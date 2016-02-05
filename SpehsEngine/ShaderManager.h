@@ -62,11 +62,13 @@ namespace SpehsEngine
 		void setUniforms();
 		float delta;
 		glm::vec2 mouse;
+		float zoom;
 		BackgroundUniforms* backgroundUniformPtr(){ return this; }
 
 	private:
 		GLint deltaLocation = 0;
 		GLint mouseLocation = 0;
+		GLint zoomLocation = 0;
 	};
 	class DefaultTextureUniforms : public Uniforms
 	{

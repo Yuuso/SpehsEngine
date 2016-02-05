@@ -29,6 +29,7 @@ namespace SpehsEngine
 	{
 		deltaLocation = shader->getUniformLocation("delta");
 		mouseLocation = shader->getUniformLocation("mouse");
+		zoomLocation = shader->getUniformLocation("zoom");
 	}
 	BackgroundUniforms::~BackgroundUniforms()
 	{}
@@ -36,6 +37,7 @@ namespace SpehsEngine
 	{
 		Uniforms::setUniforms();
 		glUniform1f(deltaLocation, delta);
+		glUniform1f(zoomLocation, zoom);
 		glUniform2fv(mouseLocation, 1, &mouse[0]);
 	}
 
