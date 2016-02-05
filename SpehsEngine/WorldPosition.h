@@ -1,10 +1,6 @@
 #pragma once
 
 #define UNIVERSUM_DIAMETER 9223372036854775807
-/*
-1 distance unit = 100 m
-universum diameter: 922 337 203 685 477 580.7 km | 6 148 914 691.23652 AU | 97491.43337 LY
-*/
 
 #include <glm\vec2.hpp>
 
@@ -23,7 +19,7 @@ namespace SpehsEngine
 		bool operator==(const WorldPosition& other);
 		bool operator!=(const WorldPosition& other);
 		void translate(const glm::vec2& _traslation);//Local distance translations
-		void translate(int64_t _ix, int64_t _iy);//Hyper space translations/worm holes etc. world translations
+		void translate(int64_t _ix, int64_t _iy);//world translations
 		void setPosition(int64_t _ix, int64_t _iy);
 		void setPosition(const WorldPosition& other);
 		void reset();

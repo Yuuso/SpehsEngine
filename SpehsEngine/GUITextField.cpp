@@ -91,7 +91,7 @@ namespace SpehsEngine
 	{
 		//Alphabet
 		int capital = 0;
-		if (inputManager->isKeyDown(SDLK_LSHIFT) || inputManager->isKeyDown(SDLK_RSHIFT))
+		if (inputManager->isKeyDown(KEYBOARD_LSHIFT) || inputManager->isKeyDown(KEYBOARD_RSHIFT))
 			capital = -32;
 		for (unsigned i = 97; i <= 122; i++)
 		{
@@ -111,26 +111,26 @@ namespace SpehsEngine
 			}
 
 		//Special characters
-		if (inputManager->isKeyPressed(SDLK_SPACE))
+		if (inputManager->isKeyPressed(KEYBOARD_SPACE))
 		{
 			input += ' ';
 			stringUpdated = false;
 		}
 
 		//Backspace/character deletion
-		if (inputManager->isKeyPressed(SDLK_BACKSPACE) && input.size() > 0)
+		if (inputManager->isKeyPressed(KEYBOARD_BACKSPACE) && input.size() > 0)
 		{
 			input.erase(input.begin() + input.size() - 1);
 			stringUpdated = false;
 		}
 
 		//End typing
-		if (inputManager->isKeyPressed(SDLK_RETURN))
+		if (inputManager->isKeyPressed(KEYBOARD_RETURN))
 		{
 			storedString = input;//Store input string
 			endTyping();
 		}
-		if (inputManager->isKeyPressed(SDLK_ESCAPE))
+		if (inputManager->isKeyPressed(KEYBOARD_ESCAPE))
 		{
 			endTyping();
 		}

@@ -1,6 +1,5 @@
 #pragma once
-#include <SDL\SDL_stdinc.h>//Uint32
-
+#include <stdint.h>
 
 
 namespace SpehsEngine
@@ -8,7 +7,7 @@ namespace SpehsEngine
 	//Variables that should be visible outside
 	extern float fps;
 	extern int maxFPS;
-	extern Uint32 deltaTime;
+	extern uint32_t deltaTime;
 	extern unsigned long drawCalls;
 	extern unsigned long vertexDrawCount;
 
@@ -21,6 +20,5 @@ namespace SpehsEngine
 	//Analyzation
 	/*30 timers (0-29)*/
 	void beginTimer(int timerIndex);
-	Uint32 endTimer(int timerIndex);
-
+	uint32_t endTimer(int timerIndex);
 }

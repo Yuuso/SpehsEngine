@@ -2,6 +2,9 @@
 #include "Exceptions.h"
 #include "ApplicationData.h"
 
+#include <SDL/SDL_video.h>
+#include <glew.h>
+
 
 SpehsEngine::Window* mainWindow;
 namespace SpehsEngine

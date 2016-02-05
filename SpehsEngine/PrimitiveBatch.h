@@ -10,6 +10,8 @@
 #include "ShaderManager.h"
 
 
+typedef unsigned short GLushort;
+
 namespace SpehsEngine
 {
 	enum Shape

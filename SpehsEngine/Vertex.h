@@ -1,5 +1,4 @@
 #pragma once
-#include <glew.h>
 
 namespace SpehsEngine
 {
@@ -24,11 +23,11 @@ namespace SpehsEngine
 	struct ColorRGBA8
 	{
 		ColorRGBA8() : r(0), g(0), b(0), a(255) {}
-		ColorRGBA8(GLubyte R, GLubyte G, GLubyte B, GLubyte A = 255) : r(R), g(G), b(B), a(A) {}
-		GLubyte r;
-		GLubyte g;
-		GLubyte b;
-		GLubyte a;
+		ColorRGBA8(unsigned char R, unsigned char G, unsigned char B, unsigned char A = 255) : r(R), g(G), b(B), a(A) {}
+		unsigned char r;
+		unsigned char g;
+		unsigned char b;
+		unsigned char a;
 	};
 	struct UV
 	{
@@ -53,7 +52,7 @@ namespace SpehsEngine
 			position.z = _z;
 		}
 
-		void setColor(GLubyte r, GLubyte g, GLubyte b, GLubyte a)
+		void setColor(unsigned char r, unsigned char g, unsigned char b, unsigned char a)
 		{
 			color.r = r;
 			color.g = g;

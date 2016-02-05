@@ -7,11 +7,11 @@
 #include <glm/vec4.hpp>
 #include <glm/mat3x3.hpp>
 #include <glm/mat4x4.hpp>
-#include <glew.h>
 
 #include "GLSLProgram.h"
 
 
+typedef int GLint;
 namespace SpehsEngine
 {
 	enum ShaderName : int

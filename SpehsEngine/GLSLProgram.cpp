@@ -1,6 +1,8 @@
 #include <fstream>
 #include <vector>
 
+#include <GL/glew.h>
+
 #include "GLSLProgram.h"
 #include "Exceptions.h"
 

@@ -1,5 +1,6 @@
 #include <SDL.h>
 #include <SDL/SDL_joystick.h>
+#include <SDL/SDL_events.h>
 #include <iostream>
 #include "Exceptions.h"
 #include "InputManager.h"
@@ -12,6 +13,10 @@
 SpehsEngine::InputManager* inputManager;
 namespace SpehsEngine
 {
+	SpehsEngine::GUID getJoystickDeviceGUID(int _deviceIndex)
+	{
+		return SDL_JoystickGetDeviceGUID(_deviceIndex);
+	}
 
 	InputManager::InputManager() : mouseCoords(0), mouseMovement(0,0)
 	{
@@ -84,6 +89,7 @@ namespace SpehsEngine
 		latestKeyboardPress = 0;
 		latestMouseButtonPress = 0;
 
+		static SDL_Event mEvent;
 		while (SDL_PollEvent(&mEvent))
 		{
 			switch (mEvent.type)
@@ -287,9 +293,9 @@ namespace SpehsEngine
 		ID = SDL_JoystickInstanceID(joystick);
 		name = SDL_JoystickNameForIndex(index);
 		guid = SDL_JoystickGetDeviceGUID(index);
-		hatCount = SDL_JoystickNumHats(joystick);
-		axisCount = SDL_JoystickNumAxes(joystick);
 		buttonCount = SDL_JoystickNumButtons(joystick);
+		axisCount = SDL_JoystickNumAxes(joystick);
+		hatCount = SDL_JoystickNumHats(joystick);
 		offline = false;
 		std::cout << "\nJoystick created: " << SDL_JoystickName(joystick);
 	}
@@ -325,7 +331,7 @@ namespace SpehsEngine
 			return true;
 		return false;
 	}
-	bool Joystick::isHatInPosition(int hatIndex, Uint8 position)
+	bool Joystick::isHatInPosition(int hatIndex, uint8_t position)
 	{
 		if (offline)
 			return false;

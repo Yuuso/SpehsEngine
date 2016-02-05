@@ -1,8 +1,12 @@
 #include <iostream>
 #include <vector>
+
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtx/transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
+#include <GL/glew.h>
+#include <ft2build.h>
+#include FT_FREETYPE_H
 
 #include "Exceptions.h"
 #include "Text.h"
@@ -11,6 +15,19 @@
 
 namespace SpehsEngine
 {
+	struct Font
+	{
+		~Font();
+
+		FT_Face* ftFace = nullptr;
+		char* fontPath;
+		int fontSize;
+		std::map<GLchar, Character> characters;
+		int referenceCount = 0;
+		int height = 0;
+		int descender = 0;
+	};
+
 	static bool textRenderingInitialized = false;
 	static int textCount = 0;
 	static FT_Library* ft = nullptr;
@@ -69,6 +86,15 @@ namespace SpehsEngine
 		//Uninitialization complete
 		std::cout << "\nText rendering uninitialized";
 		textRenderingInitialized = false;
+	}
+
+	Font::~Font()
+	{
+		if (ftFace != nullptr)
+		{
+			FT_Done_Face(*ftFace);
+			delete ftFace;
+		}
 	}
 
 	Text::~Text()
@@ -483,5 +509,17 @@ namespace SpehsEngine
 			w += (lineCount - 1) * lineSpacing;
 
 		return w;
+	}
+	int Text::getFontDescender()
+	{ 
+		return font->descender; 
+	}
+	Font* Text::getFontPtr()
+	{
+		return font; 
+	}
+	int Text::getFontSize()
+	{
+		return font->fontSize; 
 	}
 }

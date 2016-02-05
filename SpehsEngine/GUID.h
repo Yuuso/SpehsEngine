@@ -1,48 +1,25 @@
 #pragma once
-#include <SDL_joystick.h>
+#include <stdint.h>
 
-struct GUID
+/*
+Forward declaration
+IMPORTANT NOTE: This requires a modified version of the SDL_joystick.h where SDL_JoystickGUID is not typedefined from an anonymous struct
+*/
+struct SDL_JoystickGUID;
+typedef struct SDL_JoystickGUID SDL_JoystickGUID;
+
+namespace SpehsEngine
 {
-	GUID(){}
-	GUID(const SDL_JoystickGUID& other)
+	struct GUID
 	{
-		for (int i = 0; i < 16; i++)
-			guid.data[i] = other.data[i];
-	}
-	void operator=(GUID& other)
-	{//Assignent 
-		for (int i = 0; i < 16; i++)
-			guid.data[i] = other.guid.data[i];
-	}
-	void operator=(SDL_JoystickGUID& other)
-	{//Assignment
-		for (int i = 0; i < 16; i++)
-			guid.data[i] = other.data[i];
-	}
-	bool operator==(GUID& other)
-	{
-		for (int i = 0; i < 16; i++)
-			if (guid.data[i] != other.guid.data[i])
-				return false;
-		return true;
-	}
-	bool operator==(SDL_JoystickGUID& other)
-	{
-		for (int i = 0; i < 16; i++)
-			if (guid.data[i] != other.data[i])
-				return false;
-		return true;
-	}
-	bool operator!=(GUID& other)
-	{
-		for (int i = 0; i < 16; i++)
-			if (guid.data[i] != other.guid.data[i])
-				return true;
-		return false;
-	}
-	Uint8 operator[](int index)
-	{
-		return guid.data[index];
-	}
-	SDL_JoystickGUID guid;
-};
+		GUID();
+		GUID(const SDL_JoystickGUID& other);
+		void operator=(GUID& other);
+		void operator=(SDL_JoystickGUID& other);
+		bool operator==(GUID& other);
+		bool operator==(SDL_JoystickGUID& other);
+		bool operator!=(GUID& other);
+		uint8_t operator[](int index);
+		uint8_t guid[16];
+	};
+}

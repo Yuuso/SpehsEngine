@@ -1,13 +1,11 @@
 #pragma once
 #include <map>
 #include <string>
-#include <GL/glew.h>
 #include <glm/glm.hpp>
-#include <ft2build.h>
-#include FT_FREETYPE_H
 
 
-
+typedef unsigned int GLuint;
+typedef char GLchar;
 
 namespace SpehsEngine
 {
@@ -20,26 +18,7 @@ namespace SpehsEngine
 		glm::ivec2 bearing;    // Offset from baseline to left/top of glyph
 		GLuint     advance;    // Offset to advance to next glyph
 	};
-	struct Font
-	{
-		~Font()
-		{
-			if (ftFace != nullptr)
-			{
-				FT_Done_Face(*ftFace);
-				delete ftFace;
-			}
-		}
-
-		FT_Face* ftFace = nullptr;
-		char* fontPath;
-		int fontSize;
-		std::map<GLchar, Character> characters;
-		int referenceCount = 0;
-		int height = 0;
-		int descender = 0;
-	};
-
+	struct Font;
 	class Text
 	{
 	public:
@@ -72,9 +51,9 @@ namespace SpehsEngine
 		std::string getString();
 		int getTextWidth();
 		int getTextHeight();
-		int getFontDescender(){ return font->descender; }
-		Font* getFontPtr(){ return font; }
-		int getFontSize(){ return font->fontSize; }
+		int getFontDescender();
+		Font* getFontPtr();
+		int getFontSize();
 
 	private:
 		int glyphsToRender;

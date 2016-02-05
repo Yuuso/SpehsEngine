@@ -1,8 +1,9 @@
 #pragma once
 #include <string>
-#include <glew.h>
 
 
+typedef int GLint;
+typedef unsigned int GLuint;
 namespace SpehsEngine
 {
 	class GLSLProgram

@@ -63,7 +63,7 @@ namespace SpehsEngine
 		if (focusedWindow)
 		{
 			//Yielding focus
-			if (inputManager->isKeyPressed(SDLK_ESCAPE))
+			if (inputManager->isKeyPressed(KEYBOARD_ESCAPE))
 			{
 				focusedWindow->loseFocus();
 				focusedWindow = nullptr;

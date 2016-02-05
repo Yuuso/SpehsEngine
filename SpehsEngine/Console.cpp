@@ -90,7 +90,7 @@ namespace SpehsEngine
 		if (!open)
 		{
 			//Console is not open, check opening key combination
-			if (inputManager->isKeyDown(SDLK_LCTRL) && inputManager->isKeyDown(SDLK_LALT) && inputManager->isKeyDown(SDLK_BACKSPACE))
+			if (inputManager->isKeyDown(KEYBOARD_LCTRL) && inputManager->isKeyDown(KEYBOARD_LALT) && inputManager->isKeyDown(KEYBOARD_BACKSPACE))
 			{
 				openConsole();
 				input = "";
@@ -110,7 +110,7 @@ namespace SpehsEngine
 			bool inputReceived = false;
 			//Alphabet
 			unsigned char capital = 0;
-			if (inputManager->isKeyDown(SDLK_LSHIFT) || inputManager->isKeyDown(SDLK_RSHIFT))
+			if (inputManager->isKeyDown(KEYBOARD_LSHIFT) || inputManager->isKeyDown(KEYBOARD_RSHIFT))
 				capital = 32;
 			for (unsigned char i = 61; i <= 122; i++)
 			{
@@ -181,7 +181,7 @@ namespace SpehsEngine
 			}
 
 			//Enter
-			if (inputManager->isKeyPressed(SDLK_RETURN))
+			if (inputManager->isKeyPressed(KEYBOARD_RETURN))
 			{
 				executeConsole();
 				closeConsole();

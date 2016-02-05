@@ -1,8 +1,7 @@
 #pragma once
-#include <SDL/SDL_video.h>
-#include <glew.h>
 #include <string>
 
+struct SDL_Window;
 namespace SpehsEngine
 {
 	enum SpehsEngine_WindowFlags

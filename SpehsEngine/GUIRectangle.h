@@ -4,8 +4,9 @@
 #include <glm/vec3.hpp>
 #include <glm/vec4.hpp>
 #include "BitwiseOperations.h"
-#define GUIRECT_ID_TYPE uint32_t
-#define TEXT_PREFERRED_SIZE_BORDER 2
+
+#define GUIRECT_ID_TYPE						uint32_t
+#define TEXT_PREFERRED_SIZE_BORDER			2
 ////GUI rectangle states
 #define GUIRECT_STATE_TYPE					uint32_t
 #define GUIRECT_MOUSE_HOVER					0x00000001

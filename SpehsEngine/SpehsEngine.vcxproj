@@ -48,7 +48,7 @@
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>$(SolutionDir)/Dependencies/include/glm/;$(SolutionDir)/Dependencies/include/GL/;$(SolutionDir)/Dependencies/include/SDL/;$(SolutionDir)/Dependencies/include/freetype/;$(SolutionDir)/Dependencies/include/;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)/../Dependencies/include/glm/;$(ProjectDir)/../Dependencies/include/GL/;$(ProjectDir)/../Dependencies/include/SDL/;$(ProjectDir)/../Dependencies/include/freetype/;$(ProjectDir)/../Dependencies/include/;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <BrowseInformation>true</BrowseInformation>
     </ClCompile>
     <Link>
@@ -57,7 +57,7 @@
     </Link>
     <Lib>
       <AdditionalDependencies>SDL2.lib;SDL2main.lib;glew32.lib;glew32s.lib;opengl32.lib;freetype.lib;SOIL.lib</AdditionalDependencies>
-      <AdditionalLibraryDirectories>$(SolutionDir)/Dependencies/lib/</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(ProjectDir)/../Dependencies/lib/</AdditionalLibraryDirectories>
     </Lib>
     <Bscmake>
       <PreserveSbr>true</PreserveSbr>
@@ -73,7 +73,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>$(SolutionDir)/Dependencies/include/glm/;$(SolutionDir)/Dependencies/include/GL/;$(SolutionDir)/Dependencies/include/SDL/;$(SolutionDir)/Dependencies/include/freetype/;$(SolutionDir)/Dependencies/include/;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)/../Dependencies/include/glm/;$(ProjectDir)/../Dependencies/include/GL/;$(ProjectDir)/../Dependencies/include/SDL/;$(ProjectDir)/../Dependencies/include/freetype/;$(ProjectDir)/../Dependencies/include/;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -83,7 +83,7 @@
     </Link>
     <Lib>
       <AdditionalDependencies>SDL2.lib;SDL2main.lib;glew32.lib;glew32s.lib;opengl32.lib;freetype.lib</AdditionalDependencies>
-      <AdditionalLibraryDirectories>$(SolutionDir)/Dependencies/lib/</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(ProjectDir)/../Dependencies/lib/</AdditionalLibraryDirectories>
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -95,6 +95,7 @@
     <ClCompile Include="Geometry.cpp" />
     <ClCompile Include="GLSLProgram.cpp" />
     <ClCompile Include="GUICheckbox.cpp" />
+    <ClCompile Include="GUID.cpp" />
     <ClCompile Include="GUIRectangle.cpp" />
     <ClCompile Include="GUIRectangleContainer.cpp" />
     <ClCompile Include="GUIRectangleGrid.cpp" />
