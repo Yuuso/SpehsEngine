@@ -1,6 +1,7 @@
 #include <iostream>
 #include "InputManager.h"
 #include "ApplicationData.h"
+#include "Time.h"
 #include "Console.h"
 #define CONSOLE_FONT_PATH "Fonts/Anonymous.ttf"
 #define CONSOLE_BORDER 5
@@ -61,13 +62,13 @@ namespace SpehsEngine
 		lines.back()->setFont(CONSOLE_FONT_PATH, applicationData->consoleTextSize);
 		lines.back()->setColor(glm::vec4(1.0f, 0.6f, 0.0f, applicationData->consoleTextAlpha / 1000.0f));
 		lines.back()->setString(str);
-		visibility = 255;
+		visibility = 1.0f;
 
 		updateLinePositions();
 	}
 	void Console::update()
 	{
-		if (visibility > 0)
+		if (visibility > 0.0f)
 		{
 			//Update console font size if needed
 			if (previousFontSize != applicationData->consoleTextSize)
@@ -79,9 +80,10 @@ namespace SpehsEngine
 				}
 				previousFontSize = applicationData->consoleTextSize;
 			}
+
 			if (!open)
 			{
-				visibility--;
+				visibility -= deltaTime / 1000.0f;
 			}
 		}
 
@@ -96,13 +98,11 @@ namespace SpehsEngine
 		}
 		else
 		{
-			if (visibility < 255)
+			if (visibility < 1.0f)
 			{
-				visibility += 5;
-				if (visibility > 255)
-				{
-					visibility = 255;
-				}
+				visibility += deltaTime / 200.0f;
+				if (visibility > 1.0f)
+					visibility = 1.0f;
 			}
 
 			//Console is open
@@ -216,13 +216,13 @@ namespace SpehsEngine
 	void Console::render()
 	{
 		//Render lines
-		if (visibility <= 0)
+		if (visibility < 0.01f)
 		{
 			return;
 		}
 		for (auto i = lines.begin(); i < lines.end(); i++)
 		{
-			(*i)->getColorRef().a = visibility / 255.0f;
+			(*i)->getColorRef().a = visibility * (applicationData->consoleTextAlpha / 1000.0f);
 			(*i)->render();
 		}
 
@@ -231,7 +231,7 @@ namespace SpehsEngine
 		{
 			return;
 		}
-		consoleText->getColorRef().a = visibility / 255.0f;
+		consoleText->getColorRef().a = visibility * (applicationData->consoleTextAlpha / 1000.0f);
 		consoleText->render();
 	}
 

@@ -54,7 +54,7 @@ namespace SpehsEngine
 		void closeConsole();
 
 	private:
-		int visibility = 255;
+		float visibility = 1.0f;
 		bool open = false;
 		std::string input;
 		Text* consoleText;
