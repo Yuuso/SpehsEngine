@@ -1,0 +1,243 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="GLSLProgram.cpp">
+      <Filter>Rendering</Filter>
+    </ClCompile>
+    <ClCompile Include="Text.cpp">
+      <Filter>Rendering</Filter>
+    </ClCompile>
+    <ClCompile Include="Exceptions.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="SpehsEngine.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Time.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="LengthConversion.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="InputManager.cpp">
+      <Filter>HID</Filter>
+    </ClCompile>
+    <ClCompile Include="Window.cpp">
+      <Filter>Rendering</Filter>
+    </ClCompile>
+    <ClCompile Include="Camera2D.cpp">
+      <Filter>Rendering</Filter>
+    </ClCompile>
+    <ClCompile Include="WorldPosition.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="ShaderManager.cpp">
+      <Filter>Rendering</Filter>
+    </ClCompile>
+    <ClCompile Include="Geometry.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="TextureManager.cpp">
+      <Filter>Rendering</Filter>
+    </ClCompile>
+    <ClCompile Include="ApplicationData.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="RNG.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="GUIRectangle.cpp">
+      <Filter>Rendering\GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="GUIRectangleContainer.cpp">
+      <Filter>Rendering\GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="GUIRectangleList.cpp">
+      <Filter>Rendering\GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="GUITextField.cpp">
+      <Filter>Rendering\GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="GUIWindow.cpp">
+      <Filter>Rendering\GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="Console.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Arrow.cpp">
+      <Filter>Rendering\Geometric Rendering</Filter>
+    </ClCompile>
+    <ClCompile Include="PolygonMeshBatch.cpp">
+      <Filter>Rendering\Geometric Rendering</Filter>
+    </ClCompile>
+    <ClCompile Include="PolygonBatch.cpp">
+      <Filter>Rendering\Geometric Rendering</Filter>
+    </ClCompile>
+    <ClCompile Include="PrimitiveBatch.cpp">
+      <Filter>Rendering\Geometric Rendering</Filter>
+    </ClCompile>
+    <ClCompile Include="LineBatch.cpp">
+      <Filter>Rendering\Geometric Rendering</Filter>
+    </ClCompile>
+    <ClCompile Include="PointBatch.cpp">
+      <Filter>Rendering\Geometric Rendering</Filter>
+    </ClCompile>
+    <ClCompile Include="SATCollision.cpp">
+      <Filter>Physics</Filter>
+    </ClCompile>
+    <ClCompile Include="GUIRectangleTree.cpp">
+      <Filter>Rendering\GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="GUICheckbox.cpp">
+      <Filter>Rendering\GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="GUIWindowManager.cpp">
+      <Filter>Rendering\GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="GUIRectangleGrid.cpp">
+      <Filter>Rendering\GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="GUIRectangleRow.cpp">
+      <Filter>Rendering\GUI</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="GLSLProgram.h">
+      <Filter>Rendering</Filter>
+    </ClInclude>
+    <ClInclude Include="Text.h">
+      <Filter>Rendering</Filter>
+    </ClInclude>
+    <ClInclude Include="SATCollision.h">
+      <Filter>Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="Exceptions.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="SpehsEngine.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Time.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="LengthConversion.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="InputManager.h">
+      <Filter>HID</Filter>
+    </ClInclude>
+    <ClInclude Include="Window.h">
+      <Filter>Rendering</Filter>
+    </ClInclude>
+    <ClInclude Include="Camera2D.h">
+      <Filter>Rendering</Filter>
+    </ClInclude>
+    <ClInclude Include="ShaderManager.h">
+      <Filter>Rendering</Filter>
+    </ClInclude>
+    <ClInclude Include="GUID.h">
+      <Filter>HID</Filter>
+    </ClInclude>
+    <ClInclude Include="WorldPosition.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Geometry.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="TextureManager.h">
+      <Filter>Rendering</Filter>
+    </ClInclude>
+    <ClInclude Include="BitwiseOperations.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="ApplicationData.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="RNG.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="GUIRectangle.h">
+      <Filter>Rendering\GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="GUIRectangleContainer.h">
+      <Filter>Rendering\GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="GUIRectangleList.h">
+      <Filter>Rendering\GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="GUITextField.h">
+      <Filter>Rendering\GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="GUIWindow.h">
+      <Filter>Rendering\GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="Console.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Shapes.h">
+      <Filter>Rendering\Geometric Rendering</Filter>
+    </ClInclude>
+    <ClInclude Include="Arrow.h">
+      <Filter>Rendering\Geometric Rendering</Filter>
+    </ClInclude>
+    <ClInclude Include="Vertex.h">
+      <Filter>Rendering</Filter>
+    </ClInclude>
+    <ClInclude Include="PolygonMeshBatch.h">
+      <Filter>Rendering\Geometric Rendering</Filter>
+    </ClInclude>
+    <ClInclude Include="PolygonBatch.h">
+      <Filter>Rendering\Geometric Rendering</Filter>
+    </ClInclude>
+    <ClInclude Include="PrimitiveBatch.h">
+      <Filter>Rendering\Geometric Rendering</Filter>
+    </ClInclude>
+    <ClInclude Include="PointBatch.h">
+      <Filter>Rendering\Geometric Rendering</Filter>
+    </ClInclude>
+    <ClInclude Include="LineBatch.h">
+      <Filter>Rendering\Geometric Rendering</Filter>
+    </ClInclude>
+    <ClInclude Include="GUIRectangleTree.h">
+      <Filter>Rendering\GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="GUICheckbox.h">
+      <Filter>Rendering\GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="GUIWindowManager.h">
+      <Filter>Rendering\GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="GUIRectangleGrid.h">
+      <Filter>Rendering\GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="GUIRectangleRow.h">
+      <Filter>Rendering\GUI</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Physics">
+      <UniqueIdentifier>{c62a4106-1b15-4782-ab29-3b9eb2c38f6a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering">
+      <UniqueIdentifier>{c90f89f6-f9aa-4f67-8d51-cc0cc479bf5e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Core">
+      <UniqueIdentifier>{63c24639-7b9e-484e-813f-0c891bec1b90}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="HID">
+      <UniqueIdentifier>{21188960-9180-464e-959c-54aba4a6f620}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Audio">
+      <UniqueIdentifier>{9438310d-dd42-4fe3-8bcd-3b03db57dbc0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resources">
+      <UniqueIdentifier>{41c5ea82-1934-4aef-9843-dbfd3a7c4b0d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\GUI">
+      <UniqueIdentifier>{8ef701aa-199f-40b2-b2f4-7198c54182c8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\Geometric Rendering">
+      <UniqueIdentifier>{2c1665b1-8c4e-481d-9c89-1148e8b99b6e}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

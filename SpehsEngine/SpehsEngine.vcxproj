@@ -1,0 +1,166 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{545A88BB-7447-428B-8A73-A1E8F2BBDB33}</ProjectGuid>
+    <Keyword>Win32Proj</Keyword>
+    <RootNamespace>SpehsEngine</RootNamespace>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v120</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v120</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup />
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <SDLCheck>true</SDLCheck>
+      <AdditionalIncludeDirectories>$(SolutionDir)/Dependencies/include/glm/;$(SolutionDir)/Dependencies/include/GL/;$(SolutionDir)/Dependencies/include/SDL/;$(SolutionDir)/Dependencies/include/freetype/;$(SolutionDir)/Dependencies/include/;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <BrowseInformation>true</BrowseInformation>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+    <Lib>
+      <AdditionalDependencies>SDL2.lib;SDL2main.lib;glew32.lib;glew32s.lib;opengl32.lib;freetype.lib;SOIL.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)/Dependencies/lib/</AdditionalLibraryDirectories>
+    </Lib>
+    <Bscmake>
+      <PreserveSbr>true</PreserveSbr>
+    </Bscmake>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <SDLCheck>true</SDLCheck>
+      <AdditionalIncludeDirectories>$(SolutionDir)/Dependencies/include/glm/;$(SolutionDir)/Dependencies/include/GL/;$(SolutionDir)/Dependencies/include/SDL/;$(SolutionDir)/Dependencies/include/freetype/;$(SolutionDir)/Dependencies/include/;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+    </Link>
+    <Lib>
+      <AdditionalDependencies>SDL2.lib;SDL2main.lib;glew32.lib;glew32s.lib;opengl32.lib;freetype.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)/Dependencies/lib/</AdditionalLibraryDirectories>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="ApplicationData.cpp" />
+    <ClCompile Include="Arrow.cpp" />
+    <ClCompile Include="Camera2D.cpp" />
+    <ClCompile Include="Console.cpp" />
+    <ClCompile Include="Exceptions.cpp" />
+    <ClCompile Include="Geometry.cpp" />
+    <ClCompile Include="GLSLProgram.cpp" />
+    <ClCompile Include="GUICheckbox.cpp" />
+    <ClCompile Include="GUIRectangle.cpp" />
+    <ClCompile Include="GUIRectangleContainer.cpp" />
+    <ClCompile Include="GUIRectangleGrid.cpp" />
+    <ClCompile Include="GUIRectangleList.cpp" />
+    <ClCompile Include="GUIRectangleRow.cpp" />
+    <ClCompile Include="GUIRectangleTree.cpp" />
+    <ClCompile Include="GUITextField.cpp" />
+    <ClCompile Include="GUIWindow.cpp" />
+    <ClCompile Include="GUIWindowManager.cpp" />
+    <ClCompile Include="InputManager.cpp" />
+    <ClCompile Include="LengthConversion.cpp" />
+    <ClCompile Include="LineBatch.cpp" />
+    <ClCompile Include="PointBatch.cpp" />
+    <ClCompile Include="PolygonBatch.cpp" />
+    <ClCompile Include="PolygonMeshBatch.cpp" />
+    <ClCompile Include="PrimitiveBatch.cpp" />
+    <ClCompile Include="RNG.cpp" />
+    <ClCompile Include="SATCollision.cpp" />
+    <ClCompile Include="ShaderManager.cpp" />
+    <ClCompile Include="SpehsEngine.cpp" />
+    <ClCompile Include="Text.cpp" />
+    <ClCompile Include="TextureManager.cpp" />
+    <ClCompile Include="Time.cpp" />
+    <ClCompile Include="Window.cpp" />
+    <ClCompile Include="WorldPosition.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="ApplicationData.h" />
+    <ClInclude Include="Arrow.h" />
+    <ClInclude Include="BitwiseOperations.h" />
+    <ClInclude Include="Camera2D.h" />
+    <ClInclude Include="Console.h" />
+    <ClInclude Include="Exceptions.h" />
+    <ClInclude Include="Geometry.h" />
+    <ClInclude Include="GLSLProgram.h" />
+    <ClInclude Include="GUICheckbox.h" />
+    <ClInclude Include="GUID.h" />
+    <ClInclude Include="GUIRectangle.h" />
+    <ClInclude Include="GUIRectangleContainer.h" />
+    <ClInclude Include="GUIRectangleGrid.h" />
+    <ClInclude Include="GUIRectangleList.h" />
+    <ClInclude Include="GUIRectangleRow.h" />
+    <ClInclude Include="GUIRectangleTree.h" />
+    <ClInclude Include="GUITextField.h" />
+    <ClInclude Include="GUIWindow.h" />
+    <ClInclude Include="GUIWindowManager.h" />
+    <ClInclude Include="InputManager.h" />
+    <ClInclude Include="LengthConversion.h" />
+    <ClInclude Include="LineBatch.h" />
+    <ClInclude Include="PointBatch.h" />
+    <ClInclude Include="PolygonBatch.h" />
+    <ClInclude Include="PolygonMeshBatch.h" />
+    <ClInclude Include="PrimitiveBatch.h" />
+    <ClInclude Include="RNG.h" />
+    <ClInclude Include="SATCollision.h" />
+    <ClInclude Include="ShaderManager.h" />
+    <ClInclude Include="Shapes.h" />
+    <ClInclude Include="SpehsEngine.h" />
+    <ClInclude Include="Text.h" />
+    <ClInclude Include="TextureManager.h" />
+    <ClInclude Include="Time.h" />
+    <ClInclude Include="Vertex.h" />
+    <ClInclude Include="Window.h" />
+    <ClInclude Include="WorldPosition.h" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>
