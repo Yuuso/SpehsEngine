@@ -24,6 +24,8 @@ namespace SpehsEngine
 		//getters
 		float getScale() { return scale; }
 		WorldPosition& getWorldPositionRef(){ return worldPosition; }
+		
+		glm::vec2 deltaMovement;
 
 	private:
 		float zoomSpeed;
@@ -31,6 +33,7 @@ namespace SpehsEngine
 		glm::mat4 orthoMatrix;
 		glm::mat4 cameraMatrix;
 		WorldPosition worldPosition;
+		WorldPosition previousPosition;
 	};
 }
 extern SpehsEngine::Camera2D camera;
