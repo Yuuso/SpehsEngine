@@ -52,6 +52,7 @@ namespace SpehsEngine
 		void clearLog();
 		void openConsole();
 		void closeConsole();
+		bool isOpen(){ return open; }
 
 	private:
 		float visibility = 1.0f;
@@ -59,13 +60,15 @@ namespace SpehsEngine
 		std::string input;
 		Text* consoleText;
 		std::vector<Text*> lines;
-		float backspaceTimer = 0;
+		int backspaceTimer = 0;
 		int backspaceAcceleration = 0;
 		std::vector<ConsoleCommand> commands;
 		std::vector<std::string> consoleWords;
 		std::vector<ConsoleVariable<int>> intVariables;
 		std::vector<ConsoleVariable<float>> floatVariables;
 		std::vector<ConsoleVariable<bool>> boolVariables;
+		std::vector<std::string> previousCommands;
+		int previousCommandIndex = 0;
 
 		void updateLinePositions();
 		void setVariable();

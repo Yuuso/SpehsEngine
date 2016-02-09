@@ -3,6 +3,7 @@
 #include "ApplicationData.h"
 #include "Time.h"
 #include "Console.h"
+#define CONSOLE_COMMANDS_KEPT_IN_MEMORY 10
 #define CONSOLE_FONT_PATH "Fonts/Anonymous.ttf"
 #define CONSOLE_BORDER 5
 #define BACKSPACE_INITIAL_INTERVAL 500
@@ -23,11 +24,6 @@ namespace SpehsEngine
 		consoleText->setColor(glm::vec4(1.0f, 0.6f, 0.0f, applicationData->consoleTextAlpha / 1000.0f));
 		consoleText->setPosition(glm::vec2(CONSOLE_BORDER, CONSOLE_BORDER));
 		consoleText->setString("><");
-
-
-		//Add console variables
-		addVariable("fontSize", applicationData->consoleTextSize);
-
 
 		log("Console initialized");
 		return 0;
@@ -122,12 +118,27 @@ namespace SpehsEngine
 			}
 
 			//Numbers
-			for (unsigned char i = 48; i <= 57; i++)
+			if (!inputManager->isKeyDown(KEYBOARD_LSHIFT) && !inputManager->isKeyDown(KEYBOARD_RSHIFT))
 			{
-				if (inputManager->isKeyPressed(i))
+				for (unsigned char i = 48; i <= 57; i++)
 				{
-					input += i;
-					inputReceived = true;
+					if (inputManager->isKeyPressed(i))
+					{
+						input += i;
+						inputReceived = true;
+					}
+				}
+			}
+			else
+			{
+				//Special characters
+				for (unsigned char i = 48; i <= 59; i++)
+				{
+					if (inputManager->isKeyPressed(i))
+					{
+						input += i - 10;
+						inputReceived = true;
+					}
 				}
 			}
 
@@ -150,12 +161,27 @@ namespace SpehsEngine
 				inputReceived = true;
 			}
 			//Backspace
-			if (inputManager->isKeyDown(8) || inputManager->isKeyPressed(8))
+			if (inputManager->isKeyDown(8))
 			{
-				if (backspaceTimer <= 0)
-				{//Erase one character
-					if (input.size() > 0)
-					{
+				if (backspaceTimer <= 0 && input.size() > 0)
+				{
+					if (inputManager->isKeyDown(KEYBOARD_LCTRL) || inputManager->isKeyDown(KEYBOARD_RCTRL))
+					{//Erase a word
+						if (input.back() == ' ')
+							input.pop_back();
+						else
+						{//Erase until space or empty
+							while (input.size() > 0 && input.back() != ' ')
+							{
+								input.pop_back();
+							}
+							if (input.size() == 1 && input.back() == ' ')
+								input.pop_back();
+							backspaceTimer = BACKSPACE_INITIAL_INTERVAL;
+						}
+					}
+					else
+					{//Erase one character
 						input.pop_back();
 						if (inputManager->isKeyPressed(8))
 						{
@@ -166,12 +192,12 @@ namespace SpehsEngine
 							backspaceTimer = BACKSPACE_INTERVAL - backspaceAcceleration;
 							backspaceAcceleration += 3;
 						}
-						inputReceived = true;
 					}
+					inputReceived = true;
 				}
 				else
 				{
-					//backspaceTimer -= deltaTime; //TODO
+					backspaceTimer -= deltaTime;
 				}
 			}
 			else
@@ -185,6 +211,34 @@ namespace SpehsEngine
 			{
 				executeConsole();
 				closeConsole();
+				inputReceived = true;
+			}
+
+			//Escape
+			if (inputManager->isKeyPressed(KEYBOARD_ESCAPE))
+			{
+				closeConsole();
+				inputReceived = true;
+			}
+
+			//Previous commands
+			if (inputManager->isKeyPressed(KEYBOARD_UP) && previousCommands.size() > 0)
+			{
+				if (previousCommandIndex == -1)
+					previousCommandIndex = previousCommands.size() - 1;
+				else if (--previousCommandIndex < 0)
+					previousCommandIndex = previousCommands.size() - 1;
+				input = previousCommands[previousCommandIndex];
+				inputReceived = true;
+			}
+			if (inputManager->isKeyPressed(KEYBOARD_DOWN) && previousCommands.size() > 0)
+			{
+				if (previousCommandIndex == -1)
+					previousCommandIndex = 0;
+				else if (++previousCommandIndex >= previousCommands.size())
+					previousCommandIndex = 0;
+				input = previousCommands[previousCommandIndex];
+				inputReceived = true;
 			}
 
 
@@ -240,6 +294,20 @@ namespace SpehsEngine
 		if (input.size() == 0)
 			return;
 
+		//Record command
+		for (unsigned i = 0; i < previousCommands.size(); i++)
+		{//Erase if command already recorded
+			if (previousCommands[i] == input)
+			{
+				previousCommands.erase(previousCommands.begin() + i);
+				break;
+			}
+		}
+		previousCommands.push_back(input);
+		if (previousCommands.size() > CONSOLE_COMMANDS_KEPT_IN_MEMORY)
+			previousCommands.erase(previousCommands.begin());
+		previousCommandIndex = -1;
+
 		//Record each word as a different element in console words vector
 		bool foundCommand = false;
 		consoleWords.clear();
@@ -258,6 +326,22 @@ namespace SpehsEngine
 				break;
 			}
 		}
+		
+		//Help
+		if (consoleWords[0] == "?" || consoleWords[0] == "help")
+		{
+			log("Available variables <set variable value>");
+			for (unsigned i = 0; i < boolVariables.size(); i++)
+				log("\\\\" + boolVariables[i].identifier);
+			for (unsigned i = 0; i < intVariables.size(); i++)
+				log("\\\\" + intVariables[i].identifier);
+			for (unsigned i = 0; i < floatVariables.size(); i++)
+				log("\\\\" + floatVariables[i].identifier);
+			log("Available commands <command parameter1 parameter2 parameterN>");
+			for (unsigned i = 0; i < commands.size(); i++)
+				log("\\\\" + commands[i].command);
+			return;
+		}
 
 		//Set variables
 		if (consoleWords[0] == "set")
@@ -270,6 +354,7 @@ namespace SpehsEngine
 			else
 			{
 				log("Set failed! Too few parameters in command call");
+				return;
 			}
 		}
 		else
@@ -289,7 +374,8 @@ namespace SpehsEngine
 		consoleText->setString("><");
 		if (!foundCommand)
 		{
-			log("Unkown command");
+			log("Unknown command");
+			return;
 		}
 	}
 	void Console::setVariable()
@@ -328,7 +414,7 @@ namespace SpehsEngine
 					isFloat = true;
 				else
 				{
-					log("Invalid command!");
+					log("Unknown command!");
 					return;
 				}
 			}
@@ -359,7 +445,7 @@ namespace SpehsEngine
 		}
 		if (!foundVariable)
 		{
-			log("Unkown identifier [" + consoleWords[1] + "]!");
+			log("Unknown identifier [" + consoleWords[1] + "]!");
 		}
 	}
 	void Console::clearLog()
@@ -379,5 +465,6 @@ namespace SpehsEngine
 	{
 		open = false;
 		updateLinePositions();
+		input.clear();
 	}
 }
