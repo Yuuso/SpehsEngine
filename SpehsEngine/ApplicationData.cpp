@@ -2,7 +2,6 @@
 #include <fstream>
 #include <iostream>
 #include <string>
-#define APPLICATION_DATA_FILE_DIRECTORY "SaveFiles/ApplicationData.txt"
 
 
 SpehsEngine::ApplicationData* applicationData;
@@ -41,7 +40,7 @@ namespace SpehsEngine
 	void ApplicationData::save()
 	{
 		std::ofstream stream;
-		stream.open(APPLICATION_DATA_FILE_DIRECTORY, std::ios::trunc);
+		stream.open(GAME_DATA_DIRECTORY "/ApplicationData.txt", std::ios::trunc);
 		if (stream.fail())
 		{
 			std::cout << "\nFailed to save application data!";
@@ -65,7 +64,7 @@ namespace SpehsEngine
 	void ApplicationData::load()
 	{
 		std::ifstream stream;
-		stream.open(APPLICATION_DATA_FILE_DIRECTORY);
+		stream.open(GAME_DATA_DIRECTORY "/ApplicationData.txt");
 		if (stream.fail())
 		{
 			std::cout << "\nFailed to save application data!";

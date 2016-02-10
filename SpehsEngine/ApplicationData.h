@@ -2,6 +2,7 @@
 #include <vector>
 #include <string>
 #include <stdint.h>
+#define GAME_DATA_DIRECTORY "data/"
 
 
 /*Purpose of this class:

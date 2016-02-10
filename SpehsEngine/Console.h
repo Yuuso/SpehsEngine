@@ -50,6 +50,8 @@ namespace SpehsEngine
 		void addConsoleCommand(std::string str, void(*fnc)(std::vector<std::string>&));
 		void log(std::string str);
 		void clearLog();
+		void clearVariables();
+		void clearCommands();
 		void openConsole();
 		void closeConsole();
 		bool isOpen(){ return open; }

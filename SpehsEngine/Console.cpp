@@ -51,6 +51,16 @@ namespace SpehsEngine
 	{
 		commands.push_back(ConsoleCommand(str, fnc));
 	}
+	void Console::clearVariables()
+	{
+		boolVariables.clear();
+		floatVariables.clear();
+		intVariables.clear();
+	}
+	void Console::clearCommands()
+	{
+		commands.clear();
+	}
 
 	void Console::log(std::string str)
 	{
