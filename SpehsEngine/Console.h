@@ -44,10 +44,11 @@ namespace SpehsEngine
 
 		void update();
 		void render();
-		void addVariable(std::string str, bool& var);
-		void addVariable(std::string str, float& var);
-		void addVariable(std::string str, int& var);
-		void addConsoleCommand(std::string str, void(*fnc)(std::vector<std::string>&));
+		void addVariable(std::string identifier, bool& var);
+		void addVariable(std::string identifier, float& var);
+		void addVariable(std::string identifier, int& var);
+		void addVariable(std::string identifier, std::string& var);
+		void addConsoleCommand(std::string identifier, void(*fnc)(std::vector<std::string>&));
 		void log(std::string str);
 		void clearLog();
 		void clearVariables();
@@ -69,6 +70,7 @@ namespace SpehsEngine
 		std::vector<ConsoleVariable<int>> intVariables;
 		std::vector<ConsoleVariable<float>> floatVariables;
 		std::vector<ConsoleVariable<bool>> boolVariables;
+		std::vector<ConsoleVariable<std::string>> stringVariables;
 		std::vector<std::string> previousCommands;
 		int previousCommandIndex = 0;
 

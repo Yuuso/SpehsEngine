@@ -47,6 +47,10 @@ namespace SpehsEngine
 	{
 		intVariables.push_back(ConsoleVariable<int>(str, var));
 	}
+	void Console::addVariable(std::string str, std::string& var)
+	{
+		stringVariables.push_back(ConsoleVariable<std::string>(str, var));
+	}
 	void Console::addConsoleCommand(std::string str, void(*fnc)(std::vector<std::string>&))
 	{
 		commands.push_back(ConsoleCommand(str, fnc));
@@ -56,6 +60,7 @@ namespace SpehsEngine
 		boolVariables.clear();
 		floatVariables.clear();
 		intVariables.clear();
+		stringVariables.clear();
 	}
 	void Console::clearCommands()
 	{
@@ -337,25 +342,9 @@ namespace SpehsEngine
 			}
 		}
 		
-		//Help
-		if (consoleWords[0] == "?" || consoleWords[0] == "help")
-		{
-			log("Available variables <set variable value>");
-			for (unsigned i = 0; i < boolVariables.size(); i++)
-				log("\\\\" + boolVariables[i].identifier);
-			for (unsigned i = 0; i < intVariables.size(); i++)
-				log("\\\\" + intVariables[i].identifier);
-			for (unsigned i = 0; i < floatVariables.size(); i++)
-				log("\\\\" + floatVariables[i].identifier);
-			log("Available commands <command parameter1 parameter2 parameterN>");
-			for (unsigned i = 0; i < commands.size(); i++)
-				log("\\\\" + commands[i].command);
-			return;
-		}
-
-		//Set variables
+		
 		if (consoleWords[0] == "set")
-		{
+		{//Set variables
 			if (consoleWords.size() >= 3)
 			{
 				setVariable();
@@ -367,9 +356,24 @@ namespace SpehsEngine
 				return;
 			}
 		}
+		else if (consoleWords[0] == "?" || consoleWords[0] == "help")
+		{//Help
+			log("Available variables <set variable value>");
+			for (unsigned i = 0; i < boolVariables.size(); i++)
+				log("\\\\" + boolVariables[i].identifier);
+			for (unsigned i = 0; i < intVariables.size(); i++)
+				log("\\\\" + intVariables[i].identifier);
+			for (unsigned i = 0; i < floatVariables.size(); i++)
+				log("\\\\" + floatVariables[i].identifier);
+			for (unsigned i = 0; i < stringVariables.size(); i++)
+				log("\\\\" + stringVariables[i].identifier);
+			log("Available commands <command parameter1 parameter2 parameterN>");
+			for (unsigned i = 0; i < commands.size(); i++)
+				log("\\\\" + commands[i].command);
+			return;
+		}
 		else
-		{
-			//Search for command with matching identifier
+		{//Search for command with matching identifier
 			for (unsigned i = 0; i < commands.size(); i++)
 			{
 				if (commands[i].command == consoleWords[0])
@@ -390,11 +394,12 @@ namespace SpehsEngine
 	}
 	void Console::setVariable()
 	{
-		bool foundVariable = false;
 		bool isFloat = false;
 		for (unsigned i = 0; i < consoleWords[2].size(); i++)
 			if ((consoleWords[2][i] < 48 || consoleWords[2][i] > 57) && consoleWords[2][i] != 45)//if the character is not "numeric" (number or -)
 			{//Value is not numeric
+
+				//Check booleans
 				if (consoleWords[2] == "true" || consoleWords[2] == "false")
 				{
 					for (unsigned i = 0; i < boolVariables.size(); i++)
@@ -402,29 +407,40 @@ namespace SpehsEngine
 						{
 							if (consoleWords[2] == "true")
 							{
-								foundVariable = true;
-								boolVariables[i].set(true);
 								log("Setting " + boolVariables[i].identifier + " as true");
+								boolVariables[i].set(true);
 							}
 							else
 							{
-								foundVariable = true;
-								boolVariables[i].set(false);
 								log("Setting " + boolVariables[i].identifier + " as false");
+								boolVariables[i].set(false);
 							}
 							return;
 						}
 					log("Invalid command!");
 					return;
 				}
+
+				//Check string variables
+				for (unsigned i = 0; i < stringVariables.size(); i++)
+				{
+					if (stringVariables[i].identifier == consoleWords[1])
+					{
+						log("Setting " + stringVariables[i].identifier + " to " + consoleWords[2]);
+						*stringVariables[i].variablePtr = consoleWords[2];
+						return;
+					}
+				}
+				log("Invalid command!");
+				return;
 			}
 			else if (consoleWords[2][i] == 46)//Test for period (decimal numbers/aka floats)
 			{
 				if (isFloat == false)
 					isFloat = true;
 				else
-				{
-					log("Unknown command!");
+				{//Two periods -> invalid float
+					log("Invalid command!");
 					return;
 				}
 			}
@@ -435,9 +451,9 @@ namespace SpehsEngine
 				if (floatVariables[i].identifier == consoleWords[1])
 				{
 					{
-						foundVariable = true;
-						floatVariables[i].set(atoi(consoleWords[2].c_str()));
 						log("Setting " + floatVariables[i].identifier + " to " + consoleWords[2]);
+						floatVariables[i].set(atoi(consoleWords[2].c_str()));
+						return;
 					}
 				}
 		}
@@ -447,15 +463,11 @@ namespace SpehsEngine
 				if (intVariables[i].identifier == consoleWords[1])
 				{
 					{
-						foundVariable = true;
-						intVariables[i].set(atoi(consoleWords[2].c_str()));
 						log("Setting " + intVariables[i].identifier + " to " + consoleWords[2]);
+						intVariables[i].set(atoi(consoleWords[2].c_str()));
+						return;
 					}
 				}
-		}
-		if (!foundVariable)
-		{
-			log("Unknown identifier [" + consoleWords[1] + "]!");
 		}
 	}
 	void Console::clearLog()

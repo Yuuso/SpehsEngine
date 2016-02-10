@@ -18,7 +18,7 @@ namespace SpehsEngine
 		return SDL_JoystickGetDeviceGUID(_deviceIndex);
 	}
 
-	InputManager::InputManager() : mouseCoords(0), mouseMovement(0,0)
+	InputManager::InputManager() : mouseCoords(0), mouseMovement(0, 0), droppedFileDirectory("")
 	{
 	}
 	InputManager::~InputManager()
@@ -116,6 +116,10 @@ namespace SpehsEngine
 				break;
 			case SDL_QUIT:
 				quitRequested = true;
+				break;
+			case SDL_DROPFILE:
+				std::cout << "\n\tFile dropped: " << mEvent.drop.file;
+				droppedFileDirectory = mEvent.drop.file;
 				break;
 			}
 		}
