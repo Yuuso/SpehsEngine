@@ -216,6 +216,9 @@
     <ClInclude Include="GUIRectangleRow.h">
       <Filter>Rendering\GUI</Filter>
     </ClInclude>
+    <ClInclude Include="ConsoleVariable.h">
+      <Filter>Core</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Physics">

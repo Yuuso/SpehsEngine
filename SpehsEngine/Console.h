@@ -1,38 +1,14 @@
 #pragma once
-#include "Text.h"
 #include <vector>
 #include <string>
+#include <glm/vec3.hpp>
+#include "ConsoleVariable.h"
+#define CONSOLE_FONT_COLOR 1.0f, 0.6f, 0.0f
 
 
 namespace SpehsEngine
 {
-	template <typename T>
-	struct ConsoleVariable
-	{
-		ConsoleVariable(std::string n, T& ptr)
-		{
-			identifier = n;
-			variablePtr = &ptr;
-		}
-		void set(T value)
-		{
-			*variablePtr = value;
-		}
-		std::string identifier;
-		T* variablePtr = nullptr;
-	};
-	struct ConsoleCommand
-	{
-		ConsoleCommand(std::string cmd, void(*fnc)(std::vector<std::string>& words))
-		{
-			command = cmd;
-			function = fnc;
-		}
-		std::string command;
-		void(*function)(std::vector<std::string>& words);
-	};
-
-
+	class Text;
 	class Console
 	{
 	public:
@@ -49,7 +25,10 @@ namespace SpehsEngine
 		void addVariable(std::string identifier, int& var);
 		void addVariable(std::string identifier, std::string& var);
 		void addConsoleCommand(std::string identifier, void(*fnc)(std::vector<std::string>&));
-		void log(std::string str);
+		void log(std::string str, glm::vec3& color = glm::vec3(CONSOLE_FONT_COLOR));
+		void warning(std::string warning);
+		void error(std::string error);
+		void fatalError(std::string fatal_error);
 		void clearLog();
 		void clearVariables();
 		void clearCommands();

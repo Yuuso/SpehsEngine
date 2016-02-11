@@ -267,6 +267,8 @@ namespace SpehsEngine
 	}
 	int InputManager::getGUIDIndex(int joystickIndex)
 	{
+		if (joystickIndex >= joysticks.size() || joystickIndex < 0)
+			return -1;
 		GUID guid = SDL_JoystickGetDeviceGUID(joystickIndex);
 		int index = 0;
 		for (int i = 0; i < joystickIndex - 1; i++)

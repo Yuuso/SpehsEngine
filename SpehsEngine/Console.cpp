@@ -1,8 +1,11 @@
 #include <iostream>
+#include "Exceptions.h"
 #include "InputManager.h"
 #include "ApplicationData.h"
 #include "Time.h"
 #include "Console.h"
+#include "ConsoleVariable.h"
+#include "Text.h"
 #define CONSOLE_COMMANDS_KEPT_IN_MEMORY 10
 #define CONSOLE_FONT_PATH "Fonts/Anonymous.ttf"
 #define CONSOLE_BORDER 5
@@ -67,15 +70,29 @@ namespace SpehsEngine
 		commands.clear();
 	}
 
-	void Console::log(std::string str)
+	void Console::log(std::string str, glm::vec3& color)
 	{
 		lines.push_back(new SpehsEngine::Text());
 		lines.back()->setFont(CONSOLE_FONT_PATH, applicationData->consoleTextSize);
-		lines.back()->setColor(glm::vec4(1.0f, 0.6f, 0.0f, applicationData->consoleTextAlpha / 1000.0f));
+		lines.back()->setColor(glm::vec4(color, applicationData->consoleTextAlpha / 1000.0f));
 		lines.back()->setString(str);
 		visibility = 1.0f;
 
 		updateLinePositions();
+	}
+	void Console::warning(std::string str)
+	{
+		log("[Warning] " + str, glm::vec3(1.0f, 0.3f, 0.0f));
+	}
+	void Console::error(std::string str)
+	{
+		log("[Error] " + str, glm::vec3(1.0f, 0.0f, 0.0f));
+		SpehsEngine::unexpectedError(str);
+	}
+	void Console::fatalError(std::string str)
+	{
+		log("[FatalError] " + str, glm::vec3(1.0f, 0.0f, 0.0f));
+		SpehsEngine::fatalError(str);
 	}
 	void Console::update()
 	{

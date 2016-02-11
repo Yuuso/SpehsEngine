@@ -160,6 +160,9 @@ namespace SpehsEngine
 			return;
 		}
 		pressedLeafNodeID = _ID;
+		
+		if (_ID > 1000000)//DEBUG
+			std::cout << "Inform Teo";//DEBUG
 	}
 	void GUIRectangleTree::addElement(GUIRectangle* element)
 	{

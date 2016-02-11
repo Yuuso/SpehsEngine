@@ -20,7 +20,7 @@ namespace SpehsEngine
 		~Font();
 
 		FT_Face* ftFace = nullptr;
-		char* fontPath;
+		std::string fontPath;
 		int fontSize;
 		std::map<GLchar, Character> characters;
 		int referenceCount = 0;
@@ -173,7 +173,7 @@ namespace SpehsEngine
 		setFont(font->fontPath, size);
 		return true;
 	}
-	bool Text::setFont(char* fontPath, int size)
+	bool Text::setFont(std::string fontPath, int size)
 	{
 		
 		if (!textRenderingInitialized)
@@ -205,7 +205,7 @@ namespace SpehsEngine
 		font = fonts.back();
 		font->ftFace = new FT_Face;
 
-		FT_Error error = FT_New_Face(*ft, fontPath, 0, font->ftFace);
+		FT_Error error = FT_New_Face(*ft, fontPath.c_str(), 0, font->ftFace);
 		if (error)
 		{
 			//std::string errorString = "Freetype error: Failed to load font "; errorString += fontPath; errorString += " code: " + error;

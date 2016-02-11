@@ -27,7 +27,7 @@ namespace SpehsEngine
 		~Text();
 		void operator=(const Text& original);
 
-		bool setFont(char* fontPath, int size);
+		bool setFont(std::string fontPath, int size);
 		bool setFontSize(int size);
 		void render();
 		void setString(std::string str);

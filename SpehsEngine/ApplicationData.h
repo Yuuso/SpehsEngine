@@ -15,6 +15,8 @@ namespace SpehsEngine
 	public:
 		ApplicationData();
 		~ApplicationData();
+		void save();
+		void load();
 
 		int windowMode;// 0 windowed / 1 fullscreen
 		int masterVolume;
@@ -25,7 +27,6 @@ namespace SpehsEngine
 		int consoleTextAlpha;
 		int vSync;
 		int MSAA;
-		std::vector<std::string> gameNames;
 
 		//Window dimensions
 		void setWindowWidth(int w){ windowWidth = w; windowWidthHalf = w / 2.0f; }
@@ -34,9 +35,6 @@ namespace SpehsEngine
 		int getWindowHeight(){ return windowHeight; }
 		int getWindowWidthHalf(){ return windowWidthHalf; }
 		int getWindowHeightHalf(){ return windowHeightHalf; }
-
-		void save();
-		void load();
 
 	private:
 		int windowWidth;
