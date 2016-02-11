@@ -37,7 +37,7 @@ namespace SpehsEngine
 		glm::mat4 transformMatrix;
 		glm::mat4 cameraMatrix;
 		glm::vec4 color;
-		unsigned int textureDataID; //this is only here because primitives need it, Uniform base class can't send textureData
+		size_t textureDataID; //this is only here because primitives need it, Uniform base class can't send textureData
 
 		virtual BackgroundUniforms* backgroundUniformPtr(){ return nullptr; }
 		virtual DefaultTextureUniforms* defaultTextureUniformPtr(){ return nullptr; }

@@ -329,10 +329,17 @@ namespace SpehsEngine
 	}
 
 
-	void PolygonBatch::setTexture(unsigned int _textureIndex)
+	void PolygonBatch::setTexture(std::string _texturePath)
 	{
-		textureDataID = _textureIndex;
-		shaderIndex = DefaultTexture;
+		textureDataID = textureManager->preloadTexture(_texturePath);
+		if (shaderIndex == DefaultPolygon)
+			shaderIndex = DefaultTexture;
+	}
+	void PolygonBatch::setTexture(size_t _textureID)
+	{
+		textureDataID = _textureID;
+		if (shaderIndex == DefaultPolygon)
+			shaderIndex = DefaultTexture;
 	}
 
 

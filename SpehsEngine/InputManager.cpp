@@ -1,4 +1,4 @@
-#include <SDL.h>
+#include <SDL/SDL.h>
 #include <SDL/SDL_joystick.h>
 #include <SDL/SDL_events.h>
 #include <iostream>

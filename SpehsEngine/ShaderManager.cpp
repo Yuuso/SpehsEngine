@@ -1,6 +1,8 @@
 #include "ShaderManager.h"
 #include "TextureManager.h"
 
+#include <GL/glew.h>
+
 
 
 SpehsEngine::ShaderManager* shaderManager;

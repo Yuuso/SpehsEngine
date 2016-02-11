@@ -1,5 +1,5 @@
 #include "GUID.h"
-#include <SDL_joystick.h>
+#include <SDL/SDL_joystick.h>
 
 
 namespace SpehsEngine

@@ -6,6 +6,7 @@
 
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/gtx/transform.hpp>
+#include <GL/glew.h>
 
 
 namespace SpehsEngine
@@ -109,9 +110,16 @@ namespace SpehsEngine
 	}
 
 
-	void PointBatch::setTexture(unsigned int _textureIndex)
+	void PointBatch::setTexture(std::string _texturePath)
 	{
-		textureDataID = _textureIndex;
-		shaderIndex = DefaultTexture;
+		textureDataID = textureManager->preloadTexture(_texturePath);
+		if (shaderIndex == DefaultPolygon)
+			shaderIndex = DefaultTexture;
+	}
+	void PointBatch::setTexture(size_t _textureID)
+	{
+		textureDataID = _textureID;
+		if (shaderIndex == DefaultPolygon)
+			shaderIndex = DefaultTexture;
 	}
 }

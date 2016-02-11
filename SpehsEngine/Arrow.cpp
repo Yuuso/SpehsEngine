@@ -29,7 +29,7 @@ namespace SpehsEngine
 	{
 		if (linePart == nullptr)
 		{
-			unexpectedError("LinePart doesn't exist!");
+			//unexpectedError("LinePart doesn't exist!");
 			return;
 		}
 		linePart->setThickness(_thickness);
@@ -68,11 +68,10 @@ namespace SpehsEngine
 
 	void Arrow::render()
 	{
-		if (linePart != nullptr | polygonPart != nullptr)
-		{
+		if (linePart)
 			linePart->draw();
+		if (polygonPart)
 			polygonPart->draw();
-		}
 	}
 
 

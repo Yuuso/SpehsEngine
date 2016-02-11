@@ -3,7 +3,7 @@
 #include "ApplicationData.h"
 
 #include <SDL/SDL_video.h>
-#include <glew.h>
+#include <GL/glew.h>
 
 
 SpehsEngine::Window* mainWindow;

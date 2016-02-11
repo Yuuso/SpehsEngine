@@ -2,6 +2,8 @@
 
 #include "PrimitiveBatch.h"
 
+#include <string>
+
 
 namespace SpehsEngine
 {
@@ -14,6 +16,7 @@ namespace SpehsEngine
 		void draw();
 		void setPosition(float _x, float _y);
 		void addPoint(float _relativePosX, float _relativePosY);
-		void setTexture(unsigned int _textureIndex); //Set custom shaders AFTER calling setTexture
+		void setTexture(std::string _texturePath);
+		void setTexture(size_t _textureID);
 	};
 }

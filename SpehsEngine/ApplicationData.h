@@ -29,8 +29,8 @@ namespace SpehsEngine
 		int MSAA;
 
 		//Window dimensions
-		void setWindowWidth(int w){ windowWidth = w; windowWidthHalf = w / 2.0f; }
-		void setWindowHeight(int h){ windowHeight = h; windowHeightHalf = h / 2.0f; }
+		void setWindowWidth(int w){ windowWidth = w; windowWidthHalf = w / 2; }
+		void setWindowHeight(int h){ windowHeight = h; windowHeightHalf = h / 2; }
 		int getWindowWidth(){ return windowWidth; }
 		int getWindowHeight(){ return windowHeight; }
 		int getWindowWidthHalf(){ return windowWidthHalf; }

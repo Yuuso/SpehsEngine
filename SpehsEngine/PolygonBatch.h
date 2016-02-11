@@ -1,5 +1,8 @@
 #pragma once
+
 #include "PrimitiveBatch.h"
+
+#include <string>
 
 
 namespace SpehsEngine
@@ -17,7 +20,8 @@ namespace SpehsEngine
 		void setPosition(float _x, float _y);
 		void setScale(float _newScale);
 		void setDrawMode(DrawMode _drawMode);
-		void setTexture(unsigned int _textureIndex); //Set custom shaders AFTER calling setTexture
+		void setTexture(std::string _texturePath);
+		void setTexture(size_t _textureID);
 		void setUVScale(float _newScale);
 
 		void updateCollisions();

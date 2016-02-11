@@ -10,8 +10,8 @@
 #include "ShaderManager.h"
 #include "Console.h"
 
-#include <SDL.h>
-#include <glew.h>
+#include <SDL/SDL.h>
+#include <GL/glew.h>
 
 
 
@@ -55,7 +55,6 @@ namespace SpehsEngine
 		inputManager = new InputManager();
 		inputManager->initialize();
 		textureManager = new TextureManager();
-		textureManager->initializeTextures();
 		rng = new RNG();
 		shaderManager = new ShaderManager();
 		console = new Console();

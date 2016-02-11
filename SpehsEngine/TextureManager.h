@@ -1,8 +1,10 @@
 #pragma once
 
 #include <unordered_map>
-#include <GL\glew.h>
+#include <string>
 
+
+typedef unsigned int GLuint;
 
 namespace SpehsEngine
 {
@@ -12,13 +14,19 @@ namespace SpehsEngine
 		TextureManager();
 		~TextureManager();
 
-		void initializeTextures();
+		GLuint getTextureData(std::string _texturePath); //Get texture data from path
+		GLuint getTextureData(size_t _hash); //Get texture data from hash
+		size_t preloadTexture(std::string _texturePath); //Loads texture and return hash
 
-		GLuint getTextureData(int _textureIndex);
+		void removeTextureData(std::string _texturePath);
+		void removeTextureData(size_t _hash);
+		void clearAllTextureData();
 
 	private:
-		GLuint toTexture(const char* _filepath);
-		std::unordered_map<unsigned int, GLuint> textureDataMap;
+		GLuint toTexture(std::string _filepath);
+
+		GLuint defaultTexture;
+		std::unordered_map<size_t, GLuint> textureDataMap;
 	};
 }
 extern SpehsEngine::TextureManager* textureManager;

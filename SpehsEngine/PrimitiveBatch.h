@@ -30,6 +30,7 @@ namespace SpehsEngine
 	class PolygonBatch;
 	class PrimitiveBatch
 	{
+		//All virtual functions might not be up-to-date here...
 	public:
 		PrimitiveBatch();
 		~PrimitiveBatch();
@@ -52,7 +53,6 @@ namespace SpehsEngine
 		//For Polygons only
 		virtual void addPolygon(float _xDistanceFromOrigin, float _yDistanceFromOrigin, PolygonBatch* _newPolygon){}
 		virtual void setDrawMode(DrawMode _drawMode){}
-		virtual void setTexture(unsigned int _textureIndex){}
 		virtual void setTextureScale(float _newScale){}
 		virtual void resize(float _width, float _height){}
 		virtual void updateCollisions(){}
@@ -63,7 +63,9 @@ namespace SpehsEngine
 
 		//For Points only
 		virtual void addPoint(float _relativePosX, float _relativePosY){}
-		virtual void setTexture(unsigned int _textureIndex, float _pointSize){}
+			//Points and Polygons
+			virtual void setTexture(std::string _texturePath){}
+			virtual void setTexture(size_t _textureID){}
 
 	protected:
 		void uniforms();
@@ -74,7 +76,7 @@ namespace SpehsEngine
 
 		bool cameraMatrixState = true;
 		int numIndices = 0;
-		unsigned int textureDataID = 0;
+		size_t textureDataID = 0;
 		GLuint vertexArrayObjectID = 0;
 		GLuint vertexBufferID = 0;
 		GLuint indexBufferID = 0;

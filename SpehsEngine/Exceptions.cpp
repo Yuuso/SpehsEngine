@@ -2,7 +2,7 @@
 
 #include <cstdlib>
 #include <iostream>
-#include <SDL.h>
+#include <SDL/SDL.h>
 
 
 namespace SpehsEngine
@@ -20,7 +20,5 @@ namespace SpehsEngine
 	{
 		std::cout << std::endl;
 		std::cout << "Unexpected error: " << errorString << std::endl;
-		std::cout << "Enter to continue.." << std::endl;
-		//std::cin.ignore();
 	}
 }

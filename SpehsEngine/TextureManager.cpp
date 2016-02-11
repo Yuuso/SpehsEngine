@@ -1,15 +1,72 @@
 #include "TextureManager.h"
 #include "Exceptions.h"
 
+#include <functional>
+
 #include <SOIL\SOIL.h>
+#include <GL\glew.h>
 
 
 SpehsEngine::TextureManager* textureManager;
 namespace SpehsEngine
 {
 	TextureManager::TextureManager()
-	{}
+	{
+		//defaultTexture = toTexture("enginedata/error_texture.png"); //Set default texture
+	}
 	TextureManager::~TextureManager()
+	{
+		clearAllTextureData();
+	}
+
+
+	GLuint TextureManager::getTextureData(std::string _texturePath)
+	{
+		size_t hash = std::hash<std::string>()(_texturePath);
+		for (auto &it : textureDataMap)
+		{
+			if (it.first == hash)
+			{
+				return it.second;
+			}
+		}
+
+		GLuint data = toTexture(_texturePath);
+		textureDataMap.insert(std::pair<size_t, GLuint>(hash, data));
+		return data;
+	}
+	GLuint TextureManager::getTextureData(size_t _hash)
+	{
+		for (auto &it : textureDataMap)
+		{
+			if (it.first == _hash)
+			{
+				return it.second;
+			}
+		}
+		unexpectedError("Texture data for hash not found!");
+		return defaultTexture;
+	}
+	size_t TextureManager::preloadTexture(std::string _texturePath)
+	{
+		size_t hash = std::hash<std::string>()(_texturePath);
+		textureDataMap.insert(std::pair<size_t, GLuint>(hash, toTexture(_texturePath)));
+		return hash;
+	}
+
+
+	void TextureManager::removeTextureData(std::string _texturePath)
+	{
+		size_t hash = std::hash<std::string>()(_texturePath);
+		glDeleteTextures(1, &(textureDataMap[hash]));
+		textureDataMap.erase(hash);
+	}
+	void TextureManager::removeTextureData(size_t _hash)
+	{
+		glDeleteTextures(1, &(textureDataMap[_hash]));
+		textureDataMap.erase(_hash);
+	}
+	void TextureManager::clearAllTextureData()
 	{
 		for (unsigned int i = 0; i < textureDataMap.size(); i++)
 		{
@@ -18,36 +75,9 @@ namespace SpehsEngine
 		textureDataMap.clear();
 	}
 
-	void TextureManager::initializeTextures()
-	{
-		//HULL TEXTURES: 1 - 9999
 
-
-		//COMPONENT TEXTURES: 10000 - 19999
-
-
-		//BACKGROUND TEXTURES: 20000 - 29999
-
-
-		//PARTICES EFFECT TEXTURES: 30000 - 39999
-		textureDataMap[30000] = toTexture("Textures/blue_star.png");
-
-		//MENU/GUI/BUTTON TEXTURES: 40000 - 49999
-
-
-		//SOMETHING ELSE?
-		textureDataMap[50000] = toTexture("Textures/test_texture.png");
-
-	}
-
-
-	GLuint TextureManager::getTextureData(int _textureIndex)
-	{
-		return textureDataMap[_textureIndex];
-	}
-
-
-	GLuint TextureManager::toTexture(const char* _filepath)
+	//Private:
+	GLuint TextureManager::toTexture(std::string _filepath)
 	{
 		glEnable(GL_TEXTURE_2D);
 
@@ -58,7 +88,7 @@ namespace SpehsEngine
 		glGenTextures(1, &textureData);
 		glBindTexture(GL_TEXTURE_2D, textureData);
 
-		image = SOIL_load_image(_filepath, &width, &height, 0, SOIL_LOAD_RGBA);
+		image = SOIL_load_image(_filepath.c_str(), &width, &height, 0, SOIL_LOAD_RGBA);
 		//textureData = SOIL_load_OGL_texture(_filepath, SOIL_LOAD_RGBA, SOIL_CREATE_NEW_ID, SOIL_FLAG_INVERT_Y);
 
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
@@ -75,7 +105,7 @@ namespace SpehsEngine
 		GLenum error = glGetError();
 		if (error != GL_NO_ERROR)
 		{
-			fatalError("Error loading a texture!");
+			fatalError("Error loading a texture: " + _filepath);
 		}
 
 		return textureData;

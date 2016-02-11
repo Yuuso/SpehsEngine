@@ -48,7 +48,7 @@
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>$(ProjectDir)/../Dependencies/include/glm/;$(ProjectDir)/../Dependencies/include/GL/;$(ProjectDir)/../Dependencies/include/SDL/;$(ProjectDir)/../Dependencies/include/freetype/;$(ProjectDir)/../Dependencies/include/;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)/../Dependencies/include/;$(ProjectDir)/../Dependencies/include/Freetype;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <BrowseInformation>true</BrowseInformation>
     </ClCompile>
     <Link>

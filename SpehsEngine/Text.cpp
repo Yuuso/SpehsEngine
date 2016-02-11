@@ -5,7 +5,7 @@
 #include <glm/gtx/transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include <GL/glew.h>
-#include <ft2build.h>
+#include <Freetype/ft2build.h>
 #include FT_FREETYPE_H
 
 #include "Exceptions.h"
