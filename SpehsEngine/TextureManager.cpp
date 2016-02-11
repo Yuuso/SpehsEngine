@@ -45,9 +45,11 @@ namespace SpehsEngine
 	}
 	size_t TextureManager::preloadTexture(std::string _texturePath)
 	{
-		//TODO: if texture exists donT do it!
 		size_t hash = std::hash<std::string>()(_texturePath);
-		textureDataMap.insert(std::pair<size_t, GLuint>(hash, toTexture(_texturePath)));
+		if (textureDataMap.find(hash) == textureDataMap.end())
+		{
+			textureDataMap.insert(std::pair<size_t, GLuint>(hash, toTexture(_texturePath)));
+		}
 		return hash;
 	}
 
