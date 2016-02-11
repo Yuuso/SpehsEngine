@@ -14,6 +14,8 @@ namespace SpehsEngine
 		TextureManager();
 		~TextureManager();
 
+		void setDefaultTexture(std::string _filepath);
+
 		GLuint getTextureData(std::string _texturePath); //Get texture data from path
 		GLuint getTextureData(size_t _hash); //Get texture data from hash
 		size_t preloadTexture(std::string _texturePath); //Loads texture and return hash

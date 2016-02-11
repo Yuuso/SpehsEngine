@@ -115,7 +115,6 @@ namespace SpehsEngine
 		}
 
 		setPolygonIndices(POLYGON);
-
 		resize(_width, _height);
 		//NOTE: RESIZE CONTAINTS UPDATEVBO SO IT'S NOT NEEDED AGAIN HERE!
 	}
@@ -334,12 +333,14 @@ namespace SpehsEngine
 		textureDataID = textureManager->preloadTexture(_texturePath);
 		if (shaderIndex == DefaultPolygon)
 			shaderIndex = DefaultTexture;
+		shaderManager->getShader(shaderIndex)->uniforms->textureDataID = textureDataID;
 	}
 	void PolygonBatch::setTexture(size_t _textureID)
 	{
 		textureDataID = _textureID;
 		if (shaderIndex == DefaultPolygon)
 			shaderIndex = DefaultTexture;
+		shaderManager->getShader(shaderIndex)->uniforms->textureDataID = textureDataID;
 	}
 
 

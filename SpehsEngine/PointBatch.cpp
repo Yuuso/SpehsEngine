@@ -115,11 +115,13 @@ namespace SpehsEngine
 		textureDataID = textureManager->preloadTexture(_texturePath);
 		if (shaderIndex == DefaultPolygon)
 			shaderIndex = DefaultTexture;
+		shaderManager->getShader(shaderIndex)->uniforms->textureDataID = textureDataID;
 	}
 	void PointBatch::setTexture(size_t _textureID)
 	{
 		textureDataID = _textureID;
 		if (shaderIndex == DefaultPolygon)
 			shaderIndex = DefaultTexture;
+		shaderManager->getShader(shaderIndex)->uniforms->textureDataID = textureDataID;
 	}
 }

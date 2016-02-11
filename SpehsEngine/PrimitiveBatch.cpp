@@ -34,7 +34,9 @@ namespace SpehsEngine
 
 	void PrimitiveBatch::setShader(ShaderName _shaderIndex)
 	{
-		shaderIndex =_shaderIndex;
+		shaderIndex = _shaderIndex;
+		if (textureDataID)
+			shaderManager->getShader(shaderIndex)->uniforms->textureDataID = textureDataID;
 	}
 
 
@@ -53,8 +55,6 @@ namespace SpehsEngine
 	//Protected:
 	void PrimitiveBatch::uniforms()
 	{
-		if (textureDataID)
-			shaderManager->getShader(shaderIndex)->uniforms->textureDataID = textureDataID;
 		if (projectionMatrix != nullptr && cameraMatrixState)
 			shaderManager->getShader(shaderIndex)->uniforms->cameraMatrix = *projectionMatrix;
 		else

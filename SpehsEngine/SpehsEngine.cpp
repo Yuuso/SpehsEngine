@@ -10,6 +10,8 @@
 #include "ShaderManager.h"
 #include "Console.h"
 
+#include <string>
+
 #include <SDL/SDL.h>
 #include <GL/glew.h>
 
@@ -17,7 +19,7 @@
 
 namespace SpehsEngine
 {
-	int initialize()
+	int initialize(std::string _windowName)
 	{
 		if (SDL_Init(SDL_INIT_VIDEO) < 0)
 		{
@@ -46,7 +48,7 @@ namespace SpehsEngine
 		SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, 4);
 
 		mainWindow = new SpehsEngine::Window();
-		mainWindow->create("Spehs Game <Rebuut>", applicationData->getWindowWidth(), applicationData->getWindowHeight(), applicationData->windowMode);//To get e.g. Fullscreen mode - replace '0' with 'SpehsEngine::FULLSCREEN'
+		mainWindow->create(_windowName, applicationData->getWindowWidth(), applicationData->getWindowHeight(), applicationData->windowMode);//To get e.g. Fullscreen mode - replace '0' with 'SpehsEngine::FULLSCREEN'
 
 		SpehsEngine::initializeTextRendering();
 		SpehsEngine::initializeTime();

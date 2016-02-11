@@ -12,43 +12,40 @@ namespace SpehsEngine
 {
 	TextureManager::TextureManager()
 	{
-		//defaultTexture = toTexture("enginedata/error_texture.png"); //Set default texture
 	}
 	TextureManager::~TextureManager()
 	{
 		clearAllTextureData();
 	}
 
+	void TextureManager::setDefaultTexture(std::string _filepath)
+	{
+		defaultTexture = toTexture(_filepath);
+	}
+
 
 	GLuint TextureManager::getTextureData(std::string _texturePath)
 	{
 		size_t hash = std::hash<std::string>()(_texturePath);
-		for (auto &it : textureDataMap)
+		if (textureDataMap.find(hash) != textureDataMap.end())
 		{
-			if (it.first == hash)
-			{
-				return it.second;
-			}
+			return textureDataMap[hash];
 		}
-
 		GLuint data = toTexture(_texturePath);
 		textureDataMap.insert(std::pair<size_t, GLuint>(hash, data));
 		return data;
 	}
 	GLuint TextureManager::getTextureData(size_t _hash)
 	{
-		for (auto &it : textureDataMap)
+		if (textureDataMap.find(_hash) != textureDataMap.end())
 		{
-			if (it.first == _hash)
-			{
-				return it.second;
-			}
+			return textureDataMap[_hash];
 		}
-		unexpectedError("Texture data for hash not found!");
 		return defaultTexture;
 	}
 	size_t TextureManager::preloadTexture(std::string _texturePath)
 	{
+		//TODO: if texture exists donT do it!
 		size_t hash = std::hash<std::string>()(_texturePath);
 		textureDataMap.insert(std::pair<size_t, GLuint>(hash, toTexture(_texturePath)));
 		return hash;

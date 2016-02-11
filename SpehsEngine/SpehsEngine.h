@@ -6,6 +6,6 @@ Spehs "Engine / Framework"
 
 namespace SpehsEngine
 {
-	extern int initialize();
+	extern int initialize(std::string _windowName);
 	extern void uninitialize();
 }
