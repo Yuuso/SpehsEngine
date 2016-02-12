@@ -27,9 +27,10 @@ namespace SpehsEngine
 	GLuint TextureManager::getTextureData(std::string _texturePath)
 	{
 		size_t hash = std::hash<std::string>()(_texturePath);
-		if (textureDataMap.find(hash) != textureDataMap.end())
+		auto it = textureDataMap.find(hash);
+		if (it != textureDataMap.end())
 		{
-			return textureDataMap[hash];
+			return it->second;
 		}
 		GLuint data = toTexture(_texturePath);
 		textureDataMap.insert(std::pair<size_t, GLuint>(hash, data));
@@ -37,9 +38,10 @@ namespace SpehsEngine
 	}
 	GLuint TextureManager::getTextureData(size_t _hash)
 	{
-		if (textureDataMap.find(_hash) != textureDataMap.end())
+		auto it = textureDataMap.find(_hash);
+		if (it != textureDataMap.end())
 		{
-			return textureDataMap[_hash];
+			return it->second;
 		}
 		return defaultTexture;
 	}
@@ -67,9 +69,9 @@ namespace SpehsEngine
 	}
 	void TextureManager::clearAllTextureData()
 	{
-		for (unsigned int i = 0; i < textureDataMap.size(); i++)
+		for (auto &it : textureDataMap)
 		{
-			glDeleteTextures(1, &(textureDataMap[i]));
+			glDeleteTextures(1, &it.second);
 		}
 		textureDataMap.clear();
 	}

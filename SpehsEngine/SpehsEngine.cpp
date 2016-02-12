@@ -62,6 +62,7 @@ namespace SpehsEngine
 		console = new Console();
 		console->initialize();
 
+
 		return 0;
 	}
 
