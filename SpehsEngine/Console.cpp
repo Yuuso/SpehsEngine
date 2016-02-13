@@ -13,8 +13,11 @@
 #define BACKSPACE_INTERVAL 75
 static int previousFontSize = 10;
 static  bool colorUpdated = true;
-
 SpehsEngine::Console* console;
+extern int64_t guiRectangleAllocations;
+extern int64_t guiRectangleDeallocations;
+extern int64_t primitiveBatchAllocations;
+extern int64_t primitiveBatchDeallocations;
 
 namespace SpehsEngine
 {
@@ -387,6 +390,21 @@ namespace SpehsEngine
 			log("Available commands <command parameter1 parameter2 parameterN>");
 			for (unsigned i = 0; i < commands.size(); i++)
 				log("\\\\" + commands[i].command);
+			return;
+		}
+		else if (consoleWords[0] == "engine")
+		{
+			if (consoleWords.size() > 1 && consoleWords[1] == "memory")
+			{
+				glm::vec3 color(0.8f, 0.8f, 0.8f);
+				log("-------------------", color);
+				log("Spehs Engine select memory allocations:", color * 0.75f);
+				log("Remaining allocations / Total (runtime) allocations", color);
+				log("GUI Rectangles: " + std::to_string(guiRectangleAllocations - guiRectangleDeallocations) + "/" + std::to_string(guiRectangleAllocations), color);
+				log("Primitive batches: " + std::to_string(primitiveBatchAllocations - primitiveBatchDeallocations) + "/" + std::to_string(primitiveBatchAllocations), color);
+				log("-------------------", color);
+				return;
+			}
 			return;
 		}
 		else

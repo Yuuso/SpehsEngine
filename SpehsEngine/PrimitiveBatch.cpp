@@ -6,6 +6,8 @@
 #include <GL/glew.h>
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/gtx/transform.hpp>
+int64_t primitiveBatchAllocations = 0;
+int64_t primitiveBatchDeallocations = 0;
 
 //Camera matrix
 extern glm::mat4* projectionMatrix;
@@ -16,9 +18,15 @@ namespace SpehsEngine
 {
 	PrimitiveBatch::PrimitiveBatch()
 	{
+#ifdef _DEBUG
+		++primitiveBatchAllocations;
+#endif
 	}
 	PrimitiveBatch::~PrimitiveBatch()
 	{
+#ifdef _DEBUG
+		++primitiveBatchDeallocations;
+#endif
 	}
 	void PrimitiveBatch::setRotation(float _newRotAngle)
 	{

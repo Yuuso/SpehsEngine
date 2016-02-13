@@ -103,6 +103,9 @@
     <ClCompile Include="GUID.cpp">
       <Filter>HID</Filter>
     </ClCompile>
+    <ClCompile Include="FileStream.cpp">
+      <Filter>Filestream</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GLSLProgram.h">
@@ -219,6 +222,9 @@
     <ClInclude Include="ConsoleVariable.h">
       <Filter>Core</Filter>
     </ClInclude>
+    <ClInclude Include="FileStream.h">
+      <Filter>Filestream</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Physics">
@@ -244,6 +250,9 @@
     </Filter>
     <Filter Include="Rendering\Geometric Rendering">
       <UniqueIdentifier>{2c1665b1-8c4e-481d-9c89-1148e8b99b6e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Filestream">
+      <UniqueIdentifier>{320c57f6-2870-4274-b553-17a481b83caf}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

@@ -7,12 +7,17 @@
 #define TEXT_MAX_STRING_LENGTH 32
 #define TEXT_FONT_PATH "Fonts/Anonymous.ttf"
 #define TEXT_FONT_SIZE 18
+int64_t guiRectangleAllocations = 0;
+int64_t guiRectangleDeallocations = 0;
 
 
 namespace SpehsEngine
 {
 	GUIRectangle::GUIRectangle() : position(0), size(0), minSize(0), state(0)
 	{//Default constructor
+#ifdef _DEBUG
+		++guiRectangleAllocations;
+#endif
 
 		//Create polygon
 		polygon = new SpehsEngine::PolygonBatch(SpehsEngine::Shape(SpehsEngine::BUTTON), 1, 1);
@@ -43,6 +48,9 @@ namespace SpehsEngine
 	}
 	GUIRectangle::~GUIRectangle()
 	{
+#ifdef _DEBUG
+		++guiRectangleDeallocations;
+#endif
 		delete polygon;
 		if (text)
 			delete text;

@@ -19,7 +19,7 @@
 
 namespace SpehsEngine
 {
-	int initialize(std::string _windowName)
+	int initialize(std::string _windowName, ApplicationData* customApplicationDataInstance)
 	{
 		if (SDL_Init(SDL_INIT_VIDEO) < 0)
 		{
@@ -32,8 +32,15 @@ namespace SpehsEngine
 		SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 2);
 
 		//ApplicationData
-		applicationData = new ApplicationData();
-		applicationData->load();
+		if (customApplicationDataInstance)
+		{//Set application data pointer to custom instance
+			applicationData = customApplicationDataInstance;
+		}
+		else
+		{//Create a basic application data instance
+			applicationData = new ApplicationData();
+		}
+		applicationData->read();//Load application data
 
 		SDL_GL_SetAttribute(SDL_GL_RED_SIZE, 8);
 		SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE, 8);
@@ -69,7 +76,7 @@ namespace SpehsEngine
 
 	void uninitialize()
 	{
-		applicationData->save();
+		applicationData->write();
 		delete applicationData;
 		inputManager->uninitialize();
 		delete inputManager;
