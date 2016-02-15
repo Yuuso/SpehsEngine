@@ -3,7 +3,6 @@
 #include <string>
 #include <stdint.h>
 #include <fstream>
-#define GAME_DATA_DIRECTORY "data/"
 
 
 /*Purpose of this class:
@@ -34,6 +33,7 @@ namespace SpehsEngine
 		int consoleTextAlpha;
 		int vSync;
 		int MSAA;
+		std::string dataDirectory;//Specified directory where data should be stored
 
 		//Window dimensions
 		void setWindowWidth(int w){ windowWidth = w; windowWidthHalf = w / 2; }

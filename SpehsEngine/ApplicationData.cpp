@@ -1,4 +1,5 @@
 #include "ApplicationData.h"
+#include "FileStream.h"
 #include "Console.h"
 #include <string>
 
@@ -46,7 +47,7 @@ namespace SpehsEngine
 	ApplicationData::ApplicationData() :
 		windowWidth(1280), windowHeight(720), windowMode(0),
 		masterVolume(100), musicVolume(100), sfxVolume(100),
-		showFps(1), consoleTextSize(20), consoleTextAlpha(1000), vSync(0), MSAA(4)
+		showFps(1), consoleTextSize(20), consoleTextAlpha(1000), vSync(0), MSAA(4), dataDirectory("data/")
 	{
 
 	}
@@ -61,7 +62,7 @@ namespace SpehsEngine
 		{//Create file stream
 			stream = new std::ofstream;
 			streamOwner = true;
-			stream->open(GAME_DATA_DIRECTORY "/ApplicationData.txt", std::ios::trunc);
+			stream->open("ApplicationData.txt", std::ios::trunc);
 			if (stream->fail())
 			{
 				console->error("Failed to write application data!");
@@ -80,6 +81,7 @@ namespace SpehsEngine
 		*stream << "ConsoleTextAlpha (divided by 1000): " << consoleTextAlpha << "\n";
 		*stream << "VSync: " << vSync << "\n";
 		*stream << "MSAA: " << MSAA << "\n";
+		*stream << "Data directory: " << dataDirectory << "\n";
 
 		if (streamOwner)
 		{
@@ -94,11 +96,26 @@ namespace SpehsEngine
 		{//Create file stream
 			stream = new std::ifstream;
 			streamOwner = true;
-			stream->open(GAME_DATA_DIRECTORY "/ApplicationData.txt");
+			stream->open("ApplicationData.txt");
 			if (stream->fail())
-			{
-				console->error("Failed to read application data!");
-				return;
+			{//Application data does not exist
+				std::ofstream ofstream;
+				ofstream.open("ApplicationData.txt", std::ios::trunc);
+				if (ofstream.fail())
+				{
+					console->error("Failed to write application data!");
+					delete stream;
+					return;
+				}
+				write(&ofstream);
+				ofstream.close();
+				stream->open("ApplicationData.txt");
+				if (stream->fail())
+				{
+					console->error("Failed to create (SpehsData)application data");
+					delete stream;
+					return;
+				}
 			}
 		}
 
@@ -113,6 +130,10 @@ namespace SpehsEngine
 		readValueIntoInt(*stream, consoleTextAlpha);
 		readValueIntoInt(*stream, vSync);
 		readValueIntoInt(*stream, MSAA);
+		readValueIntoString(*stream, dataDirectory);
+		
+		//Create data directory
+		createDirectory(dataDirectory);
 
 		if (streamOwner)
 		{

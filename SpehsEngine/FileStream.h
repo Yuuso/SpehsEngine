@@ -9,7 +9,7 @@ namespace SpehsEngine
 	void readString(std::string& string, std::ifstream* stream);
 	/**Returns true if directory exists at given path*/
 	bool directoryExists(std::string& path);
-	/**Returns true if a file exists at given path*/
+	/**Returns true if file exists at given path*/
 	bool fileExists(std::string& path);
 	/**Returns false if failed to create directory at given path*/
 	bool createDirectory(std::string& path);
