@@ -13,4 +13,6 @@ namespace SpehsEngine
 	bool fileExists(std::string& path);
 	/**Returns false if failed to create directory at given path*/
 	bool createDirectory(std::string& path);
+	/**If directory doesn't exist, creates one. If creation fails, returns false*/
+	bool verifyDirectory(std::string& path);
 }

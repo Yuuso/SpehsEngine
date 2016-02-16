@@ -1,5 +1,6 @@
 #include <boost/filesystem.hpp>
 #include "FileStream.h"
+#include "Console.h"
 using namespace boost::filesystem;
 
 namespace SpehsEngine
@@ -46,5 +47,17 @@ namespace SpehsEngine
 	bool createDirectory(std::string& path)
 	{
 		return create_directory(path);
+	}
+	bool verifyDirectory(std::string& path)
+	{
+		if (!SpehsEngine::directoryExists(path))
+		{
+			if (!SpehsEngine::createDirectory(path))
+			{
+				console->log("Failed to create directory: \"" + path + "\"!");
+				return false;
+			}
+		}
+		return true;
 	}
 }
