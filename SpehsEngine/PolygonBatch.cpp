@@ -142,7 +142,6 @@ namespace SpehsEngine
 		std::copy(_vertexData, _vertexData + N, stdext::checked_array_iterator<Vertex*>(worldVertexArray, N));
 		originalVertexArray = new Vertex[N];
 		std::copy(_vertexData, _vertexData + N, stdext::checked_array_iterator<Vertex*>(originalVertexArray, N));
-		delete []_vertexData;
 
 		//Set texture coordinates
 		for (unsigned int i = 0; i < N; i++)

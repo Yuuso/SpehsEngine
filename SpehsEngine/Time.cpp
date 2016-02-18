@@ -15,13 +15,14 @@ namespace SpehsEngine
 	int fpsCounterFontSize = 24;
 	float fps = 0;
 	int maxFPS = 0;
-	Uint32 deltaTime = 0;
+	uint32_t maxDeltaTime = 1000;
+	uint32_t deltaTime = 0;
 	unsigned long drawCalls;
 	unsigned long vertexDrawCount;
 
 	//Local variables
 	float runTime = 0;
-	Uint32 startTicks = 0;
+	uint32_t startTicks = 0;
 	SpehsEngine::Text* fpsCounter;
 	static bool initialized = false;
 	static int previousFontSize = fpsCounterFontSize;
@@ -84,16 +85,20 @@ namespace SpehsEngine
 	void endFPS()
 	{
 		static const int NUM_SAMPLES = 20;
-		static Uint32 deltaTimes[NUM_SAMPLES];
+		static uint32_t deltaTimes[NUM_SAMPLES];
 		static int currentFrame = 0;
 
-		static Uint32 previousTicks = SDL_GetTicks();
+		static uint32_t previousTicks = SDL_GetTicks();
 
-		Uint32 currentTicks;
+		uint32_t currentTicks;
 		currentTicks = SDL_GetTicks();
 
 		deltaTime = currentTicks - previousTicks;
 		deltaTimes[currentFrame % NUM_SAMPLES] = deltaTime;
+
+		//Limit delta time
+		if (maxDeltaTime && deltaTime > maxDeltaTime)
+			deltaTime = maxDeltaTime;
 
 		previousTicks = currentTicks;
 
@@ -136,10 +141,10 @@ namespace SpehsEngine
 		vertexDrawCount = 0;
 
 		//Limit FPS = delay return
-		Uint32 frameTicks = SDL_GetTicks() - startTicks;
+		uint32_t frameTicks = SDL_GetTicks() - startTicks;
 		if (maxFPS > 0)
 			if (1000.0f / maxFPS > frameTicks)
-				SDL_Delay(Uint32(1000.0f / maxFPS) - frameTicks);
+				SDL_Delay(uint32_t(1000.0f / maxFPS) - frameTicks);
 
 	}
 	void drawFPS()
@@ -150,8 +155,8 @@ namespace SpehsEngine
 	}
 
 	//Analyzation
-	static Uint32 beginTime[30];
-	static Uint32 endTime[30];
+	static uint32_t beginTime[30];
+	static uint32_t endTime[30];
 	static bool timerOn = false;
 	void beginTimer(int timerIndex)
 	{
@@ -160,7 +165,7 @@ namespace SpehsEngine
 		timerOn = true;
 		beginTime[timerIndex] = SDL_GetTicks();
 	}
-	Uint32 endTimer(int timerIndex)
+	uint32_t endTimer(int timerIndex)
 	{
 		if (timerOn == false)
 			return -1;
