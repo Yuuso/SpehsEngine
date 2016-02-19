@@ -8,6 +8,12 @@ typedef unsigned int GLuint;
 
 namespace SpehsEngine
 {
+	struct TextureSizeData
+	{
+		TextureSizeData(int _width, int _height) : width(_width), height(_height){}
+		int width, height;
+	};
+
 	class TextureManager
 	{
 	public:
@@ -20,6 +26,8 @@ namespace SpehsEngine
 		GLuint getTextureData(size_t _hash); //Get texture data from hash
 		size_t preloadTexture(std::string _texturePath); //Loads texture and return hash
 
+		TextureSizeData* getSizeData(std::string _texturePath);
+
 		void removeTextureData(std::string _texturePath);
 		void removeTextureData(size_t _hash);
 		void clearAllTextureData();
@@ -29,6 +37,7 @@ namespace SpehsEngine
 
 		GLuint defaultTexture;
 		std::unordered_map<size_t, GLuint> textureDataMap;
+		std::unordered_map<size_t, TextureSizeData*> textureSizeDataMap;
 	};
 }
 extern SpehsEngine::TextureManager* textureManager;

@@ -56,16 +56,36 @@ namespace SpehsEngine
 	}
 
 
+	TextureSizeData* TextureManager::getSizeData(std::string _texturePath)
+	{
+		size_t hash = std::hash<std::string>()(_texturePath);
+		auto it = textureSizeDataMap.find(hash);
+		if (it != textureSizeDataMap.end())
+		{
+			return it->second;			
+		}
+		return nullptr;
+	}
+
+
 	void TextureManager::removeTextureData(std::string _texturePath)
 	{
 		size_t hash = std::hash<std::string>()(_texturePath);
-		glDeleteTextures(1, &(textureDataMap[hash]));
+		auto it = textureDataMap.find(hash);
+		glDeleteTextures(1, &it->second);
+		auto it2 = textureSizeDataMap.find(hash);
+		delete it2->second;
 		textureDataMap.erase(hash);
+		textureSizeDataMap.erase(hash);
 	}
 	void TextureManager::removeTextureData(size_t _hash)
 	{
-		glDeleteTextures(1, &(textureDataMap[_hash]));
+		auto it = textureDataMap.find(_hash);
+		glDeleteTextures(1, &it->second);
+		auto it2 = textureSizeDataMap.find(_hash);
+		delete it2->second;
 		textureDataMap.erase(_hash);
+		textureSizeDataMap.erase(_hash);
 	}
 	void TextureManager::clearAllTextureData()
 	{
@@ -73,7 +93,12 @@ namespace SpehsEngine
 		{
 			glDeleteTextures(1, &it.second);
 		}
+		for (auto &it : textureSizeDataMap)
+		{
+			delete it.second;
+		}
 		textureDataMap.clear();
+		textureSizeDataMap.clear();
 	}
 
 
@@ -98,10 +123,13 @@ namespace SpehsEngine
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 		glGenerateMipmap(GL_TEXTURE_2D);
-
-
+		
 		SOIL_free_image_data(image);
 		glBindTexture(GL_TEXTURE_2D, 0);
+
+		//Create TextureSizeData
+		size_t hash = std::hash<std::string>()(_filepath);
+		textureSizeDataMap.insert(std::pair<size_t, TextureSizeData*>(hash, new TextureSizeData(width, height)));
 
 		GLenum error = glGetError();
 		if (error != GL_NO_ERROR)

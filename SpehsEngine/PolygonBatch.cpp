@@ -3,8 +3,6 @@
 #define HALF_PI 1.57079632679f
 #define TWO_PI 6.28318530718f
 
-#define SCALE_C 0.001f
-
 #include "PolygonBatch.h"
 #include "Shapes.h"
 #include "Exceptions.h"
@@ -315,8 +313,8 @@ namespace SpehsEngine
 
 	void PolygonBatch::setScale(float _newScale)
 	{
-		scaleX = _newScale * SCALE_C;
-		scaleY = _newScale * SCALE_C;
+		scaleX = _newScale;
+		scaleY = _newScale;
 	}
 
 
