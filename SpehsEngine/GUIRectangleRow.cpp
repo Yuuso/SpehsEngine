@@ -2,7 +2,7 @@
 
 namespace SpehsEngine
 {
-	GUIRectangleRow::GUIRectangleRow() : evenElementWidth(false)
+	GUIRectangleRow::GUIRectangleRow() : evenElementWidth(false), elementPositionMode(PositionMode::Standard)
 	{
 	}
 	GUIRectangleRow::~GUIRectangleRow()
@@ -13,6 +13,14 @@ namespace SpehsEngine
 		if (evenElementWidth == setting)
 			return;
 		evenElementWidth = setting;
+		disableBit(state, GUIRECT_SCALED);
+		disableBit(state, GUIRECT_POSITIONED);
+	}
+	void GUIRectangleRow::setElementPositionMode(PositionMode mode)
+	{
+		if (elementPositionMode == mode)
+			return;
+		elementPositionMode = mode;
 		disableBit(state, GUIRECT_SCALED);
 		disableBit(state, GUIRECT_POSITIONED);
 	}
@@ -43,13 +51,41 @@ namespace SpehsEngine
 			}
 		}
 		else //size > min size
-		{//Scale each element scaling relative to element min size : this->min size
-			for (unsigned i = 0; i < elements.size(); i++)
+		{
+			if (elementPositionMode == PositionMode::Standard || evenElementWidth)
+			{//Scale each element scaling relative to element min size : this->min size
+				for (unsigned i = 0; i < elements.size(); i++)
+				{
+					if (evenElementWidth)
+						elements[i]->setSize(minElementSize.x / float(minSize.x) * size.x, size.y);
+					else
+						elements[i]->setSize(elements[i]->getMinWidth() / float(minSize.x) * size.x, size.y);
+				}
+			}
+			else if (elementPositionMode == PositionMode::Left)
 			{
-				if (evenElementWidth)
-					elements[i]->setSize(minElementSize.x / float(minSize.x) * size.x, size.y);
-				else
-					elements[i]->setSize(elements[i]->getMinWidth() / float(minSize.x) * size.x, size.y);
+				int widthAllocated = 0;
+				for (unsigned i = 0; i < elements.size(); i++)
+				{
+					if (i == elements.size() - 1)
+						elements[i]->setSize(size.x - widthAllocated, size.y);
+					else
+					{
+						elements[i]->setSize(elements[i]->getMinWidth(), size.y);
+						widthAllocated += elements[i]->getMinWidth();
+					}
+				}
+			}
+			else if (elementPositionMode == PositionMode::Right)
+			{
+				int widthAllocated = 0;
+				for (unsigned i = 1; i < elements.size(); i++)
+				{
+					elements[i]->setSize(elements[i]->getMinWidth(), size.y);
+					widthAllocated += elements[i]->getMinWidth();
+				}
+				if (elements.size() > 0)
+					elements[0]->setSize(size.x - widthAllocated, size.y);
 			}
 		}
 	}

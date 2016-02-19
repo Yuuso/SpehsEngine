@@ -94,9 +94,6 @@
     <ClCompile Include="GUIWindowManager.cpp">
       <Filter>Rendering\GUI</Filter>
     </ClCompile>
-    <ClCompile Include="GUIRectangleGrid.cpp">
-      <Filter>Rendering\GUI</Filter>
-    </ClCompile>
     <ClCompile Include="GUIRectangleRow.cpp">
       <Filter>Rendering\GUI</Filter>
     </ClCompile>
@@ -211,9 +208,6 @@
       <Filter>Rendering\GUI</Filter>
     </ClInclude>
     <ClInclude Include="GUIWindowManager.h">
-      <Filter>Rendering\GUI</Filter>
-    </ClInclude>
-    <ClInclude Include="GUIRectangleGrid.h">
       <Filter>Rendering\GUI</Filter>
     </ClInclude>
     <ClInclude Include="GUIRectangleRow.h">

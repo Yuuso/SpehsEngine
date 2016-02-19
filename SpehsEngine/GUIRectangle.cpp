@@ -13,7 +13,7 @@ int64_t guiRectangleDeallocations = 0;
 
 namespace SpehsEngine
 {
-	GUIRectangle::GUIRectangle() : position(0), size(0), minSize(0), state(0)
+	GUIRectangle::GUIRectangle() : position(0), size(0), minSize(0), state(0), displayTexture(nullptr)
 	{//Default constructor
 #ifdef _DEBUG
 		++guiRectangleAllocations;
@@ -56,6 +56,8 @@ namespace SpehsEngine
 			delete text;
 		if (tooltip)
 			delete tooltip;
+		if (displayTexture)
+			delete displayTexture;
 	}
 	void GUIRectangle::update()
 	{
@@ -96,11 +98,18 @@ namespace SpehsEngine
 
 		//Drawing rectangle polygon
 		if (checkBit(state, GUIRECT_VISIBLE))
+		{
 			polygon->draw();
 
-		//Rendering text
-		if (text)
-			text->render();
+			//Rendering text
+			if (text)
+				text->render();
+
+			//Rendering display texture
+			if (displayTexture)
+				displayTexture->draw();
+
+		}
 	}
 	void GUIRectangle::postRender()
 	{
@@ -146,6 +155,12 @@ namespace SpehsEngine
 			else
 				textX += 0.5f *(size.x - text->getTextWidth());
 			text->setPosition(textX, getY() + 0.5f * (size.y + text->getTextHeight()) - text->getFontHeight() - text->getFontDescender());
+		}
+
+		//Display texture position
+		if (displayTexture)
+		{
+			displayTexture->setPosition(getX() + size.x / 2 - applicationData->getWindowWidthHalf(), getY() + size.y / 2 - applicationData->getWindowHeightHalf());
 		}
 
 		enableBit(state, GUIRECT_POSITIONED);
@@ -197,10 +212,20 @@ namespace SpehsEngine
 	}
 	void GUIRectangle::updateMinSize()
 	{
+		minSize.x = 0;
+		minSize.y = 0;
+
 		if (text)
 		{
 			minSize.x = text->getTextWidth() + 2 * TEXT_PREFERRED_SIZE_BORDER;
 			minSize.y = text->getTextHeight() + 2 * TEXT_PREFERRED_SIZE_BORDER;
+		}
+		if (displayTexture)
+		{
+			if (minSize.x < 20)
+				minSize.x = 20;
+			if (minSize.y < 20)
+				minSize.y = 20;
 		}
 	}
 
@@ -259,6 +284,14 @@ namespace SpehsEngine
 		text = new SpehsEngine::Text();
 		text->setFont(TEXT_FONT_PATH, TEXT_FONT_SIZE);
 		text->setColor(0.05f, 0.05f, 0.05f);
+	}
+	void GUIRectangle::setDisplayTexture(std::string path)
+	{
+		if (displayTexture)
+			delete displayTexture;
+		displayTexture = new PolygonBatch(4, 20, 20);
+		displayTexture->setTexture(path);
+		displayTexture->setCameraMatrixState(false);
 	}
 
 }

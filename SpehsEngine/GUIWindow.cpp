@@ -445,6 +445,7 @@ namespace SpehsEngine
 	void GUIWindow::updateMinSize()
 	{
 		//Initialize min dimensions
+		header->updateMinSize();
 		minSize.x = header->getMinWidth() + exit->getWidth();
 		minSize.y = 0;
 

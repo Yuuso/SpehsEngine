@@ -216,8 +216,6 @@ namespace SpehsEngine
 		delete [] this->originalVertexArray; //delete the old vertexArray
 		this->originalVertexArray = pos2;
 
-		delete _newPolygon;
-
 		//Set texture coordinates
 		for (unsigned int i = 0; i < totalNumVertices; i++)
 		{

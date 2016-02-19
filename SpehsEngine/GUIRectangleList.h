@@ -12,20 +12,20 @@ namespace SpehsEngine
 	public:
 		GUIRectangleList();
 		GUIRectangleList(uint32_t);
-		~GUIRectangleList();
+		virtual ~GUIRectangleList();
 
-		void render();
-		void postRender();
-		void update();
-		void updateScale();
-		void updatePosition();
-		void updateMinSize();
-		void incrementUpdateElementCount(int incrementation);
+		virtual void render();
+		virtual void postRender();
+		virtual void update();
+		virtual void updateScale();
+		virtual void updatePosition();
+		virtual void updateMinSize();
+		virtual void incrementUpdateElementCount(int incrementation);
 		/*Updates update element count based on current dimensions. Element size is also updated.*/
 		virtual void updateUpdateElementCount();
 
 		//Element management
-		void addElement(GUIRectangle* e);
+		virtual void addElement(GUIRectangle* e);
 
 		//Identity
 		GUIRectangleList* getAsGUIRectangleListPtr(){ return this; }

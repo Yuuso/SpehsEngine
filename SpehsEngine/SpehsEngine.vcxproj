@@ -99,7 +99,6 @@
     <ClCompile Include="GUID.cpp" />
     <ClCompile Include="GUIRectangle.cpp" />
     <ClCompile Include="GUIRectangleContainer.cpp" />
-    <ClCompile Include="GUIRectangleGrid.cpp" />
     <ClCompile Include="GUIRectangleList.cpp" />
     <ClCompile Include="GUIRectangleRow.cpp" />
     <ClCompile Include="GUIRectangleTree.cpp" />
@@ -138,7 +137,6 @@
     <ClInclude Include="GUID.h" />
     <ClInclude Include="GUIRectangle.h" />
     <ClInclude Include="GUIRectangleContainer.h" />
-    <ClInclude Include="GUIRectangleGrid.h" />
     <ClInclude Include="GUIRectangleList.h" />
     <ClInclude Include="GUIRectangleRow.h" />
     <ClInclude Include="GUIRectangleTree.h" />

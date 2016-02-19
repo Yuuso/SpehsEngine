@@ -98,6 +98,8 @@ namespace SpehsEngine
 		//Tooltip
 		void setTooltip(std::string tooltipString);
 		GUIRectangle* getTooltipPtr(){ return tooltip; }
+		//Display texture
+		void setDisplayTexture(std::string path);
 
 		////State
 		//Getters
@@ -176,6 +178,7 @@ namespace SpehsEngine
 		glm::ivec2 size;///<Current size of the rectangle
 		glm::ivec2 minSize;///<The minimum size of the rectangle. Checked whenever rezising the polygon.
 		PolygonBatch* polygon;
+		PolygonBatch* displayTexture;
 		GUIRectangle* tooltip;
 		Text* text;
 		GUIRectangle* parent;///<Rectangle inherits position from parent chain. NOTE: parent must be ractangle container
