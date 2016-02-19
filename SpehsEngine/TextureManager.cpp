@@ -64,6 +64,7 @@ namespace SpehsEngine
 		{
 			return it->second;			
 		}
+		unexpectedError("Texture doesn't exists!");
 		return nullptr;
 	}
 

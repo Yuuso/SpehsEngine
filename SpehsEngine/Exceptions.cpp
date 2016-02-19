@@ -20,5 +20,7 @@ namespace SpehsEngine
 	{
 		std::cout << std::endl;
 		std::cout << "Unexpected error: " << errorString << std::endl;
+		std::cout << "Press 'Enter' to continue." << std::endl;
+		std::cin.ignore();
 	}
 }
