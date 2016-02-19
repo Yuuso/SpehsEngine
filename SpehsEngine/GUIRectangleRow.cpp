@@ -47,7 +47,7 @@ namespace SpehsEngine
 				if (evenElementWidth)
 					elements[i]->setSize(minElementSize);
 				else
-					elements[i]->setSize(elements[i]->getMinSize());
+					elements[i]->setSize(elements[i]->getMinWidth(), minSize.y);
 			}
 		}
 		else //size > min size

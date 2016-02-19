@@ -1,6 +1,7 @@
 #include "PolygonBatch.h"
 #include "InputManager.h"
 #include "GUIRectangle.h"
+#include "TextureManager.h"
 #include "GUIRectangleContainer.h"
 #include "ApplicationData.h"
 #include "Text.h"
@@ -10,9 +11,12 @@
 int64_t guiRectangleAllocations = 0;
 int64_t guiRectangleDeallocations = 0;
 
-
 namespace SpehsEngine
 {
+	GUIRectangle::DisplayTexture::~DisplayTexture()
+	{
+		delete polygon;
+	}
 	GUIRectangle::GUIRectangle() : position(0), size(0), minSize(0), state(0), displayTexture(nullptr)
 	{//Default constructor
 #ifdef _DEBUG
@@ -107,7 +111,7 @@ namespace SpehsEngine
 
 			//Rendering display texture
 			if (displayTexture)
-				displayTexture->draw();
+				displayTexture->polygon->draw();
 
 		}
 	}
@@ -160,7 +164,7 @@ namespace SpehsEngine
 		//Display texture position
 		if (displayTexture)
 		{
-			displayTexture->setPosition(getX() + size.x / 2 - applicationData->getWindowWidthHalf(), getY() + size.y / 2 - applicationData->getWindowHeightHalf());
+			displayTexture->polygon->setPosition(getX() + size.x / 2 - applicationData->getWindowWidthHalf(), getY() + size.y / 2 - applicationData->getWindowHeightHalf());
 		}
 
 		enableBit(state, GUIRECT_POSITIONED);
@@ -222,10 +226,10 @@ namespace SpehsEngine
 		}
 		if (displayTexture)
 		{
-			if (minSize.x < 20)
-				minSize.x = 20;
-			if (minSize.y < 20)
-				minSize.y = 20;
+			if (minSize.x < displayTexture->width)
+				minSize.x = displayTexture->width;
+			if (minSize.y < displayTexture->height)
+				minSize.y = displayTexture->height;
 		}
 	}
 
@@ -289,9 +293,18 @@ namespace SpehsEngine
 	{
 		if (displayTexture)
 			delete displayTexture;
-		displayTexture = new PolygonBatch(4, 20, 20);
-		displayTexture->setTexture(path);
-		displayTexture->setCameraMatrixState(false);
+		displayTexture = new DisplayTexture();
+		displayTexture->polygon = new PolygonBatch(4, 1, 1);
+		displayTexture->polygon->setTexture(path);
+		TextureSizeData* texSize = textureManager->getSizeData(path);
+		displayTexture->polygon->resize(texSize->width, texSize->height);
+		displayTexture->polygon->setCameraMatrixState(false);
+		displayTexture->width = texSize->width;
+		displayTexture->height = texSize->height;
+	}
+	void GUIRectangle::setTexture(std::string path)
+	{
+		polygon->setTexture(path);
 	}
 
 }
