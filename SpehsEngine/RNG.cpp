@@ -13,116 +13,151 @@ namespace SpehsEngine
 		seed = uirandom();
 		initialize();
 	}
-	RNG::RNG(unsigned int initSeed) : seed(initSeed)
+	RNG::RNG(unsigned int _initSeed)
 	{
-		seed = initSeed;
+		seed = _initSeed;
 		initialize();
 	}
+	RNG::~RNG()
+	{
+
+	}
+
 	void RNG::initialize()
 	{
 		srand(time(NULL));
 		MTEngine = std::mt19937(seed);
 	}
-
-	//Seed-Based Pseudo RNG
-	void RNG::setSeed(unsigned int newSeed)
+	void RNG::setSeed(unsigned int _newSeed)
 	{
-		seed = newSeed;
+		seed = _newSeed;
 		MTEngine.seed(seed);
 	}
-
 	unsigned int RNG::getSeed()
 	{
 		return seed;
 	}
-
 	unsigned int RNG::mtrandom()
 	{
 		return MTEngine();
 	}
-
-	void RNG::discardNext(int amount)
+	void RNG::discardNext(int _amount)
 	{
-		MTEngine.discard(amount);
+		MTEngine.discard(_amount);
 	}
-
 	unsigned int RNG::getMax()
 	{
 		return MTEngine.max();
 	}
-
 	unsigned int RNG::getMin()
 	{
 		return MTEngine.min();
 	}
-
 	void RNG::resetRandomSeedEngine()
 	{
 		MTEngine.seed(seed);
 	}
 
-
-	//Time-based RNG
 	int RNG::sirandom()
 	{
 		return (rand() % (RAND_MAX / 2 + RAND_MAX / 2)) - RAND_MAX / 2;
 	}
-
 	int RNG::uirandom()
 	{
 		return rand();
 	}
-
-	int RNG::irandom(int min, int max)
+	int RNG::irandom(int _min, int _max)
 	{
-		if (min > max)
+		if (_min > _max)
 		{
 			SpehsEngine::fatalError("Min value is greater than Max value! (irandom)");
 		}
-		if (min == max)
-			return min;
-		else if (min < 0)
-			return (rand() % (abs(min) + (max + 1))) - abs(min);
+		if (_min == _max)
+			return _min;
+		else if (_min < 0)
+			return (rand() % (abs(_min) + (_max + 1))) - abs(_min);
 		else
-			return rand() % (max - min) + min;
+			return rand() % (_max - _min) + _min;
 	}
-
-	int RNG::irandom(int min, int max, int maxMin, int minMax)
+	int RNG::irandom(int _min, int _max, int _maxMin, int _minMax)
 	{
-		int value = irandom(min, max);
-		if (maxMin >= minMax)
+		int value = irandom(_min, _max);
+		if (_maxMin >= _minMax)
 			SpehsEngine::fatalError("maxMin value is greater than minMax value! (irandom)");
-		if (maxMin < min || minMax > max)
+		if (_maxMin < _min || _minMax > _max)
 			SpehsEngine::fatalError("mixMaxMin stuff is wrong!! (irandom)");
 
-		while (value < minMax && value > maxMin)
-			value = irandom(min, max);
+		while (value < _minMax && value > _maxMin)
+			value = irandom(_min, _max);
 
 		return value;
 	}
-
-	float RNG::frandom(float min, float max)
+	float RNG::frandom(float _min, float _max)
 	{
-		if (min > max)
+		if (_min > _max)
 		{
 			SpehsEngine::fatalError("Min value is greater than Max value! (frandom)");
 		}
 		float random = ((float) rand() / (float) RAND_MAX);
-		float range = max - min;
-		return (random*range) + min;
-	}
-	
-	float RNG::frandom(float min, float max, float maxMin, float minMax)
+		float range = _max - _min;
+		return (random*range) + _min;
+	}	
+	float RNG::frandom(float _min, float _max, float _maxMin, float _minMax)
 	{
-		float value = frandom(min, max);
-		if (maxMin >= minMax)
+		float value = frandom(_min, _max);
+		if (_maxMin >= _minMax)
 			SpehsEngine::fatalError("maxMin value is greater than minMax value! (irandom)");
-		if (maxMin < min || minMax > max)
+		if (_maxMin < _min || _minMax > _max)
 			SpehsEngine::fatalError("mixMaxMin stuff is wrong!! (irandom)");
 
-		while (value < minMax && value > maxMin)
-			value = frandom(min, max);
+		while (value < _minMax && value > _maxMin)
+			value = frandom(_min, _max);
 
 		return value;
+	}
+
+
+	RNG_64::RNG_64()
+	{
+		MTEngine = std::mt19937_64();
+	}
+	RNG_64::RNG_64(uint_fast64_t _seed)
+	{
+		seed = _seed;
+		MTEngine = std::mt19937_64(_seed);
+	}
+	RNG_64::~RNG_64()
+	{
+
+	}
+
+	void RNG_64::setSeed(uint_fast64_t _newSeed)
+	{
+		seed = _newSeed;
+		MTEngine.seed(_newSeed);
+	}
+	uint_fast64_t RNG_64::getSeed()
+	{
+		return seed;
+	}
+	void RNG_64::resetRandomSeedEngine()
+	{
+		MTEngine.seed(seed);
+	}
+	uint_fast64_t RNG_64::mtrandom()
+	{
+		return MTEngine();
+	}
+	void RNG_64::discardNext(int _amount)
+	{
+		MTEngine.discard(_amount);
+	}
+	uint_fast64_t RNG_64::getMax()
+	{
+		return MTEngine.max();
+	}
+	uint_fast64_t RNG_64::getMin()
+	{
+		return MTEngine.min();
 	}
 }

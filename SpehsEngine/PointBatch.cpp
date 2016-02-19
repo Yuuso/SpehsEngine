@@ -110,6 +110,13 @@ namespace SpehsEngine
 	}
 
 
+	void PointBatch::setScale(float _newScale)
+	{
+		scaleX = _newScale;
+		scaleY = _newScale;
+	}
+
+
 	void PointBatch::setTexture(std::string _texturePath)
 	{
 		textureDataID = textureManager->preloadTexture(_texturePath);

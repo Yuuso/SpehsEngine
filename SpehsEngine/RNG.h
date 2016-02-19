@@ -1,6 +1,7 @@
 #pragma once
 
 #include <random>
+#include <stdint.h>
 
 
 namespace SpehsEngine
@@ -9,14 +10,15 @@ namespace SpehsEngine
 	{
 	public:
 		RNG();
-		RNG(unsigned int initSeed);
+		RNG(unsigned int _initSeed);
+		~RNG();
 
 		//Pseudorandom Number Generation = Same seed always returns the same "random" numbers in the same order			
-		void setSeed(unsigned int newSeed);
+		void setSeed(unsigned int _newSeed);
 		unsigned int getSeed();
 		void resetRandomSeedEngine();
 		unsigned int mtrandom(); //returns a large unsigned int from seed
-		void discardNext(int amount = 1);
+		void discardNext(int _amount = 1);
 		unsigned int getMax();
 		unsigned int getMin();
 
@@ -24,15 +26,36 @@ namespace SpehsEngine
 		//Returns only relatively small values (RAND_MAX)
 		int sirandom();
 		int uirandom();
-		int irandom(int min, int max);
-		int irandom(int min, int max, int maxMin, int minMax); //Exclude range maxMin <-> minMax
-		float frandom(float min, float max);
-		float frandom(float min, float max, float maxMin, float minMax); //Exclude range maxMin <-> minMax
+		int irandom(int _min, int _max);
+		int irandom(int _min, int _max, int _maxMin, int _minMax); //Exclude range maxMin <-> minMax
+		float frandom(float _min, float _max);
+		float frandom(float _min, float _max, float _maxMin, float _minMax); //Exclude range maxMin <-> minMax
 
 	private:
 		void initialize();
 		unsigned int seed;
 		std::mt19937 MTEngine;
+	};
+
+	//64-bit version of the PRNG
+	class RNG_64
+	{
+	public:
+		RNG_64();
+		RNG_64(uint_fast64_t _seed);
+		~RNG_64();
+
+		void setSeed(uint_fast64_t _newSeed);
+		uint_fast64_t getSeed();
+		void resetRandomSeedEngine();
+		uint_fast64_t mtrandom();
+		void discardNext(int _amount = 1);
+		uint_fast64_t getMax();
+		uint_fast64_t getMin();
+
+	private:
+		std::mt19937_64 MTEngine;
+		uint_fast64_t seed;
 	};
 }
 extern SpehsEngine::RNG* rng;
