@@ -21,10 +21,14 @@ namespace SpehsEngine
 
 	void GUIWindowManager::update()
 	{
-		//Check if focused window yielded focus internally
-		if (focusedWindow && !focusedWindow->isFocused())
-			focusedWindow = nullptr;
-
+		bool focusedWindowReceivingInput = false;
+		if (focusedWindow)
+		{
+			if (!focusedWindow->isFocused())//Check if focused window yielded focus internally
+				focusedWindow = nullptr;
+			else if (focusedWindow->isReceivingInput())
+				focusedWindowReceivingInput = true;
+		}
 
 		//Search for a window to update from the top
 		for (int i = int(windows.size()) - 1; i >= 0; i--)
@@ -63,7 +67,7 @@ namespace SpehsEngine
 		if (focusedWindow)
 		{
 			//Yielding focus
-			if (inputManager->isKeyPressed(KEYBOARD_ESCAPE))
+			if (inputManager->isKeyPressed(KEYBOARD_ESCAPE) && !focusedWindowReceivingInput)
 			{
 				focusedWindow->loseFocus();
 				focusedWindow = nullptr;

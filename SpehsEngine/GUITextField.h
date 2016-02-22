@@ -25,6 +25,7 @@ namespace SpehsEngine
 		bool stringReady();
 		/*Returns the stored string. [!]Resets string storeage to accept next string element*/
 		std::string retrieveString();
+		float retrieveStringAsFloat();
 
 		//Identity
 		GUITextField* getAsGUITextFieldPtr(){ return this; }

@@ -1,3 +1,4 @@
+#include "ApplicationData.h"
 #include "Text.h"
 #include "InputManager.h"
 #include "GUITextField.h"
@@ -52,7 +53,14 @@ namespace SpehsEngine
 				text->setString(input);
 		}
 		else//If not typing, use default string
+		{
+			if (!text)
+			{
+				text = new SpehsEngine::Text();
+				text->setFont(applicationData->GUITextFontPath, applicationData->GUITextSize);
+			}
 			text->setString(defaultString);
+		}
 		stringUpdated = true;
 
 		disableStateRecursiveUpwards(GUIRECT_MIN_SIZE_UPDATED);
@@ -116,6 +124,21 @@ namespace SpehsEngine
 			input += ' ';
 			stringUpdated = false;
 		}
+		if (inputManager->isKeyPressed(KEYBOARD_PERIOD))
+		{
+			input += '.';
+			stringUpdated = false;
+		}
+		if (inputManager->isKeyPressed(KEYBOARD_COMMA))
+		{
+			input += ',';
+			stringUpdated = false;
+		}
+		if (inputManager->isKeyPressed(KEYBOARD_MINUS))
+		{
+			input += '-';
+			stringUpdated = false;
+		}
 
 		//Backspace/character deletion
 		if (inputManager->isKeyPressed(KEYBOARD_BACKSPACE) && input.size() > 0)
@@ -148,6 +171,59 @@ namespace SpehsEngine
 		std::string returnValue = storedString;
 		storedString.clear();
 		return returnValue;
+	}
+	float GUITextField::retrieveStringAsFloat()
+	{
+		int8_t stringState = 0;
+		int intValue = 0;
+		float floatValue = 0.0f;
+		for (unsigned i = 0; i < storedString.size(); i++)
+		{
+			if (storedString[i] >= '0' && storedString[i] <= '9')
+			{//Add numerical value
+				if (checkBit(stringState, 2))
+				{//Decimal
+					floatValue *= 0.1f;
+					floatValue += int(storedString[i] - 48) * 0.1f;
+				}
+				else
+				{
+					intValue *= 10;
+					intValue += int(storedString[i] - 48);
+				}
+			}
+			else if (storedString[i] == '-')
+			{
+				if (checkBit(stringState, 1))
+				{
+					storedString.clear();
+					return 0.0f;
+				}
+				enableBit(stringState, 1);//Negative
+			}
+			else if (storedString[i] == '.' || storedString[i] == ',')
+			{
+				if (checkBit(stringState, 2))
+				{
+					storedString.clear();
+					return 0.0f;
+				}
+				enableBit(stringState, 2);//Begin decimal part
+			}
+			else
+			{//Character is unknown
+				storedString.clear();
+				return 0.0f;
+			}
+		}
+		storedString.clear();
+
+		//Add up values, negate if needed
+		floatValue += intValue;
+		if (checkBit(stringState, 1))
+			floatValue *= -1;
+
+		return floatValue;
 	}
 	void GUITextField::loseFocus()
 	{

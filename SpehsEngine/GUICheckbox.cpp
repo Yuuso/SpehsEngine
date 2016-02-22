@@ -53,8 +53,11 @@ namespace SpehsEngine
 	void GUICheckbox::render()
 	{
 		GUIRectangle::render();
-		checkboxBackground->draw();
-		checkboxFilling->draw();
+		if (checkBit(state, GUIRECT_VISIBLE))
+		{
+			checkboxBackground->draw();
+			checkboxFilling->draw();
+		}
 	}
 	void GUICheckbox::updatePosition()
 	{
@@ -99,8 +102,13 @@ namespace SpehsEngine
 	void GUICheckbox::setBooleanPtr(bool* ptr)
 	{
 		booleanPtr = ptr;
-		if (*booleanPtr)
-			enableBit(state, GUIRECT_SELECTED);
+		if (booleanPtr)
+		{
+			if (*booleanPtr)
+				enableBit(state, GUIRECT_SELECTED);
+			else
+				disableBit(state, GUIRECT_SELECTED);
+		}
 		else
 			disableBit(state, GUIRECT_SELECTED);
 	}

@@ -7,7 +7,7 @@
 #include "GUIWindow.h"
 #include "GUITextField.h"
 #include "GUIRectangleList.h"
-#define HEADER_HEIGHT 20
+#define EXIT_WIDTH 20
 #define STRECH_BORDER 5
 #define DOCK_BORDER 50
 #define DOUBLE_CLICK_TIME 200
@@ -43,8 +43,8 @@ namespace SpehsEngine
 		//Exit button
 		exit = new GUIRectangle(-2);
 		exit->setParent(this);
-		exit->setPosition(size.x - HEADER_HEIGHT, size.y);
-		exit->setSize(HEADER_HEIGHT, HEADER_HEIGHT);
+		exit->setPosition(size.x - EXIT_WIDTH, size.y);
+		exit->setSize(EXIT_WIDTH, header->getHeight());
 		exit->setID(1);
 		exit->setColor(255, 0, 0);
 		exit->setString("X");
@@ -100,12 +100,12 @@ namespace SpehsEngine
 			//Check docking
 			if (inputManager->getMouseX() < DOCK_BORDER)
 			{//Dock left
-				setSize(minSize.x, applicationData->getWindowHeight() - UP_BORDER - DOWN_BORDER - HEADER_HEIGHT - 2 * STRECH_BORDER);
+				setSize(minSize.x, applicationData->getWindowHeight() - UP_BORDER - DOWN_BORDER - header->getHeight() - 2 * STRECH_BORDER);
 				setPosition(STRECH_BORDER + LEFT_BORDER, STRECH_BORDER + DOWN_BORDER);
 			}
 			else if (inputManager->getMouseX() > applicationData->getWindowWidth() - DOCK_BORDER)
 			{//Dock right
-				setSize(minSize.x, applicationData->getWindowHeight() - UP_BORDER - DOWN_BORDER - HEADER_HEIGHT - 2 * STRECH_BORDER);
+				setSize(minSize.x, applicationData->getWindowHeight() - UP_BORDER - DOWN_BORDER - header->getWidth() - 2 * STRECH_BORDER);
 				setPosition(applicationData->getWindowWidth() - size.x - STRECH_BORDER - RIGHT_BORDER, STRECH_BORDER + DOWN_BORDER);
 			}
 
@@ -265,7 +265,7 @@ namespace SpehsEngine
 				{//Set to full window
 
 					//Set size according to application data's window dimensions
-					setSize(applicationData->getWindowWidth() - RIGHT_BORDER - LEFT_BORDER, applicationData->getWindowHeight() - UP_BORDER - DOWN_BORDER - HEADER_HEIGHT);
+					setSize(applicationData->getWindowWidth() - RIGHT_BORDER - LEFT_BORDER, applicationData->getWindowHeight() - UP_BORDER - DOWN_BORDER - header->getHeight());
 					setPosition(0, 0);
 
 					//Position window so that it won't go out of the application window
@@ -359,7 +359,7 @@ namespace SpehsEngine
 		GUIRectangle::updatePosition();
 
 		//Reposition and update exit button
-		exit->setPosition(size.x - HEADER_HEIGHT, size.y);
+		exit->setPosition(size.x - exit->getWidth(), size.y);
 		exit->updatePosition();
 
 		//Reposition and update header
@@ -385,10 +385,13 @@ namespace SpehsEngine
 		GUIRectangle::updateScale();
 
 		//Background strech rectangle
-		strech->setSize(size.x + 2 * STRECH_BORDER, size.y + 2 * STRECH_BORDER + HEADER_HEIGHT);
+		strech->setSize(size.x + 2 * STRECH_BORDER, size.y + 2 * STRECH_BORDER + header->getHeight());
 		
 		//Resize and reposition header
-		header->setSize(size.x - HEADER_HEIGHT, HEADER_HEIGHT);
+		header->setSize(size.x - EXIT_WIDTH, header->getHeight());
+
+		//Resize exit
+		exit->setHeight(header->getHeight());
 
 		////Resize and position elements
 		bool minY = false;//Use minimal y value for every element
@@ -409,12 +412,12 @@ namespace SpehsEngine
 	{//Prevent window going out of application window
 
 		//Limit size
-		if (size.y + HEADER_HEIGHT > applicationData->getWindowHeight() - UP_BORDER - DOWN_BORDER)
+		if (size.y + header->getHeight() > applicationData->getWindowHeight() - UP_BORDER - DOWN_BORDER)
 		{//Window too high
 			if (size.x > applicationData->getWindowWidth() - LEFT_BORDER - RIGHT_BORDER)
-				setSize(applicationData->getWindowWidth() - LEFT_BORDER - RIGHT_BORDER, applicationData->getWindowHeight() - HEADER_HEIGHT - UP_BORDER - DOWN_BORDER);
+				setSize(applicationData->getWindowWidth() - LEFT_BORDER - RIGHT_BORDER, applicationData->getWindowHeight() - header->getHeight() - UP_BORDER - DOWN_BORDER);
 			else
-				setSize(size.x, applicationData->getWindowHeight() - HEADER_HEIGHT - UP_BORDER - DOWN_BORDER);
+				setSize(size.x, applicationData->getWindowHeight() - header->getHeight() - UP_BORDER - DOWN_BORDER);
 		}
 		else if (size.x > applicationData->getWindowWidth() - LEFT_BORDER - RIGHT_BORDER)
 		{//Window too wide
@@ -423,9 +426,9 @@ namespace SpehsEngine
 
 		//////Limit position
 		////Y
-		if (getY() > applicationData->getWindowHeight() - size.y - UP_BORDER - HEADER_HEIGHT)
+		if (getY() > applicationData->getWindowHeight() - size.y - UP_BORDER - header->getHeight())
 		{//Window too up
-			setPosition(position.x, applicationData->getWindowHeight() - size.y - UP_BORDER - HEADER_HEIGHT);
+			setPosition(position.x, applicationData->getWindowHeight() - size.y - UP_BORDER - header->getHeight());
 		}
 		else if (getY() < DOWN_BORDER)
 		{//Window too down
