@@ -81,8 +81,8 @@ namespace SpehsEngine
 		float getMouseMovementY(){ return mouseMovement.y; }
 		int getMouseWheelDelta() const { return mouseWheelDelta; }
 		bool isQuitRequested() const { return quitRequested; }
-		bool fileDropped(){ if (droppedFileDirectory.size() > 0) return true; }
-		std::string getDroppedFileDirectory(){ std::string directory = droppedFileDirectory; droppedFileDirectory.clear();/*Reset dropped file diorectory*/ return directory; }
+		bool fileDropped(){ if (droppedFilePath.size() > 0) return true; }
+		std::string getDroppedFilePath(){ std::string path = droppedFilePath; droppedFilePath.clear();/*Reset dropped file path*/ return path; }
 
 		//Public access members
 		std::vector<Joystick*> joysticks;
@@ -91,7 +91,7 @@ namespace SpehsEngine
 
 	private:
 		bool quitRequested = false;
-		std::string droppedFileDirectory;///<Dropped file directory is retrievable until any source retrieves(getDroppedFileDirectory()) it once.
+		std::string droppedFilePath;///<Dropped file path is retrievable until any source retrieves(getDroppedFilePath()) it once.
 		
 		//Keyboard
 		bool wasKeyDown(unsigned int keyID);
