@@ -1,3 +1,4 @@
+#include "ApplicationData.h"
 #include "PolygonBatch.h"
 #include "InputManager.h"
 #include "GUIRectangle.h"
@@ -6,8 +7,6 @@
 #include "ApplicationData.h"
 #include "Text.h"
 #define TEXT_MAX_STRING_LENGTH 32
-#define TEXT_FONT_PATH "Fonts/Anonymous.ttf"
-#define TEXT_FONT_SIZE 18
 int64_t guiRectangleAllocations = 0;
 int64_t guiRectangleDeallocations = 0;
 
@@ -263,7 +262,7 @@ namespace SpehsEngine
 			tooltip = new GUIRectangle();
 
 		tooltip->setString(tooltipString);
-		tooltip->setStringSize(14);
+		tooltip->setStringSize(applicationData->GUITextSize);
 		tooltip->setJustification(GUIRECT_TEXT_JUSTIFICATION_CENTER);
 		tooltip->setColor(150, 150, 150);
 		tooltip->updateScale();
@@ -286,7 +285,7 @@ namespace SpehsEngine
 		if (text)
 			return;
 		text = new SpehsEngine::Text();
-		text->setFont(TEXT_FONT_PATH, TEXT_FONT_SIZE);
+		text->setFont(applicationData->GUITextFontPath, applicationData->GUITextSize);
 		text->setColor(0.05f, 0.05f, 0.05f);
 	}
 	void GUIRectangle::setDisplayTexture(std::string path)

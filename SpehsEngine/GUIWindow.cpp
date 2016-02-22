@@ -38,7 +38,7 @@ namespace SpehsEngine
 		header->setPosition(0, size.y);
 		header->setColor(255, 255, 255);
 		header->setJustification(GUIRECT_TEXT_JUSTIFICATION_LEFT);
-		header->setStringSize(11);
+		header->setStringSize(applicationData->GUITextSize + 2);
 
 		//Exit button
 		exit = new GUIRectangle(-2);
@@ -47,7 +47,6 @@ namespace SpehsEngine
 		exit->setSize(HEADER_HEIGHT, HEADER_HEIGHT);
 		exit->setID(1);
 		exit->setColor(255, 0, 0);
-		exit->setStringSize(11);
 		exit->setString("X");
 
 		//Strech background rectangle

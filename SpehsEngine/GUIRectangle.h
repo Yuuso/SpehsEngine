@@ -64,7 +64,7 @@ namespace SpehsEngine
 		virtual ~GUIRectangle();
 		friend class GUIWindow;
 
-		///During GUI's update the element's size, min size may change even so that it might affect parents above.
+		///During GUI's update the element's size and/or min size may change even so that it might affect parents above.
 		virtual void update();
 		/**During scale update dimensions must not change in a manner that would affect parents above.\n
 		scale update is called up to once per update if the size of the rectangle has changed*/

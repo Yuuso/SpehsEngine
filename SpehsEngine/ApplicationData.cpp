@@ -47,7 +47,9 @@ namespace SpehsEngine
 	ApplicationData::ApplicationData() :
 		windowWidth(1280), windowHeight(720), windowMode(0),
 		masterVolume(100), musicVolume(100), sfxVolume(100),
-		showFps(1), consoleTextSize(20), consoleTextAlpha(1000), vSync(0), MSAA(4), dataDirectory("data/")
+		showFps(1), consoleTextSize(20), consoleTextAlpha(1000),
+		GUITextSize(10), GUITextFontPath("Fonts/Anonymous.ttf"),
+		vSync(0), MSAA(4), dataDirectory("data/")
 	{
 
 	}
@@ -78,7 +80,9 @@ namespace SpehsEngine
 		*stream << "SFX volume: " << sfxVolume << "\n";
 		*stream << "Show FPS: " << showFps << "\n";
 		*stream << "Console text size: " << consoleTextSize << "\n";
-		*stream << "ConsoleTextAlpha (divided by 1000): " << consoleTextAlpha << "\n";
+		*stream << "ConsoleTextAlpha (0-255): " << consoleTextAlpha << "\n";
+		*stream << "GUI text size: " << GUITextSize << "\n";
+		*stream << "GUI text font path: " << GUITextFontPath << "\n";
 		*stream << "VSync: " << vSync << "\n";
 		*stream << "MSAA: " << MSAA << "\n";
 		*stream << "Data directory: " << dataDirectory << "\n";
@@ -128,9 +132,37 @@ namespace SpehsEngine
 		readValueIntoInt(*stream, showFps);
 		readValueIntoInt(*stream, consoleTextSize);
 		readValueIntoInt(*stream, consoleTextAlpha);
+		readValueIntoInt(*stream, GUITextSize);
+		readValueIntoString(*stream, GUITextFontPath);
 		readValueIntoInt(*stream, vSync);
 		readValueIntoInt(*stream, MSAA);
 		readValueIntoString(*stream, dataDirectory);
+
+		//Limit values
+		if (windowWidth < 1)
+			windowWidth = 1;
+		if (windowHeight < 1)
+			windowHeight = 1;
+		if (masterVolume < 0)
+			masterVolume = 0;
+		else if (masterVolume > 100)
+			masterVolume = 100;
+		if (musicVolume < 0)
+			musicVolume = 0;
+		else if (musicVolume > 100)
+			musicVolume = 100;
+		if (sfxVolume < 0)
+			sfxVolume = 0;
+		else if (sfxVolume > 100)
+			sfxVolume = 100;
+		if (consoleTextAlpha < 0)
+			consoleTextAlpha = 0;
+		else if (consoleTextAlpha > 255)
+			consoleTextAlpha = 255;
+		if (consoleTextSize < 1)
+			consoleTextSize = 1;
+		if (GUITextSize < 1)
+			GUITextSize = 1;
 		
 		//Create data directory
 		createDirectory(dataDirectory);

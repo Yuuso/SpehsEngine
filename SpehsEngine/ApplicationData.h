@@ -31,6 +31,8 @@ namespace SpehsEngine
 		int showFps;
 		int consoleTextSize;
 		int consoleTextAlpha;
+		int GUITextSize;
+		std::string GUITextFontPath;
 		int vSync;
 		int MSAA;
 		std::string dataDirectory;//Specified directory where data should be stored

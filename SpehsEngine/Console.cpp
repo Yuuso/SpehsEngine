@@ -7,7 +7,6 @@
 #include "ConsoleVariable.h"
 #include "Text.h"
 #define CONSOLE_COMMANDS_KEPT_IN_MEMORY 10
-#define CONSOLE_FONT_PATH "Fonts/Anonymous.ttf"
 #define CONSOLE_BORDER 5
 #define BACKSPACE_INITIAL_INTERVAL 500
 #define BACKSPACE_INTERVAL 75
@@ -26,8 +25,8 @@ namespace SpehsEngine
 	int Console::initialize()
 	{
 		consoleText = new SpehsEngine::Text();
-		consoleText->setFont(CONSOLE_FONT_PATH, applicationData->consoleTextSize);
-		consoleText->setColor(glm::vec4(1.0f, 0.6f, 0.0f, applicationData->consoleTextAlpha / 1000.0f));
+		consoleText->setFont(applicationData->GUITextFontPath, applicationData->consoleTextSize);
+		consoleText->setColor(glm::vec4(1.0f, 0.6f, 0.0f, applicationData->consoleTextAlpha / 255.0f));
 		consoleText->setPosition(glm::vec2(CONSOLE_BORDER, CONSOLE_BORDER));
 		consoleText->setString("><");
 
@@ -76,8 +75,8 @@ namespace SpehsEngine
 	void Console::log(std::string str, glm::vec3& color)
 	{
 		lines.push_back(new SpehsEngine::Text());
-		lines.back()->setFont(CONSOLE_FONT_PATH, applicationData->consoleTextSize);
-		lines.back()->setColor(glm::vec4(color, applicationData->consoleTextAlpha / 1000.0f));
+		lines.back()->setFont(applicationData->GUITextFontPath, applicationData->consoleTextSize);
+		lines.back()->setColor(glm::vec4(color, applicationData->consoleTextAlpha / 255.0f));
 		lines.back()->setString(str);
 		visibility = 1.0f;
 
@@ -104,10 +103,10 @@ namespace SpehsEngine
 			//Update console font size if needed
 			if (previousFontSize != applicationData->consoleTextSize)
 			{
-				consoleText->setFont(CONSOLE_FONT_PATH, applicationData->consoleTextSize);
+				consoleText->setFont(applicationData->GUITextFontPath, applicationData->consoleTextSize);
 				for (unsigned i = 0; i < lines.size(); i++)
 				{
-					lines[i]->setFont(CONSOLE_FONT_PATH, applicationData->consoleTextSize);
+					lines[i]->setFont(applicationData->GUITextFontPath, applicationData->consoleTextSize);
 				}
 				previousFontSize = applicationData->consoleTextSize;
 			}
@@ -311,7 +310,7 @@ namespace SpehsEngine
 		}
 		for (auto i = lines.begin(); i < lines.end(); i++)
 		{
-			(*i)->getColorRef().a = visibility * (applicationData->consoleTextAlpha / 1000.0f);
+			(*i)->getColorRef().a = visibility * (applicationData->consoleTextAlpha / 255.0f);
 			(*i)->render();
 		}
 
@@ -320,7 +319,7 @@ namespace SpehsEngine
 		{
 			return;
 		}
-		consoleText->getColorRef().a = visibility * (applicationData->consoleTextAlpha / 1000.0f);
+		consoleText->getColorRef().a = visibility * (applicationData->consoleTextAlpha / 255.0f);
 		consoleText->render();
 	}
 
