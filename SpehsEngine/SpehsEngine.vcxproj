@@ -108,6 +108,7 @@
     <ClCompile Include="InputManager.cpp" />
     <ClCompile Include="LengthConversion.cpp" />
     <ClCompile Include="LineBatch.cpp" />
+    <ClCompile Include="OpenGLError.cpp" />
     <ClCompile Include="PointBatch.cpp" />
     <ClCompile Include="PolygonBatch.cpp" />
     <ClCompile Include="PolygonMeshBatch.cpp" />
@@ -146,6 +147,7 @@
     <ClInclude Include="InputManager.h" />
     <ClInclude Include="LengthConversion.h" />
     <ClInclude Include="LineBatch.h" />
+    <ClInclude Include="OpenGLError.h" />
     <ClInclude Include="PointBatch.h" />
     <ClInclude Include="PolygonBatch.h" />
     <ClInclude Include="PolygonMeshBatch.h" />

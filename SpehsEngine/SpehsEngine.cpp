@@ -9,6 +9,7 @@
 #include "RNG.h"
 #include "ShaderManager.h"
 #include "Console.h"
+#include "OpenGLError.h"
 
 #include <string>
 
@@ -69,6 +70,9 @@ namespace SpehsEngine
 		console = new Console();
 		console->initialize();
 
+#ifdef _DEBUG
+		checkOpenGLErrors(__FILE__, __LINE__);
+#endif
 
 		return 0;
 	}

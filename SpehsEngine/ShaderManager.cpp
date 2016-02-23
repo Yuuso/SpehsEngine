@@ -1,5 +1,6 @@
 #include "ShaderManager.h"
 #include "TextureManager.h"
+#include "OpenGLError.h"
 
 #include <GL/glew.h>
 
@@ -25,6 +26,10 @@ namespace SpehsEngine
 		glUniformMatrix4fv(transformLocation, 1, GL_FALSE, &transformMatrix[0][0]);
 		glUniform4fv(colorLocation, 1, &color[0]);
 		glUniformMatrix4fv(cameraLocation, 1, GL_FALSE, &cameraMatrix[0][0]);
+
+#ifdef _DEBUG
+		checkOpenGLErrors(__FILE__, __LINE__);
+#endif
 	}
 
 	BackgroundUniforms::BackgroundUniforms(GLSLProgram* _shader) : Uniforms(_shader)
@@ -41,6 +46,10 @@ namespace SpehsEngine
 		glUniform1f(deltaLocation, delta);
 		glUniform1f(zoomLocation, zoom);
 		glUniform2fv(mouseLocation, 1, &mouse[0]);
+
+#ifdef _DEBUG
+		checkOpenGLErrors(__FILE__, __LINE__);
+#endif
 	}
 
 	DefaultTextureUniforms::DefaultTextureUniforms(GLSLProgram* _shader) : Uniforms(_shader)
@@ -55,6 +64,10 @@ namespace SpehsEngine
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, textureManager->getTextureData(textureDataID));
 		glUniform1i(textureLocation, 0);
+
+#ifdef _DEBUG
+		checkOpenGLErrors(__FILE__, __LINE__);
+#endif
 	}
 
 	DefaultPolygonUniforms::DefaultPolygonUniforms(GLSLProgram* _shader) : Uniforms(_shader)
@@ -67,6 +80,10 @@ namespace SpehsEngine
 	{
 		Uniforms::setUniforms();
 		glUniform2fv(mouseLocation, 1, &mouse[0]);
+
+#ifdef _DEBUG
+		checkOpenGLErrors(__FILE__, __LINE__);
+#endif
 	}
 
 	ParticleUniforms::ParticleUniforms(GLSLProgram* _shader) : Uniforms(_shader)
@@ -85,6 +102,10 @@ namespace SpehsEngine
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, textureManager->getTextureData(textureDataID));
 		glUniform1i(textureLocation, 0);
+
+#ifdef _DEBUG
+		checkOpenGLErrors(__FILE__, __LINE__);
+#endif
 	}
 
 

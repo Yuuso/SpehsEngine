@@ -1,5 +1,6 @@
 #include "TextureManager.h"
 #include "Exceptions.h"
+#include "OpenGLError.h"
 
 #include <functional>
 
@@ -132,11 +133,9 @@ namespace SpehsEngine
 		size_t hash = std::hash<std::string>()(_filepath);
 		textureSizeDataMap.insert(std::pair<size_t, TextureSizeData*>(hash, new TextureSizeData(width, height)));
 
-		//GLenum error = glGetError();
-		//if (error != GL_NO_ERROR)
-		//{
-		//	fatalError("Error loading a texture: " + _filepath);
-		//}
+#ifdef _DEBUG
+		checkOpenGLErrors(__FILE__, __LINE__);
+#endif
 
 		return textureData;
 	}

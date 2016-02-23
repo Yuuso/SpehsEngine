@@ -5,6 +5,7 @@
 
 #include "GLSLProgram.h"
 #include "Exceptions.h"
+#include "OpenGLError.h"
 
 
 
@@ -31,6 +32,10 @@ namespace SpehsEngine
 
 		compileShader(vertexShaderPath, vertexShaderID);
 		compileShader(fragmentShaderPath, fragmentShaderID);
+
+#ifdef _DEBUG
+		checkOpenGLErrors(__FILE__, __LINE__);
+#endif
 	}
 
 	
@@ -66,18 +71,30 @@ namespace SpehsEngine
 		glDetachShader(programID, fragmentShaderID);
 		glDeleteShader(vertexShaderID);
 		glDeleteShader(fragmentShaderID);
+
+#ifdef _DEBUG
+		checkOpenGLErrors(__FILE__, __LINE__);
+#endif
 	}
 
 
 	void GLSLProgram::addAttribute(const std::string& attributeName)
 	{
 		glBindAttribLocation(programID, numberOfAttributes++, attributeName.c_str());
+
+#ifdef _DEBUG
+		checkOpenGLErrors(__FILE__, __LINE__);
+#endif
 	}
 
 
 	GLint GLSLProgram::getUniformLocation(const std::string& uniformName)
 	{
 		GLint location = glGetUniformLocation(programID, uniformName.c_str());
+
+#ifdef _DEBUG
+		checkOpenGLErrors(__FILE__, __LINE__);
+#endif
 
 		if (location == GL_INVALID_INDEX)
 		{
@@ -94,6 +111,10 @@ namespace SpehsEngine
 		glUseProgram(programID);
 		for (int i = 0; i < numberOfAttributes; i++)
 			glEnableVertexAttribArray(i);
+
+#ifdef _DEBUG
+		checkOpenGLErrors(__FILE__, __LINE__);
+#endif
 	}
 
 
@@ -102,6 +123,10 @@ namespace SpehsEngine
 		glUseProgram(0);
 		for (int i = 0; i < numberOfAttributes; i++)
 			glDisableVertexAttribArray(i);
+
+#ifdef _DEBUG
+		checkOpenGLErrors(__FILE__, __LINE__);
+#endif
 	}
 	
 	
@@ -120,8 +145,16 @@ namespace SpehsEngine
 
 		const char* contentsPtr = fileContents.c_str();
 		glShaderSource(id, 1, &contentsPtr, nullptr);
+
+#ifdef _DEBUG
+		checkOpenGLErrors(__FILE__, __LINE__);
+#endif
 		
 		glCompileShader(id);
+
+#ifdef _DEBUG
+		checkOpenGLErrors(__FILE__, __LINE__);
+#endif
 
 		GLint success;
 		glGetShaderiv(id, GL_COMPILE_STATUS, &success);
@@ -141,5 +174,9 @@ namespace SpehsEngine
 				std::printf("\n%s", &errorLog[0]);
 			fatalError("Shader " + filePath + " failed to compile!");
 		}
+
+#ifdef _DEBUG
+		checkOpenGLErrors(__FILE__, __LINE__);
+#endif
 	}
 }

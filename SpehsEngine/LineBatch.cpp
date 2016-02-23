@@ -3,6 +3,7 @@
 #include "ShaderManager.h"
 #include "ApplicationData.h"
 #include "Time.h"
+#include "OpenGLError.h"
 
 #include <GL/glew.h>
 #include <glm/gtc/type_ptr.hpp>
@@ -40,6 +41,10 @@ namespace SpehsEngine
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 		glBindVertexArray(0);
 		indices.clear();
+
+#ifdef _DEBUG
+		checkOpenGLErrors(__FILE__, __LINE__);
+#endif
 	}
 	LineBatch::~LineBatch()
 	{
@@ -88,6 +93,10 @@ namespace SpehsEngine
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 		glBindVertexArray(0);
 		indices.clear();
+
+#ifdef _DEBUG
+		checkOpenGLErrors(__FILE__, __LINE__);
+#endif
 	}
 
 
@@ -121,6 +130,10 @@ namespace SpehsEngine
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 		glBindVertexArray(0);
 		shaderManager->unuse(shaderIndex);
+
+#ifdef _DEBUG
+		checkOpenGLErrors(__FILE__, __LINE__);
+#endif
 	}
 
 
@@ -159,6 +172,10 @@ namespace SpehsEngine
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 		glBindVertexArray(0);
 		indices.clear();
+
+#ifdef _DEBUG
+		checkOpenGLErrors(__FILE__, __LINE__);
+#endif
 	}
 
 

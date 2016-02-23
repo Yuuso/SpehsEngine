@@ -10,7 +10,6 @@ namespace SpehsEngine
 {
 	RNG::RNG()
 	{
-		seed = uirandom();
 		initialize();
 	}
 	RNG::RNG(unsigned int _initSeed)
@@ -25,7 +24,9 @@ namespace SpehsEngine
 
 	void RNG::initialize()
 	{
-		srand(time(NULL));
+		std::random_device randomDevice;
+		randomMTEngine.seed(randomDevice());
+		seed = randomDevice();
 		MTEngine = std::mt19937(seed);
 	}
 	void RNG::setSeed(unsigned int _newSeed)
@@ -60,11 +61,11 @@ namespace SpehsEngine
 
 	int RNG::sirandom()
 	{
-		return (rand() % (RAND_MAX / 2 + RAND_MAX / 2)) - RAND_MAX / 2;
+		return intDist(randomMTEngine, { -INT_MAX, INT_MAX });
 	}
 	int RNG::uirandom()
 	{
-		return rand();
+		return intDist(randomMTEngine, { 0, INT_MAX });
 	}
 	int RNG::irandom(int _min, int _max)
 	{
@@ -74,10 +75,8 @@ namespace SpehsEngine
 		}
 		if (_min == _max)
 			return _min;
-		else if (_min < 0)
-			return (rand() % (abs(_min) + (_max + 1))) - abs(_min);
 		else
-			return rand() % (_max - _min) + _min;
+			return intDist(randomMTEngine, { _min, _max });
 	}
 	int RNG::irandom(int _min, int _max, int _maxMin, int _minMax)
 	{
@@ -98,20 +97,39 @@ namespace SpehsEngine
 		{
 			SpehsEngine::fatalError("Min value is greater than Max value! (frandom)");
 		}
-		float random = ((float) rand() / (float) RAND_MAX);
-		float range = _max - _min;
-		return (random*range) + _min;
+		return floatDist(randomMTEngine, { _min, _max });
 	}	
 	float RNG::frandom(float _min, float _max, float _maxMin, float _minMax)
 	{
 		float value = frandom(_min, _max);
 		if (_maxMin >= _minMax)
-			SpehsEngine::fatalError("maxMin value is greater than minMax value! (irandom)");
+			SpehsEngine::fatalError("maxMin value is greater than minMax value! (frandom)");
 		if (_maxMin < _min || _minMax > _max)
-			SpehsEngine::fatalError("mixMaxMin stuff is wrong!! (irandom)");
+			SpehsEngine::fatalError("mixMaxMin stuff is wrong!! (frandom)");
 
 		while (value < _minMax && value > _maxMin)
 			value = frandom(_min, _max);
+
+		return value;
+	}
+	double RNG::drandom(double _min, double _max)
+	{
+		if (_min > _max)
+		{
+			SpehsEngine::fatalError("Min value is greater than Max value! (drandom)");
+		}
+		return doubleDist(randomMTEngine, { _min, _max });
+	}
+	double RNG::drandom(double _min, double _max, double _maxMin, double _minMax)
+	{
+		double value = drandom(_min, _max);
+		if (_maxMin >= _minMax)
+			SpehsEngine::fatalError("maxMin value is greater than minMax value! (drandom)");
+		if (_maxMin < _min || _minMax > _max)
+			SpehsEngine::fatalError("mixMaxMin stuff is wrong!! (drandom)");
+
+		while (value < _minMax && value > _maxMin)
+			value = drandom(_min, _max);
 
 		return value;
 	}

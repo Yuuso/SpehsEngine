@@ -12,6 +12,7 @@
 #include "Text.h"
 #include "GLSLProgram.h"
 #include "ApplicationData.h"
+#include "OpenGLError.h"
 
 namespace SpehsEngine
 {
@@ -262,6 +263,10 @@ namespace SpehsEngine
 			font->characters.insert(std::pair<GLchar, Character>(c, character));
 		}
 
+#ifdef _DEBUG
+		checkOpenGLErrors(__FILE__, __LINE__);
+#endif
+
 		font->height = (*font->ftFace)->size->metrics.height >> 6;
 		font->descender = (*font->ftFace)->descender >> 6;
 		projectionMatrix = glm::ortho(0.0f, float(applicationData->getWindowWidth()), 0.0f, float(applicationData->getWindowHeight()));
@@ -354,6 +359,10 @@ namespace SpehsEngine
 				y -= font->height + lineSpacing;
 			}
 
+#ifdef _DEBUG
+		checkOpenGLErrors(__FILE__, __LINE__);
+#endif
+
 
 		//Submit data
 		glBindBuffer(GL_ARRAY_BUFFER, vertexArrayData);
@@ -362,6 +371,9 @@ namespace SpehsEngine
 		delete[] vertices;
 		doUpdate = false;
 
+#ifdef _DEBUG
+		checkOpenGLErrors(__FILE__, __LINE__);
+#endif
 	}
 	void Text::updateGlyphsToRender()
 	{
@@ -402,6 +414,10 @@ namespace SpehsEngine
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
 		glBindTexture(GL_TEXTURE_2D, 0);
 		textProgram.unuse();
+
+#ifdef _DEBUG
+		checkOpenGLErrors(__FILE__, __LINE__);
+#endif
 	}
 
 	void Text::setString(std::string str)

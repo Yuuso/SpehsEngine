@@ -3,6 +3,7 @@
 #include "TextureManager.h"
 #include "ApplicationData.h"
 #include "Time.h"
+#include "OpenGLError.h"
 
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/gtx/transform.hpp>
@@ -28,6 +29,10 @@ namespace SpehsEngine
 
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
 		glBindVertexArray(0);
+
+#ifdef _DEBUG
+		checkOpenGLErrors(__FILE__, __LINE__);
+#endif
 	}
 	PointBatch::~PointBatch()
 	{
@@ -66,6 +71,10 @@ namespace SpehsEngine
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
 		glBindVertexArray(0);
 		shaderManager->unuse(shaderIndex);
+
+#ifdef _DEBUG
+		checkOpenGLErrors(__FILE__, __LINE__);
+#endif
 	}
 
 
@@ -107,6 +116,10 @@ namespace SpehsEngine
 		glBufferData(GL_ARRAY_BUFFER, sizeof(Vertex) * numIndices, vertexArray, GL_STATIC_DRAW);
 
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+#ifdef _DEBUG
+		checkOpenGLErrors(__FILE__, __LINE__);
+#endif
 	}
 
 

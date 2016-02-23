@@ -1,6 +1,7 @@
 #include "Window.h"
 #include "Exceptions.h"
 #include "ApplicationData.h"
+#include "OpenGLError.h"
 
 #include <SDL/SDL_video.h>
 #include <GL/glew.h>
@@ -60,6 +61,10 @@ namespace SpehsEngine
 		if (applicationData->MSAA > 0)
 			glEnable(GL_MULTISAMPLE);
 
+#ifdef _DEBUG
+		checkOpenGLErrors(__FILE__, __LINE__);
+#endif
+
 		return 0;
 	}
 
@@ -67,17 +72,29 @@ namespace SpehsEngine
 	void Window::swapBuffers()
 	{
 		SDL_GL_SwapWindow(sdlWindow);
+
+#ifdef _DEBUG
+		checkOpenGLErrors(__FILE__, __LINE__);
+#endif
 	}
 
 
 	void Window::clearBuffer()
 	{
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+#ifdef _DEBUG
+		checkOpenGLErrors(__FILE__, __LINE__);
+#endif
 	}
 
 
 	void Window::clearColor(float _r, float _g, float _b, float _a)
 	{
 		glClearColor(_r, _g, _b, _a);
+
+#ifdef _DEBUG
+		checkOpenGLErrors(__FILE__, __LINE__);
+#endif
 	}
 }

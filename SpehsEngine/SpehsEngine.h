@@ -1,8 +1,4 @@
 #pragma once
-/*
-Spehs "Engine / Framework"
-...
-*/
 
 namespace SpehsEngine
 {

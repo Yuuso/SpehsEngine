@@ -10,6 +10,7 @@
 #include "TextureManager.h"
 #include "ApplicationData.h"
 #include "Time.h"
+#include "OpenGLError.h"
 
 #include <GL/glew.h>
 #include <glm/gtc/type_ptr.hpp>
@@ -249,6 +250,9 @@ namespace SpehsEngine
 		glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*) offsetof(Vertex, position));
 		glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*) offsetof(Vertex, uv));
 
+#ifdef _DEBUG
+		checkOpenGLErrors(__FILE__, __LINE__);
+#endif
 
 		switch (drawMode)
 		{
@@ -281,6 +285,10 @@ namespace SpehsEngine
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 		glBindVertexArray(0);
 		shaderManager->unuse(shaderIndex);
+
+#ifdef _DEBUG
+		checkOpenGLErrors(__FILE__, __LINE__);
+#endif
 	}
 
 
@@ -452,6 +460,10 @@ namespace SpehsEngine
 
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 		indices.clear();
+
+#ifdef _DEBUG
+		checkOpenGLErrors(__FILE__, __LINE__);
+#endif
 	}
 
 
@@ -473,5 +485,9 @@ namespace SpehsEngine
 
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
 		glBindVertexArray(0);
+
+#ifdef _DEBUG
+		checkOpenGLErrors(__FILE__, __LINE__);
+#endif
 	}
 }

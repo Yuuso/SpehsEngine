@@ -23,18 +23,25 @@ namespace SpehsEngine
 		unsigned int getMin();
 
 		//Random Pseudorandom Number Generation
-		//Returns only relatively small values (RAND_MAX)
+		//Return values from -INT_MAX to INT_MAX
 		int sirandom();
 		int uirandom();
 		int irandom(int _min, int _max);
 		int irandom(int _min, int _max, int _maxMin, int _minMax); //Exclude range maxMin <-> minMax
 		float frandom(float _min, float _max);
 		float frandom(float _min, float _max, float _maxMin, float _minMax); //Exclude range maxMin <-> minMax
+		double drandom(double _min, double _max);
+		double drandom(double _min, double _max, double _maxMin, double _minMax); //Exclude range maxMin <-> minMax
 
 	private:
 		void initialize();
 		unsigned int seed;
-		std::mt19937 MTEngine;
+		std::mt19937 MTEngine; //Used for pseudo-random numbers
+		std::mt19937 randomMTEngine; //Used for random numbers
+
+		std::uniform_int_distribution<int> intDist;
+		std::uniform_real_distribution<float> floatDist;
+		std::uniform_real_distribution<double> doubleDist;
 	};
 
 	//64-bit version of the PRNG
