@@ -24,17 +24,21 @@ namespace SpehsEngine
 		/**Reads line until ':' is encountered, reads rest as string and assigns to string. Erases space after ':' if one exists*/
 		void readValueIntoString(std::ifstream& stream, std::string& string);
 
+		//Video
 		int windowMode;// 0 windowed / 1 fullscreen
+		int showFps;
+		int maxFps;
+		int vSync;
+		int MSAA;
+		//Audio
 		int masterVolume;
 		int musicVolume;
 		int sfxVolume;
-		int showFps;
+		//Other
 		int consoleTextSize;
 		int consoleTextAlpha;
 		int GUITextSize;
 		std::string GUITextFontPath;
-		int vSync;
-		int MSAA;
 		std::string dataDirectory;//Specified directory where data should be stored
 
 		//Window dimensions

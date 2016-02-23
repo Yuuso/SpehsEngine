@@ -45,11 +45,15 @@ namespace SpehsEngine
 		string = value;
 	}
 	ApplicationData::ApplicationData() :
-		windowWidth(1280), windowHeight(720), windowMode(0),
+		//Video
+		windowMode(0), showFps(1), maxFps(200), vSync(0), MSAA(4),
+		//Audio
 		masterVolume(100), musicVolume(100), sfxVolume(100),
-		showFps(1), consoleTextSize(20), consoleTextAlpha(1000),
-		GUITextSize(10), GUITextFontPath("Fonts/Anonymous.ttf"),
-		vSync(0), MSAA(4), dataDirectory("data/")
+		//Other
+		consoleTextSize(20), consoleTextAlpha(1000),
+		GUITextSize(12), GUITextFontPath("Fonts/Anonymous.ttf"),
+		dataDirectory("data/"),
+		windowWidth(1280), windowHeight(720)
 	{
 
 	}
@@ -72,19 +76,23 @@ namespace SpehsEngine
 			}
 		}
 
+		//Video
 		*stream << "Window width: " << windowWidth << "\n";
 		*stream << "Window height: " << windowHeight << "\n";
 		*stream << "Window mode: " << windowMode << "\n";
+		*stream << "Show FPS: " << showFps << "\n";
+		*stream << "Max FPS: " << maxFps << "\n";
+		*stream << "VSync: " << vSync << "\n";
+		*stream << "MSAA: " << MSAA << "\n";
+		//Audio
 		*stream << "Master volume: " << masterVolume << "\n";
 		*stream << "Music volume: " << musicVolume << "\n";
 		*stream << "SFX volume: " << sfxVolume << "\n";
-		*stream << "Show FPS: " << showFps << "\n";
+		//Other
 		*stream << "Console text size: " << consoleTextSize << "\n";
 		*stream << "ConsoleTextAlpha (0-255): " << consoleTextAlpha << "\n";
 		*stream << "GUI text size: " << GUITextSize << "\n";
 		*stream << "GUI text font path: " << GUITextFontPath << "\n";
-		*stream << "VSync: " << vSync << "\n";
-		*stream << "MSAA: " << MSAA << "\n";
 		*stream << "Data directory: " << dataDirectory << "\n";
 
 		if (streamOwner)
@@ -123,19 +131,23 @@ namespace SpehsEngine
 			}
 		}
 
+		//Video
 		readValueIntoInt(*stream, windowWidth);
 		readValueIntoInt(*stream, windowHeight);
 		readValueIntoInt(*stream, windowMode);
+		readValueIntoInt(*stream, showFps);
+		readValueIntoInt(*stream, maxFps);
+		readValueIntoInt(*stream, vSync);
+		readValueIntoInt(*stream, MSAA);
+		//Audio
 		readValueIntoInt(*stream, masterVolume);
 		readValueIntoInt(*stream, musicVolume);
 		readValueIntoInt(*stream, sfxVolume);
-		readValueIntoInt(*stream, showFps);
+		//Other
 		readValueIntoInt(*stream, consoleTextSize);
 		readValueIntoInt(*stream, consoleTextAlpha);
 		readValueIntoInt(*stream, GUITextSize);
 		readValueIntoString(*stream, GUITextFontPath);
-		readValueIntoInt(*stream, vSync);
-		readValueIntoInt(*stream, MSAA);
 		readValueIntoString(*stream, dataDirectory);
 
 		//Limit values

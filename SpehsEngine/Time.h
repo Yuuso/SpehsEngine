@@ -6,7 +6,6 @@ namespace SpehsEngine
 {
 	//Variables that should be visible outside
 	extern float fps;
-	extern int maxFPS;
 	extern uint32_t maxDeltaTime;
 	extern uint32_t deltaTime;
 	extern unsigned long drawCalls;

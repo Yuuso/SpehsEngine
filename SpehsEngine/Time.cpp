@@ -14,7 +14,6 @@ namespace SpehsEngine
 	//Global variables
 	int fpsCounterFontSize = 24;
 	float fps = 0;
-	int maxFPS = 0;
 	uint32_t maxDeltaTime = 1000;
 	uint32_t deltaTime = 0;
 	unsigned long drawCalls;
@@ -142,9 +141,9 @@ namespace SpehsEngine
 
 		//Limit FPS = delay return
 		uint32_t frameTicks = SDL_GetTicks() - startTicks;
-		if (maxFPS > 0)
-			if (1000.0f / maxFPS > frameTicks)
-				SDL_Delay(uint32_t(1000.0f / maxFPS) - frameTicks);
+		if (applicationData->maxFps > 0)
+			if (1000.0f / applicationData->maxFps > frameTicks)
+				SDL_Delay(uint32_t(1000.0f / applicationData->maxFps) - frameTicks);
 
 	}
 	void drawFPS()
