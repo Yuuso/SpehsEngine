@@ -73,7 +73,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>$(ProjectDir)/../Dependencies/include/glm/;$(ProjectDir)/../Dependencies/include/GL/;$(ProjectDir)/../Dependencies/include/SDL/;$(ProjectDir)/../Dependencies/include/freetype/;$(ProjectDir)/../Dependencies/include/;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)/../Dependencies/include/;$(ProjectDir)/../Dependencies/include/Freetype;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -82,7 +82,7 @@
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
     <Lib>
-      <AdditionalDependencies>SDL2.lib;SDL2main.lib;glew32.lib;glew32s.lib;opengl32.lib;freetype.lib</AdditionalDependencies>
+      <AdditionalDependencies>SDL2.lib;SDL2main.lib;glew32.lib;glew32s.lib;opengl32.lib;freetype.lib;SOIL.lib</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(ProjectDir)/../Dependencies/lib/</AdditionalLibraryDirectories>
     </Lib>
   </ItemDefinitionGroup>
