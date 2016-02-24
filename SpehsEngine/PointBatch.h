@@ -1,6 +1,7 @@
 #pragma once
 
 #include "PrimitiveBatch.h"
+#include "TextureManager.h"
 
 #include <string>
 
@@ -17,7 +18,7 @@ namespace SpehsEngine
 		void setPosition(float _x, float _y);
 		void addPoint(float _relativePosX, float _relativePosY);
 		void setScale(float _newScale);
-		void setTexture(std::string _texturePath);
-		void setTexture(size_t _textureID);
+		TextureData* setTexture(std::string _texturePath);
+		TextureData* setTexture(size_t _textureID);
 	};
 }

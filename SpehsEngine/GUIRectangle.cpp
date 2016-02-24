@@ -294,12 +294,12 @@ namespace SpehsEngine
 			delete displayTexture;
 		displayTexture = new DisplayTexture();
 		displayTexture->polygon = new PolygonBatch(4, 1, 1);
-		displayTexture->polygon->setTexture(path);
-		TextureSizeData* texSize = textureManager->getSizeData(path);
-		displayTexture->polygon->resize(texSize->width, texSize->height);
+		TextureData* texData = textureManager->getTextureData(path);
+		displayTexture->polygon->setTexture(texData);
+		displayTexture->polygon->resize(texData->width, texData->height);
 		displayTexture->polygon->setCameraMatrixState(false);
-		displayTexture->width = texSize->width;
-		displayTexture->height = texSize->height;
+		displayTexture->width = texData->width;
+		displayTexture->height = texData->height;
 	}
 	void GUIRectangle::setTexture(std::string path)
 	{

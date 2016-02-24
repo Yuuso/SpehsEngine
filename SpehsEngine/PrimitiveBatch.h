@@ -8,9 +8,11 @@
 
 #include "Vertex.h"
 #include "ShaderManager.h"
+#include "TextureManager.h"
 
 
 typedef unsigned short GLushort;
+typedef unsigned int GLuint;
 
 namespace SpehsEngine
 {
@@ -64,8 +66,8 @@ namespace SpehsEngine
 		//For Points only
 		virtual void addPoint(float _relativePosX, float _relativePosY){}
 			//Points and Polygons
-			virtual void setTexture(std::string _texturePath){}
-			virtual void setTexture(size_t _textureID){}
+			virtual TextureData* setTexture(std::string _texturePath){ return nullptr; }
+			virtual TextureData* setTexture(size_t _textureID){ return nullptr; }
 
 	protected:
 		void uniforms();
@@ -76,7 +78,7 @@ namespace SpehsEngine
 
 		bool cameraMatrixState = true;
 		int numIndices = 0;
-		size_t textureDataID = 0;
+		GLuint textureDataID = 0;
 		GLuint vertexArrayObjectID = 0;
 		GLuint vertexBufferID = 0;
 		GLuint indexBufferID = 0;

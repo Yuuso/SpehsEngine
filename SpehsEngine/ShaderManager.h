@@ -12,6 +12,7 @@
 
 
 typedef int GLint;
+typedef unsigned int GLuint;
 namespace SpehsEngine
 {
 	enum ShaderName : int
@@ -37,7 +38,7 @@ namespace SpehsEngine
 		glm::mat4 transformMatrix;
 		glm::mat4 cameraMatrix;
 		glm::vec4 color;
-		size_t textureDataID; //this is only here because primitives need it, Uniform base class can't send textureData
+		GLuint textureDataID; //this is only here because primitives need it, Uniform base class can't send textureData
 
 		virtual BackgroundUniforms* backgroundUniformPtr(){ return nullptr; }
 		virtual DefaultTextureUniforms* defaultTextureUniformPtr(){ return nullptr; }

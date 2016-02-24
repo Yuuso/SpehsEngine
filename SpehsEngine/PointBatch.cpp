@@ -130,18 +130,18 @@ namespace SpehsEngine
 	}
 
 
-	void PointBatch::setTexture(std::string _texturePath)
+	TextureData* PointBatch::setTexture(std::string _texturePath)
 	{
 		textureDataID = textureManager->preloadTexture(_texturePath);
 		if (shaderIndex == DefaultPolygon)
 			shaderIndex = DefaultTexture;
-		shaderManager->getShader(shaderIndex)->uniforms->textureDataID = textureDataID;
+		return textureManager->getTextureData(textureDataID);
 	}
-	void PointBatch::setTexture(size_t _textureID)
+	TextureData* PointBatch::setTexture(size_t _textureID)
 	{
 		textureDataID = _textureID;
 		if (shaderIndex == DefaultPolygon)
 			shaderIndex = DefaultTexture;
-		shaderManager->getShader(shaderIndex)->uniforms->textureDataID = textureDataID;
+		return textureManager->getTextureData(textureDataID);
 	}
 }

@@ -1,6 +1,5 @@
 #include "PrimitiveBatch.h"
 #include "ShaderManager.h"
-#include "TextureManager.h"
 #include "ApplicationData.h"
 
 #include <GL/glew.h>
@@ -69,6 +68,9 @@ namespace SpehsEngine
 			shaderManager->getShader(shaderIndex)->uniforms->cameraMatrix = staticMatrix;
 		shaderManager->getShader(shaderIndex)->uniforms->color = color;
 		shaderManager->getShader(shaderIndex)->uniforms->transformMatrix = transformMatrix;
+
+		if (textureDataID)
+			shaderManager->getShader(shaderIndex)->uniforms->textureDataID = textureDataID;
 
 		shaderManager->setUniforms(shaderIndex);
 	}

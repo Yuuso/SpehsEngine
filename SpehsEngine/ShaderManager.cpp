@@ -62,7 +62,7 @@ namespace SpehsEngine
 	{
 		Uniforms::setUniforms();
 		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, textureManager->getTextureData(textureDataID));
+		glBindTexture(GL_TEXTURE_2D, textureDataID);
 		glUniform1i(textureLocation, 0);
 
 #ifdef _DEBUG
@@ -100,7 +100,7 @@ namespace SpehsEngine
 		glUniform1f(randomLocation, random);
 		glUniform1f(zoomLocation, zoom);
 		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, textureManager->getTextureData(textureDataID));
+		glBindTexture(GL_TEXTURE_2D, textureDataID);
 		glUniform1i(textureLocation, 0);
 
 #ifdef _DEBUG
