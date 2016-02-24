@@ -39,7 +39,7 @@ namespace SpehsEngine
 	}
 
 
-	void PrimitiveBatch::setShader(ShaderName _shaderIndex)
+	void PrimitiveBatch::setShader(int _shaderIndex)
 	{
 		shaderIndex = _shaderIndex;
 		if (textureDataID)
@@ -47,7 +47,7 @@ namespace SpehsEngine
 	}
 
 
-	ShaderName PrimitiveBatch::getShaderIndex()
+	int PrimitiveBatch::getShaderIndex()
 	{
 		return shaderIndex;
 	}

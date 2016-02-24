@@ -9,6 +9,7 @@
 #include <glm/mat4x4.hpp>
 
 #include "GLSLProgram.h"
+#include "Exceptions.h"
 
 
 typedef int GLint;
@@ -16,18 +17,11 @@ typedef unsigned int GLuint;
 namespace SpehsEngine
 {
 	enum ShaderName : int
-	{
+	{//Default Shaders
 		DefaultPolygon = 0,
 		DefaultTexture = 1,
-		Background = 2,
-		Particle = 3,
 	};
 
-	struct Shader;
-	class BackgroundUniforms;
-	class DefaultTextureUniforms;
-	class DefaultPolygonUniforms;
-	class ParticleUniforms;
 	class Uniforms
 	{
 	public:
@@ -40,11 +34,6 @@ namespace SpehsEngine
 		glm::vec4 color;
 		GLuint textureDataID; //this is only here because primitives need it, Uniform base class can't send textureData
 
-		virtual BackgroundUniforms* backgroundUniformPtr(){ return nullptr; }
-		virtual DefaultTextureUniforms* defaultTextureUniformPtr(){ return nullptr; }
-		virtual DefaultPolygonUniforms* defaultPolygonUniformPtr(){ return nullptr; }
-		virtual ParticleUniforms* particleUniformPtr(){ return nullptr; }
-
 	protected:
 		GLSLProgram* shader;
 
@@ -53,81 +42,51 @@ namespace SpehsEngine
 		GLint colorLocation = 0;
 	};
 
-#pragma region Individual Uniforms
-	class BackgroundUniforms : public Uniforms
+
+	class DefaultPolygonUniforms : public SpehsEngine::Uniforms
 	{
 	public:
-		BackgroundUniforms(GLSLProgram* _shader);
-		~BackgroundUniforms();
-
-		void setUniforms();
-		float delta;
-		glm::vec2 mouse;
-		float zoom;
-		BackgroundUniforms* backgroundUniformPtr(){ return this; }
-
-	private:
-		GLint deltaLocation = 0;
-		GLint mouseLocation = 0;
-		GLint zoomLocation = 0;
-	};
-	class DefaultTextureUniforms : public Uniforms
-	{
-	public:
-		DefaultTextureUniforms(GLSLProgram* _shader);
-		~DefaultTextureUniforms();
-
-		void setUniforms();
-		DefaultTextureUniforms* defaultTextureUniformPtr(){ return this; }
-
-	private:
-		GLint textureLocation = 0;
-	};
-	class DefaultPolygonUniforms : public Uniforms
-	{
-	public:
-		DefaultPolygonUniforms(GLSLProgram* _shader);
+		DefaultPolygonUniforms(SpehsEngine::GLSLProgram* _shader);
 		~DefaultPolygonUniforms();
 
 		void setUniforms();
 		glm::vec2 mouse;
-		DefaultPolygonUniforms* defaultPolygonUniformPtr(){ return this; }
 
 	private:
 		GLint mouseLocation = 0;
 	};
-	class ParticleUniforms : public Uniforms
+
+
+	class DefaultTextureUniforms : public SpehsEngine::Uniforms
 	{
 	public:
-		ParticleUniforms(GLSLProgram* _shader);
-		~ParticleUniforms();
+		DefaultTextureUniforms(SpehsEngine::GLSLProgram* _shader);
+		~DefaultTextureUniforms();
 
 		void setUniforms();
-		float random;
-		float zoom;
-		ParticleUniforms* particleUniformPtr(){ return this; }
 
 	private:
-		GLint randomLocation = 0;
-		GLint zoomLocation = 0;
-		unsigned int textureLocation = 0;
+		GLint textureLocation = 0;
 	};
-#pragma endregion
 
-	struct Shader
+
+	class Shader
 	{
-		Shader(ShaderName _name, GLSLProgram* _shader, Uniforms* _uniforms)
+	public:
+		Shader(int _index, GLSLProgram* _shader, Uniforms* _uniforms)
 		{
-			name = _name;
 			shader = _shader;
 			uniforms = _uniforms;
+			index = _index;
 		}
 		~Shader()
 		{
 			delete shader;
 			delete uniforms;
 		}
-		ShaderName name;
+		template<typename type> type* getCustomUniforms();
+
+		int index;
 		GLSLProgram* shader;
 		Uniforms* uniforms;
 	};
@@ -138,13 +97,38 @@ namespace SpehsEngine
 		ShaderManager();
 		~ShaderManager();
 
-		Shader* getShader(ShaderName _shaderName);
-		void setUniforms(ShaderName _shaderName);
-		void use(ShaderName _shaderName);
-		void unuse(ShaderName _shaderName);
+		void pushShader(Shader* _newShader);
+		void reload(int _shaderIndex, Shader* _newShader);
+		
+		Shader* getShader(int _index);
+		void setUniforms(int _index);
+		void use(int _index);
+		void unuse(int _index);
 
 	private:
-		std::vector<Shader*> shaderPrograms;//TODO:not a vector
+		std::vector<Shader*> shaderPrograms;
 	};
+
+
+	//Wrapping functions for OpenGL
+	void bind2DTexture(const GLuint &_textureID);
+	void setUniform_int(const GLint &_location, const int &_value);
+	void setUniform_float(const GLint &_location, const float &_value);
+	void setUniform_vec2(const GLint &_location, const glm::vec2 &_value);
+
+
+	//TEMPLATES:
+
+	template<typename type>
+	type* Shader::getCustomUniforms()
+	{
+		type* temp = dynamic_cast<type*>(uniforms);
+		if (temp != nullptr)
+		{
+			return temp;
+		}
+		fatalError("Uniforms type not found!");
+		return nullptr;
+	}
 }
 extern SpehsEngine::ShaderManager* shaderManager;

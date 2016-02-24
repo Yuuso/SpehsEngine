@@ -46,8 +46,8 @@ namespace SpehsEngine
 		void setAlpha(int a){ color[3] = a / 255.0f; }
 		void setAlpha(float a){ color[3] = a; }
 		glm::vec4 getColor(){ return color; }
-		void setShader(ShaderName _shaderIndex);
-		ShaderName getShaderIndex();
+		void setShader(int _shaderIndex);
+		int getShaderIndex();
 
 		//true = primitive scales with camera, false = primitive has a scale of 1.0f = 1 pixel
 		void setCameraMatrixState(bool _newState);
@@ -90,7 +90,7 @@ namespace SpehsEngine
 		glm::mat4 transformMatrix = glm::mat4(1.0f);
 		glm::mat4 scaledMatrix = glm::mat4(1.0f);
 		glm::mat4 scaledRotatedMatrix = glm::mat4(1.0f);
-		ShaderName shaderIndex = DefaultPolygon;
+		int shaderIndex = DefaultPolygon;
 		Vertex* vertexArray = nullptr;
 	};
 }

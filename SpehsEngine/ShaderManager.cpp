@@ -9,7 +9,6 @@
 SpehsEngine::ShaderManager* shaderManager;
 namespace SpehsEngine
 {
-	//UNIFORMS:
 	Uniforms::Uniforms(GLSLProgram* _shader)
 	{
 		textureDataID = 0;
@@ -32,113 +31,45 @@ namespace SpehsEngine
 #endif
 	}
 
-	BackgroundUniforms::BackgroundUniforms(GLSLProgram* _shader) : Uniforms(_shader)
-	{
-		deltaLocation = shader->getUniformLocation("delta");
-		mouseLocation = shader->getUniformLocation("mouse");
-		zoomLocation = shader->getUniformLocation("zoom");
-	}
-	BackgroundUniforms::~BackgroundUniforms()
-	{}
-	void BackgroundUniforms::setUniforms()
-	{
-		Uniforms::setUniforms();
-		glUniform1f(deltaLocation, delta);
-		glUniform1f(zoomLocation, zoom);
-		glUniform2fv(mouseLocation, 1, &mouse[0]);
-
-#ifdef _DEBUG
-		checkOpenGLErrors(__FILE__, __LINE__);
-#endif
-	}
-
-	DefaultTextureUniforms::DefaultTextureUniforms(GLSLProgram* _shader) : Uniforms(_shader)
-	{
-		textureLocation = shader->getUniformLocation("tex");
-	}
-	DefaultTextureUniforms::~DefaultTextureUniforms()
-	{}
-	void DefaultTextureUniforms::setUniforms()
-	{
-		Uniforms::setUniforms();
-		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, textureDataID);
-		glUniform1i(textureLocation, 0);
-
-#ifdef _DEBUG
-		checkOpenGLErrors(__FILE__, __LINE__);
-#endif
-	}
-
-	DefaultPolygonUniforms::DefaultPolygonUniforms(GLSLProgram* _shader) : Uniforms(_shader)
+	DefaultPolygonUniforms::DefaultPolygonUniforms(SpehsEngine::GLSLProgram* _shader) : Uniforms(_shader)
 	{
 		mouseLocation = shader->getUniformLocation("mouse");
 	}
-	DefaultPolygonUniforms::~DefaultPolygonUniforms()
-	{}
+	DefaultPolygonUniforms::~DefaultPolygonUniforms(){}
 	void DefaultPolygonUniforms::setUniforms()
 	{
+		SpehsEngine::setUniform_vec2(mouseLocation, mouse);
 		Uniforms::setUniforms();
-		glUniform2fv(mouseLocation, 1, &mouse[0]);
-
-#ifdef _DEBUG
-		checkOpenGLErrors(__FILE__, __LINE__);
-#endif
 	}
 
-	ParticleUniforms::ParticleUniforms(GLSLProgram* _shader) : Uniforms(_shader)
+	DefaultTextureUniforms::DefaultTextureUniforms(SpehsEngine::GLSLProgram* _shader) : Uniforms(_shader)
 	{
-		randomLocation = shader->getUniformLocation("random");
-		zoomLocation = shader->getUniformLocation("zoom");
 		textureLocation = shader->getUniformLocation("tex");
 	}
-	ParticleUniforms::~ParticleUniforms()
-	{}
-	void ParticleUniforms::setUniforms()
+	DefaultTextureUniforms::~DefaultTextureUniforms(){}
+	void DefaultTextureUniforms::setUniforms()
 	{
+		SpehsEngine::bind2DTexture(textureDataID);
+		SpehsEngine::setUniform_int(textureLocation, 0);
 		Uniforms::setUniforms();
-		glUniform1f(randomLocation, random);
-		glUniform1f(zoomLocation, zoom);
-		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, textureDataID);
-		glUniform1i(textureLocation, 0);
-
-#ifdef _DEBUG
-		checkOpenGLErrors(__FILE__, __LINE__);
-#endif
 	}
 
 
-	//SHADERMANAGER:
 	ShaderManager::ShaderManager()
 	{
 		//DefaultPolygon
-		GLSLProgram* defaultShader = new GLSLProgram();
+		SpehsEngine::GLSLProgram* defaultShader = new SpehsEngine::GLSLProgram();
 		defaultShader->compileShaders("Shaders/polygonShader.vert", "Shaders/polygonShader.frag");
 		defaultShader->addAttribute("vertexPosition");
 		defaultShader->linkShaders();
-		shaderPrograms.push_back(new Shader(DefaultPolygon, defaultShader, new DefaultPolygonUniforms(defaultShader)));
+		shaderPrograms.push_back(new SpehsEngine::Shader(SpehsEngine::DefaultPolygon, defaultShader, new DefaultPolygonUniforms(defaultShader)));
 
 		//DefaultTexture
-		GLSLProgram* defaultTexShader = new GLSLProgram();
+		SpehsEngine::GLSLProgram* defaultTexShader = new SpehsEngine::GLSLProgram();
 		defaultTexShader->compileShaders("Shaders/defaultTextureShader.vert", "Shaders/defaultTextureShader.frag");
 		defaultTexShader->addAttribute("vertexPosition");
 		defaultTexShader->linkShaders();
-		shaderPrograms.push_back(new Shader(DefaultPolygon, defaultTexShader, new DefaultTextureUniforms(defaultTexShader)));
-
-		//Background
-		GLSLProgram* backgroundShader = new GLSLProgram();
-		backgroundShader->compileShaders("Shaders/backgroundShader.vert", "Shaders/backgroundShader.frag");
-		backgroundShader->addAttribute("vertexPosition");
-		backgroundShader->linkShaders();
-		shaderPrograms.push_back(new Shader(DefaultPolygon, backgroundShader, new BackgroundUniforms(backgroundShader)));
-
-		//Particle
-		GLSLProgram* particleShader = new GLSLProgram();
-		particleShader->compileShaders("Shaders/particleShader.vert", "Shaders/particleShader.frag");
-		particleShader->addAttribute("vertexPosition");
-		particleShader->linkShaders();
-		shaderPrograms.push_back(new Shader(DefaultPolygon, particleShader, new ParticleUniforms(particleShader)));
+		shaderPrograms.push_back(new SpehsEngine::Shader(SpehsEngine::DefaultTexture, defaultTexShader, new DefaultTextureUniforms(defaultTexShader)));
 	}
 	ShaderManager::~ShaderManager()
 	{
@@ -147,21 +78,64 @@ namespace SpehsEngine
 			delete shaderPrograms[i];
 		}
 	}
+	void ShaderManager::pushShader(Shader* _newShader)
+	{
+		shaderPrograms.push_back(_newShader);
+	}
+	void ShaderManager::reload(int _shaderIndex, Shader* _newShader)
+	{
+		delete shaderPrograms[_shaderIndex];
+		shaderPrograms[_shaderIndex] = _newShader;
+	}
+	Shader* ShaderManager::getShader(int _index)
+	{
+		return shaderPrograms[_index];
+	}
+	void ShaderManager::setUniforms(int _index)
+	{
+		shaderPrograms[_index]->uniforms->setUniforms();
+	}
+	void ShaderManager::use(int _index)
+	{
+		shaderPrograms[_index]->shader->use();
+	}
+	void ShaderManager::unuse(int _index)
+	{
+		shaderPrograms[_index]->shader->unuse();
+	}
 
-	Shader* ShaderManager::getShader(ShaderName _shaderName)
+
+	void bind2DTexture(const GLuint &_textureID)
 	{
-		return shaderPrograms[(int) _shaderName];
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, _textureID);
+
+#ifdef _DEBUG
+		checkOpenGLErrors(__FILE__, __LINE__);
+#endif
 	}
-	void ShaderManager::setUniforms(ShaderName _shaderName)
+	void setUniform_int(const GLint &_location, const int &_value)
 	{
-		shaderPrograms[(int) _shaderName]->uniforms->setUniforms();
+		glUniform1i(_location, _value);
+
+#ifdef _DEBUG
+		checkOpenGLErrors(__FILE__, __LINE__);
+#endif
 	}
-	void ShaderManager::use(ShaderName _shaderName)
+	void setUniform_float(const GLint &_location, const float &_value)
 	{
-		shaderPrograms[(int) _shaderName]->shader->use();
+		glUniform1f(_location, _value);
+
+#ifdef _DEBUG
+		checkOpenGLErrors(__FILE__, __LINE__);
+#endif
 	}
-	void ShaderManager::unuse(ShaderName _shaderName)
+	void setUniform_vec2(const GLint &_location, const glm::vec2 &_value)
 	{
-		shaderPrograms[(int) _shaderName]->shader->unuse();
+		glUniform2fv(_location, 1, &_value[0]);
+
+#ifdef _DEBUG
+		checkOpenGLErrors(__FILE__, __LINE__);
+#endif
 	}
 }
