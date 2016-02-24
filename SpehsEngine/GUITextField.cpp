@@ -1,6 +1,7 @@
 #include "ApplicationData.h"
 #include "Text.h"
 #include "InputManager.h"
+#include "StringOperations.h"
 #include "GUITextField.h"
 
 
@@ -117,6 +118,17 @@ namespace SpehsEngine
 				input += char(i);
 				stringUpdated = false;
 			}
+		for (int i = KEYBOARD_KP_1; i <= KEYBOARD_KP_9; i++)
+			if (inputManager->isKeyPressed(i))
+			{
+				input += char(i - KEYBOARD_KP_1 + 49);
+				stringUpdated = false;
+			}
+		if (inputManager->isKeyPressed(KEYBOARD_KP_0))
+		{
+			input += '0';
+			stringUpdated = false;
+		}
 
 		//Special characters
 		if (inputManager->isKeyPressed(KEYBOARD_SPACE))
@@ -134,7 +146,17 @@ namespace SpehsEngine
 			input += ',';
 			stringUpdated = false;
 		}
+		if (inputManager->isKeyPressed(KEYBOARD_KP_PERIOD))
+		{
+			input += ',';
+			stringUpdated = false;
+		}
 		if (inputManager->isKeyPressed(KEYBOARD_MINUS))
+		{
+			input += '-';
+			stringUpdated = false;
+		}
+		if (inputManager->isKeyPressed(KEYBOARD_KP_MINUS))
 		{
 			input += '-';
 			stringUpdated = false;
@@ -149,6 +171,11 @@ namespace SpehsEngine
 
 		//End typing
 		if (inputManager->isKeyPressed(KEYBOARD_RETURN))
+		{
+			storedString = input;//Store input string
+			endTyping();
+		}
+		if (inputManager->isKeyPressed(KEYBOARD_KP_ENTER))
 		{
 			storedString = input;//Store input string
 			endTyping();
@@ -174,56 +201,11 @@ namespace SpehsEngine
 	}
 	float GUITextField::retrieveStringAsFloat()
 	{
-		int8_t stringState = 0;
-		int intValue = 0;
-		float floatValue = 0.0f;
-		for (unsigned i = 0; i < storedString.size(); i++)
-		{
-			if (storedString[i] >= '0' && storedString[i] <= '9')
-			{//Add numerical value
-				if (checkBit(stringState, 2))
-				{//Decimal
-					floatValue *= 0.1f;
-					floatValue += int(storedString[i] - 48) * 0.1f;
-				}
-				else
-				{
-					intValue *= 10;
-					intValue += int(storedString[i] - 48);
-				}
-			}
-			else if (storedString[i] == '-')
-			{
-				if (checkBit(stringState, 1))
-				{
-					storedString.clear();
-					return 0.0f;
-				}
-				enableBit(stringState, 1);//Negative
-			}
-			else if (storedString[i] == '.' || storedString[i] == ',')
-			{
-				if (checkBit(stringState, 2))
-				{
-					storedString.clear();
-					return 0.0f;
-				}
-				enableBit(stringState, 2);//Begin decimal part
-			}
-			else
-			{//Character is unknown
-				storedString.clear();
-				return 0.0f;
-			}
-		}
-		storedString.clear();
-
-		//Add up values, negate if needed
-		floatValue += intValue;
-		if (checkBit(stringState, 1))
-			floatValue *= -1;
-
-		return floatValue;
+		return getStringAsFloat(storedString);
+	}
+	int GUITextField::retrieveStringAsInt()
+	{
+		return getStringAsInt(storedString);
 	}
 	void GUITextField::loseFocus()
 	{

@@ -276,7 +276,7 @@ namespace SpehsEngine
 	}
 	std::string GUIRectangle::getString()
 	{
-		if (text) 
+		if (text)
 			return text->getString();
 		return std::string("");
 	}

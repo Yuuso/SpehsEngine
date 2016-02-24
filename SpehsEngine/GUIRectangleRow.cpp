@@ -4,6 +4,7 @@ namespace SpehsEngine
 {
 	GUIRectangleRow::GUIRectangleRow() : evenElementWidth(false), elementPositionMode(PositionMode::Standard)
 	{
+		disableBit(state, GUIRECT_HOVER_COLOR);
 	}
 	GUIRectangleRow::~GUIRectangleRow()
 	{

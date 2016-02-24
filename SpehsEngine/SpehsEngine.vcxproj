@@ -90,6 +90,7 @@
     <ClCompile Include="ApplicationData.cpp" />
     <ClCompile Include="Arrow.cpp" />
     <ClCompile Include="Camera2D.cpp" />
+    <ClCompile Include="Camera3D.cpp" />
     <ClCompile Include="Console.cpp" />
     <ClCompile Include="Exceptions.cpp" />
     <ClCompile Include="FileStream.cpp" />
@@ -101,6 +102,7 @@
     <ClCompile Include="GUIRectangleContainer.cpp" />
     <ClCompile Include="GUIRectangleList.cpp" />
     <ClCompile Include="GUIRectangleRow.cpp" />
+    <ClCompile Include="GUIRectangleTable.cpp" />
     <ClCompile Include="GUIRectangleTree.cpp" />
     <ClCompile Include="GUITextField.cpp" />
     <ClCompile Include="GUIWindow.cpp" />
@@ -117,6 +119,7 @@
     <ClCompile Include="SATCollision.cpp" />
     <ClCompile Include="ShaderManager.cpp" />
     <ClCompile Include="SpehsEngine.cpp" />
+    <ClCompile Include="StringOperations.cpp" />
     <ClCompile Include="Text.cpp" />
     <ClCompile Include="TextureManager.cpp" />
     <ClCompile Include="Time.cpp" />
@@ -128,6 +131,7 @@
     <ClInclude Include="Arrow.h" />
     <ClInclude Include="BitwiseOperations.h" />
     <ClInclude Include="Camera2D.h" />
+    <ClInclude Include="Camera3D.h" />
     <ClInclude Include="Console.h" />
     <ClInclude Include="ConsoleVariable.h" />
     <ClInclude Include="Exceptions.h" />
@@ -140,6 +144,7 @@
     <ClInclude Include="GUIRectangleContainer.h" />
     <ClInclude Include="GUIRectangleList.h" />
     <ClInclude Include="GUIRectangleRow.h" />
+    <ClInclude Include="GUIRectangleTable.h" />
     <ClInclude Include="GUIRectangleTree.h" />
     <ClInclude Include="GUITextField.h" />
     <ClInclude Include="GUIWindow.h" />
@@ -157,6 +162,7 @@
     <ClInclude Include="ShaderManager.h" />
     <ClInclude Include="Shapes.h" />
     <ClInclude Include="SpehsEngine.h" />
+    <ClInclude Include="StringOperations.h" />
     <ClInclude Include="Text.h" />
     <ClInclude Include="TextureManager.h" />
     <ClInclude Include="Time.h" />

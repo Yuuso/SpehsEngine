@@ -26,6 +26,7 @@ namespace SpehsEngine
 		/*Returns the stored string. [!]Resets string storeage to accept next string element*/
 		std::string retrieveString();
 		float retrieveStringAsFloat();
+		int retrieveStringAsInt();
 
 		//Identity
 		GUITextField* getAsGUITextFieldPtr(){ return this; }
