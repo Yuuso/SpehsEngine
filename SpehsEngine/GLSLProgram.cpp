@@ -4,7 +4,7 @@
 #include <GL/glew.h>
 
 #include "GLSLProgram.h"
-#include "Exceptions.h"
+#include "Console.h"
 #include "OpenGLError.h"
 
 
@@ -25,10 +25,10 @@ namespace SpehsEngine
 
 		vertexShaderID = glCreateShader(GL_VERTEX_SHADER);
 		if (vertexShaderID == 0)
-			fatalError("Failed to create vertex shader!");
+			console->fatalError("Failed to create vertex shader!");
 		fragmentShaderID = glCreateShader(GL_FRAGMENT_SHADER);
 		if (fragmentShaderID == 0)
-			fatalError("Failed to create vertex shader!");
+			console->fatalError("Failed to create vertex shader!");
 
 		compileShader(vertexShaderPath, vertexShaderID);
 		compileShader(fragmentShaderPath, fragmentShaderID);
@@ -64,7 +64,7 @@ namespace SpehsEngine
 
 			if (errorLog.size() > 0)
 				std::printf("\n%s", &(errorLog[0]));
-			fatalError("Shaders failed to link!");
+			console->fatalError("Shaders failed to link!");
 		}
 		
 		glDetachShader(programID, vertexShaderID);
@@ -98,7 +98,7 @@ namespace SpehsEngine
 
 		if (location == GL_INVALID_INDEX)
 		{
-			unexpectedError("Uniform " + uniformName + " not found in shader!");
+			console->warning("Uniform " + uniformName + " not found in shader!");
 			return NULL;
 		}
 
@@ -134,7 +134,7 @@ namespace SpehsEngine
 	{
 		std::ifstream vertexFile(filePath);
 		if (vertexFile.fail())
-			fatalError("Failed to open " + filePath);
+			console->fatalError("Failed to open " + filePath);
 
 		std::string fileContents = "";
 		std::string line;
@@ -172,7 +172,7 @@ namespace SpehsEngine
 
 			if (errorLog.size() > 0)
 				std::printf("\n%s", &errorLog[0]);
-			fatalError("Shader " + filePath + " failed to compile!");
+			console->fatalError("Shader " + filePath + " failed to compile!");
 		}
 
 #ifdef _DEBUG

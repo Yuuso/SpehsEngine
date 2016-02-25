@@ -29,7 +29,6 @@ namespace SpehsEngine
 	{
 		if (linePart == nullptr)
 		{
-			//unexpectedError("LinePart doesn't exist!");
 			return;
 		}
 		linePart->setThickness(_thickness);

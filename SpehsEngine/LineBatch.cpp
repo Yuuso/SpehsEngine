@@ -1,5 +1,5 @@
 #include "LineBatch.h"
-#include "Exceptions.h"
+#include "Console.h"
 #include "ShaderManager.h"
 #include "ApplicationData.h"
 #include "Time.h"
@@ -15,7 +15,7 @@ namespace SpehsEngine
 	LineBatch::LineBatch(glm::vec2 _startPoint, glm::vec2 _endPoint)
 	{
 		if (glm::distance(_startPoint, _endPoint) <= 0.0f)
-			fatalError("Line needs to have length greater than 0!");
+			console->error("Line needs to have length greater than 0!");
 
 		numVertices = 2;
 		Vertex* pos = new Vertex[numVertices];
@@ -59,7 +59,7 @@ namespace SpehsEngine
 	void LineBatch::addLine(glm::vec2 _startPoint, glm::vec2 _endPoint)
 	{
 		if (glm::distance(_startPoint, _endPoint) <= 0.0f)
-			fatalError("Line needs to have length greater than 0!");
+			console->error("Line needs to have length greater than 0!");
 
 		numVertices += 2;
 		Vertex* pos = new Vertex[numVertices];
@@ -140,7 +140,7 @@ namespace SpehsEngine
 	void LineBatch::updateVertices(glm::vec2* _vertices, int _numVertices)
 	{
 		if (_numVertices != numVertices)
-			fatalError("Incorrect number of vertices!");
+			console->error("Incorrect number of vertices!");
 
 		Vertex* pos = new Vertex[numVertices];
 		for (unsigned int i = 0; i < numVertices; i++)

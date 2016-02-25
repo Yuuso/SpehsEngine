@@ -23,4 +23,9 @@ namespace SpehsEngine
 		std::cout << "Press 'Enter' to continue." << std::endl;
 		std::cin.ignore();
 	}
+	void warning(std::string warningString)
+	{
+		std::cout << std::endl;
+		std::cout << "Warning: " << warningString << std::endl;
+	}
 }

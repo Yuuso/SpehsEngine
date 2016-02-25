@@ -2,7 +2,7 @@
 #include <time.h>
 
 #include "RNG.h"
-#include "Exceptions.h"
+#include "Console.h"
 
 
 SpehsEngine::RNG* rng;
@@ -71,7 +71,7 @@ namespace SpehsEngine
 	{
 		if (_min > _max)
 		{
-			SpehsEngine::fatalError("Min value is greater than Max value! (irandom)");
+			console->error("Min value is greater than Max value! (irandom)");
 		}
 		if (_min == _max)
 			return _min;
@@ -82,9 +82,9 @@ namespace SpehsEngine
 	{
 		int value = irandom(_min, _max);
 		if (_maxMin >= _minMax)
-			SpehsEngine::fatalError("maxMin value is greater than minMax value! (irandom)");
+			console->error("maxMin value is greater than minMax value! (irandom)");
 		if (_maxMin < _min || _minMax > _max)
-			SpehsEngine::fatalError("mixMaxMin stuff is wrong!! (irandom)");
+			console->error("mixMaxMin stuff is wrong!! (irandom)");
 
 		while (value < _minMax && value > _maxMin)
 			value = irandom(_min, _max);
@@ -95,7 +95,7 @@ namespace SpehsEngine
 	{
 		if (_min > _max)
 		{
-			SpehsEngine::fatalError("Min value is greater than Max value! (frandom)");
+			console->error("Min value is greater than Max value! (frandom)");
 		}
 		return floatDist(randomMTEngine, { _min, _max });
 	}	
@@ -103,9 +103,9 @@ namespace SpehsEngine
 	{
 		float value = frandom(_min, _max);
 		if (_maxMin >= _minMax)
-			SpehsEngine::fatalError("maxMin value is greater than minMax value! (frandom)");
+			console->error("maxMin value is greater than minMax value! (frandom)");
 		if (_maxMin < _min || _minMax > _max)
-			SpehsEngine::fatalError("mixMaxMin stuff is wrong!! (frandom)");
+			console->error("mixMaxMin stuff is wrong!! (frandom)");
 
 		while (value < _minMax && value > _maxMin)
 			value = frandom(_min, _max);
@@ -116,7 +116,7 @@ namespace SpehsEngine
 	{
 		if (_min > _max)
 		{
-			SpehsEngine::fatalError("Min value is greater than Max value! (drandom)");
+			console->error("Min value is greater than Max value! (drandom)");
 		}
 		return doubleDist(randomMTEngine, { _min, _max });
 	}
@@ -124,9 +124,9 @@ namespace SpehsEngine
 	{
 		double value = drandom(_min, _max);
 		if (_maxMin >= _minMax)
-			SpehsEngine::fatalError("maxMin value is greater than minMax value! (drandom)");
+			console->error("maxMin value is greater than minMax value! (drandom)");
 		if (_maxMin < _min || _minMax > _max)
-			SpehsEngine::fatalError("mixMaxMin stuff is wrong!! (drandom)");
+			console->error("mixMaxMin stuff is wrong!! (drandom)");
 
 		while (value < _minMax && value > _maxMin)
 			value = drandom(_min, _max);

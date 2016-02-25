@@ -2,7 +2,7 @@
 #include <SDL/SDL_joystick.h>
 #include <SDL/SDL_events.h>
 #include <iostream>
-#include "Exceptions.h"
+#include "Console.h"
 #include "InputManager.h"
 #include "ApplicationData.h"
 #define SINT16_MIN -32768
@@ -210,7 +210,7 @@ namespace SpehsEngine
 					{
 						std::string error = "Couldn't open SDL joystick! ";
 						error += SDL_GetError();
-						unexpectedError(error);
+						console->error(error);
 					}
 					joysticks[i]->goOnline(js);
 					foundOffline = true;
@@ -292,7 +292,7 @@ namespace SpehsEngine
 		{
 			std::string error = "Failed to open SDL_joystick! ";
 			error += SDL_GetError();
-			unexpectedError(error);
+			console->error(error);
 			return;
 		}
 

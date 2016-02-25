@@ -9,7 +9,7 @@
 #include <glm/mat4x4.hpp>
 
 #include "GLSLProgram.h"
-#include "Exceptions.h"
+#include "Console.h"
 
 
 typedef int GLint;
@@ -127,7 +127,7 @@ namespace SpehsEngine
 		{
 			return temp;
 		}
-		fatalError("Uniforms type not found!");
+		console->fatalError("Uniforms type not found!");
 		return nullptr;
 	}
 }

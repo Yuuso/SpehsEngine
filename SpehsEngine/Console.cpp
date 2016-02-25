@@ -85,6 +85,7 @@ namespace SpehsEngine
 	void Console::warning(std::string str)
 	{
 		log("[Warning] " + str, glm::vec3(1.0f, 0.3f, 0.0f));
+		SpehsEngine::warning(str);
 	}
 	void Console::error(std::string str)
 	{
