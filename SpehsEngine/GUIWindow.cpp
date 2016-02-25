@@ -359,11 +359,11 @@ namespace SpehsEngine
 		GUIRectangle::updatePosition();
 
 		//Reposition and update exit button
-		exit->setPosition(size.x - exit->getWidth(), size.y);
+		exit->setPosition(size.x - exit->getWidth(), size.y - header->getHeight());
 		exit->updatePosition();
 
 		//Reposition and update header
-		header->setPosition(0, size.y);
+		header->setPosition(0, size.y - header->getHeight());
 		header->updatePosition();
 
 		//Update strech position
@@ -385,10 +385,10 @@ namespace SpehsEngine
 		GUIRectangle::updateScale();
 
 		//Background strech rectangle
-		strech->setSize(size.x + 2 * STRECH_BORDER, size.y + 2 * STRECH_BORDER + header->getHeight());
+		strech->setSize(size.x + 2 * STRECH_BORDER, size.y + 2 * STRECH_BORDER);
 		
 		//Resize and reposition header
-		header->setSize(size.x - EXIT_WIDTH, header->getHeight());
+		header->setSize(size.x - exit->getWidth(), header->getHeight());
 
 		//Resize exit
 		exit->setHeight(header->getHeight());
@@ -449,7 +449,7 @@ namespace SpehsEngine
 		//Initialize min dimensions
 		header->updateMinSize();
 		minSize.x = header->getMinWidth() + exit->getWidth();
-		minSize.y = 0;
+		minSize.y = header->getMinHeight();
 
 		//Go through every element...
 		for (unsigned i = 0; i < elements.size(); i++)

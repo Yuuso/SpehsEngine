@@ -230,6 +230,11 @@ namespace SpehsEngine
 			if (minSize.y < displayTexture->height)
 				minSize.y = displayTexture->height;
 		}
+
+		if (minSize.x > size.x)
+			setWidth(minSize.x);
+		if (minSize.y > size.y)
+			setWidth(minSize.y);
 	}
 
 	//Setters
