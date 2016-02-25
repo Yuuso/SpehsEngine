@@ -16,6 +16,10 @@ namespace SpehsEngine
 	}
 	Arrow::~Arrow()
 	{
+		if (linePart)
+			delete linePart;
+		if (polygonPart)
+			delete polygonPart;
 	}
 
 
