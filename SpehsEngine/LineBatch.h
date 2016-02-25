@@ -18,6 +18,6 @@ namespace SpehsEngine
 
 	private:
 		unsigned int numVertices = 0;
-		float thickness;
+		float thickness = 1.0f;
 	};
 }

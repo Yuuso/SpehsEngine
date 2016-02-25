@@ -103,12 +103,14 @@
     <ClCompile Include="FileStream.cpp">
       <Filter>Filestream</Filter>
     </ClCompile>
-    <ClCompile Include="OpenGLError.cpp" />
     <ClCompile Include="Camera3D.cpp">
       <Filter>Rendering</Filter>
     </ClCompile>
     <ClCompile Include="GUIRectangleTable.cpp" />
     <ClCompile Include="StringOperations.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="OpenGLError.cpp">
       <Filter>Core</Filter>
     </ClCompile>
   </ItemGroup>
@@ -227,12 +229,14 @@
     <ClInclude Include="FileStream.h">
       <Filter>Filestream</Filter>
     </ClInclude>
-    <ClInclude Include="OpenGLError.h" />
     <ClInclude Include="Camera3D.h">
       <Filter>Rendering</Filter>
     </ClInclude>
     <ClInclude Include="GUIRectangleTable.h" />
     <ClInclude Include="StringOperations.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="OpenGLError.h">
       <Filter>Core</Filter>
     </ClInclude>
   </ItemGroup>
