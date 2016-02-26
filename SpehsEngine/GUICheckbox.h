@@ -19,7 +19,9 @@ namespace SpehsEngine
 		void updatePosition();
 		void updateScale();
 		void updateMinSize();
+		void setCheckboxSize(int _size){ checkboxSize = _size; disableStateRecursiveUpwards(GUIRECT_SCALED); }
 
+		bool selectedStateChanged(){ if (checkBit(state, GUIRECT_SELECTED) != previousSelectedState) return true; return false; }
 		/*Checkbox updates the boolean behind this address*/
 		void setBooleanPtr(bool* ptr);
 
@@ -30,6 +32,7 @@ namespace SpehsEngine
 		PolygonBatch* checkboxBackground;
 		PolygonBatch* checkboxFilling;
 		bool* booleanPtr;
-		float checkboxWidth;
+		int checkboxSize;
+		bool previousSelectedState;
 	};
 }

@@ -9,7 +9,7 @@
 
 namespace SpehsEngine
 {
-	GUICheckbox::GUICheckbox() : booleanPtr(nullptr)
+	GUICheckbox::GUICheckbox() : booleanPtr(nullptr), checkboxSize(20)
 	{
 		checkboxBackground = new PolygonBatch(Shape::BUTTON);
 		checkboxBackground->setColor(30, 30, 30);
@@ -37,6 +37,7 @@ namespace SpehsEngine
 		GUIRectangle::update();
 
 		//Check mouse press
+		previousSelectedState = checkBit(state, GUIRECT_SELECTED);
 		if (getMouseHover() && inputManager->isKeyPressed(MOUSE_BUTTON_LEFT))
 		{//Toggle selected state, update boolean pointer if one exists
 			toggleState(GUIRECT_SELECTED);
@@ -66,38 +67,40 @@ namespace SpehsEngine
 
 		GUIRectangle::updatePosition();
 
-		checkboxBackground->setPosition(getX() + size.x - CHECKBOX_BORDER - checkboxWidth - applicationData->getWindowWidth() / 2, getY() + size.y / 2.0f - checkboxWidth / 2.0f - applicationData->getWindowHeight() / 2);
-		checkboxFilling->setPosition(getX() + size.x - checkboxWidth - applicationData->getWindowWidthHalf(), getY() + size.y / 2.0f - checkboxWidth / 2.0f + CHECKBOX_BORDER - applicationData->getWindowHeightHalf());
+		checkboxBackground->setPosition(getX() + size.x - CHECKBOX_BORDER - checkboxSize - applicationData->getWindowWidthHalf(), getY() + (size.y - checkboxSize) * 0.5f - applicationData->getWindowHeight() / 2);
+		checkboxFilling->setPosition(getX() + size.x - checkboxSize - applicationData->getWindowWidthHalf(), getY() + (size.y - checkboxSize) * 0.5f + CHECKBOX_BORDER - applicationData->getWindowHeightHalf());
 
 		//Update minimum size
 		updateMinSize();
 		
 		//Text position
-		float textX = getX();
-		if (checkBit(state, GUIRECT_TEXT_JUSTIFICATION_LEFT))
-			textX += CHECKBOX_BORDER;
-		else if (checkBit(state, GUIRECT_TEXT_JUSTIFICATION_RIGHT))
-			textX += size.x - size.y - CHECKBOX_BORDER - text->getTextWidth() - TEXT_PREFERRED_SIZE_BORDER;
-		else
-			textX += 0.5f *(size.x - size.y - CHECKBOX_BORDER - text->getTextWidth());
-		text->setPosition(textX, getY() + 0.5f * (size.y + text->getTextHeight()) - text->getFontHeight() - text->getFontDescender());
-
+		if (text)
+		{
+			float textX = getX();
+			if (checkBit(state, GUIRECT_TEXT_JUSTIFICATION_LEFT))
+				textX += CHECKBOX_BORDER;
+			else if (checkBit(state, GUIRECT_TEXT_JUSTIFICATION_RIGHT))
+				textX += size.x - size.y - CHECKBOX_BORDER - text->getTextWidth() - TEXT_PREFERRED_SIZE_BORDER;
+			else
+				textX += 0.5f *(size.x - size.y - CHECKBOX_BORDER - text->getTextWidth());
+			text->setPosition(textX, getY() + 0.5f * (size.y + text->getTextHeight()) - text->getFontHeight() - text->getFontDescender());
+		}
 	}
 	void GUICheckbox::updateScale()
 	{
 		GUIRectangle::updateScale();
 
-		checkboxWidth = size.y - 2 * CHECKBOX_BORDER;
-		if (checkboxWidth > size.x - text->getTextWidth() - CHECKBOX_BORDER)
-			checkboxWidth = size.x - text->getTextWidth() - CHECKBOX_BORDER;
-
-		checkboxBackground->resize(checkboxWidth, checkboxWidth);
-		checkboxFilling->resize(checkboxWidth - 2 * CHECKBOX_BORDER, checkboxWidth - 2 * CHECKBOX_BORDER);
+		checkboxBackground->resize(checkboxSize, checkboxSize);
+		checkboxFilling->resize(checkboxSize - 2 * CHECKBOX_BORDER, checkboxSize - 2 * CHECKBOX_BORDER);
 	}
 	void GUICheckbox::updateMinSize()
 	{
-		GUIRectangle::updateMinSize();
-		minSize.x += (text->getTextHeight() + CHECKBOX_BORDER);
+		minSize.x = 2 * CHECKBOX_BORDER + checkboxSize;
+		if (text)
+			minSize.x += text->getTextWidth();
+		minSize.y = 2 * CHECKBOX_BORDER + checkboxSize;
+		if (text && text->getTextHeight() > minSize.y)
+			minSize.y = text->getTextHeight();
 	}
 	void GUICheckbox::setBooleanPtr(bool* ptr)
 	{

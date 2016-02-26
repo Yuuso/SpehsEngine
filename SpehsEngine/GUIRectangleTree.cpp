@@ -126,19 +126,24 @@ namespace SpehsEngine
 			}
 			else
 			{//Parent TREE doesn't exist. Decide branching direction based on horizontal location/size
-				if (getX() + size.x / 2.0f > applicationData->getWindowWidthHalf())
-				{//Branch left
-					if (getFirstGenerationParent() != this)
-						branchX = getFirstGenerationParent()->getX() - getX() - minElementSize.x;
+				GUIRectangle* firstGenParent = getFirstGenerationParent();
+				if (firstGenParent)
+				{
+					if (firstGenParent->getX() + firstGenParent->getWidth() / 2.0f > applicationData->getWindowWidthHalf())
+					{//Branch left
+						branchX = firstGenParent->getX() - getX() - minElementSize.x;
+					}
 					else
-						branchX = -minElementSize.x;
+					{//Branch right
+						branchX = firstGenParent->getX() - getX() + firstGenParent->getWidth();
+					}
 				}
 				else
-				{//Branch right
-					if (getFirstGenerationParent())
-						branchX = size.x;//may need to be implemented in the future
+				{//No parent
+					if (getX() + size.x / 2.0f > applicationData->getWindowWidthHalf())
+						branchX = -minElementSize.x;//Branch left
 					else
-						branchX = size.x;
+						branchX = size.x;//Branch right
 				}
 			}
 
