@@ -245,10 +245,12 @@ namespace SpehsEngine
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBufferID);
 
 		glEnableVertexAttribArray(0);
-		glEnableVertexAttribArray(1);
+		if (textureDataID)
+			glEnableVertexAttribArray(1);
 
 		glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*) offsetof(Vertex, position));
-		glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*) offsetof(Vertex, uv));
+		if (textureDataID)
+			glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*) offsetof(Vertex, uv));
 
 #ifdef _DEBUG
 		checkOpenGLErrors(__FILE__, __LINE__);
@@ -279,7 +281,8 @@ namespace SpehsEngine
 		}
 
 		glDisableVertexAttribArray(0);
-		glDisableVertexAttribArray(1);
+		if (textureDataID)
+			glDisableVertexAttribArray(1);
 
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);

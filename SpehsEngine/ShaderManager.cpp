@@ -31,17 +31,6 @@ namespace SpehsEngine
 #endif
 	}
 
-	DefaultPolygonUniforms::DefaultPolygonUniforms(SpehsEngine::GLSLProgram* _shader) : Uniforms(_shader)
-	{
-		mouseLocation = shader->getUniformLocation("mouse");
-	}
-	DefaultPolygonUniforms::~DefaultPolygonUniforms(){}
-	void DefaultPolygonUniforms::setUniforms()
-	{
-		SpehsEngine::setUniform_vec2(mouseLocation, mouse);
-		Uniforms::setUniforms();
-	}
-
 	DefaultTextureUniforms::DefaultTextureUniforms(SpehsEngine::GLSLProgram* _shader) : Uniforms(_shader)
 	{
 		textureLocation = shader->getUniformLocation("tex");
@@ -57,17 +46,82 @@ namespace SpehsEngine
 
 	ShaderManager::ShaderManager()
 	{
+#pragma region Default Shaders
+		const std::string defaultPolygonVert =
+		{
+			"#version 130\n"
+			"in vec2 vertexPosition;\n"
+			"out vec2 fragmentPosition;\n"
+			"out vec4 fragmentColor;\n"
+			"uniform mat4 transformMatrix;\n"
+			"uniform vec4 polygonColor;\n"
+			"uniform mat4 cameraMatrix;\n"
+			"void main()\n"
+			"{\n"
+			"	gl_Position = cameraMatrix * (transformMatrix * vec4(vertexPosition.xy, 0.0f, 1.0));\n"
+			"	fragmentPosition = vertexPosition;\n"
+			"	fragmentColor = polygonColor;\n"
+			"}\n"
+		};
+		const std::string defaultTextureVert =
+		{
+			"#version 130\n"
+			"in vec2 vertexPosition;\n"
+			"in vec2 textureCoords;\n"
+			"out vec2 fragmentPosition;\n"
+			"out vec2 texCoord;\n"
+			"out vec4 fragmentColor;\n"
+			"uniform mat4 transformMatrix;\n"
+			"uniform vec4 polygonColor;\n"
+			"uniform mat4 cameraMatrix;\n"
+			"void main()\n"
+			"{\n"
+			"	gl_Position = cameraMatrix * (transformMatrix * vec4(vertexPosition.xy, 0.0f, 1.0));\n"
+			"	fragmentPosition = vertexPosition;\n"
+			"	fragmentColor = polygonColor;\n"
+			"	texCoord = textureCoords;\n"
+			"}\n"
+		};
+		const std::string defaultPolygonFrag =
+		{
+			"#version 130\n"
+			"in vec2 fragmentPosition;\n"
+			"in vec2 texCoord;\n"
+			"in vec4 fragmentColor;\n"
+			"out vec4 color;\n"
+			"void main()\n"
+			"{\n"
+			"	color = fragmentColor;\n"
+			"}\n"
+		};
+		const std::string defaultTextureFrag =
+		{
+			"#version 130\n"
+			"in vec2 fragmentPosition;\n"
+			"in vec2 texCoord;\n"
+			"in vec4 fragmentColor;\n"
+			"out vec4 color;\n"
+			"uniform sampler2D tex;\n"
+			"void main()\n"
+			"{\n"
+			"	color = texture(tex, texCoord);\n"
+			"	color = color * fragmentColor;\n"
+			"}\n"
+		};
+#pragma endregion
+
 		//DefaultPolygon
 		SpehsEngine::GLSLProgram* defaultShader = new SpehsEngine::GLSLProgram();
-		defaultShader->compileShaders("Shaders/polygonShader.vert", "Shaders/polygonShader.frag");
+		defaultShader->compileShadersFromSource(defaultPolygonVert, defaultPolygonFrag);
 		defaultShader->addAttribute("vertexPosition");
 		defaultShader->linkShaders();
-		shaderPrograms.push_back(new SpehsEngine::Shader(SpehsEngine::DefaultPolygon, defaultShader, new DefaultPolygonUniforms(defaultShader)));
+		shaderPrograms.push_back(new SpehsEngine::Shader(SpehsEngine::DefaultPolygon, defaultShader, new Uniforms(defaultShader)));
 
 		//DefaultTexture
 		SpehsEngine::GLSLProgram* defaultTexShader = new SpehsEngine::GLSLProgram();
-		defaultTexShader->compileShaders("Shaders/defaultTextureShader.vert", "Shaders/defaultTextureShader.frag");
+		defaultTexShader->compileShadersFromSource(defaultTextureVert, defaultTextureFrag);
 		defaultTexShader->addAttribute("vertexPosition");
+		defaultTexShader->addAttribute("textureCoords");
 		defaultTexShader->linkShaders();
 		shaderPrograms.push_back(new SpehsEngine::Shader(SpehsEngine::DefaultTexture, defaultTexShader, new DefaultTextureUniforms(defaultTexShader)));
 	}
@@ -133,6 +187,62 @@ namespace SpehsEngine
 	void setUniform_vec2(const GLint &_location, const glm::vec2 &_value)
 	{
 		glUniform2fv(_location, 1, &_value[0]);
+
+#ifdef _DEBUG
+		checkOpenGLErrors(__FILE__, __LINE__);
+#endif
+	}
+	void setUniform_vec3(const GLint &_location, const glm::vec2 &_value)
+	{
+		glUniform3fv(_location, 1, &_value[0]);
+
+#ifdef _DEBUG
+		checkOpenGLErrors(__FILE__, __LINE__);
+#endif
+	}
+	void setUniform_vec4(const GLint &_location, const glm::vec4 &_value)
+	{
+		glUniform4fv(_location, 1, &_value[0]);
+
+#ifdef _DEBUG
+		checkOpenGLErrors(__FILE__, __LINE__);
+#endif
+	}
+	void setUniform_ivec2(const GLint &_location, const glm::ivec2 &_value)
+	{
+		glUniform2iv(_location, 1, &_value[0]);
+
+#ifdef _DEBUG
+		checkOpenGLErrors(__FILE__, __LINE__);
+#endif
+	}
+	void setUniform_ivec3(const GLint &_location, const glm::ivec3 &_value)
+	{
+		glUniform3iv(_location, 1, &_value[0]);
+
+#ifdef _DEBUG
+		checkOpenGLErrors(__FILE__, __LINE__);
+#endif
+	}
+	void setUniform_ivec4(const GLint &_location, const glm::ivec4 &_value)
+	{
+		glUniform4iv(_location, 1, &_value[0]);
+
+#ifdef _DEBUG
+		checkOpenGLErrors(__FILE__, __LINE__);
+#endif
+	}
+	void setUniform_mat3(const GLint &_location, const glm::mat3 &_value, bool _transpose)
+	{
+		glUniformMatrix3fv(_location, 1, (GLboolean) _transpose, &_value[0][0]);
+
+#ifdef _DEBUG
+		checkOpenGLErrors(__FILE__, __LINE__);
+#endif
+	}
+	void setUniform_mat4(const GLint &_location, const glm::mat4 &_value, bool _transpose)
+	{
+		glUniformMatrix4fv(_location, 1, (GLboolean) _transpose, &_value[0][0]);
 
 #ifdef _DEBUG
 		checkOpenGLErrors(__FILE__, __LINE__);

@@ -43,20 +43,6 @@ namespace SpehsEngine
 	};
 
 
-	class DefaultPolygonUniforms : public SpehsEngine::Uniforms
-	{
-	public:
-		DefaultPolygonUniforms(SpehsEngine::GLSLProgram* _shader);
-		~DefaultPolygonUniforms();
-
-		void setUniforms();
-		glm::vec2 mouse;
-
-	private:
-		GLint mouseLocation = 0;
-	};
-
-
 	class DefaultTextureUniforms : public SpehsEngine::Uniforms
 	{
 	public:
@@ -115,10 +101,16 @@ namespace SpehsEngine
 	void setUniform_int(const GLint &_location, const int &_value);
 	void setUniform_float(const GLint &_location, const float &_value);
 	void setUniform_vec2(const GLint &_location, const glm::vec2 &_value);
+	void setUniform_vec3(const GLint &_location, const glm::vec3 &_value);
+	void setUniform_vec4(const GLint &_location, const glm::vec4 &_value);
+	void setUniform_ivec2(const GLint &_location, const glm::ivec2 &_value);
+	void setUniform_ivec3(const GLint &_location, const glm::ivec3 &_value);
+	void setUniform_ivec4(const GLint &_location, const glm::ivec4 &_value);
+	void setUniform_mat3(const GLint &_location, const glm::mat3 &_value, bool _transpose = false);
+	void setUniform_mat4(const GLint &_location, const glm::mat4 &_value, bool _transpose = false);
 
 
 	//TEMPLATES:
-
 	template<typename type>
 	type* Shader::getCustomUniforms()
 	{

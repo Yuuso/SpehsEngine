@@ -28,10 +28,28 @@ namespace SpehsEngine
 			console->fatalError("Failed to create vertex shader!");
 		fragmentShaderID = glCreateShader(GL_FRAGMENT_SHADER);
 		if (fragmentShaderID == 0)
-			console->fatalError("Failed to create vertex shader!");
+			console->fatalError("Failed to create fragment shader!");
 
 		compileShader(vertexShaderPath, vertexShaderID);
 		compileShader(fragmentShaderPath, fragmentShaderID);
+
+#ifdef _DEBUG
+		checkOpenGLErrors(__FILE__, __LINE__);
+#endif
+	}
+	void GLSLProgram::compileShadersFromSource(const std::string& vertexShader, const std::string& fragmentShader)
+	{
+		programID = glCreateProgram();
+
+		vertexShaderID = glCreateShader(GL_VERTEX_SHADER);
+		if (vertexShaderID == 0)
+			console->fatalError("Failed to create vertex shader!");
+		fragmentShaderID = glCreateShader(GL_FRAGMENT_SHADER);
+		if (fragmentShaderID == 0)
+			console->fatalError("Failed to create fragment shader!");
+
+		compileShaderFromSource(vertexShader, vertexShaderID);
+		compileShaderFromSource(fragmentShader, fragmentShaderID);
 
 #ifdef _DEBUG
 		checkOpenGLErrors(__FILE__, __LINE__);
@@ -145,10 +163,6 @@ namespace SpehsEngine
 
 		const char* contentsPtr = fileContents.c_str();
 		glShaderSource(id, 1, &contentsPtr, nullptr);
-
-#ifdef _DEBUG
-		checkOpenGLErrors(__FILE__, __LINE__);
-#endif
 		
 		glCompileShader(id);
 
@@ -174,9 +188,35 @@ namespace SpehsEngine
 				std::printf("\n%s", &errorLog[0]);
 			console->fatalError("Shader " + filePath + " failed to compile!");
 		}
+	}
+	void GLSLProgram::compileShaderFromSource(const std::string& shader, GLuint id)
+	{
+		const char* contentsPtr = shader.c_str();
+		glShaderSource(id, 1, &contentsPtr, nullptr);
+
+		glCompileShader(id);
 
 #ifdef _DEBUG
 		checkOpenGLErrors(__FILE__, __LINE__);
 #endif
+
+		GLint success;
+		glGetShaderiv(id, GL_COMPILE_STATUS, &success);
+
+		if (success == GL_FALSE)
+		{
+			GLint maxLength = 0;
+			glGetShaderiv(id, GL_INFO_LOG_LENGTH, &maxLength);
+
+			std::vector<char> errorLog(maxLength);
+			if (errorLog.size() > 0)
+				glGetShaderInfoLog(id, maxLength, &maxLength, &errorLog[0]);
+
+			glDeleteShader(id);
+
+			if (errorLog.size() > 0)
+				std::printf("\n%s", &errorLog[0]);
+			console->fatalError("Default shader failed to compile!");
+		}
 	}
 }
