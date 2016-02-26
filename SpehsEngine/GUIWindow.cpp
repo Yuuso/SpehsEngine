@@ -60,6 +60,8 @@ namespace SpehsEngine
 		disableBit(state, GUIRECT_OPEN);
 		//By default, lose focus
 		loseFocus();
+
+		limitWithinMainWindow();
 	}
 	GUIWindow::~GUIWindow()
 	{
@@ -360,25 +362,34 @@ namespace SpehsEngine
 
 		//Reposition and update exit button
 		exit->setPosition(size.x - exit->getWidth(), size.y - header->getHeight());
-		exit->updatePosition();
+		//exit->updatePosition();
 
 		//Reposition and update header
 		header->setPosition(0, size.y - header->getHeight());
-		header->updatePosition();
+		//header->updatePosition();
 
 		//Update strech position
-		strech->updatePosition();
+		strech->disableState(GUIRECT_POSITIONED);
+		//strech->updatePosition();
 
-		//Reposition and update all elements
-		for (int i = int(elements.size()) - 1; i >= 0; i--)
+		////Reposition and update all elements
+		if (elements.size() == 0)
+			return;
+		//Position first element
+		elements[0]->setPosition(0, size.y - header->getHeight() - elements[0]->getHeight());
+		for (unsigned i = 1; i < elements.size(); i++)
 		{
-			if (i == elements.size() - 1)
-				elements[i]->setPosition(0, 0);
-			else
-				elements[i]->setPosition(0, elements[i + 1]->getLocalY() + elements[i + 1]->getHeight());
+			elements[i]->setPosition(0, elements[i - 1]->getLocalY() - elements[i]->getHeight());
 		}
-		for (unsigned i = 0; i < elements.size(); i++)
-			elements[i]->updatePosition();
+		//for (int i = int(elements.size()) - 1; i >= 0; i--)
+		//{
+		//	if (i == elements.size() - 1)
+		//		elements[i]->setPosition(0, 0);
+		//	else
+		//		elements[i]->setPosition(0, elements[i + 1]->getLocalY() + elements[i + 1]->getHeight());
+		//}
+		//for (unsigned i = 0; i < elements.size(); i++)
+			//elements[i]->updatePosition();
 	}
 	void GUIWindow::updateScale()
 	{
@@ -388,22 +399,32 @@ namespace SpehsEngine
 		strech->setSize(size.x + 2 * STRECH_BORDER, size.y + 2 * STRECH_BORDER);
 		
 		//Resize and reposition header
-		header->setSize(size.x - exit->getWidth(), header->getHeight());
+		header->setWidth(size.x - exit->getWidth());
 
 		//Resize exit
 		exit->setHeight(header->getHeight());
 
 		////Resize and position elements
+		if (elements.size() == 0)
+			return;
 		bool minY = false;//Use minimal y value for every element
 		if (size.y == minSize.y)
-			minY = true;
-		//Resize
-		for (unsigned i = 0; i < elements.size(); i++)
-		{
-			if (minY)
+		{//Automatically use minimal size for every element
+			for (unsigned i = 0; i < elements.size(); i++)
 				elements[i]->setSize(size.x, elements[i]->getMinHeight());
-			else
-				elements[i]->setSize(size.x, elements[i]->getMinHeight() / float(minSize.y) * size.y);
+		}
+		else
+		{//Use scaled size for every element
+			int hAllocated(0), hElement;
+			float scalePercentage = (size.y - header->getHeight()) / float(minSize.y - header->getMinHeight());//How many % of min size should each element scale
+			for (std::vector<SpehsEngine::GUIRectangle*>::iterator i = elements.begin(); i != elements.end() - 1; i++)
+			{
+				hElement = scalePercentage * (*i)->getMinHeight();
+				hAllocated += hElement;
+				(*i)->setSize(size.x, hElement);
+			}
+			//Allocate excess h to last element
+			elements.back()->setSize(size.x, size.y - header->getHeight() - hAllocated);
 		}
 
 		disableBit(state, GUIRECT_POSITIONED);
@@ -504,7 +525,7 @@ namespace SpehsEngine
 			return true;
 		if (inputManager->getMouseX() > getX() + size.x)
 			return true;
-		if (inputManager->getMouseY() > getY() + size.y + header->getHeight())
+		if (inputManager->getMouseY() > getY() + size.y)
 			return true;
 		return false;
 	}
