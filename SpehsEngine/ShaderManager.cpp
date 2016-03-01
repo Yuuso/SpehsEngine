@@ -1,6 +1,7 @@
 #include "ShaderManager.h"
 #include "TextureManager.h"
 #include "OpenGLError.h"
+#include "Console.h"
 
 #include <GL/glew.h>
 
@@ -136,25 +137,50 @@ namespace SpehsEngine
 	{
 		shaderPrograms.push_back(_newShader);
 	}
-	void ShaderManager::reload(int _shaderIndex, Shader* _newShader)
+	void ShaderManager::reload(int _index, Shader* _newShader)
 	{
-		delete shaderPrograms[_shaderIndex];
-		shaderPrograms[_shaderIndex] = _newShader;
+		if (shaderPrograms.size() < _index + 1)
+		{
+			console->error("Trying to access a non-existing shader!");
+			return;
+		}
+		delete shaderPrograms[_index];
+		shaderPrograms[_index] = _newShader;
 	}
 	Shader* ShaderManager::getShader(int _index)
 	{
+		if (shaderPrograms.size() < _index + 1)
+		{
+			console->error("Trying to access a non-existing shader!");
+			return nullptr;
+		}
 		return shaderPrograms[_index];
 	}
 	void ShaderManager::setUniforms(int _index)
 	{
+		if (shaderPrograms.size() < _index + 1)
+		{
+			console->error("Trying to access a non-existing shader!");
+			return;
+		}
 		shaderPrograms[_index]->uniforms->setUniforms();
 	}
 	void ShaderManager::use(int _index)
 	{
+		if (shaderPrograms.size() < _index + 1)
+		{
+			console->error("Trying to access a non-existing shader!");
+			return;
+		}
 		shaderPrograms[_index]->shader->use();
 	}
 	void ShaderManager::unuse(int _index)
 	{
+		if (shaderPrograms.size() < _index + 1)
+		{
+			console->error("Trying to access a non-existing shader!");
+			return;
+		}
 		shaderPrograms[_index]->shader->unuse();
 	}
 

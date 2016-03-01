@@ -10,7 +10,7 @@
 
 namespace SpehsEngine
 {
-	Vertex* getShapeVertexArray(Shape shape)
+	Vertex* getShapeVertexArray(Shape shape) //Deleting is handled by the caller of the function.
 	{
 		switch (shape)
 		{

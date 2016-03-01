@@ -84,9 +84,9 @@ namespace SpehsEngine
 		~ShaderManager();
 
 		void pushShader(Shader* _newShader);
-		void reload(int _shaderIndex, Shader* _newShader);
+		void reload(int _index, Shader* _newShader);
 		
-		Shader* getShader(int _index);
+		Shader* getShader(int _index); //NOTE: Don't store shader pointers since it is possible that they expire. Always use getShader to access shaders.
 		void setUniforms(int _index);
 		void use(int _index);
 		void unuse(int _index);

@@ -89,6 +89,9 @@
   <ItemGroup>
     <ClCompile Include="ApplicationData.cpp" />
     <ClCompile Include="Arrow.cpp" />
+    <ClCompile Include="Batch.cpp" />
+    <ClCompile Include="BatchObject.cpp" />
+    <ClCompile Include="BatchRenderer.cpp" />
     <ClCompile Include="Camera2D.cpp" />
     <ClCompile Include="Camera3D.cpp" />
     <ClCompile Include="Console.cpp" />
@@ -109,11 +112,16 @@
     <ClCompile Include="GUIWindowManager.cpp" />
     <ClCompile Include="InputManager.cpp" />
     <ClCompile Include="LengthConversion.cpp" />
+    <ClCompile Include="Line.cpp" />
     <ClCompile Include="LineBatch.cpp" />
+    <ClCompile Include="Mesh.cpp" />
+    <ClCompile Include="ModelManager.cpp" />
     <ClCompile Include="OpenGLError.cpp" />
+    <ClCompile Include="Point.cpp" />
     <ClCompile Include="PointBatch.cpp" />
+    <ClCompile Include="Polygon.cpp" />
     <ClCompile Include="PolygonBatch.cpp" />
-    <ClCompile Include="PolygonMeshBatch.cpp" />
+    <ClCompile Include="Primitive.cpp" />
     <ClCompile Include="PrimitiveBatch.cpp" />
     <ClCompile Include="RNG.cpp" />
     <ClCompile Include="SATCollision.cpp" />
@@ -123,12 +131,16 @@
     <ClCompile Include="Text.cpp" />
     <ClCompile Include="TextureManager.cpp" />
     <ClCompile Include="Time.cpp" />
+    <ClCompile Include="Vertex.cpp" />
     <ClCompile Include="Window.cpp" />
     <ClCompile Include="WorldPosition.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ApplicationData.h" />
     <ClInclude Include="Arrow.h" />
+    <ClInclude Include="Batch.h" />
+    <ClInclude Include="BatchObject.h" />
+    <ClInclude Include="BatchRenderer.h" />
     <ClInclude Include="BitwiseOperations.h" />
     <ClInclude Include="Camera2D.h" />
     <ClInclude Include="Camera3D.h" />
@@ -151,11 +163,16 @@
     <ClInclude Include="GUIWindowManager.h" />
     <ClInclude Include="InputManager.h" />
     <ClInclude Include="LengthConversion.h" />
+    <ClInclude Include="Line.h" />
     <ClInclude Include="LineBatch.h" />
+    <ClInclude Include="Mesh.h" />
+    <ClInclude Include="ModelManager.h" />
     <ClInclude Include="OpenGLError.h" />
+    <ClInclude Include="Point.h" />
     <ClInclude Include="PointBatch.h" />
+    <ClInclude Include="Polygon.h" />
     <ClInclude Include="PolygonBatch.h" />
-    <ClInclude Include="PolygonMeshBatch.h" />
+    <ClInclude Include="Primitive.h" />
     <ClInclude Include="PrimitiveBatch.h" />
     <ClInclude Include="RNG.h" />
     <ClInclude Include="SATCollision.h" />

@@ -31,14 +31,8 @@
     <ClCompile Include="WorldPosition.cpp">
       <Filter>Core</Filter>
     </ClCompile>
-    <ClCompile Include="ShaderManager.cpp">
-      <Filter>Rendering</Filter>
-    </ClCompile>
     <ClCompile Include="Geometry.cpp">
       <Filter>Core</Filter>
-    </ClCompile>
-    <ClCompile Include="TextureManager.cpp">
-      <Filter>Rendering</Filter>
     </ClCompile>
     <ClCompile Include="ApplicationData.cpp">
       <Filter>Core</Filter>
@@ -65,9 +59,6 @@
       <Filter>Core</Filter>
     </ClCompile>
     <ClCompile Include="Arrow.cpp">
-      <Filter>Rendering\Geometric Rendering</Filter>
-    </ClCompile>
-    <ClCompile Include="PolygonMeshBatch.cpp">
       <Filter>Rendering\Geometric Rendering</Filter>
     </ClCompile>
     <ClCompile Include="PolygonBatch.cpp">
@@ -113,6 +104,42 @@
     <ClCompile Include="OpenGLError.cpp">
       <Filter>Core</Filter>
     </ClCompile>
+    <ClCompile Include="Primitive.cpp">
+      <Filter>Rendering\Geometric Rendering\Batch Rendering</Filter>
+    </ClCompile>
+    <ClCompile Include="Polygon.cpp">
+      <Filter>Rendering\Geometric Rendering\Batch Rendering</Filter>
+    </ClCompile>
+    <ClCompile Include="Batch.cpp">
+      <Filter>Rendering\Geometric Rendering\Batch Rendering</Filter>
+    </ClCompile>
+    <ClCompile Include="Line.cpp">
+      <Filter>Rendering\Geometric Rendering\Batch Rendering</Filter>
+    </ClCompile>
+    <ClCompile Include="Point.cpp">
+      <Filter>Rendering\Geometric Rendering\Batch Rendering</Filter>
+    </ClCompile>
+    <ClCompile Include="Mesh.cpp">
+      <Filter>Rendering\Geometric Rendering\Batch Rendering</Filter>
+    </ClCompile>
+    <ClCompile Include="TextureManager.cpp">
+      <Filter>Rendering\Resource Management</Filter>
+    </ClCompile>
+    <ClCompile Include="ShaderManager.cpp">
+      <Filter>Rendering\Resource Management</Filter>
+    </ClCompile>
+    <ClCompile Include="ModelManager.cpp">
+      <Filter>Rendering\Resource Management</Filter>
+    </ClCompile>
+    <ClCompile Include="BatchRenderer.cpp">
+      <Filter>Rendering\Geometric Rendering\Batch Rendering</Filter>
+    </ClCompile>
+    <ClCompile Include="BatchObject.cpp">
+      <Filter>Rendering\Geometric Rendering\Batch Rendering</Filter>
+    </ClCompile>
+    <ClCompile Include="Vertex.cpp">
+      <Filter>Rendering</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GLSLProgram.h">
@@ -145,9 +172,6 @@
     <ClInclude Include="Camera2D.h">
       <Filter>Rendering</Filter>
     </ClInclude>
-    <ClInclude Include="ShaderManager.h">
-      <Filter>Rendering</Filter>
-    </ClInclude>
     <ClInclude Include="GUID.h">
       <Filter>HID</Filter>
     </ClInclude>
@@ -156,9 +180,6 @@
     </ClInclude>
     <ClInclude Include="Geometry.h">
       <Filter>Core</Filter>
-    </ClInclude>
-    <ClInclude Include="TextureManager.h">
-      <Filter>Rendering</Filter>
     </ClInclude>
     <ClInclude Include="BitwiseOperations.h">
       <Filter>Core</Filter>
@@ -195,9 +216,6 @@
     </ClInclude>
     <ClInclude Include="Vertex.h">
       <Filter>Rendering</Filter>
-    </ClInclude>
-    <ClInclude Include="PolygonMeshBatch.h">
-      <Filter>Rendering\Geometric Rendering</Filter>
     </ClInclude>
     <ClInclude Include="PolygonBatch.h">
       <Filter>Rendering\Geometric Rendering</Filter>
@@ -239,6 +257,39 @@
     <ClInclude Include="OpenGLError.h">
       <Filter>Core</Filter>
     </ClInclude>
+    <ClInclude Include="Primitive.h">
+      <Filter>Rendering\Geometric Rendering\Batch Rendering</Filter>
+    </ClInclude>
+    <ClInclude Include="Polygon.h">
+      <Filter>Rendering\Geometric Rendering\Batch Rendering</Filter>
+    </ClInclude>
+    <ClInclude Include="Batch.h">
+      <Filter>Rendering\Geometric Rendering\Batch Rendering</Filter>
+    </ClInclude>
+    <ClInclude Include="Line.h">
+      <Filter>Rendering\Geometric Rendering\Batch Rendering</Filter>
+    </ClInclude>
+    <ClInclude Include="Point.h">
+      <Filter>Rendering\Geometric Rendering\Batch Rendering</Filter>
+    </ClInclude>
+    <ClInclude Include="Mesh.h">
+      <Filter>Rendering\Geometric Rendering\Batch Rendering</Filter>
+    </ClInclude>
+    <ClInclude Include="TextureManager.h">
+      <Filter>Rendering\Resource Management</Filter>
+    </ClInclude>
+    <ClInclude Include="ShaderManager.h">
+      <Filter>Rendering\Resource Management</Filter>
+    </ClInclude>
+    <ClInclude Include="ModelManager.h">
+      <Filter>Rendering\Resource Management</Filter>
+    </ClInclude>
+    <ClInclude Include="BatchRenderer.h">
+      <Filter>Rendering\Geometric Rendering\Batch Rendering</Filter>
+    </ClInclude>
+    <ClInclude Include="BatchObject.h">
+      <Filter>Rendering\Geometric Rendering\Batch Rendering</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Physics">
@@ -267,6 +318,12 @@
     </Filter>
     <Filter Include="Filestream">
       <UniqueIdentifier>{320c57f6-2870-4274-b553-17a481b83caf}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\Geometric Rendering\Batch Rendering">
+      <UniqueIdentifier>{2e92b7df-f3ae-40ca-b192-04d05e73c445}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\Resource Management">
+      <UniqueIdentifier>{5d317e38-b18e-4637-b325-67f73190943b}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

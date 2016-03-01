@@ -1,69 +1,55 @@
 #pragma once
 
+#include <glm/vec4.hpp>
+
+
 namespace SpehsEngine
 {
 	struct Position
 	{
+		Position();
+
+		void setPosition(const float &_x, const float &_y);
+		void setPosition(const float &_x, const float &_y, const float &_z);
+
 		float x;
 		float y;
 		float z;
-		void setPosition(float _x, float _y)
-		{
-			x = _x;
-			y = _y;
-		}
-		void setPosition(float _x, float _y, float _z)
-		{
-			x = _x;
-			y = _y;
-			z = _z;
-		}
 	};
-
-	struct ColorRGBA8
+	struct ColorRGBA
 	{
-		ColorRGBA8() : r(0), g(0), b(0), a(255) {}
-		ColorRGBA8(unsigned char R, unsigned char G, unsigned char B, unsigned char A = 255) : r(R), g(G), b(B), a(A) {}
-		unsigned char r;
-		unsigned char g;
-		unsigned char b;
-		unsigned char a;
+		ColorRGBA();
+		ColorRGBA(const unsigned char &_r, const unsigned char &_g, const unsigned char &_b, const unsigned char &_a = 255);
+		ColorRGBA(const float &_r, const float &_g, const float &_b, const float &_a = 1.0f);
+
+		void setColor(const unsigned char &_r, const unsigned char &_g, const unsigned char &_b, const unsigned char &_a);
+		void setColor(const float &_r, const float &_g, const float &_b, const float &_a);
+
+		glm::vec4 rgba;
 	};
 	struct UV
 	{
+		UV();
+
+		void setUV(const float &_u, const float &_v);
+
 		float u;
 		float v;
 	};
+
 	struct Vertex
 	{
+		Vertex(const Position &_position, const ColorRGBA &_color, const UV &_uv);
+		Vertex();
+
+		void setPosition(const float &_x, const float &_y);
+		void setPosition(const float &_x, const float &_y, const float &_z);
+		void setColor(const unsigned char &_r, const unsigned char &_g, const unsigned char &_b, const unsigned char &_a);
+		void setColor(const float &_r, const float &_g, const float &_b, const float &_a);
+		void setUV(const float &_u, const float &_v);
+
 		Position position;
-		ColorRGBA8 color;
+		ColorRGBA color;
 		UV uv;
-
-		void setPosition(float x, float y)
-		{
-			position.x = x;
-			position.y = y;
-		}
-		void setPosition(float _x, float _y, float _z)
-		{
-			position.x = _x;
-			position.y = _y;
-			position.z = _z;
-		}
-
-		void setColor(unsigned char r, unsigned char g, unsigned char b, unsigned char a)
-		{
-			color.r = r;
-			color.g = g;
-			color.b = b;
-			color.a = a;
-		}
-
-		void setUV(float u, float v)
-		{
-			uv.u = u;
-			uv.v = v;
-		}
 	};
 }
