@@ -12,6 +12,8 @@
 #include "OpenGLError.h"
 
 #include <string>
+#include <thread>
+#include <iostream>
 
 #include <SDL/SDL.h>
 #include <GL/glew.h>
@@ -57,6 +59,8 @@ namespace SpehsEngine
 
 		mainWindow = new SpehsEngine::Window();
 		mainWindow->create(_windowName, applicationData->getWindowWidth(), applicationData->getWindowHeight(), applicationData->windowMode);//To get e.g. Fullscreen mode - replace '0' with 'SpehsEngine::FULLSCREEN'
+
+		std::cout << "\nHardware threads: " + std::to_string(std::thread::hardware_concurrency());
 
 		SpehsEngine::initializeTextRendering();
 		SpehsEngine::initializeTime();
