@@ -94,6 +94,23 @@ namespace SpehsEngine
 		//Element update tracking
 		incrementUpdateElementCount(1);
 	}
+	bool GUIRectangleContainer::removeElement(GUIRectangle* element)
+	{
+		for (unsigned i = 0; i < elements.size(); i++)
+		{
+			if (elements[i] == element)
+			{
+				delete elements[i];
+				elements.erase(elements.begin() + i);
+				disableBit(state, GUIRECT_SCALED);
+				disableBit(state, GUIRECT_POSITIONED);
+				if (updateElementCount > elements.size())
+					--updateElementCount;
+				return true;
+			}
+		}
+		return false;
+	}
 	void GUIRectangleContainer::enableStateRecursive(GUIRECT_STATE_TYPE stateBit)
 	{
 		GUIRectangle::enableState(stateBit);

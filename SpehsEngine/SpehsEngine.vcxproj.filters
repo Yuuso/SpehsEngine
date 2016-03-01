@@ -97,7 +97,6 @@
     <ClCompile Include="Camera3D.cpp">
       <Filter>Rendering</Filter>
     </ClCompile>
-    <ClCompile Include="GUIRectangleTable.cpp" />
     <ClCompile Include="StringOperations.cpp">
       <Filter>Core</Filter>
     </ClCompile>
@@ -139,6 +138,9 @@
     </ClCompile>
     <ClCompile Include="Vertex.cpp">
       <Filter>Rendering</Filter>
+    </ClCompile>
+    <ClCompile Include="GUIRectangleTable.cpp">
+      <Filter>Rendering\GUI</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -250,7 +252,6 @@
     <ClInclude Include="Camera3D.h">
       <Filter>Rendering</Filter>
     </ClInclude>
-    <ClInclude Include="GUIRectangleTable.h" />
     <ClInclude Include="StringOperations.h">
       <Filter>Core</Filter>
     </ClInclude>
@@ -289,6 +290,9 @@
     </ClInclude>
     <ClInclude Include="BatchObject.h">
       <Filter>Rendering\Geometric Rendering\Batch Rendering</Filter>
+    </ClInclude>
+    <ClInclude Include="GUIRectangleTable.h">
+      <Filter>Rendering\GUI</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

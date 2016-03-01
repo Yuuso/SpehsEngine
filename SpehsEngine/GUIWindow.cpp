@@ -464,6 +464,9 @@ namespace SpehsEngine
 		{//Window too left
 			setPosition(LEFT_BORDER, position.y);
 		}
+
+		updateScale();
+		updatePosition();
 	}
 	void GUIWindow::updateMinSize()
 	{

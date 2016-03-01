@@ -41,6 +41,7 @@ namespace SpehsEngine
 
 		//Element management
 		virtual void addElement(GUIRectangle* element);
+		bool removeElement(GUIRectangle* element);//Searches elements list and removes element. If element is not found, returns false
 		virtual GUIRectangle* back(){ return elements.back(); }
 		GUIRectangle* at(int index){ if (index < 0 || index >= elements.size()) return nullptr; return elements[index]; }
 		GUIRectangle* operator[](int index){ return elements[index]; }

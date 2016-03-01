@@ -30,6 +30,7 @@ namespace SpehsEngine
 		enableBit(state, GUIRECT_ENABLED);
 		enableBit(state, GUIRECT_VISIBLE);
 		enableBit(state, GUIRECT_HOVER_COLOR);
+		enableBit(state, GUIRECT_TEXT_JUSTIFICATION_LEFT);
 
 		setColor(125, 125, 125);
 	}
@@ -132,7 +133,7 @@ namespace SpehsEngine
 			disableBit(state, GUIRECT_MOUSE_HOVER);
 			return false;
 		}
-		else if (inputManager->getMouseY() < getY() || inputManager->getMouseY() > getY() + size.y)
+		else if (round(inputManager->getMouseY()) <= getY() || round(inputManager->getMouseY()) > getY() + size.y)
 		{
 			disableBit(state, GUIRECT_MOUSE_HOVER);
 			return false;
@@ -268,7 +269,7 @@ namespace SpehsEngine
 
 		tooltip->setString(tooltipString);
 		tooltip->setStringSize(applicationData->GUITextSize);
-		tooltip->setJustification(GUIRECT_TEXT_JUSTIFICATION_CENTER);
+		tooltip->setJustification(GUIRECT_TEXT_JUSTIFICATION_LEFT);
 		tooltip->setColor(150, 150, 150);
 		tooltip->updateScale();
 		tooltip->setSize(tooltip->minSize);
