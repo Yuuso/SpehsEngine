@@ -3,6 +3,7 @@
 #include "BatchRenderer.h"
 #include "TextureManager.h"
 #include "ShaderManager.h"
+#include "Vertex.h"
 
 
 namespace SpehsEngine

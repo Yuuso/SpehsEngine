@@ -112,7 +112,7 @@ namespace SpehsEngine
 		primitiveColor.a = (float)_a / 255.0f;
 	}
 
-	void Primitive::setCameraMatrixState(const bool &_newState)
+	void Primitive::setCameraMatrixState(const bool _newState)
 	{
 		cameraMatrixState = _newState;
 	}

@@ -35,14 +35,14 @@ namespace SpehsEngine
 		/*
 		IMPORTANT NOTE:
 		All drawables have a two-step deletion.
-		User calls destroy normally, but that it not delete the BatchObject.
-		BatchRenderer checks if user has asked for deletion and calls delete -> which will actually delete the BatchObject.
+		When user calls destroy, BatchObject is marked to be removed by Batch. If BatchObject is not in a Batch it is deleted.
+		Batch checks if user has asked for deletion and calls delete -> which will actually delete the BatchObject.
 		(Destructor is protected to prevent user from deleting the BatchObject.)
 		*/
-		void destoy();
+		void destroy();
 
 		//Setters
-		void setRenderState(const bool &_newState);
+		void setRenderState(const bool _newState);
 		void setShader(const int &_newShaderIndex);
 
 		//Getters

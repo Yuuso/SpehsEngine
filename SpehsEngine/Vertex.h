@@ -5,8 +5,9 @@
 
 namespace SpehsEngine
 {
-	struct Position
+	class Position
 	{
+	public:
 		Position();
 
 		void setPosition(const float &_x, const float &_y);
@@ -16,8 +17,9 @@ namespace SpehsEngine
 		float y;
 		float z;
 	};
-	struct ColorRGBA
+	class ColorRGBA
 	{
+	public:
 		ColorRGBA();
 		ColorRGBA(const unsigned char &_r, const unsigned char &_g, const unsigned char &_b, const unsigned char &_a = 255);
 		ColorRGBA(const float &_r, const float &_g, const float &_b, const float &_a = 1.0f);
@@ -27,8 +29,9 @@ namespace SpehsEngine
 
 		glm::vec4 rgba;
 	};
-	struct UV
+	class UV
 	{
+	public:
 		UV();
 
 		void setUV(const float &_u, const float &_v);
@@ -37,10 +40,11 @@ namespace SpehsEngine
 		float v;
 	};
 
-	struct Vertex
+	class Vertex
 	{
-		Vertex(const Position &_position, const ColorRGBA &_color, const UV &_uv);
+	public:
 		Vertex();
+		Vertex(const Position &_position, const ColorRGBA &_color, const UV &_uv);
 
 		void setPosition(const float &_x, const float &_y);
 		void setPosition(const float &_x, const float &_y, const float &_z);

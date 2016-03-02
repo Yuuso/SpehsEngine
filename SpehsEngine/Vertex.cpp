@@ -4,11 +4,9 @@
 
 namespace SpehsEngine
 {
-	Position::Position()
+	Position::Position() : x(0.0f), y(0.0f), z(0.0f)
 	{
-		x = 0.0f;
-		y = 0.0f;
-		z = 0.0f;
+
 	}
 	void Position::setPosition(const float &_x, const float &_y)
 	{
@@ -49,10 +47,9 @@ namespace SpehsEngine
 		rgba.w = _a;
 	}
 
-	UV::UV()
+	UV::UV() : u(0.0f), v(0.0f)
 	{
-		u = 0.0f;
-		v = 0.0f;
+
 	}
 	void UV::setUV(const float &_u, const float &_v)
 	{
@@ -60,11 +57,11 @@ namespace SpehsEngine
 		v = _v;
 	}
 
-	Vertex::Vertex(const Position &_position, const ColorRGBA &_color, const UV &_uv) : position(_position), color(_color), uv(_uv) 
+	Vertex::Vertex()
 	{
 
 	}
-	Vertex::Vertex()
+	Vertex::Vertex(const Position &_position, const ColorRGBA &_color, const UV &_uv) : position(_position), color(_color), uv(_uv) 
 	{
 
 	}

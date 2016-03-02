@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Primitive.h"
+#include "Vertex.h"
 
 #include <glm/vec2.hpp>
 
@@ -12,7 +13,6 @@ typedef unsigned int GLuint;
 namespace SpehsEngine
 {
 	struct TextureData;
-	struct Vertex;
 
 	class Polygon : public Primitive
 	{

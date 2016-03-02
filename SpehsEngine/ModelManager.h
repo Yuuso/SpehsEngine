@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Vertex.h"
+
 #include <glm/vec3.hpp>
 
 #include <string>
@@ -10,8 +12,6 @@ typedef unsigned short GLushort;
 
 namespace SpehsEngine
 {
-	struct Vertex;
-
 	struct ModelData
 	{
 

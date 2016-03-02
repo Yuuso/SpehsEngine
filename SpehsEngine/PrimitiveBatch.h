@@ -9,6 +9,7 @@
 #include "Vertex.h"
 #include "ShaderManager.h"
 #include "TextureManager.h"
+#include "Primitive.h"
 
 
 typedef unsigned short GLushort;
@@ -16,19 +17,6 @@ typedef unsigned int GLuint;
 
 namespace SpehsEngine
 {
-	enum Shape
-	{
-		BUTTON = 0,
-		RIGHTANGLED_TRIANGLE = 1,
-		ISOSCELES_TRIANGLE = 2
-	};
-	enum DrawMode
-	{
-		UNDEFINED,
-		POLYGON,
-		OUTLINE,
-	};
-
 	class PolygonBatch;
 	class PrimitiveBatch
 	{

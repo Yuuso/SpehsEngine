@@ -136,11 +136,11 @@
     <ClCompile Include="BatchObject.cpp">
       <Filter>Rendering\Geometric Rendering\Batch Rendering</Filter>
     </ClCompile>
-    <ClCompile Include="Vertex.cpp">
-      <Filter>Rendering</Filter>
-    </ClCompile>
     <ClCompile Include="GUIRectangleTable.cpp">
       <Filter>Rendering\GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="Vertex.cpp">
+      <Filter>Rendering</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -216,9 +216,6 @@
     <ClInclude Include="Arrow.h">
       <Filter>Rendering\Geometric Rendering</Filter>
     </ClInclude>
-    <ClInclude Include="Vertex.h">
-      <Filter>Rendering</Filter>
-    </ClInclude>
     <ClInclude Include="PolygonBatch.h">
       <Filter>Rendering\Geometric Rendering</Filter>
     </ClInclude>
@@ -293,6 +290,9 @@
     </ClInclude>
     <ClInclude Include="GUIRectangleTable.h">
       <Filter>Rendering\GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="Vertex.h">
+      <Filter>Rendering</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

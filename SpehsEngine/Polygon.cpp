@@ -1,7 +1,7 @@
 
+#include "Vertex.h"
 #include "Polygon.h"
 #include "TextureManager.h"
-#include "Vertex.h"
 #include "Shapes.h"
 #include "Console.h"
 #include "BatchRenderer.h"
@@ -91,7 +91,7 @@ namespace SpehsEngine
 
 		batchRenderer->addBatchObject(this);
 	}
-	Polygon(Vertex* _vertexData, const int &_numVertices, const PlaneDepth &_planeDepth, const float &_width, const float &_height)
+	Polygon::Polygon(Vertex* _vertexData, const int &_numVertices, const PlaneDepth &_planeDepth, const float &_width, const float &_height)
 	{
 		planeDepth = _planeDepth;
 		numVertices = _numVertices;
@@ -121,7 +121,7 @@ namespace SpehsEngine
 	}
 	Polygon::~Polygon()
 	{
-		batchRenderer->removePrimitive(this);
+
 	}
 
 

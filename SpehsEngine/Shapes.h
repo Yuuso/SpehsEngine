@@ -1,9 +1,12 @@
 #pragma once
-#define PI 3.14159265f
+
+#include "Primitive.h"
+#include "Vertex.h"
 
 #include <math.h>
 
-#include "Vertex.h"
+
+#define PI 3.14159265f
 
 
 //Make all shapes 1.0f x 1.0f by size

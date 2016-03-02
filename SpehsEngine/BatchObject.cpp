@@ -32,7 +32,7 @@ namespace SpehsEngine
 			delete [] vertexArray;
 	}
 
-	void BatchObject::destoy()
+	void BatchObject::destroy()
 	{
 		//If this has been already called before or if there is no batch that is going to handle the removal:
 		if (readyForDelete == true || batch == nullptr)
@@ -46,7 +46,7 @@ namespace SpehsEngine
 		}
 	}
 
-	void BatchObject::setRenderState(const bool &_newState)
+	void BatchObject::setRenderState(const bool _newState)
 	{
 		renderState = _newState;
 	}

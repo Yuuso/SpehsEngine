@@ -59,7 +59,7 @@ namespace SpehsEngine
 		void setColor(const unsigned char &_r, const unsigned char &_g, const unsigned char &_b, const unsigned char &_a = 1.0f);
 		void setColorAlpha(const float &_a);
 		void setColorAlpha(const unsigned char &_a);
-		void setCameraMatrixState(const bool &_newState);
+		void setCameraMatrixState(const bool _newState);
 		void setPlaneDepth(const PlaneDepth &_newPlaneDepth);
 
 		//Getters
