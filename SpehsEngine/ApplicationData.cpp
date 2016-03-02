@@ -2,7 +2,7 @@
 #include "FileStream.h"
 #include "Console.h"
 #include <string>
-
+#include <thread>
 
 SpehsEngine::ApplicationData* applicationData;
 namespace SpehsEngine
@@ -53,6 +53,7 @@ namespace SpehsEngine
 		consoleTextSize(20), consoleTextAlpha(1000),
 		GUITextSize(12), GUITextFontPath("Fonts/Anonymous.ttf"),
 		dataDirectory("data/"),
+		additionalThreads(std::thread::hardware_concurrency()),
 		windowWidth(1280), windowHeight(720)
 	{
 
@@ -93,6 +94,7 @@ namespace SpehsEngine
 		*stream << "ConsoleTextAlpha (0-255): " << consoleTextAlpha << "\n";
 		*stream << "GUI text size: " << GUITextSize << "\n";
 		*stream << "GUI text font path: " << GUITextFontPath << "\n";
+		*stream << "Additional CPU threads: " << additionalThreads << "\n";
 		*stream << "Data directory: " << dataDirectory << "\n";
 
 		if (streamOwner)
@@ -148,6 +150,7 @@ namespace SpehsEngine
 		readValueIntoInt(*stream, consoleTextAlpha);
 		readValueIntoInt(*stream, GUITextSize);
 		readValueIntoString(*stream, GUITextFontPath);
+		readValueIntoInt(*stream, additionalThreads);
 		readValueIntoString(*stream, dataDirectory);
 
 		//Limit values
@@ -175,6 +178,10 @@ namespace SpehsEngine
 			consoleTextSize = 1;
 		if (GUITextSize < 1)
 			GUITextSize = 1;
+		if (additionalThreads < 0)
+			additionalThreads = 0;
+		else if (additionalThreads > 9000)
+			additionalThreads = 9000;//Cannot have over 9000 threads!
 		
 		//Create data directory
 		createDirectory(dataDirectory);

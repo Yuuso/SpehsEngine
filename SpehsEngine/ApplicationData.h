@@ -40,6 +40,7 @@ namespace SpehsEngine
 		int GUITextSize;
 		std::string GUITextFontPath;
 		std::string dataDirectory;//Specified directory where data should be stored
+		int additionalThreads;///<Number of additional threads, used for multithreading tasks
 
 		//Window dimensions
 		void setWindowWidth(int w){ windowWidth = w; windowWidthHalf = w / 2; }
