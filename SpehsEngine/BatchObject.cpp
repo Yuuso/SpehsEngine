@@ -10,7 +10,7 @@ namespace SpehsEngine
 	{
 		Vertex* worldVertexArray = nullptr;
 		GLuint numVertices = 0;
-
+		textureDataID = 0;
 		readyForDelete = false;
 		renderState = true;
 		useColor = false;

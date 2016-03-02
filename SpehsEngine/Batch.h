@@ -36,7 +36,6 @@ namespace SpehsEngine
 		GLuint vertexBufferID;
 		GLuint indexBufferID;
 		GLuint normalBufferID;
-		GLuint textureDataID;
 
 		bool blending;
 		int shaderIndex;

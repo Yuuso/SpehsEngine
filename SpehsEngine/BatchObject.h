@@ -59,6 +59,7 @@ namespace SpehsEngine
 		bool renderState; //Whether BatchObject is rendered or not
 		bool useColor; //When true: Colors are sent as uniform
 		int shaderIndex;
+		GLuint textureDataID;
 		glm::mat4 scaledMatrix;
 		glm::mat4 scaledRotatedMatrix;
 

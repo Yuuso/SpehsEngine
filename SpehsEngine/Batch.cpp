@@ -15,7 +15,6 @@ namespace SpehsEngine
 		shaderIndex = -1;
 		textureDataID = 0;
 		drawMode = 0;
-		numIndices = 0;
 	}
 	Batch::Batch(const bool _blending, const int &_shaderIndex, const GLuint &_textureDataID, const GLenum &_drawMode)
 	{
