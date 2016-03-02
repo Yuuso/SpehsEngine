@@ -19,6 +19,7 @@ namespace SpehsEngine
 
 	public:
 		Batch();
+		Batch(const bool _blending, const int &_shaderIndex, const GLuint &_textureDataID, const GLenum &_drawMode);
 		~Batch();
 
 		void render();
@@ -26,11 +27,18 @@ namespace SpehsEngine
 		void remove(BatchObject* _batchObject);
 
 	protected:
-		void updateIndices();
+		void updateIndices(BatchObject* _batchObject);
 
 		std::vector<BatchObject*> batchObjects;
 		std::vector<GLushort> indices;
 
+		GLuint vertexArrayObjectID;
+		GLuint vertexBufferID;
+		GLuint indexBufferID;
+		GLuint normalBufferID;
+		GLuint textureDataID;
+
+		bool blending;
 		int shaderIndex;
 		GLuint textureDataID;
 		GLenum drawMode;

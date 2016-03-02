@@ -13,8 +13,12 @@ typedef unsigned short GLushort;
 
 namespace SpehsEngine
 {
+	class Batch;
+
 	class Mesh : public BatchObject
 	{
+		friend class Batch;
+
 	public:
 		Mesh();
 		Mesh(const std::string &_filepath);
