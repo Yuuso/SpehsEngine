@@ -1,23 +1,26 @@
 #pragma once
 
-#include "BatchObject.h"
 #include "Vertex.h"
 
 #include <glm/vec2.hpp>
 #include <glm/vec3.hpp>
 #include <glm/vec4.hpp>
+#include <glm/mat4x4.hpp>
 
 #include <vector>
 
 
 //Int based depth that is used to determine the drawing order of 2D primitives.
 typedef int16_t PlaneDepth;
+typedef unsigned int GLuint;
 
 namespace SpehsEngine
 {
 	class Polygon;
 	class Line;
 	class Point;
+	class BatchManager;
+	class PrimitiveBatch;
 
 	enum Shape
 	{
@@ -25,23 +28,41 @@ namespace SpehsEngine
 		RIGHTANGLED_TRIANGLE = 1,
 		ISOSCELES_TRIANGLE = 2
 	};
-	enum DrawMode
+	enum DrawMode : int
 	{
-		UNDEFINED = 0,
-		POLYGON = 1,
-		OUTLINE = 2,
+		UNDEFINED = -1,
+
+		POINT = 0x0000,
+		LINE = 0x0001,
+		LINE_LOOP = 0x0002,
+		LINE_STRIP = 0x0003,
+		LINE_ADJACENCY = 0x000A,
+		LINE_STRIP_ADJACENCY = 0x000B,
+		TRIANGLE = 0x0004,
+		TRIANGLE_FAN = 0x0006,
+		TRIANGLE_STRIP = 0x0005,
+		TRIANGLE_ADJACENCY = 0x000C,
+		TRIANGLE_STRIP_ADJACENCY = 0x000D,
+		PATCH = 0xE,
+
+		OUTLINE = LINE_LOOP,
+		POLYGON = TRIANGLE,
 	};
 
 	//Base class for polygon, line and point
-	class Primitive : public BatchObject
+	class Primitive
 	{
-	public:
-		Primitive();
+		friend class BatchManager;
+		friend class PrimitiveBatch;
 
-		Primitive* getPrimitivePtr(){ return this; }
+	public:
 		virtual Polygon* getPolygonPtr(){ return nullptr; }
 		virtual Line* getLinePtr(){ return nullptr; }
 		virtual Point* getPointPtr(){ return nullptr; }
+		
+		virtual void updateVertices() = 0; //This is called automatically when rendering
+
+		void destroy(); //Primitives can only be deleted from BatchManager, user can request deletion by calling destroy()
 
 		//Setters
 		void setPosition(const float &_x, const float &_y);
@@ -61,18 +82,41 @@ namespace SpehsEngine
 		void setColorAlpha(const unsigned char &_a);
 		void setCameraMatrixState(const bool _newState);
 		void setPlaneDepth(const PlaneDepth &_newPlaneDepth);
+		void setLineWidth(const float &_newWidth);
+		void setRenderState(const bool _newState);
+		void setShader(const int &_newShaderIndex);
+		void setBlending(const bool _newState);
 
 		//Getters
 		PlaneDepth getPlaneDepth(){ return planeDepth; }
+		int getShaderIndex(){ return shaderIndex; }
+
+		//Public Variables
+		Vertex* worldVertexArray; //Transformed vertices
+		GLuint numVertices;
 
 	protected:
+		Primitive();
 		virtual ~Primitive();
 
+		bool readyForDelete;
+		bool blending;
+		bool renderState; //Whether Primitive is rendered or not
+		bool useColor; //When true: Colors are sent as uniform
 		bool cameraMatrixState; //Whether primitive scales with camera or not
+		GLuint textureDataID;
 		PlaneDepth planeDepth;
+		DrawMode drawMode;
+		int shaderIndex;
+		float lineWidth;
 		float rotation;
 		float scaleX, scaleY;
 		glm::vec3 rotationVector;
 		glm::vec4 primitiveColor;
+		glm::mat4 scaledMatrix;
+		glm::mat4 scaledRotatedMatrix;
+
+		Position position;
+		Vertex* vertexArray; //Original vertices
 	};
 }

@@ -1,8 +1,9 @@
 
 #include "Mesh.h"
 #include "ModelManager.h"
-#include "BatchRenderer.h"
+#include "BatchManager.h"
 #include "Console.h"
+#include "ShaderManager.h"
 
 #include <glm/gtx/transform.hpp>
 #include <glm/gtc/quaternion.hpp>
@@ -13,6 +14,17 @@ namespace SpehsEngine
 {
 	Mesh::Mesh()
 	{
+		Vertex* worldVertexArray = nullptr;
+		GLuint numVertices = 0;
+		textureDataID = 0;
+		readyForDelete = false;
+		renderState = true;
+		useColor = false;
+		shaderIndex = DefaultPolygon;
+		scaledMatrix = glm::mat4(1.0f);
+		scaledRotatedMatrix = glm::mat4(1.0f);
+		vertexArray = nullptr;
+
 		yaw = 0.0f;
 		pitch = 0.0f;
 		roll = 0.0f;
@@ -27,10 +39,13 @@ namespace SpehsEngine
 		//Check here what file type the given filepath is
 		//For now we assume that it's all obj files...
 		modelManager->loadOBJ(_filepath, vertexArray, elementArray, normalArray);
-		batchRenderer->addBatchObject(this);
 	}
 	Mesh::~Mesh()
 	{
+		if (worldVertexArray != nullptr)
+			delete [] worldVertexArray;
+		if (vertexArray != nullptr)
+			delete [] vertexArray;
 		if (normalArray)
 			delete [] normalArray;
 	}
@@ -49,16 +64,14 @@ namespace SpehsEngine
 		}
 	}
 
+	void Mesh::destroy()
+	{
+		readyForDelete = true;
+	}
+
 	void Mesh::setOBJMesh(const std::string &_objFilepath)
 	{
-		if (batch != nullptr)
-		{
-			//This is temporary
-			console->fatalError("Cannot change model after the mesh has been batched already! (for now..)");
-		}
-		//TODO: Change batch if already batched
 		modelManager->loadOBJ(_objFilepath, vertexArray, elementArray, normalArray);
-		batchRenderer->addBatchObject(this);
 	}
 
 	void Mesh::setPosition(const float &_x, const float &_y, const float &_z)
@@ -126,4 +139,18 @@ namespace SpehsEngine
 		color = glm::vec4(_r, _g, _b, _a);
 	}
 
+	void Mesh::setRenderState(const bool _newState)
+	{
+		renderState = _newState;
+	}
+
+	void Mesh::setShader(const int &_newShaderIndex)
+	{
+		if (shaderManager->getShader(_newShaderIndex) == nullptr)
+		{
+			console->error("Trying to set a non-existing shader to Mesh!");
+			return;
+		}
+		shaderIndex = _newShaderIndex;
+	}
 }

@@ -130,17 +130,14 @@
     <ClCompile Include="ModelManager.cpp">
       <Filter>Rendering\Resource Management</Filter>
     </ClCompile>
-    <ClCompile Include="BatchRenderer.cpp">
-      <Filter>Rendering\Geometric Rendering\Batch Rendering</Filter>
-    </ClCompile>
-    <ClCompile Include="BatchObject.cpp">
-      <Filter>Rendering\Geometric Rendering\Batch Rendering</Filter>
-    </ClCompile>
     <ClCompile Include="GUIRectangleTable.cpp">
       <Filter>Rendering\GUI</Filter>
     </ClCompile>
     <ClCompile Include="Vertex.cpp">
       <Filter>Rendering</Filter>
+    </ClCompile>
+    <ClCompile Include="BatchManager.cpp">
+      <Filter>Rendering\Geometric Rendering\Batch Rendering</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -282,17 +279,14 @@
     <ClInclude Include="ModelManager.h">
       <Filter>Rendering\Resource Management</Filter>
     </ClInclude>
-    <ClInclude Include="BatchRenderer.h">
-      <Filter>Rendering\Geometric Rendering\Batch Rendering</Filter>
-    </ClInclude>
-    <ClInclude Include="BatchObject.h">
-      <Filter>Rendering\Geometric Rendering\Batch Rendering</Filter>
-    </ClInclude>
     <ClInclude Include="GUIRectangleTable.h">
       <Filter>Rendering\GUI</Filter>
     </ClInclude>
     <ClInclude Include="Vertex.h">
       <Filter>Rendering</Filter>
+    </ClInclude>
+    <ClInclude Include="BatchManager.h">
+      <Filter>Rendering\Geometric Rendering\Batch Rendering</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

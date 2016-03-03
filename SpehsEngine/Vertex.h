@@ -1,7 +1,5 @@
 #pragma once
 
-#include <glm/vec4.hpp>
-
 
 namespace SpehsEngine
 {
@@ -27,7 +25,10 @@ namespace SpehsEngine
 		void setColor(const unsigned char &_r, const unsigned char &_g, const unsigned char &_b, const unsigned char &_a);
 		void setColor(const float &_r, const float &_g, const float &_b, const float &_a);
 
-		glm::vec4 rgba;
+		unsigned char r;
+		unsigned char g;
+		unsigned char b;
+		unsigned char a;
 	};
 	class UV
 	{

@@ -90,8 +90,7 @@
     <ClCompile Include="ApplicationData.cpp" />
     <ClCompile Include="Arrow.cpp" />
     <ClCompile Include="Batch.cpp" />
-    <ClCompile Include="BatchObject.cpp" />
-    <ClCompile Include="BatchRenderer.cpp" />
+    <ClCompile Include="BatchManager.cpp" />
     <ClCompile Include="Camera2D.cpp" />
     <ClCompile Include="Camera3D.cpp" />
     <ClCompile Include="Console.cpp" />
@@ -139,8 +138,7 @@
     <ClInclude Include="ApplicationData.h" />
     <ClInclude Include="Arrow.h" />
     <ClInclude Include="Batch.h" />
-    <ClInclude Include="BatchObject.h" />
-    <ClInclude Include="BatchRenderer.h" />
+    <ClInclude Include="BatchManager.h" />
     <ClInclude Include="BitwiseOperations.h" />
     <ClInclude Include="Camera2D.h" />
     <ClInclude Include="Camera3D.h" />

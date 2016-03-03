@@ -12,17 +12,39 @@ namespace SpehsEngine
 {
 	Primitive::Primitive()
 	{
+		blending = false;
 		cameraMatrixState = true;
+		readyForDelete = false;
+		renderState = true;
+		useColor = false;
+		shaderIndex = DefaultPolygon;
+		drawMode = UNDEFINED;
+		numVertices = 0;
+		textureDataID = 0;
 		planeDepth = 0;
+		lineWidth = 0.0f;
 		rotation = 0.0f;
 		scaleX = 0.0f;
 		scaleY = 0.0f;
 		rotationVector = glm::vec3(0.0f);
 		primitiveColor = glm::vec4(1.0f);
+		scaledMatrix = glm::mat4(1.0f);
+		scaledRotatedMatrix = glm::mat4(1.0f);
+		vertexArray = nullptr;
+		worldVertexArray = nullptr;
+
 	}
 	Primitive::~Primitive()
 	{
+		if (worldVertexArray != nullptr)
+			delete [] worldVertexArray;
+		if (vertexArray != nullptr)
+			delete [] vertexArray;
+	}
 
+	void Primitive::destroy()
+	{
+		readyForDelete = true;
 	}
 
 	void Primitive::setPosition(const float &_x, const float &_y)
@@ -120,6 +142,30 @@ namespace SpehsEngine
 	void Primitive::setPlaneDepth(const PlaneDepth &_newPlaneDepth)
 	{
 		planeDepth = _newPlaneDepth;
-		//TODO: Move to another Batch! (yeah this function doesn't really do anything useful atm..)
+	}
+
+	void Primitive::setLineWidth(const float &_newWidth)
+	{
+		lineWidth = _newWidth;
+	}
+
+	void Primitive::setRenderState(const bool _newState)
+	{
+		renderState = _newState;
+	}
+
+	void Primitive::setShader(const int &_newShaderIndex)
+	{
+		if (shaderManager->getShader(_newShaderIndex) == nullptr)
+		{
+			console->error("Trying to set a non-existing shader to Primitive!");
+			return;
+		}
+		shaderIndex = _newShaderIndex;
+	}
+
+	void Primitive::setBlending(const bool _newState)
+	{
+		blending = _newState;
 	}
 }

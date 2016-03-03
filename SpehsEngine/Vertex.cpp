@@ -20,31 +20,31 @@ namespace SpehsEngine
 		z = _z;
 	}
 
-	ColorRGBA::ColorRGBA() : rgba(0.0f, 0.0f, 0.0f, 1.0f)
+	ColorRGBA::ColorRGBA() : r(0), g(0), b(0), a(1)
 	{
 
 	}
-	ColorRGBA::ColorRGBA(const unsigned char &_r, const unsigned char &_g, const unsigned char &_b, const unsigned char &_a) : rgba((float) _r / 255.0f, (float) _g / 255.0f, (float) _b / 255.0f, (float) _a / 255.0f)
+	ColorRGBA::ColorRGBA(const unsigned char &_r, const unsigned char &_g, const unsigned char &_b, const unsigned char &_a) : r((float) _r / 255.0f), g((float) _g / 255.0f), b((float) _b / 255.0f), a((float) _a / 255.0f)
 	{
 
 	}
-	ColorRGBA::ColorRGBA(const float &_r, const float &_g, const float &_b, const float &_a) : rgba(_r, _g, _b, _a)
+	ColorRGBA::ColorRGBA(const float &_r, const float &_g, const float &_b, const float &_a) : r(_r), g(_g), b(_b), a(_a)
 	{
 
 	}
 	void ColorRGBA::setColor(const unsigned char &_r, const unsigned char &_g, const unsigned char &_b, const unsigned char &_a)
 	{
-		rgba.x = (float) _r / 255.0f;
-		rgba.y = (float) _g / 255.0f;
-		rgba.z = (float) _b / 255.0f;
-		rgba.w = (float) _a / 255.0f;
+		r = (float) _r / 255.0f;
+		g = (float) _g / 255.0f;
+		b = (float) _b / 255.0f;
+		a = (float) _a / 255.0f;
 	}
 	void ColorRGBA::setColor(const float &_r, const float &_g, const float &_b, const float &_a)
 	{
-		rgba.x = _r;
-		rgba.y = _g;
-		rgba.z = _b;
-		rgba.w = _a;
+		r = _r;
+		g = _g;
+		b = _b;
+		a = _a;
 	}
 
 	UV::UV() : u(0.0f), v(0.0f)

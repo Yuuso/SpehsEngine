@@ -1,31 +1,29 @@
 #pragma once
 
-#include "BatchObject.h"
 #include "Vertex.h"
 
 #include <glm/vec3.hpp>
 #include <glm/vec4.hpp>
+#include <glm/mat4x4.hpp>
 #include <vector>
 #include <string>
 
 
 typedef unsigned short GLushort;
+typedef unsigned int GLuint;
 
 namespace SpehsEngine
 {
-	class Batch;
+	class MeshBatch;
 
-	class Mesh : public BatchObject
+	class Mesh
 	{
-		friend class Batch;
+		friend class BatchManager;
 
 	public:
-		Mesh();
-		Mesh(const std::string &_filepath);
+		void updateVertices(); //This is called automatically when rendering
 
-		Mesh* getMeshPtr(){ return this; }
-
-		void updateVertices();
+		void destroy(); //Meshes can only be deleted from BatchManager, user can request deletion by calling destroy()
 
 		void setOBJMesh(const std::string &_objFilepath);
 
@@ -41,15 +39,36 @@ namespace SpehsEngine
 		void setColor(const glm::vec4 &_newColor);
 		void setColor(const glm::vec3 &_newColor);
 		void setColor(const unsigned char &_r, const unsigned char &_g, const unsigned char &_b, const unsigned char &_a = 1.0f);
+		void setRenderState(const bool _newState);
+		void setShader(const int &_newShaderIndex);
+
+		//Getters
+		int getShaderIndex(){ return shaderIndex; }
+
+		//Public Variables
+		Vertex* worldVertexArray; //Transformed vertices
+		GLuint numVertices;
 
 	protected:
+		Mesh();
+		Mesh(const std::string &_filepath);
 		~Mesh();
 
+		bool readyForDelete;
+		bool renderState; //Whether BatchObject is rendered or not
+		bool useColor; //When true: Colors are sent as uniform
+		int shaderIndex;
+		GLuint textureDataID;
 		float yaw, pitch, roll; //Rotations
 		float scaleX, scaleY, scaleZ;
 
-		std::vector<GLushort> elementArray; //Indices
-		glm::vec3* normalArray;
 		glm::vec4 color;
+		glm::mat4 scaledMatrix;
+		glm::mat4 scaledRotatedMatrix;
+
+		Position position;
+		Vertex* vertexArray; //Original vertices
+		glm::vec3* normalArray;
+		std::vector<GLushort> elementArray; //Indices
 	};
 }

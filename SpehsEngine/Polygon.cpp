@@ -4,7 +4,7 @@
 #include "TextureManager.h"
 #include "Shapes.h"
 #include "Console.h"
-#include "BatchRenderer.h"
+#include "BatchManager.h"
 #include "ShaderManager.h"
 
 #include <glm/vec3.hpp>
@@ -88,8 +88,7 @@ namespace SpehsEngine
 		height = _height;
 		radius = 0.0f;
 		planeDepth = _planeDepth;
-
-		batchRenderer->addBatchObject(this);
+		blending = true;
 	}
 	Polygon::Polygon(Vertex* _vertexData, const int &_numVertices, const PlaneDepth &_planeDepth, const float &_width, const float &_height)
 	{
@@ -112,12 +111,11 @@ namespace SpehsEngine
 		width = _width;
 		height = _height;
 		radius = 0.0f;
-
-		batchRenderer->addBatchObject(this);
+		blending = true;
 	}
 	Polygon::Polygon(Vertex* _vertexData, const int &_numVertices, const float &_width, const float &_height) : Polygon(_vertexData, _numVertices, 0, _width, _height)
 	{
-
+		blending = false;
 	}
 	Polygon::~Polygon()
 	{

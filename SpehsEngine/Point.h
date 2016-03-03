@@ -10,9 +10,9 @@ namespace SpehsEngine
 
 	class Point : public Primitive
 	{
-	public:
-		Point(const PlaneDepth &_planeDepth = 0);
+		friend class BatchManager;
 
+	public:
 		Point* getPointPtr(){ return this; }
 
 		void updateVertices();
@@ -23,6 +23,8 @@ namespace SpehsEngine
 		TextureData* setTexture(const size_t &_textureID);
 
 	protected:
+		//NOTE: Point always in 2D (No Z-Depth), if there is need for 3D points for some reason -> call setBlending(false)
+		Point(const PlaneDepth &_planeDepth = 0);
 		~Point();
 	};
 }

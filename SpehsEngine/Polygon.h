@@ -16,12 +16,9 @@ namespace SpehsEngine
 
 	class Polygon : public Primitive
 	{
-	public:
-		Polygon(const int &_shapeID, const PlaneDepth &_planeDepth = 0, const float &_width = 1.0f, const float &_height = 1.0f);
-		//Given vertexArray is copied
-		Polygon(Vertex* _vertexData, const int &_numVertices, const PlaneDepth &_planeDepth, const float &_width = 1.0f, const float &_height = 1.0f); //For 2DPolygons
-		Polygon(Vertex* _vertexData, const int &_numVertices, const float &_width = 1.0f, const float &_height = 1.0f);
+		friend class BatchManager;
 
+	public:
 		Polygon* getPolygonPtr(){ return this; }
 
 		void updateVertices();
@@ -41,11 +38,15 @@ namespace SpehsEngine
 		float getRadius();
 
 	protected:
+		Polygon(const int &_shapeID, const PlaneDepth &_planeDepth = 0, const float &_width = 1.0f, const float &_height = 1.0f);
+		//Given vertexArray is copied
+		Polygon(Vertex* _vertexData, const int &_numVertices, const PlaneDepth &_planeDepth, const float &_width = 1.0f, const float &_height = 1.0f); //For 2DPolygons
+		Polygon(Vertex* _vertexData, const int &_numVertices, const float &_width = 1.0f, const float &_height = 1.0f);
 		~Polygon();
+
 		void setUVCoords();
 
 		float radius;
 		float width, height;
-		DrawMode drawMode;
 	};
 }

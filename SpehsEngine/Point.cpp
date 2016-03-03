@@ -1,6 +1,6 @@
 
 #include "Point.h"
-#include "BatchRenderer.h"
+#include "BatchManager.h"
 #include "TextureManager.h"
 #include "ShaderManager.h"
 #include "Vertex.h"
@@ -19,8 +19,7 @@ namespace SpehsEngine
 		std::copy(pos, pos + numVertices, stdext::checked_array_iterator<Vertex*>(worldVertexArray, numVertices));
 
 		planeDepth = _planeDepth;
-
-		batchRenderer->addBatchObject(this);
+		blending = true;
 	}
 	Point::~Point()
 	{

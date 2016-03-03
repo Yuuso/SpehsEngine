@@ -1,7 +1,7 @@
 
 #include "Line.h"
 #include "Console.h"
-#include "BatchRenderer.h"
+#include "BatchManager.h"
 
 #include <glm/vec3.hpp>
 #include <glm/vec4.hpp>
@@ -27,10 +27,9 @@ namespace SpehsEngine
 		worldVertexArray = new Vertex[numVertices];
 		std::copy(pos, pos + numVertices, stdext::checked_array_iterator<Vertex*>(worldVertexArray, numVertices));
 
-		thickness = 1.0f;
+		lineWidth = 1.0f;
 		planeDepth = _planeDepth;
-
-		batchRenderer->addBatchObject(this);
+		blending = true;
 	}
 	Line::Line(const glm::vec3 &_startPoint, const glm::vec3 &_endPoint)
 	{
@@ -46,9 +45,8 @@ namespace SpehsEngine
 		worldVertexArray = new Vertex[numVertices];
 		std::copy(pos, pos + numVertices, stdext::checked_array_iterator<Vertex*>(worldVertexArray, numVertices));
 
-		thickness = 1.0f;
-
-		batchRenderer->addBatchObject(this);
+		lineWidth = 1.0f;
+		blending = false;
 	}
 	Line::~Line()
 	{
@@ -79,10 +77,5 @@ namespace SpehsEngine
 	{
 		vertexArray[0].setPosition(_newStartPoint.x, _newStartPoint.y, _newStartPoint.z);
 		vertexArray[1].setPosition(_newEndPoint.x, _newEndPoint.y, _newEndPoint.z);
-	}
-
-	void Line::setThickness(const float &_newThickness)
-	{
-		thickness = _newThickness;
 	}
 }
