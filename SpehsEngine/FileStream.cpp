@@ -3,7 +3,7 @@
 #include "Console.h"
 using namespace boost::filesystem;
 
-namespace SpehsEngine
+namespace spehs
 {
 	static unsigned count;
 	void writeString(std::string& string, std::ofstream* stream)
@@ -50,9 +50,9 @@ namespace SpehsEngine
 	}
 	bool verifyDirectory(std::string& path)
 	{
-		if (!SpehsEngine::directoryExists(path))
+		if (!spehs::directoryExists(path))
 		{
-			if (!SpehsEngine::createDirectory(path))
+			if (!spehs::createDirectory(path))
 			{
 				console->log("Failed to create directory: \"" + path + "\"!");
 				return false;

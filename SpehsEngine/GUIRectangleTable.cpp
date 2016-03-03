@@ -1,6 +1,6 @@
 #include "GUIRectangleTable.h"
 
-namespace SpehsEngine
+namespace spehs
 {
 	GUIRectangleTable::GUIRectangleTable(int _columns) : columns(_columns)
 	{

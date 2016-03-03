@@ -21,7 +21,7 @@
 
 
 
-namespace SpehsEngine
+namespace spehs
 {
 	int initialize(std::string _windowName, ApplicationData* customApplicationDataInstance)
 	{
@@ -58,13 +58,13 @@ namespace SpehsEngine
 		SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, 1);
 		SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, applicationData->MSAA);
 
-		mainWindow = new SpehsEngine::Window();
-		mainWindow->create(_windowName, applicationData->getWindowWidth(), applicationData->getWindowHeight(), applicationData->windowMode);//To get e.g. Fullscreen mode - replace '0' with 'SpehsEngine::FULLSCREEN'
+		mainWindow = new spehs::Window();
+		mainWindow->create(_windowName, applicationData->getWindowWidth(), applicationData->getWindowHeight(), applicationData->windowMode);//To get e.g. Fullscreen mode - replace '0' with 'spehs::FULLSCREEN'
 
 		std::cout << "\nHardware threads: " + std::to_string(std::thread::hardware_concurrency());
 
-		SpehsEngine::initializeTextRendering();
-		SpehsEngine::initializeTime();
+		spehs::initializeTextRendering();
+		spehs::initializeTime();
 
 		//INITIALIZATIONS
 		inputManager = new InputManager();
@@ -96,8 +96,8 @@ namespace SpehsEngine
 		delete modelManager;
 		console->unitialize();
 		delete console;
-		SpehsEngine::uninitializeTime();
-		SpehsEngine::uninitializeTextRendering();
+		spehs::uninitializeTime();
+		spehs::uninitializeTextRendering();
 		SDL_Quit();
 	}
 }

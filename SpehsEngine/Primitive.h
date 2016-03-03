@@ -8,13 +8,14 @@
 #include <glm/mat4x4.hpp>
 
 #include <vector>
+#include <stdint.h>
 
 
 //Int based depth that is used to determine the drawing order of 2D primitives.
 typedef int16_t PlaneDepth;
 typedef unsigned int GLuint;
 
-namespace SpehsEngine
+namespace spehs
 {
 	class Polygon;
 	class Line;

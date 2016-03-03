@@ -2,7 +2,7 @@
 #include <vector>
 #include "GUIRectangle.h"
 
-namespace SpehsEngine
+namespace spehs
 {
 	class GUIWindow;
 	class GUIRectangleList;

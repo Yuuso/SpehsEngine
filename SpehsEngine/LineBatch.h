@@ -1,7 +1,7 @@
 #pragma once
 #include "PrimitiveBatch.h"
 
-namespace SpehsEngine
+namespace spehs
 {
 	class LineBatch : public PrimitiveBatch
 	{

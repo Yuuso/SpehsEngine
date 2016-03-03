@@ -1,7 +1,7 @@
 #pragma once
 #include <vector>
 
-namespace SpehsEngine
+namespace spehs
 {
 	class GUIWindow;
 	class GUIWindowManager

@@ -8,7 +8,7 @@
 #define DISTANCE_EPSILON 0.0000001f
 typedef unsigned int GLuint;
 
-namespace SpehsEngine
+namespace spehs
 {
 	class Line : public Primitive
 	{

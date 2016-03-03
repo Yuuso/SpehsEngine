@@ -7,8 +7,8 @@
 #include <GL/glew.h>
 
 
-SpehsEngine::Window* mainWindow;
-namespace SpehsEngine
+spehs::Window* mainWindow;
+namespace spehs
 {
 	Window::Window()
 	{

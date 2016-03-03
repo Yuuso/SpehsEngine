@@ -2,7 +2,7 @@
 #include "GUIRectangleContainer.h"
 #include <vector>
 
-namespace SpehsEngine
+namespace spehs
 {
 	class GUITextField;
 	class GUIRectangleList;

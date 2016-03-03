@@ -2,7 +2,7 @@
 #include "ApplicationData.h"
 #include "Camera3D.h"
 
-namespace SpehsEngine
+namespace spehs
 {
 	Camera3D* camera3D;
 

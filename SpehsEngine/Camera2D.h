@@ -4,7 +4,7 @@
 #include "WorldPosition.h"
 
 
-namespace SpehsEngine
+namespace spehs
 {
 	class Camera2D
 	{
@@ -36,5 +36,5 @@ namespace SpehsEngine
 		WorldPosition previousPosition;
 	};
 }
-extern SpehsEngine::Camera2D camera;
-extern SpehsEngine::Camera2D editorCamera;
+extern spehs::Camera2D camera;
+extern spehs::Camera2D editorCamera;

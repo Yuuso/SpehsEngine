@@ -1,6 +1,7 @@
 #pragma once
 
 #include <vector>
+#include <stdint.h>
 
 
 typedef unsigned int GLenum;
@@ -10,11 +11,12 @@ typedef int16_t PlaneDepth;
 
 #define MAX_BATCH_DEFAULT_SIZE 4000
 
-namespace SpehsEngine
+namespace spehs
 {
 	class BatchRenderer;
 	class Primitive;
 	class Mesh;
+	class Vertex;
 	
 	//Batch for Primitives
 	class PrimitiveBatch

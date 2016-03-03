@@ -3,7 +3,7 @@
 #include "GUIRectangle.h"
 
 
-namespace SpehsEngine
+namespace spehs
 {
 	class PolygonBatch;
 	class GUICheckbox : public GUIRectangle

@@ -3,7 +3,7 @@
 #define PI 3.14159265359f
 #define TWO_PI 6.28318530718f
 
-namespace SpehsEngine
+namespace spehs
 {
 	/*Returns the magnitude of vector*/
 	float magnitude(glm::vec2& vector);

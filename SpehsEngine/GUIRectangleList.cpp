@@ -7,7 +7,7 @@
 #define MIN_VISIBLE_COUNT 4
 
 
-namespace SpehsEngine
+namespace spehs
 {
 	namespace ScrollButtons{ enum ScrollButtons{ up, bar, down }; }
 	GUIRectangleList::GUIRectangleList() : GUIRectangleContainer()

@@ -12,7 +12,7 @@
 typedef unsigned short GLushort;
 typedef unsigned int GLuint;
 
-namespace SpehsEngine
+namespace spehs
 {
 	class MeshBatch;
 

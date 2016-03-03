@@ -11,7 +11,7 @@
 #define GLM_FORCE_RADIANS
 
 
-namespace SpehsEngine
+namespace spehs
 {
 	Line::Line(const glm::vec2 &_startPoint, const glm::vec2 &_endPoint, const PlaneDepth &_planeDepth)
 	{

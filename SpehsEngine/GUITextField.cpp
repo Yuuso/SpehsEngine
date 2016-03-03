@@ -5,7 +5,7 @@
 #include "GUITextField.h"
 
 
-namespace SpehsEngine
+namespace spehs
 {
 	GUITextField::GUITextField() : stringUpdated(false), defaultString(""), input("")
 	{
@@ -57,7 +57,7 @@ namespace SpehsEngine
 		{
 			if (!text)
 			{
-				text = new SpehsEngine::Text();
+				text = new spehs::Text();
 				text->setFont(applicationData->GUITextFontPath, applicationData->GUITextSize);
 			}
 			text->setString(defaultString);

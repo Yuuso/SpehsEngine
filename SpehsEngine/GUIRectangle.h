@@ -36,7 +36,7 @@
 #define GUIRECT_SELECTED					0x00100000
 #define GUIRECT_HOVER_COLOR					0x00200000
 
-namespace SpehsEngine
+namespace spehs
 {
 	class Text;
 	class PolygonBatch;
@@ -82,7 +82,7 @@ namespace SpehsEngine
 		/*Range [0, 255]*/
 		void setColor(int r, int g, int b, int a = 255);
 		void setParent(GUIRectangle* Parent){ parent = Parent; }
-		SpehsEngine::PolygonBatch* getPolygonPtr(){ return polygon; }
+		spehs::PolygonBatch* getPolygonPtr(){ return polygon; }
 		GUIRectangle* getParentPtr(){ return parent; }
 		GUIRectangle* getFirstGenerationParent();
 		//ID

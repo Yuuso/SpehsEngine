@@ -2,13 +2,13 @@
 #include "Camera2D.h"
 #include "ApplicationData.h"
 
-SpehsEngine::Camera2D camera;
-SpehsEngine::Camera2D editorCamera;
+spehs::Camera2D camera;
+spehs::Camera2D editorCamera;
 glm::mat4* projectionMatrix;
 glm::mat4 staticMatrix;
 
 
-namespace SpehsEngine
+namespace spehs
 {
 	Camera2D::Camera2D() : zoomSpeed(100.0f),scale(1.0f), orthoMatrix(1.0f), cameraMatrix(1.0f), worldPosition(0, 0), previousPosition(0, 0){}
 	Camera2D::~Camera2D(){}

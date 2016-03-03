@@ -1,7 +1,7 @@
 #pragma once
 #include "GUIRectangleContainer.h"
 
-namespace SpehsEngine
+namespace spehs
 {
 	/**Stores elements in a nice even cell size table. Column count defines the number of columns*/
 	class GUIRectangleTable : public GUIRectangleContainer

@@ -5,8 +5,8 @@
 #include "Console.h"
 
 
-SpehsEngine::RNG* rng;
-namespace SpehsEngine
+spehs::RNG* rng;
+namespace spehs
 {
 	RNG::RNG()
 	{

@@ -14,7 +14,7 @@
 #include "ApplicationData.h"
 #include "OpenGLError.h"
 
-namespace SpehsEngine
+namespace spehs
 {
 	struct Font
 	{

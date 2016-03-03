@@ -19,7 +19,7 @@
 #define GLM_FORCE_RADIANS
 
 
-namespace SpehsEngine
+namespace spehs
 {
 	Polygon::Polygon(const int &_shapeID, const PlaneDepth &_planeDepth, const float &_width, const float &_height)
 	{
@@ -68,11 +68,11 @@ namespace SpehsEngine
 		}
 		else //Polygons from Shapes
 		{
-			numVertices = getNumVertices(SpehsEngine::Shape(_shapeID));
+			numVertices = getNumVertices(spehs::Shape(_shapeID));
 			if (numVertices < 3)
 				console->fatalError("Can't create a polygon with less than 3 vertices!");
 
-			Vertex* shapeVertexArray = getShapeVertexArray(SpehsEngine::Shape(_shapeID));
+			Vertex* shapeVertexArray = getShapeVertexArray(spehs::Shape(_shapeID));
 			if (shapeVertexArray == nullptr)
 				console->fatalError(__FUNCTION__" Vertex Array is a nullptr!");
 

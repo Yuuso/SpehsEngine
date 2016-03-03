@@ -8,8 +8,8 @@
 #include <GL\glew.h>
 
 
-SpehsEngine::TextureManager* textureManager;
-namespace SpehsEngine
+spehs::TextureManager* textureManager;
+namespace spehs
 {
 	TextureManager::TextureManager()
 	{

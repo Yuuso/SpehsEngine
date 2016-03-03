@@ -3,7 +3,7 @@
 #include "GUITextField.h"
 
 
-namespace SpehsEngine
+namespace spehs
 {
 	GUIRectangleContainer::GUIRectangleContainer() : beginElementIndex(0), updateElementCount(0)
 	{

@@ -2,7 +2,7 @@
 #include <SDL/SDL_joystick.h>
 
 
-namespace SpehsEngine
+namespace spehs
 {
 	GUID::GUID()
 	{}

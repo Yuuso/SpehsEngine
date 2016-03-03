@@ -7,7 +7,7 @@
 #define SELECTED_ALPHA 1.0f
 #define UNSELECTED_ALPHA 0.1f
 
-namespace SpehsEngine
+namespace spehs
 {
 	GUICheckbox::GUICheckbox() : booleanPtr(nullptr), checkboxSize(20)
 	{

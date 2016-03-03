@@ -6,7 +6,7 @@
 #define CONSOLE_FONT_COLOR 1.0f, 0.6f, 0.0f
 
 
-namespace SpehsEngine
+namespace spehs
 {
 	class Text;
 	class Console
@@ -58,4 +58,4 @@ namespace SpehsEngine
 		void executeConsole();
 	};
 }
-extern SpehsEngine::Console* console;
+extern spehs::Console* console;

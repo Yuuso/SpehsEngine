@@ -5,7 +5,7 @@
 This class handles all errors and exceptions
 */
 
-namespace SpehsEngine
+namespace spehs
 {
 	extern void fatalError(std::string errorString);
 	extern void unexpectedError(std::string errorString);

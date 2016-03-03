@@ -14,7 +14,7 @@
 
 typedef int GLint;
 typedef unsigned int GLuint;
-namespace SpehsEngine
+namespace spehs
 {
 	enum ShaderName : int
 	{//Default Shaders
@@ -43,10 +43,10 @@ namespace SpehsEngine
 	};
 
 
-	class DefaultTextureUniforms : public SpehsEngine::Uniforms
+	class DefaultTextureUniforms : public spehs::Uniforms
 	{
 	public:
-		DefaultTextureUniforms(SpehsEngine::GLSLProgram* _shader);
+		DefaultTextureUniforms(spehs::GLSLProgram* _shader);
 		~DefaultTextureUniforms();
 
 		void setUniforms();
@@ -123,4 +123,4 @@ namespace SpehsEngine
 		return nullptr;
 	}
 }
-extern SpehsEngine::ShaderManager* shaderManager;
+extern spehs::ShaderManager* shaderManager;

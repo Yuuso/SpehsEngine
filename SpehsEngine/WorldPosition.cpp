@@ -3,7 +3,7 @@
 #include "WorldPosition.h"
 
 
-namespace SpehsEngine
+namespace spehs
 {
 	WorldPosition::WorldPosition() : integerX(0), integerY(0), floatingX(0.0f), floatingY(0.0f)
 	{

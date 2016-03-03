@@ -4,7 +4,7 @@
 #include "Exceptions.h"
 
 
-namespace SpehsEngine
+namespace spehs
 {
 	Arrow::Arrow()
 	{//Default constructor

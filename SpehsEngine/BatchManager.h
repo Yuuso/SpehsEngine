@@ -3,7 +3,7 @@
 #include <vector>
 
 
-namespace SpehsEngine
+namespace spehs
 {
 	class Primitive;
 	class Polygon;

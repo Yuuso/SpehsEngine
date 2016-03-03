@@ -5,7 +5,7 @@
 
 //TODO: Advanced collisions for physics stuff
 
-namespace SpehsEngine
+namespace spehs
 {
 	struct Projection
 	{

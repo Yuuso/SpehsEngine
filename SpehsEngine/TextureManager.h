@@ -6,7 +6,7 @@
 
 typedef unsigned int GLuint;
 
-namespace SpehsEngine
+namespace spehs
 {
 	struct TextureData
 	{
@@ -38,4 +38,4 @@ namespace SpehsEngine
 		std::unordered_map<size_t, TextureData*> textureDataMap;
 	};
 }
-extern SpehsEngine::TextureManager* textureManager;
+extern spehs::TextureManager* textureManager;

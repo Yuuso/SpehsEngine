@@ -5,7 +5,7 @@
 #define SCROLLBAR_CLICK_THRESHOLD 5
 
 
-namespace SpehsEngine
+namespace spehs
 {
 	class GUIRectangleList : public GUIRectangleContainer
 	{

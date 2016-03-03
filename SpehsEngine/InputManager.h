@@ -18,7 +18,7 @@
 struct _SDL_Joystick;
 typedef struct _SDL_Joystick SDL_Joystick;
 typedef int32_t SDL_JoystickID;
-namespace SpehsEngine
+namespace spehs
 {
 	GUID getJoystickDeviceGUID(int _deviceIndex);
 	/**Joysticks can only be created during run time, they will not be removed but instead go into offline mode. \n
@@ -111,7 +111,7 @@ namespace SpehsEngine
 		int joystickCount = 0;
 	};
 }
-extern SpehsEngine::InputManager* inputManager;
+extern spehs::InputManager* inputManager;
 
 /*
 SDL Keycodes wrapped to Engines own.

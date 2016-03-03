@@ -7,7 +7,7 @@
 #define TREE_OPEN_TIME 500
 
 
-namespace SpehsEngine
+namespace spehs
 {
 	GUIRectangleTree::GUIRectangleTree() : pressedLeafNodeID(0), openTreeButton(MOUSE_BUTTON_LEFT)
 	{

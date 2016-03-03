@@ -10,7 +10,7 @@
 #include <glm/gtx/transform.hpp>
 
 
-namespace SpehsEngine
+namespace spehs
 {
 	LineBatch::LineBatch(glm::vec2 _startPoint, glm::vec2 _endPoint)
 	{

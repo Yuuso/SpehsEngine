@@ -1,6 +1,6 @@
 #include "GUIRectangleRow.h"
 
-namespace SpehsEngine
+namespace spehs
 {
 	GUIRectangleRow::GUIRectangleRow() : evenElementWidth(false), elementPositionMode(PositionMode::Standard)
 	{

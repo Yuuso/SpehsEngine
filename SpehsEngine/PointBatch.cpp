@@ -10,7 +10,7 @@
 #include <GL/glew.h>
 
 
-namespace SpehsEngine
+namespace spehs
 {
 	PointBatch::PointBatch()
 	{

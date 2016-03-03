@@ -2,7 +2,7 @@
 #include <glm/vec3.hpp>
 #include <glm/vec2.hpp>
 
-namespace SpehsEngine
+namespace spehs
 {
 	class Camera3D
 	{

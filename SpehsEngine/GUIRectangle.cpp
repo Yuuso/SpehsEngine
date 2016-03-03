@@ -10,7 +10,7 @@
 int64_t guiRectangleAllocations = 0;
 int64_t guiRectangleDeallocations = 0;
 
-namespace SpehsEngine
+namespace spehs
 {
 	GUIRectangle::DisplayTexture::~DisplayTexture()
 	{
@@ -23,7 +23,7 @@ namespace SpehsEngine
 #endif
 
 		//Create polygon
-		polygon = new SpehsEngine::PolygonBatch(SpehsEngine::Shape(SpehsEngine::BUTTON), 1, 1);
+		polygon = new spehs::PolygonBatch(spehs::Shape(spehs::BUTTON), 1, 1);
 		polygon->setCameraMatrixState(false);
 
 		//Initial state (0)
@@ -290,7 +290,7 @@ namespace SpehsEngine
 	{
 		if (text)
 			return;
-		text = new SpehsEngine::Text();
+		text = new spehs::Text();
 		text->setFont(applicationData->GUITextFontPath, applicationData->GUITextSize);
 		text->setColor(0.05f, 0.05f, 0.05f);
 	}

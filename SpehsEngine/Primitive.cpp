@@ -8,7 +8,7 @@
 #include <GL/glew.h>
 
 
-namespace SpehsEngine
+namespace spehs
 {
 	Primitive::Primitive()
 	{

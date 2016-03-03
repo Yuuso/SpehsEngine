@@ -8,7 +8,7 @@
 /*Purpose of this class:
 -Save and manage application wide data like window size and window mode
 */
-namespace SpehsEngine
+namespace spehs
 {
 	class ApplicationData
 	{
@@ -57,4 +57,4 @@ namespace SpehsEngine
 		int windowHeightHalf;
 	};
 }
-extern SpehsEngine::ApplicationData* applicationData;
+extern spehs::ApplicationData* applicationData;

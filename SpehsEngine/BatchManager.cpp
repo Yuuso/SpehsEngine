@@ -7,7 +7,7 @@
 #include <algorithm>
 
 
-namespace SpehsEngine
+namespace spehs
 {
 	BatchManager::BatchManager(Camera2D* _camera)
 	{

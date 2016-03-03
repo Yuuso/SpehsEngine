@@ -6,7 +6,7 @@
 #include <string>
 
 
-namespace SpehsEngine
+namespace spehs
 {
 	class PolygonBatch : public PrimitiveBatch
 	{

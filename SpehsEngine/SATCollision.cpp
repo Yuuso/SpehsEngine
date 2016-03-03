@@ -4,7 +4,7 @@
 #include "glm\matrix.hpp"
 
 
-namespace SpehsEngine
+namespace spehs
 {
 	Projection projectPolygon(glm::vec2 _axis, Vertex* _vertexArray, int _size)
 	{

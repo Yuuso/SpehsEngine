@@ -4,7 +4,7 @@
 
 typedef int GLint;
 typedef unsigned int GLuint;
-namespace SpehsEngine
+namespace spehs
 {
 	class GLSLProgram
 	{

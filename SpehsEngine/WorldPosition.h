@@ -6,7 +6,7 @@
 #include <glm\vec2.hpp>
 
 
-namespace SpehsEngine
+namespace spehs
 {
 	struct WorldPosition
 	{

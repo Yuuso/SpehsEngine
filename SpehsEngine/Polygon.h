@@ -10,7 +10,7 @@
 
 typedef unsigned int GLuint;
 
-namespace SpehsEngine
+namespace spehs
 {
 	struct TextureData;
 

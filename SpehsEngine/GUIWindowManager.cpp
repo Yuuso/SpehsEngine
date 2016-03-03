@@ -3,7 +3,7 @@
 #include "GUIWindow.h"
 
 
-namespace SpehsEngine
+namespace spehs
 {
 
 	GUIWindowManager::GUIWindowManager() : focusedWindow(nullptr)
@@ -94,7 +94,7 @@ namespace SpehsEngine
 		focusedWindow = window;
 		window->gainFocus();
 	}
-	void GUIWindowManager::toggleWindow(SpehsEngine::GUIWindow* window)
+	void GUIWindowManager::toggleWindow(spehs::GUIWindow* window)
 	{
 		for (unsigned i = 0; i < windows.size(); i++)
 			if (windows[i] == window)
@@ -115,7 +115,7 @@ namespace SpehsEngine
 		for (unsigned i = 0; i < windows.size(); i++)
 			windows[i]->refresh();
 	}
-	void GUIWindowManager::openWindow(SpehsEngine::GUIWindow* window)
+	void GUIWindowManager::openWindow(spehs::GUIWindow* window)
 	{
 		window->open();
 		window->gainFocus();

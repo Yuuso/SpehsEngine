@@ -10,10 +10,10 @@
 #define SINT16_STATES 65536
 
 
-SpehsEngine::InputManager* inputManager;
-namespace SpehsEngine
+spehs::InputManager* inputManager;
+namespace spehs
 {
-	SpehsEngine::GUID getJoystickDeviceGUID(int _deviceIndex)
+	spehs::GUID getJoystickDeviceGUID(int _deviceIndex)
 	{
 		return SDL_JoystickGetDeviceGUID(_deviceIndex);
 	}

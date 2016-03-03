@@ -9,7 +9,7 @@
 #define FPS_FONT_PATH "Fonts/Anonymous.ttf"
 
 
-namespace SpehsEngine
+namespace spehs
 {
 	//Global variables
 	int fpsCounterFontSize = 24;
@@ -22,7 +22,7 @@ namespace SpehsEngine
 	//Local variables
 	float runTime = 0;
 	uint32_t startTicks = 0;
-	SpehsEngine::Text* fpsCounter;
+	spehs::Text* fpsCounter;
 	static bool initialized = false;
 	static int previousFontSize = fpsCounterFontSize;
 
@@ -36,7 +36,7 @@ namespace SpehsEngine
 			return true;
 		}
 
-		fpsCounter = new SpehsEngine::Text();
+		fpsCounter = new spehs::Text();
 		if (!fpsCounter)
 		{
 			std::cout << "\nInitialization failed! Failed to create fpsCounter!";

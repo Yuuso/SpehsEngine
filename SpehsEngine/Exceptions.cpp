@@ -5,7 +5,7 @@
 #include <SDL/SDL.h>
 
 
-namespace SpehsEngine
+namespace spehs
 {
 	void fatalError(std::string errorString)
 	{

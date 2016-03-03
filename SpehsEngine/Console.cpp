@@ -12,19 +12,19 @@
 #define BACKSPACE_INTERVAL 75
 static int previousFontSize = 10;
 static  bool colorUpdated = true;
-SpehsEngine::Console* console;
+spehs::Console* console;
 extern int64_t guiRectangleAllocations;
 extern int64_t guiRectangleDeallocations;
 extern int64_t primitiveBatchAllocations;
 extern int64_t primitiveBatchDeallocations;
 
-namespace SpehsEngine
+namespace spehs
 {
 	Console::Console(){}
 	Console::~Console(){}
 	int Console::initialize()
 	{
-		consoleText = new SpehsEngine::Text();
+		consoleText = new spehs::Text();
 		consoleText->setFont(applicationData->GUITextFontPath, applicationData->consoleTextSize);
 		consoleText->setColor(glm::vec4(1.0f, 0.6f, 0.0f, applicationData->consoleTextAlpha / 255.0f));
 		consoleText->setPosition(glm::vec2(CONSOLE_BORDER, CONSOLE_BORDER));
@@ -74,7 +74,7 @@ namespace SpehsEngine
 
 	void Console::log(std::string str, glm::vec3& color)
 	{
-		lines.push_back(new SpehsEngine::Text());
+		lines.push_back(new spehs::Text());
 		lines.back()->setFont(applicationData->GUITextFontPath, applicationData->consoleTextSize);
 		lines.back()->setColor(glm::vec4(color, applicationData->consoleTextAlpha / 255.0f));
 		lines.back()->setString(str);
@@ -85,17 +85,17 @@ namespace SpehsEngine
 	void Console::warning(std::string str)
 	{
 		log("[Warning] " + str, glm::vec3(1.0f, 0.3f, 0.0f));
-		SpehsEngine::warning(str);
+		spehs::warning(str);
 	}
 	void Console::error(std::string str)
 	{
 		log("[Error] " + str, glm::vec3(1.0f, 0.0f, 0.0f));
-		SpehsEngine::unexpectedError(str);
+		spehs::unexpectedError(str);
 	}
 	void Console::fatalError(std::string str)
 	{
 		log("[FatalError] " + str, glm::vec3(1.0f, 0.0f, 0.0f));
-		SpehsEngine::fatalError(str);
+		spehs::fatalError(str);
 	}
 	void Console::update()
 	{

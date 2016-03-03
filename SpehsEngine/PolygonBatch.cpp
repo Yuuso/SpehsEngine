@@ -18,7 +18,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 
 
-namespace SpehsEngine
+namespace spehs
 {
 	PolygonBatch::PolygonBatch(int _shapeID, float _width, float _height)
 	{
@@ -81,11 +81,11 @@ namespace SpehsEngine
 		{
 			numPolygons++;
 
-			N = getNumVertices(SpehsEngine::Shape(_shapeID));
+			N = getNumVertices(spehs::Shape(_shapeID));
 			if (N < 3)
 				console->fatalError("Can't create a polygon with less than 3 vertices!");
 
-			Vertex* shapeVertexArray = getShapeVertexArray(SpehsEngine::Shape(_shapeID));
+			Vertex* shapeVertexArray = getShapeVertexArray(spehs::Shape(_shapeID));
 			if (shapeVertexArray == nullptr)
 				console->fatalError("Vertex Array is a nullptr!");
 

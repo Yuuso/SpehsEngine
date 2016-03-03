@@ -2,7 +2,7 @@
 #include "Vertex.h"
 
 
-namespace SpehsEngine
+namespace spehs
 {
 	Position::Position() : x(0.0f), y(0.0f), z(0.0f)
 	{

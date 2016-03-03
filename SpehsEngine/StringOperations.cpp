@@ -2,7 +2,7 @@
 #include "BitwiseOperations.h"
 #include "StringOperations.h"
 
-namespace SpehsEngine
+namespace spehs
 {
 	float getStringAsFloat(const std::string& string)
 	{

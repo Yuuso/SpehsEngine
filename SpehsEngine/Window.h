@@ -2,7 +2,7 @@
 #include <string>
 
 struct SDL_Window;
-namespace SpehsEngine
+namespace spehs
 {
 	enum SpehsEngine_WindowFlags
 	{
@@ -25,4 +25,4 @@ namespace SpehsEngine
 		SDL_Window* sdlWindow;
 	};
 }
-extern SpehsEngine::Window* mainWindow;
+extern spehs::Window* mainWindow;

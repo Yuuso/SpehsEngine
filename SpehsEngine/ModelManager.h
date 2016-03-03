@@ -10,7 +10,7 @@
 
 typedef unsigned short GLushort;
 
-namespace SpehsEngine
+namespace spehs
 {
 	struct ModelData
 	{
@@ -29,4 +29,4 @@ namespace SpehsEngine
 		std::unordered_map<size_t, ModelData*> modelDataMap;
 	};
 }
-extern SpehsEngine::ModelManager* modelManager;
+extern spehs::ModelManager* modelManager;

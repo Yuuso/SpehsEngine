@@ -7,7 +7,7 @@
 typedef unsigned int GLuint;
 typedef char GLchar;
 
-namespace SpehsEngine
+namespace spehs
 {
 	void initializeTextRendering();
 	void uninitializeTextRendering();

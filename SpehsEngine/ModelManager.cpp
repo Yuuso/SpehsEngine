@@ -4,8 +4,8 @@
 #include <fstream>
 #include <glm/vec2.hpp>
 
-SpehsEngine::ModelManager* modelManager;
-namespace SpehsEngine
+spehs::ModelManager* modelManager;
+namespace spehs
 {
 	ModelManager::ModelManager()
 	{
@@ -35,7 +35,7 @@ namespace SpehsEngine
 		}
 
 		std::string line;
-		std::vector<SpehsEngine::Vertex> vertices;
+		std::vector<spehs::Vertex> vertices;
 		std::vector<glm::vec3> normals;
 		std::vector<glm::vec2> textureCoordinates;
 		std::vector<GLushort> normalIndices;
@@ -57,7 +57,7 @@ namespace SpehsEngine
 				{
 					if (line[1] == ' ' || line[1] == '\t')
 					{//Read vertex data "v "...
-						vertices.push_back(SpehsEngine::Vertex());
+						vertices.push_back(spehs::Vertex());
 						std::string strValue;//Currently reading value as string, to be converted into float using getStringAsFloat()
 						int valueIndex = 0;//Index of modified position value x=0, y=1, z=2
 						for (unsigned i = 2/*begins with "v "*/; i < line.size(); i++)

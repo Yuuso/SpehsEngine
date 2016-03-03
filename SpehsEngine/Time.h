@@ -2,7 +2,7 @@
 #include <stdint.h>
 
 
-namespace SpehsEngine
+namespace spehs
 {
 	//Variables that should be visible outside
 	extern float fps;

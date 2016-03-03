@@ -10,7 +10,7 @@
 
 #define GLM_FORCE_RADIANS
 
-namespace SpehsEngine
+namespace spehs
 {
 	Mesh::Mesh()
 	{

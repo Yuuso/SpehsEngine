@@ -6,7 +6,7 @@
 #include "Vertex.h"
 
 
-namespace SpehsEngine
+namespace spehs
 {
 	Point::Point(const PlaneDepth &_planeDepth)
 	{

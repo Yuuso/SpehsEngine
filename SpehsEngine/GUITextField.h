@@ -2,7 +2,7 @@
 #include "GUIRectangle.h"
 #include <string>
 
-namespace SpehsEngine
+namespace spehs
 {
 	class GUITextField : public GUIRectangle
 	{

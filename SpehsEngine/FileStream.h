@@ -1,7 +1,7 @@
 #pragma once
 #include <string>
 #include <fstream>
-namespace SpehsEngine
+namespace spehs
 {
 	/**Writes string to stream*/
 	void writeString(std::string& string, std::ofstream* stream);

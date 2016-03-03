@@ -9,7 +9,7 @@
 
 
 
-namespace SpehsEngine
+namespace spehs
 {
 	GLSLProgram::~GLSLProgram()
 	{

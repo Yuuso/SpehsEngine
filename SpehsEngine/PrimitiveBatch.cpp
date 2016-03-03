@@ -13,7 +13,7 @@ extern glm::mat4* projectionMatrix;
 extern glm::mat4 staticMatrix;
 
 
-namespace SpehsEngine
+namespace spehs
 {
 	PrimitiveBatch::PrimitiveBatch()
 	{

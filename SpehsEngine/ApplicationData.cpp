@@ -4,8 +4,8 @@
 #include <string>
 #include <thread>
 
-SpehsEngine::ApplicationData* applicationData;
-namespace SpehsEngine
+spehs::ApplicationData* applicationData;
+namespace spehs
 {
 	void ApplicationData::readValueIntoInt(std::ifstream& stream, int& integer)
 	{

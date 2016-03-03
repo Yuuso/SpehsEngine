@@ -11,7 +11,7 @@
 
 //Make all shapes 1.0f x 1.0f by size
 
-namespace SpehsEngine
+namespace spehs
 {
 	Vertex* getShapeVertexArray(Shape shape) //Deleting is handled by the caller of the function.
 	{

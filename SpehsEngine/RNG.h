@@ -4,7 +4,7 @@
 #include <stdint.h>
 
 
-namespace SpehsEngine
+namespace spehs
 {
 	class RNG
 	{
@@ -65,4 +65,4 @@ namespace SpehsEngine
 		uint_fast64_t seed;
 	};
 }
-extern SpehsEngine::RNG* rng;
+extern spehs::RNG* rng;

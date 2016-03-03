@@ -7,8 +7,8 @@
 
 
 
-SpehsEngine::ShaderManager* shaderManager;
-namespace SpehsEngine
+spehs::ShaderManager* shaderManager;
+namespace spehs
 {
 	Uniforms::Uniforms(GLSLProgram* _shader)
 	{
@@ -32,15 +32,15 @@ namespace SpehsEngine
 #endif
 	}
 
-	DefaultTextureUniforms::DefaultTextureUniforms(SpehsEngine::GLSLProgram* _shader) : Uniforms(_shader)
+	DefaultTextureUniforms::DefaultTextureUniforms(spehs::GLSLProgram* _shader) : Uniforms(_shader)
 	{
 		textureLocation = shader->getUniformLocation("tex");
 	}
 	DefaultTextureUniforms::~DefaultTextureUniforms(){}
 	void DefaultTextureUniforms::setUniforms()
 	{
-		SpehsEngine::bind2DTexture(textureDataID);
-		SpehsEngine::setUniform_int(textureLocation, 0);
+		spehs::bind2DTexture(textureDataID);
+		spehs::setUniform_int(textureLocation, 0);
 		Uniforms::setUniforms();
 	}
 
@@ -112,19 +112,19 @@ namespace SpehsEngine
 #pragma endregion
 
 		//DefaultPolygon
-		SpehsEngine::GLSLProgram* defaultShader = new SpehsEngine::GLSLProgram();
+		spehs::GLSLProgram* defaultShader = new spehs::GLSLProgram();
 		defaultShader->compileShadersFromSource(defaultPolygonVert, defaultPolygonFrag);
 		defaultShader->addAttribute("vertexPosition");
 		defaultShader->linkShaders();
-		shaderPrograms.push_back(new SpehsEngine::Shader(SpehsEngine::DefaultPolygon, defaultShader, new Uniforms(defaultShader)));
+		shaderPrograms.push_back(new spehs::Shader(spehs::DefaultPolygon, defaultShader, new Uniforms(defaultShader)));
 
 		//DefaultTexture
-		SpehsEngine::GLSLProgram* defaultTexShader = new SpehsEngine::GLSLProgram();
+		spehs::GLSLProgram* defaultTexShader = new spehs::GLSLProgram();
 		defaultTexShader->compileShadersFromSource(defaultTextureVert, defaultTextureFrag);
 		defaultTexShader->addAttribute("vertexPosition");
 		defaultTexShader->addAttribute("textureCoords");
 		defaultTexShader->linkShaders();
-		shaderPrograms.push_back(new SpehsEngine::Shader(SpehsEngine::DefaultTexture, defaultTexShader, new DefaultTextureUniforms(defaultTexShader)));
+		shaderPrograms.push_back(new spehs::Shader(spehs::DefaultTexture, defaultTexShader, new DefaultTextureUniforms(defaultTexShader)));
 	}
 	ShaderManager::~ShaderManager()
 	{

@@ -6,11 +6,12 @@
 #include "BatchManager.h"
 #include "ShaderManager.h"
 #include "OpenGLError.h"
+#include "Vertex.h"
 
 #include <GL/glew.h>
 
 
-namespace SpehsEngine
+namespace spehs
 {
 	PrimitiveBatch::PrimitiveBatch()
 	{
@@ -20,7 +21,7 @@ namespace SpehsEngine
 		lineWidth = 0.0f;
 		totalNumvertices = 0;
 	}
-	PrimitiveBatch::PrimitiveBatch(const PlaneDepth &_priority, const bool _blending, const int &_shaderIndex, const GLuint &_textureDataID, const GLenum &_drawMode, float _lineWidth = 0.0f)
+	PrimitiveBatch::PrimitiveBatch(const int16_t &_priority, const bool _blending, const int &_shaderIndex, const GLuint &_textureDataID, const GLenum &_drawMode, float _lineWidth)
 	{
 		vertexArrayObjectID = 0;
 		vertexBufferID = 0;

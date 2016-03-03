@@ -2,7 +2,7 @@
 #include <math.h>
 
 
-namespace SpehsEngine
+namespace spehs
 {
 	float magnitude(glm::vec2& vec)
 	{

@@ -25,7 +25,7 @@
 #define STRECH_STATE_W 32
 #define STRECH_CORNER_PERCENTAGE 0.1f
 
-namespace SpehsEngine
+namespace spehs
 {
 	GUIWindow::GUIWindow() : doubleClickTimer(0), strechState(0)
 	{
@@ -255,7 +255,7 @@ namespace SpehsEngine
 		////Header double clicking
 		//Timer decrease
 		if (doubleClickTimer > 0)
-			doubleClickTimer -= SpehsEngine::deltaTime;
+			doubleClickTimer -= spehs::deltaTime;
 		//Check header double click
 		if (isFocused() && inputManager->isKeyPressed(MOUSE_BUTTON_LEFT) && header->getMouseHover())
 		{//Header has been clicked
@@ -417,7 +417,7 @@ namespace SpehsEngine
 		{//Use scaled size for every element
 			int hAllocated(0), hElement;
 			float scalePercentage = (size.y - header->getHeight()) / float(minSize.y - header->getMinHeight());//How many % of min size should each element scale
-			for (std::vector<SpehsEngine::GUIRectangle*>::iterator i = elements.begin(); i != elements.end() - 1; i++)
+			for (std::vector<spehs::GUIRectangle*>::iterator i = elements.begin(); i != elements.end() - 1; i++)
 			{
 				hElement = scalePercentage * (*i)->getMinHeight();
 				hAllocated += hElement;

@@ -7,7 +7,7 @@
 #define STOP_AFTER_ERROR true
 
 
-namespace SpehsEngine
+namespace spehs
 {
 	void checkOpenGLErrors(const std::string &_file, int _line)
 	{
