@@ -9,14 +9,15 @@ namespace SpehsEngine
 		int8_t stringState = 0;
 		int intValue = 0;
 		float floatValue = 0.0f;
+		float decimalFactor = 0.1f;
 		for (unsigned i = 0; i < string.size(); i++)
 		{
 			if (string[i] >= '0' && string[i] <= '9')
 			{//Add numerical value
 				if (checkBit(stringState, 2))
 				{//Decimal
-					floatValue *= 0.1f;
-					floatValue += int(string[i] - 48) * 0.1f;
+					floatValue += int(string[i] - 48) * decimalFactor;
+					decimalFactor *= 0.1f;
 				}
 				else
 				{

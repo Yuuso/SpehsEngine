@@ -28,5 +28,5 @@ namespace SpehsEngine
 	private:
 		std::unordered_map<size_t, ModelData*> modelDataMap;
 	};
-	extern ModelManager* modelManager;
 }
+extern SpehsEngine::ModelManager* modelManager;

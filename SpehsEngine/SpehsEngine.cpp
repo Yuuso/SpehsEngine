@@ -8,6 +8,7 @@
 #include "TextureManager.h"
 #include "RNG.h"
 #include "ShaderManager.h"
+#include "ModelManager.h"
 #include "Console.h"
 #include "OpenGLError.h"
 
@@ -69,6 +70,7 @@ namespace SpehsEngine
 		inputManager = new InputManager();
 		inputManager->initialize();
 		textureManager = new TextureManager();
+		modelManager = new ModelManager();
 		rng = new RNG();
 		shaderManager = new ShaderManager();
 		console = new Console();
@@ -91,6 +93,7 @@ namespace SpehsEngine
 		delete textureManager;
 		delete rng;
 		delete shaderManager;
+		delete modelManager;
 		console->unitialize();
 		delete console;
 		SpehsEngine::uninitializeTime();
