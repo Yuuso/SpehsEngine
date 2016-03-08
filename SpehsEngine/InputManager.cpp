@@ -210,7 +210,7 @@ namespace spehs
 					{
 						std::string error = "Couldn't open SDL joystick! ";
 						error += SDL_GetError();
-						console->error(error);
+						spehs::console::error(error);
 					}
 					joysticks[i]->goOnline(js);
 					foundOffline = true;
@@ -292,7 +292,7 @@ namespace spehs
 		{
 			std::string error = "Failed to open SDL_joystick! ";
 			error += SDL_GetError();
-			console->error(error);
+			spehs::console::error(error);
 			return;
 		}
 

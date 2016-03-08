@@ -8,6 +8,7 @@
 #include <glm/mat3x3.hpp>
 #include <glm/mat4x4.hpp>
 
+#include "Exceptions.h"
 #include "GLSLProgram.h"
 #include "Console.h"
 
@@ -119,7 +120,7 @@ namespace spehs
 		{
 			return temp;
 		}
-		console->fatalError("Uniforms type not found!");
+		spehs::exceptions::fatalError("Uniforms type not found!");
 		return nullptr;
 	}
 }

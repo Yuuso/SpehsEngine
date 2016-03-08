@@ -72,7 +72,7 @@ namespace spehs
 			stream->open("ApplicationData.txt", std::ios::trunc);
 			if (stream->fail())
 			{
-				console->error("Failed to write application data!");
+				spehs::console::error("Failed to write application data!");
 				return;
 			}
 		}
@@ -117,7 +117,7 @@ namespace spehs
 				ofstream.open("ApplicationData.txt", std::ios::trunc);
 				if (ofstream.fail())
 				{
-					console->error("Failed to write application data!");
+					spehs::console::error("Failed to write application data!");
 					delete stream;
 					return;
 				}
@@ -126,7 +126,7 @@ namespace spehs
 				stream->open("ApplicationData.txt");
 				if (stream->fail())
 				{
-					console->error("Failed to create (SpehsData)application data");
+					spehs::console::error("Failed to create (SpehsData)application data");
 					delete stream;
 					return;
 				}

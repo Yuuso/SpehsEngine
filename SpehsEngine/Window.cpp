@@ -28,7 +28,7 @@ namespace spehs
 
 		sdlWindow = SDL_CreateWindow(windowName.c_str(), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, scrWidth, scrHeight, flags);
 		if (sdlWindow == nullptr)
-			fatalError("\nFailed to create window!");
+			exceptions::fatalError("\nFailed to create window!");
 
 		//Update window size if it changed
 		
@@ -39,11 +39,11 @@ namespace spehs
 
 		SDL_GLContext glContext = SDL_GL_CreateContext(sdlWindow);
 		if (glContext == nullptr)
-			fatalError("\nFailed to create glContext!");
+			exceptions::fatalError("\nFailed to create glContext!");
 
 		GLenum error = glewInit();
 		if (error != GLEW_OK)
-			fatalError("\nFailed to initialize glew!");
+			exceptions::fatalError("\nFailed to initialize glew!");
 
 		//Check OpenGL version
 		std::printf("*** OpenGL Version: %s ***\n", glGetString(GL_VERSION));

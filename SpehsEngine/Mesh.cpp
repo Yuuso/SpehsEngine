@@ -148,7 +148,7 @@ namespace spehs
 	{
 		if (shaderManager->getShader(_newShaderIndex) == nullptr)
 		{
-			console->error("Trying to set a non-existing shader to Mesh!");
+			spehs::console::error("Trying to set a non-existing shader to Mesh!");
 			return;
 		}
 		shaderIndex = _newShaderIndex;

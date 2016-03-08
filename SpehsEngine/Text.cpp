@@ -40,19 +40,19 @@ namespace spehs
 	{
 		if (textRenderingInitialized)
 		{
-			unexpectedError("Text rendering already initialized!");
+			exceptions::unexpectedError("Text rendering already initialized!");
 			return;
 		}
 
 		if (ft != nullptr)
 		{
-			unexpectedError("Freetype library already exists!");
+			exceptions::unexpectedError("Freetype library already exists!");
 			return;
 		}
 		ft = new FT_Library;
 		if (FT_Init_FreeType(ft))
 		{
-			fatalError("Freetype library initialization failed!");
+			exceptions::fatalError("Freetype library initialization failed!");
 			return;
 		}
 

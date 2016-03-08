@@ -16,7 +16,7 @@ namespace spehs
 	Line::Line(const glm::vec2 &_startPoint, const glm::vec2 &_endPoint, const PlaneDepth &_planeDepth)
 	{
 		if (glm::distance(_startPoint, _endPoint) < DISTANCE_EPSILON)
-			console->error("Line needs to have length greater than 0!");
+			spehs::console::error("Line needs to have length greater than 0!");
 
 		numVertices = 2;
 		Vertex* pos = new Vertex[numVertices];
@@ -34,7 +34,7 @@ namespace spehs
 	Line::Line(const glm::vec3 &_startPoint, const glm::vec3 &_endPoint)
 	{
 		if (glm::distance(_startPoint, _endPoint) < DISTANCE_EPSILON)
-			console->error("Line needs to have length greater than 0!");
+			spehs::console::error("Line needs to have length greater than 0!");
 
 		numVertices = 2;
 		Vertex* pos = new Vertex[numVertices];

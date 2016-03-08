@@ -54,7 +54,7 @@ namespace spehs
 		{
 			if (!spehs::createDirectory(path))
 			{
-				console->log("Failed to create directory: \"" + path + "\"!");
+				spehs::console::log("Failed to create directory: \"" + path + "\"!");
 				return false;
 			}
 		}

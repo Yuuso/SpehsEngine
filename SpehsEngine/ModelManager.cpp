@@ -30,7 +30,7 @@ namespace spehs
 		std::ifstream stream(_filepath);
 		if (!stream.is_open())
 		{
-			console->warning("Failed to open OBJ file: " + _filepath);
+			spehs::console::warning("Failed to open OBJ file: " + _filepath);
 			return;
 		}
 

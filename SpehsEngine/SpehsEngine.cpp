@@ -27,7 +27,7 @@ namespace spehs
 	{
 		if (SDL_Init(SDL_INIT_VIDEO) < 0)
 		{
-			fatalError("\nVideo initialization failed!");
+			exceptions::fatalError("\nVideo initialization failed!");
 			return 1;
 		}
 
@@ -73,8 +73,7 @@ namespace spehs
 		modelManager = new ModelManager();
 		rng = new RNG();
 		shaderManager = new ShaderManager();
-		console = new Console();
-		console->initialize();
+		console::initialize();
 
 #ifdef _DEBUG
 		checkOpenGLErrors(__FILE__, __LINE__);
@@ -94,8 +93,7 @@ namespace spehs
 		delete rng;
 		delete shaderManager;
 		delete modelManager;
-		console->unitialize();
-		delete console;
+		console::unitialize();
 		spehs::uninitializeTime();
 		spehs::uninitializeTextRendering();
 		SDL_Quit();

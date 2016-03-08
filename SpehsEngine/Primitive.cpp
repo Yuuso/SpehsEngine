@@ -118,7 +118,7 @@ namespace spehs
 	{
 		if (!useColor)
 		{
-			console->error("Must set color before modifying alpha!");
+			spehs::console::error("Must set color before modifying alpha!");
 			return;
 		}
 		primitiveColor.a = _a;
@@ -128,7 +128,7 @@ namespace spehs
 	{
 		if (!useColor)
 		{
-			console->error("Must set color before modifying alpha!");
+			spehs::console::error("Must set color before modifying alpha!");
 			return;
 		}
 		primitiveColor.a = (float)_a / 255.0f;
@@ -158,7 +158,7 @@ namespace spehs
 	{
 		if (shaderManager->getShader(_newShaderIndex) == nullptr)
 		{
-			console->error("Trying to set a non-existing shader to Primitive!");
+			spehs::console::error("Trying to set a non-existing shader to Primitive!");
 			return;
 		}
 		shaderIndex = _newShaderIndex;

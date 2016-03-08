@@ -6,6 +6,7 @@
 #include "Console.h"
 #include "BatchManager.h"
 #include "ShaderManager.h"
+#include "Exceptions.h"
 
 #include <glm/vec3.hpp>
 #include <glm/vec4.hpp>
@@ -70,11 +71,11 @@ namespace spehs
 		{
 			numVertices = getNumVertices(spehs::Shape(_shapeID));
 			if (numVertices < 3)
-				console->fatalError("Can't create a polygon with less than 3 vertices!");
+				spehs::exceptions::fatalError("Can't create a polygon with less than 3 vertices!");
 
 			Vertex* shapeVertexArray = getShapeVertexArray(spehs::Shape(_shapeID));
 			if (shapeVertexArray == nullptr)
-				console->fatalError(__FUNCTION__" Vertex Array is a nullptr!");
+				spehs::exceptions::fatalError(__FUNCTION__" Vertex Array is a nullptr!");
 
 			//Copy the shape vertex array into polygon's own arrays
 			vertexArray = shapeVertexArray;
@@ -95,10 +96,10 @@ namespace spehs
 		planeDepth = _planeDepth;
 		numVertices = _numVertices;
 		if (numVertices < 3)
-			console->fatalError("Can't create a polygon with less than 3 vertices!");
+			spehs::exceptions::fatalError("Can't create a polygon with less than 3 vertices!");
 
 		if (_vertexData == nullptr)
-			console->fatalError("Vertex Array is a nullptr!");
+			spehs::exceptions::fatalError("Vertex Array is a nullptr!");
 
 		//Copy the shape vertex array into polygon's own arrays
 		vertexArray = new Vertex[numVertices];

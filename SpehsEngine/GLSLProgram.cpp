@@ -6,6 +6,7 @@
 #include "GLSLProgram.h"
 #include "Console.h"
 #include "OpenGLError.h"
+#include "Exceptions.h"
 
 
 
@@ -25,10 +26,10 @@ namespace spehs
 
 		vertexShaderID = glCreateShader(GL_VERTEX_SHADER);
 		if (vertexShaderID == 0)
-			console->fatalError("Failed to create vertex shader!");
+			exceptions::fatalError("Failed to create vertex shader!");
 		fragmentShaderID = glCreateShader(GL_FRAGMENT_SHADER);
 		if (fragmentShaderID == 0)
-			console->fatalError("Failed to create fragment shader!");
+			exceptions::fatalError("Failed to create fragment shader!");
 
 		compileShader(vertexShaderPath, vertexShaderID);
 		compileShader(fragmentShaderPath, fragmentShaderID);
@@ -43,10 +44,10 @@ namespace spehs
 
 		vertexShaderID = glCreateShader(GL_VERTEX_SHADER);
 		if (vertexShaderID == 0)
-			console->fatalError("Failed to create vertex shader!");
+			exceptions::fatalError("Failed to create vertex shader!");
 		fragmentShaderID = glCreateShader(GL_FRAGMENT_SHADER);
 		if (fragmentShaderID == 0)
-			console->fatalError("Failed to create fragment shader!");
+			exceptions::fatalError("Failed to create fragment shader!");
 
 		compileShaderFromSource(vertexShader, vertexShaderID);
 		compileShaderFromSource(fragmentShader, fragmentShaderID);
@@ -82,7 +83,7 @@ namespace spehs
 
 			if (errorLog.size() > 0)
 				std::printf("\n%s", &(errorLog[0]));
-			console->fatalError("Shaders failed to link!");
+			exceptions::fatalError("Shaders failed to link!");
 		}
 		
 		glDetachShader(programID, vertexShaderID);
@@ -116,7 +117,7 @@ namespace spehs
 
 		if (location == GL_INVALID_INDEX)
 		{
-			console->warning("Uniform " + uniformName + " not found in shader!");
+			spehs::console::warning("Uniform " + uniformName + " not found in shader!");
 			return NULL;
 		}
 
@@ -152,7 +153,7 @@ namespace spehs
 	{
 		std::ifstream vertexFile(filePath);
 		if (vertexFile.fail())
-			console->fatalError("Failed to open " + filePath);
+			exceptions::fatalError("Failed to open " + filePath);
 
 		std::string fileContents = "";
 		std::string line;
@@ -186,7 +187,7 @@ namespace spehs
 
 			if (errorLog.size() > 0)
 				std::printf("\n%s", &errorLog[0]);
-			console->fatalError("Shader " + filePath + " failed to compile!");
+			exceptions::fatalError("Shader " + filePath + " failed to compile!");
 		}
 	}
 	void GLSLProgram::compileShaderFromSource(const std::string& shader, GLuint id)
@@ -216,7 +217,7 @@ namespace spehs
 
 			if (errorLog.size() > 0)
 				std::printf("\n%s", &errorLog[0]);
-			console->fatalError("Default shader failed to compile!");
+			exceptions::fatalError("Default shader failed to compile!");
 		}
 	}
 }

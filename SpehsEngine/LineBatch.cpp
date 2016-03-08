@@ -15,7 +15,7 @@ namespace spehs
 	LineBatch::LineBatch(glm::vec2 _startPoint, glm::vec2 _endPoint)
 	{
 		if (glm::distance(_startPoint, _endPoint) <= 0.0f)
-			console->error("Line needs to have length greater than 0!");
+			spehs::console::error("Line needs to have length greater than 0!");
 
 		numVertices = 2;
 		Vertex* pos = new Vertex[numVertices];
@@ -59,7 +59,7 @@ namespace spehs
 	void LineBatch::addLine(glm::vec2 _startPoint, glm::vec2 _endPoint)
 	{
 		if (glm::distance(_startPoint, _endPoint) <= 0.0f)
-			console->error("Line needs to have length greater than 0!");
+			spehs::console::error("Line needs to have length greater than 0!");
 
 		numVertices += 2;
 		Vertex* pos = new Vertex[numVertices];
@@ -140,7 +140,7 @@ namespace spehs
 	void LineBatch::updateVertices(glm::vec2* _vertices, int _numVertices)
 	{
 		if (_numVertices != numVertices)
-			console->error("Incorrect number of vertices!");
+			spehs::console::error("Incorrect number of vertices!");
 
 		Vertex* pos = new Vertex[numVertices];
 		for (unsigned int i = 0; i < numVertices; i++)

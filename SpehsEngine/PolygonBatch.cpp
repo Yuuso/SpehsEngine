@@ -11,6 +11,7 @@
 #include "Time.h"
 #include "OpenGLError.h"
 #include "Console.h"
+#include "Exceptions.h"
 
 #include <GL/glew.h>
 #include <glm/gtc/type_ptr.hpp>
@@ -83,11 +84,11 @@ namespace spehs
 
 			N = getNumVertices(spehs::Shape(_shapeID));
 			if (N < 3)
-				console->fatalError("Can't create a polygon with less than 3 vertices!");
+				exceptions::fatalError("Can't create a polygon with less than 3 vertices!");
 
 			Vertex* shapeVertexArray = getShapeVertexArray(spehs::Shape(_shapeID));
 			if (shapeVertexArray == nullptr)
-				console->fatalError("Vertex Array is a nullptr!");
+				exceptions::fatalError("Vertex Array is a nullptr!");
 
 			numVertices = new GLuint[numPolygons];
 			numVertices[numPolygons - 1] = N;
@@ -122,10 +123,10 @@ namespace spehs
 		numPolygons++;
 		int N = _numVertices;
 		if (N < 3)
-			console->fatalError("Can't create a polygon with less than 3 vertices!");
+			exceptions::fatalError("Can't create a polygon with less than 3 vertices!");
 
 		if (_vertexData == nullptr)
-			console->fatalError("Vertex Array is a nullptr!");
+			exceptions::fatalError("Vertex Array is a nullptr!");
 
 		numVertices = new GLuint[numPolygons];
 		numVertices[numPolygons - 1] = N;
@@ -275,7 +276,7 @@ namespace spehs
 		}
 		default:
 		{
-			console->error("Undefined polygon drawMode!");
+			spehs::console::error("Undefined polygon drawMode!");
 			break;
 		}
 		}
@@ -458,7 +459,7 @@ namespace spehs
 			break;
 		}
 		default:
-			console->fatalError("Cannot set polygon indices -> polygon draw mode not supported!");
+			exceptions::fatalError("Cannot set polygon indices -> polygon draw mode not supported!");
 		}
 
 		if (indexBufferID != 0)

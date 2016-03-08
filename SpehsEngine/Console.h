@@ -5,57 +5,37 @@
 #include "ConsoleVariable.h"
 #define CONSOLE_FONT_COLOR 1.0f, 0.6f, 0.0f
 
-
+/**Console is accessed through these functions.
+The console is internally mutex locked and can thus be safely accessed from any thread.*/
 namespace spehs
 {
-	class Text;
-	class Console
+	namespace console
 	{
-	public:
-		Console();
-		~Console();
-
+		//Console state
 		int initialize();
 		void unitialize();
+		void open();
+		void close();
+		bool isOpen();
 
+		//Update cycle
 		void update();
 		void render();
+
+		//Variables, commands
 		void addVariable(std::string identifier, bool& var);
 		void addVariable(std::string identifier, float& var);
 		void addVariable(std::string identifier, int& var);
 		void addVariable(std::string identifier, std::string& var);
-		void addConsoleCommand(std::string identifier, void(*fnc)(std::vector<std::string>&));
-		void log(std::string str, glm::vec3& color = glm::vec3(CONSOLE_FONT_COLOR));
-		void warning(std::string warning);
-		void error(std::string error);
-		void fatalError(std::string fatal_error);
-		void clearLog();
+		void addCommand(std::string identifier, void(*fnc)(std::vector<std::string>&));
 		void clearVariables();
 		void clearCommands();
-		void openConsole();
-		void closeConsole();
-		bool isOpen(){ return open; }
 
-	private:
-		float visibility = 1.0f;
-		bool open = false;
-		std::string input;
-		Text* consoleText;
-		std::vector<Text*> lines;
-		int backspaceTimer = 0;
-		int backspaceAcceleration = 0;
-		std::vector<ConsoleCommand> commands;
-		std::vector<std::string> consoleWords;
-		std::vector<ConsoleVariable<int>> intVariables;
-		std::vector<ConsoleVariable<float>> floatVariables;
-		std::vector<ConsoleVariable<bool>> boolVariables;
-		std::vector<ConsoleVariable<std::string>> stringVariables;
-		std::vector<std::string> previousCommands;
-		int previousCommandIndex = 0;
+		//Console log / exceptions
+		void log(std::string str, glm::vec3& color = glm::vec3(CONSOLE_FONT_COLOR));
+		void warning(std::string warning);///<Exception: warning: inform through console. For direct warning without console, use spehs::exceptions::warning()
+		void error(std::string error);///<Exception: error: inform through console. For direct error without console, use spehs::exceptions::warning()
+		void clearLog();
 
-		void updateLinePositions();
-		void setVariable();
-		void executeConsole();
-	};
+	}
 }
-extern spehs::Console* console;
