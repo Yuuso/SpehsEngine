@@ -9,6 +9,7 @@
 #include "ConsoleVariable.h"
 #include "Text.h"
 #define CONSOLE_COMMANDS_KEPT_IN_MEMORY 10
+#define LOG_LINES_KEPT_IN_MEMORY 25
 #define CONSOLE_BORDER 5
 #define BACKSPACE_INITIAL_INTERVAL 500
 #define BACKSPACE_INTERVAL 75
@@ -367,6 +368,11 @@ namespace spehs
 		void log(std::string str, glm::vec3& color)
 		{
 			lockGuardRecursive regionLock(consoleMutex);
+
+			if (lines.size() >= LOG_LINES_KEPT_IN_MEMORY)
+			{
+				lines.erase(lines.begin());
+			}
 			lines.push_back(new spehs::Text());
 			lines.back()->setFont(applicationData->GUITextFontPath, applicationData->consoleTextSize);
 			lines.back()->setColor(glm::vec4(color, applicationData->consoleTextAlpha / 255.0f));
