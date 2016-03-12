@@ -6,7 +6,8 @@
 #define CONSOLE_FONT_COLOR 1.0f, 0.6f, 0.0f
 
 /**Console is accessed through these functions.
-The console is internally mutex locked and can thus be safely accessed from any thread.*/
+The console is internally mutex locked and can thus be safely accessed from any thread.
+*/
 namespace spehs
 {
 	namespace console
@@ -27,7 +28,9 @@ namespace spehs
 		void addVariable(std::string identifier, float& var);
 		void addVariable(std::string identifier, int& var);
 		void addVariable(std::string identifier, std::string& var);
+		void addCommand(std::string identifier, void(*fnc)(void));
 		void addCommand(std::string identifier, void(*fnc)(std::vector<std::string>&));
+		bool removeCommand(std::string commandIdentifier);///< Returns true if command is found and removed succesfully
 		void clearVariables();
 		void clearCommands();
 

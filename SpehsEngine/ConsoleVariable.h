@@ -7,26 +7,35 @@ namespace spehs
 	template <typename T>
 	struct ConsoleVariable
 	{
-		ConsoleVariable(std::string n, T& ptr)
+		ConsoleVariable(std::string identifier, T& ptr)
 		{
-			identifier = n;
-			variablePtr = &ptr;
+			_identifier = identifier;
+			_variablePtr = &ptr;
 		}
 		void set(T value)
 		{
-			*variablePtr = value;
+			*_variablePtr = value;
 		}
-		std::string identifier;
-		T* variablePtr = nullptr;
+		std::string _identifier;
+		T* _variablePtr = nullptr;
 	};
+
 	struct ConsoleCommand
 	{
-		ConsoleCommand(std::string cmd, void(*fnc)(std::vector<std::string>& words))
+		ConsoleCommand(std::string identifier, void(*function)(void)) :
+			_functionWords(nullptr),
+			_functionVoid(function),
+			_identifier(identifier)
 		{
-			command = cmd;
-			function = fnc;
 		}
-		std::string command;
-		void(*function)(std::vector<std::string>& words);
+		ConsoleCommand(std::string identifier, void(*function)(std::vector<std::string>& words)) :
+			_functionWords(function),
+			_functionVoid(nullptr),
+			_identifier(identifier)			
+		{
+		}
+		std::string _identifier;
+		void(*_functionWords)(std::vector<std::string>& words);
+		void(*_functionVoid)();
 	};
 }

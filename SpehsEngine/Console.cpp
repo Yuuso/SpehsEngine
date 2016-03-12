@@ -344,10 +344,28 @@ namespace spehs
 			lockGuardRecursive regionLock(consoleMutex);
 			stringVariables.push_back(ConsoleVariable<std::string>(str, var));
 		}
+		void addCommand(std::string str, void(*fnc)(void))
+		{
+			lockGuardRecursive regionLock(consoleMutex);
+			commands.push_back(ConsoleCommand(str, fnc));
+		}
 		void addCommand(std::string str, void(*fnc)(std::vector<std::string>&))
 		{
 			lockGuardRecursive regionLock(consoleMutex);
 			commands.push_back(ConsoleCommand(str, fnc));
+		}
+		bool removeCommand(std::string commandIdentifier)
+		{
+			lockGuardRecursive regionLock(consoleMutex);
+			for (unsigned i = 0; i < commands.size(); i++)
+			{
+				if (commands[i]._identifier == commandIdentifier)
+				{
+					commands.erase(commands.begin() + i);
+					return true;
+				}
+			}
+			return false;
 		}
 		void clearVariables()
 		{
@@ -482,16 +500,16 @@ namespace spehs
 			{//Help
 				log("Available variables <set variable value>");
 				for (unsigned i = 0; i < boolVariables.size(); i++)
-					log("\\\\" + boolVariables[i].identifier);
+					log("\\\\" + boolVariables[i]._identifier);
 				for (unsigned i = 0; i < intVariables.size(); i++)
-					log("\\\\" + intVariables[i].identifier);
+					log("\\\\" + intVariables[i]._identifier);
 				for (unsigned i = 0; i < floatVariables.size(); i++)
-					log("\\\\" + floatVariables[i].identifier);
+					log("\\\\" + floatVariables[i]._identifier);
 				for (unsigned i = 0; i < stringVariables.size(); i++)
-					log("\\\\" + stringVariables[i].identifier);
+					log("\\\\" + stringVariables[i]._identifier);
 				log("Available commands <command parameter1 parameter2 parameterN>");
 				for (unsigned i = 0; i < commands.size(); i++)
-					log("\\\\" + commands[i].command);
+					log("\\\\" + commands[i]._identifier);
 				return;
 			}
 			else if (consoleWords[0] == "engine")
@@ -513,9 +531,12 @@ namespace spehs
 			{//Search for command with matching identifier
 				for (unsigned i = 0; i < commands.size(); i++)
 				{
-					if (commands[i].command == consoleWords[0])
+					if (commands[i]._identifier == consoleWords[0])
 					{
-						commands[i].function(consoleWords);
+						if (commands[i]._functionVoid)
+							commands[i]._functionVoid();
+						else
+							commands[i]._functionWords(consoleWords);
 						foundCommand = true;
 					}
 				}
@@ -531,6 +552,7 @@ namespace spehs
 		}
 		void setVariable()
 		{
+			lockGuardRecursive regionLock(consoleMutex);
 			bool isFloat = false;
 			for (unsigned i = 0; i < consoleWords[2].size(); i++)
 			if ((consoleWords[2][i] < 48 || consoleWords[2][i] > 57) && consoleWords[2][i] != 45)//if the character is not "numeric" (number or -)
@@ -540,16 +562,16 @@ namespace spehs
 				if (consoleWords[2] == "true" || consoleWords[2] == "false")
 				{
 					for (unsigned i = 0; i < boolVariables.size(); i++)
-					if (consoleWords[1] == boolVariables[i].identifier)
+					if (consoleWords[1] == boolVariables[i]._identifier)
 					{
 						if (consoleWords[2] == "true")
 						{
-							log("Setting " + boolVariables[i].identifier + " as true");
+							log("Setting " + boolVariables[i]._identifier + " as true");
 							boolVariables[i].set(true);
 						}
 						else
 						{
-							log("Setting " + boolVariables[i].identifier + " as false");
+							log("Setting " + boolVariables[i]._identifier + " as false");
 							boolVariables[i].set(false);
 						}
 						return;
@@ -561,10 +583,10 @@ namespace spehs
 				//Check string variables
 				for (unsigned i = 0; i < stringVariables.size(); i++)
 				{
-					if (stringVariables[i].identifier == consoleWords[1])
+					if (stringVariables[i]._identifier == consoleWords[1])
 					{
-						log("Setting " + stringVariables[i].identifier + " to " + consoleWords[2]);
-						*stringVariables[i].variablePtr = consoleWords[2];
+						log("Setting " + stringVariables[i]._identifier + " to " + consoleWords[2]);
+						*stringVariables[i]._variablePtr = consoleWords[2];
 						return;
 					}
 				}
@@ -585,10 +607,10 @@ namespace spehs
 			if (isFloat)
 			{
 				for (unsigned i = 0; i < floatVariables.size(); i++)
-				if (floatVariables[i].identifier == consoleWords[1])
+				if (floatVariables[i]._identifier == consoleWords[1])
 				{
 					{
-						log("Setting " + floatVariables[i].identifier + " to " + consoleWords[2]);
+						log("Setting " + floatVariables[i]._identifier + " to " + consoleWords[2]);
 						floatVariables[i].set(atoi(consoleWords[2].c_str()));
 						return;
 					}
@@ -597,10 +619,10 @@ namespace spehs
 			else
 			{
 				for (unsigned i = 0; i < intVariables.size(); i++)
-				if (intVariables[i].identifier == consoleWords[1])
+				if (intVariables[i]._identifier == consoleWords[1])
 				{
 					{
-						log("Setting " + intVariables[i].identifier + " to " + consoleWords[2]);
+						log("Setting " + intVariables[i]._identifier + " to " + consoleWords[2]);
 						intVariables[i].set(atoi(consoleWords[2].c_str()));
 						return;
 					}
