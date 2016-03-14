@@ -20,7 +20,7 @@ extern int64_t guiRectangleAllocations;
 extern int64_t guiRectangleDeallocations;
 extern int64_t primitiveBatchAllocations;
 extern int64_t primitiveBatchDeallocations;
-typedef std::lock_guard<std::recursive_mutex> lockGuardRecursive;
+typedef std::lock_guard<std::recursive_mutex> LockGuardRecursive;
 
 
 
@@ -56,7 +56,7 @@ namespace spehs
 		//Console state
 		int initialize()
 		{
-			lockGuardRecursive regionLock(consoleMutex);
+			LockGuardRecursive regionLock(consoleMutex);
 			if (checkBit(state, CONSOLE_INITIALIZED_BIT))
 			{
 				log("Console already initialized!");
@@ -74,7 +74,7 @@ namespace spehs
 		}
 		void unitialize()
 		{
-			lockGuardRecursive regionLock(consoleMutex);
+			LockGuardRecursive regionLock(consoleMutex);
 			if (!checkBit(state, CONSOLE_INITIALIZED_BIT))
 			{
 				std::cout << "\nSpehsEngine::console already uninitialized!";
@@ -87,7 +87,7 @@ namespace spehs
 		}
 		void open()
 		{
-			lockGuardRecursive regionLock(consoleMutex);
+			LockGuardRecursive regionLock(consoleMutex);
 			if (checkBit(state, CONSOLE_OPEN_BIT))
 				return;
 			enableBit(state, CONSOLE_OPEN_BIT);
@@ -95,7 +95,7 @@ namespace spehs
 		}
 		void close()
 		{
-			lockGuardRecursive regionLock(consoleMutex);
+			LockGuardRecursive regionLock(consoleMutex);
 			if (!checkBit(state, CONSOLE_OPEN_BIT))
 				return;
 			disableBit(state, CONSOLE_OPEN_BIT);
@@ -104,7 +104,7 @@ namespace spehs
 		}
 		bool isOpen()
 		{
-			lockGuardRecursive regionLock(consoleMutex);
+			LockGuardRecursive regionLock(consoleMutex);
 			return checkBit(state, CONSOLE_OPEN_BIT);
 		}
 
@@ -112,7 +112,7 @@ namespace spehs
 		//Update cycle
 		void update()
 		{
-			lockGuardRecursive regionLock(consoleMutex);
+			LockGuardRecursive regionLock(consoleMutex);
 			if (visibility > 0.0f)
 			{
 				//Update console font size if needed
@@ -299,7 +299,7 @@ namespace spehs
 		}
 		void render()
 		{
-			lockGuardRecursive regionLock(consoleMutex);
+			LockGuardRecursive regionLock(consoleMutex);
 
 			//Render lines
 			if (visibility < 0.01f)
@@ -326,37 +326,37 @@ namespace spehs
 		//Console variables/commands
 		void addVariable(std::string str, bool& var)
 		{
-			lockGuardRecursive regionLock(consoleMutex);
+			LockGuardRecursive regionLock(consoleMutex);
 			boolVariables.push_back(ConsoleVariable<bool>(str, var));
 		}
 		void addVariable(std::string str, float& var)
 		{
-			lockGuardRecursive regionLock(consoleMutex);
+			LockGuardRecursive regionLock(consoleMutex);
 			floatVariables.push_back(ConsoleVariable<float>(str, var));
 		}
 		void addVariable(std::string str, int& var)
 		{
-			lockGuardRecursive regionLock(consoleMutex);
+			LockGuardRecursive regionLock(consoleMutex);
 			intVariables.push_back(ConsoleVariable<int>(str, var));
 		}
 		void addVariable(std::string str, std::string& var)
 		{
-			lockGuardRecursive regionLock(consoleMutex);
+			LockGuardRecursive regionLock(consoleMutex);
 			stringVariables.push_back(ConsoleVariable<std::string>(str, var));
 		}
 		void addCommand(std::string str, void(*fnc)(void))
 		{
-			lockGuardRecursive regionLock(consoleMutex);
+			LockGuardRecursive regionLock(consoleMutex);
 			commands.push_back(ConsoleCommand(str, fnc));
 		}
 		void addCommand(std::string str, void(*fnc)(std::vector<std::string>&))
 		{
-			lockGuardRecursive regionLock(consoleMutex);
+			LockGuardRecursive regionLock(consoleMutex);
 			commands.push_back(ConsoleCommand(str, fnc));
 		}
 		bool removeCommand(std::string commandIdentifier)
 		{
-			lockGuardRecursive regionLock(consoleMutex);
+			LockGuardRecursive regionLock(consoleMutex);
 			for (unsigned i = 0; i < commands.size(); i++)
 			{
 				if (commands[i]._identifier == commandIdentifier)
@@ -369,7 +369,7 @@ namespace spehs
 		}
 		void clearVariables()
 		{
-			lockGuardRecursive regionLock(consoleMutex);
+			LockGuardRecursive regionLock(consoleMutex);
 			boolVariables.clear();
 			floatVariables.clear();
 			intVariables.clear();
@@ -377,7 +377,7 @@ namespace spehs
 		}
 		void clearCommands()
 		{
-			lockGuardRecursive regionLock(consoleMutex);
+			LockGuardRecursive regionLock(consoleMutex);
 			commands.clear();
 		}
 
@@ -385,7 +385,7 @@ namespace spehs
 		//Console logging
 		void log(std::string str, glm::vec3& color)
 		{
-			lockGuardRecursive regionLock(consoleMutex);
+			LockGuardRecursive regionLock(consoleMutex);
 
 			if (lines.size() >= LOG_LINES_KEPT_IN_MEMORY)
 			{
@@ -401,19 +401,19 @@ namespace spehs
 		}
 		void warning(std::string str)
 		{
-			lockGuardRecursive regionLock(consoleMutex);
+			LockGuardRecursive regionLock(consoleMutex);
 			log("[Warning] " + str, glm::vec3(1.0f, 0.3f, 0.0f));
 			spehs::exceptions::warning(str);
 		}
 		void error(std::string str)
 		{
-			lockGuardRecursive regionLock(consoleMutex);
+			LockGuardRecursive regionLock(consoleMutex);
 			log("[Error] " + str, glm::vec3(1.0f, 0.0f, 0.0f));
 			spehs::exceptions::unexpectedError(str);
 		}
 		void clearLog()
 		{
-			lockGuardRecursive regionLock(consoleMutex);
+			LockGuardRecursive regionLock(consoleMutex);
 			while (!lines.empty())
 			{
 				delete lines.back();
@@ -427,7 +427,7 @@ namespace spehs
 		//Local functions
 		void updateLinePositions()
 		{
-			lockGuardRecursive regionLock(consoleMutex);
+			LockGuardRecursive regionLock(consoleMutex);
 			if (lines.size() == 0)
 			{
 				return;
@@ -445,7 +445,7 @@ namespace spehs
 		}
 		void executeConsole()
 		{
-			lockGuardRecursive regionLock(consoleMutex);
+			LockGuardRecursive regionLock(consoleMutex);
 			if (input.size() == 0)
 				return;
 
@@ -552,7 +552,7 @@ namespace spehs
 		}
 		void setVariable()
 		{
-			lockGuardRecursive regionLock(consoleMutex);
+			LockGuardRecursive regionLock(consoleMutex);
 			bool isFloat = false;
 			for (unsigned i = 0; i < consoleWords[2].size(); i++)
 			if ((consoleWords[2][i] < 48 || consoleWords[2][i] > 57) && consoleWords[2][i] != 45)//if the character is not "numeric" (number or -)
