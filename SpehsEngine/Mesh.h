@@ -36,7 +36,7 @@ namespace spehs
 		void setScale(const float &_newScale);
 		void setScale(const float &_newScaleX, const float &_newScaleY, const float &_newScaleZ);
 		void setScale(const glm::vec3 &_newScale);
-		void setColor(const glm::vec4 &_newColor);
+		void setColor(const glm::vec4 &_newColor);//TODO: FIX COLORS
 		void setColor(const glm::vec3 &_newColor);
 		void setColor(const unsigned char &_r, const unsigned char &_g, const unsigned char &_b, const unsigned char &_a = 1.0f);
 		void setRenderState(const bool _newState);

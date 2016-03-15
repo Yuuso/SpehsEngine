@@ -72,12 +72,14 @@ namespace spehs
 				//If none found create a new one
 				if (!batchFound)
 				{
-					primitiveBatches.push_back(new PrimitiveBatch(primitives[i]->planeDepth, primitives[i]->shaderIndex, 
-																  primitives[i]->textureDataID, primitives[i]->drawMode, primitives[i]->lineWidth));
+					primitiveBatches.push_back(new PrimitiveBatch(primitives[i]->planeDepth, primitives[i]->shaderIndex,
+						primitives[i]->textureDataID, primitives[i]->drawMode, primitives[i]->lineWidth));
 					primitiveBatches.back()->push(primitives[i]);
 				}
 				i++;
 			}
+			else
+				i++;
 		}
 
 		//Batch Meshes

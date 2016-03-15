@@ -91,6 +91,7 @@ namespace spehs
 		//Getters
 		PlaneDepth getPlaneDepth(){ return planeDepth; }
 		int getShaderIndex(){ return shaderIndex; }
+		glm::vec4 getColor(){ return primitiveColor; }
 
 		//Public Variables
 		Vertex* worldVertexArray; //Transformed vertices
@@ -103,7 +104,6 @@ namespace spehs
 		bool readyForDelete;
 		bool blending;
 		bool renderState; //Whether Primitive is rendered or not
-		bool useColor; //When true: Colors are sent as uniform
 		bool cameraMatrixState; //Whether primitive scales with camera or not
 		GLuint textureDataID;
 		PlaneDepth planeDepth;

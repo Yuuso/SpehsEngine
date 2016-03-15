@@ -71,11 +71,11 @@ namespace spehs
 		{
 			numVertices = getNumVertices(spehs::Shape(_shapeID));
 			if (numVertices < 3)
-				spehs::exceptions::fatalError("Can't create a polygon with less than 3 vertices!");
+				exceptions::fatalError("Can't create a polygon with less than 3 vertices!");
 
 			Vertex* shapeVertexArray = getShapeVertexArray(spehs::Shape(_shapeID));
 			if (shapeVertexArray == nullptr)
-				spehs::exceptions::fatalError(__FUNCTION__" Vertex Array is a nullptr!");
+				exceptions::fatalError(__FUNCTION__" Vertex Array is a nullptr!");
 
 			//Copy the shape vertex array into polygon's own arrays
 			vertexArray = shapeVertexArray;
@@ -96,10 +96,10 @@ namespace spehs
 		planeDepth = _planeDepth;
 		numVertices = _numVertices;
 		if (numVertices < 3)
-			spehs::exceptions::fatalError("Can't create a polygon with less than 3 vertices!");
+			exceptions::fatalError("Can't create a polygon with less than 3 vertices!");
 
 		if (_vertexData == nullptr)
-			spehs::exceptions::fatalError("Vertex Array is a nullptr!");
+			exceptions::fatalError("Vertex Array is a nullptr!");
 
 		//Copy the shape vertex array into polygon's own arrays
 		vertexArray = new Vertex[numVertices];

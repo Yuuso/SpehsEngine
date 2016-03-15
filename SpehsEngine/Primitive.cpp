@@ -16,7 +16,6 @@ namespace spehs
 		cameraMatrixState = true;
 		readyForDelete = false;
 		renderState = true;
-		useColor = false;
 		shaderIndex = DefaultPolygon;
 		drawMode = UNDEFINED;
 		numVertices = 0;
@@ -98,40 +97,47 @@ namespace spehs
 
 	void Primitive::setColor(const glm::vec4 &_newColor)
 	{
-		useColor = true;
 		primitiveColor = _newColor;
+		for (unsigned i = 0; i < numVertices; i++)
+		{
+			worldVertexArray[i].setColor(primitiveColor.x, primitiveColor.y, primitiveColor.z, primitiveColor.w);
+		}
 	}
 
 	void Primitive::setColor(const glm::vec3 &_newColor)
 	{
-		useColor = true;
 		primitiveColor = glm::vec4(_newColor, 1.0f);
+		for (unsigned i = 0; i < numVertices; i++)
+		{
+			worldVertexArray[i].setColor(primitiveColor.x, primitiveColor.y, primitiveColor.z, primitiveColor.w);
+		}
 	}
 
 	void Primitive::setColor(const unsigned char &_r, const unsigned char &_g, const unsigned char &_b, const unsigned char &_a)
 	{
-		useColor = true;
 		primitiveColor = glm::vec4((float) _r / 255.0f, (float) _g / 255.0f, (float) _b / 255.0f, (float) _a / 255.0f);
+		for (unsigned i = 0; i < numVertices; i++)
+		{
+			worldVertexArray[i].setColor(_r, _g, _b, _a);
+		}
 	}
 
 	void Primitive::setColorAlpha(const float &_a)
 	{
-		if (!useColor)
-		{
-			spehs::console::error("Must set color before modifying alpha!");
-			return;
-		}
 		primitiveColor.a = _a;
+		for (unsigned i = 0; i < numVertices; i++)
+		{
+			worldVertexArray[i].color.a = (unsigned char)(_a * 255.0f);
+		}
 	}
 
 	void Primitive::setColorAlpha(const unsigned char &_a)
 	{
-		if (!useColor)
+		primitiveColor.a = (float) _a / 255.0f;
+		for (unsigned i = 0; i < numVertices; i++)
 		{
-			spehs::console::error("Must set color before modifying alpha!");
-			return;
+			worldVertexArray[i].color.a = _a;
 		}
-		primitiveColor.a = (float)_a / 255.0f;
 	}
 
 	void Primitive::setCameraMatrixState(const bool _newState)
@@ -158,7 +164,7 @@ namespace spehs
 	{
 		if (shaderManager->getShader(_newShaderIndex) == nullptr)
 		{
-			spehs::console::error("Trying to set a non-existing shader to Primitive!");
+			console::error("Trying to set a non-existing shader to Primitive!");
 			return;
 		}
 		shaderIndex = _newShaderIndex;

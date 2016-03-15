@@ -9,7 +9,7 @@ typedef unsigned int GLuint;
 typedef unsigned short GLushort;
 typedef int16_t PlaneDepth;
 
-#define MAX_BATCH_DEFAULT_SIZE 4000
+#define MAX_BATCH_DEFAULT_SIZE 4096
 
 namespace spehs
 {
@@ -30,7 +30,7 @@ namespace spehs
 
 		bool operator==(const Primitive &_primitive); //Checks if primitive is suitable for this batch
 
-		bool render();
+		bool render(); //Returns false if the batch is empty
 		void push(Primitive* _primitive);
 
 		PlaneDepth getPriority() const{ return priority; }
@@ -38,6 +38,7 @@ namespace spehs
 	protected:
 		bool isEnoughRoom(unsigned int _numVertices);
 		void initBuffers();
+		void updateBuffers();
 		void setIndices(const unsigned int &_numVertices);
 
 		std::vector<Vertex*> vertices;
