@@ -7,12 +7,14 @@
 #include "ShaderManager.h"
 #include "OpenGLError.h"
 #include "Vertex.h"
+#include "Camera2D.h"
 
 #include <GL/glew.h>
 
 
 namespace spehs
 {
+	//PRIMITIVE BATCH
 	PrimitiveBatch::PrimitiveBatch()
 	{
 		vertexArrayObjectID = 0;
@@ -20,6 +22,7 @@ namespace spehs
 		indexBufferID = 0;
 
 		blending = false;
+		cameraMatrixState = false;
 		shaderIndex = -1;
 		textureDataID = 0;
 		drawMode = 0;
@@ -27,12 +30,13 @@ namespace spehs
 		totalNumvertices = 0;
 		priority = 0;
 	}
-	PrimitiveBatch::PrimitiveBatch(const int16_t &_priority, const bool _blending, const int &_shaderIndex, const GLuint &_textureDataID, const GLenum &_drawMode, float _lineWidth)
+	PrimitiveBatch::PrimitiveBatch(const bool _cameraMatrixState, const int16_t &_priority, const bool _blending, const int &_shaderIndex, const GLuint &_textureDataID, const GLenum &_drawMode, float _lineWidth)
 	{
 		vertexArrayObjectID = 0;
 		vertexBufferID = 0;
 		indexBufferID = 0;
 
+		cameraMatrixState = _cameraMatrixState;
 		blending = _blending;
 		shaderIndex = _shaderIndex;
 		textureDataID = _textureDataID;
@@ -72,7 +76,8 @@ namespace spehs
 			textureDataID != _primitive.textureDataID ||
 			drawMode != _primitive.drawMode ||
 			priority != _primitive.planeDepth ||
-			blending != _primitive.blending)
+			blending != _primitive.blending ||
+			cameraMatrixState != _primitive.cameraMatrixState)
 		{
 			return false;
 		}
@@ -106,6 +111,7 @@ namespace spehs
 		
 		updateBuffers();
 
+		//Blending
 		if (blending)
 		{
 			glEnable(GL_BLEND);
@@ -114,13 +120,27 @@ namespace spehs
 		{
 			glDisable(GL_BLEND);
 		}
+
 		shaderManager->use(shaderIndex);
+
+		//Texture
 		if (textureDataID)
 		{
 			shaderManager->getShader(shaderIndex)->uniforms->textureDataID = textureDataID;
 		}
+		//Camera Matrix
+		if (cameraMatrixState)
+		{
+			shaderManager->getShader(shaderIndex)->uniforms->cameraMatrix = *spehs::getActiveBatchManager()->getCamera2D()->projectionMatrix;
+		}
+		else
+		{
+			shaderManager->getShader(shaderIndex)->uniforms->cameraMatrix = spehs::getActiveBatchManager()->getCamera2D()->staticMatrix;
+		}
+		//Uniforms
 		shaderManager->setUniforms(shaderIndex);
 
+		//Draw
 		glBindVertexArray(vertexArrayObjectID);
 		if (lineWidth != 0.0f)
 		{
@@ -128,8 +148,10 @@ namespace spehs
 		}
 		glDrawElements(drawMode, indices.size(), GL_UNSIGNED_SHORT, (GLvoid*) 0);
 		glBindVertexArray(0);
+
 		shaderManager->unuse(shaderIndex);
 
+		//Clean up
 		vertices.clear();
 		indices.clear();
 		return true;
@@ -236,5 +258,41 @@ namespace spehs
 			exceptions::fatalError("Draw mode is either undefined or is not supported by the engine at the moment! DrawMode: " + drawMode);
 			break;
 		}
+	}
+
+
+	//MESH BATCH
+	MeshBatch::MeshBatch()
+	{
+
+	}
+	MeshBatch::~MeshBatch()
+	{
+
+	}
+
+	bool MeshBatch::operator==(const Mesh &_primitive)
+	{
+		return false;
+	}
+
+	void MeshBatch::render()
+	{
+
+	}
+
+	void MeshBatch::push(Mesh* _batchObject)
+	{
+
+	}
+
+	bool MeshBatch::isEnoughRoom(unsigned int _numVertices)
+	{
+		return false;
+	}
+
+	void MeshBatch::initBuffers()
+	{
+
 	}
 }

@@ -25,7 +25,10 @@ namespace spehs
 		float getScale() { return scale; }
 		WorldPosition& getWorldPositionRef(){ return worldPosition; }
 		
+		//Public Variables
 		glm::vec2 deltaMovement;
+		glm::mat4* projectionMatrix;
+		glm::mat4 staticMatrix;
 
 	private:
 		float zoomSpeed;
@@ -36,5 +39,3 @@ namespace spehs
 		WorldPosition previousPosition;
 	};
 }
-extern spehs::Camera2D camera;
-extern spehs::Camera2D editorCamera;

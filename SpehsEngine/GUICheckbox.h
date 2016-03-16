@@ -1,11 +1,13 @@
 #pragma once
-#include <string>
+
 #include "GUIRectangle.h"
+
+#include <string>
 
 
 namespace spehs
 {
-	class PolygonBatch;
+	class Polygon;
 	class GUICheckbox : public GUIRectangle
 	{
 	public:
@@ -29,8 +31,8 @@ namespace spehs
 		GUICheckbox* getAsGUICheckboxPtr(){ return this; }
 
 	protected:
-		PolygonBatch* checkboxBackground;
-		PolygonBatch* checkboxFilling;
+		Polygon* checkboxBackground;
+		Polygon* checkboxFilling;
 		bool* booleanPtr;
 		int checkboxSize;
 		bool previousSelectedState;

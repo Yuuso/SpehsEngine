@@ -1,7 +1,12 @@
 #pragma once
 
+#include <glm/vec2.hpp>
+#include <glm/vec3.hpp>
+
 #include <vector>
 
+
+typedef int16_t PlaneDepth;
 
 namespace spehs
 {
@@ -14,6 +19,7 @@ namespace spehs
 	class Camera3D;
 	class PrimitiveBatch;
 	class MeshBatch;
+	class Vertex;
 
 	/*
 	Class that handles the management and rendering of batches and batchobjects.
@@ -33,12 +39,21 @@ namespace spehs
 		~BatchManager();
 
 		Mesh* createMesh();
-		Polygon* createPolygon();
-		Line* createLine();
-		Point* createPoint();
+
+		Polygon* createPolygon(const int &_shapeID, const PlaneDepth &_planeDepth = 0, const float &_width = 1.0f, const float &_height = 1.0f);
+		Polygon* createPolygon(Vertex* _vertexData, const int &_numVertices, const PlaneDepth &_planeDepth, const float &_width = 1.0f, const float &_height = 1.0f);
+		Polygon* createPolygon(Vertex* _vertexData, const int &_numVertices, const float &_width = 1.0f, const float &_height = 1.0f);
+
+		Line* createLine(const glm::vec2 &_startPoint, const glm::vec2 &_endPoint, const PlaneDepth &_planeDepth = 0);
+		Line* createLine(const glm::vec3 &_startPoint, const glm::vec3 &_endPoint);
+
+		Point* createPoint(const PlaneDepth &_planeDepth = 0);
 
 		void render();
 		void clearBatches();
+
+		Camera2D* getCamera2D(){ return camera2D; }
+		Camera3D* getCamera3D(){ return camera3D; }
 
 	protected:
 		std::vector<PrimitiveBatch*> primitiveBatches;
@@ -50,4 +65,11 @@ namespace spehs
 		Camera2D* camera2D;
 		Camera3D* camera3D;
 	};
+
+	/*
+	Active BatchManager needs to be set when using some parts of the engine!
+	*/
+	void setActiveBatchManager(BatchManager* _active);
+	void resetActiveBatchManager();
+	BatchManager* getActiveBatchManager();
 }

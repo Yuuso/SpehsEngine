@@ -1,12 +1,16 @@
 #include "ApplicationData.h"
-#include "PolygonBatch.h"
+#include "Polygon.h"
 #include "InputManager.h"
 #include "GUIRectangle.h"
 #include "TextureManager.h"
 #include "GUIRectangleContainer.h"
 #include "ApplicationData.h"
 #include "Text.h"
+#include "BatchManager.h"
+
+
 #define TEXT_MAX_STRING_LENGTH 32
+
 int64_t guiRectangleAllocations = 0;
 int64_t guiRectangleDeallocations = 0;
 
@@ -14,7 +18,7 @@ namespace spehs
 {
 	GUIRectangle::DisplayTexture::~DisplayTexture()
 	{
-		delete polygon;
+		polygon->destroy();
 	}
 	GUIRectangle::GUIRectangle() : position(0), size(0), minSize(0), state(0), displayTexture(nullptr)
 	{//Default constructor
@@ -23,7 +27,7 @@ namespace spehs
 #endif
 
 		//Create polygon
-		polygon = new spehs::PolygonBatch(spehs::Shape(spehs::BUTTON), 1, 1);
+		polygon = spehs::getActiveBatchManager()->createPolygon(spehs::BUTTON, 1, 1);
 		polygon->setCameraMatrixState(false);
 
 		//Initial state (0)
@@ -55,7 +59,7 @@ namespace spehs
 #ifdef _DEBUG
 		++guiRectangleDeallocations;
 #endif
-		delete polygon;
+		polygon->destroy();
 		if (text)
 			delete text;
 		if (tooltip)
@@ -103,7 +107,7 @@ namespace spehs
 		//Drawing rectangle polygon
 		if (checkBit(state, GUIRECT_VISIBLE))
 		{
-			polygon->draw();
+			polygon->setRenderState(true);
 
 			//Rendering text
 			if (text)
@@ -111,8 +115,13 @@ namespace spehs
 
 			//Rendering display texture
 			if (displayTexture)
-				displayTexture->polygon->draw();
-
+				displayTexture->polygon->setRenderState(true);
+		}
+		else
+		{
+			polygon->setRenderState(false);
+			if (displayTexture)
+				displayTexture->polygon->setRenderState(false);
 		}
 	}
 	void GUIRectangle::postRender()
@@ -299,7 +308,7 @@ namespace spehs
 		if (displayTexture)
 			delete displayTexture;
 		displayTexture = new DisplayTexture();
-		displayTexture->polygon = new PolygonBatch(4, 1, 1);
+		displayTexture->polygon = spehs::getActiveBatchManager()->createPolygon(4, 1, 1);
 		TextureData* texData = textureManager->getTextureData(path);
 		displayTexture->polygon->setTexture(texData);
 		displayTexture->polygon->resize(texData->width, texData->height);

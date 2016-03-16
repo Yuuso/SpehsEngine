@@ -21,6 +21,8 @@ namespace spehs
 	{//Default Shaders
 		DefaultPolygon = 0,
 		DefaultTexture = 1,
+		DefaultMesh = 2,
+		DefaultMeshTexture = 3,
 	};
 
 	class Uniforms
@@ -30,17 +32,13 @@ namespace spehs
 		virtual ~Uniforms();
 
 		virtual void setUniforms();
-		glm::mat4 transformMatrix;
 		glm::mat4 cameraMatrix;
-		glm::vec4 color;
 		GLuint textureDataID; //this is only here because primitives need it, Uniform base class can't send textureData
 
 	protected:
 		GLSLProgram* shader;
 
-		GLint transformLocation = 0;
 		GLint cameraLocation = 0;
-		GLint colorLocation = 0;
 	};
 
 

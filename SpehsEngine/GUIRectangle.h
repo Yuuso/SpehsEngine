@@ -39,7 +39,7 @@
 namespace spehs
 {
 	class Text;
-	class PolygonBatch;
+	class Polygon;
 	class GUIWindow;
 	class GUIButton;
 	class GUICheckbox;
@@ -82,7 +82,7 @@ namespace spehs
 		/*Range [0, 255]*/
 		void setColor(int r, int g, int b, int a = 255);
 		void setParent(GUIRectangle* Parent){ parent = Parent; }
-		spehs::PolygonBatch* getPolygonPtr(){ return polygon; }
+		spehs::Polygon* getPolygonPtr(){ return polygon; }
 		GUIRectangle* getParentPtr(){ return parent; }
 		GUIRectangle* getFirstGenerationParent();
 		//ID
@@ -179,7 +179,7 @@ namespace spehs
 		glm::ivec2 position;///<The position of the rectangle, originating from the lower left corner, given in screen coordinates
 		glm::ivec2 size;///<Current size of the rectangle
 		glm::ivec2 minSize;///<The minimum size of the rectangle. Checked whenever rezising the polygon.
-		PolygonBatch* polygon;
+		Polygon* polygon;
 		GUIRectangle* tooltip;
 		Text* text;
 		GUIRectangle* parent;///<Rectangle inherits position from parent chain. NOTE: parent must be ractangle container
@@ -190,7 +190,7 @@ namespace spehs
 		{
 			DisplayTexture() : polygon(nullptr), width(0), height(0){}
 			~DisplayTexture();
-			PolygonBatch* polygon;
+			Polygon* polygon;
 			uint16_t width;
 			uint16_t height;
 		};

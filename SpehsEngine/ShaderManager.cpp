@@ -15,16 +15,12 @@ namespace spehs
 		textureDataID = 0;
 		shader = _shader;
 
-		transformLocation = shader->getUniformLocation("transformMatrix");
 		cameraLocation = shader->getUniformLocation("cameraMatrix");
-		colorLocation = shader->getUniformLocation("polygonColor");
 	}
 	Uniforms::~Uniforms()
 	{}
 	void Uniforms::setUniforms()
 	{
-		glUniformMatrix4fv(transformLocation, 1, GL_FALSE, &transformMatrix[0][0]);
-		glUniform4fv(colorLocation, 1, &color[0]);
 		glUniformMatrix4fv(cameraLocation, 1, GL_FALSE, &cameraMatrix[0][0]);
 
 #ifdef _DEBUG
@@ -51,43 +47,35 @@ namespace spehs
 		const std::string defaultPolygonVert =
 		{
 			"#version 130\n"
-			"in vec2 vertexPosition;\n"
-			"out vec2 fragmentPosition;\n"
+			"in vec3 vertexPosition;\n"
+			"in vec4 vertexColor;\n"
 			"out vec4 fragmentColor;\n"
-			"uniform mat4 transformMatrix;\n"
-			"uniform vec4 polygonColor;\n"
 			"uniform mat4 cameraMatrix;\n"
 			"void main()\n"
 			"{\n"
-			"	gl_Position = cameraMatrix * (transformMatrix * vec4(vertexPosition.xy, 0.0f, 1.0));\n"
-			"	fragmentPosition = vertexPosition;\n"
-			"	fragmentColor = polygonColor;\n"
+			"	gl_Position = cameraMatrix * vec4(vertexPosition.xy, 0.0f, 1.0);\n"
+			"	fragmentColor = vertexColor;\n"
 			"}\n"
 		};
 		const std::string defaultTextureVert =
 		{
 			"#version 130\n"
-			"in vec2 vertexPosition;\n"
-			"in vec2 textureCoords;\n"
-			"out vec2 fragmentPosition;\n"
-			"out vec2 texCoord;\n"
+			"in vec3 vertexPosition;\n"
+			"in vec4 vertexColor;\n"
+			"in vec2 vertexUV;\n"
 			"out vec4 fragmentColor;\n"
-			"uniform mat4 transformMatrix;\n"
-			"uniform vec4 polygonColor;\n"
+			"out vec2 texCoord;\n"
 			"uniform mat4 cameraMatrix;\n"
 			"void main()\n"
 			"{\n"
-			"	gl_Position = cameraMatrix * (transformMatrix * vec4(vertexPosition.xy, 0.0f, 1.0));\n"
-			"	fragmentPosition = vertexPosition;\n"
-			"	fragmentColor = polygonColor;\n"
-			"	texCoord = textureCoords;\n"
+			"	gl_Position = cameraMatrix * vec4(vertexPosition.xy, 0.0f, 1.0);\n"
+			"	fragmentColor = vertexColor;\n"
+			"	texCoord = vertexUV;\n"
 			"}\n"
 		};
 		const std::string defaultPolygonFrag =
 		{
 			"#version 130\n"
-			"in vec2 fragmentPosition;\n"
-			"in vec2 texCoord;\n"
 			"in vec4 fragmentColor;\n"
 			"out vec4 color;\n"
 			"void main()\n"
@@ -98,7 +86,6 @@ namespace spehs
 		const std::string defaultTextureFrag =
 		{
 			"#version 130\n"
-			"in vec2 fragmentPosition;\n"
 			"in vec2 texCoord;\n"
 			"in vec4 fragmentColor;\n"
 			"out vec4 color;\n"
@@ -109,6 +96,8 @@ namespace spehs
 			"	color = color * fragmentColor;\n"
 			"}\n"
 		};
+
+		//TODO: Mesh shaders
 #pragma endregion
 
 		//DefaultPolygon
@@ -125,6 +114,14 @@ namespace spehs
 		defaultTexShader->addAttribute("textureCoords");
 		defaultTexShader->linkShaders();
 		shaderPrograms.push_back(new spehs::Shader(spehs::DefaultTexture, defaultTexShader, new DefaultTextureUniforms(defaultTexShader)));
+
+		//TODO: Mesh shaders, these are just placeholder shaders!
+		//DefaultMesh
+		spehs::GLSLProgram* defaultMeshShader = defaultShader;
+		shaderPrograms.push_back(new spehs::Shader(spehs::DefaultMesh, defaultMeshShader, new Uniforms(defaultMeshShader)));
+		//DefaultMeshTexture
+		spehs::GLSLProgram* defaultMeshTexShader = defaultTexShader;
+		shaderPrograms.push_back(new spehs::Shader(spehs::DefaultMeshTexture, defaultMeshTexShader, new DefaultTextureUniforms(defaultMeshTexShader)));
 	}
 	ShaderManager::~ShaderManager()
 	{

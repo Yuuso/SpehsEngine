@@ -89,6 +89,7 @@ namespace spehs
 		void setBlending(const bool _newState);
 
 		//Getters
+		bool getCameraMatrixState(){ return cameraMatrixState; }
 		PlaneDepth getPlaneDepth(){ return planeDepth; }
 		int getShaderIndex(){ return shaderIndex; }
 		glm::vec4 getColor(){ return primitiveColor; }

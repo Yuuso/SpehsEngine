@@ -61,18 +61,6 @@
     <ClCompile Include="Arrow.cpp">
       <Filter>Rendering\Geometric Rendering</Filter>
     </ClCompile>
-    <ClCompile Include="PolygonBatch.cpp">
-      <Filter>Rendering\Geometric Rendering</Filter>
-    </ClCompile>
-    <ClCompile Include="PrimitiveBatch.cpp">
-      <Filter>Rendering\Geometric Rendering</Filter>
-    </ClCompile>
-    <ClCompile Include="LineBatch.cpp">
-      <Filter>Rendering\Geometric Rendering</Filter>
-    </ClCompile>
-    <ClCompile Include="PointBatch.cpp">
-      <Filter>Rendering\Geometric Rendering</Filter>
-    </ClCompile>
     <ClCompile Include="SATCollision.cpp">
       <Filter>Physics</Filter>
     </ClCompile>
@@ -138,6 +126,9 @@
     </ClCompile>
     <ClCompile Include="BatchManager.cpp">
       <Filter>Rendering\Geometric Rendering\Batch Rendering</Filter>
+    </ClCompile>
+    <ClCompile Include="Shapes.cpp">
+      <Filter>Rendering\Geometric Rendering</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -211,18 +202,6 @@
       <Filter>Rendering\Geometric Rendering</Filter>
     </ClInclude>
     <ClInclude Include="Arrow.h">
-      <Filter>Rendering\Geometric Rendering</Filter>
-    </ClInclude>
-    <ClInclude Include="PolygonBatch.h">
-      <Filter>Rendering\Geometric Rendering</Filter>
-    </ClInclude>
-    <ClInclude Include="PrimitiveBatch.h">
-      <Filter>Rendering\Geometric Rendering</Filter>
-    </ClInclude>
-    <ClInclude Include="PointBatch.h">
-      <Filter>Rendering\Geometric Rendering</Filter>
-    </ClInclude>
-    <ClInclude Include="LineBatch.h">
       <Filter>Rendering\Geometric Rendering</Filter>
     </ClInclude>
     <ClInclude Include="GUIRectangleTree.h">

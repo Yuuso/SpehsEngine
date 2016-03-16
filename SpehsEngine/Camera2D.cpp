@@ -2,11 +2,6 @@
 #include "Camera2D.h"
 #include "ApplicationData.h"
 
-spehs::Camera2D camera;
-spehs::Camera2D editorCamera;
-glm::mat4* projectionMatrix;
-glm::mat4 staticMatrix;
-
 
 namespace spehs
 {
@@ -44,6 +39,9 @@ namespace spehs
 		static glm::vec3 scaleVec;
 		scaleVec = glm::vec3(((float) applicationData->getWindowWidth() / (float) applicationData->getWindowHeight()) * scale, scale, 0.0f);
 		cameraMatrix = glm::scale(glm::mat4(1.0f), scaleVec) * cameraMatrix;
+
+		//?
+		enableCameraMatrix();
 
 		//Delta movement
 		deltaMovement = worldPosition - previousPosition;
