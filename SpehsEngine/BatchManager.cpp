@@ -3,6 +3,7 @@
 #include "Primitive.h"
 #include "Mesh.h"
 #include "Batch.h"
+#include "Polygon.h"
 
 #include <algorithm>
 
@@ -36,6 +37,30 @@ namespace spehs
 			delete meshes[i];
 		}
 	}
+
+
+
+	Mesh* BatchManager::createMesh()
+	{
+		return nullptr;
+	}
+
+	Polygon* BatchManager::createPolygon()
+	{
+		primitives.push_back(new Polygon(4));
+		return primitives.back()->getPolygonPtr();
+	}
+
+	Line* BatchManager::createLine()
+	{
+		return nullptr;
+	}
+
+	Point* BatchManager::createPoint()
+	{
+		return nullptr;
+	}
+
 
 
 	void BatchManager::render()

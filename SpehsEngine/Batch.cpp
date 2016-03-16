@@ -128,6 +128,7 @@ namespace spehs
 		}
 		glDrawElements(drawMode, indices.size(), GL_UNSIGNED_SHORT, (GLvoid*) 0);
 		glBindVertexArray(0);
+		shaderManager->unuse(shaderIndex);
 
 		vertices.clear();
 		indices.clear();
