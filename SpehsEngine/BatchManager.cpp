@@ -127,12 +127,13 @@ namespace spehs
 					{
 						primitiveBatches[j]->push(primitives[i]);
 						batchFound = true;
+						j = primitiveBatches.size();
 					}
 				}
 				//If none found create a new one
 				if (!batchFound)
 				{
-					primitiveBatches.push_back(new PrimitiveBatch(this, primitives[i]->cameraMatrixState, primitives[i]->planeDepth, primitives[i]->shaderIndex,
+					primitiveBatches.push_back(new PrimitiveBatch(primitives[i]->cameraMatrixState, primitives[i]->planeDepth, primitives[i]->blending, primitives[i]->shaderIndex,
 						primitives[i]->textureDataID, primitives[i]->drawMode, primitives[i]->lineWidth));
 					primitiveBatches.back()->push(primitives[i]);
 				}

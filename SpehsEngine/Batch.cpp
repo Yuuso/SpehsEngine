@@ -214,8 +214,8 @@ namespace spehs
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBufferID);
 
 		//Sent data to GPU
-		glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(Vertex) * totalNumvertices, &vertices);
-		glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, sizeof(GLushort) * indices.size(), &indices);
+		glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(Vertex) * totalNumvertices, &vertices[0]);
+		glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, sizeof(GLushort) * indices.size(), &indices[0]);
 
 		glBindVertexArray(0);
 		glBindBuffer(GL_ARRAY_BUFFER, 0);

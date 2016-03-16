@@ -127,7 +127,7 @@ namespace spehs
 	void Polygon::updateVertices()
 	{
 		static glm::vec4 vertex;
-		scaledMatrix = glm::scale(glm::mat4(), glm::vec3(scaleX, scaleY, 0.0f));
+		scaledMatrix = glm::scale(glm::mat4(1.0f), glm::vec3(scaleX, scaleY, 0.0f));
 		scaledRotatedMatrix = glm::rotate(scaledMatrix, rotation, rotationVector);
 		for (unsigned int i = 0; i < numVertices; i++)
 		{

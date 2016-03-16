@@ -23,9 +23,9 @@ namespace spehs
 		planeDepth = 0;
 		lineWidth = 0.0f;
 		rotation = 0.0f;
-		scaleX = 0.0f;
-		scaleY = 0.0f;
-		rotationVector = glm::vec3(0.0f);
+		scaleX = 1.0f;
+		scaleY = 1.0f;
+		rotationVector = glm::vec3(0.0f, 0.0f, 1.0f);//?
 		primitiveColor = glm::vec4(1.0f);
 		scaledMatrix = glm::mat4(1.0f);
 		scaledRotatedMatrix = glm::mat4(1.0f);
