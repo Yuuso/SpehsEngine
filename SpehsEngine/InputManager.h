@@ -88,6 +88,8 @@ namespace spehs
 		std::vector<Joystick*> joysticks;
 		int32_t latestKeyboardPress;///< Latest key pressed. Reset for each update (0) if nothing was pressed during that update
 		int32_t latestMouseButtonPress;///< Latest mouse buton pressed. Reset for each update (0) if nothing was pressed during that update
+		std::unordered_map<unsigned int, bool> keyMap;
+		std::unordered_map<unsigned int, bool> previousKeyMap;
 
 	private:
 		bool quitRequested = false;
@@ -95,8 +97,6 @@ namespace spehs
 		
 		//Keyboard
 		bool wasKeyDown(unsigned int keyID);
-		std::unordered_map<unsigned int, bool> keyMap;
-		std::unordered_map<unsigned int, bool> previousKeyMap;
 
 		//Mouse
 		glm::ivec2 mouseCoords;
