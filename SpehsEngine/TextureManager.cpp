@@ -109,9 +109,7 @@ namespace spehs
 		TextureData* newTexData = new TextureData(textureData, width, height);
 		textureDataMap.insert(std::pair<size_t, TextureData*>(hash, newTexData));
 
-#ifdef _DEBUG
 		checkOpenGLErrors(__FILE__, __LINE__);
-#endif
 
 		return newTexData;
 	}

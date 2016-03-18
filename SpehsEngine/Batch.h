@@ -11,8 +11,6 @@ typedef unsigned int GLuint;
 typedef unsigned short GLushort;
 typedef int16_t PlaneDepth;
 
-#define MAX_BATCH_DEFAULT_SIZE 4096
-
 namespace spehs
 {
 	class BatchManager;
@@ -51,6 +49,7 @@ namespace spehs
 
 		bool blending;
 		bool cameraMatrixState;
+		bool bufferInit;
 		int shaderIndex;
 		unsigned int totalNumvertices;
 		GLuint textureDataID;

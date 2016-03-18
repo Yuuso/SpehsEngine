@@ -12,6 +12,7 @@ namespace spehs
 	void checkOpenGLErrors(const std::string &_file, int _line)
 	{
 		static GLenum errorCode;
+#ifdef _DEBUG
 		errorCode = glGetError();
 
 		switch (errorCode)
@@ -93,5 +94,6 @@ namespace spehs
 			}
 			break;
 		}
+#endif
 	}
 }

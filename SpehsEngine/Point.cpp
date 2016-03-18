@@ -12,7 +12,7 @@ namespace spehs
 	{
 		numVertices = 1;
 		Vertex* pos = new Vertex[numVertices];
-		pos[0].setPosition(0.0f, 0.0f);
+		pos[0].position.setPosition(0.0f, 0.0f);
 
 		vertexArray = pos;
 		worldVertexArray = new Vertex[numVertices];
@@ -20,6 +20,7 @@ namespace spehs
 
 		planeDepth = _planeDepth;
 		blending = true;
+		drawMode = POINT;
 	}
 	Point::~Point()
 	{
@@ -31,7 +32,7 @@ namespace spehs
 	{
 		for (unsigned int i = 0; i < numVertices; i++)
 		{
-			worldVertexArray[i].setPosition(vertexArray[i].position.x + position.x, vertexArray[i].position.y + position.y, vertexArray[i].position.z + position.z);
+			worldVertexArray[i].position.setPosition(vertexArray[i].position.x + position.x, vertexArray[i].position.y + position.y, vertexArray[i].position.z + position.z);
 		}
 	}
 

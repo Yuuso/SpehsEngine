@@ -17,8 +17,8 @@ namespace spehs
 		~Window();
 
 		int create(std::string windowName, int scrWidth, int scrHeight, unsigned int currentFlags);
-		void swapBuffers();
-		void clearBuffer();
+		void renderBegin();
+		void renderEnd();
 		void clearColor(float _r, float _g, float _b, float _a);
 
 	private:

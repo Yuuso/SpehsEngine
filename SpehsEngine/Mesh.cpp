@@ -60,7 +60,7 @@ namespace spehs
 		{
 			vertex = glm::vec4(vertexArray[i].position.x, vertexArray[i].position.y, vertexArray[i].position.z, 1.0f);
 			vertex = scaledRotatedMatrix * vertex;
-			worldVertexArray[i].setPosition(vertex.x + position.x, vertex.y + position.y, vertex.z + position.z);
+			worldVertexArray[i].position.setPosition(vertex.x + position.x, vertex.y + position.y, vertex.z + position.z);
 		}
 	}
 

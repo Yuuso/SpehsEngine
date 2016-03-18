@@ -5,7 +5,7 @@
 #include <glm/vec2.hpp>
 
 
-#define DISTANCE_EPSILON 0.0000001f
+#define DISTANCE_EPSILON 0.00001f
 typedef unsigned int GLuint;
 
 namespace spehs

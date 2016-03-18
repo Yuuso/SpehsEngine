@@ -34,9 +34,7 @@ namespace spehs
 		compileShader(vertexShaderPath, vertexShaderID);
 		compileShader(fragmentShaderPath, fragmentShaderID);
 
-#ifdef _DEBUG
 		checkOpenGLErrors(__FILE__, __LINE__);
-#endif
 	}
 	void GLSLProgram::compileShadersFromSource(const std::string& vertexShader, const std::string& fragmentShader)
 	{
@@ -52,9 +50,7 @@ namespace spehs
 		compileShaderFromSource(vertexShader, vertexShaderID);
 		compileShaderFromSource(fragmentShader, fragmentShaderID);
 
-#ifdef _DEBUG
 		checkOpenGLErrors(__FILE__, __LINE__);
-#endif
 	}
 
 	
@@ -91,9 +87,7 @@ namespace spehs
 		glDeleteShader(vertexShaderID);
 		glDeleteShader(fragmentShaderID);
 
-#ifdef _DEBUG
 		checkOpenGLErrors(__FILE__, __LINE__);
-#endif
 	}
 
 
@@ -101,9 +95,7 @@ namespace spehs
 	{
 		glBindAttribLocation(programID, numberOfAttributes++, attributeName.c_str());
 
-#ifdef _DEBUG
 		checkOpenGLErrors(__FILE__, __LINE__);
-#endif
 	}
 
 
@@ -111,9 +103,7 @@ namespace spehs
 	{
 		GLint location = glGetUniformLocation(programID, uniformName.c_str());
 
-#ifdef _DEBUG
 		checkOpenGLErrors(__FILE__, __LINE__);
-#endif
 
 		if (location == GL_INVALID_INDEX)
 		{
@@ -131,9 +121,7 @@ namespace spehs
 		for (int i = 0; i < numberOfAttributes; i++)
 			glEnableVertexAttribArray(i);
 
-#ifdef _DEBUG
 		checkOpenGLErrors(__FILE__, __LINE__);
-#endif
 	}
 
 
@@ -143,9 +131,7 @@ namespace spehs
 		for (int i = 0; i < numberOfAttributes; i++)
 			glDisableVertexAttribArray(i);
 
-#ifdef _DEBUG
 		checkOpenGLErrors(__FILE__, __LINE__);
-#endif
 	}
 	
 	
@@ -167,9 +153,7 @@ namespace spehs
 		
 		glCompileShader(id);
 
-#ifdef _DEBUG
 		checkOpenGLErrors(__FILE__, __LINE__);
-#endif
 
 		GLint success;
 		glGetShaderiv(id, GL_COMPILE_STATUS, &success);
@@ -197,9 +181,7 @@ namespace spehs
 
 		glCompileShader(id);
 
-#ifdef _DEBUG
 		checkOpenGLErrors(__FILE__, __LINE__);
-#endif
 
 		GLint success;
 		glGetShaderiv(id, GL_COMPILE_STATUS, &success);

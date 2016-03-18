@@ -35,12 +35,12 @@ namespace spehs
 				firstPosition = HALF_PI;
 			else
 				firstPosition = HALF_PI + (TWO_PI / numVertices) / 2;
-			pos[0].setPosition(cos(firstPosition), sin(firstPosition));
+			pos[0].position.setPosition(cos(firstPosition), sin(firstPosition));
 			float minX = pos[0].position.x, minY = pos[0].position.y, maxX = pos[0].position.x, maxY = pos[0].position.y;
 			for (int i = 1; i < numVertices; i++)
 			{
 				//Set position
-				pos[i].setPosition(cos(firstPosition - i * (TWO_PI / numVertices)), sin(firstPosition - i * (TWO_PI / numVertices)));
+				pos[i].position.setPosition(cos(firstPosition - i * (TWO_PI / numVertices)), sin(firstPosition - i * (TWO_PI / numVertices)));
 
 				//Check min/max
 				if (pos[i].position.x > maxX)
@@ -135,7 +135,7 @@ namespace spehs
 			vertex.x *= width;
 			vertex.y *= height;
 			vertex = scaledRotatedMatrix * vertex;
-			worldVertexArray[i].setPosition(vertex.x + position.x, vertex.y + position.y, vertex.z + position.z);
+			worldVertexArray[i].position.setPosition(vertex.x + position.x, vertex.y + position.y, vertex.z + position.z);
 		}
 	}
 

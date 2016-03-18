@@ -15,26 +15,26 @@ namespace spehs
 		case RIGHTANGLED_TRIANGLE:
 		{
 			Vertex* vertexArray = new Vertex[3];
-			vertexArray[0].setPosition(-0.5f, -0.5f);
-			vertexArray[1].setPosition(0.5f, -0.5f);
-			vertexArray[2].setPosition(-0.5f, 0.5f);
+			vertexArray[0].position.setPosition(-0.5f, -0.5f);
+			vertexArray[1].position.setPosition(0.5f, -0.5f);
+			vertexArray[2].position.setPosition(-0.5f, 0.5f);
 			return vertexArray;
 		}
 		case ISOSCELES_TRIANGLE:
 		{
 			Vertex* vertexArray = new Vertex[3];
-			vertexArray[0].setPosition(0.0f, 0.5f);
-			vertexArray[1].setPosition(cos((7.0f / 6.0f) * PI) * 0.5f, sin((7.0f / 6.0f) * PI) * 0.5f);
-			vertexArray[2].setPosition(cos((11.0f / 6.0f) * PI) * 0.5f, sin((11.0f / 6.0f) * PI) * 0.5f);
+			vertexArray[0].position.setPosition(0.0f, 0.5f);
+			vertexArray[1].position.setPosition(cos((7.0f / 6.0f) * PI) * 0.5f, sin((7.0f / 6.0f) * PI) * 0.5f);
+			vertexArray[2].position.setPosition(cos((11.0f / 6.0f) * PI) * 0.5f, sin((11.0f / 6.0f) * PI) * 0.5f);
 			return vertexArray;
 		}
 		case BUTTON:
 		{
 			Vertex* vertexArray = new Vertex[4];
-			vertexArray[0].setPosition(0.0f, 0.0f);
-			vertexArray[1].setPosition(1.0f, 0.0f);
-			vertexArray[2].setPosition(1.0f, 1.0f);
-			vertexArray[3].setPosition(0.0f, 1.0f);
+			vertexArray[0].position.setPosition(0.0f, 0.0f);
+			vertexArray[1].position.setPosition(1.0f, 0.0f);
+			vertexArray[2].position.setPosition(1.0f, 1.0f);
+			vertexArray[3].position.setPosition(0.0f, 1.0f);
 			return vertexArray;
 		}
 		default:

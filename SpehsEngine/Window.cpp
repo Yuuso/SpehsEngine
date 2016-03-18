@@ -61,31 +61,25 @@ namespace spehs
 		if (applicationData->MSAA > 0)
 			glEnable(GL_MULTISAMPLE);
 
-#ifdef _DEBUG
 		checkOpenGLErrors(__FILE__, __LINE__);
-#endif
 
 		return 0;
 	}
 
 
-	void Window::swapBuffers()
+	void Window::renderEnd()
 	{
 		SDL_GL_SwapWindow(sdlWindow);
 
-#ifdef _DEBUG
 		checkOpenGLErrors(__FILE__, __LINE__);
-#endif
 	}
 
 
-	void Window::clearBuffer()
+	void Window::renderBegin()
 	{
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-#ifdef _DEBUG
 		checkOpenGLErrors(__FILE__, __LINE__);
-#endif
 	}
 
 
@@ -93,8 +87,6 @@ namespace spehs
 	{
 		glClearColor(_r, _g, _b, _a);
 
-#ifdef _DEBUG
 		checkOpenGLErrors(__FILE__, __LINE__);
-#endif
 	}
 }

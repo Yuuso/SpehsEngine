@@ -100,7 +100,7 @@ namespace spehs
 		primitiveColor = _newColor;
 		for (unsigned i = 0; i < numVertices; i++)
 		{
-			worldVertexArray[i].setColor(primitiveColor.x, primitiveColor.y, primitiveColor.z, primitiveColor.w);
+			worldVertexArray[i].color.setColor(primitiveColor);
 		}
 	}
 
@@ -109,7 +109,7 @@ namespace spehs
 		primitiveColor = glm::vec4(_newColor, 1.0f);
 		for (unsigned i = 0; i < numVertices; i++)
 		{
-			worldVertexArray[i].setColor(primitiveColor.x, primitiveColor.y, primitiveColor.z, primitiveColor.w);
+			worldVertexArray[i].color.setColor(primitiveColor);
 		}
 	}
 
@@ -118,7 +118,7 @@ namespace spehs
 		primitiveColor = glm::vec4((float) _r / 255.0f, (float) _g / 255.0f, (float) _b / 255.0f, (float) _a / 255.0f);
 		for (unsigned i = 0; i < numVertices; i++)
 		{
-			worldVertexArray[i].setColor(_r, _g, _b, _a);
+			worldVertexArray[i].color.setColor(primitiveColor);
 		}
 	}
 
@@ -127,7 +127,7 @@ namespace spehs
 		primitiveColor.a = _a;
 		for (unsigned i = 0; i < numVertices; i++)
 		{
-			worldVertexArray[i].color.a = (unsigned char)(_a * 255.0f);
+			worldVertexArray[i].color.rgba.a = _a;
 		}
 	}
 
@@ -136,7 +136,7 @@ namespace spehs
 		primitiveColor.a = (float) _a / 255.0f;
 		for (unsigned i = 0; i < numVertices; i++)
 		{
-			worldVertexArray[i].color.a = _a;
+			worldVertexArray[i].color.rgba.a = (float) _a / 255.0f;
 		}
 	}
 
