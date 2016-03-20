@@ -53,6 +53,17 @@ namespace spehs
 		totalNumvertices = 0;
 
 		vertices.reserve(MAX_BATCH_DEFAULT_SIZE);
+		int indexMultiplier; //calculate index buffer size
+		switch (drawMode)
+		{
+		case TRIANGLE:
+			indexMultiplier = (MAX_BATCH_DEFAULT_SIZE - 2) * 3;
+			break;
+		default:
+			indexMultiplier = MAX_BATCH_DEFAULT_SIZE;
+			break;
+		}
+		indices.reserve(indexMultiplier);
 
 		initBuffers();
 	}
@@ -206,6 +217,7 @@ namespace spehs
 		{
 		case TRIANGLE:
 			indexMultiplier = (MAX_BATCH_DEFAULT_SIZE - 2) * 3;
+			break;
 		default:
 			indexMultiplier = MAX_BATCH_DEFAULT_SIZE;
 			break;
@@ -234,8 +246,8 @@ namespace spehs
 			glDisableVertexAttribArray(2);
 		
 		//Unbind
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
 		checkOpenGLErrors(__FILE__, __LINE__);
 	}
