@@ -41,6 +41,7 @@ namespace spehs
 		if (glContext == nullptr)
 			exceptions::fatalError("\nFailed to create glContext!");
 
+		//glewExperimental = GL_TRUE;
 		GLenum error = glewInit();
 		if (error != GLEW_OK)
 			exceptions::fatalError("\nFailed to initialize glew!");

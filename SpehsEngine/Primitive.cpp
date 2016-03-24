@@ -89,6 +89,11 @@ namespace spehs
 		scaleY = _newScale.y;
 	}
 
+	void Primitive::setRotation(const float &_newRotation)
+	{
+		rotation = _newRotation;
+	}
+
 	void Primitive::setRotation(const float &_newRotation, const glm::vec3 &_newRotationVector)
 	{
 		rotation = _newRotation;

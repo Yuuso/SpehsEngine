@@ -13,7 +13,7 @@
 #include <glm/mat4x4.hpp>
 #include <GL/glew.h>
 
-#define MAX_BATCH_DEFAULT_SIZE 4096
+#define DEFAULT_MAX_BATCH_SIZE 4096
 
 
 namespace spehs
@@ -52,15 +52,15 @@ namespace spehs
 
 		totalNumvertices = 0;
 
-		vertices.reserve(MAX_BATCH_DEFAULT_SIZE);
-		int indexMultiplier; //calculate index buffer size
+		vertices.reserve(DEFAULT_MAX_BATCH_SIZE);
+		int indexMultiplier; //calculate max index buffer size
 		switch (drawMode)
 		{
 		case TRIANGLE:
-			indexMultiplier = (MAX_BATCH_DEFAULT_SIZE - 2) * 3;
+			indexMultiplier = (DEFAULT_MAX_BATCH_SIZE - 2) * 3;
 			break;
 		default:
-			indexMultiplier = MAX_BATCH_DEFAULT_SIZE;
+			indexMultiplier = DEFAULT_MAX_BATCH_SIZE;
 			break;
 		}
 		indices.reserve(indexMultiplier);
@@ -184,17 +184,17 @@ namespace spehs
 
 	void PrimitiveBatch::push(Primitive* _primitive)
 	{
+		setIndices(_primitive->numVertices); //Set indices before vertices!
 		for (unsigned i = 0; i < _primitive->numVertices; i++)
 		{
 			vertices.push_back(&_primitive->vertexArray[i]);
 		}
-		setIndices(_primitive->numVertices);
 		totalNumvertices += _primitive->numVertices;
 	}
 	
 	bool PrimitiveBatch::isEnoughRoom(unsigned int _numVertices)
 	{
-		return (totalNumvertices + _numVertices) <= MAX_BATCH_DEFAULT_SIZE;
+		return (totalNumvertices + _numVertices) <= DEFAULT_MAX_BATCH_SIZE;
 	}
 
 	void PrimitiveBatch::initBuffers()
@@ -210,16 +210,16 @@ namespace spehs
 
 		//Bind buffers
 		glBindBuffer(GL_ARRAY_BUFFER, vertexBufferID);
-		glBufferData(GL_ARRAY_BUFFER, sizeof(Vertex) * MAX_BATCH_DEFAULT_SIZE, nullptr, GL_STREAM_DRAW);
+		glBufferData(GL_ARRAY_BUFFER, sizeof(Vertex) * DEFAULT_MAX_BATCH_SIZE, nullptr, GL_STREAM_DRAW);
 
-		int indexMultiplier; //calculate index buffer size
+		int indexMultiplier; //calculate max index buffer size
 		switch (drawMode)
 		{
 		case TRIANGLE:
-			indexMultiplier = (MAX_BATCH_DEFAULT_SIZE - 2) * 3;
+			indexMultiplier = (DEFAULT_MAX_BATCH_SIZE - 2) * 3;
 			break;
 		default:
-			indexMultiplier = MAX_BATCH_DEFAULT_SIZE;
+			indexMultiplier = DEFAULT_MAX_BATCH_SIZE;
 			break;
 		}
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBufferID);
@@ -259,8 +259,8 @@ namespace spehs
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBufferID);
 
 		//Sent data to GPU
-		glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(Vertex) * totalNumvertices, vertices.data());
-		glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, sizeof(GLushort) * indices.size(), indices.data());
+		glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(Vertex) * totalNumvertices, vertices[0]);
+		glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, sizeof(GLushort) * indices.size(), &indices[0]);
 
 		glBindVertexArray(0);
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -272,11 +272,13 @@ namespace spehs
 	void PrimitiveBatch::setIndices(const unsigned int &_numVertices)
 	{
 		static unsigned int currentIndex;
-		currentIndex = indices.size();
+		static unsigned int numIndices;
+		currentIndex = totalNumvertices;
+		numIndices = indices.size();
 		switch (drawMode)
 		{
 		case UNDEFINED:
-			exceptions::fatalError("Batch's DrawMode is UNDEFINED!");
+			exceptions::fatalError(std::to_string(drawMode) + " - Batch's DrawMode is UNDEFINED!");
 			break;
 
 		case POINT:
@@ -293,16 +295,16 @@ namespace spehs
 			Number of indices in a polygon:
 			(NumberOfVertices - 2) * 3
 			*/
-			for (unsigned i = 1; indices.size() < currentIndex + ((_numVertices - 2) * 3);)
+			for (unsigned i = 1; indices.size() < (numIndices + ((_numVertices - 2) * 3));)
 			{
 				indices.push_back((GLushort) currentIndex);
+				indices.push_back((GLushort) (currentIndex + i++));
 				indices.push_back((GLushort) (currentIndex + i));
-				indices.push_back((GLushort) (currentIndex + ++i));
 			}
 			break;
 
 		default:
-			exceptions::fatalError("Draw mode is either undefined or is not supported by the engine at the moment! DrawMode: " + drawMode);
+			exceptions::fatalError(std::to_string(drawMode) + " - Draw mode is either undefined or is not supported by the engine at the moment!");
 			break;
 		}
 	}
