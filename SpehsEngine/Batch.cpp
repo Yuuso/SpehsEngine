@@ -282,6 +282,7 @@ namespace spehs
 			break;
 
 		case POINT:
+			glPointSize(10.0f);
 		case LINE:
 		case LINE_LOOP:
 			for (unsigned i = currentIndex; i < currentIndex + _numVertices; i++)
