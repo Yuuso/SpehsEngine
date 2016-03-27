@@ -22,7 +22,7 @@ namespace spehs
 {
 	GUID getJoystickDeviceGUID(int _deviceIndex);
 	/**Joysticks can only be created during run time, they will not be removed but instead go into offline mode. \n
-	This is because many parts of the program can be attached to a joystick pointer/reference and unknowingly could try to access removed joysticks state*/
+	This is because parts of the program can be attached to a joystick through a pointer/reference and unknowingly could try to access the removed joystick's state*/
 	struct Joystick
 	{
 		~Joystick();
@@ -46,7 +46,7 @@ namespace spehs
 
 		void goOffline();
 		void goOnline(SDL_Joystick* newJs);
-		bool offline;///<When joystick becomes desconnected during run time it goes into offline mode. In offline mode key pressed return false, axis querys return 0
+		bool offline;///<When joystick disconnects during runtime it goes into offline mode. In offline mode key pressed calls return false, axis states return 0.
 	};
 	class InputManager
 	{

@@ -61,6 +61,10 @@ namespace spehs
 	{
 
 	}
+	Vertex::Vertex(const Position &_position) : position(_position)
+	{
+
+	}
 	Vertex::Vertex(const Position &_position, const ColorRGBA &_color, const UV &_uv) : position(_position), color(_color), uv(_uv) 
 	{
 

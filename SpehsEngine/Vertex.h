@@ -45,6 +45,7 @@ namespace spehs
 	{
 	public:
 		Vertex();
+		Vertex(const Position &_position);
 		Vertex(const Position &_position, const ColorRGBA &_color, const UV &_uv);
 
 		void setPosition(const float &_x, const float &_y);

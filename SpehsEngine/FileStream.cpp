@@ -40,7 +40,7 @@ namespace spehs
 		memcpy(&count, &buffer[offset], sizeof(count));
 		offset += sizeof(count);
 		string.resize(count);//Could potentially invalidate string reference??
-		memcpy(&string[0], buffer, sizeof(char) * count);
+		memcpy(&string[0], &buffer[offset], sizeof(char) * count);
 		offset += sizeof(char) * count;
 		return offset;
 	}

@@ -34,4 +34,12 @@ namespace spehs
 			angle += TWO_PI;
 		return angle;
 	}
+	float getArea(spehs::Position* cusps, unsigned numCusps)
+	{
+		return 1;//TODO
+	}
+	float getRadius(spehs::Position* cusps, unsigned numCusps)
+	{
+		return 1;//TODOlateSu
+	}
 }

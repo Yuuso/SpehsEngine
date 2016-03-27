@@ -18,7 +18,7 @@ namespace spehs
 		return SDL_JoystickGetDeviceGUID(_deviceIndex);
 	}
 
-	InputManager::InputManager() : mouseCoords(0), mouseMovement(0, 0), droppedFilePath("")
+	InputManager::InputManager() : mouseCoords(0, 0), mouseMovement(0, 0), droppedFilePath("")
 	{
 	}
 	InputManager::~InputManager()
@@ -28,9 +28,6 @@ namespace spehs
 	void InputManager::initialize()
 	{
 		SDL_InitSubSystem(SDL_INIT_JOYSTICK);
-
-		//DEBUG JOYSTICK TESTING
-		//joystickConnected();
 	}
 	void InputManager::uninitialize()
 	{
@@ -48,33 +45,6 @@ namespace spehs
 			previousKeyMap[it.first] = it.second;
 		}
 		processEvents();
-
-		/*
-		//JS DEBUG
-		SDL_JoystickUpdate();
-		for (unsigned j = 0; j < joysticks.size(); j++)
-			if (!joysticks[j]->offline)
-		{
-			//Buttons
-			for (int i = 0; i < joysticks[j]->buttonCount; i++)
-			{
-				if (joysticks[j]->isButtonDown(i))
-					std::cout << "\n[" << j << "]Button " << i << " is down";
-			}
-			//Axes
-			//std::cout << "\n[" << j << "] Axes: ";
-			for (int i = 0; i < joysticks[j]->axisCount; i++)
-			{
-				//std::cout << " [" << i << "]" << joysticks[j]->getAxisState(i);
-			}
-			//Hats
-			for (int i = 0; i < joysticks[j]->hatCount; i++)
-			{
-				for (int b = 1; b < 9; b++)
-					if (joysticks[j]->isHatInPosition(i, b) == SINT16_MAX)
-						std::cout << "\nHat" << i << ": " << b << " pressed";
-			}
-		}*/
 	}
 	void InputManager::processEvents()
 	{
