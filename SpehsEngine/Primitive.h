@@ -63,7 +63,8 @@ namespace spehs
 		
 		virtual void updateVertices() = 0; //This is called automatically when rendering
 
-		void destroy(); //Primitives can only be deleted from BatchManager, user can request deletion by calling destroy()
+		void destroy(); //Primitives can only be deleted by BatchManager, user can request deletion by calling destroy()
+		//NOTE: BatchManager does clean up the primitives after it is deleted, but it is advised that the user destroys primitives that are not needed
 
 		//Setters
 		void setPosition(const float &_x, const float &_y);
@@ -76,6 +77,7 @@ namespace spehs
 		void setScale(const glm::vec2 &_newScale);
 		void setRotation(const float &_newRotation);
 		void setRotation(const float &_newRotation, const glm::vec3 &_newRotationVector);
+		void setRotationVector(const glm::vec3 &_newRotationVector);
 		void setColor(const glm::vec4 &_newColor);
 		void setColor(const glm::vec3 &_newColor);
 		void setColor(const unsigned char &_r, const unsigned char &_g, const unsigned char &_b, const unsigned char &_a = 1.0f);
@@ -105,7 +107,7 @@ namespace spehs
 		bool readyForDelete;
 		bool blending;
 		bool renderState; //Whether Primitive is rendered or not
-		bool cameraMatrixState; //Whether primitive scales with camera or not
+		bool cameraMatrixState; //Whether camera affects the primitive or not
 		GLuint textureDataID;
 		PlaneDepth planeDepth;
 		DrawMode drawMode;

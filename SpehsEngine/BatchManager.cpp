@@ -6,6 +6,7 @@
 #include "Polygon.h"
 #include "Line.h"
 #include "Point.h"
+#include "Console.h"
 
 #include <algorithm>
 
@@ -42,6 +43,8 @@ namespace spehs
 		//Delete batches
 		clearBatches();
 
+		int cleanUpPrimitives = primitives.size();
+		int cleanUpMeshes = meshes.size();
 		//Delete Primitives
 		for (unsigned i = 0; i < primitives.size(); i++)
 		{
@@ -53,6 +56,11 @@ namespace spehs
 		{
 			delete meshes[i];
 		}
+
+		if (cleanUpPrimitives != 0)
+			console::warning("BatchManager cleaned up " + std::to_string(cleanUpPrimitives) + " primitives!");
+		if (cleanUpMeshes != 0)
+			console::warning("BatchManager cleaned up " + std::to_string(cleanUpMeshes) + " meshes!");
 	}
 
 

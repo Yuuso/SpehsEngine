@@ -49,7 +49,6 @@ namespace spehs
 
 		bool blending;
 		bool cameraMatrixState;
-		bool bufferInit;
 		int shaderIndex;
 		unsigned int totalNumvertices;
 		GLuint textureDataID;

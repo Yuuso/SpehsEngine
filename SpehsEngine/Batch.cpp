@@ -187,7 +187,7 @@ namespace spehs
 		setIndices(_primitive->numVertices); //Set indices before vertices!
 		for (unsigned i = 0; i < _primitive->numVertices; i++)
 		{
-			vertices.push_back(&_primitive->vertexArray[i]);
+			vertices.push_back(&_primitive->worldVertexArray[i]);
 		}
 		totalNumvertices += _primitive->numVertices;
 	}

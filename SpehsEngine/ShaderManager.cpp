@@ -42,6 +42,7 @@ namespace spehs
 	ShaderManager::ShaderManager()
 	{
 #pragma region Default Shaders
+		//
 		const std::string defaultPolygonVert =
 		{
 			"#version 130\n"
@@ -55,6 +56,17 @@ namespace spehs
 			"	fragmentColor = vertexColor;\n"
 			"}\n"
 		};
+		const std::string defaultPolygonFrag =
+		{
+			"#version 130\n"
+			"in vec4 fragmentColor;\n"
+			"out vec4 color;\n"
+			"void main()\n"
+			"{\n"
+			"	color = fragmentColor;\n"
+			"}\n"
+		};
+		//
 		const std::string defaultTextureVert =
 		{
 			"#version 130\n"
@@ -71,16 +83,6 @@ namespace spehs
 			"	texCoord = vertexUV;\n"
 			"}\n"
 		};
-		const std::string defaultPolygonFrag =
-		{
-			"#version 130\n"
-			"in vec4 fragmentColor;\n"
-			"out vec4 color;\n"
-			"void main()\n"
-			"{\n"
-			"	color = fragmentColor;\n"
-			"}\n"
-		};
 		const std::string defaultTextureFrag =
 		{
 			"#version 130\n"
@@ -94,7 +96,7 @@ namespace spehs
 			"	color = color * fragmentColor;\n"
 			"}\n"
 		};
-
+		//
 		//TODO: Mesh shaders
 #pragma endregion
 

@@ -100,6 +100,11 @@ namespace spehs
 		rotationVector = _newRotationVector;
 	}
 
+	void Primitive::setRotationVector(const glm::vec3 &_newRotationVector)
+	{
+		rotationVector = _newRotationVector;
+	}
+
 	void Primitive::setColor(const glm::vec4 &_newColor)
 	{
 		primitiveColor = _newColor;
@@ -132,7 +137,7 @@ namespace spehs
 		primitiveColor.a = _a;
 		for (unsigned i = 0; i < numVertices; i++)
 		{
-			worldVertexArray[i].color.rgba.a = _a;
+			worldVertexArray[i].color.rgba.a = primitiveColor.a;
 		}
 	}
 
