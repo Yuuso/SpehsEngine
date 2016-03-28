@@ -235,7 +235,7 @@ namespace spehs
 		
 		return js;//Joystick is not connected, or preferred index not found
 	}
-	int InputManager::getGUIDIndex(int joystickIndex)
+	int InputManager::getGUIDIndex(unsigned joystickIndex)
 	{
 		if (joystickIndex >= joysticks.size() || joystickIndex < 0)
 			return -1;
@@ -326,15 +326,15 @@ namespace spehs
 		}
 		return -1;
 	}
-	int Joystick::getGUIDIndex()
+	unsigned Joystick::getGUIDIndex()
 	{
-		int index = 0;
+		unsigned index = 0;
 		for (unsigned i = 0; i < inputManager->joysticks.size(); i++)
 		{
 			if (inputManager->joysticks[i] == this)
 				return index;
 			else if (inputManager->joysticks[i]->guid == guid)
-				index++;//Found similar index among joysticks
+				index++;//Found same guid among joysticks before this
 		}
 	}
 }

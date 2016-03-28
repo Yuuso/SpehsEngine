@@ -23,17 +23,15 @@ namespace spehs
 	GUID getJoystickDeviceGUID(int _deviceIndex);
 	/**Joysticks can only be created during run time, they will not be removed but instead go into offline mode. \n
 	This is because parts of the program can be attached to a joystick through a pointer/reference and unknowingly could try to access the removed joystick's state*/
-	struct Joystick
+	class Joystick
 	{
-		~Joystick();
-		Joystick(int index);
-
+	public:
 		/*Returns the axis state, range [-1, 1] NOTE: float precision...*/
 		float getAxisState(int axisIndex);
 		bool isButtonDown(int buttonIndex);
 		bool isHatInPosition(int hatIndex, uint8_t position);
 		int32_t queryButtonDown();///<Returns -1 if no button is pressed. Returns button index (>= 0) if a button is pressed. If multiple buttons are being pressed, returns the one with the lowerst index.
-		int getGUIDIndex();///<Searches for joysticks with the same GUID as given joystick. Returns index of given joystick among devices with the same GUID
+		unsigned getGUIDIndex();///<Searches for joysticks with the same GUID. Returns my index among devices with the same GUID
 
 		GUID guid;
 		SDL_Joystick* joystick;
@@ -47,6 +45,10 @@ namespace spehs
 		void goOffline();
 		void goOnline(SDL_Joystick* newJs);
 		bool offline;///<When joystick disconnects during runtime it goes into offline mode. In offline mode key pressed calls return false, axis states return 0.
+	private:
+		Joystick(int index);
+		~Joystick();
+		friend class InputManager;
 	};
 	class InputManager
 	{
@@ -70,7 +72,7 @@ namespace spehs
 
 		//Managing joysticks
 		Joystick* getJoystick(GUID guid, int preferredIndex = 0);
-		int getGUIDIndex(int joystickIndex);///<Searches for joysticks with the same GUID as given joystick. Returns index of given joystick among devices with the same GUID
+		int getGUIDIndex(unsigned joystickIndex);///<Searches for joysticks with the same GUID as given joystick. Returns index of given joystick among devices with the same GUID. Returns -1 on failure
 
 		//Getters
 		glm::vec2 getMouseCoords() const { return mouseCoords; }
