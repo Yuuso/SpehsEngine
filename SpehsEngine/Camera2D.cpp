@@ -20,7 +20,7 @@ namespace spehs
 	void Camera2D::initialize()
 	{
 		//Init
-		//orthoMatrix = glm::ortho(0.0f, (float) applicationData->getWindowWidth(), 0.0f, (float) applicationData->getWindowHeight());
+		orthoMatrix = glm::ortho(0.0f, (float) applicationData->getWindowWidth(), 0.0f, (float) applicationData->getWindowHeight());
 
 		//Camera translation
 		glm::vec3 translation(applicationData->getWindowWidth()*0.5f, applicationData->getWindowHeight()*0.5f, 0);
@@ -41,11 +41,11 @@ namespace spehs
 	void Camera2D::update()
 	{
 		//Camera translation
-		cameraMatrix = glm::translate(orthoMatrix, glm::vec3(position.x / ((float) applicationData->getWindowWidth() / (float) applicationData->getWindowHeight()), position.y, 0.0f));
+		cameraMatrix = glm::translate(orthoMatrix, glm::vec3(position.x/* / ((float) applicationData->getWindowWidth() / (float) applicationData->getWindowHeight())*/, position.y, 0.0f));
 
 		//Camera Scale
 		static glm::vec3 scaleVec;
-		scaleVec = glm::vec3(scale / ((float) applicationData->getWindowWidth() / (float) applicationData->getWindowHeight()), scale, 0.0f);
+		scaleVec = glm::vec3(scale/* / ((float) applicationData->getWindowWidth() / (float) applicationData->getWindowHeight())*/, scale, 0.0f);
 		cameraMatrix = glm::scale(glm::mat4(1.0f), scaleVec) * cameraMatrix;
 
 		//Delta movement
