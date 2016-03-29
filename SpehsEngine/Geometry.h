@@ -1,6 +1,8 @@
 #pragma once
 #include <glm/vec2.hpp>
-#define PI 3.14159265359f
+#define GLM_FORCE_RADIANS
+#define PI 3.14159265f
+#define HALF_PI 1.57079632679f
 #define TWO_PI 6.28318530718f
 
 namespace spehs
@@ -9,6 +11,7 @@ namespace spehs
 
 	/**Returns the magnitude of vector*/
 	float magnitude(glm::vec2& vector);
+	float magnitude(spehs::Position& position);
 
 	/**Returns distance from origin to destination*/
 	float distance(glm::vec2& origin, glm::vec2& destination);
@@ -21,6 +24,9 @@ namespace spehs
 
 	/**Returns angle from angle1 to angle2*/
 	float getAngle(float angle1, float angle2);
+
+	/**Returns a generated position array. Assigns length of array into numCusps*/
+	spehs::Position* generateCusps(unsigned& numCusps, int shape, float width, float height);
 
 	/**Returns area of the shape formed by a number of cusps*/
 	float getArea(spehs::Position* cusps, unsigned numCusps);
