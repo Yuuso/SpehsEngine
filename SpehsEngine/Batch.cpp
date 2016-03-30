@@ -259,7 +259,7 @@ namespace spehs
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBufferID);
 
 		//Sent data to GPU
-		glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(Vertex) * totalNumvertices, vertices[0]);
+		glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(Vertex) * vertices.size(), vertices[0]);
 		glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, sizeof(GLushort) * indices.size(), &indices[0]);
 
 		glBindVertexArray(0);
@@ -282,7 +282,7 @@ namespace spehs
 			break;
 
 		case POINT:
-			glPointSize(10.0f);
+			glPointSize(5.0f);
 		case LINE:
 		case LINE_LOOP:
 			for (unsigned i = currentIndex; i < currentIndex + _numVertices; i++)

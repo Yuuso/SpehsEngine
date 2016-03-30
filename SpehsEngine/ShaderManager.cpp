@@ -64,6 +64,7 @@ namespace spehs
 			"void main()\n"
 			"{\n"
 			"	color = fragmentColor;\n"
+			//"	color = vec4(1.0, 1.0, 1.0, 1.0);\n"
 			"}\n"
 		};
 		//
