@@ -80,12 +80,12 @@ namespace spehs
 		}
 
 	}
-	void GUIWindowManager::render()
+	void GUIWindowManager::setRenderState(const bool _state)
 	{
 		for (unsigned i = 0; i < windows.size(); i++)
-			windows[i]->render();
+			windows[i]->setRenderState(_state);
 		for (unsigned i = 0; i < windows.size(); i++)
-			windows[i]->postRender();
+			windows[i]->setPostRenderState(_state);
 	}
 	void GUIWindowManager::setFocusedWindow(GUIWindow* window)
 	{

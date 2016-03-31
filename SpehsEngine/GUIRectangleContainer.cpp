@@ -35,27 +35,27 @@ namespace spehs
 		}
 	}
 
-	void GUIRectangleContainer::render()
+	void GUIRectangleContainer::setRenderState(const bool _state)
 	{
 		if (!checkBit(state, GUIRECT_VISIBLE))
 			return;
 
-		GUIRectangle::render();
+		GUIRectangle::setRenderState(_state);
 
 		if (isOpen())
 		{//Render elements
 			for (int i = beginElementIndex; i < beginElementIndex + updateElementCount; i++)
-				elements[i]->render();
+				elements[i]->setRenderState(_state);
 		}
 	}
-	void GUIRectangleContainer::postRender()
+	void GUIRectangleContainer::setPostRenderState(const bool _state)
 	{
-		GUIRectangle::postRender();
+		GUIRectangle::setPostRenderState(_state);
 		
 		if (isOpen())
 		{//Post render elements
 			for (int i = beginElementIndex; i < beginElementIndex + updateElementCount; i++)
-				elements[i]->postRender();
+				elements[i]->setPostRenderState(_state);
 		}
 	}
 	bool GUIRectangleContainer::isReceivingTextInput()

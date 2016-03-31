@@ -69,26 +69,26 @@ namespace spehs
 
 		GUIRectangleContainer::update();
 	}
-	void GUIRectangleList::render()
+	void GUIRectangleList::setRenderState(const bool _state)
 	{
-		GUIRectangleContainer::render();
+		GUIRectangleContainer::setRenderState(_state);
 
 		if (invisibleElements())
 		{
-			scrollUp->render();
-			scrollBar->render();
-			scrollDown->render();
+			scrollUp->setRenderState(_state);
+			scrollBar->setRenderState(_state);
+			scrollDown->setRenderState(_state);
 		}
 	}
-	void GUIRectangleList::postRender()
+	void GUIRectangleList::setPostRenderState(const bool _state)
 	{
-		GUIRectangleContainer::postRender();
+		GUIRectangleContainer::setPostRenderState(_state);
 
 		if (invisibleElements())
 		{
-			scrollUp->postRender();
-			scrollBar->postRender();
-			scrollDown->postRender();
+			scrollUp->setPostRenderState(_state);
+			scrollBar->setPostRenderState(_state);
+			scrollDown->setPostRenderState(_state);
 		}
 	}
 	void GUIRectangleList::updatePosition()

@@ -14,8 +14,8 @@ namespace spehs
 		GUIRectangleList(uint32_t);
 		virtual ~GUIRectangleList();
 
-		virtual void render();
-		virtual void postRender();
+		virtual void setRenderState(const bool _state);
+		virtual void setPostRenderState(const bool _state);
 		virtual void update();
 		virtual void updateScale();
 		virtual void updatePosition();

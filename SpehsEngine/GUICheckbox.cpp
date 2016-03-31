@@ -56,9 +56,9 @@ namespace spehs
 		else
 			checkboxFilling->setColorAlpha(UNSELECTED_ALPHA);
 	}
-	void GUICheckbox::render()
+	void GUICheckbox::setRenderState(const bool _state)
 	{
-		GUIRectangle::render();
+		GUIRectangle::setRenderState(_state);
 		if (checkBit(state, GUIRECT_VISIBLE))
 		{
 			checkboxBackground->setRenderState(true);

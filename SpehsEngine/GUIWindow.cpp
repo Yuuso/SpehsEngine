@@ -297,7 +297,7 @@ namespace spehs
 			close();
 
 	}
-	void GUIWindow::render()
+	void GUIWindow::setRenderState(const bool _state)
 	{
 		if (!isOpen())
 			return;
@@ -308,17 +308,17 @@ namespace spehs
 		if (!checkBit(state, GUIRECT_POSITIONED))
 			updatePosition();
 
-		strech->render();
-		GUIRectangleContainer::render();
-		header->render();
-		exit->render();
+		strech->setRenderState(_state);
+		GUIRectangleContainer::setRenderState(_state);
+		header->setRenderState(_state);
+		exit->setRenderState(_state);
 	}
-	void GUIWindow::postRender()
+	void GUIWindow::setPostRenderState(const bool _state)
 	{
-		strech->postRender();
-		header->postRender();
-		exit->postRender();
-		GUIRectangleContainer::postRender();
+		strech->setPostRenderState(_state);
+		header->setPostRenderState(_state);
+		exit->setPostRenderState(_state);
+		GUIRectangleContainer::setPostRenderState(_state);
 	}
 	void GUIWindow::gainFocus()
 	{//Function called whenever this window receives focus

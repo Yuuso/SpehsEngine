@@ -71,9 +71,9 @@ namespace spehs
 		virtual void updateScale();
 		///Positon update is called up to once per update if the position of the rectangle has changed
 		virtual void updatePosition();
-		virtual void render();		
+		virtual void setRenderState(const bool _state);		
 		///Call to post render is made from window manager after all render methods for every window have been ran.
-		virtual void postRender();
+		virtual void setPostRenderState(const bool _state);
 		virtual void updateMinSize();
 		/*Checks whether the mouse is above this rectangle. Returns mouse hover value*/
 		virtual bool updateMouseHover();

@@ -85,19 +85,19 @@ namespace spehs
 				close();
 		}
 	}
-	void GUIRectangleTree::render()
+	void GUIRectangleTree::setRenderState(const bool _state)
 	{
-		GUIRectangleContainer::render();
+		GUIRectangleContainer::setRenderState(_state);
 	}
-	void GUIRectangleTree::postRender()
+	void GUIRectangleTree::setPostRenderState(const bool _state)
 	{
 		if (isOpen())
 		{
 			for (int i = beginElementIndex; i < beginElementIndex + updateElementCount; i++)
-				elements[i]->postRender();
+				elements[i]->setPostRenderState(_state);
 		}
 		else
-			GUIRectangle::postRender();
+			GUIRectangle::setPostRenderState(_state);
 	}
 	void GUIRectangleTree::updateScale()
 	{

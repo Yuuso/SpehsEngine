@@ -24,8 +24,8 @@ namespace spehs
 		virtual ~GUIRectangleContainer();
 
 		virtual void update();
-		virtual void render();
-		virtual void postRender();
+		virtual void setRenderState(const bool _state);
+		virtual void setPostRenderState(const bool _state);
 
 		/*These pure virtual methods MUST be implemented by the derived class*/
 		virtual void updatePosition() = 0;

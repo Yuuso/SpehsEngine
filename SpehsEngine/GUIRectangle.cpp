@@ -71,7 +71,7 @@ namespace spehs
 	{
 		updateMouseHover();
 	}
-	void GUIRectangle::render()
+	void GUIRectangle::setRenderState(const bool _state)
 	{
 		//Hover color
 		if (checkBit(state, GUIRECT_HOVER_COLOR	))
@@ -107,7 +107,7 @@ namespace spehs
 		//Drawing rectangle polygon
 		if (checkBit(state, GUIRECT_VISIBLE))
 		{
-			polygon->setRenderState(true);
+			polygon->setRenderState(_state);
 
 			//Rendering text
 			if (text)
@@ -115,7 +115,7 @@ namespace spehs
 
 			//Rendering display texture
 			if (displayTexture)
-				displayTexture->polygon->setRenderState(true);
+				displayTexture->polygon->setRenderState(_state);
 		}
 		else
 		{
@@ -124,13 +124,13 @@ namespace spehs
 				displayTexture->polygon->setRenderState(false);
 		}
 	}
-	void GUIRectangle::postRender()
+	void GUIRectangle::setPostRenderState(const bool _state)
 	{
 		//Rendering tooltip if one exists
 		if (tooltip && getMouseHover())
 		{
 			tooltip->setPosition(inputManager->getMouseX(), inputManager->getMouseY());
-			tooltip->render();
+			tooltip->setRenderState(_state);
 		}
 		disableBit(state, GUIRECT_MOUSE_HOVER);
 		disableBit(state, GUIRECT_MOUSE_HOVER_CONTAINER);

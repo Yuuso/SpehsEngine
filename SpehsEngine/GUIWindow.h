@@ -16,8 +16,8 @@ namespace spehs
 		virtual void updatePosition();
 		virtual void updateScale();
 		virtual void updateMinSize();//Updates min size variable based on element requirements
-		virtual void render();
-		virtual void postRender();
+		virtual void setRenderState(const bool _state);
+		virtual void setPostRenderState(const bool _state);
 
 		virtual void gainFocus();
 		virtual void loseFocus();

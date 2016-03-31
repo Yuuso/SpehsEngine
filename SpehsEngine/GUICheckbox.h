@@ -17,7 +17,7 @@ namespace spehs
 		~GUICheckbox();
 
 		void update();
-		void render();
+		void setRenderState(const bool _state);
 		void updatePosition();
 		void updateScale();
 		void updateMinSize();
