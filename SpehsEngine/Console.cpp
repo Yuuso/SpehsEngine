@@ -13,9 +13,9 @@
 #define CONSOLE_BORDER 5
 #define BACKSPACE_INITIAL_INTERVAL 500
 #define BACKSPACE_INTERVAL 75
-#define CONSOLE_INITIALIZED_BIT 1
-#define CONSOLE_OPEN_BIT 2
-#define CONSOLE_LOCK_ENABLED_BIT 4
+#define CONSOLE_INITIALIZED_BIT				0x0001
+#define CONSOLE_OPEN_BIT					0x0002
+#define CONSOLE_TEXT_EXECUTED_BIT			0x0004
 extern int64_t guiRectangleAllocations;
 extern int64_t guiRectangleDeallocations;
 extern int64_t primitiveBatchAllocations;
@@ -30,7 +30,7 @@ namespace spehs
 	{
 		//Static console data
 		static int previousFontSize = 10;
-		static int state = 0;
+		static int16_t state = 0;
 		static int backspaceTimer = 0;
 		static int backspaceAcceleration = 0;
 		static int previousCommandIndex = 0;
@@ -38,6 +38,7 @@ namespace spehs
 		static Text* consoleText;
 		static std::recursive_mutex consoleMutex;
 		static std::string input;
+		static std::string textExecuted;///< Text executed without '/'
 		static std::vector<Text*> lines;
 		static std::vector<ConsoleCommand> commands;
 		static std::vector<std::string> consoleWords;
@@ -46,6 +47,9 @@ namespace spehs
 		static std::vector<ConsoleVariable<bool>> boolVariables;
 		static std::vector<ConsoleVariable<std::string>> stringVariables;
 		static std::vector<std::string> previousCommands;
+		static bool checkState(uint16_t bits);
+		static void enableState(uint16_t bits);
+		static void disableState(uint16_t bits);
 
 		//Local methods
 		void updateLinePositions();
@@ -57,7 +61,7 @@ namespace spehs
 		int initialize()
 		{
 			LockGuardRecursive regionLock(consoleMutex);
-			if (checkBit(state, CONSOLE_INITIALIZED_BIT))
+			if (checkState(CONSOLE_INITIALIZED_BIT))
 			{
 				log("Console already initialized!");
 				return 0;
@@ -68,14 +72,14 @@ namespace spehs
 			consoleText->setPosition(glm::vec2(CONSOLE_BORDER, CONSOLE_BORDER));
 			consoleText->setString("><");
 
-			enableBit(state, CONSOLE_INITIALIZED_BIT);
+			enableState(CONSOLE_INITIALIZED_BIT);
 			log("Console initialized");
 			return 0;
 		}
 		void unitialize()
 		{
 			LockGuardRecursive regionLock(consoleMutex);
-			if (!checkBit(state, CONSOLE_INITIALIZED_BIT))
+			if (!checkState(CONSOLE_INITIALIZED_BIT))
 			{
 				std::cout << "\nSpehsEngine::console already uninitialized!";
 				return;
@@ -83,14 +87,14 @@ namespace spehs
 			delete consoleText;
 			consoleText = nullptr;
 			clearLog();
-			disableBit(state, CONSOLE_INITIALIZED_BIT);
+			disableState(CONSOLE_INITIALIZED_BIT);
 		}
 		void open()
 		{
 			LockGuardRecursive regionLock(consoleMutex);
-			if (checkBit(state, CONSOLE_OPEN_BIT))
+			if (checkState(CONSOLE_OPEN_BIT))
 				return;
-			enableBit(state, CONSOLE_OPEN_BIT);
+			enableState(CONSOLE_OPEN_BIT);
 			updateLinePositions();
 		}
 		void close()
@@ -105,7 +109,34 @@ namespace spehs
 		bool isOpen()
 		{
 			LockGuardRecursive regionLock(consoleMutex);
-			return checkBit(state, CONSOLE_OPEN_BIT);
+			return checkState(CONSOLE_OPEN_BIT);
+		}
+		bool checkState(uint16_t bits)
+		{
+			LockGuardRecursive regionLock(consoleMutex);
+			return checkBit(state, bits);
+		}
+		void enableState(uint16_t bits)
+		{
+			consoleMutex.lock();
+			enableBit(state, bits);
+			consoleMutex.unlock();
+		}
+		void disableState(uint16_t bits)
+		{
+			consoleMutex.lock();
+			disableBit(state, bits);
+			consoleMutex.unlock();
+		}
+		bool textEntered()
+		{
+			LockGuardRecursive regionLock(consoleMutex);
+			return checkState(CONSOLE_TEXT_EXECUTED_BIT);
+		}
+		std::string getTextEntered()
+		{
+			LockGuardRecursive regionLock(consoleMutex);
+			return textExecuted;
 		}
 
 
@@ -113,6 +144,7 @@ namespace spehs
 		void update()
 		{
 			LockGuardRecursive regionLock(consoleMutex);
+			disableState(CONSOLE_TEXT_EXECUTED_BIT);
 			if (visibility > 0.0f)
 			{
 				//Update console font size if needed
@@ -448,6 +480,16 @@ namespace spehs
 			LockGuardRecursive regionLock(consoleMutex);
 			if (input.size() == 0)
 				return;
+
+			if (input[0] != '/')
+			{//Plain text, not command
+				enableState(CONSOLE_TEXT_EXECUTED_BIT);
+				consoleText->setString("><");
+				textExecuted = input;
+				input.clear();
+				return;
+			}
+			input.erase(input.begin());///Erase '/'
 
 			//Record command
 			for (unsigned i = 0; i < previousCommands.size(); i++)

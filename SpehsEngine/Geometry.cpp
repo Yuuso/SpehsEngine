@@ -95,8 +95,9 @@ namespace spehs
 				cusps[i].y *= hFactor;
 			}
 
-			//Finally return shape as the cusp quantity
+			//Assign cusps quantity to given unsigned reference
 			numCusps = shape;
+			return cusps;
 		}
 		else switch (shape)
 		{//Predetermine shapes
