@@ -22,7 +22,7 @@
 
 namespace spehs
 {
-	Polygon::Polygon(const int &_shapeID, const PlaneDepth &_planeDepth, const float &_width, const float &_height)
+	Polygon::Polygon(const int &_shapeID, const PlaneDepth &_planeDepth, const float &_width, const float &_height) : Polygon(_width, _height)
 	{
 		if (_shapeID >= 3) //Regular Convex Polygons
 		{
@@ -83,15 +83,30 @@ namespace spehs
 			std::copy(shapeVertexArray, shapeVertexArray + numVertices, stdext::checked_array_iterator<Vertex*>(worldVertexArray, numVertices));
 		}
 
-		drawMode = POLYGON;
 		setUVCoords();
-		width = _width;
-		height = _height;
-		radius = 0.0f;
-		planeDepth = _planeDepth;
-		blending = true;
 	}
-	Polygon::Polygon(Vertex* _vertexData, const int &_numVertices, const PlaneDepth &_planeDepth, const float &_width, const float &_height)
+	Polygon::Polygon(Position* _positionData, const int &_numVertices, const PlaneDepth &_planeDepth, const float &_width, const float &_height) : Polygon(_width, _height)
+	{
+		planeDepth = _planeDepth;
+		numVertices = _numVertices;
+		if (numVertices < 3)
+			exceptions::fatalError("Can't create a polygon with less than 3 vertices!");
+
+		if (_positionData == nullptr)
+			exceptions::fatalError("Vertex Array is a nullptr!");
+
+		//Copy the shape vertex array into polygon's own arrays
+		vertexArray = new Vertex[numVertices];
+		for (unsigned i = 0; i < numVertices; i++)
+		{
+			vertexArray[i].position = _positionData[i];
+		}
+		worldVertexArray = new Vertex[numVertices];
+		std::copy(vertexArray, vertexArray + numVertices, stdext::checked_array_iterator<Vertex*>(worldVertexArray, numVertices));
+
+		setUVCoords();
+	}
+	Polygon::Polygon(Vertex* _vertexData, const int &_numVertices, const PlaneDepth &_planeDepth, const float &_width, const float &_height) : Polygon(_width, _height)
 	{
 		planeDepth = _planeDepth;
 		numVertices = _numVertices;
@@ -107,16 +122,19 @@ namespace spehs
 		worldVertexArray = new Vertex[numVertices];
 		std::copy(_vertexData, _vertexData + numVertices, stdext::checked_array_iterator<Vertex*>(worldVertexArray, numVertices));
 
-		drawMode = POLYGON;
 		setUVCoords();
-		width = _width;
-		height = _height;
-		radius = 0.0f;
-		blending = true;
 	}
 	Polygon::Polygon(Vertex* _vertexData, const int &_numVertices, const float &_width, const float &_height) : Polygon(_vertexData, _numVertices, 0, _width, _height)
 	{
 		blending = false;
+	}
+	Polygon::Polygon(const float &_width, const float &_height)
+	{
+		drawMode = POLYGON;
+		width = _width;
+		height = _height;
+		radius = 0.0f;
+		blending = true;
 	}
 	Polygon::~Polygon()
 	{

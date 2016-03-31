@@ -41,6 +41,7 @@ namespace spehs
 		Polygon(const int &_shapeID, const PlaneDepth &_planeDepth, const float &_width, const float &_height);
 		//Given vertexArray is copied
 		Polygon(Vertex* _vertexData, const int &_numVertices, const PlaneDepth &_planeDepth, const float &_width, const float &_height); //For 2DPolygons
+		Polygon(Position* _positionData, const int &_numVertices, const PlaneDepth &_planeDepth, const float &_width, const float &_height);
 		Polygon(Vertex* _vertexData, const int &_numVertices, const float &_width, const float &_height);
 		~Polygon();
 
@@ -48,5 +49,8 @@ namespace spehs
 
 		float radius;
 		float width, height;
+
+	private:
+		Polygon(const float &_width, const float &_height);
 	};
 }

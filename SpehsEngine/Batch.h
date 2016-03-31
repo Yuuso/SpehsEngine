@@ -40,7 +40,7 @@ namespace spehs
 		void updateBuffers();
 		void setIndices(const unsigned int &_numVertices);
 
-		std::vector<Vertex*> vertices;
+		std::vector<Vertex> vertices;
 		std::vector<GLushort> indices;
 
 		GLuint vertexArrayObjectID;

@@ -119,7 +119,8 @@ namespace spehs
 			if (primitives[i]->readyForDelete)
 			{
 				delete primitives[i];
-				std::swap(primitives.begin() + i, primitives.end());
+				if (primitives[i] != primitives.back())
+					primitives[i] = primitives.back();
 				primitives.pop_back();
 			}
 			//Check primitives rendering state

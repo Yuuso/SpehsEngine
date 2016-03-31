@@ -177,9 +177,13 @@ namespace spehs
 	void PrimitiveBatch::push(Primitive* _primitive)
 	{
 		setIndices(_primitive->numVertices); //Set indices before vertices!
+		//MEMCPY WAY
+		//vertices.resize(vertices.size() + _primitive->numVertices);
+		//memcpy(&vertices[totalNumvertices], &_primitive->worldVertexArray[0], sizeof(Vertex) * _primitive->numVertices);
+		//PUSH_BACK WAY
 		for (unsigned i = 0; i < _primitive->numVertices; i++)
 		{
-			vertices.push_back(&_primitive->worldVertexArray[i]);
+			vertices.push_back(_primitive->worldVertexArray[i]);
 		}
 		totalNumvertices += _primitive->numVertices;
 	}
@@ -251,7 +255,7 @@ namespace spehs
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBufferID);
 
 		//Sent data to GPU
-		glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(spehs::Vertex) * vertices.size(), vertices[0]);
+		glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(spehs::Vertex) * vertices.size(), &vertices[0]);
 		glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, sizeof(GLushort) * indices.size(), &indices[0]);
 
 		glBindVertexArray(0);
