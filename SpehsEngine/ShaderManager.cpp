@@ -105,6 +105,7 @@ namespace spehs
 		spehs::GLSLProgram* defaultShader = new spehs::GLSLProgram();
 		defaultShader->compileShadersFromSource(defaultPolygonVert, defaultPolygonFrag);
 		defaultShader->addAttribute("vertexPosition");
+		defaultShader->addAttribute("vertexColor");
 		defaultShader->linkShaders();
 		shaderPrograms.push_back(new spehs::Shader(spehs::DefaultPolygon, defaultShader, new Uniforms(defaultShader)));
 
@@ -112,7 +113,8 @@ namespace spehs
 		spehs::GLSLProgram* defaultTexShader = new spehs::GLSLProgram();
 		defaultTexShader->compileShadersFromSource(defaultTextureVert, defaultTextureFrag);
 		defaultTexShader->addAttribute("vertexPosition");
-		defaultTexShader->addAttribute("textureCoords");
+		defaultTexShader->addAttribute("vertexColor");
+		defaultTexShader->addAttribute("vertexUV");
 		defaultTexShader->linkShaders();
 		shaderPrograms.push_back(new spehs::Shader(spehs::DefaultTexture, defaultTexShader, new DefaultTextureUniforms(defaultTexShader)));
 
