@@ -23,9 +23,9 @@ namespace spehs
 		planeDepth = 0;
 		lineWidth = 0.0f;
 		rotation = 0.0f;
-		scaleX = 0.0f;
-		scaleY = 0.0f;
-		rotationVector = glm::vec3(0.0f);
+		scaleX = 1.0f;
+		scaleY = 1.0f;
+		rotationVector = glm::vec3(0.0f, 0.0f, 1.0f);//?
 		primitiveColor = glm::vec4(1.0f);
 		scaledMatrix = glm::mat4(1.0f);
 		scaledRotatedMatrix = glm::mat4(1.0f);
@@ -89,9 +89,19 @@ namespace spehs
 		scaleY = _newScale.y;
 	}
 
+	void Primitive::setRotation(const float &_newRotation)
+	{
+		rotation = _newRotation;
+	}
+
 	void Primitive::setRotation(const float &_newRotation, const glm::vec3 &_newRotationVector)
 	{
 		rotation = _newRotation;
+		rotationVector = _newRotationVector;
+	}
+
+	void Primitive::setRotationVector(const glm::vec3 &_newRotationVector)
+	{
 		rotationVector = _newRotationVector;
 	}
 
@@ -100,7 +110,7 @@ namespace spehs
 		primitiveColor = _newColor;
 		for (unsigned i = 0; i < numVertices; i++)
 		{
-			worldVertexArray[i].setColor(primitiveColor.x, primitiveColor.y, primitiveColor.z, primitiveColor.w);
+			worldVertexArray[i].color.setColor(primitiveColor);
 		}
 	}
 
@@ -109,7 +119,7 @@ namespace spehs
 		primitiveColor = glm::vec4(_newColor, 1.0f);
 		for (unsigned i = 0; i < numVertices; i++)
 		{
-			worldVertexArray[i].setColor(primitiveColor.x, primitiveColor.y, primitiveColor.z, primitiveColor.w);
+			worldVertexArray[i].color.setColor(primitiveColor);
 		}
 	}
 
@@ -118,7 +128,7 @@ namespace spehs
 		primitiveColor = glm::vec4((float) _r / 255.0f, (float) _g / 255.0f, (float) _b / 255.0f, (float) _a / 255.0f);
 		for (unsigned i = 0; i < numVertices; i++)
 		{
-			worldVertexArray[i].setColor(_r, _g, _b, _a);
+			worldVertexArray[i].color.setColor(primitiveColor);
 		}
 	}
 
@@ -127,7 +137,7 @@ namespace spehs
 		primitiveColor.a = _a;
 		for (unsigned i = 0; i < numVertices; i++)
 		{
-			worldVertexArray[i].color.a = (unsigned char)(_a * 255.0f);
+			worldVertexArray[i].color.rgba.a = primitiveColor.a;
 		}
 	}
 
@@ -136,7 +146,7 @@ namespace spehs
 		primitiveColor.a = (float) _a / 255.0f;
 		for (unsigned i = 0; i < numVertices; i++)
 		{
-			worldVertexArray[i].color.a = _a;
+			worldVertexArray[i].color.rgba.a = (float) _a / 255.0f;
 		}
 	}
 

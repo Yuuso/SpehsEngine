@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Primitive.h"
+
 #include <vector>
 #include <stdint.h>
 
@@ -9,23 +11,20 @@ typedef unsigned int GLuint;
 typedef unsigned short GLushort;
 typedef int16_t PlaneDepth;
 
-#define MAX_BATCH_DEFAULT_SIZE 4096
-
 namespace spehs
 {
-	class BatchRenderer;
-	class Primitive;
+	class BatchManager;
 	class Mesh;
 	class Vertex;
 	
 	//Batch for Primitives
 	class PrimitiveBatch
 	{
-		friend class BatchRenderer;
+		friend class BatchManager;
 
 	public:
 		PrimitiveBatch();
-		PrimitiveBatch(const PlaneDepth &_priority, const bool _blending, const int &_shaderIndex, const GLuint &_textureDataID, const GLenum &_drawMode, float _lineWidth = 0.0f);
+		PrimitiveBatch(const bool _cameraMatrixState, const PlaneDepth &_priority, const bool _blending, const int &_shaderIndex, const GLuint &_textureDataID, const GLenum &_drawMode, float _lineWidth = 0.0f);
 		~PrimitiveBatch();
 
 		bool operator==(const Primitive &_primitive); //Checks if primitive is suitable for this batch
@@ -41,7 +40,7 @@ namespace spehs
 		void updateBuffers();
 		void setIndices(const unsigned int &_numVertices);
 
-		std::vector<Vertex*> vertices;
+		std::vector<Vertex> vertices;
 		std::vector<GLushort> indices;
 
 		GLuint vertexArrayObjectID;
@@ -49,6 +48,7 @@ namespace spehs
 		GLuint indexBufferID;
 
 		bool blending;
+		bool cameraMatrixState;
 		int shaderIndex;
 		unsigned int totalNumvertices;
 		GLuint textureDataID;
@@ -57,10 +57,11 @@ namespace spehs
 		PlaneDepth priority;
 	};
 
+
 	//Batch for Meshes
 	class MeshBatch
 	{
-		friend class BatchRenderer;
+		friend class BatchManager;
 
 	public:
 		MeshBatch();

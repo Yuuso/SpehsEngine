@@ -75,9 +75,7 @@ namespace spehs
 		shaderManager = new ShaderManager();
 		console::initialize();
 
-#ifdef _DEBUG
 		checkOpenGLErrors(__FILE__, __LINE__);
-#endif
 
 		return 0;
 	}

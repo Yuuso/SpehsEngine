@@ -1,17 +1,22 @@
-#include <glm/gtc/matrix_transform.hpp>
+
 #include "Camera2D.h"
 #include "ApplicationData.h"
 
-spehs::Camera2D camera;
-spehs::Camera2D editorCamera;
-glm::mat4* projectionMatrix;
-glm::mat4 staticMatrix;
+#include <glm/gtc/matrix_transform.hpp>
 
 
+#include <iostream>
 namespace spehs
 {
-	Camera2D::Camera2D() : zoomSpeed(100.0f),scale(1.0f), orthoMatrix(1.0f), cameraMatrix(1.0f), worldPosition(0, 0), previousPosition(0, 0){}
-	Camera2D::~Camera2D(){}
+	Camera2D::Camera2D() : zoomSpeed(50.0f), scale(1.0f), orthoMatrix(1.0f), cameraMatrix(1.0f), position(0.0f, 0.0f), previousPosition(0.0f, 0.0f)
+	{
+		initialize();
+	}
+	Camera2D::~Camera2D()
+	{
+	}
+
+
 	void Camera2D::initialize()
 	{
 		//Init
@@ -22,33 +27,29 @@ namespace spehs
 		cameraMatrix = glm::translate(orthoMatrix, translation);
 
 		//Camera Scale
-		glm::vec3 scaleVec(((float) applicationData->getWindowWidth() / (float) applicationData->getWindowHeight()) * scale, scale, 0.0f);
+		glm::vec3 scaleVec(scale, scale, 0.0f);
 		cameraMatrix = glm::scale(glm::mat4(1.0f), scaleVec) * cameraMatrix;
 		staticMatrix = cameraMatrix;
-	}
-	void Camera2D::enableCameraMatrix()
-	{
-		//Set camera matrix pointer
 		projectionMatrix = &cameraMatrix;
 	}
+
+	void Camera2D::translate(const glm::vec2& _vec)
+	{
+		position += _vec;
+	}
+
 	void Camera2D::update()
-	{//We could assume that the camera needs updating on each frame
-
-
+	{
 		//Camera translation
-		static glm::vec3 translation;
-		translation = glm::vec3(applicationData->getWindowWidth()*0.5f, applicationData->getWindowHeight()*0.5f, 0);
-		cameraMatrix = glm::translate(orthoMatrix, translation);
+		cameraMatrix = glm::translate(orthoMatrix, glm::vec3(position.x, position.y, 0.0f));
 
 		//Camera Scale
 		static glm::vec3 scaleVec;
-		scaleVec = glm::vec3(((float) applicationData->getWindowWidth() / (float) applicationData->getWindowHeight()) * scale, scale, 0.0f);
+		scaleVec = glm::vec3(scale, scale, 0.0f);
 		cameraMatrix = glm::scale(glm::mat4(1.0f), scaleVec) * cameraMatrix;
 
 		//Delta movement
-		deltaMovement = worldPosition - previousPosition;
-		previousPosition = worldPosition;
+		deltaMovement = position - previousPosition;
+		previousPosition = position;
 	}
-
-
 }

@@ -24,7 +24,7 @@ namespace spehs
 
 	protected:
 		//NOTE: Point always in 2D (No Z-Depth), if there is need for 3D points for some reason -> call setBlending(false)
-		Point(const PlaneDepth &_planeDepth = 0);
+		Point(const PlaneDepth &_planeDepth);
 		~Point();
 	};
 }

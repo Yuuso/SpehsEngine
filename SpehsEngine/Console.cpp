@@ -18,8 +18,6 @@
 #define CONSOLE_TEXT_EXECUTED_BIT			0x0004
 extern int64_t guiRectangleAllocations;
 extern int64_t guiRectangleDeallocations;
-extern int64_t primitiveBatchAllocations;
-extern int64_t primitiveBatchDeallocations;
 typedef std::lock_guard<std::recursive_mutex> LockGuardRecursive;
 
 
@@ -563,7 +561,7 @@ namespace spehs
 					log("Spehs Engine select memory allocations:", color * 0.75f);
 					log("Remaining allocations / Total (runtime) allocations", color);
 					log("GUI Rectangles: " + std::to_string(guiRectangleAllocations - guiRectangleDeallocations) + "/" + std::to_string(guiRectangleAllocations), color);
-					log("Primitive batches: " + std::to_string(primitiveBatchAllocations - primitiveBatchDeallocations) + "/" + std::to_string(primitiveBatchAllocations), color);
+					//log("Primitive batches: " + std::to_string(primitiveBatchAllocations - primitiveBatchDeallocations) + "/" + std::to_string(primitiveBatchAllocations), color);
 					log("-------------------", color);
 					return;
 				}

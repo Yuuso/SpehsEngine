@@ -1,6 +1,5 @@
 #include <iostream>
 #include "inputManager.h"
-#include "PolygonBatch.h"
 #include "Time.h"
 #include "Geometry.h"
 #include "applicationData.h"

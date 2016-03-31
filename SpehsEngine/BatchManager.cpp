@@ -4,12 +4,30 @@
 #include "Mesh.h"
 #include "Batch.h"
 #include "Polygon.h"
+#include "Line.h"
+#include "Point.h"
+#include "Console.h"
 
 #include <algorithm>
 
 
 namespace spehs
 {
+	BatchManager* activeBatchManager;
+	void setActiveBatchManager(BatchManager* _active)
+	{
+		activeBatchManager = _active;
+	}
+	void resetActiveBatchManager()
+	{
+		activeBatchManager = nullptr;
+	}
+	BatchManager* getActiveBatchManager()
+	{
+		return activeBatchManager;
+	}
+
+
 	BatchManager::BatchManager(Camera2D* _camera)
 	{
 		camera2D = _camera;
@@ -25,6 +43,8 @@ namespace spehs
 		//Delete batches
 		clearBatches();
 
+		int cleanUpPrimitives = primitives.size();
+		int cleanUpMeshes = meshes.size();
 		//Delete Primitives
 		for (unsigned i = 0; i < primitives.size(); i++)
 		{
@@ -36,29 +56,52 @@ namespace spehs
 		{
 			delete meshes[i];
 		}
+
+		if (cleanUpPrimitives != 0)
+			console::warning("BatchManager cleaned up " + std::to_string(cleanUpPrimitives) + " primitives!");
+		if (cleanUpMeshes != 0)
+			console::warning("BatchManager cleaned up " + std::to_string(cleanUpMeshes) + " meshes!");
 	}
 
 
 
 	Mesh* BatchManager::createMesh()
 	{
+		//TODO
 		return nullptr;
 	}
 
-	Polygon* BatchManager::createPolygon()
+	Polygon* BatchManager::createPolygon(const int &_shapeID, const PlaneDepth &_planeDepth, const float &_width, const float &_height)
 	{
-		primitives.push_back(new Polygon(4));
+		primitives.push_back(new Polygon(_shapeID, _planeDepth, _width, _height));
+		return primitives.back()->getPolygonPtr();
+	}
+	Polygon* BatchManager::createPolygon(Vertex* _vertexData, const int &_numVertices, const PlaneDepth &_planeDepth, const float &_width, const float &_height)
+	{
+		primitives.push_back(new Polygon(_vertexData, _numVertices, _planeDepth, _width, _height));
+		return primitives.back()->getPolygonPtr();
+	}
+	Polygon* BatchManager::createPolygon(Vertex* _vertexData, const int &_numVertices, const float &_width, const float &_height)
+	{
+		primitives.push_back(new Polygon(_vertexData, _numVertices, _width, _height));
 		return primitives.back()->getPolygonPtr();
 	}
 
-	Line* BatchManager::createLine()
+	Line* BatchManager::createLine(const glm::vec2 &_startPoint, const glm::vec2 &_endPoint, const PlaneDepth &_planeDepth)
 	{
-		return nullptr;
+		primitives.push_back(new Line(_startPoint, _endPoint, _planeDepth));
+		return primitives.back()->getLinePtr();
+	}
+	Line* BatchManager::createLine(const glm::vec3 &_startPoint, const glm::vec3 &_endPoint)
+	{
+		primitives.push_back(new Line(_startPoint, _endPoint));
+		return primitives.back()->getLinePtr();
 	}
 
-	Point* BatchManager::createPoint()
+	Point* BatchManager::createPoint(const PlaneDepth &_planeDepth)
 	{
-		return nullptr;
+		primitives.push_back(new Point(_planeDepth));
+		return primitives.back()->getPointPtr();
 	}
 
 
@@ -76,7 +119,8 @@ namespace spehs
 			if (primitives[i]->readyForDelete)
 			{
 				delete primitives[i];
-				std::swap(primitives.begin() + i, primitives.end());
+				if (primitives[i] != primitives.back())
+					primitives[i] = primitives.back();
 				primitives.pop_back();
 			}
 			//Check primitives rendering state
@@ -92,12 +136,13 @@ namespace spehs
 					{
 						primitiveBatches[j]->push(primitives[i]);
 						batchFound = true;
+						j = primitiveBatches.size();
 					}
 				}
 				//If none found create a new one
 				if (!batchFound)
 				{
-					primitiveBatches.push_back(new PrimitiveBatch(primitives[i]->planeDepth, primitives[i]->shaderIndex,
+					primitiveBatches.push_back(new PrimitiveBatch(primitives[i]->cameraMatrixState, primitives[i]->planeDepth, primitives[i]->blending, primitives[i]->shaderIndex,
 						primitives[i]->textureDataID, primitives[i]->drawMode, primitives[i]->lineWidth));
 					primitiveBatches.back()->push(primitives[i]);
 				}
@@ -123,16 +168,13 @@ namespace spehs
 		{
 			return first->getPriority() < second->getPriority();
 		});
-		for (unsigned i = 0; i < primitiveBatches.size();)
+		for (unsigned i = 0; i < primitiveBatches.size();i++)
 		{
 			if (!primitiveBatches[i]->render()) //If the batch is empty, delete it
 			{
 				delete primitiveBatches[i];
-				std::swap(primitiveBatches.begin() + i, primitiveBatches.end());
-				primitiveBatches.pop_back();
+				primitiveBatches.erase(primitiveBatches.begin() + i);
 			}
-			else
-				i++;
 		}
 	}
 

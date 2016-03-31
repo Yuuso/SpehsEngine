@@ -1,5 +1,7 @@
 #pragma once
 
+#include <glm/vec4.hpp>
+
 
 namespace spehs
 {
@@ -24,11 +26,9 @@ namespace spehs
 
 		void setColor(const unsigned char &_r, const unsigned char &_g, const unsigned char &_b, const unsigned char &_a);
 		void setColor(const float &_r, const float &_g, const float &_b, const float &_a);
+		void setColor(const glm::vec4 _color);
 
-		unsigned char r;
-		unsigned char g;
-		unsigned char b;
-		unsigned char a;
+		glm::vec4 rgba;
 	};
 	class UV
 	{
@@ -47,12 +47,6 @@ namespace spehs
 		Vertex();
 		Vertex(const Position &_position);
 		Vertex(const Position &_position, const ColorRGBA &_color, const UV &_uv);
-
-		void setPosition(const float &_x, const float &_y);
-		void setPosition(const float &_x, const float &_y, const float &_z);
-		void setColor(const unsigned char &_r, const unsigned char &_g, const unsigned char &_b, const unsigned char &_a);
-		void setColor(const float &_r, const float &_g, const float &_b, const float &_a);
-		void setUV(const float &_u, const float &_v);
 
 		Position position;
 		ColorRGBA color;

@@ -109,8 +109,8 @@ namespace spehs
 			}
 		}
 		//Here we know that no separating axis was found and there is a collision
-		delete axis1;
-		delete axis2;
+		delete [] axis1;
+		delete [] axis2;
 		return true;
 	}
 	glm::vec2 SATMTVCollision(Vertex* _vertexArray1, int _size1, Vertex* _vertexArray2, int _size2)
@@ -182,8 +182,8 @@ namespace spehs
 			}
 		}
 		//Here we know that no separating axis was found and there is a collision
-		delete axis1;
-		delete axis2;
+		delete [] axis1;
+		delete [] axis2;
 		return glm::normalize(smallestAxis) * abs(overlap);
 	}
 
@@ -227,7 +227,7 @@ namespace spehs
 			}
 		}
 		//Here we know that no separating axis was found and there is a collision
-		delete axis1;
+		delete [] axis1;
 		return true;
 	}
 	glm::vec2 SATMTVCollision(Vertex* _vertexArray, int _size, glm::vec2& _circleCenterPoint, float _circleRadius)
@@ -289,7 +289,7 @@ namespace spehs
 			}
 		}
 		//Here we know that no separating axis was found and there is a collision
-		delete axis1;
+		delete [] axis1;
 		return glm::normalize(smallestAxis) * abs(overlap);
 	}
 

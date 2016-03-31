@@ -20,8 +20,8 @@ namespace spehs
 
 		numVertices = 2;
 		Vertex* pos = new Vertex[numVertices];
-		pos[0].setPosition(_startPoint.x, _startPoint.y);
-		pos[1].setPosition(_endPoint.x, _endPoint.y);
+		pos[0].position.setPosition(_startPoint.x, _startPoint.y);
+		pos[1].position.setPosition(_endPoint.x, _endPoint.y);
 
 		vertexArray = pos;
 		worldVertexArray = new Vertex[numVertices];
@@ -30,6 +30,7 @@ namespace spehs
 		lineWidth = 1.0f;
 		planeDepth = _planeDepth;
 		blending = true;
+		drawMode = LINE;
 	}
 	Line::Line(const glm::vec3 &_startPoint, const glm::vec3 &_endPoint)
 	{
@@ -38,8 +39,8 @@ namespace spehs
 
 		numVertices = 2;
 		Vertex* pos = new Vertex[numVertices];
-		pos[0].setPosition(_startPoint.x, _startPoint.y, _startPoint.z);
-		pos[1].setPosition(_endPoint.x, _endPoint.y, _endPoint.z);
+		pos[0].position.setPosition(_startPoint.x, _startPoint.y, _startPoint.z);
+		pos[1].position.setPosition(_endPoint.x, _endPoint.y, _endPoint.z);
 
 		vertexArray = pos;
 		worldVertexArray = new Vertex[numVertices];
@@ -47,6 +48,7 @@ namespace spehs
 
 		lineWidth = 1.0f;
 		blending = false;
+		drawMode = LINE;
 	}
 	Line::~Line()
 	{
@@ -63,19 +65,19 @@ namespace spehs
 		{
 			vertex = glm::vec4(vertexArray[i].position.x, vertexArray[i].position.y, vertexArray[i].position.z, 1.0f);
 			vertex = scaledRotatedMatrix * vertex;
-			worldVertexArray[i].setPosition(vertex.x + position.x, vertex.y + position.y, vertex.z + position.z);
+			worldVertexArray[i].position.setPosition(vertex.x + position.x, vertex.y + position.y, vertex.z + position.z);
 		}
 	}
 
 	void Line::setPoints(const glm::vec2 &_newStartPoint, const glm::vec2 &_newEndPoint)
 	{
-		vertexArray[0].setPosition(_newStartPoint.x, _newStartPoint.y);
-		vertexArray[1].setPosition(_newEndPoint.x, _newEndPoint.y);
+		vertexArray[0].position.setPosition(_newStartPoint.x, _newStartPoint.y);
+		vertexArray[1].position.setPosition(_newEndPoint.x, _newEndPoint.y);
 	}
 
 	void Line::setPoints(const glm::vec3 &_newStartPoint, const glm::vec3 &_newEndPoint)
 	{
-		vertexArray[0].setPosition(_newStartPoint.x, _newStartPoint.y, _newStartPoint.z);
-		vertexArray[1].setPosition(_newEndPoint.x, _newEndPoint.y, _newEndPoint.z);
+		vertexArray[0].position.setPosition(_newStartPoint.x, _newStartPoint.y, _newStartPoint.z);
+		vertexArray[1].position.setPosition(_newEndPoint.x, _newEndPoint.y, _newEndPoint.z);
 	}
 }

@@ -22,7 +22,7 @@
 
 namespace spehs
 {
-	Polygon::Polygon(const int &_shapeID, const PlaneDepth &_planeDepth, const float &_width, const float &_height)
+	Polygon::Polygon(const int &_shapeID, const PlaneDepth &_planeDepth, const float &_width, const float &_height) : Polygon(_width, _height)
 	{
 		if (_shapeID >= 3) //Regular Convex Polygons
 		{
@@ -35,12 +35,12 @@ namespace spehs
 				firstPosition = HALF_PI;
 			else
 				firstPosition = HALF_PI + (TWO_PI / numVertices) / 2;
-			pos[0].setPosition(cos(firstPosition), sin(firstPosition));
+			pos[0].position.setPosition(cos(firstPosition), sin(firstPosition));
 			float minX = pos[0].position.x, minY = pos[0].position.y, maxX = pos[0].position.x, maxY = pos[0].position.y;
 			for (int i = 1; i < numVertices; i++)
 			{
 				//Set position
-				pos[i].setPosition(cos(firstPosition - i * (TWO_PI / numVertices)), sin(firstPosition - i * (TWO_PI / numVertices)));
+				pos[i].position.setPosition(cos(firstPosition - i * (TWO_PI / numVertices)), sin(firstPosition - i * (TWO_PI / numVertices)));
 
 				//Check min/max
 				if (pos[i].position.x > maxX)
@@ -83,15 +83,30 @@ namespace spehs
 			std::copy(shapeVertexArray, shapeVertexArray + numVertices, stdext::checked_array_iterator<Vertex*>(worldVertexArray, numVertices));
 		}
 
-		drawMode = POLYGON;
 		setUVCoords();
-		width = _width;
-		height = _height;
-		radius = 0.0f;
-		planeDepth = _planeDepth;
-		blending = true;
 	}
-	Polygon::Polygon(Vertex* _vertexData, const int &_numVertices, const PlaneDepth &_planeDepth, const float &_width, const float &_height)
+	Polygon::Polygon(Position* _positionData, const int &_numVertices, const PlaneDepth &_planeDepth, const float &_width, const float &_height) : Polygon(_width, _height)
+	{
+		planeDepth = _planeDepth;
+		numVertices = _numVertices;
+		if (numVertices < 3)
+			exceptions::fatalError("Can't create a polygon with less than 3 vertices!");
+
+		if (_positionData == nullptr)
+			exceptions::fatalError("Vertex Array is a nullptr!");
+
+		//Copy the shape vertex array into polygon's own arrays
+		vertexArray = new Vertex[numVertices];
+		for (unsigned i = 0; i < numVertices; i++)
+		{
+			vertexArray[i].position = _positionData[i];
+		}
+		worldVertexArray = new Vertex[numVertices];
+		std::copy(vertexArray, vertexArray + numVertices, stdext::checked_array_iterator<Vertex*>(worldVertexArray, numVertices));
+
+		setUVCoords();
+	}
+	Polygon::Polygon(Vertex* _vertexData, const int &_numVertices, const PlaneDepth &_planeDepth, const float &_width, const float &_height) : Polygon(_width, _height)
 	{
 		planeDepth = _planeDepth;
 		numVertices = _numVertices;
@@ -107,16 +122,19 @@ namespace spehs
 		worldVertexArray = new Vertex[numVertices];
 		std::copy(_vertexData, _vertexData + numVertices, stdext::checked_array_iterator<Vertex*>(worldVertexArray, numVertices));
 
-		drawMode = POLYGON;
 		setUVCoords();
-		width = _width;
-		height = _height;
-		radius = 0.0f;
-		blending = true;
 	}
 	Polygon::Polygon(Vertex* _vertexData, const int &_numVertices, const float &_width, const float &_height) : Polygon(_vertexData, _numVertices, 0, _width, _height)
 	{
 		blending = false;
+	}
+	Polygon::Polygon(const float &_width, const float &_height)
+	{
+		drawMode = POLYGON;
+		width = _width;
+		height = _height;
+		radius = 0.0f;
+		blending = true;
 	}
 	Polygon::~Polygon()
 	{
@@ -127,7 +145,7 @@ namespace spehs
 	void Polygon::updateVertices()
 	{
 		static glm::vec4 vertex;
-		scaledMatrix = glm::scale(glm::mat4(), glm::vec3(scaleX, scaleY, 0.0f));
+		scaledMatrix = glm::scale(glm::mat4(1.0f), glm::vec3(scaleX, scaleY, 0.0f));
 		scaledRotatedMatrix = glm::rotate(scaledMatrix, rotation, rotationVector);
 		for (unsigned int i = 0; i < numVertices; i++)
 		{
@@ -135,7 +153,7 @@ namespace spehs
 			vertex.x *= width;
 			vertex.y *= height;
 			vertex = scaledRotatedMatrix * vertex;
-			worldVertexArray[i].setPosition(vertex.x + position.x, vertex.y + position.y, vertex.z + position.z);
+			worldVertexArray[i].position.setPosition(vertex.x + position.x, vertex.y + position.y, vertex.z + position.z);
 		}
 	}
 

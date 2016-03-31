@@ -38,15 +38,19 @@ namespace spehs
 		float getRadius();
 
 	protected:
-		Polygon(const int &_shapeID, const PlaneDepth &_planeDepth = 0, const float &_width = 1.0f, const float &_height = 1.0f);
+		Polygon(const int &_shapeID, const PlaneDepth &_planeDepth, const float &_width, const float &_height);
 		//Given vertexArray is copied
-		Polygon(Vertex* _vertexData, const int &_numVertices, const PlaneDepth &_planeDepth, const float &_width = 1.0f, const float &_height = 1.0f); //For 2DPolygons
-		Polygon(Vertex* _vertexData, const int &_numVertices, const float &_width = 1.0f, const float &_height = 1.0f);
+		Polygon(Vertex* _vertexData, const int &_numVertices, const PlaneDepth &_planeDepth, const float &_width, const float &_height); //For 2DPolygons
+		Polygon(Position* _positionData, const int &_numVertices, const PlaneDepth &_planeDepth, const float &_width, const float &_height);
+		Polygon(Vertex* _vertexData, const int &_numVertices, const float &_width, const float &_height);
 		~Polygon();
 
 		void setUVCoords();
 
 		float radius;
 		float width, height;
+
+	private:
+		Polygon(const float &_width, const float &_height);
 	};
 }

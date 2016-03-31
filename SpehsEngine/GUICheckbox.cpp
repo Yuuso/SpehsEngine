@@ -1,8 +1,11 @@
 #include "ApplicationData.h"
-#include "PolygonBatch.h"
+#include "Polygon.h"
+#include "BatchManager.h"
 #include "InputManager.h"
 #include "GUICheckbox.h"
 #include "Text.h"
+
+
 #define CHECKBOX_BORDER 2
 #define SELECTED_ALPHA 1.0f
 #define UNSELECTED_ALPHA 0.1f
@@ -11,12 +14,14 @@ namespace spehs
 {
 	GUICheckbox::GUICheckbox() : booleanPtr(nullptr), checkboxSize(20)
 	{
-		checkboxBackground = new PolygonBatch(Shape::BUTTON);
+		checkboxBackground = spehs::getActiveBatchManager()->createPolygon(Shape::BUTTON);
 		checkboxBackground->setColor(30, 30, 30);
 		checkboxBackground->setCameraMatrixState(false);
-		checkboxFilling = new PolygonBatch(Shape::BUTTON);
+
+		checkboxFilling = spehs::getActiveBatchManager()->createPolygon(Shape::BUTTON);
 		checkboxFilling->setColor(160, 170, 180);
 		checkboxFilling->setCameraMatrixState(false);
+
 		setJustification(GUIRECT_TEXT_JUSTIFICATION_LEFT);
 	}
 	GUICheckbox::GUICheckbox(int _ID) : GUICheckbox()
@@ -29,8 +34,8 @@ namespace spehs
 	}
 	GUICheckbox::~GUICheckbox()
 	{
-		delete checkboxBackground;
-		delete checkboxFilling;
+		checkboxBackground->destroy();
+		checkboxFilling->destroy();
 	}
 	void GUICheckbox::update()
 	{
@@ -47,17 +52,22 @@ namespace spehs
 
 		//Filling color
 		if (checkBit(state, GUIRECT_SELECTED))
-			checkboxFilling->setAlpha(SELECTED_ALPHA);
+			checkboxFilling->setColorAlpha(SELECTED_ALPHA);
 		else
-			checkboxFilling->setAlpha(UNSELECTED_ALPHA);
+			checkboxFilling->setColorAlpha(UNSELECTED_ALPHA);
 	}
 	void GUICheckbox::render()
 	{
 		GUIRectangle::render();
 		if (checkBit(state, GUIRECT_VISIBLE))
 		{
-			checkboxBackground->draw();
-			checkboxFilling->draw();
+			checkboxBackground->setRenderState(true);
+			checkboxFilling->setRenderState(true);
+		}
+		else
+		{
+			checkboxBackground->setRenderState(false);
+			checkboxFilling->setRenderState(false);
 		}
 	}
 	void GUICheckbox::updatePosition()

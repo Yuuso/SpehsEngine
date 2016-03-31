@@ -263,9 +263,7 @@ namespace spehs
 			font->characters.insert(std::pair<GLchar, Character>(c, character));
 		}
 
-#ifdef _DEBUG
 		checkOpenGLErrors(__FILE__, __LINE__);
-#endif
 
 		font->height = (*font->ftFace)->size->metrics.height >> 6;
 		font->descender = (*font->ftFace)->descender >> 6;
@@ -359,10 +357,7 @@ namespace spehs
 				y -= font->height + lineSpacing;
 			}
 
-#ifdef _DEBUG
 		checkOpenGLErrors(__FILE__, __LINE__);
-#endif
-
 
 		//Submit data
 		glBindBuffer(GL_ARRAY_BUFFER, vertexArrayData);
@@ -371,9 +366,7 @@ namespace spehs
 		delete[] vertices;
 		doUpdate = false;
 
-#ifdef _DEBUG
 		checkOpenGLErrors(__FILE__, __LINE__);
-#endif
 	}
 	void Text::updateGlyphsToRender()
 	{
@@ -415,9 +408,7 @@ namespace spehs
 		glBindTexture(GL_TEXTURE_2D, 0);
 		textProgram.unuse();
 
-#ifdef _DEBUG
 		checkOpenGLErrors(__FILE__, __LINE__);
-#endif
 	}
 
 	void Text::setString(std::string str)
