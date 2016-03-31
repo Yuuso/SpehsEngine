@@ -21,7 +21,7 @@ namespace spehs
 	{}
 	void Uniforms::setUniforms()
 	{
-		glUniformMatrix4fv(cameraLocation, 1, GL_FALSE, &cameraMatrix[0][0]);
+		spehs::setUniform_mat4(cameraLocation, cameraMatrix);
 
 		checkOpenGLErrors(__FILE__, __LINE__);
 	}
@@ -45,7 +45,7 @@ namespace spehs
 		//
 		const std::string defaultPolygonVert =
 		{
-			"#version 130\n"
+			"#version 150\n"
 			"in vec3 vertexPosition;\n"
 			"in vec4 vertexColor;\n"
 			"out vec4 fragmentColor;\n"
@@ -58,7 +58,7 @@ namespace spehs
 		};
 		const std::string defaultPolygonFrag =
 		{
-			"#version 130\n"
+			"#version 150\n"
 			"in vec4 fragmentColor;\n"
 			"out vec4 color;\n"
 			"void main()\n"
@@ -70,7 +70,7 @@ namespace spehs
 		//
 		const std::string defaultTextureVert =
 		{
-			"#version 130\n"
+			"#version 150\n"
 			"in vec3 vertexPosition;\n"
 			"in vec4 vertexColor;\n"
 			"in vec2 vertexUV;\n"
@@ -86,7 +86,7 @@ namespace spehs
 		};
 		const std::string defaultTextureFrag =
 		{
-			"#version 130\n"
+			"#version 150\n"
 			"in vec2 texCoord;\n"
 			"in vec4 fragmentColor;\n"
 			"out vec4 color;\n"

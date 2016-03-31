@@ -132,30 +132,22 @@ namespace spehs
 
 		//Blending
 		if (blending)
-		{
 			glEnable(GL_BLEND);
-		}
 		else
-		{
 			glDisable(GL_BLEND);
-		}
 
 		shaderManager->use(shaderIndex);
 
 		//Texture
 		if (textureDataID)
-		{
 			shaderManager->getShader(shaderIndex)->uniforms->textureDataID = textureDataID;
-		}
+
 		//Camera Matrix
 		if (cameraMatrixState)
-		{
 			shaderManager->getShader(shaderIndex)->uniforms->cameraMatrix = *spehs::getActiveBatchManager()->getCamera2D()->projectionMatrix;
-		}
 		else
-		{
 			shaderManager->getShader(shaderIndex)->uniforms->cameraMatrix = spehs::getActiveBatchManager()->getCamera2D()->staticMatrix;
-		}
+
 		//Uniforms
 		shaderManager->setUniforms(shaderIndex);
 
@@ -165,7 +157,7 @@ namespace spehs
 		{
 			glLineWidth(lineWidth);
 		}
-		glDrawElements(drawMode, indices.size(), GL_UNSIGNED_SHORT, (GLvoid*) 0);
+		glDrawElements(drawMode, indices.size(), GL_UNSIGNED_SHORT, (GLvoid*) NULL);
 		glBindVertexArray(0);
 
 		checkOpenGLErrors(__FILE__, __LINE__);
@@ -233,10 +225,10 @@ namespace spehs
 		if (textureDataID)
 			glEnableVertexAttribArray(2);
 
-		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*) offsetof(Vertex, position));
-		glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*) offsetof(Vertex, color));
+		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), reinterpret_cast<void*>(offsetof(Vertex, position)));
+		glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), reinterpret_cast<void*>(offsetof(Vertex, color)));
 		if (textureDataID)
-			glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*) offsetof(Vertex, uv));
+			glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), reinterpret_cast<void*>(offsetof(Vertex, uv)));
 
 		glBindVertexArray(0);
 
