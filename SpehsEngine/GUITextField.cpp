@@ -57,7 +57,7 @@ namespace spehs
 		{
 			if (!text)
 			{
-				text = new spehs::Text();
+				text = new spehs::Text(getDepth() + 2);
 				text->setFont(applicationData->GUITextFontPath, applicationData->GUITextSize);
 			}
 			text->setString(defaultString);

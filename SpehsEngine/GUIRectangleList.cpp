@@ -18,10 +18,10 @@ namespace spehs
 		scrollUp = new GUIRectangle(ScrollButtons::up);
 		scrollBar = new GUIRectangle(ScrollButtons::bar);
 		scrollDown = new GUIRectangle(ScrollButtons::down);
-
 		scrollUp->setParent(this);
 		scrollBar->setParent(this);
 		scrollDown->setParent(this);
+
 
 		scrollUp->setString("U");
 		scrollBar->setString("B");
@@ -78,17 +78,6 @@ namespace spehs
 			scrollUp->setRenderState(_state);
 			scrollBar->setRenderState(_state);
 			scrollDown->setRenderState(_state);
-		}
-	}
-	void GUIRectangleList::setPostRenderState(const bool _state)
-	{
-		GUIRectangleContainer::setPostRenderState(_state);
-
-		if (invisibleElements())
-		{
-			scrollUp->setPostRenderState(_state);
-			scrollBar->setPostRenderState(_state);
-			scrollDown->setPostRenderState(_state);
 		}
 	}
 	void GUIRectangleList::updatePosition()

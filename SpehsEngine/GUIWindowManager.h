@@ -11,7 +11,6 @@ namespace spehs
 		~GUIWindowManager();
 
 		void update();
-		void setRenderState(const bool _state);
 
 		void addWindow(GUIWindow* window){ windows.push_back(window); }
 		void refreshWindows();

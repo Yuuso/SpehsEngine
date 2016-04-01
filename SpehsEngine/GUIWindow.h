@@ -13,11 +13,11 @@ namespace spehs
 		virtual ~GUIWindow();
 		
 		virtual void update();
+		virtual void postUpdate();
 		virtual void updatePosition();
 		virtual void updateScale();
 		virtual void updateMinSize();//Updates min size variable based on element requirements
 		virtual void setRenderState(const bool _state);
-		virtual void setPostRenderState(const bool _state);
 
 		virtual void gainFocus();
 		virtual void loseFocus();

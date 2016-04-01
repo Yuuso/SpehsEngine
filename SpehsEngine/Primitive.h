@@ -92,6 +92,7 @@ namespace spehs
 
 		//Getters
 		bool getCameraMatrixState(){ return cameraMatrixState; }
+		bool getRenderState(){ return renderState; }
 		PlaneDepth getPlaneDepth(){ return planeDepth; }
 		int getShaderIndex(){ return shaderIndex; }
 		glm::vec4 getColor(){ return primitiveColor; }

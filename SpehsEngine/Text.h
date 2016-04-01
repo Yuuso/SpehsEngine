@@ -6,6 +6,7 @@
 
 typedef unsigned int GLuint;
 typedef char GLchar;
+typedef int16_t PlaneDepth;
 
 namespace spehs
 {
@@ -22,14 +23,14 @@ namespace spehs
 	class Text
 	{
 	public:
-		Text();
+		Text(PlaneDepth depth);
 		Text(const Text& original);
 		~Text();
 		void operator=(const Text& original);
 
 		bool setFont(std::string fontPath, int size);
 		bool setFontSize(int size);
-		void render();
+		void setRenderState(bool state);
 		void setString(std::string str);
 		void incrementString(std::string str);
 		void incrementFrontString(std::string str);
@@ -38,6 +39,7 @@ namespace spehs
 		void setColor(float r, float g, float b, float a = 1.0f);
 		void setPosition(glm::vec2& vec);
 		void setPosition(float, float);
+		void setPlaneDepth(PlaneDepth depth){/*TODO*/ }
 		void translate(glm::vec2& vec);
 
 		void updateGlyphsToRender();

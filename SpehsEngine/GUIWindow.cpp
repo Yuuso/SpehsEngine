@@ -297,28 +297,18 @@ namespace spehs
 			close();
 
 	}
-	void GUIWindow::setRenderState(const bool _state)
+	void GUIWindow::postUpdate()
 	{
-		if (!isOpen())
-			return;
-
 		//Check size and positioning before drawing strech
 		if (!checkBit(state, GUIRECT_SCALED))
 			updateScale();
 		if (!checkBit(state, GUIRECT_POSITIONED))
 			updatePosition();
 
-		strech->setRenderState(_state);
-		GUIRectangleContainer::setRenderState(_state);
-		header->setRenderState(_state);
-		exit->setRenderState(_state);
-	}
-	void GUIWindow::setPostRenderState(const bool _state)
-	{
-		strech->setPostRenderState(_state);
-		header->setPostRenderState(_state);
-		exit->setPostRenderState(_state);
-		GUIRectangleContainer::setPostRenderState(_state);
+		strech->postUpdate();
+		GUIRectangleContainer::postUpdate();
+		header->postUpdate();
+		exit->postUpdate();
 	}
 	void GUIWindow::gainFocus()
 	{//Function called whenever this window receives focus
@@ -346,12 +336,14 @@ namespace spehs
 	void GUIWindow::close()
 	{
 		disableBit(state, GUIRECT_OPEN);
+		setRenderState(false);
 		loseFocus();
 		std::cout << "\nWindow closed: " << header->getString();
 	}
 	void GUIWindow::open()
 	{
 		enableBit(state, GUIRECT_OPEN);
+		setRenderState(true);
 		refresh();
 		std::cout << "\nWindow opened: " << header->getString();
 	}
@@ -380,15 +372,6 @@ namespace spehs
 		{
 			elements[i]->setPosition(0, elements[i - 1]->getLocalY() - elements[i]->getHeight());
 		}
-		//for (int i = int(elements.size()) - 1; i >= 0; i--)
-		//{
-		//	if (i == elements.size() - 1)
-		//		elements[i]->setPosition(0, 0);
-		//	else
-		//		elements[i]->setPosition(0, elements[i + 1]->getLocalY() + elements[i + 1]->getHeight());
-		//}
-		//for (unsigned i = 0; i < elements.size(); i++)
-			//elements[i]->updatePosition();
 	}
 	void GUIWindow::updateScale()
 	{
@@ -485,6 +468,13 @@ namespace spehs
 			//Increase min height by element's minimal required height
 			minSize.y += elements[i]->getMinHeight();
 		}
+	}
+	void GUIWindow::setRenderState(const bool _state)
+	{
+		GUIRectangleContainer::setRenderState(_state);
+		strech->setRenderState(_state);
+		header->setRenderState(_state);
+		exit->setRenderState(_state);
 	}
 	void GUIWindow::disableStateRecursive(GUIRECT_STATE_TYPE stateBit)
 	{

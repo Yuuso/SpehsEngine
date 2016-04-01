@@ -107,7 +107,7 @@ namespace spehs
 			uninitializeTextRendering();
 		}
 	}
-	Text::Text() : glyphsToRender(0), lineCount(0), vertexArrayData(0), textures(nullptr), scale(1.0f), lineSpacing(0), doUpdate(true), font(nullptr)
+	Text::Text(PlaneDepth depth) : glyphsToRender(0), lineCount(0), vertexArrayData(0), textures(nullptr), scale(1.0f), lineSpacing(0), doUpdate(true), font(nullptr)
 	{//Default constructor is called from copy constructor as well
 		textCount++;
 	}
@@ -378,7 +378,7 @@ namespace spehs
 			}
 	}
 
-	void Text::render()
+	void Text::setRenderState(bool state)
 	{
 		if (doUpdate)
 			updateBuffers();

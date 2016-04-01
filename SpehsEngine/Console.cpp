@@ -13,6 +13,7 @@
 #define CONSOLE_BORDER 5
 #define BACKSPACE_INITIAL_INTERVAL 500
 #define BACKSPACE_INTERVAL 75
+#define TEXT_PLANEDEPTH 10000
 #define CONSOLE_INITIALIZED_BIT				0x0001
 #define CONSOLE_OPEN_BIT					0x0002
 #define CONSOLE_TEXT_EXECUTED_BIT			0x0004
@@ -64,7 +65,7 @@ namespace spehs
 				log("Console already initialized!");
 				return 0;
 			}
-			consoleText = new spehs::Text();
+			consoleText = new spehs::Text(TEXT_PLANEDEPTH);
 			consoleText->setFont(applicationData->GUITextFontPath, applicationData->consoleTextSize);
 			consoleText->setColor(glm::vec4(1.0f, 0.6f, 0.0f, applicationData->consoleTextAlpha / 255.0f));
 			consoleText->setPosition(glm::vec2(CONSOLE_BORDER, CONSOLE_BORDER));
@@ -339,7 +340,7 @@ namespace spehs
 			for (auto i = lines.begin(); i < lines.end(); i++)
 			{
 				(*i)->getColorRef().a = visibility * (applicationData->consoleTextAlpha / 255.0f);
-				(*i)->render();
+				(*i)->setRenderState(true);
 			}
 
 			//Render console text
@@ -348,7 +349,7 @@ namespace spehs
 				return;
 			}
 			consoleText->getColorRef().a = visibility * (applicationData->consoleTextAlpha / 255.0f);
-			consoleText->render();
+			consoleText->setRenderState(true);
 		}
 
 
@@ -421,7 +422,7 @@ namespace spehs
 			{
 				lines.erase(lines.begin());
 			}
-			lines.push_back(new spehs::Text());
+			lines.push_back(new spehs::Text(TEXT_PLANEDEPTH));
 			lines.back()->setFont(applicationData->GUITextFontPath, applicationData->consoleTextSize);
 			lines.back()->setColor(glm::vec4(color, applicationData->consoleTextAlpha / 255.0f));
 			lines.back()->setString(str);

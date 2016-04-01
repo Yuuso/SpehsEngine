@@ -85,20 +85,6 @@ namespace spehs
 				close();
 		}
 	}
-	void GUIRectangleTree::setRenderState(const bool _state)
-	{
-		GUIRectangleContainer::setRenderState(_state);
-	}
-	void GUIRectangleTree::setPostRenderState(const bool _state)
-	{
-		if (isOpen())
-		{
-			for (int i = beginElementIndex; i < beginElementIndex + updateElementCount; i++)
-				elements[i]->setPostRenderState(_state);
-		}
-		else
-			GUIRectangle::setPostRenderState(_state);
-	}
 	void GUIRectangleTree::updateScale()
 	{
 		GUIRectangle::updateScale();
@@ -165,9 +151,6 @@ namespace spehs
 			return;
 		}
 		pressedLeafNodeID = _ID;
-		
-		if (_ID > 1000000)//DEBUG
-			std::cout << "Inform Teo";//DEBUG
 	}
 	void GUIRectangleTree::addElement(GUIRectangle* element)
 	{

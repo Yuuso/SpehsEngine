@@ -4,7 +4,6 @@
 #include <glm/vec3.hpp>
 #include <glm/vec4.hpp>
 #include "BitwiseOperations.h"
-
 #define GUIRECT_ID_TYPE						uint32_t
 #define TEXT_PREFERRED_SIZE_BORDER			2
 ////GUI rectangle states
@@ -12,9 +11,9 @@
 #define GUIRECT_MOUSE_HOVER					0x00000001
 #define GUIRECT_SCALED						0x00000002
 #define GUIRECT_POSITIONED					0x00000004
-#define GUIRECT_VISIBLE						0x00000008
-#define GUIRECT_ENABLED						0x00000010
-#define GUIRECT_MIN_SIZE_UPDATED			0x00000020
+#define GUIRECT_ENABLED						0x00000008
+#define GUIRECT_MIN_SIZE_UPDATED			0x00000010
+#define GUIRECT_UNUSED0						0x00000020
 #define GUIRECT_UNUSED1						0x00000040
 #define GUIRECT_UNUSED2						0x00000080
 #define GUIRECT_UNUSED3						0x00000100
@@ -35,6 +34,7 @@
 #define GUIRECT_RECEIVING_INPUT				0x00080000//Underlings should inform their first generation parents when receiving input
 #define GUIRECT_SELECTED					0x00100000
 #define GUIRECT_HOVER_COLOR					0x00200000
+
 
 namespace spehs
 {
@@ -66,14 +66,13 @@ namespace spehs
 
 		///During GUI's update the element's size and/or min size may change even so that it might affect parents above.
 		virtual void update();
+		virtual void postUpdate();
 		/**During scale update dimensions must not change in a manner that would affect parents above.\n
 		scale update is called up to once per update if the size of the rectangle has changed*/
 		virtual void updateScale();
 		///Positon update is called up to once per update if the position of the rectangle has changed
 		virtual void updatePosition();
 		virtual void setRenderState(const bool _state);		
-		///Call to post render is made from window manager after all render methods for every window have been ran.
-		virtual void setPostRenderState(const bool _state);
 		virtual void updateMinSize();
 		/*Checks whether the mouse is above this rectangle. Returns mouse hover value*/
 		virtual bool updateMouseHover();
@@ -81,7 +80,9 @@ namespace spehs
 		void setColor(glm::vec4& color);
 		/*Range [0, 255]*/
 		void setColor(int r, int g, int b, int a = 255);
-		void setParent(GUIRectangle* Parent){ parent = Parent; }
+		void setParent(GUIRectangle* Parent);
+		void setDepth(uint16_t depth);
+		uint16_t getDepth();
 		spehs::Polygon* getPolygonPtr(){ return polygon; }
 		GUIRectangle* getParentPtr(){ return parent; }
 		GUIRectangle* getFirstGenerationParent();
@@ -111,7 +112,7 @@ namespace spehs
 		bool getMouseHover(){ return checkBit(state, GUIRECT_MOUSE_HOVER); }
 		bool getMouseHoverContainer(){ return checkBit(state, GUIRECT_MOUSE_HOVER_CONTAINER); }
 		bool getMouseHoverAny(){ if (checkBit(state, GUIRECT_MOUSE_HOVER)) return true; return checkBit(state, GUIRECT_MOUSE_HOVER_CONTAINER); }
-		bool isVisible(){ return checkBit(state, GUIRECT_VISIBLE); }
+		bool isVisible();
 		bool isEnabled(){ return checkBit(state, GUIRECT_ENABLED); }
 		bool isFocused(){ return checkBit(state, GUIRECT_FOCUSED); }
 		bool isReceivingInput(){ return checkBit(state, GUIRECT_RECEIVING_INPUT); }
@@ -179,10 +180,10 @@ namespace spehs
 		glm::ivec2 position;///<The position of the rectangle, originating from the lower left corner, given in screen coordinates
 		glm::ivec2 size;///<Current size of the rectangle
 		glm::ivec2 minSize;///<The minimum size of the rectangle. Checked whenever rezising the polygon.
+		GUIRectangle* parent;///<Rectangle inherits position from parent chain. NOTE: parent must be ractangle container
 		Polygon* polygon;
 		GUIRectangle* tooltip;
 		Text* text;
-		GUIRectangle* parent;///<Rectangle inherits position from parent chain. NOTE: parent must be ractangle container
 		GUIRECT_STATE_TYPE state;
 		GUIRECT_ID_TYPE id;///<GUI rectangles can be given IDs for identification
 
@@ -195,5 +196,7 @@ namespace spehs
 			uint16_t height;
 		};
 		DisplayTexture* displayTexture;
+	private:
+
 	};
 }

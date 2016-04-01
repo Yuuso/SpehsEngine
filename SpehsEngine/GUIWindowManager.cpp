@@ -37,6 +37,7 @@ namespace spehs
 
 				//Run an update on this window, updates mouse hover variable
 				windows[i]->update();
+				windows[i]->postUpdate();
 
 				if (windows[i]->checkState(GUIRECT_MOUSE_HOVER_CONTAINER))
 				{//If mouse is hovering over this window, do not update windows below
@@ -79,13 +80,6 @@ namespace spehs
 			}
 		}
 
-	}
-	void GUIWindowManager::setRenderState(const bool _state)
-	{
-		for (unsigned i = 0; i < windows.size(); i++)
-			windows[i]->setRenderState(_state);
-		for (unsigned i = 0; i < windows.size(); i++)
-			windows[i]->setPostRenderState(_state);
 	}
 	void GUIWindowManager::setFocusedWindow(GUIWindow* window)
 	{

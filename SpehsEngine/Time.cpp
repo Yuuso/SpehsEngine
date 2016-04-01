@@ -36,7 +36,7 @@ namespace spehs
 			return true;
 		}
 
-		fpsCounter = new spehs::Text();
+		fpsCounter = new spehs::Text(10000);
 		if (!fpsCounter)
 		{
 			std::cout << "\nInitialization failed! Failed to create fpsCounter!";
@@ -150,7 +150,7 @@ namespace spehs
 	{
 		if (!applicationData->showFps)
 			return;
-		fpsCounter->render();
+		fpsCounter->setRenderState(true);
 	}
 
 	//Analyzation

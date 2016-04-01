@@ -34,28 +34,21 @@ namespace spehs
 			}
 		}
 	}
-
+	void GUIRectangleContainer::postUpdate()
+	{
+		GUIRectangle::postUpdate();
+		for (int i = 0; i < beginElementIndex + updateElementCount; i++)
+			elements[i]->postUpdate();
+	}
 	void GUIRectangleContainer::setRenderState(const bool _state)
 	{
-		if (!checkBit(state, GUIRECT_VISIBLE))
-			return;
-
 		GUIRectangle::setRenderState(_state);
-
-		if (isOpen())
-		{//Render elements
-			for (int i = beginElementIndex; i < beginElementIndex + updateElementCount; i++)
+		for (unsigned i = 0; i < elements.size(); i++)
+		{
+			if (i < beginElementIndex || i > getEndElementIndex())
+				elements[i]->setRenderState(false);
+			else
 				elements[i]->setRenderState(_state);
-		}
-	}
-	void GUIRectangleContainer::setPostRenderState(const bool _state)
-	{
-		GUIRectangle::setPostRenderState(_state);
-		
-		if (isOpen())
-		{//Post render elements
-			for (int i = beginElementIndex; i < beginElementIndex + updateElementCount; i++)
-				elements[i]->setPostRenderState(_state);
 		}
 	}
 	bool GUIRectangleContainer::isReceivingTextInput()
@@ -143,20 +136,36 @@ namespace spehs
 	}
 	void GUIRectangleContainer::scroll(int amount)
 	{
-		//Increment begin index value
-		beginElementIndex += amount;
+		if (amount > 0)
+		{//Scroll down
+			for (unsigned i = 0; i < amount; i++)
+			{
+				if (beginElementIndex + updateElementCount >= elements.size())
+					break;//Do not scroll any more downwards
+				elements[beginElementIndex + updateElementCount]->setRenderState(true);//Make the bottom-most element visible
+				elements[beginElementIndex]->setRenderState(false);//Make the top-most element invisible
+				beginElementIndex++;
+			}
+		}
+		else if (amount < 0)
+		{//Scroll up
+			amount *= -1;//flip amount for for loop
+			for (unsigned i = 0; i < amount; i++)
+			{
+				if (beginElementIndex <= 0)
+					break;//Do not scroll any more upwards
+				beginElementIndex--;
+				elements[beginElementIndex + updateElementCount]->setRenderState(false);//Make the bottom-most element invisible
+				elements[beginElementIndex]->setRenderState(true);//Make the top-most element visible
+			}
+		}
+		else
+			return;
 
-		////Limit begin index
-		//Scrolled below the bottom
-		if (beginElementIndex + updateElementCount > elements.size())
-			beginElementIndex = int(elements.size()) - updateElementCount;
-		//Scrolled over the top
-		if (beginElementIndex < 0)
-			beginElementIndex = 0;
-
-		//Reposition in the next rendering phase
+		//Reposition in the next post update
 		disableBit(state, GUIRECT_SCALED);
 		disableBit(state, GUIRECT_POSITIONED);
+		
 	}
 	void GUIRectangleContainer::open()
 	{//Open container dimension
@@ -164,11 +173,6 @@ namespace spehs
 		disableBit(state, GUIRECT_POSITIONED);
 		disableBit(state, GUIRECT_SCALED);
 		disableBit(state, GUIRECT_MIN_SIZE_UPDATED);
-		//for (unsigned i = 0; i < elements.size(); i++)
-		//{
-		//	elements[i]->disableState(GUIRECT_SCALED);
-		//	elements[i]->disableState(GUIRECT_POSITIONED);
-		//}
 	}
 	void GUIRectangleContainer::close()
 	{//Close container dimension

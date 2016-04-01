@@ -8,7 +8,7 @@
 #include "Text.h"
 #include "BatchManager.h"
 
-
+#define GUI_DEFAULT_PLANEDEPTH 10000
 #define TEXT_MAX_STRING_LENGTH 32
 
 int64_t guiRectangleAllocations = 0;
@@ -27,12 +27,11 @@ namespace spehs
 #endif
 
 		//Create polygon
-		polygon = spehs::getActiveBatchManager()->createPolygon(spehs::BUTTON, 1, 1);
+		polygon = spehs::getActiveBatchManager()->createPolygon(spehs::BUTTON, GUI_DEFAULT_PLANEDEPTH, 1, 1);
 		polygon->setCameraMatrixState(false);
 
 		//Initial state (0)
 		enableBit(state, GUIRECT_ENABLED);
-		enableBit(state, GUIRECT_VISIBLE);
 		enableBit(state, GUIRECT_HOVER_COLOR);
 		enableBit(state, GUIRECT_TEXT_JUSTIFICATION_LEFT);
 
@@ -70,11 +69,20 @@ namespace spehs
 	void GUIRectangle::update()
 	{
 		updateMouseHover();
+
+		//Toolti render state
+		if (tooltip)
+		{
+			if (getMouseHover())
+				tooltip->setRenderState(true);
+			else
+				tooltip->setRenderState(false);
+		}
 	}
-	void GUIRectangle::setRenderState(const bool _state)
+	void GUIRectangle::postUpdate()
 	{
 		//Hover color
-		if (checkBit(state, GUIRECT_HOVER_COLOR	))
+		if (checkBit(state, GUIRECT_HOVER_COLOR))
 		{
 			if (getMouseHover())
 			{
@@ -95,7 +103,7 @@ namespace spehs
 		}
 
 		if (!checkBit(state, GUIRECT_SCALED))
-		{//Rescaling GUI
+		{//Rescaling
 			updateScale();
 			updatePosition();
 		}
@@ -103,35 +111,16 @@ namespace spehs
 		{//Repositioning GUI
 			updatePosition();
 		}
-
-		//Drawing rectangle polygon
-		if (checkBit(state, GUIRECT_VISIBLE))
-		{
-			polygon->setRenderState(_state);
-
-			//Rendering text
-			if (text)
-				text->render();
-
-			//Rendering display texture
-			if (displayTexture)
-				displayTexture->polygon->setRenderState(_state);
-		}
-		else
-		{
-			polygon->setRenderState(false);
-			if (displayTexture)
-				displayTexture->polygon->setRenderState(false);
-		}
 	}
-	void GUIRectangle::setPostRenderState(const bool _state)
+	void GUIRectangle::setRenderState(const bool _state)
 	{
-		//Rendering tooltip if one exists
-		if (tooltip && getMouseHover())
-		{
-			tooltip->setPosition(inputManager->getMouseX(), inputManager->getMouseY());
-			tooltip->setRenderState(_state);
-		}
+		polygon->setRenderState(_state);
+		if (text)
+			text->setRenderState(_state);
+		if (displayTexture)
+			displayTexture->polygon->setRenderState(_state);
+		if (tooltip && !_state)
+			tooltip->setRenderState(false);
 		disableBit(state, GUIRECT_MOUSE_HOVER);
 		disableBit(state, GUIRECT_MOUSE_HOVER_CONTAINER);
 	}
@@ -207,6 +196,25 @@ namespace spehs
 		color[2] = b / 255.0f;
 		color[3] = a / 255.0f;
 		polygon->setColor(color);
+	}
+	void GUIRectangle::setDepth(uint16_t depth)
+	{
+		polygon->setPlaneDepth(depth);
+		if (text)
+			text->setPlaneDepth(depth + 3);
+		if (displayTexture)
+			displayTexture->polygon->setPlaneDepth(depth + 1);
+		if (tooltip)
+			tooltip->setDepth(depth + 5000);
+	}
+	uint16_t GUIRectangle::getDepth()
+	{
+		return polygon->getPlaneDepth();
+	}
+	void GUIRectangle::setParent(GUIRectangle* Parent)
+	{
+		parent = Parent;
+		setDepth(parent->getDepth());
 	}
 	GUIRectangle* GUIRectangle::getFirstGenerationParent()
 	{
@@ -299,7 +307,7 @@ namespace spehs
 	{
 		if (text)
 			return;
-		text = new spehs::Text();
+		text = new spehs::Text(polygon->getPlaneDepth() + 1);
 		text->setFont(applicationData->GUITextFontPath, applicationData->GUITextSize);
 		text->setColor(0.05f, 0.05f, 0.05f);
 	}
@@ -320,5 +328,8 @@ namespace spehs
 	{
 		polygon->setTexture(path);
 	}
-
+	bool GUIRectangle::isVisible()
+	{
+		return polygon->getRenderState();
+	}
 }
