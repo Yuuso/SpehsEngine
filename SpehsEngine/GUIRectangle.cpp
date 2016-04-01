@@ -74,7 +74,10 @@ namespace spehs
 		if (tooltip)
 		{
 			if (getMouseHover())
+			{
+				tooltip->setPosition(inputManager->getMouseX(), inputManager->getMouseY());
 				tooltip->setRenderState(true);
+			}
 			else
 				tooltip->setRenderState(false);
 		}
@@ -111,6 +114,9 @@ namespace spehs
 		{//Repositioning GUI
 			updatePosition();
 		}
+
+		if (tooltip)
+			tooltip->postUpdate();
 	}
 	void GUIRectangle::setRenderState(const bool _state)
 	{

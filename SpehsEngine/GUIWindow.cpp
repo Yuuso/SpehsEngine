@@ -355,15 +355,12 @@ namespace spehs
 
 		//Reposition and update exit button
 		exit->setPosition(size.x - exit->getWidth(), size.y - header->getHeight());
-		//exit->updatePosition();
 
 		//Reposition and update header
 		header->setPosition(0, size.y - header->getHeight());
-		//header->updatePosition();
 
 		//Update strech position
 		strech->disableState(GUIRECT_POSITIONED);
-		//strech->updatePosition();
 
 		////Reposition and update all elements
 		if (elements.size() == 0)

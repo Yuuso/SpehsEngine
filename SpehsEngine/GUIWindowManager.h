@@ -12,7 +12,7 @@ namespace spehs
 
 		void update();
 
-		void addWindow(GUIWindow* window){ windows.push_back(window); }
+		void addWindow(GUIWindow* window);
 		void refreshWindows();
 		GUIWindow* getFocusedWindow(){ return focusedWindow; }
 		void setFocusedWindow(GUIWindow* window);

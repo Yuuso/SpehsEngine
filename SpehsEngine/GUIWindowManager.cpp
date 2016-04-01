@@ -9,16 +9,16 @@ namespace spehs
 	GUIWindowManager::GUIWindowManager() : focusedWindow(nullptr)
 	{
 	}
-
-
 	GUIWindowManager::~GUIWindowManager()
 	{
 		for (unsigned i = 0; i < windows.size(); i++)
 			delete windows[i];
 	}
-
-
-
+	void GUIWindowManager::addWindow(GUIWindow* window)
+	{
+		windows.push_back(window);
+		window->setRenderState(false);
+	}
 	void GUIWindowManager::update()
 	{
 		bool focusedWindowReceivingInput = false;
