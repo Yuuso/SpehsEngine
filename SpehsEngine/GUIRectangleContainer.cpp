@@ -130,7 +130,26 @@ namespace spehs
 	}
 	void GUIRectangleContainer::incrementUpdateElementCount(int incrementation)
 	{
-		updateElementCount += incrementation;
+		do
+		{
+			if (incrementation < 0)
+			{//Try to decrease
+				if (updateElementCount == 0)
+					break;
+				elements[getEndElementIndex()]->setRenderState(false);
+				updateElementCount--;
+				++incrementation;
+			}
+			else
+			{//Try to increase
+				if (getEndElementIndex() + 1 == elements.size())
+					break;
+				updateElementCount++;
+				elements[getEndElementIndex()]->setRenderState(true);
+				--incrementation;
+			}
+		} while (incrementation != 0);
+
 		disableBit(state, GUIRECT_SCALED);
 		disableBit(state, GUIRECT_POSITIONED);
 	}
@@ -199,5 +218,11 @@ namespace spehs
 			else
 				elements[i]->getAsGUIRectangleContainerPtr()->closeTreeElements(excluded);
 			}
+	}
+	void GUIRectangleContainer::setDepth(uint16_t depth)
+	{
+		GUIRectangle::setDepth(depth);
+		for (unsigned i = 0; i < elements.size(); i++)
+			elements[i]->setDepth(depth + 10);
 	}
 }

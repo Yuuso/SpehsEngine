@@ -81,7 +81,7 @@ namespace spehs
 		/*Range [0, 255]*/
 		void setColor(int r, int g, int b, int a = 255);
 		void setParent(GUIRectangle* Parent);
-		void setDepth(uint16_t depth);
+		virtual void setDepth(uint16_t depth);
 		uint16_t getDepth();
 		spehs::Polygon* getPolygonPtr(){ return polygon; }
 		GUIRectangle* getParentPtr(){ return parent; }

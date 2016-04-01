@@ -290,6 +290,7 @@ namespace spehs
 		tooltip->setColor(150, 150, 150);
 		tooltip->updateScale();
 		tooltip->setSize(tooltip->minSize);
+		tooltip->setRenderState(false);
 	}
 	void GUIRectangle::setStringColor(glm::vec4& col)
 	{

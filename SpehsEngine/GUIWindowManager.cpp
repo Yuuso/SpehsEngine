@@ -112,10 +112,7 @@ namespace spehs
 	void GUIWindowManager::openWindow(spehs::GUIWindow* window)
 	{
 		window->open();
-		window->gainFocus();
-		if (focusedWindow)
-			focusedWindow->loseFocus();
-		focusedWindow = window;
+		setFocusedWindow(window);
 		if (focusedWindow != windows.back())
 		{//Send window to back of the windows vector
 			for (unsigned i = 0; i < windows.size(); i++)

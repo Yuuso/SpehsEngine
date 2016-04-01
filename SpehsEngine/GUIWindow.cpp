@@ -315,6 +315,7 @@ namespace spehs
 		if (isFocused())
 			return;
 
+		setDepth(20000);
 		enableStateRecursive(GUIRECT_FOCUSED);
 		strech->setColor(255, 110, 0);
 		std::cout << "\nWindow gained focus: " << header->getString();
@@ -326,6 +327,7 @@ namespace spehs
 		if (!isFocused())
 			return;
 
+		setDepth(10000);
 		disableBit(state, GUIRECT_STRECHING);
 		disableBit(state, GUIRECT_DRAGGING);
 		strech->setColor(0, 0, 0);
@@ -468,6 +470,13 @@ namespace spehs
 			//Increase min height by element's minimal required height
 			minSize.y += elements[i]->getMinHeight();
 		}
+	}
+	void GUIWindow::setDepth(uint16_t depth)
+	{
+		GUIRectangleContainer::setDepth(depth);
+		strech->setDepth(depth - 1);
+		header->setDepth(depth + 1);
+		exit->setDepth(depth + 1);
 	}
 	void GUIWindow::setRenderState(const bool _state)
 	{

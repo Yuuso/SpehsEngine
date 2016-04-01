@@ -38,6 +38,7 @@ namespace spehs
 		virtual void close();//Close container dimension
 		void closeTreeElements();//Closes every gui rectangle tree beneath this.
 		void closeTreeElements(GUIRectangle* exclude);//Closes all other trees except select excluded
+		virtual void setDepth(uint16_t depth);
 
 		//Element management
 		virtual void addElement(GUIRectangle* element);

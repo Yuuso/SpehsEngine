@@ -16,12 +16,15 @@ namespace spehs
 
 		virtual void setRenderState(const bool _state);
 		virtual void update();
+		virtual void postUpdate();
 		virtual void updateScale();
 		virtual void updatePosition();
 		virtual void updateMinSize();
 		virtual void incrementUpdateElementCount(int incrementation);
 		/*Updates update element count based on current dimensions. Element size is also updated.*/
 		virtual void updateUpdateElementCount();
+		virtual void setDepth(uint16_t depth);
+
 
 		//Element management
 		virtual void addElement(GUIRectangle* e);

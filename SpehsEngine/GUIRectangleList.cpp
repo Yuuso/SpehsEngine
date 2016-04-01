@@ -69,15 +69,28 @@ namespace spehs
 
 		GUIRectangleContainer::update();
 	}
+	void GUIRectangleList::postUpdate()
+	{
+		scrollUp->postUpdate();
+		scrollBar->postUpdate();
+		scrollDown->postUpdate();
+		GUIRectangleContainer::postUpdate();
+	}
 	void GUIRectangleList::setRenderState(const bool _state)
 	{
 		GUIRectangleContainer::setRenderState(_state);
 
-		if (invisibleElements())
+		if (invisibleElements() && _state)
 		{
-			scrollUp->setRenderState(_state);
-			scrollBar->setRenderState(_state);
-			scrollDown->setRenderState(_state);
+			scrollUp->setRenderState(true);
+			scrollBar->setRenderState(true);
+			scrollDown->setRenderState(true);
+		}
+		else
+		{
+			scrollUp->setRenderState(false);
+			scrollBar->setRenderState(false);
+			scrollDown->setRenderState(false);
 		}
 	}
 	void GUIRectangleList::updatePosition()
@@ -162,12 +175,13 @@ namespace spehs
 		if (minSize.y == size.y && updateElementCount > MIN_VISIBLE_COUNT)
 		{
 			incrementUpdateElementCount(-1);
-			beginElementIndex = 0;
+			scroll(-1);
 		}
 		while (size.y > minElementSize.y * (updateElementCount + 1) && updateElementCount < elements.size())
 		{//Else if list size has enough height for another element (min size), increase visible count
 			incrementUpdateElementCount(1);
-			beginElementIndex = 0;
+			if (getEndElementIndex() + 1 == elements.size())
+				break;
 		}
 
 		//Update element size
@@ -203,5 +217,12 @@ namespace spehs
 		//Account scroll button width into min width
 		if (invisibleElements())
 			minSize.x += SCROLL_BUTTON_WIDTH;
+	}
+	void GUIRectangleList::setDepth(uint16_t depth)
+	{
+		GUIRectangleContainer::setDepth(depth);
+		scrollUp->setDepth(depth + 5);
+		scrollDown->setDepth(depth + 5);
+		scrollBar->setDepth(depth + 5);
 	}
 }
