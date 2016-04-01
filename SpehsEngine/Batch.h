@@ -1,6 +1,9 @@
 #pragma once
 
 #include "Primitive.h"
+#include "Vertex.h"
+
+#include <glm/vec3.hpp>
 
 #include <vector>
 #include <stdint.h>
@@ -9,14 +12,18 @@
 typedef unsigned int GLenum;
 typedef unsigned int GLuint;
 typedef unsigned short GLushort;
+
 typedef int16_t PlaneDepth;
+
 
 namespace spehs
 {
 	class BatchManager;
 	class Mesh;
-	class Vertex;
 	
+	int getIndexMultiplier(const GLenum &_drawMode); //Calculate max number of indices
+
+
 	//Batch for Primitives
 	class PrimitiveBatch
 	{
@@ -35,7 +42,7 @@ namespace spehs
 		PlaneDepth getPriority() const{ return priority; }
 
 	protected:
-		bool isEnoughRoom(unsigned int _numVertices);
+		bool isEnoughRoom(const unsigned int &_numVertices);
 		void initBuffers();
 		void updateBuffers();
 		void setIndices(const unsigned int &_numVertices);
@@ -65,17 +72,33 @@ namespace spehs
 
 	public:
 		MeshBatch();
+		MeshBatch(const int &_shader, const GLuint &_textureID, const GLenum &_drawMode, const float &_lineWidth = 0.0f);
 		~MeshBatch();
 
-		bool operator==(const Mesh &_primitive); //Checks if mesh is suitable for this batch
+		bool operator==(const Mesh &_mesh); //Checks if mesh is suitable for this batch
 
 		void render();
-		void push(Mesh* _batchObject);
+		void push(Mesh* _mesh);
 
 	private:
-		bool isEnoughRoom(unsigned int _numVertices);
+		bool isEnoughRoom(const unsigned int &_numVertices);
 		void initBuffers();
+		void updateBuffers();
 
-		
+		std::vector<Vertex> vertices;
+		std::vector<GLushort> indices;
+		std::vector<glm::vec3> normals;
+
+		GLuint vertexArrayObjectID;
+		GLuint vertexBufferID;
+		GLuint indexBufferID;
+		GLuint normalBufferID;
+
+		int shaderIndex;
+		unsigned int totalNumvertices;
+		GLuint textureDataID;
+		GLenum drawMode;
+		float lineWidth;
+
 	};
 }

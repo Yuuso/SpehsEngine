@@ -19,12 +19,13 @@ namespace spehs
 		textureDataID = 0;
 		readyForDelete = false;
 		renderState = true;
-		useColor = false;
 		shaderIndex = DefaultPolygon;
+		drawMode = TRIANGLE;
 		scaledMatrix = glm::mat4(1.0f);
 		scaledRotatedMatrix = glm::mat4(1.0f);
 		vertexArray = nullptr;
 
+		lineWidth = 0.0f;
 		yaw = 0.0f;
 		pitch = 0.0f;
 		roll = 0.0f;
@@ -127,16 +128,28 @@ namespace spehs
 	void Mesh::setColor(const glm::vec4 &_newColor)
 	{
 		color = _newColor;
+		for (unsigned i = 0; i < numVertices; i++)
+		{
+			worldVertexArray[i].color.setColor(color);
+		}
 	}
 
 	void Mesh::setColor(const glm::vec3 &_newColor)
 	{
 		color = glm::vec4(_newColor, 1.0f);
+		for (unsigned i = 0; i < numVertices; i++)
+		{
+			worldVertexArray[i].color.setColor(color);
+		}
 	}
 
 	void Mesh::setColor(const unsigned char &_r, const unsigned char &_g, const unsigned char &_b, const unsigned char &_a)
 	{
-		color = glm::vec4(_r, _g, _b, _a);
+		color = glm::vec4((float) _r / 255.0f, (float) _g / 255.0f, (float) _b / 255.0f, (float) _a / 255.0f);
+		for (unsigned i = 0; i < numVertices; i++)
+		{
+			worldVertexArray[i].color.setColor(color);
+		}
 	}
 
 	void Mesh::setRenderState(const bool _newState)
@@ -152,5 +165,15 @@ namespace spehs
 			return;
 		}
 		shaderIndex = _newShaderIndex;
+	}
+
+	void Mesh::setDrawMode(const DrawMode &_drawMode)
+	{
+		drawMode = _drawMode;
+	}
+
+	void Mesh::setLineWidth(const float &_lineWidth)
+	{
+		lineWidth = _lineWidth;
 	}
 }

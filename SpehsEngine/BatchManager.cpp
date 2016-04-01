@@ -48,12 +48,16 @@ namespace spehs
 		//Delete Primitives
 		for (unsigned i = 0; i < primitives.size(); i++)
 		{
+			if (primitives[i]->readyForDelete)
+				cleanUpPrimitives--;
 			delete primitives[i];
 		}
 
 		//Delete Meshes
 		for (unsigned i = 0; i < meshes.size(); i++)
 		{
+			if (meshes[i]->readyForDelete)
+				cleanUpMeshes--;
 			delete meshes[i];
 		}
 

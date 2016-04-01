@@ -24,6 +24,7 @@ namespace spehs
 {
 	Polygon::Polygon(const int &_shapeID, const PlaneDepth &_planeDepth, const float &_width, const float &_height) : Polygon(_width, _height)
 	{
+		planeDepth = _planeDepth;
 		if (_shapeID >= 3) //Regular Convex Polygons
 		{
 			numVertices = _shapeID;

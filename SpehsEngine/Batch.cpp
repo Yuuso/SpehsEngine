@@ -18,6 +18,19 @@
 
 namespace spehs
 {
+	int getIndexMultiplier(const GLenum &_drawMode)
+	{
+		switch (_drawMode)
+		{
+		case TRIANGLE:
+			return (DEFAULT_MAX_BATCH_SIZE - 2) * 3;
+			break;
+		default:
+			return DEFAULT_MAX_BATCH_SIZE;
+			break;
+		}
+	}
+
 	//PRIMITIVE BATCH
 	PrimitiveBatch::PrimitiveBatch()
 	{
@@ -53,17 +66,7 @@ namespace spehs
 		totalNumvertices = 0;
 
 		vertices.reserve(DEFAULT_MAX_BATCH_SIZE);
-		int indexMultiplier; //calculate max index buffer size
-		switch (drawMode)
-		{
-		case TRIANGLE:
-			indexMultiplier = (DEFAULT_MAX_BATCH_SIZE - 2) * 3;
-			break;
-		default:
-			indexMultiplier = DEFAULT_MAX_BATCH_SIZE;
-			break;
-		}
-		indices.reserve(indexMultiplier);
+		indices.reserve(getIndexMultiplier(drawMode));
 
 		initBuffers();
 	}
@@ -188,8 +191,11 @@ namespace spehs
 		totalNumvertices += _primitive->numVertices;
 	}
 	
-	bool PrimitiveBatch::isEnoughRoom(unsigned int _numVertices)
+	//Private:
+	bool PrimitiveBatch::isEnoughRoom(const unsigned int &_numVertices)
 	{
+		if (_numVertices > DEFAULT_MAX_BATCH_SIZE)
+			exceptions::fatalError("The number of vertices in a primitive exceeds the max amount allowed in the batch!");
 		return (totalNumvertices + _numVertices) <= DEFAULT_MAX_BATCH_SIZE;
 	}
 
@@ -208,18 +214,8 @@ namespace spehs
 		glBindBuffer(GL_ARRAY_BUFFER, vertexBufferID);
 		glBufferData(GL_ARRAY_BUFFER, sizeof(spehs::Vertex) * DEFAULT_MAX_BATCH_SIZE, nullptr, GL_STREAM_DRAW);
 
-		int indexMultiplier; //calculate max index buffer size
-		switch (drawMode)
-		{
-		case TRIANGLE:
-			indexMultiplier = (DEFAULT_MAX_BATCH_SIZE - 2) * 3;
-			break;
-		default:
-			indexMultiplier = DEFAULT_MAX_BATCH_SIZE;
-			break;
-		}
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBufferID);
-		glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLushort) * indexMultiplier, nullptr, GL_STREAM_DRAW);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLushort) * getIndexMultiplier(drawMode), nullptr, GL_STREAM_DRAW);
 
 		checkOpenGLErrors(__FILE__, __LINE__);
 
@@ -278,7 +274,7 @@ namespace spehs
 			break;
 
 		case POINT:
-			glPointSize(5.0f);
+			glPointSize(2.0f);
 		case LINE:
 		case LINE_LOOP:
 			for (unsigned i = currentIndex; i < currentIndex + _numVertices; i++)
@@ -310,34 +306,157 @@ namespace spehs
 	//MESH BATCH
 	MeshBatch::MeshBatch()
 	{
+		vertexArrayObjectID = 0;
+		vertexBufferID = 0;
+		indexBufferID = 0;
+		normalBufferID = 0;
 
+		shaderIndex = 0;
+		totalNumvertices = 0;
+		textureDataID = 0;
+		drawMode = UNDEFINED;
+		lineWidth = 0.0f;
+
+		initBuffers();
+	}
+	MeshBatch::MeshBatch(const int &_shader, const GLuint &_textureID, const GLenum &_drawMode, const float &_lineWidth)
+	{
+		vertexArrayObjectID = 0;
+		vertexBufferID = 0;
+		indexBufferID = 0;
+		normalBufferID = 0;
+
+		totalNumvertices = 0;
+
+		shaderIndex = _shader;
+		textureDataID = _textureID;
+		drawMode = _drawMode;
+		lineWidth = _lineWidth;
+
+		vertices.reserve(DEFAULT_MAX_BATCH_SIZE);
+		normals.reserve(DEFAULT_MAX_BATCH_SIZE);
+		indices.reserve(getIndexMultiplier(drawMode));
+
+		initBuffers();
 	}
 	MeshBatch::~MeshBatch()
 	{
+		if (vertexBufferID != 0)
+		{
+			glBindBuffer(GL_ARRAY_BUFFER, 0);
+			glDeleteBuffers(1, &vertexBufferID);
+		}
+		if (indexBufferID != 0)
+		{
+			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+			glDeleteBuffers(1, &indexBufferID);
+		}
+		if (normalBufferID != 0)
+		{
+			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+			glDeleteBuffers(1, &normalBufferID);
+		}
+		if (vertexArrayObjectID != 0)
+		{
+			glBindVertexArray(0);
+			glDeleteVertexArrays(1, &vertexArrayObjectID);
+		}
 
+		checkOpenGLErrors(__FILE__, __LINE__);
 	}
 
-	bool MeshBatch::operator==(const Mesh &_primitive)
+
+	bool MeshBatch::operator==(const Mesh &_mesh)
 	{
-		return false;
+		if (shaderIndex != _mesh.shaderIndex ||
+			textureDataID != _mesh.textureDataID ||
+			drawMode != _mesh.drawMode)
+		{
+			return false;
+		}
+		if (drawMode == LINE ||
+			drawMode == LINE_LOOP ||
+			drawMode == LINE_STRIP ||
+			drawMode == LINE_STRIP_ADJACENCY ||
+			drawMode == LINE_ADJACENCY)
+		{
+			if (lineWidth != _mesh.lineWidth)
+			{
+				return false;
+			}
+		}
+		if (!isEnoughRoom(_mesh.numVertices))
+		{
+			return false;
+		}
+		return true;
 	}
+
 
 	void MeshBatch::render()
 	{
 
 	}
 
-	void MeshBatch::push(Mesh* _batchObject)
+	void MeshBatch::push(Mesh* _mesh)
 	{
 
 	}
 
-	bool MeshBatch::isEnoughRoom(unsigned int _numVertices)
+	//Private:
+	bool MeshBatch::isEnoughRoom(const unsigned int &_numVertices)
 	{
-		return false;
+		if (_numVertices > DEFAULT_MAX_BATCH_SIZE)
+			exceptions::fatalError("The number of vertices in a mesh exceeds the max amount allowed in the batch!");
+		return (totalNumvertices + _numVertices) <= DEFAULT_MAX_BATCH_SIZE;
 	}
 
 	void MeshBatch::initBuffers()
+	{
+		//Generate VAO
+		glGenVertexArrays(1, &vertexArrayObjectID);
+		glBindVertexArray(vertexArrayObjectID);
+		//Generate buffers
+		glGenBuffers(1, &vertexBufferID);
+		glGenBuffers(1, &indexBufferID);
+
+		checkOpenGLErrors(__FILE__, __LINE__);
+
+		//Bind buffers
+		glBindBuffer(GL_ARRAY_BUFFER, vertexBufferID);
+		glBufferData(GL_ARRAY_BUFFER, sizeof(spehs::Vertex) * DEFAULT_MAX_BATCH_SIZE, nullptr, GL_STREAM_DRAW);
+
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBufferID);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLushort) * getIndexMultiplier(drawMode), nullptr, GL_STREAM_DRAW);
+
+		checkOpenGLErrors(__FILE__, __LINE__);
+
+		//Attributes
+		glEnableVertexAttribArray(0);
+		glEnableVertexAttribArray(1);
+		if (textureDataID)
+			glEnableVertexAttribArray(2);
+
+		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(spehs::Vertex), reinterpret_cast<void*>(offsetof(spehs::Vertex, position)));
+		glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(spehs::Vertex), reinterpret_cast<void*>(offsetof(spehs::Vertex, color)));
+		if (textureDataID)
+			glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(spehs::Vertex), reinterpret_cast<void*>(offsetof(spehs::Vertex, uv)));
+
+		glBindVertexArray(0);
+
+		glDisableVertexAttribArray(0);
+		glDisableVertexAttribArray(1);
+		if (textureDataID)
+			glDisableVertexAttribArray(2);
+
+		//Unbind
+		glBindBuffer(GL_ARRAY_BUFFER, 0);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+
+		checkOpenGLErrors(__FILE__, __LINE__);
+	}
+
+	void MeshBatch::updateBuffers()
 	{
 
 	}

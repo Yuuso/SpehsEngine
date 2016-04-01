@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Vertex.h"
+#include "Primitive.h"
 
 #include <glm/vec3.hpp>
 #include <glm/vec4.hpp>
@@ -19,6 +20,7 @@ namespace spehs
 	class Mesh
 	{
 		friend class BatchManager;
+		friend class MeshBatch;
 
 	public:
 		void updateVertices(); //This is called automatically when rendering
@@ -36,14 +38,19 @@ namespace spehs
 		void setScale(const float &_newScale);
 		void setScale(const float &_newScaleX, const float &_newScaleY, const float &_newScaleZ);
 		void setScale(const glm::vec3 &_newScale);
-		void setColor(const glm::vec4 &_newColor);//TODO: FIX COLORS
+		void setColor(const glm::vec4 &_newColor);
 		void setColor(const glm::vec3 &_newColor);
 		void setColor(const unsigned char &_r, const unsigned char &_g, const unsigned char &_b, const unsigned char &_a = 1.0f);
 		void setRenderState(const bool _newState);
 		void setShader(const int &_newShaderIndex);
+		void setDrawMode(const DrawMode &_drawMode);
+		void setLineWidth(const float &_lineWidth);
 
 		//Getters
 		int getShaderIndex(){ return shaderIndex; }
+		bool getRenderState(){ return renderState; }
+		glm::vec4 getColor(){ return color; }
+
 
 		//Public Variables
 		Vertex* worldVertexArray; //Transformed vertices
@@ -56,9 +63,10 @@ namespace spehs
 
 		bool readyForDelete;
 		bool renderState; //Whether BatchObject is rendered or not
-		bool useColor; //When true: Colors are sent as uniform
 		int shaderIndex;
 		GLuint textureDataID;
+		DrawMode drawMode;
+		float lineWidth;
 		float yaw, pitch, roll; //Rotations
 		float scaleX, scaleY, scaleZ;
 
