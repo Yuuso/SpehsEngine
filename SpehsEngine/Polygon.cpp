@@ -41,7 +41,7 @@ namespace spehs
 			for (int i = 1; i < numVertices; i++)
 			{
 				//Set position
-				pos[i].position.setPosition(cos(firstPosition - i * (TWO_PI / numVertices)), sin(firstPosition - i * (TWO_PI / numVertices)));
+				pos[i].position.setPosition(cos(firstPosition + i * (TWO_PI / numVertices)), sin(firstPosition + i * (TWO_PI / numVertices)));
 
 				//Check min/max
 				if (pos[i].position.x > maxX)
@@ -150,10 +150,7 @@ namespace spehs
 		scaledRotatedMatrix = glm::rotate(scaledMatrix, rotation, rotationVector);
 		for (unsigned int i = 0; i < numVertices; i++)
 		{
-			vertex = glm::vec4(vertexArray[i].position.x, vertexArray[i].position.y, vertexArray[i].position.z, 1.0f);
-			vertex.x *= width;
-			vertex.y *= height;
-			vertex = scaledRotatedMatrix * vertex;
+			vertex = scaledRotatedMatrix * glm::vec4(vertexArray[i].position.x * width, vertexArray[i].position.y * height, vertexArray[i].position.z, 1.0f);
 			worldVertexArray[i].position.setPosition(vertex.x + position.x, vertex.y + position.y, vertex.z + position.z);
 		}
 	}

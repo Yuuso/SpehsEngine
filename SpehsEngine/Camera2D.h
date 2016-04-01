@@ -17,6 +17,7 @@ namespace spehs
 		void update();
 
 		void translate(const glm::vec2& _vec);
+		void setRotation(const float &_rotation);
 				
 		//Public Variables
 		glm::vec2 deltaMovement;
@@ -28,6 +29,7 @@ namespace spehs
 		glm::vec2 previousPosition;
 
 	private:
+		float rotation;
 		float zoomSpeed;
 		glm::mat4 orthoMatrix;
 		glm::mat4 cameraMatrix;

@@ -15,7 +15,7 @@ namespace spehs
 	{
 
 	}
-	void ModelManager::loadOBJ(const std::string &_filepath, Vertex* vertexArray, std::vector<GLushort> &_elementArray, glm::vec3* _normalArray)
+	void ModelManager::loadOBJ(const std::string &_filepath, Vertex* vertexArray, std::vector<GLushort> &_elementArray, std::vector<glm::vec3> _normalArray)
 	{
 		/* .obj files can contain, with the given prefix
 		# comment

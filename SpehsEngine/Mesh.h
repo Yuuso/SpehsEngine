@@ -76,7 +76,7 @@ namespace spehs
 
 		Position position;
 		Vertex* vertexArray; //Original vertices
-		glm::vec3* normalArray;
+		std::vector<glm::vec3> normalArray;
 		std::vector<GLushort> elementArray; //Indices
 	};
 }

@@ -23,7 +23,7 @@ namespace spehs
 		ModelManager();
 		~ModelManager();
 
-		void loadOBJ(const std::string &_filepath, Vertex* vertexArray, std::vector<GLushort> &_elementArray, glm::vec3* _normalArray);
+		void loadOBJ(const std::string &_filepath, Vertex* vertexArray, std::vector<GLushort> &_elementArray, std::vector<glm::vec3> _normalArray);
 
 	private:
 		std::unordered_map<size_t, ModelData*> modelDataMap;

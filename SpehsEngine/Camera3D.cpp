@@ -1,54 +1,61 @@
-#include <glm/mat3x3.hpp>
-#include "ApplicationData.h"
+
 #include "Camera3D.h"
+#include "ApplicationData.h"
+
+#include <glm/gtx/transform.hpp>
+
 
 namespace spehs
 {
-	Camera3D* camera3D;
-
-	Camera3D::Camera3D()
+	Camera3D::Camera3D() : fov(60.0f), near(0.1f), far(500.0f)
 	{
+		position = glm::vec3(0.0f, 0.0f, 3.0f);
+		target = glm::vec3(0.0f);
+
+		up = glm::vec3(0.0f, 1.0f, 0.0f);
+		front = glm::vec3(0.0f, 0.0f, -1.0f);
+
+		view = glm::mat4(1.0f);
+		projection = glm::perspective(fov, (float)applicationData->getWindowWidth() / (float)applicationData->getWindowHeight(), near, far);
+
+		cameraMatrix = &view;
 	}
-
-
 	Camera3D::~Camera3D()
 	{
 	}
 
 	void Camera3D::update()
 	{
-
+		right = glm::normalize(glm::cross(front, glm::vec3(0.0f, 1.0f, 0.0f)));
+		up = glm::normalize(glm::cross(right, front));
+		direction = glm::normalize(position - target);
+		view = glm::lookAt(position, position + front, up);
+		view = projection * view;
 	}
-	glm::vec2 Camera3D::project(glm::vec3& point)
+
+	void Camera3D::translate(const glm::vec3& _translation)
 	{
+		position += _translation;
+	}
 
-		/*
-		????:
-		https://en.wikipedia.org/wiki/3D_projection
-		*/
-		glm::mat3 mat1;
-		mat1[0][0] = 1;	mat1[0][1] = 0;						mat1[0][2] = 0;
-		mat1[1][0] = 0;	mat1[1][1] = cos(-camera3D->orientation.x);	mat1[1][2] = -sin(-orientation.x);
-		mat1[2][0] = 0;	mat1[2][1] = sin(-orientation.x);	mat1[2][2] = cos(-orientation.x);
+	void Camera3D::setPosition(const glm::vec3 &_position)
+	{
+		position = _position;
+	}
 
-		glm::mat3 mat2;
-		mat2[0][0] = cos(-orientation.y);	mat2[0][1] = 0;		mat2[0][2] = sin(-orientation.y);
-		mat2[1][0] = 0;						mat2[1][1] = 1;		mat2[1][2] = 0;
-		mat2[2][0] = -sin(-orientation.y);	mat2[2][1] = 0;		mat2[2][2] = cos(-orientation.y);
+	void Camera3D::rotate(const glm::vec2 &_rotation)
+	{
+		//TODO:?
+	}
 
-		glm::mat3 mat3;
-		mat3[0][0] = cos(-orientation.z);	mat3[0][1] = -sin(-orientation.z);	mat3[0][2] = 0;
-		mat3[1][0] = sin(-orientation.z);	mat3[1][1] = cos(-orientation.z);	mat3[1][2] = 0;
-		mat3[2][0] = 0;						mat3[2][1] = 0;						mat3[2][2] = 1;
+	void Camera3D::setRotation(const glm::vec2 &_rotation)
+	{
+		front = glm::normalize(glm::vec3(cos(_rotation.x * _rotation.y), sin(_rotation.x), cos(_rotation.x * _rotation.y)));
+	}
 
-		glm::vec3 d = mat1*mat2*mat3*(point - position);
-
-		if (d.z != 0)
-		{
-			glm::vec2 projectedPoint = glm::vec2((viewerPosition.z / d.z)*d.x*(float(applicationData->getWindowHeight()) / applicationData->getWindowWidth()), (viewerPosition.z / d.z)*d.y);
-			return projectedPoint;
-		}
-
-		return glm::vec2(0, 0);
+	void Camera3D::setFOV(const float &_fov)
+	{
+		fov = _fov;
+		projection = glm::perspective(fov, (float) applicationData->getWindowWidth() / (float) applicationData->getWindowHeight(), near, far);
 	}
 }

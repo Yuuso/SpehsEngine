@@ -10,6 +10,7 @@
 
 #define GLM_FORCE_RADIANS
 
+
 namespace spehs
 {
 	Mesh::Mesh()
@@ -32,14 +33,23 @@ namespace spehs
 		scaleX = 0.0f;
 		scaleY = 0.0f;
 		scaleZ = 0.0f;
-		normalArray = nullptr;
 		color = glm::vec4(1.0f);
 	}
 	Mesh::Mesh(const std::string &_filepath) : Mesh()
 	{
-		//Check here what file type the given filepath is
-		//For now we assume that it's all obj files...
-		modelManager->loadOBJ(_filepath, vertexArray, elementArray, normalArray);
+		//Check the file type of the given model file
+		std::string fileEnding = "";
+		auto it = _filepath.end() - 1;
+		while (*it != '.')
+		{
+			fileEnding.push_back(*it);
+			it--;
+		}
+
+		if (fileEnding == "jbo") //.obj files
+			modelManager->loadOBJ(_filepath, vertexArray, elementArray, normalArray);
+		else
+			exceptions::fatalError("The models file type is not supported!");
 	}
 	Mesh::~Mesh()
 	{
@@ -47,8 +57,6 @@ namespace spehs
 			delete [] worldVertexArray;
 		if (vertexArray != nullptr)
 			delete [] vertexArray;
-		if (normalArray)
-			delete [] normalArray;
 	}
 
 

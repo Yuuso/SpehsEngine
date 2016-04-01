@@ -77,7 +77,7 @@ namespace spehs
 
 		bool operator==(const Mesh &_mesh); //Checks if mesh is suitable for this batch
 
-		void render();
+		bool render(); //Returns false if the batch is empty
 		void push(Mesh* _mesh);
 
 	private:

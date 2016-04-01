@@ -71,8 +71,13 @@ namespace spehs
 
 	Mesh* BatchManager::createMesh()
 	{
-		//TODO
-		return nullptr;
+		meshes.push_back(new Mesh());
+		return meshes.back();
+	}
+	Mesh* BatchManager::createMesh(const std::string &_filePath)
+	{
+		meshes.push_back(new Mesh(_filePath));
+		return meshes.back();
 	}
 
 	Polygon* BatchManager::createPolygon(const int &_shapeID, const PlaneDepth &_planeDepth, const float &_width, const float &_height)
@@ -157,14 +162,54 @@ namespace spehs
 		}
 
 		//Batch Meshes
-		///TODO
+		for (unsigned i = 0; i < meshes.size();)
+		{
+			//Check if user has requested for deletion
+			if (meshes[i]->readyForDelete)
+			{
+				delete meshes[i];
+				if (meshes[i] != meshes.back())
+					meshes[i] = meshes.back();
+				meshes.pop_back();
+			}
+			//Check meshes rendering state
+			else if (meshes[i]->renderState)
+			{
+				batchFound = false;
+				//Update worldVertexArray
+				meshes[i]->updateVertices();
+				//Find a suitable batch for it
+				for (unsigned j = 0; j < meshBatches.size(); j++)
+				{
+					if (*(meshBatches[j]) == *(meshes[i]))
+					{
+						meshBatches[j]->push(meshes[i]);
+						batchFound = true;
+						j = meshBatches.size();
+					}
+				}
+				//If none found create a new one
+				if (!batchFound)
+				{
+					meshBatches.push_back(new MeshBatch(meshes[i]->shaderIndex, meshes[i]->textureDataID, meshes[i]->drawMode, meshes[i]->lineWidth));
+					meshBatches.back()->push(meshes[i]);
+				}
+				i++;
+			}
+			else
+				i++;
+		}
 
 	//RENDERING:
 
 		//Render MeshBatches
 		for (unsigned int i = 0; i < meshBatches.size(); i++)
 		{
-			meshBatches[i]->render();
+			if (!meshBatches[i]->render()) //If the batch is empty, delete it
+			{
+				delete meshBatches[i];
+				meshBatches.erase(meshBatches.begin() + i);
+			}
 		}
 
 		//Sort and Render PrimitiveBatches

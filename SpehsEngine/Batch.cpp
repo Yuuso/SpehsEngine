@@ -124,12 +124,8 @@ namespace spehs
 
 	bool PrimitiveBatch::render()
 	{
-		if (totalNumvertices <= 0)
-		{
+		if (totalNumvertices == 0)
 			return false;
-		}
-
-	//RENDERING
 		
 		updateBuffers();
 
@@ -230,6 +226,7 @@ namespace spehs
 		if (textureDataID)
 			glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(spehs::Vertex), reinterpret_cast<void*>(offsetof(spehs::Vertex, uv)));
 
+		//Unbind
 		glBindVertexArray(0);
 
 		glDisableVertexAttribArray(0);
@@ -237,7 +234,6 @@ namespace spehs
 		if (textureDataID)
 			glDisableVertexAttribArray(2);
 		
-		//Unbind
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
@@ -274,7 +270,10 @@ namespace spehs
 			break;
 
 		case POINT:
-			glPointSize(2.0f);
+			if (cameraMatrixState)
+				glPointSize(getActiveBatchManager()->getCamera2D()->scale * 2);
+			else
+				glPointSize(1.0f);
 		case LINE:
 		case LINE_LOOP:
 			for (unsigned i = currentIndex; i < currentIndex + _numVertices; i++)
@@ -393,14 +392,66 @@ namespace spehs
 	}
 
 
-	void MeshBatch::render()
+	bool MeshBatch::render()
 	{
+		if (totalNumvertices == 0)
+			return false;
 
+		updateBuffers();
+
+		shaderManager->use(shaderIndex);
+
+		//Texture
+		if (textureDataID)
+			shaderManager->getShader(shaderIndex)->uniforms->textureDataID = textureDataID;
+
+		//TODO:Camera Matrix!
+
+		//Uniforms
+		shaderManager->setUniforms(shaderIndex);
+
+		//Draw
+		glBindVertexArray(vertexArrayObjectID);
+		if (lineWidth != 0.0f)
+		{
+			glLineWidth(lineWidth);
+		}
+		glDrawElements(drawMode, indices.size(), GL_UNSIGNED_SHORT, (GLvoid*) NULL);
+		glBindVertexArray(0);
+
+		checkOpenGLErrors(__FILE__, __LINE__);
+
+		shaderManager->unuse(shaderIndex);
+
+		drawCalls++;
+		vertexDrawCount += totalNumvertices;
+
+		//Clean up
+		vertices.clear();
+		indices.clear();
+		normals.clear();
+		totalNumvertices = 0;
+		return true;
 	}
 
 	void MeshBatch::push(Mesh* _mesh)
 	{
-
+		//INDICES
+		for (unsigned i = 0; i < _mesh->elementArray.size(); i++)
+		{
+			indices.push_back(_mesh->elementArray[i]);
+		}
+		//VERTICES
+		for (unsigned i = 0; i < _mesh->numVertices; i++)
+		{
+			vertices.push_back(_mesh->worldVertexArray[i]);
+		}
+		totalNumvertices += _mesh->numVertices;
+		//NORMALS
+		for (unsigned i = 0; i < _mesh->normalArray.size(); i++)
+		{
+			normals.push_back(_mesh->normalArray[i]);
+		}
 	}
 
 	//Private:
@@ -419,6 +470,7 @@ namespace spehs
 		//Generate buffers
 		glGenBuffers(1, &vertexBufferID);
 		glGenBuffers(1, &indexBufferID);
+		glGenBuffers(1, &normalBufferID);
 
 		checkOpenGLErrors(__FILE__, __LINE__);
 
@@ -428,6 +480,9 @@ namespace spehs
 
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBufferID);
 		glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLushort) * getIndexMultiplier(drawMode), nullptr, GL_STREAM_DRAW);
+
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, normalBufferID);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(glm::vec3) * DEFAULT_MAX_BATCH_SIZE, nullptr, GL_STREAM_DRAW);
 
 		checkOpenGLErrors(__FILE__, __LINE__);
 
@@ -442,6 +497,7 @@ namespace spehs
 		if (textureDataID)
 			glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(spehs::Vertex), reinterpret_cast<void*>(offsetof(spehs::Vertex, uv)));
 
+		//Unbind
 		glBindVertexArray(0);
 
 		glDisableVertexAttribArray(0);
@@ -449,7 +505,6 @@ namespace spehs
 		if (textureDataID)
 			glDisableVertexAttribArray(2);
 
-		//Unbind
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
@@ -458,6 +513,21 @@ namespace spehs
 
 	void MeshBatch::updateBuffers()
 	{
+		glBindVertexArray(vertexArrayObjectID);
+		glBindBuffer(GL_ARRAY_BUFFER, vertexBufferID);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBufferID);
 
+		//Sent data to GPU
+		glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(spehs::Vertex) * vertices.size(), &vertices[0]);
+		glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, sizeof(GLushort) * indices.size(), &indices[0]);
+
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, normalBufferID);
+		glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, sizeof(glm::vec3) * normals.size(), &normals[0]);
+
+		glBindVertexArray(0);
+		glBindBuffer(GL_ARRAY_BUFFER, 0);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+
+		checkOpenGLErrors(__FILE__, __LINE__);
 	}
 }

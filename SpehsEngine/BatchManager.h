@@ -39,6 +39,7 @@ namespace spehs
 		~BatchManager();
 
 		Mesh* createMesh();
+		Mesh* createMesh(const std::string &_filePath);
 
 		Polygon* createPolygon(const int &_shapeID, const PlaneDepth &_planeDepth = 0, const float &_width = 1.0f, const float &_height = 1.0f);
 		Polygon* createPolygon(Vertex* _vertexData, const int &_numVertices, const PlaneDepth &_planeDepth, const float &_width = 1.0f, const float &_height = 1.0f);
