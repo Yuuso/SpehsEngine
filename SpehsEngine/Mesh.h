@@ -16,11 +16,13 @@ typedef unsigned int GLuint;
 namespace spehs
 {
 	class MeshBatch;
+	class ModelManager;
 
 	class Mesh
 	{
 		friend class BatchManager;
 		friend class MeshBatch;
+		friend class ModelManager;
 
 	public:
 		void updateVertices(); //This is called automatically when rendering

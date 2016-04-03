@@ -10,7 +10,7 @@ namespace spehs
 {
 	struct TextureData
 	{
-		TextureData(GLuint _dataID, int _width, int _height) : textureDataID(_dataID), width(_width), height(_height){}
+		TextureData(const GLuint& _dataID, const int& _width, const int& _height) : textureDataID(_dataID), width(_width), height(_height){}
 		int width, height;
 		GLuint textureDataID;
 	};
@@ -21,18 +21,18 @@ namespace spehs
 		TextureManager();
 		~TextureManager();
 
-		void setDefaultTexture(std::string _filepath);
+		void setDefaultTexture(const std::string& _filepath);
 
-		TextureData* getTextureData(std::string _texturePath); //Get texture data from path
-		TextureData* getTextureData(size_t _hash); //Get texture data from hash
-		size_t preloadTexture(std::string _texturePath); //Loads texture and return hash
+		TextureData* getTextureData(const std::string& _texturePath); //Get texture data from path
+		TextureData* getTextureData(const size_t& _hash); //Get texture data from hash
+		size_t preloadTexture(const std::string& _texturePath); //Loads texture and return hash
 
-		void removeTextureData(std::string _texturePath);
-		void removeTextureData(size_t _hash);
+		void removeTextureData(const std::string& _texturePath);
+		void removeTextureData(const size_t& _hash);
 		void clearAllTextureData();
 
 	private:
-		TextureData* toTexture(std::string _filepath);
+		TextureData* toTexture(const std::string& _filepath);
 
 		size_t defaultTexture;
 		std::unordered_map<size_t, TextureData*> textureDataMap;

@@ -19,14 +19,14 @@ namespace spehs
 		clearAllTextureData();
 	}
 
-	void TextureManager::setDefaultTexture(std::string _filepath)
+	void TextureManager::setDefaultTexture(const std::string& _filepath)
 	{
 		toTexture(_filepath);
 		defaultTexture = std::hash<std::string>()(_filepath);
 	}
 
 
-	TextureData* TextureManager::getTextureData(std::string _texturePath)
+	TextureData* TextureManager::getTextureData(const std::string& _texturePath)
 	{
 		size_t hash = std::hash<std::string>()(_texturePath);
 		auto it = textureDataMap.find(hash);
@@ -36,7 +36,7 @@ namespace spehs
 		}
 		return toTexture(_texturePath);
 	}
-	TextureData* TextureManager::getTextureData(size_t _hash)
+	TextureData* TextureManager::getTextureData(const size_t& _hash)
 	{
 		auto it = textureDataMap.find(_hash);
 		if (it != textureDataMap.end())
@@ -45,7 +45,7 @@ namespace spehs
 		}
 		return textureDataMap.find(defaultTexture)->second;
 	}
-	size_t TextureManager::preloadTexture(std::string _texturePath)
+	size_t TextureManager::preloadTexture(const std::string& _texturePath)
 	{
 		size_t hash = std::hash<std::string>()(_texturePath);
 		if (textureDataMap.find(hash) == textureDataMap.end())
@@ -56,14 +56,14 @@ namespace spehs
 	}
 
 
-	void TextureManager::removeTextureData(std::string _texturePath)
+	void TextureManager::removeTextureData(const std::string& _texturePath)
 	{
 		size_t hash = std::hash<std::string>()(_texturePath);
 		auto it = textureDataMap.find(hash);
 		glDeleteTextures(1, &it->second->textureDataID);
 		textureDataMap.erase(hash);
 	}
-	void TextureManager::removeTextureData(size_t _hash)
+	void TextureManager::removeTextureData(const size_t& _hash)
 	{
 		auto it = textureDataMap.find(_hash);
 		glDeleteTextures(1, &it->second->textureDataID);
@@ -80,7 +80,7 @@ namespace spehs
 
 
 	//Private:
-	TextureData* TextureManager::toTexture(std::string _filepath)
+	TextureData* TextureManager::toTexture(const std::string& _filepath)
 	{
 		glEnable(GL_TEXTURE_2D);
 

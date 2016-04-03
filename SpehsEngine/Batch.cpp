@@ -478,11 +478,11 @@ namespace spehs
 		glBindBuffer(GL_ARRAY_BUFFER, vertexBufferID);
 		glBufferData(GL_ARRAY_BUFFER, sizeof(spehs::Vertex) * DEFAULT_MAX_BATCH_SIZE, nullptr, GL_STREAM_DRAW);
 
+		glBindBuffer(GL_ARRAY_BUFFER, normalBufferID);//??
+		glBufferData(GL_ARRAY_BUFFER, sizeof(glm::vec3) * DEFAULT_MAX_BATCH_SIZE, nullptr, GL_STREAM_DRAW);
+
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBufferID);
 		glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLushort) * getIndexMultiplier(drawMode), nullptr, GL_STREAM_DRAW);
-
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, normalBufferID);
-		glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(glm::vec3) * DEFAULT_MAX_BATCH_SIZE, nullptr, GL_STREAM_DRAW);
 
 		checkOpenGLErrors(__FILE__, __LINE__);
 
@@ -494,6 +494,7 @@ namespace spehs
 
 		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(spehs::Vertex), reinterpret_cast<void*>(offsetof(spehs::Vertex, position)));
 		glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(spehs::Vertex), reinterpret_cast<void*>(offsetof(spehs::Vertex, color)));
+		//??
 		if (textureDataID)
 			glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(spehs::Vertex), reinterpret_cast<void*>(offsetof(spehs::Vertex, uv)));
 

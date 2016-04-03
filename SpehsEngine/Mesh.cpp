@@ -47,7 +47,7 @@ namespace spehs
 		}
 
 		if (fileEnding == "jbo") //.obj files
-			modelManager->loadOBJ(_filepath, vertexArray, elementArray, normalArray);
+			setOBJMesh(_filepath);
 		else
 			exceptions::fatalError("The models file type is not supported!");
 	}
@@ -80,7 +80,8 @@ namespace spehs
 
 	void Mesh::setOBJMesh(const std::string &_objFilepath)
 	{
-		modelManager->loadOBJ(_objFilepath, vertexArray, elementArray, normalArray);
+		modelManager->loadOBJ(_objFilepath, this);
+		//WORLD VERTEX ARRAY!!!
 	}
 
 	void Mesh::setPosition(const float &_x, const float &_y, const float &_z)

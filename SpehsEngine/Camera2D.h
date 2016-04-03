@@ -13,7 +13,6 @@ namespace spehs
 		Camera2D();
 		~Camera2D();
 
-		void initialize();
 		void update();
 
 		void translate(const glm::vec2& _vec);

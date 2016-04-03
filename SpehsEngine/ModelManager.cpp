@@ -1,103 +1,164 @@
-#include "StringOperations.h"
+
 #include "ModelManager.h"
 #include "Console.h"
-#include <fstream>
+#include "Mesh.h"
+
 #include <glm/vec2.hpp>
+#include <glm/vec3.hpp>
+#include <GL/glew.h>
+
+#include <fstream>
+#include <sstream>
+
 
 spehs::ModelManager* modelManager;
 namespace spehs
 {
+	ModelData::ModelData()
+	{
+	}
+	void ModelData::loadFromData(spehs::Vertex* _vertexArray, unsigned int* _numVertices, std::vector<GLushort> &_elementArray, std::vector<glm::vec3> &_normalArray)
+	{
+		//TODO: insert data into mesh
+		//Figure out indexing stuff
+	}
+
+
 	ModelManager::ModelManager()
 	{
 
 	}
 	ModelManager::~ModelManager()
 	{
-
+		clearAllModelData();
 	}
-	void ModelManager::loadOBJ(const std::string &_filepath, Vertex* vertexArray, std::vector<GLushort> &_elementArray, std::vector<glm::vec3> _normalArray)
-	{
-		/* .obj files can contain, with the given prefix
-		# comment
-		v vertex data x,y,z,(w = 1) (+ color value r,g,b)
-		vt texture coordinates u,v,(w = 1)
-		vn vertex normals x,y,z
-		pm parameter space vertices u,(v),(w)
-		f polygonal face elements
-		*/
 
-		
-		std::ifstream stream(_filepath);
-		if (!stream.is_open())
+	void ModelManager::loadOBJ(const std::string& _filepath, spehs::Mesh* _mesh)
+	{
+		//Try to find from data map
+		size_t hash = std::hash<std::string>()(_filepath);
+		auto it = modelDataMap.find(hash);
+		if (it == modelDataMap.end())
 		{
-			spehs::console::warning("Failed to open OBJ file: " + _filepath);
+			//Data not found ->
+			//Load new data
+			preloadOBJ(_filepath);
+			it = modelDataMap.find(hash);
+		}
+		it->second->loadFromData(_mesh->vertexArray, &_mesh->numVertices, _mesh->elementArray, _mesh->normalArray);
+	}
+
+	void ModelManager::loadOBJ(const size_t& _hash, spehs::Mesh* _mesh)
+	{
+		auto it = modelDataMap.find(_hash);
+		if (it != modelDataMap.end())
+		{
+			it->second->loadFromData(_mesh->vertexArray, &_mesh->numVertices, _mesh->elementArray, _mesh->normalArray);
+			return;
+		}
+		else
+		{
+			console::error("Couldn't find model data: " + std::to_string(_hash));
+			return;
+		}
+	}
+
+	void ModelManager::preloadOBJ(const std::string& _filepath)
+	{
+		//Load new data
+		std::ifstream file(_filepath, std::ios::in);
+		if (!file.is_open())
+		{
+			console::error("Failed to open OBJ file: " + _filepath);
 			return;
 		}
 
+		ModelData*  data = new ModelData();
 		std::string line;
-		std::vector<spehs::Vertex> vertices;
-		std::vector<glm::vec3> normals;
-		std::vector<glm::vec2> textureCoordinates;
-		std::vector<GLushort> normalIndices;
-		std::vector<GLushort> vertexIndices;
-		std::vector<GLushort> textureCoordinateIndices;
-
-		while (true)
+		std::istringstream stringStream;
+		while (std::getline(file, line))
 		{
-			if (stream.eof())
-				break;
-
-			//Read the next line
-			std::getline(stream, line);
-
-			if (line[0] != '#' && line.size() >= 3/*3+ characters must be on the line in order for it to contain any useful data*/)
+			//Vertices
+			if (line.substr(0, 2) == "v ")
 			{
-				//Read data type from the beginning of the line
-				if (line[0] == 'v')
+				stringStream = std::istringstream(line.substr(2));
+				spehs::Position vertex;
+				stringStream >> vertex.x;
+				stringStream >> vertex.y;
+				stringStream >> vertex.z;
+				data->vertices.push_back(spehs::Vertex(vertex));
+			}
+			//Normals
+			else if (line.substr(0, 3) == "vn ")
+			{
+				stringStream = std::istringstream(line.substr(3));
+				glm::vec3 normal;
+				stringStream >> normal.x;
+				stringStream >> normal.y;
+				stringStream >> normal.z;
+				data->normals.push_back(normal);
+			}
+			//Texture Coordinates
+			else if (line.substr(0, 3) == "vt ")
+			{
+				stringStream = std::istringstream(line.substr(3));
+				glm::vec2 uv;
+				stringStream >> uv.x;
+				stringStream >> uv.y;
+				data->textureCoordinates.push_back(uv);
+			}
+			//Elements
+			else if (line.substr(0, 2) == "f ")
+			{
+				stringStream = std::istringstream(line.substr(2));
+				GLushort v, u, n;
+				for (unsigned i = 0; i < 3; i++)
 				{
-					if (line[1] == ' ' || line[1] == '\t')
-					{//Read vertex data "v "...
-						vertices.push_back(spehs::Vertex());
-						std::string strValue;//Currently reading value as string, to be converted into float using getStringAsFloat()
-						int valueIndex = 0;//Index of modified position value x=0, y=1, z=2
-						for (unsigned i = 2/*begins with "v "*/; i < line.size(); i++)
-						{
-							switch (line[i])
-							{
-							default:
-								strValue += line[i];//Record character into value string
-								break;
-							case ' ':
-							case '\t':
-								switch (valueIndex)
-								{//Assign value to position
-								case 0: vertices.back().position.x = getStringAsFloat(strValue); break;
-								case 1: vertices.back().position.y = getStringAsFloat(strValue); break;
-								}
-								strValue.clear();
-								++valueIndex;
-							}
-						}
-						vertices.back().position.z = getStringAsFloat(strValue);
-					}
-					else if (line[1] == 't' && line.size() >= 3 && (line[2] == ' ' || line[1] == '\t'))
-					{//Read texture coordinate data "vt "...
-
-					}
-					else if (line[1] == 'n' && line.size() >= 3 && (line[2] == ' ' || line[1] == '\t'))
-					{//Read vertex normal data "vn "...
-
-					}
-				}
-				else if (line[0] == 'f' && (line[1] == ' ' || line[1] == '\t'))
-				{//Read face data "f "...
-
+					//TODO: extract the info correctly!
+					stringStream >> v;
+					stringStream >> u;
+					stringStream >> n;
+					data->vertexElements.push_back(v);
+					data->textureElements.push_back(u);
+					data->normalElements.push_back(n);
 				}
 			}
-			//Proceed to read the next line
 		}
-
-		stream.close();
+		size_t hash = std::hash<std::string>()(_filepath);
+		modelDataMap.insert(std::pair<size_t, ModelData*>(hash, data));
 	}
 
+	void ModelManager::removeModelData(std::string _filepath)
+	{
+		size_t hash = std::hash<std::string>()(_filepath);
+		auto it = modelDataMap.find(hash);
+		if (it == modelDataMap.end())
+		{
+			console::error("Couldn't find model data: " + _filepath);
+			return;
+		}
+		delete it->second;
+		modelDataMap.erase(hash);
+	}
+
+	void ModelManager::removeModelData(size_t _hash)
+	{
+		auto it = modelDataMap.find(_hash);
+		if (it == modelDataMap.end())
+		{
+			console::error("Couldn't find model data: " + std::to_string(_hash));
+			return;
+		}
+		delete it->second;
+		modelDataMap.erase(_hash);
+	}
+
+	void ModelManager::clearAllModelData()
+	{
+		for (auto &it : modelDataMap)
+		{
+			delete it.second;
+		}
+		modelDataMap.clear();
+	}
 }
