@@ -80,9 +80,9 @@ namespace spehs
 		void setRotationVector(const glm::vec3 &_newRotationVector);
 		void setColor(const glm::vec4 &_newColor);
 		void setColor(const glm::vec3 &_newColor);
-		void setColor(const unsigned char &_r, const unsigned char &_g, const unsigned char &_b, const unsigned char &_a = 1.0f);
+		void setColor(const unsigned char _r, const unsigned char _g, const unsigned char _b, const unsigned char _a = 255);
 		void setColorAlpha(const float &_a);
-		void setColorAlpha(const unsigned char &_a);
+		void setColorAlpha(const unsigned char _a);
 		void setCameraMatrixState(const bool _newState);
 		void setPlaneDepth(const PlaneDepth &_newPlaneDepth);
 		void setLineWidth(const float &_newWidth);

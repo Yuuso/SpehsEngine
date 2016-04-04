@@ -20,11 +20,11 @@ namespace spehs
 		z = _z;
 	}
 
-	ColorRGBA::ColorRGBA() : rgba(0.0f)
+	ColorRGBA::ColorRGBA() : rgba(1.0f)
 	{
 
 	}
-	ColorRGBA::ColorRGBA(const unsigned char &_r, const unsigned char &_g, const unsigned char &_b, const unsigned char &_a) : rgba((float) _r / 255.0f, (float) _g / 255.0f, (float) _b / 255.0f, (float) _a / 255.0f)
+	ColorRGBA::ColorRGBA(const unsigned char _r, const unsigned char _g, const unsigned char _b, const unsigned char _a) : rgba((float) _r / 255.0f, (float) _g / 255.0f, (float) _b / 255.0f, (float) _a / 255.0f)
 	{
 
 	}
@@ -32,7 +32,7 @@ namespace spehs
 	{
 
 	}
-	void ColorRGBA::setColor(const unsigned char &_r, const unsigned char &_g, const unsigned char &_b, const unsigned char &_a)
+	void ColorRGBA::setColor(const unsigned char _r, const unsigned char _g, const unsigned char _b, const unsigned char _a)
 	{
 		rgba.r = (float) _r / 255.0f;
 		rgba.g = (float) _g / 255.0f;

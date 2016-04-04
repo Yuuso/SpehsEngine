@@ -65,6 +65,9 @@ namespace spehs
 			console::warning("BatchManager cleaned up " + std::to_string(cleanUpPrimitives) + " primitives!");
 		if (cleanUpMeshes != 0)
 			console::warning("BatchManager cleaned up " + std::to_string(cleanUpMeshes) + " meshes!");
+
+		if (getActiveBatchManager() == this)
+			resetActiveBatchManager();
 	}
 
 

@@ -31,7 +31,6 @@ namespace spehs
 		scaledRotatedMatrix = glm::mat4(1.0f);
 		vertexArray = nullptr;
 		worldVertexArray = nullptr;
-
 	}
 	Primitive::~Primitive()
 	{
@@ -123,7 +122,7 @@ namespace spehs
 		}
 	}
 
-	void Primitive::setColor(const unsigned char &_r, const unsigned char &_g, const unsigned char &_b, const unsigned char &_a)
+	void Primitive::setColor(const unsigned char _r, const unsigned char _g, const unsigned char _b, const unsigned char _a)
 	{
 		primitiveColor = glm::vec4((float) _r / 255.0f, (float) _g / 255.0f, (float) _b / 255.0f, (float) _a / 255.0f);
 		for (unsigned i = 0; i < numVertices; i++)
@@ -141,12 +140,12 @@ namespace spehs
 		}
 	}
 
-	void Primitive::setColorAlpha(const unsigned char &_a)
+	void Primitive::setColorAlpha(const unsigned char _a)
 	{
 		primitiveColor.a = (float) _a / 255.0f;
 		for (unsigned i = 0; i < numVertices; i++)
 		{
-			worldVertexArray[i].color.rgba.a = (float) _a / 255.0f;
+			worldVertexArray[i].color.rgba.a = primitiveColor.a;
 		}
 	}
 

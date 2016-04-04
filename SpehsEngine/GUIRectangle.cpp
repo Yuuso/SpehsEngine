@@ -27,7 +27,7 @@ namespace spehs
 #endif
 
 		//Create polygon
-		polygon = spehs::getActiveBatchManager()->createPolygon(spehs::BUTTON, GUI_DEFAULT_PLANEDEPTH, 1, 1);
+		polygon = spehs::getActiveBatchManager()->createPolygon(spehs::BUTTON, GUI_DEFAULT_PLANEDEPTH, 1.0f, 1.0f);
 		polygon->setCameraMatrixState(false);
 
 		//Initial state (0)

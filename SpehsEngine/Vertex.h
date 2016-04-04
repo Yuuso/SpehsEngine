@@ -21,10 +21,10 @@ namespace spehs
 	{
 	public:
 		ColorRGBA();
-		ColorRGBA(const unsigned char &_r, const unsigned char &_g, const unsigned char &_b, const unsigned char &_a = 255);
+		ColorRGBA(const unsigned char _r, const unsigned char _g, const unsigned char _b, const unsigned char _a = 255);
 		ColorRGBA(const float &_r, const float &_g, const float &_b, const float &_a = 1.0f);
 
-		void setColor(const unsigned char &_r, const unsigned char &_g, const unsigned char &_b, const unsigned char &_a);
+		void setColor(const unsigned char _r, const unsigned char _g, const unsigned char _b, const unsigned char _a);
 		void setColor(const float &_r, const float &_g, const float &_b, const float &_a);
 		void setColor(const glm::vec4 _color);
 
