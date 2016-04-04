@@ -338,15 +338,15 @@ namespace spehs
 	void GUIWindow::close()
 	{
 		disableBit(state, GUIRECT_OPEN);
-		setRenderState(false);
 		loseFocus();
+		setRenderState(false);
 		std::cout << "\nWindow closed: " << header->getString();
 	}
 	void GUIWindow::open()
 	{
 		enableBit(state, GUIRECT_OPEN);
-		setRenderState(true);
 		refresh();
+		setRenderState(true);
 		std::cout << "\nWindow opened: " << header->getString();
 	}
 	void GUIWindow::updatePosition()

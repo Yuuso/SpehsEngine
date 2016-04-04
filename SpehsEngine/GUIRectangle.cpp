@@ -84,6 +84,10 @@ namespace spehs
 	}
 	void GUIRectangle::postUpdate()
 	{
+		//Tooltip
+		if (tooltip)
+			tooltip->postUpdate();
+		
 		//Hover color
 		if (checkBit(state, GUIRECT_HOVER_COLOR))
 		{
@@ -114,9 +118,6 @@ namespace spehs
 		{//Repositioning GUI
 			updatePosition();
 		}
-
-		if (tooltip)
-			tooltip->postUpdate();
 	}
 	void GUIRectangle::setRenderState(const bool _state)
 	{
@@ -328,8 +329,11 @@ namespace spehs
 		displayTexture->polygon->setTexture(texData);
 		displayTexture->polygon->resize(texData->width, texData->height);
 		displayTexture->polygon->setCameraMatrixState(false);
+		displayTexture->polygon->setRenderState(polygon->getRenderState());
 		displayTexture->width = texData->width;
 		displayTexture->height = texData->height;
+		disableStateRecursiveUpwards(GUIRECT_POSITIONED);
+		disableStateRecursiveUpwards(GUIRECT_SCALED);
 	}
 	void GUIRectangle::setTexture(std::string path)
 	{

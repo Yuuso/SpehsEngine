@@ -1,6 +1,7 @@
 #include "GUIRectangleContainer.h"
 #include "GUIRectangleTree.h"
 #include "GUITextField.h"
+#include "Polygon.h"
 
 
 namespace spehs
@@ -81,6 +82,7 @@ namespace spehs
 	{
 		elements.push_back(element);
 		elements.back()->setParent(this);
+		elements.back()->setRenderState(polygon->getRenderState());
 
 		disableStateRecursiveUpwards(GUIRECT_MIN_SIZE_UPDATED);
 		
@@ -145,7 +147,10 @@ namespace spehs
 				if (getEndElementIndex() + 1 == elements.size())
 					break;
 				updateElementCount++;
-				elements[getEndElementIndex()]->setRenderState(true);
+				if (polygon->getRenderState())
+					elements[getEndElementIndex()]->setRenderState(true);
+				else
+					elements[getEndElementIndex()]->setRenderState(false);
 				--incrementation;
 			}
 		} while (incrementation != 0);
