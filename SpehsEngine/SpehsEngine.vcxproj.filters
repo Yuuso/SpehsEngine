@@ -130,6 +130,21 @@
     <ClCompile Include="Shapes.cpp">
       <Filter>Rendering\Geometric Rendering</Filter>
     </ClCompile>
+    <ClCompile Include="GameObject.cpp">
+      <Filter>Core\Object/Component</Filter>
+    </ClCompile>
+    <ClCompile Include="Component.cpp">
+      <Filter>Core\Object/Component</Filter>
+    </ClCompile>
+    <ClCompile Include="Sprite.cpp">
+      <Filter>Core\Object/Component</Filter>
+    </ClCompile>
+    <ClCompile Include="Transform2D.cpp">
+      <Filter>Core\Object/Component</Filter>
+    </ClCompile>
+    <ClCompile Include="RigidBody2D.cpp">
+      <Filter>Core\Object/Component</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GLSLProgram.h">
@@ -267,6 +282,21 @@
     <ClInclude Include="BatchManager.h">
       <Filter>Rendering\Geometric Rendering\Batch Rendering</Filter>
     </ClInclude>
+    <ClInclude Include="GameObject.h">
+      <Filter>Core\Object/Component</Filter>
+    </ClInclude>
+    <ClInclude Include="Component.h">
+      <Filter>Core\Object/Component</Filter>
+    </ClInclude>
+    <ClInclude Include="Sprite.h">
+      <Filter>Core\Object/Component</Filter>
+    </ClInclude>
+    <ClInclude Include="Transform2D.h">
+      <Filter>Core\Object/Component</Filter>
+    </ClInclude>
+    <ClInclude Include="RigidBody2D.h">
+      <Filter>Core\Object/Component</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Physics">
@@ -301,6 +331,9 @@
     </Filter>
     <Filter Include="Rendering\Resource Management">
       <UniqueIdentifier>{5d317e38-b18e-4637-b325-67f73190943b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Core\Object/Component">
+      <UniqueIdentifier>{d2fdada1-b4b1-403b-9166-08f0a4118180}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>
