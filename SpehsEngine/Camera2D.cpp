@@ -37,11 +37,11 @@ namespace spehs
 	void Camera2D::update()
 	{
 		//Camera translation
-		cameraMatrix = glm::rotate(orthoMatrix, -rotation, glm::vec3(0.0f, 0.0f, 1.0f));
+		cameraMatrix = glm::rotate(staticMatrix, -rotation, glm::vec3(0.0f, 0.0f, 1.0f));
 		cameraMatrix = glm::translate(cameraMatrix, glm::vec3(-position.x, -position.y, 0.0f));
 
 		//Camera Scale
-		cameraMatrix = glm::scale(glm::mat4(1.0f), glm::vec3(scale, scale, 0.0f)) * cameraMatrix;
+		cameraMatrix = glm::scale(cameraMatrix, glm::vec3(scale, scale, 0.0f));
 
 		//Delta movement
 		deltaMovement = position - previousPosition;
