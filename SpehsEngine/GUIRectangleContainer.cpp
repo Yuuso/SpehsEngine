@@ -6,6 +6,14 @@
 
 namespace spehs
 {
+#ifdef DRAW_TEXT_ENABLED
+	void GUIRectangleContainer::DRAW_TEXT()
+	{//DEBUG
+		GUIRectangle::DRAW_TEXT();
+		for (int i = beginElementIndex; i < getEndElementIndex(); i++)
+			elements[i]->DRAW_TEXT();
+	}
+#endif
 	GUIRectangleContainer::GUIRectangleContainer() : beginElementIndex(0), updateElementCount(0)
 	{
 		enableBit(state, GUIRECT_OPEN);

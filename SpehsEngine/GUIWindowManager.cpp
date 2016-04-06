@@ -5,6 +5,14 @@
 
 namespace spehs
 {
+	void GUIWindowManager::DRAW_TEXT()
+	{
+		for (unsigned i = 0; i < windows.size(); i++)
+		{
+			if (windows[i]->isOpen())
+				windows[i]->DRAW_TEXT();
+		}
+	}
 
 	GUIWindowManager::GUIWindowManager() : focusedWindow(nullptr)
 	{

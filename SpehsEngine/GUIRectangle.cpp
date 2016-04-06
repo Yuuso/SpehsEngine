@@ -14,8 +14,16 @@
 int64_t guiRectangleAllocations = 0;
 int64_t guiRectangleDeallocations = 0;
 
+
 namespace spehs
 {
+#ifdef DRAW_TEXT_ENABLED
+	void GUIRectangle::DRAW_TEXT()
+	{//DEBUG
+		if (text)
+			text->setRenderState(true);
+	}
+#endif
 	GUIRectangle::DisplayTexture::~DisplayTexture()
 	{
 		polygon->destroy();

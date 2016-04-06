@@ -10,6 +10,8 @@ namespace spehs
 		GUIWindowManager();
 		~GUIWindowManager();
 
+		void DRAW_TEXT();
+
 		void update();
 
 		void addWindow(GUIWindow* window);
