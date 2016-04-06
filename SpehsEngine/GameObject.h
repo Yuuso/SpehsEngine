@@ -56,7 +56,6 @@ namespace spehs
 				return dynamic_cast<type*>(components[i]);
 			}
 		}
-		std::cout << "Component not found!" << std::endl;
 		return nullptr;
 	}
 }

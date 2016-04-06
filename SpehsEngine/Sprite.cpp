@@ -10,7 +10,7 @@ namespace spehs
 	{
 		sprite = getActiveBatchManager()->createPolygon(4);
 	}
-	Sprite::Sprite(GameObject* _owner) : Component(_owner)
+	Sprite::Sprite(GameObject* _owner) : Component(_owner) 
 	{
 		sprite = getActiveBatchManager()->createPolygon(4);
 	}
