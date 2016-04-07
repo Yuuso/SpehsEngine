@@ -31,6 +31,7 @@ namespace spehs
 		glm::vec3 position;
 		glm::vec3 target;
 		glm::vec3 direction; //Vector from target to camera
+		glm::vec3 rotation;
 
 		glm::vec3 up;
 		glm::vec3 right;

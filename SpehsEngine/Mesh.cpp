@@ -57,7 +57,7 @@ namespace spehs
 	{
 		static glm::vec4 vertex;
 		scaledMatrix = glm::scale(glm::mat4(1.0f), glm::vec3(scaleX, scaleY, 0.0f));
-		scaledRotatedMatrix = scaledMatrix * glm::mat4_cast(glm::fquat(glm::vec3(roll, pitch, yaw)));
+		scaledRotatedMatrix = scaledMatrix * glm::mat4_cast(glm::fquat(glm::vec3(yaw, pitch, roll)));
 		for (unsigned int i = 0; i < worldVertexArray.size(); i++)
 		{
 			vertex = glm::vec4(vertexArray[i].position.x, vertexArray[i].position.y, vertexArray[i].position.z, 1.0f);

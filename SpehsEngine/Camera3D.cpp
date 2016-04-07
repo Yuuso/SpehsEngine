@@ -7,7 +7,7 @@
 
 namespace spehs
 {
-	Camera3D::Camera3D() : fov(60.0f), near(0.1f), far(500.0f)
+	Camera3D::Camera3D() : fov(60.0f), near(0.1f), far(500.0f), rotation(1.0f)
 	{
 		position = glm::vec3(0.0f, 0.0f, 3.0f);
 		target = glm::vec3(0.0f);
@@ -26,6 +26,7 @@ namespace spehs
 
 	void Camera3D::update()
 	{
+		front = glm::normalize(glm::vec3(cos(rotation.x * rotation.y), sin(rotation.x), cos(rotation.x * rotation.y)));
 		right = glm::normalize(glm::cross(front, glm::vec3(0.0f, 1.0f, 0.0f)));
 		up = glm::normalize(glm::cross(right, front));
 		direction = glm::normalize(position - target);
@@ -45,12 +46,14 @@ namespace spehs
 
 	void Camera3D::rotate(const glm::vec2 &_rotation)
 	{
-		//TODO:?
+		rotation.x += _rotation.x;
+		rotation.y += _rotation.y;
 	}
 
 	void Camera3D::setRotation(const glm::vec2 &_rotation)
 	{
-		front = glm::normalize(glm::vec3(cos(_rotation.x * _rotation.y), sin(_rotation.x), cos(_rotation.x * _rotation.y)));
+		rotation.x = _rotation.x;
+		rotation.y = _rotation.y;
 	}
 
 	void Camera3D::setFOV(const float &_fov)
