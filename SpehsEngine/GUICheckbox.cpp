@@ -70,6 +70,12 @@ namespace spehs
 			checkboxFilling->setRenderState(false);
 		}
 	}
+	void GUICheckbox::setDepth(uint16_t depth)
+	{
+		GUIRectangle::setDepth(depth);
+		checkboxBackground->setPlaneDepth(depth + 1);
+		checkboxFilling->setPlaneDepth(depth + 2);
+	}
 	void GUICheckbox::updatePosition()
 	{
 		//Checkbox has to exceptionally scale first before positioning

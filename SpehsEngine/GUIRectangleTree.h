@@ -20,7 +20,8 @@ namespace spehs
 		virtual ~GUIRectangleTree();
 
 		void update();
-		void setPostRenderState(const bool _state);
+		void setRenderState(const bool _state);
+
 		void updateScale();
 		void updatePosition();
 		void updateMinSize();

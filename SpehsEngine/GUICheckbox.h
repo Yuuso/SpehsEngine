@@ -18,6 +18,7 @@ namespace spehs
 
 		void update();
 		void setRenderState(const bool _state);
+		void setDepth(uint16_t depth);
 		void updatePosition();
 		void updateScale();
 		void updateMinSize();

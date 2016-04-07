@@ -1,4 +1,5 @@
 #include <iostream>
+#include "Polygon.h"
 #include "InputManager.h"
 #include "ApplicationData.h"
 #include "GUIRectangleTree.h"
@@ -11,7 +12,7 @@ namespace spehs
 {
 	GUIRectangleTree::GUIRectangleTree() : pressedLeafNodeID(0), openTreeButton(MOUSE_BUTTON_LEFT)
 	{
-		disableBit(state, GUIRECT_OPEN);
+		close();
 	}
 	GUIRectangleTree::GUIRectangleTree(int _ID) : GUIRectangleTree()
 	{
@@ -58,7 +59,6 @@ namespace spehs
 				else if (treeOpenTimer <= 0)
 					close();
 			}
-
 		}
 
 
@@ -85,6 +85,20 @@ namespace spehs
 				close();
 		}
 	}
+	void GUIRectangleTree::setRenderState(const bool _state)
+	{
+		GUIRectangle::setRenderState(_state);
+		if (!checkState(GUIRECT_OPEN))
+		{
+			for (int i = beginElementIndex; i <= getEndElementIndex(); i++)
+				elements[i]->setRenderState(false);
+		}
+		else
+		{
+			for (int i = beginElementIndex; i <= getEndElementIndex(); i++)
+				elements[i]->setRenderState(_state);
+		}
+	}
 	void GUIRectangleTree::updateScale()
 	{
 		GUIRectangle::updateScale();
@@ -98,8 +112,7 @@ namespace spehs
 	void GUIRectangleTree::updatePosition()
 	{
 		GUIRectangle::updatePosition();
-
-
+		
 		if (isOpen())
 		{
 			////Element positioning
@@ -177,11 +190,15 @@ namespace spehs
 	}
 	void GUIRectangleTree::close()
 	{
-		if (!isOpen())
+		if (!checkState(GUIRECT_OPEN))
+		{
 			return;
-
+		}
+		
+		//Close this
 		treeOpenTimer = 0.0f;
 		GUIRectangleContainer::close();
+
 		//Close all elements
 		for (unsigned i = 0; i < elements.size(); i++)
 			elements[i]->getAsGUIRectangleTreePtr()->close();

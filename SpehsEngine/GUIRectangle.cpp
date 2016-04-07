@@ -20,8 +20,12 @@ namespace spehs
 #ifdef DRAW_TEXT_ENABLED
 	void GUIRectangle::DRAW_TEXT()
 	{//DEBUG
-		if (text)
-			text->setRenderState(true);
+		if (polygon->getRenderState() && text)
+		{
+			text->setRenderState(true);//Renders text, not actually sets render state
+			if (tooltip)
+				tooltip->DRAW_TEXT();
+		}
 	}
 #endif
 	GUIRectangle::DisplayTexture::~DisplayTexture()
@@ -76,6 +80,8 @@ namespace spehs
 	}
 	void GUIRectangle::update()
 	{
+		disableBit(state, GUIRECT_MOUSE_HOVER);
+		disableBit(state, GUIRECT_MOUSE_HOVER_CONTAINER);
 		updateMouseHover();
 
 		//Toolti render state
@@ -92,6 +98,10 @@ namespace spehs
 	}
 	void GUIRectangle::postUpdate()
 	{
+		//Return if not visible
+		if (!polygon->getRenderState())
+			return;
+
 		//Tooltip
 		if (tooltip)
 			tooltip->postUpdate();
@@ -136,8 +146,6 @@ namespace spehs
 			displayTexture->polygon->setRenderState(_state);
 		if (tooltip && !_state)
 			tooltip->setRenderState(false);
-		disableBit(state, GUIRECT_MOUSE_HOVER);
-		disableBit(state, GUIRECT_MOUSE_HOVER_CONTAINER);
 	}
 	bool GUIRectangle::updateMouseHover()
 	{

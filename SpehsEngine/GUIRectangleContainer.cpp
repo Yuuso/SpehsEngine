@@ -10,13 +10,13 @@ namespace spehs
 	void GUIRectangleContainer::DRAW_TEXT()
 	{//DEBUG
 		GUIRectangle::DRAW_TEXT();
-		for (int i = beginElementIndex; i < getEndElementIndex(); i++)
+		for (int i = beginElementIndex; i <= getEndElementIndex(); i++)
 			elements[i]->DRAW_TEXT();
 	}
 #endif
 	GUIRectangleContainer::GUIRectangleContainer() : beginElementIndex(0), updateElementCount(0)
 	{
-		enableBit(state, GUIRECT_OPEN);
+		open();
 	}
 	GUIRectangleContainer::~GUIRectangleContainer()
 	{
@@ -46,18 +46,29 @@ namespace spehs
 	void GUIRectangleContainer::postUpdate()
 	{
 		GUIRectangle::postUpdate();
-		for (int i = 0; i < beginElementIndex + updateElementCount; i++)
-			elements[i]->postUpdate();
+		if (checkState(GUIRECT_OPEN))
+		{
+			for (int i = beginElementIndex; i < beginElementIndex + updateElementCount; i++)
+				elements[i]->postUpdate();
+		}
 	}
 	void GUIRectangleContainer::setRenderState(const bool _state)
 	{
 		GUIRectangle::setRenderState(_state);
-		for (unsigned i = 0; i < elements.size(); i++)
+		if (checkState(GUIRECT_OPEN))
 		{
-			if (i < beginElementIndex || i > getEndElementIndex())
+			for (unsigned i = 0; i < elements.size(); i++)
+			{
+				if (i < beginElementIndex || i > getEndElementIndex())
+					elements[i]->setRenderState(false);
+				else
+					elements[i]->setRenderState(_state);
+			}
+		}
+		else
+		{//Container is not open
+			for (unsigned i = 0; i < elements.size(); i++)
 				elements[i]->setRenderState(false);
-			else
-				elements[i]->setRenderState(_state);
 		}
 	}
 	bool GUIRectangleContainer::isReceivingTextInput()
@@ -205,10 +216,13 @@ namespace spehs
 		disableBit(state, GUIRECT_POSITIONED);
 		disableBit(state, GUIRECT_SCALED);
 		disableBit(state, GUIRECT_MIN_SIZE_UPDATED);
+		setRenderState(true);
 	}
 	void GUIRectangleContainer::close()
 	{//Close container dimension
 		disableBit(state, GUIRECT_OPEN);
+		for (unsigned i = 0; i < elements.size(); i++)
+			elements[i]->setRenderState(false);
 	}
 	void GUIRectangleContainer::closeTreeElements()
 	{

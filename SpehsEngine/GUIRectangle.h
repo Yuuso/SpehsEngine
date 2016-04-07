@@ -117,7 +117,6 @@ namespace spehs
 		bool getMouseHover(){ return checkBit(state, GUIRECT_MOUSE_HOVER); }
 		bool getMouseHoverContainer(){ return checkBit(state, GUIRECT_MOUSE_HOVER_CONTAINER); }
 		bool getMouseHoverAny(){ if (checkBit(state, GUIRECT_MOUSE_HOVER)) return true; return checkBit(state, GUIRECT_MOUSE_HOVER_CONTAINER); }
-		bool isVisible();
 		bool isEnabled(){ return checkBit(state, GUIRECT_ENABLED); }
 		bool isFocused(){ return checkBit(state, GUIRECT_FOCUSED); }
 		bool isReceivingInput(){ return checkBit(state, GUIRECT_RECEIVING_INPUT); }
@@ -125,6 +124,7 @@ namespace spehs
 		bool isDragging(){ return checkBit(state, GUIRECT_DRAGGING); }
 		bool isSelected(){ return checkBit(state, GUIRECT_SELECTED); }
 		bool isOpen(){ return checkBit(state, GUIRECT_OPEN); }
+		bool isVisible();
 		//Setters
 		virtual void enableStateRecursive(GUIRECT_STATE_TYPE stateBit){ enableBit(state, stateBit); }
 		virtual void disableStateRecursive(GUIRECT_STATE_TYPE stateBit){ disableBit(state, stateBit); }
@@ -182,7 +182,7 @@ namespace spehs
 
 	protected:
 		glm::vec4 color;///<Color values given to polygon. Ranges from 0.0f - 1.0f
-		glm::ivec2 position;///<The position of the rectangle, originating from the lower left corner, given in screen coordinates
+		glm::ivec2 position;///<The position of the rectangle, originating from the lower left corner, given in screen coordinates. Relative to parent's position
 		glm::ivec2 size;///<Current size of the rectangle
 		glm::ivec2 minSize;///<The minimum size of the rectangle. Checked whenever rezising the polygon.
 		GUIRectangle* parent;///<Rectangle inherits position from parent chain. NOTE: parent must be ractangle container
