@@ -55,7 +55,7 @@ namespace spehs
 
 
 		//Public Variables
-		std::vector<spehs::Vertex> worldVertexArray; //Transformed vertices
+		std::vector<spehs::Vertex3D> worldVertexArray; //Transformed vertices
 
 	protected:
 		Mesh();
@@ -76,8 +76,7 @@ namespace spehs
 		glm::mat4 scaledRotatedMatrix;
 
 		spehs::Position position;
-		std::vector<spehs::Vertex> vertexArray; //Original vertices
-		std::vector<glm::vec3> normalArray;
+		std::vector<spehs::Vertex3D> vertexArray; //Original vertices
 		std::vector<GLushort> elementArray; //Indices
 	};
 }

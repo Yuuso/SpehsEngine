@@ -8,6 +8,10 @@ namespace spehs
 	{
 
 	}
+	Position::Position(const float &_x, const float &_y, const float &_z) : x(_x), y(_y), z(_z)
+	{
+
+	}
 	void Position::setPosition(const float &_x, const float &_y)
 	{
 		x = _x;
@@ -18,6 +22,10 @@ namespace spehs
 		x = _x;
 		y = _y;
 		z = _z;
+	}
+	bool Position::operator==(const Position& _other)
+	{
+		return (x == _other.x && y == _other.y && z == _other.z);
 	}
 
 	ColorRGBA::ColorRGBA() : rgba(1.0f)
@@ -55,6 +63,14 @@ namespace spehs
 	{
 
 	}
+	UV::UV(const float &_u, const float &_v) : u(_u), v(_v)
+	{
+
+	}
+	bool UV::operator==(const UV& _other)
+	{
+		return (u == _other.u && v == _other.v);
+	}
 	void UV::setUV(const float &_u, const float &_v)
 	{
 		u = _u;
@@ -70,6 +86,19 @@ namespace spehs
 
 	}
 	Vertex::Vertex(const Position &_position, const ColorRGBA &_color, const UV &_uv) : position(_position), color(_color), uv(_uv) 
+	{
+
+	}
+	
+	Vertex3D::Vertex3D()
+	{
+
+	}
+	Vertex3D::Vertex3D(const Position &_position) : position(_position)
+	{
+
+	}
+	Vertex3D::Vertex3D(const Position &_position, const UV &_uv, const Position &_normal) : position(_position), uv(_uv), normal(_normal)
 	{
 
 	}

@@ -15,12 +15,14 @@ namespace spehs
 {
 	class Mesh;
 
+	int checkArrayForElements(std::vector<spehs::Vertex3D>& _array, const spehs::Position& _position, const glm::vec2& _textureCoord, const glm::vec3& _normal);
+
 	struct ModelData
 	{
 		ModelData();
-		void loadFromData(std::vector<spehs::Vertex> _vertexArray, std::vector<GLushort> &_elementArray, std::vector<glm::vec3> &_normalArray);
+		void loadFromData(std::vector<spehs::Vertex3D> &_vertexArray, std::vector<GLushort> &_elementArray);
 
-		std::vector<spehs::Vertex> vertices;
+		std::vector<spehs::Vertex3D> vertices;
 		std::vector<glm::vec2> textureCoordinates;
 		std::vector<glm::vec3> normals;
 		std::vector<GLushort> vertexElements;

@@ -84,14 +84,12 @@ namespace spehs
 		void initBuffers();
 		void updateBuffers();
 
-		std::vector<spehs::Vertex> vertices;
+		std::vector<spehs::Vertex3D> vertices;
 		std::vector<GLushort> indices;
-		std::vector<glm::vec3> normals;
 
 		GLuint vertexArrayObjectID;
 		GLuint vertexBufferID;
 		GLuint indexBufferID;
-		GLuint normalBufferID;
 
 		int shaderIndex;
 		GLuint textureDataID;

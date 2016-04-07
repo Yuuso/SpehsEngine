@@ -97,7 +97,31 @@ namespace spehs
 			"}\n"
 		};
 		//
-		//TODO: Mesh shaders
+		const std::string defaultMeshVert =
+		{
+			"#version 150\n"
+			"in vec3 vertexPosition;\n"
+			"in vec4 vertexColor;\n"
+			"in vec3 vertexNormal;\n"
+			"out vec4 fragmentColor;\n"
+			"uniform mat4 cameraMatrix;\n"
+			"void main()\n"
+			"{\n"
+			"	gl_Position = cameraMatrix * vec4(vertexPosition.xyz, 1.0);\n"
+			"	fragmentColor = vertexColor;\n"
+			"}\n"
+		};
+		const std::string defaultMeshFrag =
+		{
+			"#version 150\n"
+			"in vec4 fragmentColor;\n"
+			"out vec4 color;\n"
+			"void main()\n"
+			"{\n"
+			"	color = fragmentColor;\n"
+			"}\n"
+		};
+		//
 #pragma endregion
 
 		//DefaultPolygon
@@ -117,13 +141,14 @@ namespace spehs
 		defaultTexShader->linkShaders();
 		shaderPrograms.push_back(new spehs::Shader(spehs::DefaultTexture, defaultTexShader, new DefaultTextureUniforms(defaultTexShader)));
 
-		//TODO: Mesh shaders, these are just placeholder shaders!
 		//DefaultMesh
-		//spehs::GLSLProgram* defaultMeshShader = new spehs::GLSLProgram();
-		//defaultShader->compileShadersFromSource(defaultPolygonVert, defaultPolygonFrag);
-		//defaultShader->addAttribute("vertexPosition");
-		//defaultShader->linkShaders();
-		//shaderPrograms.push_back(new spehs::Shader(spehs::DefaultMesh, defaultMeshShader, new Uniforms(defaultMeshShader)));
+		spehs::GLSLProgram* defaultMeshShader = new spehs::GLSLProgram();
+		defaultMeshShader->compileShadersFromSource(defaultMeshVert, defaultMeshFrag);
+		defaultMeshShader->addAttribute("vertexPosition");
+		defaultMeshShader->addAttribute("vertexColor");
+		defaultMeshShader->addAttribute("vertexNormal");
+		defaultMeshShader->linkShaders();
+		shaderPrograms.push_back(new spehs::Shader(spehs::DefaultMesh, defaultMeshShader, new Uniforms(defaultMeshShader)));
 		////DefaultMeshTexture
 		//spehs::GLSLProgram* defaultMeshTexShader = new spehs::GLSLProgram();
 		//defaultTexShader->compileShadersFromSource(defaultTextureVert, defaultTextureFrag);

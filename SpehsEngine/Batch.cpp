@@ -8,6 +8,7 @@
 #include "OpenGLError.h"
 #include "Vertex.h"
 #include "Camera2D.h"
+#include "Camera3D.h"
 #include "Time.h"
 
 #include <glm/mat4x4.hpp>
@@ -172,7 +173,9 @@ namespace spehs
 
 	void PrimitiveBatch::push(Primitive* _primitive)
 	{
-		setIndices(_primitive->worldVertexArray.size()); //Set indices before vertices!
+		//INDICES
+		setIndices(_primitive->worldVertexArray.size());
+		//VERTICES
 		vertices.insert(vertices.end(), _primitive->worldVertexArray.begin(), _primitive->worldVertexArray.end());
 	}
 	
@@ -297,7 +300,6 @@ namespace spehs
 		vertexArrayObjectID = 0;
 		vertexBufferID = 0;
 		indexBufferID = 0;
-		normalBufferID = 0;
 
 		shaderIndex = 0;
 		textureDataID = 0;
@@ -311,7 +313,6 @@ namespace spehs
 		vertexArrayObjectID = 0;
 		vertexBufferID = 0;
 		indexBufferID = 0;
-		normalBufferID = 0;
 
 		shaderIndex = _shader;
 		textureDataID = _textureID;
@@ -319,7 +320,6 @@ namespace spehs
 		lineWidth = _lineWidth;
 
 		vertices.reserve(DEFAULT_MAX_BATCH_SIZE);
-		normals.reserve(DEFAULT_MAX_BATCH_SIZE);
 		indices.reserve(getIndexMultiplier(drawMode));
 
 		initBuffers();
@@ -335,11 +335,6 @@ namespace spehs
 		{
 			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 			glDeleteBuffers(1, &indexBufferID);
-		}
-		if (normalBufferID != 0)
-		{
-			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-			glDeleteBuffers(1, &normalBufferID);
 		}
 		if (vertexArrayObjectID != 0)
 		{
@@ -391,7 +386,7 @@ namespace spehs
 		if (textureDataID)
 			shaderManager->getShader(shaderIndex)->uniforms->textureDataID = textureDataID;
 
-		//TODO:Camera Matrix!
+		shaderManager->getShader(shaderIndex)->uniforms->cameraMatrix = *spehs::getActiveBatchManager()->getCamera3D()->cameraMatrix;
 
 		//Uniforms
 		shaderManager->setUniforms(shaderIndex);
@@ -415,7 +410,6 @@ namespace spehs
 		//Clean up
 		vertices.clear();
 		indices.clear();
-		normals.clear();
 		return true;
 	}
 
@@ -425,8 +419,6 @@ namespace spehs
 		indices.insert(indices.end(), _mesh->elementArray.begin(), _mesh->elementArray.end());
 		//VERTICES
 		vertices.insert(vertices.end(), _mesh->worldVertexArray.begin(), _mesh->worldVertexArray.end());
-		//NORMALS
-		normals.insert(normals.end(), _mesh->normalArray.begin(), _mesh->normalArray.end());
 	}
 
 	//Private:
@@ -445,16 +437,12 @@ namespace spehs
 		//Generate buffers
 		glGenBuffers(1, &vertexBufferID);
 		glGenBuffers(1, &indexBufferID);
-		glGenBuffers(1, &normalBufferID);
 
 		checkOpenGLErrors(__FILE__, __LINE__);
 
 		//Bind buffers
 		glBindBuffer(GL_ARRAY_BUFFER, vertexBufferID);
 		glBufferData(GL_ARRAY_BUFFER, sizeof(spehs::Vertex) * DEFAULT_MAX_BATCH_SIZE, nullptr, GL_STREAM_DRAW);
-
-		glBindBuffer(GL_ARRAY_BUFFER, normalBufferID);//??
-		glBufferData(GL_ARRAY_BUFFER, sizeof(glm::vec3) * DEFAULT_MAX_BATCH_SIZE, nullptr, GL_STREAM_DRAW);
 
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBufferID);
 		glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLushort) * getIndexMultiplier(drawMode), nullptr, GL_STREAM_DRAW);
@@ -464,22 +452,24 @@ namespace spehs
 		//Attributes
 		glEnableVertexAttribArray(0);
 		glEnableVertexAttribArray(1);
+		glEnableVertexAttribArray(2);
 		if (textureDataID)
-			glEnableVertexAttribArray(2);
+			glEnableVertexAttribArray(3);
 
-		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(spehs::Vertex), reinterpret_cast<void*>(offsetof(spehs::Vertex, position)));
-		glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(spehs::Vertex), reinterpret_cast<void*>(offsetof(spehs::Vertex, color)));
-		//??
+		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(spehs::Vertex3D), reinterpret_cast<void*>(offsetof(spehs::Vertex3D, position)));
+		glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(spehs::Vertex3D), reinterpret_cast<void*>(offsetof(spehs::Vertex3D, color)));
+		glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(spehs::Vertex3D), reinterpret_cast<void*>(offsetof(spehs::Vertex3D, normal)));
 		if (textureDataID)
-			glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(spehs::Vertex), reinterpret_cast<void*>(offsetof(spehs::Vertex, uv)));
+			glVertexAttribPointer(3, 2, GL_FLOAT, GL_FALSE, sizeof(spehs::Vertex3D), reinterpret_cast<void*>(offsetof(spehs::Vertex3D, uv)));
 
 		//Unbind
 		glBindVertexArray(0);
 
 		glDisableVertexAttribArray(0);
 		glDisableVertexAttribArray(1);
+		glDisableVertexAttribArray(2);
 		if (textureDataID)
-			glDisableVertexAttribArray(2);
+			glDisableVertexAttribArray(3);
 
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
@@ -496,9 +486,6 @@ namespace spehs
 		//Sent data to GPU
 		glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(spehs::Vertex) * vertices.size(), &vertices[0]);
 		glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, sizeof(GLushort) * indices.size(), &indices[0]);
-
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, normalBufferID);
-		glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, sizeof(glm::vec3) * normals.size(), &normals[0]);
 
 		glBindVertexArray(0);
 		glBindBuffer(GL_ARRAY_BUFFER, 0);

@@ -9,9 +9,12 @@ namespace spehs
 	{
 	public:
 		Position();
+		Position(const float &_x, const float &_y, const float &_z);
 
 		void setPosition(const float &_x, const float &_y);
 		void setPosition(const float &_x, const float &_y, const float &_z);
+
+		bool operator==(const Position& _other);
 
 		float x;
 		float y;
@@ -34,6 +37,9 @@ namespace spehs
 	{
 	public:
 		UV();
+		UV(const float &_u, const float &_v);
+
+		bool operator==(const UV& _other);
 
 		void setUV(const float &_u, const float &_v);
 
@@ -51,5 +57,18 @@ namespace spehs
 		Position position;
 		ColorRGBA color;
 		UV uv;
+	};
+
+	class Vertex3D
+	{
+	public:
+		Vertex3D();
+		Vertex3D(const Position &_position);
+		Vertex3D(const Position &_position, const UV &_uv, const Position &_normal);
+
+		Position position;
+		ColorRGBA color;
+		UV uv;
+		Position normal;
 	};
 }

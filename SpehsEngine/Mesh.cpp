@@ -27,9 +27,9 @@ namespace spehs
 		yaw = 0.0f;
 		pitch = 0.0f;
 		roll = 0.0f;
-		scaleX = 0.0f;
-		scaleY = 0.0f;
-		scaleZ = 0.0f;
+		scaleX = 1.0f;
+		scaleY = 1.0f;
+		scaleZ = 1.0f;
 		color = glm::vec4(1.0f);
 	}
 	Mesh::Mesh(const std::string &_filepath) : Mesh()
@@ -56,8 +56,8 @@ namespace spehs
 	void Mesh::updateVertices()
 	{
 		static glm::vec4 vertex;
-		scaledMatrix = glm::scale(glm::mat4(), glm::vec3(scaleX, scaleY, 0.0f));
-		scaledRotatedMatrix = scaledMatrix * glm::mat4_cast(glm::fquat(glm::vec3(roll, pitch, yaw))); //Make sure these are correct
+		scaledMatrix = glm::scale(glm::mat4(1.0f), glm::vec3(scaleX, scaleY, 0.0f));
+		scaledRotatedMatrix = scaledMatrix * glm::mat4_cast(glm::fquat(glm::vec3(roll, pitch, yaw)));
 		for (unsigned int i = 0; i < worldVertexArray.size(); i++)
 		{
 			vertex = glm::vec4(vertexArray[i].position.x, vertexArray[i].position.y, vertexArray[i].position.z, 1.0f);
