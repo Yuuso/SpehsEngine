@@ -72,7 +72,7 @@ namespace spehs
 
 		//Managing joysticks
 		Joystick* getJoystick(GUID guid, int preferredIndex = 0);
-		int getGUIDIndex(unsigned joystickIndex);///<Searches for joysticks with the same GUID as given joystick. Returns index of given joystick among devices with the same GUID. Returns -1 on failure
+		int getGUIDIndex(int joystickIndex);///<Searches for joysticks with the same GUID as given joystick. Returns index of given joystick among devices with the same GUID. Returns -1 on failure
 
 		//Getters
 		glm::vec2 getMouseCoords() const { return mouseCoords; }

@@ -235,7 +235,7 @@ namespace spehs
 		
 		return js;//Joystick is not connected, or preferred index not found
 	}
-	int InputManager::getGUIDIndex(unsigned joystickIndex)
+	int InputManager::getGUIDIndex(int/*NOTE: i < joystickIndex - 1*/ joystickIndex)
 	{
 		if (joystickIndex >= joysticks.size() || joystickIndex < 0)
 			return -1;

@@ -1,3 +1,4 @@
+#include <iostream>
 #include "ApplicationData.h"
 #include "Polygon.h"
 #include "InputManager.h"
@@ -159,11 +160,8 @@ namespace spehs
 			disableBit(state, GUIRECT_MOUSE_HOVER);
 			return false;
 		}
-		else
-		{
-			enableBit(state, GUIRECT_MOUSE_HOVER);
-			return true;
-		}
+		enableBit(state, GUIRECT_MOUSE_HOVER);
+		return true;
 	}
 	void GUIRectangle::updatePosition()
 	{

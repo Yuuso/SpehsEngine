@@ -7,7 +7,6 @@
 #include "Time.h"
 #define TREE_OPEN_TIME 500
 
-
 namespace spehs
 {
 	GUIRectangleTree::GUIRectangleTree() : pressedLeafNodeID(0), openTreeButton(MOUSE_BUTTON_LEFT)
@@ -54,7 +53,7 @@ namespace spehs
 			}
 			else
 			{//Open when mouse is hovering over
-				if (getMouseHoverContainer() && getFirstGenerationParent()->checkState(GUIRECT_FOCUSED))
+				if (checkBit(state, GUIRECT_MOUSE_HOVER_CONTAINER) && getFirstGenerationParent()->checkState(GUIRECT_FOCUSED))
 					open();
 				else if (treeOpenTimer <= 0)
 					close();
@@ -64,7 +63,7 @@ namespace spehs
 
 		pressedLeafNodeID = 0;//Reset pressed leaf node id before next node update
 
-		if (isOpen())
+		if (checkState(GUIRECT_OPEN))
 		{//Update elements
 			for (int i = beginElementIndex; i < beginElementIndex + updateElementCount; i++)
 			{
@@ -179,21 +178,21 @@ namespace spehs
 	}
 	void GUIRectangleTree::open()
 	{
-		if (isOpen())
+		if (checkState(GUIRECT_OPEN))
 			return;
 
 		//Close other trees
 		if (getRootTree())
 			getFirstGenerationParent()->getAsGUIRectangleContainerPtr()->closeTreeElements(getRootTree()->getAsGUIRectanglePtr());
 
+		//Open this
+		treeOpenTimer = TREE_OPEN_TIME;
 		GUIRectangleContainer::open();
 	}
 	void GUIRectangleTree::close()
 	{
 		if (!checkState(GUIRECT_OPEN))
-		{
 			return;
-		}
 		
 		//Close this
 		treeOpenTimer = 0.0f;

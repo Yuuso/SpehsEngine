@@ -46,7 +46,7 @@ namespace spehs
 
 	protected:
 		int pressedLeafNodeID;//This id is cleared at the beginning of each update. If during that update a leaf node is pressed, its id will be stored in this variable until the next update.
-		int openTreeButton;//Referring to input manager key index
+		unsigned openTreeButton;//Referring to input manager key index
 		float branchX;//Leaf node x position. If positive, branch towards right, else branch towards left
 		int treeOpenTimer;//How long, in milliseconds, the tree remains open after opening it
 	};
