@@ -47,7 +47,7 @@ namespace spehs
 		void updateBuffers();
 		void setIndices(const unsigned int &_numVertices);
 
-		std::vector<Vertex> vertices;
+		std::vector<spehs::Vertex> vertices;
 		std::vector<GLushort> indices;
 
 		GLuint vertexArrayObjectID;
@@ -57,7 +57,6 @@ namespace spehs
 		bool blending;
 		bool cameraMatrixState;
 		int shaderIndex;
-		unsigned int totalNumvertices;
 		GLuint textureDataID;
 		GLenum drawMode;
 		float lineWidth;
@@ -85,7 +84,7 @@ namespace spehs
 		void initBuffers();
 		void updateBuffers();
 
-		std::vector<Vertex> vertices;
+		std::vector<spehs::Vertex> vertices;
 		std::vector<GLushort> indices;
 		std::vector<glm::vec3> normals;
 
@@ -95,7 +94,6 @@ namespace spehs
 		GLuint normalBufferID;
 
 		int shaderIndex;
-		unsigned int totalNumvertices;
 		GLuint textureDataID;
 		GLenum drawMode;
 		float lineWidth;

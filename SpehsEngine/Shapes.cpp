@@ -1,6 +1,7 @@
 
 #include "Shapes.h"
 #include "Vertex.h"
+#include "Exceptions.h"
 
 #include <math.h>
 
@@ -8,13 +9,14 @@
 
 namespace spehs
 {
-	Vertex* getShapeVertexArray(Shape shape)
+	std::vector<Vertex> getShapeVertexArray(Shape shape)
 	{
 		switch (shape)
 		{
 		case RIGHTANGLED_TRIANGLE:
 		{
-			Vertex* vertexArray = new Vertex[3];
+			std::vector<Vertex> vertexArray;
+			vertexArray.resize(3);
 			vertexArray[0].position.setPosition(-0.5f, -0.5f);
 			vertexArray[1].position.setPosition(0.5f, -0.5f);
 			vertexArray[2].position.setPosition(-0.5f, 0.5f);
@@ -22,7 +24,8 @@ namespace spehs
 		}
 		case ISOSCELES_TRIANGLE:
 		{
-			Vertex* vertexArray = new Vertex[3];
+			std::vector<Vertex> vertexArray;
+			vertexArray.resize(3);
 			vertexArray[0].position.setPosition(0.0f, 0.5f);
 			vertexArray[1].position.setPosition(cos((7.0f / 6.0f) * PI) * 0.5f, sin((7.0f / 6.0f) * PI) * 0.5f);
 			vertexArray[2].position.setPosition(cos((11.0f / 6.0f) * PI) * 0.5f, sin((11.0f / 6.0f) * PI) * 0.5f);
@@ -30,7 +33,8 @@ namespace spehs
 		}
 		case BUTTON:
 		{
-			Vertex* vertexArray = new Vertex[4];
+			std::vector<Vertex> vertexArray;
+			vertexArray.resize(4);
 			vertexArray[0].position.setPosition(0.0f, 0.0f);
 			vertexArray[1].position.setPosition(1.0f, 0.0f);
 			vertexArray[2].position.setPosition(1.0f, 1.0f);
@@ -40,7 +44,9 @@ namespace spehs
 		default:
 			break;
 		}
-		return nullptr;
+		exceptions::fatalError("Invalid shape!");
+		std::vector<Vertex> errorVector;
+		return errorVector;
 	}
 
 	int getNumVertices(Shape shape)

@@ -18,7 +18,6 @@ namespace spehs
 		renderState = true;
 		shaderIndex = DefaultPolygon;
 		drawMode = UNDEFINED;
-		numVertices = 0;
 		textureDataID = 0;
 		planeDepth = 0;
 		lineWidth = 0.0f;
@@ -29,15 +28,9 @@ namespace spehs
 		primitiveColor = glm::vec4(1.0f);
 		scaledMatrix = glm::mat4(1.0f);
 		scaledRotatedMatrix = glm::mat4(1.0f);
-		vertexArray = nullptr;
-		worldVertexArray = nullptr;
 	}
 	Primitive::~Primitive()
 	{
-		if (worldVertexArray != nullptr)
-			delete [] worldVertexArray;
-		if (vertexArray != nullptr)
-			delete [] vertexArray;
 	}
 
 	void Primitive::destroy()
@@ -107,7 +100,7 @@ namespace spehs
 	void Primitive::setColor(const glm::vec4 &_newColor)
 	{
 		primitiveColor = _newColor;
-		for (unsigned i = 0; i < numVertices; i++)
+		for (unsigned i = 0; i < worldVertexArray.size(); i++)
 		{
 			worldVertexArray[i].color.setColor(primitiveColor);
 		}
@@ -116,7 +109,7 @@ namespace spehs
 	void Primitive::setColor(const glm::vec3 &_newColor)
 	{
 		primitiveColor = glm::vec4(_newColor, 1.0f);
-		for (unsigned i = 0; i < numVertices; i++)
+		for (unsigned i = 0; i < worldVertexArray.size(); i++)
 		{
 			worldVertexArray[i].color.setColor(primitiveColor);
 		}
@@ -125,7 +118,7 @@ namespace spehs
 	void Primitive::setColor(const unsigned char _r, const unsigned char _g, const unsigned char _b, const unsigned char _a)
 	{
 		primitiveColor = glm::vec4((float) _r / 255.0f, (float) _g / 255.0f, (float) _b / 255.0f, (float) _a / 255.0f);
-		for (unsigned i = 0; i < numVertices; i++)
+		for (unsigned i = 0; i < worldVertexArray.size(); i++)
 		{
 			worldVertexArray[i].color.setColor(primitiveColor);
 		}
@@ -134,7 +127,7 @@ namespace spehs
 	void Primitive::setColorAlpha(const float &_a)
 	{
 		primitiveColor.a = _a;
-		for (unsigned i = 0; i < numVertices; i++)
+		for (unsigned i = 0; i < worldVertexArray.size(); i++)
 		{
 			worldVertexArray[i].color.rgba.a = primitiveColor.a;
 		}
@@ -143,7 +136,7 @@ namespace spehs
 	void Primitive::setColorAlpha(const unsigned char _a)
 	{
 		primitiveColor.a = (float) _a / 255.0f;
-		for (unsigned i = 0; i < numVertices; i++)
+		for (unsigned i = 0; i < worldVertexArray.size(); i++)
 		{
 			worldVertexArray[i].color.rgba.a = primitiveColor.a;
 		}

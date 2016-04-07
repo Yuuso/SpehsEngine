@@ -12,6 +12,7 @@
 
 #include <glm/mat4x4.hpp>
 #include <GL/glew.h>
+#include <algorithm>
 
 #define DEFAULT_MAX_BATCH_SIZE 4096
 
@@ -44,7 +45,6 @@ namespace spehs
 		textureDataID = 0;
 		drawMode = 0;
 		lineWidth = 0.0f;
-		totalNumvertices = 0;
 		priority = 0;
 
 		initBuffers();
@@ -62,8 +62,6 @@ namespace spehs
 		drawMode = _drawMode;
 		lineWidth = _lineWidth;
 		priority = _priority;
-
-		totalNumvertices = 0;
 
 		vertices.reserve(DEFAULT_MAX_BATCH_SIZE);
 		indices.reserve(getIndexMultiplier(drawMode));
@@ -114,7 +112,7 @@ namespace spehs
 				return false;
 			}
 		}
-		if (!isEnoughRoom(_primitive.numVertices))
+		if (!isEnoughRoom(_primitive.worldVertexArray.size()))
 		{
 			return false;
 		}
@@ -124,7 +122,7 @@ namespace spehs
 
 	bool PrimitiveBatch::render()
 	{
-		if (totalNumvertices == 0)
+		if (vertices.size() == 0)
 			return false;
 		
 		updateBuffers();
@@ -164,27 +162,18 @@ namespace spehs
 		shaderManager->unuse(shaderIndex);
 
 		drawCalls++;
-		vertexDrawCount += totalNumvertices;
+		vertexDrawCount += vertices.size();
 
 		//Clean up
 		vertices.clear();
 		indices.clear();
-		totalNumvertices = 0;
 		return true;
 	}
 
 	void PrimitiveBatch::push(Primitive* _primitive)
 	{
-		setIndices(_primitive->numVertices); //Set indices before vertices!
-		//MEMCPY WAY
-		//vertices.resize(vertices.size() + _primitive->numVertices);
-		//memcpy(&vertices[totalNumvertices], &_primitive->worldVertexArray[0], sizeof(Vertex) * _primitive->numVertices);
-		//PUSH_BACK WAY
-		for (unsigned i = 0; i < _primitive->numVertices; i++)
-		{
-			vertices.push_back(_primitive->worldVertexArray[i]);
-		}
-		totalNumvertices += _primitive->numVertices;
+		setIndices(_primitive->worldVertexArray.size()); //Set indices before vertices!
+		vertices.insert(vertices.end(), _primitive->worldVertexArray.begin(), _primitive->worldVertexArray.end());
 	}
 	
 	//Private:
@@ -192,7 +181,7 @@ namespace spehs
 	{
 		if (_numVertices > DEFAULT_MAX_BATCH_SIZE)
 			exceptions::fatalError("The number of vertices in a primitive exceeds the max amount allowed in the batch!");
-		return (totalNumvertices + _numVertices) <= DEFAULT_MAX_BATCH_SIZE;
+		return (vertices.size() + _numVertices) <= DEFAULT_MAX_BATCH_SIZE;
 	}
 
 	void PrimitiveBatch::initBuffers()
@@ -261,7 +250,7 @@ namespace spehs
 	{
 		static unsigned int currentIndex;
 		static unsigned int numIndices;
-		currentIndex = totalNumvertices;
+		currentIndex = vertices.size();
 		numIndices = indices.size();
 		switch (drawMode)
 		{
@@ -311,7 +300,6 @@ namespace spehs
 		normalBufferID = 0;
 
 		shaderIndex = 0;
-		totalNumvertices = 0;
 		textureDataID = 0;
 		drawMode = UNDEFINED;
 		lineWidth = 0.0f;
@@ -324,8 +312,6 @@ namespace spehs
 		vertexBufferID = 0;
 		indexBufferID = 0;
 		normalBufferID = 0;
-
-		totalNumvertices = 0;
 
 		shaderIndex = _shader;
 		textureDataID = _textureID;
@@ -384,7 +370,7 @@ namespace spehs
 				return false;
 			}
 		}
-		if (!isEnoughRoom(_mesh.numVertices))
+		if (!isEnoughRoom(_mesh.worldVertexArray.size()))
 		{
 			return false;
 		}
@@ -394,7 +380,7 @@ namespace spehs
 
 	bool MeshBatch::render()
 	{
-		if (totalNumvertices == 0)
+		if (vertices.size() == 0)
 			return false;
 
 		updateBuffers();
@@ -424,34 +410,23 @@ namespace spehs
 		shaderManager->unuse(shaderIndex);
 
 		drawCalls++;
-		vertexDrawCount += totalNumvertices;
+		vertexDrawCount += vertices.size();
 
 		//Clean up
 		vertices.clear();
 		indices.clear();
 		normals.clear();
-		totalNumvertices = 0;
 		return true;
 	}
 
 	void MeshBatch::push(Mesh* _mesh)
 	{
 		//INDICES
-		for (unsigned i = 0; i < _mesh->elementArray.size(); i++)
-		{
-			indices.push_back(_mesh->elementArray[i]);
-		}
+		indices.insert(indices.end(), _mesh->elementArray.begin(), _mesh->elementArray.end());
 		//VERTICES
-		for (unsigned i = 0; i < _mesh->numVertices; i++)
-		{
-			vertices.push_back(_mesh->worldVertexArray[i]);
-		}
-		totalNumvertices += _mesh->numVertices;
+		vertices.insert(vertices.end(), _mesh->worldVertexArray.begin(), _mesh->worldVertexArray.end());
 		//NORMALS
-		for (unsigned i = 0; i < _mesh->normalArray.size(); i++)
-		{
-			normals.push_back(_mesh->normalArray[i]);
-		}
+		normals.insert(normals.end(), _mesh->normalArray.begin(), _mesh->normalArray.end());
 	}
 
 	//Private:
@@ -459,7 +434,7 @@ namespace spehs
 	{
 		if (_numVertices > DEFAULT_MAX_BATCH_SIZE)
 			exceptions::fatalError("The number of vertices in a mesh exceeds the max amount allowed in the batch!");
-		return (totalNumvertices + _numVertices) <= DEFAULT_MAX_BATCH_SIZE;
+		return (vertices.size() + _numVertices) <= DEFAULT_MAX_BATCH_SIZE;
 	}
 
 	void MeshBatch::initBuffers()

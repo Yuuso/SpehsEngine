@@ -15,8 +15,6 @@ namespace spehs
 {
 	Mesh::Mesh()
 	{
-		Vertex* worldVertexArray = nullptr;
-		GLuint numVertices = 0;
 		textureDataID = 0;
 		readyForDelete = false;
 		renderState = true;
@@ -24,7 +22,6 @@ namespace spehs
 		drawMode = TRIANGLE;
 		scaledMatrix = glm::mat4(1.0f);
 		scaledRotatedMatrix = glm::mat4(1.0f);
-		vertexArray = nullptr;
 
 		lineWidth = 0.0f;
 		yaw = 0.0f;
@@ -53,10 +50,6 @@ namespace spehs
 	}
 	Mesh::~Mesh()
 	{
-		if (worldVertexArray != nullptr)
-			delete [] worldVertexArray;
-		if (vertexArray != nullptr)
-			delete [] vertexArray;
 	}
 
 
@@ -65,7 +58,7 @@ namespace spehs
 		static glm::vec4 vertex;
 		scaledMatrix = glm::scale(glm::mat4(), glm::vec3(scaleX, scaleY, 0.0f));
 		scaledRotatedMatrix = scaledMatrix * glm::mat4_cast(glm::fquat(glm::vec3(roll, pitch, yaw))); //Make sure these are correct
-		for (unsigned int i = 0; i < numVertices; i++)
+		for (unsigned int i = 0; i < worldVertexArray.size(); i++)
 		{
 			vertex = glm::vec4(vertexArray[i].position.x, vertexArray[i].position.y, vertexArray[i].position.z, 1.0f);
 			vertex = scaledRotatedMatrix * vertex;
@@ -81,7 +74,7 @@ namespace spehs
 	void Mesh::setOBJMesh(const std::string &_objFilepath)
 	{
 		modelManager->loadOBJ(_objFilepath, this);
-		//WORLD VERTEX ARRAY!!!
+		worldVertexArray = vertexArray;
 	}
 
 	void Mesh::setPosition(const float &_x, const float &_y, const float &_z)
@@ -137,7 +130,7 @@ namespace spehs
 	void Mesh::setColor(const glm::vec4 &_newColor)
 	{
 		color = _newColor;
-		for (unsigned i = 0; i < numVertices; i++)
+		for (unsigned i = 0; i < worldVertexArray.size(); i++)
 		{
 			worldVertexArray[i].color.setColor(color);
 		}
@@ -146,7 +139,7 @@ namespace spehs
 	void Mesh::setColor(const glm::vec3 &_newColor)
 	{
 		color = glm::vec4(_newColor, 1.0f);
-		for (unsigned i = 0; i < numVertices; i++)
+		for (unsigned i = 0; i < worldVertexArray.size(); i++)
 		{
 			worldVertexArray[i].color.setColor(color);
 		}
@@ -155,7 +148,7 @@ namespace spehs
 	void Mesh::setColor(const unsigned char &_r, const unsigned char &_g, const unsigned char &_b, const unsigned char &_a)
 	{
 		color = glm::vec4((float) _r / 255.0f, (float) _g / 255.0f, (float) _b / 255.0f, (float) _a / 255.0f);
-		for (unsigned i = 0; i < numVertices; i++)
+		for (unsigned i = 0; i < worldVertexArray.size(); i++)
 		{
 			worldVertexArray[i].color.setColor(color);
 		}

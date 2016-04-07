@@ -88,14 +88,14 @@ namespace spehs
 		primitives.push_back(new Polygon(_shapeID, _planeDepth, _width, _height));
 		return primitives.back()->getPolygonPtr();
 	}
-	Polygon* BatchManager::createPolygon(Vertex* _vertexData, const int &_numVertices, const PlaneDepth &_planeDepth, const float &_width, const float &_height)
+	Polygon* BatchManager::createPolygon(std::vector<Vertex> _vertexData, const PlaneDepth &_planeDepth, const float &_width, const float &_height)
 	{
-		primitives.push_back(new Polygon(_vertexData, _numVertices, _planeDepth, _width, _height));
+		primitives.push_back(new Polygon(_vertexData, _planeDepth, _width, _height));
 		return primitives.back()->getPolygonPtr();
 	}
-	Polygon* BatchManager::createPolygon(Vertex* _vertexData, const int &_numVertices, const float &_width, const float &_height)
+	Polygon* BatchManager::createPolygon(std::vector<Vertex> _vertexData, const float &_width, const float &_height)
 	{
-		primitives.push_back(new Polygon(_vertexData, _numVertices, _width, _height));
+		primitives.push_back(new Polygon(_vertexData, _width, _height));
 		return primitives.back()->getPolygonPtr();
 	}
 

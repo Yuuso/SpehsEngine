@@ -98,8 +98,7 @@ namespace spehs
 		glm::vec4 getColor(){ return primitiveColor; }
 
 		//Public Variables
-		Vertex* worldVertexArray; //Transformed vertices
-		GLuint numVertices;
+		std::vector<spehs::Vertex> worldVertexArray; //Transformed vertices
 
 	protected:
 		Primitive();
@@ -122,6 +121,6 @@ namespace spehs
 		glm::mat4 scaledRotatedMatrix;
 
 		Position position;
-		Vertex* vertexArray; //Original vertices
+		std::vector<spehs::Vertex> vertexArray; //Original vertices
 	};
 }

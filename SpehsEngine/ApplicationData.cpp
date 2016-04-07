@@ -67,9 +67,9 @@ namespace spehs
 		bool streamOwner = false;
 		if (!stream)
 		{//Create file stream
-			stream = new std::ofstream;
+			stream = new std::ofstream("ApplicationData.txt");
 			streamOwner = true;
-			stream->open("ApplicationData.txt", std::ios::trunc);
+			//stream->open("ApplicationData.txt", std::ios::trunc);
 			if (stream->fail())
 			{
 				spehs::console::error("Failed to write application data!");
@@ -184,7 +184,8 @@ namespace spehs
 			additionalThreads = 9000;//Cannot have over 9000 threads!
 		
 		//Create data directory
-		createDirectory(dataDirectory);
+		if (dataDirectory.size() > 0)
+			createDirectory(dataDirectory);
 
 		if (streamOwner)
 		{

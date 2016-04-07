@@ -17,7 +17,7 @@ namespace spehs
 	ModelData::ModelData()
 	{
 	}
-	void ModelData::loadFromData(spehs::Vertex* _vertexArray, unsigned int* _numVertices, std::vector<GLushort> &_elementArray, std::vector<glm::vec3> &_normalArray)
+	void ModelData::loadFromData(std::vector<spehs::Vertex> _vertexArray, std::vector<GLushort> &_elementArray, std::vector<glm::vec3> &_normalArray)
 	{
 		//TODO: insert data into mesh
 		//Figure out indexing stuff
@@ -45,7 +45,7 @@ namespace spehs
 			preloadOBJ(_filepath);
 			it = modelDataMap.find(hash);
 		}
-		it->second->loadFromData(_mesh->vertexArray, &_mesh->numVertices, _mesh->elementArray, _mesh->normalArray);
+		it->second->loadFromData(_mesh->vertexArray, _mesh->elementArray, _mesh->normalArray);
 	}
 
 	void ModelManager::loadOBJ(const size_t& _hash, spehs::Mesh* _mesh)
@@ -53,7 +53,7 @@ namespace spehs
 		auto it = modelDataMap.find(_hash);
 		if (it != modelDataMap.end())
 		{
-			it->second->loadFromData(_mesh->vertexArray, &_mesh->numVertices, _mesh->elementArray, _mesh->normalArray);
+			it->second->loadFromData(_mesh->vertexArray, _mesh->elementArray, _mesh->normalArray);
 			return;
 		}
 		else
@@ -111,16 +111,38 @@ namespace spehs
 			else if (line.substr(0, 2) == "f ")
 			{
 				stringStream = std::istringstream(line.substr(2));
-				GLushort v, u, n;
+				GLushort v, u, n, index = 0;
 				for (unsigned i = 0; i < 3; i++)
 				{
-					//TODO: extract the info correctly!
-					stringStream >> v;
-					stringStream >> u;
-					stringStream >> n;
+					while (stringStream.peek() != ' ')
+					{
+						switch (stringStream.peek())
+						{
+						case '/':
+							index++;
+							break;
+						default:
+							switch (index)
+							{
+							case 0:
+								stringStream >> v;
+								break;
+							case 1:
+								stringStream >> u;
+								break;
+							case 2:
+								stringStream >> n;
+								break;
+							default:
+								break;
+							}
+							break;
+						}
+					}
 					data->vertexElements.push_back(v);
 					data->textureElements.push_back(u);
 					data->normalElements.push_back(n);
+					index = 0;
 				}
 			}
 		}

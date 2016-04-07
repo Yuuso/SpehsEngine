@@ -39,10 +39,9 @@ namespace spehs
 
 	protected:
 		Polygon(const int &_shapeID, const PlaneDepth &_planeDepth, const float &_width, const float &_height);
-		//Given vertexArray is copied
-		Polygon(Vertex* _vertexData, const int &_numVertices, const PlaneDepth &_planeDepth, const float &_width, const float &_height); //For 2DPolygons
-		Polygon(Position* _positionData, const int &_numVertices, const PlaneDepth &_planeDepth, const float &_width, const float &_height);
-		Polygon(Vertex* _vertexData, const int &_numVertices, const float &_width, const float &_height);
+		Polygon(std::vector<spehs::Vertex> _vertexData, const PlaneDepth &_planeDepth, const float &_width, const float &_height); //For 2DPolygons
+		Polygon(std::vector<spehs::Vertex> _vertexData, const float &_width, const float &_height);
+		Polygon(std::vector<spehs::Position> _positionData, const PlaneDepth &_planeDepth, const float &_width, const float &_height);
 		~Polygon();
 
 		void setUVCoords();

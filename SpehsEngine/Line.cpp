@@ -18,14 +18,11 @@ namespace spehs
 		if (glm::distance(_startPoint, _endPoint) < DISTANCE_EPSILON)
 			spehs::console::error("Line needs to have length greater than 0!");
 
-		numVertices = 2;
-		Vertex* pos = new Vertex[numVertices];
-		pos[0].position.setPosition(_startPoint.x, _startPoint.y);
-		pos[1].position.setPosition(_endPoint.x, _endPoint.y);
+		vertexArray.resize(2);
+		vertexArray[0].position.setPosition(_startPoint.x, _startPoint.y);
+		vertexArray[1].position.setPosition(_endPoint.x, _endPoint.y);
 
-		vertexArray = pos;
-		worldVertexArray = new Vertex[numVertices];
-		std::copy(pos, pos + numVertices, stdext::checked_array_iterator<Vertex*>(worldVertexArray, numVertices));
+		worldVertexArray = vertexArray;
 
 		lineWidth = 1.0f;
 		planeDepth = _planeDepth;
@@ -37,14 +34,11 @@ namespace spehs
 		if (glm::distance(_startPoint, _endPoint) < DISTANCE_EPSILON)
 			spehs::console::error("Line needs to have length greater than 0!");
 
-		numVertices = 2;
-		Vertex* pos = new Vertex[numVertices];
-		pos[0].position.setPosition(_startPoint.x, _startPoint.y, _startPoint.z);
-		pos[1].position.setPosition(_endPoint.x, _endPoint.y, _endPoint.z);
+		vertexArray.resize(2);
+		vertexArray[0].position.setPosition(_startPoint.x, _startPoint.y, _startPoint.z);
+		vertexArray[1].position.setPosition(_endPoint.x, _endPoint.y, _endPoint.z);
 
-		vertexArray = pos;
-		worldVertexArray = new Vertex[numVertices];
-		std::copy(pos, pos + numVertices, stdext::checked_array_iterator<Vertex*>(worldVertexArray, numVertices));
+		worldVertexArray = vertexArray;
 
 		lineWidth = 1.0f;
 		blending = false;
@@ -61,7 +55,7 @@ namespace spehs
 		static glm::vec4 vertex;
 		scaledMatrix = glm::scale(glm::mat4(), glm::vec3(scaleX, scaleY, 0.0f));
 		scaledRotatedMatrix = glm::rotate(scaledMatrix, rotation, rotationVector);
-		for (unsigned int i = 0; i < numVertices; i++)
+		for (unsigned int i = 0; i < worldVertexArray.size(); i++)
 		{
 			vertex = glm::vec4(vertexArray[i].position.x, vertexArray[i].position.y, vertexArray[i].position.z, 1.0f);
 			vertex = scaledRotatedMatrix * vertex;

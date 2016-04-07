@@ -18,7 +18,7 @@ namespace spehs
 	struct ModelData
 	{
 		ModelData();
-		void loadFromData(spehs::Vertex* _vertexArray, unsigned int* _numVertices, std::vector<GLushort> &_elementArray, std::vector<glm::vec3> &_normalArray);
+		void loadFromData(std::vector<spehs::Vertex> _vertexArray, std::vector<GLushort> &_elementArray, std::vector<glm::vec3> &_normalArray);
 
 		std::vector<spehs::Vertex> vertices;
 		std::vector<glm::vec2> textureCoordinates;

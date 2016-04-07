@@ -10,13 +10,10 @@ namespace spehs
 {
 	Point::Point(const PlaneDepth &_planeDepth)
 	{
-		numVertices = 1;
-		Vertex* pos = new Vertex[numVertices];
-		pos[0].position.setPosition(0.0f, 0.0f);
+		vertexArray.push_back(Vertex());
+		vertexArray.back().position.setPosition(0.0f, 0.0f);
 
-		vertexArray = pos;
-		worldVertexArray = new Vertex[numVertices];
-		std::copy(pos, pos + numVertices, stdext::checked_array_iterator<Vertex*>(worldVertexArray, numVertices));
+		worldVertexArray = vertexArray;
 
 		planeDepth = _planeDepth;
 		blending = true;
@@ -30,7 +27,7 @@ namespace spehs
 
 	void Point::updateVertices()
 	{
-		for (unsigned int i = 0; i < numVertices; i++)
+		for (unsigned int i = 0; i < worldVertexArray.size(); i++)
 		{
 			worldVertexArray[i].position.setPosition(vertexArray[i].position.x + position.x, vertexArray[i].position.y + position.y, vertexArray[i].position.z + position.z);
 		}
