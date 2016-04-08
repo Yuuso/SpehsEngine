@@ -56,18 +56,20 @@ namespace spehs
 						_elementArray.push_back(index);
 					}
 				}
-
-				index = checkArrayForElements(_vertexArray, vertices[vertexElements[i]].position, glm::vec2(0.0f), normals[normalElements[i]]);
-				if (index < 0)
-				{
-					_vertexArray.push_back(Vertex3D(vertices[vertexElements[i]].position,
-						UV(),
-						Position(normals[normalElements[i]].x, normals[normalElements[i]].y, normals[normalElements[i]].z)));
-					_elementArray.push_back(_vertexArray.size());
-				}
 				else
 				{
-					_elementArray.push_back(index);
+					index = checkArrayForElements(_vertexArray, vertices[vertexElements[i]].position, glm::vec2(0.0f), normals[normalElements[i]]);
+					if (index < 0)
+					{
+						_vertexArray.push_back(Vertex3D(vertices[vertexElements[i]].position,
+							UV(),
+							Position(normals[normalElements[i]].x, normals[normalElements[i]].y, normals[normalElements[i]].z)));
+						_elementArray.push_back(_vertexArray.size() - 1);
+					}
+					else
+					{
+						_elementArray.push_back(index);
+					}
 				}
 			}
 			else if (normals.size() == 0)

@@ -7,6 +7,7 @@
 
 #include <glm/gtx/transform.hpp>
 #include <glm/gtc/quaternion.hpp>
+#include <glm/gtx/quaternion.hpp>
 
 #define GLM_FORCE_RADIANS
 
@@ -18,15 +19,14 @@ namespace spehs
 		textureDataID = 0;
 		readyForDelete = false;
 		renderState = true;
-		shaderIndex = DefaultPolygon;
+		needUpdate = true;
+		shaderIndex = DefaultMesh;
 		drawMode = TRIANGLE;
 		scaledMatrix = glm::mat4(1.0f);
 		scaledRotatedMatrix = glm::mat4(1.0f);
 
 		lineWidth = 0.0f;
-		yaw = 0.0f;
-		pitch = 0.0f;
-		roll = 0.0f;
+		rotation = glm::vec3(0.0f, 0.0f, 0.0f);
 		scaleX = 1.0f;
 		scaleY = 1.0f;
 		scaleZ = 1.0f;
@@ -55,14 +55,18 @@ namespace spehs
 
 	void Mesh::updateVertices()
 	{
-		static glm::vec4 vertex;
-		scaledMatrix = glm::scale(glm::mat4(1.0f), glm::vec3(scaleX, scaleY, 0.0f));
-		scaledRotatedMatrix = scaledMatrix * glm::mat4_cast(glm::fquat(glm::vec3(yaw, pitch, roll)));
-		for (unsigned int i = 0; i < worldVertexArray.size(); i++)
+		if (needUpdate)
 		{
-			vertex = glm::vec4(vertexArray[i].position.x, vertexArray[i].position.y, vertexArray[i].position.z, 1.0f);
-			vertex = scaledRotatedMatrix * vertex;
-			worldVertexArray[i].position.setPosition(vertex.x + position.x, vertex.y + position.y, vertex.z + position.z);
+			static glm::vec4 vertex;
+			scaledMatrix = glm::scale(glm::mat4(1.0f), glm::vec3(scaleX, scaleY, scaleZ));
+			scaledRotatedMatrix = glm::mat4_cast(glm::quat(rotation)) * scaledMatrix;
+			transformMatrix = glm::translate(scaledRotatedMatrix, glm::vec3(position.x, position.y, position.z));
+			for (unsigned i = 0; i < worldVertexArray.size(); i++)
+			{
+				vertex = transformMatrix * glm::vec4(vertexArray[i].position.x, vertexArray[i].position.y, vertexArray[i].position.z, 1.0f);
+				worldVertexArray[i].position.setPosition(vertex.x, vertex.y, vertex.z);
+			}
+			needUpdate = false;
 		}
 	}
 
@@ -73,37 +77,48 @@ namespace spehs
 
 	void Mesh::setOBJMesh(const std::string &_objFilepath)
 	{
+		vertexArray.clear();
+		worldVertexArray.clear();
+		elementArray.clear();
+
 		modelManager->loadOBJ(_objFilepath, this);
 		worldVertexArray = vertexArray;
+
+		needUpdate = true;
 	}
 
 	void Mesh::setPosition(const float &_x, const float &_y, const float &_z)
 	{
 		position.setPosition(_x, _y, _z);
+		needUpdate = true;
 	}
 
 	void Mesh::setPosition(const glm::vec3 &_newPosition)
 	{
 		position.setPosition(_newPosition.x, _newPosition.y, _newPosition.z);
+		needUpdate = true;
 	}
 
 	void Mesh::setPosition(const Position &_newPosition)
 	{
 		position = _newPosition;
+		needUpdate = true;
 	}
 
 	void Mesh::setRotation(const float &_yaw, const float &_pitch, const float &_roll)
 	{
-		yaw = _yaw;
-		pitch = _pitch;
-		roll = _roll;
+		rotation.x = _yaw;
+		rotation.y = _pitch;
+		rotation.z = _roll;
+		needUpdate = true;
 	}
 
 	void Mesh::setRotation(const glm::vec3 &_newRotation)
 	{
-		yaw = _newRotation.x;
-		pitch = _newRotation.y;
-		roll = _newRotation.z;
+		rotation.x = _newRotation.x;
+		rotation.y = _newRotation.y;
+		rotation.z = _newRotation.z;
+		needUpdate = true;
 	}
 
 	void Mesh::setScale(const float &_newScale)
@@ -111,6 +126,7 @@ namespace spehs
 		scaleX = _newScale;
 		scaleY = _newScale;
 		scaleZ = _newScale;
+		needUpdate = true;
 	}
 
 	void Mesh::setScale(const float &_newScaleX, const float &_newScaleY, const float &_newScaleZ)
@@ -118,6 +134,7 @@ namespace spehs
 		scaleX = _newScaleX;
 		scaleY = _newScaleY;
 		scaleZ = _newScaleZ;
+		needUpdate = true;
 	}
 
 	void Mesh::setScale(const glm::vec3 &_newScale)
@@ -125,6 +142,7 @@ namespace spehs
 		scaleX = _newScale.x;
 		scaleY = _newScale.y;
 		scaleZ = _newScale.z;
+		needUpdate = true;
 	}
 
 	void Mesh::setColor(const glm::vec4 &_newColor)

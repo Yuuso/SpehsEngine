@@ -8,7 +8,7 @@
 #include <iostream>
 namespace spehs
 {
-	Camera2D::Camera2D() : zoomSpeed(50.0f), scale(1.0f), orthoMatrix(1.0f), cameraMatrix(1.0f), position(0.0f, 0.0f), previousPosition(0.0f, 0.0f), rotation(0.0f)
+	Camera2D::Camera2D() : zoomSpeed(50.0f), scale(1.0f), orthoMatrix(1.0f), cameraMatrix(1.0f), position(0.0f, 0.0f), previousPosition(0.0f, 0.0f), rotation(0.0f), up(0.0f, 1.0f, 0.0f, 1.0f)
 	{
 		orthoMatrix = glm::ortho(0.0f, (float) applicationData->getWindowWidth(), 0.0f, (float) applicationData->getWindowHeight());
 
@@ -27,11 +27,13 @@ namespace spehs
 	void Camera2D::translate(const glm::vec2& _vec)
 	{
 		position += _vec;
+		//?rotation
 	}
 
 	void Camera2D::setRotation(const float &_rotation)
 	{
 		rotation = _rotation;
+		//up = glm::normalize(glm::rotate(glm::mat4(), rotation, glm::vec3(0.0f, 0.0f, 1.0f)) * up);
 	}
 
 	void Camera2D::update()

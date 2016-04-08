@@ -105,7 +105,7 @@ namespace spehs
 	}
 	Polygon::Polygon(const float &_width, const float &_height)
 	{
-		drawMode = POLYGON;
+		drawMode = TRIANGLE;
 		width = _width;
 		height = _height;
 		radius = 0.0f;
@@ -119,13 +119,17 @@ namespace spehs
 
 	void Polygon::updateVertices()
 	{
-		static glm::vec4 vertex;
-		scaledMatrix = glm::scale(glm::mat4(1.0f), glm::vec3(scaleX, scaleY, 0.0f));
-		scaledRotatedMatrix = glm::rotate(scaledMatrix, rotation, rotationVector);
-		for (unsigned int i = 0; i < worldVertexArray.size(); i++)
+		if (needUpdate)
 		{
-			vertex = scaledRotatedMatrix * glm::vec4(vertexArray[i].position.x * width, vertexArray[i].position.y * height, vertexArray[i].position.z, 1.0f);
-			worldVertexArray[i].position.setPosition(vertex.x + position.x, vertex.y + position.y, vertex.z + position.z);
+			static glm::vec4 vertex;
+			scaledMatrix = glm::scale(glm::mat4(1.0f), glm::vec3(scaleX, scaleY, 0.0f));
+			scaledRotatedMatrix = glm::rotate(scaledMatrix, rotation, rotationVector);
+			for (unsigned int i = 0; i < worldVertexArray.size(); i++)
+			{
+				vertex = scaledRotatedMatrix * glm::vec4(vertexArray[i].position.x * width, vertexArray[i].position.y * height, vertexArray[i].position.z, 1.0f);
+				worldVertexArray[i].position.setPosition(vertex.x + position.x, vertex.y + position.y, vertex.z + position.z);
+			}
+			needUpdate = false;
 		}
 	}
 
@@ -134,6 +138,7 @@ namespace spehs
 	{
 		width = _width;
 		height = _height;
+		needUpdate = true;
 	}
 
 	void Polygon::setUVScale(const float &_newScale)

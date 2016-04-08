@@ -27,9 +27,13 @@ namespace spehs
 
 	void Point::updateVertices()
 	{
-		for (unsigned int i = 0; i < worldVertexArray.size(); i++)
+		if (needUpdate)
 		{
-			worldVertexArray[i].position.setPosition(vertexArray[i].position.x + position.x, vertexArray[i].position.y + position.y, vertexArray[i].position.z + position.z);
+			for (unsigned int i = 0; i < worldVertexArray.size(); i++)
+			{
+				worldVertexArray[i].position.setPosition(vertexArray[i].position.x + position.x, vertexArray[i].position.y + position.y, vertexArray[i].position.z + position.z);
+			}
+			needUpdate = false;
 		}
 	}
 

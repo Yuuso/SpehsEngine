@@ -45,9 +45,9 @@ namespace spehs
 		TRIANGLE_ADJACENCY = 0x000C,
 		TRIANGLE_STRIP_ADJACENCY = 0x000D,
 		PATCH = 0xE,
-
-		OUTLINE = LINE_LOOP,
-		POLYGON = TRIANGLE,
+		QUAD = 0x0007,
+		QUAD_STRIP = 0x0008,
+		POLYGON = 0x0009,
 	};
 
 	//Base class for polygon, line and point
@@ -108,6 +108,7 @@ namespace spehs
 		bool blending;
 		bool renderState; //Whether Primitive is rendered or not
 		bool cameraMatrixState; //Whether camera affects the primitive or not
+		bool needUpdate;
 		GLuint textureDataID;
 		PlaneDepth planeDepth;
 		DrawMode drawMode;

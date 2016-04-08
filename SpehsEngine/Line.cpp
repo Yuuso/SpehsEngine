@@ -52,14 +52,18 @@ namespace spehs
 
 	void Line::updateVertices()
 	{
-		static glm::vec4 vertex;
-		scaledMatrix = glm::scale(glm::mat4(), glm::vec3(scaleX, scaleY, 0.0f));
-		scaledRotatedMatrix = glm::rotate(scaledMatrix, rotation, rotationVector);
-		for (unsigned int i = 0; i < worldVertexArray.size(); i++)
+		if (needUpdate)
 		{
-			vertex = glm::vec4(vertexArray[i].position.x, vertexArray[i].position.y, vertexArray[i].position.z, 1.0f);
-			vertex = scaledRotatedMatrix * vertex;
-			worldVertexArray[i].position.setPosition(vertex.x + position.x, vertex.y + position.y, vertex.z + position.z);
+			static glm::vec4 vertex;
+			scaledMatrix = glm::scale(glm::mat4(), glm::vec3(scaleX, scaleY, 0.0f));
+			scaledRotatedMatrix = glm::rotate(scaledMatrix, rotation, rotationVector);
+			for (unsigned int i = 0; i < worldVertexArray.size(); i++)
+			{
+				vertex = glm::vec4(vertexArray[i].position.x, vertexArray[i].position.y, vertexArray[i].position.z, 1.0f);
+				vertex = scaledRotatedMatrix * vertex;
+				worldVertexArray[i].position.setPosition(vertex.x + position.x, vertex.y + position.y, vertex.z + position.z);
+			}
+			needUpdate = false;
 		}
 	}
 
@@ -67,11 +71,13 @@ namespace spehs
 	{
 		vertexArray[0].position.setPosition(_newStartPoint.x, _newStartPoint.y);
 		vertexArray[1].position.setPosition(_newEndPoint.x, _newEndPoint.y);
+		needUpdate = true;
 	}
 
 	void Line::setPoints(const glm::vec3 &_newStartPoint, const glm::vec3 &_newEndPoint)
 	{
 		vertexArray[0].position.setPosition(_newStartPoint.x, _newStartPoint.y, _newStartPoint.z);
 		vertexArray[1].position.setPosition(_newEndPoint.x, _newEndPoint.y, _newEndPoint.z);
+		needUpdate = true;
 	}
 }

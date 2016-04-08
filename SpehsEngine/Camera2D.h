@@ -1,6 +1,7 @@
 #pragma once
 
 #include <glm/vec2.hpp>
+#include <glm/vec4.hpp>
 #include <glm/mat4x4.hpp>
 #include "WorldPosition.h"
 
@@ -30,6 +31,9 @@ namespace spehs
 	private:
 		float rotation;
 		float zoomSpeed;
+
+		glm::vec4 up; //compensate for rotation
+
 		glm::mat4 orthoMatrix;
 		glm::mat4 cameraMatrix;
 	};

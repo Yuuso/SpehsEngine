@@ -16,6 +16,7 @@ namespace spehs
 		cameraMatrixState = true;
 		readyForDelete = false;
 		renderState = true;
+		needUpdate = true;
 		shaderIndex = DefaultPolygon;
 		drawMode = UNDEFINED;
 		textureDataID = 0;
@@ -41,55 +42,65 @@ namespace spehs
 	void Primitive::setPosition(const float &_x, const float &_y)
 	{
 		position.setPosition(_x, _y);
+		needUpdate = true;
 	}
 
 	void Primitive::setPosition(const float &_x, const float &_y, const float &_z)
 	{
 		position.setPosition(_x, _y, _z);
+		needUpdate = true;
 	}
 
 	void Primitive::setPosition(const glm::vec2 &_newPosition)
 	{
 		position.setPosition(_newPosition.x, _newPosition.y);
+		needUpdate = true;
 	}
 
 	void Primitive::setPosition(const glm::vec3 &_newPosition)
 	{
 		position.setPosition(_newPosition.x, _newPosition.y, _newPosition.z);
+		needUpdate = true;
 	}
 
 	void Primitive::setPosition(const Position &_newPosition)
 	{
 		position = _newPosition;
+		needUpdate = true;
 	}
 
 	void Primitive::setScale(const float &_newScale)
 	{
 		scaleX = _newScale;
 		scaleY = _newScale;
+		needUpdate = true;
 	}
 
 	void Primitive::setScale(const float &_newScaleX, const float &_newScaleY)
 	{
 		scaleX = _newScaleX;
 		scaleY = _newScaleY;
+		needUpdate = true;
 	}
 
 	void Primitive::setScale(const glm::vec2 &_newScale)
 	{
 		scaleX = _newScale.x;
 		scaleY = _newScale.y;
+		needUpdate = true;
 	}
 
 	void Primitive::setRotation(const float &_newRotation)
 	{
 		rotation = _newRotation;
+		needUpdate = true;
 	}
 
 	void Primitive::setRotation(const float &_newRotation, const glm::vec3 &_newRotationVector)
 	{
 		rotation = _newRotation;
 		rotationVector = _newRotationVector;
+		needUpdate = true;
 	}
 
 	void Primitive::setRotationVector(const glm::vec3 &_newRotationVector)

@@ -6,6 +6,7 @@
 #include <glm/vec3.hpp>
 #include <glm/vec4.hpp>
 #include <glm/mat4x4.hpp>
+#include <glm/gtc/quaternion.hpp>
 #include <vector>
 #include <string>
 
@@ -42,7 +43,7 @@ namespace spehs
 		void setScale(const glm::vec3 &_newScale);
 		void setColor(const glm::vec4 &_newColor);
 		void setColor(const glm::vec3 &_newColor);
-		void setColor(const unsigned char &_r, const unsigned char &_g, const unsigned char &_b, const unsigned char &_a = 1.0f);
+		void setColor(const unsigned char &_r, const unsigned char &_g, const unsigned char &_b, const unsigned char &_a = 255);
 		void setRenderState(const bool _newState);
 		void setShader(const int &_newShaderIndex);
 		void setDrawMode(const DrawMode &_drawMode);
@@ -63,17 +64,19 @@ namespace spehs
 		~Mesh();
 
 		bool readyForDelete;
-		bool renderState; //Whether BatchObject is rendered or not
+		bool renderState; //Whether Mesh is rendered or not
+		bool needUpdate;
 		int shaderIndex;
 		GLuint textureDataID;
 		DrawMode drawMode;
 		float lineWidth;
-		float yaw, pitch, roll; //Rotations
+		glm::vec3 rotation;
 		float scaleX, scaleY, scaleZ;
 
 		glm::vec4 color;
 		glm::mat4 scaledMatrix;
 		glm::mat4 scaledRotatedMatrix;
+		glm::mat4 transformMatrix;
 
 		spehs::Position position;
 		std::vector<spehs::Vertex3D> vertexArray; //Original vertices

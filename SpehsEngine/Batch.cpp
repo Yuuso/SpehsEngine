@@ -34,6 +34,7 @@ namespace spehs
 	}
 
 	//PRIMITIVE BATCH
+#pragma region PRIMITIVE BATCH
 	PrimitiveBatch::PrimitiveBatch()
 	{
 		vertexArrayObjectID = 0;
@@ -292,9 +293,11 @@ namespace spehs
 			break;
 		}
 	}
+#pragma endregion
 
 
 	//MESH BATCH
+#pragma region MESH BATCH
 	MeshBatch::MeshBatch()
 	{
 		vertexArrayObjectID = 0;
@@ -493,4 +496,5 @@ namespace spehs
 
 		checkOpenGLErrors(__FILE__, __LINE__);
 	}
+#pragma endregion
 }

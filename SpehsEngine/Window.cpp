@@ -41,7 +41,7 @@ namespace spehs
 		if (glContext == nullptr)
 			exceptions::fatalError("\nFailed to create glContext!");
 
-		//glewExperimental = GL_TRUE;
+		glewExperimental = GL_TRUE;
 		GLenum error = glewInit();
 		if (error != GLEW_OK)
 			exceptions::fatalError("\nFailed to initialize glew!");
@@ -54,10 +54,10 @@ namespace spehs
 		//Set VSync
 		SDL_GL_SetSwapInterval(0);//0 disable, 1 enable, -1 ???
 
-		//Enable alpha blending
-		glEnable(GL_BLEND);
 		//glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+		//Face culling
+		//glEnable(GL_CULL_FACE);
 		//MSAA Antialiasing
 		if (applicationData->MSAA > 0)
 			glEnable(GL_MULTISAMPLE);
