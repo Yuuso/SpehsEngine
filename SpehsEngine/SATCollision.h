@@ -70,8 +70,8 @@ namespace spehs
 	//Polygon x Polygon collision
 	bool SATCollision(Vertex* _vertexArray1, int _size1, Vertex* _vertexArray2, int _size2);
 	glm::vec2 SATMTVCollision(Vertex* _vertexArray1, int _size1, Vertex* _vertexArray2, int _size2);
-	bool SATCollision(Position* _vertexArray1, int _size1, Vertex* _vertexArray2, int _size2);
-	glm::vec2 SATMTVCollision(Position* _vertexArray1, int _size1, Vertex* _vertexArray2, int _size2);
+	bool SATCollision(Position* _vertexArray1, int _size1, Position* _vertexArray2, int _size2);
+	glm::vec2 SATMTVCollision(Position* _vertexArray1, int _size1, Position* _vertexArray2, int _size2);
 
 	//Polygon x Circle Collision
 	bool SATCollision(Vertex* _vertexArray, int _size, glm::vec2& _circleCenterPoint, float _circleRadius);

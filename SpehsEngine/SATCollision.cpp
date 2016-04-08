@@ -282,6 +282,79 @@ namespace spehs
 		delete [] axis2;
 		return glm::normalize(smallestAxis) * abs(overlap);
 	}
+	glm::vec2 SATMTVCollision(Position* _vertexArray1, int _size1, Position* _vertexArray2, int _size2)
+	{
+		float overlap = FLT_MAX;
+		glm::vec2 smallestAxis;
+		glm::vec2* axis1 = new glm::vec2[_size1];
+		glm::vec2* axis2 = new glm::vec2[_size2];
+
+		//Get all axes
+		for (int i = 0; i < _size1; i++)
+		{
+			axis1[i] = getAxis(_vertexArray1, _size1, i);
+		}
+		for (int i = 0; i < _size2; i++)
+		{
+			axis2[i] = getAxis(_vertexArray2, _size2, i);
+		}
+		//Normalize all axes
+		for (int i = 0; i < _size1; i++)
+		{
+			axis1[i] = glm::normalize(axis1[i]);
+		}
+		for (int i = 0; i < _size2; i++)
+		{
+			axis2[i] = glm::normalize(axis2[i]);
+		}
+
+		//Loop through axes2
+		for (int i = 0; i < _size2; i++)
+		{
+			Projection p1 = projectPolygon(axis2[i], _vertexArray1, _size1);
+			Projection p2 = projectPolygon(axis2[i], _vertexArray2, _size2);
+			if (!p1.overlap(p2))
+			{
+				delete axis1;
+				delete axis2;
+				return glm::vec2(NULL);
+			}
+			else
+			{
+				float o = p1.getOverlap(p2);
+				if (o < overlap)
+				{
+					overlap = o;
+					smallestAxis = axis2[i];
+				}
+			}
+		}
+		//Loop through axes1
+		for (int i = 0; i < _size1; i++)
+		{
+			Projection p1 = projectPolygon(axis1[i], _vertexArray1, _size1);
+			Projection p2 = projectPolygon(axis1[i], _vertexArray2, _size2);
+			if (!p1.overlap(p2))
+			{
+				delete axis1;
+				delete axis2;
+				return glm::vec2(NULL);
+			}
+			else
+			{
+				float o = p1.getOverlap(p2);
+				if (o < overlap)
+				{
+					overlap = o;
+					smallestAxis = axis1[i];
+				}
+			}
+		}
+		//Here we know that no separating axis was found and there is a collision
+		delete [] axis1;
+		delete [] axis2;
+		return glm::normalize(smallestAxis) * abs(overlap);
+	}
 
 
 	bool SATCollision(Vertex* _vertexArray, int _size, glm::vec2& _circleCenterPoint, float _circleRadius)
