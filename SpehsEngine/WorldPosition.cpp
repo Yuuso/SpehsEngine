@@ -16,6 +16,16 @@ namespace spehs
 		*this = _stPos;
 		translate(_transl);
 	}
+	size_t WorldPosition::write(void* buffer)
+	{
+		memcpy(buffer, &integerX, sizeof(integerX) + sizeof(integerY) + sizeof(floatingX) + sizeof(floatingY));
+		return sizeof(integerX) + sizeof(integerY) + sizeof(floatingX) + sizeof(floatingY);
+	}
+	size_t WorldPosition::read(void* buffer)
+	{
+		memcpy(&integerX, buffer, sizeof(integerX) + sizeof(integerY) + sizeof(floatingX) + sizeof(floatingY));
+		return sizeof(integerX) + sizeof(integerY) + sizeof(floatingX) + sizeof(floatingY);
+	}
 	glm::vec2 WorldPosition::operator-(const WorldPosition& _position)
 	{
 		return glm::vec2(integerX - _position.integerX + floatingX - _position.floatingX, integerY - _position.integerY + floatingY - _position.floatingY);

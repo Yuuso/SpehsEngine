@@ -252,10 +252,8 @@ namespace spehs
 
 	void PrimitiveBatch::setIndices(const unsigned int &_numVertices)
 	{
-		static unsigned int currentIndex;
-		static unsigned int numIndices;
-		currentIndex = vertices.size();
-		numIndices = indices.size();
+		unsigned int currentIndex(vertices.size());
+		unsigned int numIndices(indices.size());
 		switch (drawMode)
 		{
 		case UNDEFINED:
