@@ -1,11 +1,11 @@
 #pragma once
 
 #include "Vertex.h"
+#include "Container.h"
 
 #include <glm/vec3.hpp>
 
 #include <string>
-#include <vector>
 #include <unordered_map>
 
 
@@ -15,19 +15,19 @@ namespace spehs
 {
 	class Mesh;
 
-	int checkArrayForElements(std::vector<spehs::Vertex3D>& _array, const spehs::Position& _position, const glm::vec2& _textureCoord, const glm::vec3& _normal);
+	int checkArrayForElements(spehs::Container<spehs::Vertex3D>& _array, const spehs::Position& _position, const glm::vec2& _textureCoord, const glm::vec3& _normal);
 
 	struct ModelData
 	{
 		ModelData();
-		void loadFromData(std::vector<spehs::Vertex3D> &_vertexArray, std::vector<GLushort> &_elementArray);
+		void loadFromData(spehs::Container<spehs::Vertex3D> &_vertexArray, spehs::Container<GLushort> &_elementArray);
 
-		std::vector<spehs::Vertex3D> vertices;
-		std::vector<glm::vec2> textureCoordinates;
-		std::vector<glm::vec3> normals;
-		std::vector<GLushort> vertexElements;
-		std::vector<GLushort> textureElements;
-		std::vector<GLushort> normalElements;
+		spehs::Container<spehs::Vertex3D> vertices;
+		spehs::Container<glm::vec2> textureCoordinates;
+		spehs::Container<glm::vec3> normals;
+		spehs::Container<GLushort> vertexElements;
+		spehs::Container<GLushort> textureElements;
+		spehs::Container<GLushort> normalElements;
 	};
 
 	class ModelManager
@@ -40,8 +40,8 @@ namespace spehs
 		void loadOBJ(const size_t& _hash, spehs::Mesh* _mesh);
 		void preloadOBJ(const std::string& _filepath);
 
-		void removeModelData(std::string _filepath);
-		void removeModelData(size_t _hash);
+		void removeModelData(const std::string& _filepath);
+		void removeModelData(const size_t& _hash);
 		void clearAllModelData();
 
 	private:

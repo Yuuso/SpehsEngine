@@ -172,6 +172,43 @@ namespace spehs
 		}
 	}
 
+	void Mesh::setColor(const CommonColor& _color)
+	{
+		switch (_color)
+		{
+		case WHITE:
+			setColor(255, 255, 255);
+			break;
+		case BLACK:
+			setColor(0, 0, 0);
+			break;
+		case RED:
+			setColor(255, 0, 0);
+			break;
+		case ORANGE:
+			setColor(255, 128, 0);
+			break;
+		case YELLOW:
+			setColor(255, 255, 0);
+			break;
+		case GREEN:
+			setColor(0, 255, 0);
+			break;
+		case CYAN:
+			setColor(0, 255, 255);
+			break;
+		case BLUE:
+			setColor(0, 0, 255);
+			break;
+		case MAGENTA:
+			setColor(255, 0, 255);
+			break;
+		default:
+			console::error("Invalid CommonColor: " + std::to_string(_color));
+			break;
+		}
+	}
+
 	void Mesh::setRenderState(const bool _newState)
 	{
 		renderState = _newState;

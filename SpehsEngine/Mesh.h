@@ -2,12 +2,12 @@
 
 #include "Vertex.h"
 #include "Primitive.h"
+#include "Container.h"
 
 #include <glm/vec3.hpp>
 #include <glm/vec4.hpp>
 #include <glm/mat4x4.hpp>
 #include <glm/gtc/quaternion.hpp>
-#include <vector>
 #include <string>
 
 
@@ -43,6 +43,7 @@ namespace spehs
 		void setScale(const glm::vec3 &_newScale);
 		void setColor(const glm::vec4 &_newColor);
 		void setColor(const glm::vec3 &_newColor);
+		void setColor(const CommonColor& _color);
 		void setColor(const unsigned char &_r, const unsigned char &_g, const unsigned char &_b, const unsigned char &_a = 255);
 		void setRenderState(const bool _newState);
 		void setShader(const int &_newShaderIndex);
@@ -56,7 +57,7 @@ namespace spehs
 
 
 		//Public Variables
-		std::vector<spehs::Vertex3D> worldVertexArray; //Transformed vertices
+		spehs::Container<spehs::Vertex3D> worldVertexArray; //Transformed vertices
 
 	protected:
 		Mesh();
@@ -79,7 +80,7 @@ namespace spehs
 		glm::mat4 transformMatrix;
 
 		spehs::Position position;
-		std::vector<spehs::Vertex3D> vertexArray; //Original vertices
-		std::vector<GLushort> elementArray; //Indices
+		spehs::Container<spehs::Vertex3D> vertexArray; //Original vertices
+		spehs::Container<GLushort> elementArray; //Indices
 	};
 }

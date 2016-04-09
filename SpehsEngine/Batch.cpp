@@ -131,9 +131,15 @@ namespace spehs
 
 		//Blending
 		if (blending)
+		{
 			glEnable(GL_BLEND);
+			glDisable(GL_DEPTH_TEST);
+		}
 		else
+		{
 			glDisable(GL_BLEND);
+			glEnable(GL_DEPTH_TEST);
+		}
 
 		shaderManager->use(shaderIndex);
 
@@ -320,8 +326,8 @@ namespace spehs
 		drawMode = _drawMode;
 		lineWidth = _lineWidth;
 
-		vertices.reserve(DEFAULT_MAX_BATCH_SIZE);
-		indices.reserve(getIndexMultiplier(drawMode));
+		//vertices.resize(DEFAULT_MAX_BATCH_SIZE);
+		//indices.resize(getIndexMultiplier(drawMode));
 
 		initBuffers();
 	}
@@ -379,6 +385,9 @@ namespace spehs
 		if (vertices.size() == 0)
 			return false;
 
+		glDisable(GL_BLEND);
+		glEnable(GL_DEPTH_TEST);
+
 		updateBuffers();
 
 		shaderManager->use(shaderIndex);
@@ -398,7 +407,7 @@ namespace spehs
 		{
 			glLineWidth(lineWidth);
 		}
-		glDrawElements(drawMode, indices.size(), GL_UNSIGNED_SHORT, (GLvoid*) NULL);
+		glDrawElements(drawMode, indices.size(), GL_UNSIGNED_SHORT, reinterpret_cast<void*>(0));
 		glBindVertexArray(0);
 
 		checkOpenGLErrors(__FILE__, __LINE__);
@@ -417,9 +426,9 @@ namespace spehs
 	void MeshBatch::push(Mesh* _mesh)
 	{
 		//INDICES
-		indices.insert(indices.end(), _mesh->elementArray.begin(), _mesh->elementArray.end());
+		indices.push(_mesh->elementArray);
 		//VERTICES
-		vertices.insert(vertices.end(), _mesh->worldVertexArray.begin(), _mesh->worldVertexArray.end());
+		vertices.push(_mesh->worldVertexArray);
 	}
 
 	//Private:
@@ -485,8 +494,8 @@ namespace spehs
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBufferID);
 
 		//Sent data to GPU
-		glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(spehs::Vertex) * vertices.size(), &vertices[0]);
-		glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, sizeof(GLushort) * indices.size(), &indices[0]);
+		glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(spehs::Vertex) * vertices.size(), vertices.data());
+		glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, sizeof(GLushort) * indices.size(), indices.data());
 
 		glBindVertexArray(0);
 		glBindBuffer(GL_ARRAY_BUFFER, 0);

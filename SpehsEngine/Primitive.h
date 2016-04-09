@@ -49,6 +49,18 @@ namespace spehs
 		QUAD_STRIP = 0x0008,
 		POLYGON = 0x0009,
 	};
+	enum CommonColor
+	{
+		WHITE = 0xFFFFFF,
+		BLACK = 0x000000,
+		RED = 0xFF0000,
+		ORANGE = 0xFF8000,
+		YELLOW = 0xFFFF00,
+		GREEN = 0x00FF00,
+		CYAN = 0x00FFFF,
+		BLUE = 0x0000FF,
+		MAGENTA = 0xFF00FF
+	};
 
 	//Base class for polygon, line and point
 	class Primitive
@@ -81,6 +93,7 @@ namespace spehs
 		void setColor(const glm::vec4 &_newColor);
 		void setColor(const glm::vec3 &_newColor);
 		void setColor(const unsigned char _r, const unsigned char _g, const unsigned char _b, const unsigned char _a = 255);
+		void setColor(const CommonColor& _color);
 		void setColorAlpha(const float &_a);
 		void setColorAlpha(const unsigned char _a);
 		void setCameraMatrixState(const bool _newState);

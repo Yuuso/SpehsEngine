@@ -1,5 +1,8 @@
 
 #include "Vertex.h"
+#include "Console.h"
+#include "Primitive.h" //color
+
 
 
 namespace spehs
@@ -57,6 +60,42 @@ namespace spehs
 	void ColorRGBA::setColor(const glm::vec4 _color)
 	{
 		rgba = _color;
+	}
+	void ColorRGBA::setColor(const int& _color)
+	{
+		switch (_color)
+		{
+		case WHITE:
+			setColor(1.0f, 1.0f, 1.0f, 1.0f);
+			break;
+		case BLACK:
+			setColor(0, 0, 0, 1.0f);
+			break;
+		case RED:
+			setColor(1.0f, 0, 0, 1.0f);
+			break;
+		case ORANGE:
+			setColor(1.0f, 0.5f, 0, 1.0f);
+			break;
+		case YELLOW:
+			setColor(1.0f, 1.0f, 0, 1.0f);
+			break;
+		case GREEN:
+			setColor(0, 1.0f, 0, 1.0f);
+			break;
+		case CYAN:
+			setColor(0, 1.0f, 1.0f, 1.0f);
+			break;
+		case BLUE:
+			setColor(0, 0, 1.0f, 1.0f);
+			break;
+		case MAGENTA:
+			setColor(1.0f, 0, 1.0f, 1.0f);
+			break;
+		default:
+			console::error("Invalid CommonColor: " + std::to_string(_color));
+			break;
+		}
 	}
 
 	UV::UV() : u(0.0f), v(0.0f)

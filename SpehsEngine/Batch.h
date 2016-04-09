@@ -2,6 +2,7 @@
 
 #include "Primitive.h"
 #include "Vertex.h"
+#include "Container.h"
 
 #include <glm/vec3.hpp>
 
@@ -84,8 +85,8 @@ namespace spehs
 		void initBuffers();
 		void updateBuffers();
 
-		std::vector<spehs::Vertex3D> vertices;
-		std::vector<GLushort> indices;
+		spehs::Container<spehs::Vertex3D> vertices;
+		spehs::Container<GLushort> indices;
 
 		GLuint vertexArrayObjectID;
 		GLuint vertexBufferID;

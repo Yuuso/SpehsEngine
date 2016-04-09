@@ -297,6 +297,9 @@
     <ClInclude Include="RigidBody2D.h">
       <Filter>Core\Object/Component</Filter>
     </ClInclude>
+    <ClInclude Include="Container.h">
+      <Filter>Core</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Physics">
