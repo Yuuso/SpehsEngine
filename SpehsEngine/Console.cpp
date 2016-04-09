@@ -308,7 +308,7 @@ namespace spehs
 						previousCommandIndex = previousCommands.size() - 1;
 					else if (--previousCommandIndex < 0)
 						previousCommandIndex = previousCommands.size() - 1;
-					input = previousCommands[previousCommandIndex];
+					input = '/' + previousCommands[previousCommandIndex];
 					inputReceived = true;
 				}
 				if (inputManager->isKeyPressed(KEYBOARD_DOWN) && previousCommands.size() > 0)
@@ -317,7 +317,7 @@ namespace spehs
 						previousCommandIndex = 0;
 					else if (++previousCommandIndex >= previousCommands.size())
 						previousCommandIndex = 0;
-					input = previousCommands[previousCommandIndex];
+					input = '/' + previousCommands[previousCommandIndex];
 					inputReceived = true;
 				}
 
