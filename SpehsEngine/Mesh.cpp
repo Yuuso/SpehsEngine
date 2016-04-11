@@ -50,6 +50,9 @@ namespace spehs
 	}
 	Mesh::~Mesh()
 	{
+		vertexArray.clear();
+		worldVertexArray.clear();
+		elementArray.clear();
 	}
 
 

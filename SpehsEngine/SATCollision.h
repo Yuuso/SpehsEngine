@@ -3,7 +3,6 @@
 #include "Vertex.h"
 #include "glm\vec2.hpp"
 
-//TODO: Advanced collisions for physics stuff
 
 namespace spehs
 {

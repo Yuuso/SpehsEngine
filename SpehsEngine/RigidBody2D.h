@@ -5,10 +5,10 @@
 
 #include <glm/vec2.hpp>
 
-
 namespace spehs
 {
 	class GameObject;
+	class PhysicsWorld2D;
 
 	enum Collider : char
 	{
@@ -19,9 +19,10 @@ namespace spehs
 	
 	class RigidBody2D : public Component
 	{
+		friend PhysicsWorld2D;
 	public:
 		RigidBody2D();
-		RigidBody2D(GameObject* _owner);
+		RigidBody2D(GameObject& _owner);
 		~RigidBody2D();
 
 		void update();
@@ -48,6 +49,9 @@ namespace spehs
 		Collider getCollider();
 
 	private:
+		bool setWorld(PhysicsWorld2D* _world);
+		PhysicsWorld2D* world;
+
 		bool isStatic;
 		bool freezeRotation;
 		bool useGravity;

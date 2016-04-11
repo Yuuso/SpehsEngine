@@ -9,7 +9,7 @@ namespace spehs
 	{
 
 	}
-	Transform2D::Transform2D(GameObject* _owner) : Component(_owner)
+	Transform2D::Transform2D(GameObject& _owner) : Component(_owner)
 	{
 		
 	}

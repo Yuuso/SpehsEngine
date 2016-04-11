@@ -34,6 +34,8 @@ namespace spehs
 	void ModelData::loadFromData(spehs::Container<spehs::Vertex3D> &_vertexArray, spehs::Container<GLushort> &_elementArray)
 	{
 		int index;
+		spehs::Container<spehs::Vertex3D> vertexArray;
+		spehs::Container<GLushort> elementArray;
 		for (unsigned i = 0; i < vertexElements.size(); i++)
 		{
 			//Check if there is already a vertex with the wanted attributes (position, uv, normal)
@@ -43,66 +45,70 @@ namespace spehs
 			{
 				if (normals.size() == 0)
 				{
-					index = checkArrayForElements(_vertexArray, vertices[vertexElements[i]].position, glm::vec2(0.0f), glm::vec3(0.0f));
+					index = checkArrayForElements(vertexArray, vertices[vertexElements[i]].position, glm::vec2(0.0f), glm::vec3(0.0f));
 					if (index < 0)
 					{
-						_vertexArray.push(Vertex3D(vertices[vertexElements[i]].position,
+						vertexArray.push(Vertex3D(vertices[vertexElements[i]].position,
 							UV(),
 							Position()));
-						_elementArray.push(_vertexArray.size());
+						elementArray.push(vertexArray.size());
 					}
 					else
 					{
-						_elementArray.push(index);
+						elementArray.push(index);
 					}
 				}
 				else
 				{
-					index = checkArrayForElements(_vertexArray, vertices[vertexElements[i]].position, glm::vec2(0.0f), normals[normalElements[i]]);
+					index = checkArrayForElements(vertexArray, vertices[vertexElements[i]].position, glm::vec2(0.0f), normals[normalElements[i]]);
 					if (index < 0)
 					{
-						_vertexArray.push(Vertex3D(vertices[vertexElements[i]].position,
+						vertexArray.push(Vertex3D(vertices[vertexElements[i]].position,
 							UV(),
 							Position(normals[normalElements[i]].x, normals[normalElements[i]].y, normals[normalElements[i]].z)));
-						_elementArray.push(_vertexArray.size() - 1);
+						elementArray.push(vertexArray.size() - 1);
 					}
 					else
 					{
-						_elementArray.push(index);
+						elementArray.push(index);
 					}
 				}
 			}
 			else if (normals.size() == 0)
 			{
-				index = checkArrayForElements(_vertexArray, vertices[vertexElements[i]].position, textureCoordinates[textureElements[i]], glm::vec3(0.0f));
+				index = checkArrayForElements(vertexArray, vertices[vertexElements[i]].position, textureCoordinates[textureElements[i]], glm::vec3(0.0f));
 				if (index < 0)
 				{
-					_vertexArray.push(Vertex3D(vertices[vertexElements[i]].position,
+					vertexArray.push(Vertex3D(vertices[vertexElements[i]].position,
 						UV(textureCoordinates[textureElements[i]].x, textureCoordinates[textureElements[i]].y),
 						Position()));
-					_elementArray.push(_vertexArray.size());
+					elementArray.push(vertexArray.size());
 				}
 				else
 				{
-					_elementArray.push(index);
+					elementArray.push(index);
 				}
 			}
 			else
 			{
-				index = checkArrayForElements(_vertexArray, vertices[vertexElements[i]].position, textureCoordinates[textureElements[i]], normals[normalElements[i]]);
+				index = checkArrayForElements(vertexArray, vertices[vertexElements[i]].position, textureCoordinates[textureElements[i]], normals[normalElements[i]]);
 				if (index < 0)
 				{
-					_vertexArray.push(Vertex3D(vertices[vertexElements[i]].position,
+					vertexArray.push(Vertex3D(vertices[vertexElements[i]].position,
 						UV(textureCoordinates[textureElements[i]].x, textureCoordinates[textureElements[i]].y),
 						Position(normals[normalElements[i]].x, normals[normalElements[i]].y, normals[normalElements[i]].z)));
-					_elementArray.push(_vertexArray.size());
+					elementArray.push(vertexArray.size());
 				}
 				else
 				{
-					_elementArray.push(index);
+					elementArray.push(index);
 				}
 			}
 		}
+		_vertexArray.clear();
+		_elementArray.clear();
+		_vertexArray = vertexArray;
+		_elementArray = elementArray;
 	}
 
 

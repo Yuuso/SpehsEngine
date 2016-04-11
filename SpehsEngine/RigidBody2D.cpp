@@ -1,5 +1,6 @@
 
 #include "RigidBody2D.h"
+#include "PhysicsWorld2D.h"
 #include "GameObject.h"
 #include "Transform2D.h"
 #include "Sprite.h"
@@ -10,9 +11,8 @@ namespace spehs
 {
 	RigidBody2D::RigidBody2D() : Component()
 	{
-
 	}
-	RigidBody2D::RigidBody2D(GameObject* _owner) : Component(_owner)
+	RigidBody2D::RigidBody2D(GameObject& _owner) : Component(_owner), world(nullptr)
 	{
 		isStatic = false;
 		freezeRotation = false;
@@ -37,9 +37,9 @@ namespace spehs
 	}
 	RigidBody2D::~RigidBody2D()
 	{
-
+		if (world)
+			world->removeRigidBody(*this);
 	}
-
 
 	void RigidBody2D::update()
 	{
@@ -137,5 +137,19 @@ namespace spehs
 	Collider RigidBody2D::getCollider()
 	{
 		return collider;
+	}
+
+	bool RigidBody2D::setWorld(PhysicsWorld2D* _world)
+	{
+		if (_world == nullptr)
+		{
+			world->removeRigidBody(*this);
+			world = nullptr;
+			return true;
+		}
+		if (world)
+			return false;
+		world = _world;
+		return true;
 	}
 }

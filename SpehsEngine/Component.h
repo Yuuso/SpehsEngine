@@ -10,7 +10,7 @@ namespace spehs
 	{
 	public:
 		Component();
-		Component(GameObject* _owner);
+		Component(GameObject& _owner);
 		virtual ~Component();
 
 		virtual void update();

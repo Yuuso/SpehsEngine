@@ -15,7 +15,7 @@ namespace spehs
 	{
 	public:
 		Sprite();
-		Sprite(GameObject* _owner);
+		Sprite(GameObject& _owner);
 		~Sprite();
 
 		Polygon* sprite;

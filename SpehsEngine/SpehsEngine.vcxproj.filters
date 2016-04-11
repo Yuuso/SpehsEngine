@@ -145,6 +145,9 @@
     <ClCompile Include="RigidBody2D.cpp">
       <Filter>Core\Object/Component</Filter>
     </ClCompile>
+    <ClCompile Include="PhysicsWorld2D.cpp">
+      <Filter>Physics</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GLSLProgram.h">
@@ -299,6 +302,9 @@
     </ClInclude>
     <ClInclude Include="Container.h">
       <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="PhysicsWorld2D.h">
+      <Filter>Physics</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -9,9 +9,9 @@ namespace spehs
 	{
 		ownerObject = nullptr;
 	}
-	Component::Component(GameObject* _owner)
+	Component::Component(GameObject& _owner)
 	{
-		ownerObject = _owner;
+		ownerObject = &_owner;
 	}
 	Component::~Component()
 	{

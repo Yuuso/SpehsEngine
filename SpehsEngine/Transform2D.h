@@ -14,7 +14,7 @@ namespace spehs
 	{
 	public:
 		Transform2D();
-		Transform2D(GameObject* _owner);
+		Transform2D(GameObject& _owner);
 		~Transform2D();
 
 		//Getters
