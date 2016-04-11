@@ -14,7 +14,7 @@
 spehs::ModelManager* modelManager;
 namespace spehs
 {
-	int checkArrayForElements(spehs::Container<spehs::Vertex3D>& _array, const spehs::Position& _position, const glm::vec2& _textureCoord, const glm::vec3& _normal)
+	int checkArrayForElements(const spehs::Container<spehs::Vertex3D>& _array, const spehs::Position& _position, const glm::vec2& _textureCoord, const glm::vec3& _normal)
 	{
 		for (unsigned i = 0; i < _array.size(); i++)
 		{

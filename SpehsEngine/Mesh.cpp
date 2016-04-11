@@ -50,9 +50,6 @@ namespace spehs
 	}
 	Mesh::~Mesh()
 	{
-		vertexArray.clear();
-		worldVertexArray.clear();
-		elementArray.clear();
 	}
 
 
@@ -60,13 +57,12 @@ namespace spehs
 	{
 		if (needUpdate)
 		{
-			static glm::vec4 vertex;
 			scaledMatrix = glm::scale(glm::mat4(1.0f), glm::vec3(scaleX, scaleY, scaleZ));
 			scaledRotatedMatrix = glm::mat4_cast(glm::quat(rotation)) * scaledMatrix;
 			transformMatrix = glm::translate(scaledRotatedMatrix, glm::vec3(position.x, position.y, position.z));
 			for (unsigned i = 0; i < worldVertexArray.size(); i++)
 			{
-				vertex = transformMatrix * glm::vec4(vertexArray[i].position.x, vertexArray[i].position.y, vertexArray[i].position.z, 1.0f);
+				glm::vec4 vertex = transformMatrix * glm::vec4(vertexArray[i].position.x, vertexArray[i].position.y, vertexArray[i].position.z, 1.0f);
 				worldVertexArray[i].position.setPosition(vertex.x, vertex.y, vertex.z);
 			}
 			needUpdate = false;
