@@ -12,7 +12,7 @@ namespace spehs
 		void fatalError(std::string errorString)
 		{
 			std::cout << std::endl;
-			std::cout << errorString << std::endl;
+			std::cout << "Fatal Error: " << errorString << std::endl;
 			std::cout << "Press 'Enter' to quit." << std::endl;
 			std::cin.ignore();
 			SDL_Quit();
@@ -21,7 +21,7 @@ namespace spehs
 		void unexpectedError(std::string errorString)
 		{
 			std::cout << std::endl;
-			std::cout << "Unexpected error: " << errorString << std::endl;
+			std::cout << "Unexpected Error: " << errorString << std::endl;
 			std::cout << "Press 'Enter' to continue." << std::endl;
 			std::cin.ignore();
 		}

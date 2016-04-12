@@ -18,6 +18,7 @@ namespace spehs
 		unsigned int getSeed();
 		void resetRandomSeedEngine();
 		unsigned int mtrandom(); //returns a large unsigned int from seed
+		int mtrandom(int _min, int _max); //seeded value from range
 		void discardNext(int _amount = 1);
 		unsigned int getMax();
 		unsigned int getMin();

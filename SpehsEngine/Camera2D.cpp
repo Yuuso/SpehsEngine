@@ -5,7 +5,9 @@
 #include <glm/gtc/matrix_transform.hpp>
 
 
-#include <iostream>
+#define GLM_FORCE_RADIANS
+
+
 namespace spehs
 {
 	Camera2D::Camera2D() : zoomSpeed(50.0f), scale(1.0f), orthoMatrix(1.0f), cameraMatrix(1.0f), position(0.0f, 0.0f), previousPosition(0.0f, 0.0f), rotation(0.0f), up(0.0f, 1.0f, 0.0f, 1.0f)

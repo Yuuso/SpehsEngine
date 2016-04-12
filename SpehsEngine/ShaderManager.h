@@ -22,7 +22,7 @@ namespace spehs
 		DefaultPolygon = 0,
 		DefaultTexture = 1,
 		DefaultMesh = 2,
-		DefaultMeshTexture = 3,
+		//DefaultMeshTexture = 3,
 	};
 
 	class Uniforms

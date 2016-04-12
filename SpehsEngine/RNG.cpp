@@ -42,6 +42,17 @@ namespace spehs
 	{
 		return MTEngine();
 	}
+	int RNG::mtrandom(int _min, int _max)
+	{
+		if (_min > _max)
+		{
+			spehs::console::error("Min value is greater than Max value! (irandom)");
+		}
+		if (_min == _max)
+			return _min;
+		else
+			return intDist(MTEngine, { _min, _max });
+	}
 	void RNG::discardNext(int _amount)
 	{
 		MTEngine.discard(_amount);
