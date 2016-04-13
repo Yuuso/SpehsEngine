@@ -134,11 +134,6 @@ namespace spehs
 		{
 			glEnable(GL_BLEND);
 			glDisable(GL_DEPTH_TEST);
-			if (drawMode == POINT)
-			{
-				glEnable(GL_POINT_SPRITE);
-				glEnable(GL_PROGRAM_POINT_SIZE);
-			}
 		}
 		else
 		{
@@ -150,7 +145,14 @@ namespace spehs
 
 		//Texture
 		if (textureDataID)
+		{
 			shaderManager->getShader(shaderIndex)->uniforms->textureDataID = textureDataID;
+			if (drawMode == POINT)
+			{
+				glEnable(GL_POINT_SPRITE);
+				glEnable(GL_PROGRAM_POINT_SIZE);
+			}
+		}
 
 		//Camera Matrix
 		if (cameraMatrixState)
@@ -465,14 +467,12 @@ namespace spehs
 		glEnableVertexAttribArray(0);
 		glEnableVertexAttribArray(1);
 		glEnableVertexAttribArray(2);
-		if (textureDataID)
-			glEnableVertexAttribArray(3);
+		glEnableVertexAttribArray(3);
 
 		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(spehs::Vertex3D), reinterpret_cast<void*>(offsetof(spehs::Vertex3D, position)));
 		glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(spehs::Vertex3D), reinterpret_cast<void*>(offsetof(spehs::Vertex3D, color)));
 		glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(spehs::Vertex3D), reinterpret_cast<void*>(offsetof(spehs::Vertex3D, normal)));
-		if (textureDataID)
-			glVertexAttribPointer(3, 2, GL_FLOAT, GL_FALSE, sizeof(spehs::Vertex3D), reinterpret_cast<void*>(offsetof(spehs::Vertex3D, uv)));
+		glVertexAttribPointer(3, 2, GL_FLOAT, GL_FALSE, sizeof(spehs::Vertex3D), reinterpret_cast<void*>(offsetof(spehs::Vertex3D, uv)));
 
 		//Unbind
 		glBindVertexArray(0);
@@ -480,8 +480,7 @@ namespace spehs
 		glDisableVertexAttribArray(0);
 		glDisableVertexAttribArray(1);
 		glDisableVertexAttribArray(2);
-		if (textureDataID)
-			glDisableVertexAttribArray(3);
+		glDisableVertexAttribArray(3);
 
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);

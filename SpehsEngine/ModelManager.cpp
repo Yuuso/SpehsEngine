@@ -51,7 +51,7 @@ namespace spehs
 						vertexArray.push(Vertex3D(vertices[vertexElements[i]].position,
 							UV(),
 							Position()));
-						elementArray.push(vertexArray.size());
+						elementArray.push(vertexArray.size() - 1);
 					}
 					else
 					{
@@ -82,7 +82,7 @@ namespace spehs
 					vertexArray.push(Vertex3D(vertices[vertexElements[i]].position,
 						UV(textureCoordinates[textureElements[i]].x, textureCoordinates[textureElements[i]].y),
 						Position()));
-					elementArray.push(vertexArray.size());
+					elementArray.push(vertexArray.size() - 1);
 				}
 				else
 				{
@@ -97,7 +97,7 @@ namespace spehs
 					vertexArray.push(Vertex3D(vertices[vertexElements[i]].position,
 						UV(textureCoordinates[textureElements[i]].x, textureCoordinates[textureElements[i]].y),
 						Position(normals[normalElements[i]].x, normals[normalElements[i]].y, normals[normalElements[i]].z)));
-					elementArray.push(vertexArray.size());
+					elementArray.push(vertexArray.size() - 1);
 				}
 				else
 				{
