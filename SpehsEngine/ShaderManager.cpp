@@ -119,8 +119,8 @@ namespace spehs
 			"void main()\n"
 			"{\n"
 			"	color = fragmentColor;\n"
-			//"	color = vec4(1.0f, 1.0f, 1.0f, 1.0f);\n"
 			"}\n"
+			//duriansoftware.com/joe/An-intro-to-modern-OpenGL.-Chapter-4:-Rendering-a-Dynamic-3D-Scene-with-Phong-Shading.html
 		};
 		//
 #pragma endregion

@@ -7,6 +7,16 @@
 
 namespace spehs
 {
+	enum Movement
+	{
+		UP,
+		DOWN,
+		RIGHT,
+		LEFT,
+		FORWARD,
+		BACKWARD,
+	};
+
 	class Camera3D
 	{
 	public:
@@ -16,12 +26,9 @@ namespace spehs
 		void initialize();
 		void update();
 
-		void moveForward(const float& _amount);
-		void moveBackward(const float& _amount);
-		void moveRight(const float& _amount);
-		void moveLeft(const float& _amount);
-		void moveUp(const float& _amount);
-		void moveDown(const float& _amount);
+		void move(const Movement& _movement, const float& _amount);
+		void setSmoothCamera(const bool _value);
+		void setMaxSpeed(const float& _value);
 
 		void setPosition(const glm::vec3 &_position);
 
@@ -37,9 +44,11 @@ namespace spehs
 		glm::mat4* cameraMatrix;
 
 	private:
+		bool smoothCamera;
 
 		glm::vec3 position;
 		glm::vec3 rotation;
+		glm::vec3 movement;
 
 		glm::vec3 direction;
 		glm::vec3 target;
@@ -52,5 +61,6 @@ namespace spehs
 		float fov;
 		float near;
 		float far;
+		float maxSpeed;
 	};
 }

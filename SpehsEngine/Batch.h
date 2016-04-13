@@ -75,13 +75,13 @@ namespace spehs
 		MeshBatch(const int &_shader, const GLuint &_textureID, const GLenum &_drawMode, const float &_lineWidth = 0.0f);
 		~MeshBatch();
 
-		bool operator==(const Mesh &_mesh); //Checks if mesh is suitable for this batch
+		bool operator==(const Mesh &_mesh) const; //Checks if mesh is suitable for this batch
 
 		bool render(); //Returns false if the batch is empty
 		void push(Mesh* _mesh);
 
 	private:
-		bool isEnoughRoom(const unsigned int &_numVertices);
+		bool isEnoughRoom(const unsigned int &_numVertices) const;
 		void initBuffers();
 		void updateBuffers();
 

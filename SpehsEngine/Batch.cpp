@@ -357,7 +357,7 @@ namespace spehs
 	}
 
 
-	bool MeshBatch::operator==(const Mesh &_mesh)
+	bool MeshBatch::operator==(const Mesh &_mesh) const
 	{
 		if (shaderIndex != _mesh.shaderIndex ||
 			textureDataID != _mesh.textureDataID ||
@@ -398,7 +398,14 @@ namespace spehs
 
 		//Texture
 		if (textureDataID)
+		{
 			shaderManager->getShader(shaderIndex)->uniforms->textureDataID = textureDataID;
+			if (drawMode == POINT)
+			{
+				glEnable(GL_POINT_SPRITE);
+				glEnable(GL_PROGRAM_POINT_SIZE);
+			}
+		}
 
 		shaderManager->getShader(shaderIndex)->uniforms->cameraMatrix = *spehs::getActiveBatchManager()->getCamera3D()->cameraMatrix;
 
@@ -429,14 +436,20 @@ namespace spehs
 
 	void MeshBatch::push(Mesh* _mesh)
 	{
+		GLushort firstElement = vertices.size();
+		unsigned int indSize = indices.size();
 		//INDICES
 		indices.push(_mesh->elementArray);
+		for (size_t i = indSize; i < indices.size(); i++)
+		{
+			indices[i] += firstElement;
+		}
 		//VERTICES
 		vertices.push(_mesh->worldVertexArray);
 	}
 
 	//Private:
-	bool MeshBatch::isEnoughRoom(const unsigned int &_numVertices)
+	bool MeshBatch::isEnoughRoom(const unsigned int &_numVertices) const
 	{
 		if (_numVertices > DEFAULT_MAX_BATCH_SIZE)
 			exceptions::fatalError("The number of vertices in a mesh exceeds the max amount allowed in the batch!");
@@ -447,7 +460,6 @@ namespace spehs
 	{
 		//Generate VAO
 		glGenVertexArrays(1, &vertexArrayObjectID);
-		glBindVertexArray(vertexArrayObjectID);
 		//Generate buffers
 		glGenBuffers(1, &vertexBufferID);
 		glGenBuffers(1, &indexBufferID);
@@ -455,8 +467,10 @@ namespace spehs
 		checkOpenGLErrors(__FILE__, __LINE__);
 
 		//Bind buffers
+		glBindVertexArray(vertexArrayObjectID);
+
 		glBindBuffer(GL_ARRAY_BUFFER, vertexBufferID);
-		glBufferData(GL_ARRAY_BUFFER, sizeof(spehs::Vertex) * DEFAULT_MAX_BATCH_SIZE, nullptr, GL_STREAM_DRAW);
+		glBufferData(GL_ARRAY_BUFFER, sizeof(spehs::Vertex3D) * DEFAULT_MAX_BATCH_SIZE, nullptr, GL_STREAM_DRAW);
 
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBufferID);
 		glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLushort) * getIndexMultiplier(drawMode), nullptr, GL_STREAM_DRAW);
@@ -495,7 +509,7 @@ namespace spehs
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBufferID);
 
 		//Sent data to GPU
-		glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(spehs::Vertex) * vertices.size(), vertices.data());
+		glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(spehs::Vertex3D) * vertices.size(), vertices.data());
 		glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, sizeof(GLushort) * indices.size(), indices.data());
 
 		glBindVertexArray(0);

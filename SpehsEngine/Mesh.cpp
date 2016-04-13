@@ -57,9 +57,11 @@ namespace spehs
 	{
 		if (needUpdate)
 		{
+			//T = t * R * S
 			scaledMatrix = glm::scale(glm::mat4(1.0f), glm::vec3(scaleX, scaleY, scaleZ));
 			scaledRotatedMatrix = glm::mat4_cast(glm::quat(rotation)) * scaledMatrix;
-			transformMatrix = glm::translate(scaledRotatedMatrix, glm::vec3(position.x, position.y, position.z));
+			transformMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(position.x, position.y, position.z)) * scaledRotatedMatrix;
+
 			for (unsigned i = 0; i < worldVertexArray.size(); i++)
 			{
 				glm::vec4 vertex = transformMatrix * glm::vec4(vertexArray[i].position.x, vertexArray[i].position.y, vertexArray[i].position.z, 1.0f);
@@ -114,9 +116,7 @@ namespace spehs
 
 	void Mesh::setRotation(const glm::vec3 &_newRotation)
 	{
-		rotation.x = _newRotation.x;
-		rotation.y = _newRotation.y;
-		rotation.z = _newRotation.z;
+		rotation = _newRotation;
 		needUpdate = true;
 	}
 

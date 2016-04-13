@@ -1,10 +1,12 @@
 
 #include "Camera3D.h"
 #include "ApplicationData.h"
+#include "Time.h"
 
 #include <glm/gtx/transform.hpp>
 #include <glm/gtc/quaternion.hpp>
 #include <glm/gtx/quaternion.hpp>
+#include <iostream>
 
 
 #define GLM_FORCE_RADIANS
@@ -12,13 +14,15 @@
 
 namespace spehs
 {
-	Camera3D::Camera3D() : fov(45.0f), near(0.05f), far(500.0f), rotation(1.0f)
+	Camera3D::Camera3D() : fov(45.0f), near(0.05f), far(500.0f), rotation(0.0f), smoothCamera(false), maxSpeed(1.5f)
 	{
-		position = glm::vec3(0.0f, 0.0f, 3.0f);
+		position = glm::vec3(1.0f);
+		movement = glm::vec3(0.0f);
 
 		up = glm::vec3(0.0f, 1.0f, 0.0f);
 		target = glm::vec3(0.0f, 0.0f, 0.0f);
 		right = glm::vec3(1.0f, 0.0f, 0.0f);
+		direction = glm::normalize(target - position);
 
 		view = glm::mat4(1.0f);
 		projection = glm::perspective(fov, (float)applicationData->getWindowWidth() / (float)applicationData->getWindowHeight(), near, far);
@@ -31,46 +35,72 @@ namespace spehs
 
 	void Camera3D::update()
 	{
+		//movement
+		if (movement.x > maxSpeed)
+			movement.x = maxSpeed;
+		if (movement.y > maxSpeed)
+			movement.y = maxSpeed;
+		if (movement.z > maxSpeed)
+			movement.z = maxSpeed;
+		position += movement;
+		target = position + direction;
+
+		if (smoothCamera)
+			movement *= 0.9f - ((float)spehs::deltaTime / 1000.0f);
+		else
+			movement = glm::vec3(0.0f);
+
 		direction = glm::normalize(target - position);
 		right = glm::cross(direction, up);
 		glm::quat pitchQ = glm::angleAxis(rotation.x, right);
 		glm::quat yawQ = glm::angleAxis(-rotation.y, up);
-		glm::quat temp = glm::normalize(glm::cross(pitchQ, yawQ));
-		direction = glm::rotate(temp, direction);
+		rotation = glm::vec3(0.0f); //clear rotation
+		direction = glm::rotate(glm::normalize(glm::cross(pitchQ, yawQ)), direction);
 		target = position + direction;
 		
 		view = glm::lookAt(position, target, up);
 		view = projection * view;
 	}
 
-	void Camera3D::moveForward(const float& _amount)
+	void Camera3D::move(const Movement& _movement, const float& _amount)
 	{
-		position += direction * _amount;
+		switch (_movement)
+		{
+		case FORWARD:
+			movement += direction * _amount;
+			break;
+		case BACKWARD:
+			movement -= direction * _amount;
+			break;
+		case UP:
+			movement += up * _amount;
+			//target = position + direction;
+			break;
+		case DOWN:
+			movement -= up * _amount;
+			//target = position + direction;
+			break;
+		case RIGHT:
+			movement += right * _amount;
+			//target = position + direction;
+			break;
+		case LEFT:
+			movement -= right * _amount;
+			//target = position + direction;
+			break;
+		default:
+			break;
+		}
 	}
 
-	void Camera3D::moveBackward(const float& _amount)
+	void Camera3D::setSmoothCamera(const bool _value)
 	{
-		position -= direction * _amount;
+		smoothCamera = _value;
 	}
 
-	void Camera3D::moveRight(const float& _amount)
+	void Camera3D::setMaxSpeed(const float& _value)
 	{
-		position += right * _amount;
-	}
-
-	void Camera3D::moveLeft(const float& _amount)
-	{
-		position -= right * _amount;
-	}
-
-	void Camera3D::moveUp(const float& _amount)
-	{
-		position += up * _amount;
-	}
-
-	void Camera3D::moveDown(const float& _amount)
-	{
-		position -= up * _amount;
+		maxSpeed = _value;
 	}
 
 	void Camera3D::setPosition(const glm::vec3 &_position)
