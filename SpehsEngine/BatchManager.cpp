@@ -98,6 +98,11 @@ namespace spehs
 		primitives.push_back(new Polygon(_vertexData, _width, _height));
 		return primitives.back()->getPolygonPtr();
 	}
+	Polygon* BatchManager::createPolygon(std::vector<spehs::Position> _cuspData, const PlaneDepth &_planeDepth, const float &_width, const float &_height)
+	{
+		primitives.push_back(new Polygon(_cuspData, _planeDepth, _width, _height));
+		return primitives.back()->getPolygonPtr();
+	}
 
 	Line* BatchManager::createLine(const glm::vec2 &_startPoint, const glm::vec2 &_endPoint, const PlaneDepth &_planeDepth)
 	{

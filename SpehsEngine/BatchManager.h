@@ -20,6 +20,7 @@ namespace spehs
 	class PrimitiveBatch;
 	class MeshBatch;
 	class Vertex;
+	class Position;
 
 	/*
 	Class that handles the management and rendering of batches and batchobjects.
@@ -44,6 +45,7 @@ namespace spehs
 		Polygon* createPolygon(const int &_shapeID, const PlaneDepth &_planeDepth = 0, const float &_width = 1.0f, const float &_height = 1.0f);
 		Polygon* createPolygon(std::vector<spehs::Vertex> _vertexData, const PlaneDepth &_planeDepth, const float &_width = 1.0f, const float &_height = 1.0f);
 		Polygon* createPolygon(std::vector<spehs::Vertex> _vertexData, const float &_width = 1.0f, const float &_height = 1.0f);
+		Polygon* createPolygon(std::vector<spehs::Position> _cuspData, const PlaneDepth &_planeDepth, const float &_width = 1.0f, const float &_height = 1.0f);
 
 		Line* createLine(const glm::vec2 &_startPoint, const glm::vec2 &_endPoint, const PlaneDepth &_planeDepth = 0);
 		Line* createLine(const glm::vec3 &_startPoint, const glm::vec3 &_endPoint);
