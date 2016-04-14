@@ -159,7 +159,7 @@ namespace spehs
 
 				if (!isOpen())
 				{
-					visibility -= deltaTime / 1000.0f;
+					visibility -= deltaTime.asSeconds;
 				}
 			}
 
@@ -176,7 +176,7 @@ namespace spehs
 			{
 				if (visibility < 1.0f)
 				{
-					visibility += deltaTime / 200.0f;
+					visibility += deltaTime.asSeconds * 5.0f;
 					if (visibility > 1.0f)
 						visibility = 1.0f;
 				}
@@ -277,7 +277,7 @@ namespace spehs
 					}
 					else
 					{
-						backspaceTimer -= deltaTime;
+						backspaceTimer -= deltaTime.asMilliseconds;
 					}
 				}
 				else

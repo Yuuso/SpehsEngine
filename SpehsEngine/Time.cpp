@@ -14,13 +14,12 @@ namespace spehs
 	//Global variables
 	int fpsCounterFontSize = 24;
 	float fps = 0;
-	uint32_t maxDeltaTime = 1000;
-	uint32_t deltaTime = 0;
+	Time maxDeltaTime(uint32_t(1000));
+	Time deltaTime;
 	unsigned long drawCalls;
 	unsigned long vertexDrawCount;
 
 	//Local variables
-	float runTime = 0;
 	uint32_t startTicks = 0;
 	spehs::Text* fpsCounter;
 	static bool initialized = false;
@@ -72,7 +71,6 @@ namespace spehs
 	void beginFPS()
 	{
 		startTicks = SDL_GetTicks();
-		runTime += deltaTime / 1000.0f;
 
 		//Update fps counter font size if needed
 		if (previousFontSize != fpsCounterFontSize)
@@ -92,12 +90,16 @@ namespace spehs
 		uint32_t currentTicks;
 		currentTicks = SDL_GetTicks();
 
-		deltaTime = currentTicks - previousTicks;
-		deltaTimes[currentFrame % NUM_SAMPLES] = deltaTime;
+		deltaTime.asMilliseconds = currentTicks - previousTicks;
+		deltaTime.asSeconds = float(deltaTime.asMilliseconds) / 1000.0f;
+		deltaTimes[currentFrame % NUM_SAMPLES] = deltaTime.asMilliseconds;
 
 		//Limit delta time
-		if (maxDeltaTime && deltaTime > maxDeltaTime)
-			deltaTime = maxDeltaTime;
+		if (maxDeltaTime.asMilliseconds > 0 && deltaTime.asMilliseconds > maxDeltaTime.asMilliseconds)
+		{
+			deltaTime.asMilliseconds = maxDeltaTime.asMilliseconds;
+			deltaTime.asSeconds = maxDeltaTime.asSeconds;
+		}
 
 		previousTicks = currentTicks;
 

@@ -254,7 +254,7 @@ namespace spehs
 		////Header double clicking
 		//Timer decrease
 		if (doubleClickTimer > 0)
-			doubleClickTimer -= spehs::deltaTime;
+			doubleClickTimer -= spehs::deltaTime.asMilliseconds;
 		//Check header double click
 		if (isFocused() && inputManager->isKeyPressed(MOUSE_BUTTON_LEFT) && header->getMouseHover())
 		{//Header has been clicked
