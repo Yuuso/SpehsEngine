@@ -55,6 +55,21 @@ namespace spehs
 	};
 
 
+	class DefaultMeshUniforms : public spehs::Uniforms
+	{
+	public:
+		DefaultMeshUniforms(spehs::GLSLProgram* _shader);
+		~DefaultMeshUniforms();
+
+		void setUniforms();
+
+		glm::vec3 cameraPosition;
+
+	private:
+		GLint cameraPositionLocation = 0;
+	};
+
+
 	class Shader
 	{
 	public:

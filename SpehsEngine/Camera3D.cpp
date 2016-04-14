@@ -2,11 +2,11 @@
 #include "Camera3D.h"
 #include "ApplicationData.h"
 #include "Time.h"
+#include "ShaderManager.h"
 
 #include <glm/gtx/transform.hpp>
 #include <glm/gtc/quaternion.hpp>
 #include <glm/gtx/quaternion.hpp>
-#include <iostream>
 
 
 #define GLM_FORCE_RADIANS
@@ -57,9 +57,11 @@ namespace spehs
 		rotation = glm::vec3(0.0f); //clear rotation
 		direction = glm::rotate(glm::normalize(glm::cross(pitchQ, yawQ)), direction);
 		target = position + direction;
-		
+				
 		view = glm::lookAt(position, target, up);
 		view = projection * view;
+
+		shaderManager->getShader(DefaultMesh)->getCustomUniforms<DefaultMeshUniforms>()->cameraPosition = position;
 	}
 
 	void Camera3D::move(const Movement& _movement, const float& _amount)

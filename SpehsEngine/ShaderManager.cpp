@@ -38,6 +38,17 @@ namespace spehs
 		Uniforms::setUniforms();
 	}
 
+	DefaultMeshUniforms::DefaultMeshUniforms(spehs::GLSLProgram* _shader) : Uniforms(_shader)
+	{
+		cameraPositionLocation = shader->getUniformLocation("cameraPosition");
+	}
+	DefaultMeshUniforms::~DefaultMeshUniforms(){}
+	void DefaultMeshUniforms::setUniforms()
+	{
+		spehs::setUniform_vec3(cameraPositionLocation, cameraPosition);
+		Uniforms::setUniforms();
+	}
+
 
 	ShaderManager::ShaderManager()
 	{
@@ -103,24 +114,54 @@ namespace spehs
 			"in vec3 vertexPosition;\n"
 			"in vec4 vertexColor;\n"
 			"in vec3 vertexNormal;\n"
+			"out vec3 fragmentPosition;\n"
 			"out vec4 fragmentColor;\n"
+			"out vec3 fragmentNormal;\n"
 			"uniform mat4 cameraMatrix;\n"
 			"void main()\n"
 			"{\n"
 			"	gl_Position = cameraMatrix * vec4(vertexPosition.xyz, 1.0);\n"
+			"	fragmentPosition = vertexPosition;\n"
 			"	fragmentColor = vertexColor;\n"
+			"	fragmentNormal = vertexNormal;\n"
 			"}\n"
 		};
 		const std::string defaultMeshFrag =
 		{
 			"#version 150\n"
+			"in vec3 fragmentPosition;\n"
 			"in vec4 fragmentColor;\n"
+			"in vec3 fragmentNormal;\n"
 			"out vec4 color;\n"
+			"uniform vec3 cameraPosition;\n"
 			"void main()\n"
 			"{\n"
-			"	color = fragmentColor;\n"
+			"	vec3 normal = normalize(fragmentNormal);\n"
+			"	vec3 lightPosition = vec3(0.0, 5.0, 0.0);\n"
+			"	vec3 lightDirection = normalize(lightPosition - fragmentPosition);\n"
+			"	vec3 viewDirection = normalize(cameraPosition - fragmentPosition);\n"
+			"	float distance = length(lightPosition - fragmentPosition);\n"
+			"	float radius = 20.0;\n"
+			"	float attenuation = 1 - pow((distance / radius), 2);\n"
+			"	float shininess = 64.0;\n"
+			//Ambient
+			"	vec3 ambient = 0.1 * fragmentColor.rgb;\n"
+			//Diffuse
+			"	vec3 diffuse = fragmentColor.rgb;\n"
+			//Specular
+			"	vec3 specular = fragmentColor.rgb;\n"
+			"	float spec = 0.0;\n"
+			"	float lambertian = max(dot(lightDirection, normal), 0.0);\n"
+			"	if(lambertian > 0.0)\n"
+			"	{\n"
+			"		vec3 halfwayDirection = normalize(lightDirection + viewDirection);\n"
+			"		float specAngle = max(dot(normal, halfwayDirection), 0.0);\n"
+			"		spec = pow(specAngle, shininess);\n"
+			"	}\n"
+			"	diffuse = diffuse * lambertian;\n"
+			"	specular = specular * spec;\n"
+			"	color = vec4(ambient + attenuation * (diffuse + specular), 1.0);\n"
 			"}\n"
-			//duriansoftware.com/joe/An-intro-to-modern-OpenGL.-Chapter-4:-Rendering-a-Dynamic-3D-Scene-with-Phong-Shading.html
 		};
 		//
 #pragma endregion
@@ -148,8 +189,9 @@ namespace spehs
 		defaultMeshShader->addAttribute("vertexPosition");
 		defaultMeshShader->addAttribute("vertexColor");
 		defaultMeshShader->addAttribute("vertexNormal");
+		defaultTexShader->addAttribute("vertexUV");
 		defaultMeshShader->linkShaders();
-		shaderPrograms.push_back(new spehs::Shader(spehs::DefaultMesh, defaultMeshShader, new Uniforms(defaultMeshShader)));
+		shaderPrograms.push_back(new spehs::Shader(spehs::DefaultMesh, defaultMeshShader, new DefaultMeshUniforms(defaultMeshShader)));
 		////DefaultMeshTexture
 		//spehs::GLSLProgram* defaultMeshTexShader = new spehs::GLSLProgram();
 		//defaultTexShader->compileShadersFromSource(defaultTextureVert, defaultTextureFrag);
@@ -242,7 +284,7 @@ namespace spehs
 
 		checkOpenGLErrors(__FILE__, __LINE__);
 	}
-	void setUniform_vec3(const GLint &_location, const glm::vec2 &_value)
+	void setUniform_vec3(const GLint &_location, const glm::vec3 &_value)
 	{
 		glUniform3fv(_location, 1, &_value[0]);
 

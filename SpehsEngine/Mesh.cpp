@@ -66,6 +66,9 @@ namespace spehs
 			{
 				glm::vec4 vertex = transformMatrix * glm::vec4(vertexArray[i].position.x, vertexArray[i].position.y, vertexArray[i].position.z, 1.0f);
 				worldVertexArray[i].position.setPosition(vertex.x, vertex.y, vertex.z);
+				vertex = transformMatrix * glm::vec4(vertexArray[i].normal.x, vertexArray[i].normal.y, vertexArray[i].normal.z, 1.0f);
+				vertex = glm::normalize(vertex);
+				worldVertexArray[i].normal.setPosition(vertex.x, vertex.y, vertex.z);
 			}
 			needUpdate = false;
 		}
