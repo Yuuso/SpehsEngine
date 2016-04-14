@@ -175,4 +175,196 @@ namespace spehs
 
 		return endTime[timerIndex] - beginTime[timerIndex];
 	}
+
+
+
+
+	//TIME STRUCT
+	Time::Time() : asMilliseconds(0), asSeconds(0) {}
+	Time::Time(const Time& other) : asMilliseconds(other.asMilliseconds), asSeconds(other.asSeconds) {}
+	Time::Time(const float _asSeconds) : asMilliseconds(_asSeconds * 1000), asSeconds(_asSeconds) {}
+	Time::Time(const uint32_t _asMilliSeconds) : asMilliseconds(_asMilliSeconds), asSeconds(float(_asMilliSeconds) / 1000.0f) {}
+	Time Time::operator*(const Time& other)
+	{
+		return Time(asSeconds * other.asSeconds);
+	}
+	Time Time::operator*(const float& _asSeconds)
+	{
+		return Time(asSeconds * _asSeconds);
+	}
+	Time Time::operator*(const uint32_t& _asMilliseconds)
+	{
+		return Time(asSeconds * float(_asMilliseconds * 1000.0f));
+	}
+	Time Time::operator/(const Time& other)
+	{
+		return Time(asSeconds / other.asSeconds);
+	}
+	Time Time::operator/(const float& _asSeconds)
+	{
+		return Time(asSeconds / _asSeconds);
+	}
+	Time Time::operator/(const uint32_t& _asMilliseconds)
+	{
+		return Time(float(asMilliseconds * 1000) / float(_asMilliseconds * 1000));
+	}
+	Time Time::operator+(const Time& other)
+	{
+		return Time(asMilliseconds + other.asMilliseconds);
+	}
+	Time Time::operator+(const float& _asSeconds)
+	{
+		return Time(asSeconds + _asSeconds);
+	}
+	Time Time::operator+(const uint32_t& _asMilliseconds)
+	{
+		return Time(asMilliseconds + _asMilliseconds);
+	}
+	Time Time::operator-(const Time& other)
+	{
+		return Time(asMilliseconds - other.asMilliseconds);
+	}
+	Time Time::operator-(const float& _asSeconds)
+	{
+		return Time(asSeconds - _asSeconds);
+	}
+	Time Time::operator-(const uint32_t& _asMilliseconds)
+	{
+		return Time(asMilliseconds - _asMilliseconds);
+	}
+	void Time::operator=(const Time& other)
+	{
+		asMilliseconds = other.asMilliseconds;
+		asSeconds = other.asSeconds;
+	}
+	void Time::operator=(const float _asSeconds)
+	{
+		asMilliseconds = _asSeconds * 1000.0f;
+		asSeconds = _asSeconds;
+	}
+	void Time::operator=(const uint32_t _asMilliseconds)
+	{
+		asMilliseconds = _asMilliseconds;
+		asSeconds = _asMilliseconds / 1000.0f;
+	}
+	void Time::operator*=(const Time& other)
+	{
+		asMilliseconds = float(asMilliseconds * 1000.0f) * float(other.asMilliseconds * 1000.0f);
+		asSeconds *= other.asSeconds;
+	}
+	void Time::operator*=(const float& _asSeconds)
+	{
+		asMilliseconds = float(asMilliseconds * 1000.0f) * _asSeconds;
+		asSeconds *= _asSeconds;
+	}
+	void Time::operator*=(const uint32_t& _asMilliseconds)
+	{
+		asMilliseconds = float(asMilliseconds * 1000.0f) * float(_asMilliseconds * 1000.0f);
+		asSeconds *= float(_asMilliseconds * 1000.0f);
+	}
+	void Time::operator/=(const Time& other)
+	{
+		asMilliseconds = float(asMilliseconds * 1000.0f) / float(other.asMilliseconds * 1000.0f);
+		asSeconds /= other.asSeconds;
+	}
+	void Time::operator/=(const float& _asSeconds)
+	{
+		asMilliseconds = float(asMilliseconds * 1000.0f) / _asSeconds;
+		asSeconds /= _asSeconds;
+	}
+	void Time::operator/=(const uint32_t& _asMilliseconds)
+	{
+		asMilliseconds = float(asMilliseconds * 1000.0f) / float(_asMilliseconds * 1000.0f);
+		asSeconds /= float(_asMilliseconds * 1000.0f);
+	}
+	void Time::operator+=(const Time& other)
+	{
+		asSeconds += other.asSeconds;
+		asMilliseconds += other.asMilliseconds;
+	}
+	void Time::operator+=(const float& _asSeconds)
+	{
+		asSeconds += _asSeconds;
+		asMilliseconds += uint32_t(_asSeconds * 1000.0f);
+	}
+	void Time::operator+=(const uint32_t& _asMilliseconds)
+	{
+		asSeconds += float(_asMilliseconds) / 1000.0f;
+		asMilliseconds += _asMilliseconds;
+	}
+	void Time::operator-=(const Time& other)
+	{
+		asSeconds -= other.asSeconds;
+		asMilliseconds -= other.asMilliseconds;
+	}
+	void Time::operator-=(const float& _asSeconds)
+	{
+		asSeconds -= _asSeconds;
+		asMilliseconds -= uint32_t(_asSeconds * 1000.0f);
+	}
+	void Time::operator-=(const uint32_t& _asMilliseconds)
+	{
+		asSeconds -= float(_asMilliseconds) / 1000.0f;
+		asMilliseconds -= _asMilliseconds;
+	}
+	bool Time::operator==(const Time& other)
+	{
+		return asMilliseconds == other.asMilliseconds;
+	}
+	bool Time::operator==(const float _asSeconds)
+	{
+		return abs(asSeconds - _asSeconds) < 0.0005;
+	}
+	bool Time::operator==(const uint32_t _asMilliseconds)
+	{
+		return asMilliseconds == _asMilliseconds;
+	}
+	bool Time::operator>(const Time& other)
+	{
+		return asMilliseconds > other.asMilliseconds;
+	}
+	bool Time::operator>(const float _asSeconds)
+	{
+		return asMilliseconds > _asSeconds;
+	}
+	bool Time::operator>(const uint32_t _asMilliseconds)
+	{
+		return asMilliseconds > _asMilliseconds;
+	}
+	bool Time::operator<(const Time& other)
+	{
+		return asMilliseconds < other.asMilliseconds;
+	}
+	bool Time::operator<(const float _asSeconds)
+	{
+		return asMilliseconds < _asSeconds;
+	}
+	bool Time::operator<(const uint32_t _asMilliseconds)
+	{
+		return asMilliseconds < _asMilliseconds;
+	}
+	bool Time::operator>=(const Time& other)
+	{
+		return asMilliseconds >= other.asMilliseconds;
+	}
+	bool Time::operator>=(const float _asSeconds)
+	{
+		return asSeconds >= _asSeconds;
+	}
+	bool Time::operator>=(const uint32_t _asMilliseconds)
+	{
+		return asMilliseconds >= _asMilliseconds;
+	}
+	bool Time::operator<=(const Time& other)
+	{
+		return asMilliseconds <= other.asMilliseconds;
+	}
+	bool Time::operator<=(const float _asSeconds)
+	{
+		return asSeconds <= _asSeconds;
+	}
+	bool Time::operator<=(const uint32_t _asMilliseconds)
+	{
+		return asMilliseconds <= _asMilliseconds;
+	}
 }

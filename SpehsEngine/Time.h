@@ -6,9 +6,52 @@ namespace spehs
 {
 	struct Time
 	{
-		Time() : asMilliseconds(0), asSeconds(0) {}
-		Time(const float _asSeconds) : asMilliseconds(_asSeconds * 1000), asSeconds(_asSeconds) {}
-		Time(const uint32_t _asMilliSeconds) : asMilliseconds(_asMilliSeconds), asSeconds(float(_asMilliSeconds) / 1000.0f) {}
+		Time();
+		Time(const Time& other);
+		Time(const float _asSeconds);
+		Time(const uint32_t _asMilliSeconds);
+		void operator*=(const Time& other);
+		void operator*=(const float& _asSeconds);
+		void operator*=(const uint32_t& _asMilliseconds);
+		void operator/=(const Time& other);
+		void operator/=(const float& _asSeconds);
+		void operator/=(const uint32_t& _asMilliseconds);
+		void operator+=(const Time& other);
+		void operator+=(const float& _asSeconds);
+		void operator+=(const uint32_t& _asMilliseconds);
+		void operator-=(const Time& other);
+		void operator-=(const float& _asSeconds);
+		void operator-=(const uint32_t& _asMilliseconds);
+		Time operator*(const Time& other);
+		Time operator*(const float& _asSeconds);
+		Time operator*(const uint32_t& _asMilliseconds);
+		Time operator/(const Time& other);
+		Time operator/(const float& _asSeconds);
+		Time operator/(const uint32_t& _asMilliseconds);
+		Time operator+(const Time& other);
+		Time operator+(const float& _asSeconds);
+		Time operator+(const uint32_t& _asMilliseconds);
+		Time operator-(const Time& other);
+		Time operator-(const float& _asSeconds);
+		Time operator-(const uint32_t& _asMilliseconds);
+		void operator=(const Time& other);
+		void operator=(const float _asSeconds);
+		void operator=(const uint32_t _asMilliseconds);
+		bool operator==(const Time& other);
+		bool operator==(const float _asSeconds);
+		bool operator==(const uint32_t _asMilliseconds);
+		bool operator>(const Time& other);
+		bool operator>(const float _asSeconds);
+		bool operator>(const uint32_t _asMilliseconds);
+		bool operator<(const Time& other);
+		bool operator<(const float _asSeconds);
+		bool operator<(const uint32_t _asMilliseconds);
+		bool operator>=(const Time& other);
+		bool operator>=(const float _asSeconds);
+		bool operator>=(const uint32_t _asMilliseconds);
+		bool operator<=(const Time& other);
+		bool operator<=(const float _asSeconds);
+		bool operator<=(const uint32_t _asMilliseconds);
 		uint32_t asMilliseconds;
 		float asSeconds;
 	};
