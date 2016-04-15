@@ -62,6 +62,8 @@ namespace spehs
 		glDepthFunc(GL_LESS);
 
 		//Face culling
+		glFrontFace(GL_CCW);
+		glCullFace(GL_BACK);
 		glEnable(GL_CULL_FACE);
 
 		//MSAA Antialiasing

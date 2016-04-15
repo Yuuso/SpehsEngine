@@ -199,7 +199,7 @@ namespace spehs
 				//If none found create a new one
 				if (!batchFound)
 				{
-					meshBatches.push_back(new MeshBatch(meshes[i]->shaderIndex, meshes[i]->textureDataID, meshes[i]->drawMode, meshes[i]->lineWidth));
+					meshBatches.push_back(new MeshBatch(meshes[i]->worldVertexArray.size(), meshes[i]->shaderIndex, meshes[i]->textureDataID, meshes[i]->drawMode, meshes[i]->lineWidth));
 					meshBatches.back()->push(meshes[i]);
 				}
 				i++;

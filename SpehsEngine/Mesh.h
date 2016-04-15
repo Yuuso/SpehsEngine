@@ -2,13 +2,13 @@
 
 #include "Vertex.h"
 #include "Primitive.h"
-#include "Container.h"
 
 #include <glm/vec3.hpp>
 #include <glm/vec4.hpp>
 #include <glm/mat4x4.hpp>
 #include <glm/gtc/quaternion.hpp>
 #include <string>
+#include <vector>
 
 
 typedef unsigned short GLushort;
@@ -57,7 +57,7 @@ namespace spehs
 
 
 		//Public Variables
-		spehs::Container<spehs::Vertex3D> worldVertexArray; //Transformed vertices
+		std::vector<spehs::Vertex3D> worldVertexArray; //Transformed vertices
 
 	protected:
 		Mesh();
@@ -78,9 +78,10 @@ namespace spehs
 		glm::mat4 scaledMatrix;
 		glm::mat4 scaledRotatedMatrix;
 		glm::mat4 transformMatrix;
+		glm::mat4 normalMatrix;
 
 		spehs::Position position;
-		spehs::Container<spehs::Vertex3D> vertexArray; //Original vertices
-		spehs::Container<GLushort> elementArray; //Indices
+		std::vector<spehs::Vertex3D> vertexArray; //Original vertices
+		std::vector<GLushort> elementArray; //Indices
 	};
 }

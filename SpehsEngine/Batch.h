@@ -2,13 +2,13 @@
 
 #include "Primitive.h"
 #include "Vertex.h"
-#include "Container.h"
 
 #include <glm/vec3.hpp>
 
 #include <vector>
 #include <stdint.h>
 
+#define DEFAULT_MAX_BATCH_SIZE 4096
 
 typedef unsigned int GLenum;
 typedef unsigned int GLuint;
@@ -22,7 +22,7 @@ namespace spehs
 	class BatchManager;
 	class Mesh;
 	
-	int getIndexMultiplier(const GLenum &_drawMode); //Calculate max number of indices
+	int getIndexMultiplier(const GLenum &_drawMode, const unsigned int& _batchSize = DEFAULT_MAX_BATCH_SIZE); //Calculate max number of indices
 
 
 	//Batch for Primitives
@@ -72,27 +72,29 @@ namespace spehs
 
 	public:
 		MeshBatch();
-		MeshBatch(const int &_shader, const GLuint &_textureID, const GLenum &_drawMode, const float &_lineWidth = 0.0f);
+		MeshBatch(const unsigned int& _batchSizeCheck, const int &_shader, const GLuint &_textureID, const GLenum &_drawMode, const float &_lineWidth = 0.0f);
 		~MeshBatch();
 
-		bool operator==(const Mesh &_mesh) const; //Checks if mesh is suitable for this batch
+		bool operator==(const Mesh &_mesh); //Checks if mesh is suitable for this batch
 
 		bool render(); //Returns false if the batch is empty
 		void push(Mesh* _mesh);
 
 	private:
-		bool isEnoughRoom(const unsigned int &_numVertices) const;
+		bool isEnoughRoom(const unsigned int &_numVertices);
 		void initBuffers();
 		void updateBuffers();
+		void clearGPUBuffers();
 
-		spehs::Container<spehs::Vertex3D> vertices;
-		spehs::Container<GLushort> indices;
+		std::vector<spehs::Vertex3D> vertices;
+		std::vector<GLushort> indices;
 
 		GLuint vertexArrayObjectID;
 		GLuint vertexBufferID;
 		GLuint indexBufferID;
 
 		int shaderIndex;
+		unsigned int batchSize;
 		GLuint textureDataID;
 		GLenum drawMode;
 		float lineWidth;

@@ -4,7 +4,7 @@
 #include <GL/glew.h>
 #include <SDL/SDL.h>
 
-#define STOP_AFTER_ERROR false
+#define STOP_AFTER_ERROR true
 
 
 namespace spehs

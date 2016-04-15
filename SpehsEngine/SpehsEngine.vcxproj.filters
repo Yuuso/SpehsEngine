@@ -300,9 +300,6 @@
     <ClInclude Include="RigidBody2D.h">
       <Filter>Core\Object/Component</Filter>
     </ClInclude>
-    <ClInclude Include="Container.h">
-      <Filter>Core</Filter>
-    </ClInclude>
     <ClInclude Include="PhysicsWorld2D.h">
       <Filter>Physics</Filter>
     </ClInclude>

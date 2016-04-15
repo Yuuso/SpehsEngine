@@ -15,20 +15,18 @@
 #include <GL/glew.h>
 #include <algorithm>
 
-#define DEFAULT_MAX_BATCH_SIZE 4096
-
 
 namespace spehs
 {
-	int getIndexMultiplier(const GLenum &_drawMode)
+	int getIndexMultiplier(const GLenum &_drawMode, const unsigned int& _batchSize)
 	{
 		switch (_drawMode)
 		{
 		case TRIANGLE:
-			return (DEFAULT_MAX_BATCH_SIZE - 2) * 3;
+			return (_batchSize - 2) * 3;
 			break;
 		default:
-			return DEFAULT_MAX_BATCH_SIZE;
+			return _batchSize;
 			break;
 		}
 	}
@@ -262,8 +260,9 @@ namespace spehs
 
 	void PrimitiveBatch::setIndices(const unsigned int &_numVertices)
 	{
-		unsigned int currentIndex(vertices.size());
-		unsigned int numIndices(indices.size());
+		unsigned int currentIndex = (vertices.size());
+		unsigned int numIndices = (indices.size());
+		unsigned int index = (numIndices);
 		switch (drawMode)
 		{
 		case UNDEFINED:
@@ -277,9 +276,10 @@ namespace spehs
 				glPointSize(1.0f);
 		case LINE:
 		case LINE_LOOP:
-			for (unsigned i = currentIndex; i < currentIndex + _numVertices; i++)
+			indices.resize(indices.size() + _numVertices);
+			for (unsigned i = numIndices; i < numIndices + _numVertices; i++)
 			{
-				indices.push_back((GLushort) i);
+				indices[i] = (GLushort) currentIndex + (i - numIndices);
 			}
 			break;
 
@@ -288,11 +288,12 @@ namespace spehs
 			Number of indices in a polygon:
 			(NumberOfVertices - 2) * 3
 			*/
-			for (unsigned i = 1; indices.size() < (numIndices + ((_numVertices - 2) * 3));)
+			indices.resize(indices.size() + ((_numVertices - 2) * 3));
+			for (unsigned i = 1; index < (numIndices + ((_numVertices - 2) * 3));)
 			{
-				indices.push_back((GLushort) currentIndex);
-				indices.push_back((GLushort) (currentIndex + i++));
-				indices.push_back((GLushort) (currentIndex + i));
+				indices[index++] = ((GLushort) currentIndex);
+				indices[index++] = ((GLushort) (currentIndex + i++));
+				indices[index++] = ((GLushort) (currentIndex + i));
 			}
 			break;
 
@@ -312,6 +313,7 @@ namespace spehs
 		vertexBufferID = 0;
 		indexBufferID = 0;
 
+		batchSize = DEFAULT_MAX_BATCH_SIZE;
 		shaderIndex = 0;
 		textureDataID = 0;
 		drawMode = UNDEFINED;
@@ -319,45 +321,34 @@ namespace spehs
 
 		initBuffers();
 	}
-	MeshBatch::MeshBatch(const int &_shader, const GLuint &_textureID, const GLenum &_drawMode, const float &_lineWidth)
+	MeshBatch::MeshBatch(const unsigned int& _batchSizeCheck, const int &_shader, const GLuint &_textureID, const GLenum &_drawMode, const float &_lineWidth)
 	{
 		vertexArrayObjectID = 0;
 		vertexBufferID = 0;
 		indexBufferID = 0;
+
+		if (_batchSizeCheck > DEFAULT_MAX_BATCH_SIZE)
+			batchSize = _batchSizeCheck;
+		else
+			batchSize = DEFAULT_MAX_BATCH_SIZE;
 
 		shaderIndex = _shader;
 		textureDataID = _textureID;
 		drawMode = _drawMode;
 		lineWidth = _lineWidth;
 
-		//vertices.resize(DEFAULT_MAX_BATCH_SIZE);
-		//indices.resize(getIndexMultiplier(drawMode));
+		vertices.reserve(batchSize);
+		indices.reserve(batchSize * 4); //For mesh batch this is not the true max value
 
 		initBuffers();
 	}
 	MeshBatch::~MeshBatch()
 	{
-		if (vertexBufferID != 0)
-		{
-			glBindBuffer(GL_ARRAY_BUFFER, 0);
-			glDeleteBuffers(1, &vertexBufferID);
-		}
-		if (indexBufferID != 0)
-		{
-			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-			glDeleteBuffers(1, &indexBufferID);
-		}
-		if (vertexArrayObjectID != 0)
-		{
-			glBindVertexArray(0);
-			glDeleteVertexArrays(1, &vertexArrayObjectID);
-		}
-
-		checkOpenGLErrors(__FILE__, __LINE__);
+		clearGPUBuffers();
 	}
 
 
-	bool MeshBatch::operator==(const Mesh &_mesh) const
+	bool MeshBatch::operator==(const Mesh &_mesh)
 	{
 		if (shaderIndex != _mesh.shaderIndex ||
 			textureDataID != _mesh.textureDataID ||
@@ -439,25 +430,35 @@ namespace spehs
 		GLushort firstElement = vertices.size();
 		unsigned int indSize = indices.size();
 		//INDICES
-		indices.push(_mesh->elementArray);
+		indices.insert(indices.end(), _mesh->elementArray.begin(), _mesh->elementArray.end());
 		for (size_t i = indSize; i < indices.size(); i++)
 		{
 			indices[i] += firstElement;
 		}
 		//VERTICES
-		vertices.push(_mesh->worldVertexArray);
+		vertices.insert(vertices.end(), _mesh->worldVertexArray.begin(), _mesh->worldVertexArray.end());
 	}
 
 	//Private:
-	bool MeshBatch::isEnoughRoom(const unsigned int &_numVertices) const
+	bool MeshBatch::isEnoughRoom(const unsigned int &_numVertices)
 	{
 		if (_numVertices > DEFAULT_MAX_BATCH_SIZE)
-			exceptions::fatalError("The number of vertices in a mesh exceeds the max amount allowed in the batch!");
+		{
+			if (vertices.size() == 0) //If this is empty batch, resize it for the mesh
+			{
+				batchSize = _numVertices;
+				clearGPUBuffers();
+				initBuffers();
+				return true;
+			}
+			return false;
+		}
 		return (vertices.size() + _numVertices) <= DEFAULT_MAX_BATCH_SIZE;
 	}
 
 	void MeshBatch::initBuffers()
 	{
+		clearGPUBuffers();
 		//Generate VAO
 		glGenVertexArrays(1, &vertexArrayObjectID);
 		//Generate buffers
@@ -470,10 +471,10 @@ namespace spehs
 		glBindVertexArray(vertexArrayObjectID);
 
 		glBindBuffer(GL_ARRAY_BUFFER, vertexBufferID);
-		glBufferData(GL_ARRAY_BUFFER, sizeof(spehs::Vertex3D) * DEFAULT_MAX_BATCH_SIZE, nullptr, GL_STREAM_DRAW);
+		glBufferData(GL_ARRAY_BUFFER, sizeof(spehs::Vertex3D) * batchSize, nullptr, GL_STREAM_DRAW);
 
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBufferID);
-		glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLushort) * getIndexMultiplier(drawMode), nullptr, GL_STREAM_DRAW);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLushort) * batchSize * 4, nullptr, GL_STREAM_DRAW);
 
 		checkOpenGLErrors(__FILE__, __LINE__);
 
@@ -515,6 +516,27 @@ namespace spehs
 		glBindVertexArray(0);
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+
+		checkOpenGLErrors(__FILE__, __LINE__);
+	}
+
+	void MeshBatch::clearGPUBuffers()
+	{
+		if (vertexBufferID != 0)
+		{
+			glBindBuffer(GL_ARRAY_BUFFER, 0);
+			glDeleteBuffers(1, &vertexBufferID);
+		}
+		if (indexBufferID != 0)
+		{
+			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+			glDeleteBuffers(1, &indexBufferID);
+		}
+		if (vertexArrayObjectID != 0)
+		{
+			glBindVertexArray(0);
+			glDeleteVertexArrays(1, &vertexArrayObjectID);
+		}
 
 		checkOpenGLErrors(__FILE__, __LINE__);
 	}

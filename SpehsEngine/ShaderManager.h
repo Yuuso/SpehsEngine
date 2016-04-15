@@ -104,6 +104,7 @@ namespace spehs
 		void setUniforms(int _index);
 		void use(int _index);
 		void unuse(int _index);
+		size_t size();
 
 	private:
 		std::vector<Shader*> shaderPrograms;

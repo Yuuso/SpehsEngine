@@ -15,7 +15,7 @@ namespace spehs
 		void setPosition(const float &_x, const float &_y);
 		void setPosition(const float &_x, const float &_y, const float &_z);
 
-		bool operator==(const Position& _other);
+		bool operator==(const Position& _other) const;
 
 		float x;
 		float y;
@@ -41,7 +41,7 @@ namespace spehs
 		UV();
 		UV(const float &_u, const float &_v);
 
-		bool operator==(const UV& _other);
+		bool operator==(const UV& _other) const;
 
 		void setUV(const float &_u, const float &_v);
 

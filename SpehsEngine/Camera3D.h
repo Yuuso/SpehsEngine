@@ -45,6 +45,7 @@ namespace spehs
 
 	private:
 		bool smoothCamera;
+		bool followTarget;
 
 		glm::vec3 position;
 		glm::vec3 rotation;
@@ -52,6 +53,7 @@ namespace spehs
 
 		glm::vec3 direction;
 		glm::vec3 target;
+		glm::vec3 targetToFollow;
 		glm::vec3 up;
 		glm::vec3 right;
 

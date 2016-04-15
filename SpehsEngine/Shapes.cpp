@@ -11,42 +11,33 @@ namespace spehs
 {
 	std::vector<Vertex> getShapeVertexArray(Shape shape)
 	{
+		std::vector<Vertex> vertexArray;
 		switch (shape)
 		{
 		case RIGHTANGLED_TRIANGLE:
-		{
-			std::vector<Vertex> vertexArray;
 			vertexArray.resize(3);
 			vertexArray[0].position.setPosition(-0.5f, -0.5f);
 			vertexArray[1].position.setPosition(0.5f, -0.5f);
 			vertexArray[2].position.setPosition(-0.5f, 0.5f);
-			return vertexArray;
-		}
+			break;
 		case ISOSCELES_TRIANGLE:
-		{
-			std::vector<Vertex> vertexArray;
 			vertexArray.resize(3);
 			vertexArray[0].position.setPosition(0.0f, 0.5f);
 			vertexArray[1].position.setPosition(cos((7.0f / 6.0f) * PI) * 0.5f, sin((7.0f / 6.0f) * PI) * 0.5f);
 			vertexArray[2].position.setPosition(cos((11.0f / 6.0f) * PI) * 0.5f, sin((11.0f / 6.0f) * PI) * 0.5f);
-			return vertexArray;
-		}
+			break;
 		case BUTTON:
-		{
-			std::vector<Vertex> vertexArray;
 			vertexArray.resize(4);
 			vertexArray[0].position.setPosition(0.0f, 0.0f);
 			vertexArray[1].position.setPosition(1.0f, 0.0f);
 			vertexArray[2].position.setPosition(1.0f, 1.0f);
 			vertexArray[3].position.setPosition(0.0f, 1.0f);
-			return vertexArray;
-		}
+			break;
 		default:
+			exceptions::fatalError("Invalid shape!");
 			break;
 		}
-		exceptions::fatalError("Invalid shape!");
-		std::vector<Vertex> errorVector;
-		return errorVector;
+		return vertexArray;
 	}
 
 	int getNumVertices(Shape shape)

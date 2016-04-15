@@ -50,7 +50,7 @@ namespace spehs
 	}
 
 
-	ShaderManager::ShaderManager()
+	Shader* buildDefaultShader(const int _index)
 	{
 #pragma region Default Shaders
 		//
@@ -123,7 +123,7 @@ namespace spehs
 			"	gl_Position = cameraMatrix * vec4(vertexPosition.xyz, 1.0);\n"
 			"	fragmentPosition = vertexPosition;\n"
 			"	fragmentColor = vertexColor;\n"
-			"	fragmentNormal = vertexNormal;\n"
+			"	fragmentNormal = normalize(vertexNormal);\n"
 			"}\n"
 		};
 		const std::string defaultMeshFrag =
@@ -136,7 +136,7 @@ namespace spehs
 			"uniform vec3 cameraPosition;\n"
 			"void main()\n"
 			"{\n"
-			"	vec3 normal = normalize(fragmentNormal);\n"
+			"	vec3 normal = (fragmentNormal);\n"
 			"	vec3 lightPosition = vec3(0.0, 5.0, 0.0);\n"
 			"	vec3 lightDirection = normalize(lightPosition - fragmentPosition);\n"
 			"	vec3 viewDirection = normalize(cameraPosition - fragmentPosition);\n"
@@ -165,40 +165,56 @@ namespace spehs
 		};
 		//
 #pragma endregion
+		Shader* result = nullptr;
+		spehs::GLSLProgram* defaultShader = new spehs::GLSLProgram();
+		switch (_index)
+		{
+		case 0:
+			defaultShader->compileShadersFromSource(defaultPolygonVert, defaultPolygonFrag);
+			defaultShader->addAttribute("vertexPosition");
+			defaultShader->addAttribute("vertexColor");
+			defaultShader->linkShaders();
+			result = new spehs::Shader(spehs::DefaultPolygon, defaultShader, new Uniforms(defaultShader));
+			break;
+		case 1:
+			defaultShader->compileShadersFromSource(defaultTextureVert, defaultTextureFrag);
+			defaultShader->addAttribute("vertexPosition");
+			defaultShader->addAttribute("vertexColor");
+			defaultShader->addAttribute("vertexUV");
+			defaultShader->linkShaders();
+			result = new spehs::Shader(spehs::DefaultTexture, defaultShader, new DefaultTextureUniforms(defaultShader));
+			break;
+		case 2:
+			defaultShader->compileShadersFromSource(defaultMeshVert, defaultMeshFrag);
+			defaultShader->addAttribute("vertexPosition");
+			defaultShader->addAttribute("vertexColor");
+			defaultShader->addAttribute("vertexNormal");
+			defaultShader->linkShaders();
+			result = new spehs::Shader(spehs::DefaultMesh, defaultShader, new DefaultMeshUniforms(defaultShader));
+			break;
+		case 3:
+			exceptions::fatalError("shader not built yet!");
+			break;
+		default:
+			exceptions::fatalError("Default shader index out of reach!");
+			break;
+		}
+		return result;
+	}
+	ShaderManager::ShaderManager()
+	{
 
 		//DefaultPolygon
-		spehs::GLSLProgram* defaultShader = new spehs::GLSLProgram();
-		defaultShader->compileShadersFromSource(defaultPolygonVert, defaultPolygonFrag);
-		defaultShader->addAttribute("vertexPosition");
-		defaultShader->addAttribute("vertexColor");
-		defaultShader->linkShaders();
-		shaderPrograms.push_back(new spehs::Shader(spehs::DefaultPolygon, defaultShader, new Uniforms(defaultShader)));
+		shaderPrograms.push_back(buildDefaultShader(0));
 
 		//DefaultTexture
-		spehs::GLSLProgram* defaultTexShader = new spehs::GLSLProgram();
-		defaultTexShader->compileShadersFromSource(defaultTextureVert, defaultTextureFrag);
-		defaultTexShader->addAttribute("vertexPosition");
-		defaultTexShader->addAttribute("vertexColor");
-		defaultTexShader->addAttribute("vertexUV");
-		defaultTexShader->linkShaders();
-		shaderPrograms.push_back(new spehs::Shader(spehs::DefaultTexture, defaultTexShader, new DefaultTextureUniforms(defaultTexShader)));
+		shaderPrograms.push_back(buildDefaultShader(1));
 
 		//DefaultMesh
-		spehs::GLSLProgram* defaultMeshShader = new spehs::GLSLProgram();
-		defaultMeshShader->compileShadersFromSource(defaultMeshVert, defaultMeshFrag);
-		defaultMeshShader->addAttribute("vertexPosition");
-		defaultMeshShader->addAttribute("vertexColor");
-		defaultMeshShader->addAttribute("vertexNormal");
-		defaultTexShader->addAttribute("vertexUV");
-		defaultMeshShader->linkShaders();
-		shaderPrograms.push_back(new spehs::Shader(spehs::DefaultMesh, defaultMeshShader, new DefaultMeshUniforms(defaultMeshShader)));
-		////DefaultMeshTexture
-		//spehs::GLSLProgram* defaultMeshTexShader = new spehs::GLSLProgram();
-		//defaultTexShader->compileShadersFromSource(defaultTextureVert, defaultTextureFrag);
-		//defaultTexShader->addAttribute("vertexPosition");
-		//defaultTexShader->addAttribute("textureCoords");
-		//defaultTexShader->linkShaders();
-		//shaderPrograms.push_back(new spehs::Shader(spehs::DefaultMeshTexture, defaultMeshTexShader, new DefaultTextureUniforms(defaultMeshTexShader)));
+		shaderPrograms.push_back(buildDefaultShader(2));
+
+		//DefaultMeshTexture
+		//TODO
 	}
 	ShaderManager::~ShaderManager()
 	{
@@ -256,6 +272,10 @@ namespace spehs
 			return;
 		}
 		shaderPrograms[_index]->shader->unuse();
+	}
+	size_t ShaderManager::size()
+	{
+		return shaderPrograms.size();
 	}
 
 

@@ -26,7 +26,7 @@ namespace spehs
 		y = _y;
 		z = _z;
 	}
-	bool Position::operator==(const Position& _other)
+	bool Position::operator==(const Position& _other) const
 	{
 		return (x == _other.x && y == _other.y && z == _other.z);
 	}
@@ -106,7 +106,7 @@ namespace spehs
 	{
 
 	}
-	bool UV::operator==(const UV& _other)
+	bool UV::operator==(const UV& _other) const
 	{
 		return (u == _other.u && v == _other.v);
 	}

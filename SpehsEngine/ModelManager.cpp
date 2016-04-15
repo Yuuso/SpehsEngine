@@ -14,7 +14,7 @@
 spehs::ModelManager* modelManager;
 namespace spehs
 {
-	int checkArrayForElements(const spehs::Container<spehs::Vertex3D>& _array, const spehs::Position& _position, const glm::vec2& _textureCoord, const glm::vec3& _normal)
+	int checkArrayForElements(const std::vector<spehs::Vertex3D>& _array, const spehs::Position& _position, const glm::vec2& _textureCoord, const glm::vec3& _normal)
 	{
 		for (unsigned i = 0; i < _array.size(); i++)
 		{
@@ -31,11 +31,11 @@ namespace spehs
 	ModelData::ModelData()
 	{
 	}
-	void ModelData::loadFromData(spehs::Container<spehs::Vertex3D> &_vertexArray, spehs::Container<GLushort> &_elementArray)
+	void ModelData::loadFromData(std::vector<spehs::Vertex3D> &_vertexArray, std::vector<GLushort> &_elementArray)
 	{
 		int index;
-		spehs::Container<spehs::Vertex3D> vertexArray;
-		spehs::Container<GLushort> elementArray;
+		std::vector<spehs::Vertex3D> vertexArray;
+		std::vector<GLushort> elementArray;
 		for (unsigned i = 0; i < vertexElements.size(); i++)
 		{
 			//Check if there is already a vertex with the wanted attributes (position, uv, normal)
@@ -48,14 +48,14 @@ namespace spehs
 					index = checkArrayForElements(vertexArray, vertices[vertexElements[i]].position, glm::vec2(0.0f), glm::vec3(0.0f));
 					if (index < 0)
 					{
-						vertexArray.push(Vertex3D(vertices[vertexElements[i]].position,
+						vertexArray.push_back(Vertex3D(vertices[vertexElements[i]].position,
 							UV(),
 							Position()));
-						elementArray.push(vertexArray.size() - 1);
+						elementArray.push_back(vertexArray.size() - 1);
 					}
 					else
 					{
-						elementArray.push(index);
+						elementArray.push_back(index);
 					}
 				}
 				else
@@ -63,14 +63,14 @@ namespace spehs
 					index = checkArrayForElements(vertexArray, vertices[vertexElements[i]].position, glm::vec2(0.0f), normals[normalElements[i]]);
 					if (index < 0)
 					{
-						vertexArray.push(Vertex3D(vertices[vertexElements[i]].position,
+						vertexArray.push_back(Vertex3D(vertices[vertexElements[i]].position,
 							UV(),
 							Position(normals[normalElements[i]].x, normals[normalElements[i]].y, normals[normalElements[i]].z)));
-						elementArray.push(vertexArray.size() - 1);
+						elementArray.push_back(vertexArray.size() - 1);
 					}
 					else
 					{
-						elementArray.push(index);
+						elementArray.push_back(index);
 					}
 				}
 			}
@@ -79,14 +79,14 @@ namespace spehs
 				index = checkArrayForElements(vertexArray, vertices[vertexElements[i]].position, textureCoordinates[textureElements[i]], glm::vec3(0.0f));
 				if (index < 0)
 				{
-					vertexArray.push(Vertex3D(vertices[vertexElements[i]].position,
+					vertexArray.push_back(Vertex3D(vertices[vertexElements[i]].position,
 						UV(textureCoordinates[textureElements[i]].x, textureCoordinates[textureElements[i]].y),
 						Position()));
-					elementArray.push(vertexArray.size() - 1);
+					elementArray.push_back(vertexArray.size() - 1);
 				}
 				else
 				{
-					elementArray.push(index);
+					elementArray.push_back(index);
 				}
 			}
 			else
@@ -94,14 +94,14 @@ namespace spehs
 				index = checkArrayForElements(vertexArray, vertices[vertexElements[i]].position, textureCoordinates[textureElements[i]], normals[normalElements[i]]);
 				if (index < 0)
 				{
-					vertexArray.push(Vertex3D(vertices[vertexElements[i]].position,
+					vertexArray.push_back(Vertex3D(vertices[vertexElements[i]].position,
 						UV(textureCoordinates[textureElements[i]].x, textureCoordinates[textureElements[i]].y),
 						Position(normals[normalElements[i]].x, normals[normalElements[i]].y, normals[normalElements[i]].z)));
-					elementArray.push(vertexArray.size() - 1);
+					elementArray.push_back(vertexArray.size() - 1);
 				}
 				else
 				{
-					elementArray.push(index);
+					elementArray.push_back(index);
 				}
 			}
 		}
@@ -174,7 +174,7 @@ namespace spehs
 				stringStream >> vertex.x;
 				stringStream >> vertex.y;
 				stringStream >> vertex.z;
-				data->vertices.push(spehs::Vertex3D(vertex));
+				data->vertices.push_back(spehs::Vertex3D(vertex));
 			}
 			//Normals
 			else if (line.substr(0, 3) == "vn ")
@@ -184,7 +184,7 @@ namespace spehs
 				stringStream >> normal.x;
 				stringStream >> normal.y;
 				stringStream >> normal.z;
-				data->normals.push(normal);
+				data->normals.push_back(normal);
 			}
 			//Texture Coordinates
 			else if (line.substr(0, 3) == "vt ")
@@ -193,7 +193,7 @@ namespace spehs
 				glm::vec2 uv;
 				stringStream >> uv.x;
 				stringStream >> uv.y;
-				data->textureCoordinates.push(uv);
+				data->textureCoordinates.push_back(uv);
 			}
 			//Elements
 			else if (line.substr(0, 2) == "f ")
@@ -231,9 +231,9 @@ namespace spehs
 
 						subString = subString.substr(pos + 1);
 					}
-					data->vertexElements.push(v - 1);
-					data->textureElements.push(u - 1);
-					data->normalElements.push(n - 1);
+					data->vertexElements.push_back(v - 1);
+					data->textureElements.push_back(u - 1);
+					data->normalElements.push_back(n - 1);
 				}
 			}
 		}

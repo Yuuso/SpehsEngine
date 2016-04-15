@@ -8,6 +8,7 @@
 #include <glm/gtx/transform.hpp>
 #include <glm/gtc/quaternion.hpp>
 #include <glm/gtx/quaternion.hpp>
+#include <glm/gtc/matrix_transform.hpp>
 
 #define GLM_FORCE_RADIANS
 
@@ -24,6 +25,8 @@ namespace spehs
 		drawMode = TRIANGLE;
 		scaledMatrix = glm::mat4(1.0f);
 		scaledRotatedMatrix = glm::mat4(1.0f);
+		transformMatrix = glm::mat4(1.0f);
+		normalMatrix = glm::mat4(1.0f);
 
 		lineWidth = 0.0f;
 		rotation = glm::vec3(0.0f, 0.0f, 0.0f);
@@ -61,13 +64,15 @@ namespace spehs
 			scaledMatrix = glm::scale(glm::mat4(1.0f), glm::vec3(scaleX, scaleY, scaleZ));
 			scaledRotatedMatrix = glm::mat4_cast(glm::quat(rotation)) * scaledMatrix;
 			transformMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(position.x, position.y, position.z)) * scaledRotatedMatrix;
+			normalMatrix = glm::mat4(glm::inverse(glm::transpose(glm::mat3(transformMatrix))));
 
 			for (unsigned i = 0; i < worldVertexArray.size(); i++)
 			{
+				//Vertices
 				glm::vec4 vertex = transformMatrix * glm::vec4(vertexArray[i].position.x, vertexArray[i].position.y, vertexArray[i].position.z, 1.0f);
 				worldVertexArray[i].position.setPosition(vertex.x, vertex.y, vertex.z);
-				vertex = transformMatrix * glm::vec4(vertexArray[i].normal.x, vertexArray[i].normal.y, vertexArray[i].normal.z, 1.0f);
-				vertex = glm::normalize(vertex);
+				//Normals				
+				vertex = normalMatrix * glm::vec4(vertexArray[i].normal.x, vertexArray[i].normal.y, vertexArray[i].normal.z, 1.0f);
 				worldVertexArray[i].normal.setPosition(vertex.x, vertex.y, vertex.z);
 			}
 			needUpdate = false;
@@ -93,24 +98,48 @@ namespace spehs
 
 	void Mesh::setPosition(const float &_x, const float &_y, const float &_z)
 	{
+#ifdef _DEBUG
+		if (_x != _x || _y != _y || _z != _z)
+		{
+			console::error("Position values corrupted!");
+		}
+#endif
 		position.setPosition(_x, _y, _z);
 		needUpdate = true;
 	}
 
 	void Mesh::setPosition(const glm::vec3 &_newPosition)
 	{
+#ifdef _DEBUG
+		if (_newPosition.x != _newPosition.x || _newPosition.y != _newPosition.y || _newPosition.z != _newPosition.z)
+		{
+			console::error("Position values corrupted!");
+		}
+#endif
 		position.setPosition(_newPosition.x, _newPosition.y, _newPosition.z);
 		needUpdate = true;
 	}
 
 	void Mesh::setPosition(const Position &_newPosition)
 	{
+#ifdef _DEBUG
+		if (_newPosition.x != _newPosition.x || _newPosition.y != _newPosition.y || _newPosition.z != _newPosition.z)
+		{
+			console::error("Position values corrupted!");
+		}
+#endif
 		position = _newPosition;
 		needUpdate = true;
 	}
 
 	void Mesh::setRotation(const float &_yaw, const float &_pitch, const float &_roll)
 	{
+#ifdef _DEBUG
+		if (_yaw != _yaw || _pitch != _pitch || _roll != _roll)
+		{
+			console::error("Rotation values corrupted!");
+		}
+#endif
 		rotation.x = _yaw;
 		rotation.y = _pitch;
 		rotation.z = _roll;
@@ -119,12 +148,24 @@ namespace spehs
 
 	void Mesh::setRotation(const glm::vec3 &_newRotation)
 	{
+#ifdef _DEBUG
+		if (_newRotation.x != _newRotation.x || _newRotation.y != _newRotation.y || _newRotation.z != _newRotation.z)
+		{
+			console::error("Position values corrupted!");
+		}
+#endif
 		rotation = _newRotation;
 		needUpdate = true;
 	}
 
 	void Mesh::setScale(const float &_newScale)
 	{
+#ifdef _DEBUG
+		if (_newScale != _newScale)
+		{
+			console::error("Scale values corrupted!");
+		}
+#endif
 		scaleX = _newScale;
 		scaleY = _newScale;
 		scaleZ = _newScale;
@@ -133,6 +174,12 @@ namespace spehs
 
 	void Mesh::setScale(const float &_newScaleX, const float &_newScaleY, const float &_newScaleZ)
 	{
+#ifdef _DEBUG
+		if (_newScaleX != _newScaleX || _newScaleY != _newScaleY || _newScaleZ != _newScaleZ)
+		{
+			console::error("Position values corrupted!");
+		}
+#endif
 		scaleX = _newScaleX;
 		scaleY = _newScaleY;
 		scaleZ = _newScaleZ;
@@ -141,6 +188,12 @@ namespace spehs
 
 	void Mesh::setScale(const glm::vec3 &_newScale)
 	{
+#ifdef _DEBUG
+		if (_newScale.x != _newScale.x || _newScale.y != _newScale.y || _newScale.z != _newScale.z)
+		{
+			console::error("Position values corrupted!");
+		}
+#endif
 		scaleX = _newScale.x;
 		scaleY = _newScale.y;
 		scaleZ = _newScale.z;

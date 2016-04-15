@@ -14,7 +14,7 @@
 
 namespace spehs
 {
-	Camera3D::Camera3D() : fov(45.0f), near(0.05f), far(500.0f), rotation(0.0f), smoothCamera(false), maxSpeed(1.5f)
+	Camera3D::Camera3D() : fov(45.0f), near(0.05f), far(500.0f), rotation(0.0f), smoothCamera(false), maxSpeed(1.5f), followTarget(false)
 	{
 		position = glm::vec3(1.0f);
 		movement = glm::vec3(0.0f);
@@ -57,6 +57,11 @@ namespace spehs
 		rotation = glm::vec3(0.0f); //clear rotation
 		direction = glm::rotate(glm::normalize(glm::cross(pitchQ, yawQ)), direction);
 		target = position + direction;
+		if (followTarget)
+		{
+			target = targetToFollow;
+			followTarget = false;
+		}
 				
 		view = glm::lookAt(position, target, up);
 		view = projection * view;
@@ -76,19 +81,15 @@ namespace spehs
 			break;
 		case UP:
 			movement += up * _amount;
-			//target = position + direction;
 			break;
 		case DOWN:
 			movement -= up * _amount;
-			//target = position + direction;
 			break;
 		case RIGHT:
 			movement += right * _amount;
-			//target = position + direction;
 			break;
 		case LEFT:
 			movement -= right * _amount;
-			//target = position + direction;
 			break;
 		default:
 			break;
@@ -128,7 +129,8 @@ namespace spehs
 
 	void Camera3D::setTarget(const glm::vec3& _target)
 	{
-		target = _target;
+		targetToFollow = _target;
+		followTarget = true;
 	}
 
 	void Camera3D::setFOV(const float &_fov)

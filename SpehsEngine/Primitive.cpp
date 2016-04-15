@@ -41,36 +41,72 @@ namespace spehs
 
 	void Primitive::setPosition(const float &_x, const float &_y)
 	{
+#ifdef _DEBUG
+		if (_x != _x || _y != _y)
+		{
+			console::error("Position values corrupted!");
+		}
+#endif
 		position.setPosition(_x, _y);
 		needUpdate = true;
 	}
 
 	void Primitive::setPosition(const float &_x, const float &_y, const float &_z)
 	{
+#ifdef _DEBUG
+		if (_x != _x || _y != _y || _z != _z)
+		{
+			console::error("Position values corrupted!");
+		}
+#endif
 		position.setPosition(_x, _y, _z);
 		needUpdate = true;
 	}
 
 	void Primitive::setPosition(const glm::vec2 &_newPosition)
 	{
+#ifdef _DEBUG
+		if (_newPosition.x != _newPosition.x || _newPosition.y != _newPosition.y)
+		{
+			console::error("Position values corrupted!");
+		}
+#endif
 		position.setPosition(_newPosition.x, _newPosition.y);
 		needUpdate = true;
 	}
 
 	void Primitive::setPosition(const glm::vec3 &_newPosition)
 	{
+#ifdef _DEBUG
+		if (_newPosition.x != _newPosition.x || _newPosition.y != _newPosition.y || _newPosition.z != _newPosition.z)
+		{
+			console::error("Position values corrupted!");
+		}
+#endif
 		position.setPosition(_newPosition.x, _newPosition.y, _newPosition.z);
 		needUpdate = true;
 	}
 
 	void Primitive::setPosition(const Position &_newPosition)
 	{
+#ifdef _DEBUG
+		if (_newPosition.x != _newPosition.x || _newPosition.y != _newPosition.y || _newPosition.z != _newPosition.z)
+		{
+			console::error("Position values corrupted!");
+		}
+#endif
 		position = _newPosition;
 		needUpdate = true;
 	}
 
 	void Primitive::setScale(const float &_newScale)
 	{
+#ifdef _DEBUG
+		if (_newScale != _newScale)
+		{
+			console::error("Scale values corrupted!");
+		}
+#endif
 		scaleX = _newScale;
 		scaleY = _newScale;
 		needUpdate = true;
@@ -78,6 +114,12 @@ namespace spehs
 
 	void Primitive::setScale(const float &_newScaleX, const float &_newScaleY)
 	{
+#ifdef _DEBUG
+		if (_newScaleX != _newScaleX || _newScaleY != _newScaleY)
+		{
+			console::error("Scale values corrupted!");
+		}
+#endif
 		scaleX = _newScaleX;
 		scaleY = _newScaleY;
 		needUpdate = true;
@@ -85,6 +127,12 @@ namespace spehs
 
 	void Primitive::setScale(const glm::vec2 &_newScale)
 	{
+#ifdef _DEBUG
+		if (_newScale.x != _newScale.x || _newScale.y != _newScale.y)
+		{
+			console::error("Scale values corrupted!");
+		}
+#endif
 		scaleX = _newScale.x;
 		scaleY = _newScale.y;
 		needUpdate = true;
@@ -92,12 +140,24 @@ namespace spehs
 
 	void Primitive::setRotation(const float &_newRotation)
 	{
+#ifdef _DEBUG
+		if (_newRotation != _newRotation)
+		{
+			console::error("Rotation values corrupted!");
+		}
+#endif
 		rotation = _newRotation;
 		needUpdate = true;
 	}
 
 	void Primitive::setRotation(const float &_newRotation, const glm::vec3 &_newRotationVector)
 	{
+#ifdef _DEBUG
+		if (_newRotation != _newRotation || _newRotationVector.x != _newRotationVector.x || _newRotationVector.y != _newRotationVector.y || _newRotationVector.z != _newRotationVector.z)
+		{
+			console::error("Rotation values corrupted!");
+		}
+#endif
 		rotation = _newRotation;
 		rotationVector = _newRotationVector;
 		needUpdate = true;
@@ -105,6 +165,12 @@ namespace spehs
 
 	void Primitive::setRotationVector(const glm::vec3 &_newRotationVector)
 	{
+#ifdef _DEBUG
+		if (_newRotationVector.x != _newRotationVector.x || _newRotationVector.y != _newRotationVector.y || _newRotationVector.z != _newRotationVector.z)
+		{
+			console::error("Rotation values corrupted!");
+		}
+#endif
 		rotationVector = _newRotationVector;
 	}
 
@@ -197,6 +263,12 @@ namespace spehs
 
 	void Primitive::setPlaneDepth(const PlaneDepth &_newPlaneDepth)
 	{
+#ifdef _DEBUG
+		if (_newPlaneDepth != _newPlaneDepth)
+		{
+			console::error("Depth values corrupted!");
+		}
+#endif
 		planeDepth = _newPlaneDepth;
 	}
 
