@@ -85,8 +85,8 @@ namespace spehs
 			}
 
 			//Determine width and height factors to scale the cusp locations
-			float wFactor = 1.0f / (maxX - minX);//Note: Max is positive, min is negative
-			float hFactor = 1.0f / (maxY - minY);//Note: Max is positive, min is negative
+			float wFactor = width * 1.0f / (maxX - minX);//Note: Max is positive, min is negative
+			float hFactor = height * 1.0f / (maxY - minY);//Note: Max is positive, min is negative
 
 			//Rescale cusps
 			for (int i = 0; i < shape; i++)
