@@ -65,8 +65,6 @@ namespace spehs
 				
 		view = glm::lookAt(position, target, up);
 		view = projection * view;
-
-		shaderManager->getShader(DefaultMesh)->getCustomUniforms<DefaultMeshUniforms>()->cameraPosition = position;
 	}
 
 	void Camera3D::move(const Movement& _movement, const float& _amount)

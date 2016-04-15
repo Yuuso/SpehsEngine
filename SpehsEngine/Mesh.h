@@ -18,6 +18,7 @@ namespace spehs
 {
 	class MeshBatch;
 	class ModelManager;
+	struct TextureData;
 
 	class Mesh
 	{
@@ -49,6 +50,9 @@ namespace spehs
 		void setShader(const int &_newShaderIndex);
 		void setDrawMode(const DrawMode &_drawMode);
 		void setLineWidth(const float &_lineWidth);
+		TextureData* setTexture(const std::string &_texturePath);
+		TextureData* setTexture(const size_t &_textureID);
+		void setTexture(TextureData* _textureDataPtr);
 
 		//Getters
 		int getShaderIndex(){ return shaderIndex; }

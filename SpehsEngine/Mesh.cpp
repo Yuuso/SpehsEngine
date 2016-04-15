@@ -4,6 +4,7 @@
 #include "BatchManager.h"
 #include "Console.h"
 #include "ShaderManager.h"
+#include "TextureManager.h"
 
 #include <glm/gtx/transform.hpp>
 #include <glm/gtc/quaternion.hpp>
@@ -287,5 +288,31 @@ namespace spehs
 	void Mesh::setLineWidth(const float &_lineWidth)
 	{
 		lineWidth = _lineWidth;
+	}
+
+
+	TextureData* Mesh::setTexture(const std::string &_texturePath)
+	{
+		TextureData* value = textureManager->getTextureData(_texturePath);
+		textureDataID = value->textureDataID;
+		if (shaderIndex == DefaultMesh)
+			shaderIndex = DefaultTextureMesh;
+		return value;
+	}
+
+	TextureData* Mesh::setTexture(const size_t &_textureID)
+	{
+		TextureData* value = textureManager->getTextureData(_textureID);
+		textureDataID = value->textureDataID;
+		if (shaderIndex == DefaultMesh)
+			shaderIndex = DefaultTextureMesh;
+		return value;
+	}
+
+	void Mesh::setTexture(TextureData* _textureDataPtr)
+	{
+		textureDataID = _textureDataPtr->textureDataID;
+		if (shaderIndex == DefaultMesh)
+			shaderIndex = DefaultTextureMesh;
 	}
 }

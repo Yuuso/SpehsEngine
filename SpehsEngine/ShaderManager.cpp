@@ -38,17 +38,6 @@ namespace spehs
 		Uniforms::setUniforms();
 	}
 
-	DefaultMeshUniforms::DefaultMeshUniforms(spehs::GLSLProgram* _shader) : Uniforms(_shader)
-	{
-		cameraPositionLocation = shader->getUniformLocation("cameraPosition");
-	}
-	DefaultMeshUniforms::~DefaultMeshUniforms(){}
-	void DefaultMeshUniforms::setUniforms()
-	{
-		spehs::setUniform_vec3(cameraPositionLocation, cameraPosition);
-		Uniforms::setUniforms();
-	}
-
 
 	Shader* buildDefaultShader(const int _index)
 	{
@@ -133,13 +122,12 @@ namespace spehs
 			"in vec4 fragmentColor;\n"
 			"in vec3 fragmentNormal;\n"
 			"out vec4 color;\n"
-			"uniform vec3 cameraPosition;\n"
 			"void main()\n"
 			"{\n"
 			"	vec3 normal = (fragmentNormal);\n"
 			"	vec3 lightPosition = vec3(0.0, 5.0, 0.0);\n"
 			"	vec3 lightDirection = normalize(lightPosition - fragmentPosition);\n"
-			"	vec3 viewDirection = normalize(cameraPosition - fragmentPosition);\n"
+			"	vec3 viewDirection = normalize(-fragmentPosition);\n"
 			"	float distance = length(lightPosition - fragmentPosition);\n"
 			"	float radius = 20.0;\n"
 			"	float attenuation = 1 - pow((distance / radius), 2);\n"
@@ -164,6 +152,65 @@ namespace spehs
 			"}\n"
 		};
 		//
+		const std::string defaultTextureMeshVert =
+		{
+			"#version 150\n"
+			"in vec3 vertexPosition;\n"
+			"in vec4 vertexColor;\n"
+			"in vec3 vertexNormal;\n"
+			"in vec2 vertexUV;\n"
+			"out vec3 fragmentPosition;\n"
+			"out vec4 fragmentColor;\n"
+			"out vec3 fragmentNormal;\n"
+			"out vec2 fragmentUV;\n"
+			"uniform mat4 cameraMatrix;\n"
+			"void main()\n"
+			"{\n"
+			"	gl_Position = cameraMatrix * vec4(vertexPosition.xyz, 1.0);\n"
+			"	fragmentPosition = vertexPosition;\n"
+			"	fragmentColor = vertexColor;\n"
+			"	fragmentNormal = vertexNormal;\n"
+			"	fragmentUV = vertexUV;\n"
+			"}\n"
+		};
+		const std::string defaultTextureMeshFrag =
+		{
+			"#version 150\n"
+			"in vec3 fragmentPosition;\n"
+			"in vec4 fragmentColor;\n"
+			"in vec3 fragmentNormal;\n"
+			"in vec2 fragmentUV;\n"
+			"out vec4 color;\n"
+			"uniform sampler2D tex;\n"
+			"void main()\n"
+			"{\n"
+			"	vec3 normal = (fragmentNormal);\n"
+			"	vec3 lightPosition = vec3(0.0, 5.0, 0.0);\n"
+			"	vec3 lightDirection = normalize(lightPosition - fragmentPosition);\n"
+			"	vec3 viewDirection = normalize(-fragmentPosition);\n"
+			"	float distance = length(lightPosition - fragmentPosition);\n"
+			"	float radius = 20.0;\n"
+			"	float attenuation = 1 - pow((distance / radius), 2);\n"
+			"	float shininess = 64.0;\n"
+			//Ambient
+			"	vec3 ambient = texture(tex, fragmentUV).rgb;\n"
+			//Diffuse
+			"	vec3 diffuse = fragmentColor.rgb;\n"
+			//Specular
+			"	vec3 specular = fragmentColor.rgb;\n"
+			"	float spec = 0.0;\n"
+			"	float lambertian = max(dot(lightDirection, normal), 0.0);\n"
+			"	if(lambertian > 0.0)\n"
+			"	{\n"
+			"		vec3 halfwayDirection = normalize(lightDirection + viewDirection);\n"
+			"		float specAngle = max(dot(normal, halfwayDirection), 0.0);\n"
+			"		spec = pow(specAngle, shininess);\n"
+			"	}\n"
+			"	diffuse = diffuse * lambertian;\n"
+			"	specular = specular * spec;\n"
+			"	color = vec4(ambient + attenuation * (diffuse + specular), 1.0);\n"
+			"}\n"
+		};
 #pragma endregion
 		Shader* result = nullptr;
 		spehs::GLSLProgram* defaultShader = new spehs::GLSLProgram();
@@ -190,10 +237,16 @@ namespace spehs
 			defaultShader->addAttribute("vertexColor");
 			defaultShader->addAttribute("vertexNormal");
 			defaultShader->linkShaders();
-			result = new spehs::Shader(spehs::DefaultMesh, defaultShader, new DefaultMeshUniforms(defaultShader));
+			result = new spehs::Shader(spehs::DefaultMesh, defaultShader, new Uniforms(defaultShader));
 			break;
 		case 3:
-			exceptions::fatalError("shader not built yet!");
+			defaultShader->compileShadersFromSource(defaultTextureMeshVert, defaultTextureMeshFrag);
+			defaultShader->addAttribute("vertexPosition");
+			defaultShader->addAttribute("vertexColor");
+			defaultShader->addAttribute("vertexNormal");
+			defaultShader->addAttribute("vertexUV");
+			defaultShader->linkShaders();
+			result = new spehs::Shader(spehs::DefaultTextureMesh, defaultShader, new DefaultTextureUniforms(defaultShader));
 			break;
 		default:
 			exceptions::fatalError("Default shader index out of reach!");
@@ -214,7 +267,7 @@ namespace spehs
 		shaderPrograms.push_back(buildDefaultShader(2));
 
 		//DefaultMeshTexture
-		//TODO
+		shaderPrograms.push_back(buildDefaultShader(3));
 	}
 	ShaderManager::~ShaderManager()
 	{

@@ -22,7 +22,7 @@ namespace spehs
 		DefaultPolygon = 0,
 		DefaultTexture = 1,
 		DefaultMesh = 2,
-		//DefaultMeshTexture = 3,
+		DefaultTextureMesh = 3,
 	};
 
 	class Uniforms
@@ -52,21 +52,6 @@ namespace spehs
 
 	private:
 		GLint textureLocation = 0;
-	};
-
-
-	class DefaultMeshUniforms : public spehs::Uniforms
-	{
-	public:
-		DefaultMeshUniforms(spehs::GLSLProgram* _shader);
-		~DefaultMeshUniforms();
-
-		void setUniforms();
-
-		glm::vec3 cameraPosition;
-
-	private:
-		GLint cameraPositionLocation = 0;
 	};
 
 
