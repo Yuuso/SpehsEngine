@@ -1,5 +1,6 @@
 #include <SDL\SDL_timer.h>
 #include <iostream>
+#include <mutex>
 
 #include "ApplicationData.h"
 #include "Time.h"
@@ -14,12 +15,17 @@ namespace spehs
 	//Global variables
 	int fpsCounterFontSize = 24;
 	float fps = 0;
-	Time maxDeltaTime(uint32_t(1000));
-	Time deltaTime;
+	Time maxDeltaTime(1000);
 	unsigned long drawCalls;
 	unsigned long vertexDrawCount;
 
+	//Mutex
+	std::mutex deltaTimeMutex;
+	std::mutex runTimeMutex;
+
 	//Local variables
+	Time deltaTime;
+	Time runTime; 
 	uint32_t startTicks = 0;
 	spehs::Text* fpsCounter;
 	static bool initialized = false;
@@ -84,9 +90,9 @@ namespace spehs
 		static const int NUM_SAMPLES = 20;
 		static uint32_t deltaTimes[NUM_SAMPLES];
 		static int currentFrame = 0;
-
 		static uint32_t previousTicks = SDL_GetTicks();
 
+		runTime = (int)SDL_GetTicks();
 		uint32_t currentTicks;
 		currentTicks = SDL_GetTicks();
 
@@ -154,27 +160,17 @@ namespace spehs
 			return;
 		fpsCounter->setRenderState(true);
 	}
-
-	//Analyzation
-	static uint32_t beginTime[30];
-	static uint32_t endTime[30];
-	static bool timerOn = false;
-	void beginTimer(int timerIndex)
+	Time getDeltaTime()
 	{
-		if (timerOn == true)
-			return;
-		timerOn = true;
-		beginTime[timerIndex] = SDL_GetTicks();
+		std::lock_guard<std::mutex> lock(deltaTimeMutex);
+		return deltaTime;
 	}
-	uint32_t endTimer(int timerIndex)
+	Time getRunTime()
 	{
-		if (timerOn == false)
-			return -1;
-		timerOn = false;
-		endTime[timerIndex] = SDL_GetTicks();
-
-		return endTime[timerIndex] - beginTime[timerIndex];
+		std::lock_guard<std::mutex> lock(runTimeMutex);
+		return runTime;
 	}
+
 
 
 
@@ -183,16 +179,16 @@ namespace spehs
 	Time::Time() : asMilliseconds(0), asSeconds(0) {}
 	Time::Time(const Time& other) : asMilliseconds(other.asMilliseconds), asSeconds(other.asSeconds) {}
 	Time::Time(const float _asSeconds) : asMilliseconds(_asSeconds * 1000), asSeconds(_asSeconds) {}
-	Time::Time(const uint32_t _asMilliSeconds) : asMilliseconds(_asMilliSeconds), asSeconds(float(_asMilliSeconds) / 1000.0f) {}
+	Time::Time(const int _asMilliSeconds) : asMilliseconds(_asMilliSeconds), asSeconds(float(_asMilliSeconds) / 1000.0f) {}
 	Time Time::operator*(const Time& other)
 	{
 		return Time(asSeconds * other.asSeconds);
 	}
-	Time Time::operator*(const float& _asSeconds)
+	Time Time::operator*(const float _asSeconds)
 	{
 		return Time(asSeconds * _asSeconds);
 	}
-	Time Time::operator*(const uint32_t& _asMilliseconds)
+	Time Time::operator*(const int _asMilliseconds)
 	{
 		return Time(asSeconds * float(_asMilliseconds * 1000.0f));
 	}
@@ -200,11 +196,11 @@ namespace spehs
 	{
 		return Time(asSeconds / other.asSeconds);
 	}
-	Time Time::operator/(const float& _asSeconds)
+	Time Time::operator/(const float _asSeconds)
 	{
 		return Time(asSeconds / _asSeconds);
 	}
-	Time Time::operator/(const uint32_t& _asMilliseconds)
+	Time Time::operator/(const int _asMilliseconds)
 	{
 		return Time(float(asMilliseconds * 1000) / float(_asMilliseconds * 1000));
 	}
@@ -212,11 +208,11 @@ namespace spehs
 	{
 		return Time(asMilliseconds + other.asMilliseconds);
 	}
-	Time Time::operator+(const float& _asSeconds)
+	Time Time::operator+(const float _asSeconds)
 	{
 		return Time(asSeconds + _asSeconds);
 	}
-	Time Time::operator+(const uint32_t& _asMilliseconds)
+	Time Time::operator+(const int _asMilliseconds)
 	{
 		return Time(asMilliseconds + _asMilliseconds);
 	}
@@ -224,11 +220,11 @@ namespace spehs
 	{
 		return Time(asMilliseconds - other.asMilliseconds);
 	}
-	Time Time::operator-(const float& _asSeconds)
+	Time Time::operator-(const float _asSeconds)
 	{
 		return Time(asSeconds - _asSeconds);
 	}
-	Time Time::operator-(const uint32_t& _asMilliseconds)
+	Time Time::operator-(const int _asMilliseconds)
 	{
 		return Time(asMilliseconds - _asMilliseconds);
 	}
@@ -242,7 +238,7 @@ namespace spehs
 		asMilliseconds = _asSeconds * 1000.0f;
 		asSeconds = _asSeconds;
 	}
-	void Time::operator=(const uint32_t _asMilliseconds)
+	void Time::operator=(const int _asMilliseconds)
 	{
 		asMilliseconds = _asMilliseconds;
 		asSeconds = _asMilliseconds / 1000.0f;
@@ -252,12 +248,12 @@ namespace spehs
 		asMilliseconds = float(asMilliseconds * 1000.0f) * float(other.asMilliseconds * 1000.0f);
 		asSeconds *= other.asSeconds;
 	}
-	void Time::operator*=(const float& _asSeconds)
+	void Time::operator*=(const float _asSeconds)
 	{
 		asMilliseconds = float(asMilliseconds * 1000.0f) * _asSeconds;
 		asSeconds *= _asSeconds;
 	}
-	void Time::operator*=(const uint32_t& _asMilliseconds)
+	void Time::operator*=(const int _asMilliseconds)
 	{
 		asMilliseconds = float(asMilliseconds * 1000.0f) * float(_asMilliseconds * 1000.0f);
 		asSeconds *= float(_asMilliseconds * 1000.0f);
@@ -267,12 +263,12 @@ namespace spehs
 		asMilliseconds = float(asMilliseconds * 1000.0f) / float(other.asMilliseconds * 1000.0f);
 		asSeconds /= other.asSeconds;
 	}
-	void Time::operator/=(const float& _asSeconds)
+	void Time::operator/=(const float _asSeconds)
 	{
 		asMilliseconds = float(asMilliseconds * 1000.0f) / _asSeconds;
 		asSeconds /= _asSeconds;
 	}
-	void Time::operator/=(const uint32_t& _asMilliseconds)
+	void Time::operator/=(const int _asMilliseconds)
 	{
 		asMilliseconds = float(asMilliseconds * 1000.0f) / float(_asMilliseconds * 1000.0f);
 		asSeconds /= float(_asMilliseconds * 1000.0f);
@@ -282,12 +278,12 @@ namespace spehs
 		asSeconds += other.asSeconds;
 		asMilliseconds += other.asMilliseconds;
 	}
-	void Time::operator+=(const float& _asSeconds)
+	void Time::operator+=(const float _asSeconds)
 	{
 		asSeconds += _asSeconds;
-		asMilliseconds += uint32_t(_asSeconds * 1000.0f);
+		asMilliseconds += int(_asSeconds * 1000.0f);
 	}
-	void Time::operator+=(const uint32_t& _asMilliseconds)
+	void Time::operator+=(const int _asMilliseconds)
 	{
 		asSeconds += float(_asMilliseconds) / 1000.0f;
 		asMilliseconds += _asMilliseconds;
@@ -297,12 +293,12 @@ namespace spehs
 		asSeconds -= other.asSeconds;
 		asMilliseconds -= other.asMilliseconds;
 	}
-	void Time::operator-=(const float& _asSeconds)
+	void Time::operator-=(const float _asSeconds)
 	{
 		asSeconds -= _asSeconds;
-		asMilliseconds -= uint32_t(_asSeconds * 1000.0f);
+		asMilliseconds -= int(_asSeconds * 1000.0f);
 	}
-	void Time::operator-=(const uint32_t& _asMilliseconds)
+	void Time::operator-=(const int _asMilliseconds)
 	{
 		asSeconds -= float(_asMilliseconds) / 1000.0f;
 		asMilliseconds -= _asMilliseconds;
@@ -315,7 +311,7 @@ namespace spehs
 	{
 		return abs(asSeconds - _asSeconds) < 0.0005;
 	}
-	bool Time::operator==(const uint32_t _asMilliseconds)
+	bool Time::operator==(const int _asMilliseconds)
 	{
 		return asMilliseconds == _asMilliseconds;
 	}
@@ -325,9 +321,9 @@ namespace spehs
 	}
 	bool Time::operator>(const float _asSeconds)
 	{
-		return asMilliseconds > _asSeconds;
+		return _asSeconds > _asSeconds;
 	}
-	bool Time::operator>(const uint32_t _asMilliseconds)
+	bool Time::operator>(const int _asMilliseconds)
 	{
 		return asMilliseconds > _asMilliseconds;
 	}
@@ -337,9 +333,9 @@ namespace spehs
 	}
 	bool Time::operator<(const float _asSeconds)
 	{
-		return asMilliseconds < _asSeconds;
+		return _asSeconds < _asSeconds;
 	}
-	bool Time::operator<(const uint32_t _asMilliseconds)
+	bool Time::operator<(const int _asMilliseconds)
 	{
 		return asMilliseconds < _asMilliseconds;
 	}
@@ -351,7 +347,7 @@ namespace spehs
 	{
 		return asSeconds >= _asSeconds;
 	}
-	bool Time::operator>=(const uint32_t _asMilliseconds)
+	bool Time::operator>=(const int _asMilliseconds)
 	{
 		return asMilliseconds >= _asMilliseconds;
 	}
@@ -363,7 +359,7 @@ namespace spehs
 	{
 		return asSeconds <= _asSeconds;
 	}
-	bool Time::operator<=(const uint32_t _asMilliseconds)
+	bool Time::operator<=(const int _asMilliseconds)
 	{
 		return asMilliseconds <= _asMilliseconds;
 	}

@@ -79,7 +79,7 @@ namespace spehs
 		}
 		else if (treeOpenTimer > 0)
 		{//If mouse is outside the container, close over time
-			treeOpenTimer -= deltaTime.asMilliseconds;
+			treeOpenTimer -= getDeltaTime().asMilliseconds;
 			if (treeOpenTimer <= 0)
 				close();
 		}

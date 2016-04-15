@@ -4,19 +4,19 @@
 
 namespace spehs
 {
-	float magnitude(glm::vec2& vec)
+	inline float magnitude(glm::vec2& vec)
 	{
 		return sqrt(vec.x*vec.x + vec.y*vec.y);
 	}
-	float magnitude(spehs::Position& pos)
+	inline float magnitude(spehs::Position& pos)
 	{
 		return sqrt(pos.x*pos.x + pos.y*pos.y);
 	}
-	float distance(glm::vec2& origin, glm::vec2& destination)
+	inline float distance(glm::vec2& origin, glm::vec2& destination)
 	{
 		return magnitude(origin - destination);
 	}
-	float getAngle(glm::vec2& origin, glm::vec2& destination)
+	inline float getAngle(glm::vec2& origin, glm::vec2& destination)
 	{
 		glm::vec2 vec = destination - origin;
 		float pointDirection = atan2(vec.y, vec.x);
@@ -24,19 +24,44 @@ namespace spehs
 			pointDirection += TWO_PI;
 		return pointDirection;
 	}
-	float getAngle(glm::vec2& destination)
+	inline float getAngle(glm::vec2& destination)
 	{
 		float pointDirection = atan2(destination.y, destination.x);
 		if (destination.y < 0)
 			pointDirection += TWO_PI;
 		return pointDirection;
 	}
-	float getAngle(float angle1, float angle2)
+	inline float getAngle(float angle1, float angle2)
 	{
 		float angle = angle2 - angle1;
 		if (angle < 0)
 			angle += TWO_PI;
 		return angle;
+	}
+	inline float getArea(spehs::Position* cusps, unsigned numCusps)
+	{
+		if (numCusps < 3)
+			return 0.0f;
+		float area = 0.0f;
+		int j = numCusps - 1;
+		for (int i = 0; i < numCusps; i++)
+		{
+			area += (cusps[j].x * cusps[i].y) - (cusps[i].x * cusps[j].y);
+			j = i;
+		}
+		return abs((area * 0.5f));
+	}
+	inline float getRadius(spehs::Position* cusps, unsigned numCusps)
+	{
+		if (numCusps == 0)
+			return 0.0f;
+		float max = magnitude(cusps[0]);
+		for (unsigned i = 1; i < numCusps; i++)
+		{
+			if (magnitude(cusps[i]) > max)
+				max = magnitude(cusps[i]);
+		}
+		return max;
 	}
 	spehs::Position* generateCusps(unsigned& numCusps, int shape, float width, float height)
 	{
@@ -63,9 +88,9 @@ namespace spehs
 
 			//Take record of min/max cusp values so that it can be streched to match the desired width/height
 			float	minX = cusps[0].x,
-					minY = cusps[0].y,
-					maxX = cusps[0].x,
-					maxY = cusps[0].y;
+				minY = cusps[0].y,
+				maxX = cusps[0].x,
+				maxY = cusps[0].y;
 			for (int i = 1; i < shape; i++)
 			{
 				//Set position
@@ -105,30 +130,5 @@ namespace spehs
 			numCusps = 0;
 			return nullptr;
 		}
-	}
-	float getArea(spehs::Position* cusps, unsigned numCusps)
-	{
-		if (numCusps < 3)
-			return 0.0f;
-		float area = 0.0f;
-		int j = numCusps - 1;
-		for (int i = 0; i < numCusps; i++)
-		{
-			area += (cusps[j].x * cusps[i].y) - (cusps[i].x * cusps[j].y);
-			j = i;
-		}
-		return abs((area * 0.5f));
-	}
-	float getRadius(spehs::Position* cusps, unsigned numCusps)
-	{
-		if (numCusps == 0)
-			return 0.0f;
-		float max = magnitude(cusps[0]);
-		for (unsigned i = 1; i < numCusps; i++)
-		{
-			if (magnitude(cusps[i]) > max)
-				max = magnitude(cusps[i]);
-		}
-		return max;
 	}
 }

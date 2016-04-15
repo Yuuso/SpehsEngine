@@ -9,56 +9,57 @@ namespace spehs
 		Time();
 		Time(const Time& other);
 		Time(const float _asSeconds);
-		Time(const uint32_t _asMilliSeconds);
+		Time(const int _asMilliSeconds);
 		void operator*=(const Time& other);
-		void operator*=(const float& _asSeconds);
-		void operator*=(const uint32_t& _asMilliseconds);
+		void operator*=(const float _asSeconds);
+		void operator*=(const int _asMilliseconds);
 		void operator/=(const Time& other);
-		void operator/=(const float& _asSeconds);
-		void operator/=(const uint32_t& _asMilliseconds);
+		void operator/=(const float _asSeconds);
+		void operator/=(const int _asMilliseconds);
 		void operator+=(const Time& other);
-		void operator+=(const float& _asSeconds);
-		void operator+=(const uint32_t& _asMilliseconds);
+		void operator+=(const float _asSeconds);
+		void operator+=(const int _asMilliseconds);
 		void operator-=(const Time& other);
-		void operator-=(const float& _asSeconds);
-		void operator-=(const uint32_t& _asMilliseconds);
+		void operator-=(const float _asSeconds);
+		void operator-=(const int _asMilliseconds);
 		Time operator*(const Time& other);
-		Time operator*(const float& _asSeconds);
-		Time operator*(const uint32_t& _asMilliseconds);
+		Time operator*(const float _asSeconds);
+		Time operator*(const int _asMilliseconds);
 		Time operator/(const Time& other);
-		Time operator/(const float& _asSeconds);
-		Time operator/(const uint32_t& _asMilliseconds);
+		Time operator/(const float _asSeconds);
+		Time operator/(const int _asMilliseconds);
 		Time operator+(const Time& other);
-		Time operator+(const float& _asSeconds);
-		Time operator+(const uint32_t& _asMilliseconds);
+		Time operator+(const float _asSeconds);
+		Time operator+(const int _asMilliseconds);
 		Time operator-(const Time& other);
-		Time operator-(const float& _asSeconds);
-		Time operator-(const uint32_t& _asMilliseconds);
+		Time operator-(const float _asSeconds);
+		Time operator-(const int _asMilliseconds);
 		void operator=(const Time& other);
 		void operator=(const float _asSeconds);
-		void operator=(const uint32_t _asMilliseconds);
+		void operator=(const int _asMilliseconds);
 		bool operator==(const Time& other);
 		bool operator==(const float _asSeconds);
-		bool operator==(const uint32_t _asMilliseconds);
+		bool operator==(const int _asMilliseconds);
 		bool operator>(const Time& other);
 		bool operator>(const float _asSeconds);
-		bool operator>(const uint32_t _asMilliseconds);
+		bool operator>(const int _asMilliseconds);
 		bool operator<(const Time& other);
 		bool operator<(const float _asSeconds);
-		bool operator<(const uint32_t _asMilliseconds);
+		bool operator<(const int _asMilliseconds);
 		bool operator>=(const Time& other);
 		bool operator>=(const float _asSeconds);
-		bool operator>=(const uint32_t _asMilliseconds);
+		bool operator>=(const int _asMilliseconds);
 		bool operator<=(const Time& other);
 		bool operator<=(const float _asSeconds);
-		bool operator<=(const uint32_t _asMilliseconds);
-		uint32_t asMilliseconds;
+		bool operator<=(const int _asMilliseconds);
+		int asMilliseconds;
 		float asSeconds;
 	};
 	//Variables that should be visible outside
 	extern float fps;
 	extern Time maxDeltaTime;
-	extern Time deltaTime;
+	Time getDeltaTime();
+	Time getRunTime();///< For how long the program has run. Updates from endFPS()
 	extern unsigned long drawCalls;
 	extern unsigned long vertexDrawCount;
 
@@ -67,9 +68,4 @@ namespace spehs
 	void beginFPS();
 	void endFPS();
 	void drawFPS();
-
-	//Analyzation
-	/*30 timers (0-29)*/
-	void beginTimer(int timerIndex);
-	uint32_t endTimer(int timerIndex);
 }

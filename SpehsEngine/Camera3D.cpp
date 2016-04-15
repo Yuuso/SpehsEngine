@@ -46,7 +46,7 @@ namespace spehs
 		target = position + direction;
 
 		if (smoothCamera)
-			movement *= 0.9f - spehs::deltaTime.asSeconds;
+			movement *= 0.9f - spehs::getDeltaTime().asSeconds;
 		else
 			movement = glm::vec3(0.0f);
 
