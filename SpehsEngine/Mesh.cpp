@@ -22,6 +22,7 @@ namespace spehs
 		readyForDelete = false;
 		renderState = true;
 		needUpdate = true;
+		blending = false;
 		shaderIndex = DefaultMesh;
 		drawMode = TRIANGLE;
 		scaledMatrix = glm::mat4(1.0f);
@@ -38,19 +39,7 @@ namespace spehs
 	}
 	Mesh::Mesh(const std::string &_filepath) : Mesh()
 	{
-		//Check the file type of the given model file
-		std::string fileEnding = "";
-		auto it = _filepath.end() - 1;
-		while (*it != '.')
-		{
-			fileEnding.push_back(*it);
-			it--;
-		}
-
-		if (fileEnding == "jbo") //.obj files
-			setOBJMesh(_filepath);
-		else
-			exceptions::fatalError("The models file type is not supported!");
+		setMesh(_filepath);
 	}
 	Mesh::~Mesh()
 	{
@@ -85,13 +74,13 @@ namespace spehs
 		readyForDelete = true;
 	}
 
-	void Mesh::setOBJMesh(const std::string &_objFilepath)
+	void Mesh::setMesh(const std::string &_filepath)
 	{
 		vertexArray.clear();
 		worldVertexArray.clear();
 		elementArray.clear();
 
-		modelManager->loadOBJ(_objFilepath, this);
+		modelManager->loadModel(_filepath, this);
 		worldVertexArray = vertexArray;
 
 		needUpdate = true;
@@ -288,6 +277,11 @@ namespace spehs
 	void Mesh::setLineWidth(const float &_lineWidth)
 	{
 		lineWidth = _lineWidth;
+	}
+
+	void Mesh::setBlending(const bool &_value)
+	{
+		blending = _value;
 	}
 
 

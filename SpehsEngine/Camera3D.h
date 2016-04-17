@@ -40,6 +40,8 @@ namespace spehs
 		void setTarget(const glm::vec3& _target);
 		void setUp(const glm::vec3& _up);
 		void setFOV(const float &_fov);
+		void setNear(const float& _near);
+		void setFar(const float& _far);
 
 		glm::mat4* cameraMatrix;
 

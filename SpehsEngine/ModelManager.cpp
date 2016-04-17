@@ -1,6 +1,7 @@
 
 #include "ModelManager.h"
 #include "Console.h"
+#include "Exceptions.h"	
 #include "Mesh.h"
 
 #include <glm/vec2.hpp>
@@ -121,6 +122,41 @@ namespace spehs
 		clearAllModelData();
 	}
 
+
+	void ModelManager::loadModel(const std::string& _filepath, spehs::Mesh* _mesh)
+	{
+		//Check for special cases
+		if (_filepath == "Cube")
+		{
+			loadCube(_mesh);
+			return;
+		}
+		else if (_filepath == "ICube")
+		{
+			loadInvertedCube(_mesh);
+			return;
+		}
+
+		//Check the file type of the given model file
+		std::string fileEnding = "";
+		auto it = _filepath.end() - 1;
+		while (*it != '.')
+		{
+			fileEnding.push_back(*it);
+			it--;
+		}
+
+		//Search for supported file types
+		if (fileEnding == "jbo") //.obj files
+		{
+			loadOBJ(_filepath, _mesh);
+			return;
+		}
+		else
+		{
+			exceptions::fatalError("The models file type is not supported!");
+		}
+	}
 	void ModelManager::loadOBJ(const std::string& _filepath, spehs::Mesh* _mesh)
 	{
 		//Try to find from data map
@@ -239,6 +275,134 @@ namespace spehs
 		}
 		size_t hash = std::hash<std::string>()(_filepath);
 		modelDataMap.insert(std::pair<size_t, ModelData*>(hash, data));
+	}
+	
+	void ModelManager::loadCube(spehs::Mesh* _mesh)
+	{
+		//Load a standard cube
+		float size = 1.0f;
+		_mesh->vertexArray.resize(8);
+		_mesh->vertexArray[0] = spehs::Vertex3D(spehs::Position(size, -size, -size));
+		_mesh->vertexArray[1] = spehs::Vertex3D(spehs::Position(size, -size, size));
+		_mesh->vertexArray[2] = spehs::Vertex3D(spehs::Position(-size, -size, size));
+		_mesh->vertexArray[3] = spehs::Vertex3D(spehs::Position(-size, -size, -size));
+		_mesh->vertexArray[4] = spehs::Vertex3D(spehs::Position(size, size, -size));
+		_mesh->vertexArray[5] = spehs::Vertex3D(spehs::Position(size, size, size));
+		_mesh->vertexArray[6] = spehs::Vertex3D(spehs::Position(-size, size, size));
+		_mesh->vertexArray[7] = spehs::Vertex3D(spehs::Position(-size, size, -size));
+
+		_mesh->elementArray.resize(3 * 12);
+		_mesh->elementArray[0] = 1;
+		_mesh->elementArray[1] = 2;
+		_mesh->elementArray[2] = 3;
+
+		_mesh->elementArray[3] = 7;
+		_mesh->elementArray[4] = 6;
+		_mesh->elementArray[5] = 5;
+
+		_mesh->elementArray[6] = 4;
+		_mesh->elementArray[7] = 5;
+		_mesh->elementArray[8] = 1;
+
+		_mesh->elementArray[9] = 5;
+		_mesh->elementArray[10] = 6;
+		_mesh->elementArray[11] = 2;
+
+		_mesh->elementArray[12] = 2;
+		_mesh->elementArray[13] = 6;
+		_mesh->elementArray[14] = 7;
+
+		_mesh->elementArray[15] = 0;
+		_mesh->elementArray[16] = 3;
+		_mesh->elementArray[17] = 7;
+
+		_mesh->elementArray[18] = 0;
+		_mesh->elementArray[19] = 1;
+		_mesh->elementArray[20] = 3;
+
+		_mesh->elementArray[21] = 4;
+		_mesh->elementArray[22] = 7;
+		_mesh->elementArray[23] = 5;
+
+		_mesh->elementArray[24] = 0;
+		_mesh->elementArray[25] = 4;
+		_mesh->elementArray[26] = 1;
+
+		_mesh->elementArray[27] = 1;
+		_mesh->elementArray[28] = 5;
+		_mesh->elementArray[29] = 2;
+
+		_mesh->elementArray[30] = 3;
+		_mesh->elementArray[31] = 2;
+		_mesh->elementArray[32] = 7;
+
+		_mesh->elementArray[33] = 4;
+		_mesh->elementArray[34] = 0;
+		_mesh->elementArray[35] = 7;
+	}
+
+	void ModelManager::loadInvertedCube(spehs::Mesh* _mesh)
+	{
+		//Load a standard cube
+		float size = 1.0f;
+		_mesh->vertexArray.resize(8);
+		_mesh->vertexArray[0] = spehs::Vertex3D(spehs::Position(size, -size, -size));
+		_mesh->vertexArray[1] = spehs::Vertex3D(spehs::Position(size, -size, size));
+		_mesh->vertexArray[2] = spehs::Vertex3D(spehs::Position(-size, -size, size));
+		_mesh->vertexArray[3] = spehs::Vertex3D(spehs::Position(-size, -size, -size));
+		_mesh->vertexArray[4] = spehs::Vertex3D(spehs::Position(size, size, -size));
+		_mesh->vertexArray[5] = spehs::Vertex3D(spehs::Position(size, size, size));
+		_mesh->vertexArray[6] = spehs::Vertex3D(spehs::Position(-size, size, size));
+		_mesh->vertexArray[7] = spehs::Vertex3D(spehs::Position(-size, size, -size));
+
+		_mesh->elementArray.resize(36);
+		_mesh->elementArray[0] = 3;
+		_mesh->elementArray[1] = 2;
+		_mesh->elementArray[2] = 1;
+
+		_mesh->elementArray[3] = 5;
+		_mesh->elementArray[4] = 6;
+		_mesh->elementArray[5] = 7;
+
+		_mesh->elementArray[6] = 1;
+		_mesh->elementArray[7] = 5;
+		_mesh->elementArray[8] = 4;
+
+		_mesh->elementArray[9] = 2;
+		_mesh->elementArray[10] = 6;
+		_mesh->elementArray[11] = 4;
+
+		_mesh->elementArray[12] = 2;
+		_mesh->elementArray[13] = 3;
+		_mesh->elementArray[14] = 7;
+
+		_mesh->elementArray[15] = 7;
+		_mesh->elementArray[16] = 3;
+		_mesh->elementArray[17] = 0;
+
+		_mesh->elementArray[18] = 0;
+		_mesh->elementArray[19] = 3;
+		_mesh->elementArray[20] = 1;
+
+		_mesh->elementArray[21] = 4;
+		_mesh->elementArray[22] = 5;
+		_mesh->elementArray[23] = 7;
+
+		_mesh->elementArray[24] = 0;
+		_mesh->elementArray[25] = 1;
+		_mesh->elementArray[26] = 4;
+
+		_mesh->elementArray[27] = 1;
+		_mesh->elementArray[28] = 2;
+		_mesh->elementArray[29] = 5;
+
+		_mesh->elementArray[30] = 2;
+		_mesh->elementArray[31] = 3;
+		_mesh->elementArray[32] = 7;
+
+		_mesh->elementArray[33] = 4;
+		_mesh->elementArray[34] = 7;
+		_mesh->elementArray[35] = 0;
 	}
 
 	void ModelManager::removeModelData(const std::string& _filepath)

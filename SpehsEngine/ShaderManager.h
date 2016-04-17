@@ -23,6 +23,7 @@ namespace spehs
 		DefaultTexture = 1,
 		DefaultMesh = 2,
 		DefaultTextureMesh = 3,
+		DefaultSkyBox = 4,
 	};
 
 	class Uniforms
@@ -41,12 +42,23 @@ namespace spehs
 		GLint cameraLocation = 0;
 	};
 
-
 	class DefaultTextureUniforms : public spehs::Uniforms
 	{
 	public:
 		DefaultTextureUniforms(spehs::GLSLProgram* _shader);
 		~DefaultTextureUniforms();
+
+		void setUniforms();
+
+	private:
+		GLint textureLocation = 0;
+	};
+
+	class DefaultSkyBoxUniforms : public spehs::Uniforms
+	{
+	public:
+		DefaultSkyBoxUniforms(spehs::GLSLProgram* _shader);
+		~DefaultSkyBoxUniforms();
 
 		void setUniforms();
 
@@ -98,6 +110,7 @@ namespace spehs
 
 	//Wrapping functions for OpenGL
 	void bind2DTexture(const GLuint &_textureID);
+	void bindCubeMapTexture(const GLuint &_textureID);
 	void setUniform_int(const GLint &_location, const int &_value);
 	void setUniform_float(const GLint &_location, const float &_value);
 	void setUniform_vec2(const GLint &_location, const glm::vec2 &_value);

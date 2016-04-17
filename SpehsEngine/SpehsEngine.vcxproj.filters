@@ -148,6 +148,9 @@
     <ClCompile Include="PhysicsWorld2D.cpp">
       <Filter>Physics</Filter>
     </ClCompile>
+    <ClCompile Include="SkyBox.cpp">
+      <Filter>Rendering\Geometric Rendering</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GLSLProgram.h">
@@ -302,6 +305,9 @@
     </ClInclude>
     <ClInclude Include="PhysicsWorld2D.h">
       <Filter>Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="SkyBox.h">
+      <Filter>Rendering\Geometric Rendering</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

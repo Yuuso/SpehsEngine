@@ -32,7 +32,7 @@ namespace spehs
 
 	public:
 		PrimitiveBatch();
-		PrimitiveBatch(const bool _cameraMatrixState, const PlaneDepth &_priority, const bool _blending, const int &_shaderIndex, const GLuint &_textureDataID, const GLenum &_drawMode, float _lineWidth = 0.0f);
+		PrimitiveBatch(const bool _cameraMatrixState, const PlaneDepth &_priority, const bool _blending, const int &_shaderIndex, const GLuint &_textureDataID, const GLenum &_drawMode, float _lineWidth);
 		~PrimitiveBatch();
 
 		bool operator==(const Primitive &_primitive); //Checks if primitive is suitable for this batch
@@ -72,7 +72,7 @@ namespace spehs
 
 	public:
 		MeshBatch();
-		MeshBatch(const unsigned int& _batchSizeCheck, const int &_shader, const GLuint &_textureID, const GLenum &_drawMode, const float &_lineWidth = 0.0f);
+		MeshBatch(const unsigned int& _batchSizeCheck, const int &_shader, const GLuint &_textureID, const GLenum &_drawMode, const bool _blending, const float &_lineWidth);
 		~MeshBatch();
 
 		bool operator==(const Mesh &_mesh); //Checks if mesh is suitable for this batch
@@ -93,6 +93,7 @@ namespace spehs
 		GLuint vertexBufferID;
 		GLuint indexBufferID;
 
+		bool blending;
 		int shaderIndex;
 		unsigned int batchSize;
 		GLuint textureDataID;

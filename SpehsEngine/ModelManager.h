@@ -36,9 +36,14 @@ namespace spehs
 		ModelManager();
 		~ModelManager();
 
+		void loadModel(const std::string& _filepath, spehs::Mesh* _mesh);
+
 		void loadOBJ(const std::string& _filepath, spehs::Mesh* _mesh);
 		void loadOBJ(const size_t& _hash, spehs::Mesh* _mesh);
 		void preloadOBJ(const std::string& _filepath);
+
+		void loadCube(spehs::Mesh* _mesh);
+		void loadInvertedCube(spehs::Mesh* _mesh); //Index orientation reversed
 
 		void removeModelData(const std::string& _filepath);
 		void removeModelData(const size_t& _hash);

@@ -98,7 +98,6 @@ namespace spehs
 	{
 		smoothCamera = _value;
 	}
-
 	void Camera3D::setMaxSpeed(const float& _value)
 	{
 		maxSpeed = _value;
@@ -113,12 +112,10 @@ namespace spehs
 	{
 		rotation.x = _yaw;
 	}
-
 	void Camera3D::pitch(const float& _pitch)
 	{
 		rotation.y = _pitch;
 	}
-
 	void Camera3D::setRotation(const glm::vec2 &_rotation)
 	{
 		rotation.x = _rotation.x;
@@ -134,6 +131,16 @@ namespace spehs
 	void Camera3D::setFOV(const float &_fov)
 	{
 		fov = _fov;
+		projection = glm::perspective(fov, (float) applicationData->getWindowWidth() / (float) applicationData->getWindowHeight(), near, far);
+	}
+	void Camera3D::setNear(const float& _near)
+	{
+		near = _near;
+		projection = glm::perspective(fov, (float) applicationData->getWindowWidth() / (float) applicationData->getWindowHeight(), near, far);
+	}
+	void Camera3D::setFar(const float& _far)
+	{
+		far = _far;
 		projection = glm::perspective(fov, (float) applicationData->getWindowWidth() / (float) applicationData->getWindowHeight(), near, far);
 	}
 }

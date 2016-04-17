@@ -126,6 +126,7 @@
     <ClCompile Include="SATCollision.cpp" />
     <ClCompile Include="ShaderManager.cpp" />
     <ClCompile Include="Shapes.cpp" />
+    <ClCompile Include="SkyBox.cpp" />
     <ClCompile Include="SpehsEngine.cpp" />
     <ClCompile Include="Sprite.cpp" />
     <ClCompile Include="StringOperations.cpp" />
@@ -179,6 +180,7 @@
     <ClInclude Include="SATCollision.h" />
     <ClInclude Include="ShaderManager.h" />
     <ClInclude Include="Shapes.h" />
+    <ClInclude Include="SkyBox.h" />
     <ClInclude Include="SpehsEngine.h" />
     <ClInclude Include="Sprite.h" />
     <ClInclude Include="StringOperations.h" />

@@ -31,7 +31,7 @@ namespace spehs
 
 		void destroy(); //Meshes can only be deleted from BatchManager, user can request deletion by calling destroy()
 
-		void setOBJMesh(const std::string &_objFilepath);
+		void setMesh(const std::string &_filepath);
 
 		//Setters
 		void setPosition(const float &_x, const float &_y, const float &_z);
@@ -50,6 +50,7 @@ namespace spehs
 		void setShader(const int &_newShaderIndex);
 		void setDrawMode(const DrawMode &_drawMode);
 		void setLineWidth(const float &_lineWidth);
+		void setBlending(const bool &_value);
 		TextureData* setTexture(const std::string &_texturePath);
 		TextureData* setTexture(const size_t &_textureID);
 		void setTexture(TextureData* _textureDataPtr);
@@ -71,6 +72,7 @@ namespace spehs
 		bool readyForDelete;
 		bool renderState; //Whether Mesh is rendered or not
 		bool needUpdate;
+		bool blending;
 		int shaderIndex;
 		GLuint textureDataID;
 		DrawMode drawMode;

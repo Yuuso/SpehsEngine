@@ -37,6 +37,18 @@ namespace spehs
 		spehs::setUniform_int(textureLocation, 0);
 		Uniforms::setUniforms();
 	}
+	
+	DefaultSkyBoxUniforms::DefaultSkyBoxUniforms(spehs::GLSLProgram* _shader) : Uniforms(_shader)
+	{
+		textureLocation = shader->getUniformLocation("tex");
+	}
+	DefaultSkyBoxUniforms::~DefaultSkyBoxUniforms(){}
+	void DefaultSkyBoxUniforms::setUniforms()
+	{
+		spehs::bindCubeMapTexture(textureDataID);
+		spehs::setUniform_int(textureLocation, 0);
+		Uniforms::setUniforms();
+	}
 
 
 	Shader* buildDefaultShader(const int _index)
@@ -211,6 +223,30 @@ namespace spehs
 			"	color = vec4(ambient + attenuation * (diffuse + specular), 1.0);\n"
 			"}\n"
 		};
+		//
+		const std::string defaultSkyBoxVert =
+		{
+			"#version 150\n"
+			"in vec3 vertexPosition;\n"
+			"out vec3 fragmentPosition;\n"
+			"uniform mat4 cameraMatrix;\n"
+			"void main()\n"
+			"{\n"
+			"	gl_Position = mat4(mat3(cameraMatrix)) * vec4(vertexPosition.xyz, 1.0);\n"
+			"	fragmentPosition = vertexPosition;\n"
+			"}\n"
+		};
+		const std::string defaultSkyBoxFrag =
+		{
+			"#version 150\n"
+			"in vec3 fragmentPosition;\n"
+			"out vec4 color;\n"
+			"uniform samplerCube tex;\n"
+			"void main()\n"
+			"{\n"
+			"	color = texture(tex, fragmentPosition);\n"
+			"}\n"
+		};
 #pragma endregion
 		Shader* result = nullptr;
 		spehs::GLSLProgram* defaultShader = new spehs::GLSLProgram();
@@ -248,6 +284,12 @@ namespace spehs
 			defaultShader->linkShaders();
 			result = new spehs::Shader(spehs::DefaultTextureMesh, defaultShader, new DefaultTextureUniforms(defaultShader));
 			break;
+		case 4:
+			defaultShader->compileShadersFromSource(defaultSkyBoxVert, defaultSkyBoxFrag);
+			defaultShader->addAttribute("vertexPosition");
+			defaultShader->linkShaders();
+			result = new spehs::Shader(spehs::DefaultSkyBox, defaultShader, new DefaultSkyBoxUniforms(defaultShader));
+			break;
 		default:
 			exceptions::fatalError("Default shader index out of reach!");
 			break;
@@ -266,8 +308,11 @@ namespace spehs
 		//DefaultMesh
 		shaderPrograms.push_back(buildDefaultShader(2));
 
-		//DefaultMeshTexture
+		//DefaultTextureMesh
 		shaderPrograms.push_back(buildDefaultShader(3));
+
+		//DefaultSkyBox
+		shaderPrograms.push_back(buildDefaultShader(4));
 	}
 	ShaderManager::~ShaderManager()
 	{
@@ -336,6 +381,15 @@ namespace spehs
 	{
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, _textureID);
+
+		checkOpenGLErrors(__FILE__, __LINE__);
+	}
+	void bindCubeMapTexture(const GLuint &_textureID)
+	{
+		glActiveTexture(GL_TEXTURE0);
+		glEnable(GL_TEXTURE_CUBE_MAP);
+		glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
+		glBindTexture(GL_TEXTURE_CUBE_MAP, _textureID);
 
 		checkOpenGLErrors(__FILE__, __LINE__);
 	}

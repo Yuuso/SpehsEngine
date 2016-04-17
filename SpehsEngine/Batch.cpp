@@ -132,11 +132,13 @@ namespace spehs
 		{
 			glEnable(GL_BLEND);
 			glDisable(GL_DEPTH_TEST);
+			glDepthMask(GL_FALSE);
 		}
 		else
 		{
 			glDisable(GL_BLEND);
 			glEnable(GL_DEPTH_TEST);
+			glDepthMask(GL_TRUE);
 		}
 
 		shaderManager->use(shaderIndex);
@@ -313,6 +315,7 @@ namespace spehs
 		vertexBufferID = 0;
 		indexBufferID = 0;
 
+		blending = false;
 		batchSize = DEFAULT_MAX_BATCH_SIZE;
 		shaderIndex = 0;
 		textureDataID = 0;
@@ -321,7 +324,7 @@ namespace spehs
 
 		initBuffers();
 	}
-	MeshBatch::MeshBatch(const unsigned int& _batchSizeCheck, const int &_shader, const GLuint &_textureID, const GLenum &_drawMode, const float &_lineWidth)
+	MeshBatch::MeshBatch(const unsigned int& _batchSizeCheck, const int &_shader, const GLuint &_textureID, const GLenum &_drawMode, const bool _blending, const float &_lineWidth)
 	{
 		vertexArrayObjectID = 0;
 		vertexBufferID = 0;
@@ -332,6 +335,7 @@ namespace spehs
 		else
 			batchSize = DEFAULT_MAX_BATCH_SIZE;
 
+		blending = _blending;
 		shaderIndex = _shader;
 		textureDataID = _textureID;
 		drawMode = _drawMode;
@@ -352,7 +356,8 @@ namespace spehs
 	{
 		if (shaderIndex != _mesh.shaderIndex ||
 			textureDataID != _mesh.textureDataID ||
-			drawMode != _mesh.drawMode)
+			drawMode != _mesh.drawMode ||
+			blending != _mesh.blending)
 		{
 			return false;
 		}
@@ -380,8 +385,18 @@ namespace spehs
 		if (vertices.size() == 0)
 			return false;
 
-		glDisable(GL_BLEND);
-		glEnable(GL_DEPTH_TEST);
+		if (!blending)
+		{
+			glDisable(GL_BLEND);
+			glDepthMask(GL_TRUE);
+			glEnable(GL_DEPTH_TEST);
+		}
+		else
+		{
+			glDisable(GL_DEPTH_TEST);
+			glDepthMask(GL_FALSE);
+			glEnable(GL_BLEND);
+		}
 
 		updateBuffers();
 
@@ -431,10 +446,11 @@ namespace spehs
 		unsigned int indSize = indices.size();
 		//INDICES
 		indices.insert(indices.end(), _mesh->elementArray.begin(), _mesh->elementArray.end());
-		for (size_t i = indSize; i < indices.size(); i++)
-		{
-			indices[i] += firstElement;
-		}
+		if (firstElement != 0)
+			for (size_t i = indSize; i < indices.size(); i++)
+			{
+				indices[i] += firstElement;
+			}
 		//VERTICES
 		vertices.insert(vertices.end(), _mesh->worldVertexArray.begin(), _mesh->worldVertexArray.end());
 	}
