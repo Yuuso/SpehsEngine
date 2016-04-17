@@ -147,6 +147,13 @@ namespace spehs
 			return false;
 	}
 
+	bool InputManager::fileDropped()
+	{
+		if (droppedFilePath.empty())
+			return false;
+		return true;
+	}
+
 	///////////////////////////
 	//  JOYSTICK MANAGEMENT  //
 	void InputManager::joystickConnected()

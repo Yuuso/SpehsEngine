@@ -83,7 +83,7 @@ namespace spehs
 		float getMouseMovementY(){ return mouseMovement.y; }
 		int getMouseWheelDelta() const { return mouseWheelDelta; }
 		bool isQuitRequested() const { return quitRequested; }
-		bool fileDropped(){ if (droppedFilePath.size() > 0) return true; }
+		bool fileDropped();
 		std::string getDroppedFilePath(){ std::string path = droppedFilePath; droppedFilePath.clear();/*Reset dropped file path*/ return path; }
 
 		//Public access members

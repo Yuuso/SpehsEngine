@@ -26,6 +26,12 @@
 
 namespace spehs
 {
+	void GUIWindow::DRAW_TEXT()
+	{
+		GUIRectangleContainer::DRAW_TEXT();
+		header->DRAW_TEXT();
+		exit->DRAW_TEXT();
+	}
 	GUIWindow::GUIWindow() : doubleClickTimer(0), strechState(0)
 	{
 		//Set size
