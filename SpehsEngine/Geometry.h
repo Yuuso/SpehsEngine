@@ -8,6 +8,7 @@
 namespace spehs
 {
 	class Position;
+	class Vertex;
 
 	/**Returns the magnitude of vector*/
 	extern inline float magnitude(glm::vec2& vector);
@@ -28,8 +29,12 @@ namespace spehs
 	/**Returns area of the shape formed by a number of cusps*/
 	extern inline float getArea(spehs::Position* cusps, unsigned numCusps);
 
-	/**Returns redius from 0,0 to the farthest away cusp in the array*/
+	/**Returns radius from 0,0 to the farthest away cusp in the array*/
 	extern inline float getRadius(spehs::Position* cusps, unsigned numCusps);
+
+	/*Returns center of a convex polygon*/
+	extern inline glm::vec2 getCenter(spehs::Vertex* cusps, unsigned numCusps);
+	extern inline glm::vec2 getCenter(spehs::Position* cusps, unsigned numCusps);
 
 	/**Returns a generated position array. Assigns length of array into numCusps*/
 	spehs::Position* generateCusps(unsigned& numCusps, int shape, float width, float height);

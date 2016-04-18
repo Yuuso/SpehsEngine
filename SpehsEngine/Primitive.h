@@ -104,6 +104,7 @@ namespace spehs
 		void setBlending(const bool _newState);
 
 		//Getters
+		Position getPosition(){ return position; }
 		bool getCameraMatrixState(){ return cameraMatrixState; }
 		bool getRenderState(){ return renderState; }
 		PlaneDepth getPlaneDepth(){ return planeDepth; }

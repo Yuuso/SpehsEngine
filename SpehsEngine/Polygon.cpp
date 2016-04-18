@@ -214,12 +214,12 @@ namespace spehs
 	{
 		if (radius == 0.0f) //If it has not been calculated already
 		{
-			float max = glm::distance(glm::vec2(0.0f, 0.0f), glm::vec2(vertexArray[0].position.x, vertexArray[0].position.y));
+			float max = glm::distance(glm::vec2(position.x, position.y), glm::vec2(worldVertexArray[0].position.x, worldVertexArray[0].position.y));
 			for (unsigned int i = 1; i < worldVertexArray.size(); i++)
 			{
-				if (glm::distance(glm::vec2(0.0f, 0.0f), glm::vec2(vertexArray[i].position.x, vertexArray[i].position.y)) > max)
+				if (glm::distance(glm::vec2(position.x, position.y), glm::vec2(worldVertexArray[i].position.x, worldVertexArray[i].position.y)) > max)
 				{
-					max = glm::distance(glm::vec2(0.0f, 0.0f), glm::vec2(vertexArray[i].position.x, vertexArray[i].position.y));
+					max = glm::distance(glm::vec2(position.x, position.y), glm::vec2(worldVertexArray[i].position.x, worldVertexArray[i].position.y));
 				}
 			}
 			radius = max;

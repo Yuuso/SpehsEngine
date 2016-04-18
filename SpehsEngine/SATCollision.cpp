@@ -1,6 +1,7 @@
 
 #include "SATCollision.h"
 #include "Vertex.h"
+#include "Geometry.h"
 
 #include "glm/vec2.hpp"
 #include "glm/gtx/vector_query.hpp"
@@ -540,7 +541,6 @@ namespace spehs
 			}
 		}
 		//Here we know that no separating axis was found and there is a collision
-		delete [] axis1;
 		//Calculate collision point
 		CollisionPoint* result = new CollisionPoint;
 		result->MTV = glm::normalize(smallestAxis) * abs(overlap);
@@ -552,7 +552,13 @@ namespace spehs
 				return result;
 			}
 		}
-		result->point = _circleCenterPoint + smallestAxis * _circleRadius;
+		//TODO: ! Create a new normalized vector that is from the center of the cirlce to the center of the polygon and scale it with radius!
+		//This is not completely correct>
+		if (glm::distance(_circleCenterPoint + smallestAxis, getCenter(_vertexArray, _size)) < glm::distance(_circleCenterPoint - smallestAxis, getCenter(_vertexArray, _size)))
+			result->point = _circleCenterPoint + smallestAxis * _circleRadius;
+		else
+			result->point = _circleCenterPoint - smallestAxis * _circleRadius;
+		delete [] axis1;
 		return result;
 	}
 	CollisionPoint* SATMTVCollision(Position* _vertexArray, int _size, glm::vec2& _circleCenterPoint, float _circleRadius)
@@ -644,8 +650,8 @@ namespace spehs
 		if (glm::distance(_circleCenterPoint1, _circleCenterPoint2) < (_circleRadius1 + _circleRadius2))
 		{
 			CollisionPoint* result = new CollisionPoint;
-			result->MTV = glm::normalize(-_circleCenterPoint1 + _circleCenterPoint2) * (glm::distance(_circleCenterPoint1, _circleCenterPoint2) - (_circleRadius1 + _circleRadius2));
-			result->point = _circleCenterPoint1 + glm::normalize(_circleCenterPoint1 - _circleCenterPoint2) * _circleRadius1;
+			result->MTV = glm::normalize(_circleCenterPoint2 - _circleCenterPoint1) * (glm::distance(_circleCenterPoint1, _circleCenterPoint2) - (_circleRadius1 + _circleRadius2));
+			result->point = _circleCenterPoint1 + glm::normalize(_circleCenterPoint2 - _circleCenterPoint1) * _circleRadius1;
 			return result;
 		}
 		return nullptr;

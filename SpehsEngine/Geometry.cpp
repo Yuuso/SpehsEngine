@@ -63,6 +63,43 @@ namespace spehs
 		}
 		return max;
 	}
+	inline glm::vec2 getCenter(spehs::Vertex* cusps, unsigned numCusps)
+	{
+		glm::vec2 result(0.0f);
+		for (unsigned i = 0; i < numCusps; i++)
+		{
+			result += glm::vec2(cusps[i].position.x, cusps[i].position.y);
+		}
+		return result / (float)numCusps;
+		//float area;
+		//float x = 0.0f, y = 0.0f;
+		//for (unsigned i = 0; i < numCusps; i++)
+		//{
+		//	if (i < numCusps)
+		//	{
+		//		area = (cusps[i].x * cusps[i + 1].y - cusps[i + 1].x * cusps[i].y);
+		//		x += (cusps[i].x + cusps[i + 1].x) * area;
+		//		y += (cusps[i].y + cusps[i + 1].y) * area;
+		//	}
+		//	else
+		//	{
+		//		area = (cusps[i].x * cusps[0].y - cusps[0].x * cusps[i].y);
+		//		x += (cusps[i].x + cusps[0].x) * area;
+		//		y += (cusps[i].y + cusps[0].y) * area;
+		//	}
+		//}
+		//area = getArea(cusps, numCusps);
+		//return (1 / (6 * area)) * glm::vec2(x, y);
+	}
+	inline glm::vec2 getCenter(spehs::Position* cusps, unsigned numCusps)
+	{
+		glm::vec2 result(0.0f);
+		for (unsigned i = 0; i < numCusps; i++)
+		{
+			result += glm::vec2(cusps[i].x, cusps[i].y);
+		}
+		return result / (float)numCusps;
+	}
 	spehs::Position* generateCusps(unsigned& numCusps, int shape, float width, float height)
 	{
 		if (!shape)
