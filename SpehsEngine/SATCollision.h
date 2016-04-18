@@ -85,5 +85,5 @@ namespace spehs
 
 	//Circle x Circle Collision
 	bool CircleCollision(glm::vec2& _circleCenterPoint1, float _circleRadius1, glm::vec2& _circleCenterPoint2, float _circleRadius2);
-	glm::vec2 CircleMTVCollision(glm::vec2& _circleCenterPoint1, float _circleRadius1, glm::vec2& _circleCenterPoint2, float _circleRadius2);
+	CollisionPoint* CircleMTVCollision(glm::vec2& _circleCenterPoint1, float _circleRadius1, glm::vec2& _circleCenterPoint2, float _circleRadius2);
 }

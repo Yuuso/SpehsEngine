@@ -290,7 +290,7 @@ namespace spehs
 			if (SATCollision(_vertexArray2, _size2, glm::vec2(_vertexArray1[i].position.x, _vertexArray1[i].position.y), 0.0f))
 			{
 				result->point = glm::vec2(_vertexArray1[i].position.x, _vertexArray1[i].position.y);
-				goto end;
+				return result;
 			}
 		}
 		for (unsigned i = 0; i < _size2; i++)
@@ -301,7 +301,6 @@ namespace spehs
 				break;
 			}
 		}
-		end:
 		return result;
 	}
 	CollisionPoint* SATMTVCollision(Position* _vertexArray1, int _size1, Position* _vertexArray2, int _size2)
@@ -383,7 +382,7 @@ namespace spehs
 			if (SATCollision(_vertexArray2, _size2, glm::vec2(_vertexArray1[i].x, _vertexArray1[i].y), 0.0f))
 			{
 				result->point = glm::vec2(_vertexArray1[i].x, _vertexArray1[i].y);
-				goto end;
+				return result;
 			}
 		}
 		for (unsigned i = 0; i < _size2; i++)
@@ -394,7 +393,6 @@ namespace spehs
 				break;
 			}
 		}
-	end:
 		return result;
 	}
 
@@ -551,11 +549,10 @@ namespace spehs
 			if (CircleCollision(_circleCenterPoint, _circleRadius, glm::vec2(_vertexArray[i].position.x, _vertexArray[i].position.y), 0.0f))
 			{
 				result->point = glm::vec2(_vertexArray[i].position.x, _vertexArray[i].position.y);
-				goto end;
+				return result;
 			}
 		}
 		result->point = _circleCenterPoint + smallestAxis * _circleRadius;
-	end:
 		return result;
 	}
 	CollisionPoint* SATMTVCollision(Position* _vertexArray, int _size, glm::vec2& _circleCenterPoint, float _circleRadius)
@@ -626,11 +623,10 @@ namespace spehs
 			if (CircleCollision(_circleCenterPoint, _circleRadius, glm::vec2(_vertexArray[i].x, _vertexArray[i].y), 0.0f))
 			{
 				result->point = glm::vec2(_vertexArray[i].x, _vertexArray[i].y);
-				goto end;
+				return result;
 			}
 		}
 		result->point = _circleCenterPoint + smallestAxis * _circleRadius;
-	end:
 		return result;
 	}
 
@@ -643,12 +639,15 @@ namespace spehs
 		}
 		return false;
 	}
-	glm::vec2 CircleMTVCollision(glm::vec2& _circleCenterPoint1, float _circleRadius1, glm::vec2& _circleCenterPoint2, float _circleRadius2)
+	CollisionPoint* CircleMTVCollision(glm::vec2& _circleCenterPoint1, float _circleRadius1, glm::vec2& _circleCenterPoint2, float _circleRadius2)
 	{
 		if (glm::distance(_circleCenterPoint1, _circleCenterPoint2) < (_circleRadius1 + _circleRadius2))
 		{
-			return glm::normalize(-_circleCenterPoint1 + _circleCenterPoint2) * (glm::distance(_circleCenterPoint1, _circleCenterPoint2) - (_circleRadius1 + _circleRadius2));
+			CollisionPoint* result = new CollisionPoint;
+			result->MTV = glm::normalize(-_circleCenterPoint1 + _circleCenterPoint2) * (glm::distance(_circleCenterPoint1, _circleCenterPoint2) - (_circleRadius1 + _circleRadius2));
+			result->point = _circleCenterPoint1 + glm::normalize(_circleCenterPoint1 - _circleCenterPoint2) * _circleRadius1;
+			return result;
 		}
-		return glm::vec2(NULL);
+		return nullptr;
 	}
 }
