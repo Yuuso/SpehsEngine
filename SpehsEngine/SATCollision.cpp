@@ -1,7 +1,9 @@
+
 #include "SATCollision.h"
 #include "Vertex.h"
-#include "glm\vec2.hpp"
-#include "glm\matrix.hpp"
+
+#include "glm/vec2.hpp"
+#include "glm/gtx/vector_query.hpp"
 
 
 namespace spehs
@@ -209,7 +211,7 @@ namespace spehs
 		delete [] axis2;
 		return true;
 	}
-	glm::vec2 SATMTVCollision(Vertex* _vertexArray1, int _size1, Vertex* _vertexArray2, int _size2)
+	CollisionPoint* SATMTVCollision(Vertex* _vertexArray1, int _size1, Vertex* _vertexArray2, int _size2)
 	{
 		float overlap = FLT_MAX;
 		glm::vec2 smallestAxis;
@@ -244,7 +246,7 @@ namespace spehs
 			{
 				delete axis1;
 				delete axis2;
-				return glm::vec2(NULL);
+				return nullptr;
 			}
 			else
 			{
@@ -265,7 +267,7 @@ namespace spehs
 			{
 				delete axis1;
 				delete axis2;
-				return glm::vec2(NULL);
+				return nullptr;
 			}
 			else
 			{
@@ -280,9 +282,29 @@ namespace spehs
 		//Here we know that no separating axis was found and there is a collision
 		delete [] axis1;
 		delete [] axis2;
-		return glm::normalize(smallestAxis) * abs(overlap);
+		//Calculate collision point
+		CollisionPoint* result = new CollisionPoint;
+		result->MTV = glm::normalize(smallestAxis) * abs(overlap);
+		for (unsigned i = 0; i < _size1; i++)
+		{
+			if (SATCollision(_vertexArray2, _size2, glm::vec2(_vertexArray1[i].position.x, _vertexArray1[i].position.y), 0.0f))
+			{
+				result->point = glm::vec2(_vertexArray1[i].position.x, _vertexArray1[i].position.y);
+				goto end;
+			}
+		}
+		for (unsigned i = 0; i < _size2; i++)
+		{
+			if (SATCollision(_vertexArray1, _size1, glm::vec2(_vertexArray2[i].position.x, _vertexArray2[i].position.y), 0.0f))
+			{
+				result->point = glm::vec2(_vertexArray2[i].position.x, _vertexArray2[i].position.y);
+				break;
+			}
+		}
+		end:
+		return result;
 	}
-	glm::vec2 SATMTVCollision(Position* _vertexArray1, int _size1, Position* _vertexArray2, int _size2)
+	CollisionPoint* SATMTVCollision(Position* _vertexArray1, int _size1, Position* _vertexArray2, int _size2)
 	{
 		float overlap = FLT_MAX;
 		glm::vec2 smallestAxis;
@@ -317,7 +339,7 @@ namespace spehs
 			{
 				delete axis1;
 				delete axis2;
-				return glm::vec2(NULL);
+				return nullptr;
 			}
 			else
 			{
@@ -338,7 +360,7 @@ namespace spehs
 			{
 				delete axis1;
 				delete axis2;
-				return glm::vec2(NULL);
+				return nullptr;
 			}
 			else
 			{
@@ -353,7 +375,27 @@ namespace spehs
 		//Here we know that no separating axis was found and there is a collision
 		delete [] axis1;
 		delete [] axis2;
-		return glm::normalize(smallestAxis) * abs(overlap);
+		//Calculate collision point
+		CollisionPoint* result = new CollisionPoint;
+		result->MTV = glm::normalize(smallestAxis) * abs(overlap);
+		for (unsigned i = 0; i < _size1; i++)
+		{
+			if (SATCollision(_vertexArray2, _size2, glm::vec2(_vertexArray1[i].x, _vertexArray1[i].y), 0.0f))
+			{
+				result->point = glm::vec2(_vertexArray1[i].x, _vertexArray1[i].y);
+				goto end;
+			}
+		}
+		for (unsigned i = 0; i < _size2; i++)
+		{
+			if (SATCollision(_vertexArray1, _size1, glm::vec2(_vertexArray2[i].x, _vertexArray2[i].y), 0.0f))
+			{
+				result->point = glm::vec2(_vertexArray2[i].x, _vertexArray2[i].y);
+				break;
+			}
+		}
+	end:
+		return result;
 	}
 
 
@@ -441,7 +483,7 @@ namespace spehs
 		delete [] axis1;
 		return true;
 	}
-	glm::vec2 SATMTVCollision(Vertex* _vertexArray, int _size, glm::vec2& _circleCenterPoint, float _circleRadius)
+	CollisionPoint* SATMTVCollision(Vertex* _vertexArray, int _size, glm::vec2& _circleCenterPoint, float _circleRadius)
 	{
 		float overlap = FLT_MAX;
 		glm::vec2 smallestAxis;
@@ -468,7 +510,7 @@ namespace spehs
 		if (!p1.overlap(p2))
 		{
 			delete axis1;
-			return glm::vec2(NULL);
+			return nullptr;
 		}
 		else
 		{
@@ -487,7 +529,7 @@ namespace spehs
 			if (!p1.overlap(p2))
 			{
 				delete axis1;
-				return glm::vec2(NULL);
+				return nullptr;
 			}
 			else
 			{
@@ -501,9 +543,22 @@ namespace spehs
 		}
 		//Here we know that no separating axis was found and there is a collision
 		delete [] axis1;
-		return glm::normalize(smallestAxis) * abs(overlap);
+		//Calculate collision point
+		CollisionPoint* result = new CollisionPoint;
+		result->MTV = glm::normalize(smallestAxis) * abs(overlap);
+		for (unsigned i = 0; i < _size; i++)
+		{
+			if (CircleCollision(_circleCenterPoint, _circleRadius, glm::vec2(_vertexArray[i].position.x, _vertexArray[i].position.y), 0.0f))
+			{
+				result->point = glm::vec2(_vertexArray[i].position.x, _vertexArray[i].position.y);
+				goto end;
+			}
+		}
+		result->point = _circleCenterPoint + smallestAxis * _circleRadius;
+	end:
+		return result;
 	}
-	glm::vec2 SATMTVCollision(Position* _vertexArray, int _size, glm::vec2& _circleCenterPoint, float _circleRadius)
+	CollisionPoint* SATMTVCollision(Position* _vertexArray, int _size, glm::vec2& _circleCenterPoint, float _circleRadius)
 	{
 		float overlap = FLT_MAX;
 		glm::vec2 smallestAxis;
@@ -530,7 +585,7 @@ namespace spehs
 		if (!p1.overlap(p2))
 		{
 			delete axis1;
-			return glm::vec2(NULL);
+			return nullptr;
 		}
 		else
 		{
@@ -549,7 +604,7 @@ namespace spehs
 			if (!p1.overlap(p2))
 			{
 				delete axis1;
-				return glm::vec2(NULL);
+				return nullptr;
 			}
 			else
 			{
@@ -563,7 +618,20 @@ namespace spehs
 		}
 		//Here we know that no separating axis was found and there is a collision
 		delete [] axis1;
-		return glm::normalize(smallestAxis) * abs(overlap);
+		//Calculate collision point
+		CollisionPoint* result = new CollisionPoint;
+		result->MTV = glm::normalize(smallestAxis) * abs(overlap);
+		for (unsigned i = 0; i < _size; i++)
+		{
+			if (CircleCollision(_circleCenterPoint, _circleRadius, glm::vec2(_vertexArray[i].x, _vertexArray[i].y), 0.0f))
+			{
+				result->point = glm::vec2(_vertexArray[i].x, _vertexArray[i].y);
+				goto end;
+			}
+		}
+		result->point = _circleCenterPoint + smallestAxis * _circleRadius;
+	end:
+		return result;
 	}
 
 
