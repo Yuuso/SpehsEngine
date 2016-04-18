@@ -1,6 +1,8 @@
 
 #pragma once
 
+#include "Exceptions.h"
+
 #include <string>
 #include <vector>
 
@@ -34,13 +36,13 @@ namespace spehs
 	template <typename type>
 	void GameObject::addComponent()
 	{
-		type* cast = new type(this);
+		type* cast = new type(*this);
 
-		//if (std::is_base_of<Component, type>::value == false)
-		//{
-		//	std::cout << "Given type in not a Component!" << std::endl;
-		//	return;
-		//}
+		if (!dynamic_cast<Component*>(cast))
+		{
+			exceptions::fatalError("Given type is not a Component.");
+		}
+		
 		components.push_back(cast);
 	}
 

@@ -15,14 +15,18 @@ namespace spehs
 	}
 	GameObject::~GameObject()
 	{
-		for (auto &it : components)
-			delete it;
+		for (unsigned i = 0; i < components.size(); i++)
+		{
+			delete components[i];
+		}
 	}
 
 
 	void GameObject::update()
 	{
-		for (auto &it : components)
-			it->update();
+		for (unsigned i = 0; i < components.size(); i++)
+		{
+			components[i]->update();
+		}
 	}
 }

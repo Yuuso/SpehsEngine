@@ -43,13 +43,12 @@ namespace spehs
 
 	void RigidBody2D::update()
 	{
-		//POST UPDATE?
-		//If the GameObject has a transform component set it's values here
-		if (ownerObject->getComponent<Transform2D>() != nullptr)
-		{
-			ownerObject->getComponent<Transform2D>()->setPosition(position);
-			ownerObject->getComponent<Transform2D>()->setRotation(rotation);
-		}
+		Transform2D* transform = ownerObject->getComponent<Transform2D>();
+		if (!transform)
+			exceptions::fatalError("Object doesn't have transform component!");
+
+		transform->setPosition(position);
+		transform->setRotation(rotation);
 	}
 
 	void RigidBody2D::applyForce(const glm::vec2& _force)

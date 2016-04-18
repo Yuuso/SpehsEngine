@@ -18,6 +18,10 @@ namespace spehs
 		Sprite(GameObject& _owner);
 		~Sprite();
 
+		void update();
+
+		void setPolygon(float _x, float _y, int _numVertices);
+
 		Polygon* sprite;
 	};
 }
