@@ -212,18 +212,16 @@ namespace spehs
 
 	float Polygon::getRadius()
 	{
-		if (radius == 0.0f) //If it has not been calculated already
+		//Seems like this needs to be updated every time
+		float max = glm::distance(glm::vec2(position.x, position.y), glm::vec2(worldVertexArray[0].position.x, worldVertexArray[0].position.y));
+		for (unsigned int i = 1; i < worldVertexArray.size(); i++)
 		{
-			float max = glm::distance(glm::vec2(position.x, position.y), glm::vec2(worldVertexArray[0].position.x, worldVertexArray[0].position.y));
-			for (unsigned int i = 1; i < worldVertexArray.size(); i++)
+			if (glm::distance(glm::vec2(position.x, position.y), glm::vec2(worldVertexArray[i].position.x, worldVertexArray[i].position.y)) > max)
 			{
-				if (glm::distance(glm::vec2(position.x, position.y), glm::vec2(worldVertexArray[i].position.x, worldVertexArray[i].position.y)) > max)
-				{
-					max = glm::distance(glm::vec2(position.x, position.y), glm::vec2(worldVertexArray[i].position.x, worldVertexArray[i].position.y));
-				}
+				max = glm::distance(glm::vec2(position.x, position.y), glm::vec2(worldVertexArray[i].position.x, worldVertexArray[i].position.y));
 			}
-			radius = max;
 		}
+		radius = max;
 		return radius;
 	}
 
