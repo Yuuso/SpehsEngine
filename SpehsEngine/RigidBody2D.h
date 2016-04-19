@@ -9,6 +9,7 @@ namespace spehs
 {
 	class GameObject;
 	class PhysicsWorld2D;
+	class Vertex;
 
 	enum Collider : char
 	{
@@ -42,9 +43,10 @@ namespace spehs
 		void setStatic(const bool _value);
 		void setFreezeRotation(const bool _value);
 		void setUseGravity(const bool _value);
+		void setDrag(const float& _drag, const float& _angularDrag);
+		void setElasticity(const float& _e);
 
 		//Getters
-		glm::vec2 getVelocity();
 		float getMass();
 		Collider getCollider();
 
@@ -57,20 +59,27 @@ namespace spehs
 		bool useGravity;
 
 		Collider collider;
-
-		float mass;
-		float drag;
-		float angularDrag;
-		float rotation;
 		float circleRadius;
 		float boxX, boxY;
+		int numVertices;
+		Vertex* vertexData;
+
+		float rotation;
+		float mass;
+		float elasticity;
+		float drag;
+		float angularDrag;
+		float angularVelocity;
+		float angularAcceleration;
 
 		glm::vec2 position;
 		glm::vec2 centerOfMass;
 		glm::vec2 velocity;
 		glm::vec2 acceleration;
-		glm::vec2 angularVelocity;
-		glm::vec2 maxAngularVelocity;
+
+		//Vectors of forces, torques and impulses ?
+
+		const glm::vec2 CENTER;
 	};
 }
 
