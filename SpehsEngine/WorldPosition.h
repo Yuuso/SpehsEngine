@@ -16,7 +16,9 @@ namespace spehs
 		size_t write(void* buffer);///< Writes world position to buffer. Returns number of bytes written
 		size_t read(void* buffer);///< Reads world position from buffer. Returns number of bytes read
 		glm::vec2 operator-(const WorldPosition& _position);///< Returns a vector from position to this
-		void operator+=(const WorldPosition& other);//(?)
+		void operator-=(const WorldPosition& other);
+		void operator-=(const glm::vec2& other);///< Subtrack glm vec2 into this
+		void operator+=(const WorldPosition& other);
 		void operator+=(const glm::vec2& other);///< Add glm vec2 into this
 		bool operator==(const WorldPosition& other);
 		bool operator!=(const WorldPosition& other);

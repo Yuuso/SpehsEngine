@@ -23,7 +23,7 @@ namespace spehs
 	/**Returns angle from 0,0 to destination*/
 	extern inline float getAngle(const glm::vec2& destination);
 
-	/**Returns angle from angle1 to angle2*/
+	/**Returns angle from angle1 to angle2. Range [0.0, TWO_PI]*/
 	extern inline float getAngle(const float angle1, const float angle2);
 
 	/**Returns area of the shape formed by a number of cusps*/
