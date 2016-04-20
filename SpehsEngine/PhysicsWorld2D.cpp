@@ -1,6 +1,9 @@
+
 #include "RigidBody2D.h"
 #include "PhysicsWorld2D.h"
 #include "SATCollision.h"
+
+#include <glm/gtx/vector_query.hpp>
 
 
 namespace spehs
@@ -44,8 +47,11 @@ namespace spehs
 		for (unsigned cycle1 = 0; cycle1 < bodies.size(); cycle1++)
 		{
 			//Apply gravity
-			if (!bodies[cycle1]->isStatic && bodies[cycle1]->useGravity)
-				bodies[cycle1]->applyForce(gravity);
+			if (!glm::isNull(gravity, 0.0001f))
+			{
+				if (!bodies[cycle1]->isStatic && bodies[cycle1]->useGravity)
+					bodies[cycle1]->applyForce(gravity * bodies[cycle1]->getMass());
+			}
 
 			//Collision checking
 			for (unsigned cycle2 = cycle1 + 1; cycle2 < bodies.size(); cycle2++)
@@ -79,6 +85,9 @@ namespace spehs
 
 					if (collisionPoint != nullptr)
 					{
+						//Separate
+						//>>
+
 						//Apply collisions
 						//>>
 

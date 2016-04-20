@@ -105,6 +105,7 @@ namespace spehs
 
 		//Getters
 		Position getPosition(){ return position; }
+		float getRotation(){ return rotation; }
 		bool getCameraMatrixState(){ return cameraMatrixState; }
 		bool getRenderState(){ return renderState; }
 		PlaneDepth getPlaneDepth(){ return planeDepth; }

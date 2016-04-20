@@ -2,6 +2,7 @@
 #pragma once
 
 #include <glm/vec4.hpp>
+#include <glm/vec3.hpp>
 
 
 namespace spehs
@@ -73,4 +74,7 @@ namespace spehs
 		UV uv;
 		Position normal;
 	};
+
+	extern inline glm::vec3 toVec3(const Vertex& _vertex);
+	extern inline glm::vec3 toVec3(const Position& _position);
 }

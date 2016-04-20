@@ -4,19 +4,19 @@
 
 namespace spehs
 {
-	inline float magnitude(glm::vec2& vec)
+	inline float magnitude(const glm::vec2& vec)
 	{
 		return sqrt(vec.x*vec.x + vec.y*vec.y);
 	}
-	inline float magnitude(spehs::Position& pos)
+	inline float magnitude(const spehs::Position& pos)
 	{
 		return sqrt(pos.x*pos.x + pos.y*pos.y);
 	}
-	inline float distance(glm::vec2& origin, glm::vec2& destination)
+	inline float distance(const glm::vec2& origin, const glm::vec2& destination)
 	{
 		return magnitude(origin - destination);
 	}
-	inline float getAngle(glm::vec2& origin, glm::vec2& destination)
+	inline float getAngle(const glm::vec2& origin, const glm::vec2& destination)
 	{
 		glm::vec2 vec = destination - origin;
 		float pointDirection = atan2(vec.y, vec.x);
@@ -24,14 +24,14 @@ namespace spehs
 			pointDirection += TWO_PI;
 		return pointDirection;
 	}
-	inline float getAngle(glm::vec2& destination)
+	inline float getAngle(const glm::vec2& destination)
 	{
 		float pointDirection = atan2(destination.y, destination.x);
 		if (destination.y < 0)
 			pointDirection += TWO_PI;
 		return pointDirection;
 	}
-	inline float getAngle(float angle1, float angle2)
+	inline float getAngle(const float angle1, const float angle2)
 	{
 		float angle = angle2 - angle1;
 		if (angle < 0)
@@ -99,6 +99,18 @@ namespace spehs
 			result += glm::vec2(cusps[i].x, cusps[i].y);
 		}
 		return result / (float)numCusps;
+	}
+	inline float cross2(const glm::vec2& _vec1, const glm::vec2& _vec2)
+	{
+		return _vec1.x * _vec2.y - _vec1.y * _vec2.x;
+	}
+	inline glm::vec2 cross2(const float& _scalar, const glm::vec2& _vec)
+	{
+		return glm::vec2(_scalar * _vec.y, -_scalar * _vec.x);
+	}
+	inline glm::vec2 cross2(const glm::vec2& _vec, const float& _scalar)
+	{
+		return glm::vec2(-_scalar * _vec.y, _scalar * _vec.x);
 	}
 	spehs::Position* generateCusps(unsigned& numCusps, int shape, float width, float height)
 	{

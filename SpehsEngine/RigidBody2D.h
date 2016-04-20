@@ -5,11 +5,17 @@
 
 #include <glm/vec2.hpp>
 
+#include <vector>
+
+#define SHOW_FORCES false
+
+
 namespace spehs
 {
 	class GameObject;
 	class PhysicsWorld2D;
 	class Vertex;
+	class Arrow;
 
 	enum Collider : char
 	{
@@ -32,8 +38,7 @@ namespace spehs
 		void applyForceAtPosition(const glm::vec2& _force, const glm::vec2& _position);
 		void applyImpulse(const glm::vec2& _impulse);
 		void applyImpulseAtPosition(const glm::vec2& _force, const glm::vec2& _position);
-		void applyTorque(const glm::vec2& _torque);
-		void applyRelativeTorque(const glm::vec2& _torque);
+		void applyTorque(const float& _torque);
 
 		//Setters
 		void setMass(const float& _newMass);
@@ -47,12 +52,14 @@ namespace spehs
 		void setElasticity(const float& _e);
 
 		//Getters
-		float getMass();
-		Collider getCollider();
+		glm::vec2 getVelocityAtPosition(const glm::vec2& _position);
+		float getMass() const { return mass; }
 
 	private:
 		bool setWorld(PhysicsWorld2D* _world);
 		PhysicsWorld2D* world;
+
+		void calculateMOI();
 
 		bool isStatic;
 		bool freezeRotation;
@@ -67,6 +74,7 @@ namespace spehs
 		float rotation;
 		float mass;
 		float elasticity;
+		float momentOfInertia;
 		float drag;
 		float angularDrag;
 		float angularVelocity;
@@ -77,7 +85,12 @@ namespace spehs
 		glm::vec2 velocity;
 		glm::vec2 acceleration;
 
-		//Vectors of forces, torques and impulses ?
+		float resultantTorque;
+		glm::vec2 resultantForce;
+		float resultantImpulseTorque;
+		glm::vec2 resultantImpulseForce;
+
+		std::vector<spehs::Arrow*> forces;
 
 		const glm::vec2 CENTER;
 	};

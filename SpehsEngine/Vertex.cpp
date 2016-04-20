@@ -141,4 +141,14 @@ namespace spehs
 	{
 
 	}
+
+	
+	inline glm::vec3 toVec3(const Vertex& _vertex)
+	{
+		return glm::vec3(_vertex.position.x, _vertex.position.y, _vertex.position.z);
+	}
+	inline glm::vec3 toVec3(const Position& _position)
+	{
+		return glm::vec3(_position.x, _position.y, _position.z);
+	}
 }

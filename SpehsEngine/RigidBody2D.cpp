@@ -7,6 +7,11 @@
 #include "Exceptions.h"
 #include "Time.h"
 #include "Polygon.h"
+#include "Geometry.h"
+#include "Vertex.h"
+#include "Arrow.h"
+
+#include <glm/gtx/vector_query.hpp>
 
 
 namespace spehs
@@ -30,13 +35,19 @@ namespace spehs
 		mass = 1.0f;
 		rotation = 0.0f;
 		elasticity = 0.5f;
-		angularVelocity = 0.01f;
+		momentOfInertia = 0.0f;
+		angularVelocity = 0.0f;
 		angularAcceleration = 0.0f;
 
 		position = glm::vec2(0.0f);
 		centerOfMass = glm::vec2(0.0f);
-		velocity = glm::vec2(-1.0f);
+		velocity = glm::vec2(0.0f);
 		acceleration = glm::vec2(0.0f);
+
+		resultantTorque = 0.0f;
+		resultantForce = glm::vec2(0.0f);
+		resultantImpulseTorque = 0.0f;
+		resultantImpulseForce = glm::vec2(0.0f);
 
 		update();
 	}
@@ -51,11 +62,23 @@ namespace spehs
 		Transform2D* transform = ownerObject->getComponent<Transform2D>();
 		if (!transform)
 			exceptions::fatalError("Object doesn't have transform component!");
+		Sprite* sprite = ownerObject->getComponent<Sprite>();
+		if (!sprite)
+			exceptions::fatalError("Object doesn't have sprite component!");
 
-		//Apply forces
-		//>>
+		//Update from sprite (this really needs to be done only when the sprite has changed)
+		mass = sprite->sprite->getArea();
+		centerOfMass = getCenter(sprite->sprite->worldVertexArray.data(), sprite->sprite->worldVertexArray.size());
+		calculateMOI();
+		circleRadius = sprite->sprite->getRadius();
+		numVertices = sprite->sprite->worldVertexArray.size();
+		vertexData = sprite->sprite->worldVertexArray.data();
 
-		//Apply impulses
+		//Apply resultant force and torque
+		acceleration = resultantForce / mass;
+		angularAcceleration = resultantTorque / momentOfInertia;
+
+		//Apply resultant impulse
 		//>>
 
 		//Apply acceleration
@@ -69,22 +92,18 @@ namespace spehs
 		//Update RigidBodys position and rotation from transform
 		position = transform->getPosition();
 		rotation = transform->getRotation();
-		//Update radius, vertices
-		circleRadius = ownerObject->getComponent<Sprite>()->sprite->getRadius();
-		numVertices = ownerObject->getComponent<Sprite>()->sprite->worldVertexArray.size();
-		vertexData = ownerObject->getComponent<Sprite>()->sprite->worldVertexArray.data();
+
+		//Reset forces
+		resultantForce = glm::vec2(0.0f);
+		resultantTorque = 0.0f;
+		resultantImpulseForce = glm::vec2(0.0f);
+		resultantImpulseTorque = 0.0f;
 
 		//Apply drag
-		//if (velocity.x > drag)
-		//	velocity.x -= drag * getDeltaTime().asSeconds;
-		//else if (velocity.x > 0.0f)
-		//	velocity.x = 0.0f;
-		//if (velocity.y > drag)
-		//	velocity.y -= drag * getDeltaTime().asSeconds;
-		//else if (velocity.y > 0.0f)
-		//	velocity.y = 0.0f;
-
-		//angularVelocity -= angularDrag * getDeltaTime().asSeconds;
+		if (!glm::isNull(velocity, 0.0001f))
+			applyForce(-glm::normalize(velocity) * drag);
+		if (abs(angularVelocity) > 0.0001f)
+			applyTorque(-(angularVelocity / abs(angularVelocity)) * angularDrag);
 	}
 
 	void RigidBody2D::applyForce(const glm::vec2& _force)
@@ -94,7 +113,21 @@ namespace spehs
 
 	void RigidBody2D::applyForceAtPosition(const glm::vec2& _force, const glm::vec2& _position)
 	{
+		if (SHOW_FORCES)
+		{
+			forces.push_back(new Arrow(_position, _position + _force));
+			forces.back()->setArrowColor(0, 0, 255, 255);
+		}
 
+		resultantForce += _force;
+		glm::vec2 AtoB = glm::vec2(_position - centerOfMass);
+		glm::vec2 rAB = glm::vec2(-AtoB.y, AtoB.x);
+		applyTorque(glm::dot(rAB, _force));
+		if (SHOW_FORCES)
+		{
+			forces.push_back(new Arrow(_position, _position + rAB));
+			forces.back()->setArrowColor(0, 255, 0, 255);
+		}
 	}
 
 	void RigidBody2D::applyImpulse(const glm::vec2& _impulse)
@@ -104,17 +137,17 @@ namespace spehs
 
 	void RigidBody2D::applyImpulseAtPosition(const glm::vec2& _force, const glm::vec2& _position)
 	{
+		if (SHOW_FORCES)
+		{
+			forces.push_back(new Arrow(_position, _position + _force));
+			forces.back()->setArrowColor(255, 0, 0, 255);
+		}
 
 	}
 
-	void RigidBody2D::applyTorque(const glm::vec2& _torque)
+	void RigidBody2D::applyTorque(const float& _torque)
 	{
-
-	}
-
-	void RigidBody2D::applyRelativeTorque(const glm::vec2& _torque)
-	{
-
+		resultantTorque += _torque;
 	}
 
 	void RigidBody2D::setMass(const float& _newMass)
@@ -177,17 +210,24 @@ namespace spehs
 		else if (elasticity < 0.0f)
 			elasticity = 0.0f;
 	}
-
-	float RigidBody2D::getMass()
+	
+	glm::vec2 RigidBody2D::getVelocityAtPosition(const glm::vec2& _position)
 	{
-		return mass;
+		//Angular Velocity
+		glm::vec2 result = _position - centerOfMass;
+		float x = result.x;
+		result.x = -result.y;
+		result.y = x;
+
+		result *= angularVelocity;
+
+		//Linear velocity
+		result += velocity;
+
+		return result;
 	}
 
-	Collider RigidBody2D::getCollider()
-	{
-		return collider;
-	}
-
+	//Private:
 	bool RigidBody2D::setWorld(PhysicsWorld2D* _world)
 	{
 		if (_world == nullptr)
@@ -200,5 +240,38 @@ namespace spehs
 			return false;
 		world = _world;
 		return true;
+	}
+
+	void RigidBody2D::calculateMOI()
+	{
+		float sum1 = 0.0f, sum2 = 0.0f;
+		Sprite* sprite = ownerObject->getComponent<Sprite>();
+		
+		//For regular convex polygons:
+		for (unsigned i = 0; i < sprite->sprite->worldVertexArray.size(); i++)
+		{
+			if (i < sprite->sprite->worldVertexArray.size() - 1)
+			{
+				sum1 += abs(glm::length(glm::cross(toVec3(sprite->sprite->worldVertexArray[i + 1]), toVec3(sprite->sprite->worldVertexArray[i])))) *
+					(
+					(glm::dot(toVec3(sprite->sprite->worldVertexArray[i]), toVec3(sprite->sprite->worldVertexArray[i]))) +
+					(glm::dot(toVec3(sprite->sprite->worldVertexArray[i]), toVec3(sprite->sprite->worldVertexArray[i + 1]))) +
+					(glm::dot(toVec3(sprite->sprite->worldVertexArray[i + 1]), toVec3(sprite->sprite->worldVertexArray[i + 1])))
+					);
+				sum2 += abs(glm::length(glm::cross(toVec3(sprite->sprite->worldVertexArray[i + 1]), toVec3(sprite->sprite->worldVertexArray[i]))));
+			}
+			else if (i == sprite->sprite->worldVertexArray.size() - 1)
+			{
+				sum1 += abs(glm::length(glm::cross(toVec3(sprite->sprite->worldVertexArray[0]), toVec3(sprite->sprite->worldVertexArray[i])))) *
+					(
+					(glm::dot(toVec3(sprite->sprite->worldVertexArray[i]), toVec3(sprite->sprite->worldVertexArray[i]))) +
+					(glm::dot(toVec3(sprite->sprite->worldVertexArray[i]), toVec3(sprite->sprite->worldVertexArray[0]))) +
+					(glm::dot(toVec3(sprite->sprite->worldVertexArray[0]), toVec3(sprite->sprite->worldVertexArray[0])))
+					);
+				sum2 += abs(glm::length(glm::cross(toVec3(sprite->sprite->worldVertexArray[0]), toVec3(sprite->sprite->worldVertexArray[i]))));
+			}
+		}
+
+		momentOfInertia = (mass / 6) * (sum1 / sum2);
 	}
 }
