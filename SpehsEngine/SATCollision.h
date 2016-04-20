@@ -53,6 +53,7 @@ namespace spehs
 	{
 		glm::vec2 MTV;
 		glm::vec2 point;
+		glm::vec2 normal;
 	};
 
 	//Function for projecting polygon onto axis

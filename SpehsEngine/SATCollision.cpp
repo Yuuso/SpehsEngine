@@ -291,6 +291,8 @@ namespace spehs
 			if (SATCollision(_vertexArray2, _size2, glm::vec2(_vertexArray1[i].position.x, _vertexArray1[i].position.y), 0.0f))
 			{
 				result->point = glm::vec2(_vertexArray1[i].position.x, _vertexArray1[i].position.y);
+				//Find normal
+				//>>
 				return result;
 			}
 		}
@@ -299,6 +301,8 @@ namespace spehs
 			if (SATCollision(_vertexArray1, _size1, glm::vec2(_vertexArray2[i].position.x, _vertexArray2[i].position.y), 0.0f))
 			{
 				result->point = glm::vec2(_vertexArray2[i].position.x, _vertexArray2[i].position.y);
+				//Find normal
+				//>>
 				break;
 			}
 		}
@@ -650,8 +654,16 @@ namespace spehs
 		if (glm::distance(_circleCenterPoint1, _circleCenterPoint2) < (_circleRadius1 + _circleRadius2))
 		{
 			CollisionPoint* result = new CollisionPoint;
-			result->MTV = glm::normalize(_circleCenterPoint2 - _circleCenterPoint1) * (glm::distance(_circleCenterPoint1, _circleCenterPoint2) - (_circleRadius1 + _circleRadius2));
-			result->point = _circleCenterPoint1 + glm::normalize(_circleCenterPoint2 - _circleCenterPoint1) * _circleRadius1;
+			if (_circleCenterPoint1 == _circleCenterPoint2) //Can't normalize 0 vectors
+			{
+				result->MTV = glm::vec2(1.0f, 0.0f) *(glm::distance(_circleCenterPoint1, _circleCenterPoint2) - (_circleRadius1 + _circleRadius2));
+				result->point = _circleCenterPoint1 + glm::vec2(1.0f, 0.0f) * _circleRadius1;
+			}
+			else
+			{
+				result->MTV = glm::normalize(_circleCenterPoint2 - _circleCenterPoint1) * (glm::distance(_circleCenterPoint1, _circleCenterPoint2) - (_circleRadius1 + _circleRadius2));
+				result->point = _circleCenterPoint1 + glm::normalize(_circleCenterPoint2 - _circleCenterPoint1) * _circleRadius1;
+			}
 			return result;
 		}
 		return nullptr;

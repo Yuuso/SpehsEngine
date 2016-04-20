@@ -36,9 +36,9 @@ namespace spehs
 
 		void applyForce(const glm::vec2& _force);
 		void applyForceAtPosition(const glm::vec2& _force, const glm::vec2& _position);
-		void applyImpulse(const glm::vec2& _impulse);
-		void applyImpulseAtPosition(const glm::vec2& _force, const glm::vec2& _position);
 		void applyTorque(const float& _torque);
+		void applyVelocityImpulse(const glm::vec2& _impulse);
+		void applyAngularImpulse(const float& _impulse);
 
 		//Setters
 		void setMass(const float& _newMass);

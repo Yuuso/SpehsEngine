@@ -30,6 +30,9 @@ namespace spehs
 		glm::vec2 getGravity() const{ return gravity; }
 
 	private:
+		//Enter mass as 0.0f for static bodies
+		float j(const float& _e, const glm::vec2& _velocity, const glm::vec2& _normal, const float& _mass1, const float& _mass2);
+
 		CollisionPoint* collisionPoint;
 		std::vector<RigidBody2D*> bodies;
 		glm::vec2 gravity;

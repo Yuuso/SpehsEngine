@@ -13,6 +13,9 @@
 
 #include <glm/gtx/vector_query.hpp>
 
+#define DEFAULT_MASS_MULTIPLIER 1.0f
+#define NULL_EPSILON 0.00001f
+
 
 namespace spehs
 {
@@ -30,8 +33,8 @@ namespace spehs
 		boxX = 0.0f;
 		boxY = 0.0f;
 
-		drag = 0.1f;
-		angularDrag = 0.1f;
+		drag = 10.0f;
+		angularDrag = 10.0f;
 		mass = 1.0f;
 		rotation = 0.0f;
 		elasticity = 0.5f;
@@ -67,7 +70,7 @@ namespace spehs
 			exceptions::fatalError("Object doesn't have sprite component!");
 
 		//Update from sprite (this really needs to be done only when the sprite has changed)
-		mass = sprite->sprite->getArea();
+		mass = sprite->sprite->getArea() * DEFAULT_MASS_MULTIPLIER;
 		centerOfMass = getCenter(sprite->sprite->worldVertexArray.data(), sprite->sprite->worldVertexArray.size());
 		calculateMOI();
 		circleRadius = sprite->sprite->getRadius();
@@ -79,7 +82,10 @@ namespace spehs
 		angularAcceleration = resultantTorque / momentOfInertia;
 
 		//Apply resultant impulse
-		//>>
+		if (!glm::isNull(resultantImpulseForce, NULL_EPSILON))
+			velocity = resultantImpulseForce;
+		if (resultantImpulseTorque > NULL_EPSILON)
+			angularVelocity = resultantImpulseTorque;
 
 		//Apply acceleration
 		velocity += acceleration * getDeltaTime().asSeconds;
@@ -100,9 +106,9 @@ namespace spehs
 		resultantImpulseTorque = 0.0f;
 
 		//Apply drag
-		if (!glm::isNull(velocity, 0.0001f))
+		if (!glm::isNull(velocity, NULL_EPSILON))
 			applyForce(-glm::normalize(velocity) * drag);
-		if (abs(angularVelocity) > 0.0001f)
+		if (abs(angularVelocity) > NULL_EPSILON)
 			applyTorque(-(angularVelocity / abs(angularVelocity)) * angularDrag);
 	}
 
@@ -122,7 +128,7 @@ namespace spehs
 		resultantForce += _force;
 		glm::vec2 AtoB = glm::vec2(_position - centerOfMass);
 		glm::vec2 rAB = glm::vec2(-AtoB.y, AtoB.x);
-		applyTorque(glm::dot(rAB, _force));
+		applyTorque(glm::dot(rAB, _force)); //?
 		if (SHOW_FORCES)
 		{
 			forces.push_back(new Arrow(_position, _position + rAB));
@@ -130,19 +136,14 @@ namespace spehs
 		}
 	}
 
-	void RigidBody2D::applyImpulse(const glm::vec2& _impulse)
+	void RigidBody2D::applyVelocityImpulse(const glm::vec2& _impulse)
 	{
-		applyImpulseAtPosition(_impulse, CENTER);
+		resultantImpulseForce += _impulse;
 	}
 
-	void RigidBody2D::applyImpulseAtPosition(const glm::vec2& _force, const glm::vec2& _position)
+	void RigidBody2D::applyAngularImpulse(const float& _impulse)
 	{
-		if (SHOW_FORCES)
-		{
-			forces.push_back(new Arrow(_position, _position + _force));
-			forces.back()->setArrowColor(255, 0, 0, 255);
-		}
-
+		resultantImpulseTorque += _impulse;
 	}
 
 	void RigidBody2D::applyTorque(const float& _torque)
