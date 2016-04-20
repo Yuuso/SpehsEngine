@@ -30,14 +30,25 @@ namespace spehs
 	{
 		return glm::vec2(integerX - _position.integerX + floatingX - _position.floatingX, integerY - _position.integerY + floatingY - _position.floatingY);
 	}
-	void WorldPosition::operator+=(const WorldPosition& other) //TODO: ... wtf
+	void WorldPosition::operator-=(const glm::vec2& other)
 	{
-		integerX += other.integerX;
-		integerY += other.integerY;
+		translate(-other);
 	}
 	void WorldPosition::operator+=(const glm::vec2& other)
 	{
 		translate(other);
+	}
+	void WorldPosition::operator-=(const WorldPosition& other)
+	{
+		integerX -= other.integerX;
+		integerY -= other.integerY;
+		translate(glm::vec2(-other.floatingX, -other.floatingY));
+	}
+	void WorldPosition::operator+=(const WorldPosition& other)
+	{
+		integerX += other.integerX;
+		integerY += other.integerY;
+		translate(glm::vec2(other.floatingX, other.floatingY));
 	}
 	bool WorldPosition::operator==(const WorldPosition& other)
 	{
