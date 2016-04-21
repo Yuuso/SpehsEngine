@@ -21,9 +21,10 @@ namespace spehs
 #ifdef DRAW_TEXT_ENABLED
 	void GUIRectangle::DRAW_TEXT()
 	{//DEBUG
-		if (polygon->getRenderState() && text)
+		if (polygon->getRenderState())
 		{
-			text->setRenderState(true);//Renders text, not actually sets render state
+			if (text)
+				text->setRenderState(true);//Renders text, not actually sets render state
 			if (tooltip)
 				tooltip->DRAW_TEXT();
 		}
