@@ -391,8 +391,6 @@ namespace spehs
 			}
 		}
 		//Here we know that no separating axis was found and there is a collision
-		delete [] axis1;
-		delete [] axis2;
 		//Calculate collision point
 		CollisionPoint* result = new CollisionPoint;
 		result->MTV = glm::normalize(smallestAxis) * abs(overlap);
@@ -400,7 +398,7 @@ namespace spehs
 		{
 			if (SATCollision(_vertexArray2, _size2, glm::vec2(_vertexArray1[i].x, _vertexArray1[i].y), 0.0f))
 			{
-				result->point[i] = glm::vec2(_vertexArray1[i].x, _vertexArray1[i].y);
+				result->point.push_back(glm::vec2(_vertexArray1[i].x, _vertexArray1[i].y));
 				//Find normal
 				glm::vec2 pointVector = result->point.back() - getCenter(_vertexArray1, _size1);
 				result->normal.push_back(axis2[0]);
@@ -418,7 +416,7 @@ namespace spehs
 		{
 			if (SATCollision(_vertexArray1, _size1, glm::vec2(_vertexArray2[i].x, _vertexArray2[i].y), 0.0f))
 			{
-				result->point[i] = glm::vec2(_vertexArray2[i].x, _vertexArray2[i].y);
+				result->point.push_back(glm::vec2(_vertexArray2[i].x, _vertexArray2[i].y));
 				//Find normal
 				glm::vec2 pointVector = result->point.back() - getCenter(_vertexArray1, _size1);
 				result->normal.push_back(axis1[0]);
@@ -432,6 +430,8 @@ namespace spehs
 				break;
 			}
 		}
+		delete [] axis1;
+		delete [] axis2;
 		return result;
 	}
 
@@ -661,7 +661,6 @@ namespace spehs
 			}
 		}
 		//Here we know that no separating axis was found and there is a collision
-		delete [] axis1;
 		//Calculate collision point
 		CollisionPoint* result = new CollisionPoint;
 		result->MTV = glm::normalize(smallestAxis) * abs(overlap);
@@ -674,6 +673,7 @@ namespace spehs
 		}
 		//result->point = _circleCenterPoint + smallestAxis * _circleRadius;
 		result->normal.push_back(result->MTV);
+		delete [] axis1;
 		return result;
 	}
 
