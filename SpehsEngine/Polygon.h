@@ -17,6 +17,7 @@ namespace spehs
 	class Polygon : public Primitive
 	{
 		friend class BatchManager;
+		friend class RigidBody2D;
 
 	public:
 		Polygon* getPolygonPtr(){ return this; }

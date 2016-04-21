@@ -9,11 +9,10 @@
 #include "Polygon.h"
 #include "Geometry.h"
 #include "Vertex.h"
-#include "Arrow.h"
 
 #include <glm/gtx/vector_query.hpp>
 
-#define DEFAULT_MASS_MULTIPLIER 1.0f
+#define DEFAULT_MASS_MULTIPLIER 20.0f
 #define NULL_EPSILON 0.00001f
 
 
@@ -22,7 +21,7 @@ namespace spehs
 	RigidBody2D::RigidBody2D() : Component()
 	{
 	}
-	RigidBody2D::RigidBody2D(GameObject& _owner) : Component(_owner), world(nullptr), CENTER(0.0f, 0.0f)
+	RigidBody2D::RigidBody2D(GameObject& _owner) : Component(_owner), world(nullptr)
 	{
 		isStatic = false;
 		freezeRotation = false;
@@ -49,8 +48,6 @@ namespace spehs
 
 		resultantTorque = 0.0f;
 		resultantForce = glm::vec2(0.0f);
-		resultantImpulseTorque = 0.0f;
-		resultantImpulseForce = glm::vec2(0.0f);
 
 		update();
 	}
@@ -77,19 +74,45 @@ namespace spehs
 		numVertices = sprite->sprite->worldVertexArray.size();
 		vertexData = sprite->sprite->worldVertexArray.data();
 
+		//Apply support forces
+		for (unsigned i = 0; i < supportForces.size(); i++)
+		{
+
+		}
+
 		//Apply resultant force and torque
 		acceleration = resultantForce / mass;
 		angularAcceleration = resultantTorque / momentOfInertia;
 
-		//Apply resultant impulse
-		if (!glm::isNull(resultantImpulseForce, NULL_EPSILON))
-			velocity = resultantImpulseForce;
-		if (resultantImpulseTorque > NULL_EPSILON)
-			angularVelocity = resultantImpulseTorque;
-
 		//Apply acceleration
 		velocity += acceleration * getDeltaTime().asSeconds;
 		angularVelocity += angularAcceleration * getDeltaTime().asSeconds;
+
+		//Apply impulses
+		if (resultantImpulseForce.size())
+		{
+			glm::vec2 resultForce(0.0f);
+			for (unsigned i = 0; i < resultantImpulseForce.size(); i++)
+				resultForce += resultantImpulseForce[i];
+			resultForce /= resultantImpulseForce.size();
+			velocity = resultForce;
+		}
+		if (resultantImpulseTorque.size())
+		{
+			float resultTorque(0.0f);
+			for (unsigned i = 0; i < resultantImpulseTorque.size(); i++)
+				resultTorque += resultantImpulseTorque[i];
+			resultTorque /= resultantImpulseTorque.size();
+			angularVelocity = resultTorque;
+		}
+
+		//For static bodies (NOTE: Doesn't work atm)
+		if (isStatic)
+			if (false)
+		{
+			velocity = transform->getLastSetPosition() - transform->getPosition();
+			rotation = transform->getLastSetRotation() - transform->getRotation();
+		}
 
 		//Update transform based on velocity
 		transform->setPosition(transform->getPosition() + velocity);
@@ -102,8 +125,9 @@ namespace spehs
 		//Reset forces
 		resultantForce = glm::vec2(0.0f);
 		resultantTorque = 0.0f;
-		resultantImpulseForce = glm::vec2(0.0f);
-		resultantImpulseTorque = 0.0f;
+		resultantImpulseForce.clear();
+		resultantImpulseTorque.clear();
+		supportForces.clear();
 
 		//Apply drag
 		if (!glm::isNull(velocity, NULL_EPSILON))
@@ -114,41 +138,34 @@ namespace spehs
 
 	void RigidBody2D::applyForce(const glm::vec2& _force)
 	{
-		applyForceAtPosition(_force, CENTER);
+		applyForceAtPosition(_force, centerOfMass);
 	}
 
 	void RigidBody2D::applyForceAtPosition(const glm::vec2& _force, const glm::vec2& _position)
 	{
-		if (SHOW_FORCES)
-		{
-			forces.push_back(new Arrow(_position, _position + _force));
-			forces.back()->setArrowColor(0, 0, 255, 255);
-		}
-
 		resultantForce += _force;
 		glm::vec2 AtoB = glm::vec2(_position - centerOfMass);
-		glm::vec2 rAB = glm::vec2(-AtoB.y, AtoB.x);
-		applyTorque(glm::dot(rAB, _force)); //?
-		if (SHOW_FORCES)
-		{
-			forces.push_back(new Arrow(_position, _position + rAB));
-			forces.back()->setArrowColor(0, 255, 0, 255);
-		}
+		applyTorque(cross2(AtoB, _force));
 	}
 
 	void RigidBody2D::applyVelocityImpulse(const glm::vec2& _impulse)
 	{
-		resultantImpulseForce += _impulse;
+		resultantImpulseForce.push_back(_impulse);
 	}
 
 	void RigidBody2D::applyAngularImpulse(const float& _impulse)
 	{
-		resultantImpulseTorque += _impulse;
+		resultantImpulseTorque.push_back(_impulse);
 	}
 
 	void RigidBody2D::applyTorque(const float& _torque)
 	{
 		resultantTorque += _torque;
+	}
+
+	void RigidBody2D::applySupportForce(const glm::vec2& _normal, const glm::vec2& _position)
+	{
+		supportForces.push_back({ _normal, _position });
 	}
 
 	void RigidBody2D::setMass(const float& _newMass)
@@ -247,29 +264,29 @@ namespace spehs
 	{
 		float sum1 = 0.0f, sum2 = 0.0f;
 		Sprite* sprite = ownerObject->getComponent<Sprite>();
-		
+
 		//For regular convex polygons:
-		for (unsigned i = 0; i < sprite->sprite->worldVertexArray.size(); i++)
+		for (unsigned i = 0; i < sprite->sprite->vertexArray.size(); i++)
 		{
-			if (i < sprite->sprite->worldVertexArray.size() - 1)
+			if (i < sprite->sprite->vertexArray.size() - 1)
 			{
-				sum1 += abs(glm::length(glm::cross(toVec3(sprite->sprite->worldVertexArray[i + 1]), toVec3(sprite->sprite->worldVertexArray[i])))) *
+				sum1 += abs(glm::length(glm::cross(toVec3(sprite->sprite->vertexArray[i + 1]), toVec3(sprite->sprite->vertexArray[i])))) *
 					(
-					(glm::dot(toVec3(sprite->sprite->worldVertexArray[i]), toVec3(sprite->sprite->worldVertexArray[i]))) +
-					(glm::dot(toVec3(sprite->sprite->worldVertexArray[i]), toVec3(sprite->sprite->worldVertexArray[i + 1]))) +
-					(glm::dot(toVec3(sprite->sprite->worldVertexArray[i + 1]), toVec3(sprite->sprite->worldVertexArray[i + 1])))
+					(glm::dot(toVec3(sprite->sprite->vertexArray[i]), toVec3(sprite->sprite->vertexArray[i]))) +
+					(glm::dot(toVec3(sprite->sprite->vertexArray[i]), toVec3(sprite->sprite->vertexArray[i + 1]))) +
+					(glm::dot(toVec3(sprite->sprite->vertexArray[i + 1]), toVec3(sprite->sprite->vertexArray[i + 1])))
 					);
-				sum2 += abs(glm::length(glm::cross(toVec3(sprite->sprite->worldVertexArray[i + 1]), toVec3(sprite->sprite->worldVertexArray[i]))));
+				sum2 += abs(glm::length(glm::cross(toVec3(sprite->sprite->vertexArray[i + 1]), toVec3(sprite->sprite->vertexArray[i]))));
 			}
-			else if (i == sprite->sprite->worldVertexArray.size() - 1)
+			else if (i == sprite->sprite->vertexArray.size() - 1)
 			{
-				sum1 += abs(glm::length(glm::cross(toVec3(sprite->sprite->worldVertexArray[0]), toVec3(sprite->sprite->worldVertexArray[i])))) *
+				sum1 += abs(glm::length(glm::cross(toVec3(sprite->sprite->vertexArray[0]), toVec3(sprite->sprite->vertexArray[i])))) *
 					(
-					(glm::dot(toVec3(sprite->sprite->worldVertexArray[i]), toVec3(sprite->sprite->worldVertexArray[i]))) +
-					(glm::dot(toVec3(sprite->sprite->worldVertexArray[i]), toVec3(sprite->sprite->worldVertexArray[0]))) +
-					(glm::dot(toVec3(sprite->sprite->worldVertexArray[0]), toVec3(sprite->sprite->worldVertexArray[0])))
+					(glm::dot(toVec3(sprite->sprite->vertexArray[i]), toVec3(sprite->sprite->vertexArray[i]))) +
+					(glm::dot(toVec3(sprite->sprite->vertexArray[i]), toVec3(sprite->sprite->vertexArray[0]))) +
+					(glm::dot(toVec3(sprite->sprite->vertexArray[0]), toVec3(sprite->sprite->vertexArray[0])))
 					);
-				sum2 += abs(glm::length(glm::cross(toVec3(sprite->sprite->worldVertexArray[0]), toVec3(sprite->sprite->worldVertexArray[i]))));
+				sum2 += abs(glm::length(glm::cross(toVec3(sprite->sprite->vertexArray[0]), toVec3(sprite->sprite->vertexArray[i]))));
 			}
 		}
 

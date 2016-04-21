@@ -35,15 +35,36 @@ namespace spehs
 		return position.y;
 	}
 
-	float Transform2D::getScale()
-	{
-		return scale;
-	}
-
 	float Transform2D::getRotation()
 	{
 		return rotation;
 	}
+
+	float Transform2D::getScale()
+	{
+		return scale;
+	}
+	
+	glm::vec2 Transform2D::getLastSetPosition()
+	{
+		return lastSetPosition;
+	}
+
+	float Transform2D::getXLastSetPosition()
+	{
+		return lastSetPosition.x;
+	}
+
+	float Transform2D::getYLastSetPosition()
+	{
+		return lastSetPosition.y;
+	}
+
+	float Transform2D::getLastSetRotation()
+	{
+		return lastSetRotation;
+	}
+
 
 	void Transform2D::setPosition(glm::vec2 _position)
 	{
@@ -51,6 +72,7 @@ namespace spehs
 		if (_position != _position)
 			console::error("Position value corrupted!");
 #endif
+		lastSetPosition = position;
 		position = _position;
 	}
 
@@ -60,6 +82,7 @@ namespace spehs
 		if (_xpos != _xpos)
 			console::error("Position value corrupted!");
 #endif
+		lastSetPosition.x = position.x;
 		position.x = _xpos;
 	}
 
@@ -69,6 +92,7 @@ namespace spehs
 		if (_ypos != _ypos)
 			console::error("Position value corrupted!");
 #endif
+		lastSetPosition.y = position.y;
 		position.y = _ypos;
 	}
 
@@ -78,6 +102,7 @@ namespace spehs
 		if (_rotation != _rotation)
 			console::error("Rotation value corrupted!");
 #endif
+		lastSetRotation = rotation;
 		rotation = _rotation;
 	}
 

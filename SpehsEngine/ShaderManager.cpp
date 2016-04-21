@@ -232,7 +232,8 @@ namespace spehs
 			"uniform mat4 cameraMatrix;\n"
 			"void main()\n"
 			"{\n"
-			"	gl_Position = mat4(mat3(cameraMatrix)) * vec4(vertexPosition.xyz, 1.0);\n"
+			"	vec4 pos = mat4(mat3(cameraMatrix)) * vec4(vertexPosition.xyz, 1.0);\n"
+			"	gl_Position = pos.xyww;\n"
 			"	fragmentPosition = vertexPosition;\n"
 			"}\n"
 		};

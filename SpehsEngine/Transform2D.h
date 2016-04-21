@@ -21,8 +21,13 @@ namespace spehs
 		glm::vec2 getPosition();
 		float getXPosition();
 		float getYPosition();
-		float getScale();
 		float getRotation();
+		float getScale();
+
+		glm::vec2 getLastSetPosition();
+		float getXLastSetPosition();
+		float getYLastSetPosition();
+		float getLastSetRotation();
 
 
 		//Setters
@@ -36,5 +41,8 @@ namespace spehs
 		glm::vec2 position;
 		float rotation;
 		float scale;
+
+		glm::vec2 lastSetPosition;
+		float lastSetRotation;
 	};
 }

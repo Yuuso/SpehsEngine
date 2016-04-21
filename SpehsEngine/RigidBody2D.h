@@ -6,8 +6,7 @@
 #include <glm/vec2.hpp>
 
 #include <vector>
-
-#define SHOW_FORCES false
+#include <algorithm>
 
 
 namespace spehs
@@ -15,7 +14,6 @@ namespace spehs
 	class GameObject;
 	class PhysicsWorld2D;
 	class Vertex;
-	class Arrow;
 
 	enum Collider : char
 	{
@@ -39,6 +37,7 @@ namespace spehs
 		void applyTorque(const float& _torque);
 		void applyVelocityImpulse(const glm::vec2& _impulse);
 		void applyAngularImpulse(const float& _impulse);
+		void applySupportForce(const glm::vec2& _normal, const glm::vec2& _position);
 
 		//Setters
 		void setMass(const float& _newMass);
@@ -73,7 +72,7 @@ namespace spehs
 
 		float rotation;
 		float mass;
-		float elasticity;
+		float elasticity; //Coefficient of Restitution
 		float momentOfInertia;
 		float drag;
 		float angularDrag;
@@ -87,12 +86,9 @@ namespace spehs
 
 		float resultantTorque;
 		glm::vec2 resultantForce;
-		float resultantImpulseTorque;
-		glm::vec2 resultantImpulseForce;
-
-		std::vector<spehs::Arrow*> forces;
-
-		const glm::vec2 CENTER;
+		std::vector<float> resultantImpulseTorque;
+		std::vector<glm::vec2> resultantImpulseForce;
+		std::vector<std::pair<glm::vec2, glm::vec2>> supportForces;
 	};
 }
 

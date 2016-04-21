@@ -1,7 +1,9 @@
 #pragma once
 
 #include "Vertex.h"
-#include "glm\vec2.hpp"
+
+#include <glm\vec2.hpp>
+#include <vector>
 
 
 namespace spehs
@@ -52,8 +54,8 @@ namespace spehs
 	struct CollisionPoint
 	{
 		glm::vec2 MTV;
-		glm::vec2 point;
-		glm::vec2 normal;
+		std::vector<glm::vec2> point;
+		std::vector<glm::vec2> normal;
 	};
 
 	//Function for projecting polygon onto axis
@@ -62,6 +64,10 @@ namespace spehs
 
 	//Function for projecting circle onto axis
 	Projection projectCircle(glm::vec2 _axis, glm::vec2& _vertex, float _radius);
+
+	//Function for getting axis
+	glm::vec2 getEdge(Vertex* _vertexArray, int _size, int _i);
+	glm::vec2 getEdge(Position* _vertexArray, int _size, int _i);
 
 	//Function for getting axis
 	glm::vec2 getAxis(Vertex* _vertexArray, int _size, int _i);
