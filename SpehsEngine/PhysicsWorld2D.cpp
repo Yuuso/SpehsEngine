@@ -7,10 +7,12 @@
 
 #include "Sprite.h"
 #include "Polygon.h"
+#include "Line.h"
+#include "BatchManager.h"
 
 #include <glm/gtx/vector_query.hpp>
 
-#define ZERO_EPSILON 0.000001f
+#define ZERO_EPSILON 0.00001f
 
 #define SHOW_COLORS false
 
@@ -65,6 +67,9 @@ namespace spehs
 			//Collision checking
 			for (unsigned cycle2 = cycle1 + 1; cycle2 < bodies.size(); cycle2++)
 			{
+				//if (bodies[cycle1] == bodies[cycle2])
+				//	continue;
+
 				//Radius collisions
 				if (CircleCollision(bodies[cycle1]->position, bodies[cycle1]->circleRadius, bodies[cycle2]->position, bodies[cycle2]->circleRadius))
 				{
@@ -151,7 +156,7 @@ namespace spehs
 										body1VelocityAfter = body1VelocityBefore;
 
 										body2VelocityAfter = body2VelocityBefore + (
-											-j_lin(e, (body1VelocityBefore - body2VelocityBefore), collisionPoint->normal[i], 0.0f, bodies[cycle2]->mass, rVecAP, rVecBP, bodies[cycle1]->momentOfInertia, bodies[cycle2]->momentOfInertia)
+											-j_lin(e, (body1VelocityBefore - body2VelocityBefore), collisionPoint->normal[i], 0.0f, bodies[cycle2]->mass)
 											/ bodies[cycle2]->mass) * collisionPoint->normal[i];
 
 										body1AngularVelocityAfter = bodies[cycle1]->angularVelocity;
@@ -164,7 +169,7 @@ namespace spehs
 								else if (bodies[cycle2]->isStatic)
 								{
 									body1VelocityAfter = body1VelocityBefore + (
-										j_lin(e, (body1VelocityBefore - body2VelocityBefore), collisionPoint->normal[i], bodies[cycle1]->mass, 0.0f, rVecAP, rVecBP, bodies[cycle1]->momentOfInertia, bodies[cycle2]->momentOfInertia)
+										j_lin(e, (body1VelocityBefore - body2VelocityBefore), collisionPoint->normal[i], bodies[cycle1]->mass, 0.0f)
 										/ bodies[cycle1]->mass) * collisionPoint->normal[i];
 
 									body2VelocityAfter = body2VelocityBefore;
@@ -178,11 +183,11 @@ namespace spehs
 								else
 								{
 									body1VelocityAfter = body1VelocityBefore + (
-										j_lin(e, (body1VelocityBefore - body2VelocityBefore), collisionPoint->normal[i], bodies[cycle1]->mass, bodies[cycle2]->mass, rVecAP, rVecBP, bodies[cycle1]->momentOfInertia, bodies[cycle2]->momentOfInertia)
+										j_lin(e, (body1VelocityBefore - body2VelocityBefore), collisionPoint->normal[i], bodies[cycle1]->mass, bodies[cycle2]->mass)
 										/ bodies[cycle1]->mass) * collisionPoint->normal[i];
 
 									body2VelocityAfter = body2VelocityBefore + (
-										-j_lin(e, (body1VelocityBefore - body2VelocityBefore), collisionPoint->normal[i], bodies[cycle1]->mass, bodies[cycle2]->mass, rVecAP, rVecBP, bodies[cycle1]->momentOfInertia, bodies[cycle2]->momentOfInertia)
+										-j_lin(e, (body1VelocityBefore - body2VelocityBefore), collisionPoint->normal[i], bodies[cycle1]->mass, bodies[cycle2]->mass)
 										/ bodies[cycle2]->mass) * collisionPoint->normal[i];
 
 									body1AngularVelocityAfter = bodies[cycle1]->angularVelocity + glm::dot(rVecAP,
@@ -194,10 +199,14 @@ namespace spehs
 										/ bodies[cycle2]->momentOfInertia;
 								}
 
-								bodies[cycle1]->applyVelocityImpulse(body1VelocityAfter / (float)collisionPoint->point.size());
-								bodies[cycle2]->applyVelocityImpulse(body2VelocityAfter / (float) collisionPoint->point.size());
-								bodies[cycle1]->applyAngularImpulse(body1AngularVelocityAfter / (float) collisionPoint->point.size());
-								bodies[cycle2]->applyAngularImpulse(body2AngularVelocityAfter / (float) collisionPoint->point.size());
+								bodies[cycle1]->applyVelocityImpulse(body1VelocityAfter);
+								bodies[cycle2]->applyVelocityImpulse(body2VelocityAfter);
+								//bodies[cycle1]->applyAngularImpulse(body1AngularVelocityAfter);
+								//bodies[cycle2]->applyAngularImpulse(body2AngularVelocityAfter);
+
+								Line* temp = getActiveBatchManager()->createLine(collisionPoint->point[i], collisionPoint->point[i]+collisionPoint->normal[i] * 20.0f);
+								temp->setColor(spehs::RED);
+								temp->setPlaneDepth(1000);
 							}
 							else if (relativeNormalVelocity >= -ZERO_EPSILON && relativeNormalVelocity <= ZERO_EPSILON) //Points are in contact
 							{
@@ -237,7 +246,7 @@ namespace spehs
 		gravity = _gravity;
 	}
 
-	float PhysicsWorld2D::j_lin(const float& _e, const glm::vec2& _velocity, const glm::vec2& _normal, const float& _mass1, const float& _mass2, const glm::vec2& _rVecAP, const glm::vec2& _rVecBP, const float& _MoIA, const float& _MoIB)
+	float PhysicsWorld2D::j_lin(const float& _e, const glm::vec2& _velocity, const glm::vec2& _normal, const float& _mass1, const float& _mass2)
 	{
 		if (_mass1 == 0.0f) //if 1 is static
 		{

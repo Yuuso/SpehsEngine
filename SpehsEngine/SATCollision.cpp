@@ -284,40 +284,49 @@ namespace spehs
 		//Calculate collision point
 		CollisionPoint* result = new CollisionPoint;
 		result->MTV = glm::normalize(smallestAxis) * abs(overlap);
+
+
 		for (unsigned i = 0; i < _size1; i++)
 		{
 			if (SATCollision(_vertexArray2, _size2, glm::vec2(_vertexArray1[i].position.x, _vertexArray1[i].position.y), 0.0f))
 			{
 				result->point.push_back(glm::vec2(_vertexArray1[i].position.x, _vertexArray1[i].position.y));
+
 				//Find normal
-				glm::vec2 pointVector = result->point.back() - getCenter(_vertexArray1, _size1);
+				glm::vec2 pointVector = glm::normalize(result->point.back() - getCenter(_vertexArray2, _size2));
 				result->normal.push_back(axis2[0]);
 				for (unsigned i = 1; i < _size2; i++)
 				{
-					if (glm::dot(pointVector, axis2[i]) < glm::dot(pointVector, result->normal.back()))
+					if (glm::dot(pointVector, axis2[i]) > glm::dot(pointVector, result->normal.back()))
 					{
 						result->normal.back() = axis2[i];
 					}
 				}
 			}
 		}
+
+
 		for (unsigned i = 0; i < _size2; i++)
 		{
 			if (SATCollision(_vertexArray1, _size1, glm::vec2(_vertexArray2[i].position.x, _vertexArray2[i].position.y), 0.0f))
 			{
 				result->point.push_back(glm::vec2(_vertexArray2[i].position.x, _vertexArray2[i].position.y));
+
 				//Find normal
-				glm::vec2 pointVector = result->point.back() - getCenter(_vertexArray1, _size1);
+				glm::vec2 pointVector = glm::normalize(result->point.back() - getCenter(_vertexArray1, _size1));
 				result->normal.push_back(axis1[0]);
 				for (unsigned i = 1; i < _size1; i++)
 				{
-					if (glm::dot(pointVector, axis1[i]) < glm::dot(pointVector, result->normal.back()))
+					if (glm::dot(pointVector, axis1[i]) > glm::dot(pointVector, result->normal.back()))
 					{
 						result->normal.back() = axis1[i];
 					}
 				}
+				result->normal.back() = -result->normal.back();
 			}
 		}
+
+
 		delete [] axis1;
 		delete [] axis2;
 		return result;

@@ -12,12 +12,21 @@
 
 #include <glm/gtx/vector_query.hpp>
 
-#define DEFAULT_MASS_MULTIPLIER 20.0f
+#define DEFAULT_MASS_MULTIPLIER 200.0f
 #define NULL_EPSILON 0.00001f
 
 
 namespace spehs
 {
+	float projectForce(const glm::vec2& _force, const glm::vec2& _support)
+	{
+		if (glm::dot(_force, glm::normalize(_support)) < 0.0f)
+		{
+			return abs(glm::dot(_force, glm::normalize(_support)));
+		}
+		return 0.0f;
+	}
+
 	RigidBody2D::RigidBody2D() : Component()
 	{
 	}
@@ -36,7 +45,7 @@ namespace spehs
 		angularDrag = 10.0f;
 		mass = 1.0f;
 		rotation = 0.0f;
-		elasticity = 0.5f;
+		elasticity = 0.0f;
 		momentOfInertia = 0.0f;
 		angularVelocity = 0.0f;
 		angularAcceleration = 0.0f;
@@ -69,24 +78,20 @@ namespace spehs
 		//Update from sprite (this really needs to be done only when the sprite has changed)
 		mass = sprite->sprite->getArea() * DEFAULT_MASS_MULTIPLIER;
 		centerOfMass = getCenter(sprite->sprite->worldVertexArray.data(), sprite->sprite->worldVertexArray.size());
-		calculateMOI();
 		circleRadius = sprite->sprite->getRadius();
+		calculateMOI();
 		numVertices = sprite->sprite->worldVertexArray.size();
 		vertexData = sprite->sprite->worldVertexArray.data();
 
 		//Apply support forces
 		for (unsigned i = 0; i < supportForces.size(); i++)
 		{
-
+			applyForceAtPosition(supportForces[i].first * projectForce(resultantForce, supportForces[i].first), supportForces[i].second);
 		}
 
 		//Apply resultant force and torque
 		acceleration = resultantForce / mass;
 		angularAcceleration = resultantTorque / momentOfInertia;
-
-		//Apply acceleration
-		velocity += acceleration * getDeltaTime().asSeconds;
-		angularVelocity += angularAcceleration * getDeltaTime().asSeconds;
 
 		//Apply impulses
 		if (resultantImpulseForce.size())
@@ -105,6 +110,10 @@ namespace spehs
 			resultTorque /= resultantImpulseTorque.size();
 			angularVelocity = resultTorque;
 		}
+
+		//Apply acceleration
+		velocity += acceleration * getDeltaTime().asSeconds;
+		angularVelocity += angularAcceleration * getDeltaTime().asSeconds;
 
 		//For static bodies (NOTE: Doesn't work atm)
 		if (isStatic)
@@ -264,6 +273,12 @@ namespace spehs
 	{
 		float sum1 = 0.0f, sum2 = 0.0f;
 		Sprite* sprite = ownerObject->getComponent<Sprite>();
+		std::vector<Vertex> vArray = sprite->sprite->vertexArray;
+		for (unsigned i = 0; i < vArray.size(); i++)
+		{
+			vArray[i].position.x *= sprite->sprite->width;
+			vArray[i].position.y *= sprite->sprite->height;
+		}
 
 		//For regular convex polygons:
 		for (unsigned i = 0; i < sprite->sprite->vertexArray.size(); i++)
@@ -290,6 +305,13 @@ namespace spehs
 			}
 		}
 
-		momentOfInertia = (mass / 6) * (sum1 / sum2);
+		//Polygon
+		momentOfInertia = (mass / 6.0f) * (sum1 / sum2);
+
+		//Plane
+		momentOfInertia = (mass / 12.0f)*(sprite->sprite->width*sprite->sprite->width + sprite->sprite->height*sprite->sprite->height);
+
+		//Circle
+		//momentOfInertia = (mass * circleRadius * circleRadius) / 2.0f;
 	}
 }
