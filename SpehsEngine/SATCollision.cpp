@@ -688,6 +688,14 @@ namespace spehs
 		}
 		//result->point = _circleCenterPoint + smallestAxis * _circleRadius;
 		result->normal.push_back(result->MTV);
+#ifdef _DEBUG
+		if (result->point.empty())
+		{
+			delete result;
+			return nullptr;
+			spehs::console::warning(__FUNCTION__" no collision point was detected!");
+		}
+#endif
 		delete [] axis1;
 		return result;
 	}
