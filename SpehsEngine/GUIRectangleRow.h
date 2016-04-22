@@ -13,6 +13,7 @@ namespace spehs
 		};
 
 		GUIRectangleRow();
+		GUIRectangleRow(GUIRECT_ID_TYPE _id);
 		~GUIRectangleRow();
 
 		void updatePosition();

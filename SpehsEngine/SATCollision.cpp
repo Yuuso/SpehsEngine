@@ -1,4 +1,4 @@
-
+#include "Console.h"
 #include "SATCollision.h"
 #include "Vertex.h"
 #include "Geometry.h"
@@ -405,7 +405,7 @@ namespace spehs
 		result->MTV = glm::normalize(smallestAxis) * abs(overlap);
 		for (unsigned i = 0; i < _size1; i++)
 		{
-			if (SATCollision(_vertexArray2, _size2, glm::vec2(_vertexArray1[i].x, _vertexArray1[i].y), 0.0f))
+			if (SATCollision(_vertexArray2, _size2, glm::vec2(_vertexArray1[i].x, _vertexArray1[i].y), 0.1f))
 			{
 				result->point.push_back(glm::vec2(_vertexArray1[i].x, _vertexArray1[i].y));
 				//Find normal
@@ -418,12 +418,11 @@ namespace spehs
 						result->normal.back() = axis2[i];
 					}
 				}
-				return result;
 			}
 		}
 		for (unsigned i = 0; i < _size2; i++)
 		{
-			if (SATCollision(_vertexArray1, _size1, glm::vec2(_vertexArray2[i].x, _vertexArray2[i].y), 0.0f))
+			if (SATCollision(_vertexArray1, _size1, glm::vec2(_vertexArray2[i].x, _vertexArray2[i].y), 0.1f))
 			{
 				result->point.push_back(glm::vec2(_vertexArray2[i].x, _vertexArray2[i].y));
 				//Find normal
@@ -436,9 +435,16 @@ namespace spehs
 						result->normal.back() = axis1[i];
 					}
 				}
-				break;
 			}
 		}
+#ifdef _DEBUG
+		if (result->point.empty())
+		{
+			delete result;
+			return nullptr;
+			spehs::console::warning(__FUNCTION__" no collision point was detected!");
+		}
+#endif
 		delete [] axis1;
 		delete [] axis2;
 		return result;

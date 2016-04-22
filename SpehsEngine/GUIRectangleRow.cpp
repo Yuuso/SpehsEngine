@@ -6,6 +6,10 @@ namespace spehs
 	{
 		disableBit(state, GUIRECT_HOVER_COLOR);
 	}
+	GUIRectangleRow::GUIRectangleRow(GUIRECT_ID_TYPE _id) : GUIRectangleRow()
+	{
+		setID(_id);
+	}
 	GUIRectangleRow::~GUIRectangleRow()
 	{
 	}
