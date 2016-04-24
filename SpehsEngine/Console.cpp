@@ -14,6 +14,7 @@
 #define BACKSPACE_INITIAL_INTERVAL 500
 #define BACKSPACE_INTERVAL 75
 #define TEXT_PLANEDEPTH 10000
+#define FADE_OUT_TIME 2.5f
 #define CONSOLE_INITIALIZED_BIT				0x0001
 #define CONSOLE_OPEN_BIT					0x0002
 #define CONSOLE_TEXT_EXECUTED_BIT			0x0004
@@ -159,7 +160,7 @@ namespace spehs
 
 				if (!isOpen())
 				{
-					visibility -= getDeltaTime().asSeconds;
+					visibility -= getDeltaTime().asSeconds / FADE_OUT_TIME;
 				}
 			}
 
