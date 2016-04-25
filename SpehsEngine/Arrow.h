@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Primitive.h"
+
 #include <glm\vec2.hpp>
 
 namespace spehs{ class Line; class Polygon; }
@@ -19,6 +21,7 @@ namespace spehs
 		void setArrowPointerSize(const glm::vec2 &_ref);
 		void setArrowColor(const int &_r, const int &_b, const int &_g, const int &_a);
 		void setArrowColor(const glm::vec4 &_color);
+		void setArrowColor(const CommonColor& _color);
 		void setRenderState(const bool _value);
 		void cameraState(const bool _value);
 

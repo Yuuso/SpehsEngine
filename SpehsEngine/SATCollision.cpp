@@ -293,7 +293,7 @@ namespace spehs
 				result->point.push_back(glm::vec2(_vertexArray1[i].position.x, _vertexArray1[i].position.y));
 
 				//Find normal
-				glm::vec2 pointVector = glm::normalize(result->point.back() - getCenter(_vertexArray2, _size2));
+				glm::vec2 pointVector = result->point.back() - getCenter(_vertexArray2, _size2);
 				result->normal.push_back(axis2[0]);
 				for (unsigned i = 1; i < _size2; i++)
 				{
@@ -313,7 +313,7 @@ namespace spehs
 				result->point.push_back(glm::vec2(_vertexArray2[i].position.x, _vertexArray2[i].position.y));
 
 				//Find normal
-				glm::vec2 pointVector = glm::normalize(result->point.back() - getCenter(_vertexArray1, _size1));
+				glm::vec2 pointVector = result->point.back() - getCenter(_vertexArray1, _size1);
 				result->normal.push_back(axis1[0]);
 				for (unsigned i = 1; i < _size1; i++)
 				{

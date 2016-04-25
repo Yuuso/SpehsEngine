@@ -23,6 +23,8 @@ namespace spehs
 
 		void update();
 
+		void enableGravity(const bool _value);
+
 		//Setters
 		void setGravity(const glm::vec2& _gravity);
 
@@ -34,6 +36,8 @@ namespace spehs
 		float j_lin(const float& _e, const glm::vec2& _velocity, const glm::vec2& _normal, const float& _mass1, const float& _mass2);
 		float j_rot(const float& _e, const glm::vec2& _velocity, const glm::vec2& _normal, const float& _mass1, const float& _mass2, 
 			const glm::vec2& _rVecAP, const glm::vec2& _rVecBP, const float& _MoIA, const float& _MoIB);
+
+		bool useGravity;
 
 		CollisionPoint* collisionPoint;
 		std::vector<RigidBody2D*> bodies;

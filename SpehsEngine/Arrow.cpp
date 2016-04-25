@@ -73,6 +73,15 @@ namespace spehs
 	}
 
 
+	void Arrow::setArrowColor(const CommonColor &_color)
+	{
+		if (linePart)
+			linePart->setColor(_color);
+		if (polygonPart)
+			polygonPart->setColor(_color);
+	}
+
+
 	void Arrow::setRenderState(const bool _value)
 	{
 		if (linePart)

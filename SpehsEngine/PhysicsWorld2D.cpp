@@ -19,7 +19,7 @@
 
 namespace spehs
 {
-	PhysicsWorld2D::PhysicsWorld2D() : gravity(0.0f, -9.81f), collisionPoint(nullptr)
+	PhysicsWorld2D::PhysicsWorld2D() : gravity(0.0f, -2.81f), collisionPoint(nullptr), useGravity(true)
 	{
 	}
 	PhysicsWorld2D::~PhysicsWorld2D()
@@ -58,10 +58,13 @@ namespace spehs
 		for (unsigned cycle1 = 0; cycle1 < bodies.size(); cycle1++)
 		{
 			//Apply gravity
-			if (!glm::isNull(gravity, ZERO_EPSILON))
+			if (useGravity)
 			{
-				if (!bodies[cycle1]->isStatic && bodies[cycle1]->useGravity)
-					bodies[cycle1]->applyForce(gravity * bodies[cycle1]->getMass());
+				if (!glm::isNull(gravity, ZERO_EPSILON))
+				{
+					if (!bodies[cycle1]->isStatic && bodies[cycle1]->useGravity)
+						bodies[cycle1]->applyForce(gravity * bodies[cycle1]->getMass());
+				}
 			}
 
 			//Collision checking
@@ -69,6 +72,13 @@ namespace spehs
 			{
 				//if (bodies[cycle1] == bodies[cycle2])
 				//	continue;
+
+
+			//stackoverflow.com/questions/14483821/rigid-body-simulation-friction
+			//gamedevelopment.tutsplus.com/tutorials/how-to-create-a-custom-2d-physics-engine-friction-scene-and-jump-table--gamedev-7756
+
+
+
 
 				//Radius collisions
 				if (CircleCollision(bodies[cycle1]->position, bodies[cycle1]->circleRadius, bodies[cycle2]->position, bodies[cycle2]->circleRadius))
@@ -201,12 +211,8 @@ namespace spehs
 
 								bodies[cycle1]->applyVelocityImpulse(body1VelocityAfter);
 								bodies[cycle2]->applyVelocityImpulse(body2VelocityAfter);
-								//bodies[cycle1]->applyAngularImpulse(body1AngularVelocityAfter);
-								//bodies[cycle2]->applyAngularImpulse(body2AngularVelocityAfter);
-
-								Line* temp = getActiveBatchManager()->createLine(collisionPoint->point[i], collisionPoint->point[i]+collisionPoint->normal[i] * 20.0f);
-								temp->setColor(spehs::RED);
-								temp->setPlaneDepth(1000);
+								bodies[cycle1]->applyAngularImpulse(body1AngularVelocityAfter);
+								bodies[cycle2]->applyAngularImpulse(body2AngularVelocityAfter);
 							}
 							else if (relativeNormalVelocity >= -ZERO_EPSILON && relativeNormalVelocity <= ZERO_EPSILON) //Points are in contact
 							{
@@ -239,6 +245,11 @@ namespace spehs
 				}
 			}
 		}
+	}
+
+	void PhysicsWorld2D::enableGravity(const bool _value)
+	{
+		useGravity = _value;
 	}
 
 	void PhysicsWorld2D::setGravity(const glm::vec2& _gravity)
