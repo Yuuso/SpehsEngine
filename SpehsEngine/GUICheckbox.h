@@ -24,7 +24,7 @@ namespace spehs
 		void updateMinSize();
 		void setCheckboxSize(int _size){ checkboxSize = _size; disableStateRecursiveUpwards(GUIRECT_SCALED); }
 
-		bool selectedStateChanged(){ if (checkBit(state, GUIRECT_SELECTED) != previousSelectedState) return true; return false; }
+		bool selectedStateChanged();
 		/*Checkbox updates the boolean behind this address*/
 		void setBooleanPtr(bool* ptr);
 

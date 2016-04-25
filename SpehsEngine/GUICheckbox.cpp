@@ -131,4 +131,10 @@ namespace spehs
 		else
 			disableBit(state, GUIRECT_SELECTED);
 	}
+	bool GUICheckbox::selectedStateChanged()
+	{
+		if (checkState(GUIRECT_SELECTED) != previousSelectedState)
+			return true;
+		return false;
+	}
 }
