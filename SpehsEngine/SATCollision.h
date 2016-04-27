@@ -66,16 +66,15 @@ namespace spehs
 	Projection projectCircle(glm::vec2 _axis, glm::vec2& _vertex, float _radius);
 
 	//Function for getting axis
-	glm::vec2 getEdge(Vertex* _vertexArray, int _size, int _i);
-	glm::vec2 getEdge(Position* _vertexArray, int _size, int _i);
-
-	//Function for getting axis
 	glm::vec2 getAxis(Vertex* _vertexArray, int _size, int _i);
 	glm::vec2 getAxis(Position* _vertexArray, int _size, int _i);
 
 	//Get the axis for circle
 	glm::vec2 getCircleAxis(Vertex* _vertexArray, int _size, glm::vec2& _circleCenter);
 	glm::vec2 getCircleAxis(Position* _vertexArray, int _size, glm::vec2& _circleCenter);
+
+	//Line Collision
+	bool isIntersecting(const glm::vec2& _start1, const glm::vec2& _end1, const glm::vec2& _start2, const glm::vec2& _end2);
 
 
 	//Polygon x Polygon collision

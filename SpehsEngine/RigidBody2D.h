@@ -37,7 +37,6 @@ namespace spehs
 		void applyTorque(const float& _torque);
 		void applyVelocityImpulse(const glm::vec2& _impulse);
 		void applyAngularImpulse(const float& _impulse);
-		void applySupportForce(const glm::vec2& _normal, const glm::vec2& _position);
 
 		//Setters
 		void setMass(const float& _newMass);
@@ -46,6 +45,7 @@ namespace spehs
 		void setCircleCollider(const float& _radius);
 		void setStatic(const bool _value);
 		void setFreezeRotation(const bool _value);
+		void setFreezePosition(const bool _value);
 		void setUseGravity(const bool _value);
 		void setDrag(const float& _drag, const float& _angularDrag);
 		void setElasticity(const float& _e);
@@ -53,6 +53,11 @@ namespace spehs
 		//Getters
 		glm::vec2 getVelocityAtPosition(const glm::vec2& _position);
 		float getMass() const { return mass; }
+		float getInvMass() const { if (isStatic || freezePosition) return 0.0f; else return 1 / mass; }
+		float getInvMoI() const { if (isStatic || freezeRotation) return 0.0f; else return 1 / momentOfInertia; }
+		bool getIsStatic() const { return isStatic; }
+		bool getFreezeRotation() const { return freezeRotation; }
+		bool getFreezePosition() const { return freezePosition; }
 
 	private:
 		bool setWorld(PhysicsWorld2D* _world);
@@ -62,6 +67,7 @@ namespace spehs
 
 		bool isStatic;
 		bool freezeRotation;
+		bool freezePosition;
 		bool useGravity;
 
 		Collider collider;
@@ -73,6 +79,8 @@ namespace spehs
 		float rotation;
 		float mass;
 		float elasticity; //Coefficient of Restitution
+		float staticFriction;
+		float dynamicFriction;
 		float momentOfInertia;
 		float drag;
 		float angularDrag;
@@ -88,7 +96,6 @@ namespace spehs
 		glm::vec2 resultantForce;
 		std::vector<float> resultantImpulseTorque;
 		std::vector<glm::vec2> resultantImpulseForce;
-		std::vector<std::pair<glm::vec2, glm::vec2>> supportForces;
 	};
 }
 

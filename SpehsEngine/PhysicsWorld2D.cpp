@@ -4,6 +4,7 @@
 #include "SATCollision.h"
 #include "GameObject.h"
 #include "Transform2D.h"
+#include "Geometry.h"
 
 #include "Sprite.h"
 #include "Polygon.h"
@@ -19,7 +20,7 @@
 
 namespace spehs
 {
-	PhysicsWorld2D::PhysicsWorld2D() : gravity(0.0f, -2.81f), collisionPoint(nullptr), useGravity(true)
+	PhysicsWorld2D::PhysicsWorld2D() : gravity(0.0f, -3.0f), collisionPoint(nullptr), useGravity(true)
 	{
 	}
 	PhysicsWorld2D::~PhysicsWorld2D()
@@ -73,13 +74,6 @@ namespace spehs
 				//if (bodies[cycle1] == bodies[cycle2])
 				//	continue;
 
-
-			//stackoverflow.com/questions/14483821/rigid-body-simulation-friction
-			//gamedevelopment.tutsplus.com/tutorials/how-to-create-a-custom-2d-physics-engine-friction-scene-and-jump-table--gamedev-7756
-
-
-
-
 				//Radius collisions
 				if (CircleCollision(bodies[cycle1]->position, bodies[cycle1]->circleRadius, bodies[cycle2]->position, bodies[cycle2]->circleRadius))
 				{
@@ -113,22 +107,8 @@ namespace spehs
 						{
 							glm::vec2 body1VelocityBefore = bodies[cycle1]->getVelocityAtPosition(collisionPoint->point[i]);
 							glm::vec2 body2VelocityBefore = bodies[cycle2]->getVelocityAtPosition(collisionPoint->point[i]);
-							float relativeNormalVelocity = glm::dot((body1VelocityBefore - body2VelocityBefore), collisionPoint->normal[i]);
-
-							//Separate
-							//float body1Percentage = glm::length(body1VelocityBefore) / (glm::length(body1VelocityBefore) + glm::length(body2VelocityBefore));
-							//if (body1Percentage != body1Percentage) //if 2 zero-velocity bodies collide
-							//	body1Percentage = 0.5f;
-							//if (glm::dot(body1VelocityBefore, collisionPoint->MTV) > 0.0f)
-							//{
-							//	bodies[cycle1]->ownerObject->getComponent<Transform2D>()->setPosition(bodies[cycle1]->ownerObject->getComponent<Transform2D>()->getPosition() - collisionPoint->MTV * body1Percentage);
-							//	bodies[cycle2]->ownerObject->getComponent<Transform2D>()->setPosition(bodies[cycle2]->ownerObject->getComponent<Transform2D>()->getPosition() + collisionPoint->MTV * (1.0f - body1Percentage));
-							//}
-							//else
-							//{
-							//	bodies[cycle1]->ownerObject->getComponent<Transform2D>()->setPosition(bodies[cycle1]->ownerObject->getComponent<Transform2D>()->getPosition() + collisionPoint->MTV * body1Percentage);
-							//	bodies[cycle2]->ownerObject->getComponent<Transform2D>()->setPosition(bodies[cycle2]->ownerObject->getComponent<Transform2D>()->getPosition() - collisionPoint->MTV * (1.0f - body1Percentage));
-							//}
+							glm::vec2 relativeVelocity = (body1VelocityBefore - body2VelocityBefore);
+							float relativeNormalVelocity = glm::dot(relativeVelocity, collisionPoint->normal[i]);
 
 							//Resolve collisions
 							if (relativeNormalVelocity < -ZERO_EPSILON) //Point are colliding
@@ -140,79 +120,79 @@ namespace spehs
 									bodies[cycle2]->ownerObject->getComponent<Sprite>()->sprite->setColor(spehs::RED);
 								}
 
+								//Positional Correction
+								const float percentage = 0.5f;
+								const float slop = 0.05f;
+								glm::vec2 correction = std::max(collisionPoint->MTV.length() - slop, 0.0f) / (bodies[cycle1]->getInvMass() + bodies[cycle2]->getInvMass()) * percentage * collisionPoint->normal[i];
+								if (!bodies[cycle1]->freezePosition && !bodies[cycle1]->isStatic)
+									bodies[cycle1]->ownerObject->getComponent<Transform2D>()->setPosition(bodies[cycle1]->ownerObject->getComponent<Transform2D>()->getPosition() + correction * bodies[cycle1]->getInvMass());
+								if (!bodies[cycle2]->freezePosition && !bodies[cycle2]->isStatic)
+									bodies[cycle2]->ownerObject->getComponent<Transform2D>()->setPosition(bodies[cycle2]->ownerObject->getComponent<Transform2D>()->getPosition() - correction * bodies[cycle2]->getInvMass());
+
+								//Impulses
 								glm::vec2 body1VelocityAfter;
 								glm::vec2 body2VelocityAfter;
 								float body1AngularVelocityAfter;
 								float body2AngularVelocityAfter;
-								float e = (bodies[cycle1]->elasticity + bodies[cycle2]->elasticity) / 2.0f;
-								//if (abs(body1VelocityBefore - body2VelocityBefore).x < ZERO_EPSILON || abs(body1VelocityBefore - body2VelocityBefore).x < ZERO_EPSILON)
-								//	e = 0.0f;
+								glm::vec2 body1LinearFrictionAfter;
+								glm::vec2 body2LinearFrictionAfter;
+								float body1AngularFrictionAfter;
+								float body2AngularFrictionAfter;
+								
+								float e = std::min(bodies[cycle1]->elasticity, bodies[cycle2]->elasticity);
 
 								glm::vec2 rVecAP = glm::vec2(-(collisionPoint->point[i] - bodies[cycle1]->centerOfMass).y, (collisionPoint->point[i] - bodies[cycle1]->centerOfMass).x);
 								glm::vec2 rVecBP = glm::vec2(-(collisionPoint->point[i] - bodies[cycle2]->centerOfMass).y, (collisionPoint->point[i] - bodies[cycle2]->centerOfMass).x);
+								glm::vec2 tangent = glm::vec2(-collisionPoint->normal[i].y, collisionPoint->normal[i].x);
+								if (glm::dot(tangent, relativeVelocity) < 0.0f)
+									tangent = -tangent;
 
-								if (bodies[cycle1]->isStatic)
-								{
-									if (bodies[cycle2]->isStatic)
-									{
-										body1VelocityAfter = body1VelocityBefore;
-										body2VelocityAfter = body2VelocityBefore;
+								float jL = j_lin(e, relativeVelocity, collisionPoint->normal[i], bodies[cycle1]->getInvMass(), bodies[cycle2]->getInvMass());
+								float jR = j_rot(e, relativeVelocity, collisionPoint->normal[i], bodies[cycle1]->getInvMass(), bodies[cycle2]->getInvMass(), rVecAP, rVecBP, bodies[cycle1]->getInvMoI(), bodies[cycle2]->getInvMoI());
+								float jLt = j_lin(e, relativeVelocity, tangent, bodies[cycle1]->getInvMass(), bodies[cycle2]->getInvMass());
+								float jRt = j_rot(e, relativeVelocity, tangent, bodies[cycle1]->getInvMass(), bodies[cycle2]->getInvMass(), rVecAP, rVecBP, bodies[cycle1]->getInvMoI(), bodies[cycle2]->getInvMoI());
 
-										body1AngularVelocityAfter = bodies[cycle1]->angularVelocity;
-										body2AngularVelocityAfter = bodies[cycle2]->angularVelocity;
-									}
-									else
-									{
-										body1VelocityAfter = body1VelocityBefore;
+								//Collision impulses
+								body1VelocityAfter = body1VelocityBefore + (jL * bodies[cycle1]->getInvMass()) * collisionPoint->normal[i];
+								body2VelocityAfter = body2VelocityBefore + (-jL * bodies[cycle2]->getInvMass()) * collisionPoint->normal[i];
 
-										body2VelocityAfter = body2VelocityBefore + (
-											-j_lin(e, (body1VelocityBefore - body2VelocityBefore), collisionPoint->normal[i], 0.0f, bodies[cycle2]->mass)
-											/ bodies[cycle2]->mass) * collisionPoint->normal[i];
+								body1AngularVelocityAfter = bodies[cycle1]->angularVelocity + glm::dot(rVecAP, jR * collisionPoint->normal[i]) * bodies[cycle1]->getInvMoI();
+								body2AngularVelocityAfter = bodies[cycle2]->angularVelocity + glm::dot(rVecBP, -jR * collisionPoint->normal[i]) * bodies[cycle2]->getInvMoI();
 
-										body1AngularVelocityAfter = bodies[cycle1]->angularVelocity;
+								//Friction impulses
+								float mu = (bodies[cycle1]->staticFriction + bodies[cycle2]->staticFriction) / 2.0f;
 
-										body2AngularVelocityAfter = bodies[cycle2]->angularVelocity + glm::dot(rVecBP,
-											-j_rot(e, (body1VelocityBefore - body2VelocityBefore), collisionPoint->normal[i], 0.0f, bodies[cycle2]->mass, rVecAP, rVecBP, bodies[cycle1]->momentOfInertia, bodies[cycle2]->momentOfInertia) * collisionPoint->normal[i])
-											/ bodies[cycle2]->momentOfInertia;
-									}
-								}
-								else if (bodies[cycle2]->isStatic)
-								{
-									body1VelocityAfter = body1VelocityBefore + (
-										j_lin(e, (body1VelocityBefore - body2VelocityBefore), collisionPoint->normal[i], bodies[cycle1]->mass, 0.0f)
-										/ bodies[cycle1]->mass) * collisionPoint->normal[i];
-
-									body2VelocityAfter = body2VelocityBefore;
-
-									body1AngularVelocityAfter = bodies[cycle1]->angularVelocity + glm::dot(rVecAP,
-										j_rot(e, (body1VelocityBefore - body2VelocityBefore), collisionPoint->normal[i], bodies[cycle1]->mass, 0.0f, rVecAP, rVecBP, bodies[cycle1]->momentOfInertia, bodies[cycle2]->momentOfInertia) * collisionPoint->normal[i])
-										/ bodies[cycle1]->momentOfInertia;
-
-									body2AngularVelocityAfter = bodies[cycle2]->angularVelocity;
-								}
+								glm::vec2 linearFrictionImpulse;
+								if (abs(jLt) < jL * mu)
+									linearFrictionImpulse = jLt * tangent;
 								else
 								{
-									body1VelocityAfter = body1VelocityBefore + (
-										j_lin(e, (body1VelocityBefore - body2VelocityBefore), collisionPoint->normal[i], bodies[cycle1]->mass, bodies[cycle2]->mass)
-										/ bodies[cycle1]->mass) * collisionPoint->normal[i];
-
-									body2VelocityAfter = body2VelocityBefore + (
-										-j_lin(e, (body1VelocityBefore - body2VelocityBefore), collisionPoint->normal[i], bodies[cycle1]->mass, bodies[cycle2]->mass)
-										/ bodies[cycle2]->mass) * collisionPoint->normal[i];
-
-									body1AngularVelocityAfter = bodies[cycle1]->angularVelocity + glm::dot(rVecAP,
-										j_rot(e, (body1VelocityBefore - body2VelocityBefore), collisionPoint->normal[i], bodies[cycle1]->mass, bodies[cycle2]->mass, rVecAP, rVecBP, bodies[cycle1]->momentOfInertia, bodies[cycle2]->momentOfInertia) * collisionPoint->normal[i])
-										/ bodies[cycle1]->momentOfInertia;
-
-									body2AngularVelocityAfter = bodies[cycle2]->angularVelocity + glm::dot(rVecBP,
-										-j_rot(e, (body1VelocityBefore - body2VelocityBefore), collisionPoint->normal[i], bodies[cycle1]->mass, bodies[cycle2]->mass, rVecAP, rVecBP, bodies[cycle1]->momentOfInertia, bodies[cycle2]->momentOfInertia) * collisionPoint->normal[i])
-										/ bodies[cycle2]->momentOfInertia;
+									linearFrictionImpulse = -jL * tangent * ((bodies[cycle1]->dynamicFriction + bodies[cycle2]->dynamicFriction) / 2.0f);
+								}
+								float angularFrictionImpulse;
+								if (abs(jRt) < jR * mu)
+									angularFrictionImpulse = jRt;
+								else
+								{
+									angularFrictionImpulse = -jR * ((bodies[cycle1]->dynamicFriction + bodies[cycle2]->dynamicFriction) / 2.0f);
 								}
 
+								body1LinearFrictionAfter = linearFrictionImpulse * bodies[cycle1]->getInvMass();
+								body2LinearFrictionAfter = linearFrictionImpulse * bodies[cycle2]->getInvMass();
+
+								body1AngularFrictionAfter = angularFrictionImpulse * bodies[cycle1]->getInvMoI();
+								body2AngularFrictionAfter = angularFrictionImpulse * bodies[cycle2]->getInvMoI();
+
+								//Apply impulses
 								bodies[cycle1]->applyVelocityImpulse(body1VelocityAfter);
 								bodies[cycle2]->applyVelocityImpulse(body2VelocityAfter);
+								bodies[cycle1]->applyVelocityImpulse(body1LinearFrictionAfter);
+								bodies[cycle2]->applyVelocityImpulse(body2LinearFrictionAfter);
+
 								bodies[cycle1]->applyAngularImpulse(body1AngularVelocityAfter);
 								bodies[cycle2]->applyAngularImpulse(body2AngularVelocityAfter);
+								bodies[cycle1]->applyAngularImpulse(body1AngularFrictionAfter);
+								bodies[cycle2]->applyAngularImpulse(body2AngularFrictionAfter);
 							}
 							else if (relativeNormalVelocity >= -ZERO_EPSILON && relativeNormalVelocity <= ZERO_EPSILON) //Points are in contact
 							{
@@ -222,9 +202,6 @@ namespace spehs
 									bodies[cycle1]->ownerObject->getComponent<Sprite>()->sprite->setColor(spehs::GREEN);
 									bodies[cycle2]->ownerObject->getComponent<Sprite>()->sprite->setColor(spehs::GREEN);
 								}
-
-								bodies[cycle1]->applySupportForce(collisionPoint->normal[i], collisionPoint->point[i]);
-								bodies[cycle2]->applySupportForce(collisionPoint->normal[i], collisionPoint->point[i]);
 							}
 							else //Points are separating
 							{
@@ -257,35 +234,13 @@ namespace spehs
 		gravity = _gravity;
 	}
 
-	float PhysicsWorld2D::j_lin(const float& _e, const glm::vec2& _velocity, const glm::vec2& _normal, const float& _mass1, const float& _mass2)
+	float PhysicsWorld2D::j_lin(const float& _e, const glm::vec2& _velocity, const glm::vec2& _normal, const float& _invmass1, const float& _invmass2)
 	{
-		if (_mass1 == 0.0f) //if 1 is static
-		{
-			return glm::dot(-(1 + _e)*_velocity, _normal) / (glm::dot(_normal, _normal*(1 / _mass2)));
-		}
-		else if (_mass2 == 0.0f) //if 2 is static
-		{
-			return glm::dot(-(1 + _e)*_velocity, _normal) / (glm::dot(_normal, _normal*(1 / _mass1)));
-		}
-		else
-		{
-			return glm::dot(-(1 + _e)*_velocity, _normal) / (glm::dot(_normal, _normal*((1 / _mass1) + (1 / _mass2))));
-		}
+		return -(1 + _e)*glm::dot(_velocity, _normal) / (glm::dot(_normal, _normal*((_invmass1) +(_invmass2))));
 	}
 
-	float PhysicsWorld2D::j_rot(const float& _e, const glm::vec2& _velocity, const glm::vec2& _normal, const float& _mass1, const float& _mass2, const glm::vec2& _rVecAP, const glm::vec2& _rVecBP, const float& _MoIA, const float& _MoIB)
+	float PhysicsWorld2D::j_rot(const float& _e, const glm::vec2& _velocity, const glm::vec2& _normal, const float& _invmass1, const float& _invmass2, const glm::vec2& _rVecAP, const glm::vec2& _rVecBP, const float& _InvMoIA, const float& _InvMoIB)
 	{
-		if (_mass1 == 0.0f) //if 1 is static
-		{
-			return glm::dot(-(1 + _e)*_velocity, _normal) / (glm::dot(_normal, _normal*(1 / _mass2)) + (pow(glm::dot(_rVecBP, _normal), 2) / _MoIB) );
-		}
-		else if (_mass2 == 0.0f) //if 2 is static
-		{
-			return glm::dot(-(1 + _e)*_velocity, _normal) / (glm::dot(_normal, _normal*(1 / _mass1)) + (pow(glm::dot(_rVecAP, _normal), 2) / _MoIA) );
-		}
-		else
-		{
-			return glm::dot(-(1 + _e)*_velocity, _normal) / (glm::dot(_normal, _normal*((1 / _mass1) + (1 / _mass2))) + (pow(glm::dot(_rVecAP, _normal), 2) / _MoIA) + (pow(glm::dot(_rVecBP, _normal), 2) / _MoIB) );
-		}
+		return (-(1 + _e)*glm::dot(_velocity, _normal)) / (glm::dot(_normal, _normal*((_invmass1) +(_invmass2))) + (pow(glm::dot(_rVecAP, _normal), 2) * _InvMoIA) + (pow(glm::dot(_rVecBP, _normal), 2) * _InvMoIB));
 	}
 }

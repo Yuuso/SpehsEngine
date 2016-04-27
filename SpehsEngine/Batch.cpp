@@ -277,6 +277,7 @@ namespace spehs
 			else
 				glPointSize(1.0f);
 		case LINE:
+		case LINE_STRIP:
 		case LINE_LOOP:
 			indices.resize(indices.size() + _numVertices);
 			for (unsigned i = numIndices; i < numIndices + _numVertices; i++)

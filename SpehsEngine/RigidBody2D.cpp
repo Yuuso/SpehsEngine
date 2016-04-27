@@ -12,7 +12,7 @@
 
 #include <glm/gtx/vector_query.hpp>
 
-#define DEFAULT_MASS_MULTIPLIER 200.0f
+#define DEFAULT_MASS_MULTIPLIER 1.0f
 #define NULL_EPSILON 0.00001f
 
 
@@ -34,6 +34,7 @@ namespace spehs
 	{
 		isStatic = false;
 		freezeRotation = false;
+		freezePosition = false;
 		useGravity = true;
 		collider = SPRITE;
 
@@ -45,7 +46,9 @@ namespace spehs
 		angularDrag = 10.0f;
 		mass = 1.0f;
 		rotation = 0.0f;
-		elasticity = 0.0f;
+		elasticity = 0.9f;
+		staticFriction = 1.0f;
+		dynamicFriction = 0.01f;
 		momentOfInertia = 0.0f;
 		angularVelocity = 0.0f;
 		angularAcceleration = 0.0f;
@@ -83,18 +86,12 @@ namespace spehs
 		numVertices = sprite->sprite->worldVertexArray.size();
 		vertexData = sprite->sprite->worldVertexArray.data();
 
-		//Apply support forces
-		for (unsigned i = 0; i < supportForces.size(); i++)
-		{
-			applyForceAtPosition(supportForces[i].first * projectForce(resultantForce, supportForces[i].first), supportForces[i].second);
-		}
-
 		//Apply resultant force and torque
 		acceleration = resultantForce / mass;
 		angularAcceleration = resultantTorque / momentOfInertia;
 
 		//Apply impulses
-		if (resultantImpulseForce.size())
+		if (resultantImpulseForce.size() && !freezePosition)
 		{
 			glm::vec2 resultForce(0.0f);
 			for (unsigned i = 0; i < resultantImpulseForce.size(); i++)
@@ -102,7 +99,7 @@ namespace spehs
 			resultForce /= resultantImpulseForce.size();
 			velocity = resultForce;
 		}
-		if (resultantImpulseTorque.size())
+		if (resultantImpulseTorque.size() && !freezeRotation)
 		{
 			float resultTorque(0.0f);
 			for (unsigned i = 0; i < resultantImpulseTorque.size(); i++)
@@ -112,15 +109,17 @@ namespace spehs
 		}
 
 		//Apply acceleration
-		velocity += acceleration * getDeltaTime().asSeconds;
-		angularVelocity += angularAcceleration * getDeltaTime().asSeconds;
+		if (!freezePosition)
+			velocity += acceleration * getDeltaTime().asSeconds;
+		if (!freezeRotation)
+			angularVelocity += angularAcceleration * getDeltaTime().asSeconds;
 
 		//For static bodies (NOTE: Doesn't work atm)
 		if (isStatic)
 			if (false)
 		{
-			velocity = transform->getLastSetPosition() - transform->getPosition();
-			rotation = transform->getLastSetRotation() - transform->getRotation();
+			velocity = transform->getLastSetPosition() - position;
+			rotation = transform->getLastSetRotation() - rotation;
 		}
 
 		//Update transform based on velocity
@@ -136,7 +135,6 @@ namespace spehs
 		resultantTorque = 0.0f;
 		resultantImpulseForce.clear();
 		resultantImpulseTorque.clear();
-		supportForces.clear();
 
 		//Apply drag
 		if (!glm::isNull(velocity, NULL_EPSILON))
@@ -170,11 +168,6 @@ namespace spehs
 	void RigidBody2D::applyTorque(const float& _torque)
 	{
 		resultantTorque += _torque;
-	}
-
-	void RigidBody2D::applySupportForce(const glm::vec2& _normal, const glm::vec2& _position)
-	{
-		supportForces.push_back({ _normal, _position });
 	}
 
 	void RigidBody2D::setMass(const float& _newMass)
@@ -214,6 +207,11 @@ namespace spehs
 	void RigidBody2D::setFreezeRotation(const bool _value)
 	{
 		freezeRotation = _value;
+	}
+
+	void RigidBody2D::setFreezePosition(const bool _value)
+	{
+		freezePosition = _value;
 	}
 
 	void RigidBody2D::setUseGravity(const bool _value)

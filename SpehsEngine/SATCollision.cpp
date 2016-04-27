@@ -104,6 +104,20 @@ namespace spehs
 		glm::vec2 normalVector = glm::vec2(-edgeVector.y, edgeVector.x);
 		return normalVector;
 	};
+	bool isIntersecting(const glm::vec2& _start1, const glm::vec2& _end1, const glm::vec2& _start2, const glm::vec2& _end2)
+	{
+		float denominator = ((_end1.x - _start1.x) * (_end2.y - _start2.y)) - ((_end1.y - _start1.y) * (_end2.x - _start2.x));
+		float numerator1 = ((_start1.y - _start2.y) * (_end2.x - _start2.x)) - ((_start1.x - _start2.x) * (_end2.y - _start2.y));
+		float numerator2 = ((_start1.y - _start2.y) * (_end1.x - _start1.x)) - ((_start1.x - _start2.x) * (_end1.y - _start1.y));
+
+		if (denominator == 0)
+			return numerator1 == 0 && numerator2 == 0;
+
+		float r = numerator1 / denominator;
+		float s = numerator2 / denominator;
+
+		return (r >= 0 && r <= 1) && (s >= 0 && s <= 1);
+	}
 
 
 	bool SATCollision(Vertex* _vertexArray1, int _size1, Vertex* _vertexArray2, int _size2)
@@ -293,13 +307,21 @@ namespace spehs
 				result->point.push_back(glm::vec2(_vertexArray1[i].position.x, _vertexArray1[i].position.y));
 
 				//Find normal
-				glm::vec2 pointVector = result->point.back() - getCenter(_vertexArray2, _size2);
-				result->normal.push_back(axis2[0]);
-				for (unsigned i = 1; i < _size2; i++)
+				for (unsigned i = 0; i < _size2; i++)
 				{
-					if (glm::dot(pointVector, axis2[i]) > glm::dot(pointVector, result->normal.back()))
+					if (i < _size2 - 1)
 					{
-						result->normal.back() = axis2[i];
+						if (isIntersecting(getCenter(_vertexArray1, _size1), result->point.back(), glm::vec2(toVec3(_vertexArray2[i].position)), glm::vec2(toVec3(_vertexArray2[i + 1].position))))
+						{
+							//
+						}
+					}
+					else
+					{
+						if (isIntersecting(getCenter(_vertexArray1, _size1), result->point.back(), glm::vec2(toVec3(_vertexArray2[i].position)), glm::vec2(toVec3(_vertexArray2[0].position))))
+						{
+							//
+						}
 					}
 				}
 			}

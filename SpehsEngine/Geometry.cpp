@@ -24,6 +24,11 @@ namespace spehs
 			pointDirection += TWO_PI;
 		return pointDirection;
 	}
+	inline float getAcuteAngle(const glm::vec2& origin, const glm::vec2& destination)
+	{
+		//TODO?
+		return NULL;
+	}
 	inline float getAngle(const glm::vec2& destination)
 	{
 		float pointDirection = atan2(destination.y, destination.x);
