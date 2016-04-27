@@ -26,8 +26,11 @@ namespace spehs
 	/**Returns angle from 0,0 to destination*/
 	extern inline float getAngle(const glm::vec2& destination);
 
-	/**Returns angle from angle1 to angle2. Range [0.0, TWO_PI]*/
+	/**Returns angle from angle1 to angle2. Return angle and argument ranges must be within [0.0, TWO_PI]*/
 	extern inline float getAngle(const float angle1, const float angle2);
+
+	/**Returns true if two angles (range ]0, TWO_PI[) are parallel with eachother. If angle between angles is more than the tolerance, returns false.*/
+	extern inline bool anglesParallel(float angle1, float angle2, const float parallelToleranceRad);
 
 	/**Returns area of the shape formed by a number of cusps*/
 	extern inline float getArea(spehs::Position* cusps, unsigned numCusps);

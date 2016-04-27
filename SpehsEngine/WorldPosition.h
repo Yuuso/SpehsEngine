@@ -40,6 +40,7 @@ namespace spehs
 
 		//Getters
 		glm::vec2 getVec2From(const WorldPosition& other);///< Returns a vec2 from other to this
+		glm::vec2 getVec2To(const WorldPosition& other);///< Returns a vec2 from this to other
 		float getDistance(const WorldPosition& other);
 		float getDistanceI(const WorldPosition& other);//Do not measure floating precision, faster calculation
 

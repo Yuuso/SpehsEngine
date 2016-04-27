@@ -16,11 +16,11 @@ namespace spehs
 	{
 		return magnitude(origin - destination);
 	}
-	inline float getAngle(const glm::vec2& origin, const glm::vec2& destination)
+	inline float getAngle(glm::vec2& origin, glm::vec2& destination)
 	{
-		glm::vec2 vec = destination - origin;
-		float pointDirection = atan2(vec.y, vec.x);
-		if (vec.y < 0)
+		glm::vec2 angle = destination - origin;
+		float pointDirection = atan2(angle.y, angle.x);
+		if (angle.y < 0)
 			pointDirection += TWO_PI;
 		return pointDirection;
 	}
@@ -42,6 +42,15 @@ namespace spehs
 		if (angle < 0)
 			angle += TWO_PI;
 		return angle;
+	}
+	inline bool anglesParallel(float angle1, float angle2, const float radTolerance)
+	{
+		angle2 -= angle1;
+		if (angle2 < 0)
+			angle2 += TWO_PI;
+		if (angle2 < radTolerance || angle2 > TWO_PI - radTolerance)
+			return true;
+		return false;
 	}
 	inline float getArea(spehs::Position* cusps, unsigned numCusps)
 	{
