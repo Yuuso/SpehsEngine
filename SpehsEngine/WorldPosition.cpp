@@ -210,6 +210,10 @@ namespace spehs
 	{
 		return glm::vec2(integerX - _position.integerX + floatingX - _position.floatingX, integerY - _position.integerY + floatingY - _position.floatingY);
 	}
+	glm::vec2 WorldPosition::getVec2To(const WorldPosition& _position)
+	{
+		return glm::vec2(_position.integerX - integerX + _position.floatingX - floatingX, _position.integerY - integerY + _position.floatingY - floatingY);
+	}
 	float WorldPosition::getDistance(const WorldPosition& other)
 	{
 		return sqrtf(pow(float(integerX) + floatingX - float(other.integerX) - other.floatingX, 2) + pow(float(integerY) + floatingY - float(other.integerY) - other.floatingY, 2));
