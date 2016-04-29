@@ -309,7 +309,7 @@ namespace spehs
 						previousCommandIndex = previousCommands.size() - 1;
 					else if (--previousCommandIndex < 0)
 						previousCommandIndex = previousCommands.size() - 1;
-					input = '/' + previousCommands[previousCommandIndex];
+					input = previousCommands[previousCommandIndex];
 					inputReceived = true;
 				}
 				if (inputManager->isKeyPressed(KEYBOARD_DOWN) && previousCommands.size() > 0)
@@ -318,7 +318,7 @@ namespace spehs
 						previousCommandIndex = 0;
 					else if (++previousCommandIndex >= previousCommands.size())
 						previousCommandIndex = 0;
-					input = '/' + previousCommands[previousCommandIndex];
+					input = previousCommands[previousCommandIndex];
 					inputReceived = true;
 				}
 
@@ -481,16 +481,6 @@ namespace spehs
 			if (input.size() == 0)
 				return;
 
-			if (input[0] != '/')
-			{//Plain text, not command
-				enableState(CONSOLE_TEXT_EXECUTED_BIT);
-				consoleText->setString("><");
-				textExecuted = input;
-				input.clear();
-				return;
-			}
-			input.erase(input.begin());///Erase '/'
-
 			//Record command
 			for (unsigned i = 0; i < previousCommands.size(); i++)
 			{//Erase if command already recorded
@@ -504,6 +494,17 @@ namespace spehs
 			if (previousCommands.size() > CONSOLE_COMMANDS_KEPT_IN_MEMORY)
 				previousCommands.erase(previousCommands.begin());
 			previousCommandIndex = -1;
+
+			if (input[0] != '/')
+			{//Plain text, not command
+				enableState(CONSOLE_TEXT_EXECUTED_BIT);
+				consoleText->setString("><");
+				textExecuted = input;
+				input.clear();
+				return;
+			}
+			input.erase(input.begin());///Erase '/'
+
 
 			//Record each word as a different element in console words vector
 			bool foundCommand = false;

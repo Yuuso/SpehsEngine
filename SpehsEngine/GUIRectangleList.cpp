@@ -189,7 +189,18 @@ namespace spehs
 		elementSize.y = size.y / float(updateElementCount);
 		//Resize width if scroll bar is displayed
 		if (elements.size() > updateElementCount)
+		{//Hidden elements
 			elementSize.x -= SCROLL_BUTTON_WIDTH;
+			scrollUp->setRenderState(true);
+			scrollBar->setRenderState(true);
+			scrollDown->setRenderState(true);
+		}
+		else
+		{//All elements visible
+			scrollUp->setRenderState(false);
+			scrollBar->setRenderState(false);
+			scrollDown->setRenderState(false);
+		}
 	}
 	void GUIRectangleList::addElement(GUIRectangle* e)
 	{
