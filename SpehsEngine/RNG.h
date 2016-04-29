@@ -17,20 +17,29 @@ namespace spehs
 		void setSeed(unsigned int _newSeed);
 		unsigned int getSeed();
 		void resetRandomSeedEngine();
-		unsigned int mtrandom(); //returns a large unsigned int from seed
-		int mtrandom(int _min, int _max); //seeded value from range
+
+		unsigned int mtuirandom();
+		int mtsirandom();
+		float mtfrandom();
+		double mtdrandom();
+
+		int mtirandom(int _min, int _max);
+		float mtfrandom(float _min, float _max);
+		double mtdrandom(double _min, double _max);
+
 		void discardNext(int _amount = 1);
 		unsigned int getMax();
 		unsigned int getMin();
 
 		//Random Pseudorandom Number Generation
-		//Return values from -INT_MAX to INT_MAX
 		int sirandom();
 		int uirandom();
 		int irandom(int _min, int _max);
 		int irandom(int _min, int _max, int _maxMin, int _minMax); //Exclude range maxMin <-> minMax
+		float frandom();
 		float frandom(float _min, float _max);
 		float frandom(float _min, float _max, float _maxMin, float _minMax); //Exclude range maxMin <-> minMax
+		double drandom();
 		double drandom(double _min, double _max);
 		double drandom(double _min, double _max, double _maxMin, double _minMax); //Exclude range maxMin <-> minMax
 

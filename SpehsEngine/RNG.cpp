@@ -14,8 +14,8 @@ namespace spehs
 	}
 	RNG::RNG(unsigned int _initSeed)
 	{
-		seed = _initSeed;
 		initialize();
+		setSeed(_initSeed);
 	}
 	RNG::~RNG()
 	{
@@ -27,7 +27,7 @@ namespace spehs
 		std::random_device randomDevice;
 		randomMTEngine.seed(randomDevice());
 		seed = randomDevice();
-		MTEngine = std::mt19937(seed);
+		MTEngine.seed(seed);
 	}
 	void RNG::setSeed(unsigned int _newSeed)
 	{
@@ -38,11 +38,23 @@ namespace spehs
 	{
 		return seed;
 	}
-	unsigned int RNG::mtrandom()
+	unsigned int RNG::mtuirandom()
 	{
 		return MTEngine();
 	}
-	int RNG::mtrandom(int _min, int _max)
+	int RNG::mtsirandom()
+	{
+		return intDist(MTEngine, { -INT_MAX, INT_MAX });
+	}
+	float RNG::mtfrandom()
+	{
+		return floatDist(MTEngine, { -FLT_MAX, FLT_MAX });
+	}
+	double RNG::mtdrandom()
+	{
+		return doubleDist(MTEngine, { -DBL_MAX, DBL_MAX });
+	}
+	int RNG::mtirandom(int _min, int _max)
 	{
 		if (_min > _max)
 		{
@@ -52,6 +64,28 @@ namespace spehs
 			return _min;
 		else
 			return intDist(MTEngine, { _min, _max });
+	}
+	float RNG::mtfrandom(float _min, float _max)
+	{
+		if (_min > _max)
+		{
+			spehs::console::error("Min value is greater than Max value! (irandom)");
+		}
+		if (_min == _max)
+			return _min;
+		else
+			return floatDist(MTEngine, { _min, _max });
+	}
+	double RNG::mtdrandom(double _min, double _max)
+	{
+		if (_min > _max)
+		{
+			spehs::console::error("Min value is greater than Max value! (irandom)");
+		}
+		if (_min == _max)
+			return _min;
+		else
+			return doubleDist(MTEngine, { _min, _max });
 	}
 	void RNG::discardNext(int _amount)
 	{
@@ -102,6 +136,10 @@ namespace spehs
 
 		return value;
 	}
+	float RNG::frandom()
+	{
+		return floatDist(randomMTEngine, { -FLT_MAX, FLT_MAX });
+	}
 	float RNG::frandom(float _min, float _max)
 	{
 		if (_min > _max)
@@ -122,6 +160,10 @@ namespace spehs
 			value = frandom(_min, _max);
 
 		return value;
+	}
+	double RNG::drandom()
+	{
+		return doubleDist(randomMTEngine, { -DBL_MAX, DBL_MAX });
 	}
 	double RNG::drandom(double _min, double _max)
 	{
