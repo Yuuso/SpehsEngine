@@ -10,6 +10,11 @@
 */
 namespace spehs
 {
+	/**Reads line until ':' is encountered, reads rest as int and assigns to integer. For example the line "data value: 5" would assign 5 to integer*/
+	void readValueIntoInt(std::ifstream& stream, int& integer);
+	/**Reads line until ':' is encountered, reads rest as string and assigns to string. Erases space after ':' if one exists*/
+	void readValueIntoString(std::ifstream& stream, std::string& string);
+
 	class ApplicationData
 	{
 	public:
@@ -19,10 +24,6 @@ namespace spehs
 		virtual void write(std::ofstream* stream = nullptr);
 		///Writes application data to a txt file. If a stream pointer is given, reads from that stream instead.
 		virtual void read(std::ifstream* stream = nullptr);
-		/**Reads line until ':' is encountered, reads rest as int and assigns to integer. For example the line "data value: 5" would assign 5 to integer*/
-		void readValueIntoInt(std::ifstream& stream, int& integer);
-		/**Reads line until ':' is encountered, reads rest as string and assigns to string. Erases space after ':' if one exists*/
-		void readValueIntoString(std::ifstream& stream, std::string& string);
 
 		//Video
 		int windowMode;// 0 windowed / 1 fullscreen
@@ -40,7 +41,6 @@ namespace spehs
 		int GUITextSize;
 		std::string GUITextFontPath;
 		std::string dataDirectory;//Specified directory where data should be stored
-		int additionalThreads;///<Number of additional threads, used for multithreading tasks
 
 		//Window dimensions
 		void setWindowWidth(int w){ windowWidth = w; windowWidthHalf = w / 2; }

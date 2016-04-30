@@ -7,7 +7,7 @@
 spehs::ApplicationData* applicationData;
 namespace spehs
 {
-	void ApplicationData::readValueIntoInt(std::ifstream& stream, int& integer)
+	void readValueIntoInt(std::ifstream& stream, int& integer)
 	{
 		std::string line;
 		std::string intString = "";
@@ -26,7 +26,7 @@ namespace spehs
 		}
 		integer = atoi(intString.c_str());
 	}
-	void ApplicationData::readValueIntoString(std::ifstream& stream, std::string& string)
+	void readValueIntoString(std::ifstream& stream, std::string& string)
 	{
 		std::string line;
 		std::string value = "";
@@ -44,6 +44,7 @@ namespace spehs
 			value.erase(value.begin());
 		string = value;
 	}
+
 	ApplicationData::ApplicationData() :
 		//Video
 		windowMode(0), showFps(1), maxFps(200), vSync(0), MSAA(4),
@@ -53,7 +54,6 @@ namespace spehs
 		consoleTextSize(20), consoleTextAlpha(1000),
 		GUITextSize(12), GUITextFontPath("Fonts/Anonymous.ttf"),
 		dataDirectory("data/"),
-		additionalThreads(std::thread::hardware_concurrency()),
 		windowWidth(1280), windowHeight(720)
 	{
 
@@ -94,7 +94,6 @@ namespace spehs
 		*stream << "ConsoleTextAlpha (0-255): " << consoleTextAlpha << "\n";
 		*stream << "GUI text size: " << GUITextSize << "\n";
 		*stream << "GUI text font path: " << GUITextFontPath << "\n";
-		*stream << "Additional CPU threads: " << additionalThreads << "\n";
 		*stream << "Data directory: " << dataDirectory << "\n";
 
 		if (streamOwner)
@@ -150,7 +149,6 @@ namespace spehs
 		readValueIntoInt(*stream, consoleTextAlpha);
 		readValueIntoInt(*stream, GUITextSize);
 		readValueIntoString(*stream, GUITextFontPath);
-		readValueIntoInt(*stream, additionalThreads);
 		readValueIntoString(*stream, dataDirectory);
 
 		//Limit values
@@ -178,10 +176,6 @@ namespace spehs
 			consoleTextSize = 1;
 		if (GUITextSize < 1)
 			GUITextSize = 1;
-		if (additionalThreads < 0)
-			additionalThreads = 0;
-		else if (additionalThreads > 9000)
-			additionalThreads = 9000;//Cannot have over 9000 threads!
 		
 		//Create data directory
 		if (dataDirectory.size() > 0)

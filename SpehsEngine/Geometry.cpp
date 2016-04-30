@@ -1,4 +1,5 @@
 #include <math.h>
+#include <algorithm>
 #include "Geometry.h"
 #include "Vertex.h"
 
@@ -55,15 +56,15 @@ namespace spehs
 	inline float getArea(spehs::Position* cusps, unsigned numCusps)
 	{
 		if (numCusps < 3)
-			return 0.0f;
-		float area = 0.0f;
+			return 0.000000001f;
+		float area(0.0f);
 		int j = numCusps - 1;
 		for (int i = 0; i < numCusps; i++)
 		{
 			area += (cusps[j].x * cusps[i].y) - (cusps[i].x * cusps[j].y);
 			j = i;
 		}
-		return abs((area * 0.5f));
+		return std::max(abs((area * 0.5f)), 0.0001f);
 	}
 	inline float getRadius(spehs::Position* cusps, unsigned numCusps)
 	{

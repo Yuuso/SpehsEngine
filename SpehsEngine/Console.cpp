@@ -417,6 +417,10 @@ namespace spehs
 		//Console logging
 		void log(std::string str, glm::vec3& color)
 		{
+			log(&str[0], str.size(), color);
+		}
+		void log(char* str, unsigned length, glm::vec3& color)
+		{
 			LockGuardRecursive regionLock(consoleMutex);
 
 			if (lines.size() >= LOG_LINES_KEPT_IN_MEMORY)

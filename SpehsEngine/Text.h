@@ -32,6 +32,7 @@ namespace spehs
 		bool setFontSize(int size);
 		void setRenderState(bool state);
 		void setString(std::string str);
+		void setString(char* str, unsigned length);
 		void incrementString(std::string str);
 		void incrementFrontString(std::string str);
 		void setColor(glm::vec4& col);

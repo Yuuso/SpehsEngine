@@ -421,6 +421,16 @@ namespace spehs
 		string = str;
 		doUpdate = true;
 	}
+	void Text::setString(char* str, unsigned length)
+	{
+		//Set line count
+		if (length > 0) lineCount = 1; else lineCount = 0;
+		for (unsigned i = 0; i < length; i++)
+			if (str[i] == '\n') lineCount++;
+
+		string = str;
+		doUpdate = true;
+	}
 	void Text::incrementString(std::string str)
 	{
 		//Increase line count
