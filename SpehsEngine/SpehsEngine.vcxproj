@@ -149,6 +149,7 @@
     <ClInclude Include="Component.h" />
     <ClInclude Include="Console.h" />
     <ClInclude Include="ConsoleVariable.h" />
+    <ClInclude Include="Depth.h" />
     <ClInclude Include="Exceptions.h" />
     <ClInclude Include="FileStream.h" />
     <ClInclude Include="GameObject.h" />

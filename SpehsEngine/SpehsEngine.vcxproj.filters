@@ -309,6 +309,9 @@
     <ClInclude Include="SkyBox.h">
       <Filter>Rendering\Geometric Rendering</Filter>
     </ClInclude>
+    <ClInclude Include="Depth.h">
+      <Filter>Rendering</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Physics">

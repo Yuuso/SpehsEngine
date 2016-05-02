@@ -2,11 +2,11 @@
 #include <map>
 #include <string>
 #include <glm/glm.hpp>
+#include "Depth.h"
 
 
 typedef unsigned int GLuint;
 typedef char GLchar;
-typedef int16_t PlaneDepth;
 
 namespace spehs
 {

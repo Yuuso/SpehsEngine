@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Vertex.h"
+#include "Depth.h"
 
 #include <glm/vec2.hpp>
 #include <glm/vec3.hpp>
@@ -12,7 +13,6 @@
 
 
 //Int based depth that is used to determine the drawing order of 2D primitives.
-typedef int16_t PlaneDepth;
 typedef unsigned int GLuint;
 
 namespace spehs

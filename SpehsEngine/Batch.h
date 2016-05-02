@@ -2,6 +2,7 @@
 
 #include "Primitive.h"
 #include "Vertex.h"
+#include "Depth.h"
 
 #include <glm/vec3.hpp>
 
@@ -14,7 +15,6 @@ typedef unsigned int GLenum;
 typedef unsigned int GLuint;
 typedef unsigned short GLushort;
 
-typedef int16_t PlaneDepth;
 
 
 namespace spehs

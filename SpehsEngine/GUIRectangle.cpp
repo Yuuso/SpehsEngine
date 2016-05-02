@@ -8,8 +8,8 @@
 #include "ApplicationData.h"
 #include "Text.h"
 #include "BatchManager.h"
+#include "Depth.h"
 
-#define GUI_DEFAULT_PLANEDEPTH 10000
 #define TEXT_MAX_STRING_LENGTH 32
 
 int64_t guiRectangleAllocations = 0;
@@ -41,7 +41,7 @@ namespace spehs
 #endif
 
 		//Create polygon
-		polygon = spehs::getActiveBatchManager()->createPolygon(spehs::BUTTON, GUI_DEFAULT_PLANEDEPTH, 1.0f, 1.0f);
+		polygon = spehs::getActiveBatchManager()->createPolygon(spehs::BUTTON, GUI_PLANEDEPTH, 1.0f, 1.0f);
 		polygon->setCameraMatrixState(false);
 
 		//Initial state (0)

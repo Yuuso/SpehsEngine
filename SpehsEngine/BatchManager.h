@@ -5,8 +5,9 @@
 
 #include <vector>
 
+#include "Depth.h"
 
-typedef int16_t PlaneDepth;
+
 
 namespace spehs
 {
