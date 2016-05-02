@@ -46,7 +46,7 @@ namespace spehs
 		angularDrag = 10.0f;
 		mass = 1.0f;
 		rotation = 0.0f;
-		elasticity = 0.9f;
+		elasticity = 0.6f;
 		staticFriction = 1.0f;
 		dynamicFriction = 0.01f;
 		momentOfInertia = 0.0f;
@@ -279,27 +279,27 @@ namespace spehs
 		}
 
 		//For regular convex polygons:
-		for (unsigned i = 0; i < sprite->sprite->vertexArray.size(); i++)
+		for (unsigned i = 0; i < vArray.size(); i++)
 		{
-			if (i < sprite->sprite->vertexArray.size() - 1)
+			if (i < vArray.size() - 1)
 			{
-				sum1 += abs(glm::length(glm::cross(toVec3(sprite->sprite->vertexArray[i + 1]), toVec3(sprite->sprite->vertexArray[i])))) *
+				sum1 += abs(glm::length(glm::cross(toVec3(vArray[i + 1]), toVec3(vArray[i])))) *
 					(
-					(glm::dot(toVec3(sprite->sprite->vertexArray[i]), toVec3(sprite->sprite->vertexArray[i]))) +
-					(glm::dot(toVec3(sprite->sprite->vertexArray[i]), toVec3(sprite->sprite->vertexArray[i + 1]))) +
-					(glm::dot(toVec3(sprite->sprite->vertexArray[i + 1]), toVec3(sprite->sprite->vertexArray[i + 1])))
+					(glm::dot(toVec3(vArray[i]), toVec3(vArray[i]))) +
+					(glm::dot(toVec3(vArray[i]), toVec3(vArray[i + 1]))) +
+					(glm::dot(toVec3(vArray[i + 1]), toVec3(vArray[i + 1])))
 					);
-				sum2 += abs(glm::length(glm::cross(toVec3(sprite->sprite->vertexArray[i + 1]), toVec3(sprite->sprite->vertexArray[i]))));
+				sum2 += abs(glm::length(glm::cross(toVec3(vArray[i + 1]), toVec3(vArray[i]))));
 			}
-			else if (i == sprite->sprite->vertexArray.size() - 1)
+			else if (i == vArray.size() - 1)
 			{
-				sum1 += abs(glm::length(glm::cross(toVec3(sprite->sprite->vertexArray[0]), toVec3(sprite->sprite->vertexArray[i])))) *
+				sum1 += abs(glm::length(glm::cross(toVec3(vArray[0]), toVec3(vArray[i])))) *
 					(
-					(glm::dot(toVec3(sprite->sprite->vertexArray[i]), toVec3(sprite->sprite->vertexArray[i]))) +
-					(glm::dot(toVec3(sprite->sprite->vertexArray[i]), toVec3(sprite->sprite->vertexArray[0]))) +
-					(glm::dot(toVec3(sprite->sprite->vertexArray[0]), toVec3(sprite->sprite->vertexArray[0])))
+					(glm::dot(toVec3(vArray[i]), toVec3(vArray[i]))) +
+					(glm::dot(toVec3(vArray[i]), toVec3(vArray[0]))) +
+					(glm::dot(toVec3(vArray[0]), toVec3(vArray[0])))
 					);
-				sum2 += abs(glm::length(glm::cross(toVec3(sprite->sprite->vertexArray[0]), toVec3(sprite->sprite->vertexArray[i]))));
+				sum2 += abs(glm::length(glm::cross(toVec3(vArray[0]), toVec3(vArray[i]))));
 			}
 		}
 
@@ -307,7 +307,7 @@ namespace spehs
 		momentOfInertia = (mass / 6.0f) * (sum1 / sum2);
 
 		//Plane
-		momentOfInertia = (mass / 12.0f)*(sprite->sprite->width*sprite->sprite->width + sprite->sprite->height*sprite->sprite->height);
+		//momentOfInertia = (mass / 12.0f)*(sprite->sprite->width*sprite->sprite->width + sprite->sprite->height*sprite->sprite->height);
 
 		//Circle
 		//momentOfInertia = (mass * circleRadius * circleRadius) / 2.0f;

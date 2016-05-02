@@ -13,7 +13,7 @@
 
 #include <glm/gtx/vector_query.hpp>
 
-#define ZERO_EPSILON 0.00001f
+#define ZERO_EPSILON 0.000001f
 
 #define SHOW_COLORS false
 
@@ -121,8 +121,8 @@ namespace spehs
 								}
 
 								//Positional Correction
-								const float percentage = 0.5f;
-								const float slop = 0.05f;
+								const float percentage = 0.25f;
+								const float slop = 0.04f;
 								glm::vec2 correction = std::max(collisionPoint->MTV.length() - slop, 0.0f) / (bodies[cycle1]->getInvMass() + bodies[cycle2]->getInvMass()) * percentage * collisionPoint->normal[i];
 								if (!bodies[cycle1]->freezePosition && !bodies[cycle1]->isStatic)
 									bodies[cycle1]->ownerObject->getComponent<Transform2D>()->setPosition(bodies[cycle1]->ownerObject->getComponent<Transform2D>()->getPosition() + correction * bodies[cycle1]->getInvMass());
@@ -202,6 +202,14 @@ namespace spehs
 									bodies[cycle1]->ownerObject->getComponent<Sprite>()->sprite->setColor(spehs::GREEN);
 									bodies[cycle2]->ownerObject->getComponent<Sprite>()->sprite->setColor(spehs::GREEN);
 								}
+								//Positional Correction
+								const float percentage = 0.25f;
+								const float slop = 0.04f;
+								glm::vec2 correction = std::max(collisionPoint->MTV.length() - slop, 0.0f) / (bodies[cycle1]->getInvMass() + bodies[cycle2]->getInvMass()) * percentage * collisionPoint->normal[i];
+								if (!bodies[cycle1]->freezePosition && !bodies[cycle1]->isStatic)
+									bodies[cycle1]->ownerObject->getComponent<Transform2D>()->setPosition(bodies[cycle1]->ownerObject->getComponent<Transform2D>()->getPosition() + correction * bodies[cycle1]->getInvMass());
+								if (!bodies[cycle2]->freezePosition && !bodies[cycle2]->isStatic)
+									bodies[cycle2]->ownerObject->getComponent<Transform2D>()->setPosition(bodies[cycle2]->ownerObject->getComponent<Transform2D>()->getPosition() - correction * bodies[cycle2]->getInvMass());
 							}
 							else //Points are separating
 							{

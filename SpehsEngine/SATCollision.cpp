@@ -307,21 +307,13 @@ namespace spehs
 				result->point.push_back(glm::vec2(_vertexArray1[i].position.x, _vertexArray1[i].position.y));
 
 				//Find normal
-				for (unsigned i = 0; i < _size2; i++)
+				glm::vec2 pointVector = result->point.back() - getCenter(_vertexArray2, _size2);
+				result->normal.push_back(axis2[0]);
+				for (unsigned i = 1; i < _size2; i++)
 				{
-					if (i < _size2 - 1)
+					if (glm::dot(pointVector, axis2[i]) > glm::dot(pointVector, result->normal.back()))
 					{
-						if (isIntersecting(getCenter(_vertexArray1, _size1), result->point.back(), glm::vec2(toVec3(_vertexArray2[i].position)), glm::vec2(toVec3(_vertexArray2[i + 1].position))))
-						{
-							//
-						}
-					}
-					else
-					{
-						if (isIntersecting(getCenter(_vertexArray1, _size1), result->point.back(), glm::vec2(toVec3(_vertexArray2[i].position)), glm::vec2(toVec3(_vertexArray2[0].position))))
-						{
-							//
-						}
+						result->normal.back() = axis2[i];
 					}
 				}
 			}
@@ -344,7 +336,7 @@ namespace spehs
 						result->normal.back() = axis1[i];
 					}
 				}
-				result->normal.back() = -result->normal.back();
+				result->normal.back() = -result->normal.back(); //?
 			}
 		}
 
