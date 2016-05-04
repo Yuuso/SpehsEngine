@@ -96,6 +96,7 @@ namespace spehs
 		bool blending;
 		int shaderIndex;
 		unsigned int batchSize;
+		unsigned int indexSize;
 		GLuint textureDataID;
 		GLenum drawMode;
 		float lineWidth;

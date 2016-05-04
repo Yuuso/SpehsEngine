@@ -318,6 +318,7 @@ namespace spehs
 
 		blending = false;
 		batchSize = DEFAULT_MAX_BATCH_SIZE;
+		indexSize = getIndexMultiplier(batchSize);
 		shaderIndex = 0;
 		textureDataID = 0;
 		drawMode = UNDEFINED;
@@ -335,6 +336,7 @@ namespace spehs
 			batchSize = _batchSizeCheck;
 		else
 			batchSize = DEFAULT_MAX_BATCH_SIZE;
+		indexSize = getIndexMultiplier(batchSize);
 
 		blending = _blending;
 		shaderIndex = _shader;
@@ -343,7 +345,7 @@ namespace spehs
 		lineWidth = _lineWidth;
 
 		vertices.reserve(batchSize);
-		indices.reserve(batchSize * 4); //For mesh batch this is not the true max value
+		indices.reserve(indexSize); //For mesh batch this is not the true max value
 
 		initBuffers();
 	}
@@ -464,8 +466,11 @@ namespace spehs
 			if (vertices.size() == 0) //If this is empty batch, resize it for the mesh
 			{
 				batchSize = _numVertices;
-				clearGPUBuffers();
-				initBuffers();
+				glBindVertexArray(vertexArrayObjectID);
+				glBindBuffer(GL_ARRAY_BUFFER, vertexBufferID);
+				glBufferData(GL_ARRAY_BUFFER, sizeof(spehs::Vertex3D) * batchSize, nullptr, GL_STREAM_DRAW);
+				glBindVertexArray(0);
+				glBindBuffer(GL_ARRAY_BUFFER, 0);
 				return true;
 			}
 			return false;
@@ -491,7 +496,7 @@ namespace spehs
 		glBufferData(GL_ARRAY_BUFFER, sizeof(spehs::Vertex3D) * batchSize, nullptr, GL_STREAM_DRAW);
 
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBufferID);
-		glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLushort) * batchSize * 4, nullptr, GL_STREAM_DRAW);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLushort) * indexSize, nullptr, GL_STREAM_DRAW);
 
 		checkOpenGLErrors(__FILE__, __LINE__);
 
@@ -528,6 +533,13 @@ namespace spehs
 
 		//Sent data to GPU
 		glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(spehs::Vertex3D) * vertices.size(), vertices.data());
+
+		//Check indices
+		if (indices.size() > indexSize)
+		{
+			indexSize = indices.size();
+			glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLushort) * indexSize, nullptr, GL_STREAM_DRAW);
+		}
 		glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, sizeof(GLushort) * indices.size(), indices.data());
 
 		glBindVertexArray(0);
