@@ -43,6 +43,8 @@ namespace spehs
 		void setNear(const float& _near);
 		void setFar(const float& _far);
 
+		glm::vec3 getPosition(){ return position; }
+
 		glm::mat4* cameraMatrix;
 
 	private:
