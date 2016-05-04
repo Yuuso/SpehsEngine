@@ -59,6 +59,8 @@ namespace spehs
 		int getShaderIndex(){ return shaderIndex; }
 		bool getRenderState(){ return renderState; }
 		glm::vec4 getColor(){ return color; }
+		glm::vec3 getPosition(){ return spehs::toVec3(position); }
+		glm::vec3 getRotation(){ return rotation; }
 
 
 		//Public Variables
