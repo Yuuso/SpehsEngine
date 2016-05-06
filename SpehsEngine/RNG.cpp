@@ -58,7 +58,8 @@ namespace spehs
 	{
 		if (_min > _max)
 		{
-			spehs::console::error("Min value is greater than Max value! (irandom)");
+			spehs::console::warning("Min value is greater than Max value! (irandom)");
+			return _min;
 		}
 		if (_min == _max)
 			return _min;
@@ -69,7 +70,8 @@ namespace spehs
 	{
 		if (_min > _max)
 		{
-			spehs::console::error("Min value is greater than Max value! (irandom)");
+			spehs::console::warning("Min value is greater than Max value! (irandom)");
+			return _min;
 		}
 		if (_min == _max)
 			return _min;
@@ -80,7 +82,8 @@ namespace spehs
 	{
 		if (_min > _max)
 		{
-			spehs::console::error("Min value is greater than Max value! (irandom)");
+			spehs::console::warning("Min value is greater than Max value! (irandom)");
+			return _min;
 		}
 		if (_min == _max)
 			return _min;
@@ -116,7 +119,8 @@ namespace spehs
 	{
 		if (_min > _max)
 		{
-			spehs::console::error("Min value is greater than Max value! (irandom)");
+			spehs::console::warning("Min value is greater than Max value! (irandom)");
+			return _min;
 		}
 		if (_min == _max)
 			return _min;
@@ -127,9 +131,15 @@ namespace spehs
 	{
 		int value = irandom(_min, _max);
 		if (_maxMin >= _minMax)
-			spehs::console::error("maxMin value is greater than minMax value! (irandom)");
+		{
+			spehs::console::warning("maxMin value is greater than minMax value! (irandom)");
+			return _min;
+		}
 		if (_maxMin < _min || _minMax > _max)
-			spehs::console::error("mixMaxMin stuff is wrong!! (irandom)");
+		{
+			spehs::console::warning("Ranges of min-max stuff is wrong!! (irandom)");
+			return _min;
+		}
 
 		while (value < _minMax && value > _maxMin)
 			value = irandom(_min, _max);
@@ -144,7 +154,8 @@ namespace spehs
 	{
 		if (_min > _max)
 		{
-			spehs::console::error("Min value is greater than Max value! (frandom)");
+			spehs::console::warning("Min value is greater than Max value! (frandom)");
+			return _min;
 		}
 		return floatDist(randomMTEngine, { _min, _max });
 	}	
@@ -152,9 +163,15 @@ namespace spehs
 	{
 		float value = frandom(_min, _max);
 		if (_maxMin >= _minMax)
-			spehs::console::error("maxMin value is greater than minMax value! (frandom)");
+		{
+			spehs::console::warning("maxMin value is greater than minMax value! (frandom)");
+			return _min;
+		}
 		if (_maxMin < _min || _minMax > _max)
-			spehs::console::error("mixMaxMin stuff is wrong!! (frandom)");
+		{
+			spehs::console::warning("Ranges of min-max stuff is wrong!! (frandom)");
+			return _min;
+		}
 
 		while (value < _minMax && value > _maxMin)
 			value = frandom(_min, _max);
@@ -169,7 +186,8 @@ namespace spehs
 	{
 		if (_min > _max)
 		{
-			spehs::console::error("Min value is greater than Max value! (drandom)");
+			spehs::console::warning("Min value is greater than Max value! (drandom)");
+			return _min;
 		}
 		return doubleDist(randomMTEngine, { _min, _max });
 	}
@@ -177,9 +195,15 @@ namespace spehs
 	{
 		double value = drandom(_min, _max);
 		if (_maxMin >= _minMax)
-			spehs::console::error("maxMin value is greater than minMax value! (drandom)");
+		{
+			spehs::console::warning("maxMin value is greater than minMax value! (drandom)");
+			return _min;
+		}
 		if (_maxMin < _min || _minMax > _max)
-			spehs::console::error("mixMaxMin stuff is wrong!! (drandom)");
+		{
+			spehs::console::warning("Ranges of min-max stuff is wrong!! (drandom)");
+			return _min;
+		}
 
 		while (value < _minMax && value > _maxMin)
 			value = drandom(_min, _max);
