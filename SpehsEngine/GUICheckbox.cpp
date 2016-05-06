@@ -14,11 +14,11 @@ namespace spehs
 {
 	GUICheckbox::GUICheckbox() : booleanPtr(nullptr), checkboxSize(20)
 	{
-		checkboxBackground = spehs::getActiveBatchManager()->createPolygon(Shape::BUTTON);
+		checkboxBackground = spehs::getActiveBatchManager()->createPolygon(Shape::BUTTON, 0, 1.0f, 1.0f);
 		checkboxBackground->setColor(30, 30, 30);
 		checkboxBackground->setCameraMatrixState(false);
 
-		checkboxFilling = spehs::getActiveBatchManager()->createPolygon(Shape::BUTTON);
+		checkboxFilling = spehs::getActiveBatchManager()->createPolygon(Shape::BUTTON, 0, 1.0f, 1.0f);
 		checkboxFilling->setColor(160, 170, 180);
 		checkboxFilling->setCameraMatrixState(false);
 

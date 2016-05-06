@@ -339,7 +339,7 @@ namespace spehs
 		if (displayTexture)
 			delete displayTexture;
 		displayTexture = new DisplayTexture();
-		displayTexture->polygon = spehs::getActiveBatchManager()->createPolygon(4, 1, 1);
+		displayTexture->polygon = spehs::getActiveBatchManager()->createPolygon(4, 0, 1, 1);
 		TextureData* texData = textureManager->getTextureData(path);
 		displayTexture->polygon->setTexture(texData);
 		displayTexture->polygon->resize(texData->width, texData->height);

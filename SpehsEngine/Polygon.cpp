@@ -34,7 +34,7 @@ namespace spehs
 			if (_shapeID % 2)
 				firstPosition = HALF_PI;
 			else
-				firstPosition = HALF_PI + (TWO_PI / _shapeID) / 2;
+				firstPosition = HALF_PI + (TWO_PI / _shapeID) / 2.0f;
 			vertexArray[0].position.setPosition(cos(firstPosition), sin(firstPosition));
 			float minX = vertexArray[0].position.x, minY = vertexArray[0].position.y, maxX = vertexArray[0].position.x, maxY = vertexArray[0].position.y;
 			for (int i = 1; i < _shapeID; i++)
@@ -52,15 +52,13 @@ namespace spehs
 				else if (vertexArray[i].position.y < minY)
 					minY = vertexArray[i].position.y;
 			}
-			float width = maxX - minX;//Note: Max x IS positive, min IS negative
-			float height = maxY - minY;//Note: Max x IS positive, min IS negative
-			float wFactor = 1.0f / width;
-			float hFactor = 1.0f / height;
+			float twidth = abs(maxX) + abs(minX);
+			float theight = abs(maxY) + abs(minY);
 
 			for (int i = 0; i < _shapeID; i++)
 			{
-				vertexArray[i].position.x *= wFactor;
-				vertexArray[i].position.y *= hFactor;
+				vertexArray[i].position.x /= twidth;
+				vertexArray[i].position.y /= theight;
 			}
 
 			worldVertexArray = vertexArray;

@@ -33,17 +33,16 @@ namespace spehs
 	}
 
 
-	void Arrow::setLineThickness(const float &_thickness)
+	void Arrow::setLineThickness(const float _thickness)
 	{
 		if (linePart == nullptr)
 		{
 			return;
 		}
-		linePart->setLineWidth(_thickness);
 	}
 
 
-	void Arrow::setArrowPointerSize(const float &_sizeX, const float &_sizeY)
+	void Arrow::setArrowPointerSize(const float _sizeX, const float _sizeY)
 	{
 		arrowSizeX = _sizeX;
 		arrowSizeY = _sizeY;
@@ -55,7 +54,7 @@ namespace spehs
 	}
 
 
-	void Arrow::setArrowColor(const int &_r, const int &_b, const int &_g, const int &_a)
+	void Arrow::setArrowColor(const int _r, const int _b, const int _g, const int _a)
 	{
 		if (linePart)
 			linePart->setColor(_r, _b, _g, _a);
@@ -91,6 +90,15 @@ namespace spehs
 	}
 
 
+	void Arrow::setDepth(const PlaneDepth _value)
+	{
+		if (linePart)
+			linePart->setPlaneDepth(_value);
+		if (polygonPart)
+			polygonPart->setPlaneDepth(_value);
+	}
+
+
 	void Arrow::cameraState(const bool _value)
 	{
 		if (linePart)
@@ -111,13 +119,13 @@ namespace spehs
 		if (polygonPart != nullptr)
 			polygonPart->destroy();
 
-		linePart = getActiveBatchManager()->createLine(_startPoint, _endPoint);
+		linePart = getActiveBatchManager()->createLine(_startPoint, _endPoint, 0);
 		linePart->setCameraMatrixState(false);
 
 		float _angle = -atan2(_endPoint.x - _startPoint.x, _endPoint.y - _startPoint.y);
 
-		polygonPart = getActiveBatchManager()->createPolygon(3, arrowSizeX, arrowSizeY);
-		polygonPart->setPosition(_endPoint.x + 0.5f*arrowSizeY*cos(_angle - 0.5f * PI), _endPoint.y + 0.5f*arrowSizeY*sin(_angle - 0.5f * PI));
+		polygonPart = getActiveBatchManager()->createPolygon(3, 0, arrowSizeX, arrowSizeY);
+		polygonPart->setPosition(_endPoint.x, _endPoint.y);
 		polygonPart->setRotation(_angle);
 		polygonPart->setCameraMatrixState(false);
 	}
