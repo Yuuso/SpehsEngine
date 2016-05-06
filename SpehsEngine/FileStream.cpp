@@ -1,10 +1,11 @@
+#include <mutex>
 #include <boost/filesystem.hpp>
 #include "FileStream.h"
 #include "Console.h"
-using namespace boost::filesystem;
 
 namespace spehs
 {
+	std::recursive_mutex filestreamMutex;
 	void writeString(std::string& string, std::ofstream* stream)
 	{
 		unsigned count = string.size();
@@ -47,9 +48,10 @@ namespace spehs
 
 	bool directoryExists(std::string& path)
 	{
-		if (exists(path))
+		std::lock_guard<std::recursive_mutex> lock(filestreamMutex);
+		if (boost::filesystem::exists(path))
 		{//File exists, check type
-			if (is_directory(path))
+			if (boost::filesystem::is_directory(path))
 				return true;
 			else
 				return false;
@@ -60,9 +62,10 @@ namespace spehs
 
 	bool fileExists(std::string& path)
 	{
-		if (exists(path))
+		std::lock_guard<std::recursive_mutex> lock(filestreamMutex);
+		if (boost::filesystem::exists(path))
 		{//File exists, check type
-			if (is_regular_file(path))
+			if (boost::filesystem::is_regular_file(path))
 				return true;
 			else
 				return false;
@@ -73,7 +76,8 @@ namespace spehs
 
 	bool createDirectory(std::string& path)
 	{
-		return create_directory(path);
+		std::lock_guard<std::recursive_mutex> lock(filestreamMutex);
+		return boost::filesystem::create_directory(path);
 	}
 
 	bool verifyDirectory(std::string& path)
