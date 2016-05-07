@@ -99,6 +99,9 @@ namespace spehs
 		virtual void setString(std::string str);
 		void setStringSize(int size);
 		void setStringColor(glm::vec4& col);
+		void setStringColor(unsigned char r, unsigned char g, unsigned char b, unsigned char a = 255);
+		void setStringAlpha(float alpha);
+		void setStringAlpha(unsigned char a);
 		std::string getString();
 		void setJustification(GUIRECT_STATE_TYPE justificationBit);///<NOTE: if non-justification bit is given, all justification bits will be cleared and given bit will be enabled
 		//Tooltip

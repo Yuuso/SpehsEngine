@@ -478,6 +478,21 @@ namespace spehs
 		color.b = b;
 		color.a = a;
 	}
+	void Text::setColor(unsigned char r, unsigned char g, unsigned char b, unsigned char a)
+	{
+		color.r = r / 255.0f;
+		color.g = g / 255.0f;
+		color.b = b / 255.0f;
+		color.a = a / 255.0f;
+	}
+	void Text::setAlpha(float alpha)
+	{
+		color.a = alpha;
+	}
+	void Text::setAlpha(unsigned char a)
+	{
+		color.a = a / 255.0f;
+	}
 	int Text::getLineCount()
 	{
 		return lineCount;

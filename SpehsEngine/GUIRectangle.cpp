@@ -320,6 +320,24 @@ namespace spehs
 			createText();
 		text->setColor(col); 
 	}
+	void GUIRectangle::setStringColor(unsigned char r, unsigned char g, unsigned char b, unsigned char a)
+	{
+		if (!text)
+			createText();
+		text->setColor(r, g, b, a);
+	}
+	void GUIRectangle::setStringAlpha(float alpha)
+	{
+		if (!text)
+			createText();
+		text->setAlpha(alpha);
+	}
+	void GUIRectangle::setStringAlpha(unsigned char a)
+	{
+		if (!text)
+			createText();
+		text->setAlpha(a);
+	}
 	std::string GUIRectangle::getString()
 	{
 		if (text)

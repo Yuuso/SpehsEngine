@@ -36,8 +36,13 @@ namespace spehs
 		void incrementString(std::string str);
 		void incrementFrontString(std::string str);
 		void setColor(glm::vec4& col);
-		/*Set color in floating range [0.0f - 1.0f]*/
-		void setColor(float r, float g, float b, float a = 1.0f);
+		/*Set color in floating range ]0.0f, 1.0f[*/
+		void setColor(float red, float green, float blue, float alpha = 1.0f);
+		/*Set color in single byte range ]0, 255[*/
+		void setColor(unsigned char r, unsigned char g, unsigned char b, unsigned char a = 1.0f);
+		/*Set color alpha channel*/
+		void setAlpha(float alpha);
+		void setAlpha(unsigned char a);
 		void setPosition(glm::vec2& vec);
 		void setPosition(float, float);
 		void setPlaneDepth(PlaneDepth depth){/*TODO*/ }
