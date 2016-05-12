@@ -4,6 +4,7 @@
 
 #include <glm\vec2.hpp>
 #include <vector>
+#include <memory>
 
 
 namespace spehs
@@ -53,6 +54,8 @@ namespace spehs
 	};
 	struct CollisionPoint
 	{
+		CollisionPoint();
+		~CollisionPoint();
 		glm::vec2 MTV;
 		std::vector<glm::vec2> point;
 		std::vector<glm::vec2> normal;
@@ -94,13 +97,13 @@ namespace spehs
 
 	//COLLISIONPOINT COLLISIONS
 	//Polygon x Polygon collision
-	CollisionPoint* SATMTVCollision(Vertex* _vertexArray1, const unsigned int _size1, Vertex* _vertexArray2, const unsigned int _size2);
-	CollisionPoint* SATMTVCollision(Position* _vertexArray1, const unsigned int _size1, Position* _vertexArray2, const unsigned int _size2);
+	std::shared_ptr<CollisionPoint> SATMTVCollision(Vertex* _vertexArray1, const unsigned int _size1, Vertex* _vertexArray2, const unsigned int _size2);
+	std::shared_ptr<CollisionPoint> SATMTVCollision(Position* _vertexArray1, const unsigned int _size1, Position* _vertexArray2, const unsigned int _size2);
 
 	//Polygon x Circle Collision
-	CollisionPoint* SATMTVCollision(Vertex* _vertexArray, const unsigned int _size, const glm::vec2& _circleCenterPoint, const float _circleRadius);
-	CollisionPoint* SATMTVCollision(Position* _vertexArray, const unsigned int _size, const glm::vec2& _circleCenterPoint, const float _circleRadius);
+	std::shared_ptr<CollisionPoint> SATMTVCollision(Vertex* _vertexArray, const unsigned int _size, const glm::vec2& _circleCenterPoint, const float _circleRadius);
+	std::shared_ptr<CollisionPoint> SATMTVCollision(Position* _vertexArray, const unsigned int _size, const glm::vec2& _circleCenterPoint, const float _circleRadius);
 
 	//Circle x Circle Collision
-	CollisionPoint* CircleMTVCollision(const glm::vec2& _circleCenterPoint1, const float _circleRadius1, const glm::vec2& _circleCenterPoint2, const float _circleRadius2);
+	std::shared_ptr<CollisionPoint> CircleMTVCollision(const glm::vec2& _circleCenterPoint1, const float _circleRadius1, const glm::vec2& _circleCenterPoint2, const float _circleRadius2);
 }

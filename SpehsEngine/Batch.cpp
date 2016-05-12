@@ -16,6 +16,12 @@
 #include <algorithm>
 
 
+int64_t primitiveBatchAllocations;
+int64_t primitiveBatchDeallocations;
+int64_t meshBatchAllocations;
+int64_t meshBatchDeallocations;
+
+
 namespace spehs
 {
 	int getIndexMultiplier(const GLenum &_drawMode, const unsigned int& _batchSize)
@@ -35,6 +41,10 @@ namespace spehs
 #pragma region PRIMITIVE BATCH
 	PrimitiveBatch::PrimitiveBatch()
 	{
+#ifdef _DEBUG
+		primitiveBatchAllocations++;
+#endif
+
 		vertexArrayObjectID = 0;
 		vertexBufferID = 0;
 		indexBufferID = 0;
@@ -51,6 +61,9 @@ namespace spehs
 	}
 	PrimitiveBatch::PrimitiveBatch(const bool _cameraMatrixState, const int16_t &_priority, const bool _blending, const int &_shaderIndex, const GLuint &_textureDataID, const GLenum &_drawMode, float _lineWidth)
 	{
+#ifdef _DEBUG
+		primitiveBatchAllocations++;
+#endif
 		vertexArrayObjectID = 0;
 		vertexBufferID = 0;
 		indexBufferID = 0;
@@ -70,6 +83,9 @@ namespace spehs
 	}
 	PrimitiveBatch::~PrimitiveBatch()
 	{
+#ifdef _DEBUG
+		primitiveBatchDeallocations++;
+#endif
 		if (vertexBufferID != 0)
 		{
 			glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -312,6 +328,9 @@ namespace spehs
 #pragma region MESH BATCH
 	MeshBatch::MeshBatch()
 	{
+#ifdef _DEBUG
+		meshBatchAllocations++;
+#endif
 		vertexArrayObjectID = 0;
 		vertexBufferID = 0;
 		indexBufferID = 0;
@@ -328,6 +347,9 @@ namespace spehs
 	}
 	MeshBatch::MeshBatch(const unsigned int& _batchSizeCheck, const int &_shader, const GLuint &_textureID, const GLenum &_drawMode, const bool _blending, const float &_lineWidth)
 	{
+#ifdef _DEBUG
+		meshBatchAllocations++;
+#endif
 		vertexArrayObjectID = 0;
 		vertexBufferID = 0;
 		indexBufferID = 0;
@@ -351,6 +373,9 @@ namespace spehs
 	}
 	MeshBatch::~MeshBatch()
 	{
+#ifdef _DEBUG
+		meshBatchDeallocations++;
+#endif
 		clearGPUBuffers();
 	}
 

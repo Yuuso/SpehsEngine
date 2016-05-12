@@ -14,10 +14,18 @@
 #define GLM_FORCE_RADIANS
 
 
+int64_t meshAllocations;
+int64_t meshDeallocations;
+
+
 namespace spehs
 {
 	Mesh::Mesh()
 	{
+#ifdef _DEBUG
+		meshAllocations++;
+#endif
+
 		textureDataID = 0;
 		readyForDelete = false;
 		renderState = true;
@@ -43,6 +51,9 @@ namespace spehs
 	}
 	Mesh::~Mesh()
 	{
+#ifdef _DEBUG
+		meshDeallocations++;
+#endif
 	}
 
 

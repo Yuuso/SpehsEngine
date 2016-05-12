@@ -8,10 +8,18 @@
 #include <GL/glew.h>
 
 
+int64_t primitiveAllocations;
+int64_t primitiveDeallocations;
+
+
 namespace spehs
 {
 	Primitive::Primitive()
 	{
+#ifdef _DEBUG
+		primitiveAllocations++;
+#endif
+
 		blending = false;
 		cameraMatrixState = true;
 		readyForDelete = false;
@@ -32,6 +40,9 @@ namespace spehs
 	}
 	Primitive::~Primitive()
 	{
+#ifdef _DEBUG
+		primitiveDeallocations++;
+#endif
 	}
 
 	void Primitive::destroy()

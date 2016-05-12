@@ -223,9 +223,6 @@ namespace spehs
 								char breakpoint = 0;
 							}
 						}
-
-						delete collisionPoint;
-						collisionPoint = nullptr;
 					}
 				}
 			}

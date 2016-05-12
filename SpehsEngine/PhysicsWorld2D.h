@@ -3,6 +3,7 @@
 
 #include <glm/vec2.hpp>
 #include <vector>
+#include <memory>
 
 
 namespace spehs
@@ -39,7 +40,7 @@ namespace spehs
 
 		bool useGravity;
 
-		CollisionPoint* collisionPoint;
+		std::shared_ptr<CollisionPoint> collisionPoint;
 		std::vector<RigidBody2D*> bodies;
 		glm::vec2 gravity;
 	};

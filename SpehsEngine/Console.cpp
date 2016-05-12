@@ -20,6 +20,16 @@
 #define CONSOLE_TEXT_EXECUTED_BIT			0x0004
 extern int64_t guiRectangleAllocations;
 extern int64_t guiRectangleDeallocations;
+extern int64_t primitiveAllocations;
+extern int64_t primitiveDeallocations;
+extern int64_t meshAllocations;
+extern int64_t meshDeallocations;
+extern int64_t primitiveBatchAllocations;
+extern int64_t primitiveBatchDeallocations;
+extern int64_t meshBatchAllocations;
+extern int64_t meshBatchDeallocations;
+extern int64_t collisionPointAllocations;
+extern int64_t collisionPointDeallocations;
 typedef std::lock_guard<std::recursive_mutex> LockGuardRecursive;
 
 
@@ -568,7 +578,11 @@ namespace spehs
 					log("Spehs Engine select memory allocations:", color * 0.75f);
 					log("Remaining allocations / Total (runtime) allocations", color);
 					log("GUI Rectangles: " + std::to_string(guiRectangleAllocations - guiRectangleDeallocations) + "/" + std::to_string(guiRectangleAllocations), color);
-					//log("Primitive batches: " + std::to_string(primitiveBatchAllocations - primitiveBatchDeallocations) + "/" + std::to_string(primitiveBatchAllocations), color);
+					log("Primitives: " + std::to_string(primitiveAllocations - primitiveDeallocations) + "/" + std::to_string(primitiveAllocations), color);
+					log("Meshes: " + std::to_string(meshAllocations - meshDeallocations) + "/" + std::to_string(meshAllocations), color);
+					log("PrimitiveBatches: " + std::to_string(primitiveBatchAllocations - primitiveBatchDeallocations) + "/" + std::to_string(primitiveBatchAllocations), color);
+					log("MeshBatches: " + std::to_string(meshBatchAllocations - meshBatchDeallocations) + "/" + std::to_string(meshBatchAllocations), color);
+					log("CollisionPoints: " + std::to_string(collisionPointAllocations - collisionPointDeallocations) + "/" + std::to_string(collisionPointAllocations), color);
 					log("-------------------", color);
 					return;
 				}

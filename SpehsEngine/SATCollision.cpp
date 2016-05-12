@@ -8,8 +8,26 @@
 #include "glm/gtx/vector_query.hpp"
 
 
+
+int64_t collisionPointAllocations;
+int64_t collisionPointDeallocations;
+
+
 namespace spehs
 {
+	CollisionPoint::CollisionPoint()
+	{
+#ifdef _DEBUG
+		collisionPointAllocations++;
+#endif
+	}
+	CollisionPoint::~CollisionPoint()
+	{
+#ifdef _DEBUG
+		collisionPointDeallocations++;
+#endif
+	}
+
 	Projection projectPolygon(const glm::vec2& _axis, Vertex* _vertexArray, const unsigned int _size)
 	{
 		float min = glm::dot(_axis, glm::vec2(_vertexArray[0].position.x, _vertexArray[0].position.y));
@@ -117,8 +135,7 @@ namespace spehs
 
 		return (r >= 0 && r <= 1) && (s >= 0 && s <= 1);
 	}
-
-
+	
 	
 #pragma region BOOL COLLISIONS
 	bool SATCollision(Vertex* _vertexArray1, const unsigned int _size1, Vertex* _vertexArray2, const unsigned int _size2)
@@ -297,7 +314,7 @@ namespace spehs
 
 	
 #pragma region COLLISIONPOINT COLLISIONS
-	CollisionPoint* SATMTVCollision(Vertex* _vertexArray1, const unsigned int _size1, Vertex* _vertexArray2, const unsigned int _size2)
+	std::shared_ptr<CollisionPoint> SATMTVCollision(Vertex* _vertexArray1, const unsigned int _size1, Vertex* _vertexArray2, const unsigned int _size2)
 	{
 		float overlap = FLT_MAX;
 		glm::vec2 smallestAxis;
@@ -360,7 +377,7 @@ namespace spehs
 
 		//Here we know that no separating axis was found and there is a collision
 		//Calculate collision point
-		CollisionPoint* result = new CollisionPoint;
+		std::shared_ptr<CollisionPoint> result(new CollisionPoint);
 		result->MTV = smallestAxis * abs(overlap);
 		
 		//Recalculate all axes without normalization
@@ -426,7 +443,7 @@ namespace spehs
 		delete [] axis2;
 		return result;
 	}
-	CollisionPoint* SATMTVCollision(Position* _vertexArray1, const unsigned int _size1, Position* _vertexArray2, const unsigned int _size2)
+	std::shared_ptr<CollisionPoint> SATMTVCollision(Position* _vertexArray1, const unsigned int _size1, Position* _vertexArray2, const unsigned int _size2)
 	{
 		float overlap = FLT_MAX;
 		glm::vec2 smallestAxis;
@@ -489,7 +506,7 @@ namespace spehs
 
 		//Here we know that no separating axis was found and there is a collision
 		//Calculate collision point
-		CollisionPoint* result = new CollisionPoint;
+		std::shared_ptr<CollisionPoint> result(new CollisionPoint);
 		result->MTV = smallestAxis * abs(overlap);
 
 		//Recalculate all axes without normalization
@@ -555,7 +572,7 @@ namespace spehs
 		delete [] axis2;
 		return result;
 	}
-	CollisionPoint* SATMTVCollision(Vertex* _vertexArray, const unsigned int _size, const glm::vec2& _circleCenterPoint, const float _circleRadius)
+	std::shared_ptr<CollisionPoint> SATMTVCollision(Vertex* _vertexArray, const unsigned int _size, const glm::vec2& _circleCenterPoint, const float _circleRadius)
 	{
 		float overlap = FLT_MAX;
 		glm::vec2 smallestAxis;
@@ -610,7 +627,7 @@ namespace spehs
 
 		//Here we know that no separating axis was found and there is a collision
 		//Calculate collision point
-		CollisionPoint* result = new CollisionPoint;
+		std::shared_ptr<CollisionPoint> result(new CollisionPoint);
 		result->MTV = glm::normalize(smallestAxis) * abs(overlap);
 		
 		//Recalculate all axes without normalizing
@@ -664,7 +681,7 @@ namespace spehs
 		delete [] axis1;
 		return result;
 	}
-	CollisionPoint* SATMTVCollision(Position* _vertexArray, const unsigned int _size, const glm::vec2& _circleCenterPoint, const float _circleRadius)
+	std::shared_ptr<CollisionPoint> SATMTVCollision(Position* _vertexArray, const unsigned int _size, const glm::vec2& _circleCenterPoint, const float _circleRadius)
 	{
 		float overlap = FLT_MAX;
 		glm::vec2 smallestAxis;
@@ -719,7 +736,7 @@ namespace spehs
 
 		//Here we know that no separating axis was found and there is a collision
 		//Calculate collision point
-		CollisionPoint* result = new CollisionPoint;
+		std::shared_ptr<CollisionPoint> result(new CollisionPoint);
 		result->MTV = glm::normalize(smallestAxis) * abs(overlap);
 
 		//Recalculate all axes without normalizing
@@ -773,11 +790,11 @@ namespace spehs
 		delete [] axis1;
 		return result;
 	}
-	CollisionPoint* CircleMTVCollision(const glm::vec2& _circleCenterPoint1, const float _circleRadius1, const glm::vec2& _circleCenterPoint2, const float _circleRadius2)
+	std::shared_ptr<CollisionPoint> CircleMTVCollision(const glm::vec2& _circleCenterPoint1, const float _circleRadius1, const glm::vec2& _circleCenterPoint2, const float _circleRadius2)
 	{
 		if (glm::distance(_circleCenterPoint1, _circleCenterPoint2) < (_circleRadius1 + _circleRadius2))
 		{
-			CollisionPoint* result = new CollisionPoint;
+			std::shared_ptr<CollisionPoint> result(new CollisionPoint);
 			if (_circleCenterPoint1 == _circleCenterPoint2) //Can't normalize 0 vectors
 			{
 				result->MTV = glm::vec2(1.0f, 0.0f) *(glm::distance(_circleCenterPoint1, _circleCenterPoint2) - (_circleRadius1 + _circleRadius2));
