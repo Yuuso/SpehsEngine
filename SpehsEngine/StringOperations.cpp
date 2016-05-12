@@ -1,4 +1,6 @@
+#include <string>
 #include <stdint.h>
+#include "Console.h"
 #include "BitwiseOperations.h"
 #include "StringOperations.h"
 
@@ -96,5 +98,21 @@ namespace spehs
 			intValue *= -1;
 
 		return intValue;
+	}
+
+	std::string toString(float value, int precision)
+	{
+#ifdef _DEBUG
+		if (precision > 6)	spehs::console::error(__FUNCTION__" precision too high! Maximum precision 6!");
+#endif
+		std::string str(std::to_string(value));
+		for (unsigned i = 0; i < str.size(); i++)
+		{
+			if (str[i] == '.')
+			{
+				str.resize(i + 1 + precision);
+				return str;
+			}
+		}
 	}
 }
