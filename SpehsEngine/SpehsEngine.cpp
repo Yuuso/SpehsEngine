@@ -20,9 +20,13 @@
 #include <GL/glew.h>
 
 
-
 namespace spehs
 {
+	namespace rng
+	{
+		extern void initializeRNG();
+	}
+
 	int initialize(std::string _windowName, ApplicationData* customApplicationDataInstance)
 	{
 		if (SDL_Init(SDL_INIT_VIDEO) < 0)
@@ -71,8 +75,8 @@ namespace spehs
 		inputManager->initialize();
 		textureManager = new TextureManager();
 		modelManager = new ModelManager();
-		rng = new RNG();
 		shaderManager = new ShaderManager();
+		rng::initializeRNG();
 		console::initialize();
 
 		checkOpenGLErrors(__FILE__, __LINE__);
@@ -88,7 +92,6 @@ namespace spehs
 		inputManager->uninitialize();
 		delete inputManager;
 		delete textureManager;
-		delete rng;
 		delete shaderManager;
 		delete modelManager;
 		console::unitialize();

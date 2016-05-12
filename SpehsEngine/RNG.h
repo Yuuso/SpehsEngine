@@ -1,3 +1,4 @@
+
 #pragma once
 
 #include <random>
@@ -6,73 +7,84 @@
 
 namespace spehs
 {
-	class RNG
+	namespace rng
 	{
-	public:
-		RNG();
-		RNG(unsigned int _initSeed);
-		~RNG();
-
-		//Pseudorandom Number Generation = Same seed always returns the same "random" numbers in the same order			
-		void setSeed(unsigned int _newSeed);
-		unsigned int getSeed();
-		void resetRandomSeedEngine();
-
-		unsigned int mtuirandom();
-		int mtsirandom();
-		float mtfrandom();
-		double mtdrandom();
-
-		int mtirandom(int _min, int _max);
-		float mtfrandom(float _min, float _max);
-		double mtdrandom(double _min, double _max);
-
-		void discardNext(int _amount = 1);
-		unsigned int getMax();
-		unsigned int getMin();
-
-		//Random Pseudorandom Number Generation
+		//General true random functions
+		int irandom();
+		int irandom(const int _min, const int _max);
+		unsigned int uirandom();
+		unsigned int uirandom(const unsigned int _min, const unsigned int _max);
+		unsigned int uirandom(const unsigned int _min, const unsigned int _max, const unsigned int _maxmin, const unsigned int _minmax);
 		int sirandom();
-		int uirandom();
-		int irandom(int _min, int _max);
-		int irandom(int _min, int _max, int _maxMin, int _minMax); //Exclude range maxMin <-> minMax
+		int sirandom(const int _min, const int _max);
+		int sirandom(const int _min, const int _max, const int _maxmin, const int _minmax);
 		float frandom();
-		float frandom(float _min, float _max);
-		float frandom(float _min, float _max, float _maxMin, float _minMax); //Exclude range maxMin <-> minMax
+		float frandom(const float _min, const float _max);
+		float frandom(const float _min, const float _max, const float _maxmin, const float _minmax);
 		double drandom();
-		double drandom(double _min, double _max);
-		double drandom(double _min, double _max, double _maxMin, double _minMax); //Exclude range maxMin <-> minMax
+		double drandom(const double& _min, const double& _max);
+		double drandom(const double& _min, const double& _max, const double& _maxmin, const double& _minmax);
+		
 
-	private:
-		void initialize();
-		unsigned int seed;
-		std::mt19937 MTEngine; //Used for pseudo-random numbers
-		std::mt19937 randomMTEngine; //Used for random numbers
+		//Pseudo random classes
+		class PRNG32
+		{
+		public:
+			PRNG32();
+			PRNG32(const uint_fast32_t _initSeed);
+			~PRNG32();
+		
+			void setSeed(const uint_fast32_t _newSeed);
+			uint_fast32_t getSeed() const;
+			void reset();
 
-		std::uniform_int_distribution<int> intDist;
-		std::uniform_real_distribution<float> floatDist;
-		std::uniform_real_distribution<double> doubleDist;
-	};
+			uint_fast32_t uirandom();
+			uint_fast32_t uirandom(const unsigned int _min, const unsigned int _max);
+			uint_fast32_t uirandom(const unsigned int _min, const unsigned int _max, const unsigned int _maxmin, const unsigned int _minmax);
+			int_fast32_t sirandom();
+			int_fast32_t sirandom(const int _min, const int _max);
+			int_fast32_t sirandom(const int _min, const int _max, const int _maxmin, const int _minmax);
+			float frandom();
+			float frandom(const float _min, const float _max);
+			float frandom(const float _min, const float _max, const float _maxmin, const float _minmax);
+			double drandom();
+			double drandom(const double& _min, const double& _max);
+			double drandom(const double& _min, const double& _max, const double& _maxmin, const double& _minmax);
 
-	//64-bit version of the PRNG
-	class RNG_64
-	{
-	public:
-		RNG_64();
-		RNG_64(uint_fast64_t _seed);
-		~RNG_64();
+			void discardNext(const int _amount = 1);
+			uint_fast32_t getMin() const;
+			uint_fast32_t getMax() const;
+			
+		private:
+			uint_fast32_t seed;
+			std::mt19937 MTEngine;
+		};
 
-		void setSeed(uint_fast64_t _newSeed);
-		uint_fast64_t getSeed();
-		void resetRandomSeedEngine();
-		uint_fast64_t mtrandom();
-		void discardNext(int _amount = 1);
-		uint_fast64_t getMax();
-		uint_fast64_t getMin();
+		class PRNG64
+		{
+		public:
+			PRNG64();
+			PRNG64(const uint_fast64_t& _seed);
+			~PRNG64();
 
-	private:
-		std::mt19937_64 MTEngine;
-		uint_fast64_t seed;
-	};
+			void setSeed(const uint_fast64_t& _newSeed);
+			uint_fast64_t getSeed() const;
+			void reset();
+
+			uint_fast64_t uirandom();
+			uint_fast64_t uirandom(const unsigned long long& _min, const unsigned long long& _max);
+			uint_fast64_t uirandom(const unsigned long long& _min, const unsigned long long& _max, const unsigned long long& _maxmin, const unsigned long long& _minmax);
+			int_fast64_t sirandom();
+			int_fast64_t sirandom(const long long& _min, const long long& _max);
+			int_fast64_t sirandom(const long long& _min, const long long& _max, const long long& _maxmin, const long long& _minmax);
+
+			void discardNext(const int _amount = 1);
+			uint_fast64_t getMin() const;
+			uint_fast64_t getMax() const;
+
+		private:
+			uint_fast64_t seed;
+			std::mt19937_64 MTEngine;
+		};
+	}
 }
-extern spehs::RNG* rng;

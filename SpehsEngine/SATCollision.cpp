@@ -361,7 +361,17 @@ namespace spehs
 		//Here we know that no separating axis was found and there is a collision
 		//Calculate collision point
 		CollisionPoint* result = new CollisionPoint;
-		result->MTV = glm::normalize(smallestAxis) * abs(overlap);
+		result->MTV = smallestAxis * abs(overlap);
+		
+		//Recalculate all axes without normalization
+		for (unsigned int i = 0; i < _size1; i++)
+		{
+			axis1[i] = getAxis(_vertexArray1, _size1, i);
+		}
+		for (unsigned int i = 0; i < _size2; i++)
+		{
+			axis2[i] = getAxis(_vertexArray2, _size2, i);
+		}
 
 		glm::vec2 testPoint;
 		for (unsigned int i = 0; i < _size1; i++)
@@ -385,13 +395,13 @@ namespace spehs
 			}
 		}
 
-
 		for (unsigned int i = 0; i < _size2; i++)
 		{
+			testPoint = glm::vec2(_vertexArray2[i].position.x, _vertexArray2[i].position.y);
 			//Find which points are colliding
-			if (SATCollision(_vertexArray1, _size1, glm::vec2(_vertexArray2[i].position.x, _vertexArray2[i].position.y), 0.0f))
+			if (SATCollision(_vertexArray1, _size1, testPoint, 0.0f))
 			{
-				result->point.push_back(glm::vec2(_vertexArray2[i].position.x, _vertexArray2[i].position.y));
+				result->point.push_back(testPoint);
 
 				//Find normal
 				glm::vec2 pointVector = result->point.back() - getCenter(_vertexArray1, _size1);
@@ -407,6 +417,10 @@ namespace spehs
 			}
 		}
 
+		for (unsigned int i = 0; i < result->normal.size(); i++)
+		{
+			result->normal[i] = glm::normalize(result->normal[i]);
+		}
 
 		delete [] axis1;
 		delete [] axis2;
@@ -420,22 +434,13 @@ namespace spehs
 		glm::vec2* axis2 = new glm::vec2[_size2];
 
 		//Get all axes
-		for (int i = 0; i < _size1; i++)
+		for (unsigned int i = 0; i < _size1; i++)
 		{
-			axis1[i] = getAxis(_vertexArray1, _size1, i);
+			axis1[i] = glm::normalize(getAxis(_vertexArray1, _size1, i));
 		}
-		for (int i = 0; i < _size2; i++)
+		for (unsigned int i = 0; i < _size2; i++)
 		{
-			axis2[i] = getAxis(_vertexArray2, _size2, i);
-		}
-		//Normalize all axes
-		for (int i = 0; i < _size1; i++)
-		{
-			axis1[i] = glm::normalize(axis1[i]);
-		}
-		for (int i = 0; i < _size2; i++)
-		{
-			axis2[i] = glm::normalize(axis2[i]);
+			axis2[i] = glm::normalize(getAxis(_vertexArray2, _size2, i));
 		}
 
 		//Loop through axes2
@@ -445,8 +450,8 @@ namespace spehs
 			Projection p2 = projectPolygon(axis2[i], _vertexArray2, _size2);
 			if (!p1.overlap(p2))
 			{
-				delete axis1;
-				delete axis2;
+				delete [] axis1;
+				delete [] axis2;
 				return nullptr;
 			}
 			else
@@ -459,15 +464,16 @@ namespace spehs
 				}
 			}
 		}
+
 		//Loop through axes1
-		for (int i = 0; i < _size1; i++)
+		for (unsigned int i = 0; i < _size1; i++)
 		{
 			Projection p1 = projectPolygon(axis1[i], _vertexArray1, _size1);
 			Projection p2 = projectPolygon(axis1[i], _vertexArray2, _size2);
 			if (!p1.overlap(p2))
 			{
-				delete axis1;
-				delete axis2;
+				delete [] axis1;
+				delete [] axis2;
 				return nullptr;
 			}
 			else
@@ -480,52 +486,71 @@ namespace spehs
 				}
 			}
 		}
+
 		//Here we know that no separating axis was found and there is a collision
 		//Calculate collision point
 		CollisionPoint* result = new CollisionPoint;
-		result->MTV = glm::normalize(smallestAxis) * abs(overlap);
-		for (unsigned i = 0; i < _size1; i++)
+		result->MTV = smallestAxis * abs(overlap);
+
+		//Recalculate all axes without normalization
+		for (unsigned int i = 0; i < _size1; i++)
 		{
-			if (SATCollision(_vertexArray2, _size2, glm::vec2(_vertexArray1[i].x, _vertexArray1[i].y), 0.1f))
+			axis1[i] = getAxis(_vertexArray1, _size1, i);
+		}
+		for (unsigned int i = 0; i < _size2; i++)
+		{
+			axis2[i] = getAxis(_vertexArray2, _size2, i);
+		}
+
+		glm::vec2 testPoint;
+		for (unsigned int i = 0; i < _size1; i++)
+		{
+			testPoint = glm::vec2(_vertexArray1[i].x, _vertexArray1[i].y);
+			//Find which points are colliding
+			if (SATCollision(_vertexArray2, _size2, testPoint, 0.0f))
 			{
-				result->point.push_back(glm::vec2(_vertexArray1[i].x, _vertexArray1[i].y));
+				result->point.push_back(testPoint);
+
 				//Find normal
-				glm::vec2 pointVector = result->point.back() - getCenter(_vertexArray1, _size1);
+				glm::vec2 pointVector = result->point.back() - getCenter(_vertexArray2, _size2);
 				result->normal.push_back(axis2[0]);
 				for (unsigned i = 1; i < _size2; i++)
 				{
-					if (glm::dot(pointVector, axis2[i]) < glm::dot(pointVector, result->normal.back()))
+					if (glm::dot(pointVector, axis2[i]) > glm::dot(pointVector, result->normal.back()))
 					{
 						result->normal.back() = axis2[i];
 					}
 				}
 			}
 		}
-		for (unsigned i = 0; i < _size2; i++)
+
+		for (unsigned int i = 0; i < _size2; i++)
 		{
-			if (SATCollision(_vertexArray1, _size1, glm::vec2(_vertexArray2[i].x, _vertexArray2[i].y), 0.1f))
+			testPoint = glm::vec2(_vertexArray2[i].x, _vertexArray2[i].y);
+			//Find which points are colliding
+			if (SATCollision(_vertexArray1, _size1, testPoint, 0.0f))
 			{
-				result->point.push_back(glm::vec2(_vertexArray2[i].x, _vertexArray2[i].y));
+				result->point.push_back(testPoint);
+
 				//Find normal
 				glm::vec2 pointVector = result->point.back() - getCenter(_vertexArray1, _size1);
 				result->normal.push_back(axis1[0]);
 				for (unsigned i = 1; i < _size1; i++)
 				{
-					if (glm::dot(pointVector, axis1[i]) < glm::dot(pointVector, result->normal.back()))
+					if (glm::dot(pointVector, axis1[i]) > glm::dot(pointVector, result->normal.back()))
 					{
 						result->normal.back() = axis1[i];
 					}
 				}
+				result->normal.back() = -result->normal.back(); //?
 			}
 		}
-//#ifdef _DEBUG
-		if (result->point.empty())
+
+		for (unsigned int i = 0; i < result->normal.size(); i++)
 		{
-			delete result;
-			return nullptr;
-			spehs::console::warning(__FUNCTION__" no collision point was detected!");
+			result->normal[i] = glm::normalize(result->normal[i]);
 		}
-//#endif
+
 		delete [] axis1;
 		delete [] axis2;
 		return result;
@@ -540,16 +565,9 @@ namespace spehs
 		//Get all axes
 		for (int i = 0; i < _size; i++)
 		{
-			axis1[i] = getAxis(_vertexArray, _size, i);
+			axis1[i] = glm::normalize(getAxis(_vertexArray, _size, i));
 		}
-		axis2 = getCircleAxis(_vertexArray, _size, _circleCenterPoint);
-
-		//Normalize all axes
-		for (int i = 0; i < _size; i++)
-		{
-			axis1[i] = glm::normalize(axis1[i]);
-		}
-		axis2 = glm::normalize(axis2);
+		axis2 = glm::normalize(getCircleAxis(_vertexArray, _size, _circleCenterPoint));
 
 		//Go through axes2
 		Projection p1 = projectPolygon(axis2, _vertexArray, _size);
@@ -568,6 +586,7 @@ namespace spehs
 				smallestAxis = axis2;
 			}
 		}
+
 		//Loop through axes1
 		for (int i = 0; i < _size; i++)
 		{
@@ -588,27 +607,60 @@ namespace spehs
 				}
 			}
 		}
+
 		//Here we know that no separating axis was found and there is a collision
 		//Calculate collision point
 		CollisionPoint* result = new CollisionPoint;
 		result->MTV = glm::normalize(smallestAxis) * abs(overlap);
-		for (unsigned i = 0; i < _size; i++)
+		
+		//Recalculate all axes without normalizing
+		for (int i = 0; i < _size; i++)
 		{
-			if (CircleCollision(_circleCenterPoint, _circleRadius, glm::vec2(_vertexArray[i].position.x, _vertexArray[i].position.y), 0.0f))
+			axis1[i] = getAxis(_vertexArray, _size, i);
+		}
+		axis2 = getCircleAxis(_vertexArray, _size, _circleCenterPoint);
+
+
+		glm::vec2 testPoint;
+		for (unsigned int i = 0; i < _size; i++)
+		{
+			testPoint = glm::vec2(_vertexArray[i].position.x, _vertexArray[i].position.y);
+			//Find which points are colliding
+			if (CircleCollision(_circleCenterPoint, _circleRadius, testPoint, 0.0f))
 			{
-				//result->point = glm::vec2(_vertexArray[i].position.x, _vertexArray[i].position.y);
-				return result;
+				result->point.push_back(testPoint);
+
+				//Find normal
+				result->normal.push_back(glm::vec2(testPoint - _circleCenterPoint));
+				result->normal.back() = -result->normal.back(); //?
 			}
 		}
-		//TODO: ! Create a new normalized vector that is from the center of the cirlce to the center of the polygon and scale it with radius!
-		//This is not completely correct>
-		result->point.push_back(glm::vec2());
-		result->normal.push_back(glm::vec2());
-		if (glm::distance(_circleCenterPoint + smallestAxis, getCenter(_vertexArray, _size)) < glm::distance(_circleCenterPoint - smallestAxis, getCenter(_vertexArray, _size)))
-			result->point[0] = _circleCenterPoint + smallestAxis * _circleRadius;
-		else
-			result->point[0] = _circleCenterPoint - smallestAxis * _circleRadius;
-		result->normal[0] = result->MTV;
+
+		glm::vec2 circlePoint = glm::normalize(getCenter(_vertexArray, _size) - _circleCenterPoint);
+		circlePoint = _circleCenterPoint + circlePoint * _circleRadius;
+		//Find which points are colliding
+		if (SATCollision(_vertexArray, _size, circlePoint, 0.0f))
+		{
+			result->point.push_back(circlePoint);
+
+			//Find normal
+			glm::vec2 pointVector = result->point.back() - getCenter(_vertexArray, _size);
+			result->normal.push_back(axis1[0]);
+			for (unsigned i = 1; i < _size; i++)
+			{
+				if (glm::dot(pointVector, axis1[i]) > glm::dot(pointVector, result->normal.back()))
+				{
+					result->normal.back() = axis1[i];
+				}
+			}
+		}
+
+		//Normalize normals
+		for (unsigned int i = 0; i < result->normal.size(); i++)
+		{
+			result->normal[i] = glm::normalize(result->normal[i]);
+		}
+
 		delete [] axis1;
 		return result;
 	}
@@ -622,16 +674,9 @@ namespace spehs
 		//Get all axes
 		for (int i = 0; i < _size; i++)
 		{
-			axis1[i] = getAxis(_vertexArray, _size, i);
+			axis1[i] = glm::normalize(getAxis(_vertexArray, _size, i));
 		}
-		axis2 = getCircleAxis(_vertexArray, _size, _circleCenterPoint);
-
-		//Normalize all axes
-		for (int i = 0; i < _size; i++)
-		{
-			axis1[i] = glm::normalize(axis1[i]);
-		}
-		axis2 = glm::normalize(axis2);
+		axis2 = glm::normalize(getCircleAxis(_vertexArray, _size, _circleCenterPoint));
 
 		//Go through axes2
 		Projection p1 = projectPolygon(axis2, _vertexArray, _size);
@@ -650,6 +695,7 @@ namespace spehs
 				smallestAxis = axis2;
 			}
 		}
+
 		//Loop through axes1
 		for (int i = 0; i < _size; i++)
 		{
@@ -670,27 +716,60 @@ namespace spehs
 				}
 			}
 		}
+
 		//Here we know that no separating axis was found and there is a collision
 		//Calculate collision point
 		CollisionPoint* result = new CollisionPoint;
 		result->MTV = glm::normalize(smallestAxis) * abs(overlap);
-		for (unsigned i = 0; i < _size; i++)
+
+		//Recalculate all axes without normalizing
+		for (int i = 0; i < _size; i++)
 		{
-			if (CircleCollision(_circleCenterPoint, _circleRadius, glm::vec2(_vertexArray[i].x, _vertexArray[i].y), 0.0f))
+			axis1[i] = getAxis(_vertexArray, _size, i);
+		}
+		axis2 = getCircleAxis(_vertexArray, _size, _circleCenterPoint);
+
+
+		glm::vec2 testPoint;
+		for (unsigned int i = 0; i < _size; i++)
+		{
+			testPoint = glm::vec2(_vertexArray[i].x, _vertexArray[i].y);
+			//Find which points are colliding
+			if (CircleCollision(_circleCenterPoint, _circleRadius, testPoint, 0.0f))
 			{
-				result->point.push_back(glm::vec2(_vertexArray[i].x, _vertexArray[i].y));
+				result->point.push_back(testPoint);
+
+				//Find normal
+				result->normal.push_back(glm::vec2(testPoint - _circleCenterPoint));
+				result->normal.back() = -result->normal.back(); //?
 			}
 		}
-		//result->point = _circleCenterPoint + smallestAxis * _circleRadius;
-		result->normal.push_back(result->MTV);
-//#ifdef _DEBUG
-		if (result->point.empty())
+
+		glm::vec2 circlePoint = glm::normalize(getCenter(_vertexArray, _size) - _circleCenterPoint);
+		circlePoint = _circleCenterPoint + circlePoint * _circleRadius;
+		//Find which points are colliding
+		if (SATCollision(_vertexArray, _size, circlePoint, 0.0f))
 		{
-			delete result;
-			return nullptr;
-			spehs::console::warning(__FUNCTION__" no collision point was detected!");
+			result->point.push_back(circlePoint);
+
+			//Find normal
+			glm::vec2 pointVector = result->point.back() - getCenter(_vertexArray, _size);
+			result->normal.push_back(axis1[0]);
+			for (unsigned i = 1; i < _size; i++)
+			{
+				if (glm::dot(pointVector, axis1[i]) > glm::dot(pointVector, result->normal.back()))
+				{
+					result->normal.back() = axis1[i];
+				}
+			}
 		}
-//#endif
+
+		//Normalize normals
+		for (unsigned int i = 0; i < result->normal.size(); i++)
+		{
+			result->normal[i] = glm::normalize(result->normal[i]);
+		}
+
 		delete [] axis1;
 		return result;
 	}
