@@ -13,6 +13,9 @@
 #include "Console.h"
 
 
+#define NEXT_SHADER_INDEX 5
+
+
 typedef int GLint;
 typedef unsigned int GLuint;
 namespace spehs
