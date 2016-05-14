@@ -1,3 +1,4 @@
+
 #include "Window.h"
 #include "Exceptions.h"
 #include "ApplicationData.h"

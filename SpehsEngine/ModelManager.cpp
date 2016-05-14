@@ -9,7 +9,6 @@
 #include <GL/glew.h>
 
 #include <fstream>
-#include <sstream>
 
 
 spehs::ModelManager* modelManager;
@@ -128,12 +127,30 @@ namespace spehs
 		//Check for special cases
 		if (_filepath == "Cube")
 		{
-			loadCube(_mesh);
+			size_t hash = std::hash<std::string>()(_filepath);
+			auto it = modelDataMap.find(hash);
+			if (it == modelDataMap.end())
+			{
+				//Data not found ->
+				//Load new data
+				loadOBJFromStringStream(loadCube(), hash);
+				it = modelDataMap.find(hash);
+			}
+			it->second->loadFromData(_mesh->vertexArray, _mesh->elementArray);
 			return;
 		}
-		else if (_filepath == "ICube")
+		else if (_filepath == "InvertedCube")
 		{
-			loadInvertedCube(_mesh);
+			size_t hash = std::hash<std::string>()(_filepath);
+			auto it = modelDataMap.find(hash);
+			if (it == modelDataMap.end())
+			{
+				//Data not found ->
+				//Load new data
+				loadOBJFromStringStream(loadInvertedCube(), hash);
+				it = modelDataMap.find(hash);
+			}
+			it->second->loadFromData(_mesh->vertexArray, _mesh->elementArray);
 			return;
 		}
 
@@ -197,10 +214,121 @@ namespace spehs
 			return;
 		}
 
+		loadOBJFromFile(file, std::hash<std::string>()(_filepath));
+
+		file.close();
+	}
+
+	void ModelManager::removeModelData(const std::string& _filepath)
+	{
+		size_t hash = std::hash<std::string>()(_filepath);
+		auto it = modelDataMap.find(hash);
+		if (it == modelDataMap.end())
+		{
+			console::error("Couldn't find model data: " + _filepath);
+			return;
+		}
+		delete it->second;
+		modelDataMap.erase(hash);
+	}
+
+	void ModelManager::removeModelData(const size_t& _hash)
+	{
+		auto it = modelDataMap.find(_hash);
+		if (it == modelDataMap.end())
+		{
+			console::error("Couldn't find model data: " + std::to_string(_hash));
+			return;
+		}
+		delete it->second;
+		modelDataMap.erase(_hash);
+	}
+
+	void ModelManager::clearAllModelData()
+	{
+		for (auto &it : modelDataMap)
+		{
+			delete it.second;
+		}
+		modelDataMap.clear();
+	}
+
+	std::istringstream ModelManager::loadCube()
+	{
+		std::string file =
+		{
+			"v 1.000000 -1.000000 -1.000000\n"
+			"v 1.000000 -1.000000 1.000000\n"
+			"v -1.000000 -1.000000 1.000000\n"
+			"v -1.000000 -1.000000 -1.000000\n"
+			"v 1.000000 1.000000 -1.000000\n"
+			"v 1.000000 1.000000 1.000000\n"
+			"v -1.000000 1.000000 1.000000\n"
+			"v -1.000000 1.000000 -1.000000\n"
+			"vn 0.000000 1.000000 0.000000\n"
+			"vn 0.000000 -1.000000 0.000000\n"
+			"vn -1.000000 -0.000000 -0.000000\n"
+			"vn 0.000000 -0.000000 -1.000000\n"
+			"vn 1.000000 0.000000 0.000000\n"
+			"vn -0.000000 -0.000000 1.000000\n"
+			"f 4//1 3//1 2//1\n"
+			"f 6//2 7//2 8//2\n"
+			"f 2//3 6//3 5//3\n"
+			"f 3//4 7//4 6//4\n"
+			"f 3//5 4//5 8//5\n"
+			"f 8//6 4//6 1//6\n"
+			"f 1//1 4//1 2//1\n"
+			"f 5//2 6//2 8//2\n"
+			"f 1//3 2//3 5//3\n"
+			"f 2//4 3//4 6//4\n"
+			"f 7//5 3//5 8//5\n"
+			"f 5//6 8//6 1//6\n"
+		};
+		return std::istringstream(file);
+	}
+
+	std::istringstream ModelManager::loadInvertedCube()
+	{
+		std::string file =
+		{
+			"v 1.000000 -1.000000 -1.000000\n"
+			"v 1.000000 -1.000000 1.000000\n"
+			"v -1.000000 -1.000000 1.000000\n"
+			"v -1.000000 -1.000000 -1.000000\n"
+			"v 1.000000 1.000000 -1.000000\n"
+			"v 1.000000 1.000000 1.000000\n"
+			"v -1.000000 1.000000 1.000000\n"
+			"v -1.000000 1.000000 -1.000000\n"
+			"vn 0.000000 1.000000 0.000000\n"
+			"vn 0.000000 -1.000000 0.000000\n"
+			"vn -1.000000 -0.000000 -0.000000\n"
+			"vn 0.000000 -0.000000 -1.000000\n"
+			"vn 1.000000 0.000000 0.000000\n"
+			"vn -0.000000 -0.000000 1.000000\n"
+			"f 4//1 3//1 2//1\n"
+			"f 6//2 7//2 8//2\n"
+			"f 2//3 6//3 5//3\n"
+			"f 3//4 7//4 6//4\n"
+			"f 3//5 4//5 8//5\n"
+			"f 8//6 4//6 1//6\n"
+			"f 1//1 4//1 2//1\n"
+			"f 5//2 6//2 8//2\n"
+			"f 1//3 2//3 5//3\n"
+			"f 2//4 3//4 6//4\n"
+			"f 7//5 3//5 8//5\n"
+			"f 5//6 8//6 1//6\n"
+		};
+		return std::istringstream(file);
+	}
+
+
+	void ModelManager::loadOBJFromFile(std::ifstream& _data, const size_t& _hash)
+	{
 		ModelData* data = new ModelData();
 		std::string line;
 		std::istringstream stringStream;
-		while (std::getline(file, line))
+
+		while (std::getline(_data, line))
 		{
 			//Vertices
 			if (line.substr(0, 2) == "v ")
@@ -273,169 +401,87 @@ namespace spehs
 				}
 			}
 		}
-		size_t hash = std::hash<std::string>()(_filepath);
-		modelDataMap.insert(std::pair<size_t, ModelData*>(hash, data));
+		modelDataMap.insert(std::pair<size_t, ModelData*>(_hash, data));
 	}
-	
-	void ModelManager::loadCube(spehs::Mesh* _mesh)
+	void ModelManager::loadOBJFromStringStream(std::istringstream& _data, const size_t& _hash)
 	{
-		//Load a standard cube
-		float size = 1.0f;
-		_mesh->vertexArray.resize(8);
-		_mesh->vertexArray[0] = spehs::Vertex3D(spehs::Position(size, -size, -size));
-		_mesh->vertexArray[1] = spehs::Vertex3D(spehs::Position(size, -size, size));
-		_mesh->vertexArray[2] = spehs::Vertex3D(spehs::Position(-size, -size, size));
-		_mesh->vertexArray[3] = spehs::Vertex3D(spehs::Position(-size, -size, -size));
-		_mesh->vertexArray[4] = spehs::Vertex3D(spehs::Position(size, size, -size));
-		_mesh->vertexArray[5] = spehs::Vertex3D(spehs::Position(size, size, size));
-		_mesh->vertexArray[6] = spehs::Vertex3D(spehs::Position(-size, size, size));
-		_mesh->vertexArray[7] = spehs::Vertex3D(spehs::Position(-size, size, -size));
+		ModelData* data = new ModelData();
+		std::string line;
+		std::istringstream stringStream;
 
-		_mesh->elementArray.resize(3 * 12);
-		_mesh->elementArray[0] = 1;
-		_mesh->elementArray[1] = 2;
-		_mesh->elementArray[2] = 3;
-
-		_mesh->elementArray[3] = 7;
-		_mesh->elementArray[4] = 6;
-		_mesh->elementArray[5] = 5;
-
-		_mesh->elementArray[6] = 4;
-		_mesh->elementArray[7] = 5;
-		_mesh->elementArray[8] = 1;
-
-		_mesh->elementArray[9] = 5;
-		_mesh->elementArray[10] = 6;
-		_mesh->elementArray[11] = 2;
-
-		_mesh->elementArray[12] = 2;
-		_mesh->elementArray[13] = 6;
-		_mesh->elementArray[14] = 7;
-
-		_mesh->elementArray[15] = 0;
-		_mesh->elementArray[16] = 3;
-		_mesh->elementArray[17] = 7;
-
-		_mesh->elementArray[18] = 0;
-		_mesh->elementArray[19] = 1;
-		_mesh->elementArray[20] = 3;
-
-		_mesh->elementArray[21] = 4;
-		_mesh->elementArray[22] = 7;
-		_mesh->elementArray[23] = 5;
-
-		_mesh->elementArray[24] = 0;
-		_mesh->elementArray[25] = 4;
-		_mesh->elementArray[26] = 1;
-
-		_mesh->elementArray[27] = 1;
-		_mesh->elementArray[28] = 5;
-		_mesh->elementArray[29] = 2;
-
-		_mesh->elementArray[30] = 3;
-		_mesh->elementArray[31] = 2;
-		_mesh->elementArray[32] = 7;
-
-		_mesh->elementArray[33] = 4;
-		_mesh->elementArray[34] = 0;
-		_mesh->elementArray[35] = 7;
-	}
-
-	void ModelManager::loadInvertedCube(spehs::Mesh* _mesh)
-	{
-		//Load a standard cube
-		float size = 1.0f;
-		_mesh->vertexArray.resize(8);
-		_mesh->vertexArray[0] = spehs::Vertex3D(spehs::Position(size, -size, -size));
-		_mesh->vertexArray[1] = spehs::Vertex3D(spehs::Position(size, -size, size));
-		_mesh->vertexArray[2] = spehs::Vertex3D(spehs::Position(-size, -size, size));
-		_mesh->vertexArray[3] = spehs::Vertex3D(spehs::Position(-size, -size, -size));
-		_mesh->vertexArray[4] = spehs::Vertex3D(spehs::Position(size, size, -size));
-		_mesh->vertexArray[5] = spehs::Vertex3D(spehs::Position(size, size, size));
-		_mesh->vertexArray[6] = spehs::Vertex3D(spehs::Position(-size, size, size));
-		_mesh->vertexArray[7] = spehs::Vertex3D(spehs::Position(-size, size, -size));
-
-		_mesh->elementArray.resize(36);
-		_mesh->elementArray[0] = 3;
-		_mesh->elementArray[1] = 2;
-		_mesh->elementArray[2] = 1;
-
-		_mesh->elementArray[3] = 5;
-		_mesh->elementArray[4] = 6;
-		_mesh->elementArray[5] = 7;
-
-		_mesh->elementArray[6] = 1;
-		_mesh->elementArray[7] = 5;
-		_mesh->elementArray[8] = 4;
-
-		_mesh->elementArray[9] = 2;
-		_mesh->elementArray[10] = 6;
-		_mesh->elementArray[11] = 4;
-
-		_mesh->elementArray[12] = 2;
-		_mesh->elementArray[13] = 3;
-		_mesh->elementArray[14] = 7;
-
-		_mesh->elementArray[15] = 7;
-		_mesh->elementArray[16] = 3;
-		_mesh->elementArray[17] = 0;
-
-		_mesh->elementArray[18] = 0;
-		_mesh->elementArray[19] = 3;
-		_mesh->elementArray[20] = 1;
-
-		_mesh->elementArray[21] = 4;
-		_mesh->elementArray[22] = 5;
-		_mesh->elementArray[23] = 7;
-
-		_mesh->elementArray[24] = 0;
-		_mesh->elementArray[25] = 1;
-		_mesh->elementArray[26] = 4;
-
-		_mesh->elementArray[27] = 1;
-		_mesh->elementArray[28] = 2;
-		_mesh->elementArray[29] = 5;
-
-		_mesh->elementArray[30] = 2;
-		_mesh->elementArray[31] = 3;
-		_mesh->elementArray[32] = 7;
-
-		_mesh->elementArray[33] = 4;
-		_mesh->elementArray[34] = 7;
-		_mesh->elementArray[35] = 0;
-	}
-
-	void ModelManager::removeModelData(const std::string& _filepath)
-	{
-		size_t hash = std::hash<std::string>()(_filepath);
-		auto it = modelDataMap.find(hash);
-		if (it == modelDataMap.end())
+		while (std::getline(_data, line))
 		{
-			console::error("Couldn't find model data: " + _filepath);
-			return;
-		}
-		delete it->second;
-		modelDataMap.erase(hash);
-	}
+			//Vertices
+			if (line.substr(0, 2) == "v ")
+			{
+				stringStream = std::istringstream(line.substr(2));
+				spehs::Position vertex;
+				stringStream >> vertex.x;
+				stringStream >> vertex.y;
+				stringStream >> vertex.z;
+				data->vertices.push_back(spehs::Vertex3D(vertex));
+			}
+			//Normals
+			else if (line.substr(0, 3) == "vn ")
+			{
+				stringStream = std::istringstream(line.substr(3));
+				glm::vec3 normal;
+				stringStream >> normal.x;
+				stringStream >> normal.y;
+				stringStream >> normal.z;
+				data->normals.push_back(normal);
+			}
+			//Texture Coordinates
+			else if (line.substr(0, 3) == "vt ")
+			{
+				stringStream = std::istringstream(line.substr(3));
+				glm::vec2 uv;
+				stringStream >> uv.x;
+				stringStream >> uv.y;
+				data->textureCoordinates.push_back(uv);
+			}
+			//Elements
+			else if (line.substr(0, 2) == "f ")
+			{
+				std::string subString = line.substr(2);
+				GLushort v = 0, u = 0, n = 0;
+				size_t pos;
+				for (unsigned w = 0; w < 3; w++)
+				{
+					for (unsigned i = 0; i < 3; i++)
+					{
+						if (i < 2)
+						{
+							pos = subString.find('/');
+							stringStream = std::istringstream(subString.substr(0, pos));
+						}
+						else
+						{
+							pos = subString.find(' ');
+							stringStream = std::istringstream(subString);
+						}
 
-	void ModelManager::removeModelData(const size_t& _hash)
-	{
-		auto it = modelDataMap.find(_hash);
-		if (it == modelDataMap.end())
-		{
-			console::error("Couldn't find model data: " + std::to_string(_hash));
-			return;
-		}
-		delete it->second;
-		modelDataMap.erase(_hash);
-	}
+						switch (i)
+						{
+						case 0:
+							stringStream >> v;
+							break;
+						case 1:
+							stringStream >> u;
+							break;
+						case 2:
+							stringStream >> n;
+							break;
+						}
 
-	void ModelManager::clearAllModelData()
-	{
-		for (auto &it : modelDataMap)
-		{
-			delete it.second;
+						subString = subString.substr(pos + 1);
+					}
+					data->vertexElements.push_back(v - 1);
+					data->textureElements.push_back(u - 1);
+					data->normalElements.push_back(n - 1);
+				}
+			}
 		}
-		modelDataMap.clear();
+		modelDataMap.insert(std::pair<size_t, ModelData*>(_hash, data));
 	}
 }

@@ -50,6 +50,8 @@ namespace spehs
 		~Joystick();
 		friend class InputManager;
 	};
+
+
 	class InputManager
 	{
 	public:
@@ -69,6 +71,7 @@ namespace spehs
 
 		//Managing mouse
 		void setMouseCoords(int _x, int _y);
+		bool lockMouse(const bool _value);
 
 		//Managing joysticks
 		Joystick* getJoystick(GUID guid, int preferredIndex = 0);
@@ -101,9 +104,10 @@ namespace spehs
 		bool wasKeyDown(unsigned int keyID);
 
 		//Mouse
+		bool mouseLocked = false;
+		int mouseWheelDelta = 0;
 		glm::ivec2 mouseCoords;
 		glm::ivec2 mouseMovement;
-		int mouseWheelDelta = 0;
 		
 		//Joystick(s)
 		void joystickConnected();

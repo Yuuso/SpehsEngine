@@ -39,17 +39,26 @@ namespace spehs
 
 	TextureData* Point::setTexture(const std::string &_texturePath)
 	{
-		textureDataID = textureManager->preloadTexture(_texturePath);
+		TextureData* value = textureManager->getTextureData(_texturePath);
+		textureDataID = value->textureDataID;
 		if (shaderIndex == DefaultPolygon)
 			shaderIndex = DefaultTexture;
-		return textureManager->getTextureData(textureDataID);
+		return value;
 	}
 
 	TextureData* Point::setTexture(const size_t &_textureID)
 	{
-		textureDataID = _textureID;
+		TextureData* value = textureManager->getTextureData(_textureID);
+		textureDataID = value->textureDataID;
 		if (shaderIndex == DefaultPolygon)
 			shaderIndex = DefaultTexture;
-		return textureManager->getTextureData(textureDataID);
+		return value;
+	}
+
+	void Point::setTexture(TextureData* _textureDataPtr)
+	{
+		textureDataID = _textureDataPtr->textureDataID;
+		if (shaderIndex == DefaultPolygon)
+			shaderIndex = DefaultTexture;
 	}
 }

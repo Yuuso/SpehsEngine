@@ -6,6 +6,7 @@
 
 #include <vector>
 #include <string>
+#include <sstream>
 #include <unordered_map>
 
 
@@ -42,15 +43,18 @@ namespace spehs
 		void loadOBJ(const size_t& _hash, spehs::Mesh* _mesh);
 		void preloadOBJ(const std::string& _filepath);
 
-		void loadCube(spehs::Mesh* _mesh);
-		void loadInvertedCube(spehs::Mesh* _mesh); //Index orientation reversed
-
 		void removeModelData(const std::string& _filepath);
 		void removeModelData(const size_t& _hash);
 		void clearAllModelData();
 
 	private:
+		std::istringstream loadCube();
+		std::istringstream loadInvertedCube(); //Index orientation reversed
+
 		std::unordered_map<size_t, ModelData*> modelDataMap;
+
+		void loadOBJFromFile(std::ifstream& _data, const size_t& _hash);
+		void loadOBJFromStringStream(std::istringstream& _data, const size_t& _hash);
 	};
 }
 extern spehs::ModelManager* modelManager;

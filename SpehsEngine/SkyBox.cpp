@@ -12,7 +12,7 @@ namespace spehs
 	{
 		mesh = getActiveBatchManager()->createMesh();
 		mesh->setShader(DefaultSkyBox);
-		mesh->setMesh("Models/cube.obj");
+		mesh->setMesh("InvertedCube");
 		mesh->setBlending(true);
 		mesh->setPosition(0.0f, 0.0f, 0.0f);
 	}

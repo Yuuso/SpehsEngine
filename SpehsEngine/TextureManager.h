@@ -51,8 +51,7 @@ namespace spehs
 								const std::string& _negy, const std::string& _posy, 
 								const std::string& _negz, const std::string& _posz);
 
-		bool defaultSet;
-		size_t defaultTexture;
+		TextureData* defaultTexture;
 		std::unordered_map<size_t, TextureData*> textureDataMap;
 	};
 }

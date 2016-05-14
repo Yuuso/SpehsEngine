@@ -21,6 +21,7 @@ namespace spehs
 
 		TextureData* setTexture(const std::string &_texturePath);
 		TextureData* setTexture(const size_t &_textureID);
+		void setTexture(TextureData* _textureDataPtr);
 
 	protected:
 		//NOTE: Point always in 2D (No Z-Depth), if there is need for 3D points for some reason -> call setBlending(false)

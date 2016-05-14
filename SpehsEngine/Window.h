@@ -12,6 +12,7 @@ namespace spehs
 
 	class Window
 	{
+		friend class InputManager;
 	public:
 		Window();
 		~Window();

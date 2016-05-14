@@ -1,10 +1,15 @@
+
+#include "InputManager.h"
+#include "Console.h"
+#include "ApplicationData.h"
+#include "Window.h"
+
 #include <SDL/SDL.h>
 #include <SDL/SDL_joystick.h>
 #include <SDL/SDL_events.h>
+
 #include <iostream>
-#include "Console.h"
-#include "InputManager.h"
-#include "ApplicationData.h"
+
 #define SINT16_MIN -32768
 #define SINT16_MAX  32767
 #define SINT16_STATES 65536
@@ -96,6 +101,12 @@ namespace spehs
 
 		//Update mouse movement
 		mouseMovement = mouseCoords - prevMouseCoords;
+
+		if (mouseLocked)
+		{
+			//If mouse is locked, keep mouse in the center of the screen without creating a mousemotion event
+			//SDL_WarpMouseInWindow(mainWindow->sdlWindow, applicationData->getWindowWidthHalf(), applicationData->getWindowHeightHalf());
+		}
 	}
 
 
@@ -115,6 +126,27 @@ namespace spehs
 	{
 		mouseCoords.x = _x;
 		mouseCoords.y = _y;
+	}
+
+	bool InputManager::lockMouse(const bool _value)
+	{
+		if (mouseLocked == _value)
+			return true;
+		else
+			mouseLocked = _value;
+
+		SDL_SetWindowGrab(mainWindow->sdlWindow, (SDL_bool) _value);
+		SDL_ShowCursor(!_value);
+		return true;
+		//if (SDL_SetRelativeMouseMode((SDL_bool) _value) == 0)
+		//{
+		//	return true;
+		//}
+		//else
+		//{
+		//	console::warning("Mouse locking not supported!");
+		//	return false;
+		//}
 	}
 
 

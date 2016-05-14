@@ -11,11 +11,15 @@
 #include <GL\glew.h>
 
 
+#define DEFAULT_TEXTURE_SEED 1965819
+
+
 spehs::TextureManager* textureManager;
 namespace spehs
 {
-	TextureManager::TextureManager() : defaultSet(false)
+	TextureManager::TextureManager()
 	{
+		defaultTexture = getNoiseTexture(16, 16, DEFAULT_TEXTURE_SEED, 4, false);
 	}
 	TextureManager::~TextureManager()
 	{
@@ -24,9 +28,9 @@ namespace spehs
 
 	void TextureManager::setDefaultTexture(const std::string& _filepath)
 	{
-		toTexture(_filepath);
-		defaultTexture = std::hash<std::string>()(_filepath);
-		defaultSet = true;
+		TextureData* temp = toTexture(_filepath);
+		if (temp)
+			defaultTexture = toTexture(_filepath);
 	}
 
 
@@ -38,7 +42,11 @@ namespace spehs
 		{
 			return it->second;
 		}
-		return toTexture(_texturePath);
+		TextureData* temp = toTexture(_texturePath);
+		if (temp)
+			return temp;
+		else
+			return defaultTexture;
 	}
 	TextureData* TextureManager::getTextureData(const size_t& _hash)
 	{
@@ -47,16 +55,21 @@ namespace spehs
 		{
 			return it->second;
 		}
-		if (defaultSet)
-			return textureDataMap.find(defaultTexture)->second;
-		return nullptr;
+		console::warning("Texture not found, using default.");
+		return defaultTexture;
 	}
 	size_t TextureManager::preloadTexture(const std::string& _texturePath)
 	{
 		size_t hash = std::hash<std::string>()(_texturePath);
 		if (textureDataMap.find(hash) == textureDataMap.end())
 		{
-			toTexture(_texturePath);
+			TextureData* temp = toTexture(_texturePath);
+			if (!temp)
+				return std::hash<unsigned int>()(DEFAULT_TEXTURE_SEED);
+		}
+		else
+		{
+			console::warning("Trying to preload already existing texture!");
 		}
 		return hash;
 	}
@@ -80,6 +93,7 @@ namespace spehs
 			return it->second;
 		}
 		console::error("CubeMap data not found! hash: " + std::to_string(_hash));
+		//TODO: Default Cube Map
 		return nullptr;
 	}
 	size_t TextureManager::preloadCubeMap(const std::string& _negx, const std::string& _posx, const std::string& _negy, const std::string& _posy, const std::string& _negz, const std::string& _posz)
@@ -88,6 +102,10 @@ namespace spehs
 		if (textureDataMap.find(hash) == textureDataMap.end())
 		{
 			toCubeMap(_negx, _posx, _negy, _posy, _negz, _posz);
+		}
+		else
+		{
+			console::warning("Trying to preload already existing cubemap!");
 		}
 		return hash;
 	}
@@ -107,17 +125,21 @@ namespace spehs
 		auto it = textureDataMap.find(_hash);
 		if (it != textureDataMap.end())
 			return it->second;
-		console::error("NoiseTexture data not found! hash: " + std::to_string(_hash));
-		if (defaultSet)
-			return textureDataMap.find(defaultTexture)->second;
-		return nullptr;
+		console::warning("NoiseTexture not found, using default.");
+		return defaultTexture;
 	}
 	size_t TextureManager::preloadNoiseTexture(const int& _width, const int& _height, const unsigned int& _seed, const int& _factor, const bool _turbulence)
 	{
+		if (_factor == 0)
+		{
+			console::error("Factor can't be 0! Using default texture. (TextureManager->preloadNoiseTexture)");
+			return std::hash<unsigned int>()(DEFAULT_TEXTURE_SEED);
+		}
+
 		size_t hash = std::hash<unsigned>()(_seed);
 		if (textureDataMap.find(hash) != textureDataMap.end())
 		{
-			console::warning("Preloading already existing noise texture!");
+			console::warning("Tryng to preload already existing noisetexture!");
 			return hash;
 		}
 
@@ -268,6 +290,12 @@ namespace spehs
 
 		image = SOIL_load_image(_filepath.c_str(), &width, &height, 0, SOIL_LOAD_RGBA);
 		//textureData = SOIL_load_OGL_texture(_filepath, SOIL_LOAD_RGBA, SOIL_CREATE_NEW_ID, SOIL_FLAG_INVERT_Y);
+
+		if (!image)
+		{
+			console::warning("Failed to load image file: " + _filepath);
+			return nullptr;
+		}
 
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
