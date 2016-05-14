@@ -95,6 +95,7 @@ namespace spehs
 		void setColor(const unsigned char _r, const unsigned char _g, const unsigned char _b, const unsigned char _a = 255);
 		void setColor(const CommonColor& _color);
 		void setColor(const unsigned char* _rgbaArray);///< Reads 4 bytes from array. Channel value ranges are from 0 to 255.
+		void setColor(const Primitive& other);
 		void setColorAlpha(const float &_a);
 		void setColorAlpha(const unsigned char _a);
 		void setCameraMatrixState(const bool _newState);

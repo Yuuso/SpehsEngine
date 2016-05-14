@@ -260,6 +260,15 @@ namespace spehs
 		}
 	}
 	
+	void Primitive::setColor(const Primitive& other)
+	{
+		primitiveColor = other.primitiveColor;
+		for (unsigned i = 0; i < worldVertexArray.size(); i++)
+		{
+			worldVertexArray[i].color.setColor(primitiveColor);
+		}
+	}
+
 	void Primitive::setColorAlpha(const float &_a)
 	{
 		primitiveColor.a = _a;
