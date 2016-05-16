@@ -12,7 +12,7 @@ namespace spehs
 	{
 		mesh = getActiveBatchManager()->createMesh();
 		mesh->setShader(DefaultSkyBox);
-		mesh->setMesh("InvertedCube");
+		mesh->setMesh("InvertedSphere");
 		mesh->setBlending(true);
 		mesh->setPosition(0.0f, 0.0f, 0.0f);
 	}
@@ -49,5 +49,10 @@ namespace spehs
 	void SkyBox::setCubeMap(const size_t& _hash)
 	{
 		mesh->setTexture(_hash);
+	}
+
+	void SkyBox::setShader(const int _index)
+	{
+		mesh->setShader(_index);
 	}
 }

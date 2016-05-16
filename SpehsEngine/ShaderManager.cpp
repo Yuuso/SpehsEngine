@@ -33,7 +33,7 @@ namespace spehs
 	DefaultTextureUniforms::~DefaultTextureUniforms(){}
 	void DefaultTextureUniforms::setUniforms()
 	{
-		spehs::bind2DTexture(textureDataID);
+		spehs::bind2DTexture(textureDataID, 0);
 		spehs::setUniform_int(textureLocation, 0);
 		Uniforms::setUniforms();
 	}
@@ -45,7 +45,7 @@ namespace spehs
 	DefaultSkyBoxUniforms::~DefaultSkyBoxUniforms(){}
 	void DefaultSkyBoxUniforms::setUniforms()
 	{
-		spehs::bindCubeMapTexture(textureDataID);
+		spehs::bindCubeMapTexture(textureDataID, 0);
 		spehs::setUniform_int(textureLocation, 0);
 		Uniforms::setUniforms();
 	}
@@ -378,16 +378,62 @@ namespace spehs
 	}
 
 
-	void bind2DTexture(const GLuint &_textureID)
+	void bind2DTexture(const GLuint &_textureID, const int _index)
 	{
-		glActiveTexture(GL_TEXTURE0);
+		switch (_index)
+		{
+		case 0:
+			glActiveTexture(GL_TEXTURE0);
+			break;
+		case 1:
+			glActiveTexture(GL_TEXTURE1);
+			break;
+		case 2:
+			glActiveTexture(GL_TEXTURE2);
+			break;
+		case 3:
+			glActiveTexture(GL_TEXTURE3);
+			break;
+		case 4:
+			glActiveTexture(GL_TEXTURE4);
+			break;
+		case 5:
+			glActiveTexture(GL_TEXTURE5);
+			break;
+		default:
+			exceptions::fatalError("Incorrect texture index! (bind2DTexture)");
+			break;
+		}
 		glBindTexture(GL_TEXTURE_2D, _textureID);
 
 		checkOpenGLErrors(__FILE__, __LINE__);
 	}
-	void bindCubeMapTexture(const GLuint &_textureID)
+	void bindCubeMapTexture(const GLuint &_textureID, const int _index)
 	{
-		glActiveTexture(GL_TEXTURE0);
+		switch (_index)
+		{
+		case 0:
+			glActiveTexture(GL_TEXTURE0);
+			break;
+		case 1:
+			glActiveTexture(GL_TEXTURE1);
+			break;
+		case 2:
+			glActiveTexture(GL_TEXTURE2);
+			break;
+		case 3:
+			glActiveTexture(GL_TEXTURE3);
+			break;
+		case 4:
+			glActiveTexture(GL_TEXTURE4);
+			break;
+		case 5:
+			glActiveTexture(GL_TEXTURE5);
+			break;
+		default:
+			exceptions::fatalError("Incorrect texture index! (bindCubeMapTexture)");
+			break;
+		}
 		glEnable(GL_TEXTURE_CUBE_MAP);
 		glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
 		glBindTexture(GL_TEXTURE_CUBE_MAP, _textureID);

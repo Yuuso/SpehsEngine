@@ -112,8 +112,8 @@ namespace spehs
 
 
 	//Wrapping functions for OpenGL
-	void bind2DTexture(const GLuint &_textureID);
-	void bindCubeMapTexture(const GLuint &_textureID);
+	void bind2DTexture(const GLuint &_textureID, const int _index);
+	void bindCubeMapTexture(const GLuint &_textureID, const int _index);
 	void setUniform_int(const GLint &_location, const int &_value);
 	void setUniform_float(const GLint &_location, const float &_value);
 	void setUniform_vec2(const GLint &_location, const glm::vec2 &_value);

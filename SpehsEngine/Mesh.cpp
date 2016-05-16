@@ -91,8 +91,33 @@ namespace spehs
 		worldVertexArray.clear();
 		elementArray.clear();
 
-		modelManager->loadModel(_filepath, this);
-		worldVertexArray = vertexArray;
+		if (_filepath == "InfinitePlane")
+		{
+			//WIP
+			vertexArray.push_back(Vertex3D(Position(0.0f, 0.0f, 1.0f))); //Need to set z>w in shader
+			vertexArray.push_back(Vertex3D(Position(1.0f, 0.0f, 0.0f)));
+			vertexArray.push_back(Vertex3D(Position(0.0f, 1.0f, 0.0f)));
+			vertexArray.push_back(Vertex3D(Position(-1.0f, 0.0f, 0.0f)));
+			vertexArray.push_back(Vertex3D(Position(0.0f, -1.0f, 0.0f)));
+
+			elementArray.push_back(0);
+			elementArray.push_back(1);
+			elementArray.push_back(2);
+			elementArray.push_back(0);
+			elementArray.push_back(2);
+			elementArray.push_back(3);
+			elementArray.push_back(0);
+			elementArray.push_back(3);
+			elementArray.push_back(4);
+			elementArray.push_back(0);
+			elementArray.push_back(4);
+			elementArray.push_back(1);
+		}
+		else
+		{
+			modelManager->loadModel(_filepath, this);
+			worldVertexArray = vertexArray;
+		}
 
 		needUpdate = true;
 	}

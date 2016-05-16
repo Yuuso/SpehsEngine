@@ -25,7 +25,7 @@ namespace spehs
 		direction = glm::normalize(target - position);
 
 		view = glm::mat4(1.0f);
-		projection = glm::perspective(fov, (float)applicationData->getWindowWidth() / (float)applicationData->getWindowHeight(), near, far);
+		projection = glm::perspective(glm::radians(fov), (float) applicationData->getWindowWidth() / (float) applicationData->getWindowHeight(), near, far);
 
 		cameraMatrix = &view;
 	}
@@ -131,16 +131,16 @@ namespace spehs
 	void Camera3D::setFOV(const float &_fov)
 	{
 		fov = _fov;
-		projection = glm::perspective(fov, (float) applicationData->getWindowWidth() / (float) applicationData->getWindowHeight(), near, far);
+		projection = glm::perspective(glm::radians(fov), (float) applicationData->getWindowWidth() / (float) applicationData->getWindowHeight(), near, far);
 	}
 	void Camera3D::setNear(const float& _near)
 	{
 		near = _near;
-		projection = glm::perspective(fov, (float) applicationData->getWindowWidth() / (float) applicationData->getWindowHeight(), near, far);
+		projection = glm::perspective(glm::radians(fov), (float) applicationData->getWindowWidth() / (float) applicationData->getWindowHeight(), near, far);
 	}
 	void Camera3D::setFar(const float& _far)
 	{
 		far = _far;
-		projection = glm::perspective(fov, (float) applicationData->getWindowWidth() / (float) applicationData->getWindowHeight(), near, far);
+		projection = glm::perspective(glm::radians(fov), (float) applicationData->getWindowWidth() / (float) applicationData->getWindowHeight(), near, far);
 	}
 }

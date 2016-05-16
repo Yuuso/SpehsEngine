@@ -49,7 +49,8 @@ namespace spehs
 
 	private:
 		std::istringstream loadCube();
-		std::istringstream loadInvertedCube(); //Index orientation reversed
+		std::istringstream loadInvertedCube();
+		std::istringstream loadInvertedSphere(); 
 
 		std::unordered_map<size_t, ModelData*> modelDataMap;
 
