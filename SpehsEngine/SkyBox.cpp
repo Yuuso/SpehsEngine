@@ -48,6 +48,7 @@ namespace spehs
 	}
 	void SkyBox::setCubeMap(const size_t& _hash)
 	{
+		cubeMapHash = _hash;
 		mesh->setTexture(_hash);
 	}
 

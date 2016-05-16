@@ -27,8 +27,11 @@ namespace spehs
 
 		void setShader(const int _index);
 
+		size_t getCubeMapHash(){ return cubeMapHash; }
+
 	private:
 		Mesh* mesh;
+		size_t cubeMapHash;
 	};
 
 }
