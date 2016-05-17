@@ -1,9 +1,12 @@
 #pragma once
 #include <string>
+#include "ShaderManager.h"
+
 
 struct SDL_Window;
 namespace spehs
 {
+	class GLSLProgram;
 	enum SpehsEngine_WindowFlags
 	{
 		FULLSCREEN = 0x1,
@@ -24,6 +27,13 @@ namespace spehs
 
 	private:
 		SDL_Window* sdlWindow;
+		
+		//Post processing effect
+		GLSLProgram* glslProgram;
+		GLuint fbo, fbo_texture, rbo_depth, vbo_fbo_vertices;
+		float fbo_vertices[8];
+		GLint vertexPositionLocation;
+		GLint textureLocation;
 	};
 }
 extern spehs::Window* mainWindow;

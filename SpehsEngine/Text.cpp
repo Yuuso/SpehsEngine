@@ -29,7 +29,7 @@ namespace spehs
 		int descender = 0;
 	};
 
-	static bool textRenderingInitialized = false;
+	static bool textRenderingInitialized(false);
 	static int textCount = 0;
 	static FT_Library* ft = nullptr;
 	static GLSLProgram textProgram;
@@ -40,13 +40,13 @@ namespace spehs
 	{
 		if (textRenderingInitialized)
 		{
-			exceptions::unexpectedError("Text rendering already initialized!");
+			exceptions::warning("Text rendering already initialized!");
 			return;
 		}
 
-		if (ft != nullptr)
+		if (ft)
 		{
-			exceptions::unexpectedError("Freetype library already exists!");
+			exceptions::warning("Freetype library already exists!");
 			return;
 		}
 		ft = new FT_Library;
