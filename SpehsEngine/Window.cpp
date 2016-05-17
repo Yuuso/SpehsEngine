@@ -17,10 +17,7 @@ namespace spehs
 	}
 	Window::~Window()
 	{
-		glDeleteBuffers(1, &vbo_fbo_vertices);
-		glDeleteRenderbuffers(1, &rbo_depth);
-		glDeleteTextures(1, &fbo_texture);
-		glDeleteFramebuffers(1, &fbo);
+		deallocatePostProcessingShader();
 	}
 
 	int Window::create(std::string windowName, int scrWidth, int scrHeight, unsigned int currentFlags)
@@ -81,16 +78,30 @@ namespace spehs
 		return 0;
 	}
 
-	void Window::setPostProcessingShader(std::string vertexShaderPath, std::string fragmentShaderPath)
+
+	void Window::disablePostProcessingShader()
+	{
+		deallocatePostProcessingShader();
+	}
+
+
+	void Window::deallocatePostProcessingShader()
 	{
 		if (glslProgram)
 		{
 			delete glslProgram;
+			glslProgram = nullptr;
 			glDeleteBuffers(1, &vbo_fbo_vertices);
 			glDeleteRenderbuffers(1, &rbo_depth);
 			glDeleteTextures(1, &fbo_texture);
 			glDeleteFramebuffers(1, &fbo);
 		}
+	}
+
+
+	void Window::setPostProcessingShader(std::string vertexShaderPath, std::string fragmentShaderPath)
+	{
+		deallocatePostProcessingShader();
 
 		////Post processing
 		glGenTextures(1, &fbo_texture);
@@ -98,7 +109,7 @@ namespace spehs
 		glGenFramebuffers(1, &fbo);
 		glGenBuffers(1, &vbo_fbo_vertices);
 		fbo_vertices[0] = -1;	fbo_vertices[1] = -1;	fbo_vertices[2] = 1;	fbo_vertices[3] = -1;	fbo_vertices[4] = -1;	fbo_vertices[5] = 1;	fbo_vertices[6] = 1;	fbo_vertices[7] = 1;
-
+		
 		/* Texture */
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, fbo_texture);
@@ -127,7 +138,7 @@ namespace spehs
 		glBufferData(GL_ARRAY_BUFFER, sizeof(fbo_vertices), fbo_vertices, GL_STATIC_DRAW);
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
 
-		glslProgram = new GLSLProgram;
+		glslProgram = new GLSLProgram();
 		glslProgram->compileShaders(vertexShaderPath, fragmentShaderPath);
 		glslProgram->addAttribute("vertexPosition");
 		glslProgram->linkShaders();
@@ -154,7 +165,7 @@ namespace spehs
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 		
 		if (glslProgram)
-		{
+		{//Post processing effects
 			glslProgram->use();
 			glBindTexture(GL_TEXTURE_2D, fbo_texture);
 			glUniform1i(textureLocation, /*GL_TEXTURE*/0);

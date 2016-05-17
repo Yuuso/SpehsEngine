@@ -24,10 +24,16 @@ namespace spehs
 		void renderBegin();
 		void renderEnd();
 		void clearColor(float _r, float _g, float _b, float _a);
+
+		//Post processing effects
 		void setPostProcessingShader(std::string vertexShaderPath, std::string fragmentShaderPath);
+		void disablePostProcessingShader();
+		bool postProcessingEnabled(){ if (glslProgram) return true; return false; }
+		//TODO: custom uniforms?
 
 	private:
 		SDL_Window* sdlWindow;
+		void deallocatePostProcessingShader();
 		
 		//Post processing effect
 		GLSLProgram* glslProgram;
