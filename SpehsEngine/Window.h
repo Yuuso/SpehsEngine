@@ -24,6 +24,7 @@ namespace spehs
 		void renderBegin();
 		void renderEnd();
 		void clearColor(float _r, float _g, float _b, float _a);
+		void setPostProcessingShader(std::string vertexShaderPath, std::string fragmentShaderPath);
 
 	private:
 		SDL_Window* sdlWindow;

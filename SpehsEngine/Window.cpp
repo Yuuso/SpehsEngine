@@ -12,7 +12,7 @@
 spehs::Window* mainWindow;
 namespace spehs
 {
-	Window::Window()
+	Window::Window() : glslProgram(nullptr)
 	{
 	}
 	Window::~Window()
@@ -75,6 +75,22 @@ namespace spehs
 		//MSAA Antialiasing
 		if (applicationData->MSAA > 0)
 			glEnable(GL_MULTISAMPLE);
+		
+		checkOpenGLErrors(__FILE__, __LINE__);
+
+		return 0;
+	}
+
+	void Window::setPostProcessingShader(std::string vertexShaderPath, std::string fragmentShaderPath)
+	{
+		if (glslProgram)
+		{
+			delete glslProgram;
+			glDeleteBuffers(1, &vbo_fbo_vertices);
+			glDeleteRenderbuffers(1, &rbo_depth);
+			glDeleteTextures(1, &fbo_texture);
+			glDeleteFramebuffers(1, &fbo);
+		}
 
 		////Post processing
 		glGenTextures(1, &fbo_texture);
@@ -82,7 +98,7 @@ namespace spehs
 		glGenFramebuffers(1, &fbo);
 		glGenBuffers(1, &vbo_fbo_vertices);
 		fbo_vertices[0] = -1;	fbo_vertices[1] = -1;	fbo_vertices[2] = 1;	fbo_vertices[3] = -1;	fbo_vertices[4] = -1;	fbo_vertices[5] = 1;	fbo_vertices[6] = 1;	fbo_vertices[7] = 1;
-		
+
 		/* Texture */
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, fbo_texture);
@@ -110,22 +126,22 @@ namespace spehs
 		glBindBuffer(GL_ARRAY_BUFFER, vbo_fbo_vertices);
 		glBufferData(GL_ARRAY_BUFFER, sizeof(fbo_vertices), fbo_vertices, GL_STATIC_DRAW);
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
-		
+
 		glslProgram = new GLSLProgram;
-		glslProgram->compileShaders("Shaders/postproc.vert", "Shaders/postproc.frag");
+		glslProgram->compileShaders(vertexShaderPath, fragmentShaderPath);
 		glslProgram->addAttribute("vertexPosition");
 		glslProgram->linkShaders();
 		textureLocation = glslProgram->getUniformLocation("texture");
-
-		checkOpenGLErrors(__FILE__, __LINE__);
-
-		return 0;
 	}
 
 
 	void Window::renderBegin()
 	{
-		glBindFramebuffer(GL_FRAMEBUFFER, fbo);
+		if (glslProgram)
+			glBindFramebuffer(GL_FRAMEBUFFER, fbo);
+		else
+			glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
 		glClearColor(0.0, 0.0, 0.0, 1.0);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -137,21 +153,23 @@ namespace spehs
 	{
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 		
-		glslProgram->use();
-		glBindTexture(GL_TEXTURE_2D, fbo_texture);
-		glUniform1i(textureLocation, /*GL_TEXTURE*/0);
-
-		glBindBuffer(GL_ARRAY_BUFFER, vbo_fbo_vertices);
-		glVertexAttribPointer(
-			vertexPositionLocation,  // attribute
-			2,                  // number of elements per vertex, here (x,y)
-			GL_FLOAT,           // the type of each element
-			GL_FALSE,           // take our values as-is
-			0,                  // no extra data between each position
-			0                   // offset of first element
-			);
-		glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
-		glslProgram->unuse();
+		if (glslProgram)
+		{
+			glslProgram->use();
+			glBindTexture(GL_TEXTURE_2D, fbo_texture);
+			glUniform1i(textureLocation, /*GL_TEXTURE*/0);
+			glBindBuffer(GL_ARRAY_BUFFER, vbo_fbo_vertices);
+			glVertexAttribPointer(
+				vertexPositionLocation,  // attribute
+				2,                  // number of elements per vertex, here (x,y)
+				GL_FLOAT,           // the type of each element
+				GL_FALSE,           // take our values as-is
+				0,                  // no extra data between each position
+				0                   // offset of first element
+				);
+			glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+			glslProgram->unuse();
+		}
 
 		SDL_GL_SwapWindow(sdlWindow);
 
