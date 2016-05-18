@@ -13,7 +13,7 @@
 #include "Console.h"
 
 
-#define NEXT_SHADER_INDEX 5
+#define NEXT_SHADER_INDEX 6
 
 
 typedef int GLint;
@@ -27,6 +27,7 @@ namespace spehs
 		DefaultMesh = 2,
 		DefaultTextureMesh = 3,
 		DefaultSkyBox = 4,
+		DefaultPostProc = 5,
 	};
 
 	class Uniforms

@@ -19,6 +19,10 @@
 #include <SDL/SDL.h>
 #include <GL/glew.h>
 
+//[MR].[mR].[B].[A].[pA]
+#define CURRENT_BUILD "0.0.0.0.0."
+std::string buildVersion;
+
 
 namespace spehs
 {
@@ -63,9 +67,10 @@ namespace spehs
 		SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, applicationData->MSAA);
 
 		mainWindow = new spehs::Window();
-		mainWindow->create(_windowName, applicationData->getWindowWidth(), applicationData->getWindowHeight(), applicationData->windowMode);//To get e.g. Fullscreen mode - replace '0' with 'spehs::FULLSCREEN'
+		mainWindow->create(_windowName, applicationData->getWindowWidth(), applicationData->getWindowHeight(), applicationData->windowMode);
 
 		std::cout << "\nHardware threads: " + std::to_string(std::thread::hardware_concurrency());
+		std::cout << "\nCurrent SpehsEngine build: " << getEngineVersion() << std::endl;
 
 		spehs::initializeTextRendering();
 		spehs::initializeTime();
@@ -98,5 +103,12 @@ namespace spehs
 		spehs::uninitializeTime();
 		spehs::uninitializeTextRendering();
 		SDL_Quit();
+	}
+
+
+	std::string getEngineVersion()
+	{
+		std::string build(CURRENT_BUILD + engineBuildYear() + engineBuildMonth() + engineBuildDay() + engineBuildHour() + engineBuildMinute() + engineBuildSecond());
+		return build;
 	}
 }

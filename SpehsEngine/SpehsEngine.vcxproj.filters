@@ -157,6 +157,9 @@
     <ClCompile Include="Transform3D.cpp">
       <Filter>Core\Object/Component</Filter>
     </ClCompile>
+    <ClCompile Include="PostProcessing.cpp">
+      <Filter>Rendering</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GLSLProgram.h">
@@ -323,6 +326,9 @@
     </ClInclude>
     <ClInclude Include="Transform3D.h">
       <Filter>Core\Object/Component</Filter>
+    </ClInclude>
+    <ClInclude Include="PostProcessing.h">
+      <Filter>Rendering</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

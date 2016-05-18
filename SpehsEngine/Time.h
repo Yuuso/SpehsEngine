@@ -1,5 +1,8 @@
+
 #pragma once
+
 #include <stdint.h>
+#include <string>
 
 
 namespace spehs
@@ -62,6 +65,14 @@ namespace spehs
 	Time getRunTime();///< For how long the program has run. Updates from endFPS()
 	extern unsigned long drawCalls;
 	extern unsigned long vertexDrawCount;
+
+	//Get time and date of when the engine was built
+	std::string engineBuildYear();
+	std::string engineBuildMonth();
+	std::string engineBuildDay();
+	std::string engineBuildHour();
+	std::string engineBuildMinute();
+	std::string engineBuildSecond();
 
 	bool initializeTime();
 	void uninitializeTime();

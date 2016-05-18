@@ -248,19 +248,42 @@ namespace spehs
 			"	color = texture(tex, fragmentPosition);\n"
 			"}\n"
 		};
+		//
+		const std::string defaultPostProcVert =
+		{
+			"#version 150\n"
+			"in vec2 vertexPosition;\n"
+			"out vec2 texCoord;\n"
+			"void main()\n"
+			"{\n"
+			"	gl_Position = vec4(vertexPosition, 0.0, 1.0);\n"
+			"	texCoord = (vertexPosition + 1.0) / 2.0;\n"
+			"}\n"
+		};
+		const std::string defaultPostProcFrag =
+		{
+			"#version 150\n"
+			"in vec2 texCoord;\n"
+			"out vec4 outColor;\n"
+			"uniform sampler2D tex;\n"
+			"void main()\n"
+			"{\n"
+			"	outColor = texture(tex, texCoord);\n"
+			"}\n"
+		};
 #pragma endregion
 		Shader* result = nullptr;
 		spehs::GLSLProgram* defaultShader = new spehs::GLSLProgram();
 		switch (_index)
 		{
-		case 0:
+		case DefaultPolygon:
 			defaultShader->compileShadersFromSource(defaultPolygonVert, defaultPolygonFrag);
 			defaultShader->addAttribute("vertexPosition");
 			defaultShader->addAttribute("vertexColor");
 			defaultShader->linkShaders();
 			result = new spehs::Shader(spehs::DefaultPolygon, defaultShader, new Uniforms(defaultShader));
 			break;
-		case 1:
+		case DefaultTexture:
 			defaultShader->compileShadersFromSource(defaultTextureVert, defaultTextureFrag);
 			defaultShader->addAttribute("vertexPosition");
 			defaultShader->addAttribute("vertexColor");
@@ -268,7 +291,7 @@ namespace spehs
 			defaultShader->linkShaders();
 			result = new spehs::Shader(spehs::DefaultTexture, defaultShader, new DefaultTextureUniforms(defaultShader));
 			break;
-		case 2:
+		case DefaultMesh:
 			defaultShader->compileShadersFromSource(defaultMeshVert, defaultMeshFrag);
 			defaultShader->addAttribute("vertexPosition");
 			defaultShader->addAttribute("vertexColor");
@@ -276,7 +299,7 @@ namespace spehs
 			defaultShader->linkShaders();
 			result = new spehs::Shader(spehs::DefaultMesh, defaultShader, new Uniforms(defaultShader));
 			break;
-		case 3:
+		case DefaultTextureMesh:
 			defaultShader->compileShadersFromSource(defaultTextureMeshVert, defaultTextureMeshFrag);
 			defaultShader->addAttribute("vertexPosition");
 			defaultShader->addAttribute("vertexColor");
@@ -285,11 +308,17 @@ namespace spehs
 			defaultShader->linkShaders();
 			result = new spehs::Shader(spehs::DefaultTextureMesh, defaultShader, new DefaultTextureUniforms(defaultShader));
 			break;
-		case 4:
+		case DefaultSkyBox:
 			defaultShader->compileShadersFromSource(defaultSkyBoxVert, defaultSkyBoxFrag);
 			defaultShader->addAttribute("vertexPosition");
 			defaultShader->linkShaders();
 			result = new spehs::Shader(spehs::DefaultSkyBox, defaultShader, new DefaultSkyBoxUniforms(defaultShader));
+			break;
+		case DefaultPostProc:
+			defaultShader->compileShadersFromSource(defaultPostProcVert, defaultPostProcFrag);
+			defaultShader->addAttribute("vertexPosition");
+			defaultShader->linkShaders();
+			result = new spehs::Shader(spehs::DefaultPostProc, defaultShader, new DefaultTextureUniforms(defaultShader));
 			break;
 		default:
 			exceptions::fatalError("Default shader index out of reach!");
@@ -299,21 +328,23 @@ namespace spehs
 	}
 	ShaderManager::ShaderManager()
 	{
-
 		//DefaultPolygon
-		shaderPrograms.push_back(buildDefaultShader(0));
+		shaderPrograms.push_back(buildDefaultShader(DefaultPolygon));
 
 		//DefaultTexture
-		shaderPrograms.push_back(buildDefaultShader(1));
+		shaderPrograms.push_back(buildDefaultShader(DefaultTexture));
 
 		//DefaultMesh
-		shaderPrograms.push_back(buildDefaultShader(2));
+		shaderPrograms.push_back(buildDefaultShader(DefaultMesh));
 
 		//DefaultTextureMesh
-		shaderPrograms.push_back(buildDefaultShader(3));
+		shaderPrograms.push_back(buildDefaultShader(DefaultTextureMesh));
 
 		//DefaultSkyBox
-		shaderPrograms.push_back(buildDefaultShader(4));
+		shaderPrograms.push_back(buildDefaultShader(DefaultSkyBox));
+
+		//DefaultPostProc
+		shaderPrograms.push_back(buildDefaultShader(DefaultPostProc));
 	}
 	ShaderManager::~ShaderManager()
 	{

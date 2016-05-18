@@ -229,8 +229,9 @@ namespace spehs
 	{
 		for (unsigned int i = 0; i < worldVertexArray.size(); i++)
 		{
-			worldVertexArray[i].uv.u = (worldVertexArray[i].position.x + 1.0f) / 2.0f;
-			worldVertexArray[i].uv.v = (worldVertexArray[i].position.y + 1.0f) / 2.0f;
+			//These should be divided in half, but since usually primitives are made with a width of 1 not 2, we're just not gonna do that here...
+			worldVertexArray[i].uv.u = (worldVertexArray[i].position.x + 0.5f) ;
+			worldVertexArray[i].uv.v = (-worldVertexArray[i].position.y + 0.5f) ;
 		}
 	}
 }
