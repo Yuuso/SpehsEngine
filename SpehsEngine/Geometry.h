@@ -1,5 +1,6 @@
 #pragma once
 #include <glm/vec2.hpp>
+#include <glm/vec3.hpp>
 #define GLM_FORCE_RADIANS
 #define PI 3.14159265f
 #define HALF_PI 1.57079632679f
@@ -31,6 +32,8 @@ namespace spehs
 
 	/**Returns true if two angles (range ]0, TWO_PI[) are parallel with eachother. If angle between angles is more than the tolerance, returns false.*/
 	extern inline bool anglesParallel(float angle1, float angle2, const float parallelToleranceRad);
+
+	extern inline glm::vec3 getRotation(const glm::vec3& _a, const glm::vec3& _b);
 
 	/**Returns area of the shape formed by a number of cusps*/
 	extern inline float getArea(spehs::Position* cusps, unsigned numCusps);

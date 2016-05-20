@@ -51,6 +51,7 @@ namespace spehs
 		void setDrawMode(const DrawMode &_drawMode);
 		void setLineWidth(const float &_lineWidth);
 		void setBlending(const bool &_value);
+		void setBackFaceCulling(const bool& _value);
 		TextureData* setTexture(const std::string &_texturePath);
 		TextureData* setTexture(const size_t &_textureID);
 		void setTexture(TextureData* _textureDataPtr);
@@ -65,12 +66,14 @@ namespace spehs
 
 		//Public Variables
 		std::vector<spehs::Vertex3D> worldVertexArray; //Transformed vertices
+		std::vector<spehs::Vertex3D> vertexArray; //Original vertices
 
 	protected:
 		Mesh();
 		Mesh(const std::string &_filepath);
 		~Mesh();
 
+		bool backFaceCulling;
 		bool readyForDelete;
 		bool renderState; //Whether Mesh is rendered or not
 		bool needUpdate;
@@ -89,7 +92,6 @@ namespace spehs
 		glm::mat4 normalMatrix;
 
 		spehs::Position position;
-		std::vector<spehs::Vertex3D> vertexArray; //Original vertices
 		std::vector<GLushort> elementArray; //Indices
 	};
 }

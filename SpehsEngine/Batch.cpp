@@ -335,6 +335,7 @@ namespace spehs
 		vertexBufferID = 0;
 		indexBufferID = 0;
 
+		backFaceCulling = true;
 		blending = false;
 		batchSize = DEFAULT_MAX_BATCH_SIZE;
 		indexSize = getIndexMultiplier(batchSize);
@@ -345,7 +346,7 @@ namespace spehs
 
 		initBuffers();
 	}
-	MeshBatch::MeshBatch(const unsigned int& _batchSizeCheck, const int &_shader, const GLuint &_textureID, const GLenum &_drawMode, const bool _blending, const float &_lineWidth)
+	MeshBatch::MeshBatch(const unsigned int& _batchSizeCheck, const int &_shader, const GLuint &_textureID, const GLenum &_drawMode, const bool _backFaceCulling, const bool _blending, const float &_lineWidth)
 	{
 #ifdef _DEBUG
 		meshBatchAllocations++;
@@ -360,6 +361,7 @@ namespace spehs
 			batchSize = DEFAULT_MAX_BATCH_SIZE;
 		indexSize = getIndexMultiplier(batchSize);
 
+		backFaceCulling = _backFaceCulling;
 		blending = _blending;
 		shaderIndex = _shader;
 		textureDataID = _textureID;
@@ -424,6 +426,16 @@ namespace spehs
 			glDisable(GL_DEPTH_TEST);
 			glDepthMask(GL_FALSE);
 			glEnable(GL_BLEND);
+		}
+
+		if (backFaceCulling)
+		{
+			glCullFace(GL_BACK);
+			glEnable(GL_CULL_FACE);
+		}
+		else
+		{
+			glDisable(GL_CULL_FACE);
 		}
 
 		updateBuffers();

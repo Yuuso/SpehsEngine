@@ -1,7 +1,14 @@
-#include <math.h>
-#include <algorithm>
+
 #include "Geometry.h"
 #include "Vertex.h"
+
+#include <math.h>
+#include <algorithm>
+
+#include <glm/gtx/vector_query.hpp>
+#include <glm/gtc/type_ptr.hpp>
+
+
 
 namespace spehs
 {
@@ -52,6 +59,13 @@ namespace spehs
 		if (angle2 < radTolerance || angle2 > TWO_PI - radTolerance)
 			return true;
 		return false;
+	}
+	inline glm::vec3 getRotation(const glm::vec3& _a, const glm::vec3& _b)
+	{
+		glm::vec3 v = glm::cross(_a, _b);
+		float c = glm::dot(_a, _b)/(glm::length(_a)*glm::length(_b));
+
+		return glm::eulerAngles(glm::angleAxis(c, v));
 	}
 	inline float getArea(spehs::Position* cusps, unsigned numCusps)
 	{

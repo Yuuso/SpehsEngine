@@ -72,7 +72,7 @@ namespace spehs
 
 	public:
 		MeshBatch();
-		MeshBatch(const unsigned int& _batchSizeCheck, const int &_shader, const GLuint &_textureID, const GLenum &_drawMode, const bool _blending, const float &_lineWidth);
+		MeshBatch(const unsigned int& _batchSizeCheck, const int &_shader, const GLuint &_textureID, const GLenum &_drawMode, const bool _backFaceCulling, const bool _blending, const float &_lineWidth);
 		~MeshBatch();
 
 		bool operator==(const Mesh &_mesh); //Checks if mesh is suitable for this batch
@@ -93,6 +93,7 @@ namespace spehs
 		GLuint vertexBufferID;
 		GLuint indexBufferID;
 
+		bool backFaceCulling;
 		bool blending;
 		int shaderIndex;
 		unsigned int batchSize;

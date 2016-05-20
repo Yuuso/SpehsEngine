@@ -27,6 +27,7 @@ namespace spehs
 #endif
 
 		textureDataID = 0;
+		backFaceCulling = true;
 		readyForDelete = false;
 		renderState = true;
 		needUpdate = true;
@@ -74,6 +75,7 @@ namespace spehs
 				worldVertexArray[i].position.setPosition(vertex.x, vertex.y, vertex.z);
 				//Normals				
 				vertex = normalMatrix * glm::vec4(vertexArray[i].normal.x, vertexArray[i].normal.y, vertexArray[i].normal.z, 1.0f);
+				vertex = glm::normalize(vertex);
 				worldVertexArray[i].normal.setPosition(vertex.x, vertex.y, vertex.z);
 			}
 			needUpdate = false;
@@ -318,6 +320,10 @@ namespace spehs
 	void Mesh::setBlending(const bool &_value)
 	{
 		blending = _value;
+	}
+	void Mesh::setBackFaceCulling(const bool& _value)
+	{
+		backFaceCulling = _value;
 	}
 
 

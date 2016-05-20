@@ -36,17 +36,18 @@ namespace spehs
 	void Camera3D::update()
 	{
 		//movement
-		if (movement.x > maxSpeed)
-			movement.x = maxSpeed;
-		if (movement.y > maxSpeed)
-			movement.y = maxSpeed;
-		if (movement.z > maxSpeed)
-			movement.z = maxSpeed;
+		//TODO: possibly fix these?
+		//if (movement.x > maxSpeed)
+		//	movement.x = maxSpeed;
+		//if (movement.y > maxSpeed)
+		//	movement.y = maxSpeed;
+		//if (movement.z > maxSpeed)
+		//	movement.z = maxSpeed;
 		position += movement;
 		target = position + direction;
 
 		if (smoothCamera)
-			movement *= 0.9f - spehs::getDeltaTime().asSeconds;
+			movement *= 0.95f - spehs::getDeltaTime().asSeconds;
 		else
 			movement = glm::vec3(0.0f);
 
@@ -55,7 +56,7 @@ namespace spehs
 		glm::quat pitchQ = glm::angleAxis(rotation.x, right);
 		glm::quat yawQ = glm::angleAxis(-rotation.y, up);
 		rotation = glm::vec3(0.0f); //clear rotation
-		direction = glm::rotate(glm::normalize(glm::cross(pitchQ, yawQ)), direction);
+		direction = glm::normalize(glm::rotate(glm::normalize(glm::cross(pitchQ, yawQ)), direction));
 		target = position + direction;
 		if (followTarget)
 		{
