@@ -44,6 +44,7 @@ namespace spehs
 		void setFar(const float& _far);
 
 		glm::vec3 getPosition(){ return position; }
+		glm::vec3 getDirection(){ return direction; }
 
 		glm::mat4* cameraMatrix;
 
