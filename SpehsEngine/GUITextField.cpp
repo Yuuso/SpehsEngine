@@ -170,15 +170,14 @@ namespace spehs
 		}
 
 		//End typing
-		if (inputManager->isKeyPressed(KEYBOARD_RETURN))
+		if (inputManager->isKeyPressed(KEYBOARD_RETURN) ||
+			inputManager->isKeyPressed(KEYBOARD_KP_ENTER))
 		{
 			storedString = input;//Store input string
 			endTyping();
-		}
-		if (inputManager->isKeyPressed(KEYBOARD_KP_ENTER))
-		{
-			storedString = input;//Store input string
-			endTyping();
+
+			//Make press callback call
+			(*pressCallbackFunction)(*this);
 		}
 		if (inputManager->isKeyPressed(KEYBOARD_ESCAPE))
 		{

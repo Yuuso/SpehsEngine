@@ -1,5 +1,6 @@
 #pragma once
 #include <string>
+#include <functional>
 #include <glm/vec2.hpp>
 #include <glm/vec3.hpp>
 #include <glm/vec4.hpp>
@@ -111,6 +112,8 @@ namespace spehs
 		void setDisplayTexture(std::string path);
 		//Rectangle texture
 		void setTexture(std::string path);
+		//Callback
+		void setPressCallback(std::function<void(GUIRectangle&)> callbackFunction);///< Callback to function/method that returns void and accepts the button reference as an argument. Called when the rectangle is left pressed.
 
 		////State
 		//Getters
@@ -194,6 +197,7 @@ namespace spehs
 		Text* text;
 		GUIRECT_STATE_TYPE state;
 		GUIRECT_ID_TYPE id;///<GUI rectangles can be given IDs for identification
+		std::function<void(GUIRectangle&)>* pressCallbackFunction;//Called when pressed
 
 		struct DisplayTexture
 		{
@@ -204,6 +208,7 @@ namespace spehs
 			uint16_t height;
 		};
 		DisplayTexture* displayTexture;
+
 	private:
 
 	};

@@ -34,7 +34,7 @@ namespace spehs
 	{
 		polygon->destroy();
 	}
-	GUIRectangle::GUIRectangle() : position(0), size(0), minSize(0), state(0), displayTexture(nullptr)
+	GUIRectangle::GUIRectangle() : position(0), size(0), minSize(0), state(0), displayTexture(nullptr), pressCallbackFunction(nullptr)
 	{//Default constructor
 #ifdef _DEBUG
 		++guiRectangleAllocations;
@@ -79,12 +79,16 @@ namespace spehs
 			delete tooltip;
 		if (displayTexture)
 			delete displayTexture;
+		if (pressCallbackFunction)
+			delete pressCallbackFunction;
 	}
 	void GUIRectangle::update()
 	{
 		disableBit(state, GUIRECT_MOUSE_HOVER);
 		disableBit(state, GUIRECT_MOUSE_HOVER_CONTAINER);
 		updateMouseHover();
+		if (pressCallbackFunction && getMouseHoverAny() && inputManager->isKeyPressed(MOUSEBUTTON_LEFT))
+			(*pressCallbackFunction)(*this);
 
 		//Toolti render state
 		if (tooltip)
@@ -375,5 +379,12 @@ namespace spehs
 	bool GUIRectangle::isVisible()
 	{
 		return polygon->getRenderState();
+	}
+	void GUIRectangle::setPressCallback(std::function<void(GUIRectangle&)> callbackFunction)
+	{
+		if (pressCallbackFunction)
+			*pressCallbackFunction = callbackFunction;
+		else
+			pressCallbackFunction = new std::function<void(GUIRectangle&)>(callbackFunction);
 	}
 }
