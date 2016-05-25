@@ -51,7 +51,7 @@ namespace spehs
 		//Audio
 		masterVolume(100), musicVolume(100), sfxVolume(100),
 		//Other
-		consoleTextSize(20), consoleTextAlpha(1000),
+		consoleTextSize(12), consoleTextAlpha(900),
 		GUITextSize(12), GUITextFontPath("Fonts/Anonymous.ttf"),
 		dataDirectory("data/"),
 		windowWidth(1280), windowHeight(720)

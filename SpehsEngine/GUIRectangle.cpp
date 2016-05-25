@@ -15,9 +15,27 @@
 int64_t guiRectangleAllocations = 0;
 int64_t guiRectangleDeallocations = 0;
 
-
 namespace spehs
 {
+	glm::vec4 GUIRectangle::defaultColor;
+	void GUIRectangle::setDefaultColor(int r, int g, int b, int a)
+	{
+		defaultColor[0] = r / 255.0f;
+		defaultColor[1] = g / 255.0f;
+		defaultColor[2] = b / 255.0f;
+		defaultColor[3] = a / 255.0f;
+	}
+	void GUIRectangle::setDefaultColor(glm::vec4 color)
+	{
+		defaultColor = color;
+	}
+	void GUIRectangle::setDefaultColor(glm::vec3 color)
+	{
+		memcpy(&defaultColor[0], &color[0], sizeof(float) * 3);
+		defaultColor.a = 1.0f;
+	}
+
+
 #ifdef DRAW_TEXT_ENABLED
 	void GUIRectangle::DRAW_TEXT()
 	{//DEBUG
@@ -49,7 +67,7 @@ namespace spehs
 		enableBit(state, GUIRECT_HOVER_COLOR);
 		enableBit(state, GUIRECT_TEXT_JUSTIFICATION_LEFT);
 
-		setColor(125, 125, 125);
+		setColor(defaultColor);
 	}
 	GUIRectangle::GUIRectangle(GUIRECT_ID_TYPE ID) : GUIRectangle()
 	{
@@ -304,6 +322,10 @@ namespace spehs
 		disableStateRecursiveUpwards(GUIRECT_MIN_SIZE_UPDATED);
 		disableStateRecursiveUpwards(GUIRECT_POSITIONED);
 	}
+	void GUIRectangle::setStringSizeRelative(int relativeSize)
+	{
+		setStringSize(applicationData->GUITextSize + relativeSize);
+	}
 	void GUIRectangle::setTooltip(std::string tooltipString)
 	{
 		//Create tooltip object if one does not exist already
@@ -354,7 +376,7 @@ namespace spehs
 			return;
 		text = new spehs::Text(polygon->getPlaneDepth() + 1);
 		text->setFont(applicationData->GUITextFontPath, applicationData->GUITextSize);
-		text->setColor(0.05f, 0.05f, 0.05f);
+		text->setColor(0.0f, 0.0f, 0.0f);
 	}
 	void GUIRectangle::setDisplayTexture(std::string path)
 	{

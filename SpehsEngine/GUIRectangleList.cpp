@@ -9,6 +9,14 @@
 
 namespace spehs
 {
+	void GUIRectangleList::DRAW_TEXT()
+	{
+		GUIRectangleContainer::DRAW_TEXT();
+		scrollUp->DRAW_TEXT();
+		scrollBar->DRAW_TEXT();
+		scrollDown->DRAW_TEXT();
+	}
+
 	namespace ScrollButtons{ enum ScrollButtons{ up, bar, down }; }
 	GUIRectangleList::GUIRectangleList() : GUIRectangleContainer()
 	{
@@ -21,6 +29,9 @@ namespace spehs
 		scrollUp->setParent(this);
 		scrollBar->setParent(this);
 		scrollDown->setParent(this);
+		scrollUp->setRenderState(false);
+		scrollBar->setRenderState(false);
+		scrollDown->setRenderState(false);
 
 
 		scrollUp->setString("U");
@@ -64,7 +75,7 @@ namespace spehs
 			else if (scrollDown->getMouseHover())
 				scroll(1);
 		}
-		if (isFocused() && inputManager->getMouseWheelDelta())
+		if (getMouseHover() && inputManager->getMouseWheelDelta())
 			scroll(-inputManager->getMouseWheelDelta());
 
 		GUIRectangleContainer::update();

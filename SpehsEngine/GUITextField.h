@@ -8,6 +8,7 @@ namespace spehs
 	{
 	public:
 		GUITextField();
+		GUITextField(std::string str);
 		GUITextField(GUIRECT_ID_TYPE id);
 		GUITextField(int, int);
 		~GUITextField();

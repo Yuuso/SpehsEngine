@@ -10,6 +10,8 @@ namespace spehs
 	class GUIRectangleList : public GUIRectangleContainer
 	{
 	public:
+		virtual void DRAW_TEXT();
+
 		GUIRectangleList();
 		GUIRectangleList(uint32_t);
 		virtual ~GUIRectangleList();

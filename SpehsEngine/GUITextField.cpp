@@ -7,14 +7,20 @@
 
 namespace spehs
 {
-	GUITextField::GUITextField() : stringUpdated(false), defaultString(""), input("")
+	GUITextField::GUITextField() : stringUpdated(false), defaultString(""), input(""), storedString("")
 	{
 	}
-	GUITextField::GUITextField(GUIRECT_ID_TYPE ID) : GUIRectangle(ID)
+	GUITextField::GUITextField(std::string str) : GUITextField()
 	{
+		setString(str);
 	}
-	GUITextField::GUITextField(int w, int h) : GUIRectangle(w, h)
+	GUITextField::GUITextField(GUIRECT_ID_TYPE ID) : GUITextField()
 	{
+		setID(ID);
+	}
+	GUITextField::GUITextField(int w, int h) : GUITextField()
+	{
+		setSize(w, h);
 	}
 	GUITextField::~GUITextField()
 	{
@@ -171,7 +177,8 @@ namespace spehs
 
 		//End typing
 		if (inputManager->isKeyPressed(KEYBOARD_RETURN) ||
-			inputManager->isKeyPressed(KEYBOARD_KP_ENTER))
+			inputManager->isKeyPressed(KEYBOARD_KP_ENTER) ||
+			(inputManager->isKeyPressed(MOUSEBUTTON_LEFT) && getMouseHover()))
 		{
 			storedString = input;//Store input string
 			endTyping();
@@ -179,7 +186,8 @@ namespace spehs
 			//Make press callback call
 			(*pressCallbackFunction)(*this);
 		}
-		if (inputManager->isKeyPressed(KEYBOARD_ESCAPE))
+		if (inputManager->isKeyPressed(KEYBOARD_ESCAPE) ||
+			inputManager->isKeyPressed(MOUSEBUTTON_LEFT) && !getMouseHover())
 		{
 			endTyping();
 		}

@@ -1,6 +1,7 @@
 #pragma once
 #include <string>
 #include <fstream>
+#include <vector>
 namespace spehs
 {
 	/**Writes string to stream*/
@@ -24,4 +25,9 @@ namespace spehs
 
 	/**If directory doesn't exist, creates one. If creation fails, returns false*/
 	bool verifyDirectory(std::string& path);
+
+	/**Returns a vector of strings, each string representing a file found in the given directory.
+	Directory path is not included in the file string. If file type is specified, the file type will not be included in the file string.
+	If file type is specified, only files of that type are returned.*/
+	std::vector<std::string> listFilesInDirectory(std::string directoryPath, std::string fileType = "");
 }

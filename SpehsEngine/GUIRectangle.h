@@ -56,6 +56,15 @@ namespace spehs
 	GUI rectangles can be stored in GUI rectangle containers*/
 	class GUIRectangle
 	{
+	////Static
+	public:
+		static void setDefaultColor(int r, int g, int b, int a = 255);
+		static void setDefaultColor(glm::vec4 color);
+		static void setDefaultColor(glm::vec3 color);
+	private:
+		static glm::vec4 defaultColor;
+
+
 	public:
 		GUIRectangle();
 		GUIRectangle(GUIRECT_ID_TYPE ID);
@@ -99,6 +108,7 @@ namespace spehs
 		void createText();
 		virtual void setString(std::string str);
 		void setStringSize(int size);
+		void setStringSizeRelative(int relativeSize);///< Set string size relative to global default GUI text size.
 		void setStringColor(glm::vec4& col);
 		void setStringColor(unsigned char r, unsigned char g, unsigned char b, unsigned char a = 255);
 		void setStringAlpha(float alpha);
@@ -112,8 +122,12 @@ namespace spehs
 		void setDisplayTexture(std::string path);
 		//Rectangle texture
 		void setTexture(std::string path);
+		
 		//Callback
-		void setPressCallback(std::function<void(GUIRectangle&)> callbackFunction);///< Callback to function/method that returns void and accepts the button reference as an argument. Called when the rectangle is left pressed.
+		/** Callback to function/method that returns void and accepts the button reference as an argument.
+		Called when the rectangle is left pressed.
+		IMPORTANT NOTE: callback function must not remove the element, as the callback is called from the update.*/
+		void setPressCallback(std::function<void(GUIRectangle&)> callbackFunction);
 
 		////State
 		//Getters
