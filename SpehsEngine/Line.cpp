@@ -15,8 +15,8 @@ namespace spehs
 {
 	Line::Line(const glm::vec2 &_startPoint, const glm::vec2 &_endPoint, const PlaneDepth &_planeDepth)
 	{
-		if (glm::distance(_startPoint, _endPoint) < DISTANCE_EPSILON)
-			spehs::console::error("Line needs to have length greater than 0!");
+		//if (glm::distance(_startPoint, _endPoint) < DISTANCE_EPSILON)
+			//spehs::console::error("Line needs to have length greater than 0!");
 
 		vertexArray.resize(2);
 		vertexArray[0].position.setPosition(_startPoint.x, _startPoint.y);
