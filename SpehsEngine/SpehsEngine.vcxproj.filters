@@ -160,6 +160,9 @@
     <ClCompile Include="PostProcessing.cpp">
       <Filter>Rendering</Filter>
     </ClCompile>
+    <ClCompile Include="Compression.cpp">
+      <Filter>Filestream</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GLSLProgram.h">
@@ -329,6 +332,9 @@
     </ClInclude>
     <ClInclude Include="PostProcessing.h">
       <Filter>Rendering</Filter>
+    </ClInclude>
+    <ClInclude Include="Compression.h">
+      <Filter>Filestream</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

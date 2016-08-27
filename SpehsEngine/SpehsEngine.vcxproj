@@ -94,6 +94,7 @@
     <ClCompile Include="Camera2D.cpp" />
     <ClCompile Include="Camera3D.cpp" />
     <ClCompile Include="Component.cpp" />
+    <ClCompile Include="Compression.cpp" />
     <ClCompile Include="Console.cpp" />
     <ClCompile Include="ControlMesh.cpp" />
     <ClCompile Include="Exceptions.cpp" />
@@ -150,6 +151,7 @@
     <ClInclude Include="Camera2D.h" />
     <ClInclude Include="Camera3D.h" />
     <ClInclude Include="Component.h" />
+    <ClInclude Include="Compression.h" />
     <ClInclude Include="Console.h" />
     <ClInclude Include="ConsoleVariable.h" />
     <ClInclude Include="ControlMesh.h" />
