@@ -28,9 +28,6 @@
     <ClCompile Include="Camera2D.cpp">
       <Filter>Rendering</Filter>
     </ClCompile>
-    <ClCompile Include="WorldPosition.cpp">
-      <Filter>Core</Filter>
-    </ClCompile>
     <ClCompile Include="Geometry.cpp">
       <Filter>Core</Filter>
     </ClCompile>
@@ -163,6 +160,9 @@
     <ClCompile Include="Compression.cpp">
       <Filter>Filestream</Filter>
     </ClCompile>
+    <ClCompile Include="Position64.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GLSLProgram.h">
@@ -197,9 +197,6 @@
     </ClInclude>
     <ClInclude Include="GUID.h">
       <Filter>HID</Filter>
-    </ClInclude>
-    <ClInclude Include="WorldPosition.h">
-      <Filter>Core</Filter>
     </ClInclude>
     <ClInclude Include="Geometry.h">
       <Filter>Core</Filter>
@@ -335,6 +332,9 @@
     </ClInclude>
     <ClInclude Include="Compression.h">
       <Filter>Filestream</Filter>
+    </ClInclude>
+    <ClInclude Include="Position64.h">
+      <Filter>Core</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

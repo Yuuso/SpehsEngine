@@ -1,22 +1,22 @@
 #include <iostream>
 
-#include "WorldPosition.h"
+#include "Position64.h"
 
 
 namespace spehs
 {
-	WorldPosition::WorldPosition() : integerX(0), integerY(0), floatingX(0.0f), floatingY(0.0f)
+	Position64::Position64() : integerX(0), integerY(0), floatingX(0.0f), floatingY(0.0f)
 	{
 	}
-	WorldPosition::WorldPosition(int64_t ix, int64_t iy) : integerX(ix), integerY(iy), floatingX(0.0f), floatingY(0.0f)
+	Position64::Position64(int64_t ix, int64_t iy) : integerX(ix), integerY(iy), floatingX(0.0f), floatingY(0.0f)
 	{
 	}
-	WorldPosition::WorldPosition(WorldPosition _stPos, glm::vec2 _transl)
+	Position64::Position64(Position64 _stPos, glm::vec2 _transl)
 	{
 		*this = _stPos;
 		translate(_transl);
 	}
-	void WorldPosition::reset()
+	void Position64::reset()
 	{
 		integerX = 0;
 		integerY = 0;
@@ -25,63 +25,63 @@ namespace spehs
 	}
 
 	//Buffer read/write
-	size_t WorldPosition::write(void* buffer)
+	size_t Position64::write(void* buffer)
 	{
 		memcpy(buffer, &integerX, sizeof(integerX) + sizeof(integerY) + sizeof(floatingX) + sizeof(floatingY));
 		return sizeof(integerX) + sizeof(integerY) + sizeof(floatingX) + sizeof(floatingY);
 	}
-	size_t WorldPosition::read(void* buffer)
+	size_t Position64::read(void* buffer)
 	{
 		memcpy(&integerX, buffer, sizeof(integerX) + sizeof(integerY) + sizeof(floatingX) + sizeof(floatingY));
 		return sizeof(integerX) + sizeof(integerY) + sizeof(floatingX) + sizeof(floatingY);
 	}
 
 	//Operators
-	WorldPosition WorldPosition::operator+(const glm::vec2& other)
+	Position64 Position64::operator+(const glm::vec2& other)
 	{
-		WorldPosition pos(*this);
+		Position64 pos(*this);
 		pos += other;
 		return pos;
 	}
-	WorldPosition WorldPosition::operator-(const glm::vec2& other)
+	Position64 Position64::operator-(const glm::vec2& other)
 	{
-		WorldPosition pos(*this);
+		Position64 pos(*this);
 		pos -= other;
 		return pos;
 	}
-	WorldPosition WorldPosition::operator+(const WorldPosition& other)
+	Position64 Position64::operator+(const Position64& other)
 	{
-		WorldPosition pos(integerX + other.integerX, integerY + other.integerY);
+		Position64 pos(integerX + other.integerX, integerY + other.integerY);
 		pos.translate(glm::vec2(floatingX + other.floatingX, floatingY + other.floatingY));
 		return pos;
 	}
-	WorldPosition WorldPosition::operator-(const WorldPosition& other)
+	Position64 Position64::operator-(const Position64& other)
 	{
-		WorldPosition pos(integerX - other.integerX, integerY - other.integerY);
+		Position64 pos(integerX - other.integerX, integerY - other.integerY);
 		pos.translate(glm::vec2(floatingX - other.floatingX, floatingY - other.floatingY));
 		return pos;
 	}
-	void WorldPosition::operator-=(const glm::vec2& other)
+	void Position64::operator-=(const glm::vec2& other)
 	{
 		translate(-other);
 	}
-	void WorldPosition::operator+=(const glm::vec2& other)
+	void Position64::operator+=(const glm::vec2& other)
 	{
 		translate(other);
 	}
-	void WorldPosition::operator-=(const WorldPosition& other)
+	void Position64::operator-=(const Position64& other)
 	{
 		integerX -= other.integerX;
 		integerY -= other.integerY;
 		translate(glm::vec2(-other.floatingX, -other.floatingY));
 	}
-	void WorldPosition::operator+=(const WorldPosition& other)
+	void Position64::operator+=(const Position64& other)
 	{
 		integerX += other.integerX;
 		integerY += other.integerY;
 		translate(glm::vec2(other.floatingX, other.floatingY));
 	}
-	bool WorldPosition::operator==(const WorldPosition& other)
+	bool Position64::operator==(const Position64& other)
 	{
 		if (integerX != other.integerX)
 			return false;
@@ -93,7 +93,7 @@ namespace spehs
 			return false;
 		return true;
 	}
-	bool WorldPosition::operator!=(const WorldPosition& other)
+	bool Position64::operator!=(const Position64& other)
 	{
 		if (integerX != other.integerX)
 			return true;
@@ -107,7 +107,7 @@ namespace spehs
 	}
 
 	//Translation
-	void WorldPosition::translate(const glm::vec2& _translation)
+	void Position64::translate(const glm::vec2& _translation)
 	{
 		//Integer difference
 		int64_t dix = std::trunc(_translation.x);
@@ -147,7 +147,7 @@ namespace spehs
 			integerY--;
 		}
 	}
-	void WorldPosition::translate(float fx, float fy)
+	void Position64::translate(float fx, float fy)
 	{
 		//Integer difference
 		int64_t dix = std::trunc(fx);
@@ -187,17 +187,17 @@ namespace spehs
 			integerY--;
 		}
 	}
-	void WorldPosition::translate(int64_t _ix, int64_t _iy)
+	void Position64::translate(int64_t _ix, int64_t _iy)
 	{
 		integerX += _ix;
 		integerY += _iy;
 	}
-	void WorldPosition::setPosition(int64_t _ix, int64_t _iy)
+	void Position64::setPosition(int64_t _ix, int64_t _iy)
 	{
 		integerX = _ix;
 		integerY = _iy;
 	}
-	void WorldPosition::setPosition(const WorldPosition& other)
+	void Position64::setPosition(const Position64& other)
 	{
 		integerX = other.integerX;
 		integerY = other.integerY;
@@ -206,19 +206,19 @@ namespace spehs
 	}
 
 	//Getters
-	glm::vec2 WorldPosition::getVec2From(const WorldPosition& _position)
+	glm::vec2 Position64::getVec2From(const Position64& _position)
 	{
 		return glm::vec2(integerX - _position.integerX + floatingX - _position.floatingX, integerY - _position.integerY + floatingY - _position.floatingY);
 	}
-	glm::vec2 WorldPosition::getVec2To(const WorldPosition& _position)
+	glm::vec2 Position64::getVec2To(const Position64& _position)
 	{
 		return glm::vec2(_position.integerX - integerX + _position.floatingX - floatingX, _position.integerY - integerY + _position.floatingY - floatingY);
 	}
-	float WorldPosition::getDistance(const WorldPosition& other)
+	float Position64::getDistance(const Position64& other)
 	{
 		return sqrtf(pow(float(integerX) + floatingX - float(other.integerX) - other.floatingX, 2) + pow(float(integerY) + floatingY - float(other.integerY) - other.floatingY, 2));
 	}
-	float WorldPosition::getDistanceI(const WorldPosition& other)
+	float Position64::getDistanceI(const Position64& other)
 	{
 		return sqrtf(pow(integerX - other.integerX, 2) + pow(integerY - other.integerY, 2));
 	}
