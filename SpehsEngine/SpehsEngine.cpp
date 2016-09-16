@@ -1,3 +1,4 @@
+
 #include "ApplicationData.h"
 #include "SpehsEngine.h"
 #include "Exceptions.h"
@@ -8,7 +9,6 @@
 #include "TextureManager.h"
 #include "RNG.h"
 #include "ShaderManager.h"
-#include "ModelManager.h"
 #include "Console.h"
 #include "OpenGLError.h"
 
@@ -26,6 +26,8 @@ std::string buildVersion;
 
 namespace spehs
 {
+	extern void initText();
+	extern void uninitText();
 	namespace rng
 	{
 		extern void initializeRNG();
@@ -72,14 +74,13 @@ namespace spehs
 		std::cout << "\nHardware threads: " + std::to_string(std::thread::hardware_concurrency());
 		std::cout << "\nCurrent SpehsEngine build: " << getEngineVersion() << std::endl;
 
-		spehs::initializeTextRendering();
+		spehs::initText();
 		spehs::initializeTime();
 
 		//INITIALIZATIONS
 		inputManager = new InputManager();
 		inputManager->initialize();
 		textureManager = new TextureManager();
-		modelManager = new ModelManager();
 		shaderManager = new ShaderManager();
 		rng::initializeRNG();
 		console::initialize();
@@ -98,10 +99,9 @@ namespace spehs
 		delete inputManager;
 		delete textureManager;
 		delete shaderManager;
-		delete modelManager;
 		console::unitialize();
 		spehs::uninitializeTime();
-		spehs::uninitializeTextRendering();
+		spehs::uninitText();
 		SDL_Quit();
 	}
 

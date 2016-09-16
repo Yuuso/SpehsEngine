@@ -1,5 +1,10 @@
-#include <iostream>
-#include <vector>
+
+#include "Text.h"
+#include "Exceptions.h"
+#include "GLSLProgram.h"
+#include "ApplicationData.h"
+#include "OpenGLError.h"
+#include "Console.h"
 
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtx/transform.hpp>
@@ -8,17 +13,79 @@
 #include <Freetype/ft2build.h>
 #include FT_FREETYPE_H
 
-#include "Exceptions.h"
-#include "Text.h"
-#include "GLSLProgram.h"
-#include "ApplicationData.h"
-#include "OpenGLError.h"
+#include <iostream>
+
 
 namespace spehs
 {
+	static bool textRenderingInitialized(false);
+	static FT_Library* ft = nullptr;
+
+	void initText()
+	{
+		FontManager::instance = new FontManager;
+
+		if (textRenderingInitialized)
+		{
+			console::error("Text rendering already initialized!");
+			return;
+		}
+
+		if (ft)
+		{
+			console::error("Freetype library already exists!");
+			return;
+		}
+		ft = new FT_Library;
+		if (FT_Init_FreeType(ft))
+		{
+			exceptions::fatalError("Freetype library initialization failed!");
+			return;
+		}
+
+		textRenderingInitialized = true;
+	}
+	void uninitText()
+	{
+		if (!textRenderingInitialized)
+		{//Validate uninitialization
+			console::error("Text rendering already uninitialized");
+			return;
+		}
+
+		//Uninitialize FreeType
+		FT_Done_FreeType(*ft);
+		delete ft;
+		ft = nullptr;
+
+		//Uninitialization complete
+		std::cout << "\nText rendering uninitialized.";
+		textRenderingInitialized = false;
+	}
+
+
 	struct Font
 	{
-		~Font();
+		~Font()
+		{
+			if (ftFace != nullptr)
+			{
+				FT_Error error = FT_Done_Face(*ftFace);
+				if (error)
+				{
+					std::string errorString = "Freetype error: Failed to unload font ";
+					errorString += fontPath;
+					errorString += " code: " + error;
+					console::error(errorString);
+				}
+				delete ftFace;
+
+				for (unsigned i = 0; i < characters.size(); i++)
+				{
+					glDeleteTextures(1, &characters[i].textureID);
+				}
+			}
+		}
 
 		FT_Face* ftFace = nullptr;
 		std::string fontPath;
@@ -29,88 +96,136 @@ namespace spehs
 		int descender = 0;
 	};
 
-	static bool textRenderingInitialized(false);
-	static int textCount = 0;
-	static FT_Library* ft = nullptr;
-	static GLSLProgram textProgram;
-	static std::vector<Font*> fonts;
-	static glm::mat4 projectionMatrix;
 
-	void initializeTextRendering()
+	FontManager::~FontManager()
 	{
-		if (textRenderingInitialized)
-		{
-			exceptions::warning("Text rendering already initialized!");
-			return;
-		}
-
-		if (ft)
-		{
-			exceptions::warning("Freetype library already exists!");
-			return;
-		}
-		ft = new FT_Library;
-		if (FT_Init_FreeType(ft))
-		{
-			exceptions::fatalError("Freetype library initialization failed!");
-			return;
-		}
-
-		textProgram.compileShaders("Shaders/text.vertex", "Shaders/text.fragment");
-		textProgram.addAttribute("vertex");
-		textProgram.linkShaders();
-
-		textRenderingInitialized = true;
-	}
-	void uninitializeTextRendering()
-	{
-		if (!textRenderingInitialized)
-		{//Validate uninitialization
-			return;
-		}
-
-		//Uninitialize FreeType
-		FT_Done_FreeType(*ft);
-		delete ft;
-		ft = nullptr;
-
 		//Inform (possible) memory leaks
-		if (textCount != 0)
-		{
-			std::cout << "\nSome Text objects were not deallocated! Remaining gines::Text count: " << textCount;
-		}
 		if (fonts.size() != 0)
 		{
 			std::cout << "\nSome Font objects were not deallocated! Remaining font count: " << fonts.size();
+			for (unsigned i = 0; i < fonts.size(); i++)
+			{
+				delete fonts[i];
+			}
 		}
-
-		//Uninitialization complete
-		std::cout << "\nText rendering uninitialized";
-		textRenderingInitialized = false;
 	}
-
-	Font::~Font()
+	Font* FontManager::getFont(const std::string &_fontPath, const int &_size)
 	{
-		if (ftFace != nullptr)
+		//Check for already existing font
+		for (unsigned int i = 0; i < fonts.size(); i++)
 		{
-			FT_Done_Face(*ftFace);
-			delete ftFace;
+			if (_fontPath == fonts[i]->fontPath)
+			{
+				if (_size == fonts[i]->fontSize)
+				{
+					fonts[i]->referenceCount++;
+					return fonts[i];
+				}
+			}
 		}
+
+		//Create a new font
+		fonts.push_back(new Font);
+		Font* font = fonts.back();
+		font->ftFace = new FT_Face;
+
+		FT_Error error = FT_New_Face(*ft, _fontPath.c_str(), 0, font->ftFace);
+		if (error)
+		{			
+			std::string errorString = "Freetype error: Failed to load font "; 
+			errorString += _fontPath; 
+			errorString += " code: " + error;
+			console::error(errorString);
+			return nullptr;
+		}
+
+		font->fontPath = _fontPath;
+		font->fontSize = _size;
+		font->referenceCount = 1;
+
+		FT_Face* ftFace = font->ftFace;
+		FT_Set_Pixel_Sizes(*ftFace, 0, _size);
+		glPixelStorei(GL_UNPACK_ALIGNMENT, 1); //Disable byte-alignment restriction
+
+		for (GLubyte c = 32; c <= 126; c++)
+		{
+			//Load character glyph
+			if (FT_Load_Char(*ftFace, c, FT_LOAD_RENDER))
+			{
+				console::error("FreeType error: Failed to load Glyph");
+				return nullptr;
+			}
+
+			//Generate texture
+			GLuint texture;
+			glGenTextures(1, &texture);
+			glBindTexture(GL_TEXTURE_2D, texture);
+			glTexImage2D(
+				GL_TEXTURE_2D,
+				0,
+				GL_RED,
+				(*ftFace)->glyph->bitmap.width,
+				(*ftFace)->glyph->bitmap.rows,
+				0,
+				GL_RED,
+				GL_UNSIGNED_BYTE,
+				(*ftFace)->glyph->bitmap.buffer
+				);
+
+			//Set texture options
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+			//Now store character for later use
+			Character character =
+			{
+				texture,
+				glm::ivec2((*ftFace)->glyph->bitmap.width, (*ftFace)->glyph->bitmap.rows),
+				glm::ivec2((*ftFace)->glyph->bitmap_left, (*ftFace)->glyph->bitmap_top),
+				(*ftFace)->glyph->advance.x
+			};
+			font->characters.insert(std::pair<GLchar, Character>(c, character));
+		}
+
+		checkOpenGLErrors(__FILE__, __LINE__);
+
+		font->height = (*font->ftFace)->size->metrics.height >> 6;
+		font->descender = (*font->ftFace)->descender >> 6;
+
+		return font;
 	}
+	void FontManager::unreferenceFont(Font* _font)
+	{
+		if (_font == nullptr)
+			return;
+
+		//If face becomes useless, remove it
+		if (--_font->referenceCount <= 0)
+		{
+			for (unsigned int i = 0; i < fonts.size(); i++)
+			{
+				if (fonts[i] == _font)
+				{
+					fonts.erase(fonts.begin() + i);
+					delete _font;
+				}
+			}
+		}
+		_font = nullptr;
+	}
+	
 
 	Text::~Text()
 	{
-		glDeleteBuffers(1, &vertexArrayData);
-		unreferenceFont();
-		if (--textCount <= 0)
-		{
-			uninitializeTextRendering();
-		}
+		FontManager::instance->unreferenceFont(font);
 	}
-	Text::Text(PlaneDepth depth) : glyphsToRender(0), lineCount(0), vertexArrayData(0), textures(nullptr), scale(1.0f), lineSpacing(0), doUpdate(true), font(nullptr)
-	{//Default constructor is called from copy constructor as well
-		textCount++;
+	Text::Text(PlaneDepth depth) : lineCount(0), scale(1.0f), lineSpacing(0), font(nullptr), needTextUpdate(false), needPositionUpdate(false), renderState(true), readyForDelete(false)
+	{
+		
 	}
+	/*
 	Text::Text(const Text& original)
 	{//Copy constructor
 		*this = original;
@@ -136,384 +251,201 @@ namespace spehs
 			setFont(original.font->fontPath, original.font->fontSize);//Increases reference count
 			updateBuffers();
 		}
-	}
-	void Text::unreferenceFont()
-	{
-		if (font == nullptr)
-		{
-			return;
-		}
+	}*/
 
-		//if face becomes useless, remove
-		if (--font->referenceCount <= 0)
+	void Text::destroy()
+	{
+		readyForDelete = true;
+	}
+
+	void Text::update()
+	{
+		if (needTextUpdate)
 		{
-			for (unsigned int i = 0; i < fonts.size(); i++)
-			if (fonts[i] == font)
+			updateText();
+		}
+		if (needPositionUpdate)
+		{
+			updatePosition();
+		}
+	}
+	void Text::updatePosition()
+	{
+		worldVertexArray = vertexArray;
+		for (unsigned i = 0; i < worldVertexArray.size(); i++)
+		{
+			worldVertexArray[i].position.x += position.x;
+			worldVertexArray[i].position.y += position.y;
+		}
+	}
+	void Text::updateText()
+	{
+		int x = 0.0f;
+		int y = 0.0f;
+
+		textureIDs.clear();
+		vertexArray.clear();
+
+		//Iterate through all the characters in the string
+		for (auto c = string.begin(); c != string.end(); c++)
+		{
+			if (*c != '\n')
 			{
-				fonts.erase(fonts.begin() + i);
-				delete font;
+				Character ch = font->characters[*c];
+
+				GLfloat xpos = x + ch.bearing.x * scale;
+				GLfloat ypos = y - (ch.size.y - ch.bearing.y) * scale;
+
+				GLfloat w = ch.size.x * scale;
+				GLfloat h = ch.size.y * scale;
+
+				vertexArray.push_back(Vertex(spehs::Position(xpos, ypos + h), spehs::UV(0.0f, 0.0f)));
+				vertexArray.push_back(Vertex(spehs::Position(xpos, ypos), spehs::UV(0.0f, 1.0f)));
+				vertexArray.push_back(Vertex(spehs::Position(xpos + w, ypos), spehs::UV(1.0f, 1.0f)));
+				vertexArray.push_back(Vertex(spehs::Position(xpos + w, ypos + h), spehs::UV(1.0f, 0.0f)));
+
+				textureIDs.push_back(ch.textureID);
+
+				//Now advance cursors for next glyph (note that advance is number of 1/64 pixels)
+				x += (ch.advance >> 6) * scale; //Bitshift by 6 to get value in pixels (2^6 = 64)
+			}
+			else
+			{
+				//new line
+				x = 0.0f;
+				y -= font->height + lineSpacing;
 			}
 		}
-		font = nullptr;
 	}
-	bool Text::setFontSize(int size)
+
+	void Text::setRenderState(bool _state)
+	{
+		renderState = _state;
+	}
+
+	void Text::setFont(const std::string &_fontPath, const int &_size)
+	{
+		if (font)
+		{
+			FontManager::instance->unreferenceFont(font);
+		}
+
+		font = FontManager::instance->getFont(_fontPath, _size);
+	}
+	void Text::setFont(Font* _font)
+	{
+		font = _font;
+		font->referenceCount++;
+	}
+	void Text::setFontSize(int _size)
 	{
 		//No font loaded
 		if (font == nullptr)
-		{
-			return false;
-		}
+			return;
 
 		//The size already matches
-		if (font->fontSize == size)
-		{
-			return true;
-		}
+		if (font->fontSize == _size)
+			return;
 
 		//Get new font face
-		setFont(font->fontPath, size);
-		return true;
+		FontManager::instance->unreferenceFont(font);
+		font = FontManager::instance->getFont(font->fontPath, _size);
 	}
-	bool Text::setFont(std::string fontPath, int size)
-	{
-		
-		if (!textRenderingInitialized)
-		{//make sure text is initialized
-			initializeTextRendering();
-		}
-
-		if (font != nullptr)
-		{//If a font is active, unreference it
-			unreferenceFont();
-		}
-
-		for (unsigned int i = 0; i < fonts.size(); i++)
-		{//Check whether the font that is being looked for exists...
-			if (fontPath == fonts[i]->fontPath)
-			{//... with the correct size
-				if (size == fonts[i]->fontSize)
-				{//Font already loaded
-					font = fonts[i];
-					font->referenceCount++;
-					doUpdate = true;
-					return true;
-				}
-			}
-		}
-
-		//Create a new font
-		fonts.push_back(new Font);
-		font = fonts.back();
-		font->ftFace = new FT_Face;
-
-		FT_Error error = FT_New_Face(*ft, fontPath.c_str(), 0, font->ftFace);
-		if (error)
-		{
-			//std::string errorString = "Freetype error: Failed to load font "; errorString += fontPath; errorString += " code: " + error;
-			//logError(errorString);
-			return false;
-		}
-
-		font->fontPath = fontPath;
-		font->fontSize = size;
-		font->referenceCount = 1;
-		FT_Face* ftFace = font->ftFace;
-		FT_Set_Pixel_Sizes(*ftFace, 0, size);
-		glPixelStorei(GL_UNPACK_ALIGNMENT, 1); // Disable byte-alignment restriction
-
-		for (GLubyte c = 32; c <= 126; c++)
-		{
-			// Load character glyph
-			if (FT_Load_Char(*ftFace, c, FT_LOAD_RENDER))
-			{
-				//logError("FreeType error: Failed to load Glyph");
-				return false;
-			}
-
-			// Generate texture
-			GLuint texture;
-			glGenTextures(1, &texture);
-			glBindTexture(GL_TEXTURE_2D, texture);
-			glTexImage2D(
-				GL_TEXTURE_2D,
-				0,
-				GL_RED,
-				(*ftFace)->glyph->bitmap.width,
-				(*ftFace)->glyph->bitmap.rows,
-				0,
-				GL_RED,
-				GL_UNSIGNED_BYTE,
-				(*ftFace)->glyph->bitmap.buffer
-				);
-
-			// Set texture options
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-			// Now store character for later use
-			Character character =
-			{
-				texture,
-				glm::ivec2((*ftFace)->glyph->bitmap.width, (*ftFace)->glyph->bitmap.rows),
-				glm::ivec2((*ftFace)->glyph->bitmap_left, (*ftFace)->glyph->bitmap_top),
-				(*ftFace)->glyph->advance.x
-			};
-			font->characters.insert(std::pair<GLchar, Character>(c, character));
-		}
-
-		checkOpenGLErrors(__FILE__, __LINE__);
-
-		font->height = (*font->ftFace)->size->metrics.height >> 6;
-		font->descender = (*font->ftFace)->descender >> 6;
-		projectionMatrix = glm::ortho(0.0f, float(applicationData->getWindowWidth()), 0.0f, float(applicationData->getWindowHeight()));
-
-		doUpdate = true;
-
-		return true;
-	}
-	void Text::updateBuffers()
-	{
-		if (!textRenderingInitialized)
-		{
-			return;
-		}
-
-		//This function should be called everytime the number of glyphs to render changes
-		updateGlyphsToRender();
-		glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-
-		glDeleteBuffers(1, &vertexArrayData);
-		glGenBuffers(1, &vertexArrayData);
-		glBindBuffer(GL_ARRAY_BUFFER, vertexArrayData);
-		glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * 6 * 4 * glyphsToRender, NULL, GL_DYNAMIC_DRAW);
-		// The 2D quad requires 6 vertices of 4 floats each so we reserve 6 * 4 floats of memory.
-		// Because we'll be updating the content of the VBO's memory quite often we'll allocate the memory with GL_DYNAMIC_DRAW.
-
-		int x = position.x;
-		int y = position.y;
-
-		// Iterate through all characters
-		if (textures != nullptr)
-		{
-			delete[] textures;
-		}
-		textures = new GLuint[glyphsToRender];
-		GLfloat* vertices = new GLfloat[24 * glyphsToRender];
-		int _index = 0;
-		for (auto c = string.begin(); c != string.end(); c++)
-			if (*c != '\n')
-			{
-			Character ch = font->characters[*c];
-
-			GLfloat xpos = x + ch.bearing.x * scale;
-			GLfloat ypos = y - (ch.size.y - ch.bearing.y) * scale;
-
-			GLfloat w = ch.size.x * scale;
-			GLfloat h = ch.size.y * scale;
-
-			// Update VBO for each character
-			vertices[_index * 24 + 0] = xpos;
-			vertices[_index * 24 + 1] = ypos + h;
-			vertices[_index * 24 + 2] = 0.0f;
-			vertices[_index * 24 + 3] = 0.0f;
-
-			vertices[_index * 24 + 4] = xpos;
-			vertices[_index * 24 + 5] = ypos;
-			vertices[_index * 24 + 6] = 0.0f;
-			vertices[_index * 24 + 7] = 1.0f;
-
-			vertices[_index * 24 + 8] = xpos + w;
-			vertices[_index * 24 + 9] = ypos;
-			vertices[_index * 24 + 10] = 1.0f;
-			vertices[_index * 24 + 11] = 1.0f;
-
-			vertices[_index * 24 + 12] = xpos;
-			vertices[_index * 24 + 13] = ypos + h;
-			vertices[_index * 24 + 14] = 0.0f;
-			vertices[_index * 24 + 15] = 0.0f;
-
-			vertices[_index * 24 + 16] = xpos + w;
-			vertices[_index * 24 + 17] = ypos;
-			vertices[_index * 24 + 18] = 1.0f;
-			vertices[_index * 24 + 19] = 1.0f;
-
-			vertices[_index * 24 + 20] = xpos + w;
-			vertices[_index * 24 + 21] = ypos + h;
-			vertices[_index * 24 + 22] = 1.0f;
-			vertices[_index * 24 + 23] = 0.0f;
-
-			// Render glyph texture over quad
-			textures[_index] = ch.textureID;
-
-			// Now advance cursors for next glyph (note that advance is number of 1/64 pixels)
-			x += (ch.advance >> 6) * scale; // Bitshift by 6 to get value in pixels (2^6 = 64)
-			_index++;
-			}
-			else
-			{//new line
-				x = position.x;
-				y -= font->height + lineSpacing;
-			}
-
-		checkOpenGLErrors(__FILE__, __LINE__);
-
-		//Submit data
-		glBindBuffer(GL_ARRAY_BUFFER, vertexArrayData);
-		glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(GLfloat) * 24 * glyphsToRender, vertices);
-		glBindBuffer(GL_ARRAY_BUFFER, 0);
-		delete[] vertices;
-		doUpdate = false;
-
-		checkOpenGLErrors(__FILE__, __LINE__);
-	}
-	void Text::updateGlyphsToRender()
-	{
-		glyphsToRender = 0;
-		for (auto c = string.begin(); c != string.end(); c++)
-			if (*c != '\n')
-			{
-			glyphsToRender++;
-			}
-	}
-
-	void Text::setRenderState(bool state)
-	{
-		if (doUpdate)
-			updateBuffers();
-
-		//Enable blending
-		glEnable(GL_BLEND);
-		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-		textProgram.use();
-
-		glBindBuffer(GL_ARRAY_BUFFER, vertexArrayData);
-		glUniformMatrix4fv(textProgram.getUniformLocation("projection"), 1, GL_FALSE, glm::value_ptr(projectionMatrix));
-		glUniform4f(textProgram.getUniformLocation("textColor"), color.r, color.g, color.b, color.a);
-
-		glEnableVertexAttribArray(0);
-		glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 0, (void*)0);
-
-		glActiveTexture(GL_TEXTURE0);
-		for (int i = 0; i < glyphsToRender; i++)
-		{//Draw
-			glBindTexture(GL_TEXTURE_2D, textures[i]);
-			glDrawArrays(GL_TRIANGLES, i * 6, 6);
-		}
-
-		//Unbinds / unuse program
-		glDisableVertexAttribArray(0);
-		glBindBuffer(GL_ARRAY_BUFFER, 0);
-		glBindTexture(GL_TEXTURE_2D, 0);
-		textProgram.unuse();
-
-		checkOpenGLErrors(__FILE__, __LINE__);
-	}
-
-	void Text::setString(std::string str)
+	void Text::setString(std::string _str)
 	{
 		//Set line count
-		if (str.size() > 0) lineCount = 1; else lineCount = 0;
-		for (unsigned i = 0; i < str.size(); i++)
-		if (str[i] == '\n') lineCount++;
+		if (_str.size() > 0) lineCount = 1; else lineCount = 0;
+		for (unsigned i = 0; i < _str.size(); i++)
+			if (_str[i] == '\n') lineCount++;
 
-		string = str;
-		doUpdate = true;
+		string = _str;
+		needTextUpdate = true;
 	}
-	void Text::setString(char* str, unsigned length)
+	void Text::setString(char* _str, unsigned length)
 	{
 		//Set line count
 		if (length > 0) lineCount = 1; else lineCount = 0;
 		for (unsigned i = 0; i < length; i++)
-			if (str[i] == '\n') lineCount++;
+			if (_str[i] == '\n') lineCount++;
 
-		string = str;
-		doUpdate = true;
+		string = _str;
+		needTextUpdate = true;
 	}
-	void Text::incrementString(std::string str)
+	void Text::incrementString(std::string _str)
 	{
 		//Increase line count
-		for (unsigned i = 0; i < str.size(); i++)
-		if (str[i] == '\n') lineCount++;
+		for (unsigned i = 0; i < _str.size(); i++)
+			if (_str[i] == '\n') lineCount++;
 
-		string += str;
-		doUpdate = true;
+		string += _str;
+		needTextUpdate = true;
 	}
-	void Text::incrementFrontString(std::string str)
+	void Text::incrementFrontString(std::string _str)
 	{
 		//Increase line count
-		for (unsigned i = 0; i < str.size(); i++)
-		if (str[i] == '\n') lineCount++;
+		for (unsigned i = 0; i < _str.size(); i++)
+			if (_str[i] == '\n') lineCount++;
 
-		string = str + string;
-		doUpdate = true;
+		string = _str + string;
+		needTextUpdate = true;
 	}
-	void Text::setPosition(glm::vec2& vec)
+	void Text::setPosition(glm::vec2& _vec)
 	{
-		position.x = vec.x;
-		position.y = vec.y;
-		doUpdate = true;
+		position.x = _vec.x;
+		position.y = _vec.y;
+		needPositionUpdate = true;
 	}
 	void Text::setPosition(float _x, float _y)
 	{
 		position.x = _x;
 		position.y = _y;
-		doUpdate = true;
+		needPositionUpdate = true;
 	}
-	void Text::translate(glm::vec2& vec)
+	void Text::translate(glm::vec2& _vec)
 	{
-		position.x += vec.x;
-		position.y += vec.y;
-		doUpdate = true;
+		position.x += _vec.x;
+		position.y += _vec.y;
+		needPositionUpdate = true;
 	}
-	void Text::setColor(glm::vec4& vec)
+	void Text::setColor(glm::vec4& _vec)
 	{
-		color = vec;
+		color = _vec;
 	}
-	void Text::setColor(float r, float g, float b, float a)
+	void Text::setColor(float _r, float _g, float _b, float _a)
 	{
-		color.r = r;
-		color.g = g;
-		color.b = b;
-		color.a = a;
+		color.r = _r;
+		color.g = _g;
+		color.b = _b;
+		color.a = _a;
 	}
-	void Text::setColor(unsigned char r, unsigned char g, unsigned char b, unsigned char a)
+	void Text::setColor(unsigned char _r, unsigned char _g, unsigned char _b, unsigned char _a)
 	{
-		color.r = r / 255.0f;
-		color.g = g / 255.0f;
-		color.b = b / 255.0f;
-		color.a = a / 255.0f;
+		color.r = _r / 255.0f;
+		color.g = _g / 255.0f;
+		color.b = _b / 255.0f;
+		color.a = _a / 255.0f;
 	}
-	void Text::setAlpha(float alpha)
+	void Text::setAlpha(float _alpha)
 	{
-		color.a = alpha;
+		color.a = _alpha;
 	}
-	void Text::setAlpha(unsigned char a)
+	void Text::setAlpha(unsigned char _a)
 	{
-		color.a = a / 255.0f;
+		color.a = _a / 255.0f;
 	}
-	int Text::getLineCount()
+	int Text::getFontSize() const
 	{
-		return lineCount;
+		return font->fontSize;
 	}
-	int Text::getFontHeight()
+	int Text::getFontHeight() const
 	{
 		return font->height;
 	}
-	glm::vec4& Text::getColorRef()
+	int Text::getFontDescender() const
 	{
-		return color;
+		return font->descender;
 	}
-	int Text::getGlyphsToRender()
-	{
-		return glyphsToRender;
-	}
-	std::string Text::getString()
-	{
-		return string;
-	}
-	int Text::getTextWidth()
+	int Text::getTextWidth() const
 	{
 		int record = 0;
 		int currentLineWidth = 0;
@@ -534,24 +466,12 @@ namespace spehs
 			return currentLineWidth >> 6;
 		return record >> 6;
 	}
-	int Text::getTextHeight()
+	int Text::getTextHeight() const
 	{
 		int w = getFontHeight() * lineCount;
 		if (lineCount > 1)
 			w += (lineCount - 1) * lineSpacing;
 
 		return w;
-	}
-	int Text::getFontDescender()
-	{ 
-		return font->descender; 
-	}
-	Font* Text::getFontPtr()
-	{
-		return font; 
-	}
-	int Text::getFontSize()
-	{
-		return font->fontSize; 
 	}
 }

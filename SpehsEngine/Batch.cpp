@@ -2,28 +2,37 @@
 #include "Batch.h"
 #include "Console.h"
 #include "Primitive.h"
-#include "Mesh.h"
 #include "BatchManager.h"
 #include "ShaderManager.h"
 #include "OpenGLError.h"
 #include "Vertex.h"
 #include "Camera2D.h"
-#include "Camera3D.h"
 #include "Time.h"
 
-#include <glm/mat4x4.hpp>
 #include <GL/glew.h>
 #include <algorithm>
 
 
-int64_t primitiveBatchAllocations;
-int64_t primitiveBatchDeallocations;
-int64_t meshBatchAllocations;
-int64_t meshBatchDeallocations;
+int64_t BatchAllocations;
+int64_t BatchDeallocations;
 
 
 namespace spehs
 {
+	Batch::Batch(const PlaneDepth &_priority, const int &_shaderIndex) : priority(_priority), shaderIndex(_shaderIndex)
+	{
+#ifdef _DEBUG
+		BatchAllocations++;
+#endif
+	}
+	Batch::~Batch()
+	{
+#ifdef _DEBUG
+		BatchDeallocations++;
+#endif
+	}
+
+
 	int getIndexMultiplier(const GLenum &_drawMode, const unsigned int& _batchSize)
 	{
 		switch (_drawMode)
@@ -39,42 +48,18 @@ namespace spehs
 
 	//PRIMITIVE BATCH
 #pragma region PRIMITIVE BATCH
-	PrimitiveBatch::PrimitiveBatch()
-	{
-#ifdef _DEBUG
-		primitiveBatchAllocations++;
-#endif
-
-		vertexArrayObjectID = 0;
-		vertexBufferID = 0;
-		indexBufferID = 0;
-
-		blending = false;
-		cameraMatrixState = false;
-		shaderIndex = -1;
-		textureDataID = 0;
-		drawMode = 0;
-		lineWidth = 0.0f;
-		priority = 0;
-
-		initBuffers();
-	}
 	PrimitiveBatch::PrimitiveBatch(const bool _cameraMatrixState, const int16_t &_priority, const bool _blending, const int &_shaderIndex, const GLuint &_textureDataID, const GLenum &_drawMode, float _lineWidth)
+		: Batch(_priority, _shaderIndex)
 	{
-#ifdef _DEBUG
-		primitiveBatchAllocations++;
-#endif
 		vertexArrayObjectID = 0;
 		vertexBufferID = 0;
 		indexBufferID = 0;
 
 		cameraMatrixState = _cameraMatrixState;
 		blending = _blending;
-		shaderIndex = _shaderIndex;
 		textureDataID = _textureDataID;
-		drawMode = _drawMode;
 		lineWidth = _lineWidth;
-		priority = _priority;
+		drawMode = _drawMode;
 
 		vertices.reserve(DEFAULT_MAX_BATCH_SIZE);
 		indices.reserve(getIndexMultiplier(drawMode));
@@ -83,9 +68,6 @@ namespace spehs
 	}
 	PrimitiveBatch::~PrimitiveBatch()
 	{
-#ifdef _DEBUG
-		primitiveBatchDeallocations++;
-#endif
 		if (vertexBufferID != 0)
 		{
 			glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -106,7 +88,7 @@ namespace spehs
 	}
 
 
-	bool PrimitiveBatch::operator==(const Primitive &_primitive)
+	bool PrimitiveBatch::check(const Primitive &_primitive)
 	{
 		if (shaderIndex != _primitive.shaderIndex ||
 			textureDataID != _primitive.textureDataID ||
@@ -324,269 +306,22 @@ namespace spehs
 #pragma endregion
 
 
-	//MESH BATCH
-#pragma region MESH BATCH
-	MeshBatch::MeshBatch()
+	//TEXT BATCH
+#pragma region TEXT BATCH
+	TextBatch::TextBatch(const bool _cameraMatrixState, const int16_t &_priority, const int &_shaderIndex) : Batch(_priority, _shaderIndex)
 	{
-#ifdef _DEBUG
-		meshBatchAllocations++;
-#endif
 		vertexArrayObjectID = 0;
 		vertexBufferID = 0;
 		indexBufferID = 0;
 
-		backFaceCulling = true;
-		blending = false;
-		batchSize = DEFAULT_MAX_BATCH_SIZE;
-		indexSize = getIndexMultiplier(batchSize);
-		shaderIndex = 0;
-		textureDataID = 0;
-		drawMode = UNDEFINED;
-		lineWidth = 0.0f;
+		cameraMatrixState = _cameraMatrixState;
+
+		vertices.reserve(DEFAULT_MAX_BATCH_SIZE);
+		indices.reserve(getIndexMultiplier(TRIANGLE));
 
 		initBuffers();
 	}
-	MeshBatch::MeshBatch(const unsigned int& _batchSizeCheck, const int &_shader, const GLuint &_textureID, const GLenum &_drawMode, const bool _backFaceCulling, const bool _blending, const float &_lineWidth)
-	{
-#ifdef _DEBUG
-		meshBatchAllocations++;
-#endif
-		vertexArrayObjectID = 0;
-		vertexBufferID = 0;
-		indexBufferID = 0;
-
-		if (_batchSizeCheck > DEFAULT_MAX_BATCH_SIZE)
-			batchSize = _batchSizeCheck;
-		else
-			batchSize = DEFAULT_MAX_BATCH_SIZE;
-		indexSize = getIndexMultiplier(batchSize);
-
-		backFaceCulling = _backFaceCulling;
-		blending = _blending;
-		shaderIndex = _shader;
-		textureDataID = _textureID;
-		drawMode = _drawMode;
-		lineWidth = _lineWidth;
-
-		vertices.reserve(batchSize);
-		indices.reserve(indexSize); //For mesh batch this is not the true max value
-
-		initBuffers();
-	}
-	MeshBatch::~MeshBatch()
-	{
-#ifdef _DEBUG
-		meshBatchDeallocations++;
-#endif
-		clearGPUBuffers();
-	}
-
-
-	bool MeshBatch::operator==(const Mesh &_mesh)
-	{
-		if (shaderIndex != _mesh.shaderIndex ||
-			textureDataID != _mesh.textureDataID ||
-			drawMode != _mesh.drawMode ||
-			blending != _mesh.blending)
-		{
-			return false;
-		}
-		if (drawMode == LINE ||
-			drawMode == LINE_LOOP ||
-			drawMode == LINE_STRIP ||
-			drawMode == LINE_STRIP_ADJACENCY ||
-			drawMode == LINE_ADJACENCY)
-		{
-			if (lineWidth != _mesh.lineWidth)
-			{
-				return false;
-			}
-		}
-		if (!isEnoughRoom(_mesh.worldVertexArray.size()))
-		{
-			return false;
-		}
-		return true;
-	}
-
-
-	bool MeshBatch::render()
-	{
-		if (vertices.size() == 0)
-			return false;
-
-		if (!blending)
-		{
-			glDisable(GL_BLEND);
-			glDepthMask(GL_TRUE);
-			glEnable(GL_DEPTH_TEST);
-		}
-		else
-		{
-			glDisable(GL_DEPTH_TEST);
-			glDepthMask(GL_FALSE);
-			glEnable(GL_BLEND);
-		}
-
-		if (backFaceCulling)
-		{
-			glCullFace(GL_BACK);
-			glEnable(GL_CULL_FACE);
-		}
-		else
-		{
-			glDisable(GL_CULL_FACE);
-		}
-
-		updateBuffers();
-
-		shaderManager->use(shaderIndex);
-
-		//Texture
-		if (textureDataID)
-		{
-			shaderManager->getShader(shaderIndex)->uniforms->textureDataID = textureDataID;
-			if (drawMode == POINT)
-			{
-				glEnable(GL_POINT_SPRITE);
-				glEnable(GL_PROGRAM_POINT_SIZE);
-			}
-		}
-
-		shaderManager->getShader(shaderIndex)->uniforms->cameraMatrix = *spehs::getActiveBatchManager()->getCamera3D()->cameraMatrix;
-
-		//Uniforms
-		shaderManager->setUniforms(shaderIndex);
-
-		//Draw
-		glBindVertexArray(vertexArrayObjectID);
-		if (lineWidth != 0.0f)
-		{
-			glLineWidth(lineWidth);
-		}
-		glDrawElements(drawMode, indices.size(), GL_UNSIGNED_SHORT, reinterpret_cast<void*>(0));
-		glBindVertexArray(0);
-
-		checkOpenGLErrors(__FILE__, __LINE__);
-
-		shaderManager->unuse(shaderIndex);
-
-		drawCalls++;
-		vertexDrawCount += vertices.size();
-
-		//Clean up
-		vertices.clear();
-		indices.clear();
-		return true;
-	}
-
-	void MeshBatch::push(Mesh* _mesh)
-	{
-		GLushort firstElement = vertices.size();
-		unsigned int indSize = indices.size();
-		//INDICES
-		indices.insert(indices.end(), _mesh->elementArray.begin(), _mesh->elementArray.end());
-		if (firstElement != 0)
-			for (size_t i = indSize; i < indices.size(); i++)
-			{
-				indices[i] += firstElement;
-			}
-		//VERTICES
-		vertices.insert(vertices.end(), _mesh->worldVertexArray.begin(), _mesh->worldVertexArray.end());
-	}
-
-	//Private:
-	bool MeshBatch::isEnoughRoom(const unsigned int &_numVertices)
-	{
-		if (_numVertices > DEFAULT_MAX_BATCH_SIZE)
-		{
-			if (vertices.size() == 0) //If this is empty batch, resize it for the mesh
-			{
-				batchSize = _numVertices;
-				glBindVertexArray(vertexArrayObjectID);
-				glBindBuffer(GL_ARRAY_BUFFER, vertexBufferID);
-				glBufferData(GL_ARRAY_BUFFER, sizeof(spehs::Vertex3D) * batchSize, nullptr, GL_STREAM_DRAW);
-				glBindVertexArray(0);
-				glBindBuffer(GL_ARRAY_BUFFER, 0);
-				return true;
-			}
-			return false;
-		}
-		return (vertices.size() + _numVertices) <= DEFAULT_MAX_BATCH_SIZE;
-	}
-
-	void MeshBatch::initBuffers()
-	{
-		clearGPUBuffers();
-		//Generate VAO
-		glGenVertexArrays(1, &vertexArrayObjectID);
-		//Generate buffers
-		glGenBuffers(1, &vertexBufferID);
-		glGenBuffers(1, &indexBufferID);
-
-		checkOpenGLErrors(__FILE__, __LINE__);
-
-		//Bind buffers
-		glBindVertexArray(vertexArrayObjectID);
-
-		glBindBuffer(GL_ARRAY_BUFFER, vertexBufferID);
-		glBufferData(GL_ARRAY_BUFFER, sizeof(spehs::Vertex3D) * batchSize, nullptr, GL_STREAM_DRAW);
-
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBufferID);
-		glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLushort) * indexSize, nullptr, GL_STREAM_DRAW);
-
-		checkOpenGLErrors(__FILE__, __LINE__);
-
-		//Attributes
-		glEnableVertexAttribArray(0);
-		glEnableVertexAttribArray(1);
-		glEnableVertexAttribArray(2);
-		glEnableVertexAttribArray(3);
-
-		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(spehs::Vertex3D), reinterpret_cast<void*>(offsetof(spehs::Vertex3D, position)));
-		glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(spehs::Vertex3D), reinterpret_cast<void*>(offsetof(spehs::Vertex3D, color)));
-		glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(spehs::Vertex3D), reinterpret_cast<void*>(offsetof(spehs::Vertex3D, normal)));
-		glVertexAttribPointer(3, 2, GL_FLOAT, GL_FALSE, sizeof(spehs::Vertex3D), reinterpret_cast<void*>(offsetof(spehs::Vertex3D, uv)));
-
-		//Unbind
-		glBindVertexArray(0);
-
-		glDisableVertexAttribArray(0);
-		glDisableVertexAttribArray(1);
-		glDisableVertexAttribArray(2);
-		glDisableVertexAttribArray(3);
-
-		glBindBuffer(GL_ARRAY_BUFFER, 0);
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-
-		checkOpenGLErrors(__FILE__, __LINE__);
-	}
-
-	void MeshBatch::updateBuffers()
-	{
-		glBindVertexArray(vertexArrayObjectID);
-		glBindBuffer(GL_ARRAY_BUFFER, vertexBufferID);
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBufferID);
-
-		//Sent data to GPU
-		glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(spehs::Vertex3D) * vertices.size(), vertices.data());
-
-		//Check indices
-		if (indices.size() > indexSize)
-		{
-			indexSize = indices.size();
-			glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLushort) * indexSize, nullptr, GL_STREAM_DRAW);
-		}
-		glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, sizeof(GLushort) * indices.size(), indices.data());
-
-		glBindVertexArray(0);
-		glBindBuffer(GL_ARRAY_BUFFER, 0);
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-
-		checkOpenGLErrors(__FILE__, __LINE__);
-	}
-
-	void MeshBatch::clearGPUBuffers()
+	TextBatch::~TextBatch()
 	{
 		if (vertexBufferID != 0)
 		{
@@ -605,6 +340,162 @@ namespace spehs
 		}
 
 		checkOpenGLErrors(__FILE__, __LINE__);
+	}
+
+
+	bool TextBatch::check(const Text &_text)
+	{
+		if (shaderIndex != _text.getShaderIndex() ||
+			priority != _text.getPlaneDepth() ||
+			cameraMatrixState != _text.getCameraMatrixState())
+		{
+			return false;
+		}
+		if (!isEnoughRoom(_text.worldVertexArray.size()))
+		{
+			return false;
+		}
+		return true;
+	}
+
+
+	bool TextBatch::render()
+	{
+		if (vertices.size() == 0)
+			return false;
+
+		updateBuffers();
+
+		//Blending
+		glEnable(GL_BLEND);
+		glDisable(GL_DEPTH_TEST);
+		glDepthMask(GL_FALSE);
+
+		shaderManager->use(shaderIndex);
+
+		//Camera Matrix
+		if (cameraMatrixState)
+			shaderManager->getShader(shaderIndex)->uniforms->cameraMatrix = *spehs::getActiveBatchManager()->getCamera2D()->projectionMatrix;
+		else
+			shaderManager->getShader(shaderIndex)->uniforms->cameraMatrix = spehs::getActiveBatchManager()->getCamera2D()->staticMatrix;
+
+		//Uniforms
+		shaderManager->setUniforms(shaderIndex);
+
+		//Draw
+		glBindVertexArray(vertexArrayObjectID);
+		for (unsigned i = 0; i < textureIDs.size(); i++)
+		{
+			bind2DTexture(textureIDs[i], 0);
+			glDrawElements(TRIANGLE, 6, GL_UNSIGNED_SHORT, (GLvoid*) indices[i * 6]);
+		}
+		glBindVertexArray(0);
+
+		checkOpenGLErrors(__FILE__, __LINE__);
+
+		shaderManager->unuse(shaderIndex);
+
+		drawCalls++;
+		vertexDrawCount += vertices.size();
+
+		//Clean up
+		vertices.clear();
+		indices.clear();
+		return true;
+	}
+
+	void TextBatch::push(Text* _text)
+	{
+		//INDICES
+		setIndices(_text->worldVertexArray.size());
+		//VERTICES
+		vertices.insert(vertices.end(), _text->worldVertexArray.begin(), _text->worldVertexArray.end());
+		//TEXTURES
+		textureIDs.insert(textureIDs.end(), _text->textureIDs.begin(), _text->textureIDs.end());
+	}
+
+	//Private:
+	bool TextBatch::isEnoughRoom(const unsigned int &_numVertices)
+	{
+		if (_numVertices > DEFAULT_MAX_BATCH_SIZE)
+			exceptions::fatalError("The number of vertices in the text exceeds the max amount allowed in the batch!");
+		return (vertices.size() + _numVertices) <= DEFAULT_MAX_BATCH_SIZE;
+	}
+
+	void TextBatch::initBuffers()
+	{
+		//Generate VAO
+		glGenVertexArrays(1, &vertexArrayObjectID);
+		glBindVertexArray(vertexArrayObjectID);
+		//Generate buffers
+		glGenBuffers(1, &vertexBufferID);
+		glGenBuffers(1, &indexBufferID);
+
+		checkOpenGLErrors(__FILE__, __LINE__);
+
+		//Bind buffers
+		glBindBuffer(GL_ARRAY_BUFFER, vertexBufferID);
+		glBufferData(GL_ARRAY_BUFFER, sizeof(spehs::Vertex) * DEFAULT_MAX_BATCH_SIZE, nullptr, GL_STREAM_DRAW);
+
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBufferID);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLushort) * getIndexMultiplier(TRIANGLE), nullptr, GL_STREAM_DRAW);
+
+		checkOpenGLErrors(__FILE__, __LINE__);
+
+		//Attributes
+		glEnableVertexAttribArray(0);
+		glEnableVertexAttribArray(1);
+
+		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(spehs::Vertex), reinterpret_cast<void*>(offsetof(spehs::Vertex, position)));
+		glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(spehs::Vertex), reinterpret_cast<void*>(offsetof(spehs::Vertex, uv)));
+
+		//Unbind
+		glBindVertexArray(0);
+
+		glDisableVertexAttribArray(0);
+		glDisableVertexAttribArray(1);
+
+		glBindBuffer(GL_ARRAY_BUFFER, 0);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+
+		checkOpenGLErrors(__FILE__, __LINE__);
+	}
+
+	void TextBatch::updateBuffers()
+	{
+		glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+
+		glBindVertexArray(vertexArrayObjectID);
+		glBindBuffer(GL_ARRAY_BUFFER, vertexBufferID);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBufferID);
+
+		//Sent data to GPU
+		glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(spehs::Vertex) * vertices.size(), &vertices[0]);
+		glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, sizeof(GLushort) * indices.size(), &indices[0]);
+
+		glBindVertexArray(0);
+		glBindBuffer(GL_ARRAY_BUFFER, 0);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+
+		checkOpenGLErrors(__FILE__, __LINE__);
+	}
+
+	void TextBatch::setIndices(const unsigned int &_numVertices)
+	{
+		unsigned int currentIndex = vertices.size();
+		unsigned int numIndices = indices.size();
+		unsigned int index = numIndices;
+		/*
+		Number of indices in a polygon:
+		(NumberOfVertices - 2) * 3
+		*/
+		indices.resize(indices.size() + ((_numVertices - 2) * 3));
+		for (unsigned i = 1; index < (numIndices + ((_numVertices - 2) * 3));)
+		{
+			indices[index++] = ((GLushort) currentIndex);
+			indices[index++] = ((GLushort) (currentIndex + i++));
+			indices[index++] = ((GLushort) (currentIndex + i));
+		}
 	}
 #pragma endregion
 }

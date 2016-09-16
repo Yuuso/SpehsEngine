@@ -4,9 +4,6 @@
     <ClCompile Include="GLSLProgram.cpp">
       <Filter>Rendering</Filter>
     </ClCompile>
-    <ClCompile Include="Text.cpp">
-      <Filter>Rendering</Filter>
-    </ClCompile>
     <ClCompile Include="Exceptions.cpp">
       <Filter>Core</Filter>
     </ClCompile>
@@ -79,9 +76,6 @@
     <ClCompile Include="FileStream.cpp">
       <Filter>Filestream</Filter>
     </ClCompile>
-    <ClCompile Include="Camera3D.cpp">
-      <Filter>Rendering</Filter>
-    </ClCompile>
     <ClCompile Include="StringOperations.cpp">
       <Filter>Core</Filter>
     </ClCompile>
@@ -103,16 +97,10 @@
     <ClCompile Include="Point.cpp">
       <Filter>Rendering\Geometric Rendering\Batch Rendering</Filter>
     </ClCompile>
-    <ClCompile Include="Mesh.cpp">
-      <Filter>Rendering\Geometric Rendering\Batch Rendering</Filter>
-    </ClCompile>
     <ClCompile Include="TextureManager.cpp">
       <Filter>Rendering\Resource Management</Filter>
     </ClCompile>
     <ClCompile Include="ShaderManager.cpp">
-      <Filter>Rendering\Resource Management</Filter>
-    </ClCompile>
-    <ClCompile Include="ModelManager.cpp">
       <Filter>Rendering\Resource Management</Filter>
     </ClCompile>
     <ClCompile Include="GUIRectangleTable.cpp">
@@ -145,15 +133,6 @@
     <ClCompile Include="PhysicsWorld2D.cpp">
       <Filter>Physics</Filter>
     </ClCompile>
-    <ClCompile Include="SkyBox.cpp">
-      <Filter>Rendering\Geometric Rendering</Filter>
-    </ClCompile>
-    <ClCompile Include="ControlMesh.cpp">
-      <Filter>Core\Object/Component</Filter>
-    </ClCompile>
-    <ClCompile Include="Transform3D.cpp">
-      <Filter>Core\Object/Component</Filter>
-    </ClCompile>
     <ClCompile Include="PostProcessing.cpp">
       <Filter>Rendering</Filter>
     </ClCompile>
@@ -163,12 +142,12 @@
     <ClCompile Include="Position64.cpp">
       <Filter>Core</Filter>
     </ClCompile>
+    <ClCompile Include="Text.cpp">
+      <Filter>Rendering\Geometric Rendering\Batch Rendering</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GLSLProgram.h">
-      <Filter>Rendering</Filter>
-    </ClInclude>
-    <ClInclude Include="Text.h">
       <Filter>Rendering</Filter>
     </ClInclude>
     <ClInclude Include="SATCollision.h">
@@ -252,9 +231,6 @@
     <ClInclude Include="FileStream.h">
       <Filter>Filestream</Filter>
     </ClInclude>
-    <ClInclude Include="Camera3D.h">
-      <Filter>Rendering</Filter>
-    </ClInclude>
     <ClInclude Include="StringOperations.h">
       <Filter>Core</Filter>
     </ClInclude>
@@ -276,16 +252,10 @@
     <ClInclude Include="Point.h">
       <Filter>Rendering\Geometric Rendering\Batch Rendering</Filter>
     </ClInclude>
-    <ClInclude Include="Mesh.h">
-      <Filter>Rendering\Geometric Rendering\Batch Rendering</Filter>
-    </ClInclude>
     <ClInclude Include="TextureManager.h">
       <Filter>Rendering\Resource Management</Filter>
     </ClInclude>
     <ClInclude Include="ShaderManager.h">
-      <Filter>Rendering\Resource Management</Filter>
-    </ClInclude>
-    <ClInclude Include="ModelManager.h">
       <Filter>Rendering\Resource Management</Filter>
     </ClInclude>
     <ClInclude Include="GUIRectangleTable.h">
@@ -315,17 +285,8 @@
     <ClInclude Include="PhysicsWorld2D.h">
       <Filter>Physics</Filter>
     </ClInclude>
-    <ClInclude Include="SkyBox.h">
-      <Filter>Rendering\Geometric Rendering</Filter>
-    </ClInclude>
     <ClInclude Include="Depth.h">
       <Filter>Rendering</Filter>
-    </ClInclude>
-    <ClInclude Include="ControlMesh.h">
-      <Filter>Core\Object/Component</Filter>
-    </ClInclude>
-    <ClInclude Include="Transform3D.h">
-      <Filter>Core\Object/Component</Filter>
     </ClInclude>
     <ClInclude Include="PostProcessing.h">
       <Filter>Rendering</Filter>
@@ -335,6 +296,9 @@
     </ClInclude>
     <ClInclude Include="Position64.h">
       <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Text.h">
+      <Filter>Rendering\Geometric Rendering\Batch Rendering</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

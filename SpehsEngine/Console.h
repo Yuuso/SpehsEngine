@@ -38,7 +38,7 @@ namespace spehs
 		void log(std::string str, glm::vec3& color = glm::vec3(CONSOLE_FONT_COLOR));
 		void log(char* str, unsigned length, glm::vec3& color = glm::vec3(CONSOLE_FONT_COLOR));
 		void warning(std::string warning);///<Exception: warning: inform through console. For direct warning without console, use spehs::exceptions::warning()
-		void error(std::string error);///<Exception: error: inform through console. For direct error without console, use spehs::exceptions::warning()
+		void error(std::string error);///<Exception: error: inform through console. For direct error without console, use spehs::exceptions::unexpectedError()
 		void clearLog();
 		bool textEntered();///< Returns true if text was "executed" to console during the last update cycle (text without '/' (command) prefix)
 		std::string getTextEntered();///< Returns latest text executed to console

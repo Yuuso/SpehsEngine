@@ -11,16 +11,14 @@ namespace spehs
 	{
 	public:
 		Position();
-		Position(const float &_x, const float &_y, const float &_z);
+		Position(const float &_x, const float &_y);
 
 		void setPosition(const float &_x, const float &_y);
-		void setPosition(const float &_x, const float &_y, const float &_z);
 
-		bool operator==(const Position& _other) const;
+		bool operator==(const Position &_other) const;
 
 		float x;
 		float y;
-		float z;
 	};
 	class ColorRGBA
 	{
@@ -55,24 +53,12 @@ namespace spehs
 	public:
 		Vertex();
 		Vertex(const Position &_position);
+		Vertex(const Position &_position, const UV &_uv);
 		Vertex(const Position &_position, const ColorRGBA &_color, const UV &_uv);
 
 		Position position;
 		ColorRGBA color;
 		UV uv;
-	};
-
-	class Vertex3D
-	{
-	public:
-		Vertex3D();
-		Vertex3D(const Position &_position);
-		Vertex3D(const Position &_position, const UV &_uv, const Position &_normal);
-
-		Position position;
-		ColorRGBA color;
-		UV uv;
-		Position normal;
 	};
 
 	extern inline glm::vec3 toVec3(const Vertex& _vertex);

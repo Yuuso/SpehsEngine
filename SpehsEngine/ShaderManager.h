@@ -1,3 +1,4 @@
+
 #pragma once
 
 #include <vector>
@@ -13,7 +14,7 @@
 #include "Console.h"
 
 
-#define NEXT_SHADER_INDEX 6
+#define NEXT_SHADER_INDEX 4
 
 
 typedef int GLint;
@@ -24,10 +25,8 @@ namespace spehs
 	{//Default Shaders
 		DefaultPolygon = 0,
 		DefaultTexture = 1,
-		DefaultMesh = 2,
-		DefaultTextureMesh = 3,
-		DefaultSkyBox = 4,
-		DefaultPostProc = 5,
+		DefaultPostProc = 2,
+		DefaultText = 3,
 	};
 
 	class Uniforms
@@ -51,18 +50,6 @@ namespace spehs
 	public:
 		DefaultTextureUniforms(spehs::GLSLProgram* _shader);
 		~DefaultTextureUniforms();
-
-		void setUniforms();
-
-	private:
-		GLint textureLocation = 0;
-	};
-
-	class DefaultSkyBoxUniforms : public spehs::Uniforms
-	{
-	public:
-		DefaultSkyBoxUniforms(spehs::GLSLProgram* _shader);
-		~DefaultSkyBoxUniforms();
 
 		void setUniforms();
 
