@@ -29,21 +29,6 @@ namespace spehs
 		blending = true;
 		drawMode = LINE;
 	}
-	Line::Line(const glm::vec3 &_startPoint, const glm::vec3 &_endPoint)
-	{
-		if (glm::distance(_startPoint, _endPoint) < DISTANCE_EPSILON)
-			spehs::console::error("Line needs to have length greater than 0!");
-
-		vertexArray.resize(2);
-		vertexArray[0].position.setPosition(_startPoint.x, _startPoint.y, _startPoint.z);
-		vertexArray[1].position.setPosition(_endPoint.x, _endPoint.y, _endPoint.z);
-
-		worldVertexArray = vertexArray;
-
-		lineWidth = 1.0f;
-		blending = false;
-		drawMode = LINE;
-	}
 	Line::~Line()
 	{
 
@@ -59,9 +44,9 @@ namespace spehs
 			scaledRotatedMatrix = glm::rotate(scaledMatrix, rotation, rotationVector);
 			for (unsigned int i = 0; i < worldVertexArray.size(); i++)
 			{
-				vertex = glm::vec4(vertexArray[i].position.x, vertexArray[i].position.y, vertexArray[i].position.z, 1.0f);
+				vertex = glm::vec4(vertexArray[i].position.x, vertexArray[i].position.y, 0.0f, 1.0f);
 				vertex = scaledRotatedMatrix * vertex;
-				worldVertexArray[i].position.setPosition(vertex.x + position.x, vertex.y + position.y, vertex.z + position.z);
+				worldVertexArray[i].position.setPosition(vertex.x + position.x, vertex.y + position.y);
 			}
 			needUpdate = false;
 		}
@@ -71,13 +56,6 @@ namespace spehs
 	{
 		vertexArray[0].position.setPosition(_newStartPoint.x, _newStartPoint.y);
 		vertexArray[1].position.setPosition(_newEndPoint.x, _newEndPoint.y);
-		needUpdate = true;
-	}
-
-	void Line::setPoints(const glm::vec3 &_newStartPoint, const glm::vec3 &_newEndPoint)
-	{
-		vertexArray[0].position.setPosition(_newStartPoint.x, _newStartPoint.y, _newStartPoint.z);
-		vertexArray[1].position.setPosition(_newEndPoint.x, _newEndPoint.y, _newEndPoint.z);
 		needUpdate = true;
 	}
 }

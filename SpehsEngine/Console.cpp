@@ -6,8 +6,10 @@
 #include "ApplicationData.h"
 #include "Time.h"
 #include "Console.h"
+#include "Camera2D.h"
 #include "ConsoleVariable.h"
 #include "Text.h"
+#include "BatchManager.h"
 #define CONSOLE_COMMANDS_KEPT_IN_MEMORY 10
 #define LOG_LINES_KEPT_IN_MEMORY 25
 #define CONSOLE_BORDER 5
@@ -57,6 +59,9 @@ namespace spehs
 		static void enableState(uint16_t bits);
 		static void disableState(uint16_t bits);
 
+		static Camera2D* consoleCamera;
+		static BatchManager* consoleBatchManager;
+
 		//Local methods
 		void updateLinePositions();
 		void setVariable();
@@ -72,7 +77,11 @@ namespace spehs
 				log("Console already initialized!");
 				return 0;
 			}
-			consoleText = new spehs::Text(TEXT_PLANEDEPTH);
+
+			consoleCamera = new Camera2D();
+			consoleBatchManager = new BatchManager(consoleCamera);
+
+			consoleText = consoleBatchManager->createText(TEXT_PLANEDEPTH);
 			consoleText->setFont(applicationData->GUITextFontPath, applicationData->consoleTextSize);
 			consoleText->setColor(glm::vec4(1.0f, 0.6f, 0.0f, applicationData->consoleTextAlpha / 255.0f));
 			consoleText->setPosition(glm::vec2(CONSOLE_BORDER, CONSOLE_BORDER));
@@ -90,7 +99,11 @@ namespace spehs
 				std::cout << "\nSpehsEngine::console already uninitialized!";
 				return;
 			}
-			delete consoleText;
+
+			delete consoleBatchManager;
+			delete consoleCamera;
+
+			consoleText->destroy();
 			consoleText = nullptr;
 			clearLog();
 			disableState(CONSOLE_INITIALIZED_BIT);
@@ -339,6 +352,8 @@ namespace spehs
 		{
 			LockGuardRecursive regionLock(consoleMutex);
 
+			consoleBatchManager->render();
+
 			//Render lines
 			if (visibility < 0.01f)
 			{
@@ -346,7 +361,7 @@ namespace spehs
 			}
 			for (auto i = lines.begin(); i < lines.end(); i++)
 			{
-				(*i)->getColorRef().a = visibility * (applicationData->consoleTextAlpha / 255.0f);
+				(*i)->setAlpha(visibility * (applicationData->consoleTextAlpha / 255.0f));
 				(*i)->setRenderState(true);
 			}
 
@@ -355,7 +370,7 @@ namespace spehs
 			{
 				return;
 			}
-			consoleText->getColorRef().a = visibility * (applicationData->consoleTextAlpha / 255.0f);
+			consoleText->setAlpha(visibility * (applicationData->consoleTextAlpha / 255.0f));
 			consoleText->setRenderState(true);
 		}
 
@@ -433,7 +448,7 @@ namespace spehs
 			{
 				lines.erase(lines.begin());
 			}
-			lines.push_back(new spehs::Text(TEXT_PLANEDEPTH));
+			lines.push_back(consoleBatchManager->createText(TEXT_PLANEDEPTH));
 			lines.back()->setFont(applicationData->GUITextFontPath, applicationData->consoleTextSize);
 			lines.back()->setColor(glm::vec4(color, applicationData->consoleTextAlpha / 255.0f));
 			lines.back()->setString(str);
@@ -458,7 +473,7 @@ namespace spehs
 			LockGuardRecursive regionLock(consoleMutex);
 			while (!lines.empty())
 			{
-				delete lines.back();
+				lines.back()->destroy();
 				lines.pop_back();
 			}
 		}

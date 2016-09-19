@@ -3,6 +3,8 @@
 #include <mutex>
 
 #include "ApplicationData.h"
+#include "BatchManager.h"
+#include "Camera2D.h"
 #include "Time.h"
 #include "Text.h"
 
@@ -31,6 +33,8 @@ namespace spehs
 	static bool initialized = false;
 	static int previousFontSize = fpsCounterFontSize;
 
+	static Camera2D* cameraForFPS;
+	static BatchManager* batchManagerForFPS;
 
 
 	bool initializeTime()
@@ -41,7 +45,10 @@ namespace spehs
 			return true;
 		}
 
-		fpsCounter = new spehs::Text(10000);
+		cameraForFPS = new Camera2D();
+		batchManagerForFPS = new BatchManager(cameraForFPS);
+
+		fpsCounter = batchManagerForFPS->createText(10000);
 		if (!fpsCounter)
 		{
 			std::cout << "\nInitialization failed! Failed to create fpsCounter!";
@@ -49,11 +56,7 @@ namespace spehs
 		}
 
 		fpsCounterFontSize = applicationData->consoleTextSize;
-		if (!fpsCounter->setFont(FPS_FONT_PATH, fpsCounterFontSize))
-		{
-			std::cout << "\nInitialization failed! Failed to set up fps counter!";
-			return false;
-		}
+		fpsCounter->setFont(FPS_FONT_PATH, fpsCounterFontSize);
 
 		fpsCounter->setColor(glm::vec4(1.0f, 0.3f, 0.0f, 1.0f));
 		fpsCounter->setPosition(glm::vec2(5, applicationData->getWindowHeight() - fpsCounter->getFontHeight()));
@@ -66,9 +69,12 @@ namespace spehs
 		if (initialized == false)
 			return;
 
+		delete batchManagerForFPS;
+		delete cameraForFPS;
+
 		if (fpsCounter != nullptr)
 		{
-			delete fpsCounter;
+			fpsCounter->destroy();
 			fpsCounter = nullptr;
 		}
 
@@ -159,7 +165,7 @@ namespace spehs
 	{
 		if (!applicationData->showFps)
 			return;
-		fpsCounter->setRenderState(true);
+		batchManagerForFPS->render();
 	}
 	Time getDeltaTime()
 	{

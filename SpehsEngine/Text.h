@@ -35,6 +35,7 @@ namespace spehs
 	public:
 		static FontManager* instance;
 
+		FontManager();
 		~FontManager();
 
 		Font* getFont(const std::string &_fontPath, const int &_size);

@@ -387,7 +387,7 @@ namespace spehs
 		for (unsigned i = 0; i < textureIDs.size(); i++)
 		{
 			bind2DTexture(textureIDs[i], 0);
-			glDrawElements(TRIANGLE, 6, GL_UNSIGNED_SHORT, (GLvoid*) indices[i * 6]);
+			glDrawElements(TRIANGLE, 6, GL_UNSIGNED_SHORT, reinterpret_cast<void*>((i * 6) * sizeof(GLushort)));
 		}
 		glBindVertexArray(0);
 
@@ -481,7 +481,7 @@ namespace spehs
 	}
 
 	void TextBatch::setIndices(const unsigned int &_numVertices)
-	{
+	{//////////////////!!!!!!!!!!!!!
 		unsigned int currentIndex = vertices.size();
 		unsigned int numIndices = indices.size();
 		unsigned int index = numIndices;

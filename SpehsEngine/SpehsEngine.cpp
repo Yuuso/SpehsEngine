@@ -76,6 +76,7 @@ namespace spehs
 
 		spehs::initText();
 		spehs::initializeTime();
+		console::initialize();
 
 		//INITIALIZATIONS
 		inputManager = new InputManager();
@@ -83,7 +84,6 @@ namespace spehs
 		textureManager = new TextureManager();
 		shaderManager = new ShaderManager();
 		rng::initializeRNG();
-		console::initialize();
 
 		checkOpenGLErrors(__FILE__, __LINE__);
 

@@ -38,7 +38,6 @@ namespace spehs
 		Polygon* createPolygon(std::vector<spehs::Position> _cuspData, const PlaneDepth &_planeDepth, const float &_width, const float &_height);
 
 		Line* createLine(const glm::vec2 &_startPoint, const glm::vec2 &_endPoint, const PlaneDepth &_planeDepth);
-		Line* createLine(const glm::vec3 &_startPoint, const glm::vec3 &_endPoint);
 
 		Point* createPoint(const PlaneDepth &_planeDepth);
 

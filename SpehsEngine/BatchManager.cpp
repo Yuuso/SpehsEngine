@@ -79,11 +79,6 @@ namespace spehs
 		primitives.push_back(new Line(_startPoint, _endPoint, _planeDepth));
 		return primitives.back()->getLinePtr();
 	}
-	Line* BatchManager::createLine(const glm::vec3 &_startPoint, const glm::vec3 &_endPoint)
-	{
-		primitives.push_back(new Line(_startPoint, _endPoint));
-		return primitives.back()->getLinePtr();
-	}
 
 	Point* BatchManager::createPoint(const PlaneDepth &_planeDepth)
 	{

@@ -124,7 +124,7 @@ namespace spehs
 			scaledRotatedMatrix = glm::rotate(scaledMatrix, rotation, rotationVector);
 			for (unsigned int i = 0; i < worldVertexArray.size(); i++)
 			{
-				vertex = scaledRotatedMatrix * glm::vec4(vertexArray[i].position.x * width, vertexArray[i].position.y * height, vertexArray[i].position.z, 1.0f);
+				vertex = scaledRotatedMatrix * glm::vec4(vertexArray[i].position.x * width, vertexArray[i].position.y * height, 0.0f, 1.0f);
 				worldVertexArray[i].position.setPosition(vertex.x + position.x, vertex.y + position.y);
 			}
 			needUpdate = false;

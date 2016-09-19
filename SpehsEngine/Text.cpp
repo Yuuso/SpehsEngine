@@ -47,6 +47,8 @@ namespace spehs
 	}
 	void uninitText()
 	{
+		delete FontManager::instance;
+
 		if (!textRenderingInitialized)
 		{//Validate uninitialization
 			console::error("Text rendering already uninitialized");
@@ -97,6 +99,10 @@ namespace spehs
 	};
 
 
+	FontManager* FontManager::instance = nullptr;
+	FontManager::FontManager()
+	{
+	}
 	FontManager::~FontManager()
 	{
 		//Inform (possible) memory leaks
@@ -400,6 +406,10 @@ namespace spehs
 		position.x = _x;
 		position.y = _y;
 		needPositionUpdate = true;
+	}
+	void Text::setPlaneDepth(PlaneDepth _depth)
+	{
+		planeDepth = _depth;
 	}
 	void Text::translate(glm::vec2& _vec)
 	{
