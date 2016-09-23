@@ -31,6 +31,7 @@ namespace spehs
 		void addCommand(std::string identifier, void(*fnc)(void));
 		void addCommand(std::string identifier, void(*fnc)(std::vector<std::string>&));
 		bool removeCommand(std::string commandIdentifier);///< Returns true if command is found and removed succesfully
+		bool removeVariable(std::string identifier);///< Returns true if variable with matching identifier was removed
 		void clearVariables();
 		void clearCommands();
 

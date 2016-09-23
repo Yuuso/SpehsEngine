@@ -420,6 +420,35 @@ namespace spehs
 			}
 			return false;
 		}
+		bool removeVariable(std::string identifier)
+		{
+			LockGuardRecursive regionLock(consoleMutex);
+			for (unsigned i = 0; i < intVariables.size(); i++)
+			{
+				if (intVariables[i]._identifier == identifier)
+				{
+					intVariables.erase(intVariables.begin() + i);
+					return true;
+				}
+			}
+			for (unsigned i = 0; i < floatVariables.size(); i++)
+			{
+				if (floatVariables[i]._identifier == identifier)
+				{
+					floatVariables.erase(floatVariables.begin() + i);
+					return true;
+				}
+			}
+			for (unsigned i = 0; i < boolVariables.size(); i++)
+			{
+				if (boolVariables[i]._identifier == identifier)
+				{
+					boolVariables.erase(boolVariables.begin() + i);
+					return true;
+				}
+			}
+			return false;
+		}
 		void clearVariables()
 		{
 			LockGuardRecursive regionLock(consoleMutex);
