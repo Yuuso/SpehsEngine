@@ -88,6 +88,7 @@ namespace spehs
 			consoleText->setColor(glm::vec4(1.0f, 0.6f, 0.0f, applicationData->consoleTextAlpha / 255.0f));
 			consoleText->setPosition(glm::vec2(CONSOLE_BORDER, CONSOLE_BORDER));
 			consoleText->setString("><");
+			consoleText->setRenderState(checkState(CONSOLE_OPEN_BIT));
 
 			enableState(CONSOLE_INITIALIZED_BIT);
 			log("Console initialized");
@@ -105,7 +106,8 @@ namespace spehs
 			delete consoleBatchManager;
 			delete consoleCamera;
 
-			consoleText->destroy();
+			if (consoleText)
+				consoleText->destroy();
 			consoleText = nullptr;
 			clearLog();
 			disableState(CONSOLE_INITIALIZED_BIT);
@@ -116,6 +118,7 @@ namespace spehs
 			if (checkState(CONSOLE_OPEN_BIT))
 				return;
 			enableState(CONSOLE_OPEN_BIT);
+			consoleText->setRenderState(true);
 			updateLinePositions();
 		}
 		void close()
@@ -124,6 +127,7 @@ namespace spehs
 			if (!checkBit(state, CONSOLE_OPEN_BIT))
 				return;
 			disableBit(state, CONSOLE_OPEN_BIT);
+			consoleText->setRenderState(false);
 			updateLinePositions();
 			input.clear();
 		}
@@ -159,9 +163,6 @@ namespace spehs
 			LockGuardRecursive regionLock(consoleMutex);
 			return textExecuted;
 		}
-
-
-		//Update cycle
 		void update()
 		{
 			LockGuardRecursive regionLock(consoleMutex);
@@ -173,16 +174,12 @@ namespace spehs
 				{
 					consoleText->setFont(applicationData->GUITextFontPath, applicationData->consoleTextSize);
 					for (unsigned i = 0; i < lines.size(); i++)
-					{
 						lines[i]->setFont(applicationData->GUITextFontPath, applicationData->consoleTextSize);
-					}
 					previousFontSize = applicationData->consoleTextSize;
 				}
 
 				if (!isOpen())
-				{
 					visibility -= getDeltaTime().asSeconds / FADE_OUT_TIME;
-				}
 			}
 
 			if (!isOpen())
@@ -274,9 +271,7 @@ namespace spehs
 							else
 							{//Erase until space or empty
 								while (input.size() > 0 && input.back() != ' ')
-								{
 									input.pop_back();
-								}
 								if (input.size() == 1 && input.back() == ' ')
 									input.pop_back();
 								backspaceTimer = BACKSPACE_INITIAL_INTERVAL;
@@ -357,23 +352,14 @@ namespace spehs
 			consoleBatchManager->render();
 
 			//Render lines
-			if (visibility < 0.01f)
+			for (unsigned i = 0; i < lines.size(); i++)
 			{
-				return;
-			}
-			for (auto i = lines.begin(); i < lines.end(); i++)
-			{
-				(*i)->setAlpha(visibility * (applicationData->consoleTextAlpha / 255.0f));
-				(*i)->setRenderState(true);
+				lines[i]->setAlpha(visibility * (applicationData->consoleTextAlpha / 255.0f));
+				lines[i]->setRenderState(true);
 			}
 
-			//Render console text
-			if (!isOpen())
-			{
-				return;
-			}
+			//Console text
 			consoleText->setAlpha(visibility * (applicationData->consoleTextAlpha / 255.0f));
-			consoleText->setRenderState(true);
 		}
 
 
@@ -477,6 +463,7 @@ namespace spehs
 
 			if (lines.size() >= LOG_LINES_KEPT_IN_MEMORY)
 			{
+				lines.front()->destroy();
 				lines.erase(lines.begin());
 			}
 			lines.push_back(consoleBatchManager->createText(TEXT_PLANEDEPTH));
@@ -517,19 +504,13 @@ namespace spehs
 		{
 			LockGuardRecursive regionLock(consoleMutex);
 			if (lines.size() == 0)
-			{
 				return;
-			}
 
 			int lineFix = 0;
 			if (isOpen())
-			{
 				lineFix++;
-			}
 			for (unsigned i = 0; i < lines.size(); i++)
-			{
 				lines[lines.size() - 1 - i]->setPosition(glm::vec2(CONSOLE_BORDER, CONSOLE_BORDER + lines.back()->getFontHeight()*(i + lineFix)));
-			}
 		}
 		void executeConsole()
 		{
