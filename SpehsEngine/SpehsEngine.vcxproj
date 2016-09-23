@@ -143,6 +143,7 @@
     <ClInclude Include="BatchManager.h" />
     <ClInclude Include="BitwiseOperations.h" />
     <ClInclude Include="Camera2D.h" />
+    <ClInclude Include="CommonColor.h" />
     <ClInclude Include="Component.h" />
     <ClInclude Include="Compression.h" />
     <ClInclude Include="Console.h" />

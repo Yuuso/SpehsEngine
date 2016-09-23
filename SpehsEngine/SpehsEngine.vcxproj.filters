@@ -300,6 +300,9 @@
     <ClInclude Include="Text.h">
       <Filter>Rendering\Geometric Rendering\Batch Rendering</Filter>
     </ClInclude>
+    <ClInclude Include="CommonColor.h">
+      <Filter>Core</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Physics">

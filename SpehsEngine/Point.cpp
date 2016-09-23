@@ -8,6 +8,10 @@
 
 namespace spehs
 {
+	Point* Point::create(const PlaneDepth &_planeDepth)
+	{
+		return getActiveBatchManager()->createPoint(_planeDepth);
+	}
 	Point::Point(const PlaneDepth &_planeDepth)
 	{
 		vertexArray.push_back(Vertex());

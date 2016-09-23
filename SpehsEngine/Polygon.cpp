@@ -22,6 +22,22 @@
 
 namespace spehs
 {
+	Polygon* Polygon::create(const int &_shapeID, const PlaneDepth &_planeDepth, const float &_width, const float &_height)
+	{
+		return getActiveBatchManager()->createPolygon(_shapeID, _planeDepth, _width, _height);
+	}
+	Polygon* Polygon::create(std::vector<spehs::Vertex> _vertexData, const PlaneDepth &_planeDepth, const float &_width, const float &_height)
+	{
+		return getActiveBatchManager()->createPolygon(_vertexData, _planeDepth, _width, _height);
+	}
+	Polygon* Polygon::create(std::vector<spehs::Vertex> _vertexData, const float &_width, const float &_height)
+	{
+		return getActiveBatchManager()->createPolygon(_vertexData, _width, _height);
+	}
+	Polygon* Polygon::create(std::vector<spehs::Position> _cuspData, const PlaneDepth &_planeDepth, const float &_width, const float &_height)
+	{
+		return getActiveBatchManager()->createPolygon(_cuspData, _planeDepth, _width, _height);
+	}
 	Polygon::Polygon(const int &_shapeID, const PlaneDepth &_planeDepth, const float &_width, const float &_height) : Polygon(_width, _height)
 	{
 		planeDepth = _planeDepth;

@@ -3,6 +3,7 @@
 
 #include "Depth.h"
 #include "Vertex.h"
+#include "CommonColor.h"
 
 #include <glm/glm.hpp>
 
@@ -45,10 +46,6 @@ namespace spehs
 		std::vector<Font*> fonts;
 	};
 
-	struct TextColor
-	{
-		
-	};
 
 	class Text
 	{
@@ -81,6 +78,7 @@ namespace spehs
 		void setFontSize(int _size);
 
 		void setColor(glm::vec4& _col);
+		void setColor(CommonColor& _col);
 		void setColor(float _red, float _green, float _blue, float _alpha = 1.0f);
 		void setColor(unsigned char _r, unsigned char _g, unsigned char _b, unsigned char _a = 1.0f);
 		void setAlpha(float _alpha);

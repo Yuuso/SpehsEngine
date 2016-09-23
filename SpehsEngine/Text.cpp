@@ -230,11 +230,11 @@ namespace spehs
 
 	Text* Text::create(const PlaneDepth &_depth)
 	{
-		return spehs::getActiveBatchManager()->createText(_depth);
+		return getActiveBatchManager()->createText(_depth);
 	}
 	Text* Text::create(const std::string &_string, const PlaneDepth &_depth)
 	{
-		return spehs::getActiveBatchManager()->createText(_string, _depth);
+		return getActiveBatchManager()->createText(_string, _depth);
 	}
 	Text::~Text()
 	{
@@ -330,10 +330,10 @@ namespace spehs
 				GLfloat w = ch.size.x * scale;
 				GLfloat h = ch.size.y * scale;
 
-				vertexArray.push_back(Vertex(spehs::Position(xpos, ypos + h), spehs::UV(0.0f, 0.0f)));
-				vertexArray.push_back(Vertex(spehs::Position(xpos, ypos), spehs::UV(0.0f, 1.0f)));
-				vertexArray.push_back(Vertex(spehs::Position(xpos + w, ypos), spehs::UV(1.0f, 1.0f)));
-				vertexArray.push_back(Vertex(spehs::Position(xpos + w, ypos + h), spehs::UV(1.0f, 0.0f)));
+				vertexArray.push_back(Vertex(spehs::Position(xpos, ypos + h), spehs::ColorRGBA(color), spehs::UV(0.0f, 0.0f)));
+				vertexArray.push_back(Vertex(spehs::Position(xpos, ypos), spehs::ColorRGBA(color), spehs::UV(0.0f, 1.0f)));
+				vertexArray.push_back(Vertex(spehs::Position(xpos + w, ypos), spehs::ColorRGBA(color), spehs::UV(1.0f, 1.0f)));
+				vertexArray.push_back(Vertex(spehs::Position(xpos + w, ypos + h), spehs::ColorRGBA(color), spehs::UV(1.0f, 0.0f)));
 
 				textureIDs.push_back(ch.textureID);
 
@@ -449,6 +449,7 @@ namespace spehs
 	void Text::setColor(glm::vec4& _vec)
 	{
 		color = _vec;
+		needTextUpdate = true;
 	}
 	void Text::setColor(float _r, float _g, float _b, float _a)
 	{
@@ -456,6 +457,7 @@ namespace spehs
 		color.g = _g;
 		color.b = _b;
 		color.a = _a;
+		needTextUpdate = true;
 	}
 	void Text::setColor(unsigned char _r, unsigned char _g, unsigned char _b, unsigned char _a)
 	{
@@ -463,14 +465,17 @@ namespace spehs
 		color.g = _g / 255.0f;
 		color.b = _b / 255.0f;
 		color.a = _a / 255.0f;
+		needTextUpdate = true;
 	}
 	void Text::setAlpha(float _alpha)
 	{
 		color.a = _alpha;
+		needTextUpdate = true;
 	}
 	void Text::setAlpha(unsigned char _a)
 	{
 		color.a = _a / 255.0f;
+		needTextUpdate = true;
 	}
 	int Text::getFontSize() const
 	{

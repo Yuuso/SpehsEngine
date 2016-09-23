@@ -29,6 +29,10 @@ namespace spehs
 	{
 
 	}
+	ColorRGBA::ColorRGBA(const glm::vec4 &_color) : rgba(_color)
+	{
+
+	}
 	ColorRGBA::ColorRGBA(const unsigned char _r, const unsigned char _g, const unsigned char _b, const unsigned char _a) : rgba((float) _r / 255.0f, (float) _g / 255.0f, (float) _b / 255.0f, (float) _a / 255.0f)
 	{
 

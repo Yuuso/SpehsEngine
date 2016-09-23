@@ -2,6 +2,7 @@
 
 #include "Vertex.h"
 #include "Depth.h"
+#include "CommonColor.h"
 
 #include <glm/vec2.hpp>
 #include <glm/vec3.hpp>
@@ -48,18 +49,6 @@ namespace spehs
 		QUAD = 0x0007,
 		QUAD_STRIP = 0x0008,
 		POLYGON = 0x0009,
-	};
-	enum CommonColor
-	{
-		WHITE = 0xFFFFFF,
-		BLACK = 0x000000,
-		RED = 0xFF0000,
-		ORANGE = 0xFF8000,
-		YELLOW = 0xFFFF00,
-		GREEN = 0x00FF00,
-		CYAN = 0x00FFFF,
-		BLUE = 0x0000FF,
-		MAGENTA = 0xFF00FF
 	};
 
 	//Base class for polygon, line and point

@@ -13,6 +13,10 @@
 
 namespace spehs
 {
+	Line* Line::create(const glm::vec2 &_startPoint, const glm::vec2 &_endPoint, const PlaneDepth &_planeDepth)
+	{
+		return getActiveBatchManager()->createLine(_startPoint, _endPoint, _planeDepth);
+	}
 	Line::Line(const glm::vec2 &_startPoint, const glm::vec2 &_endPoint, const PlaneDepth &_planeDepth)
 	{
 		//if (glm::distance(_startPoint, _endPoint) < DISTANCE_EPSILON)

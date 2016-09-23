@@ -3,6 +3,7 @@
 
 #include <glm/vec4.hpp>
 #include <glm/vec3.hpp>
+#include <glm/fwd.hpp>
 
 
 namespace spehs
@@ -24,6 +25,7 @@ namespace spehs
 	{
 	public:
 		ColorRGBA();
+		ColorRGBA(const glm::vec4 &_color);
 		ColorRGBA(const unsigned char _r, const unsigned char _g, const unsigned char _b, const unsigned char _a = 255);
 		ColorRGBA(const float &_r, const float &_g, const float &_b, const float &_a = 1.0f);
 
@@ -32,7 +34,7 @@ namespace spehs
 		void setColor(const glm::vec4 _color);
 		void setColor(const int& _commonColor);
 
-		glm::vec4 rgba;
+		glm::lowp_f32vec4 rgba;
 	};
 	class UV
 	{

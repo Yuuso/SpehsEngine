@@ -125,12 +125,15 @@ namespace spehs
 		{
 			"#version 150\n"
 			"in vec2 vertexPosition;\n"
+			"in vec4 vertexColor;"
 			"in vec2 vertexUV;\n"
+			"out vec4 fragColor;\n"
 			"out vec2 texCoord;\n"
 			"uniform mat4 cameraMatrix;\n"
 			"void main()\n"
 			"{\n"
 			"	gl_Position = cameraMatrix * vec4(vertexPosition.xy, 0.0f, 1.0);\n"
+			"	fragColor = vertexColor;\n"
 			"	texCoord = vertexUV;\n"
 			"}\n"
 		};
@@ -138,13 +141,13 @@ namespace spehs
 		{
 			"#version 150\n"
 			"in vec2 texCoord;\n"
+			"in vec4 fragColor;"
 			"out vec4 color;\n"
 			"uniform sampler2D tex;\n"
-			//"uniform vec4 textColor;"
 			"void main()\n"
 			"{\n"
 			"	color = vec4(1.0, 1.0, 1.0, texture(tex, texCoord).r);\n"
-			//"	color = color * textColor;\n"
+			"	color = color * fragColor;\n"
 			"}\n"
 		};
 #pragma endregion
@@ -176,6 +179,7 @@ namespace spehs
 		case DefaultText:
 			defaultShader->compileShadersFromSource(defaultTextVert, defaultTextFrag);
 			defaultShader->addAttribute("vertexPosition");
+			defaultShader->addAttribute("vertexColor");
 			defaultShader->addAttribute("vertexUV");
 			defaultShader->linkShaders();
 			result = new spehs::Shader(spehs::DefaultText, defaultShader, new DefaultTextureUniforms(defaultShader));

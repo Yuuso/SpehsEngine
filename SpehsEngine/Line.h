@@ -15,6 +15,8 @@ namespace spehs
 		friend class BatchManager;
 
 	public:
+		static Line* create(const glm::vec2 &_startPoint, const glm::vec2 &_endPoint, const PlaneDepth &_planeDepth);
+
 		Line* getLinePtr(){ return this; }
 
 		void updateVertices();
