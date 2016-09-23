@@ -20,8 +20,6 @@ typedef unsigned short GLushort;
 
 namespace spehs
 {
-	class BatchManager;
-	
 	int getIndexMultiplier(const GLenum &_drawMode, const unsigned int& _batchSize = DEFAULT_MAX_BATCH_SIZE); //Calculate max number of indices
 
 
@@ -57,8 +55,6 @@ namespace spehs
 	
 	class PrimitiveBatch : public Batch
 	{
-		friend class BatchManager;
-
 	public:
 		PrimitiveBatch(const bool _cameraMatrixState, const PlaneDepth &_priority, const bool _blending, const int &_shaderIndex, const GLuint &_textureDataID, const GLenum &_drawMode, float _lineWidth);
 		~PrimitiveBatch();

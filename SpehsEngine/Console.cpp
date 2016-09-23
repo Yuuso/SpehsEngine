@@ -26,6 +26,8 @@ extern int64_t primitiveAllocations;
 extern int64_t primitiveDeallocations;
 extern int64_t BatchAllocations;
 extern int64_t BatchDeallocations;
+extern int64_t textAllocations;
+extern int64_t textDeallocations;
 extern int64_t collisionPointAllocations;
 extern int64_t collisionPointDeallocations;
 typedef std::lock_guard<std::recursive_mutex> LockGuardRecursive;

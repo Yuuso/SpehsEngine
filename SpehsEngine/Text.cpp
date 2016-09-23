@@ -4,6 +4,7 @@
 #include "GLSLProgram.h"
 #include "ApplicationData.h"
 #include "ShaderManager.h"
+#include "BatchManager.h"
 #include "OpenGLError.h"
 #include "Console.h"
 
@@ -15,6 +16,9 @@
 #include FT_FREETYPE_H
 
 #include <iostream>
+
+int64_t textAllocations;
+int64_t textDeallocations;
 
 
 namespace spehs
@@ -224,14 +228,31 @@ namespace spehs
 	}
 	
 
+	Text* Text::create(const PlaneDepth &_depth)
+	{
+		return spehs::getActiveBatchManager()->createText(_depth);
+	}
+	Text* Text::create(const std::string &_string, const PlaneDepth &_depth)
+	{
+		return spehs::getActiveBatchManager()->createText(_string, _depth);
+	}
 	Text::~Text()
 	{
 		FontManager::instance->unreferenceFont(font);
+#ifdef _DEBUG
+		textDeallocations++;
+#endif
 	}
 	Text::Text(PlaneDepth depth) : lineCount(0), scale(1.0f), lineSpacing(0), font(nullptr), needTextUpdate(false), needPositionUpdate(false), renderState(true), readyForDelete(false),
 		shaderIndex(DefaultText), planeDepth(depth), cameraMatrixState(false)
 	{
-		
+#ifdef _DEBUG
+		textAllocations++;
+#endif
+	}
+	Text::Text(const std::string &_string, PlaneDepth _depth) : Text(_depth)
+	{
+		setString(_string);
 	}
 	/*
 	Text::Text(const Text& original)

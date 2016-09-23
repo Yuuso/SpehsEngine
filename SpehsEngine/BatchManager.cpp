@@ -91,6 +91,11 @@ namespace spehs
 		texts.push_back(new Text(_planeDepth));
 		return texts.back();
 	}
+	Text* BatchManager::createText(const std::string &_string, const PlaneDepth &_planeDepth)
+	{
+		texts.push_back(new Text(_string, _planeDepth));
+		return texts.back();
+	}
 
 
 

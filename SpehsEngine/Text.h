@@ -45,12 +45,19 @@ namespace spehs
 		std::vector<Font*> fonts;
 	};
 
+	struct TextColor
+	{
+		
+	};
 
 	class Text
 	{
 		friend class BatchManager;
 
 	public:
+		static Text* create(const PlaneDepth &_depth = GUI_PLANEDEPTH);
+		static Text* create(const std::string &_string, const PlaneDepth &_depth = GUI_PLANEDEPTH);
+
 		void operator=(const Text& _original);
 
 		void destroy();
@@ -104,6 +111,7 @@ namespace spehs
 
 	protected:
 		Text(PlaneDepth _depth);
+		Text(const std::string &_string, PlaneDepth _depth);
 		//Text(const Text& _original);
 		~Text();
 

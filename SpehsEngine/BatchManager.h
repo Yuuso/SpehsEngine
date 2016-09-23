@@ -4,6 +4,7 @@
 #include <glm/vec3.hpp>
 
 #include <vector>
+#include <string>
 
 #include "Depth.h"
 
@@ -41,7 +42,8 @@ namespace spehs
 
 		Point* createPoint(const PlaneDepth &_planeDepth);
 
-		Text* createText(const PlaneDepth &_planeDepth);
+		Text* createText(const PlaneDepth &_planeDepth = GUI_PLANEDEPTH);
+		Text* createText(const std::string &_string, const PlaneDepth &_planeDepth = GUI_PLANEDEPTH);
 
 		void render();
 		void clearBatches();
