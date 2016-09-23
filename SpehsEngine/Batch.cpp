@@ -317,7 +317,7 @@ namespace spehs
 		cameraMatrixState = _cameraMatrixState;
 
 		vertices.reserve(DEFAULT_MAX_BATCH_SIZE);
-		indices.reserve(getIndexMultiplier(TRIANGLE));
+		indices.reserve((DEFAULT_MAX_BATCH_SIZE / 4) * 6);
 
 		initBuffers();
 	}
@@ -364,6 +364,7 @@ namespace spehs
 		if (vertices.size() == 0)
 			return false;
 
+		setIndices();
 		updateBuffers();
 
 		//Blending
@@ -377,7 +378,7 @@ namespace spehs
 		if (cameraMatrixState)
 			shaderManager->getShader(shaderIndex)->uniforms->cameraMatrix = *spehs::getActiveBatchManager()->getCamera2D()->projectionMatrix;
 		else
-			shaderManager->getShader(shaderIndex)->uniforms->cameraMatrix = spehs::getActiveBatchManager()->getCamera2D()->staticMatrix;
+			shaderManager->getShader(shaderIndex)->uniforms->cameraMatrix = spehs::getActiveBatchManager()->getCamera2D()->textMatrix;
 
 		//Uniforms
 		shaderManager->setUniforms(shaderIndex);
@@ -388,6 +389,7 @@ namespace spehs
 		{
 			bind2DTexture(textureIDs[i], 0);
 			glDrawElements(TRIANGLE, 6, GL_UNSIGNED_SHORT, reinterpret_cast<void*>((i * 6) * sizeof(GLushort)));
+			drawCalls++;
 		}
 		glBindVertexArray(0);
 
@@ -395,19 +397,17 @@ namespace spehs
 
 		shaderManager->unuse(shaderIndex);
 
-		drawCalls++;
 		vertexDrawCount += vertices.size();
 
 		//Clean up
 		vertices.clear();
 		indices.clear();
+		textureIDs.clear();
 		return true;
 	}
 
 	void TextBatch::push(Text* _text)
 	{
-		//INDICES
-		setIndices(_text->worldVertexArray.size());
 		//VERTICES
 		vertices.insert(vertices.end(), _text->worldVertexArray.begin(), _text->worldVertexArray.end());
 		//TEXTURES
@@ -438,7 +438,7 @@ namespace spehs
 		glBufferData(GL_ARRAY_BUFFER, sizeof(spehs::Vertex) * DEFAULT_MAX_BATCH_SIZE, nullptr, GL_STREAM_DRAW);
 
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBufferID);
-		glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLushort) * getIndexMultiplier(TRIANGLE), nullptr, GL_STREAM_DRAW);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLushort) * (DEFAULT_MAX_BATCH_SIZE / 4) * 6, nullptr, GL_STREAM_DRAW);
 
 		checkOpenGLErrors(__FILE__, __LINE__);
 
@@ -447,7 +447,7 @@ namespace spehs
 		glEnableVertexAttribArray(1);
 
 		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(spehs::Vertex), reinterpret_cast<void*>(offsetof(spehs::Vertex, position)));
-		glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(spehs::Vertex), reinterpret_cast<void*>(offsetof(spehs::Vertex, uv)));
+		glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(spehs::Vertex), reinterpret_cast<void*>(offsetof(spehs::Vertex, uv)));
 
 		//Unbind
 		glBindVertexArray(0);
@@ -480,21 +480,22 @@ namespace spehs
 		checkOpenGLErrors(__FILE__, __LINE__);
 	}
 
-	void TextBatch::setIndices(const unsigned int &_numVertices)
-	{//////////////////!!!!!!!!!!!!!
-		unsigned int currentIndex = vertices.size();
-		unsigned int numIndices = indices.size();
-		unsigned int index = numIndices;
-		/*
-		Number of indices in a polygon:
-		(NumberOfVertices - 2) * 3
-		*/
-		indices.resize(indices.size() + ((_numVertices - 2) * 3));
-		for (unsigned i = 1; index < (numIndices + ((_numVertices - 2) * 3));)
+	void TextBatch::setIndices()
+	{
+		unsigned int currentIndex = 0;
+		unsigned int index = 0;
+
+		indices.resize((vertices.size() / 4) * 6);
+
+		while (index < indices.size())
 		{
-			indices[index++] = ((GLushort) currentIndex);
-			indices[index++] = ((GLushort) (currentIndex + i++));
-			indices[index++] = ((GLushort) (currentIndex + i));
+			for (unsigned i = 1; i < 3;)
+			{
+				indices[index++] = ((GLushort) currentIndex);
+				indices[index++] = ((GLushort) (currentIndex + i++));
+				indices[index++] = ((GLushort) (currentIndex + i));
+			}
+			currentIndex += 4;
 		}
 	}
 #pragma endregion

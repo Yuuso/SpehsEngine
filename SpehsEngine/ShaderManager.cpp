@@ -140,11 +140,11 @@ namespace spehs
 			"in vec2 texCoord;\n"
 			"out vec4 color;\n"
 			"uniform sampler2D tex;\n"
-			"uniform vec4 textColor;"
+			//"uniform vec4 textColor;"
 			"void main()\n"
 			"{\n"
 			"	color = vec4(1.0, 1.0, 1.0, texture(tex, texCoord).r);\n"
-			"	color = color * textColor;\n"
+			//"	color = color * textColor;\n"
 			"}\n"
 		};
 #pragma endregion

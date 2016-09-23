@@ -97,7 +97,7 @@ namespace spehs
 		bool isEnoughRoom(const unsigned int &_numVertices);
 		void initBuffers();
 		void updateBuffers();
-		void setIndices(const unsigned int &_numVertices);
+		void setIndices();
 
 	private:
 		std::vector<GLuint> textureIDs;

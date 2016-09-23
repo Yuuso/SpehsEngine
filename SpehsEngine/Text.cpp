@@ -3,6 +3,7 @@
 #include "Exceptions.h"
 #include "GLSLProgram.h"
 #include "ApplicationData.h"
+#include "ShaderManager.h"
 #include "OpenGLError.h"
 #include "Console.h"
 
@@ -227,7 +228,8 @@ namespace spehs
 	{
 		FontManager::instance->unreferenceFont(font);
 	}
-	Text::Text(PlaneDepth depth) : lineCount(0), scale(1.0f), lineSpacing(0), font(nullptr), needTextUpdate(false), needPositionUpdate(false), renderState(true), readyForDelete(false)
+	Text::Text(PlaneDepth depth) : lineCount(0), scale(1.0f), lineSpacing(0), font(nullptr), needTextUpdate(false), needPositionUpdate(false), renderState(true), readyForDelete(false),
+		shaderIndex(DefaultText), planeDepth(depth), cameraMatrixState(false)
 	{
 		
 	}
@@ -283,6 +285,8 @@ namespace spehs
 			worldVertexArray[i].position.x += position.x;
 			worldVertexArray[i].position.y += position.y;
 		}
+
+		needPositionUpdate = false;
 	}
 	void Text::updateText()
 	{
@@ -322,6 +326,10 @@ namespace spehs
 				y -= font->height + lineSpacing;
 			}
 		}
+
+		updatePosition();
+
+		needTextUpdate = false;
 	}
 
 	void Text::setRenderState(bool _state)

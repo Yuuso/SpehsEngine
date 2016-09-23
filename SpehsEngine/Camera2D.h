@@ -23,6 +23,7 @@ namespace spehs
 		glm::vec2 deltaMovement;
 		glm::mat4* projectionMatrix;
 		glm::mat4 staticMatrix;
+		glm::mat4 textMatrix;
 
 		float scale;
 		glm::vec2 position;
