@@ -6,8 +6,10 @@
 #include "ApplicationData.h"
 #include "Time.h"
 #include "Console.h"
+#include "Camera2D.h"
 #include "ConsoleVariable.h"
 #include "Text.h"
+#include "BatchManager.h"
 #define CONSOLE_COMMANDS_KEPT_IN_MEMORY 10
 #define LOG_LINES_KEPT_IN_MEMORY 25
 #define CONSOLE_BORDER 5
@@ -22,12 +24,8 @@ extern int64_t guiRectangleAllocations;
 extern int64_t guiRectangleDeallocations;
 extern int64_t primitiveAllocations;
 extern int64_t primitiveDeallocations;
-extern int64_t meshAllocations;
-extern int64_t meshDeallocations;
-extern int64_t primitiveBatchAllocations;
-extern int64_t primitiveBatchDeallocations;
-extern int64_t meshBatchAllocations;
-extern int64_t meshBatchDeallocations;
+extern int64_t BatchAllocations;
+extern int64_t BatchDeallocations;
 extern int64_t collisionPointAllocations;
 extern int64_t collisionPointDeallocations;
 typedef std::lock_guard<std::recursive_mutex> LockGuardRecursive;
@@ -61,6 +59,9 @@ namespace spehs
 		static void enableState(uint16_t bits);
 		static void disableState(uint16_t bits);
 
+		static Camera2D* consoleCamera;
+		static BatchManager* consoleBatchManager;
+
 		//Local methods
 		void updateLinePositions();
 		void setVariable();
@@ -76,7 +77,11 @@ namespace spehs
 				log("Console already initialized!");
 				return 0;
 			}
-			consoleText = new spehs::Text(TEXT_PLANEDEPTH);
+
+			consoleCamera = new Camera2D();
+			consoleBatchManager = new BatchManager(consoleCamera);
+
+			consoleText = consoleBatchManager->createText(TEXT_PLANEDEPTH);
 			consoleText->setFont(applicationData->GUITextFontPath, applicationData->consoleTextSize);
 			consoleText->setColor(glm::vec4(1.0f, 0.6f, 0.0f, applicationData->consoleTextAlpha / 255.0f));
 			consoleText->setPosition(glm::vec2(CONSOLE_BORDER, CONSOLE_BORDER));
@@ -94,7 +99,11 @@ namespace spehs
 				std::cout << "\nSpehsEngine::console already uninitialized!";
 				return;
 			}
-			delete consoleText;
+
+			delete consoleBatchManager;
+			delete consoleCamera;
+
+			consoleText->destroy();
 			consoleText = nullptr;
 			clearLog();
 			disableState(CONSOLE_INITIALIZED_BIT);
@@ -343,6 +352,8 @@ namespace spehs
 		{
 			LockGuardRecursive regionLock(consoleMutex);
 
+			consoleBatchManager->render();
+
 			//Render lines
 			if (visibility < 0.01f)
 			{
@@ -350,7 +361,7 @@ namespace spehs
 			}
 			for (auto i = lines.begin(); i < lines.end(); i++)
 			{
-				(*i)->getColorRef().a = visibility * (applicationData->consoleTextAlpha / 255.0f);
+				(*i)->setAlpha(visibility * (applicationData->consoleTextAlpha / 255.0f));
 				(*i)->setRenderState(true);
 			}
 
@@ -359,7 +370,7 @@ namespace spehs
 			{
 				return;
 			}
-			consoleText->getColorRef().a = visibility * (applicationData->consoleTextAlpha / 255.0f);
+			consoleText->setAlpha(visibility * (applicationData->consoleTextAlpha / 255.0f));
 			consoleText->setRenderState(true);
 		}
 
@@ -437,7 +448,7 @@ namespace spehs
 			{
 				lines.erase(lines.begin());
 			}
-			lines.push_back(new spehs::Text(TEXT_PLANEDEPTH));
+			lines.push_back(consoleBatchManager->createText(TEXT_PLANEDEPTH));
 			lines.back()->setFont(applicationData->GUITextFontPath, applicationData->consoleTextSize);
 			lines.back()->setColor(glm::vec4(color, applicationData->consoleTextAlpha / 255.0f));
 			lines.back()->setString(str);
@@ -462,7 +473,7 @@ namespace spehs
 			LockGuardRecursive regionLock(consoleMutex);
 			while (!lines.empty())
 			{
-				delete lines.back();
+				lines.back()->destroy();
 				lines.pop_back();
 			}
 		}
@@ -579,9 +590,7 @@ namespace spehs
 					log("Remaining allocations / Total (runtime) allocations", color);
 					log("GUI Rectangles: " + std::to_string(guiRectangleAllocations - guiRectangleDeallocations) + "/" + std::to_string(guiRectangleAllocations), color);
 					log("Primitives: " + std::to_string(primitiveAllocations - primitiveDeallocations) + "/" + std::to_string(primitiveAllocations), color);
-					log("Meshes: " + std::to_string(meshAllocations - meshDeallocations) + "/" + std::to_string(meshAllocations), color);
-					log("PrimitiveBatches: " + std::to_string(primitiveBatchAllocations - primitiveBatchDeallocations) + "/" + std::to_string(primitiveBatchAllocations), color);
-					log("MeshBatches: " + std::to_string(meshBatchAllocations - meshBatchDeallocations) + "/" + std::to_string(meshBatchAllocations), color);
+					log("PrimitiveBatches: " + std::to_string(BatchAllocations - BatchDeallocations) + "/" + std::to_string(BatchAllocations), color);
 					log("CollisionPoints: " + std::to_string(collisionPointAllocations - collisionPointDeallocations) + "/" + std::to_string(collisionPointAllocations), color);
 					log("-------------------", color);
 					return;

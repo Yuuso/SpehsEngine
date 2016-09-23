@@ -80,9 +80,7 @@ namespace spehs
 
 		//Setters
 		void setPosition(const float &_x, const float &_y);
-		void setPosition(const float &_x, const float &_y, const float &_z);
 		void setPosition(const glm::vec2 &_newPosition);
-		void setPosition(const glm::vec3 &_newPosition);
 		void setPosition(const Position &_newPosition);
 		void setScale(const float &_newScale);
 		void setScale(const float &_newScaleX, const float &_newScaleY);

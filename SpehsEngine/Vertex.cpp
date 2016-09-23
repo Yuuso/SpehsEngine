@@ -7,11 +7,11 @@
 
 namespace spehs
 {
-	Position::Position() : x(0.0f), y(0.0f), z(0.0f)
+	Position::Position() : x(0.0f), y(0.0f)
 	{
 
 	}
-	Position::Position(const float &_x, const float &_y, const float &_z) : x(_x), y(_y), z(_z)
+	Position::Position(const float &_x, const float &_y) : x(_x), y(_y)
 	{
 
 	}
@@ -20,15 +20,9 @@ namespace spehs
 		x = _x;
 		y = _y;
 	}
-	void Position::setPosition(const float &_x, const float &_y, const float &_z)
-	{
-		x = _x;
-		y = _y;
-		z = _z;
-	}
 	bool Position::operator==(const Position& _other) const
 	{
-		return (x == _other.x && y == _other.y && z == _other.z);
+		return (x == _other.x && y == _other.y);
 	}
 
 	ColorRGBA::ColorRGBA() : rgba(1.0f)
@@ -124,31 +118,12 @@ namespace spehs
 	{
 
 	}
-	Vertex::Vertex(const Position &_position, const ColorRGBA &_color, const UV &_uv) : position(_position), color(_color), uv(_uv) 
+	Vertex::Vertex(const Position &_position, const UV &_uv) : position(_position), uv(_uv)
 	{
 
 	}
-	
-	Vertex3D::Vertex3D()
+	Vertex::Vertex(const Position &_position, const ColorRGBA &_color, const UV &_uv) : position(_position), color(_color), uv(_uv)
 	{
 
-	}
-	Vertex3D::Vertex3D(const Position &_position) : position(_position)
-	{
-
-	}
-	Vertex3D::Vertex3D(const Position &_position, const UV &_uv, const Position &_normal) : position(_position), uv(_uv), normal(_normal)
-	{
-
-	}
-
-	
-	inline glm::vec3 toVec3(const Vertex& _vertex)
-	{
-		return glm::vec3(_vertex.position.x, _vertex.position.y, _vertex.position.z);
-	}
-	inline glm::vec3 toVec3(const Position& _position)
-	{
-		return glm::vec3(_position.x, _position.y, _position.z);
 	}
 }

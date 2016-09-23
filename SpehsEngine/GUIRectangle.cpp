@@ -90,9 +90,10 @@ namespace spehs
 #ifdef _DEBUG
 		++guiRectangleDeallocations;
 #endif
-		polygon->destroy();
+		if (polygon)
+			polygon->destroy();
 		if (text)
-			delete text;
+			text->destroy();
 		if (tooltip)
 			delete tooltip;
 		if (displayTexture)
@@ -374,7 +375,7 @@ namespace spehs
 	{
 		if (text)
 			return;
-		text = new spehs::Text(polygon->getPlaneDepth() + 1);
+		text = getActiveBatchManager()->createText(polygon->getPlaneDepth() + 1);
 		text->setFont(applicationData->GUITextFontPath, applicationData->GUITextSize);
 		text->setColor(0.0f, 0.0f, 0.0f);
 	}

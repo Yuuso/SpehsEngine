@@ -62,18 +62,6 @@ namespace spehs
 		needUpdate = true;
 	}
 
-	void Primitive::setPosition(const float &_x, const float &_y, const float &_z)
-	{
-#ifdef _DEBUG
-		if (_x != _x || _y != _y || _z != _z)
-		{
-			console::error("Position values corrupted!");
-		}
-#endif
-		position.setPosition(_x, _y, _z);
-		needUpdate = true;
-	}
-
 	void Primitive::setPosition(const glm::vec2 &_newPosition)
 	{
 #ifdef _DEBUG
@@ -86,22 +74,10 @@ namespace spehs
 		needUpdate = true;
 	}
 
-	void Primitive::setPosition(const glm::vec3 &_newPosition)
-	{
-#ifdef _DEBUG
-		if (_newPosition.x != _newPosition.x || _newPosition.y != _newPosition.y || _newPosition.z != _newPosition.z)
-		{
-			console::error("Position values corrupted!");
-		}
-#endif
-		position.setPosition(_newPosition.x, _newPosition.y, _newPosition.z);
-		needUpdate = true;
-	}
-
 	void Primitive::setPosition(const Position &_newPosition)
 	{
 #ifdef _DEBUG
-		if (_newPosition.x != _newPosition.x || _newPosition.y != _newPosition.y || _newPosition.z != _newPosition.z)
+		if (_newPosition.x != _newPosition.x || _newPosition.y != _newPosition.y)
 		{
 			console::error("Position values corrupted!");
 		}

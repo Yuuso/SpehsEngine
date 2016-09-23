@@ -31,11 +31,11 @@ namespace spehs
 		{
 		public:
 			PRNG32();
-			PRNG32(const uint_fast32_t _initSeed);
+			PRNG32(const unsigned int _initSeed);
 			~PRNG32();
 		
-			void setSeed(const uint_fast32_t _newSeed);
-			uint_fast32_t getSeed() const;
+			void setSeed(const unsigned int _newSeed);
+			unsigned int getSeed() const;
 			void reset();
 
 			uint_fast32_t uirandom();
@@ -56,7 +56,7 @@ namespace spehs
 			uint_fast32_t getMax() const;
 			
 		private:
-			uint_fast32_t seed;
+			unsigned int seed;
 			std::mt19937 MTEngine;
 		};
 
@@ -64,11 +64,11 @@ namespace spehs
 		{
 		public:
 			PRNG64();
-			PRNG64(const uint_fast64_t& _seed);
+			PRNG64(const unsigned long long& _seed);
 			~PRNG64();
 
-			void setSeed(const uint_fast64_t& _newSeed);
-			uint_fast64_t getSeed() const;
+			void setSeed(const unsigned long long& _newSeed);
+			unsigned long long getSeed() const;
 			void reset();
 
 			uint_fast64_t uirandom();
@@ -77,13 +77,19 @@ namespace spehs
 			int_fast64_t sirandom();
 			int_fast64_t sirandom(const long long& _min, const long long& _max);
 			int_fast64_t sirandom(const long long& _min, const long long& _max, const long long& _maxmin, const long long& _minmax);
+			float frandom();
+			float frandom(const float _min, const float _max);
+			float frandom(const float _min, const float _max, const float _maxmin, const float _minmax);
+			double drandom();
+			double drandom(const double& _min, const double& _max);
+			double drandom(const double& _min, const double& _max, const double& _maxmin, const double& _minmax);
 
 			void discardNext(const int _amount = 1);
 			uint_fast64_t getMin() const;
 			uint_fast64_t getMax() const;
 
 		private:
-			uint_fast64_t seed;
+			unsigned long long seed;
 			std::mt19937_64 MTEngine;
 		};
 	}

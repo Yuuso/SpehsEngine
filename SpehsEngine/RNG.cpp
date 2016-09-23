@@ -192,7 +192,7 @@ namespace spehs
 			MTEngine = std::mt19937();
 			seed = MTEngine.default_seed;
 		}
-		PRNG32::PRNG32(const uint_fast32_t _initSeed)
+		PRNG32::PRNG32(const unsigned int _initSeed)
 		{
 			seed = _initSeed;
 			MTEngine = std::mt19937(seed);
@@ -201,12 +201,12 @@ namespace spehs
 		{
 
 		}
-		void PRNG32::setSeed(const uint_fast32_t _newSeed)
+		void PRNG32::setSeed(const unsigned int _newSeed)
 		{
 			seed = _newSeed;
 			MTEngine.seed(seed);
 		}
-		uint_fast32_t PRNG32::getSeed() const
+		unsigned int PRNG32::getSeed() const
 		{
 			return seed;
 		}
@@ -385,7 +385,7 @@ namespace spehs
 			MTEngine = std::mt19937_64();
 			seed = MTEngine.default_seed;
 		}
-		PRNG64::PRNG64(const uint_fast64_t& _seed)
+		PRNG64::PRNG64(const unsigned long long& _seed)
 		{
 			seed = _seed;
 			MTEngine = std::mt19937_64(seed);
@@ -394,12 +394,12 @@ namespace spehs
 		{
 
 		}
-		void PRNG64::setSeed(const uint_fast64_t& _newSeed)
+		void PRNG64::setSeed(const unsigned long long& _newSeed)
 		{
 			seed = _newSeed;
 			MTEngine.seed(seed);
 		}
-		uint_fast64_t PRNG64::getSeed() const
+		unsigned long long PRNG64::getSeed() const
 		{
 			return seed;
 		}
@@ -481,6 +481,82 @@ namespace spehs
 			else
 			{
 				return lintDist(MTEngine, { _minmax, _max });
+			}
+		}
+		float PRNG64::frandom()
+		{
+			return floatDist(MTEngine, { -FLT_MAX, FLT_MAX });
+		}
+		float PRNG64::frandom(const float _min, const float _max)
+		{
+			if (_min > _max)
+			{
+				spehs::console::warning("Min value is greater than Max value! (PRNG32.frandom)");
+				return _min;
+			}
+			if (_min == _max)
+				return _min;
+			else
+				return floatDist(MTEngine, { _min, _max });
+		}
+		float PRNG64::frandom(const float _min, const float _max, const float _maxmin, const float _minmax)
+		{
+			if (_maxmin >= _minmax)
+			{
+				spehs::console::warning("Maxmin value is greater than minmax value! (PRNG32.frandom)");
+				return _min;
+			}
+			if (_maxmin < _min || _minmax > _max)
+			{
+				spehs::console::warning("Ranges of min-max stuff is wrong!! (PRNG32.frandom)");
+				return _min;
+			}
+
+			if (rng::sirandom(0, 1))
+			{
+				return floatDist(MTEngine, { _min, _maxmin });
+			}
+			else
+			{
+				return floatDist(MTEngine, { _minmax, _max });
+			}
+		}
+		double PRNG64::drandom()
+		{
+			return doubleDist(MTEngine, { -DBL_MAX, DBL_MAX });
+		}
+		double PRNG64::drandom(const double& _min, const double& _max)
+		{
+			if (_min > _max)
+			{
+				spehs::console::warning("Min value is greater than Max value! (PRNG32.drandom)");
+				return _min;
+			}
+			if (_min == _max)
+				return _min;
+			else
+				return doubleDist(MTEngine, { _min, _max });
+		}
+		double PRNG64::drandom(const double& _min, const double& _max, const double& _maxmin, const double& _minmax)
+		{
+			if (_maxmin >= _minmax)
+			{
+				spehs::console::warning("Maxmin value is greater than minmax value! (PRNG32.drandom)");
+				return _min;
+			}
+			if (_maxmin < _min || _minmax > _max)
+			{
+				spehs::console::warning("Ranges of min-max stuff is wrong!! (PRNG32.drandom)");
+				return _min;
+			}
+
+			if (rng::sirandom(0, 1))
+			{
+				return doubleDist(MTEngine, { _min, _maxmin });
+			}
+			else
+			{
+				return doubleDist(MTEngine, { _minmax, _max });
 			}
 		}
 		void PRNG64::discardNext(const int _amount)
