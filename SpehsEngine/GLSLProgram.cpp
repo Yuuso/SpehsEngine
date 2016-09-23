@@ -15,7 +15,7 @@ namespace spehs
 	GLSLProgram::~GLSLProgram()
 	{
 	}
-	GLSLProgram::GLSLProgram() : numberOfAttributes(0), programID(0), vertexShaderID(0), fragmentShaderID(0)
+	GLSLProgram::GLSLProgram() : programID(0), vertexShaderID(0), fragmentShaderID(0)
 	{
 	}
 
@@ -91,9 +91,10 @@ namespace spehs
 	}
 
 
-	void GLSLProgram::addAttribute(const std::string& attributeName)
+	void GLSLProgram::addAttribute(const VertexAttributePosition _attrib, const std::string& _attributeName)
 	{
-		glBindAttribLocation(programID, numberOfAttributes++, attributeName.c_str());
+		glBindAttribLocation(programID, _attrib, _attributeName.c_str());
+		attributes.push_back(_attrib);
 
 		checkOpenGLErrors(__FILE__, __LINE__);
 	}
@@ -118,8 +119,8 @@ namespace spehs
 	void GLSLProgram::use()
 	{
 		glUseProgram(programID);
-		for (int i = 0; i < numberOfAttributes; i++)
-			glEnableVertexAttribArray(i);
+		for (int i = 0; i < attributes.size(); i++)
+			glEnableVertexAttribArray(attributes[i]);
 
 		checkOpenGLErrors(__FILE__, __LINE__);
 	}
@@ -128,8 +129,8 @@ namespace spehs
 	void GLSLProgram::unuse()
 	{
 		glUseProgram(0);
-		for (int i = 0; i < numberOfAttributes; i++)
-			glDisableVertexAttribArray(i);
+		for (int i = 0; i < attributes.size(); i++)
+			glDisableVertexAttribArray(attributes[i]);
 
 		checkOpenGLErrors(__FILE__, __LINE__);
 	}

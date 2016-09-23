@@ -1,7 +1,11 @@
 
 #pragma once
 
+#include "Console.h"
+
 #include <glm/vec4.hpp>
+
+#include <string>
 
 
 namespace spehs
@@ -19,7 +23,7 @@ namespace spehs
 		MAGENTA = 0xFF00FF
 	};
 
-	glm::vec4 commonColor(CommonColor _color)
+	static glm::vec4 commonColor(const CommonColor _color)
 	{
 		switch (_color)
 		{

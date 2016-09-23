@@ -157,30 +157,30 @@ namespace spehs
 		{
 		case DefaultPolygon:
 			defaultShader->compileShadersFromSource(defaultPolygonVert, defaultPolygonFrag);
-			defaultShader->addAttribute("vertexPosition");
-			defaultShader->addAttribute("vertexColor");
+			defaultShader->addAttribute(VertexAttributePosition::VERTEX_POSITION, "vertexPosition");
+			defaultShader->addAttribute(VertexAttributePosition::VERTEX_COLOR, "vertexColor");
 			defaultShader->linkShaders();
 			result = new spehs::Shader(spehs::DefaultPolygon, defaultShader, new Uniforms(defaultShader));
 			break;
 		case DefaultTexture:
 			defaultShader->compileShadersFromSource(defaultTextureVert, defaultTextureFrag);
-			defaultShader->addAttribute("vertexPosition");
-			defaultShader->addAttribute("vertexColor");
-			defaultShader->addAttribute("vertexUV");
+			defaultShader->addAttribute(VertexAttributePosition::VERTEX_POSITION, "vertexPosition");
+			defaultShader->addAttribute(VertexAttributePosition::VERTEX_COLOR, "vertexColor");
+			defaultShader->addAttribute(VertexAttributePosition::VERTEX_UV, "vertexUV");
 			defaultShader->linkShaders();
 			result = new spehs::Shader(spehs::DefaultTexture, defaultShader, new DefaultTextureUniforms(defaultShader));
 			break;
 		case DefaultPostProc:
 			defaultShader->compileShadersFromSource(defaultPostProcVert, defaultPostProcFrag);
-			defaultShader->addAttribute("vertexPosition");
+			defaultShader->addAttribute(VertexAttributePosition::VERTEX_POSITION, "vertexPosition");
 			defaultShader->linkShaders();
 			result = new spehs::Shader(spehs::DefaultPostProc, defaultShader, new DefaultTextureUniforms(defaultShader));
 			break;
 		case DefaultText:
 			defaultShader->compileShadersFromSource(defaultTextVert, defaultTextFrag);
-			defaultShader->addAttribute("vertexPosition");
-			defaultShader->addAttribute("vertexColor");
-			defaultShader->addAttribute("vertexUV");
+			defaultShader->addAttribute(VertexAttributePosition::VERTEX_POSITION, "vertexPosition");
+			defaultShader->addAttribute(VertexAttributePosition::VERTEX_COLOR, "vertexColor");
+			defaultShader->addAttribute(VertexAttributePosition::VERTEX_UV, "vertexUV");
 			defaultShader->linkShaders();
 			result = new spehs::Shader(spehs::DefaultText, defaultShader, new DefaultTextureUniforms(defaultShader));
 			break;
