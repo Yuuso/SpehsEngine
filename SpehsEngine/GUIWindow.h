@@ -11,7 +11,6 @@ namespace spehs
 	public:
 		GUIWindow();
 		virtual ~GUIWindow();
-		void DRAW_TEXT();
 		
 		virtual void update();
 		virtual void postUpdate();

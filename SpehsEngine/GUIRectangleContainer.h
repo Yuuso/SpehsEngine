@@ -23,11 +23,6 @@ namespace spehs
 		GUIRectangleContainer();
 		virtual ~GUIRectangleContainer();
 
-#ifdef DRAW_TEXT_ENABLED
-		//DEBUG
-		virtual void DRAW_TEXT();
-#endif
-
 		virtual void update();
 		virtual void postUpdate();
 		virtual void setRenderState(const bool _state);

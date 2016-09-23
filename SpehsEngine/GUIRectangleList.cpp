@@ -9,14 +9,6 @@
 
 namespace spehs
 {
-	void GUIRectangleList::DRAW_TEXT()
-	{
-		GUIRectangleContainer::DRAW_TEXT();
-		scrollUp->DRAW_TEXT();
-		scrollBar->DRAW_TEXT();
-		scrollDown->DRAW_TEXT();
-	}
-
 	namespace ScrollButtons{ enum ScrollButtons{ up, bar, down }; }
 	GUIRectangleList::GUIRectangleList() : GUIRectangleContainer()
 	{

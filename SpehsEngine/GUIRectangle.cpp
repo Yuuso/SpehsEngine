@@ -34,20 +34,7 @@ namespace spehs
 		memcpy(&defaultColor[0], &color[0], sizeof(float) * 3);
 		defaultColor.a = 1.0f;
 	}
-
-
-#ifdef DRAW_TEXT_ENABLED
-	void GUIRectangle::DRAW_TEXT()
-	{//DEBUG
-		if (polygon->getRenderState())
-		{
-			if (text)
-				text->setRenderState(true);//Renders text, not actually sets render state
-			if (tooltip)
-				tooltip->DRAW_TEXT();
-		}
-	}
-#endif
+	
 	GUIRectangle::DisplayTexture::~DisplayTexture()
 	{
 		polygon->destroy();
@@ -375,7 +362,8 @@ namespace spehs
 	{
 		if (text)
 			return;
-		text = getActiveBatchManager()->createText(polygon->getPlaneDepth() + 1);
+		text = Text::create(polygon->getPlaneDepth() + 1);
+		text->setRenderState(polygon->getRenderState());
 		text->setFont(applicationData->GUITextFontPath, applicationData->GUITextSize);
 		text->setColor(0.0f, 0.0f, 0.0f);
 	}

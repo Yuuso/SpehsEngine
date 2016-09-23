@@ -35,7 +35,6 @@
 #define GUIRECT_RECEIVING_INPUT				0x00080000//Underlings should inform their first generation parents when receiving input
 #define GUIRECT_SELECTED					0x00100000
 #define GUIRECT_HOVER_COLOR					0x00200000
-#define DRAW_TEXT_ENABLED
 
 namespace spehs
 {
@@ -73,12 +72,7 @@ namespace spehs
 		GUIRectangle(int width, int height);
 		virtual ~GUIRectangle();
 		friend class GUIWindow;
-
-#ifdef DRAW_TEXT_ENABLED
-		//DEBUG
-		virtual void DRAW_TEXT();
-#endif
-
+		
 		///During GUI's update the element's size and/or min size may change even so that it might affect parents above.
 		virtual void update();
 		virtual void postUpdate();
@@ -105,7 +99,6 @@ namespace spehs
 		void setID(int newID){ id = newID; }
 		int getID(){ return id; }
 		//Text
-		void createText();
 		virtual void setString(std::string str);
 		void setStringSize(int size);
 		void setStringSizeRelative(int relativeSize);///< Set string size relative to global default GUI text size.
@@ -201,6 +194,8 @@ namespace spehs
 		virtual GUIRectangleContainer* getAsGUIRectangleContainerPtr(){ return nullptr; }
 
 	protected:
+		void createText();
+
 		glm::vec4 color;///<Color values given to polygon. Ranges from 0.0f - 1.0f
 		glm::ivec2 position;///<The position of the rectangle, originating from the lower left corner, given in screen coordinates. Relative to parent's position
 		glm::ivec2 size;///<Current size of the rectangle
