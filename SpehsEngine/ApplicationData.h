@@ -40,7 +40,7 @@ namespace spehs
 		int consoleTextAlpha;
 		int GUITextSize;
 		std::string GUITextFontPath;
-		std::string dataDirectory;//Specified directory where data should be stored
+		std::string dataDirectory;//Specified directory where data should be stored. Contains the forward slash suffix
 
 		//Window dimensions
 		void setWindowWidth(int w){ windowWidth = w; windowWidthHalf = w / 2; }
