@@ -151,23 +151,23 @@ namespace spehs
 
 		////Managing element position
 		//Setting both coordinates
-		virtual void setPosition(glm::ivec2& pos){ setX(pos.x); setY(pos.y); }
-		virtual void setPosition(int x, int y){ setX(x); setY(y); }
-		virtual void translate(glm::ivec2& translation){ setX(position.x + translation.x); setY(position.y + translation.y); }
-		virtual void translate(int x, int y){ setX(position.x + x); setY(position.y + y); }
+		virtual void setPositionLocal(glm::ivec2& pos){ setXLocal(pos.x); setYLocal(pos.y); }
+		virtual void setPositionLocal(int x, int y){ setXLocal(x); setYLocal(y); }
+		virtual void translate(glm::ivec2& translation){ setXLocal(position.x + translation.x); setYLocal(position.y + translation.y); }
+		virtual void translate(int x, int y){ setXLocal(position.x + x); setYLocal(position.y + y); }
 		//Setting only one coordinate
-		virtual void setX(int x){ position.x = x; disableBit(state, GUIRECT_POSITIONED); }
-		virtual void setY(int y){ position.y = y; disableBit(state, GUIRECT_POSITIONED); }
-		virtual void incrementX(int incrementation){ setX(position.x + incrementation); }
-		virtual void incrementY(int incrementation){ setY(position.y + incrementation); }
-		//Global screen position getters
-		glm::ivec2 getPosition(){ if (parent) return parent->getPosition() + position; return position; }
-		int getX(){ if (parent) return parent->getX() + position.x; return position.x; }
-		int getY(){ if (parent) return parent->getY() + position.y; return position.y; }
+		virtual void incrementX(int incrementation){ setXLocal(position.x + incrementation); }
+		virtual void incrementY(int incrementation){ setYLocal(position.y + incrementation); }
+		//Getting the GUIRectangle screen position (global)
+		glm::ivec2 getPositionGlobal(){ if (parent) return parent->getPositionGlobal() + position; return position; }
+		int getXGlobal(){ if (parent) return parent->getXGlobal() + position.x; return position.x; }
+		int getYGlobal(){ if (parent) return parent->getYGlobal() + position.y; return position.y; }
 		//Local position getters
-		glm::ivec2 getLocalPosition(){ return position; }
-		int getLocalX(){ return position.x; }
-		int getLocalY(){ return position.y; }
+		glm::ivec2 getPositionLocal(){ return position; }
+		int getXLocal(){ return position.x; }
+		int getYLocal(){ return position.y; }
+
+		//Managing element scale
 		//Scale managament
 		virtual void setSize(int width, int height){ setWidth(width); setHeight(height); }
 		virtual void setSize(glm::ivec2& newSize){ setWidth(newSize.x); setHeight(newSize.y); }

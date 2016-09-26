@@ -18,7 +18,7 @@ namespace spehs
 		int totalRowCount = ceil(float(elements.size()) / float(columns));
 		for (unsigned i = 0; i < elements.size(); i++)
 		{
-			elements[i]->setPosition(col * elementSize.x, elementSize.y * (totalRowCount - row - 1));
+			elements[i]->setPositionLocal(col * elementSize.x, elementSize.y * (totalRowCount - row - 1));
 			col++;
 			if (col >= columns)
 			{

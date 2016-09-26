@@ -35,9 +35,9 @@ namespace spehs
 		for (unsigned i = 0; i < elements.size(); i++)
 		{
 			if (i == 0)
-				elements[i]->setPosition(0, 0);
+				elements[i]->setPositionLocal(0, 0);
 			else
-				elements[i]->setPosition(elements[i - 1]->getLocalX() + elements[i - 1]->getWidth(), 0);
+				elements[i]->setPositionLocal(elements[i - 1]->getXLocal() + elements[i - 1]->getWidth(), 0);
 		}
 
 	}

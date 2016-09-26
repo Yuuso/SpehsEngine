@@ -93,7 +93,6 @@ namespace spehs
 	{
 		elements.push_back(element);
 		elements.back()->setParent(this);
-		elements.back()->setRenderState(polygon->getRenderState());
 
 		disableStateRecursiveUpwards(GUIRECT_MIN_SIZE_UPDATED);
 		

@@ -83,8 +83,8 @@ namespace spehs
 
 		GUIRectangle::updatePosition();
 
-		checkboxBackground->setPosition(getX() + size.x - CHECKBOX_BORDER - checkboxSize - applicationData->getWindowWidthHalf(), getY() + (size.y - checkboxSize) * 0.5f - applicationData->getWindowHeight() / 2);
-		checkboxFilling->setPosition(getX() + size.x - checkboxSize - applicationData->getWindowWidthHalf(), getY() + (size.y - checkboxSize) * 0.5f + CHECKBOX_BORDER - applicationData->getWindowHeightHalf());
+		checkboxBackground->setPosition(getXGlobal() + size.x - CHECKBOX_BORDER - checkboxSize - applicationData->getWindowWidthHalf(), getYGlobal() + (size.y - checkboxSize) * 0.5f - applicationData->getWindowHeight() / 2);
+		checkboxFilling->setPosition(getXGlobal() + size.x - checkboxSize - applicationData->getWindowWidthHalf(), getYGlobal() + (size.y - checkboxSize) * 0.5f + CHECKBOX_BORDER - applicationData->getWindowHeightHalf());
 
 		//Update minimum size
 		updateMinSize();
@@ -92,14 +92,14 @@ namespace spehs
 		//Text position
 		if (text)
 		{
-			float textX = getX();
+			float textX = getXGlobal();
 			if (checkBit(state, GUIRECT_TEXT_JUSTIFICATION_LEFT))
 				textX += CHECKBOX_BORDER;
 			else if (checkBit(state, GUIRECT_TEXT_JUSTIFICATION_RIGHT))
 				textX += size.x - size.y - CHECKBOX_BORDER - text->getTextWidth() - TEXT_PREFERRED_SIZE_BORDER;
 			else
 				textX += 0.5f *(size.x - size.y - CHECKBOX_BORDER - text->getTextWidth());
-			text->setPosition(textX, getY() + 0.5f * (size.y + text->getTextHeight()) - text->getFontHeight() - text->getFontDescender());
+			text->setPosition(textX, getYGlobal() + 0.5f * (size.y + text->getTextHeight()) - text->getFontHeight() - text->getFontDescender());
 		}
 	}
 	void GUICheckbox::updateScale()

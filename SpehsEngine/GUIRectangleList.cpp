@@ -48,15 +48,15 @@ namespace spehs
 		scrollDown->update();
 
 		if (inputManager->isKeyDown(MOUSE_BUTTON_LEFT) && //Mouse left is held
-			inputManager->getMouseY() > scrollDown->getY() + scrollDown->getHeight() && //mouse is within scroll bar area of movement
-			inputManager->getMouseY() < scrollUp->getY() &&
-			inputManager->getMouseX() > scrollDown->getX() &&
-			inputManager->getMouseX() < scrollDown->getX() + scrollDown->getWidth())
+			inputManager->getMouseY() > scrollDown->getYGlobal() + scrollDown->getHeight() && //mouse is within scroll bar area of movement
+			inputManager->getMouseY() < scrollUp->getYGlobal() &&
+			inputManager->getMouseX() > scrollDown->getXGlobal() &&
+			inputManager->getMouseX() < scrollDown->getXGlobal() + scrollDown->getWidth())
 		{//Mouse dragging scroll bar
 
 			//Calculate scroll based on mouse position relative to scroll area
-			float scrollAreaBegin = scrollDown->getY() + scrollDown->getHeight() + scrollBar->getHeight() / 2.0f;//Y value of the scrolling area beginning
-			float scrollAreaHeight = scrollUp->getY() - scrollDown->getY() - scrollDown->getHeight() - scrollBar->getHeight();//Height of the scrolling area in between min and max positions of scroll bar center
+			float scrollAreaBegin = scrollDown->getYGlobal() + scrollDown->getHeight() + scrollBar->getHeight() / 2.0f;//Y value of the scrolling area beginning
+			float scrollAreaHeight = scrollUp->getYGlobal() - scrollDown->getYGlobal() - scrollDown->getHeight() - scrollBar->getHeight();//Height of the scrolling area in between min and max positions of scroll bar center
 			scroll(round((elements.size() - updateElementCount) * (1.0f - (inputManager->getMouseY() - scrollAreaBegin) / scrollAreaHeight)) - beginElementIndex);
 		}
 
@@ -108,7 +108,7 @@ namespace spehs
 
 		//Position visible elements
 		bool listOnLeftSideOfMainWindow = true;
-		if (getX() + size.x / 2.0f > applicationData->getWindowWidthHalf())
+		if (getXGlobal() + size.x / 2.0f > applicationData->getWindowWidthHalf())
 			listOnLeftSideOfMainWindow = false;
 		int _x = 0;
 		if (invisibleElements() && listOnLeftSideOfMainWindow)
@@ -116,9 +116,9 @@ namespace spehs
 		for (int i = getEndElementIndex(); i >= beginElementIndex; i--)
 		{
 			if (i == getEndElementIndex())
-				elements[i]->setPosition(_x, 0);
+				elements[i]->setPositionLocal(_x, 0);
 			else
-				elements[i]->setPosition(_x, elements[i + 1]->getLocalY() + elements[i + 1]->getHeight());
+				elements[i]->setPositionLocal(_x, elements[i + 1]->getYLocal() + elements[i + 1]->getHeight());
 		}
 
 		//Reposition scrolling elements
@@ -127,11 +127,11 @@ namespace spehs
 			float scrollButtonX = 0;
 			if (!listOnLeftSideOfMainWindow)
 				scrollButtonX = size.x - SCROLL_BUTTON_WIDTH;
-			scrollDown->setPosition(scrollButtonX, 0);
-			scrollUp->setPosition(scrollButtonX, elements[beginElementIndex]->getLocalPosition().y);
-			float barSpace = scrollUp->getLocalY() - scrollDown->getHeight() - elementSize.y;
+			scrollDown->setPositionLocal(scrollButtonX, 0);
+			scrollUp->setPositionLocal(scrollButtonX, elements[beginElementIndex]->getPositionLocal().y);
+			float barSpace = scrollUp->getYLocal() - scrollDown->getHeight() - elementSize.y;
 			float scrollPercentage = beginElementIndex / float(int(elements.size()) - updateElementCount);
-			scrollBar->setPosition(scrollButtonX, elements[beginElementIndex]->getLocalY() - elementSize.y - scrollPercentage * barSpace);
+			scrollBar->setPositionLocal(scrollButtonX, elements[beginElementIndex]->getYLocal() - elementSize.y - scrollPercentage * barSpace);
 		}
 	}
 	void GUIRectangleList::updateScale()

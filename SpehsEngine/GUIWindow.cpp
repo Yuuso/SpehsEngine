@@ -34,7 +34,7 @@ namespace spehs
 		//Header bar
 		header = new GUIRectangle(-1);
 		header->setParent(this);
-		header->setPosition(0, size.y);
+		header->setPositionLocal(0, size.y);
 		header->setColor(255, 255, 255);
 		header->setJustification(GUIRECT_TEXT_JUSTIFICATION_LEFT);
 		header->setStringSize(applicationData->GUITextSize + 2);
@@ -42,7 +42,7 @@ namespace spehs
 		//Exit button
 		exit = new GUIRectangle(-2);
 		exit->setParent(this);
-		exit->setPosition(size.x - EXIT_WIDTH, size.y);
+		exit->setPositionLocal(size.x - EXIT_WIDTH, size.y);
 		exit->setSize(EXIT_WIDTH, header->getHeight());
 		exit->setID(1);
 		exit->setColor(255, 0, 0);
@@ -51,7 +51,7 @@ namespace spehs
 		//Strech background rectangle
 		strech = new GUIRectangle();
 		strech->setParent(this);
-		strech->setPosition(-STRECH_BORDER, -STRECH_BORDER);
+		strech->setPositionLocal(-STRECH_BORDER, -STRECH_BORDER);
 		strech->disableState(GUIRECT_HOVER_COLOR);
 
 		//State
@@ -102,23 +102,23 @@ namespace spehs
 			if (inputManager->getMouseX() < DOCK_BORDER)
 			{//Dock left
 				setSize(minSize.x, applicationData->getWindowHeight() - UP_BORDER - DOWN_BORDER - header->getHeight() - 2 * STRECH_BORDER);
-				setPosition(STRECH_BORDER + LEFT_BORDER, STRECH_BORDER + DOWN_BORDER);
+				setPositionLocal(STRECH_BORDER + LEFT_BORDER, STRECH_BORDER + DOWN_BORDER);
 			}
 			else if (inputManager->getMouseX() > applicationData->getWindowWidth() - DOCK_BORDER)
 			{//Dock right
 				setSize(minSize.x, applicationData->getWindowHeight() - UP_BORDER - DOWN_BORDER - header->getWidth() - 2 * STRECH_BORDER);
-				setPosition(applicationData->getWindowWidth() - size.x - STRECH_BORDER - RIGHT_BORDER, STRECH_BORDER + DOWN_BORDER);
+				setPositionLocal(applicationData->getWindowWidth() - size.x - STRECH_BORDER - RIGHT_BORDER, STRECH_BORDER + DOWN_BORDER);
 			}
 
 			if (inputManager->getMouseY() < DOCK_BORDER)
 			{//Dock down
 				setSize(applicationData->getWindowWidth() - 2 * STRECH_BORDER - LEFT_BORDER - RIGHT_BORDER, minSize.y);
-				setPosition(STRECH_BORDER + LEFT_BORDER, STRECH_BORDER + DOWN_BORDER);
+				setPositionLocal(STRECH_BORDER + LEFT_BORDER, STRECH_BORDER + DOWN_BORDER);
 			}
 			else if (inputManager->getMouseY() > applicationData->getWindowHeight() - DOCK_BORDER)
 			{//Dock up
 				setSize(applicationData->getWindowWidth() - 2 * STRECH_BORDER - LEFT_BORDER - RIGHT_BORDER, minSize.y);
-				setPosition(STRECH_BORDER + LEFT_BORDER, applicationData->getWindowHeight() - header->getHeight() - STRECH_BORDER - size.y - UP_BORDER);
+				setPositionLocal(STRECH_BORDER + LEFT_BORDER, applicationData->getWindowHeight() - header->getHeight() - STRECH_BORDER - size.y - UP_BORDER);
 			}
 
 			limitWithinMainWindow();
@@ -140,12 +140,12 @@ namespace spehs
 				//Check if mouse has crossed over to the opposite side of the window -> break from strech
 				if (checkBit(strechState, STRECH_STATE_W))
 				{//Strech began from left side of the window
-					if (inputManager->getMouseX() > getX() + size.x / 2.0f)
+					if (inputManager->getMouseX() > getXGlobal() + size.x / 2.0f)
 						breakFromStrech = true;
 				}
 				else
 				{//Strech began from the right side of the window
-					if (inputManager->getMouseX() < getX() + size.x / 2.0f)
+					if (inputManager->getMouseX() < getXGlobal() + size.x / 2.0f)
 						breakFromStrech = true;
 				}
 
@@ -171,12 +171,12 @@ namespace spehs
 				//Check if mouse has crossed over to the opposite side of the window -> break from strech
 				if (checkBit(strechState, STRECH_STATE_N))
 				{//Strech began from upper side of the window
-					if (inputManager->getMouseY() < getY() + size.y / 2.0f + header->getHeight() / 2.0f)
+					if (inputManager->getMouseY() < getYGlobal() + size.y / 2.0f + header->getHeight() / 2.0f)
 						breakFromStrech = true;
 				}
 				else
 				{//Strech began from the lower side of the window
-					if (inputManager->getMouseY() > getY() + size.y / 2.0f + header->getHeight() / 2.0f)
+					if (inputManager->getMouseY() > getYGlobal() + size.y / 2.0f + header->getHeight() / 2.0f)
 						breakFromStrech = true;
 				}
 
@@ -213,14 +213,14 @@ namespace spehs
 			enableBit(state, GUIRECT_STRECHING);
 			strechState = 0;
 			//Horizontal
-			if (inputManager->getMouseX() < getX() + size.x * STRECH_CORNER_PERCENTAGE)
+			if (inputManager->getMouseX() < getXGlobal() + size.x * STRECH_CORNER_PERCENTAGE)
 			{
 				//Enable horizontal streching
 				enableBit(strechState, STRECH_STATE_HORIZONTAL);
 				//Take record that the streching began from the western side of the window
 				enableBit(strechState, STRECH_STATE_W);
 			}
-			else if (inputManager->getMouseX() > getX() + size.x * (1.0 - STRECH_CORNER_PERCENTAGE))
+			else if (inputManager->getMouseX() > getXGlobal() + size.x * (1.0 - STRECH_CORNER_PERCENTAGE))
 			{
 				//Enable horizontal streching
 				enableBit(strechState, STRECH_STATE_HORIZONTAL);
@@ -228,14 +228,14 @@ namespace spehs
 				enableBit(strechState, STRECH_STATE_E);
 			}
 			//Vertical
-			if (inputManager->getMouseY() < getY() + size.y * STRECH_CORNER_PERCENTAGE)
+			if (inputManager->getMouseY() < getYGlobal() + size.y * STRECH_CORNER_PERCENTAGE)
 			{
 				//Enable vertical streching
 				enableBit(strechState, STRECH_STATE_VERTICAL);
 				//Take record that the streching began from the southern side of the window
 				enableBit(strechState, STRECH_STATE_S);
 			}
-			else if (inputManager->getMouseY() > getY() + size.y * (1.0 - STRECH_CORNER_PERCENTAGE))
+			else if (inputManager->getMouseY() > getYGlobal() + size.y * (1.0 - STRECH_CORNER_PERCENTAGE))
 			{
 				//Enable vertical streching
 				enableBit(strechState, STRECH_STATE_VERTICAL);
@@ -267,7 +267,7 @@ namespace spehs
 
 					//Set size according to application data's window dimensions
 					setSize(applicationData->getWindowWidth() - RIGHT_BORDER - LEFT_BORDER, applicationData->getWindowHeight() - UP_BORDER - DOWN_BORDER - header->getHeight());
-					setPosition(0, 0);
+					setPositionLocal(0, 0);
 
 					//Position window so that it won't go out of the application window
 					limitWithinMainWindow();
@@ -276,13 +276,13 @@ namespace spehs
 				{//Set to min size
 
 					//Take record of the window's old center position so that resized window can be nicely centered at the same position
-					glm::vec2 oldCenterPos(getX() + size.x / 2.0f, getY() + size.y / 2.0f);
+					glm::vec2 oldCenterPos(getXGlobal() + size.x / 2.0f, getYGlobal() + size.y / 2.0f);
 
 					//Rezise to min size
 					setSize(minSize);
 
 					//Reposition relative to old center position (recorded earlier)
-					setPosition(oldCenterPos.x - size.x / 2.0f, oldCenterPos.y - size.y / 2.0f);
+					setPositionLocal(oldCenterPos.x - size.x / 2.0f, oldCenterPos.y - size.y / 2.0f);
 
 					//Position window so that it won't go out of the application window
 					limitWithinMainWindow();
@@ -354,10 +354,10 @@ namespace spehs
 		GUIRectangle::updatePosition();
 
 		//Reposition and update exit button
-		exit->setPosition(size.x - exit->getWidth(), size.y - header->getHeight());
+		exit->setPositionLocal(size.x - exit->getWidth(), size.y - header->getHeight());
 
 		//Reposition and update header
-		header->setPosition(0, size.y - header->getHeight());
+		header->setPositionLocal(0, size.y - header->getHeight());
 
 		//Update strech position
 		strech->disableState(GUIRECT_POSITIONED);
@@ -366,10 +366,10 @@ namespace spehs
 		if (elements.size() == 0)
 			return;
 		//Position first element
-		elements[0]->setPosition(0, size.y - header->getHeight() - elements[0]->getHeight());
+		elements[0]->setPositionLocal(0, size.y - header->getHeight() - elements[0]->getHeight());
 		for (unsigned i = 1; i < elements.size(); i++)
 		{
-			elements[i]->setPosition(0, elements[i - 1]->getLocalY() - elements[i]->getHeight());
+			elements[i]->setPositionLocal(0, elements[i - 1]->getYLocal() - elements[i]->getHeight());
 		}
 	}
 	void GUIWindow::updateScale()
@@ -428,22 +428,22 @@ namespace spehs
 
 		//////Limit position
 		////Y
-		if (getY() > applicationData->getWindowHeight() - size.y - UP_BORDER - header->getHeight())
+		if (getYGlobal() > applicationData->getWindowHeight() - size.y - UP_BORDER - header->getHeight())
 		{//Window too up
-			setPosition(position.x, applicationData->getWindowHeight() - size.y - UP_BORDER - header->getHeight());
+			setPositionLocal(position.x, applicationData->getWindowHeight() - size.y - UP_BORDER - header->getHeight());
 		}
-		else if (getY() < DOWN_BORDER)
+		else if (getYGlobal() < DOWN_BORDER)
 		{//Window too down
-			setPosition(position.x, DOWN_BORDER);
+			setPositionLocal(position.x, DOWN_BORDER);
 		}
 		////X
-		if (getX() > applicationData->getWindowWidth() - size.x - RIGHT_BORDER)
+		if (getXGlobal() > applicationData->getWindowWidth() - size.x - RIGHT_BORDER)
 		{//Window too right
-			setPosition(applicationData->getWindowWidth() - size.x - RIGHT_BORDER, position.y);
+			setPositionLocal(applicationData->getWindowWidth() - size.x - RIGHT_BORDER, position.y);
 		}
-		else if (getX() < LEFT_BORDER)
+		else if (getXGlobal() < LEFT_BORDER)
 		{//Window too left
-			setPosition(LEFT_BORDER, position.y);
+			setPositionLocal(LEFT_BORDER, position.y);
 		}
 
 		updateScale();
@@ -517,13 +517,13 @@ namespace spehs
 			return false;
 
 		//Check each border individually
-		if (inputManager->getMouseX() < getX())
+		if (inputManager->getMouseX() < getXGlobal())
 			return true;
-		if (inputManager->getMouseY() < getY())
+		if (inputManager->getMouseY() < getYGlobal())
 			return true;
-		if (inputManager->getMouseX() > getX() + size.x)
+		if (inputManager->getMouseX() > getXGlobal() + size.x)
 			return true;
-		if (inputManager->getMouseY() > getY() + size.y)
+		if (inputManager->getMouseY() > getYGlobal() + size.y)
 			return true;
 		return false;
 	}

@@ -17,7 +17,7 @@ int64_t guiRectangleDeallocations = 0;
 
 namespace spehs
 {
-	glm::vec4 GUIRectangle::defaultColor;
+	glm::vec4 GUIRectangle::defaultColor(1.0f, 1.0f, 1.0f, 1.0f);
 	void GUIRectangle::setDefaultColor(int r, int g, int b, int a)
 	{
 		defaultColor[0] = r / 255.0f;
@@ -39,7 +39,7 @@ namespace spehs
 	{
 		polygon->destroy();
 	}
-	GUIRectangle::GUIRectangle() : position(0), size(0), minSize(0), state(0), displayTexture(nullptr), pressCallbackFunction(nullptr)
+	GUIRectangle::GUIRectangle() : position(0), size(0), minSize(0), state(GUIRECT_ENABLED | GUIRECT_HOVER_COLOR | GUIRECT_TEXT_JUSTIFICATION_LEFT), displayTexture(nullptr), pressCallbackFunction(nullptr)
 	{//Default constructor
 #ifdef _DEBUG
 		++guiRectangleAllocations;
@@ -48,12 +48,7 @@ namespace spehs
 		//Create polygon
 		polygon = spehs::getActiveBatchManager()->createPolygon(spehs::BUTTON, GUI_PLANEDEPTH, 1.0f, 1.0f);
 		polygon->setCameraMatrixState(false);
-
-		//Initial state (0)
-		enableBit(state, GUIRECT_ENABLED);
-		enableBit(state, GUIRECT_HOVER_COLOR);
-		enableBit(state, GUIRECT_TEXT_JUSTIFICATION_LEFT);
-
+		
 		setColor(defaultColor);
 	}
 	GUIRectangle::GUIRectangle(GUIRECT_ID_TYPE ID) : GUIRectangle()
@@ -101,7 +96,7 @@ namespace spehs
 		{
 			if (getMouseHover())
 			{
-				tooltip->setPosition(inputManager->getMouseX(), inputManager->getMouseY());
+				tooltip->setPositionLocal(inputManager->getMouseX(), inputManager->getMouseY());
 				tooltip->setRenderState(true);
 			}
 			else
@@ -161,12 +156,11 @@ namespace spehs
 	}
 	bool GUIRectangle::updateMouseHover()
 	{
-		if (inputManager->getMouseX() < getX() || inputManager->getMouseX() > getX() + size.x)
+		if (inputManager->getMouseX() < getXGlobal() || inputManager->getMouseX() > getXGlobal() + size.x)
 		{
 			disableBit(state, GUIRECT_MOUSE_HOVER);
 			return false;
 		}
-		else if (round(inputManager->getMouseY()) <= getY() || round(inputManager->getMouseY()) > getY() + size.y)
 		{
 			disableBit(state, GUIRECT_MOUSE_HOVER);
 			return false;
@@ -176,25 +170,25 @@ namespace spehs
 	}
 	void GUIRectangle::updatePosition()
 	{
-		polygon->setPosition(getX() - applicationData->getWindowWidthHalf(), getY() - applicationData->getWindowHeightHalf());
+		polygon->setPosition(getXGlobal() - applicationData->getWindowWidthHalf(), getYGlobal() - applicationData->getWindowHeightHalf());
 
 		//Text position
 		if (text)
 		{
-			float textX = getX();
+			float textX = getXGlobal();
 			if (checkBit(state, GUIRECT_TEXT_JUSTIFICATION_LEFT))
 				textX += TEXT_PREFERRED_SIZE_BORDER;
 			else if (checkBit(state, GUIRECT_TEXT_JUSTIFICATION_RIGHT))
 				textX += size.x - text->getTextWidth() - TEXT_PREFERRED_SIZE_BORDER;
 			else
 				textX += 0.5f *(size.x - text->getTextWidth());
-			text->setPosition(textX, getY() + 0.5f * (size.y + text->getTextHeight()) - text->getFontHeight() - text->getFontDescender());
+			text->setPosition(textX, getYGlobal() + 0.5f * (size.y + text->getTextHeight()) - text->getFontHeight() - text->getFontDescender());
 		}
 
 		//Display texture position
 		if (displayTexture)
 		{
-			displayTexture->polygon->setPosition(getX() + size.x / 2 - applicationData->getWindowWidthHalf(), getY() + size.y / 2 - applicationData->getWindowHeightHalf());
+			displayTexture->polygon->setPosition(getXGlobal() + size.x / 2 - applicationData->getWindowWidthHalf(), getYGlobal() + size.y / 2 - applicationData->getWindowHeightHalf());
 		}
 
 		enableBit(state, GUIRECT_POSITIONED);

@@ -127,18 +127,18 @@ namespace spehs
 				GUIRectangle* firstGenParent = getFirstGenerationParent();
 				if (firstGenParent)
 				{
-					if (firstGenParent->getX() + firstGenParent->getWidth() / 2.0f > applicationData->getWindowWidthHalf())
+					if (firstGenParent->getXGlobal() + firstGenParent->getWidth() / 2.0f > applicationData->getWindowWidthHalf())
 					{//Branch left
-						branchX = firstGenParent->getX() - getX() - minElementSize.x;
+						branchX = firstGenParent->getXGlobal() - getXGlobal() - minElementSize.x;
 					}
 					else
 					{//Branch right
-						branchX = firstGenParent->getX() - getX() + firstGenParent->getWidth();
+						branchX = firstGenParent->getXGlobal() - getXGlobal() + firstGenParent->getWidth();
 					}
 				}
 				else
 				{//No parent
-					if (getX() + size.x / 2.0f > applicationData->getWindowWidthHalf())
+					if (getXGlobal() + size.x / 2.0f > applicationData->getWindowWidthHalf())
 						branchX = -minElementSize.x;//Branch left
 					else
 						branchX = size.x;//Branch right
@@ -149,9 +149,9 @@ namespace spehs
 			for (int i = beginElementIndex; i <= getEndElementIndex(); i++)
 			{
 				if (i == beginElementIndex)
-					elements[i]->setPosition(branchX, 0);
+					elements[i]->setPositionLocal(branchX, 0);
 				else
-					elements[i]->setPosition(branchX, elements[i - 1]->getLocalY() + elements[i - 1]->getHeight());
+					elements[i]->setPositionLocal(branchX, elements[i - 1]->getYLocal() + elements[i - 1]->getHeight());
 			}
 		}
 	}
@@ -167,6 +167,7 @@ namespace spehs
 	void GUIRectangleTree::addElement(GUIRectangle* element)
 	{
 		GUIRectangleContainer::addElement(element);
+		element->setRenderState(checkState(GUIRECT_OPEN));
 
 		//By default, make tree to open on mouse hover when node element is added
 		openTreeButton = 0;
