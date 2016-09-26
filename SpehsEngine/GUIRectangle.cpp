@@ -161,6 +161,7 @@ namespace spehs
 			disableBit(state, GUIRECT_MOUSE_HOVER);
 			return false;
 		}
+		else if (round(inputManager->getMouseY()) <= getYGlobal() || round(inputManager->getMouseY()) > getYGlobal() + size.y)
 		{
 			disableBit(state, GUIRECT_MOUSE_HOVER);
 			return false;

@@ -156,6 +156,8 @@ namespace spehs
 		virtual void translate(glm::ivec2& translation){ setXLocal(position.x + translation.x); setYLocal(position.y + translation.y); }
 		virtual void translate(int x, int y){ setXLocal(position.x + x); setYLocal(position.y + y); }
 		//Setting only one coordinate
+		virtual void setXLocal(int x){ position.x = x; disableBit(state, GUIRECT_POSITIONED); }
+		virtual void setYLocal(int y){ position.y = y; disableBit(state, GUIRECT_POSITIONED); }
 		virtual void incrementX(int incrementation){ setXLocal(position.x + incrementation); }
 		virtual void incrementY(int incrementation){ setYLocal(position.y + incrementation); }
 		//Getting the GUIRectangle screen position (global)
