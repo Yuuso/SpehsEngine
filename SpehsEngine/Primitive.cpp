@@ -227,9 +227,7 @@ namespace spehs
 
 	void Primitive::setColor(const unsigned char* _rgbaArray)
 	{
-		unsigned char color[4];
-		memcpy(&color[0], _rgbaArray, sizeof(unsigned char) * 4);
-		primitiveColor = glm::vec4((float)color[0] / 255.0f, (float)color[1] / 255.0f, (float)color[2] / 255.0f, (float)color[3] / 255.0f);
+		primitiveColor = glm::vec4((float)_rgbaArray[0] / 255.0f, (float)_rgbaArray[1] / 255.0f, (float)_rgbaArray[2] / 255.0f, (float)_rgbaArray[3] / 255.0f);
 		for (unsigned i = 0; i < worldVertexArray.size(); i++)
 		{
 			worldVertexArray[i].color.setColor(primitiveColor);

@@ -1,4 +1,4 @@
-# Windows image file caches
+﻿# Windows image file caches
 Thumbs.db
 ehthumbs.db
 
@@ -6,13 +6,9 @@ ehthumbs.db
 *.log
 *.dll
 *.sdf
-Debug/
-Release/
+bin/
 Dependencies/
-SpehsRebuut/Debug/
-SpehsRebuut/Release/
-SpehsEngine/Debug/
-SpehsEngine/Release/
+SpehsEngine/obj/
 
 
 # Folder config file
