@@ -29,14 +29,6 @@ namespace spehs
 		TextureData* getTextureData(const size_t& _hash); //Get texture data from hash
 		size_t preloadTexture(const std::string& _texturePath); //Loads texture and returns hash
 
-		TextureData* getCubeMapData(const std::string& _negx, const std::string& _posx,
-									const std::string& _negy, const std::string& _posy,
-									const std::string& _negz, const std::string& _posz); //Get CubeMap data from path
-		TextureData* getCubeMapData(const size_t& _hash); //Get CubeMap data from hash
-		size_t preloadCubeMap(const std::string& _negx, const std::string& _posx,
-								const std::string& _negy, const std::string& _posy,
-								const std::string& _negz, const std::string& _posz); //Loads CubeMap and returns hash
-
 		TextureData* getNoiseTexture(const int& _width, const int& _height, const unsigned int& _seed, const int& _factor, const bool _turbulence);
 		TextureData* getNoiseTexture(const size_t& _hash);
 		size_t preloadNoiseTexture(const int& _width, const int& _height, const unsigned int& _seed, const int& _factor, const bool _turbulence);
@@ -47,9 +39,6 @@ namespace spehs
 
 	private:
 		TextureData* toTexture(const std::string& _filepath);
-		TextureData* toCubeMap(const std::string& _negx, const std::string& _posx, 
-								const std::string& _negy, const std::string& _posy, 
-								const std::string& _negz, const std::string& _posz);
 
 		TextureData* defaultTexture;
 		std::unordered_map<size_t, TextureData*> textureDataMap;
