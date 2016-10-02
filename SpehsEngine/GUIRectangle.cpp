@@ -34,6 +34,11 @@ namespace spehs
 		memcpy(&defaultColor[0], &color[0], sizeof(float) * 3);
 		defaultColor.a = 1.0f;
 	}
+	glm::vec4 GUIRectangle::getDefaultColor()
+	{
+		return defaultColor;
+	}
+
 	
 	GUIRectangle::DisplayTexture::~DisplayTexture()
 	{

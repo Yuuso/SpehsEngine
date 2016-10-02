@@ -60,6 +60,7 @@ namespace spehs
 		static void setDefaultColor(int r, int g, int b, int a = 255);
 		static void setDefaultColor(glm::vec4 color);
 		static void setDefaultColor(glm::vec3 color);
+		static glm::vec4 getDefaultColor();
 	private:
 		static glm::vec4 defaultColor;
 

@@ -18,6 +18,8 @@ namespace spehs
 		void toggleWindow(GUIWindow* window);
 		void openWindow(GUIWindow* window);
 		bool receivingInput();
+		unsigned getWindowCount(){ return windows.size(); }
+		GUIWindow* at(int index){ if (index < 0 || index >= windows.size()) return nullptr; return windows[index]; }
 
 	private:
 
