@@ -377,6 +377,7 @@ enum KeyboardKey : unsigned int
 	KEYBOARD_EJECT = 0x40000119,
 	KEYBOARD_SLEEP = 0x4000011A
 };
+std::string getKeyboardKeyAsString(KeyboardKey key);
 
 //MOUSE
 enum MouseButton : unsigned int
