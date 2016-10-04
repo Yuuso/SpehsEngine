@@ -93,6 +93,7 @@ namespace spehs
 	{
 		elements.push_back(element);
 		elements.back()->setParent(this);
+		elements.back()->setDepth(getDepth() + 10);
 
 		//Render state
 		if (checkState(GUIRECT_OPEN))
