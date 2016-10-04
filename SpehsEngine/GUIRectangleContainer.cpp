@@ -94,6 +94,13 @@ namespace spehs
 		elements.push_back(element);
 		elements.back()->setParent(this);
 
+		//Render state
+		if (checkState(GUIRECT_OPEN))
+			element->setRenderState(true);
+		else
+			element->setRenderState(false);
+
+		//Min size must be updated for everything above
 		disableStateRecursiveUpwards(GUIRECT_MIN_SIZE_UPDATED);
 		
 		//Element update tracking

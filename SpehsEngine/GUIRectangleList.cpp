@@ -205,11 +205,14 @@ namespace spehs
 			scrollDown->setRenderState(false);
 		}
 	}
-	void GUIRectangleList::addElement(GUIRectangle* e)
+	void GUIRectangleList::addElement(GUIRectangle* element)
 	{
-		GUIRectangleContainer::addElement(e);
+		GUIRectangleContainer::addElement(element);
 		if (updateElementCount > MIN_VISIBLE_COUNT)
+		{
 			incrementUpdateElementCount(-1);
+			element->setRenderState(false);
+		}
 		if (beginElementIndex == -1)
 			beginElementIndex = 0;
 	}
