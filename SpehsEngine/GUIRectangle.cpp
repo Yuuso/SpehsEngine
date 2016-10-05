@@ -7,7 +7,6 @@
 #include "GUIRectangleContainer.h"
 #include "ApplicationData.h"
 #include "Text.h"
-#include "BatchManager.h"
 #include "Depth.h"
 
 #define TEXT_MAX_STRING_LENGTH 32
@@ -51,7 +50,7 @@ namespace spehs
 #endif
 
 		//Create polygon
-		polygon = spehs::getActiveBatchManager()->createPolygon(spehs::BUTTON, GUI_PLANEDEPTH, 1.0f, 1.0f);
+		polygon = spehs::Polygon::create(spehs::BUTTON, GUI_PLANEDEPTH, 1.0f, 1.0f);
 		polygon->setCameraMatrixState(false);
 		
 		setColor(defaultColor);
@@ -372,7 +371,7 @@ namespace spehs
 		if (displayTexture)
 			delete displayTexture;
 		displayTexture = new DisplayTexture();
-		displayTexture->polygon = spehs::getActiveBatchManager()->createPolygon(4, 0, 1, 1);
+		displayTexture->polygon = spehs::Polygon::create(4, 0, 1, 1);
 		TextureData* texData = textureManager->getTextureData(path);
 		displayTexture->polygon->setTexture(texData);
 		displayTexture->polygon->resize(texData->width, texData->height);

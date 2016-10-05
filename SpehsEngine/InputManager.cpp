@@ -621,5 +621,5 @@ std::string getKeyboardKeyAsString(KeyboardKey key)
 	case KEYBOARD_SLEEP: return "Sleep";
 	default: break;
 	}
-	return "<keyboard key " + std::to_string(key) + " has no string equivalent defined>";
+	return "unknown";
 }

@@ -2,7 +2,6 @@
 #include "Text.h"
 #include "InputManager.h"
 #include "StringOperations.h"
-#include "BatchManager.h"
 #include "GUITextField.h"
 
 
@@ -64,7 +63,7 @@ namespace spehs
 		{
 			if (!text)
 			{
-				text = getActiveBatchManager()->createText(getDepth() + 2);
+				text = Text::create(getDepth() + 2);
 				text->setFont(applicationData->GUITextFontPath, applicationData->GUITextSize);
 			}
 			text->setString(defaultString);
