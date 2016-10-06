@@ -184,7 +184,8 @@ namespace spehs
 			endTyping();
 
 			//Make press callback call
-			(*pressCallbackFunction)(*this);
+			if (pressCallbackFunction)
+				(*pressCallbackFunction)(*this);
 		}
 		if (inputManager->isKeyPressed(KEYBOARD_ESCAPE) ||
 			inputManager->isKeyPressed(MOUSEBUTTON_LEFT) && !getMouseHover())

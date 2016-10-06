@@ -20,6 +20,9 @@ namespace spehs
 	/**Returns true if file exists at given path*/
 	bool fileExists(std::string& path);
 
+	/**Returns true if file exists and was removed succesfully*/
+	bool removeFile(std::string& path);
+
 	/**Returns false if failed to create directory at given path*/
 	bool createDirectory(std::string& path);
 

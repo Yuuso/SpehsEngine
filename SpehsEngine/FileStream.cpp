@@ -76,6 +76,11 @@ namespace spehs
 			return false;
 	}
 
+	bool removeFile(std::string& path)
+	{
+		return boost::filesystem::remove(path);
+	}
+
 	bool createDirectory(std::string& path)
 	{
 		std::lock_guard<std::recursive_mutex> lock(filestreamMutex);
