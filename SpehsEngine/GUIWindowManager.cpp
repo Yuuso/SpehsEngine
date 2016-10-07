@@ -17,6 +17,7 @@ namespace spehs
 	{
 		windows.push_back(window);
 		window->setRenderState(false);
+		updateDepths();
 	}
 	void GUIWindowManager::update()
 	{
@@ -56,7 +57,8 @@ namespace spehs
 						{
 							windows.erase(windows.begin() + i);
 							windows.push_back(focusedWindow);
-						}
+							updateDepths();
+						}						
 					}
 
 					//Break, do not run mouse activity updates in other windows
@@ -119,6 +121,7 @@ namespace spehs
 				{
 					windows.erase(windows.begin() + i);
 					windows.push_back(focusedWindow);
+					updateDepths();
 					break;
 				}
 		}
@@ -128,5 +131,10 @@ namespace spehs
 		if (!focusedWindow)
 			return false;
 		return focusedWindow->isReceivingInput();
+	}
+	void GUIWindowManager::updateDepths()
+	{
+		for (unsigned i = 0; i < windows.size(); i++)
+			windows[i]->setDepth(GUIRectangle::defaultDepth + i * 256);
 	}
 }

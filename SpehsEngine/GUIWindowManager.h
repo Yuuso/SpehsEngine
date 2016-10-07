@@ -22,6 +22,7 @@ namespace spehs
 		GUIWindow* at(int index){ if (index < 0 || index >= windows.size()) return nullptr; return windows[index]; }
 
 	private:
+		void updateDepths();
 
 		GUIWindow* focusedWindow;
 		std::vector<GUIWindow*> windows;

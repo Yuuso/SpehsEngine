@@ -57,13 +57,13 @@ namespace spehs
 	{
 	////Static
 	public:
-		static void setDefaultColor(int r, int g, int b, int a = 255);
-		static void setDefaultColor(glm::vec4 color);
-		static void setDefaultColor(glm::vec3 color);
-		static glm::vec4 getDefaultColor();
+		static int16_t defaultDepth;//Default depth where GUI rectangles will be arranged
+		static int16_t tooltipDepthRelative;//Default depth modifier for tooltips relative to their parent GUI rectangle
+		static glm::vec4 defaultColor;//Newly created GUI rectangles will have this color by default
+		static glm::vec4 defaultStringColor;//Newly created GUI rectangle strings will have this color by default
+		static glm::vec4 defaultTooltipColor;//Newly created tooltips will have this color by default
+		static glm::vec4 defaultTooltipStringColor;//Newly created tooltip string will have this color by default
 	private:
-		static glm::vec4 defaultColor;
-
 
 	public:
 		GUIRectangle();

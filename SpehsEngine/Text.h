@@ -52,8 +52,8 @@ namespace spehs
 		friend class BatchManager;
 
 	public:
-		static Text* create(const PlaneDepth &_depth = GUI_PLANEDEPTH);
-		static Text* create(const std::string &_string, const PlaneDepth &_depth = GUI_PLANEDEPTH);
+		static Text* create(const PlaneDepth &_depth = DEPTH_MAX);
+		static Text* create(const std::string &_string, const PlaneDepth &_depth = DEPTH_MAX);
 
 		void operator=(const Text& _original);
 

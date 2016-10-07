@@ -16,29 +16,13 @@ int64_t guiRectangleDeallocations = 0;
 
 namespace spehs
 {
+	int16_t GUIRectangle::defaultDepth = 10000;
+	int16_t GUIRectangle::tooltipDepthRelative = 1000;
 	glm::vec4 GUIRectangle::defaultColor(1.0f, 1.0f, 1.0f, 1.0f);
-	void GUIRectangle::setDefaultColor(int r, int g, int b, int a)
-	{
-		defaultColor[0] = r / 255.0f;
-		defaultColor[1] = g / 255.0f;
-		defaultColor[2] = b / 255.0f;
-		defaultColor[3] = a / 255.0f;
-	}
-	void GUIRectangle::setDefaultColor(glm::vec4 color)
-	{
-		defaultColor = color;
-	}
-	void GUIRectangle::setDefaultColor(glm::vec3 color)
-	{
-		memcpy(&defaultColor[0], &color[0], sizeof(float) * 3);
-		defaultColor.a = 1.0f;
-	}
-	glm::vec4 GUIRectangle::getDefaultColor()
-	{
-		return defaultColor;
-	}
+	glm::vec4 GUIRectangle::defaultStringColor(0.0f, 0.0f, 0.0f, 1.0f);
+	glm::vec4 GUIRectangle::defaultTooltipColor(1.0f, 1.0f, 1.0f, 1.0f);
+	glm::vec4 GUIRectangle::defaultTooltipStringColor(0.0f, 0.0f, 0.0f, 1.0f);
 
-	
 	GUIRectangle::DisplayTexture::~DisplayTexture()
 	{
 		polygon->destroy();
@@ -50,7 +34,7 @@ namespace spehs
 #endif
 
 		//Create polygon
-		polygon = spehs::Polygon::create(spehs::BUTTON, GUI_PLANEDEPTH, 1.0f, 1.0f);
+		polygon = spehs::Polygon::create(spehs::BUTTON, defaultDepth, 1.0f, 1.0f);
 		polygon->setCameraMatrixState(false);
 		
 		setColor(defaultColor);
@@ -236,7 +220,7 @@ namespace spehs
 		if (displayTexture)
 			displayTexture->polygon->setPlaneDepth(depth + 1);
 		if (tooltip)
-			tooltip->setDepth(depth + 5000);
+			tooltip->setDepth(depth + tooltipDepthRelative);
 	}
 	uint16_t GUIRectangle::getDepth()
 	{
@@ -320,12 +304,14 @@ namespace spehs
 			tooltip = new GUIRectangle();
 
 		tooltip->setString(tooltipString);
+		tooltip->setStringColor(defaultTooltipStringColor);
 		tooltip->setStringSize(applicationData->GUITextSize);
 		tooltip->setJustification(GUIRECT_TEXT_JUSTIFICATION_LEFT);
-		tooltip->setColor(150, 150, 150);
+		tooltip->setColor(defaultTooltipColor);
 		tooltip->updateScale();
 		tooltip->setSize(tooltip->minSize);
 		tooltip->setRenderState(false);
+		tooltip->setDepth(getDepth() + tooltipDepthRelative);
 	}
 	void GUIRectangle::setStringColor(glm::vec4& col)
 	{
@@ -364,7 +350,7 @@ namespace spehs
 		text = Text::create(polygon->getPlaneDepth() + 1);
 		text->setRenderState(polygon->getRenderState());
 		text->setFont(applicationData->GUITextFontPath, applicationData->GUITextSize);
-		text->setColor(0.0f, 0.0f, 0.0f);
+		text->setColor(defaultStringColor);
 	}
 	void GUIRectangle::setDisplayTexture(std::string path)
 	{

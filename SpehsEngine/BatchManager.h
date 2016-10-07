@@ -42,8 +42,8 @@ namespace spehs
 
 		Point* createPoint(const PlaneDepth &_planeDepth);
 
-		Text* createText(const PlaneDepth &_planeDepth = GUI_PLANEDEPTH);
-		Text* createText(const std::string &_string, const PlaneDepth &_planeDepth = GUI_PLANEDEPTH);
+		Text* createText(const PlaneDepth &_planeDepth = DEPTH_MAX);
+		Text* createText(const std::string &_string, const PlaneDepth &_planeDepth = DEPTH_MAX);
 
 		void render();
 		void clearBatches();

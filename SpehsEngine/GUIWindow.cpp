@@ -38,6 +38,7 @@ namespace spehs
 		header->setColor(255, 255, 255);
 		header->setJustification(GUIRECT_TEXT_JUSTIFICATION_LEFT);
 		header->setStringSize(applicationData->GUITextSize + 2);
+		header->setDepth(getDepth() + 1);
 
 		//Exit button
 		exit = new GUIRectangle(-2);
@@ -47,12 +48,14 @@ namespace spehs
 		exit->setID(1);
 		exit->setColor(255, 0, 0);
 		exit->setString("X");
+		exit->setDepth(getDepth() + 1);
 
 		//Strech background rectangle
 		strech = new GUIRectangle();
 		strech->setParent(this);
 		strech->setPositionLocal(-STRECH_BORDER, -STRECH_BORDER);
 		strech->disableState(GUIRECT_HOVER_COLOR);
+		strech->setDepth(getDepth() - 1);
 
 		//State
 		disableBit(state, GUIRECT_HOVER_COLOR);
@@ -315,10 +318,8 @@ namespace spehs
 		if (isFocused())
 			return;
 
-		setDepth(20000);
 		enableStateRecursive(GUIRECT_FOCUSED);
 		strech->setColor(255, 110, 0);
-		std::cout << "\nWindow gained focus: " << header->getString();
 	}
 	void GUIWindow::loseFocus()
 	{//Function called whenever this window loses focus
@@ -327,11 +328,9 @@ namespace spehs
 		if (!isFocused())
 			return;
 
-		setDepth(10000);
 		disableBit(state, GUIRECT_STRECHING);
 		disableBit(state, GUIRECT_DRAGGING);
 		strech->setColor(0, 0, 0);
-		std::cout << "\nWindow lost focus: " << header->getString();
 
 		GUIRectangleContainer::loseFocus();
 	}
