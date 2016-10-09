@@ -495,17 +495,23 @@ namespace spehs
 		int currentLineWidth = 0;
 
 		for (unsigned i = 0; i < string.size(); i++)
-		if (string[i] == '\n')
-		{//New line incoming, check current line width and compare with record. Reset current line width.
-			if (currentLineWidth > record)
-				record = currentLineWidth;
-			currentLineWidth = 0;
+		{
+			if (string[i] == '\n')
+			{//New line incoming, check current line width and compare with record. Reset current line width.
+				if (currentLineWidth > record)
+					record = currentLineWidth;
+				currentLineWidth = 0;
+			}
+			else
+			{//Increase current line width
+#ifdef _DEBUG
+				if (font->characters[string[i]].advance > 10000)
+					spehs::console::warning("Character width might be invalid!");
+#endif
+				currentLineWidth += font->characters[string[i]].advance;
+			}
 		}
-		else
-		{//Increase current line width
-			currentLineWidth += font->characters[string[i]].advance;
-		}
-		
+
 		if (currentLineWidth > record)
 			return currentLineWidth >> 6;
 		return record >> 6;

@@ -74,21 +74,21 @@ namespace spehs
 		virtual ~GUIRectangle();
 		friend class GUIWindow;
 		
-		///During GUI's update the element's size and/or min size may change even so that it might affect parents above.
+		/// During GUI's update the element's size and/or min size may change even so that it might affect parents above.
 		virtual void update();
 		virtual void postUpdate();
 		/**During scale update dimensions must not change in a manner that would affect parents above.\n
 		scale update is called up to once per update if the size of the rectangle has changed*/
 		virtual void updateScale();
-		///Positon update is called up to once per update if the position of the rectangle has changed
+		/// Positon update is called up to once per update if the position of the rectangle has changed
 		virtual void updatePosition();
 		virtual void setRenderState(const bool _state);		
 		virtual void updateMinSize();
-		/*Checks whether the mouse is above this rectangle. Returns mouse hover value*/
+		/// Checks whether the mouse is above this rectangle. Returns mouse hover value
 		virtual bool updateMouseHover();
-		/*Range [0.0f, 1.0f]*/
+		/// Range [0.0f, 1.0f]
 		void setColor(glm::vec4& color);
-		/*Range [0, 255]*/
+		/// Range [0, 255]
 		void setColor(int r, int g, int b, int a = 255);
 		void setParent(GUIRectangle* Parent);
 		virtual void setDepth(uint16_t depth);
@@ -154,6 +154,8 @@ namespace spehs
 		//Setting both coordinates
 		virtual void setPositionLocal(glm::ivec2& pos){ setXLocal(pos.x); setYLocal(pos.y); }
 		virtual void setPositionLocal(int x, int y){ setXLocal(x); setYLocal(y); }
+		virtual void setPositionGlobal(glm::ivec2& pos){ setXLocal(getXLocal() + pos.x - getXGlobal()); setYLocal(getYLocal() + pos.y - getYGlobal()); }
+		virtual void setPositionGlobal(int x, int y){ setXLocal(getXLocal() + x - getXGlobal()); setYLocal(getYLocal() + y - getYGlobal()); }
 		virtual void translate(glm::ivec2& translation){ setXLocal(position.x + translation.x); setYLocal(position.y + translation.y); }
 		virtual void translate(int x, int y){ setXLocal(position.x + x); setYLocal(position.y + y); }
 		//Setting only one coordinate

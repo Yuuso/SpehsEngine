@@ -79,12 +79,26 @@ namespace spehs
 		if (pressCallbackFunction && getMouseHoverAny() && inputManager->isKeyPressed(MOUSEBUTTON_LEFT))
 			(*pressCallbackFunction)(*this);
 
-		//Toolti render state
+		//Tooltip update
 		if (tooltip)
 		{
 			if (getMouseHover())
-			{
-				tooltip->setPositionLocal(inputManager->getMouseX(), inputManager->getMouseY());
+			{//Tooltip positioning
+
+				if (inputManager->getMouseX() > applicationData->getWindowWidthHalf())
+				{//Mouse on the right
+					if (inputManager->getMouseX() - tooltip->size.x < 0)
+						tooltip->setPositionGlobal(0, inputManager->getMouseY());
+					else
+						tooltip->setPositionGlobal(inputManager->getMouseX() - tooltip->size.x, inputManager->getMouseY());
+				}
+				else
+				{//Mouse on the left
+					if (inputManager->getMouseX() + tooltip->size.x > applicationData->getWindowWidth())
+						tooltip->setPositionGlobal(applicationData->getWindowWidth() - tooltip->size.x, inputManager->getMouseY());
+					else
+						tooltip->setPositionGlobal(inputManager->getMouseX(), inputManager->getMouseY());
+				}
 				tooltip->setRenderState(true);
 			}
 			else
@@ -171,7 +185,7 @@ namespace spehs
 				textX += size.x - text->getTextWidth() - TEXT_PREFERRED_SIZE_BORDER;
 			else
 				textX += 0.5f *(size.x - text->getTextWidth());
-			text->setPosition(textX, getYGlobal() + 0.5f * (size.y + text->getTextHeight()) - text->getFontHeight() - text->getFontDescender());
+			text->setPosition(std::round(textX), std::round(getYGlobal() + 0.5f * (size.y + text->getTextHeight()) - text->getFontHeight() - text->getFontDescender()));
 		}
 
 		//Display texture position
