@@ -310,6 +310,11 @@ namespace spehs
 		}
 		return false;
 	}
+	bool rayCollision(const glm::vec2 _rayPosition, const float _rayDirection, const glm::vec2& _circleCenterPoint, const float _circleRadius)
+	{
+		//TODO1!
+		return false;
+	}
 #pragma endregion
 
 	
@@ -812,4 +817,11 @@ namespace spehs
 		return nullptr;
 	}
 #pragma endregion
+
+	float rayCollision(const glm::vec2 _rayCastPosition, float _rayDirection, spehs::Position* _vertexArray, unsigned _vertexArrayLength)
+	{
+		//TODO1!
+		return 0.0f;
+	}
+
 }

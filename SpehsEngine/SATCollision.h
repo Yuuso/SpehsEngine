@@ -79,7 +79,8 @@ namespace spehs
 	//Line Collision (Probably doesn't work...)
 	bool isIntersecting(const glm::vec2& _start1, const glm::vec2& _end1, const glm::vec2& _start2, const glm::vec2& _end2);
 
-
+	//Ray x Polygon collision, returns 0.0f if no collision, otherwise > 0 (collision distance from point of ray origin)
+	float rayCollision(const glm::vec2 _rayCastPosition, float _rayDirection, spehs::Position* _vertexArray, unsigned _vertexArrayLength);
 
 	//BOOL COLLISIONS
 	//Polygon x Polygon collision
@@ -93,7 +94,8 @@ namespace spehs
 	//Circle x Circle Collision
 	bool CircleCollision(const glm::vec2& _circleCenterPoint1, const float _circleRadius1, const glm::vec2& _circleCenterPoint2, const float _circleRadius2);
 
-
+	//Ray x Polygon collision
+	bool rayCollision(const glm::vec2 _rayPosition, const float _rayDirection, const glm::vec2& _circleCenterPoint, const float _circleRadius);
 
 	//COLLISIONPOINT COLLISIONS
 	//Polygon x Polygon collision
