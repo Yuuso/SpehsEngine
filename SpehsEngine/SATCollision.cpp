@@ -300,9 +300,16 @@ namespace spehs
 	bool rayCollision(const glm::vec2 _rayPosition, const float _rayDirection, const glm::vec2& _circleCenterPoint, const float _circleRadius, const float _rayDistance)
 	{
 		glm::vec2 endPoint(_rayPosition.x + _rayDistance * cos(_rayDirection), _rayPosition.y + _rayDistance * sin(_rayDirection));
+		if (glm::dot(endPoint - _rayPosition, _circleCenterPoint - _rayPosition) < 0.0f)
+		{
+			return false;
+		}
 		if (pointToLineDistance(_rayPosition, endPoint, _circleCenterPoint) <= _circleRadius)
 		{
-			return true;
+			if (glm::distance(_rayPosition, _circleCenterPoint) <= _rayDistance)
+			{
+				return true;
+			}
 		}
 		return false;
 	}

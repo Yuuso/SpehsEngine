@@ -125,7 +125,7 @@ namespace spehs
 	float pointToLineDistance(const glm::vec2 &_begin, const glm::vec2 &_end, const glm::vec2 &_point)
 	{
 		float normalLength = sqrtf((_end.x - _begin.x) * (_end.x - _begin.x) + (_end.y - _begin.y) * (_end.y - _begin.y));
-		return abs((_point.x - _begin.x) * (_end.y - _begin.y) - (_point.y - _begin.y) * (_end.x - _begin.x) / normalLength);
+		return abs((_point.x - _begin.x) * (_end.y - _begin.y) - (_point.y - _begin.y) * (_end.x - _begin.x)) / normalLength;
 	}
 	spehs::Position* generateCusps(unsigned& numCusps, int shape, float width, float height)
 	{
