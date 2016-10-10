@@ -345,9 +345,18 @@ namespace spehs
 	{
 		return false;
 	}
+#include "Geometry.h"
 	float rayCollisionDistance(const glm::vec2 _rayCastPosition, float _rayDirection, spehs::Position* _vertexArray, unsigned _vertexArrayLength)
 	{
-		return 0.0f;
+		glm::vec2 vec(0.0f, 0.0f);
+		for (unsigned i = 0; i < _vertexArrayLength; i++)
+		{
+			vec.x += _vertexArray[i].x;
+			vec.y += _vertexArray[i].y;
+		}
+		vec /= _vertexArrayLength;
+
+		return magnitude(vec - _rayCastPosition);
 	}
 #pragma endregion
 
