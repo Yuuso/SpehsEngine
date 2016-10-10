@@ -13,6 +13,10 @@ int64_t collisionPointAllocations;
 int64_t collisionPointDeallocations;
 
 
+const float RAYCAST_DISTANCE = FLT_MAX / 2.0f;
+
+
+
 namespace spehs
 {
 	CollisionPoint::CollisionPoint()
@@ -121,21 +125,27 @@ namespace spehs
 		glm::vec2 normalVector = glm::vec2(-edgeVector.y, edgeVector.x);
 		return normalVector;
 	};
-	bool isIntersecting(const glm::vec2& _start1, const glm::vec2& _end1, const glm::vec2& _start2, const glm::vec2& _end2)
-	{
-		float denominator = ((_end1.x - _start1.x) * (_end2.y - _start2.y)) - ((_end1.y - _start1.y) * (_end2.x - _start2.x));
-		float numerator1 = ((_start1.y - _start2.y) * (_end2.x - _start2.x)) - ((_start1.x - _start2.x) * (_end2.y - _start2.y));
-		float numerator2 = ((_start1.y - _start2.y) * (_end1.x - _start1.x)) - ((_start1.x - _start2.x) * (_end1.y - _start1.y));
-
-		if (denominator == 0)
-			return numerator1 == 0 && numerator2 == 0;
-
-		float r = numerator1 / denominator;
-		float s = numerator2 / denominator;
-
-		return (r >= 0 && r <= 1) && (s >= 0 && s <= 1);
-	}
 	
+	glm::vec2 closestPointOnLine(const float &_linex1, const float &_liney1, const float &_linex2, const float &_liney2, const float &_pointx, const float &_pointy)
+	{
+		float A1 = _liney2 - _liney1;
+		float B1 = _linex1 - _linex2;
+
+		//Need for double precision?
+		float C1 = (_liney2 - _liney1) * _linex1 + (_linex1 - _linex2) * _liney1;
+		float C2 = -B1 * _pointx + A1 * _pointy;
+
+		float det = A1 * A1 - -B1 * B1;
+
+		if (det != 0)
+		{
+			return glm::vec2((A1 * C1 - B1 * C2) / det, (A1 * C2 - -B1 * C1) / det);
+		}
+		else
+		{
+			return glm::vec2(_pointx, _pointy);
+		}
+	}
 	
 #pragma region BOOL COLLISIONS
 	bool SATCollision(Vertex* _vertexArray1, const unsigned int _size1, Vertex* _vertexArray2, const unsigned int _size2)
@@ -302,7 +312,7 @@ namespace spehs
 		delete [] axis1;
 		return true;
 	}
-	bool CircleCollision(const glm::vec2& _circleCenterPoint1, const float _circleRadius1, const glm::vec2& _circleCenterPoint2, const float _circleRadius2)
+	bool circleCollision(const glm::vec2& _circleCenterPoint1, const float _circleRadius1, const glm::vec2& _circleCenterPoint2, const float _circleRadius2)
 	{
 		if (glm::distance(_circleCenterPoint1, _circleCenterPoint2) < (_circleRadius1 + _circleRadius2))
 		{
@@ -310,10 +320,34 @@ namespace spehs
 		}
 		return false;
 	}
+
 	bool rayCollision(const glm::vec2 _rayPosition, const float _rayDirection, const glm::vec2& _circleCenterPoint, const float _circleRadius)
 	{
-		//TODO1!
+		glm::vec2 endPoint(_rayPosition.x + RAYCAST_DISTANCE * cos(_rayDirection), _rayPosition.y + RAYCAST_DISTANCE * sin(_rayDirection));
+		if (glm::distance(closestPointOnLine(_rayPosition.x, _rayPosition.y, endPoint.x, endPoint.y, _circleCenterPoint.x, _circleCenterPoint.y), _circleCenterPoint) <= _circleRadius)
+		{
+			return true;
+		}
 		return false;
+	}
+	float rayCollisionDistance(const glm::vec2 _rayPosition, const float _rayDirection, const glm::vec2& _circleCenterPoint, const float _circleRadius)
+	{
+		glm::vec2 endPoint(_rayPosition.x + RAYCAST_DISTANCE * cos(_rayDirection), _rayPosition.y + RAYCAST_DISTANCE * sin(_rayDirection));
+		glm::vec2 closePoint = closestPointOnLine(_rayPosition.x, _rayPosition.y, endPoint.x, endPoint.y, _circleCenterPoint.x, _circleCenterPoint.y);
+		if (glm::distance(closePoint, _circleCenterPoint) <= _circleRadius)
+		{
+			return glm::distance(closePoint, _rayPosition);
+		}
+		return 0.0f;
+	}
+
+	bool rayCollision(const glm::vec2 _rayCastPosition, float _rayDirection, spehs::Position* _vertexArray, unsigned _vertexArrayLength)
+	{
+		return false;
+	}
+	float rayCollisionDistance(const glm::vec2 _rayCastPosition, float _rayDirection, spehs::Position* _vertexArray, unsigned _vertexArrayLength)
+	{
+		return 0.0f;
 	}
 #pragma endregion
 
@@ -648,7 +682,7 @@ namespace spehs
 		{
 			testPoint = glm::vec2(_vertexArray[i].position.x, _vertexArray[i].position.y);
 			//Find which points are colliding
-			if (CircleCollision(_circleCenterPoint, _circleRadius, testPoint, 0.0f))
+			if (circleCollision(_circleCenterPoint, _circleRadius, testPoint, 0.0f))
 			{
 				result->point.push_back(testPoint);
 
@@ -757,7 +791,7 @@ namespace spehs
 		{
 			testPoint = glm::vec2(_vertexArray[i].x, _vertexArray[i].y);
 			//Find which points are colliding
-			if (CircleCollision(_circleCenterPoint, _circleRadius, testPoint, 0.0f))
+			if (circleCollision(_circleCenterPoint, _circleRadius, testPoint, 0.0f))
 			{
 				result->point.push_back(testPoint);
 
@@ -795,7 +829,7 @@ namespace spehs
 		delete [] axis1;
 		return result;
 	}
-	std::shared_ptr<CollisionPoint> CircleMTVCollision(const glm::vec2& _circleCenterPoint1, const float _circleRadius1, const glm::vec2& _circleCenterPoint2, const float _circleRadius2)
+	std::shared_ptr<CollisionPoint> circleMTVCollision(const glm::vec2& _circleCenterPoint1, const float _circleRadius1, const glm::vec2& _circleCenterPoint2, const float _circleRadius2)
 	{
 		if (glm::distance(_circleCenterPoint1, _circleCenterPoint2) < (_circleRadius1 + _circleRadius2))
 		{
@@ -817,11 +851,4 @@ namespace spehs
 		return nullptr;
 	}
 #pragma endregion
-
-	float rayCollision(const glm::vec2 _rayCastPosition, float _rayDirection, spehs::Position* _vertexArray, unsigned _vertexArrayLength)
-	{
-		//TODO1!
-		return 0.0f;
-	}
-
 }

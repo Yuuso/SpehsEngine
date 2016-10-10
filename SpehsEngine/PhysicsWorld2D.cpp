@@ -75,14 +75,14 @@ namespace spehs
 				//	continue;
 
 				//Radius collisions
-				if (CircleCollision(bodies[cycle1]->position, bodies[cycle1]->circleRadius, bodies[cycle2]->position, bodies[cycle2]->circleRadius))
+				if (circleCollision(bodies[cycle1]->position, bodies[cycle1]->circleRadius, bodies[cycle2]->position, bodies[cycle2]->circleRadius))
 				{
 					//SAT Collision
 					if (bodies[cycle1]->numVertices > 10) //if circle
 					{
 						if (bodies[cycle2]->numVertices > 10) //both
 						{
-							collisionPoint = spehs::CircleMTVCollision(bodies[cycle1]->position, bodies[cycle1]->circleRadius, bodies[cycle2]->position, bodies[cycle2]->circleRadius);
+							collisionPoint = spehs::circleMTVCollision(bodies[cycle1]->position, bodies[cycle1]->circleRadius, bodies[cycle2]->position, bodies[cycle2]->circleRadius);
 						}
 						else
 						{
