@@ -74,6 +74,8 @@ namespace spehs
 		void setScale(const float &_newScale);
 		void setScale(const float &_newScaleX, const float &_newScaleY);
 		void setScale(const glm::vec2 &_newScale);
+		void setScaleX(const float _newScaleX);
+		void setScaleY(const float _newScaleX);
 		void setRotation(const float &_newRotation);
 		void setRotation(const float &_newRotation, const glm::vec3 &_newRotationVector);
 		void setRotationVector(const glm::vec3 &_newRotationVector);

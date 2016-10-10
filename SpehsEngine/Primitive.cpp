@@ -125,6 +125,30 @@ namespace spehs
 		needUpdate = true;
 	}
 
+	void Primitive::setScaleX(const float _newScaleX)
+	{
+#ifdef _DEBUG
+		if (_newScaleX != _newScaleX)
+		{
+			console::error("Scale value corrupted!");
+		}
+#endif
+		scaleX = _newScaleX;
+		needUpdate = true;
+	}
+
+	void Primitive::setScaleY(const float _newScaleY)
+	{
+#ifdef _DEBUG
+		if (_newScaleY != _newScaleY)
+		{
+			console::error("Scale value corrupted!");
+		}
+#endif
+		scaleY = _newScaleY;
+		needUpdate = true;
+	}
+
 	void Primitive::setRotation(const float &_newRotation)
 	{
 #ifdef _DEBUG
