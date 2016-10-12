@@ -95,13 +95,14 @@ namespace spehs
 		void setBlending(const bool _newState);
 
 		//Getters
-		Position getPosition(){ return position; }
-		float getRotation(){ return rotation; }
-		bool getCameraMatrixState(){ return cameraMatrixState; }
-		bool getRenderState(){ return renderState; }
-		PlaneDepth getPlaneDepth(){ return planeDepth; }
-		int getShaderIndex(){ return shaderIndex; }
-		glm::vec4 getColor(){ return primitiveColor; }
+		Position getPosition() const { return position; }
+		float getRotation() const { return rotation; }
+		bool getCameraMatrixState() const { return cameraMatrixState; }
+		bool getRenderState() const { return renderState; }
+		PlaneDepth getPlaneDepth() const { return planeDepth; }
+		int getShaderIndex() const { return shaderIndex; }
+		glm::vec4 getColor() const { return primitiveColor; }
+		float getColorAlpha() const { return primitiveColor.a; }
 
 		//Public Variables
 		std::vector<spehs::Vertex> worldVertexArray; //Transformed vertices
