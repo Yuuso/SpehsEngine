@@ -179,7 +179,14 @@ namespace spehs
 				}
 
 				if (!isOpen())
+				{
 					visibility -= getDeltaTime().asSeconds / FADE_OUT_TIME;
+					if (visibility <= 0.0f)
+					{
+						for (unsigned i = 0; i < lines.size(); i++)
+							lines[i]->setRenderState(false);
+					}
+				}
 			}
 
 			if (!isOpen())
@@ -195,6 +202,11 @@ namespace spehs
 			{
 				if (visibility < 1.0f)
 				{
+					if (visibility <= 0.0f)
+					{
+						for (unsigned i = 0; i < lines.size(); i++)
+							lines[i]->setRenderState(true);
+					}
 					visibility += getDeltaTime().asSeconds * 5.0f;
 					if (visibility > 1.0f)
 						visibility = 1.0f;
@@ -353,10 +365,7 @@ namespace spehs
 
 			//Render lines
 			for (unsigned i = 0; i < lines.size(); i++)
-			{
 				lines[i]->setAlpha(visibility * (applicationData->consoleTextAlpha / 255.0f));
-				lines[i]->setRenderState(true);
-			}
 
 			//Console text
 			consoleText->setAlpha(visibility * (applicationData->consoleTextAlpha / 255.0f));
@@ -471,6 +480,9 @@ namespace spehs
 			lines.back()->setColor(glm::vec4(color, applicationData->consoleTextAlpha / 255.0f));
 			lines.back()->setString(str);
 			visibility = 1.0f;
+			for (unsigned i = 0; i < lines.size(); i++)
+				lines[i]->setRenderState(true);
+			consoleText->setRenderState(true);
 
 			updateLinePositions();
 		}
