@@ -2,6 +2,7 @@
 
 #include <unordered_map>
 #include <string>
+#include <stdint.h>
 
 
 typedef unsigned int GLuint;
@@ -30,8 +31,10 @@ namespace spehs
 		size_t preloadTexture(const std::string& _texturePath); //Loads texture and returns hash
 
 		TextureData* getNoiseTexture(const int& _width, const int& _height, const unsigned int& _seed, const int& _factor, const bool _turbulence);
-		TextureData* getNoiseTexture(const size_t& _hash);
 		size_t preloadNoiseTexture(const int& _width, const int& _height, const unsigned int& _seed, const int& _factor, const bool _turbulence);
+
+		TextureData* createTexture(const std::string &_ID, const void* _uint8data, const int _width, const int _height);
+		size_t preloadDataTexture(const std::string &_ID, const void* _uint8data, const int _width, const int _height);
 
 		void removeTextureData(const std::string& _texturePath);
 		void removeTextureData(const size_t& _hash);
