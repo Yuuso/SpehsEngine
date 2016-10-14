@@ -191,12 +191,16 @@ namespace spehs
 		{
 			return first->getPriority() < second->getPriority();
 		});
-		for (unsigned i = 0; i < batches.size(); i++)
+		for (unsigned i = 0; i < batches.size();)
 		{
 			if (!batches[i]->render()) //If the batch is empty, delete it
 			{
 				delete batches[i];
 				batches.erase(batches.begin() + i);
+			}
+			else
+			{
+				i++;
 			}
 		}
 	}
