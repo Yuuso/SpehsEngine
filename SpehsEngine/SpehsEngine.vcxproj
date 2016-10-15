@@ -63,7 +63,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
     <Lib>
-      <AdditionalDependencies>SDL2.lib;SDL2main.lib;glew32.lib;glew32s.lib;opengl32.lib;freetype.lib;SOIL.lib;</AdditionalDependencies>
+      <AdditionalDependencies>SDL2.lib;SDL2main.lib;glew32.lib;glew32s.lib;opengl32.lib;freetype.lib;SOIL.lib;OpenAL32.lib;</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(ProjectDir)/../Dependencies/lib/</AdditionalLibraryDirectories>
     </Lib>
     <Bscmake>
@@ -89,7 +89,7 @@
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
     <Lib>
-      <AdditionalDependencies>SDL2.lib;SDL2main.lib;glew32.lib;glew32s.lib;opengl32.lib;freetype.lib;SOIL.lib</AdditionalDependencies>
+      <AdditionalDependencies>SDL2.lib;SDL2main.lib;glew32.lib;glew32s.lib;opengl32.lib;freetype.lib;SOIL.lib;OpenAL32.lib;</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(ProjectDir)/../Dependencies/lib/</AdditionalLibraryDirectories>
     </Lib>
   </ItemDefinitionGroup>
