@@ -13,9 +13,6 @@ int64_t collisionPointAllocations;
 int64_t collisionPointDeallocations;
 
 
-const float RAYCAST_DISTANCE = FLT_MAX / 2.0f;
-
-
 
 namespace spehs
 {
@@ -125,27 +122,6 @@ namespace spehs
 		glm::vec2 normalVector = glm::vec2(-edgeVector.y, edgeVector.x);
 		return normalVector;
 	};
-	
-	glm::vec2 closestPointOnLine(const float &_linex1, const float &_liney1, const float &_linex2, const float &_liney2, const float &_pointx, const float &_pointy)
-	{
-		float A1 = _liney2 - _liney1;
-		float B1 = _linex1 - _linex2;
-
-		//Need for double precision?
-		float C1 = (_liney2 - _liney1) * _linex1 + (_linex1 - _linex2) * _liney1;
-		float C2 = -B1 * _pointx + A1 * _pointy;
-
-		float det = A1 * A1 - -B1 * B1;
-
-		if (det != 0)
-		{
-			return glm::vec2((A1 * C1 - B1 * C2) / det, (A1 * C2 - -B1 * C1) / det);
-		}
-		else
-		{
-			return glm::vec2(_pointx, _pointy);
-		}
-	}
 	
 #pragma region BOOL COLLISIONS
 	bool SATCollision(Vertex* _vertexArray1, const unsigned int _size1, Vertex* _vertexArray2, const unsigned int _size2)
@@ -321,33 +297,48 @@ namespace spehs
 		return false;
 	}
 
-	bool rayCollision(const glm::vec2 _rayPosition, const float _rayDirection, const glm::vec2& _circleCenterPoint, const float _circleRadius)
+	bool rayCollision(const glm::vec2 _rayPosition, const float _rayDirection, const glm::vec2& _circleCenterPoint, const float _circleRadius, const float _rayDistance)
 	{
-		glm::vec2 endPoint(_rayPosition.x + RAYCAST_DISTANCE * cos(_rayDirection), _rayPosition.y + RAYCAST_DISTANCE * sin(_rayDirection));
-		if (glm::distance(closestPointOnLine(_rayPosition.x, _rayPosition.y, endPoint.x, endPoint.y, _circleCenterPoint.x, _circleCenterPoint.y), _circleCenterPoint) <= _circleRadius)
+		glm::vec2 endPoint(_rayPosition.x + _rayDistance * cos(_rayDirection), _rayPosition.y + _rayDistance * sin(_rayDirection));
+		if (glm::dot(endPoint - _rayPosition, _circleCenterPoint - _rayPosition) < 0.0f)
 		{
-			return true;
+			return false;
+		}
+		if (pointToLineDistance(_rayPosition, endPoint, _circleCenterPoint) <= _circleRadius)
+		{
+			if (glm::distance(_rayPosition, _circleCenterPoint) <= _rayDistance)
+			{
+				return true;
+			}
 		}
 		return false;
 	}
-	float rayCollisionDistance(const glm::vec2 _rayPosition, const float _rayDirection, const glm::vec2& _circleCenterPoint, const float _circleRadius)
+	float rayCollisionDistance(const glm::vec2 _rayPosition, const float _rayDirection, const glm::vec2& _circleCenterPoint, const float _circleRadius, const float _rayDistance)
 	{
-		glm::vec2 endPoint(_rayPosition.x + RAYCAST_DISTANCE * cos(_rayDirection), _rayPosition.y + RAYCAST_DISTANCE * sin(_rayDirection));
-		glm::vec2 closePoint = closestPointOnLine(_rayPosition.x, _rayPosition.y, endPoint.x, endPoint.y, _circleCenterPoint.x, _circleCenterPoint.y);
-		if (glm::distance(closePoint, _circleCenterPoint) <= _circleRadius)
+		glm::vec2 endPoint(_rayPosition.x + _rayDistance * cos(_rayDirection), _rayPosition.y + _rayDistance * sin(_rayDirection));
+		float distance = pointToLineDistance(_rayPosition, endPoint, _circleCenterPoint);
+		if (distance <= _circleRadius)
 		{
-			return glm::distance(closePoint, _rayPosition);
+			return glm::distance(_circleCenterPoint, _rayPosition); //TEMPs
 		}
 		return 0.0f;
 	}
 
-	bool rayCollision(const glm::vec2 _rayCastPosition, float _rayDirection, spehs::Position* _vertexArray, unsigned _vertexArrayLength)
+	bool rayCollision(const glm::vec2 _rayCastPosition, float _rayDirection, spehs::Position* _vertexArray, unsigned _vertexArrayLength, const float _rayDistance)
 	{
 		return false;
 	}
-	float rayCollisionDistance(const glm::vec2 _rayCastPosition, float _rayDirection, spehs::Position* _vertexArray, unsigned _vertexArrayLength)
+	float rayCollisionDistance(const glm::vec2 _rayCastPosition, float _rayDirection, spehs::Position* _vertexArray, unsigned _vertexArrayLength, const float _rayDistance)
 	{
-		return 0.0f;
+		glm::vec2 vec(0.0f, 0.0f);
+		for (unsigned i = 0; i < _vertexArrayLength; i++)
+		{
+			vec.x += _vertexArray[i].x;
+			vec.y += _vertexArray[i].y;
+		}
+		vec /= _vertexArrayLength;
+
+		return magnitude(vec - _rayCastPosition);
 	}
 #pragma endregion
 

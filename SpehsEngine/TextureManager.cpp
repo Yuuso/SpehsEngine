@@ -84,14 +84,6 @@ namespace spehs
 
 		return textureDataMap.find(preloadNoiseTexture(_width, _height, _seed, _factor, _turbulence))->second;
 	}
-	TextureData* TextureManager::getNoiseTexture(const size_t& _hash)
-	{
-		auto it = textureDataMap.find(_hash);
-		if (it != textureDataMap.end())
-			return it->second;
-		console::warning("NoiseTexture not found, using default.");
-		return defaultTexture;
-	}
 	size_t TextureManager::preloadNoiseTexture(const int& _width, const int& _height, const unsigned int& _seed, const int& _factor, const bool _turbulence)
 	{
 		if (_factor == 0)
@@ -206,6 +198,49 @@ namespace spehs
 		for (unsigned i = 0; i < _width; i++)
 			delete[] noise[i];
 		delete[] noise;
+
+		//Create TextureData
+		TextureData* newTexData = new TextureData(textureData, _width, _height);
+		textureDataMap.insert(std::pair<size_t, TextureData*>(hash, newTexData));
+
+		checkOpenGLErrors(__FILE__, __LINE__);
+
+		return hash;
+	}
+	TextureData* TextureManager::createTexture(const std::string &_ID, const void* _uint8data, const int _width, const int _height)
+	{
+		size_t hash = std::hash<std::string>()(_ID);
+		auto it = textureDataMap.find(hash);
+		if (it != textureDataMap.end())
+			return it->second;
+
+		return textureDataMap.find(preloadDataTexture(_ID, _uint8data, _width, _height))->second;
+	}
+	size_t TextureManager::preloadDataTexture(const std::string &_ID, const void* _uint8data, const int _width, const int _height)
+	{
+		size_t hash = std::hash<std::string>()(_ID);
+		if (textureDataMap.find(hash) != textureDataMap.end())
+		{
+			console::warning("Tryng to preload already existing datatexture!");
+			return hash;
+		}
+
+		//Create OpenGL Texture
+		glEnable(GL_TEXTURE_2D);
+
+		GLuint textureData;
+
+		glGenTextures(1, &textureData);
+		glBindTexture(GL_TEXTURE_2D, textureData);
+
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, _width, _height, 0, GL_RGBA, GL_UNSIGNED_BYTE, _uint8data);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		glGenerateMipmap(GL_TEXTURE_2D);
+
+		glBindTexture(GL_TEXTURE_2D, 0);
 
 		//Create TextureData
 		TextureData* newTexData = new TextureData(textureData, _width, _height);

@@ -100,25 +100,6 @@ namespace spehs
 			result += glm::vec2(cusps[i].position.x, cusps[i].position.y);
 		}
 		return result / (float)numCusps;
-		//float area;
-		//float x = 0.0f, y = 0.0f;
-		//for (unsigned i = 0; i < numCusps; i++)
-		//{
-		//	if (i < numCusps)
-		//	{
-		//		area = (cusps[i].x * cusps[i + 1].y - cusps[i + 1].x * cusps[i].y);
-		//		x += (cusps[i].x + cusps[i + 1].x) * area;
-		//		y += (cusps[i].y + cusps[i + 1].y) * area;
-		//	}
-		//	else
-		//	{
-		//		area = (cusps[i].x * cusps[0].y - cusps[0].x * cusps[i].y);
-		//		x += (cusps[i].x + cusps[0].x) * area;
-		//		y += (cusps[i].y + cusps[0].y) * area;
-		//	}
-		//}
-		//area = getArea(cusps, numCusps);
-		//return (1 / (6 * area)) * glm::vec2(x, y);
 	}
 	inline glm::vec2 getCenter(spehs::Position* cusps, unsigned numCusps)
 	{
@@ -140,6 +121,11 @@ namespace spehs
 	inline glm::vec2 cross2(const glm::vec2& _vec, const float& _scalar)
 	{
 		return glm::vec2(-_scalar * _vec.y, _scalar * _vec.x);
+	}
+	float pointToLineDistance(const glm::vec2 &_begin, const glm::vec2 &_end, const glm::vec2 &_point)
+	{
+		float normalLength = sqrtf((_end.x - _begin.x) * (_end.x - _begin.x) + (_end.y - _begin.y) * (_end.y - _begin.y));
+		return abs((_point.x - _begin.x) * (_end.y - _begin.y) - (_point.y - _begin.y) * (_end.x - _begin.x)) / normalLength;
 	}
 	spehs::Position* generateCusps(unsigned& numCusps, int shape, float width, float height)
 	{

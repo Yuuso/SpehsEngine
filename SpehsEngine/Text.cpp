@@ -312,17 +312,17 @@ namespace spehs
 	void Text::updateText()
 	{
 		int x = 0.0f;
-		int y = 0.0f;
+		int y = (lineCount - 1) * font->height + lineSpacing;
 
 		textureIDs.clear();
 		vertexArray.clear();
 
 		//Iterate through all the characters in the string
-		for (auto c = string.begin(); c != string.end(); c++)
+		for (unsigned c(0); c < string.size(); c++)
 		{
-			if (*c != '\n')
+			if (string[c] != '\n')
 			{
-				Character ch = font->characters[*c];
+				Character ch = font->characters[string[c]];
 
 				GLfloat xpos = x + ch.bearing.x * scale;
 				GLfloat ypos = y - (ch.size.y - ch.bearing.y) * scale;
@@ -330,10 +330,10 @@ namespace spehs
 				GLfloat w = ch.size.x * scale;
 				GLfloat h = ch.size.y * scale;
 
-				vertexArray.push_back(Vertex(spehs::Position(xpos, ypos + h), spehs::ColorRGBA(color), spehs::UV(0.0f, 0.0f)));
-				vertexArray.push_back(Vertex(spehs::Position(xpos, ypos), spehs::ColorRGBA(color), spehs::UV(0.0f, 1.0f)));
-				vertexArray.push_back(Vertex(spehs::Position(xpos + w, ypos), spehs::ColorRGBA(color), spehs::UV(1.0f, 1.0f)));
-				vertexArray.push_back(Vertex(spehs::Position(xpos + w, ypos + h), spehs::ColorRGBA(color), spehs::UV(1.0f, 0.0f)));
+				vertexArray.push_back(Vertex(spehs::Position(xpos, ypos + h), color, spehs::UV(0.0f, 0.0f)));
+				vertexArray.push_back(Vertex(spehs::Position(xpos, ypos), color, spehs::UV(0.0f, 1.0f)));
+				vertexArray.push_back(Vertex(spehs::Position(xpos + w, ypos), color, spehs::UV(1.0f, 1.0f)));
+				vertexArray.push_back(Vertex(spehs::Position(xpos + w, ypos + h), color, spehs::UV(1.0f, 0.0f)));
 
 				textureIDs.push_back(ch.textureID);
 
@@ -453,28 +453,28 @@ namespace spehs
 	}
 	void Text::setColor(float _r, float _g, float _b, float _a)
 	{
-		color.r = _r;
-		color.g = _g;
-		color.b = _b;
-		color.a = _a;
+		color.rgba.r = _r;
+		color.rgba.g = _g;
+		color.rgba.b = _b;
+		color.rgba.a = _a;
 		needTextUpdate = true;
 	}
 	void Text::setColor(unsigned char _r, unsigned char _g, unsigned char _b, unsigned char _a)
 	{
-		color.r = _r / 255.0f;
-		color.g = _g / 255.0f;
-		color.b = _b / 255.0f;
-		color.a = _a / 255.0f;
+		color.rgba.r = _r / 255.0f;
+		color.rgba.g = _g / 255.0f;
+		color.rgba.b = _b / 255.0f;
+		color.rgba.a = _a / 255.0f;
 		needTextUpdate = true;
 	}
 	void Text::setAlpha(float _alpha)
 	{
-		color.a = _alpha;
+		color.rgba.a = _alpha;
 		needTextUpdate = true;
 	}
 	void Text::setAlpha(unsigned char _a)
 	{
-		color.a = _a / 255.0f;
+		color.rgba.a = _a / 255.0f;
 		needTextUpdate = true;
 	}
 	int Text::getFontSize() const

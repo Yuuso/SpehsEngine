@@ -49,6 +49,8 @@ namespace spehs
 	extern inline glm::vec2 cross2(const float& _scalar, const glm::vec2& _vec);
 	extern inline glm::vec2 cross2(const glm::vec2& _vec, const float& _scalar);
 
+	extern float pointToLineDistance(const glm::vec2 &_begin, const glm::vec2 &_end, const glm::vec2 &_point);
+
 	/**Returns a generated position array. Assigns length of array into numCusps*/
 	spehs::Position* generateCusps(unsigned& numCusps, int shape, float width, float height);
 }

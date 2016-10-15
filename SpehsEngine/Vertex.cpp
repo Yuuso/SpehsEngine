@@ -24,6 +24,24 @@ namespace spehs
 	{
 		return (x == _other.x && y == _other.y);
 	}
+	spehs::Position Position::operator+(const Position &_other) const
+	{
+		return spehs::Position(x + _other.x, y + _other.y);
+	}
+	spehs::Position Position::operator-(const Position &_other) const
+	{
+		return spehs::Position(x - _other.x, y - _other.y);
+	}
+	void Position::operator+=(const Position &_other)
+	{
+		x += _other.x;
+		y += _other.y;
+	}
+	void Position::operator-=(const Position &_other)
+	{
+		x -= _other.x;
+		y -= _other.y;
+	}
 
 	ColorRGBA::ColorRGBA() : rgba(1.0f)
 	{

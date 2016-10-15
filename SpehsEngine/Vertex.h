@@ -17,6 +17,10 @@ namespace spehs
 		void setPosition(const float &_x, const float &_y);
 
 		bool operator==(const Position &_other) const;
+		spehs::Position operator+(const Position &_other) const;
+		spehs::Position operator-(const Position &_other) const;
+		void operator+=(const Position &_other);
+		void operator-=(const Position &_other);
 
 		float x;
 		float y;
