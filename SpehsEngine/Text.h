@@ -85,6 +85,8 @@ namespace spehs
 		void setAlpha(unsigned char _a);
 
 		void setShader(const int &_shaderIndex);
+		void setCameraMatrixState(const bool _state) { cameraMatrixState = _state; }
+
 
 		//Getters
 		std::string getString(){ return string; }
@@ -102,7 +104,7 @@ namespace spehs
 		PlaneDepth getPlaneDepth() const { return planeDepth; }
 		bool getCameraMatrixState() const { return cameraMatrixState; }
 
-		glm::vec4 getColor() const { return color; }
+		glm::vec4 getColor() const { return color.rgba; }
 
 		std::vector<GLuint> textureIDs;
 		std::vector<spehs::Vertex> worldVertexArray;
@@ -122,7 +124,7 @@ namespace spehs
 
 		std::string string;
 		glm::vec2 position;
-		glm::vec4 color;
+		spehs::ColorRGBA color;
 		float scale;
 
 		int lineCount;
