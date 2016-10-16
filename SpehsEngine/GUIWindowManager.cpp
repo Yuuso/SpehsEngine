@@ -1,12 +1,13 @@
 #include "InputManager.h"
 #include "GUIWindowManager.h"
 #include "GUIWindow.h"
-
+#include "Console.h"
 
 namespace spehs
 {
 	GUIWindowManager::GUIWindowManager() : focusedWindow(nullptr)
 	{
+		setSystemDepth(GUIRectangle::defaultDepth);
 	}
 	GUIWindowManager::~GUIWindowManager()
 	{
@@ -89,42 +90,62 @@ namespace spehs
 		focusedWindow = window;
 		window->gainFocus();
 	}
+	void GUIWindowManager::refreshWindows()
+	{
+		for (unsigned i = 0; i < windows.size(); i++)
+			windows[i]->refresh();
+	}
 	void GUIWindowManager::toggleWindow(spehs::GUIWindow* window)
 	{
 		for (unsigned i = 0; i < windows.size(); i++)
 			if (windows[i] == window)
 		{
 			if (window->isOpen())
-			{
-				window->close();
-				if (focusedWindow == window)
-					focusedWindow = nullptr;
-			}
+				closeWindow(window);
 			else
 				openWindow(window);
 			return;
 		}
-	}
-	void GUIWindowManager::refreshWindows()
-	{
-		for (unsigned i = 0; i < windows.size(); i++)
-			windows[i]->refresh();
+		spehs::console::warning("Trying to toggle window that is not under window manager!");
 	}
 	void GUIWindowManager::openWindow(spehs::GUIWindow* window)
 	{
-		window->open();
-		setFocusedWindow(window);
-		if (focusedWindow != windows.back())
-		{//Send window to back of the windows vector
-			for (unsigned i = 0; i < windows.size(); i++)
-				if (windows[i] == focusedWindow)
-				{
-					windows.erase(windows.begin() + i);
-					windows.push_back(focusedWindow);
-					updateDepths();
-					break;
+		for (unsigned i = 0; i < windows.size(); i++)
+		{
+			if (windows[i] == window)
+			{
+				window->open();
+				setFocusedWindow(window);
+				if (focusedWindow != windows.back())
+				{//Send window to back of the windows vector
+					for (unsigned i = 0; i < windows.size(); i++)
+					{
+						if (windows[i] == focusedWindow)
+						{
+							windows.erase(windows.begin() + i);
+							windows.push_back(focusedWindow);
+							updateDepths();
+						}
+					}
 				}
+				return;
+			}
 		}
+		spehs::console::warning("Trying to open window that is not under window manager!");
+	}
+	void GUIWindowManager::closeWindow(GUIWindow* window)
+	{
+		for (unsigned i = 0; i < windows.size(); i++)
+		{
+			if (windows[i] == window)
+			{
+				window->close();
+				if (focusedWindow == window)
+					focusedWindow = nullptr;
+				return;
+			}
+		}
+		spehs::console::warning("Trying to close window that is not under window manager!");
 	}
 	bool GUIWindowManager::receivingInput()
 	{
@@ -132,9 +153,14 @@ namespace spehs
 			return false;
 		return focusedWindow->isReceivingInput();
 	}
+	void GUIWindowManager::setSystemDepth(uint16_t newDepth)
+	{
+		systemDepth = newDepth;
+		updateDepths();
+	}
 	void GUIWindowManager::updateDepths()
 	{
 		for (unsigned i = 0; i < windows.size(); i++)
-			windows[i]->setDepth(GUIRectangle::defaultDepth + i * 256);
+			windows[i]->setDepth(systemDepth + i * 256);
 	}
 }

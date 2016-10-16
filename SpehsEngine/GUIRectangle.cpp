@@ -178,14 +178,14 @@ namespace spehs
 		//Text position
 		if (text)
 		{
-			float textX = getXGlobal();
+			float textX(getXGlobal());
 			if (checkBit(state, GUIRECT_TEXT_JUSTIFICATION_LEFT))
 				textX += TEXT_PREFERRED_SIZE_BORDER;
 			else if (checkBit(state, GUIRECT_TEXT_JUSTIFICATION_RIGHT))
 				textX += size.x - text->getTextWidth() - TEXT_PREFERRED_SIZE_BORDER;
 			else
-				textX += 0.5f *(size.x - text->getTextWidth());
-			text->setPosition(std::round(textX), std::round(getYGlobal() + 0.5f * (size.y + text->getTextHeight()) - text->getFontHeight() - text->getFontDescender()));
+				textX += 0.5f * (size.x - text->getTextWidth());
+			text->setPosition(std::round(textX), std::round(getYGlobal() + 0.5f * (size.y - text->getTextHeight())));
 		}
 
 		//Display texture position

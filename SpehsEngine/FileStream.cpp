@@ -108,12 +108,12 @@ namespace spehs
 		boost::filesystem::path path(directoryPath);
 		if (!boost::filesystem::exists(path))
 		{
-			spehs::console::warning("listFilesInDirectory failed: directory does not exist!");
+			spehs::console::warning("listFilesInDirectory failed: directory does not exist! : " + directoryPath);
 			return files;
 		}
 		if (!boost::filesystem::is_directory(path))
 		{
-			spehs::console::warning("listFilesInDirectory failed: directory path leads to a non-directory file!");
+			spehs::console::warning("listFilesInDirectory failed: directory path leads to a non-directory file! : " + directoryPath);
 			return files;
 		}
 

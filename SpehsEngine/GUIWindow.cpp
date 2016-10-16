@@ -48,6 +48,7 @@ namespace spehs
 		exit->setID(1);
 		exit->setColor(255, 0, 0);
 		exit->setString("X");
+		exit->setJustification(GUIRECT_TEXT_JUSTIFICATION_CENTER);
 		exit->setDepth(getDepth() + 1);
 
 		//Strech background rectangle

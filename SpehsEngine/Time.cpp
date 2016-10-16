@@ -59,7 +59,8 @@ namespace spehs
 		fpsCounter->setFont(FPS_FONT_PATH, fpsCounterFontSize);
 
 		fpsCounter->setColor(glm::vec4(1.0f, 0.3f, 0.0f, 1.0f));
-		fpsCounter->setPosition(glm::vec2(5, applicationData->getWindowHeight() - fpsCounter->getFontHeight()));
+		fpsCounter->setString("FPS:0123456789\nDraw calls:0123456789\nVertices:0123456789");
+		fpsCounter->setPosition(glm::vec2(5, applicationData->getWindowHeight() - fpsCounter->getTextHeight()));
 
 		initialized = true;
 		return true;
