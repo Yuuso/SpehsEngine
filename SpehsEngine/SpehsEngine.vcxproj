@@ -96,6 +96,9 @@
   <ItemGroup>
     <ClCompile Include="ApplicationData.cpp" />
     <ClCompile Include="Arrow.cpp" />
+    <ClCompile Include="AudioEngine.cpp" />
+    <ClCompile Include="AudioManager.cpp" />
+    <ClCompile Include="AudioSource.cpp" />
     <ClCompile Include="Batch.cpp" />
     <ClCompile Include="BatchManager.cpp" />
     <ClCompile Include="Camera2D.cpp" />
@@ -121,6 +124,7 @@
     <ClCompile Include="InputManager.cpp" />
     <ClCompile Include="LengthConversion.cpp" />
     <ClCompile Include="Line.cpp" />
+    <ClCompile Include="OpenALError.cpp" />
     <ClCompile Include="OpenGLError.cpp" />
     <ClCompile Include="PhysicsWorld2D.cpp" />
     <ClCompile Include="Point.cpp" />
@@ -146,6 +150,9 @@
   <ItemGroup>
     <ClInclude Include="ApplicationData.h" />
     <ClInclude Include="Arrow.h" />
+    <ClInclude Include="AudioEngine.h" />
+    <ClInclude Include="AudioManager.h" />
+    <ClInclude Include="AudioSource.h" />
     <ClInclude Include="Batch.h" />
     <ClInclude Include="BatchManager.h" />
     <ClInclude Include="BitwiseOperations.h" />
@@ -175,6 +182,7 @@
     <ClInclude Include="InputManager.h" />
     <ClInclude Include="LengthConversion.h" />
     <ClInclude Include="Line.h" />
+    <ClInclude Include="OpenALError.h" />
     <ClInclude Include="OpenGLError.h" />
     <ClInclude Include="PhysicsWorld2D.h" />
     <ClInclude Include="Point.h" />

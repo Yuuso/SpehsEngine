@@ -98,10 +98,10 @@
       <Filter>Rendering\Geometric Rendering\Batch Rendering</Filter>
     </ClCompile>
     <ClCompile Include="TextureManager.cpp">
-      <Filter>Rendering\Resource Management</Filter>
+      <Filter>Resource Management</Filter>
     </ClCompile>
     <ClCompile Include="ShaderManager.cpp">
-      <Filter>Rendering\Resource Management</Filter>
+      <Filter>Resource Management</Filter>
     </ClCompile>
     <ClCompile Include="GUIRectangleTable.cpp">
       <Filter>Rendering\GUI</Filter>
@@ -145,6 +145,16 @@
     <ClCompile Include="Text.cpp">
       <Filter>Rendering\Geometric Rendering\Batch Rendering</Filter>
     </ClCompile>
+    <ClCompile Include="AudioManager.cpp">
+      <Filter>Resource Management</Filter>
+    </ClCompile>
+    <ClCompile Include="AudioSource.cpp">
+      <Filter>Audio</Filter>
+    </ClCompile>
+    <ClCompile Include="OpenALError.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="AudioEngine.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GLSLProgram.h">
@@ -253,10 +263,10 @@
       <Filter>Rendering\Geometric Rendering\Batch Rendering</Filter>
     </ClInclude>
     <ClInclude Include="TextureManager.h">
-      <Filter>Rendering\Resource Management</Filter>
+      <Filter>Resource Management</Filter>
     </ClInclude>
     <ClInclude Include="ShaderManager.h">
-      <Filter>Rendering\Resource Management</Filter>
+      <Filter>Resource Management</Filter>
     </ClInclude>
     <ClInclude Include="GUIRectangleTable.h">
       <Filter>Rendering\GUI</Filter>
@@ -303,6 +313,16 @@
     <ClInclude Include="CommonColor.h">
       <Filter>Core</Filter>
     </ClInclude>
+    <ClInclude Include="AudioManager.h">
+      <Filter>Resource Management</Filter>
+    </ClInclude>
+    <ClInclude Include="AudioSource.h">
+      <Filter>Audio</Filter>
+    </ClInclude>
+    <ClInclude Include="OpenALError.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="AudioEngine.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Physics">
@@ -335,11 +355,11 @@
     <Filter Include="Rendering\Geometric Rendering\Batch Rendering">
       <UniqueIdentifier>{2e92b7df-f3ae-40ca-b192-04d05e73c445}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Rendering\Resource Management">
-      <UniqueIdentifier>{5d317e38-b18e-4637-b325-67f73190943b}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Core\Object/Component">
       <UniqueIdentifier>{d2fdada1-b4b1-403b-9166-08f0a4118180}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Management">
+      <UniqueIdentifier>{5d317e38-b18e-4637-b325-67f73190943b}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>
