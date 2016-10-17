@@ -78,14 +78,28 @@ namespace spehs
 			}
 
 			worldVertexArray = vertexArray;
+
+			setUVCoords();
 		}
 		else //Polygons from Shapes
 		{
 			vertexArray = getShapeVertexArray(spehs::Shape(_shapeID));
 			worldVertexArray = vertexArray;
-		}
 
-		setUVCoords();
+			//Custom UV Coords for Button
+			if (_shapeID == spehs::Shape::BUTTON)
+			{
+				for (unsigned int i = 0; i < worldVertexArray.size(); i++)
+				{
+					worldVertexArray[i].uv.u = (worldVertexArray[i].position.x);
+					worldVertexArray[i].uv.v = (-worldVertexArray[i].position.y);
+				}
+			}
+			else
+			{
+				setUVCoords();
+			}
+		}
 	}
 	Polygon::Polygon(std::vector<spehs::Vertex> _vertexData, const PlaneDepth &_planeDepth, const float &_width, const float &_height) : Polygon(_width, _height)
 	{
