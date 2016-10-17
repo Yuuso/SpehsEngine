@@ -173,7 +173,7 @@ namespace spehs
 	}
 	void GUIRectangle::updatePosition()
 	{
-		polygon->setPosition(getXGlobal() - applicationData->getWindowWidthHalf(), getYGlobal() - applicationData->getWindowHeightHalf());
+		polygon->setPosition(getXGlobal(), getYGlobal());
 
 		//Text position
 		if (text)
@@ -191,7 +191,7 @@ namespace spehs
 		//Display texture position
 		if (displayTexture)
 		{
-			displayTexture->polygon->setPosition(getXGlobal() + size.x / 2 - applicationData->getWindowWidthHalf(), getYGlobal() + size.y / 2 - applicationData->getWindowHeightHalf());
+			displayTexture->polygon->setPosition(getXGlobal() + size.x / 2, getYGlobal() + size.y / 2);
 		}
 
 		enableBit(state, GUIRECT_POSITIONED);

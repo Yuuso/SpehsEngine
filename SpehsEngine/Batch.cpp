@@ -379,7 +379,7 @@ namespace spehs
 		if (cameraMatrixState)
 			shaderManager->getShader(shaderIndex)->uniforms->cameraMatrix = *spehs::getActiveBatchManager()->getCamera2D()->projectionMatrix;
 		else
-			shaderManager->getShader(shaderIndex)->uniforms->cameraMatrix = spehs::getActiveBatchManager()->getCamera2D()->textMatrix;
+			shaderManager->getShader(shaderIndex)->uniforms->cameraMatrix = spehs::getActiveBatchManager()->getCamera2D()->staticMatrix;
 
 		//Uniforms
 		shaderManager->setUniforms(shaderIndex);

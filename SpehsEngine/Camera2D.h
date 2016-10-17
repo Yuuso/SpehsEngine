@@ -23,7 +23,6 @@ namespace spehs
 		glm::vec2 deltaMovement;
 		glm::mat4* projectionMatrix;
 		glm::mat4 staticMatrix;
-		glm::mat4 textMatrix;
 
 		float scale;
 		glm::vec2 position;
@@ -36,6 +35,7 @@ namespace spehs
 		glm::vec4 up; //compensate for rotation
 
 		glm::mat4 orthoMatrix;
+		glm::mat4 defaultMatrix;
 		glm::mat4 cameraMatrix;
 	};
 }
