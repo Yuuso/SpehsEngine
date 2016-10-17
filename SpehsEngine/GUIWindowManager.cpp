@@ -153,6 +153,15 @@ namespace spehs
 			return false;
 		return focusedWindow->isReceivingInput();
 	}
+	bool GUIWindowManager::getMouseHoverAny()
+	{
+		for (unsigned i = 0; i < windows.size(); i++)
+		{
+			if (windows[i]->getMouseHoverAny())
+				return true;
+		}
+		return false;
+	}
 	void GUIWindowManager::setSystemDepth(uint16_t newDepth)
 	{
 		systemDepth = newDepth;

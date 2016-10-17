@@ -19,6 +19,7 @@ namespace spehs
 		void openWindow(GUIWindow* window);
 		void closeWindow(GUIWindow* window);
 		bool receivingInput();
+		bool getMouseHoverAny();/// Returns true if any window is under the mouse
 		unsigned getWindowCount(){ return windows.size(); }
 		GUIWindow* at(int index){ if (index < 0 || index >= windows.size()) return nullptr; return windows[index]; }
 		void setSystemDepth(uint16_t newDepth);
