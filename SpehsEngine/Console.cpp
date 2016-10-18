@@ -10,16 +10,17 @@
 #include "ConsoleVariable.h"
 #include "Text.h"
 #include "BatchManager.h"
+//State
+#define CONSOLE_INITIALIZED_BIT				0x0001
+#define CONSOLE_OPEN_BIT					0x0002
+#define CONSOLE_TEXT_EXECUTED_BIT			0x0004
+//Misc
 #define CONSOLE_COMMANDS_KEPT_IN_MEMORY 10
 #define LOG_LINES_KEPT_IN_MEMORY 25
 #define CONSOLE_BORDER 5
 #define BACKSPACE_INITIAL_INTERVAL 500
 #define BACKSPACE_INTERVAL 75
-#define TEXT_PLANEDEPTH 10000
 #define FADE_OUT_TIME 2.5f
-#define CONSOLE_INITIALIZED_BIT				0x0001
-#define CONSOLE_OPEN_BIT					0x0002
-#define CONSOLE_TEXT_EXECUTED_BIT			0x0004
 extern int64_t guiRectangleAllocations;
 extern int64_t guiRectangleDeallocations;
 extern int64_t primitiveAllocations;
@@ -39,11 +40,12 @@ namespace spehs
 	namespace console
 	{
 		//Static console data
-		static int previousFontSize = 10;
 		static int16_t state = 0;
+		static uint16_t planeDepth = 10000;
 		static int backspaceTimer = 0;
 		static int backspaceAcceleration = 0;
 		static int previousCommandIndex = 0;
+		static int previousFontSize = 10;
 		static float visibility = 1.0f;
 		static Text* consoleText;
 		static std::recursive_mutex consoleMutex;
@@ -83,12 +85,13 @@ namespace spehs
 			consoleCamera = new Camera2D();
 			consoleBatchManager = new BatchManager(consoleCamera);
 
-			consoleText = consoleBatchManager->createText(TEXT_PLANEDEPTH);
+			consoleText = consoleBatchManager->createText();
 			consoleText->setFont(applicationData->GUITextFontPath, applicationData->consoleTextSize);
 			consoleText->setColor(glm::vec4(1.0f, 0.6f, 0.0f, applicationData->consoleTextAlpha / 255.0f));
 			consoleText->setPosition(glm::vec2(CONSOLE_BORDER, CONSOLE_BORDER));
 			consoleText->setString("><");
 			consoleText->setRenderState(checkState(CONSOLE_OPEN_BIT));
+			setPlaneDepth(planeDepth);
 
 			enableState(CONSOLE_INITIALIZED_BIT);
 			log("Console initialized");
@@ -475,14 +478,14 @@ namespace spehs
 				lines.front()->destroy();
 				lines.erase(lines.begin());
 			}
-			lines.push_back(consoleBatchManager->createText(TEXT_PLANEDEPTH));
+			lines.push_back(consoleBatchManager->createText(planeDepth));
 			lines.back()->setFont(applicationData->GUITextFontPath, applicationData->consoleTextSize);
 			lines.back()->setColor(glm::vec4(color, applicationData->consoleTextAlpha / 255.0f));
 			lines.back()->setString(str);
 			visibility = 1.0f;
 			for (unsigned i = 0; i < lines.size(); i++)
 				lines[i]->setRenderState(true);
-			consoleText->setRenderState(true);
+			consoleText->setRenderState(false);
 
 			updateLinePositions();
 		}
@@ -507,7 +510,13 @@ namespace spehs
 				lines.pop_back();
 			}
 		}
-
+		void setPlaneDepth(uint16_t depth)
+		{
+			planeDepth = depth;
+			consoleText->setPlaneDepth(depth);
+			for (unsigned i = 0; i < lines.size(); i++)
+				lines[i]->setPlaneDepth(depth);
+		}
 
 
 
