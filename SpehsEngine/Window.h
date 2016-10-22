@@ -29,4 +29,3 @@ namespace spehs
 		SDL_Window* sdlWindow;
 	};
 }
-extern spehs::Window* mainWindow;

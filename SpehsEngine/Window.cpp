@@ -9,7 +9,6 @@
 #include <GL/glew.h>
 
 
-spehs::Window* mainWindow;
 namespace spehs
 {
 	namespace graphics

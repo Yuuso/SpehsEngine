@@ -24,6 +24,7 @@
 std::string buildVersion;
 
 
+spehs::Window* mainWindow = nullptr;
 namespace spehs
 {
 	extern void initText();
@@ -103,6 +104,12 @@ namespace spehs
 		spehs::uninitializeTime();
 		spehs::uninitText();
 		SDL_Quit();
+	}
+
+
+	spehs::Window* getMainWindow()
+	{
+		return mainWindow;
 	}
 
 
