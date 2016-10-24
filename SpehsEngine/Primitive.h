@@ -96,6 +96,8 @@ namespace spehs
 
 		//Getters
 		Position getPosition() const { return position; }
+		float getX() const { return position.x; }
+		float getY() const { return position.y; }
 		float getRotation() const { return rotation; }
 		bool getCameraMatrixState() const { return cameraMatrixState; }
 		bool getRenderState() const { return renderState; }
