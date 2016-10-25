@@ -338,6 +338,8 @@ namespace spehs
 	void GUIWindow::close()
 	{
 		disableBit(state, GUIRECT_OPEN);
+		disableBit(state, GUIRECT_MOUSE_HOVER);
+		disableBit(state, GUIRECT_MOUSE_HOVER_CONTAINER);
 		loseFocus();
 		setRenderState(false);
 		std::cout << "\nWindow closed: " << header->getString();
