@@ -1,5 +1,7 @@
+
 #include <iostream>
 #include <mutex>
+
 #include "BitwiseOperations.h"
 #include "Exceptions.h"
 #include "InputManager.h"
@@ -10,6 +12,7 @@
 #include "ConsoleVariable.h"
 #include "Text.h"
 #include "BatchManager.h"
+
 //State
 #define CONSOLE_INITIALIZED_BIT				0x0001
 #define CONSOLE_OPEN_BIT					0x0002
@@ -21,6 +24,10 @@
 #define BACKSPACE_INITIAL_INTERVAL 500
 #define BACKSPACE_INTERVAL 75
 #define FADE_OUT_TIME 2.5f
+//FPS
+#define FPS_REFRESH_RATE 5
+
+
 extern int64_t guiRectangleAllocations;
 extern int64_t guiRectangleDeallocations;
 extern int64_t primitiveAllocations;
@@ -47,7 +54,10 @@ namespace spehs
 		static int previousCommandIndex = 0;
 		static int previousFontSize = 10;
 		static float visibility = 1.0f;
+		unsigned long drawCalls;
+		unsigned long vertexDrawCount;
 		static Text* consoleText;
+		spehs::Text* fpsCounter;
 		static std::recursive_mutex consoleMutex;
 		static std::string input;
 		static std::string textExecuted;///< Text executed without '/'
@@ -84,6 +94,18 @@ namespace spehs
 
 			consoleCamera = new Camera2D();
 			consoleBatchManager = new BatchManager(consoleCamera);
+			
+			fpsCounter = consoleBatchManager->createText(10000);
+			if (!fpsCounter)
+			{
+				std::cout << "\nInitialization failed! Failed to create fpsCounter!";
+				return false;
+			}
+			fpsCounter->setFont(applicationData->GUITextFontPath, applicationData->consoleTextSize);
+
+			fpsCounter->setColor(glm::vec4(1.0f, 0.3f, 0.0f, 1.0f));
+			fpsCounter->setString("FPS:0123456789\nDraw calls:0123456789\nVertices:0123456789");
+			fpsCounter->setPosition(glm::vec2(5, applicationData->getWindowHeight() - fpsCounter->getTextHeight()));
 
 			consoleText = consoleBatchManager->createText();
 			consoleText->setFont(applicationData->GUITextFontPath, applicationData->consoleTextSize);
@@ -104,6 +126,12 @@ namespace spehs
 			{
 				std::cout << "\nSpehsEngine::console already uninitialized!";
 				return;
+			}
+
+			if (fpsCounter != nullptr)
+			{
+				fpsCounter->destroy();
+				fpsCounter = nullptr;
 			}
 
 			delete consoleBatchManager;
@@ -175,15 +203,17 @@ namespace spehs
 				//Update console font size if needed
 				if (previousFontSize != applicationData->consoleTextSize)
 				{
+					fpsCounter->setFont(applicationData->GUITextFontPath, applicationData->consoleTextSize);
 					consoleText->setFont(applicationData->GUITextFontPath, applicationData->consoleTextSize);
 					for (unsigned i = 0; i < lines.size(); i++)
 						lines[i]->setFont(applicationData->GUITextFontPath, applicationData->consoleTextSize);
 					previousFontSize = applicationData->consoleTextSize;
+
 				}
 
 				if (!isOpen())
 				{
-					visibility -= getDeltaTime().asSeconds / FADE_OUT_TIME;
+					visibility -= time::getDeltaTimeAsSeconds() / FADE_OUT_TIME;
 					if (visibility <= 0.0f)
 					{
 						for (unsigned i = 0; i < lines.size(); i++)
@@ -210,7 +240,7 @@ namespace spehs
 						for (unsigned i = 0; i < lines.size(); i++)
 							lines[i]->setRenderState(true);
 					}
-					visibility += getDeltaTime().asSeconds * 5.0f;
+					visibility += time::getDeltaTimeAsSeconds() * 5.0f;
 					if (visibility > 1.0f)
 						visibility = 1.0f;
 				}
@@ -309,7 +339,7 @@ namespace spehs
 					}
 					else
 					{
-						backspaceTimer -= getDeltaTime().asMilliseconds;
+						backspaceTimer -= time::getDeltaTimeAsMilliseconds();
 					}
 				}
 				else
@@ -363,6 +393,25 @@ namespace spehs
 		void render()
 		{
 			LockGuardRecursive regionLock(consoleMutex);
+
+			if (applicationData->showFps)
+			{
+				fpsCounter->setRenderState(true);
+
+				static int frameCounter = 0;
+				if (++frameCounter >= FPS_REFRESH_RATE)
+				{
+					fpsCounter->setString("FPS: " + std::to_string(int(time::getFPS())) + "\nDraw calls: " + std::to_string(drawCalls) + "\nVertices: " + std::to_string(vertexDrawCount));
+					frameCounter = 0;
+				}
+			}
+			else
+			{
+				fpsCounter->setRenderState(false);
+			}
+
+			drawCalls = 0;
+			vertexDrawCount = 0;
 
 			consoleBatchManager->render();
 

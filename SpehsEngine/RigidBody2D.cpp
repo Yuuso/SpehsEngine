@@ -110,9 +110,9 @@ namespace spehs
 
 		//Apply acceleration
 		if (!freezePosition)
-			velocity += acceleration * getDeltaTime().asSeconds;
+			velocity += acceleration * time::getDeltaTimeAsSeconds();
 		if (!freezeRotation)
-			angularVelocity += angularAcceleration * getDeltaTime().asSeconds;
+			angularVelocity += angularAcceleration * time::getDeltaTimeAsSeconds();
 
 		//For static bodies (NOTE: Doesn't work atm)
 		if (isStatic)

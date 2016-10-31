@@ -46,5 +46,8 @@ namespace spehs
 
 		//Other
 		void setPlaneDepth(uint16_t depth);
+
+		extern unsigned long drawCalls;
+		extern unsigned long vertexDrawCount;
 	}
 }

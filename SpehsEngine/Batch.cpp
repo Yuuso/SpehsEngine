@@ -175,8 +175,8 @@ namespace spehs
 
 		shaderManager->unuse(shaderIndex);
 
-		drawCalls++;
-		vertexDrawCount += vertices.size();
+		console::drawCalls++;
+		console::vertexDrawCount += vertices.size();
 
 		//Clean up
 		vertices.clear();
@@ -390,7 +390,7 @@ namespace spehs
 		{
 			bind2DTexture(textureIDs[i], 0);
 			glDrawElements(TRIANGLE, 6, GL_UNSIGNED_SHORT, reinterpret_cast<void*>((i * 6) * sizeof(GLushort)));
-			drawCalls++;
+			console::drawCalls++;
 		}
 		glBindVertexArray(0);
 
@@ -398,7 +398,7 @@ namespace spehs
 
 		shaderManager->unuse(shaderIndex);
 
-		vertexDrawCount += vertices.size();
+		console::vertexDrawCount += vertices.size();
 
 		//Clean up
 		vertices.clear();
