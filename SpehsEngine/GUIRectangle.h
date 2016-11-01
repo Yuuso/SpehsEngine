@@ -108,7 +108,7 @@ namespace spehs
 		void setStringAlpha(float alpha);
 		void setStringAlpha(unsigned char a);
 		std::string getString();
-		void setJustification(GUIRECT_STATE_TYPE justificationBit);///<NOTE: if non-justification bit is given, all justification bits will be cleared and given bit will be enabled
+		virtual void setJustification(GUIRECT_STATE_TYPE justificationBit);///<NOTE: if non-justification bit is given, all justification bits will be cleared and given bit will be enabled
 		//Tooltip
 		void setTooltip(std::string tooltipString);
 		GUIRectangle* getTooltipPtr(){ return tooltip; }
@@ -133,7 +133,7 @@ namespace spehs
 		bool getMouseHoverAny(){ if (checkBit(state, GUIRECT_MOUSE_HOVER)) return true; return checkBit(state, GUIRECT_MOUSE_HOVER_CONTAINER); }
 		bool isEnabled(){ return checkBit(state, GUIRECT_ENABLED); }
 		bool isFocused(){ return checkBit(state, GUIRECT_FOCUSED); }
-		bool isReceivingInput(){ return checkBit(state, GUIRECT_RECEIVING_INPUT); }
+		virtual bool isReceivingInput(){ return checkBit(state, GUIRECT_RECEIVING_INPUT); }
 		bool isStreching(){ return checkBit(state, GUIRECT_STRECHING); }
 		bool isDragging(){ return checkBit(state, GUIRECT_DRAGGING); }
 		bool isSelected(){ return checkBit(state, GUIRECT_SELECTED); }
@@ -179,12 +179,12 @@ namespace spehs
 		virtual void setWidth(int width){ if (size.x == width) return; size.x = width; disableStateRecursiveUpwards(GUIRECT_SCALED); }
 		virtual void setHeight(int height){ if (size.y == height) return; size.y = height; disableStateRecursiveUpwards(GUIRECT_SCALED); }
 		//Getters
-		virtual glm::ivec2 getSize(){ return size; }
-		virtual int getWidth(){ return size.x; }
-		virtual int getHeight(){ return size.y; }
-		virtual glm::ivec2 getMinSize(){ return minSize; }
-		virtual int getMinWidth(){ return minSize.x; }
-		virtual int getMinHeight(){ return minSize.y; }
+		virtual glm::ivec2 getSize(){ if (!(state & GUIRECT_SCALED)) updateScale(); return size; }
+		virtual int getWidth(){ if (!(state & GUIRECT_SCALED)) updateScale(); return size.x; }
+		virtual int getHeight(){ if (!(state & GUIRECT_SCALED)) updateScale(); return size.y; }
+		virtual glm::ivec2 getMinSize(){ if (!(state & GUIRECT_MIN_SIZE_UPDATED)) updateMinSize(); return minSize; }
+		virtual int getMinWidth(){ if (!(state & GUIRECT_MIN_SIZE_UPDATED)) updateMinSize(); return minSize.x; }
+		virtual int getMinHeight(){ if (!(state & GUIRECT_MIN_SIZE_UPDATED)) updateMinSize(); return minSize.y; }
 
 
 		//Identity

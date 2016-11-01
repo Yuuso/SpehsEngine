@@ -3,6 +3,7 @@
 
 namespace spehs
 {
+	class GUIPopup;
 	class GUIWindow;
 	class GUIWindowManager
 	{
@@ -12,6 +13,7 @@ namespace spehs
 
 		void update();
 		void addWindow(GUIWindow* window);
+		void addPopup(GUIPopup* popup);
 		void refreshWindows();
 		GUIWindow* getFocusedWindow(){ return focusedWindow; }
 		void setFocusedWindow(GUIWindow* window);
@@ -29,6 +31,7 @@ namespace spehs
 
 		GUIWindow* focusedWindow;
 		std::vector<GUIWindow*> windows;
+		std::vector<GUIPopup*> popups;
 		uint16_t systemDepth;
 	};
 }

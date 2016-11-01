@@ -109,6 +109,7 @@
     <ClCompile Include="GLSLProgram.cpp" />
     <ClCompile Include="GUICheckbox.cpp" />
     <ClCompile Include="GUID.cpp" />
+    <ClCompile Include="GUIPopup.cpp" />
     <ClCompile Include="GUIRectangle.cpp" />
     <ClCompile Include="GUIRectangleContainer.cpp" />
     <ClCompile Include="GUIRectangleList.cpp" />
@@ -163,6 +164,7 @@
     <ClInclude Include="GLSLProgram.h" />
     <ClInclude Include="GUICheckbox.h" />
     <ClInclude Include="GUID.h" />
+    <ClInclude Include="GUIPopup.h" />
     <ClInclude Include="GUIRectangle.h" />
     <ClInclude Include="GUIRectangleContainer.h" />
     <ClInclude Include="GUIRectangleList.h" />
@@ -170,6 +172,7 @@
     <ClInclude Include="GUIRectangleTable.h" />
     <ClInclude Include="GUIRectangleTree.h" />
     <ClInclude Include="GUITextField.h" />
+    <ClInclude Include="GUIScalarEditor.h" />
     <ClInclude Include="GUIWindow.h" />
     <ClInclude Include="GUIWindowManager.h" />
     <ClInclude Include="InputManager.h" />

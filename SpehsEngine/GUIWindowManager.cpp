@@ -1,6 +1,8 @@
+#include "ApplicationData.h"
 #include "InputManager.h"
 #include "GUIWindowManager.h"
 #include "GUIWindow.h"
+#include "GUIPopup.h"
 #include "Console.h"
 
 namespace spehs
@@ -13,12 +15,21 @@ namespace spehs
 	{
 		for (unsigned i = 0; i < windows.size(); i++)
 			delete windows[i];
+		for (unsigned i = 0; i < popups.size(); i++)
+			delete popups[i];
 	}
 	void GUIWindowManager::addWindow(GUIWindow* window)
 	{
 		windows.push_back(window);
 		window->setRenderState(false);
 		updateDepths();
+	}
+	void GUIWindowManager::addPopup(GUIPopup* popup)
+	{
+		popups.push_back(popup);
+		popup->setRenderState(true);
+		popup->setDepth(std::numeric_limits<int16_t>::max() - 1000);
+		popup->setPositionGlobal(applicationData->getWindowWidthHalf() - popup->getWidth() * 0.5f, applicationData->getWindowHeightHalf() - popup->getHeight() * 0.5f);
 	}
 	void GUIWindowManager::update()
 	{
@@ -31,8 +42,15 @@ namespace spehs
 				focusedWindowReceivingInput = true;
 		}
 
+		for (unsigned i = 0; i < popups.size(); i++)
+		{
+			popups[i]->update();
+			popups[i]->postUpdate();
+		}
+
 		//Search for a window to update from the top
 		for (int i = int(windows.size()) - 1; i >= 0; i--)
+		{
 			if (windows[i]->isOpen())
 			{//Window must be open
 
@@ -59,13 +77,14 @@ namespace spehs
 							windows.erase(windows.begin() + i);
 							windows.push_back(focusedWindow);
 							updateDepths();
-						}						
+						}
 					}
 
 					//Break, do not run mouse activity updates in other windows
 					break;
 				}
 			}
+		}
 
 		if (focusedWindow)
 		{
