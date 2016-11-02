@@ -8,20 +8,24 @@ namespace spehs
 	//Popup option
 	struct GUIPopupOption
 	{
-		GUIPopupOption(){}
-		GUIPopupOption(std::string _string, std::function<void()>* _callback) : string(_string), callback(nullptr)
+		GUIPopupOption(std::string _string) : string(_string), hasCallback(false)
 		{
-			if (_callback)
-				callback = new std::function<void()>(*_callback);
 		}
-		~GUIPopupOption(){ if (callback) delete callback; }
-		const std::string string = "";
-		std::function<void()>* callback = nullptr;
+		GUIPopupOption(std::string _string, std::function<void()> _callback) : string(_string), callback(_callback), hasCallback(true)
+		{			
+		}
+		~GUIPopupOption()
+		{
+		}
+		const std::function<void()> callback;
+		const std::string string;
+		const bool hasCallback;
 	};
 
 	///GUI Popup
 	/*
-	First element in the elements vector is the message/header element. Other elements are option buttons displayed in a row under the header
+	First element in the elements vector is the message/header element. Other elements are option buttons displayed in a row under the header.
+	When popup option is selected, GUIRECT_REMOVE_BIT is enabled
 	*/
 	class GUIPopup : public GUIRectangleContainer
 	{
@@ -42,11 +46,18 @@ namespace spehs
 			addOptions(moreOptions...);
 		}
 
+		void update();
 		void updatePosition();
 		void updateScale();
 		void updateMinSize();
+		void setBackgroundColor(glm::vec3& rgb);
+		void setBackgroundColor(glm::vec4& rgba);
+		void setBackgroundColor(unsigned char r, unsigned char g, unsigned char b, unsigned char a = 255);
+		void enableEscape(){ escapeEnabled = true; }
+		void disableEscape(){ escapeEnabled = false; }
 
 	private:
 		std::vector<GUIPopupOption> options;
+		bool escapeEnabled;
 	};
 }

@@ -12,7 +12,8 @@ namespace spehs
 	}
 	GUIRectangleContainer::~GUIRectangleContainer()
 	{
-		clear();
+		for (unsigned i = 0; i < elements.size(); i++)
+			delete elements[i];
 	}
 	void GUIRectangleContainer::update()
 	{
