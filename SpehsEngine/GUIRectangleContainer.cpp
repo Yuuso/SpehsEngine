@@ -12,7 +12,8 @@ namespace spehs
 	}
 	GUIRectangleContainer::~GUIRectangleContainer()
 	{
-		clear();
+		for (unsigned i = 0; i < elements.size(); i++)
+			delete elements[i];
 	}
 	void GUIRectangleContainer::update()
 	{
@@ -63,18 +64,20 @@ namespace spehs
 				elements[i]->setRenderState(false);
 		}
 	}
-	bool GUIRectangleContainer::isReceivingTextInput()
+	bool GUIRectangleContainer::isReceivingInput()
 	{
-		if (isOpen())
-		{//Check activity in elements
-			for (unsigned i = 0; i < elements.size(); i++)
-			{
-				if (elements[i]->getAsGUITextFieldPtr() && elements[i]->getAsGUITextFieldPtr()->isReceivingInput())
-					return true;
-				if (elements[i]->getAsGUIRectangleContainerPtr() && elements[i]->getAsGUIRectangleContainerPtr()->isReceivingTextInput())
-					return true;
-			}
+		if (!isOpen())
+			return false;
+		if (checkState(GUIRECT_RECEIVING_INPUT))
+			return true;
+
+		//Check activity in elements
+		for (unsigned i = 0; i < updateElementCount; i++)
+		{
+			if (elements[beginElementIndex + i]->isReceivingInput())
+				return true;
 		}
+
 		return false;
 	}
 	void GUIRectangleContainer::clear()

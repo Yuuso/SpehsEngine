@@ -145,6 +145,9 @@
     <ClCompile Include="Text.cpp">
       <Filter>Rendering\Geometric Rendering\Batch Rendering</Filter>
     </ClCompile>
+    <ClCompile Include="GUIPopup.cpp">
+      <Filter>Rendering\GUI</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GLSLProgram.h">
@@ -302,6 +305,12 @@
     </ClInclude>
     <ClInclude Include="CommonColor.h">
       <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="GUIScalarEditor.h">
+      <Filter>Rendering\GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="GUIPopup.h">
+      <Filter>Rendering\GUI</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

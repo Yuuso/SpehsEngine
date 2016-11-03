@@ -90,7 +90,6 @@ namespace spehs
 		if (isReceivingInput())
 			return;
 		enableBit(state, GUIRECT_RECEIVING_INPUT);
-		getFirstGenerationParent()->enableState(GUIRECT_RECEIVING_INPUT);
 		stringUpdated = false;
 	}
 	void GUITextField::endTyping()
@@ -98,7 +97,6 @@ namespace spehs
 		if (!isReceivingInput())
 			return;
 		disableBit(state, GUIRECT_RECEIVING_INPUT);
-		getFirstGenerationParent()->disableState(GUIRECT_RECEIVING_INPUT);
 		input = "";//Reset input string
 		stringUpdated = false;
 	}
