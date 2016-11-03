@@ -146,7 +146,7 @@ namespace spehs
 			std::string errorString = "Freetype error: Failed to load font "; 
 			errorString += _fontPath; 
 			errorString += " code: " + error;
-			console::error(errorString);
+			exceptions::fatalError(errorString);
 			return nullptr;
 		}
 
