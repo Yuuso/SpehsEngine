@@ -7,14 +7,8 @@
 #include "GUITextField.h"
 #include "GUIRectangleList.h"
 #define EXIT_WIDTH 20
-#define STRECH_BORDER 5
 #define DOCK_BORDER 50
 #define DOUBLE_CLICK_TIME 200
-//Borders next to the application window where GUI windows should not stand
-#define UP_BORDER 10
-#define DOWN_BORDER 10
-#define RIGHT_BORDER 10
-#define LEFT_BORDER 10
 /*Strech state*/
 #define STRECH_STATE_HORIZONTAL 1
 #define STRECH_STATE_VERTICAL 2
@@ -26,6 +20,19 @@
 
 namespace spehs
 {
+	//Static variables (public for modification at user's will)
+	int GUIWindow::upBorder = 0;
+	int GUIWindow::downBorder = 0;
+	int GUIWindow::leftBorder = 0;
+	int GUIWindow::rightBorder = 0;
+	int GUIWindow::strechWidth = 5;
+	glm::vec4 GUIWindow::strechColorFocused = glm::vec4(1.0f, 0.22f, 0.0f, 1.0f);
+	glm::vec4 GUIWindow::strechColorUnfocused = glm::vec4(0.05f, 0.05f, 0.7f, 1.0f);
+	glm::vec4 GUIWindow::headerBackgroundColor = glm::vec4(0.8f, 0.8f, 0.8f, 1.0f);
+	glm::vec4 GUIWindow::headerStringColor = glm::vec4(0.2f, 0.2f, 0.2f, 1.0f);
+	glm::vec4 GUIWindow::exitBackgroundColor = glm::vec4(0.6f, 0.05f, 0.05f, 1.0f);
+	glm::vec4 GUIWindow::exitStringColor = glm::vec4(0.2f, 0.2f, 0.2f, 1.0f);
+
 	GUIWindow::GUIWindow() : doubleClickTimer(0), strechState(0)
 	{
 		//Set size
@@ -35,7 +42,8 @@ namespace spehs
 		header = new GUIRectangle(-1);
 		header->setParent(this);
 		header->setPositionLocal(0, size.y);
-		header->setColor(255, 255, 255);
+		header->setColor(headerBackgroundColor);
+		header->setStringColor(headerStringColor);
 		header->setJustification(GUIRECT_TEXT_JUSTIFICATION_LEFT);
 		header->setStringSize(applicationData->GUITextSize + 2);
 		header->setDepth(getDepth() + 1);
@@ -46,15 +54,16 @@ namespace spehs
 		exit->setPositionLocal(size.x - EXIT_WIDTH, size.y);
 		exit->setSize(EXIT_WIDTH, header->getHeight());
 		exit->setID(1);
-		exit->setColor(255, 0, 0);
+		exit->setColor(exitBackgroundColor);
 		exit->setString("X");
+		exit->setStringColor(exitStringColor);
 		exit->setJustification(GUIRECT_TEXT_JUSTIFICATION_CENTER);
 		exit->setDepth(getDepth() + 1);
 
 		//Strech background rectangle
 		strech = new GUIRectangle();
 		strech->setParent(this);
-		strech->setPositionLocal(-STRECH_BORDER, -STRECH_BORDER);
+		strech->setPositionLocal(-strechWidth, -strechWidth);
 		strech->disableState(GUIRECT_HOVER_COLOR);
 		strech->setDepth(getDepth() - 1);
 
@@ -105,24 +114,24 @@ namespace spehs
 			//Check docking
 			if (inputManager->getMouseX() < DOCK_BORDER)
 			{//Dock left
-				setSize(minSize.x, applicationData->getWindowHeight() - UP_BORDER - DOWN_BORDER - header->getHeight() - 2 * STRECH_BORDER);
-				setPositionLocal(STRECH_BORDER + LEFT_BORDER, STRECH_BORDER + DOWN_BORDER);
+				setSize(minSize.x, applicationData->getWindowHeight() - upBorder - downBorder - header->getHeight() - 2 * strechWidth);
+				setPositionLocal(strechWidth + leftBorder, strechWidth + downBorder);
 			}
 			else if (inputManager->getMouseX() > applicationData->getWindowWidth() - DOCK_BORDER)
 			{//Dock right
-				setSize(minSize.x, applicationData->getWindowHeight() - UP_BORDER - DOWN_BORDER - header->getWidth() - 2 * STRECH_BORDER);
-				setPositionLocal(applicationData->getWindowWidth() - size.x - STRECH_BORDER - RIGHT_BORDER, STRECH_BORDER + DOWN_BORDER);
+				setSize(minSize.x, applicationData->getWindowHeight() - upBorder - downBorder - header->getWidth() - 2 * strechWidth);
+				setPositionLocal(applicationData->getWindowWidth() - size.x - strechWidth - rightBorder, strechWidth + downBorder);
 			}
 
 			if (inputManager->getMouseY() < DOCK_BORDER)
 			{//Dock down
-				setSize(applicationData->getWindowWidth() - 2 * STRECH_BORDER - LEFT_BORDER - RIGHT_BORDER, minSize.y);
-				setPositionLocal(STRECH_BORDER + LEFT_BORDER, STRECH_BORDER + DOWN_BORDER);
+				setSize(applicationData->getWindowWidth() - 2 * strechWidth - leftBorder - rightBorder, minSize.y);
+				setPositionLocal(strechWidth + leftBorder, strechWidth + downBorder);
 			}
 			else if (inputManager->getMouseY() > applicationData->getWindowHeight() - DOCK_BORDER)
 			{//Dock up
-				setSize(applicationData->getWindowWidth() - 2 * STRECH_BORDER - LEFT_BORDER - RIGHT_BORDER, minSize.y);
-				setPositionLocal(STRECH_BORDER + LEFT_BORDER, applicationData->getWindowHeight() - header->getHeight() - STRECH_BORDER - size.y - UP_BORDER);
+				setSize(applicationData->getWindowWidth() - 2 * strechWidth - leftBorder - rightBorder, minSize.y);
+				setPositionLocal(strechWidth + leftBorder, applicationData->getWindowHeight() - header->getHeight() - strechWidth - size.y - upBorder);
 			}
 
 			limitWithinMainWindow();
@@ -270,7 +279,7 @@ namespace spehs
 				{//Set to full window
 
 					//Set size according to application data's window dimensions
-					setSize(applicationData->getWindowWidth() - RIGHT_BORDER - LEFT_BORDER, applicationData->getWindowHeight() - UP_BORDER - DOWN_BORDER - header->getHeight());
+					setSize(applicationData->getWindowWidth() - rightBorder - leftBorder, applicationData->getWindowHeight() - upBorder - downBorder - header->getHeight());
 					setPositionLocal(0, 0);
 
 					//Position window so that it won't go out of the application window
@@ -320,7 +329,7 @@ namespace spehs
 			return;
 
 		enableStateRecursive(GUIRECT_FOCUSED);
-		strech->setColor(255, 110, 0);
+		strech->setColor(strechColorFocused);
 	}
 	void GUIWindow::loseFocus()
 	{//Function called whenever this window loses focus
@@ -331,7 +340,7 @@ namespace spehs
 
 		disableBit(state, GUIRECT_STRECHING);
 		disableBit(state, GUIRECT_DRAGGING);
-		strech->setColor(0, 0, 0);
+		strech->setColor(strechColorUnfocused);
 
 		GUIRectangleContainer::loseFocus();
 	}
@@ -379,7 +388,7 @@ namespace spehs
 		GUIRectangle::updateScale();
 
 		//Background strech rectangle
-		strech->setSize(size.x + 2 * STRECH_BORDER, size.y + 2 * STRECH_BORDER);
+		strech->setSize(size.x + 2 * strechWidth, size.y + 2 * strechWidth);
 		
 		//Resize and reposition header
 		header->setWidth(size.x - exit->getWidth());
@@ -416,36 +425,36 @@ namespace spehs
 	{//Prevent window going out of application window
 
 		//Limit size
-		if (size.y + header->getHeight() > applicationData->getWindowHeight() - UP_BORDER - DOWN_BORDER)
+		if (size.y + header->getHeight() > applicationData->getWindowHeight() - upBorder - downBorder)
 		{//Window too high
-			if (size.x > applicationData->getWindowWidth() - LEFT_BORDER - RIGHT_BORDER)
-				setSize(applicationData->getWindowWidth() - LEFT_BORDER - RIGHT_BORDER, applicationData->getWindowHeight() - header->getHeight() - UP_BORDER - DOWN_BORDER);
+			if (size.x > applicationData->getWindowWidth() - leftBorder - rightBorder)
+				setSize(applicationData->getWindowWidth() - leftBorder - rightBorder, applicationData->getWindowHeight() - header->getHeight() - upBorder - downBorder);
 			else
-				setSize(size.x, applicationData->getWindowHeight() - header->getHeight() - UP_BORDER - DOWN_BORDER);
+				setSize(size.x, applicationData->getWindowHeight() - header->getHeight() - upBorder - downBorder);
 		}
-		else if (size.x > applicationData->getWindowWidth() - LEFT_BORDER - RIGHT_BORDER)
+		else if (size.x > applicationData->getWindowWidth() - leftBorder - rightBorder)
 		{//Window too wide
-			setSize(applicationData->getWindowWidth() - LEFT_BORDER - RIGHT_BORDER, size.y);
+			setSize(applicationData->getWindowWidth() - leftBorder - rightBorder, size.y);
 		}
 
 		//////Limit position
 		////Y
-		if (getYGlobal() > applicationData->getWindowHeight() - size.y - UP_BORDER - header->getHeight())
+		if (getYGlobal() > applicationData->getWindowHeight() - size.y - upBorder - header->getHeight())
 		{//Window too up
-			setPositionLocal(position.x, applicationData->getWindowHeight() - size.y - UP_BORDER - header->getHeight());
+			setPositionLocal(position.x, applicationData->getWindowHeight() - size.y - upBorder - header->getHeight());
 		}
-		else if (getYGlobal() < DOWN_BORDER)
+		else if (getYGlobal() < downBorder)
 		{//Window too down
-			setPositionLocal(position.x, DOWN_BORDER);
+			setPositionLocal(position.x, downBorder);
 		}
 		////X
-		if (getXGlobal() > applicationData->getWindowWidth() - size.x - RIGHT_BORDER)
+		if (getXGlobal() > applicationData->getWindowWidth() - size.x - rightBorder)
 		{//Window too right
-			setPositionLocal(applicationData->getWindowWidth() - size.x - RIGHT_BORDER, position.y);
+			setPositionLocal(applicationData->getWindowWidth() - size.x - rightBorder, position.y);
 		}
-		else if (getXGlobal() < LEFT_BORDER)
+		else if (getXGlobal() < leftBorder)
 		{//Window too left
-			setPositionLocal(LEFT_BORDER, position.y);
+			setPositionLocal(leftBorder, position.y);
 		}
 
 		updateScale();

@@ -108,8 +108,8 @@ namespace spehs
 
 		//DEBUG
 #ifdef _DEBUG
-		if (!checkState(GUIRECT_POST_UPDATE_CALLED_BIT))
-			console::warning("GUIRectangle: no post update called!");
+		//if (!checkState(GUIRECT_POST_UPDATE_CALLED_BIT))
+		//	console::warning("GUIRectangle: no post update called!");
 		disableState(GUIRECT_POST_UPDATE_CALLED_BIT);
 #endif
 	}
