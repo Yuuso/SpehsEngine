@@ -256,7 +256,10 @@ namespace spehs
 	{
 		size_t hash = std::hash<std::string>()(_texturePath);
 		auto it = textureDataMap.find(hash);
-		glDeleteTextures(1, &it->second->textureDataID);
+		if (it == textureDataMap.end())
+			console::warning("Texture not found from the texture data map!: " + _texturePath);
+		else
+			glDeleteTextures(1, &it->second->textureDataID);
 		textureDataMap.erase(hash);
 	}
 	void TextureManager::removeTextureData(const size_t& _hash)
