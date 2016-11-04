@@ -60,7 +60,7 @@ namespace spehs
 			popupShade->setRenderState(true);
 			if (popupShade->getColorAlpha() < popupShadeAlpha)
 			{
-				float a(popupShade->getColorAlpha() + getDeltaTime().asSeconds);
+				float a(popupShade->getColorAlpha() + time::getDeltaTime().asSeconds);
 				if (a > popupShadeAlpha)
 					a = popupShadeAlpha;
 				popupShade->setColorAlpha(a);
