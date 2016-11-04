@@ -576,11 +576,14 @@ namespace spehs
 			if (lines.size() == 0)
 				return;
 
-			int lineFix = 0;
+			int y = 0;
 			if (isOpen())
-				lineFix++;
-			for (unsigned i = 0; i < lines.size(); i++)
-				lines[lines.size() - 1 - i]->setPosition(glm::vec2(CONSOLE_BORDER, CONSOLE_BORDER + lines.back()->getFontHeight()*(i + lineFix)));
+				y += consoleText->getTextHeight();
+			for (int i = int(lines.size()) - 1; i >= 0; i--)
+			{
+				lines[i]->setPosition(glm::vec2(CONSOLE_BORDER, CONSOLE_BORDER + y));
+				y += lines[i]->getTextHeight();
+			}
 		}
 		void executeConsole()
 		{

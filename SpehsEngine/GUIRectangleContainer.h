@@ -32,8 +32,7 @@ namespace spehs
 		virtual void updateScale() = 0;
 		virtual void updateMinSize() = 0;
 
-		/*Returns true if the list has an textfield element underneath it that is currently active*/
-		bool isReceivingTextInput();
+		virtual bool isReceivingInput();
 		virtual void open();//Open container dimension
 		virtual void close();//Close container dimension
 		void closeTreeElements();//Closes every gui rectangle tree beneath this.

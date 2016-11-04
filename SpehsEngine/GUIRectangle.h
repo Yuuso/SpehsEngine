@@ -14,12 +14,12 @@
 #define GUIRECT_POSITIONED					0x00000004
 #define GUIRECT_ENABLED						0x00000008
 #define GUIRECT_MIN_SIZE_UPDATED			0x00000010
-#define GUIRECT_UNUSED0						0x00000020
+#define GUIRECT_REMOVE_BIT					0x00000020//Does not actually remove element. Must have a higher level manager to monitor remove status and act accordingly to it
 #define GUIRECT_UNUSED1						0x00000040
 #define GUIRECT_UNUSED2						0x00000080
 #define GUIRECT_UNUSED3						0x00000100
 #define GUIRECT_UNUSED4						0x00000200
-#define GUIRECT_UNUSED5						0x00000400
+#define GUIRECT_POST_UPDATE_CALLED_BIT		0x00000400//Detects if post update was forgotten
 //GUI rectangle container
 #define GUIRECT_MOUSE_HOVER_CONTAINER		0x00000800//Whether mouse hover has been detected inside an element of the container
 #define GUIRECT_OPEN						0x00001000//Different containers have different meanings for being open
@@ -87,6 +87,7 @@ namespace spehs
 		/// Checks whether the mouse is above this rectangle. Returns mouse hover value
 		virtual bool updateMouseHover();
 		/// Range [0.0f, 1.0f]
+		void setColor(glm::vec3& color);
 		void setColor(glm::vec4& color);
 		/// Range [0, 255]
 		void setColor(int r, int g, int b, int a = 255);
@@ -108,7 +109,7 @@ namespace spehs
 		void setStringAlpha(float alpha);
 		void setStringAlpha(unsigned char a);
 		std::string getString();
-		void setJustification(GUIRECT_STATE_TYPE justificationBit);///<NOTE: if non-justification bit is given, all justification bits will be cleared and given bit will be enabled
+		virtual void setJustification(GUIRECT_STATE_TYPE justificationBit);///<NOTE: if non-justification bit is given, all justification bits will be cleared and given bit will be enabled
 		//Tooltip
 		void setTooltip(std::string tooltipString);
 		GUIRectangle* getTooltipPtr(){ return tooltip; }
@@ -120,7 +121,12 @@ namespace spehs
 		//Callback
 		/** Callback to function/method that returns void and accepts the button reference as an argument.
 		Called when the rectangle is left pressed.
-		IMPORTANT NOTE: callback function must not remove the element, as the callback is called from the update.*/
+		IMPORTANT NOTE: callback function must not remove the element, as the callback is called from the update.
+		
+		Example use:
+		#include <functional>
+		guirect->setPressCallback(std::bind(&ShipEditor::methodTaking1Argument, ShipEditor::instancePtr, std::placeholders::_1));
+		*/
 		void setPressCallback(std::function<void(GUIRectangle&)> callbackFunction);
 
 		////State
@@ -133,7 +139,7 @@ namespace spehs
 		bool getMouseHoverAny(){ if (checkBit(state, GUIRECT_MOUSE_HOVER)) return true; return checkBit(state, GUIRECT_MOUSE_HOVER_CONTAINER); }
 		bool isEnabled(){ return checkBit(state, GUIRECT_ENABLED); }
 		bool isFocused(){ return checkBit(state, GUIRECT_FOCUSED); }
-		bool isReceivingInput(){ return checkBit(state, GUIRECT_RECEIVING_INPUT); }
+		virtual bool isReceivingInput(){ return checkBit(state, GUIRECT_RECEIVING_INPUT); }
 		bool isStreching(){ return checkBit(state, GUIRECT_STRECHING); }
 		bool isDragging(){ return checkBit(state, GUIRECT_DRAGGING); }
 		bool isSelected(){ return checkBit(state, GUIRECT_SELECTED); }
@@ -159,10 +165,10 @@ namespace spehs
 		virtual void translate(glm::ivec2& translation){ setXLocal(position.x + translation.x); setYLocal(position.y + translation.y); }
 		virtual void translate(int x, int y){ setXLocal(position.x + x); setYLocal(position.y + y); }
 		//Setting only one coordinate
-		virtual void setXLocal(int x){ position.x = x; disableBit(state, GUIRECT_POSITIONED); }
-		virtual void setYLocal(int y){ position.y = y; disableBit(state, GUIRECT_POSITIONED); }
 		virtual void incrementX(int incrementation){ setXLocal(position.x + incrementation); }
 		virtual void incrementY(int incrementation){ setYLocal(position.y + incrementation); }
+		virtual void setXLocal(int x){ position.x = x; disableBit(state, GUIRECT_POSITIONED); }
+		virtual void setYLocal(int y){ position.y = y; disableBit(state, GUIRECT_POSITIONED); }
 		//Getting the GUIRectangle screen position (global)
 		glm::ivec2 getPositionGlobal(){ if (parent) return parent->getPositionGlobal() + position; return position; }
 		int getXGlobal(){ if (parent) return parent->getXGlobal() + position.x; return position.x; }
@@ -179,12 +185,12 @@ namespace spehs
 		virtual void setWidth(int width){ if (size.x == width) return; size.x = width; disableStateRecursiveUpwards(GUIRECT_SCALED); }
 		virtual void setHeight(int height){ if (size.y == height) return; size.y = height; disableStateRecursiveUpwards(GUIRECT_SCALED); }
 		//Getters
-		virtual glm::ivec2 getSize(){ return size; }
-		virtual int getWidth(){ return size.x; }
-		virtual int getHeight(){ return size.y; }
-		virtual glm::ivec2 getMinSize(){ return minSize; }
-		virtual int getMinWidth(){ return minSize.x; }
-		virtual int getMinHeight(){ return minSize.y; }
+		virtual glm::ivec2 getSize(){ if (!(state & GUIRECT_SCALED)) updateScale(); return size; }
+		virtual int getWidth(){ if (!(state & GUIRECT_SCALED)) updateScale(); return size.x; }
+		virtual int getHeight(){ if (!(state & GUIRECT_SCALED)) updateScale(); return size.y; }
+		virtual glm::ivec2 getMinSize(){ if (!(state & GUIRECT_MIN_SIZE_UPDATED)) updateMinSize(); return minSize; }
+		virtual int getMinWidth(){ if (!(state & GUIRECT_MIN_SIZE_UPDATED)) updateMinSize(); return minSize.x; }
+		virtual int getMinHeight(){ if (!(state & GUIRECT_MIN_SIZE_UPDATED)) updateMinSize(); return minSize.y; }
 
 
 		//Identity

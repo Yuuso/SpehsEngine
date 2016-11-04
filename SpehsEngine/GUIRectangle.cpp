@@ -27,7 +27,8 @@ namespace spehs
 	{
 		polygon->destroy();
 	}
-	GUIRectangle::GUIRectangle() : position(0), size(0), minSize(0), state(GUIRECT_ENABLED | GUIRECT_HOVER_COLOR | GUIRECT_TEXT_JUSTIFICATION_LEFT), displayTexture(nullptr), pressCallbackFunction(nullptr)
+	GUIRectangle::GUIRectangle() : position(0), size(0), minSize(0), displayTexture(nullptr), pressCallbackFunction(nullptr),
+		state(GUIRECT_ENABLED | GUIRECT_HOVER_COLOR | GUIRECT_TEXT_JUSTIFICATION_LEFT | GUIRECT_POST_UPDATE_CALLED_BIT)
 	{//Default constructor
 #ifdef _DEBUG
 		++guiRectangleAllocations;
@@ -104,9 +105,20 @@ namespace spehs
 			else
 				tooltip->setRenderState(false);
 		}
+
+		//DEBUG
+#ifdef _DEBUG
+		//if (!checkState(GUIRECT_POST_UPDATE_CALLED_BIT))
+		//	console::warning("GUIRectangle: no post update called!");
+		disableState(GUIRECT_POST_UPDATE_CALLED_BIT);
+#endif
 	}
 	void GUIRectangle::postUpdate()
-	{
+	{		
+#ifdef _DEBUG//DEBUG checking
+		enableState(GUIRECT_POST_UPDATE_CALLED_BIT);
+#endif
+
 		//Return if not visible
 		if (!polygon->getRenderState())
 			return;
@@ -212,6 +224,14 @@ namespace spehs
 
 		polygon->resize(size.x, size.y);
 		enableBit(state, GUIRECT_SCALED);
+	}
+	void GUIRectangle::setColor(glm::vec3& c)
+	{
+		color.r = c.r;
+		color.g = c.g;
+		color.b = c.b;
+		color.a = 1.0f;
+		polygon->setColor(color);
 	}
 	void GUIRectangle::setColor(glm::vec4& c)
 	{

@@ -9,6 +9,23 @@ namespace spehs
 	class GUIWindow : public GUIRectangleContainer
 	{
 	public:
+		//Borders before application window where the window should not be located at
+		static int upBorder;
+		static int downBorder;
+		static int leftBorder;
+		static int rightBorder;
+		//Strech rectangle width
+		static int strechWidth;
+		//Strech colouring
+		static glm::vec4 strechColorFocused;
+		static glm::vec4 strechColorUnfocused;
+		//Header colouring
+		static glm::vec4 headerBackgroundColor;
+		static glm::vec4 headerStringColor;
+		//Exit colouring
+		static glm::vec4 exitBackgroundColor;
+		static glm::vec4 exitStringColor;
+	public:
 		GUIWindow();
 		virtual ~GUIWindow();
 		
