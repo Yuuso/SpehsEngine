@@ -24,19 +24,18 @@ namespace spehs
 		std::mutex FPSMutex;
 
 		//Local variables
-		static Time deltaTime;
-		static Time runTime;
-		static uint32_t startTicks = 0;
-		static float fps = 0;
+		Time deltaTime;
+		Time runTime;
+		uint32_t startTicks = 0;
+		float fps = 0;
 
 		void update()
 		{
-			//END
 			static const int NUM_SAMPLES = 20;
 			static uint32_t deltaTimes[NUM_SAMPLES];
 			static int currentFrame = 0;
 			static uint32_t previousTicks = SDL_GetTicks();
-			uint32_t currentTicks;
+			static uint32_t currentTicks;
 
 			runTimeMutex.lock();
 			runTime = (int) SDL_GetTicks();
@@ -44,11 +43,12 @@ namespace spehs
 			currentTicks = SDL_GetTicks();
 
 			deltaTimeMutex.lock();
-			deltaTime.asMilliseconds = currentTicks - previousTicks;
-			deltaTime.asSeconds = float(deltaTime.asMilliseconds) / 1000.0f;
-			deltaTimes[currentFrame % NUM_SAMPLES] = deltaTime.asMilliseconds;
+			deltaTime = int(currentTicks - previousTicks);
 			deltaTime = std::max(1, deltaTime.asMilliseconds);
+			deltaTimes[currentFrame % NUM_SAMPLES] = deltaTime.asMilliseconds;
 			deltaTimeMutex.unlock();
+
+			previousTicks = currentTicks;
 
 			//Limit delta time
 			if (maxDeltaTime.asMilliseconds > 0 && deltaTime.asMilliseconds > maxDeltaTime.asMilliseconds)
@@ -58,8 +58,6 @@ namespace spehs
 				deltaTime.asSeconds = maxDeltaTime.asSeconds;
 				deltaTimeMutex.unlock();
 			}
-
-			previousTicks = currentTicks;
 
 			int count;
 
@@ -73,7 +71,8 @@ namespace spehs
 				count = NUM_SAMPLES;
 			}
 
-			float deltaTimeAverage = 0;
+			static float deltaTimeAverage;
+			deltaTimeAverage = 0;
 			for (int i = 0; i < count; i++)
 			{
 				deltaTimeAverage += deltaTimes[i];
@@ -92,13 +91,9 @@ namespace spehs
 			FPSMutex.unlock();
 
 			//Limit FPS = delay return
-			uint32_t frameTicks = SDL_GetTicks() - startTicks;
 			if (applicationData->maxFps > 0)
-				if (1000.0f / applicationData->maxFps > frameTicks)
-					SDL_Delay(uint32_t(1000.0f / applicationData->maxFps) - frameTicks);
-			
-			//BEGIN
-			startTicks = SDL_GetTicks();
+				if ((1000.0f / applicationData->maxFps) > deltaTime.asMilliseconds)
+					SDL_Delay(uint32_t(1000.0f / applicationData->maxFps) - deltaTime.asMilliseconds);
 		}
 
 		Time getDeltaTime()
