@@ -20,6 +20,8 @@ typedef unsigned short GLushort;
 
 namespace spehs
 {
+	class Camera2D;
+
 	int getIndexMultiplier(const GLenum &_drawMode, const unsigned int& _batchSize = DEFAULT_MAX_BATCH_SIZE); //Calculate max number of indices
 
 
@@ -32,7 +34,7 @@ namespace spehs
 		virtual bool check(const Primitive &_primitive){ return false; }
 		virtual bool check(const Text &_text){ return false; }
 
-		virtual bool render() = 0; //Returns false if the batch is empty
+		virtual bool render(const Camera2D* _batchCamera) = 0; //Returns false if the batch is empty
 		virtual void push(Primitive* _primitive){}
 		virtual void push(Text* _text){}
 		
@@ -61,7 +63,7 @@ namespace spehs
 
 		bool check(const Primitive &_primitive);
 
-		bool render();
+		bool render(const Camera2D* _batchCamera);
 		void push(Primitive* _primitive);
 
 	protected:
@@ -86,7 +88,7 @@ namespace spehs
 
 		bool check(const Text &_text);
 
-		bool render();
+		bool render(const Camera2D* _batchCamera);
 		void push(Text* _text);
 
 	protected:
