@@ -193,7 +193,7 @@ namespace spehs
 		});
 		for (unsigned i = 0; i < batches.size();)
 		{
-			if (!batches[i]->render()) //If the batch is empty, delete it
+			if (!batches[i]->render(camera2D)) //If the batch is empty, delete it
 			{
 				delete batches[i];
 				batches.erase(batches.begin() + i);

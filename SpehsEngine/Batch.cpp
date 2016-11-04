@@ -119,7 +119,7 @@ namespace spehs
 	}
 
 
-	bool PrimitiveBatch::render()
+	bool PrimitiveBatch::render(const Camera2D* _batchCamera)
 	{
 		if (vertices.size() == 0)
 			return false;
@@ -155,9 +155,9 @@ namespace spehs
 
 		//Camera Matrix
 		if (cameraMatrixState)
-			shaderManager->getShader(shaderIndex)->uniforms->cameraMatrix = *spehs::getActiveBatchManager()->getCamera2D()->projectionMatrix;
+			shaderManager->getShader(shaderIndex)->uniforms->cameraMatrix = *_batchCamera->projectionMatrix;
 		else
-			shaderManager->getShader(shaderIndex)->uniforms->cameraMatrix = spehs::getActiveBatchManager()->getCamera2D()->staticMatrix;
+			shaderManager->getShader(shaderIndex)->uniforms->cameraMatrix = _batchCamera->staticMatrix;
 
 		//Uniforms
 		shaderManager->setUniforms(shaderIndex);
@@ -360,7 +360,7 @@ namespace spehs
 	}
 
 
-	bool TextBatch::render()
+	bool TextBatch::render(const Camera2D* _batchCamera)
 	{
 		if (vertices.size() == 0)
 			return false;
@@ -377,9 +377,9 @@ namespace spehs
 
 		//Camera Matrix
 		if (cameraMatrixState)
-			shaderManager->getShader(shaderIndex)->uniforms->cameraMatrix = *spehs::getActiveBatchManager()->getCamera2D()->projectionMatrix;
+			shaderManager->getShader(shaderIndex)->uniforms->cameraMatrix = *_batchCamera->projectionMatrix;
 		else
-			shaderManager->getShader(shaderIndex)->uniforms->cameraMatrix = spehs::getActiveBatchManager()->getCamera2D()->staticMatrix;
+			shaderManager->getShader(shaderIndex)->uniforms->cameraMatrix = _batchCamera->staticMatrix;
 
 		//Uniforms
 		shaderManager->setUniforms(shaderIndex);
