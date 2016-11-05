@@ -168,6 +168,10 @@ namespace spehs
 		if (tooltip && !_state)
 			tooltip->setRenderState(false);
 	}
+	bool GUIRectangle::getRenderState()
+	{
+		return polygon->getRenderState();
+	}
 	bool GUIRectangle::updateMouseHover()
 	{
 		if (inputManager->getMouseX() < getXGlobal() || inputManager->getMouseX() > getXGlobal() + size.x)
