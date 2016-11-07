@@ -21,14 +21,12 @@ namespace spehs
 		scrollUp->setParent(this);
 		scrollBar->setParent(this);
 		scrollDown->setParent(this);
-		scrollUp->setRenderState(false);
-		scrollBar->setRenderState(false);
-		scrollDown->setRenderState(false);
-
-
 		scrollUp->setString("U");
 		scrollBar->setString("B");
 		scrollDown->setString("D");
+		scrollUp->setRenderState(false);
+		scrollBar->setRenderState(false);
+		scrollDown->setRenderState(false);
 	}
 	GUIRectangleList::GUIRectangleList(GUIRECT_ID_TYPE id) : GUIRectangleList()
 	{

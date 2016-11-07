@@ -155,8 +155,7 @@ namespace spehs
 		void disableState(GUIRECT_STATE_TYPE stateBit){ disableBit(state, stateBit); }
 		void toggleState(GUIRECT_STATE_TYPE stateBit){ toggleBit(state, stateBit); }
 		virtual void loseFocus(){ disableBit(state, GUIRECT_FOCUSED); }
-
-
+		
 		////Managing element position
 		//Setting both coordinates
 		virtual void setPositionLocal(glm::ivec2& pos){ setXLocal(pos.x); setYLocal(pos.y); }
@@ -192,8 +191,7 @@ namespace spehs
 		virtual glm::ivec2 getMinSize(){ if (!(state & GUIRECT_MIN_SIZE_UPDATED)) updateMinSize(); return minSize; }
 		virtual int getMinWidth(){ if (!(state & GUIRECT_MIN_SIZE_UPDATED)) updateMinSize(); return minSize.x; }
 		virtual int getMinHeight(){ if (!(state & GUIRECT_MIN_SIZE_UPDATED)) updateMinSize(); return minSize.y; }
-
-
+		
 		//Identity
 		GUIRectangle* getAsGUIRectanglePtr(){ return this; }
 		virtual GUIWindow* getAsGUIWindowPtr(){ return nullptr; }
