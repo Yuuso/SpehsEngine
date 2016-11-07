@@ -318,11 +318,29 @@ namespace spehs
 		vertexArray.clear();
 
 		//Iterate through all the characters in the string
-		for (unsigned c(0); c < string.size(); c++)
+		for (unsigned c = 0; c < string.size(); c++)
 		{
-			if (string[c] != '\n')
+			if (string[c] == '\n')
+			{
+				//new line
+				x = 0.0f;
+				y -= font->height + lineSpacing;
+			}
+			else if (string[c] == '\t')
+			{
+				//tab
+				x += ((font->characters[' '].advance >> 6) * scale) * 3;
+			}
+			else
 			{
 				Character ch = font->characters[string[c]];
+
+				if (string[c] == ' ')
+				{
+					//Don't draw character if it's space, just move x instead
+					x += (ch.advance >> 6) * scale; //Bitshift by 6 to get value in pixels (2^6 = 64)
+					continue;
+				}
 
 				GLfloat xpos = x + ch.bearing.x * scale;
 				GLfloat ypos = y - (ch.size.y - ch.bearing.y) * scale;
@@ -339,12 +357,6 @@ namespace spehs
 
 				//Now advance cursors for next glyph (note that advance is number of 1/64 pixels)
 				x += (ch.advance >> 6) * scale; //Bitshift by 6 to get value in pixels (2^6 = 64)
-			}
-			else
-			{
-				//new line
-				x = 0.0f;
-				y -= font->height + lineSpacing;
 			}
 		}
 
