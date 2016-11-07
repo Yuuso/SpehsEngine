@@ -386,7 +386,7 @@ namespace spehs
 		if (text)
 			return;
 		text = Text::create(polygon->getPlaneDepth() + 1);
-		text->setRenderState(polygon->getRenderState());
+		text->setRenderState(getRenderState());
 		text->setFont(applicationData->GUITextFontPath, applicationData->GUITextSize);
 		text->setColor(defaultStringColor);
 	}
