@@ -322,6 +322,9 @@ namespace spehs
 		GUIRectangleContainer::postUpdate();
 		header->postUpdate();
 		exit->postUpdate();
+
+		if (checkState(GUIRECT_REFRESH_BIT))
+			refresh();
 	}
 	void GUIWindow::gainFocus()
 	{//Function called whenever this window receives focus
@@ -543,5 +546,6 @@ namespace spehs
 		disableBit(state, GUIRECT_SCALED);
 		disableBit(state, GUIRECT_POSITIONED);
 		disableBit(state, GUIRECT_MIN_SIZE_UPDATED);
+		disableBit(state, GUIRECT_REFRESH_BIT);
 	}
 }

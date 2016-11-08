@@ -27,14 +27,15 @@
 #define GUIRECT_FOCUSED						0x00002000
 #define GUIRECT_DRAGGING					0x00004000
 #define GUIRECT_STRECHING					0x00008000
+#define GUIRECT_REFRESH_BIT					0x00010000//Prevents multiple refreshes within a single update cycle. Checked at GUIWindow post update. Make refreshing the window within element update possible, otherwise resfresh would deallocate the element being updated!
 //Text justification
-#define GUIRECT_TEXT_JUSTIFICATION_LEFT		0x00010000
-#define GUIRECT_TEXT_JUSTIFICATION_CENTER	0x00020000
-#define GUIRECT_TEXT_JUSTIFICATION_RIGHT	0x00040000
+#define GUIRECT_TEXT_JUSTIFICATION_LEFT		0x00020000
+#define GUIRECT_TEXT_JUSTIFICATION_CENTER	0x00040000
+#define GUIRECT_TEXT_JUSTIFICATION_RIGHT	0x00080000
 ////Misc
-#define GUIRECT_RECEIVING_INPUT				0x00080000//Underlings should inform their first generation parents when receiving input
-#define GUIRECT_SELECTED					0x00100000
-#define GUIRECT_HOVER_COLOR					0x00200000
+#define GUIRECT_RECEIVING_INPUT				0x00100000//Underlings should inform their first generation parents when receiving input
+#define GUIRECT_SELECTED					0x00200000
+#define GUIRECT_HOVER_COLOR					0x00400000
 
 namespace spehs
 {
