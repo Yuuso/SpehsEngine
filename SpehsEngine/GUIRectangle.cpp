@@ -311,6 +311,8 @@ namespace spehs
 	//Setters
 	void GUIRectangle::setString(std::string str)
 	{
+		if (str.size() == 0)
+			return;
 		if (!text)
 			createText();
 		text->setString(str);
@@ -339,13 +341,15 @@ namespace spehs
 	{
 		//Create tooltip object if one does not exist already
 		if (!tooltip)
+		{
 			tooltip = new GUIRectangle();
+			tooltip->setStringColor(defaultTooltipStringColor);
+			tooltip->setStringSize(applicationData->GUITextSize);
+			tooltip->setColor(defaultTooltipColor);
+		}
 
 		tooltip->setString(tooltipString);
-		tooltip->setStringColor(defaultTooltipStringColor);
-		tooltip->setStringSize(applicationData->GUITextSize);
 		tooltip->setJustification(GUIRECT_TEXT_JUSTIFICATION_LEFT);
-		tooltip->setColor(defaultTooltipColor);
 		tooltip->updateScale();
 		tooltip->setSize(tooltip->minSize);
 		tooltip->setRenderState(false);
