@@ -126,7 +126,12 @@ namespace spehs
 			if (string[i] == ' ')
 				lastSpaceIndex = i;
 
-			if (++width > maxRowWidth)
+			if (string[i] == '\n')
+			{//Newline
+				lastNewLineIndex = i;
+				width = 0;
+			}
+			else if (++width > maxRowWidth)
 			{//Exceeds row width, look for the last space index
 
 				if (lastSpaceIndex > lastNewLineIndex)

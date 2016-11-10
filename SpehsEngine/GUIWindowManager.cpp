@@ -84,7 +84,7 @@ namespace spehs
 			popupShade->setRenderState(false);
 			popupShade->setColorAlpha(0.0f);
 		}
-
+		
 		//Update windows in order
 		if (updateWindows)
 		{
@@ -140,6 +140,13 @@ namespace spehs
 					focusedWindow = nullptr;
 				}
 			}
+		}
+
+		//Refresh requested
+		for (unsigned i = 0; i < windows.size(); i++)
+		{
+			if (windows[i]->checkState(GUIRECT_REFRESH_BIT) && windows[i]->isOpen())
+				windows[i]->refresh();
 		}
 	}
 	void GUIWindowManager::setFocusedWindow(GUIWindow* window)

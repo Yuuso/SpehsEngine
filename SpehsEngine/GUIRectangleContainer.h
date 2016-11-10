@@ -43,6 +43,7 @@ namespace spehs
 		virtual void addElement(GUIRectangle* element);
 		bool removeElement(GUIRectangle* element);//Searches elements list and removes element. If element is not found, returns false
 		virtual GUIRectangle* back(){ return elements.back(); }
+		virtual GUIRectangle* front(){ return elements.front(); }
 		GUIRectangle* at(int index){ if (index < 0 || index >= elements.size()) return nullptr; return elements[index]; }
 		GUIRectangle* operator[](int index){ return elements[index]; }
 		/*Returns the size of the elements vector*/

@@ -138,6 +138,7 @@
     <ClCompile Include="Sprite.cpp" />
     <ClCompile Include="StringOperations.cpp" />
     <ClCompile Include="Text.cpp" />
+    <ClCompile Include="Textbox.cpp" />
     <ClCompile Include="TextureManager.cpp" />
     <ClCompile Include="Time.cpp" />
     <ClCompile Include="Transform2D.cpp" />
@@ -194,6 +195,7 @@
     <ClInclude Include="Sprite.h" />
     <ClInclude Include="StringOperations.h" />
     <ClInclude Include="Text.h" />
+    <ClInclude Include="Textbox.h" />
     <ClInclude Include="TextureManager.h" />
     <ClInclude Include="Time.h" />
     <ClInclude Include="Transform2D.h" />

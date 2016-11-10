@@ -154,4 +154,33 @@ namespace spehs
 
 		return files;
 	}
+
+	std::vector<std::string> listSubDirectoriesInDirectory(std::string directoryPath)
+	{
+		std::lock_guard<std::recursive_mutex> lock(filestreamMutex);
+		std::vector<std::string> subDirectories;
+		boost::filesystem::path path(directoryPath);
+		if (!boost::filesystem::exists(path))
+		{
+			spehs::console::warning("listSubDirectoriesInDirectory failed: directory does not exist! : " + directoryPath);
+			return subDirectories;
+		}
+		if (!boost::filesystem::is_directory(path))
+		{
+			spehs::console::warning("listSubDirectoriesInDirectory failed: directory path leads to a non-directory file! : " + directoryPath);
+			return subDirectories;
+		}
+		
+		boost::filesystem::directory_iterator it(path);
+		boost::filesystem::directory_iterator end;
+		while (it != end)
+		{
+			std::string fileName(it->path().filename().generic_string());
+			if (boost::filesystem::is_directory(directoryPath + fileName))
+				subDirectories.push_back(fileName);
+			it++;
+		}
+
+		return subDirectories;
+	}
 }

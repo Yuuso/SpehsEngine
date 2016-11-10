@@ -322,9 +322,6 @@ namespace spehs
 		GUIRectangleContainer::postUpdate();
 		header->postUpdate();
 		exit->postUpdate();
-
-		if (checkState(GUIRECT_REFRESH_BIT))
-			refresh();
 	}
 	void GUIWindow::gainFocus()
 	{//Function called whenever this window receives focus
