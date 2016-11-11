@@ -348,10 +348,10 @@ namespace spehs
 				GLfloat w = ch.size.x * scale;
 				GLfloat h = ch.size.y * scale;
 
-				vertexArray.push_back(Vertex(spehs::Position(xpos, ypos + h), color, spehs::UV(0.0f, 0.0f)));
-				vertexArray.push_back(Vertex(spehs::Position(xpos, ypos), color, spehs::UV(0.0f, 1.0f)));
-				vertexArray.push_back(Vertex(spehs::Position(xpos + w, ypos), color, spehs::UV(1.0f, 1.0f)));
-				vertexArray.push_back(Vertex(spehs::Position(xpos + w, ypos + h), color, spehs::UV(1.0f, 0.0f)));
+				vertexArray.push_back(Vertex(glm::vec2(xpos, ypos + h), color, spehs::UV(0.0f, 0.0f)));
+				vertexArray.push_back(Vertex(glm::vec2(xpos, ypos), color, spehs::UV(0.0f, 1.0f)));
+				vertexArray.push_back(Vertex(glm::vec2(xpos + w, ypos), color, spehs::UV(1.0f, 1.0f)));
+				vertexArray.push_back(Vertex(glm::vec2(xpos + w, ypos + h), color, spehs::UV(1.0f, 0.0f)));
 
 				textureIDs.push_back(ch.textureID);
 

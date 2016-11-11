@@ -13,6 +13,7 @@ typedef unsigned int GLuint;
 namespace spehs
 {
 	struct TextureData;
+	class Camera2D;
 
 	class Polygon : public Primitive
 	{
@@ -23,11 +24,13 @@ namespace spehs
 		static Polygon* create(const int &_shapeID, const PlaneDepth &_planeDepth, const float &_width, const float &_height);
 		static Polygon* create(std::vector<spehs::Vertex> _vertexData, const PlaneDepth &_planeDepth, const float &_width, const float &_height);
 		static Polygon* create(std::vector<spehs::Vertex> _vertexData, const float &_width, const float &_height);
-		static Polygon* create(std::vector<spehs::Position> _cuspData, const PlaneDepth &_planeDepth, const float &_width, const float &_height);
+		static Polygon* create(std::vector<glm::vec2> _cuspData, const PlaneDepth &_planeDepth, const float &_width, const float &_height);
 
 		Polygon* getPolygonPtr(){ return this; }
 
 		void updateVertices();
+
+		std::vector<glm::vec2>* getScreenVertices(spehs::Camera2D* _camera);
 
 		void resize(const float &_width, const float &_height);
 		//Setters
@@ -49,7 +52,7 @@ namespace spehs
 		Polygon(const int &_shapeID, const PlaneDepth &_planeDepth, const float &_width, const float &_height);
 		Polygon(std::vector<spehs::Vertex> _vertexData, const PlaneDepth &_planeDepth, const float &_width, const float &_height); //For 2DPolygons
 		Polygon(std::vector<spehs::Vertex> _vertexData, const float &_width, const float &_height);
-		Polygon(std::vector<spehs::Position> _positionData, const PlaneDepth &_planeDepth, const float &_width, const float &_height);
+		Polygon(std::vector<glm::vec2> _positionData, const PlaneDepth &_planeDepth, const float &_width, const float &_height);
 		~Polygon();
 
 		void setUVCoords();

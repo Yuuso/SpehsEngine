@@ -27,9 +27,9 @@ namespace spehs
 		clearAllTextureData();
 	}
 
-	void TextureManager::setDefaultTexture(const std::string& _filepath, const TextureFiltering downScaleFiltering, const TextureFiltering upScaleFiltering)
+	void TextureManager::setDefaultTexture(const std::string& _filepath, const TextureFiltering minScaleFiltering, const TextureFiltering magScaleFiltering)
 	{
-		TextureData* temp = toTexture(_filepath, downScaleFiltering, upScaleFiltering);
+		TextureData* temp = toTexture(_filepath, minScaleFiltering, magScaleFiltering);
 		if (temp)
 			defaultTexture = temp;
 		else
@@ -37,7 +37,7 @@ namespace spehs
 	}
 
 
-	TextureData* TextureManager::getTextureData(const std::string& _texturePath, const TextureFiltering downScaleFiltering, const TextureFiltering upScaleFiltering)
+	TextureData* TextureManager::getTextureData(const std::string& _texturePath, const TextureFiltering minScaleFiltering, const TextureFiltering magScaleFiltering)
 	{
 		size_t hash = std::hash<std::string>()(_texturePath);
 		auto it = textureDataMap.find(hash);
@@ -45,7 +45,7 @@ namespace spehs
 		{
 			return it->second;
 		}
-		TextureData* temp = toTexture(_texturePath, downScaleFiltering, upScaleFiltering);
+		TextureData* temp = toTexture(_texturePath, minScaleFiltering, magScaleFiltering);
 		if (temp)
 			return temp;
 		else
@@ -61,12 +61,12 @@ namespace spehs
 		console::warning("Texture not found, using default.");
 		return defaultTexture;
 	}
-	size_t TextureManager::preloadTexture(const std::string& _texturePath, const TextureFiltering downScaleFiltering, const TextureFiltering upScaleFiltering)
+	size_t TextureManager::preloadTexture(const std::string& _texturePath, const TextureFiltering minScaleFiltering, const TextureFiltering magScaleFiltering)
 	{
 		size_t hash = std::hash<std::string>()(_texturePath);
 		if (textureDataMap.find(hash) == textureDataMap.end())
 		{
-			TextureData* temp = toTexture(_texturePath, downScaleFiltering, upScaleFiltering);
+			TextureData* temp = toTexture(_texturePath, minScaleFiltering, magScaleFiltering);
 			if (!temp)
 				return std::hash<unsigned int>()(DEFAULT_TEXTURE_SEED);
 		}
@@ -78,16 +78,16 @@ namespace spehs
 	}
 
 
-	TextureData* TextureManager::getNoiseTexture(const int& _width, const int& _height, const unsigned int& _seed, const int& _factor, const bool _turbulence, const TextureFiltering downScaleFiltering, const TextureFiltering upScaleFiltering)
+	TextureData* TextureManager::getNoiseTexture(const int& _width, const int& _height, const unsigned int& _seed, const int& _factor, const bool _turbulence, const TextureFiltering minScaleFiltering, const TextureFiltering magScaleFiltering)
 	{
 		size_t hash = std::hash<unsigned>()(_seed);
 		auto it = textureDataMap.find(hash);
 		if (it != textureDataMap.end())
 			return it->second;
 
-		return textureDataMap.find(preloadNoiseTexture(_width, _height, _seed, _factor, _turbulence, downScaleFiltering, upScaleFiltering))->second;
+		return textureDataMap.find(preloadNoiseTexture(_width, _height, _seed, _factor, _turbulence, minScaleFiltering, magScaleFiltering))->second;
 	}
-	size_t TextureManager::preloadNoiseTexture(const int& _width, const int& _height, const unsigned int& _seed, const int& _factor, const bool _turbulence, const TextureFiltering downScaleFiltering, const TextureFiltering upScaleFiltering)
+	size_t TextureManager::preloadNoiseTexture(const int& _width, const int& _height, const unsigned int& _seed, const int& _factor, const bool _turbulence, const TextureFiltering minScaleFiltering, const TextureFiltering magScaleFiltering)
 	{
 		if (_factor == 0)
 		{
@@ -193,8 +193,8 @@ namespace spehs
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, _width, _height, 0, GL_RGBA, GL_UNSIGNED_BYTE, noiseTextureData.data());
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, downScaleFiltering);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, upScaleFiltering);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, (GLint) minScaleFiltering);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, (GLint) magScaleFiltering);
 		glGenerateMipmap(GL_TEXTURE_2D);
 
 		glBindTexture(GL_TEXTURE_2D, 0);
@@ -210,16 +210,16 @@ namespace spehs
 
 		return hash;
 	}
-	TextureData* TextureManager::createTexture(const std::string &_ID, const void* _uint8data, const int _width, const int _height, const TextureFiltering downScaleFiltering, const TextureFiltering upScaleFiltering)
+	TextureData* TextureManager::createTexture(const std::string &_ID, const void* _uint8data, const int _width, const int _height, const TextureFiltering minScaleFiltering, const TextureFiltering magScaleFiltering)
 	{
 		size_t hash = std::hash<std::string>()(_ID);
 		auto it = textureDataMap.find(hash);
 		if (it != textureDataMap.end())
 			return it->second;
 
-		return textureDataMap.find(preloadDataTexture(_ID, _uint8data, _width, _height, downScaleFiltering, upScaleFiltering))->second;
+		return textureDataMap.find(preloadDataTexture(_ID, _uint8data, _width, _height, minScaleFiltering, magScaleFiltering))->second;
 	}
-	size_t TextureManager::preloadDataTexture(const std::string &_ID, const void* _uint8data, const int _width, const int _height, const TextureFiltering downScaleFiltering, const TextureFiltering upScaleFiltering)
+	size_t TextureManager::preloadDataTexture(const std::string &_ID, const void* _uint8data, const int _width, const int _height, const TextureFiltering minScaleFiltering, const TextureFiltering magScaleFiltering)
 	{
 		size_t hash = std::hash<std::string>()(_ID);
 		if (textureDataMap.find(hash) != textureDataMap.end())
@@ -239,17 +239,17 @@ namespace spehs
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, _width, _height, 0, GL_RGBA, GL_UNSIGNED_BYTE, _uint8data);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, downScaleFiltering);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, upScaleFiltering);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, (GLint) minScaleFiltering);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, (GLint) magScaleFiltering);
 		glGenerateMipmap(GL_TEXTURE_2D);
 
 		glBindTexture(GL_TEXTURE_2D, 0);
 
+		checkOpenGLErrors(__FILE__, __LINE__);
+
 		//Create TextureData
 		TextureData* newTexData = new TextureData(textureData, _width, _height);
 		textureDataMap.insert(std::pair<size_t, TextureData*>(hash, newTexData));
-
-		checkOpenGLErrors(__FILE__, __LINE__);
 
 		return hash;
 	}
@@ -283,7 +283,7 @@ namespace spehs
 
 
 	//Private:
-	TextureData* TextureManager::toTexture(const std::string& _filepath, const TextureFiltering downScaleFiltering, const TextureFiltering upScaleFiltering)
+	TextureData* TextureManager::toTexture(const std::string& _filepath, const TextureFiltering minScaleFiltering, const TextureFiltering magScaleFiltering)
 	{
 		glEnable(GL_TEXTURE_2D);
 
@@ -306,8 +306,8 @@ namespace spehs
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, image);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, downScaleFiltering);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, upScaleFiltering);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, (GLint) minScaleFiltering);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, (GLint) magScaleFiltering);
 		glGenerateMipmap(GL_TEXTURE_2D);
 		
 		SOIL_free_image_data(image);

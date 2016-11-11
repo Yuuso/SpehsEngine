@@ -58,7 +58,7 @@ namespace spehs
 			console::error("Position values corrupted!");
 		}
 #endif
-		position.setPosition(_x, _y);
+		position = glm::vec2(_x, _y);
 		needUpdate = true;
 	}
 
@@ -70,19 +70,7 @@ namespace spehs
 			console::error("Position values corrupted!");
 		}
 #endif
-		position.setPosition(_newPosition.x, _newPosition.y);
-		needUpdate = true;
-	}
-
-	void Primitive::setPosition(const Position &_newPosition)
-	{
-#ifdef _DEBUG
-		if (_newPosition.x != _newPosition.x || _newPosition.y != _newPosition.y)
-		{
-			console::error("Position values corrupted!");
-		}
-#endif
-		position = _newPosition;
+		position = glm::vec2(_newPosition.x, _newPosition.y);
 		needUpdate = true;
 	}
 

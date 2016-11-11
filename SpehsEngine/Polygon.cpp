@@ -7,6 +7,7 @@
 #include "BatchManager.h"
 #include "ShaderManager.h"
 #include "Exceptions.h"
+#include "Camera2D.h"
 
 #include <glm/vec3.hpp>
 #include <glm/vec4.hpp>
@@ -34,7 +35,7 @@ namespace spehs
 	{
 		return getActiveBatchManager()->createPolygon(_vertexData, _width, _height);
 	}
-	Polygon* Polygon::create(std::vector<spehs::Position> _cuspData, const PlaneDepth &_planeDepth, const float &_width, const float &_height)
+	Polygon* Polygon::create(std::vector<glm::vec2> _cuspData, const PlaneDepth &_planeDepth, const float &_width, const float &_height)
 	{
 		return getActiveBatchManager()->createPolygon(_cuspData, _planeDepth, _width, _height);
 	}
@@ -51,12 +52,12 @@ namespace spehs
 				firstPosition = HALF_PI;
 			else
 				firstPosition = HALF_PI + (TWO_PI / _shapeID) / 2.0f;
-			vertexArray[0].position.setPosition(cos(firstPosition), sin(firstPosition));
+			vertexArray[0].position = glm::vec2(cos(firstPosition), sin(firstPosition));
 			float minX = vertexArray[0].position.x, minY = vertexArray[0].position.y, maxX = vertexArray[0].position.x, maxY = vertexArray[0].position.y;
 			for (int i = 1; i < _shapeID; i++)
 			{
 				//Set position
-				vertexArray[i].position.setPosition(cos(firstPosition + i * (TWO_PI / _shapeID)), sin(firstPosition + i * (TWO_PI / _shapeID)));
+				vertexArray[i].position = glm::vec2(cos(firstPosition + i * (TWO_PI / _shapeID)), sin(firstPosition + i * (TWO_PI / _shapeID)));
 
 				//Check min/max
 				if (vertexArray[i].position.x > maxX)
@@ -116,7 +117,7 @@ namespace spehs
 	{
 		blending = false;
 	}
-	Polygon::Polygon(std::vector<spehs::Position> _positionData, const PlaneDepth &_planeDepth, const float &_width, const float &_height) : Polygon(_width, _height)
+	Polygon::Polygon(std::vector<glm::vec2> _positionData, const PlaneDepth &_planeDepth, const float &_width, const float &_height) : Polygon(_width, _height)
 	{
 		planeDepth = _planeDepth;
 		if (_positionData.size() < 3)
@@ -155,9 +156,27 @@ namespace spehs
 			for (unsigned int i = 0; i < worldVertexArray.size(); i++)
 			{
 				vertex = scaledRotatedMatrix * glm::vec4(vertexArray[i].position.x * width, vertexArray[i].position.y * height, 0.0f, 1.0f);
-				worldVertexArray[i].position.setPosition(vertex.x + position.x, vertex.y + position.y);
+				worldVertexArray[i].position = glm::vec2(vertex.x + position.x, vertex.y + position.y);
 			}
 			needUpdate = false;
+		}
+	}
+
+
+	std::vector<glm::vec2>* Polygon::getScreenVertices(spehs::Camera2D* _camera)
+	{
+		if (cameraMatrixState)
+		{
+			std::vector<glm::vec2>* result = new std::vector<glm::vec2>;
+			for (unsigned i = 0; i < worldVertexArray.size(); i++)
+			{
+				result->push_back(glm::vec2(*_camera->projectionMatrix * glm::vec4(worldVertexArray[i].position.x, worldVertexArray[i].position.y, 0.0f, 1.0f)));
+			}
+			return result; //User handles deletion
+		}
+		else
+		{
+			spehs::console::error("Camera state not enabled, screen vertices function is useless.");
 		}
 	}
 

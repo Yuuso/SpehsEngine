@@ -66,27 +66,27 @@ namespace spehs
 
 	//Function for projecting polygon onto axis
 	Projection projectPolygon(const glm::vec2& _axis, Vertex* _vertexArray, const unsigned int _size);
-	Projection projectPolygon(const glm::vec2& _axis, Position* _vertexArray, const unsigned int _size);
+	Projection projectPolygon(const glm::vec2& _axis, glm::vec2* _vertexArray, const unsigned int _size);
 
 	//Function for projecting circle onto axis
 	Projection projectCircle(const glm::vec2& _axis, const glm::vec2& _vertex, const float _radius);
 
 	//Function for getting axis
 	glm::vec2 getAxis(Vertex* _vertexArray, const unsigned int _size, const unsigned int _i);
-	glm::vec2 getAxis(Position* _vertexArray, const unsigned int _size, const unsigned int _i);
+	glm::vec2 getAxis(glm::vec2* _vertexArray, const unsigned int _size, const unsigned int _i);
 
 	//Get the axis for circle
 	glm::vec2 getCircleAxis(Vertex* _vertexArray, const unsigned int _size, const glm::vec2& _circleCenter);
-	glm::vec2 getCircleAxis(Position* _vertexArray, const unsigned int _size, const glm::vec2& _circleCenter);
+	glm::vec2 getCircleAxis(glm::vec2* _vertexArray, const unsigned int _size, const glm::vec2& _circleCenter);
 
 	//BOOL COLLISIONS
 	//Polygon x Polygon collision
 	bool SATCollision(Vertex* _vertexArray1, const unsigned int _size1, Vertex* _vertexArray2, const unsigned int _size2);
-	bool SATCollision(Position* _vertexArray1, const unsigned int _size1, Position* _vertexArray2, const unsigned int _size2);
+	bool SATCollision(glm::vec2* _vertexArray1, const unsigned int _size1, glm::vec2* _vertexArray2, const unsigned int _size2);
 
 	//Polygon x Circle Collision
 	bool SATCollision(Vertex* _vertexArray, const unsigned int _size, const glm::vec2& _circleCenterPoint, const float _circleRadius);
-	bool SATCollision(Position* _vertexArray, unsigned int _size, const glm::vec2& _circleCenterPoint, const float _circleRadius);
+	bool SATCollision(glm::vec2* _vertexArray, unsigned int _size, const glm::vec2& _circleCenterPoint, const float _circleRadius);
 
 	//Circle x Circle Collision
 	bool circleCollision(const glm::vec2& _circleCenterPoint1, const float _circleRadius1, const glm::vec2& _circleCenterPoint2, const float _circleRadius2);
@@ -96,17 +96,17 @@ namespace spehs
 	float rayCollisionDistance(const glm::vec2 _rayPosition, const float _rayDirection, const glm::vec2& _circleCenterPoint, const float _circleRadius, const float _rayDistance = RAYCAST_DISTANCE);
 
 	//Ray x Polygon collision, returns 0.0f if no collision, otherwise > 0 (collision distance from point of ray origin)
-	bool rayCollision(const glm::vec2 _rayCastPosition, float _rayDirection, spehs::Position* _vertexArray, unsigned _vertexArrayLength, const float _rayDistance = RAYCAST_DISTANCE);
-	float rayCollisionDistance(const glm::vec2 _rayCastPosition, float _rayDirection, spehs::Position* _vertexArray, unsigned _vertexArrayLength, const float _rayDistance = RAYCAST_DISTANCE);
+	bool rayCollision(const glm::vec2 _rayCastPosition, float _rayDirection, glm::vec2* _vertexArray, unsigned _vertexArrayLength, const float _rayDistance = RAYCAST_DISTANCE);
+	float rayCollisionDistance(const glm::vec2 _rayCastPosition, float _rayDirection, glm::vec2* _vertexArray, unsigned _vertexArrayLength, const float _rayDistance = RAYCAST_DISTANCE);
 
 	//COLLISIONPOINT COLLISIONS
 	//Polygon x Polygon collision
 	std::shared_ptr<CollisionPoint> SATMTVCollision(Vertex* _vertexArray1, const unsigned int _size1, Vertex* _vertexArray2, const unsigned int _size2);
-	std::shared_ptr<CollisionPoint> SATMTVCollision(Position* _vertexArray1, const unsigned int _size1, Position* _vertexArray2, const unsigned int _size2);
+	std::shared_ptr<CollisionPoint> SATMTVCollision(glm::vec2* _vertexArray1, const unsigned int _size1, glm::vec2* _vertexArray2, const unsigned int _size2);
 
 	//Polygon x Circle Collision
 	std::shared_ptr<CollisionPoint> SATMTVCollision(Vertex* _vertexArray, const unsigned int _size, const glm::vec2& _circleCenterPoint, const float _circleRadius);
-	std::shared_ptr<CollisionPoint> SATMTVCollision(Position* _vertexArray, const unsigned int _size, const glm::vec2& _circleCenterPoint, const float _circleRadius);
+	std::shared_ptr<CollisionPoint> SATMTVCollision(glm::vec2* _vertexArray, const unsigned int _size, const glm::vec2& _circleCenterPoint, const float _circleRadius);
 
 	//Circle x Circle Collision
 	std::shared_ptr<CollisionPoint> circleMTVCollision(const glm::vec2& _circleCenterPoint1, const float _circleRadius1, const glm::vec2& _circleCenterPoint2, const float _circleRadius2);

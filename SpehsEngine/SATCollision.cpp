@@ -44,7 +44,7 @@ namespace spehs
 		Projection returnProj(min, max);
 		return returnProj;
 	};
-	Projection projectPolygon(const glm::vec2& _axis, Position* _vertexArray, const unsigned int _size)
+	Projection projectPolygon(const glm::vec2& _axis, glm::vec2* _vertexArray, const unsigned int _size)
 	{
 		float min = glm::dot(_axis, glm::vec2(_vertexArray[0].x, _vertexArray[0].y));
 		float max = min;
@@ -81,7 +81,7 @@ namespace spehs
 		glm::vec2 normalVector = glm::vec2(-edgeVector.y, edgeVector.x);
 		return normalVector;
 	};
-	glm::vec2 getAxis(Position* _vertexArray, const unsigned int _size, const unsigned int _i)
+	glm::vec2 getAxis(glm::vec2* _vertexArray, const unsigned int _size, const unsigned int _i)
 	{
 		glm::vec2 currentVertex = glm::vec2(_vertexArray[_i].x, _vertexArray[_i].y);
 		glm::vec2 nextVertex;
@@ -108,7 +108,7 @@ namespace spehs
 		glm::vec2 normalVector = glm::vec2(-edgeVector.y, edgeVector.x);
 		return normalVector;
 	};
-	glm::vec2 getCircleAxis(Position* _vertexArray, const unsigned int _size, const glm::vec2& _circleCenter)
+	glm::vec2 getCircleAxis(glm::vec2* _vertexArray, const unsigned int _size, const glm::vec2& _circleCenter)
 	{
 		glm::vec2 polygonVertex = glm::vec2(_vertexArray[0].x, _vertexArray[0].y);
 		for (int i = 1; i < _size; i++)
@@ -170,7 +170,7 @@ namespace spehs
 		delete [] axis2;
 		return true;
 	}
-	bool SATCollision(Position* _vertexArray1, const unsigned int _size1, Position* _vertexArray2, const unsigned int _size2)
+	bool SATCollision(glm::vec2* _vertexArray1, const unsigned int _size1, glm::vec2* _vertexArray2, const unsigned int _size2)
 	{
 		glm::vec2* axis1 = new glm::vec2[_size1];
 		glm::vec2* axis2 = new glm::vec2[_size2];
@@ -252,7 +252,7 @@ namespace spehs
 		delete [] axis1;
 		return true;
 	}
-	bool SATCollision(Position* _vertexArray, const unsigned int _size, const glm::vec2& _circleCenterPoint, const float _circleRadius)
+	bool SATCollision(glm::vec2* _vertexArray, const unsigned int _size, const glm::vec2& _circleCenterPoint, const float _circleRadius)
 	{
 		glm::vec2* axis1 = new glm::vec2[_size];
 		glm::vec2 axis2 = glm::normalize(getCircleAxis(_vertexArray, _size, _circleCenterPoint));
@@ -324,11 +324,11 @@ namespace spehs
 		return 0.0f;
 	}
 
-	bool rayCollision(const glm::vec2 _rayCastPosition, float _rayDirection, spehs::Position* _vertexArray, unsigned _vertexArrayLength, const float _rayDistance)
+	bool rayCollision(const glm::vec2 _rayCastPosition, float _rayDirection, glm::vec2* _vertexArray, unsigned _vertexArrayLength, const float _rayDistance)
 	{
 		return false;
 	}
-	float rayCollisionDistance(const glm::vec2 _rayCastPosition, float _rayDirection, spehs::Position* _vertexArray, unsigned _vertexArrayLength, const float _rayDistance)
+	float rayCollisionDistance(const glm::vec2 _rayCastPosition, float _rayDirection, glm::vec2* _vertexArray, unsigned _vertexArrayLength, const float _rayDistance)
 	{
 		glm::vec2 vec(0.0f, 0.0f);
 		for (unsigned i = 0; i < _vertexArrayLength; i++)
@@ -473,7 +473,7 @@ namespace spehs
 		delete [] axis2;
 		return result;
 	}
-	std::shared_ptr<CollisionPoint> SATMTVCollision(Position* _vertexArray1, const unsigned int _size1, Position* _vertexArray2, const unsigned int _size2)
+	std::shared_ptr<CollisionPoint> SATMTVCollision(glm::vec2* _vertexArray1, const unsigned int _size1, glm::vec2* _vertexArray2, const unsigned int _size2)
 	{
 		float overlap = FLT_MAX;
 		glm::vec2 smallestAxis;
@@ -711,7 +711,7 @@ namespace spehs
 		delete [] axis1;
 		return result;
 	}
-	std::shared_ptr<CollisionPoint> SATMTVCollision(Position* _vertexArray, const unsigned int _size, const glm::vec2& _circleCenterPoint, const float _circleRadius)
+	std::shared_ptr<CollisionPoint> SATMTVCollision(glm::vec2* _vertexArray, const unsigned int _size, const glm::vec2& _circleCenterPoint, const float _circleRadius)
 	{
 		float overlap = FLT_MAX;
 		glm::vec2 smallestAxis;
