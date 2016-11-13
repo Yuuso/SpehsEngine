@@ -28,7 +28,7 @@ namespace spehs
 		polygon->destroy();
 	}
 	GUIRectangle::GUIRectangle() : position(0), size(0), minSize(0), displayTexture(nullptr), pressCallbackFunction(nullptr),
-		state(GUIRECT_ENABLED | GUIRECT_HOVER_COLOR | GUIRECT_TEXT_JUSTIFICATION_LEFT | GUIRECT_POST_UPDATE_CALLED_BIT)
+		state(GUIRECT_ENABLED_BIT | GUIRECT_HOVER_COLOR | GUIRECT_TEXT_JUSTIFICATION_LEFT)
 	{//Default constructor
 #ifdef _DEBUG
 		++guiRectangleAllocations;
@@ -105,20 +105,9 @@ namespace spehs
 			else
 				tooltip->setRenderState(false);
 		}
-
-		//DEBUG
-#ifdef _DEBUG
-		//if (!checkState(GUIRECT_POST_UPDATE_CALLED_BIT))
-		//	console::warning("GUIRectangle: no post update called!");
-		disableState(GUIRECT_POST_UPDATE_CALLED_BIT);
-#endif
 	}
 	void GUIRectangle::postUpdate()
-	{		
-#ifdef _DEBUG//DEBUG checking
-		enableState(GUIRECT_POST_UPDATE_CALLED_BIT);
-#endif
-
+	{
 		//Return if not visible
 		if (!polygon->getRenderState())
 			return;
@@ -128,7 +117,7 @@ namespace spehs
 			tooltip->postUpdate();
 		
 		//Hover color
-		if (checkBit(state, GUIRECT_HOVER_COLOR))
+		if (checkState(GUIRECT_HOVER_COLOR) && checkState(GUIRECT_ENABLED_BIT))
 		{
 			if (getMouseHover())
 			{

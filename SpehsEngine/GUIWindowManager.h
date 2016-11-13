@@ -18,7 +18,6 @@ namespace spehs
 		void addPopup(GUIPopup* popup);
 		void refreshWindows();
 		GUIWindow* getFocusedWindow(){ return focusedWindow; }
-		void setFocusedWindow(GUIWindow* window);
 		void toggleWindow(GUIWindow* window);
 		void openWindow(GUIWindow* window);
 		void closeWindow(GUIWindow* window);//Does not modify window order

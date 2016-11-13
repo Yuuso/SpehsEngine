@@ -15,8 +15,9 @@ namespace spehs
 
 		void update();
 		void setString(std::string str);
+		void onDisable();
 
-		void loseFocus();
+		//Text field specific
 		void toggleTyping();
 		void beginTyping();
 		void recordInput();

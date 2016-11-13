@@ -213,10 +213,10 @@ namespace spehs
 	{
 		return getStringAsInt(storedString);
 	}
-	void GUITextField::loseFocus()
+	void GUITextField::onDisable()
 	{
 		endTyping();
 		updateString();
-		GUIRectangle::loseFocus();
+		GUIRectangle::onDisable();
 	}
 }

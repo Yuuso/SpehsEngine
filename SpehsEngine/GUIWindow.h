@@ -36,18 +36,17 @@ namespace spehs
 		virtual void updateMinSize();//Updates min size variable based on element requirements
 		virtual void setRenderState(const bool _state);
 		virtual void setDepth(uint16_t);
-
-		virtual void gainFocus();
-		virtual void loseFocus();
+		virtual void onEnable();
+		virtual void onDisable();
 		virtual void disableStateRecursive(GUIRECT_STATE_TYPE stateBit);
 		virtual void enableStateRecursive(GUIRECT_STATE_TYPE stateBit);
-		void disableState(GUIRECT_STATE_TYPE stateBit);
-		void enableState(GUIRECT_STATE_TYPE stateBit);
+		virtual void disableState(GUIRECT_STATE_TYPE stateBit);
+		virtual void enableState(GUIRECT_STATE_TYPE stateBit);
 
 		virtual void close();
 		virtual void open();
 		virtual void refresh();
-		void limitWithinMainWindow();//Reposition window so that it doesn't escape the viewport
+		virtual void limitWithinMainWindow();//Reposition window so that it doesn't escape the viewport
 
 		//Getters
 		GUIRectangle* getHeaderPtr(){ return header; }

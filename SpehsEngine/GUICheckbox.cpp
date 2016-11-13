@@ -82,8 +82,8 @@ namespace spehs
 
 		GUIRectangle::updatePosition();
 
-		checkboxBackground->setPosition(getXGlobal() + size.x - CHECKBOX_BORDER - checkboxSize - applicationData->getWindowWidthHalf(), getYGlobal() + (size.y - checkboxSize) * 0.5f - applicationData->getWindowHeight() / 2);
-		checkboxFilling->setPosition(getXGlobal() + size.x - checkboxSize - applicationData->getWindowWidthHalf(), getYGlobal() + (size.y - checkboxSize) * 0.5f + CHECKBOX_BORDER - applicationData->getWindowHeightHalf());
+		checkboxBackground->setPosition(getXGlobal() + size.x - CHECKBOX_BORDER - checkboxSize, getYGlobal() + (size.y - checkboxSize) * 0.5f);
+		checkboxFilling->setPosition(getXGlobal() + size.x - checkboxSize, getYGlobal() + (size.y - checkboxSize) * 0.5f + CHECKBOX_BORDER);
 
 		//Update minimum size
 		updateMinSize();

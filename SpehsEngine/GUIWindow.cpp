@@ -7,7 +7,7 @@
 #include "GUITextField.h"
 #include "GUIRectangleList.h"
 #define EXIT_WIDTH 20
-#define DOCK_BORDER 50
+//#define DOCK_BORDER 50
 #define DOUBLE_CLICK_TIME 200
 /*Strech state*/
 #define STRECH_STATE_HORIZONTAL 1
@@ -70,8 +70,7 @@ namespace spehs
 		//State
 		disableBit(state, GUIRECT_HOVER_COLOR);
 		disableBit(state, GUIRECT_OPEN);
-		//By default, lose focus
-		loseFocus();
+		onDisable();
 
 		limitWithinMainWindow();
 	}
@@ -85,8 +84,8 @@ namespace spehs
 	{
 
 		//Clicking within window -> gaining focus
-		if (!isFocused() && isOpen() && inputManager->isKeyPressed(MOUSE_BUTTON_LEFT) && (strech->updateMouseHover() || getMouseHover()))
-			gainFocus();
+		//if (checkState(GUIRECT_ENABLED_BIT) && !isFocused() && isOpen() && inputManager->isKeyPressed(MOUSE_BUTTON_LEFT) && (strech->updateMouseHover() || getMouseHover()))
+			//gainFocus();
 
 		//Run update in all members
 		GUIRectangleContainer::update();
@@ -101,16 +100,15 @@ namespace spehs
 
 		////DRAGGING
 		//Handle previous frame dragging
-		if (isDragging() && inputManager->isKeyDown(MOUSE_BUTTON_LEFT))
+		if (checkState(GUIRECT_DRAGGING_BIT) && inputManager->isKeyDown(MOUSE_BUTTON_LEFT))
 			translate(inputManager->getMouseMovementX(), inputManager->getMouseMovementY());
 		//Set dragging boolean
-		if (!checkBit(state, GUIRECT_DRAGGING) && checkBit(state, GUIRECT_FOCUSED) && header->getMouseHover() && inputManager->isKeyPressed(MOUSE_BUTTON_LEFT))
-			enableBit(state, GUIRECT_DRAGGING);//Begin dragging
-		else if (isDragging() && isFocused() && inputManager->isKeyDown(MOUSE_BUTTON_LEFT))
-			enableBit(state, GUIRECT_DRAGGING);//Continue dragging
-		else if (isDragging())
+		if (checkState(GUIRECT_ENABLED_BIT) && !checkState(GUIRECT_DRAGGING_BIT) && header->getMouseHover() && inputManager->isKeyPressed(MOUSE_BUTTON_LEFT))
+			enableState(GUIRECT_DRAGGING_BIT);//Begin dragging
+		else if (checkState(GUIRECT_DRAGGING_BIT) && !inputManager->isKeyDown(MOUSE_BUTTON_LEFT))
 		{//Stop dragging
 
+#ifdef DOCK_BORDER
 			//Check docking
 			if (inputManager->getMouseX() < DOCK_BORDER)
 			{//Dock left
@@ -133,14 +131,15 @@ namespace spehs
 				setSize(applicationData->getWindowWidth() - 2 * strechWidth - leftBorder - rightBorder, minSize.y);
 				setPositionLocal(strechWidth + leftBorder, applicationData->getWindowHeight() - header->getHeight() - strechWidth - size.y - upBorder);
 			}
+#endif
 
 			limitWithinMainWindow();
-			disableBit(state, GUIRECT_DRAGGING);
+			disableState(GUIRECT_DRAGGING_BIT);
 		}
 
 		////STRECHING
 		//Handle previous frame strech
-		if (isStreching() && inputManager->isKeyDown(MOUSE_BUTTON_LEFT))
+		if (checkState(GUIRECT_STRECHING_BIT) && inputManager->isKeyDown(MOUSE_BUTTON_LEFT))
 		{
 			//Take record of current dimensions
 			float w = size.x;
@@ -215,15 +214,16 @@ namespace spehs
 			//position within main application window
 			limitWithinMainWindow();
 		}
+
 		//Handle strech state bit
-		if (!checkBit(state, GUIRECT_STRECHING) &&
-			checkBit(state, GUIRECT_FOCUSED) &&
+		if (checkState(GUIRECT_ENABLED_BIT) &&
+			!checkState(GUIRECT_STRECHING_BIT) &&
 			inputManager->isKeyPressed(MOUSE_BUTTON_LEFT) &&
 			mouseOverStrechArea())
 		{//Begin streching
 
 			////Define state variables
-			enableBit(state, GUIRECT_STRECHING);
+			enableState(GUIRECT_STRECHING_BIT);
 			strechState = 0;
 			//Horizontal
 			if (inputManager->getMouseX() < getXGlobal() + size.x * STRECH_CORNER_PERCENTAGE)
@@ -256,11 +256,10 @@ namespace spehs
 				enableBit(strechState, STRECH_STATE_N);
 			}
 		}
-		else if (isStreching() &&
-			(!isFocused() ||
-			!inputManager->isKeyDown(MOUSE_BUTTON_LEFT)))
+		else if (checkState(GUIRECT_STRECHING_BIT) &&
+			(!checkState(GUIRECT_ENABLED_BIT) || !inputManager->isKeyDown(MOUSE_BUTTON_LEFT)))
 		{//Conditions not met to continue streching, set to false
-			disableBit(state, GUIRECT_STRECHING);
+			disableState(GUIRECT_STRECHING_BIT);
 			strechState = 0;
 		}
 
@@ -269,11 +268,11 @@ namespace spehs
 		if (doubleClickTimer > 0)
 			doubleClickTimer -= time::getDeltaTimeAsMilliseconds();
 		//Check header double click
-		if (isFocused() && inputManager->isKeyPressed(MOUSE_BUTTON_LEFT) && header->getMouseHover())
+		if (checkState(GUIRECT_ENABLED_BIT) && inputManager->isKeyPressed(MOUSE_BUTTON_LEFT) && header->getMouseHover())
 		{//Header has been clicked
 			if (doubleClickTimer > 0)
 			{//Header double click detected
-				disableBit(state, GUIRECT_DRAGGING);
+				disableState(GUIRECT_DRAGGING_BIT);
 
 				if (size == minSize)
 				{//Set to full window
@@ -306,7 +305,7 @@ namespace spehs
 		}
 
 		//Check exit button
-		if (inputManager->isKeyPressed(MOUSE_BUTTON_LEFT) && exit->getMouseHover())
+		if (checkState(GUIRECT_ENABLED_BIT) && inputManager->isKeyPressed(MOUSE_BUTTON_LEFT) && exit->getMouseHover())
 			close();
 
 	}
@@ -323,41 +322,33 @@ namespace spehs
 		header->postUpdate();
 		exit->postUpdate();
 	}
-	void GUIWindow::gainFocus()
-	{//Function called whenever this window receives focus
-		if (isFocused())
-			return;
-
-		enableStateRecursive(GUIRECT_FOCUSED);
+	void GUIWindow::onEnable()
+	{
+		enableStateRecursive(GUIRECT_ENABLED_BIT);
 		strech->setColor(strechColorFocused);
+		GUIRectangleContainer::onEnable();
 	}
-	void GUIWindow::loseFocus()
-	{//Function called whenever this window loses focus
-
-		//Return if there was no focus to begin with
-		if (!isFocused())
-			return;
-
-		disableBit(state, GUIRECT_STRECHING);
-		disableBit(state, GUIRECT_DRAGGING);
+	void GUIWindow::onDisable()
+	{
+		disableState(GUIRECT_STRECHING_BIT);
+		disableState(GUIRECT_DRAGGING_BIT);
 		strech->setColor(strechColorUnfocused);
-
-		GUIRectangleContainer::loseFocus();
+		GUIRectangleContainer::onDisable();
 	}
 	void GUIWindow::close()
 	{
 		disableBit(state, GUIRECT_OPEN);
 		disableBit(state, GUIRECT_MOUSE_HOVER);
 		disableBit(state, GUIRECT_MOUSE_HOVER_CONTAINER);
-		loseFocus();
+		disable();
 		setRenderState(false);
 		std::cout << "\nWindow closed: " << header->getString();
 	}
 	void GUIWindow::open()
 	{
 		enableBit(state, GUIRECT_OPEN);
-		refresh();
 		setRenderState(true);
+		refresh();
 		std::cout << "\nWindow opened: " << header->getString();
 	}
 	void GUIWindow::updatePosition()
@@ -427,12 +418,9 @@ namespace spehs
 		//Limit size
 		if (size.y + header->getHeight() > applicationData->getWindowHeight() - upBorder - downBorder)
 		{//Window too high
-			if (size.x > applicationData->getWindowWidth() - leftBorder - rightBorder)
-				setSize(applicationData->getWindowWidth() - leftBorder - rightBorder, applicationData->getWindowHeight() - header->getHeight() - upBorder - downBorder);
-			else
-				setSize(size.x, applicationData->getWindowHeight() - header->getHeight() - upBorder - downBorder);
+			setSize(size.x, applicationData->getWindowHeight() - header->getHeight() - upBorder - downBorder);
 		}
-		else if (size.x > applicationData->getWindowWidth() - leftBorder - rightBorder)
+		if (size.x > applicationData->getWindowWidth() - leftBorder - rightBorder)
 		{//Window too wide
 			setSize(applicationData->getWindowWidth() - leftBorder - rightBorder, size.y);
 		}
@@ -441,20 +429,20 @@ namespace spehs
 		////Y
 		if (getYGlobal() > applicationData->getWindowHeight() - size.y - upBorder - header->getHeight())
 		{//Window too up
-			setPositionLocal(position.x, applicationData->getWindowHeight() - size.y - upBorder - header->getHeight());
+			setPositionGlobal(position.x, applicationData->getWindowHeight() - size.y - upBorder - header->getHeight());
 		}
 		else if (getYGlobal() < downBorder)
 		{//Window too down
-			setPositionLocal(position.x, downBorder);
+			setPositionGlobal(position.x, downBorder);
 		}
 		////X
 		if (getXGlobal() > applicationData->getWindowWidth() - size.x - rightBorder)
 		{//Window too right
-			setPositionLocal(applicationData->getWindowWidth() - size.x - rightBorder, position.y);
+			setPositionGlobal(applicationData->getWindowWidth() - size.x - rightBorder, position.y);
 		}
 		else if (getXGlobal() < leftBorder)
 		{//Window too left
-			setPositionLocal(leftBorder, position.y);
+			setPositionGlobal(leftBorder, position.y);
 		}
 
 		updateScale();
@@ -540,9 +528,9 @@ namespace spehs
 	}
 	void GUIWindow::refresh()
 	{
+		disableBit(state, GUIRECT_MIN_SIZE_UPDATED);
 		disableBit(state, GUIRECT_SCALED);
 		disableBit(state, GUIRECT_POSITIONED);
-		disableBit(state, GUIRECT_MIN_SIZE_UPDATED);
 		disableBit(state, GUIRECT_REFRESH_BIT);
 	}
 }

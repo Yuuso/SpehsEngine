@@ -25,7 +25,7 @@ namespace spehs
 		void updateScale();
 		void updatePosition();
 		void updateMinSize();
-		void loseFocus();
+		void onDisable();
 		void setOpenTreeButton(int buttonID){ openTreeButton = buttonID; }
 		
 		////Elements

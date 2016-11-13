@@ -53,7 +53,7 @@ namespace spehs
 			}
 			else
 			{//Open when mouse is hovering over
-				if (checkBit(state, GUIRECT_MOUSE_HOVER_CONTAINER) && getFirstGenerationParent()->checkState(GUIRECT_FOCUSED))
+				if (checkState(GUIRECT_MOUSE_HOVER_CONTAINER) && checkState(GUIRECT_ENABLED_BIT))
 					open();
 				else if (treeOpenTimer <= 0)
 					close();
@@ -82,6 +82,8 @@ namespace spehs
 			treeOpenTimer -= time::getDeltaTimeAsMilliseconds();
 			if (treeOpenTimer <= 0)
 				close();
+			else
+				enableBit(state, GUIRECT_MOUSE_HOVER_CONTAINER);//Keep container hover active for the duration of open timer
 		}
 	}
 	void GUIRectangleTree::setRenderState(const bool _state)
@@ -236,9 +238,9 @@ namespace spehs
 			}
 		}
 	}
-	void GUIRectangleTree::loseFocus()
+	void GUIRectangleTree::onDisable()
 	{
-		GUIRectangleContainer::loseFocus();
+		GUIRectangleContainer::onDisable();
 		close();
 	}
 }

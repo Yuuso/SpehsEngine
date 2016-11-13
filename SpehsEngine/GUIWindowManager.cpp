@@ -47,7 +47,7 @@ namespace spehs
 		bool updateWindows(true);
 		if (focusedWindow)
 		{
-			if (!focusedWindow->isFocused())//Check if focused window yielded focus internally
+			if (!focusedWindow->checkState(GUIRECT_ENABLED_BIT))//Check if focused window yielded focus internally
 				focusedWindow = nullptr;
 			else if (focusedWindow->isReceivingInput())
 				focusedWindowReceivingInput = true;
@@ -86,9 +86,10 @@ namespace spehs
 		}
 		
 		//Update windows in order
+		focusedWindow = nullptr;
 		if (updateWindows)
 		{
-			//Search for a window to update from the top
+			//Update from the top
 			for (int i = int(windows.size()) - 1; i >= 0; i--)
 			{
 				if (windows[i]->isOpen())
@@ -98,31 +99,22 @@ namespace spehs
 					windows[i]->update();
 					windows[i]->postUpdate();
 
-					if (windows[i]->checkState(GUIRECT_MOUSE_HOVER_CONTAINER))
-					{//If mouse is hovering over this window, do not update windows below
+					if ((windows[i]->checkState(GUIRECT_MOUSE_HOVER_CONTAINER) || windows[i]->checkState(GUIRECT_DRAGGING_BIT) || windows[i]->isReceivingInput()) && !focusedWindow)
+					{//First window to be under focus
 
-						if (windows[i]->isFocused() && focusedWindow != windows[i])
-						{//Window gained focus internally during mouse activity update
+						windows[i]->enable();
+						focusedWindow = windows[i];
 
-							//Previous active window loses focus
-							if (focusedWindow)
-								focusedWindow->loseFocus();
-
-							//Update focused window pointer
-							focusedWindow = windows[i];
-
-							//Move window to the back of the vector
-							if (focusedWindow != windows.back())
-							{
-								windows.erase(windows.begin() + i);
-								windows.push_back(focusedWindow);
-								updateDepths();
-							}
+						if (windows[i] != windows.back() &&
+							(windows[i]->checkState(GUIRECT_MOUSE_HOVER_CONTAINER) && inputManager->isKeyPressed(MOUSE_BUTTON_LEFT)))
+						{//Move window to the back of the vector
+							windows.erase(windows.begin() + i);
+							windows.push_back(focusedWindow);
+							updateDepths();
 						}
-
-						//Break, do not run mouse activity updates in other windows
-						break;
 					}
+					else if (windows[i] != focusedWindow)
+						windows[i]->disable();
 				}
 			}
 
@@ -131,12 +123,10 @@ namespace spehs
 				//Yielding focus
 				if (inputManager->isKeyPressed(KEYBOARD_ESCAPE) && !focusedWindowReceivingInput)
 				{
-					focusedWindow->loseFocus();
 					focusedWindow = nullptr;
 				}
 				else if (!focusedWindow->checkState(GUIRECT_MOUSE_HOVER_CONTAINER) && inputManager->isKeyPressed(MOUSE_BUTTON_LEFT))
 				{
-					focusedWindow->loseFocus();
 					focusedWindow = nullptr;
 				}
 			}
@@ -148,13 +138,6 @@ namespace spehs
 			if (windows[i]->checkState(GUIRECT_REFRESH_BIT) && windows[i]->isOpen())
 				windows[i]->refresh();
 		}
-	}
-	void GUIWindowManager::setFocusedWindow(GUIWindow* window)
-	{
-		if (focusedWindow)
-			focusedWindow->loseFocus();
-		focusedWindow = window;
-		window->gainFocus();
 	}
 	void GUIWindowManager::refreshWindows()
 	{
@@ -181,16 +164,16 @@ namespace spehs
 			if (windows[i] == window)
 			{
 				window->open();
-				setFocusedWindow(window);
-				if (focusedWindow != windows.back())
+				if (window != windows.back())
 				{//Send window to back of the windows vector
 					for (unsigned i = 0; i < windows.size(); i++)
 					{
-						if (windows[i] == focusedWindow)
+						if (windows[i] == window)
 						{
 							windows.erase(windows.begin() + i);
-							windows.push_back(focusedWindow);
+							windows.push_back(window);
 							updateDepths();
+							return;
 						}
 					}
 				}

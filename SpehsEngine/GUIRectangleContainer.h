@@ -57,11 +57,12 @@ namespace spehs
 		virtual void incrementUpdateElementCount(int incrementation);
 		bool invisibleElements(){ if (elements.size() > updateElementCount) return true; return false; }
 		void scroll(int amount);
-
+		
 		//State
 		virtual void enableStateRecursive(GUIRECT_STATE_TYPE stateBit);
 		virtual void disableStateRecursive(GUIRECT_STATE_TYPE stateBit);
-		virtual void loseFocus();
+		virtual void onEnable();
+		virtual void onDisable();
 
 		//Identity
 		GUIRectangleContainer* getAsGUIRectangleContainerPtr(){ return this; }

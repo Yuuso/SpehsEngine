@@ -12,21 +12,20 @@
 #define GUIRECT_MOUSE_HOVER					0x00000001
 #define GUIRECT_SCALED						0x00000002
 #define GUIRECT_POSITIONED					0x00000004
-#define GUIRECT_ENABLED						0x00000008
-#define GUIRECT_MIN_SIZE_UPDATED			0x00000010
+#define GUIRECT_MIN_SIZE_UPDATED			0x00000008
+#define GUIRECT_ENABLED_BIT					0x00000010//Enabled user interaction
 #define GUIRECT_REMOVE_BIT					0x00000020//Does not actually remove element. Must have a higher level manager to monitor remove status and act accordingly to it
 #define GUIRECT_UNUSED1						0x00000040
 #define GUIRECT_UNUSED2						0x00000080
 #define GUIRECT_UNUSED3						0x00000100
 #define GUIRECT_UNUSED4						0x00000200
-#define GUIRECT_POST_UPDATE_CALLED_BIT		0x00000400//Detects if post update was forgotten
+#define GUIRECT_UNUSED5						0x00000400
 //GUI rectangle container
 #define GUIRECT_MOUSE_HOVER_CONTAINER		0x00000800//Whether mouse hover has been detected inside an element of the container
 #define GUIRECT_OPEN						0x00001000//Different containers have different meanings for being open
 //GUI window specific
-#define GUIRECT_FOCUSED						0x00002000
-#define GUIRECT_DRAGGING					0x00004000
-#define GUIRECT_STRECHING					0x00008000
+#define GUIRECT_DRAGGING_BIT				0x00004000
+#define GUIRECT_STRECHING_BIT				0x00008000
 #define GUIRECT_REFRESH_BIT					0x00010000//Prevents multiple refreshes within a single update cycle. Checked at GUIWindow post update. Make refreshing the window within element update possible, otherwise resfresh would deallocate the element being updated!
 //Text justification
 #define GUIRECT_TEXT_JUSTIFICATION_LEFT		0x00020000
@@ -35,7 +34,7 @@
 ////Misc
 #define GUIRECT_RECEIVING_INPUT				0x00100000//Underlings should inform their first generation parents when receiving input
 #define GUIRECT_SELECTED					0x00200000
-#define GUIRECT_HOVER_COLOR					0x00400000
+#define GUIRECT_HOVER_COLOR					0x00400000//If enabled, rectangle will highlight when under mouse
 
 namespace spehs
 {
@@ -138,12 +137,8 @@ namespace spehs
 		//"Shortcut" getters
 		bool getMouseHover(){ return checkBit(state, GUIRECT_MOUSE_HOVER); }
 		bool getMouseHoverContainer(){ return checkBit(state, GUIRECT_MOUSE_HOVER_CONTAINER); }
-		bool getMouseHoverAny(){ if (checkBit(state, GUIRECT_MOUSE_HOVER)) return true; return checkBit(state, GUIRECT_MOUSE_HOVER_CONTAINER); }
-		bool isEnabled(){ return checkBit(state, GUIRECT_ENABLED); }
-		bool isFocused(){ return checkBit(state, GUIRECT_FOCUSED); }
+		bool getMouseHoverAny(){ return checkBit(state, GUIRECT_MOUSE_HOVER) | checkBit(state, GUIRECT_MOUSE_HOVER_CONTAINER); }
 		virtual bool isReceivingInput(){ return checkBit(state, GUIRECT_RECEIVING_INPUT); }
-		bool isStreching(){ return checkBit(state, GUIRECT_STRECHING); }
-		bool isDragging(){ return checkBit(state, GUIRECT_DRAGGING); }
 		bool isSelected(){ return checkBit(state, GUIRECT_SELECTED); }
 		bool isOpen(){ return checkBit(state, GUIRECT_OPEN); }
 		bool isVisible();
@@ -155,7 +150,12 @@ namespace spehs
 		void enableState(GUIRECT_STATE_TYPE stateBit){ enableBit(state, stateBit); }
 		void disableState(GUIRECT_STATE_TYPE stateBit){ disableBit(state, stateBit); }
 		void toggleState(GUIRECT_STATE_TYPE stateBit){ toggleBit(state, stateBit); }
-		virtual void loseFocus(){ disableBit(state, GUIRECT_FOCUSED); }
+
+		//Enabling
+		void enable(){ if (!checkState(GUIRECT_ENABLED_BIT)) onEnable(); }
+		void disable(){ if (checkState(GUIRECT_ENABLED_BIT)) onDisable(); }
+		virtual void onEnable(){ enableState(GUIRECT_ENABLED_BIT); }
+		virtual void onDisable(){ disableState(GUIRECT_ENABLED_BIT); }
 		
 		////Managing element position
 		//Setting both coordinates

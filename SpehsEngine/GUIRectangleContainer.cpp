@@ -100,9 +100,15 @@ namespace spehs
 
 		//Render state
 		if (checkState(GUIRECT_OPEN))
-			element->setRenderState(true);
+			element->setRenderState(getRenderState());
 		else
 			element->setRenderState(false);
+
+		//Enable state
+		if (checkState(GUIRECT_ENABLED_BIT))
+			element->enableStateRecursive(GUIRECT_ENABLED_BIT);
+		else
+			element->disableStateRecursive(GUIRECT_ENABLED_BIT);
 
 		//Min size must be updated for everything above
 		disableStateRecursiveUpwards(GUIRECT_MIN_SIZE_UPDATED);
@@ -145,11 +151,17 @@ namespace spehs
 			return -1;
 		return beginElementIndex + updateElementCount - 1;
 	}
-	void GUIRectangleContainer::loseFocus()
+	void GUIRectangleContainer::onEnable()
 	{
-		GUIRectangle::loseFocus();
+		GUIRectangle::onEnable();
 		for (unsigned i = 0; i < elements.size(); i++)
-			elements[i]->loseFocus();
+			elements[i]->onEnable();
+	}
+	void GUIRectangleContainer::onDisable()
+	{
+		GUIRectangle::onDisable();
+		for (unsigned i = 0; i < elements.size(); i++)
+			elements[i]->onDisable();
 	}
 	void GUIRectangleContainer::incrementUpdateElementCount(int incrementation)
 	{
