@@ -23,8 +23,8 @@ namespace spehs
 			//spehs::console::error("Line needs to have length greater than 0!");
 
 		vertexArray.resize(2);
-		vertexArray[0].position.setPosition(_startPoint.x, _startPoint.y);
-		vertexArray[1].position.setPosition(_endPoint.x, _endPoint.y);
+		vertexArray[0].position = glm::vec2(_startPoint.x, _startPoint.y);
+		vertexArray[1].position = glm::vec2(_endPoint.x, _endPoint.y);
 
 		worldVertexArray = vertexArray;
 
@@ -50,7 +50,7 @@ namespace spehs
 			{
 				vertex = glm::vec4(vertexArray[i].position.x, vertexArray[i].position.y, 0.0f, 1.0f);
 				vertex = scaledRotatedMatrix * vertex;
-				worldVertexArray[i].position.setPosition(vertex.x + position.x, vertex.y + position.y);
+				worldVertexArray[i].position = glm::vec2(vertex.x + position.x, vertex.y + position.y);
 			}
 			needUpdate = false;
 		}
@@ -58,8 +58,8 @@ namespace spehs
 
 	void Line::setPoints(const glm::vec2 &_newStartPoint, const glm::vec2 &_newEndPoint)
 	{
-		vertexArray[0].position.setPosition(_newStartPoint.x, _newStartPoint.y);
-		vertexArray[1].position.setPosition(_newEndPoint.x, _newEndPoint.y);
+		vertexArray[0].position = glm::vec2(_newStartPoint.x, _newStartPoint.y);
+		vertexArray[1].position = glm::vec2(_newEndPoint.x, _newEndPoint.y);
 		needUpdate = true;
 	}
 }

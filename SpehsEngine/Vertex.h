@@ -3,28 +3,12 @@
 
 #include <glm/vec4.hpp>
 #include <glm/vec3.hpp>
+#include <glm/vec2.hpp>
 #include <glm/fwd.hpp>
 
 
 namespace spehs
 {
-	class Position
-	{
-	public:
-		Position();
-		Position(const float &_x, const float &_y);
-
-		void setPosition(const float &_x, const float &_y);
-
-		bool operator==(const Position &_other) const;
-		spehs::Position operator+(const Position &_other) const;
-		spehs::Position operator-(const Position &_other) const;
-		void operator+=(const Position &_other);
-		void operator-=(const Position &_other);
-
-		float x;
-		float y;
-	};
 	class ColorRGBA
 	{
 	public:
@@ -58,15 +42,14 @@ namespace spehs
 	{
 	public:
 		Vertex();
-		Vertex(const Position &_position);
-		Vertex(const Position &_position, const UV &_uv);
-		Vertex(const Position &_position, const ColorRGBA &_color, const UV &_uv);
+		Vertex(const glm::vec2 &_position);
+		Vertex(const glm::vec2 &_position, const UV &_uv);
+		Vertex(const glm::vec2 &_position, const ColorRGBA &_color, const UV &_uv);
 
-		Position position;
+		glm::vec2 position;
 		ColorRGBA color;
 		UV uv;
 	};
 
 	extern inline glm::vec3 toVec3(const Vertex& _vertex);
-	extern inline glm::vec3 toVec3(const Position& _position);
 }

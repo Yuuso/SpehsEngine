@@ -119,7 +119,7 @@ namespace spehs
 	}
 
 
-	bool PrimitiveBatch::render()
+	bool PrimitiveBatch::render(const Camera2D* _batchCamera)
 	{
 		if (vertices.size() == 0)
 			return false;
@@ -155,9 +155,9 @@ namespace spehs
 
 		//Camera Matrix
 		if (cameraMatrixState)
-			shaderManager->getShader(shaderIndex)->uniforms->cameraMatrix = *spehs::getActiveBatchManager()->getCamera2D()->projectionMatrix;
+			shaderManager->getShader(shaderIndex)->uniforms->cameraMatrix = *_batchCamera->projectionMatrix;
 		else
-			shaderManager->getShader(shaderIndex)->uniforms->cameraMatrix = spehs::getActiveBatchManager()->getCamera2D()->staticMatrix;
+			shaderManager->getShader(shaderIndex)->uniforms->cameraMatrix = _batchCamera->staticMatrix;
 
 		//Uniforms
 		shaderManager->setUniforms(shaderIndex);
@@ -175,8 +175,8 @@ namespace spehs
 
 		shaderManager->unuse(shaderIndex);
 
-		drawCalls++;
-		vertexDrawCount += vertices.size();
+		console::drawCalls++;
+		console::vertexDrawCount += vertices.size();
 
 		//Clean up
 		vertices.clear();
@@ -360,7 +360,7 @@ namespace spehs
 	}
 
 
-	bool TextBatch::render()
+	bool TextBatch::render(const Camera2D* _batchCamera)
 	{
 		if (vertices.size() == 0)
 			return false;
@@ -377,9 +377,9 @@ namespace spehs
 
 		//Camera Matrix
 		if (cameraMatrixState)
-			shaderManager->getShader(shaderIndex)->uniforms->cameraMatrix = *spehs::getActiveBatchManager()->getCamera2D()->projectionMatrix;
+			shaderManager->getShader(shaderIndex)->uniforms->cameraMatrix = *_batchCamera->projectionMatrix;
 		else
-			shaderManager->getShader(shaderIndex)->uniforms->cameraMatrix = spehs::getActiveBatchManager()->getCamera2D()->textMatrix;
+			shaderManager->getShader(shaderIndex)->uniforms->cameraMatrix = _batchCamera->staticMatrix;
 
 		//Uniforms
 		shaderManager->setUniforms(shaderIndex);
@@ -390,7 +390,7 @@ namespace spehs
 		{
 			bind2DTexture(textureIDs[i], 0);
 			glDrawElements(TRIANGLE, 6, GL_UNSIGNED_SHORT, reinterpret_cast<void*>((i * 6) * sizeof(GLushort)));
-			drawCalls++;
+			console::drawCalls++;
 		}
 		glBindVertexArray(0);
 
@@ -398,7 +398,7 @@ namespace spehs
 
 		shaderManager->unuse(shaderIndex);
 
-		vertexDrawCount += vertices.size();
+		console::vertexDrawCount += vertices.size();
 
 		//Clean up
 		vertices.clear();

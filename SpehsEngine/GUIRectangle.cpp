@@ -27,7 +27,8 @@ namespace spehs
 	{
 		polygon->destroy();
 	}
-	GUIRectangle::GUIRectangle() : position(0), size(0), minSize(0), state(GUIRECT_ENABLED | GUIRECT_HOVER_COLOR | GUIRECT_TEXT_JUSTIFICATION_LEFT), displayTexture(nullptr), pressCallbackFunction(nullptr)
+	GUIRectangle::GUIRectangle() : position(0), size(0), minSize(0), displayTexture(nullptr), pressCallbackFunction(nullptr),
+		state(GUIRECT_ENABLED | GUIRECT_HOVER_COLOR | GUIRECT_TEXT_JUSTIFICATION_LEFT | GUIRECT_POST_UPDATE_CALLED_BIT)
 	{//Default constructor
 #ifdef _DEBUG
 		++guiRectangleAllocations;
@@ -104,9 +105,20 @@ namespace spehs
 			else
 				tooltip->setRenderState(false);
 		}
+
+		//DEBUG
+#ifdef _DEBUG
+		//if (!checkState(GUIRECT_POST_UPDATE_CALLED_BIT))
+		//	console::warning("GUIRectangle: no post update called!");
+		disableState(GUIRECT_POST_UPDATE_CALLED_BIT);
+#endif
 	}
 	void GUIRectangle::postUpdate()
-	{
+	{		
+#ifdef _DEBUG//DEBUG checking
+		enableState(GUIRECT_POST_UPDATE_CALLED_BIT);
+#endif
+
 		//Return if not visible
 		if (!polygon->getRenderState())
 			return;
@@ -156,6 +168,10 @@ namespace spehs
 		if (tooltip && !_state)
 			tooltip->setRenderState(false);
 	}
+	bool GUIRectangle::getRenderState()
+	{
+		return polygon->getRenderState();
+	}
 	bool GUIRectangle::updateMouseHover()
 	{
 		if (inputManager->getMouseX() < getXGlobal() || inputManager->getMouseX() > getXGlobal() + size.x)
@@ -173,25 +189,25 @@ namespace spehs
 	}
 	void GUIRectangle::updatePosition()
 	{
-		polygon->setPosition(getXGlobal() - applicationData->getWindowWidthHalf(), getYGlobal() - applicationData->getWindowHeightHalf());
+		polygon->setPosition(getXGlobal(), getYGlobal());
 
 		//Text position
 		if (text)
 		{
-			float textX = getXGlobal();
+			float textX(getXGlobal());
 			if (checkBit(state, GUIRECT_TEXT_JUSTIFICATION_LEFT))
 				textX += TEXT_PREFERRED_SIZE_BORDER;
 			else if (checkBit(state, GUIRECT_TEXT_JUSTIFICATION_RIGHT))
 				textX += size.x - text->getTextWidth() - TEXT_PREFERRED_SIZE_BORDER;
 			else
-				textX += 0.5f *(size.x - text->getTextWidth());
-			text->setPosition(std::round(textX), std::round(getYGlobal() + 0.5f * (size.y + text->getTextHeight()) - text->getFontHeight() - text->getFontDescender()));
+				textX += 0.5f * (size.x - text->getTextWidth());
+			text->setPosition(std::round(textX), std::round(getYGlobal() + 0.5f * (size.y - text->getTextHeight())));
 		}
 
 		//Display texture position
 		if (displayTexture)
 		{
-			displayTexture->polygon->setPosition(getXGlobal() + size.x / 2 - applicationData->getWindowWidthHalf(), getYGlobal() + size.y / 2 - applicationData->getWindowHeightHalf());
+			displayTexture->polygon->setPosition(getXGlobal() + size.x / 2, getYGlobal() + size.y / 2);
 		}
 
 		enableBit(state, GUIRECT_POSITIONED);
@@ -212,6 +228,14 @@ namespace spehs
 
 		polygon->resize(size.x, size.y);
 		enableBit(state, GUIRECT_SCALED);
+	}
+	void GUIRectangle::setColor(glm::vec3& c)
+	{
+		color.r = c.r;
+		color.g = c.g;
+		color.b = c.b;
+		color.a = 1.0f;
+		polygon->setColor(color);
 	}
 	void GUIRectangle::setColor(glm::vec4& c)
 	{
@@ -287,6 +311,8 @@ namespace spehs
 	//Setters
 	void GUIRectangle::setString(std::string str)
 	{
+		if (str.size() == 0)
+			return;
 		if (!text)
 			createText();
 		text->setString(str);
@@ -315,13 +341,15 @@ namespace spehs
 	{
 		//Create tooltip object if one does not exist already
 		if (!tooltip)
+		{
 			tooltip = new GUIRectangle();
+			tooltip->setStringColor(defaultTooltipStringColor);
+			tooltip->setStringSize(applicationData->GUITextSize);
+			tooltip->setColor(defaultTooltipColor);
+		}
 
 		tooltip->setString(tooltipString);
-		tooltip->setStringColor(defaultTooltipStringColor);
-		tooltip->setStringSize(applicationData->GUITextSize);
 		tooltip->setJustification(GUIRECT_TEXT_JUSTIFICATION_LEFT);
-		tooltip->setColor(defaultTooltipColor);
 		tooltip->updateScale();
 		tooltip->setSize(tooltip->minSize);
 		tooltip->setRenderState(false);
@@ -362,7 +390,7 @@ namespace spehs
 		if (text)
 			return;
 		text = Text::create(polygon->getPlaneDepth() + 1);
-		text->setRenderState(polygon->getRenderState());
+		text->setRenderState(getRenderState());
 		text->setFont(applicationData->GUITextFontPath, applicationData->GUITextSize);
 		text->setColor(defaultStringColor);
 	}

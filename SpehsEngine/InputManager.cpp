@@ -2,6 +2,7 @@
 #include "InputManager.h"
 #include "Console.h"
 #include "ApplicationData.h"
+#include "SpehsEngine.h"
 #include "Window.h"
 
 #include <SDL/SDL.h>
@@ -135,7 +136,7 @@ namespace spehs
 		else
 			mouseLocked = _value;
 
-		SDL_SetWindowGrab(mainWindow->sdlWindow, (SDL_bool) _value);
+		SDL_SetWindowGrab(getMainWindow()->sdlWindow, (SDL_bool) _value);
 		SDL_ShowCursor(!_value);
 		return true;
 		//if (SDL_SetRelativeMouseMode((SDL_bool) _value) == 0)

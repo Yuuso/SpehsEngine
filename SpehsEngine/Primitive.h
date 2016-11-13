@@ -70,7 +70,6 @@ namespace spehs
 		//Setters
 		void setPosition(const float &_x, const float &_y);
 		void setPosition(const glm::vec2 &_newPosition);
-		void setPosition(const Position &_newPosition);
 		void setScale(const float &_newScale);
 		void setScale(const float &_newScaleX, const float &_newScaleY);
 		void setScale(const glm::vec2 &_newScale);
@@ -95,7 +94,9 @@ namespace spehs
 		void setBlending(const bool _newState);
 
 		//Getters
-		Position getPosition() const { return position; }
+		glm::vec2 getPosition() const { return position; }
+		float getX() const { return position.x; }
+		float getY() const { return position.y; }
 		float getRotation() const { return rotation; }
 		bool getCameraMatrixState() const { return cameraMatrixState; }
 		bool getRenderState() const { return renderState; }
@@ -128,7 +129,7 @@ namespace spehs
 		glm::mat4 scaledMatrix;
 		glm::mat4 scaledRotatedMatrix;
 
-		Position position;
+		glm::vec2 position;
 		std::vector<spehs::Vertex> vertexArray; //Original vertices
 	};
 }

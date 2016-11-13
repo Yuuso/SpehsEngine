@@ -24,6 +24,7 @@
 std::string buildVersion;
 
 
+spehs::Window* mainWindow = nullptr;
 namespace spehs
 {
 	extern void initText();
@@ -74,8 +75,7 @@ namespace spehs
 		std::cout << "\nHardware threads: " + std::to_string(std::thread::hardware_concurrency());
 		std::cout << "\nCurrent SpehsEngine build: " << getEngineVersion() << std::endl;
 
-		spehs::initText();
-		spehs::initializeTime();
+		initText();
 		console::initialize();
 
 		//INITIALIZATIONS
@@ -100,15 +100,20 @@ namespace spehs
 		delete textureManager;
 		delete shaderManager;
 		console::unitialize();
-		spehs::uninitializeTime();
-		spehs::uninitText();
+		uninitText();
 		SDL_Quit();
+	}
+
+
+	spehs::Window* getMainWindow()
+	{
+		return mainWindow;
 	}
 
 
 	std::string getEngineVersion()
 	{
-		std::string build(CURRENT_BUILD + engineBuildYear() + engineBuildMonth() + engineBuildDay() + engineBuildHour() + engineBuildMinute() + engineBuildSecond());
+		std::string build(CURRENT_BUILD + time::engineBuildYear() + time::engineBuildMonth() + time::engineBuildDay() + time::engineBuildHour() + time::engineBuildMinute() + time::engineBuildSecond());
 		return build;
 	}
 }

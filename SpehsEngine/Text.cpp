@@ -146,7 +146,7 @@ namespace spehs
 			std::string errorString = "Freetype error: Failed to load font "; 
 			errorString += _fontPath; 
 			errorString += " code: " + error;
-			console::error(errorString);
+			exceptions::fatalError(errorString);
 			return nullptr;
 		}
 
@@ -318,11 +318,29 @@ namespace spehs
 		vertexArray.clear();
 
 		//Iterate through all the characters in the string
-		for (unsigned c(0); c < string.size(); c++)
+		for (unsigned c = 0; c < string.size(); c++)
 		{
-			if (string[c] != '\n')
+			if (string[c] == '\n')
+			{
+				//new line
+				x = 0.0f;
+				y -= font->height + lineSpacing;
+			}
+			else if (string[c] == '\t')
+			{
+				//tab
+				x += ((font->characters[' '].advance >> 6) * scale) * 3;
+			}
+			else
 			{
 				Character ch = font->characters[string[c]];
+
+				if (string[c] == ' ')
+				{
+					//Don't draw character if it's space, just move x instead
+					x += (ch.advance >> 6) * scale; //Bitshift by 6 to get value in pixels (2^6 = 64)
+					continue;
+				}
 
 				GLfloat xpos = x + ch.bearing.x * scale;
 				GLfloat ypos = y - (ch.size.y - ch.bearing.y) * scale;
@@ -330,21 +348,15 @@ namespace spehs
 				GLfloat w = ch.size.x * scale;
 				GLfloat h = ch.size.y * scale;
 
-				vertexArray.push_back(Vertex(spehs::Position(xpos, ypos + h), color, spehs::UV(0.0f, 0.0f)));
-				vertexArray.push_back(Vertex(spehs::Position(xpos, ypos), color, spehs::UV(0.0f, 1.0f)));
-				vertexArray.push_back(Vertex(spehs::Position(xpos + w, ypos), color, spehs::UV(1.0f, 1.0f)));
-				vertexArray.push_back(Vertex(spehs::Position(xpos + w, ypos + h), color, spehs::UV(1.0f, 0.0f)));
+				vertexArray.push_back(Vertex(glm::vec2(xpos, ypos + h), color, spehs::UV(0.0f, 0.0f)));
+				vertexArray.push_back(Vertex(glm::vec2(xpos, ypos), color, spehs::UV(0.0f, 1.0f)));
+				vertexArray.push_back(Vertex(glm::vec2(xpos + w, ypos), color, spehs::UV(1.0f, 1.0f)));
+				vertexArray.push_back(Vertex(glm::vec2(xpos + w, ypos + h), color, spehs::UV(1.0f, 0.0f)));
 
 				textureIDs.push_back(ch.textureID);
 
 				//Now advance cursors for next glyph (note that advance is number of 1/64 pixels)
 				x += (ch.advance >> 6) * scale; //Bitshift by 6 to get value in pixels (2^6 = 64)
-			}
-			else
-			{
-				//new line
-				x = 0.0f;
-				y -= font->height + lineSpacing;
 			}
 		}
 

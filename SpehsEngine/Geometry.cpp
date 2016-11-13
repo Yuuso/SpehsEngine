@@ -16,10 +16,6 @@ namespace spehs
 	{
 		return sqrt(vec.x*vec.x + vec.y*vec.y);
 	}
-	inline float magnitude(const spehs::Position& pos)
-	{
-		return sqrt(pos.x*pos.x + pos.y*pos.y);
-	}
 	inline float distance(const glm::vec2& origin, const glm::vec2& destination)
 	{
 		return magnitude(origin - destination);
@@ -67,7 +63,7 @@ namespace spehs
 
 		return glm::eulerAngles(glm::angleAxis(c, v));
 	}
-	inline float getArea(spehs::Position* cusps, unsigned numCusps)
+	inline float getArea(glm::vec2* cusps, unsigned numCusps)
 	{
 		if (numCusps < 3)
 			return 0.000000001f;
@@ -80,7 +76,7 @@ namespace spehs
 		}
 		return std::max(abs((area * 0.5f)), 0.0001f);
 	}
-	inline float getRadius(spehs::Position* cusps, unsigned numCusps)
+	inline float getRadius(glm::vec2* cusps, unsigned numCusps)
 	{
 		if (numCusps == 0)
 			return 0.0f;
@@ -101,7 +97,7 @@ namespace spehs
 		}
 		return result / (float)numCusps;
 	}
-	inline glm::vec2 getCenter(spehs::Position* cusps, unsigned numCusps)
+	inline glm::vec2 getCenter(glm::vec2* cusps, unsigned numCusps)
 	{
 		glm::vec2 result(0.0f);
 		for (unsigned i = 0; i < numCusps; i++)
@@ -127,7 +123,7 @@ namespace spehs
 		float normalLength = sqrtf((_end.x - _begin.x) * (_end.x - _begin.x) + (_end.y - _begin.y) * (_end.y - _begin.y));
 		return abs((_point.x - _begin.x) * (_end.y - _begin.y) - (_point.y - _begin.y) * (_end.x - _begin.x)) / normalLength;
 	}
-	spehs::Position* generateCusps(unsigned& numCusps, int shape, float width, float height)
+	glm::vec2* generateCusps(unsigned& numCusps, int shape, float width, float height)
 	{
 		if (!shape)
 		{
@@ -138,7 +134,7 @@ namespace spehs
 		{//Isosceles shape
 
 			//Generate number of cusps desired
-			spehs::Position* cusps = new spehs::Position[shape];
+			glm::vec2* cusps = new glm::vec2[shape];
 
 			//firstPosition adjusts initial the rotation for even numbered polygons
 			float firstPosition;
@@ -148,7 +144,7 @@ namespace spehs
 				firstPosition = HALF_PI;
 			else
 				firstPosition = HALF_PI + (TWO_PI / shape) / 2;
-			cusps[0].setPosition(cos(firstPosition), sin(firstPosition));
+			cusps[0] = glm::vec2(cos(firstPosition), sin(firstPosition));
 
 			//Take record of min/max cusp values so that it can be streched to match the desired width/height
 			float	minX = cusps[0].x,
@@ -158,7 +154,7 @@ namespace spehs
 			for (int i = 1; i < shape; i++)
 			{
 				//Set position
-				cusps[i].setPosition(
+				cusps[i] = glm::vec2(
 					cos(firstPosition - i * (TWO_PI / shape)),
 					sin(firstPosition - i * (TWO_PI / shape)));
 

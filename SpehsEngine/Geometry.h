@@ -8,12 +8,10 @@
 
 namespace spehs
 {
-	class Position;
 	class Vertex;
 
 	/**Returns the magnitude of vector*/
 	extern inline float magnitude(const glm::vec2& vector);
-	extern inline float magnitude(const spehs::Position& position);
 
 	/**Returns distance from origin to destination*/
 	extern inline float distance(const glm::vec2& origin, const glm::vec2& destination);
@@ -36,14 +34,14 @@ namespace spehs
 	extern inline glm::vec3 getRotation(const glm::vec3& _a, const glm::vec3& _b);
 
 	/**Returns area of the shape formed by a number of cusps*/
-	extern inline float getArea(spehs::Position* cusps, unsigned numCusps);
+	extern inline float getArea(glm::vec2* cusps, unsigned numCusps);
 
 	/**Returns radius from 0,0 to the farthest away cusp in the array*/
-	extern inline float getRadius(spehs::Position* cusps, unsigned numCusps);
+	extern inline float getRadius(glm::vec2* cusps, unsigned numCusps);
 
 	/*Returns center of a convex polygon*/
 	extern inline glm::vec2 getCenter(spehs::Vertex* cusps, unsigned numCusps);
-	extern inline glm::vec2 getCenter(spehs::Position* cusps, unsigned numCusps);
+	extern inline glm::vec2 getCenter(glm::vec2* cusps, unsigned numCusps);
 
 	extern inline float cross2(const glm::vec2& _vec1, const glm::vec2& _vec2);
 	extern inline glm::vec2 cross2(const float& _scalar, const glm::vec2& _vec);
@@ -52,5 +50,5 @@ namespace spehs
 	extern float pointToLineDistance(const glm::vec2 &_begin, const glm::vec2 &_end, const glm::vec2 &_point);
 
 	/**Returns a generated position array. Assigns length of array into numCusps*/
-	spehs::Position* generateCusps(unsigned& numCusps, int shape, float width, float height);
+	glm::vec2* generateCusps(unsigned& numCusps, int shape, float width, float height);
 }

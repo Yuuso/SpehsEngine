@@ -145,6 +145,10 @@
     <ClCompile Include="Text.cpp">
       <Filter>Rendering\Geometric Rendering\Batch Rendering</Filter>
     </ClCompile>
+    <ClCompile Include="GUIPopup.cpp">
+      <Filter>Rendering\GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="Textbox.cpp" />
     <ClCompile Include="AudioManager.cpp">
       <Filter>Resource Management</Filter>
     </ClCompile>
@@ -313,6 +317,13 @@
     <ClInclude Include="CommonColor.h">
       <Filter>Core</Filter>
     </ClInclude>
+    <ClInclude Include="GUIScalarEditor.h">
+      <Filter>Rendering\GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="GUIPopup.h">
+      <Filter>Rendering\GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="Textbox.h" />
     <ClInclude Include="AudioManager.h">
       <Filter>Resource Management</Filter>
     </ClInclude>

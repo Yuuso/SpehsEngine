@@ -32,8 +32,7 @@ namespace spehs
 		virtual void updateScale() = 0;
 		virtual void updateMinSize() = 0;
 
-		/*Returns true if the list has an textfield element underneath it that is currently active*/
-		bool isReceivingTextInput();
+		virtual bool isReceivingInput();
 		virtual void open();//Open container dimension
 		virtual void close();//Close container dimension
 		void closeTreeElements();//Closes every gui rectangle tree beneath this.
@@ -44,6 +43,7 @@ namespace spehs
 		virtual void addElement(GUIRectangle* element);
 		bool removeElement(GUIRectangle* element);//Searches elements list and removes element. If element is not found, returns false
 		virtual GUIRectangle* back(){ return elements.back(); }
+		virtual GUIRectangle* front(){ return elements.front(); }
 		GUIRectangle* at(int index){ if (index < 0 || index >= elements.size()) return nullptr; return elements[index]; }
 		GUIRectangle* operator[](int index){ return elements[index]; }
 		/*Returns the size of the elements vector*/

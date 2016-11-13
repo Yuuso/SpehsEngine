@@ -68,7 +68,7 @@ namespace spehs
 		primitives.push_back(new Polygon(_vertexData, _width, _height));
 		return primitives.back()->getPolygonPtr();
 	}
-	Polygon* BatchManager::createPolygon(std::vector<spehs::Position> _cuspData, const PlaneDepth &_planeDepth, const float &_width, const float &_height)
+	Polygon* BatchManager::createPolygon(std::vector<glm::vec2> _cuspData, const PlaneDepth &_planeDepth, const float &_width, const float &_height)
 	{
 		primitives.push_back(new Polygon(_cuspData, _planeDepth, _width, _height));
 		return primitives.back()->getPolygonPtr();
@@ -193,7 +193,7 @@ namespace spehs
 		});
 		for (unsigned i = 0; i < batches.size();)
 		{
-			if (!batches[i]->render()) //If the batch is empty, delete it
+			if (!batches[i]->render(camera2D)) //If the batch is empty, delete it
 			{
 				delete batches[i];
 				batches.erase(batches.begin() + i);

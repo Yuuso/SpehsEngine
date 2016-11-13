@@ -116,6 +116,40 @@ namespace spehs
 		}
 	}
 
+	void arrangeIntoRows(std::string& string, int maxRowWidth)
+	{
+		int lastNewLineIndex(0);
+		int lastSpaceIndex(0);
+		int width(0);
+		for (unsigned i = 0; i < string.size(); i++)
+		{
+			if (string[i] == ' ')
+				lastSpaceIndex = i;
+
+			if (string[i] == '\n')
+			{//Newline
+				lastNewLineIndex = i;
+				width = 0;
+			}
+			else if (++width > maxRowWidth)
+			{//Exceeds row width, look for the last space index
+
+				if (lastSpaceIndex > lastNewLineIndex)
+				{//Space exists, set newline there
+					string[lastSpaceIndex] = '\n';
+					lastNewLineIndex = lastSpaceIndex;
+					width = i - lastSpaceIndex;
+				}
+				else if (string[i] == ' ')
+				{//Make a newline here
+					string[i] = '\n';
+					lastNewLineIndex = i;
+					width = 0;
+				}
+			}
+		}
+	}
+
 	char hexTable[16] = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F' };
 	std::string toHexString(uint8_t integer)
 	{

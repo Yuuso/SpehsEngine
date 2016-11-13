@@ -44,5 +44,10 @@ namespace spehs
 		bool textEntered();///< Returns true if text was "executed" to console during the last update cycle (text without '/' (command) prefix)
 		std::string getTextEntered();///< Returns latest text executed to console
 
+		//Other
+		void setPlaneDepth(uint16_t depth);
+
+		extern unsigned long drawCalls;
+		extern unsigned long vertexDrawCount;
 	}
 }

@@ -33,4 +33,8 @@ namespace spehs
 	Directory path is not included in the file string. If file type is specified, the file type will not be included in the file string.
 	If file type is specified, only files of that type are returned.*/
 	std::vector<std::string> listFilesInDirectory(std::string directoryPath, std::string fileType = "");
+
+	/**Returns a vector of strings, each string representing a sub directory found in the given directory.
+	Directory path is not included in the sub directory string.*/
+	std::vector<std::string> listSubDirectoriesInDirectory(std::string directoryPath);
 }

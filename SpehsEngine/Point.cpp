@@ -15,7 +15,7 @@ namespace spehs
 	Point::Point(const PlaneDepth &_planeDepth)
 	{
 		vertexArray.push_back(Vertex());
-		vertexArray.back().position.setPosition(0.0f, 0.0f);
+		vertexArray.back().position = glm::vec2(0.0f, 0.0f);
 
 		worldVertexArray = vertexArray;
 
@@ -35,7 +35,7 @@ namespace spehs
 		{
 			for (unsigned int i = 0; i < worldVertexArray.size(); i++)
 			{
-				worldVertexArray[i].position.setPosition(vertexArray[i].position.x + position.x, vertexArray[i].position.y + position.y);
+				worldVertexArray[i].position = glm::vec2(vertexArray[i].position.x + position.x, vertexArray[i].position.y + position.y);
 			}
 			needUpdate = false;
 		}

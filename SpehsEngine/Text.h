@@ -61,6 +61,7 @@ namespace spehs
 
 		void update(); //Called from batch manager when drawing
 		void setRenderState(bool _state);
+		bool getRenderState(){ return renderState; }
 
 		void translate(glm::vec2& _vec);
 		void setPosition(glm::vec2& _vec);

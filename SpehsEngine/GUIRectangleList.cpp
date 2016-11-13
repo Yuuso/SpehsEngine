@@ -21,14 +21,12 @@ namespace spehs
 		scrollUp->setParent(this);
 		scrollBar->setParent(this);
 		scrollDown->setParent(this);
-		scrollUp->setRenderState(false);
-		scrollBar->setRenderState(false);
-		scrollDown->setRenderState(false);
-
-
 		scrollUp->setString("U");
 		scrollBar->setString("B");
 		scrollDown->setString("D");
+		scrollUp->setRenderState(getRenderState());
+		scrollBar->setRenderState(getRenderState());
+		scrollDown->setRenderState(getRenderState());
 	}
 	GUIRectangleList::GUIRectangleList(GUIRECT_ID_TYPE id) : GUIRectangleList()
 	{
@@ -194,9 +192,18 @@ namespace spehs
 		if (elements.size() > updateElementCount)
 		{//Hidden elements
 			elementSize.x -= SCROLL_BUTTON_WIDTH;
-			scrollUp->setRenderState(true);
-			scrollBar->setRenderState(true);
-			scrollDown->setRenderState(true);
+			if (getRenderState())
+			{
+				scrollUp->setRenderState(true);
+				scrollBar->setRenderState(true);
+				scrollDown->setRenderState(true);
+			}
+			else
+			{
+				scrollUp->setRenderState(false);
+				scrollBar->setRenderState(false);
+				scrollDown->setRenderState(false);
+			}
 		}
 		else
 		{//All elements visible
