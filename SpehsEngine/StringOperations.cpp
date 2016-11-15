@@ -155,58 +155,58 @@ namespace spehs
 	{
 		std::string str(2, '0');
 		str[0] = hexTable[integer >> 4];
-		str[1] = hexTable[(integer << 4) >> 4];
+		str[1] = hexTable[uint8_t(integer << 4) >> 4];
 		return str;
 	}
 	std::string toHexString(int8_t integer)
 	{
 		std::string str(2, '0');
 		str[0] = hexTable[integer >> 4];
-		str[1] = hexTable[(integer << 4) >> 4];
+		str[1] = hexTable[uint8_t(integer << 4) >> 4];
 		return str;
 	}
 	std::string toHexString(uint16_t integer)
 	{
 		std::string str(4, '0');
 		str[0] = hexTable[integer >> 12];
-		str[1] = hexTable[(integer << 4) >> 12];
-		str[2] = hexTable[(integer << 8) >> 12];
-		str[3] = hexTable[(integer << 12) >> 12];
+		str[1] = hexTable[uint16_t(integer << 4) >> 12];
+		str[2] = hexTable[uint16_t(integer << 8) >> 12];
+		str[3] = hexTable[uint16_t(integer << 12) >> 12];
 		return str;
 	}
 	std::string toHexString(int16_t integer)
 	{
 		std::string str(4, '0');
 		str[0] = hexTable[integer >> 12];
-		str[1] = hexTable[(integer << 4) >> 12];
-		str[2] = hexTable[(integer << 8) >> 12];
-		str[3] = hexTable[(integer << 12) >> 12];
+		str[1] = hexTable[int16_t(integer << 4) >> 12];
+		str[2] = hexTable[int16_t(integer << 8) >> 12];
+		str[3] = hexTable[int16_t(integer << 12) >> 12];
 		return str;
 	}
 	std::string toHexString(uint32_t integer)
 	{
 		std::string str(8, '0');
 		str[0] = hexTable[integer >> 28];
-		str[1] = hexTable[(integer << 4) >> 28];
-		str[2] = hexTable[(integer << 8) >> 28];
-		str[3] = hexTable[(integer << 12) >> 28];
-		str[4] = hexTable[(integer << 16) >> 28];
-		str[5] = hexTable[(integer << 20) >> 28];
-		str[6] = hexTable[(integer << 24) >> 28];
-		str[7] = hexTable[(integer << 28) >> 28];
+		str[1] = hexTable[uint32_t(integer << 4) >> 28];
+		str[2] = hexTable[uint32_t(integer << 8) >> 28];
+		str[3] = hexTable[uint32_t(integer << 12) >> 28];
+		str[4] = hexTable[uint32_t(integer << 16) >> 28];
+		str[5] = hexTable[uint32_t(integer << 20) >> 28];
+		str[6] = hexTable[uint32_t(integer << 24) >> 28];
+		str[7] = hexTable[uint32_t(integer << 28) >> 28];
 		return str;
 	}
 	std::string toHexString(int32_t integer)
 	{
 		std::string str(8, '0');
 		str[0] = hexTable[integer >> 28];
-		str[1] = hexTable[(integer << 4) >> 28];
-		str[2] = hexTable[(integer << 8) >> 28];
-		str[3] = hexTable[(integer << 12) >> 28];
-		str[4] = hexTable[(integer << 16) >> 28];
-		str[5] = hexTable[(integer << 20) >> 28];
-		str[6] = hexTable[(integer << 24) >> 28];
-		str[7] = hexTable[(integer << 28) >> 28];
+		str[1] = hexTable[int32_t(integer << 4) >> 28];
+		str[2] = hexTable[int32_t(integer << 8) >> 28];
+		str[3] = hexTable[int32_t(integer << 12) >> 28];
+		str[4] = hexTable[int32_t(integer << 16) >> 28];
+		str[5] = hexTable[int32_t(integer << 20) >> 28];
+		str[6] = hexTable[int32_t(integer << 24) >> 28];
+		str[7] = hexTable[int32_t(integer << 28) >> 28];
 		return str;
 	}
 	std::string toHexString(uint64_t integer)

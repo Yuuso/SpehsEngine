@@ -99,7 +99,10 @@ namespace spehs
 					windows[i]->update();
 					windows[i]->postUpdate();
 
-					if ((windows[i]->checkState(GUIRECT_MOUSE_HOVER_CONTAINER) || windows[i]->checkState(GUIRECT_DRAGGING_BIT) || windows[i]->isReceivingInput()) && !focusedWindow)
+					if ((windows[i]->checkState(GUIRECT_MOUSE_HOVER_CONTAINER) ||
+						windows[i]->checkState(GUIRECT_DRAGGING_BIT) ||
+						windows[i]->checkState(GUIRECT_STRECHING_BIT) ||
+						windows[i]->isReceivingInput()) && !focusedWindow)
 					{//First window to be under focus
 
 						windows[i]->enable();
