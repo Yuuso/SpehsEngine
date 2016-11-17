@@ -12,7 +12,7 @@ namespace spehs
 	class Arrow
 	{
 	public:
-		Arrow();
+		Arrow(const int16_t planeDepth = 0);
 		Arrow(const glm::vec2& _startPoint, const glm::vec2& _endPoint);
 		~Arrow();
 
@@ -25,13 +25,13 @@ namespace spehs
 		void setArrowColor(const CommonColor& _color);
 		void setRenderState(const bool _value);
 		void setDepth(const PlaneDepth _value);
-		void cameraState(const bool _value);
+		void setCameraMatrixState(const bool _value);
 
 	private:
-
-		Line* linePart = nullptr;
-		Polygon* polygonPart = nullptr;
-		float arrowSizeX = 10.0f;
-		float arrowSizeY = 10.0f;
+		Line* linePart;
+		Polygon* polygonPart;
+		float pointerWidth;
+		float pointerHeight;
+		float length;//Length from start to end
 	};
 }

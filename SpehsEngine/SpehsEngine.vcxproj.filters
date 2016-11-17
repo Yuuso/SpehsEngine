@@ -148,7 +148,9 @@
     <ClCompile Include="GUIPopup.cpp">
       <Filter>Rendering\GUI</Filter>
     </ClCompile>
-    <ClCompile Include="Textbox.cpp" />
+    <ClCompile Include="Textbox.cpp">
+      <Filter>Rendering\GUI</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GLSLProgram.h">
@@ -313,7 +315,9 @@
     <ClInclude Include="GUIPopup.h">
       <Filter>Rendering\GUI</Filter>
     </ClInclude>
-    <ClInclude Include="Textbox.h" />
+    <ClInclude Include="Textbox.h">
+      <Filter>Rendering\GUI</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Physics">

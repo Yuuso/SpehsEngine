@@ -50,4 +50,13 @@ namespace spehs
 		polygon->setRenderState(state);
 		text->setRenderState(state);
 	}
+	bool Textbox::checkPointCollision(const int x, const int y)
+	{
+		return !(x < polygon->getX() || y < polygon->getY() || x > polygon->getX() + polygon->getWidth() || y > polygon->getY() + polygon->getHeight());
+	}
+	bool Textbox::checkPointCollision(const glm::vec2& point)
+	{
+		return !(point.x < polygon->getX() || point.y < polygon->getY() || point.x > polygon->getX() + polygon->getWidth() || point.y > polygon->getY() + polygon->getHeight());
+	}
+
 }

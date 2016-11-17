@@ -116,7 +116,7 @@ namespace spehs
 		
 		if (isOpen())
 		{
-			////Element positioning
+			////Element X positioning
 			if (parent->getAsGUIRectangleTreePtr())
 			{//Parent tree exists, mimic parent branch direction
 				if (parent->getAsGUIRectangleTreePtr()->branchX > 0)
@@ -146,15 +146,16 @@ namespace spehs
 						branchX = size.x;//Branch right
 				}
 			}
+			branchX += getXGlobal();
+
+			////Element Y positioning
+			int branchY(getYGlobal());
+			if (branchY + updateElementCount * minElementSize.y + 1 > applicationData->getWindowHeight())
+				branchY = applicationData->getWindowHeight() - updateElementCount * minElementSize.y - 1;
 
 			//Position elements
 			for (int i = beginElementIndex; i <= getEndElementIndex(); i++)
-			{
-				if (i == beginElementIndex)
-					elements[i]->setPositionLocal(branchX, 0);
-				else
-					elements[i]->setPositionLocal(branchX, elements[i - 1]->getYLocal() + elements[i - 1]->getHeight());
-			}
+				elements[i]->setPositionGlobal(branchX, branchY + i * minElementSize.y);
 		}
 	}
 	void GUIRectangleTree::leafNodePressed(int _ID)
