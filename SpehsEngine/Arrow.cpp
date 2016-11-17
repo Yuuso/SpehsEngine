@@ -65,7 +65,7 @@ namespace spehs
 	{
 		pointerWidth = _pointerWidth;
 		pointerHeight = _pointerHeight;
-		polygonPart->resize(pointerWidth, pointerHeight);
+		polygonPart->resize(pointerHeight, pointerWidth);
 		if (length < pointerHeight)
 			linePart->setRenderState(false);
 		else
@@ -75,7 +75,7 @@ namespace spehs
 	{
 		pointerWidth = _ref.x;
 		pointerHeight = _ref.y;
-		polygonPart->resize(pointerWidth, pointerHeight);
+		polygonPart->resize(pointerHeight, pointerWidth);
 		if (length < pointerHeight)
 			linePart->setRenderState(false);
 		else
