@@ -16,7 +16,7 @@ namespace spehs
 		virtual bool checkPointCollision(const glm::vec2& point);
 		virtual void setPosition(const int x, const int y);
 		virtual void setRenderState(const bool state);
-		virtual void setDepth(uint16_t depth);
+		virtual void setDepth(int16_t depth);
 		virtual uint16_t getDepthBack();
 		virtual uint16_t getDepthFront();
 

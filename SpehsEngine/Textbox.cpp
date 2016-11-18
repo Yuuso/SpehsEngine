@@ -27,7 +27,7 @@ namespace spehs
 		text->destroy();
 		polygon->destroy();
 	}
-	void Textbox::setDepth(uint16_t depth)
+	void Textbox::setDepth(int16_t depth)
 	{
 		polygon->setPlaneDepth(depth);
 		text->setPlaneDepth(depth + 1);

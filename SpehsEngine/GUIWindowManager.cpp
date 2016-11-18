@@ -9,7 +9,7 @@
 
 namespace spehs
 {
-	GUIWindowManager::GUIWindowManager() : focusedWindow(nullptr)
+	GUIWindowManager::GUIWindowManager() : focusedWindow(nullptr), depthPerWindow(256)
 	{
 		popupShade = Polygon::create(Shape::BUTTON, 0, applicationData->getWindowWidth(), applicationData->getWindowHeight());
 		popupShade->setCameraMatrixState(false);
@@ -214,18 +214,29 @@ namespace spehs
 		}
 		return false;
 	}
-	void GUIWindowManager::setSystemDepth(uint16_t newDepth)
+	void GUIWindowManager::setSystemDepth(int16_t depth)
 	{
-		systemDepth = newDepth;
-		updateDepths();
+		if (systemDepth != depth)
+		{
+			systemDepth = depth;
+			updateDepths();
+		}
+	}
+	void GUIWindowManager::setDepthPerWindow(int16_t depth)
+	{
+		if (depthPerWindow != depth)
+		{
+			depthPerWindow = depth;
+			updateDepths();
+		}
 	}
 	void GUIWindowManager::updateDepths()
 	{
 		for (unsigned i = 0; i < windows.size(); i++)
-			windows[i]->setDepth(systemDepth + i * 256);
-		popupShade->setPlaneDepth(systemDepth + windows.size() * 256);
+			windows[i]->setDepth(systemDepth + i * depthPerWindow);
+		popupShade->setPlaneDepth(systemDepth + windows.size() * depthPerWindow);
 		for (unsigned i = 0; i < popups.size(); i++)
-			popups[i]->setDepth(systemDepth + windows.size() * 256 + 1 + (popups.size() - 1) * 20 - i * 20);
+			popups[i]->setDepth(systemDepth + windows.size() * depthPerWindow + 1 + (popups.size() - 1) * 20 - i * 20);
 	}
 	void GUIWindowManager::setPopupShadeColor(unsigned char r, unsigned char g, unsigned char b, unsigned char a)
 	{

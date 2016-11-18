@@ -34,21 +34,21 @@ namespace spehs
 	void Arrow::setPosition(const glm::vec2& _startPoint, const glm::vec2& _endPoint)
 	{
 		float angle = atan2(_endPoint.y - _startPoint.y, _endPoint.x - _startPoint.x);
-		glm::vec2 endOfLine(_endPoint - _startPoint);
+		glm::vec2 arrowVector(_endPoint - _startPoint);
 
 		//Arrow length changed
-		length = magnitude(endOfLine);
+		length = magnitude(arrowVector);
 		if (length < pointerHeight)
 			linePart->setRenderState(false);
 		else
 			linePart->setRenderState(polygonPart->getRenderState());
 
 		//End of line position
-		endOfLine -= glm::vec2(cos(angle) * pointerHeight, sin(angle) * pointerHeight);
+		arrowVector -= glm::vec2(cos(angle) * pointerHeight, sin(angle) * pointerHeight);
 
 		//Primitive positioning
-		linePart->setPoints(_startPoint, endOfLine);
-		polygonPart->setPosition((endOfLine.x + _endPoint.x) * 0.5f, (endOfLine.y + _endPoint.y) * 0.5f);
+		linePart->setPoints(_startPoint, _startPoint + arrowVector);
+		polygonPart->setPosition((_startPoint.x + arrowVector.x + _endPoint.x) * 0.5f, (_startPoint.y + arrowVector.y + _endPoint.y) * 0.5f);
 
 		//Polygon rotation
 		polygonPart->setRotation(angle);

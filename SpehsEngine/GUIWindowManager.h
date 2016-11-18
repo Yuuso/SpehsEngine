@@ -27,7 +27,10 @@ namespace spehs
 		unsigned getPopupCount(){ return popups.size(); }
 		GUIWindow* back(){ return windows.back(); }
 		GUIWindow* at(int index){ if (index < 0 || index >= windows.size()) return nullptr; return windows[index]; }
-		void setSystemDepth(uint16_t newDepth);
+		void setSystemDepth(int16_t depth);
+		void setDepthPerWindow(int16_t depth);
+		int16_t getSystemDepth(){ return systemDepth; }
+		int16_t getDepthPerWindow(){ return depthPerWindow; }
 		void setPopupShadeColor(unsigned char r, unsigned char g, unsigned char b, unsigned char a = 255);
 
 	private:
@@ -36,7 +39,8 @@ namespace spehs
 		GUIWindow* focusedWindow;
 		std::vector<GUIWindow*> windows;
 		std::vector<GUIPopup*> popups;
-		uint16_t systemDepth;
+		int16_t systemDepth;
+		int16_t depthPerWindow;
 		Polygon* popupShade;
 		float popupShadeAlpha;
 	};
