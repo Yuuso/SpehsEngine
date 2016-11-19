@@ -6,11 +6,12 @@ namespace spehs
 	class GUIPopup;
 	class GUIWindow;
 	class Polygon;
+	class BatchManager;
 	///Windows are stored in a vector. This vector may change ordering based on performed actions, therefore external for loops and such should be used very carefully!
 	class GUIWindowManager
 	{
 	public:
-		GUIWindowManager();
+		GUIWindowManager(BatchManager& _batchManager);//Batch manager where the windows are drawn and where future primitives will be drawn by the window manager
 		~GUIWindowManager();
 
 		void update();
@@ -43,5 +44,6 @@ namespace spehs
 		int16_t depthPerWindow;
 		Polygon* popupShade;
 		float popupShadeAlpha;
+		BatchManager& batchManager;
 	};
 }

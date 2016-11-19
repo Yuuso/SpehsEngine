@@ -93,7 +93,7 @@ namespace spehs
 			}
 
 			consoleCamera = new Camera2D();
-			consoleBatchManager = new BatchManager(consoleCamera);
+			consoleBatchManager = new BatchManager(consoleCamera, "console");
 			
 			fpsCounter = consoleBatchManager->createText(10000);
 			if (!fpsCounter)
