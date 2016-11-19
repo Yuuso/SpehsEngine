@@ -139,8 +139,7 @@ namespace spehs
 			if (primitives[i]->readyForDelete)
 			{
 				delete primitives[i];
-				if (primitives[i] != primitives.back())
-					primitives[i] = primitives.back();
+				primitives[i] = primitives.back();
 				primitives.pop_back();
 			}
 			//Check primitives rendering state
@@ -156,7 +155,7 @@ namespace spehs
 					{
 						batches[j]->push(primitives[i]);
 						batchFound = true;
-						j = batches.size();
+						break;
 					}
 				}
 				//If none found create a new one
@@ -178,8 +177,7 @@ namespace spehs
 			if (texts[i]->readyForDelete)
 			{
 				delete texts[i];
-				if (texts[i] != texts.back())
-					texts[i] = texts.back();
+				texts[i] = texts.back();
 				texts.pop_back();
 			}
 			//Check texts rendering state
@@ -195,7 +193,7 @@ namespace spehs
 					{
 						batches[j]->push(texts[i]);
 						batchFound = true;
-						j = batches.size();
+						break;
 					}
 				}
 				//If none found create a new one
