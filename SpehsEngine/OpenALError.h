@@ -3,7 +3,9 @@
 
 #include <string>
 
-struct ALCdevice;
+
+struct ALCdevice_struct;
+typedef struct ALCdevice_struct ALCdevice;
 
 
 namespace spehs

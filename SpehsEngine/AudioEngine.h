@@ -2,8 +2,12 @@
 #pragma once
 
 
-struct ALCdevice;
-struct ALCcontext;
+struct ALCdevice_struct;
+struct ALCcontext_struct;
+
+typedef struct ALCdevice_struct ALCdevice;
+typedef struct ALCcontext_struct ALCcontext;
+
 
 namespace spehs
 {

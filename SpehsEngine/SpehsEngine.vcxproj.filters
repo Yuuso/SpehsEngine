@@ -158,7 +158,9 @@
     <ClCompile Include="OpenALError.cpp">
       <Filter>Core</Filter>
     </ClCompile>
-    <ClCompile Include="AudioEngine.cpp" />
+    <ClCompile Include="AudioEngine.cpp">
+      <Filter>Audio</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GLSLProgram.h">
@@ -333,7 +335,9 @@
     <ClInclude Include="OpenALError.h">
       <Filter>Core</Filter>
     </ClInclude>
-    <ClInclude Include="AudioEngine.h" />
+    <ClInclude Include="AudioEngine.h">
+      <Filter>Audio</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Physics">
