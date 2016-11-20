@@ -44,7 +44,7 @@ namespace spehs
 			return;
 		}
 		if (batchSectionCurrentBatch != this)
-			spehs::console::error("A batch manager (" + name + ") did not end its batch section! (BatchManager::endSection() was never called for a batch manager that began a section)");
+			spehs::console::error("A batch manager (" + batchSectionCurrentBatch->name + ") did not end its batch section! (BatchManager::endSection() was never called for a batch manager that began a section)");
 
 		//Set currently active section pointer
 		batchSectionCurrentBatch = previousSections.top();
