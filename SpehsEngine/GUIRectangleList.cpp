@@ -45,28 +45,31 @@ namespace spehs
 		scrollBar->update();
 		scrollDown->update();
 
-		if (inputManager->isKeyDown(MOUSE_BUTTON_LEFT) && //Mouse left is held
-			inputManager->getMouseY() > scrollDown->getYGlobal() + scrollDown->getHeight() && //mouse is within scroll bar area of movement
-			inputManager->getMouseY() < scrollUp->getYGlobal() &&
-			inputManager->getMouseX() > scrollDown->getXGlobal() &&
-			inputManager->getMouseX() < scrollDown->getXGlobal() + scrollDown->getWidth())
-		{//Mouse dragging scroll bar
-
-			//Calculate scroll based on mouse position relative to scroll area
-			float scrollAreaBegin = scrollDown->getYGlobal() + scrollDown->getHeight() + scrollBar->getHeight() / 2.0f;//Y value of the scrolling area beginning
-			float scrollAreaHeight = scrollUp->getYGlobal() - scrollDown->getYGlobal() - scrollDown->getHeight() - scrollBar->getHeight();//Height of the scrolling area in between min and max positions of scroll bar center
-			scroll(round((elements.size() - updateElementCount) * (1.0f - (inputManager->getMouseY() - scrollAreaBegin) / scrollAreaHeight)) - beginElementIndex);
-		}
-
-		if (inputManager->isKeyPressed(MOUSE_BUTTON_LEFT) && invisibleElements())
+		if (checkState(GUIRECT_ENABLED_BIT))
 		{
-			if (scrollUp->getMouseHover())
-				scroll(-1);
-			else if (scrollDown->getMouseHover())
-				scroll(1);
+			if (inputManager->isKeyDown(MOUSE_BUTTON_LEFT) && //Mouse left is held
+				inputManager->getMouseY() > scrollDown->getYGlobal() + scrollDown->getHeight() && //mouse is within scroll bar area of movement
+				inputManager->getMouseY() < scrollUp->getYGlobal() &&
+				inputManager->getMouseX() > scrollDown->getXGlobal() &&
+				inputManager->getMouseX() < scrollDown->getXGlobal() + scrollDown->getWidth())
+			{//Mouse dragging scroll bar
+
+				//Calculate scroll based on mouse position relative to scroll area
+				float scrollAreaBegin = scrollDown->getYGlobal() + scrollDown->getHeight() + scrollBar->getHeight() / 2.0f;//Y value of the scrolling area beginning
+				float scrollAreaHeight = scrollUp->getYGlobal() - scrollDown->getYGlobal() - scrollDown->getHeight() - scrollBar->getHeight();//Height of the scrolling area in between min and max positions of scroll bar center
+				scroll(round((elements.size() - updateElementCount) * (1.0f - (inputManager->getMouseY() - scrollAreaBegin) / scrollAreaHeight)) - beginElementIndex);
+			}
+
+			if (inputManager->isKeyPressed(MOUSE_BUTTON_LEFT) && invisibleElements())
+			{
+				if (scrollUp->getMouseHover())
+					scroll(-1);
+				else if (scrollDown->getMouseHover())
+					scroll(1);
+			}
+			if (getMouseHover() && inputManager->getMouseWheelDelta())
+				scroll(-inputManager->getMouseWheelDelta());
 		}
-		if (getMouseHover() && inputManager->getMouseWheelDelta())
-			scroll(-inputManager->getMouseWheelDelta());
 
 		GUIRectangleContainer::update();
 	}
