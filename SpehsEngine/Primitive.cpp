@@ -74,6 +74,19 @@ namespace spehs
 		needUpdate = true;
 	}
 
+	void Primitive::setPosition(const Primitive& _other)
+	{
+#ifdef _DEBUG
+		if (_other.position.x != _other.position.x || _other.position.y != _other.position.y)
+		{
+			console::error("Position values corrupted!");
+		}
+#endif
+		position.x = _other.position.x;
+		position.y = _other.position.y;
+		needUpdate = true;
+	}
+
 	void Primitive::setScale(const float &_newScale)
 	{
 #ifdef _DEBUG
@@ -159,6 +172,18 @@ namespace spehs
 #endif
 		rotation = _newRotation;
 		rotationVector = _newRotationVector;
+		needUpdate = true;
+	}
+
+	void Primitive::setRotation(const Primitive& _other)
+	{
+#ifdef _DEBUG
+		if (_other.rotation != _other.rotation)
+		{
+			console::error("Rotation values corrupted!");
+		}
+#endif
+		rotation = _other.rotation;
 		needUpdate = true;
 	}
 
