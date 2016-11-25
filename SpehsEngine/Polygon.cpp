@@ -15,7 +15,6 @@
 #include <glm/gtx/transform.hpp>
 
 
-#define HALF_PI 1.57079632679f
 #define TWO_PI 6.28318530718f
 
 #define GLM_FORCE_RADIANS
@@ -49,9 +48,9 @@ namespace spehs
 			//firstPosition adjusts initial the rotation for even numbered polygons
 			//Initial rotation is set so that the "lowest" (bottom) line is drawn horizontally
 			if (_shapeID % 2)
-				firstPosition = HALF_PI;
+				firstPosition = 0;
 			else
-				firstPosition = HALF_PI + (TWO_PI / _shapeID) / 2.0f;
+				firstPosition = (TWO_PI / _shapeID) / 2.0f;
 			vertexArray[0].position = glm::vec2(cos(firstPosition), sin(firstPosition));
 			float minX = vertexArray[0].position.x, minY = vertexArray[0].position.y, maxX = vertexArray[0].position.x, maxY = vertexArray[0].position.y;
 			for (int i = 1; i < _shapeID; i++)
