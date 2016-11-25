@@ -83,7 +83,7 @@ namespace spehs
 		//Tooltip update
 		if (tooltip)
 		{
-			if (getMouseHover())
+			if (checkState(GUIRECT_ENABLED_BIT) && getMouseHover())
 			{//Tooltip positioning
 
 				if (inputManager->getMouseX() > applicationData->getWindowWidthHalf())
