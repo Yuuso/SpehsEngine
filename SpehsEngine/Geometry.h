@@ -33,6 +33,13 @@ namespace spehs
 
 	extern inline glm::vec3 getRotation(const glm::vec3& _a, const glm::vec3& _b);
 
+	/**Rotates point around specified axis point*/
+	extern inline void rotateAroundAxis(glm::vec2& point, const glm::vec2& axis, float rotation);
+	extern inline void rotateAroundAxis(glm::vec2& point, const float axisX, const float axisY, float rotation);
+
+	/**Rotates point around coordinate system origin*/
+	extern inline void rotateAroundOrigin(glm::vec2& point, float rotation);
+
 	/**Returns area of the shape formed by a number of cusps*/
 	extern inline float getArea(glm::vec2* cusps, unsigned numCusps);
 
