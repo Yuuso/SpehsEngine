@@ -21,7 +21,7 @@ namespace spehs
 
 		//Update cycle
 		void update();
-		void render();
+		void render(std::string customDebugText = "");
 
 		//Variables, commands
 		void addVariable(std::string identifier, bool& var);
