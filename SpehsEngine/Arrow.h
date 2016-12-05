@@ -20,9 +20,9 @@ namespace spehs
 		void setLineThickness(const float _thickness);
 		void setArrowPointerSize(const float _pointerWidth, const float _pointerHeight);
 		void setArrowPointerSize(const glm::vec2& _ref);
-		void setArrowColor(const int _r, const int _b, const int _g, const int _a);
-		void setArrowColor(const glm::vec4& _color);
-		void setArrowColor(const CommonColor& _color);
+		void setColor(const int _r, const int _b, const int _g, const int _a);
+		void setColor(const glm::vec4& _color);
+		void setColor(const CommonColor& _color);
 		void setRenderState(const bool _value);
 		void setDepth(const PlaneDepth _value);
 		void setCameraMatrixState(const bool _value);
