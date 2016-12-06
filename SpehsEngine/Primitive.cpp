@@ -324,6 +324,11 @@ namespace spehs
 		renderState = _newState;
 	}
 
+	void Primitive::setRenderState(const Primitive& _other)
+	{
+		renderState = _other.renderState;
+	}
+
 	void Primitive::setShader(const int &_newShaderIndex)
 	{
 		if (shaderManager->getShader(_newShaderIndex) == nullptr)

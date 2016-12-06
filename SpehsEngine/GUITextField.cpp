@@ -29,15 +29,17 @@ namespace spehs
 	{
 		GUIRectangle::update();
 
-		//Receiving input
-		if (isReceivingInput())
-			recordInput();
+		if (checkState(GUIRECT_ENABLED_BIT))
+		{//When enabled
 
-		if (getMouseHover())
-		{
-			//Toggle typing if mouse press is detected
-			if (inputManager->isKeyPressed(MOUSE_BUTTON_LEFT))
+			//Receiving input
+			if (isReceivingInput())
+				recordInput();
+
+			if (getMouseHover() && inputManager->isKeyPressed(MOUSE_BUTTON_LEFT))
+			{//Mouse press
 				toggleTyping();
+			}
 		}
 
 		if (!stringUpdated)

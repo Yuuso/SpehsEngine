@@ -92,6 +92,7 @@ namespace spehs
 		void setPlaneDepth(const PlaneDepth &_newPlaneDepth);
 		void setLineWidth(const float &_newWidth);
 		void setRenderState(const bool _newState);
+		void setRenderState(const Primitive& _other);
 		void setShader(const int &_newShaderIndex);
 		void setBlending(const bool _newState);
 

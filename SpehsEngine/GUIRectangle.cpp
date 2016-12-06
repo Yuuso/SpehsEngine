@@ -262,9 +262,9 @@ namespace spehs
 	{
 		if (parent)
 			return parent->getFirstGenerationParent();
-		if (getAsGUIRectangleContainerPtr())
-			return getAsGUIRectangleContainerPtr();
-		return nullptr;
+		//if (getAsGUIRectangleContainerPtr())
+			//return getAsGUIRectangleContainerPtr();
+		return this;
 	}
 	void GUIRectangle::setJustification(GUIRECT_STATE_TYPE justificationBit)
 	{

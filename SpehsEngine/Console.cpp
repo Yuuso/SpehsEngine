@@ -402,6 +402,7 @@ namespace spehs
 				if (++frameCounter >= FPS_REFRESH_RATE)
 				{
 					fpsCounter->setString("FPS: " + std::to_string(int(time::getFPS())) + "\nDraw calls: " + std::to_string(drawCalls) + "\nVertices: " + std::to_string(vertexDrawCount) + "\n" + customDebugText);
+					fpsCounter->setPosition(glm::vec2(5, applicationData->getWindowHeight() - fpsCounter->getTextHeight()));
 					frameCounter = 0;
 				}
 			}

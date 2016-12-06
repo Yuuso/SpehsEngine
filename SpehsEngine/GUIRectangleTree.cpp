@@ -127,26 +127,15 @@ namespace spehs
 			else
 			{//Parent TREE doesn't exist. Decide branching direction based on horizontal location/size
 				GUIRectangle* firstGenParent = getFirstGenerationParent();
-				if (firstGenParent)
-				{
-					if (firstGenParent->getXGlobal() + firstGenParent->getWidth() / 2.0f > applicationData->getWindowWidthHalf())
-					{//Branch left
-						branchX = firstGenParent->getXGlobal() - getXGlobal() - minElementSize.x;
-					}
-					else
-					{//Branch right
-						branchX = firstGenParent->getXGlobal() - getXGlobal() + firstGenParent->getWidth();
-					}
+				if (firstGenParent->getXGlobal() + firstGenParent->getWidth() / 2.0f > applicationData->getWindowWidthHalf())
+				{//Branch left
+					branchX = firstGenParent->getXGlobal() - getXGlobal() - minElementSize.x;
 				}
 				else
-				{//No parent
-					if (getXGlobal() + size.x / 2.0f > applicationData->getWindowWidthHalf())
-						branchX = -minElementSize.x;//Branch left
-					else
-						branchX = size.x;//Branch right
+				{//Branch right
+					branchX = firstGenParent->getXGlobal() - getXGlobal() + firstGenParent->getWidth();
 				}
 			}
-			branchX += getXGlobal();
 
 			////Element Y positioning
 			int branchY(getYGlobal());
@@ -155,7 +144,7 @@ namespace spehs
 
 			//Position elements
 			for (int i = beginElementIndex; i <= getEndElementIndex(); i++)
-				elements[i]->setPositionGlobal(branchX, branchY + i * minElementSize.y);
+				elements[i]->setPositionGlobal(getXGlobal() + branchX, branchY + i * minElementSize.y);
 		}
 	}
 	void GUIRectangleTree::leafNodePressed(int _ID)
