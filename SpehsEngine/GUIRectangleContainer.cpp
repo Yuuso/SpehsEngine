@@ -260,7 +260,7 @@ namespace spehs
 				elements[i]->getAsGUIRectangleContainerPtr()->closeTreeElements(excluded);
 			}
 	}
-	void GUIRectangleContainer::setDepth(uint16_t depth)
+	void GUIRectangleContainer::setDepth(int16_t depth)
 	{
 		GUIRectangle::setDepth(depth);
 		for (unsigned i = 0; i < elements.size(); i++)

@@ -35,9 +35,7 @@ namespace spehs
 		virtual bool isReceivingInput();
 		virtual void open();//Open container dimension
 		virtual void close();//Close container dimension
-		void closeTreeElements();//Closes every gui rectangle tree beneath this.
-		void closeTreeElements(GUIRectangle* exclude);//Closes all other trees except select excluded
-		virtual void setDepth(uint16_t depth);
+		virtual void setDepth(int16_t depth);
 
 		//Element management
 		virtual void addElement(GUIRectangle* element);
@@ -63,6 +61,10 @@ namespace spehs
 		virtual void disableStateRecursive(GUIRECT_STATE_TYPE stateBit);
 		virtual void onEnable();
 		virtual void onDisable();
+		
+		//Special methods for managing some of the spehs containers
+		void closeTreeElements();//Closes every gui rectangle tree beneath this.
+		void closeTreeElements(GUIRectangle* exclude);//Closes all other trees except select excluded
 
 		//Identity
 		GUIRectangleContainer* getAsGUIRectangleContainerPtr(){ return this; }

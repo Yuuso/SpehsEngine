@@ -42,7 +42,7 @@ namespace spehs
 	}
 	GUIRectangle::GUIRectangle(GUIRECT_ID_TYPE ID) : GUIRectangle()
 	{
-		id = ID;
+		setID(ID);
 	}
 	GUIRectangle::GUIRectangle(std::string str) : GUIRectangle()
 	{
@@ -77,7 +77,7 @@ namespace spehs
 		disableBit(state, GUIRECT_MOUSE_HOVER);
 		disableBit(state, GUIRECT_MOUSE_HOVER_CONTAINER);
 		updateMouseHover();
-		if (pressCallbackFunction && getMouseHoverAny() && inputManager->isKeyPressed(MOUSEBUTTON_LEFT))
+		if (pressCallbackFunction && getMouseHover() && inputManager->isKeyPressed(MOUSEBUTTON_LEFT))
 			(*pressCallbackFunction)(*this);
 
 		//Tooltip update
@@ -109,7 +109,7 @@ namespace spehs
 	void GUIRectangle::postUpdate()
 	{
 		//Return if not visible
-		if (!polygon->getRenderState())
+		if (!getRenderState())
 			return;
 
 		//Tooltip
@@ -206,7 +206,7 @@ namespace spehs
 		if (!checkBit(state, GUIRECT_MIN_SIZE_UPDATED))
 		{//TODO
 			updateMinSize();
-			enableBit(state, GUIRECT_MIN_SIZE_UPDATED);//Disable bit here because update min size function is virtual
+			enableBit(state, GUIRECT_MIN_SIZE_UPDATED);//Disable bit here because update min size function is virtual -> method implementation doesn't have to remember disabling
 		}
 
 		//Account minimum size
@@ -239,32 +239,32 @@ namespace spehs
 		color[3] = a / 255.0f;
 		polygon->setColor(color);
 	}
-	void GUIRectangle::setDepth(uint16_t depth)
+	void GUIRectangle::setDepth(int16_t depth)
 	{
 		polygon->setPlaneDepth(depth);
-		if (text)
-			text->setPlaneDepth(depth + 3);
 		if (displayTexture)
 			displayTexture->polygon->setPlaneDepth(depth + 1);
+		if (text)
+			text->setPlaneDepth(depth + 2);
 		if (tooltip)
 			tooltip->setDepth(depth + tooltipDepthRelative);
 	}
-	uint16_t GUIRectangle::getDepth()
+	int16_t GUIRectangle::getDepth()
 	{
 		return polygon->getPlaneDepth();
 	}
-	void GUIRectangle::setParent(GUIRectangle* Parent)
+	void GUIRectangle::setParent(GUIRectangleContainer* Parent)
 	{
 		parent = Parent;
-		setDepth(parent->getDepth());
+		setDepth(parent->getDepth() + 3);
 	}
-	GUIRectangle* GUIRectangle::getFirstGenerationParent()
+	GUIRectangleContainer* GUIRectangle::getFirstGenerationParent()
 	{
 		if (parent)
 			return parent->getFirstGenerationParent();
-		//if (getAsGUIRectangleContainerPtr())
-			//return getAsGUIRectangleContainerPtr();
-		return this;
+		if (getAsGUIRectangleContainerPtr())
+			return getAsGUIRectangleContainerPtr();
+		return nullptr;
 	}
 	void GUIRectangle::setJustification(GUIRECT_STATE_TYPE justificationBit)
 	{
@@ -403,15 +403,38 @@ namespace spehs
 	{
 		polygon->setTexture(path);
 	}
-	bool GUIRectangle::isVisible()
-	{
-		return polygon->getRenderState();
-	}
 	void GUIRectangle::setPressCallback(std::function<void(GUIRectangle&)> callbackFunction)
 	{
 		if (pressCallbackFunction)
 			*pressCallbackFunction = callbackFunction;
 		else
 			pressCallbackFunction = new std::function<void(GUIRectangle&)>(callbackFunction);
+	}
+	void GUIRectangle::enableStateRecursiveUpwards(GUIRECT_STATE_TYPE stateBit)
+	{
+		enableState(stateBit);
+		if (parent)
+			parent->enableStateRecursiveUpwards(stateBit);
+	}
+	void GUIRectangle::disableStateRecursiveUpwards(GUIRECT_STATE_TYPE stateBit)
+	{
+		disableState(stateBit);
+		if (parent)
+			parent->disableStateRecursiveUpwards(stateBit);
+	}
+	glm::ivec2 GUIRectangle::getPositionGlobal()
+	{
+		if (parent)
+			return parent->getPositionGlobal() + position; return position;
+	}
+	int GUIRectangle::getXGlobal()
+	{
+		if (parent)
+			return parent->getXGlobal() + position.x; return position.x;
+	}
+	int GUIRectangle::getYGlobal()
+	{
+		if (parent)
+			return parent->getYGlobal() + position.y; return position.y;
 	}
 }

@@ -58,7 +58,7 @@ namespace spehs
 	void GUICheckbox::setRenderState(const bool _state)
 	{
 		GUIRectangle::setRenderState(_state);
-		if (isVisible())
+		if (getRenderState())
 		{
 			checkboxBackground->setRenderState(true);
 			checkboxFilling->setRenderState(true);

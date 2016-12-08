@@ -92,12 +92,12 @@ namespace spehs
 		void setColor(glm::vec4& color);
 		/// Range [0, 255]
 		void setColor(int r, int g, int b, int a = 255);
-		void setParent(GUIRectangle* Parent);
-		virtual void setDepth(uint16_t depth);
-		uint16_t getDepth();
+		void setParent(GUIRectangleContainer* Parent);
+		virtual void setDepth(int16_t depth);
+		int16_t getDepth();
 		spehs::Polygon* getPolygonPtr(){ return polygon; }
-		GUIRectangle* getParentPtr(){ return parent; }
-		GUIRectangle* getFirstGenerationParent();
+		GUIRectangleContainer* getParentPtr(){ return parent; }
+		GUIRectangleContainer* getFirstGenerationParent();
 		//ID
 		void setID(int newID){ id = newID; }
 		int getID(){ return id; }
@@ -141,12 +141,11 @@ namespace spehs
 		virtual bool isReceivingInput(){ return checkBit(state, GUIRECT_RECEIVING_INPUT); }
 		bool isSelected(){ return checkBit(state, GUIRECT_SELECTED); }
 		bool isOpen(){ return checkBit(state, GUIRECT_OPEN); }
-		bool isVisible();
 		//Setters
 		virtual void enableStateRecursive(GUIRECT_STATE_TYPE stateBit){ enableBit(state, stateBit); }
 		virtual void disableStateRecursive(GUIRECT_STATE_TYPE stateBit){ disableBit(state, stateBit); }
-		void enableStateRecursiveUpwards(GUIRECT_STATE_TYPE stateBit){ enableBit(state, stateBit); if (parent) parent->enableStateRecursiveUpwards(stateBit); }
-		void disableStateRecursiveUpwards(GUIRECT_STATE_TYPE stateBit){ disableBit(state, stateBit); if (parent) parent->disableStateRecursiveUpwards(stateBit); }
+		void enableStateRecursiveUpwards(GUIRECT_STATE_TYPE stateBit);
+		void disableStateRecursiveUpwards(GUIRECT_STATE_TYPE stateBit);
 		void enableState(GUIRECT_STATE_TYPE stateBit){ enableBit(state, stateBit); }
 		void disableState(GUIRECT_STATE_TYPE stateBit){ disableBit(state, stateBit); }
 		void toggleState(GUIRECT_STATE_TYPE stateBit){ toggleBit(state, stateBit); }
@@ -171,9 +170,9 @@ namespace spehs
 		virtual void setXLocal(int x){ position.x = x; disableBit(state, GUIRECT_POSITIONED); }
 		virtual void setYLocal(int y){ position.y = y; disableBit(state, GUIRECT_POSITIONED); }
 		//Getting the GUIRectangle screen position (global)
-		glm::ivec2 getPositionGlobal(){ if (parent) return parent->getPositionGlobal() + position; return position; }
-		int getXGlobal(){ if (parent) return parent->getXGlobal() + position.x; return position.x; }
-		int getYGlobal(){ if (parent) return parent->getYGlobal() + position.y; return position.y; }
+		glm::ivec2 getPositionGlobal();
+		int getXGlobal();
+		int getYGlobal();
 		//Local position getters
 		glm::ivec2 getPositionLocal(){ return position; }
 		int getXLocal(){ return position.x; }
@@ -211,9 +210,9 @@ namespace spehs
 		glm::ivec2 position;///<The position of the rectangle, originating from the lower left corner, given in screen coordinates. Relative to parent's position
 		glm::ivec2 size;///<Current size of the rectangle
 		glm::ivec2 minSize;///<The minimum size of the rectangle. Checked whenever rezising the polygon.
-		GUIRectangle* parent;///<Rectangle inherits position from parent chain. NOTE: parent must be ractangle container
-		Polygon* polygon;
+		GUIRectangleContainer* parent;///<Rectangle inherits position from parent chain. NOTE: parent must be ractangle container
 		GUIRectangle* tooltip;
+		Polygon* polygon;
 		Text* text;
 		GUIRECT_STATE_TYPE state;
 		GUIRECT_ID_TYPE id;///<GUI rectangles can be given IDs for identification
