@@ -32,9 +32,9 @@ namespace spehs
 		addElement(new GUIRectangle(option.string));
 		elements.back()->setJustification(GUIRECT_TEXT_JUSTIFICATION_CENTER);
 	}
-	void GUIPopup::update()
+	void GUIPopup::inputUpdate()
 	{
-		GUIRectangleContainer::update();
+		GUIRectangleContainer::inputUpdate();
 		if (checkState(GUIRECT_REMOVE_BIT))
 			console::warning("GUIRECT_REMOVE_BIT is enabled!\nPopup should be removed by a higher authority!");
 		else if (inputManager->isKeyPressed(MOUSE_BUTTON_LEFT))
@@ -53,24 +53,26 @@ namespace spehs
 		if (inputManager->isKeyPressed(KEYBOARD_ESCAPE) && escapeEnabled)
 			enableState(GUIRECT_REMOVE_BIT);
 	}
-	void GUIPopup::updatePosition()
+	void GUIPopup::updateMinSize()
 	{
-		GUIRectangle::updatePosition();
+		GUIRectangle::updateMinSize();
 
-		elements[BACKGROUND_INDEX]->setPositionLocal(-BORDER_WIDTH, -BORDER_WIDTH);
-		if (elements.size() <= OPTION1_INDEX)
-		{
-			elements[MESSAGE_INDEX]->setPositionLocal(0, 0);
-			return;
-		}
-
-		int x(0);
+		int optionsRowWidth(0);
+		int optionsRowHeight(0);
 		for (unsigned i = OPTION1_INDEX; i < elements.size(); i++)
 		{
-			elements[i]->setPositionLocal(x, 0);
-			x += elements[i]->getWidth() + BORDER_WIDTH;
+			optionsRowWidth += elements[i]->getMinWidth();
+			if (elements[i]->getMinHeight() + BORDER_WIDTH > optionsRowHeight)
+				optionsRowHeight = elements[i]->getMinHeight() + BORDER_WIDTH;
 		}
-		elements[MESSAGE_INDEX]->setPositionLocal(0, elements[OPTION1_INDEX]->getHeight() + BORDER_WIDTH);
+
+		minSize.x = std::max(elements[MESSAGE_INDEX]->getMinWidth(), optionsRowWidth + BORDER_WIDTH * ((int)elements.size() - OPTION1_INDEX - 1));
+		minSize.y = elements[MESSAGE_INDEX]->getMinHeight() + optionsRowHeight;
+
+		if (minSize.x > size.x)
+			setWidth(minSize.x);
+		if (minSize.y > size.y)
+			setWidth(minSize.y);
 	}
 	void GUIPopup::updateScale()
 	{
@@ -100,26 +102,24 @@ namespace spehs
 				elements[i]->setSize(std::floor(elements[i]->getMinWidth() / float(optionsWidth) * size.x), optionHeight);
 		}
 	}
-	void GUIPopup::updateMinSize()
+	void GUIPopup::updatePosition()
 	{
-		GUIRectangle::updateMinSize();
+		GUIRectangle::updatePosition();
 
-		int optionsRowWidth(0);
-		int optionsRowHeight(0);
-		for (unsigned i = OPTION1_INDEX; i < elements.size(); i++)
+		elements[BACKGROUND_INDEX]->setPositionLocal(-BORDER_WIDTH, -BORDER_WIDTH);
+		if (elements.size() <= OPTION1_INDEX)
 		{
-			optionsRowWidth += elements[i]->getMinWidth();
-			if (elements[i]->getMinHeight() + BORDER_WIDTH > optionsRowHeight)
-				optionsRowHeight = elements[i]->getMinHeight() + BORDER_WIDTH;
+			elements[MESSAGE_INDEX]->setPositionLocal(0, 0);
+			return;
 		}
 
-		minSize.x = std::max(elements[MESSAGE_INDEX]->getMinWidth(), optionsRowWidth + BORDER_WIDTH * ((int)elements.size() - OPTION1_INDEX - 1));
-		minSize.y = elements[MESSAGE_INDEX]->getMinHeight() + optionsRowHeight;
-
-		if (minSize.x > size.x)
-			setWidth(minSize.x);
-		if (minSize.y > size.y)
-			setWidth(minSize.y);
+		int x(0);
+		for (unsigned i = OPTION1_INDEX; i < elements.size(); i++)
+		{
+			elements[i]->setPositionLocal(x, 0);
+			x += elements[i]->getWidth() + BORDER_WIDTH;
+		}
+		elements[MESSAGE_INDEX]->setPositionLocal(0, elements[OPTION1_INDEX]->getHeight() + BORDER_WIDTH);
 	}
 	void GUIPopup::setBackgroundColor(glm::vec3& rgb)
 	{

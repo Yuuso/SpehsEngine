@@ -29,13 +29,13 @@ namespace spehs
 		GUIWindow();
 		virtual ~GUIWindow();
 		
-		virtual void update();
-		virtual void postUpdate();
-		virtual void updatePosition();
-		virtual void updateScale();
+		virtual void inputUpdate();
+		virtual void visualUpdate();
 		virtual void updateMinSize();//Updates min size variable based on element requirements
+		virtual void updateScale();
+		virtual void updatePosition();
 		virtual void setRenderState(const bool _state);
-		virtual void setDepth(uint16_t);
+		virtual void setDepth(int16_t);
 		virtual void onEnable();
 		virtual void onDisable();
 		virtual void disableStateRecursive(GUIRECT_STATE_TYPE stateBit);
@@ -43,8 +43,8 @@ namespace spehs
 		virtual void disableState(GUIRECT_STATE_TYPE stateBit);
 		virtual void enableState(GUIRECT_STATE_TYPE stateBit);
 
-		virtual void close();
-		virtual void open();
+		virtual bool close();
+		virtual bool open();
 		virtual void refresh();
 		virtual void limitWithinMainWindow();//Reposition window so that it doesn't escape the viewport
 

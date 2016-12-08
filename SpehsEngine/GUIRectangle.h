@@ -10,9 +10,9 @@
 ////GUI rectangle states
 #define GUIRECT_STATE_TYPE					uint32_t
 #define GUIRECT_MOUSE_HOVER					0x00000001
-#define GUIRECT_SCALED						0x00000002
-#define GUIRECT_POSITIONED					0x00000004
-#define GUIRECT_MIN_SIZE_UPDATED			0x00000008
+#define GUIRECT_SCALE_UPDATED_BIT			0x00000002
+#define GUIRECT_POSITION_UPDATED_BIT		0x00000004
+#define GUIRECT_MIN_SIZE_UPDATED_BIT		0x00000008
 #define GUIRECT_ENABLED_BIT					0x00000010//Enabled user interaction
 #define GUIRECT_REMOVE_BIT					0x00000020//Does not actually remove element. Must have a higher level manager to monitor remove status and act accordingly to it
 #define GUIRECT_UNUSED1						0x00000040
@@ -22,7 +22,7 @@
 #define GUIRECT_UNUSED5						0x00000400
 //GUI rectangle container
 #define GUIRECT_MOUSE_HOVER_CONTAINER		0x00000800//Whether mouse hover has been detected inside an element of the container
-#define GUIRECT_OPEN						0x00001000//Different containers have different meanings for being open
+#define GUIRECT_OPEN						0x00001000//Open containers update elements inside
 //GUI window specific
 #define GUIRECT_DRAGGING_BIT				0x00004000
 #define GUIRECT_STRECHING_BIT				0x00008000
@@ -63,7 +63,7 @@ namespace spehs
 		static glm::vec4 defaultStringColor;//Newly created GUI rectangle strings will have this color by default
 		static glm::vec4 defaultTooltipColor;//Newly created tooltips will have this color by default
 		static glm::vec4 defaultTooltipStringColor;//Newly created tooltip string will have this color by default
-	private:
+		friend class GUIRectangleContainer;
 
 	public:
 		GUIRectangle();
@@ -74,17 +74,22 @@ namespace spehs
 		virtual ~GUIRectangle();
 		friend class GUIWindow;
 		
-		/// During GUI's update the element's size and/or min size may change even so that it might affect parents above.
-		virtual void update();
-		virtual void postUpdate();
+		/// During GUI's input update the element's size and/or min size may change even so that it might affect parents above.
+		virtual void inputUpdate();
+		/// During GUI's visual update the element's size and/or min size must not change!
+		virtual void visualUpdate();
+
+		///TRANSFORM CHANGES: OVERRIDING METHOD MUST ENABLE THE CORRESPONDING GUIRECT_X_UPDATED_BIT OR CALL THE BASE METHOD
+		/// Update min size is called up to once per update.
+		virtual void updateMinSize();
 		/**During scale update dimensions must not change in a manner that would affect parents above.\n
 		scale update is called up to once per update if the size of the rectangle has changed*/
 		virtual void updateScale();
 		/// Positon update is called up to once per update if the position of the rectangle has changed
 		virtual void updatePosition();
+
 		virtual void setRenderState(const bool _state);
 		virtual bool getRenderState();
-		virtual void updateMinSize();
 		/// Checks whether the mouse is above this rectangle. Returns mouse hover value
 		virtual bool updateMouseHover();
 		/// Range [0.0f, 1.0f]
@@ -96,8 +101,10 @@ namespace spehs
 		virtual void setDepth(int16_t depth);
 		int16_t getDepth();
 		spehs::Polygon* getPolygonPtr(){ return polygon; }
+		//Hierarchy
 		GUIRectangleContainer* getParentPtr(){ return parent; }
 		GUIRectangleContainer* getFirstGenerationParent();
+		bool isDescendantOf(GUIRectangleContainer* ascendant);
 		//ID
 		void setID(int newID){ id = newID; }
 		int getID(){ return id; }
@@ -153,8 +160,6 @@ namespace spehs
 		//Enabling
 		void enable(){ if (!checkState(GUIRECT_ENABLED_BIT)) onEnable(); }
 		void disable(){ if (checkState(GUIRECT_ENABLED_BIT)) onDisable(); }
-		virtual void onEnable(){ enableState(GUIRECT_ENABLED_BIT); }
-		virtual void onDisable(){ disableState(GUIRECT_ENABLED_BIT); }
 		
 		////Managing element position
 		//Setting both coordinates
@@ -167,8 +172,8 @@ namespace spehs
 		//Setting only one coordinate
 		virtual void incrementX(int incrementation){ setXLocal(position.x + incrementation); }
 		virtual void incrementY(int incrementation){ setYLocal(position.y + incrementation); }
-		virtual void setXLocal(int x){ position.x = x; disableBit(state, GUIRECT_POSITIONED); }
-		virtual void setYLocal(int y){ position.y = y; disableBit(state, GUIRECT_POSITIONED); }
+		virtual void setXLocal(int x){ position.x = x; disableBit(state, GUIRECT_POSITION_UPDATED_BIT); }
+		virtual void setYLocal(int y){ position.y = y; disableBit(state, GUIRECT_POSITION_UPDATED_BIT); }
 		//Getting the GUIRectangle screen position (global)
 		glm::ivec2 getPositionGlobal();
 		int getXGlobal();
@@ -182,15 +187,15 @@ namespace spehs
 		//Scale managament
 		virtual void setSize(int width, int height){ setWidth(width); setHeight(height); }
 		virtual void setSize(glm::ivec2& newSize){ setWidth(newSize.x); setHeight(newSize.y); }
-		virtual void setWidth(int width){ if (size.x == width) return; size.x = width; disableStateRecursiveUpwards(GUIRECT_SCALED); }
-		virtual void setHeight(int height){ if (size.y == height) return; size.y = height; disableStateRecursiveUpwards(GUIRECT_SCALED); }
+		virtual void setWidth(int width){ if (size.x == width) return; size.x = width; disableStateRecursiveUpwards(GUIRECT_SCALE_UPDATED_BIT); }
+		virtual void setHeight(int height){ if (size.y == height) return; size.y = height; disableStateRecursiveUpwards(GUIRECT_SCALE_UPDATED_BIT); }
 		//Getters
-		virtual glm::ivec2 getSize(){ if (!(state & GUIRECT_SCALED)) updateScale(); return size; }
-		virtual int getWidth(){ if (!(state & GUIRECT_SCALED)) updateScale(); return size.x; }
-		virtual int getHeight(){ if (!(state & GUIRECT_SCALED)) updateScale(); return size.y; }
-		virtual glm::ivec2 getMinSize(){ if (!(state & GUIRECT_MIN_SIZE_UPDATED)) updateMinSize(); return minSize; }
-		virtual int getMinWidth(){ if (!(state & GUIRECT_MIN_SIZE_UPDATED)) updateMinSize(); return minSize.x; }
-		virtual int getMinHeight(){ if (!(state & GUIRECT_MIN_SIZE_UPDATED)) updateMinSize(); return minSize.y; }
+		virtual glm::ivec2 getSize(){ if (!(state & GUIRECT_SCALE_UPDATED_BIT)) updateScale(); return size; }
+		virtual int getWidth(){ if (!(state & GUIRECT_SCALE_UPDATED_BIT)) updateScale(); return size.x; }
+		virtual int getHeight(){ if (!(state & GUIRECT_SCALE_UPDATED_BIT)) updateScale(); return size.y; }
+		virtual glm::ivec2 getMinSize(){ if (!(state & GUIRECT_MIN_SIZE_UPDATED_BIT)) updateMinSize(); return minSize; }
+		virtual int getMinWidth(){ if (!(state & GUIRECT_MIN_SIZE_UPDATED_BIT)) updateMinSize(); return minSize.x; }
+		virtual int getMinHeight(){ if (!(state & GUIRECT_MIN_SIZE_UPDATED_BIT)) updateMinSize(); return minSize.y; }
 		
 		//Identity
 		GUIRectangle* getAsGUIRectanglePtr(){ return this; }
@@ -205,6 +210,8 @@ namespace spehs
 
 	protected:
 		void createText();
+		virtual void onEnable(){ enableState(GUIRECT_ENABLED_BIT); }
+		virtual void onDisable(){ disableState(GUIRECT_ENABLED_BIT); }
 
 		glm::vec4 color;///<Color values given to polygon. Ranges from 0.0f - 1.0f
 		glm::ivec2 position;///<The position of the rectangle, originating from the lower left corner, given in screen coordinates. Relative to parent's position

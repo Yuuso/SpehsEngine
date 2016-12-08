@@ -6,7 +6,7 @@
 
 namespace spehs
 {
-	GUIRectangleContainer::GUIRectangleContainer() : beginElementIndex(0), updateElementCount(0)
+	GUIRectangleContainer::GUIRectangleContainer()
 	{
 		open();
 	}
@@ -15,35 +15,38 @@ namespace spehs
 		for (unsigned i = 0; i < elements.size(); i++)
 			delete elements[i];
 	}
-	void GUIRectangleContainer::update()
+	void GUIRectangleContainer::inputUpdate()
 	{
-		GUIRectangle::update();
+		disableState(GUIRECT_MOUSE_HOVER_CONTAINER);
 
-		//If mouse is hovering over the base rectangle, enable container hovering bit
-		if (checkBit(state, GUIRECT_MOUSE_HOVER))
-			enableBit(state, GUIRECT_MOUSE_HOVER_CONTAINER);
-		else
-			disableBit(state, GUIRECT_MOUSE_HOVER_CONTAINER);
-
-		if (isOpen())
-		{//Update elements
-			for (int i = beginElementIndex; i < beginElementIndex + updateElementCount; i++)
-			{
-				elements[i]->update();
-				//If element is under mouse, mark this container as under mouse
-				if (elements[i]->getMouseHoverAny())
-					enableBit(state, GUIRECT_MOUSE_HOVER_CONTAINER);
-			}
-		}
-	}
-	void GUIRectangleContainer::postUpdate()
-	{
-		GUIRectangle::postUpdate();
+		//Updating elements
 		if (checkState(GUIRECT_OPEN))
 		{
-			for (int i = beginElementIndex; i < beginElementIndex + updateElementCount; i++)
-				elements[i]->postUpdate();
+			for (unsigned i = 0; i < elements.size(); i++)
+			{
+				elements[i]->inputUpdate();
+				//If element is under mouse, mark this container as under mouse
+				if (elements[i]->getMouseHoverAny())
+					enableState(GUIRECT_MOUSE_HOVER_CONTAINER);
+			}
 		}
+
+		//Update this
+		GUIRectangle::inputUpdate();
+
+		//If mouse is hovering over the base rectangle, enable container hovering bit
+		if (checkState(GUIRECT_MOUSE_HOVER))
+			enableState(GUIRECT_MOUSE_HOVER_CONTAINER);
+
+	}
+	void GUIRectangleContainer::visualUpdate()
+	{
+		if (checkState(GUIRECT_OPEN))
+		{
+			for (unsigned i = 0; i < elements.size(); i++)
+				elements[i]->visualUpdate();
+		}
+		GUIRectangle::visualUpdate();
 	}
 	void GUIRectangleContainer::setRenderState(const bool _state)
 	{
@@ -51,31 +54,29 @@ namespace spehs
 		if (checkState(GUIRECT_OPEN))
 		{
 			for (unsigned i = 0; i < elements.size(); i++)
-			{
-				if (i < beginElementIndex || i > getEndElementIndex())
-					elements[i]->setRenderState(false);
-				else
-					elements[i]->setRenderState(_state);
-			}
+				elements[i]->setRenderState(_state);
 		}
 		else
-		{//Container is not open
+		{
 			for (unsigned i = 0; i < elements.size(); i++)
 				elements[i]->setRenderState(false);
 		}
 	}
 	bool GUIRectangleContainer::isReceivingInput()
 	{
-		if (!isOpen())
+		if (!isOpen() || !checkState(GUIRECT_ENABLED_BIT))
 			return false;
 		if (checkState(GUIRECT_RECEIVING_INPUT))
 			return true;
 
 		//Check activity in elements
-		for (unsigned i = 0; i < updateElementCount; i++)
+		if (checkState(GUIRECT_OPEN))
 		{
-			if (elements[beginElementIndex + i]->isReceivingInput())
-				return true;
+			for (unsigned i = 0; i < elements.size(); i++)
+			{
+				if (elements[i]->isReceivingInput())
+					return true;
+			}
 		}
 
 		return false;
@@ -85,12 +86,10 @@ namespace spehs
 		for (unsigned i = 0; i < elements.size(); i++)
 			delete elements[i];
 		elements.clear();
-		beginElementIndex = 0;
-		updateElementCount = 0;
 		minElementSize.x = 0;
 		minElementSize.y = 0;
 		if (parent)
-			parent->disableState(GUIRECT_SCALED);
+			parent->disableStateRecursive(GUIRECT_SCALE_UPDATED_BIT);
 	}
 	void GUIRectangleContainer::addElement(GUIRectangle* element)
 	{
@@ -99,22 +98,16 @@ namespace spehs
 		elements.back()->setDepth(getDepth() + 10);
 
 		//Render state
-		if (checkState(GUIRECT_OPEN))
-			element->setRenderState(getRenderState());
-		else
-			element->setRenderState(false);
+		element->setRenderState(getRenderState() && checkState(GUIRECT_OPEN));
 
-		//Enable state
+		//Enabled state
 		if (checkState(GUIRECT_ENABLED_BIT))
 			element->enableStateRecursive(GUIRECT_ENABLED_BIT);
 		else
 			element->disableStateRecursive(GUIRECT_ENABLED_BIT);
 
 		//Min size must be updated for everything above
-		disableStateRecursiveUpwards(GUIRECT_MIN_SIZE_UPDATED);
-		
-		//Element update tracking
-		incrementUpdateElementCount(1);
+		disableStateRecursiveUpwards(GUIRECT_MIN_SIZE_UPDATED_BIT);
 	}
 	bool GUIRectangleContainer::removeElement(GUIRectangle* element)
 	{
@@ -124,10 +117,8 @@ namespace spehs
 			{
 				delete elements[i];
 				elements.erase(elements.begin() + i);
-				disableBit(state, GUIRECT_SCALED);
-				disableBit(state, GUIRECT_POSITIONED);
-				if (updateElementCount > elements.size())
-					--updateElementCount;
+				disableStateRecursiveUpwards(GUIRECT_SCALE_UPDATED_BIT);
+				disableStateRecursiveUpwards(GUIRECT_POSITION_UPDATED_BIT);
 				return true;
 			}
 		}
@@ -145,12 +136,6 @@ namespace spehs
 		for (unsigned i = 0; i < elements.size(); i++)
 			elements[i]->disableStateRecursive(stateBit);
 	}
-	int GUIRectangleContainer::getEndElementIndex()
-	{
-		if (updateElementCount <= 0)
-			return -1;
-		return beginElementIndex + updateElementCount - 1;
-	}
 	void GUIRectangleContainer::onEnable()
 	{
 		GUIRectangle::onEnable();
@@ -163,107 +148,54 @@ namespace spehs
 		for (unsigned i = 0; i < elements.size(); i++)
 			elements[i]->onDisable();
 	}
-	void GUIRectangleContainer::incrementUpdateElementCount(int incrementation)
-	{
-		do
-		{
-			if (incrementation < 0)
-			{//Try to decrease
-				if (updateElementCount == 0)
-					break;
-				elements[getEndElementIndex()]->setRenderState(false);
-				updateElementCount--;
-				++incrementation;
-			}
-			else
-			{//Try to increase
-				if (getEndElementIndex() + 1 == elements.size())
-					break;
-				updateElementCount++;
-				if (polygon->getRenderState())
-					elements[getEndElementIndex()]->setRenderState(true);
-				else
-					elements[getEndElementIndex()]->setRenderState(false);
-				--incrementation;
-			}
-		} while (incrementation != 0);
-
-		disableBit(state, GUIRECT_SCALED);
-		disableBit(state, GUIRECT_POSITIONED);
-	}
-	void GUIRectangleContainer::scroll(int amount)
-	{
-		if (amount > 0)
-		{//Scroll down
-			for (unsigned i = 0; i < amount; i++)
-			{
-				if (beginElementIndex + updateElementCount >= elements.size())
-					break;//Do not scroll any more downwards
-				elements[beginElementIndex + updateElementCount]->setRenderState(true);//Make the bottom-most element visible
-				elements[beginElementIndex]->setRenderState(false);//Make the top-most element invisible
-				beginElementIndex++;
-			}
-		}
-		else if (amount < 0)
-		{//Scroll up
-			amount *= -1;//flip amount for for loop
-			for (unsigned i = 0; i < amount; i++)
-			{
-				if (beginElementIndex <= 0)
-					break;//Do not scroll any more upwards
-				beginElementIndex--;
-				elements[beginElementIndex + updateElementCount]->setRenderState(false);//Make the bottom-most element invisible
-				elements[beginElementIndex]->setRenderState(true);//Make the top-most element visible
-			}
-		}
-		else
-			return;
-
-		//Reposition in the next post update
-		disableBit(state, GUIRECT_SCALED);
-		disableBit(state, GUIRECT_POSITIONED);
-		
-	}
-	void GUIRectangleContainer::open()
+	bool GUIRectangleContainer::open()
 	{//Open container dimension
-		enableBit(state, GUIRECT_OPEN);
-		disableBit(state, GUIRECT_POSITIONED);
-		disableBit(state, GUIRECT_SCALED);
-		disableBit(state, GUIRECT_MIN_SIZE_UPDATED);
+		if (checkState(GUIRECT_OPEN))
+			return false;
+
+		enableState(GUIRECT_OPEN);
+		disableStateRecursiveUpwards(GUIRECT_MIN_SIZE_UPDATED_BIT);
+		disableStateRecursiveUpwards(GUIRECT_SCALE_UPDATED_BIT);
 		setRenderState(true);
+		return true;
 	}
-	void GUIRectangleContainer::close()
+	bool GUIRectangleContainer::close()
 	{//Close container dimension
-		disableBit(state, GUIRECT_OPEN);
+		if (!checkState(GUIRECT_OPEN))
+			return false;
+
+		disableStateRecursive(GUIRECT_OPEN);//Close all below
+		disableStateRecursiveUpwards(GUIRECT_MIN_SIZE_UPDATED_BIT);//Make all above update size
+		disableStateRecursiveUpwards(GUIRECT_SCALE_UPDATED_BIT);//Make all above update scale and therefore position
 		for (unsigned i = 0; i < elements.size(); i++)
 			elements[i]->setRenderState(false);
+		return true;
 	}
-	void GUIRectangleContainer::closeTreeElements()
+	void GUIRectangleContainer::toggleOpen()
 	{
-		for (int i = beginElementIndex; i <= getEndElementIndex(); i++)
-			if (elements[i]->getAsGUIRectangleContainerPtr())
-			{
-			if (elements[i]->getAsGUIRectangleTreePtr())
-				elements[i]->getAsGUIRectangleTreePtr()->close();
-			else
-				elements[i]->getAsGUIRectangleContainerPtr()->closeTreeElements();
-			}
-	}
-	void GUIRectangleContainer::closeTreeElements(GUIRectangle* excluded)
-	{
-		for (int i = beginElementIndex; i <= getEndElementIndex(); i++)
-			if (elements[i]->getAsGUIRectangleContainerPtr())
-			{
-			if (elements[i]->getAsGUIRectangleTreePtr() && elements[i] != excluded)
-				elements[i]->getAsGUIRectangleTreePtr()->close();
-			else
-				elements[i]->getAsGUIRectangleContainerPtr()->closeTreeElements(excluded);
-			}
+		if (checkState(GUIRECT_OPEN))
+			close();
+		else
+			open();
 	}
 	void GUIRectangleContainer::setDepth(int16_t depth)
 	{
 		GUIRectangle::setDepth(depth);
 		for (unsigned i = 0; i < elements.size(); i++)
 			elements[i]->setDepth(depth + 10);
+	}
+	bool GUIRectangleContainer::isDescendant(GUIRectangle* element)
+	{
+		for (unsigned i = 0; i < elements.size(); i++)
+		{
+			if (elements[i] == element)
+				return true;
+			if (elements[i]->getAsGUIRectangleContainerPtr())
+			{
+				if (elements[i]->getAsGUIRectangleContainerPtr()->isDescendant(element))
+					return true;
+			}
+		}
+		return false;
 	}
 }

@@ -560,7 +560,7 @@ namespace spehs
 				lines.pop_back();
 			}
 		}
-		void setPlaneDepth(uint16_t depth)
+		void setPlaneDepth(int16_t depth)
 		{
 			planeDepth = depth;
 			consoleText->setPlaneDepth(depth);

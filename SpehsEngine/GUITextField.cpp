@@ -25,9 +25,9 @@ namespace spehs
 	GUITextField::~GUITextField()
 	{
 	}
-	void GUITextField::update()
+	void GUITextField::inputUpdate()
 	{
-		GUIRectangle::update();
+		GUIRectangle::inputUpdate();
 
 		if (checkState(GUIRECT_ENABLED_BIT))
 		{//When enabled
@@ -72,9 +72,9 @@ namespace spehs
 		}
 		stringUpdated = true;
 
-		disableStateRecursiveUpwards(GUIRECT_MIN_SIZE_UPDATED);
-		disableStateRecursiveUpwards(GUIRECT_POSITIONED);
-		disableStateRecursiveUpwards(GUIRECT_SCALED);
+		disableStateRecursiveUpwards(GUIRECT_MIN_SIZE_UPDATED_BIT);
+		disableStateRecursiveUpwards(GUIRECT_POSITION_UPDATED_BIT);
+		disableStateRecursiveUpwards(GUIRECT_SCALE_UPDATED_BIT);
 	}
 	void GUITextField::toggleTyping()
 	{

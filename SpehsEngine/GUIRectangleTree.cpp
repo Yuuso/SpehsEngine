@@ -24,15 +24,17 @@ namespace spehs
 	GUIRectangleTree::~GUIRectangleTree()
 	{
 	}
-	void GUIRectangleTree::update()
+	void GUIRectangleTree::inputUpdate()
 	{//NOTE: do not use container update, tree requires special function call ordering
 		
-		GUIRectangle::update();
-		//If mouse is hovering over the base rectangle, enable container hovering bit
-		if (checkBit(state, GUIRECT_MOUSE_HOVER))
-			enableBit(state, GUIRECT_MOUSE_HOVER_CONTAINER);
-		else
-			disableBit(state, GUIRECT_MOUSE_HOVER_CONTAINER);
+		pressedLeafNodeID = 0;
+		GUIRectangleContainer::inputUpdate();
+
+		////If mouse is hovering over the base rectangle, enable container hovering bit
+		//if (checkState(GUIRECT_MOUSE_HOVER))
+		//	enableState(GUIRECT_MOUSE_HOVER_CONTAINER);
+		//else
+		//	disableState(GUIRECT_MOUSE_HOVER_CONTAINER);
 
 		////Closing / Opening
 		if (pressedLeafNodeID)
@@ -54,26 +56,31 @@ namespace spehs
 			else
 			{//Open when mouse is hovering over
 				if (checkState(GUIRECT_MOUSE_HOVER_CONTAINER) && checkState(GUIRECT_ENABLED_BIT))
+				{
 					open();
+					if (getString() == "def")
+					{
+						int der(0);
+						der++;
+					}
+				}
 				else if (treeOpenTimer <= 0)
 					close();
 			}
 		}
 
+		//pressedLeafNodeID = 0;
+		//if (checkState(GUIRECT_OPEN))
+		//{
+		//	for (unsigned i = 0; i < elements.size(); i++)
+		//	{
+		//		elements[i]->update();
+		//		if (elements[i]->checkState(GUIRECT_MOUSE_HOVER))
+		//			enableState(GUIRECT_MOUSE_HOVER_CONTAINER);
+		//	}
+		//}
 
-		pressedLeafNodeID = 0;//Reset pressed leaf node id before next node update
-
-		if (checkState(GUIRECT_OPEN))
-		{//Update elements
-			for (int i = beginElementIndex; i < beginElementIndex + updateElementCount; i++)
-			{
-				elements[i]->update();
-				//If element is under mouse, mark this container as under mouse
-				if (elements[i]->getMouseHoverAny())
-					enableBit(state, GUIRECT_MOUSE_HOVER_CONTAINER);
-			}
-		}
-		if (checkBit(state, GUIRECT_MOUSE_HOVER_CONTAINER))
+		if (checkState(GUIRECT_MOUSE_HOVER_CONTAINER))
 		{//Mouse hovering over the container
 			treeOpenTimer = TREE_OPEN_TIME;
 		}
@@ -83,21 +90,27 @@ namespace spehs
 			if (treeOpenTimer <= 0)
 				close();
 			else
-				enableBit(state, GUIRECT_MOUSE_HOVER_CONTAINER);//Keep container hover active for the duration of open timer
+				enableState(GUIRECT_MOUSE_HOVER_CONTAINER);//Keep container hover active for the duration of open timer
 		}
 	}
-	void GUIRectangleTree::setRenderState(const bool _state)
+	void GUIRectangleTree::updateMinSize()
 	{
-		GUIRectangle::setRenderState(_state);
-		if (!checkState(GUIRECT_OPEN))
+		/*Min size is retrieved from rectangle, update it*/
+		GUIRectangle::updateMinSize();
+
+		if (isOpen())
 		{
-			for (int i = beginElementIndex; i <= getEndElementIndex(); i++)
-				elements[i]->setRenderState(false);
-		}
-		else
-		{
-			for (int i = beginElementIndex; i <= getEndElementIndex(); i++)
-				elements[i]->setRenderState(_state);
+			//Min element size
+			minElementSize.x = 0;
+			minElementSize.y = 0;
+			for (unsigned i = 0; i < elements.size(); i++)
+			{
+				elements[i]->updateMinSize();
+				if (elements[i]->getMinWidth() > minElementSize.x)
+					minElementSize.x = elements[i]->getMinWidth();
+				if (elements[i]->getMinHeight() > minElementSize.y)
+					minElementSize.y = elements[i]->getMinHeight();
+			}
 		}
 	}
 	void GUIRectangleTree::updateScale()
@@ -139,11 +152,11 @@ namespace spehs
 
 			////Element Y positioning
 			int branchY(getYGlobal());
-			if (branchY + updateElementCount * minElementSize.y + 1 > applicationData->getWindowHeight())
-				branchY = applicationData->getWindowHeight() - updateElementCount * minElementSize.y - 1;
+			if (branchY + elements.size() * minElementSize.y + 1 > applicationData->getWindowHeight())
+				branchY = applicationData->getWindowHeight() - elements.size() * minElementSize.y - 1;
 
 			//Position elements
-			for (int i = beginElementIndex; i <= getEndElementIndex(); i++)
+			for (unsigned i = 0; i < elements.size(); i++)
 				elements[i]->setPositionGlobal(getXGlobal() + branchX, branchY + i * minElementSize.y);
 		}
 	}
@@ -159,7 +172,7 @@ namespace spehs
 	void GUIRectangleTree::addElement(GUIRectangle* element)
 	{
 		GUIRectangleContainer::addElement(element);
-		element->setRenderState(checkState(GUIRECT_OPEN));
+		element->setRenderState(checkState(GUIRECT_OPEN) && getRenderState());
 
 		//By default, make tree to open on mouse hover when node element is added
 		openTreeButton = 0;
@@ -169,64 +182,38 @@ namespace spehs
 		addElement(new GUIRectangleTree(str));
 		elements.back()->setID(_ID);
 	}
-	void GUIRectangleTree::open()
+	bool GUIRectangleTree::open()
 	{
-		if (checkState(GUIRECT_OPEN))
-			return;
+		if (GUIRectangleContainer::open())
+			return false;
 
 		//Close other trees
 		if (getRootTree())
-			getFirstGenerationParent()->getAsGUIRectangleContainerPtr()->closeTreeElements(getRootTree()->getAsGUIRectanglePtr());
+			getFirstGenerationParent()->closeElementsOfType<GUIRectangleTree>(this);
 
 		//Open this
 		treeOpenTimer = TREE_OPEN_TIME;
-		GUIRectangleContainer::open();
+		return true;
 	}
-	void GUIRectangleTree::close()
+	bool GUIRectangleTree::close()
 	{
-		if (!checkState(GUIRECT_OPEN))
-			return;
+		if (!GUIRectangleContainer::close())
+			return false;
 		
-		//Close this
+		//Close timer reset
 		treeOpenTimer = 0.0f;
-		GUIRectangleContainer::close();
 
 		//Close all elements
 		for (unsigned i = 0; i < elements.size(); i++)
 			elements[i]->getAsGUIRectangleTreePtr()->close();
-	}
-	void GUIRectangleTree::toggleOpen()
-	{
-		if (checkBit(state, GUIRECT_OPEN))
-			close();
-		else
-			open();
+
+		return true;
 	}
 	GUIRectangleTree* GUIRectangleTree::getRootTree()
 	{
 		if (parent && parent->getAsGUIRectangleTreePtr())
 			return parent->getAsGUIRectangleTreePtr()->getRootTree();
 		return this;
-	}
-	void GUIRectangleTree::updateMinSize()
-	{
-		/*Min size is retrieved from rectangle, update it*/
-		GUIRectangle::updateMinSize();
-
-		if (isOpen())
-		{
-			//Min element size
-			minElementSize.x = 0;
-			minElementSize.y = 0;
-			for (unsigned i = 0; i < elements.size(); i++)
-			{
-				elements[i]->updateMinSize();
-				if (elements[i]->getMinWidth() > minElementSize.x)
-					minElementSize.x = elements[i]->getMinWidth();
-				if (elements[i]->getMinHeight() > minElementSize.y)
-					minElementSize.y = elements[i]->getMinHeight();
-			}
-		}
 	}
 	void GUIRectangleTree::onDisable()
 	{

@@ -36,9 +36,9 @@ namespace spehs
 		checkboxBackground->destroy();
 		checkboxFilling->destroy();
 	}
-	void GUICheckbox::update()
+	void GUICheckbox::inputUpdate()
 	{
-		GUIRectangle::update();
+		GUIRectangle::inputUpdate();
 
 		//Check mouse press
 		previousSelectedState = checkBit(state, GUIRECT_SELECTED);
@@ -69,11 +69,27 @@ namespace spehs
 			checkboxFilling->setRenderState(false);
 		}
 	}
-	void GUICheckbox::setDepth(uint16_t depth)
+	void GUICheckbox::setDepth(int16_t depth)
 	{
 		GUIRectangle::setDepth(depth);
 		checkboxBackground->setPlaneDepth(depth + 1);
 		checkboxFilling->setPlaneDepth(depth + 2);
+	}
+	void GUICheckbox::updateMinSize()
+	{
+		minSize.x = 2 * CHECKBOX_BORDER + checkboxSize;
+		if (text)
+			minSize.x += text->getTextWidth();
+		minSize.y = 2 * CHECKBOX_BORDER + checkboxSize;
+		if (text && text->getTextHeight() > minSize.y)
+			minSize.y = text->getTextHeight();
+	}
+	void GUICheckbox::updateScale()
+	{
+		GUIRectangle::updateScale();
+
+		checkboxBackground->resize(checkboxSize, checkboxSize);
+		checkboxFilling->resize(checkboxSize - 2 * CHECKBOX_BORDER, checkboxSize - 2 * CHECKBOX_BORDER);
 	}
 	void GUICheckbox::updatePosition()
 	{
@@ -100,22 +116,6 @@ namespace spehs
 				textX += 0.5f *(size.x - size.y - CHECKBOX_BORDER - text->getTextWidth());
 			text->setPosition(textX, getYGlobal() + 0.5f * (size.y + text->getTextHeight()) - text->getFontHeight() - text->getFontDescender());
 		}
-	}
-	void GUICheckbox::updateScale()
-	{
-		GUIRectangle::updateScale();
-
-		checkboxBackground->resize(checkboxSize, checkboxSize);
-		checkboxFilling->resize(checkboxSize - 2 * CHECKBOX_BORDER, checkboxSize - 2 * CHECKBOX_BORDER);
-	}
-	void GUICheckbox::updateMinSize()
-	{
-		minSize.x = 2 * CHECKBOX_BORDER + checkboxSize;
-		if (text)
-			minSize.x += text->getTextWidth();
-		minSize.y = 2 * CHECKBOX_BORDER + checkboxSize;
-		if (text && text->getTextHeight() > minSize.y)
-			minSize.y = text->getTextHeight();
 	}
 	void GUICheckbox::setBooleanPtr(bool* ptr)
 	{

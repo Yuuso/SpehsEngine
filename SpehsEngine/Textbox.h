@@ -9,7 +9,7 @@ namespace spehs
 	struct Textbox
 	{
 		Textbox(std::string& string);
-		Textbox(std::string& string, uint16_t depth);
+		Textbox(std::string& string, int16_t depth);
 		~Textbox();
 
 		virtual bool checkPointCollision(const int x, const int y);

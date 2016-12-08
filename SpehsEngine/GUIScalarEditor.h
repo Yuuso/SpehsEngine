@@ -49,9 +49,9 @@ namespace spehs
 			setValue(*ptr);
 		}
 		void setTickAmount(Scalar _tickAmount){ tickAmount = _tickAmount; }
-		void update()
+		void inputUpdate()
 		{
-			GUIRectangleRow::update();
+			GUIRectangleRow::inputUpdate();
 
 			if (valueRect->stringReady())
 				setValue(getValueFromTextField());

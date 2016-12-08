@@ -18,7 +18,7 @@ namespace spehs
 		polygon->setColor(spehs::GUIRectangle::defaultTooltipColor);
 		setRenderState(false);
 	}
-	Textbox::Textbox(std::string& string, uint16_t depth) : Textbox(string)
+	Textbox::Textbox(std::string& string, int16_t depth) : Textbox(string)
 	{
 		setDepth(depth);
 	}

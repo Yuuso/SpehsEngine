@@ -72,10 +72,9 @@ namespace spehs
 		if (pressCallbackFunction)
 			delete pressCallbackFunction;
 	}
-	void GUIRectangle::update()
+	void GUIRectangle::inputUpdate()
 	{
 		disableBit(state, GUIRECT_MOUSE_HOVER);
-		disableBit(state, GUIRECT_MOUSE_HOVER_CONTAINER);
 		updateMouseHover();
 		if (pressCallbackFunction && getMouseHover() && inputManager->isKeyPressed(MOUSEBUTTON_LEFT))
 			(*pressCallbackFunction)(*this);
@@ -106,7 +105,7 @@ namespace spehs
 				tooltip->setRenderState(false);
 		}
 	}
-	void GUIRectangle::postUpdate()
+	void GUIRectangle::visualUpdate()
 	{
 		//Return if not visible
 		if (!getRenderState())
@@ -114,7 +113,7 @@ namespace spehs
 
 		//Tooltip
 		if (tooltip)
-			tooltip->postUpdate();
+			tooltip->visualUpdate();
 		
 		//Hover color
 		if (checkState(GUIRECT_HOVER_COLOR) && checkState(GUIRECT_ENABLED_BIT))
@@ -137,14 +136,20 @@ namespace spehs
 				polygon->setColor(color);
 		}
 
-		if (!checkBit(state, GUIRECT_SCALED))
-		{//Rescaling
-			updateScale();
-			updatePosition();
+		if (!checkState(GUIRECT_MIN_SIZE_UPDATED_BIT))
+		{//Recalculate min size + rescale + reposition
+			updateMinSize(); enableState(GUIRECT_MIN_SIZE_UPDATED_BIT);
+			updateScale(); enableState(GUIRECT_SCALE_UPDATED_BIT);
+			updatePosition(); enableState(GUIRECT_POSITION_UPDATED_BIT);
 		}
-		else if (!checkBit(state, GUIRECT_POSITIONED))
-		{//Repositioning GUI
-			updatePosition();
+		else if (!checkBit(state, GUIRECT_SCALE_UPDATED_BIT))
+		{//Rescale + reposition
+			updateScale(); enableState(GUIRECT_SCALE_UPDATED_BIT);
+			updatePosition(); enableState(GUIRECT_POSITION_UPDATED_BIT);
+		}
+		else if (!checkBit(state, GUIRECT_POSITION_UPDATED_BIT))
+		{//Reposition
+			updatePosition(); enableState(GUIRECT_POSITION_UPDATED_BIT);
 		}
 	}
 	void GUIRectangle::setRenderState(const bool _state)
@@ -176,8 +181,52 @@ namespace spehs
 		enableBit(state, GUIRECT_MOUSE_HOVER);
 		return true;
 	}
+	void GUIRectangle::updateMinSize()
+	{
+		minSize.x = 0;
+		minSize.y = 0;
+
+		if (text)
+		{
+			minSize.x = text->getTextWidth() + 2 * TEXT_PREFERRED_SIZE_BORDER;
+			minSize.y = text->getTextHeight() + 2 * TEXT_PREFERRED_SIZE_BORDER;
+		}
+		if (displayTexture)
+		{
+			if (minSize.x < displayTexture->width)
+				minSize.x = displayTexture->width;
+			if (minSize.y < displayTexture->height)
+				minSize.y = displayTexture->height;
+		}
+
+		if (minSize.x > size.x)
+			setWidth(minSize.x);
+		if (minSize.y > size.y)
+			setWidth(minSize.y);
+
+		enableState(GUIRECT_MIN_SIZE_UPDATED_BIT);
+	}
+	void GUIRectangle::updateScale()
+	{
+		if (!checkState(GUIRECT_MIN_SIZE_UPDATED_BIT))
+			updateMinSize();
+
+		//Account minimum size
+		if (size.x < minSize.x)
+			size.x = minSize.x;
+		if (size.y < minSize.y)
+			size.y = minSize.y;
+
+		polygon->resize(size.x, size.y);
+		enableState(GUIRECT_SCALE_UPDATED_BIT);
+	}
 	void GUIRectangle::updatePosition()
 	{
+		if (!checkState(GUIRECT_SCALE_UPDATED_BIT))
+			updateMinSize();
+		else if (!checkState(GUIRECT_MIN_SIZE_UPDATED_BIT))
+			updateMinSize();
+
 		polygon->setPosition(getXGlobal(), getYGlobal());
 
 		//Text position
@@ -199,24 +248,7 @@ namespace spehs
 			displayTexture->polygon->setPosition(getXGlobal() + size.x / 2, getYGlobal() + size.y / 2);
 		}
 
-		enableBit(state, GUIRECT_POSITIONED);
-	}
-	void GUIRectangle::updateScale()
-	{
-		if (!checkBit(state, GUIRECT_MIN_SIZE_UPDATED))
-		{//TODO
-			updateMinSize();
-			enableBit(state, GUIRECT_MIN_SIZE_UPDATED);//Disable bit here because update min size function is virtual -> method implementation doesn't have to remember disabling
-		}
-
-		//Account minimum size
-		if (size.x < minSize.x)
-			size.x = minSize.x;
-		if (size.y < minSize.y)
-			size.y = minSize.y;
-
-		polygon->resize(size.x, size.y);
-		enableBit(state, GUIRECT_SCALED);
+		enableState(GUIRECT_POSITION_UPDATED_BIT);
 	}
 	void GUIRectangle::setColor(glm::vec3& c)
 	{
@@ -266,35 +298,22 @@ namespace spehs
 			return getAsGUIRectangleContainerPtr();
 		return nullptr;
 	}
+	bool GUIRectangle::isDescendantOf(GUIRectangleContainer* ascendant)
+	{
+		if (parent)
+		{
+			if (parent == ascendant)
+				return true;
+			return parent->isDescendantOf(ascendant);
+		}
+		return false;
+	}
 	void GUIRectangle::setJustification(GUIRECT_STATE_TYPE justificationBit)
 	{
 		disableBit(state, GUIRECT_TEXT_JUSTIFICATION_LEFT);
 		disableBit(state, GUIRECT_TEXT_JUSTIFICATION_CENTER);
 		disableBit(state, GUIRECT_TEXT_JUSTIFICATION_RIGHT);
 		enableBit(state, justificationBit);
-	}
-	void GUIRectangle::updateMinSize()
-	{
-		minSize.x = 0;
-		minSize.y = 0;
-
-		if (text)
-		{
-			minSize.x = text->getTextWidth() + 2 * TEXT_PREFERRED_SIZE_BORDER;
-			minSize.y = text->getTextHeight() + 2 * TEXT_PREFERRED_SIZE_BORDER;
-		}
-		if (displayTexture)
-		{
-			if (minSize.x < displayTexture->width)
-				minSize.x = displayTexture->width;
-			if (minSize.y < displayTexture->height)
-				minSize.y = displayTexture->height;
-		}
-
-		if (minSize.x > size.x)
-			setWidth(minSize.x);
-		if (minSize.y > size.y)
-			setWidth(minSize.y);
 	}
 
 	//Setters
@@ -306,9 +325,9 @@ namespace spehs
 			createText();
 		text->setString(str);
 
-		disableStateRecursiveUpwards(GUIRECT_SCALED);
-		disableStateRecursiveUpwards(GUIRECT_MIN_SIZE_UPDATED);
-		disableStateRecursiveUpwards(GUIRECT_POSITIONED);
+		disableStateRecursiveUpwards(GUIRECT_SCALE_UPDATED_BIT);
+		disableStateRecursiveUpwards(GUIRECT_MIN_SIZE_UPDATED_BIT);
+		disableStateRecursiveUpwards(GUIRECT_POSITION_UPDATED_BIT);
 	}
 	void GUIRectangle::setStringSize(int size)
 	{
@@ -318,9 +337,9 @@ namespace spehs
 			return;
 
 		text->setFontSize(size);
-		disableStateRecursiveUpwards(GUIRECT_SCALED);
-		disableStateRecursiveUpwards(GUIRECT_MIN_SIZE_UPDATED);
-		disableStateRecursiveUpwards(GUIRECT_POSITIONED);
+		disableStateRecursiveUpwards(GUIRECT_SCALE_UPDATED_BIT);
+		disableStateRecursiveUpwards(GUIRECT_MIN_SIZE_UPDATED_BIT);
+		disableStateRecursiveUpwards(GUIRECT_POSITION_UPDATED_BIT);
 	}
 	void GUIRectangle::setStringSizeRelative(int relativeSize)
 	{
@@ -396,8 +415,8 @@ namespace spehs
 		displayTexture->polygon->setRenderState(polygon->getRenderState());
 		displayTexture->width = texData->width;
 		displayTexture->height = texData->height;
-		disableStateRecursiveUpwards(GUIRECT_POSITIONED);
-		disableStateRecursiveUpwards(GUIRECT_SCALED);
+		disableStateRecursiveUpwards(GUIRECT_POSITION_UPDATED_BIT);
+		disableStateRecursiveUpwards(GUIRECT_SCALE_UPDATED_BIT);
 	}
 	void GUIRectangle::setTexture(std::string path)
 	{

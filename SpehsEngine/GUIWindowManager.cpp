@@ -44,8 +44,8 @@ namespace spehs
 		popup->setPositionGlobal(applicationData->getWindowWidthHalf() - popup->getWidth() * 0.5f, applicationData->getWindowHeightHalf() - popup->getHeight() * 0.5f);
 		popups.push_back(popup);
 		updateDepths();
-		popup->GUIRectangleContainer::update();
-		popup->GUIRectangleContainer::postUpdate();
+		popup->GUIRectangleContainer::inputUpdate();
+		popup->GUIRectangleContainer::visualUpdate();
 		batchManager.endSection();
 	}
 	void GUIWindowManager::update()
@@ -75,8 +75,8 @@ namespace spehs
 			}
 
 			//Update
-			popups.front()->update();
-			popups.front()->postUpdate();
+			popups.front()->inputUpdate();
+			popups.front()->visualUpdate();
 			if (popups.front()->getMouseHoverAny())
 				updateWindows = false;
 			
@@ -104,8 +104,8 @@ namespace spehs
 				{//Window must be open
 
 					//Run an update on this window, updates mouse hover variable
-					windows[i]->update();
-					windows[i]->postUpdate();
+					windows[i]->inputUpdate();
+					windows[i]->visualUpdate();
 
 					if ((windows[i]->checkState(GUIRECT_MOUSE_HOVER_CONTAINER) ||
 						windows[i]->checkState(GUIRECT_DRAGGING_BIT) ||

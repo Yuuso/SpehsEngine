@@ -15,14 +15,16 @@ namespace spehs
 		GUICheckbox(int _ID);
 		GUICheckbox(std::string str);
 		~GUICheckbox();
+		
+		void inputUpdate();
 
-		void update();
-		void setRenderState(const bool _state);
-		void setDepth(uint16_t depth);
-		void updatePosition();
-		void updateScale();
 		void updateMinSize();
-		void setCheckboxSize(int _size){ checkboxSize = _size; disableStateRecursiveUpwards(GUIRECT_SCALED); }
+		void updateScale();
+		void updatePosition();
+
+		void setRenderState(const bool _state);
+		void setDepth(int16_t depth);
+		void setCheckboxSize(int _size){ checkboxSize = _size; disableStateRecursiveUpwards(GUIRECT_SCALE_UPDATED_BIT); }
 
 		bool selectedStateChanged();
 		/*Checkbox updates the boolean behind this address*/

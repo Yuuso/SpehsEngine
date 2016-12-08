@@ -13,7 +13,7 @@ namespace spehs
 		GUITextField(int, int);
 		~GUITextField();
 
-		void update();
+		void inputUpdate();
 		void setString(std::string str);
 		void onDisable();
 

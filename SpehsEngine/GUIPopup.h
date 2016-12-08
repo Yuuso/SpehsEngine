@@ -46,10 +46,12 @@ namespace spehs
 			addOptions(moreOptions...);
 		}
 
-		void update();
-		void updatePosition();
-		void updateScale();
+		void inputUpdate();
+
 		void updateMinSize();
+		void updateScale();
+		void updatePosition();
+
 		void setBackgroundColor(glm::vec3& rgb);
 		void setBackgroundColor(glm::vec4& rgba);
 		void setBackgroundColor(unsigned char r, unsigned char g, unsigned char b, unsigned char a = 255);

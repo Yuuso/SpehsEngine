@@ -45,7 +45,7 @@ namespace spehs
 		std::string getTextEntered();///< Returns latest text executed to console
 
 		//Other
-		void setPlaneDepth(uint16_t depth);
+		void setPlaneDepth(int16_t depth);
 
 		extern unsigned long drawCalls;
 		extern unsigned long vertexDrawCount;
