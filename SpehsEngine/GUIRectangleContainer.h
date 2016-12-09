@@ -18,10 +18,8 @@ namespace spehs
 	The container automatically calls updates and renders elements within the index range from beginElementIndex up to updateElementCount.\n
 	Therefore, beginElementIndex + updateElementCount should always be equal or less than total element count.
 	*/
-	//template <typename GUIRect>
 	class GUIRectangleContainer : public GUIRectangle
 	{
-		//static_assert(std::is_base_of<Base, T1>::value, "GUIRect must derive from spehs::GUIRectangle");
 	public:
 		GUIRectangleContainer();
 		virtual ~GUIRectangleContainer();

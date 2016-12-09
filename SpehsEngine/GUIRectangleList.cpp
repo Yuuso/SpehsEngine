@@ -227,7 +227,7 @@ namespace spehs
 					if (beginElementIndex > 0)
 					{
 						--beginElementIndex;
-						elements[beginElementIndex]->setRenderState(checkState(GUIRECT_OPEN_BIT));
+						elements[beginElementIndex]->setRenderState(getRenderState() && checkState(GUIRECT_OPEN_BIT));
 					}
 					else
 						break;//Cannot increase
@@ -236,7 +236,7 @@ namespace spehs
 				{//Try incrementing from the end
 					if (beginElementIndex + updateElementCount < elements.size())
 					{
-						elements[beginElementIndex + updateElementCount]->setRenderState(checkState(GUIRECT_OPEN_BIT));
+						elements[beginElementIndex + updateElementCount]->setRenderState(getRenderState() && checkState(GUIRECT_OPEN_BIT));
 						updateElementCount++;
 					}
 					else
