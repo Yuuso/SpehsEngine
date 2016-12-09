@@ -179,6 +179,7 @@
     <ClInclude Include="InputManager.h" />
     <ClInclude Include="LengthConversion.h" />
     <ClInclude Include="Line.h" />
+    <ClInclude Include="Mathematics.h" />
     <ClInclude Include="OpenGLError.h" />
     <ClInclude Include="PhysicsWorld2D.h" />
     <ClInclude Include="Point.h" />
