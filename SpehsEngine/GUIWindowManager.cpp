@@ -33,7 +33,6 @@ namespace spehs
 	{
 		batchManager.beginSection();
 		windows.push_back(window);
-		window->setRenderState(false);
 		updateDepths();
 		batchManager.endSection();
 	}

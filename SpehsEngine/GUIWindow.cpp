@@ -35,9 +35,6 @@ namespace spehs
 
 	GUIWindow::GUIWindow() : doubleClickTimer(0), strechState(0)
 	{
-		//Set size
-		setSize(minSize);
-
 		//Header bar
 		header = new GUIRectangle(-1);
 		header->setParent(this);
@@ -47,6 +44,7 @@ namespace spehs
 		header->setJustification(GUIRECT_TEXT_JUSTIFICATION_LEFT);
 		header->setStringSize(applicationData->GUITextSize + 2);
 		header->setDepth(getDepth() + 1);
+		header->setRenderState(checkState(GUIRECT_OPEN_BIT) && getRenderState());
 
 		//Exit button
 		exit = new GUIRectangle(-2);
@@ -59,6 +57,7 @@ namespace spehs
 		exit->setStringColor(exitStringColor);
 		exit->setJustification(GUIRECT_TEXT_JUSTIFICATION_CENTER);
 		exit->setDepth(getDepth() + 1);
+		exit->setRenderState(checkState(GUIRECT_OPEN_BIT) && getRenderState());
 
 		//Strech background rectangle
 		strech = new GUIRectangle();
@@ -66,12 +65,10 @@ namespace spehs
 		strech->setPositionLocal(-strechWidth, -strechWidth);
 		strech->disableState(GUIRECT_HOVER_COLOR);
 		strech->setDepth(getDepth() - 1);
+		strech->setRenderState(checkState(GUIRECT_OPEN_BIT) && getRenderState());
 
-		//State
-		disableBit(state, GUIRECT_HOVER_COLOR);
-		disableBit(state, GUIRECT_OPEN);
-		onDisable();
-
+		setSize(minSize);
+		disableState(GUIRECT_HOVER_COLOR);
 		limitWithinMainWindow();
 	}
 	GUIWindow::~GUIWindow()
@@ -102,7 +99,6 @@ namespace spehs
 			enableState(GUIRECT_DRAGGING_BIT);//Begin dragging
 		else if (checkState(GUIRECT_DRAGGING_BIT) && !inputManager->isKeyDown(MOUSE_BUTTON_LEFT))
 		{//Stop dragging
-
 #ifdef DOCK_BORDER
 			//Check docking
 			if (inputManager->getMouseX() < DOCK_BORDER)
@@ -127,14 +123,13 @@ namespace spehs
 				setPositionLocal(strechWidth + leftBorder, applicationData->getWindowHeight() - header->getHeight() - strechWidth - size.y - upBorder);
 			}
 #endif
-
 			limitWithinMainWindow();
 			disableState(GUIRECT_DRAGGING_BIT);
 		}
 
 		////STRECHING
 		//Handle previous frame strech
-		if (checkState(GUIRECT_STRECHING_BIT) && inputManager->isKeyDown(MOUSE_BUTTON_LEFT))
+		if (/*Starting streching requires window to be enabled for interaction! -> No need for checking herer*/checkState(GUIRECT_STRECHING_BIT) && inputManager->isKeyDown(MOUSE_BUTTON_LEFT))
 		{
 			//Take record of current dimensions
 			float w = size.x;
@@ -334,9 +329,9 @@ namespace spehs
 	}
 	bool GUIWindow::close()
 	{
-		if (!checkState(GUIRECT_OPEN))
+		if (!checkState(GUIRECT_OPEN_BIT))
 			return false;
-		disableBit(state, GUIRECT_OPEN);
+		disableBit(state, GUIRECT_OPEN_BIT);
 		disableBit(state, GUIRECT_MOUSE_HOVER);
 		disableBit(state, GUIRECT_MOUSE_HOVER_CONTAINER);
 		disable();
@@ -345,9 +340,9 @@ namespace spehs
 	}
 	bool GUIWindow::open()
 	{
-		if (checkState(GUIRECT_OPEN))
+		if (checkState(GUIRECT_OPEN_BIT))
 			return false;
-		enableBit(state, GUIRECT_OPEN);
+		enableBit(state, GUIRECT_OPEN_BIT);
 		setRenderState(true);
 		refresh();
 		std::cout << "\nWindow opened: " << header->getString();

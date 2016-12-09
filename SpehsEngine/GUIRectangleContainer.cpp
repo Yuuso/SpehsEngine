@@ -20,7 +20,7 @@ namespace spehs
 		disableState(GUIRECT_MOUSE_HOVER_CONTAINER);
 
 		//Updating elements
-		if (checkState(GUIRECT_OPEN))
+		if (checkState(GUIRECT_OPEN_BIT))
 		{
 			for (unsigned i = 0; i < elements.size(); i++)
 			{
@@ -41,7 +41,7 @@ namespace spehs
 	}
 	void GUIRectangleContainer::visualUpdate()
 	{
-		if (checkState(GUIRECT_OPEN))
+		if (checkState(GUIRECT_OPEN_BIT))
 		{
 			for (unsigned i = 0; i < elements.size(); i++)
 				elements[i]->visualUpdate();
@@ -51,7 +51,7 @@ namespace spehs
 	void GUIRectangleContainer::setRenderState(const bool _state)
 	{
 		GUIRectangle::setRenderState(_state);
-		if (checkState(GUIRECT_OPEN))
+		if (checkState(GUIRECT_OPEN_BIT))
 		{
 			for (unsigned i = 0; i < elements.size(); i++)
 				elements[i]->setRenderState(_state);
@@ -64,13 +64,13 @@ namespace spehs
 	}
 	bool GUIRectangleContainer::isReceivingInput()
 	{
-		if (!isOpen() || !checkState(GUIRECT_ENABLED_BIT))
+		if (!checkState(GUIRECT_OPEN_BIT) || !checkState(GUIRECT_ENABLED_BIT))
 			return false;
 		if (checkState(GUIRECT_RECEIVING_INPUT))
 			return true;
 
 		//Check activity in elements
-		if (checkState(GUIRECT_OPEN))
+		if (checkState(GUIRECT_OPEN_BIT))
 		{
 			for (unsigned i = 0; i < elements.size(); i++)
 			{
@@ -98,7 +98,7 @@ namespace spehs
 		elements.back()->setDepth(getDepth() + 10);
 
 		//Render state
-		element->setRenderState(getRenderState() && checkState(GUIRECT_OPEN));
+		element->setRenderState(getRenderState() && checkState(GUIRECT_OPEN_BIT));
 
 		//Enabled state
 		if (checkState(GUIRECT_ENABLED_BIT))
@@ -150,10 +150,10 @@ namespace spehs
 	}
 	bool GUIRectangleContainer::open()
 	{//Open container dimension
-		if (checkState(GUIRECT_OPEN))
+		if (checkState(GUIRECT_OPEN_BIT))
 			return false;
 
-		enableState(GUIRECT_OPEN);
+		enableState(GUIRECT_OPEN_BIT);
 		disableStateRecursiveUpwards(GUIRECT_MIN_SIZE_UPDATED_BIT);
 		disableStateRecursiveUpwards(GUIRECT_SCALE_UPDATED_BIT);
 		setRenderState(true);
@@ -161,10 +161,10 @@ namespace spehs
 	}
 	bool GUIRectangleContainer::close()
 	{//Close container dimension
-		if (!checkState(GUIRECT_OPEN))
+		if (!checkState(GUIRECT_OPEN_BIT))
 			return false;
 
-		disableStateRecursive(GUIRECT_OPEN);//Close all below
+		disableState(GUIRECT_OPEN_BIT);
 		disableStateRecursiveUpwards(GUIRECT_MIN_SIZE_UPDATED_BIT);//Make all above update size
 		disableStateRecursiveUpwards(GUIRECT_SCALE_UPDATED_BIT);//Make all above update scale and therefore position
 		for (unsigned i = 0; i < elements.size(); i++)
@@ -173,7 +173,7 @@ namespace spehs
 	}
 	void GUIRectangleContainer::toggleOpen()
 	{
-		if (checkState(GUIRECT_OPEN))
+		if (checkState(GUIRECT_OPEN_BIT))
 			close();
 		else
 			open();

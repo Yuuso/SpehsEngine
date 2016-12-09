@@ -22,7 +22,7 @@
 #define GUIRECT_UNUSED5						0x00000400
 //GUI rectangle container
 #define GUIRECT_MOUSE_HOVER_CONTAINER		0x00000800//Whether mouse hover has been detected inside an element of the container
-#define GUIRECT_OPEN						0x00001000//Open containers update elements inside
+#define GUIRECT_OPEN_BIT						0x00001000//Open containers update elements inside
 //GUI window specific
 #define GUIRECT_DRAGGING_BIT				0x00004000
 #define GUIRECT_STRECHING_BIT				0x00008000
@@ -147,7 +147,7 @@ namespace spehs
 		bool getMouseHoverAny(){ return checkBit(state, GUIRECT_MOUSE_HOVER) | checkBit(state, GUIRECT_MOUSE_HOVER_CONTAINER); }
 		virtual bool isReceivingInput(){ return checkBit(state, GUIRECT_RECEIVING_INPUT); }
 		bool isSelected(){ return checkBit(state, GUIRECT_SELECTED); }
-		bool isOpen(){ return checkBit(state, GUIRECT_OPEN); }
+		bool isOpen(){ return checkBit(state, GUIRECT_OPEN_BIT); }
 		//Setters
 		virtual void enableStateRecursive(GUIRECT_STATE_TYPE stateBit){ enableBit(state, stateBit); }
 		virtual void disableStateRecursive(GUIRECT_STATE_TYPE stateBit){ disableBit(state, stateBit); }
@@ -158,8 +158,8 @@ namespace spehs
 		void toggleState(GUIRECT_STATE_TYPE stateBit){ toggleBit(state, stateBit); }
 
 		//Enabling
-		void enable(){ if (!checkState(GUIRECT_ENABLED_BIT)) onEnable(); }
-		void disable(){ if (checkState(GUIRECT_ENABLED_BIT)) onDisable(); }
+		void enable(){ if (checkState(GUIRECT_ENABLED_BIT)) return; enableState(GUIRECT_ENABLED_BIT); onEnable(); }
+		void disable(){ if (!checkState(GUIRECT_ENABLED_BIT)) return; disableState(GUIRECT_ENABLED_BIT); onDisable(); }
 		
 		////Managing element position
 		//Setting both coordinates
@@ -210,8 +210,8 @@ namespace spehs
 
 	protected:
 		void createText();
-		virtual void onEnable(){ enableState(GUIRECT_ENABLED_BIT); }
-		virtual void onDisable(){ disableState(GUIRECT_ENABLED_BIT); }
+		virtual void onEnable(){  }
+		virtual void onDisable(){  }
 
 		glm::vec4 color;///<Color values given to polygon. Ranges from 0.0f - 1.0f
 		glm::ivec2 position;///<The position of the rectangle, originating from the lower left corner, given in screen coordinates. Relative to parent's position
