@@ -39,8 +39,9 @@ namespace spehs
 		void setUVScale(const glm::vec2 &_newScale);
 		void setDrawMode(const DrawMode &_newDrawMode);
 		TextureData* setTexture(const std::string &_texturePath);
-		TextureData* setTexture(const size_t &_textureID);
+		TextureData* setTexture(const size_t &_hash);
 		void setTexture(TextureData* _textureDataPtr);
+		void setTextureID(const unsigned int &_textureID);
 
 		//Getters
 		float getArea();
