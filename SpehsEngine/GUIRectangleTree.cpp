@@ -70,7 +70,7 @@ namespace spehs
 		}
 
 		//pressedLeafNodeID = 0;
-		//if (checkState(GUIRECT_OPEN))
+		//if (checkState(GUIRECT_OPEN_BIT))
 		//{
 		//	for (unsigned i = 0; i < elements.size(); i++)
 		//	{
@@ -172,7 +172,7 @@ namespace spehs
 	void GUIRectangleTree::addElement(GUIRectangle* element)
 	{
 		GUIRectangleContainer::addElement(element);
-		element->setRenderState(checkState(GUIRECT_OPEN) && getRenderState());
+		element->setRenderState(checkState(GUIRECT_OPEN_BIT) && getRenderState());
 
 		//By default, make tree to open on mouse hover when node element is added
 		openTreeButton = 0;

@@ -79,7 +79,7 @@ namespace spehs
 
 		disableState(GUIRECT_MOUSE_HOVER_CONTAINER);
 		GUIRectangle::inputUpdate();
-		if (checkState(GUIRECT_OPEN))
+		if (checkState(GUIRECT_OPEN_BIT))
 		{
 			for (unsigned i = 0; i < updateElementCount; i++)
 			{
@@ -99,7 +99,7 @@ namespace spehs
 	void GUIRectangleList::setRenderState(const bool _state)
 	{
 		GUIRectangle::setRenderState(_state);
-		if (checkState(GUIRECT_OPEN))
+		if (checkState(GUIRECT_OPEN_BIT))
 		{
 			for (unsigned i = 0; i < elements.size(); i++)
 			{
@@ -227,7 +227,7 @@ namespace spehs
 					if (beginElementIndex > 0)
 					{
 						--beginElementIndex;
-						elements[beginElementIndex]->setRenderState(checkState(GUIRECT_OPEN));
+						elements[beginElementIndex]->setRenderState(checkState(GUIRECT_OPEN_BIT));
 					}
 					else
 						break;//Cannot increase
@@ -236,7 +236,7 @@ namespace spehs
 				{//Try incrementing from the end
 					if (beginElementIndex + updateElementCount < elements.size())
 					{
-						elements[beginElementIndex + updateElementCount]->setRenderState(checkState(GUIRECT_OPEN));
+						elements[beginElementIndex + updateElementCount]->setRenderState(checkState(GUIRECT_OPEN_BIT));
 						updateElementCount++;
 					}
 					else
@@ -287,7 +287,7 @@ namespace spehs
 		GUIRectangleContainer::addElement(element);
 		if (updateElementCount < MIN_VISIBLE_COUNT)
 			incrementUpdateElementCount(1);
-		elements.back()->setRenderState((beginElementIndex + updateElementCount == elements.size()/*is updated*/) && checkState(GUIRECT_OPEN));
+		elements.back()->setRenderState(getRenderState() && checkState(GUIRECT_OPEN_BIT) && (beginElementIndex + updateElementCount == elements.size()/*is updated*/));
 	}
 	void GUIRectangleList::setDepth(int16_t depth)
 	{
