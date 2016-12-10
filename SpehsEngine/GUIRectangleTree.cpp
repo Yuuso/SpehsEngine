@@ -29,13 +29,7 @@ namespace spehs
 		
 		pressedLeafNodeID = 0;
 		GUIRectangleContainer::inputUpdate();
-
-		////If mouse is hovering over the base rectangle, enable container hovering bit
-		//if (checkState(GUIRECT_MOUSE_HOVER))
-		//	enableState(GUIRECT_MOUSE_HOVER_CONTAINER);
-		//else
-		//	disableState(GUIRECT_MOUSE_HOVER_CONTAINER);
-
+		
 		////Closing / Opening
 		if (pressedLeafNodeID)
 		{//Leaf node was pressed, close tree
@@ -55,7 +49,7 @@ namespace spehs
 			}
 			else
 			{//Open when mouse is hovering over
-				if (checkState(GUIRECT_MOUSE_HOVER_CONTAINER) && checkState(GUIRECT_ENABLED_BIT))
+				if (checkState(GUIRECT_MOUSE_HOVER_CONTAINER) && checkState(GUIRECT_INPUT_ENABLED_BIT))
 				{
 					open();
 					if (getString() == "def")
@@ -68,17 +62,6 @@ namespace spehs
 					close();
 			}
 		}
-
-		//pressedLeafNodeID = 0;
-		//if (checkState(GUIRECT_OPEN_BIT))
-		//{
-		//	for (unsigned i = 0; i < elements.size(); i++)
-		//	{
-		//		elements[i]->update();
-		//		if (elements[i]->checkState(GUIRECT_MOUSE_HOVER))
-		//			enableState(GUIRECT_MOUSE_HOVER_CONTAINER);
-		//	}
-		//}
 
 		if (checkState(GUIRECT_MOUSE_HOVER_CONTAINER))
 		{//Mouse hovering over the container
@@ -215,9 +198,9 @@ namespace spehs
 			return parent->getAsGUIRectangleTreePtr()->getRootTree();
 		return this;
 	}
-	void GUIRectangleTree::onDisable()
+	void GUIRectangleTree::onDisableInput()
 	{
-		GUIRectangleContainer::onDisable();
+		GUIRectangleContainer::onDisableInput();
 		close();
 	}
 }

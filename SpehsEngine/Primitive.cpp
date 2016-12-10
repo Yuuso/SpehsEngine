@@ -50,7 +50,7 @@ namespace spehs
 		readyForDelete = true;
 	}
 
-	void Primitive::setPosition(const float &_x, const float &_y)
+	void Primitive::setPosition(const float _x, const float _y)
 	{
 #ifdef _DEBUG
 		if (_x != _x || _y != _y)

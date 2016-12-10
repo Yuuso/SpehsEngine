@@ -108,6 +108,7 @@
     <ClCompile Include="Geometry.cpp" />
     <ClCompile Include="GLSLProgram.cpp" />
     <ClCompile Include="GUICheckbox.cpp" />
+    <ClCompile Include="GUIColorEditor.cpp" />
     <ClCompile Include="GUID.cpp" />
     <ClCompile Include="GUIPopup.cpp" />
     <ClCompile Include="GUIRectangle.cpp" />
@@ -116,7 +117,7 @@
     <ClCompile Include="GUIRectangleRow.cpp" />
     <ClCompile Include="GUIRectangleTable.cpp" />
     <ClCompile Include="GUIRectangleTree.cpp" />
-    <ClCompile Include="GUITextField.cpp" />
+    <ClCompile Include="GUIStringEditor.cpp" />
     <ClCompile Include="GUIWindow.cpp" />
     <ClCompile Include="GUIWindowManager.cpp" />
     <ClCompile Include="InputManager.cpp" />
@@ -164,7 +165,9 @@
     <ClInclude Include="Geometry.h" />
     <ClInclude Include="GLSLProgram.h" />
     <ClInclude Include="GUICheckbox.h" />
+    <ClInclude Include="GUIColorEditor.h" />
     <ClInclude Include="GUID.h" />
+    <ClInclude Include="GUIEditor.h" />
     <ClInclude Include="GUIPopup.h" />
     <ClInclude Include="GUIRectangle.h" />
     <ClInclude Include="GUIRectangleContainer.h" />
@@ -172,7 +175,7 @@
     <ClInclude Include="GUIRectangleRow.h" />
     <ClInclude Include="GUIRectangleTable.h" />
     <ClInclude Include="GUIRectangleTree.h" />
-    <ClInclude Include="GUITextField.h" />
+    <ClInclude Include="GUIStringEditor.h" />
     <ClInclude Include="GUIScalarEditor.h" />
     <ClInclude Include="GUIWindow.h" />
     <ClInclude Include="GUIWindowManager.h" />

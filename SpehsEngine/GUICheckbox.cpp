@@ -11,7 +11,7 @@
 
 namespace spehs
 {
-	GUICheckbox::GUICheckbox() : booleanPtr(nullptr), checkboxSize(20)
+	GUICheckbox::GUICheckbox() : checkboxSize(20), selectedState(false)
 	{
 		checkboxBackground = spehs::Polygon::create(Shape::BUTTON, 0, 1.0f, 1.0f);
 		checkboxBackground->setColor(30, 30, 30);
@@ -41,16 +41,12 @@ namespace spehs
 		GUIRectangle::inputUpdate();
 
 		//Check mouse press
-		previousSelectedState = checkBit(state, GUIRECT_SELECTED);
-		if (getMouseHover() && inputManager->isKeyPressed(MOUSE_BUTTON_LEFT))
-		{//Toggle selected state, update boolean pointer if one exists
-			toggleState(GUIRECT_SELECTED);
-			if (booleanPtr)
-				*booleanPtr = checkBit(state, GUIRECT_SELECTED);
-		}
+		previousSelectedState = selectedState;
+		if (checkState(GUIRECT_INPUT_ENABLED_BIT) && getMouseHover() && inputManager->isKeyPressed(MOUSE_BUTTON_LEFT))
+			selectedState = !selectedState;
 
 		//Filling color
-		if (checkBit(state, GUIRECT_SELECTED))
+		if (selectedState)
 			checkboxFilling->setColorAlpha(SELECTED_ALPHA);
 		else
 			checkboxFilling->setColorAlpha(UNSELECTED_ALPHA);
@@ -117,23 +113,8 @@ namespace spehs
 			text->setPosition(textX, getYGlobal() + 0.5f * (size.y + text->getTextHeight()) - text->getFontHeight() - text->getFontDescender());
 		}
 	}
-	void GUICheckbox::setBooleanPtr(bool* ptr)
+	bool GUICheckbox::valueEdited()
 	{
-		booleanPtr = ptr;
-		if (booleanPtr)
-		{
-			if (*booleanPtr)
-				enableBit(state, GUIRECT_SELECTED);
-			else
-				disableBit(state, GUIRECT_SELECTED);
-		}
-		else
-			disableBit(state, GUIRECT_SELECTED);
-	}
-	bool GUICheckbox::selectedStateChanged()
-	{
-		if (checkState(GUIRECT_SELECTED) != previousSelectedState)
-			return true;
-		return false;
+		return selectedState != previousSelectedState;
 	}
 }

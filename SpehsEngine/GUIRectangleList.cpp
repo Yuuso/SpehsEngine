@@ -2,7 +2,7 @@
 #include "ApplicationData.h"
 #include "GUIRectangleList.h"
 #include "GUIWindow.h"
-#include "GUITextField.h"
+#include "GUIStringEditor.h"
 #include "GUIRectangle.h"
 #define MIN_VISIBLE_COUNT 4
 
@@ -47,7 +47,7 @@ namespace spehs
 	}
 	void GUIRectangleList::inputUpdate()
 	{
-		if (checkState(GUIRECT_ENABLED_BIT))
+		if (checkState(GUIRECT_INPUT_ENABLED_BIT))
 		{
 			scrollUp->inputUpdate();
 			scrollBar->inputUpdate();

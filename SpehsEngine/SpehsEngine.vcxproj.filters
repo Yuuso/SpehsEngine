@@ -43,9 +43,6 @@
     <ClCompile Include="GUIRectangleList.cpp">
       <Filter>Rendering\GUI</Filter>
     </ClCompile>
-    <ClCompile Include="GUITextField.cpp">
-      <Filter>Rendering\GUI</Filter>
-    </ClCompile>
     <ClCompile Include="GUIWindow.cpp">
       <Filter>Rendering\GUI</Filter>
     </ClCompile>
@@ -59,9 +56,6 @@
       <Filter>Physics</Filter>
     </ClCompile>
     <ClCompile Include="GUIRectangleTree.cpp">
-      <Filter>Rendering\GUI</Filter>
-    </ClCompile>
-    <ClCompile Include="GUICheckbox.cpp">
       <Filter>Rendering\GUI</Filter>
     </ClCompile>
     <ClCompile Include="GUIWindowManager.cpp">
@@ -151,6 +145,15 @@
     <ClCompile Include="Textbox.cpp">
       <Filter>Rendering\GUI</Filter>
     </ClCompile>
+    <ClCompile Include="GUICheckbox.cpp">
+      <Filter>Rendering\GUI\Editors</Filter>
+    </ClCompile>
+    <ClCompile Include="GUIColorEditor.cpp">
+      <Filter>Rendering\GUI\Editors</Filter>
+    </ClCompile>
+    <ClCompile Include="GUIStringEditor.cpp">
+      <Filter>Rendering\GUI\Editors</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GLSLProgram.h">
@@ -204,9 +207,6 @@
     <ClInclude Include="GUIRectangleList.h">
       <Filter>Rendering\GUI</Filter>
     </ClInclude>
-    <ClInclude Include="GUITextField.h">
-      <Filter>Rendering\GUI</Filter>
-    </ClInclude>
     <ClInclude Include="GUIWindow.h">
       <Filter>Rendering\GUI</Filter>
     </ClInclude>
@@ -220,9 +220,6 @@
       <Filter>Rendering\Geometric Rendering</Filter>
     </ClInclude>
     <ClInclude Include="GUIRectangleTree.h">
-      <Filter>Rendering\GUI</Filter>
-    </ClInclude>
-    <ClInclude Include="GUICheckbox.h">
       <Filter>Rendering\GUI</Filter>
     </ClInclude>
     <ClInclude Include="GUIWindowManager.h">
@@ -309,9 +306,6 @@
     <ClInclude Include="CommonColor.h">
       <Filter>Core</Filter>
     </ClInclude>
-    <ClInclude Include="GUIScalarEditor.h">
-      <Filter>Rendering\GUI</Filter>
-    </ClInclude>
     <ClInclude Include="GUIPopup.h">
       <Filter>Rendering\GUI</Filter>
     </ClInclude>
@@ -320,6 +314,21 @@
     </ClInclude>
     <ClInclude Include="Mathematics.h">
       <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="GUICheckbox.h">
+      <Filter>Rendering\GUI\Editors</Filter>
+    </ClInclude>
+    <ClInclude Include="GUIColorEditor.h">
+      <Filter>Rendering\GUI\Editors</Filter>
+    </ClInclude>
+    <ClInclude Include="GUIScalarEditor.h">
+      <Filter>Rendering\GUI\Editors</Filter>
+    </ClInclude>
+    <ClInclude Include="GUIStringEditor.h">
+      <Filter>Rendering\GUI\Editors</Filter>
+    </ClInclude>
+    <ClInclude Include="GUIEditor.h">
+      <Filter>Rendering\GUI\Editors</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -358,6 +367,9 @@
     </Filter>
     <Filter Include="Core\Object/Component">
       <UniqueIdentifier>{d2fdada1-b4b1-403b-9166-08f0a4118180}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\GUI\Editors">
+      <UniqueIdentifier>{4a18de41-53a8-4609-a74f-6625aa3af945}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

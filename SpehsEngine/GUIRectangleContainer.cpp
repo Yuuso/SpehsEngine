@@ -1,6 +1,6 @@
 #include "GUIRectangleContainer.h"
 #include "GUIRectangleTree.h"
-#include "GUITextField.h"
+#include "GUIStringEditor.h"
 #include "Polygon.h"
 
 
@@ -64,7 +64,7 @@ namespace spehs
 	}
 	bool GUIRectangleContainer::isReceivingInput()
 	{
-		if (!checkState(GUIRECT_OPEN_BIT) || !checkState(GUIRECT_ENABLED_BIT))
+		if (!checkState(GUIRECT_OPEN_BIT) || !checkState(GUIRECT_INPUT_ENABLED_BIT))
 			return false;
 		if (checkState(GUIRECT_RECEIVING_INPUT))
 			return true;
@@ -101,10 +101,10 @@ namespace spehs
 		element->setRenderState(getRenderState() && checkState(GUIRECT_OPEN_BIT));
 
 		//Enabled state
-		if (checkState(GUIRECT_ENABLED_BIT))
-			element->enableStateRecursive(GUIRECT_ENABLED_BIT);
+		if (checkState(GUIRECT_INPUT_ENABLED_BIT))
+			element->enableStateRecursive(GUIRECT_INPUT_ENABLED_BIT);
 		else
-			element->disableStateRecursive(GUIRECT_ENABLED_BIT);
+			element->disableStateRecursive(GUIRECT_INPUT_ENABLED_BIT);
 
 		//Min size must be updated for everything above
 		disableStateRecursiveUpwards(GUIRECT_MIN_SIZE_UPDATED_BIT);
@@ -136,17 +136,17 @@ namespace spehs
 		for (unsigned i = 0; i < elements.size(); i++)
 			elements[i]->disableStateRecursive(stateBit);
 	}
-	void GUIRectangleContainer::onEnable()
+	void GUIRectangleContainer::onEnableInput()
 	{
-		GUIRectangle::onEnable();
+		GUIRectangle::onEnableInput();
 		for (unsigned i = 0; i < elements.size(); i++)
-			elements[i]->onEnable();
+			elements[i]->enableInput();
 	}
-	void GUIRectangleContainer::onDisable()
+	void GUIRectangleContainer::onDisableInput()
 	{
-		GUIRectangle::onDisable();
+		GUIRectangle::onDisableInput();
 		for (unsigned i = 0; i < elements.size(); i++)
-			elements[i]->onDisable();
+			elements[i]->disableInput();
 	}
 	bool GUIRectangleContainer::open()
 	{//Open container dimension

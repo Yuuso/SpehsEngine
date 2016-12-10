@@ -50,15 +50,17 @@ namespace spehs
 	void GUIWindowManager::update()
 	{
 		batchManager.beginSection();
-		bool focusedWindowReceivingInput(false);
-		bool updateWindows(true);
+
 		if (focusedWindow)
 		{
-			if (!focusedWindow->checkState(GUIRECT_ENABLED_BIT))//Check if focused window yielded focus internally
+			if (!focusedWindow->checkState(GUIRECT_INPUT_ENABLED_BIT) ||	//Check if focused window yielded focus internally
+				(!focusedWindow->getMouseHoverAny() &&						//Focused window is no longer under mouse 
+				!focusedWindow->isReceivingInput()))						//Focused window does not receive input
 				focusedWindow = nullptr;
-			else if (focusedWindow->isReceivingInput())
-				focusedWindowReceivingInput = true;
 		}
+
+		const bool focusedWindowReceivingInput(focusedWindow ? focusedWindow->isReceivingInput() : false);
+		bool updateWindows(true);
 
 		//Update front popup
 		if (!popups.empty())
@@ -67,7 +69,7 @@ namespace spehs
 			popupShade->setRenderState(true);
 			if (popupShade->getColorAlpha() < popupShadeAlpha)
 			{
-				float a(popupShade->getColorAlpha() + time::getDeltaTime().asSeconds);
+				float a(popupShade->getColorAlpha() + time::getDeltaTimeAsSeconds());
 				if (a > popupShadeAlpha)
 					a = popupShadeAlpha;
 				popupShade->setColorAlpha(a);
@@ -93,7 +95,8 @@ namespace spehs
 		}
 		
 		//Update windows in order
-		focusedWindow = nullptr;
+		//focusedWindow = nullptr;
+		bool focusWindowUpdated(false);
 		if (updateWindows)
 		{
 			//Update from the top
@@ -102,7 +105,9 @@ namespace spehs
 				if (windows[i]->isOpen())
 				{//Window must be open
 
-					//Run an update on this window, updates mouse hover variable
+					if (!focusedWindowReceivingInput &&
+						(!focusWindowUpdated || !focusedWindow))
+						windows[i]->enableInput();//Valid for input
 					windows[i]->inputUpdate();
 					windows[i]->visualUpdate();
 
@@ -111,33 +116,52 @@ namespace spehs
 						windows[i]->checkState(GUIRECT_STRECHING_BIT) ||
 						windows[i]->isReceivingInput()) && !focusedWindow)
 					{//First window to be under focus
-
-						windows[i]->enable();
 						focusedWindow = windows[i];
-
-						if (windows[i] != windows.back() &&
-							(windows[i]->checkState(GUIRECT_MOUSE_HOVER_CONTAINER) && inputManager->isKeyPressed(MOUSE_BUTTON_LEFT)))
-						{//Move window to the back of the vector
-							windows.erase(windows.begin() + i);
-							windows.push_back(focusedWindow);
-							updateDepths();
-						}
 					}
 					else if (windows[i] != focusedWindow)
-						windows[i]->disable();
+						windows[i]->disableInput();//Yield enabled input for the next in loop
+
+					//Mark focused window updated
+					if (windows[i] == focusedWindow)
+						focusWindowUpdated = true;
 				}
 			}
 
 			if (focusedWindow)
-			{
-				//Yielding focus
-				if (inputManager->isKeyPressed(KEYBOARD_ESCAPE) && !focusedWindowReceivingInput)
-				{
+			{//Yielding focus
+
+				if (!focusedWindow->checkState(GUIRECT_MOUSE_HOVER_CONTAINER))
+				{//Window not under mouse, do not continue focus status
 					focusedWindow = nullptr;
 				}
-				else if (!focusedWindow->checkState(GUIRECT_MOUSE_HOVER_CONTAINER) && inputManager->isKeyPressed(MOUSE_BUTTON_LEFT))
-				{
-					focusedWindow = nullptr;
+				else if (inputManager->isKeyPressed(MOUSE_BUTTON_LEFT))
+				{//Focused window was pressed, move window to the back of the vector if not there already
+					if (focusedWindow != windows.back())
+					{
+						for (unsigned i = 0; i < windows.size(); i++)
+						{
+							if (windows[i] == focusedWindow)
+							{
+								windows.erase(windows.begin() + i);
+								windows.push_back(focusedWindow);
+								updateDepths();
+								break;
+							}
+						}
+					}
+				}
+				else
+				{//Check if there are windows on top of focused window -> yield focus
+					for (int i = windows.size() - 1; i >= 0; i--)
+					{
+						if (windows[i] == focusedWindow)
+							break;
+						else if (windows[i]->checkState(GUIRECT_OPEN_BIT) && windows[i]->getMouseHoverAny())
+						{
+							focusedWindow = nullptr;
+							break;
+						}
+					}
 				}
 			}
 		}

@@ -1,10 +1,11 @@
 #pragma once
 #include "GUIRectangleContainer.h"
 #include <vector>
+#define GUIWINDOW_BASE_ELEMENT_COUNT 3
 
 namespace spehs
 {
-	class GUITextField;
+	class GUIStringEditor;
 	class GUIRectangleList;
 	class GUIWindow : public GUIRectangleContainer
 	{
@@ -27,24 +28,20 @@ namespace spehs
 		static glm::vec4 exitStringColor;
 	public:
 		GUIWindow();
-		virtual ~GUIWindow();
+		~GUIWindow() override;
 		
-		virtual void inputUpdate();
-		virtual void visualUpdate();
-		virtual void updateMinSize();//Updates min size variable based on element requirements
-		virtual void updateScale();
-		virtual void updatePosition();
-		virtual void setRenderState(const bool _state);
-		virtual void setDepth(int16_t);
-		virtual void onEnable();
-		virtual void onDisable();
-		virtual void disableStateRecursive(GUIRECT_STATE_TYPE stateBit);
-		virtual void enableStateRecursive(GUIRECT_STATE_TYPE stateBit);
-		virtual void disableState(GUIRECT_STATE_TYPE stateBit);
-		virtual void enableState(GUIRECT_STATE_TYPE stateBit);
+		void inputUpdate() override;
+		void visualUpdate() override;
+		void updateMinSize() override;//Updates min size variable based on element requirements
+		void updateScale() override;
+		void updatePosition() override;
+		void setDepth(int16_t) override;
+		void onEnableInput() override;
+		void onDisableInput() override;
+		void clear() override;
 
-		virtual bool close();
-		virtual bool open();
+		bool close() override;
+		bool open() override;
 		virtual void refresh();
 		virtual void limitWithinMainWindow();//Reposition window so that it doesn't escape the viewport
 
@@ -54,7 +51,7 @@ namespace spehs
 		GUIRectangle* getStrechPtr(){ return strech; }
 
 		//Identity
-		GUIWindow* getAsGUIWindowPtr(){ return this; }
+		GUIWindow* getAsGUIWindowPtr() override { return this; }
 
 	protected:
 

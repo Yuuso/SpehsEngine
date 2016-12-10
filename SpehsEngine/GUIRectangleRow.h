@@ -19,6 +19,7 @@ namespace spehs
 		void updateMinSize();
 		void updateScale();
 		void updatePosition();
+
 		void setEvenElementWidth(bool setting);
 		void setElementPositionMode(PositionMode mode);
 		

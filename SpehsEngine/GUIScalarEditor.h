@@ -1,7 +1,7 @@
 #pragma once
 #include "StringOperations.h"
 #include "GUIRectangleRow.h"
-#include "GUITextField.h"
+#include "GUIStringEditor.h"
 #include "InputManager.h"
 #include "Time.h"
 
@@ -15,9 +15,11 @@ namespace spehs
 	class GUIScalarEditor : public GUIRectangleRow
 	{
 	public:
-		GUIScalarEditor(std::string scalarName, Scalar* _ptr) : GUIRectangleRow(),
-			ptr(_ptr), floatPrecision(2), tickAmount(1), onHold(false), holdTimer(0.0f), holdTime(0.15f), initialHoldTime(1.0f),
-			nameRect(new GUIRectangle(scalarName)), valueRect(new GUITextField()), decreaseRect(new GUIRectangle("-")), increaseRect(new GUIRectangle("+"))
+		enum class EditorType { Slider, Ticks};
+	public:
+		GUIScalarEditor(std::string scalarName, Scalar& scalarReference) : 
+			scalar(scalarReference), floatPrecision(2), tickAmount(1), onHold(false), holdTimer(0.0f), holdTime(0.15f), initialHoldTime(1.0f),
+			nameRect(new GUIRectangle(scalarName)), valueRect(new GUIStringEditor()), decreaseRect(new GUIRectangle("-")), increaseRect(new GUIRectangle("+"))
 		{
 			setElementPositionMode(spehs::GUIRectangleRow::PositionMode::Right);
 			updateValueTextfieldString();
@@ -36,24 +38,24 @@ namespace spehs
 		{
 			min = _min;
 			max = _max;
-			setValue(*ptr);
+			setValue(scalar);
 		}
 		void setMinValue(Scalar _min)
 		{
 			min = _min;
-			setValue(*ptr);
+			setValue(scalar);
 		}
 		void setMaxValue(Scalar _max)
 		{
 			max = _max;
-			setValue(*ptr);
+			setValue(scalar);
 		}
 		void setTickAmount(Scalar _tickAmount){ tickAmount = _tickAmount; }
 		void inputUpdate()
 		{
 			GUIRectangleRow::inputUpdate();
 
-			if (valueRect->stringReady())
+			if (valueRect->valueEdited())
 				setValue(getValueFromTextField());
 			
 			//+/- buttons
@@ -63,33 +65,33 @@ namespace spehs
 				{//+
 					onHold = true;
 					holdTimer = initialHoldTime;
-					setValue(*ptr + tickAmount);
+					setValue(scalar + tickAmount);
 				}
 				else if (decreaseRect->getMouseHover())
 				{//-
 					onHold = true;
 					holdTimer = initialHoldTime;
-					setValue(*ptr - tickAmount);
+					setValue(scalar - tickAmount);
 				}
 			}
 			else if (inputManager->isKeyDown(MOUSE_BUTTON_LEFT) && onHold)
 			{//Hold
 				if (increaseRect->getMouseHover())
 				{//+
-					holdTimer -= getDeltaTime().asSeconds;
+					holdTimer -= time::getDeltaTimeAsSeconds();
 					if (holdTimer <= 0.0f)
 					{
 						holdTimer = holdTime;
-						setValue(*ptr + tickAmount);
+						setValue(scalar + tickAmount);
 					}
 				}
 				else if (decreaseRect->getMouseHover())
 				{//-
-					holdTimer -= getDeltaTime().asSeconds;
+					holdTimer -= time::getDeltaTimeAsSeconds();
 					if (holdTimer <= 0.0f)
 					{
 						holdTimer = holdTime;
-						setValue(*ptr - tickAmount);
+						setValue(scalar - tickAmount);
 					}
 				}
 				else
@@ -105,29 +107,29 @@ namespace spehs
 				return getStringAsInt(str);
 			else if (std::is_floating_point<Scalar>::value)
 				return getStringAsFloat(str);
-			return *ptr;
+			return scalar;
 		}
 		void updateValueTextfieldString()
 		{
 			if (std::is_integral<Scalar>::value)
-				valueRect->setString(std::to_string(*ptr));
+				valueRect->setString(std::to_string(scalar));
 			else if (std::is_floating_point<Scalar>::value)
-				valueRect->setString(spehs::toString(*ptr, floatPrecision));
+				valueRect->setString(spehs::toString(scalar, floatPrecision));
 			else
 				valueRect->setString("# Invalid value type #");
 		}
 		void setValue(Scalar newValue)
 		{
 			if (newValue > max)
-				*ptr = max;
+				scalar = max;
 			else if (newValue < min)
-				*ptr = min;
+				scalar = min;
 			else
-				*ptr = newValue;
+				scalar = newValue;
 			updateValueTextfieldString();
 		}
 
-		Scalar* ptr;
+		Scalar& scalar;
 		Scalar min;
 		Scalar max;
 		Scalar tickAmount;
@@ -138,7 +140,7 @@ namespace spehs
 		float initialHoldTime;
 
 		GUIRectangle* nameRect;
-		GUITextField* valueRect;
+		GUIStringEditor* valueRect;
 		GUIRectangle* decreaseRect;
 		GUIRectangle* increaseRect;
 	};

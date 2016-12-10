@@ -28,7 +28,7 @@ namespace spehs
 		polygon->destroy();
 	}
 	GUIRectangle::GUIRectangle() : position(0), size(0), minSize(0), displayTexture(nullptr), pressCallbackFunction(nullptr),
-		state(GUIRECT_ENABLED_BIT | GUIRECT_HOVER_COLOR | GUIRECT_TEXT_JUSTIFICATION_LEFT)
+		state(GUIRECT_INPUT_ENABLED_BIT | GUIRECT_HOVER_COLOR | GUIRECT_TEXT_JUSTIFICATION_LEFT)
 	{//Default constructor
 #ifdef _DEBUG
 		++guiRectangleAllocations;
@@ -75,6 +75,13 @@ namespace spehs
 	void GUIRectangle::inputUpdate()
 	{
 		disableBit(state, GUIRECT_MOUSE_HOVER);
+		if (!checkState(GUIRECT_INPUT_ENABLED_BIT))
+		{
+			if (tooltip)
+				tooltip->setRenderState(false);
+			return;
+		}
+
 		updateMouseHover();
 		if (pressCallbackFunction && getMouseHover() && inputManager->isKeyPressed(MOUSEBUTTON_LEFT))
 			(*pressCallbackFunction)(*this);
@@ -82,7 +89,7 @@ namespace spehs
 		//Tooltip update
 		if (tooltip)
 		{
-			if (checkState(GUIRECT_ENABLED_BIT) && getMouseHover())
+			if (getMouseHover())
 			{//Tooltip positioning
 
 				if (inputManager->getMouseX() > applicationData->getWindowWidthHalf())
@@ -116,7 +123,7 @@ namespace spehs
 			tooltip->visualUpdate();
 		
 		//Hover color
-		if (checkState(GUIRECT_HOVER_COLOR) && checkState(GUIRECT_ENABLED_BIT))
+		if (checkState(GUIRECT_HOVER_COLOR) && checkState(GUIRECT_INPUT_ENABLED_BIT))
 		{
 			if (getMouseHover())
 			{

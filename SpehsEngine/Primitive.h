@@ -68,7 +68,7 @@ namespace spehs
 		//NOTE: BatchManager does clean up the primitives after it is deleted, but it is advised that the user destroys primitives that are not needed
 
 		//Setters
-		void setPosition(const float &_x, const float &_y);
+		void setPosition(const float _x, const float _y);
 		void setPosition(const glm::vec2 &_newPosition);
 		void setPosition(const Primitive& _other);
 		void translate(const float &_x, const float &_y);

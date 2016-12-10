@@ -35,7 +35,7 @@ namespace spehs
 		GUIRectangleTree* getAsGUIRectangleTreePtr(){ return this; }
 
 	protected:
-		void onDisable();
+		void onDisableInput() override;
 
 		int pressedLeafNodeID;//This id is cleared at the beginning of each update. If during that update a leaf node is pressed, its id will be stored in this variable until the next update.
 		unsigned openTreeButton;//Referring to input manager key index

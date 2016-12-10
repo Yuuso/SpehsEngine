@@ -86,8 +86,8 @@ namespace spehs
 		GUIRectangleContainer* getAsGUIRectangleContainerPtr(){ return this; }
 
 	protected:
-		virtual void onEnable();
-		virtual void onDisable();
+		void onEnableInput() override;
+		void onDisableInput() override;
 
 		std::vector<GUIRectangle*> elements;
 		glm::ivec2 elementSize;///<Current size of a single element, if uniform size exists
