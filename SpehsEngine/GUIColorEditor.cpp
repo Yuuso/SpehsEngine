@@ -10,20 +10,29 @@ namespace spehs
 	int GUIColorEditor::colorEditorBorder = 3;
 	float GUIColorEditor::colorPreviewWidth = 20.0f;
 
-	GUIColorEditor::GUIColorEditor() : sliderState(0.0f), sliderOnHold(false), paletteOnHold(false), alphaSlider(nullptr)
+	GUIColorEditor::GUIColorEditor() : sliderState(0.0f), sliderOnHold(false), paletteOnHold(false)
 	{
 		palette = Polygon::create(Shape::BUTTON, getDepth(), 1.0f, 1.0f);
 		sliderRG = Polygon::create(Shape::BUTTON, getDepth(), 1.0f, 1.0f);
 		sliderGB = Polygon::create(Shape::BUTTON, getDepth(), 1.0f, 1.0f);
 		sliderBR = Polygon::create(Shape::BUTTON, getDepth(), 1.0f, 1.0f);
 		preview = Polygon::create(6, getDepth(), colorPreviewWidth, colorPreviewWidth);
-		alphaSlider = Polygon::create(Shape::BUTTON, getDepth(), 1.0f, 1.0f);
+		alphaSliderBack = Polygon::create(Shape::BUTTON, getDepth(), 1.0f, 1.0f);
+		alphaSliderFront = Polygon::create(Shape::BUTTON, getDepth(), 1.0f, 1.0f);
 
 		palette->setCameraMatrixState(false);
 		sliderRG->setCameraMatrixState(false);
 		sliderGB->setCameraMatrixState(false);
 		sliderBR->setCameraMatrixState(false);
 		preview->setCameraMatrixState(false);
+		alphaSliderBack->setCameraMatrixState(false);
+		alphaSliderFront->setCameraMatrixState(false);
+		
+		//Palette colors
+		palette->worldVertexArray[0].color = spehs::ColorRGBA(0.0f, 0.0f, 0.0f, 1.0f);
+		palette->worldVertexArray[1].color = spehs::ColorRGBA(0.0f, 0.0f, 0.0f, 1.0f);
+		palette->worldVertexArray[2].color = spehs::ColorRGBA(0.0f, 1.0f, 1.0f, 1.0f);
+		palette->worldVertexArray[3].color = spehs::ColorRGBA(1.0f, 1.0f, 1.0f, 1.0f);
 
 		//Slider colors
 		//Red-Green
@@ -42,12 +51,12 @@ namespace spehs
 		sliderBR->worldVertexArray[2].color = spehs::ColorRGBA(1.0f, 0.0f, 0.0f, 1.0f);
 		sliderBR->worldVertexArray[3].color = spehs::ColorRGBA(1.0f, 0.0f, 0.0f, 1.0f);
 
-		//Palette colors
-		palette->worldVertexArray[0].color = spehs::ColorRGBA(0.0f, 0.0f, 0.0f, 1.0f);
-		palette->worldVertexArray[1].color = spehs::ColorRGBA(0.0f, 0.0f, 0.0f, 1.0f);
-		palette->worldVertexArray[2].color = spehs::ColorRGBA(0.0f, 1.0f, 1.0f, 1.0f);
-		palette->worldVertexArray[3].color = spehs::ColorRGBA(1.0f, 1.0f, 1.0f, 1.0f);
+		//Alpha slider colors
+		alphaSliderBack->setColor((unsigned char)0, 0, 0, 255);
+		alphaSliderFront->setColor((unsigned char)255, 255, 255, 255);
 
+		setDepth(getDepth());
+		setRenderState(getRenderState());
 	}
 	GUIColorEditor::~GUIColorEditor()
 	{
@@ -56,7 +65,8 @@ namespace spehs
 		sliderGB->destroy();
 		sliderBR->destroy();
 		preview->destroy();
-		alphaSlider->destroy();
+		alphaSliderBack->destroy();
+		alphaSliderFront->destroy();
 	}
 	void GUIColorEditor::setDepth(int16_t _depth)
 	{
@@ -66,7 +76,8 @@ namespace spehs
 		sliderGB->setPlaneDepth(_depth + 1);
 		sliderBR->setPlaneDepth(_depth + 1);
 		preview->setPlaneDepth(_depth + 2);
-		alphaSlider->setPlaneDepth(_depth + 1);
+		alphaSliderBack->setPlaneDepth(_depth + 1);
+		alphaSliderFront->setPlaneDepth(_depth + 2);
 	}
 	void GUIColorEditor::setRenderState(const bool _state)
 	{
@@ -75,8 +86,9 @@ namespace spehs
 		sliderRG->setRenderState(_state);
 		sliderGB->setRenderState(_state);
 		sliderBR->setRenderState(_state);
-		alphaSlider->setRenderState(_state && alphaEnabled);
 		preview->setRenderState(false);
+		alphaSliderBack->setRenderState(_state && alphaEnabled);
+		alphaSliderFront->setRenderState(_state && alphaEnabled);
 	}
 	void GUIColorEditor::inputUpdate()
 	{
@@ -90,19 +102,19 @@ namespace spehs
 			{//Mouse press released
 				paletteOnHold = false;
 				stateChanged = true;
+				selectedColor = preview->getColor();
 			}
 			if (checkPaletteHover())
 			{
 				float horizontal(1.0f - ((inputManager->getMouseX() - palette->getX()) / palette->getWidth()));
 				float vertical((inputManager->getMouseY() - palette->getY()) / palette->getHeight());
-				selectedColor.r = (palette->worldVertexArray[2].color.rgba.r + horizontal * (1.0f - palette->worldVertexArray[2].color.rgba.r)) * vertical;
-				selectedColor.g = (palette->worldVertexArray[2].color.rgba.g + horizontal * (1.0f - palette->worldVertexArray[2].color.rgba.g)) * vertical;
-				selectedColor.b = (palette->worldVertexArray[2].color.rgba.b + horizontal * (1.0f - palette->worldVertexArray[2].color.rgba.b)) * vertical;
-				if (!alphaEnabled)
-					selectedColor.a = 1.0f;
-				else
-					selectedColor.a = 0.5f;//TODO
-				preview->setColor(selectedColor);
+				
+				glm::vec4 hoverColor;
+				hoverColor.r = (palette->worldVertexArray[2].color.rgba.r + horizontal * (1.0f - palette->worldVertexArray[2].color.rgba.r)) * vertical;
+				hoverColor.g = (palette->worldVertexArray[2].color.rgba.g + horizontal * (1.0f - palette->worldVertexArray[2].color.rgba.g)) * vertical;
+				hoverColor.b = (palette->worldVertexArray[2].color.rgba.b + horizontal * (1.0f - palette->worldVertexArray[2].color.rgba.b)) * vertical;
+				hoverColor.a = selectedColor.a;
+				preview->setColor(hoverColor);
 
 				if (inputManager->isKeyPressed(MOUSE_BUTTON_LEFT) || (paletteOnHold && inputManager->isKeyDown(MOUSE_BUTTON_LEFT)))
 					paletteOnHold = true;
@@ -150,11 +162,35 @@ namespace spehs
 			}
 			else
 				sliderOnHold = false;
+			
+			//Alpha
+			if (alphaEnabled)
+			{
+				if (alphaOnHold && !inputManager->isKeyDown(MOUSE_BUTTON_LEFT))
+				{//End alpha hold
+					alphaOnHold = false;
+					stateChanged = true;
+				}
+
+				if (checkAlphaHover())
+				{
+					if (inputManager->isKeyPressed(MOUSE_BUTTON_LEFT) || (alphaOnHold && inputManager->isKeyDown(MOUSE_BUTTON_LEFT)))
+					{
+						alphaOnHold = true;
+					}
+
+					if (alphaOnHold)
+					{
+						selectedColor.a = (inputManager->getMouseY() - alphaSliderBack->getY()) / alphaSliderBack->getHeight();
+					}
+				}
+			}
 		}
 		else
 		{
 			paletteOnHold = false;
 			sliderOnHold = false;
+			alphaOnHold = false;
 		}
 	}
 	void GUIColorEditor::visualUpdate()
@@ -167,6 +203,11 @@ namespace spehs
 		}
 		else
 			preview->setRenderState(false);
+
+		if (alphaEnabled)
+		{
+			alphaSliderFront->resize(size.x / float(minSize.x) * sliderWidth, (size.y - 2 * colorEditorBorder) * selectedColor.a);
+		}
 	}
 	void GUIColorEditor::updateMinSize()
 	{
@@ -189,7 +230,7 @@ namespace spehs
 		sliderGB->resize(std::floor(scaleX * sliderWidth), sliderThirdHeight);
 		sliderBR->resize(std::floor(scaleX * sliderWidth), sliderThirdHeight);
 		if (alphaEnabled)
-			alphaSlider->resize(std::floor(scaleX * sliderWidth), size.y / 3.0f);
+			alphaSliderBack->resize(std::floor(scaleX * sliderWidth), size.y - 2 * colorEditorBorder);
 	}
 	void GUIColorEditor::updatePosition()
 	{
@@ -200,10 +241,13 @@ namespace spehs
 		int sliderThirdHeight(std::floor((size.y - 2 * colorEditorBorder) / 3.0f));
 		int sliderX(palette->getX() + palette->getWidth() + colorEditorBorder);
 		sliderRG->setPosition(sliderX, palette->getY());
-		sliderGB->setPosition(sliderX, palette->getY() + sliderThirdHeight);
-		sliderBR->setPosition(sliderX, palette->getY() + 2 * sliderThirdHeight);
+		sliderGB->setPosition(sliderX, sliderRG->getY() + sliderRG->getHeight());
+		sliderBR->setPosition(sliderX, sliderGB->getY() + sliderGB->getHeight());
 		if (alphaEnabled)
-			alphaSlider->setPosition(sliderRG->getX() + sliderRG->getWidth() + colorEditorBorder, sliderRG->getY());
+		{
+			alphaSliderBack->setPosition(sliderRG->getX() + sliderRG->getWidth() + colorEditorBorder, sliderRG->getY());
+			alphaSliderFront->setPosition(alphaSliderBack->getX(), alphaSliderBack->getY());
+		}
 	}
 	bool GUIColorEditor::checkPaletteHover()
 	{
@@ -215,20 +259,29 @@ namespace spehs
 		return inputManager->getMouseX() > sliderRG->getX() && inputManager->getMouseX() < sliderRG->getX() + sliderRG->getWidth() &&
 			inputManager->getMouseY() > sliderRG->getY() && inputManager->getMouseY() < sliderBR->getY() + sliderBR->getHeight();
 	}
+	bool GUIColorEditor::checkAlphaHover()
+	{
+		return inputManager->getMouseX() > alphaSliderBack->getX() && inputManager->getMouseX() < alphaSliderBack->getX() + alphaSliderBack->getWidth() &&
+			inputManager->getMouseY() > alphaSliderBack->getY() && inputManager->getMouseY() < alphaSliderBack->getY() + alphaSliderBack->getHeight();
+	}
 	void GUIColorEditor::enableAlphaEditing()
 	{
 		if (alphaEnabled)
 			return;
 		alphaEnabled = true;
-		alphaSlider->setRenderState(getRenderState());
+		alphaSliderBack->setRenderState(getRenderState());
+		alphaSliderFront->setRenderState(getRenderState());
 		disableState(GUIRECT_MIN_SIZE_UPDATED_BIT);
 	}
 	void GUIColorEditor::disableAlphaEditing()
 	{
 		if (!alphaEnabled)
 			return;
+		selectedColor.a = 1.0f;
 		alphaEnabled = false;
-		alphaSlider->setRenderState(false);
+		alphaOnHold = false;
+		alphaSliderBack->setRenderState(false);
+		alphaSliderFront->setRenderState(false);
 		disableState(GUIRECT_MIN_SIZE_UPDATED_BIT);
 	}
 	void GUIColorEditor::toggleAlphaEditing()

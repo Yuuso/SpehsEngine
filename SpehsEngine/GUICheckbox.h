@@ -24,7 +24,9 @@ namespace spehs
 		void setDepth(int16_t depth);
 		void setCheckboxSize(int _size){ checkboxSize = _size; disableStateRecursiveUpwards(GUIRECT_SCALE_UPDATED_BIT); }
 
+		void setEditorState(const bool _state){ selectedState = _state; previousSelectedState = _state; }
 		bool valueEdited();
+		bool retrieveEditorState(){ return selectedState; }
 
 		//Identity
 		GUICheckbox* getAsGUICheckboxPtr(){ return this; }

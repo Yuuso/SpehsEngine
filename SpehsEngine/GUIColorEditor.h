@@ -29,21 +29,25 @@ namespace spehs
 		void toggleAlphaEditing();
 		bool colorChanged(){ return stateChanged; }
 		glm::vec4 retrieveColor(){ return selectedColor; }
+		void setEditorColor(glm::vec4 _color){ selectedColor = _color; }
 
 	private:
 		bool checkPaletteHover();
 		bool checkSliderHover();
+		bool checkAlphaHover();
 
 		Polygon* palette;
 		Polygon* sliderRG;
 		Polygon* sliderGB;
 		Polygon* sliderBR;
 		Polygon* preview;
-		Polygon* alphaSlider;
+		Polygon* alphaSliderBack;
+		Polygon* alphaSliderFront;
 		float sliderState;
 		bool alphaEnabled;
 		bool sliderOnHold;
 		bool paletteOnHold;
+		bool alphaOnHold;
 		bool stateChanged;
 		glm::vec4 selectedColor;
 	};
