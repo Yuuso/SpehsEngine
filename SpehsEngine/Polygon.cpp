@@ -22,23 +22,23 @@
 
 namespace spehs
 {
-	Polygon* Polygon::create(const int &_shapeID, const PlaneDepth &_planeDepth, const float &_width, const float &_height)
+	Polygon* Polygon::create(const int _shapeID, const PlaneDepth _planeDepth, const float _width, const float _height)
 	{
 		return getActiveBatchManager()->createPolygon(_shapeID, _planeDepth, _width, _height);
 	}
-	Polygon* Polygon::create(std::vector<spehs::Vertex> _vertexData, const PlaneDepth &_planeDepth, const float &_width, const float &_height)
+	Polygon* Polygon::create(const std::vector<spehs::Vertex>& _vertexData, const PlaneDepth _planeDepth, const float _width, const float _height)
 	{
 		return getActiveBatchManager()->createPolygon(_vertexData, _planeDepth, _width, _height);
 	}
-	Polygon* Polygon::create(std::vector<spehs::Vertex> _vertexData, const float &_width, const float &_height)
+	Polygon* Polygon::create(const std::vector<spehs::Vertex>& _vertexData, const float _width, const float _height)
 	{
 		return getActiveBatchManager()->createPolygon(_vertexData, _width, _height);
 	}
-	Polygon* Polygon::create(std::vector<glm::vec2> _cuspData, const PlaneDepth &_planeDepth, const float &_width, const float &_height)
+	Polygon* Polygon::create(const std::vector<glm::vec2>& _cuspData, const PlaneDepth _planeDepth, const float _width, const float _height)
 	{
 		return getActiveBatchManager()->createPolygon(_cuspData, _planeDepth, _width, _height);
 	}
-	Polygon::Polygon(const int &_shapeID, const PlaneDepth &_planeDepth, const float &_width, const float &_height) : Polygon(_width, _height)
+	Polygon::Polygon(const int _shapeID, const PlaneDepth _planeDepth, const float _width, const float _height) : Polygon(_width, _height)
 	{
 		planeDepth = _planeDepth;
 		if (_shapeID >= 3) //Regular Convex Polygons
@@ -101,7 +101,7 @@ namespace spehs
 			}
 		}
 	}
-	Polygon::Polygon(std::vector<spehs::Vertex> _vertexData, const PlaneDepth &_planeDepth, const float &_width, const float &_height) : Polygon(_width, _height)
+	Polygon::Polygon(const std::vector<spehs::Vertex>& _vertexData, const PlaneDepth _planeDepth, const float _width, const float _height) : Polygon(_width, _height)
 	{
 		planeDepth = _planeDepth;
 		if (_vertexData.size() < 3)
@@ -112,11 +112,11 @@ namespace spehs
 
 		setUVCoords();
 	}
-	Polygon::Polygon(std::vector<spehs::Vertex> _vertexData, const float &_width, const float &_height) : Polygon(_vertexData, 0, _width, _height)
+	Polygon::Polygon(const std::vector<spehs::Vertex>& _vertexData, const float _width, const float _height) : Polygon(_vertexData, 0, _width, _height)
 	{
 		blending = false;
 	}
-	Polygon::Polygon(std::vector<glm::vec2> _positionData, const PlaneDepth &_planeDepth, const float &_width, const float &_height) : Polygon(_width, _height)
+	Polygon::Polygon(const std::vector<glm::vec2>& _positionData, const PlaneDepth _planeDepth, const float _width, const float _height) : Polygon(_width, _height)
 	{
 		planeDepth = _planeDepth;
 		if (_positionData.size() < 3)
@@ -131,7 +131,7 @@ namespace spehs
 
 		setUVCoords();
 	}
-	Polygon::Polygon(const float &_width, const float &_height)
+	Polygon::Polygon(const float _width, const float _height)
 	{
 		drawMode = TRIANGLE;
 		width = _width;
