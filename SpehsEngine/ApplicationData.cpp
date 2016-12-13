@@ -1,8 +1,8 @@
+#include <algorithm>
+#include <string>
 #include "ApplicationData.h"
 #include "FileStream.h"
 #include "Console.h"
-#include <string>
-#include <thread>
 
 spehs::ApplicationData* applicationData;
 namespace spehs
@@ -86,9 +86,9 @@ namespace spehs
 		*stream << "VSync: " << vSync << "\n";
 		*stream << "MSAA: " << MSAA << "\n";
 		//Audio
-		*stream << "Master volume: " << masterVolume << "\n";
-		*stream << "Music volume: " << musicVolume << "\n";
-		*stream << "SFX volume: " << sfxVolume << "\n";
+		*stream << "Master volume: " << int(100 * masterVolume) << "\n";
+		*stream << "Music volume: " << int(100 * musicVolume) << "\n";
+		*stream << "SFX volume: " << int(100 * sfxVolume) << "\n";
 		//Other
 		*stream << "Console text size: " << consoleTextSize << "\n";
 		*stream << "ConsoleTextAlpha (0-255): " << consoleTextAlpha << "\n";
@@ -141,9 +141,10 @@ namespace spehs
 		readValueIntoInt(*stream, vSync);
 		readValueIntoInt(*stream, MSAA);
 		//Audio
-		readValueIntoInt(*stream, masterVolume);
-		readValueIntoInt(*stream, musicVolume);
-		readValueIntoInt(*stream, sfxVolume);
+		int intVal;
+		readValueIntoInt(*stream, intVal);		masterVolume = std::min(1.0f, std::max(0.0f, intVal * 0.01f));
+		readValueIntoInt(*stream, intVal);		musicVolume = std::min(1.0f, std::max(0.0f, intVal * 0.01f));
+		readValueIntoInt(*stream, intVal);		sfxVolume = std::min(1.0f, std::max(0.0f, intVal * 0.01f));
 		//Other
 		readValueIntoInt(*stream, consoleTextSize);
 		readValueIntoInt(*stream, consoleTextAlpha);

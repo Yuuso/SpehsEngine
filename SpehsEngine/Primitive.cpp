@@ -50,7 +50,7 @@ namespace spehs
 		readyForDelete = true;
 	}
 
-	void Primitive::setPosition(const float &_x, const float &_y)
+	void Primitive::setPosition(const float _x, const float _y)
 	{
 #ifdef _DEBUG
 		if (_x != _x || _y != _y)
@@ -84,6 +84,32 @@ namespace spehs
 #endif
 		position.x = _other.position.x;
 		position.y = _other.position.y;
+		needUpdate = true;
+	}
+
+	void Primitive::translate(const float &_x, const float &_y)
+	{
+#ifdef _DEBUG
+		if (_x != _x || _y != _y)
+		{
+			console::error("Position values corrupted!");
+		}
+#endif
+		position.x += _x;
+		position.y += _y;
+		needUpdate = true;
+	}
+
+	void Primitive::translate(const glm::vec2& _translation)
+	{
+#ifdef _DEBUG
+		if (_translation.x != _translation.x || _translation.y != _translation.y)
+		{
+			console::error("Position values corrupted!");
+		}
+#endif
+		position.x += _translation.x;
+		position.y += _translation.y;
 		needUpdate = true;
 	}
 
@@ -184,6 +210,18 @@ namespace spehs
 		}
 #endif
 		rotation = _other.rotation;
+		needUpdate = true;
+	}
+
+	void Primitive::rotate(const float _rotation)
+	{
+#ifdef _DEBUG
+		if (_rotation != _rotation)
+		{
+			console::error("Rotation values corrupted!");
+		}
+#endif
+		rotation += _rotation;
 		needUpdate = true;
 	}
 

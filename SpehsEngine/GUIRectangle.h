@@ -13,7 +13,7 @@
 #define GUIRECT_SCALE_UPDATED_BIT			0x00000002
 #define GUIRECT_POSITION_UPDATED_BIT		0x00000004
 #define GUIRECT_MIN_SIZE_UPDATED_BIT		0x00000008
-#define GUIRECT_ENABLED_BIT					0x00000010//Enabled user interaction
+#define GUIRECT_INPUT_ENABLED_BIT			0x00000010//Enables all user interaction
 #define GUIRECT_REMOVE_BIT					0x00000020//Does not actually remove element. Must have a higher level manager to monitor remove status and act accordingly to it
 #define GUIRECT_UNUSED1						0x00000040
 #define GUIRECT_UNUSED2						0x00000080
@@ -22,7 +22,7 @@
 #define GUIRECT_UNUSED5						0x00000400
 //GUI rectangle container
 #define GUIRECT_MOUSE_HOVER_CONTAINER		0x00000800//Whether mouse hover has been detected inside an element of the container
-#define GUIRECT_OPEN						0x00001000//Open containers update elements inside
+#define GUIRECT_OPEN_BIT					0x00001000//Open containers update elements inside
 //GUI window specific
 #define GUIRECT_DRAGGING_BIT				0x00004000
 #define GUIRECT_STRECHING_BIT				0x00008000
@@ -43,7 +43,7 @@ namespace spehs
 	class GUIWindow;
 	class GUIButton;
 	class GUICheckbox;
-	class GUITextField;
+	class GUIStringEditor;
 	class GUIRectangleRow;
 	class GUIRectangleTree;
 	class GUIRectangleList;
@@ -147,19 +147,19 @@ namespace spehs
 		bool getMouseHoverAny(){ return checkBit(state, GUIRECT_MOUSE_HOVER) | checkBit(state, GUIRECT_MOUSE_HOVER_CONTAINER); }
 		virtual bool isReceivingInput(){ return checkBit(state, GUIRECT_RECEIVING_INPUT); }
 		bool isSelected(){ return checkBit(state, GUIRECT_SELECTED); }
-		bool isOpen(){ return checkBit(state, GUIRECT_OPEN); }
+		bool isOpen(){ return checkBit(state, GUIRECT_OPEN_BIT); }
 		//Setters
 		virtual void enableStateRecursive(GUIRECT_STATE_TYPE stateBit){ enableBit(state, stateBit); }
 		virtual void disableStateRecursive(GUIRECT_STATE_TYPE stateBit){ disableBit(state, stateBit); }
 		void enableStateRecursiveUpwards(GUIRECT_STATE_TYPE stateBit);
 		void disableStateRecursiveUpwards(GUIRECT_STATE_TYPE stateBit);
-		void enableState(GUIRECT_STATE_TYPE stateBit){ enableBit(state, stateBit); }
-		void disableState(GUIRECT_STATE_TYPE stateBit){ disableBit(state, stateBit); }
-		void toggleState(GUIRECT_STATE_TYPE stateBit){ toggleBit(state, stateBit); }
+		virtual void enableState(GUIRECT_STATE_TYPE stateBit){ enableBit(state, stateBit); }
+		virtual void disableState(GUIRECT_STATE_TYPE stateBit){ disableBit(state, stateBit); }
+		virtual void toggleState(GUIRECT_STATE_TYPE stateBit){ toggleBit(state, stateBit); }
 
 		//Enabling
-		void enable(){ if (!checkState(GUIRECT_ENABLED_BIT)) onEnable(); }
-		void disable(){ if (checkState(GUIRECT_ENABLED_BIT)) onDisable(); }
+		void enableInput(){ if (checkState(GUIRECT_INPUT_ENABLED_BIT)) return; onEnableInput(); }
+		void disableInput(){ if (!checkState(GUIRECT_INPUT_ENABLED_BIT)) return; onDisableInput(); }
 		
 		////Managing element position
 		//Setting both coordinates
@@ -201,7 +201,7 @@ namespace spehs
 		GUIRectangle* getAsGUIRectanglePtr(){ return this; }
 		virtual GUIWindow* getAsGUIWindowPtr(){ return nullptr; }
 		virtual GUICheckbox* getAsGUICheckboxPtr(){ return nullptr; }
-		virtual GUITextField* getAsGUITextFieldPtr(){ return nullptr; }
+		virtual GUIStringEditor* getAsGUIStringEditorPtr(){ return nullptr; }
 		virtual GUIRectangleRow* getAsGUIRectangleRowPtr(){ return nullptr; }
 		virtual GUIRectangleTree* getAsGUIRectangleTreePtr(){ return nullptr; }
 		virtual GUIRectangleList* getAsGUIRectangleListPtr(){ return nullptr; }
@@ -210,8 +210,8 @@ namespace spehs
 
 	protected:
 		void createText();
-		virtual void onEnable(){ enableState(GUIRECT_ENABLED_BIT); }
-		virtual void onDisable(){ disableState(GUIRECT_ENABLED_BIT); }
+		virtual void onEnableInput(){ enableState(GUIRECT_INPUT_ENABLED_BIT); }
+		virtual void onDisableInput(){ disableState(GUIRECT_INPUT_ENABLED_BIT); }
 
 		glm::vec4 color;///<Color values given to polygon. Ranges from 0.0f - 1.0f
 		glm::ivec2 position;///<The position of the rectangle, originating from the lower left corner, given in screen coordinates. Relative to parent's position
