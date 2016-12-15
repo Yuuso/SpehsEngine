@@ -16,9 +16,10 @@ namespace spehs
 		GUIRectangleRow(GUIRECT_ID_TYPE _id);
 		~GUIRectangleRow();
 
-		void updatePosition();
-		void updateScale();
 		void updateMinSize();
+		void updateScale();
+		void updatePosition();
+
 		void setEvenElementWidth(bool setting);
 		void setElementPositionMode(PositionMode mode);
 		

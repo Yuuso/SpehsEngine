@@ -32,9 +32,9 @@ namespace spehs
 		int vSync;
 		int MSAA;
 		//Audio
-		int masterVolume;
-		int musicVolume;
-		int sfxVolume;
+		float masterVolume;
+		float musicVolume;
+		float sfxVolume;
 		//Other
 		int consoleTextSize;
 		int consoleTextAlpha;

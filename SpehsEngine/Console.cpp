@@ -93,7 +93,7 @@ namespace spehs
 			}
 
 			consoleCamera = new Camera2D();
-			consoleBatchManager = new BatchManager(consoleCamera);
+			consoleBatchManager = new BatchManager(consoleCamera, "console");
 			
 			fpsCounter = consoleBatchManager->createText(10000);
 			if (!fpsCounter)
@@ -103,7 +103,7 @@ namespace spehs
 			}
 			fpsCounter->setFont(applicationData->GUITextFontPath, applicationData->consoleTextSize);
 
-			fpsCounter->setColor(glm::vec4(1.0f, 0.3f, 0.0f, 1.0f));
+			fpsCounter->setColor(glm::vec4(1.0f, 0.3f, 0.0f, 0.85f));
 			fpsCounter->setString("FPS:0123456789\nDraw calls:0123456789\nVertices:0123456789");
 			fpsCounter->setPosition(glm::vec2(5, applicationData->getWindowHeight() - fpsCounter->getTextHeight()));
 
@@ -390,7 +390,7 @@ namespace spehs
 				}
 			}
 		}
-		void render()
+		void render(std::string customDebugText)
 		{
 			LockGuardRecursive regionLock(consoleMutex);
 
@@ -401,7 +401,8 @@ namespace spehs
 				static int frameCounter = 0;
 				if (++frameCounter >= FPS_REFRESH_RATE)
 				{
-					fpsCounter->setString("FPS: " + std::to_string(int(time::getFPS())) + "\nDraw calls: " + std::to_string(drawCalls) + "\nVertices: " + std::to_string(vertexDrawCount));
+					fpsCounter->setString("FPS: " + std::to_string(int(time::getFPS())) + "\nDraw calls: " + std::to_string(drawCalls) + "\nVertices: " + std::to_string(vertexDrawCount) + "\n" + customDebugText);
+					fpsCounter->setPosition(glm::vec2(5, applicationData->getWindowHeight() - fpsCounter->getTextHeight()));
 					frameCounter = 0;
 				}
 			}
@@ -559,7 +560,7 @@ namespace spehs
 				lines.pop_back();
 			}
 		}
-		void setPlaneDepth(uint16_t depth)
+		void setPlaneDepth(int16_t depth)
 		{
 			planeDepth = depth;
 			consoleText->setPlaneDepth(depth);

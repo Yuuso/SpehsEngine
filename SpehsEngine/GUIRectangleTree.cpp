@@ -24,16 +24,12 @@ namespace spehs
 	GUIRectangleTree::~GUIRectangleTree()
 	{
 	}
-	void GUIRectangleTree::update()
+	void GUIRectangleTree::inputUpdate()
 	{//NOTE: do not use container update, tree requires special function call ordering
 		
-		GUIRectangle::update();
-		//If mouse is hovering over the base rectangle, enable container hovering bit
-		if (checkBit(state, GUIRECT_MOUSE_HOVER))
-			enableBit(state, GUIRECT_MOUSE_HOVER_CONTAINER);
-		else
-			disableBit(state, GUIRECT_MOUSE_HOVER_CONTAINER);
-
+		pressedLeafNodeID = 0;
+		GUIRectangleContainer::inputUpdate();
+		
 		////Closing / Opening
 		if (pressedLeafNodeID)
 		{//Leaf node was pressed, close tree
@@ -53,27 +49,21 @@ namespace spehs
 			}
 			else
 			{//Open when mouse is hovering over
-				if (checkBit(state, GUIRECT_MOUSE_HOVER_CONTAINER) && getFirstGenerationParent()->checkState(GUIRECT_FOCUSED))
+				if (checkState(GUIRECT_MOUSE_HOVER_CONTAINER) && checkState(GUIRECT_INPUT_ENABLED_BIT))
+				{
 					open();
+					if (getString() == "def")
+					{
+						int der(0);
+						der++;
+					}
+				}
 				else if (treeOpenTimer <= 0)
 					close();
 			}
 		}
 
-
-		pressedLeafNodeID = 0;//Reset pressed leaf node id before next node update
-
-		if (checkState(GUIRECT_OPEN))
-		{//Update elements
-			for (int i = beginElementIndex; i < beginElementIndex + updateElementCount; i++)
-			{
-				elements[i]->update();
-				//If element is under mouse, mark this container as under mouse
-				if (elements[i]->getMouseHoverAny())
-					enableBit(state, GUIRECT_MOUSE_HOVER_CONTAINER);
-			}
-		}
-		if (checkBit(state, GUIRECT_MOUSE_HOVER_CONTAINER))
+		if (checkState(GUIRECT_MOUSE_HOVER_CONTAINER))
 		{//Mouse hovering over the container
 			treeOpenTimer = TREE_OPEN_TIME;
 		}
@@ -82,139 +72,9 @@ namespace spehs
 			treeOpenTimer -= time::getDeltaTimeAsMilliseconds();
 			if (treeOpenTimer <= 0)
 				close();
-		}
-	}
-	void GUIRectangleTree::setRenderState(const bool _state)
-	{
-		GUIRectangle::setRenderState(_state);
-		if (!checkState(GUIRECT_OPEN))
-		{
-			for (int i = beginElementIndex; i <= getEndElementIndex(); i++)
-				elements[i]->setRenderState(false);
-		}
-		else
-		{
-			for (int i = beginElementIndex; i <= getEndElementIndex(); i++)
-				elements[i]->setRenderState(_state);
-		}
-	}
-	void GUIRectangleTree::updateScale()
-	{
-		GUIRectangle::updateScale();
-
-		if (isOpen())
-		{
-			for (unsigned i = 0; i < elements.size(); i++)
-				elements[i]->setSize(minElementSize.x, minElementSize.y);
-		}
-	}
-	void GUIRectangleTree::updatePosition()
-	{
-		GUIRectangle::updatePosition();
-		
-		if (isOpen())
-		{
-			////Element positioning
-			if (parent->getAsGUIRectangleTreePtr())
-			{//Parent tree exists, mimic parent branch direction
-				if (parent->getAsGUIRectangleTreePtr()->branchX > 0)
-					branchX = size.x;//Parent branches right
-				else
-					branchX = -minElementSize.x;//Parent branches left
-			}
 			else
-			{//Parent TREE doesn't exist. Decide branching direction based on horizontal location/size
-				GUIRectangle* firstGenParent = getFirstGenerationParent();
-				if (firstGenParent)
-				{
-					if (firstGenParent->getXGlobal() + firstGenParent->getWidth() / 2.0f > applicationData->getWindowWidthHalf())
-					{//Branch left
-						branchX = firstGenParent->getXGlobal() - getXGlobal() - minElementSize.x;
-					}
-					else
-					{//Branch right
-						branchX = firstGenParent->getXGlobal() - getXGlobal() + firstGenParent->getWidth();
-					}
-				}
-				else
-				{//No parent
-					if (getXGlobal() + size.x / 2.0f > applicationData->getWindowWidthHalf())
-						branchX = -minElementSize.x;//Branch left
-					else
-						branchX = size.x;//Branch right
-				}
-			}
-
-			//Position elements
-			for (int i = beginElementIndex; i <= getEndElementIndex(); i++)
-			{
-				if (i == beginElementIndex)
-					elements[i]->setPositionLocal(branchX, 0);
-				else
-					elements[i]->setPositionLocal(branchX, elements[i - 1]->getYLocal() + elements[i - 1]->getHeight());
-			}
+				enableState(GUIRECT_MOUSE_HOVER_CONTAINER);//Keep container hover active for the duration of open timer
 		}
-	}
-	void GUIRectangleTree::leafNodePressed(int _ID)
-	{
-		if (parent->getAsGUIRectangleTreePtr())
-		{
-			parent->getAsGUIRectangleTreePtr()->leafNodePressed(_ID);
-			return;
-		}
-		pressedLeafNodeID = _ID;
-	}
-	void GUIRectangleTree::addElement(GUIRectangle* element)
-	{
-		GUIRectangleContainer::addElement(element);
-		element->setRenderState(checkState(GUIRECT_OPEN));
-
-		//By default, make tree to open on mouse hover when node element is added
-		openTreeButton = 0;
-	}
-	void GUIRectangleTree::addElement(std::string str, int _ID)
-	{
-		addElement(new GUIRectangleTree(str));
-		elements.back()->setID(_ID);
-	}
-	void GUIRectangleTree::open()
-	{
-		if (checkState(GUIRECT_OPEN))
-			return;
-
-		//Close other trees
-		if (getRootTree())
-			getFirstGenerationParent()->getAsGUIRectangleContainerPtr()->closeTreeElements(getRootTree()->getAsGUIRectanglePtr());
-
-		//Open this
-		treeOpenTimer = TREE_OPEN_TIME;
-		GUIRectangleContainer::open();
-	}
-	void GUIRectangleTree::close()
-	{
-		if (!checkState(GUIRECT_OPEN))
-			return;
-		
-		//Close this
-		treeOpenTimer = 0.0f;
-		GUIRectangleContainer::close();
-
-		//Close all elements
-		for (unsigned i = 0; i < elements.size(); i++)
-			elements[i]->getAsGUIRectangleTreePtr()->close();
-	}
-	void GUIRectangleTree::toggleOpen()
-	{
-		if (checkBit(state, GUIRECT_OPEN))
-			close();
-		else
-			open();
-	}
-	GUIRectangleTree* GUIRectangleTree::getRootTree()
-	{
-		if (parent && parent->getAsGUIRectangleTreePtr())
-			return parent->getAsGUIRectangleTreePtr()->getRootTree();
-		return this;
 	}
 	void GUIRectangleTree::updateMinSize()
 	{
@@ -236,9 +96,111 @@ namespace spehs
 			}
 		}
 	}
-	void GUIRectangleTree::loseFocus()
+	void GUIRectangleTree::updateScale()
 	{
-		GUIRectangleContainer::loseFocus();
+		GUIRectangle::updateScale();
+
+		if (isOpen())
+		{
+			for (unsigned i = 0; i < elements.size(); i++)
+				elements[i]->setSize(minElementSize.x, minElementSize.y);
+		}
+	}
+	void GUIRectangleTree::updatePosition()
+	{
+		GUIRectangle::updatePosition();
+		
+		if (isOpen())
+		{
+			////Element X positioning
+			if (parent->getAsGUIRectangleTreePtr())
+			{//Parent tree exists, mimic parent branch direction
+				if (parent->getAsGUIRectangleTreePtr()->branchX > 0)
+					branchX = size.x;//Parent branches right
+				else
+					branchX = -minElementSize.x;//Parent branches left
+			}
+			else
+			{//Parent TREE doesn't exist. Decide branching direction based on horizontal location/size
+				GUIRectangle* firstGenParent = getFirstGenerationParent();
+				if (firstGenParent->getXGlobal() + firstGenParent->getWidth() / 2.0f > applicationData->getWindowWidthHalf())
+				{//Branch left
+					branchX = firstGenParent->getXGlobal() - getXGlobal() - minElementSize.x;
+				}
+				else
+				{//Branch right
+					branchX = firstGenParent->getXGlobal() - getXGlobal() + firstGenParent->getWidth();
+				}
+			}
+
+			////Element Y positioning
+			int branchY(getYGlobal());
+			if (branchY + elements.size() * minElementSize.y + 1 > applicationData->getWindowHeight())
+				branchY = applicationData->getWindowHeight() - elements.size() * minElementSize.y - 1;
+
+			//Position elements
+			for (unsigned i = 0; i < elements.size(); i++)
+				elements[i]->setPositionGlobal(getXGlobal() + branchX, branchY + i * minElementSize.y);
+		}
+	}
+	void GUIRectangleTree::leafNodePressed(int _ID)
+	{
+		if (parent->getAsGUIRectangleTreePtr())
+		{
+			parent->getAsGUIRectangleTreePtr()->leafNodePressed(_ID);
+			return;
+		}
+		pressedLeafNodeID = _ID;
+	}
+	void GUIRectangleTree::addElement(GUIRectangle* element)
+	{
+		GUIRectangleContainer::addElement(element);
+		element->setRenderState(checkState(GUIRECT_OPEN_BIT) && getRenderState());
+
+		//By default, make tree to open on mouse hover when node element is added
+		openTreeButton = 0;
+	}
+	void GUIRectangleTree::addElement(std::string str, int _ID)
+	{
+		addElement(new GUIRectangleTree(str));
+		elements.back()->setID(_ID);
+	}
+	bool GUIRectangleTree::open()
+	{
+		if (GUIRectangleContainer::open())
+			return false;
+
+		//Close other trees
+		if (getRootTree())
+			getFirstGenerationParent()->closeElementsOfType<GUIRectangleTree>(this);
+
+		//Open this
+		treeOpenTimer = TREE_OPEN_TIME;
+		return true;
+	}
+	bool GUIRectangleTree::close()
+	{
+		if (!GUIRectangleContainer::close())
+			return false;
+		
+		//Close timer reset
+		treeOpenTimer = 0.0f;
+
+		//Close all elements
+		for (unsigned i = 0; i < elements.size(); i++)
+			elements[i]->getAsGUIRectangleTreePtr()->close();
+
+		return true;
+	}
+	GUIRectangleTree* GUIRectangleTree::getRootTree()
+	{
+		if (parent && parent->getAsGUIRectangleTreePtr())
+			return parent->getAsGUIRectangleTreePtr()->getRootTree();
+		return this;
+	}
+	void GUIRectangleTree::onDisableInput()
+	{
+		GUIRectangleContainer::onDisableInput();
 		close();
 	}
 }

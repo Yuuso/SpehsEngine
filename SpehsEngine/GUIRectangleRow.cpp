@@ -18,28 +18,39 @@ namespace spehs
 		if (evenElementWidth == setting)
 			return;
 		evenElementWidth = setting;
-		disableBit(state, GUIRECT_SCALED);
-		disableBit(state, GUIRECT_POSITIONED);
+		disableBit(state, GUIRECT_SCALE_UPDATED_BIT);
+		disableBit(state, GUIRECT_POSITION_UPDATED_BIT);
 	}
 	void GUIRectangleRow::setElementPositionMode(PositionMode mode)
 	{
 		if (elementPositionMode == mode)
 			return;
 		elementPositionMode = mode;
-		disableBit(state, GUIRECT_SCALED);
-		disableBit(state, GUIRECT_POSITIONED);
+		disableStateRecursiveUpwards(GUIRECT_SCALE_UPDATED_BIT);
+		disableBit(state, GUIRECT_POSITION_UPDATED_BIT);
 	}
-	void GUIRectangleRow::updatePosition()
+	void GUIRectangleRow::updateMinSize()
 	{
-		GUIRectangle::updatePosition();
+		minSize.x = 0;
+		minElementSize.x = 0;
+		minElementSize.y = 0;
 		for (unsigned i = 0; i < elements.size(); i++)
 		{
-			if (i == 0)
-				elements[i]->setPositionLocal(0, 0);
-			else
-				elements[i]->setPositionLocal(elements[i - 1]->getXLocal() + elements[i - 1]->getWidth(), 0);
-		}
+			elements[i]->updateMinSize();
+			if (elements[i]->getMinWidth() > minElementSize.x)
+				minElementSize.x = elements[i]->getMinWidth();
+			if (elements[i]->getMinHeight() > minElementSize.y)
+				minElementSize.y = elements[i]->getMinHeight();
 
+			//Increment min width
+			if (!evenElementWidth)
+				minSize.x += elements[i]->getMinWidth();
+		}
+		if (evenElementWidth)
+			minSize.x = minElementSize.x * elements.size();
+
+		//Set min height to highest min height found in elements
+		minSize.y = minElementSize.y;
 	}
 	void GUIRectangleRow::updateScale()
 	{
@@ -101,27 +112,15 @@ namespace spehs
 			}
 		}
 	}
-	void GUIRectangleRow::updateMinSize()
+	void GUIRectangleRow::updatePosition()
 	{
-		minSize.x = 0;
-		minElementSize.x = 0;
-		minElementSize.y = 0;
+		GUIRectangle::updatePosition();
 		for (unsigned i = 0; i < elements.size(); i++)
 		{
-			elements[i]->updateMinSize();
-			if (elements[i]->getMinWidth() > minElementSize.x)
-				minElementSize.x = elements[i]->getMinWidth();
-			if (elements[i]->getMinHeight() > minElementSize.y)
-				minElementSize.y = elements[i]->getMinHeight();
-
-			//Increment min width
-			if (!evenElementWidth)
-				minSize.x += elements[i]->getMinWidth();
+			if (i == 0)
+				elements[i]->setPositionLocal(0, 0);
+			else
+				elements[i]->setPositionLocal(elements[i - 1]->getXLocal() + elements[i - 1]->getWidth(), 0);
 		}
-		if (evenElementWidth)
-			minSize.x = minElementSize.x * elements.size();
-
-		//Set min height to highest min height found in elements
-		minSize.y = minElementSize.y;
 	}
 }

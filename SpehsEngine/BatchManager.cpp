@@ -25,9 +25,36 @@ namespace spehs
 	{
 		return activeBatchManager;
 	}
+	
+	static BatchManager* batchSectionCurrentBatch(nullptr);
+	void BatchManager::beginSection()
+	{
+		//Record previously active batch manager and activate this
+		previousSections.emplace(getActiveBatchManager());
+		setActiveBatchManager(this);
 
+		//Mark this batch as the currently running batch
+		batchSectionCurrentBatch = this;
+	}
+	void BatchManager::endSection()
+	{
+		if (previousSections.empty())
+		{
+			spehs::console::warning("A batch manager (" + name + ") called endSection()! All sections have already been ended!");
+			return;
+		}
+		if (batchSectionCurrentBatch != this)
+			spehs::console::error("A batch manager (" + batchSectionCurrentBatch->name + ") did not end its batch section! (BatchManager::endSection() was never called for a batch manager that began a section)");
 
-	BatchManager::BatchManager(Camera2D* _camera)
+		//Set currently active section pointer
+		batchSectionCurrentBatch = previousSections.top();
+		previousSections.pop();
+		
+		//Restore active batch manager to the one active when beginSection() was called
+		setActiveBatchManager(batchSectionCurrentBatch);
+	}
+
+	BatchManager::BatchManager(Camera2D* _camera, const std::string _name) : name(_name)
 	{
 		camera2D = _camera;
 	}
@@ -112,8 +139,7 @@ namespace spehs
 			if (primitives[i]->readyForDelete)
 			{
 				delete primitives[i];
-				if (primitives[i] != primitives.back())
-					primitives[i] = primitives.back();
+				primitives[i] = primitives.back();
 				primitives.pop_back();
 			}
 			//Check primitives rendering state
@@ -129,7 +155,7 @@ namespace spehs
 					{
 						batches[j]->push(primitives[i]);
 						batchFound = true;
-						j = batches.size();
+						break;
 					}
 				}
 				//If none found create a new one
@@ -151,8 +177,7 @@ namespace spehs
 			if (texts[i]->readyForDelete)
 			{
 				delete texts[i];
-				if (texts[i] != texts.back())
-					texts[i] = texts.back();
+				texts[i] = texts.back();
 				texts.pop_back();
 			}
 			//Check texts rendering state
@@ -168,7 +193,7 @@ namespace spehs
 					{
 						batches[j]->push(texts[i]);
 						batchFound = true;
-						j = batches.size();
+						break;
 					}
 				}
 				//If none found create a new one

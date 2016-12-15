@@ -18,7 +18,7 @@ namespace spehs
 		polygon->setColor(spehs::GUIRectangle::defaultTooltipColor);
 		setRenderState(false);
 	}
-	Textbox::Textbox(std::string& string, uint16_t depth) : Textbox(string)
+	Textbox::Textbox(std::string& string, int16_t depth) : Textbox(string)
 	{
 		setDepth(depth);
 	}
@@ -27,7 +27,7 @@ namespace spehs
 		text->destroy();
 		polygon->destroy();
 	}
-	void Textbox::setDepth(uint16_t depth)
+	void Textbox::setDepth(int16_t depth)
 	{
 		polygon->setPlaneDepth(depth);
 		text->setPlaneDepth(depth + 1);
@@ -50,4 +50,13 @@ namespace spehs
 		polygon->setRenderState(state);
 		text->setRenderState(state);
 	}
+	bool Textbox::checkPointCollision(const int x, const int y)
+	{
+		return !(x < polygon->getX() || y < polygon->getY() || x > polygon->getX() + polygon->getWidth() || y > polygon->getY() + polygon->getHeight());
+	}
+	bool Textbox::checkPointCollision(const glm::vec2& point)
+	{
+		return !(point.x < polygon->getX() || point.y < polygon->getY() || point.x > polygon->getX() + polygon->getWidth() || point.y > polygon->getY() + polygon->getHeight());
+	}
+
 }

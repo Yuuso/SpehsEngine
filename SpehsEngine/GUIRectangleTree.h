@@ -11,40 +11,32 @@ namespace spehs
 	class GUIRectangleTree : public GUIRectangleContainer
 	{
 	public:
-		/*Default constructor*/
 		GUIRectangleTree();
-		/*ID constructor*/
 		GUIRectangleTree(int _ID);
-		/*Button constructor. Creates button element with given string as the tree rectangle*/
 		GUIRectangleTree(std::string str);
 		virtual ~GUIRectangleTree();
 
-		void update();
-		void setRenderState(const bool _state);
-
+		void inputUpdate();
+		void updateMinSize();
 		void updateScale();
 		void updatePosition();
-		void updateMinSize();
-		void loseFocus();
 		void setOpenTreeButton(int buttonID){ openTreeButton = buttonID; }
-		
-		////Elements
-		/*Created new node with given string and id*/
-		void addElement(std::string str, int _ID);
+		bool open();
+		bool close();			
+		void addElement(std::string str, int _ID);///< Creates new node with given string and id
 		void addElement(GUIRectangle* element);
-		/*Returns 0 by defualt -> do not use 0 as leaf node index!*/
-		int getPressedLeafNodeID(){ return pressedLeafNodeID; }
-		void leafNodePressed(int _ID);
-		void open();
-		void close();
-		void toggleOpen();
 
+		//Tree
+		int getPressedLeafNodeID(){ return pressedLeafNodeID; }
+		void leafNodePressed(int _ID);///< Sets pressed leaf node recursively upwards
 		GUIRectangleTree* getRootTree();
 
 		//Identity
 		GUIRectangleTree* getAsGUIRectangleTreePtr(){ return this; }
 
 	protected:
+		void onDisableInput() override;
+
 		int pressedLeafNodeID;//This id is cleared at the beginning of each update. If during that update a leaf node is pressed, its id will be stored in this variable until the next update.
 		unsigned openTreeButton;//Referring to input manager key index
 		float branchX;//Leaf node x position. If positive, branch towards right, else branch towards left

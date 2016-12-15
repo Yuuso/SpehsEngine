@@ -13,15 +13,16 @@
 
 namespace spehs
 {
-	Line* Line::create(const glm::vec2 &_startPoint, const glm::vec2 &_endPoint, const PlaneDepth &_planeDepth)
+	Line* Line::create(const glm::vec2& _startPoint, const glm::vec2& _endPoint, const PlaneDepth& _planeDepth)
 	{
 		return getActiveBatchManager()->createLine(_startPoint, _endPoint, _planeDepth);
 	}
-	Line::Line(const glm::vec2 &_startPoint, const glm::vec2 &_endPoint, const PlaneDepth &_planeDepth)
+	Line* Line::create(const PlaneDepth &_planeDepth)
 	{
-		//if (glm::distance(_startPoint, _endPoint) < DISTANCE_EPSILON)
-			//spehs::console::error("Line needs to have length greater than 0!");
-
+		return getActiveBatchManager()->createLine(glm::vec2(0.0f, 0.0f), glm::vec2(0.0f, 0.0f), _planeDepth);
+	}
+	Line::Line(const glm::vec2& _startPoint, const glm::vec2& _endPoint, const PlaneDepth& _planeDepth)
+	{
 		vertexArray.resize(2);
 		vertexArray[0].position = glm::vec2(_startPoint.x, _startPoint.y);
 		vertexArray[1].position = glm::vec2(_endPoint.x, _endPoint.y);
@@ -56,7 +57,7 @@ namespace spehs
 		}
 	}
 
-	void Line::setPoints(const glm::vec2 &_newStartPoint, const glm::vec2 &_newEndPoint)
+	void Line::setPoints(const glm::vec2& _newStartPoint, const glm::vec2& _newEndPoint)
 	{
 		vertexArray[0].position = glm::vec2(_newStartPoint.x, _newStartPoint.y);
 		vertexArray[1].position = glm::vec2(_newEndPoint.x, _newEndPoint.y);

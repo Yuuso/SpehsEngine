@@ -90,10 +90,13 @@ namespace spehs
 			}
 			FPSMutex.unlock();
 
-			//Limit FPS = delay return
-			if (applicationData->maxFps > 0)
-				if ((1000.0f / applicationData->maxFps) > deltaTime.asMilliseconds)
-					SDL_Delay(uint32_t(1000.0f / applicationData->maxFps) - deltaTime.asMilliseconds);
+			if (applicationData)
+			{
+				//Limit FPS = delay return
+				if (applicationData->maxFps > 0)
+					if ((1000.0f / applicationData->maxFps) > deltaTime.asMilliseconds)
+						SDL_Delay(uint32_t(1000.0f / applicationData->maxFps) - deltaTime.asMilliseconds);
+			}
 		}
 
 		Time getDeltaTime()

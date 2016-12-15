@@ -50,7 +50,7 @@ namespace spehs
 		readyForDelete = true;
 	}
 
-	void Primitive::setPosition(const float &_x, const float &_y)
+	void Primitive::setPosition(const float _x, const float _y)
 	{
 #ifdef _DEBUG
 		if (_x != _x || _y != _y)
@@ -71,6 +71,45 @@ namespace spehs
 		}
 #endif
 		position = glm::vec2(_newPosition.x, _newPosition.y);
+		needUpdate = true;
+	}
+
+	void Primitive::setPosition(const Primitive& _other)
+	{
+#ifdef _DEBUG
+		if (_other.position.x != _other.position.x || _other.position.y != _other.position.y)
+		{
+			console::error("Position values corrupted!");
+		}
+#endif
+		position.x = _other.position.x;
+		position.y = _other.position.y;
+		needUpdate = true;
+	}
+
+	void Primitive::translate(const float &_x, const float &_y)
+	{
+#ifdef _DEBUG
+		if (_x != _x || _y != _y)
+		{
+			console::error("Position values corrupted!");
+		}
+#endif
+		position.x += _x;
+		position.y += _y;
+		needUpdate = true;
+	}
+
+	void Primitive::translate(const glm::vec2& _translation)
+	{
+#ifdef _DEBUG
+		if (_translation.x != _translation.x || _translation.y != _translation.y)
+		{
+			console::error("Position values corrupted!");
+		}
+#endif
+		position.x += _translation.x;
+		position.y += _translation.y;
 		needUpdate = true;
 	}
 
@@ -159,6 +198,30 @@ namespace spehs
 #endif
 		rotation = _newRotation;
 		rotationVector = _newRotationVector;
+		needUpdate = true;
+	}
+
+	void Primitive::setRotation(const Primitive& _other)
+	{
+#ifdef _DEBUG
+		if (_other.rotation != _other.rotation)
+		{
+			console::error("Rotation values corrupted!");
+		}
+#endif
+		rotation = _other.rotation;
+		needUpdate = true;
+	}
+
+	void Primitive::rotate(const float _rotation)
+	{
+#ifdef _DEBUG
+		if (_rotation != _rotation)
+		{
+			console::error("Rotation values corrupted!");
+		}
+#endif
+		rotation += _rotation;
 		needUpdate = true;
 	}
 
@@ -297,6 +360,11 @@ namespace spehs
 	void Primitive::setRenderState(const bool _newState)
 	{
 		renderState = _newState;
+	}
+
+	void Primitive::setRenderState(const Primitive& _other)
+	{
+		renderState = _other.renderState;
 	}
 
 	void Primitive::setShader(const int &_newShaderIndex)

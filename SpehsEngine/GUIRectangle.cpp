@@ -28,7 +28,7 @@ namespace spehs
 		polygon->destroy();
 	}
 	GUIRectangle::GUIRectangle() : position(0), size(0), minSize(0), displayTexture(nullptr), pressCallbackFunction(nullptr),
-		state(GUIRECT_ENABLED | GUIRECT_HOVER_COLOR | GUIRECT_TEXT_JUSTIFICATION_LEFT | GUIRECT_POST_UPDATE_CALLED_BIT)
+		state(GUIRECT_INPUT_ENABLED_BIT | GUIRECT_HOVER_COLOR | GUIRECT_TEXT_JUSTIFICATION_LEFT)
 	{//Default constructor
 #ifdef _DEBUG
 		++guiRectangleAllocations;
@@ -42,7 +42,7 @@ namespace spehs
 	}
 	GUIRectangle::GUIRectangle(GUIRECT_ID_TYPE ID) : GUIRectangle()
 	{
-		id = ID;
+		setID(ID);
 	}
 	GUIRectangle::GUIRectangle(std::string str) : GUIRectangle()
 	{
@@ -72,12 +72,18 @@ namespace spehs
 		if (pressCallbackFunction)
 			delete pressCallbackFunction;
 	}
-	void GUIRectangle::update()
+	void GUIRectangle::inputUpdate()
 	{
 		disableBit(state, GUIRECT_MOUSE_HOVER);
-		disableBit(state, GUIRECT_MOUSE_HOVER_CONTAINER);
+		if (!checkState(GUIRECT_INPUT_ENABLED_BIT))
+		{
+			if (tooltip)
+				tooltip->setRenderState(false);
+			return;
+		}
+
 		updateMouseHover();
-		if (pressCallbackFunction && getMouseHoverAny() && inputManager->isKeyPressed(MOUSEBUTTON_LEFT))
+		if (pressCallbackFunction && getMouseHover() && inputManager->isKeyPressed(MOUSEBUTTON_LEFT))
 			(*pressCallbackFunction)(*this);
 
 		//Tooltip update
@@ -105,30 +111,19 @@ namespace spehs
 			else
 				tooltip->setRenderState(false);
 		}
-
-		//DEBUG
-#ifdef _DEBUG
-		//if (!checkState(GUIRECT_POST_UPDATE_CALLED_BIT))
-		//	console::warning("GUIRectangle: no post update called!");
-		disableState(GUIRECT_POST_UPDATE_CALLED_BIT);
-#endif
 	}
-	void GUIRectangle::postUpdate()
-	{		
-#ifdef _DEBUG//DEBUG checking
-		enableState(GUIRECT_POST_UPDATE_CALLED_BIT);
-#endif
-
+	void GUIRectangle::visualUpdate()
+	{
 		//Return if not visible
-		if (!polygon->getRenderState())
+		if (!getRenderState())
 			return;
 
 		//Tooltip
 		if (tooltip)
-			tooltip->postUpdate();
+			tooltip->visualUpdate();
 		
 		//Hover color
-		if (checkBit(state, GUIRECT_HOVER_COLOR))
+		if (checkState(GUIRECT_HOVER_COLOR) && checkState(GUIRECT_INPUT_ENABLED_BIT))
 		{
 			if (getMouseHover())
 			{
@@ -148,14 +143,20 @@ namespace spehs
 				polygon->setColor(color);
 		}
 
-		if (!checkBit(state, GUIRECT_SCALED))
-		{//Rescaling
-			updateScale();
-			updatePosition();
+		if (!checkState(GUIRECT_MIN_SIZE_UPDATED_BIT))
+		{//Recalculate min size + rescale + reposition
+			updateMinSize(); enableState(GUIRECT_MIN_SIZE_UPDATED_BIT);
+			updateScale(); enableState(GUIRECT_SCALE_UPDATED_BIT);
+			updatePosition(); enableState(GUIRECT_POSITION_UPDATED_BIT);
 		}
-		else if (!checkBit(state, GUIRECT_POSITIONED))
-		{//Repositioning GUI
-			updatePosition();
+		else if (!checkBit(state, GUIRECT_SCALE_UPDATED_BIT))
+		{//Rescale + reposition
+			updateScale(); enableState(GUIRECT_SCALE_UPDATED_BIT);
+			updatePosition(); enableState(GUIRECT_POSITION_UPDATED_BIT);
+		}
+		else if (!checkBit(state, GUIRECT_POSITION_UPDATED_BIT))
+		{//Reposition
+			updatePosition(); enableState(GUIRECT_POSITION_UPDATED_BIT);
 		}
 	}
 	void GUIRectangle::setRenderState(const bool _state)
@@ -187,103 +188,6 @@ namespace spehs
 		enableBit(state, GUIRECT_MOUSE_HOVER);
 		return true;
 	}
-	void GUIRectangle::updatePosition()
-	{
-		polygon->setPosition(getXGlobal(), getYGlobal());
-
-		//Text position
-		if (text)
-		{
-			float textX(getXGlobal());
-			if (checkBit(state, GUIRECT_TEXT_JUSTIFICATION_LEFT))
-				textX += TEXT_PREFERRED_SIZE_BORDER;
-			else if (checkBit(state, GUIRECT_TEXT_JUSTIFICATION_RIGHT))
-				textX += size.x - text->getTextWidth() - TEXT_PREFERRED_SIZE_BORDER;
-			else
-				textX += 0.5f * (size.x - text->getTextWidth());
-			text->setPosition(std::round(textX), std::round(getYGlobal() + 0.5f * (size.y - text->getTextHeight())));
-		}
-
-		//Display texture position
-		if (displayTexture)
-		{
-			displayTexture->polygon->setPosition(getXGlobal() + size.x / 2, getYGlobal() + size.y / 2);
-		}
-
-		enableBit(state, GUIRECT_POSITIONED);
-	}
-	void GUIRectangle::updateScale()
-	{
-		if (!checkBit(state, GUIRECT_MIN_SIZE_UPDATED))
-		{//TODO
-			updateMinSize();
-			enableBit(state, GUIRECT_MIN_SIZE_UPDATED);//Disable bit here because update min size function is virtual
-		}
-
-		//Account minimum size
-		if (size.x < minSize.x)
-			size.x = minSize.x;
-		if (size.y < minSize.y)
-			size.y = minSize.y;
-
-		polygon->resize(size.x, size.y);
-		enableBit(state, GUIRECT_SCALED);
-	}
-	void GUIRectangle::setColor(glm::vec3& c)
-	{
-		color.r = c.r;
-		color.g = c.g;
-		color.b = c.b;
-		color.a = 1.0f;
-		polygon->setColor(color);
-	}
-	void GUIRectangle::setColor(glm::vec4& c)
-	{
-		color = c;
-		polygon->setColor(color);
-	}
-	void GUIRectangle::setColor(int r, int g, int b, int a)
-	{
-		color[0] = r / 255.0f;
-		color[1] = g / 255.0f;
-		color[2] = b / 255.0f;
-		color[3] = a / 255.0f;
-		polygon->setColor(color);
-	}
-	void GUIRectangle::setDepth(uint16_t depth)
-	{
-		polygon->setPlaneDepth(depth);
-		if (text)
-			text->setPlaneDepth(depth + 3);
-		if (displayTexture)
-			displayTexture->polygon->setPlaneDepth(depth + 1);
-		if (tooltip)
-			tooltip->setDepth(depth + tooltipDepthRelative);
-	}
-	uint16_t GUIRectangle::getDepth()
-	{
-		return polygon->getPlaneDepth();
-	}
-	void GUIRectangle::setParent(GUIRectangle* Parent)
-	{
-		parent = Parent;
-		setDepth(parent->getDepth());
-	}
-	GUIRectangle* GUIRectangle::getFirstGenerationParent()
-	{
-		if (parent)
-			return parent->getFirstGenerationParent();
-		if (getAsGUIRectangleContainerPtr())
-			return getAsGUIRectangleContainerPtr();
-		return nullptr;
-	}
-	void GUIRectangle::setJustification(GUIRECT_STATE_TYPE justificationBit)
-	{
-		disableBit(state, GUIRECT_TEXT_JUSTIFICATION_LEFT);
-		disableBit(state, GUIRECT_TEXT_JUSTIFICATION_CENTER);
-		disableBit(state, GUIRECT_TEXT_JUSTIFICATION_RIGHT);
-		enableBit(state, justificationBit);
-	}
 	void GUIRectangle::updateMinSize()
 	{
 		minSize.x = 0;
@@ -306,6 +210,117 @@ namespace spehs
 			setWidth(minSize.x);
 		if (minSize.y > size.y)
 			setWidth(minSize.y);
+
+		enableState(GUIRECT_MIN_SIZE_UPDATED_BIT);
+	}
+	void GUIRectangle::updateScale()
+	{
+		if (!checkState(GUIRECT_MIN_SIZE_UPDATED_BIT))
+			updateMinSize();
+
+		//Account minimum size
+		if (size.x < minSize.x)
+			size.x = minSize.x;
+		if (size.y < minSize.y)
+			size.y = minSize.y;
+
+		polygon->resize(size.x, size.y);
+		enableState(GUIRECT_SCALE_UPDATED_BIT);
+	}
+	void GUIRectangle::updatePosition()
+	{
+		if (!checkState(GUIRECT_SCALE_UPDATED_BIT))
+			updateMinSize();
+		else if (!checkState(GUIRECT_MIN_SIZE_UPDATED_BIT))
+			updateMinSize();
+
+		polygon->setPosition(getXGlobal(), getYGlobal());
+
+		//Text position
+		if (text)
+		{
+			float textX(getXGlobal());
+			if (checkBit(state, GUIRECT_TEXT_JUSTIFICATION_LEFT))
+				textX += TEXT_PREFERRED_SIZE_BORDER;
+			else if (checkBit(state, GUIRECT_TEXT_JUSTIFICATION_RIGHT))
+				textX += size.x - text->getTextWidth() - TEXT_PREFERRED_SIZE_BORDER;
+			else
+				textX += 0.5f * (size.x - text->getTextWidth());
+			text->setPosition(std::round(textX), std::round(getYGlobal() + 0.5f * (size.y - text->getTextHeight())));
+		}
+
+		//Display texture position
+		if (displayTexture)
+		{
+			displayTexture->polygon->setPosition(getXGlobal() + size.x / 2, getYGlobal() + size.y / 2);
+		}
+
+		enableState(GUIRECT_POSITION_UPDATED_BIT);
+	}
+	void GUIRectangle::setColor(glm::vec3& c)
+	{
+		color.r = c.r;
+		color.g = c.g;
+		color.b = c.b;
+		color.a = 1.0f;
+		polygon->setColor(color);
+	}
+	void GUIRectangle::setColor(glm::vec4& c)
+	{
+		color = c;
+		polygon->setColor(color);
+	}
+	void GUIRectangle::setColor(int r, int g, int b, int a)
+	{
+		color[0] = r / 255.0f;
+		color[1] = g / 255.0f;
+		color[2] = b / 255.0f;
+		color[3] = a / 255.0f;
+		polygon->setColor(color);
+	}
+	void GUIRectangle::setDepth(int16_t depth)
+	{
+		polygon->setPlaneDepth(depth);
+		if (displayTexture)
+			displayTexture->polygon->setPlaneDepth(depth + 1);
+		if (text)
+			text->setPlaneDepth(depth + 2);
+		if (tooltip)
+			tooltip->setDepth(depth + tooltipDepthRelative);
+	}
+	int16_t GUIRectangle::getDepth()
+	{
+		return polygon->getPlaneDepth();
+	}
+	void GUIRectangle::setParent(GUIRectangleContainer* Parent)
+	{
+		parent = Parent;
+		setDepth(parent->getDepth() + 3);
+	}
+	GUIRectangleContainer* GUIRectangle::getFirstGenerationParent()
+	{
+		if (parent)
+			return parent->getFirstGenerationParent();
+		if (getAsGUIRectangleContainerPtr())
+			return getAsGUIRectangleContainerPtr();
+		return nullptr;
+	}
+	bool GUIRectangle::isDescendantOf(GUIRectangleContainer* ascendant)
+	{
+		if (parent)
+		{
+			if (parent == ascendant)
+				return true;
+			return parent->isDescendantOf(ascendant);
+		}
+		return false;
+	}
+	void GUIRectangle::setJustification(GUIRECT_STATE_TYPE justificationBit)
+	{
+		disableBit(state, GUIRECT_TEXT_JUSTIFICATION_LEFT);
+		disableBit(state, GUIRECT_TEXT_JUSTIFICATION_CENTER);
+		disableBit(state, GUIRECT_TEXT_JUSTIFICATION_RIGHT);
+		enableBit(state, justificationBit);
 	}
 
 	//Setters
@@ -317,9 +332,9 @@ namespace spehs
 			createText();
 		text->setString(str);
 
-		disableStateRecursiveUpwards(GUIRECT_SCALED);
-		disableStateRecursiveUpwards(GUIRECT_MIN_SIZE_UPDATED);
-		disableStateRecursiveUpwards(GUIRECT_POSITIONED);
+		disableStateRecursiveUpwards(GUIRECT_SCALE_UPDATED_BIT);
+		disableStateRecursiveUpwards(GUIRECT_MIN_SIZE_UPDATED_BIT);
+		disableStateRecursiveUpwards(GUIRECT_POSITION_UPDATED_BIT);
 	}
 	void GUIRectangle::setStringSize(int size)
 	{
@@ -329,9 +344,9 @@ namespace spehs
 			return;
 
 		text->setFontSize(size);
-		disableStateRecursiveUpwards(GUIRECT_SCALED);
-		disableStateRecursiveUpwards(GUIRECT_MIN_SIZE_UPDATED);
-		disableStateRecursiveUpwards(GUIRECT_POSITIONED);
+		disableStateRecursiveUpwards(GUIRECT_SCALE_UPDATED_BIT);
+		disableStateRecursiveUpwards(GUIRECT_MIN_SIZE_UPDATED_BIT);
+		disableStateRecursiveUpwards(GUIRECT_POSITION_UPDATED_BIT);
 	}
 	void GUIRectangle::setStringSizeRelative(int relativeSize)
 	{
@@ -407,16 +422,12 @@ namespace spehs
 		displayTexture->polygon->setRenderState(polygon->getRenderState());
 		displayTexture->width = texData->width;
 		displayTexture->height = texData->height;
-		disableStateRecursiveUpwards(GUIRECT_POSITIONED);
-		disableStateRecursiveUpwards(GUIRECT_SCALED);
+		disableStateRecursiveUpwards(GUIRECT_POSITION_UPDATED_BIT);
+		disableStateRecursiveUpwards(GUIRECT_SCALE_UPDATED_BIT);
 	}
 	void GUIRectangle::setTexture(std::string path)
 	{
 		polygon->setTexture(path);
-	}
-	bool GUIRectangle::isVisible()
-	{
-		return polygon->getRenderState();
 	}
 	void GUIRectangle::setPressCallback(std::function<void(GUIRectangle&)> callbackFunction)
 	{
@@ -424,5 +435,32 @@ namespace spehs
 			*pressCallbackFunction = callbackFunction;
 		else
 			pressCallbackFunction = new std::function<void(GUIRectangle&)>(callbackFunction);
+	}
+	void GUIRectangle::enableStateRecursiveUpwards(GUIRECT_STATE_TYPE stateBit)
+	{
+		enableState(stateBit);
+		if (parent)
+			parent->enableStateRecursiveUpwards(stateBit);
+	}
+	void GUIRectangle::disableStateRecursiveUpwards(GUIRECT_STATE_TYPE stateBit)
+	{
+		disableState(stateBit);
+		if (parent)
+			parent->disableStateRecursiveUpwards(stateBit);
+	}
+	glm::ivec2 GUIRectangle::getPositionGlobal()
+	{
+		if (parent)
+			return parent->getPositionGlobal() + position; return position;
+	}
+	int GUIRectangle::getXGlobal()
+	{
+		if (parent)
+			return parent->getXGlobal() + position.x; return position.x;
+	}
+	int GUIRectangle::getYGlobal()
+	{
+		if (parent)
+			return parent->getYGlobal() + position.y; return position.y;
 	}
 }

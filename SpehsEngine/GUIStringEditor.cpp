@@ -2,55 +2,62 @@
 #include "Text.h"
 #include "InputManager.h"
 #include "StringOperations.h"
-#include "GUITextField.h"
+#include "GUIStringEditor.h"
 
 
 namespace spehs
 {
-	GUITextField::GUITextField() : stringUpdated(false), defaultString(""), input(""), storedString("")
+	GUIStringEditor::GUIStringEditor() : stringUpdated(false), defaultString(""), input(""), storedString(""), disableInputReceiveOnNextUpdate(false)
 	{
 	}
-	GUITextField::GUITextField(std::string str) : GUITextField()
+	GUIStringEditor::GUIStringEditor(std::string str) : GUIStringEditor()
 	{
 		setString(str);
 	}
-	GUITextField::GUITextField(GUIRECT_ID_TYPE ID) : GUITextField()
+	GUIStringEditor::GUIStringEditor(GUIRECT_ID_TYPE ID) : GUIStringEditor()
 	{
 		setID(ID);
 	}
-	GUITextField::GUITextField(int w, int h) : GUITextField()
+	GUIStringEditor::GUIStringEditor(int w, int h) : GUIStringEditor()
 	{
 		setSize(w, h);
 	}
-	GUITextField::~GUITextField()
+	GUIStringEditor::~GUIStringEditor()
 	{
 	}
-	void GUITextField::update()
+	void GUIStringEditor::inputUpdate()
 	{
-		GUIRectangle::update();
+		GUIRectangle::inputUpdate();
 
-		//Receiving input
-		if (isReceivingInput())
-			recordInput();
-
-		if (getMouseHover())
+		//Disable input receive?
+		if (disableInputReceiveOnNextUpdate)
 		{
-			//Toggle typing if mouse press is detected
-			if (inputManager->isKeyPressed(MOUSE_BUTTON_LEFT))
+			stringUpdated = false;
+			disableState(GUIRECT_RECEIVING_INPUT);
+			disableInputReceiveOnNextUpdate = false;
+		}
+
+		//Clear edited state
+		storedString.clear();
+
+		if (checkState(GUIRECT_INPUT_ENABLED_BIT))
+		{//When enabled
+
+			//Receiving input
+			if (isReceivingInput())
+				recordInput();
+
+			if (getMouseHover() && inputManager->isKeyPressed(MOUSE_BUTTON_LEFT))
+			{//Mouse press
 				toggleTyping();
+			}
 		}
 
 		if (!stringUpdated)
 			updateString();
 
 	}
-	void GUITextField::setString(std::string str)
-	{
-		GUIRectangle::setString(str);
-		defaultString = str;
-		stringUpdated = false;
-	}
-	void GUITextField::updateString()
+	void GUIStringEditor::updateString()
 	{
 		if (isReceivingInput())
 		{//String while typing
@@ -70,11 +77,17 @@ namespace spehs
 		}
 		stringUpdated = true;
 
-		disableStateRecursiveUpwards(GUIRECT_MIN_SIZE_UPDATED);
-		disableStateRecursiveUpwards(GUIRECT_POSITIONED);
-		disableStateRecursiveUpwards(GUIRECT_SCALED);
+		disableStateRecursiveUpwards(GUIRECT_MIN_SIZE_UPDATED_BIT);
+		disableStateRecursiveUpwards(GUIRECT_POSITION_UPDATED_BIT);
+		disableStateRecursiveUpwards(GUIRECT_SCALE_UPDATED_BIT);
 	}
-	void GUITextField::toggleTyping()
+	void GUIStringEditor::setString(std::string str)
+	{
+		GUIRectangle::setString(str);
+		defaultString = str;
+		stringUpdated = false;
+	}
+	void GUIStringEditor::toggleTyping()
 	{
 		if (isReceivingInput())
 		{
@@ -85,22 +98,22 @@ namespace spehs
 		else
 			beginTyping();
 	}
-	void GUITextField::beginTyping()
+	void GUIStringEditor::beginTyping()
 	{
 		if (isReceivingInput())
 			return;
 		enableBit(state, GUIRECT_RECEIVING_INPUT);
 		stringUpdated = false;
 	}
-	void GUITextField::endTyping()
+	void GUIStringEditor::endTyping()
 	{
 		if (!isReceivingInput())
 			return;
-		disableBit(state, GUIRECT_RECEIVING_INPUT);
+		//NOTE: Do not disable input receive here! Must remain receiving until end of update loop!
+		disableInputReceiveOnNextUpdate = true;
 		input = "";//Reset input string
-		stringUpdated = false;
 	}
-	void GUITextField::recordInput()
+	void GUIStringEditor::recordInput()
 	{
 		//Alphabet
 		int capital = 0;
@@ -193,30 +206,26 @@ namespace spehs
 
 	}
 
-	bool GUITextField::stringReady()
+	bool GUIStringEditor::valueEdited()
 	{
-		if (storedString.size() > 0)
-			return true;
-		return false;
+		return storedString.size() > 0;
 	}
-	std::string GUITextField::retrieveString()
+	std::string GUIStringEditor::retrieveString()
 	{
-		std::string returnValue = storedString;
-		storedString.clear();
-		return returnValue;
+		return storedString;
 	}
-	float GUITextField::retrieveStringAsFloat()
+	float GUIStringEditor::retrieveStringAsFloat()
 	{
 		return getStringAsFloat(storedString);
 	}
-	int GUITextField::retrieveStringAsInt()
+	int GUIStringEditor::retrieveStringAsInt()
 	{
 		return getStringAsInt(storedString);
 	}
-	void GUITextField::loseFocus()
+	void GUIStringEditor::onDisableInput()
 	{
 		endTyping();
-		updateString();
-		GUIRectangle::loseFocus();
+		stringUpdated = false;
+		GUIRectangle::onDisableInput();
 	}
 }

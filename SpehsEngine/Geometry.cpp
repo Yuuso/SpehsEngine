@@ -63,6 +63,27 @@ namespace spehs
 
 		return glm::eulerAngles(glm::angleAxis(c, v));
 	}
+	inline void rotateAroundAxis(glm::vec2& point, const glm::vec2& axis, float rotation)
+	{//Translates around the point
+		float dx = point.x - axis.x;
+		float dy = point.y - axis.y;
+		point.x = axis.x + dx*cos(rotation) - dy*sin(rotation);
+		point.y = axis.y + dx*sin(rotation) + dy*cos(rotation);
+	}
+	inline void rotateAroundAxis(glm::vec2& point, const float axisX, const float axisY, float rotation)
+	{//Translates around the point
+		float dx = point.x - axisX;
+		float dy = point.y - axisY;
+		point.x = axisX + dx*cos(rotation) - dy*sin(rotation);
+		point.y = axisY + dx*sin(rotation) + dy*cos(rotation);
+	}
+	inline void rotateAroundOrigin(glm::vec2& point, float rotation)
+	{//Translates around origin
+		float dx = point.x;
+		float dy = point.y;
+		point.x = dx*cos(rotation) - dy*sin(rotation);
+		point.y = dx*sin(rotation) + dy*cos(rotation);
+	}
 	inline float getArea(glm::vec2* cusps, unsigned numCusps)
 	{
 		if (numCusps < 3)

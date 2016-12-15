@@ -6,11 +6,12 @@ namespace spehs
 	class GUIPopup;
 	class GUIWindow;
 	class Polygon;
+	class BatchManager;
 	///Windows are stored in a vector. This vector may change ordering based on performed actions, therefore external for loops and such should be used very carefully!
 	class GUIWindowManager
 	{
 	public:
-		GUIWindowManager();
+		GUIWindowManager(BatchManager& _batchManager);//Batch manager where the windows are drawn and where future primitives will be drawn by the window manager
 		~GUIWindowManager();
 
 		void update();
@@ -18,7 +19,6 @@ namespace spehs
 		void addPopup(GUIPopup* popup);
 		void refreshWindows();
 		GUIWindow* getFocusedWindow(){ return focusedWindow; }
-		void setFocusedWindow(GUIWindow* window);
 		void toggleWindow(GUIWindow* window);
 		void openWindow(GUIWindow* window);
 		void closeWindow(GUIWindow* window);//Does not modify window order
@@ -28,7 +28,10 @@ namespace spehs
 		unsigned getPopupCount(){ return popups.size(); }
 		GUIWindow* back(){ return windows.back(); }
 		GUIWindow* at(int index){ if (index < 0 || index >= windows.size()) return nullptr; return windows[index]; }
-		void setSystemDepth(uint16_t newDepth);
+		void setSystemDepth(int16_t depth);
+		void setDepthPerWindow(int16_t depth);
+		int16_t getSystemDepth(){ return systemDepth; }
+		int16_t getDepthPerWindow(){ return depthPerWindow; }
 		void setPopupShadeColor(unsigned char r, unsigned char g, unsigned char b, unsigned char a = 255);
 
 	private:
@@ -37,8 +40,10 @@ namespace spehs
 		GUIWindow* focusedWindow;
 		std::vector<GUIWindow*> windows;
 		std::vector<GUIPopup*> popups;
-		uint16_t systemDepth;
+		int16_t systemDepth;
+		int16_t depthPerWindow;
 		Polygon* popupShade;
 		float popupShadeAlpha;
+		BatchManager& batchManager;
 	};
 }

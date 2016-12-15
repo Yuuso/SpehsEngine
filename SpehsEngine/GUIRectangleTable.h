@@ -10,11 +10,11 @@ namespace spehs
 		GUIRectangleTable(int columns);
 		~GUIRectangleTable();
 		
-		void updatePosition();
-		void updateScale();
 		void updateMinSize();
+		void updateScale();
+		void updatePosition();
 
-		void setColumnCount(int _columns){ columns = _columns; disableBit(state, GUIRECT_POSITIONED); disableBit(state, GUIRECT_SCALED); }
+		void setColumnCount(int _columns){ columns = _columns; disableBit(state, GUIRECT_POSITION_UPDATED_BIT); disableBit(state, GUIRECT_SCALE_UPDATED_BIT); }
 		int getColumnCount(){ return columns; }
 
 	private:

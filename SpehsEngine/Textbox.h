@@ -9,12 +9,14 @@ namespace spehs
 	struct Textbox
 	{
 		Textbox(std::string& string);
-		Textbox(std::string& string, uint16_t depth);
+		Textbox(std::string& string, int16_t depth);
 		~Textbox();
 
+		virtual bool checkPointCollision(const int x, const int y);
+		virtual bool checkPointCollision(const glm::vec2& point);
 		virtual void setPosition(const int x, const int y);
 		virtual void setRenderState(const bool state);
-		virtual void setDepth(uint16_t depth);
+		virtual void setDepth(int16_t depth);
 		virtual uint16_t getDepthBack();
 		virtual uint16_t getDepthFront();
 

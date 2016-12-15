@@ -11,7 +11,7 @@
 
 namespace spehs
 {
-	GUICheckbox::GUICheckbox() : booleanPtr(nullptr), checkboxSize(20)
+	GUICheckbox::GUICheckbox() : checkboxSize(20), selectedState(false)
 	{
 		checkboxBackground = spehs::Polygon::create(Shape::BUTTON, 0, 1.0f, 1.0f);
 		checkboxBackground->setColor(30, 30, 30);
@@ -36,21 +36,17 @@ namespace spehs
 		checkboxBackground->destroy();
 		checkboxFilling->destroy();
 	}
-	void GUICheckbox::update()
+	void GUICheckbox::inputUpdate()
 	{
-		GUIRectangle::update();
+		GUIRectangle::inputUpdate();
 
 		//Check mouse press
-		previousSelectedState = checkBit(state, GUIRECT_SELECTED);
-		if (getMouseHover() && inputManager->isKeyPressed(MOUSE_BUTTON_LEFT))
-		{//Toggle selected state, update boolean pointer if one exists
-			toggleState(GUIRECT_SELECTED);
-			if (booleanPtr)
-				*booleanPtr = checkBit(state, GUIRECT_SELECTED);
-		}
+		previousSelectedState = selectedState;
+		if (checkState(GUIRECT_INPUT_ENABLED_BIT) && getMouseHover() && inputManager->isKeyPressed(MOUSE_BUTTON_LEFT))
+			selectedState = !selectedState;
 
 		//Filling color
-		if (checkBit(state, GUIRECT_SELECTED))
+		if (selectedState)
 			checkboxFilling->setColorAlpha(SELECTED_ALPHA);
 		else
 			checkboxFilling->setColorAlpha(UNSELECTED_ALPHA);
@@ -58,7 +54,7 @@ namespace spehs
 	void GUICheckbox::setRenderState(const bool _state)
 	{
 		GUIRectangle::setRenderState(_state);
-		if (isVisible())
+		if (getRenderState())
 		{
 			checkboxBackground->setRenderState(true);
 			checkboxFilling->setRenderState(true);
@@ -69,11 +65,27 @@ namespace spehs
 			checkboxFilling->setRenderState(false);
 		}
 	}
-	void GUICheckbox::setDepth(uint16_t depth)
+	void GUICheckbox::setDepth(int16_t depth)
 	{
 		GUIRectangle::setDepth(depth);
 		checkboxBackground->setPlaneDepth(depth + 1);
 		checkboxFilling->setPlaneDepth(depth + 2);
+	}
+	void GUICheckbox::updateMinSize()
+	{
+		minSize.x = 2 * CHECKBOX_BORDER + checkboxSize;
+		if (text)
+			minSize.x += text->getTextWidth();
+		minSize.y = 2 * CHECKBOX_BORDER + checkboxSize;
+		if (text && text->getTextHeight() > minSize.y)
+			minSize.y = text->getTextHeight();
+	}
+	void GUICheckbox::updateScale()
+	{
+		GUIRectangle::updateScale();
+
+		checkboxBackground->resize(checkboxSize, checkboxSize);
+		checkboxFilling->resize(checkboxSize - 2 * CHECKBOX_BORDER, checkboxSize - 2 * CHECKBOX_BORDER);
 	}
 	void GUICheckbox::updatePosition()
 	{
@@ -82,8 +94,8 @@ namespace spehs
 
 		GUIRectangle::updatePosition();
 
-		checkboxBackground->setPosition(getXGlobal() + size.x - CHECKBOX_BORDER - checkboxSize - applicationData->getWindowWidthHalf(), getYGlobal() + (size.y - checkboxSize) * 0.5f - applicationData->getWindowHeight() / 2);
-		checkboxFilling->setPosition(getXGlobal() + size.x - checkboxSize - applicationData->getWindowWidthHalf(), getYGlobal() + (size.y - checkboxSize) * 0.5f + CHECKBOX_BORDER - applicationData->getWindowHeightHalf());
+		checkboxBackground->setPosition(getXGlobal() + size.x - CHECKBOX_BORDER - checkboxSize, getYGlobal() + (size.y - checkboxSize) * 0.5f);
+		checkboxFilling->setPosition(getXGlobal() + size.x - checkboxSize, getYGlobal() + (size.y - checkboxSize) * 0.5f + CHECKBOX_BORDER);
 
 		//Update minimum size
 		updateMinSize();
@@ -101,39 +113,8 @@ namespace spehs
 			text->setPosition(textX, getYGlobal() + 0.5f * (size.y + text->getTextHeight()) - text->getFontHeight() - text->getFontDescender());
 		}
 	}
-	void GUICheckbox::updateScale()
+	bool GUICheckbox::valueEdited()
 	{
-		GUIRectangle::updateScale();
-
-		checkboxBackground->resize(checkboxSize, checkboxSize);
-		checkboxFilling->resize(checkboxSize - 2 * CHECKBOX_BORDER, checkboxSize - 2 * CHECKBOX_BORDER);
-	}
-	void GUICheckbox::updateMinSize()
-	{
-		minSize.x = 2 * CHECKBOX_BORDER + checkboxSize;
-		if (text)
-			minSize.x += text->getTextWidth();
-		minSize.y = 2 * CHECKBOX_BORDER + checkboxSize;
-		if (text && text->getTextHeight() > minSize.y)
-			minSize.y = text->getTextHeight();
-	}
-	void GUICheckbox::setBooleanPtr(bool* ptr)
-	{
-		booleanPtr = ptr;
-		if (booleanPtr)
-		{
-			if (*booleanPtr)
-				enableBit(state, GUIRECT_SELECTED);
-			else
-				disableBit(state, GUIRECT_SELECTED);
-		}
-		else
-			disableBit(state, GUIRECT_SELECTED);
-	}
-	bool GUICheckbox::selectedStateChanged()
-	{
-		if (checkState(GUIRECT_SELECTED) != previousSelectedState)
-			return true;
-		return false;
+		return selectedState != previousSelectedState;
 	}
 }

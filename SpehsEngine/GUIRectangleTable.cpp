@@ -9,22 +9,30 @@ namespace spehs
 	GUIRectangleTable::~GUIRectangleTable()
 	{
 	}
-	void GUIRectangleTable::updatePosition()
+	void GUIRectangleTable::updateMinSize()
 	{
-		GUIRectangle::updatePosition();
-
-		int row = 0;
-		int col = 0;
-		int totalRowCount = ceil(float(elements.size()) / float(columns));
+		minElementSize.x = 0;
+		minElementSize.y = 0;
 		for (unsigned i = 0; i < elements.size(); i++)
 		{
-			elements[i]->setPositionLocal(col * elementSize.x, elementSize.y * (totalRowCount - row - 1));
-			col++;
-			if (col >= columns)
-			{
-				col = 0;
-				row++;
-			}
+			elements[i]->updateMinSize();
+			if (elements[i]->getMinWidth() > minElementSize.x)
+				minElementSize.x = elements[i]->getMinWidth();
+			if (elements[i]->getMinHeight() > minElementSize.y)
+				minElementSize.y = elements[i]->getMinHeight();
+		}
+		if (columns > 0)
+		{
+			if (elements.size() >= columns)
+				minSize.x = minElementSize.x * columns;
+			else
+				minSize.x = minElementSize.x * elements.size();
+			minSize.y = minElementSize.y * ceil(elements.size() / columns);
+		}
+		else
+		{
+			minSize.x = 0;
+			minSize.y = 0;
 		}
 	}
 	void GUIRectangleTable::updateScale()
@@ -59,30 +67,22 @@ namespace spehs
 			}
 		}
 	}
-	void GUIRectangleTable::updateMinSize()
+	void GUIRectangleTable::updatePosition()
 	{
-		minElementSize.x = 0;
-		minElementSize.y = 0;
+		GUIRectangle::updatePosition();
+
+		int row = 0;
+		int col = 0;
+		int totalRowCount = ceil(float(elements.size()) / float(columns));
 		for (unsigned i = 0; i < elements.size(); i++)
 		{
-			elements[i]->updateMinSize();
-			if (elements[i]->getMinWidth() > minElementSize.x)
-				minElementSize.x = elements[i]->getMinWidth();
-			if (elements[i]->getMinHeight() > minElementSize.y)
-				minElementSize.y = elements[i]->getMinHeight();
-		}
-		if (columns > 0)
-		{
-			if (elements.size() >= columns)
-				minSize.x = minElementSize.x * columns;
-			else
-				minSize.x = minElementSize.x * elements.size();
-			minSize.y = minElementSize.y * ceil(elements.size() / columns);
-		}
-		else
-		{
-			minSize.x = 0;
-			minSize.y = 0;
+			elements[i]->setPositionLocal(col * elementSize.x, elementSize.y * (totalRowCount - row - 1));
+			col++;
+			if (col >= columns)
+			{
+				col = 0;
+				row++;
+			}
 		}
 	}
 }

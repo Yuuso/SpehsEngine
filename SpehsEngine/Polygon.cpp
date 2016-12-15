@@ -15,7 +15,6 @@
 #include <glm/gtx/transform.hpp>
 
 
-#define HALF_PI 1.57079632679f
 #define TWO_PI 6.28318530718f
 
 #define GLM_FORCE_RADIANS
@@ -23,23 +22,23 @@
 
 namespace spehs
 {
-	Polygon* Polygon::create(const int &_shapeID, const PlaneDepth &_planeDepth, const float &_width, const float &_height)
+	Polygon* Polygon::create(const int _shapeID, const PlaneDepth _planeDepth, const float _width, const float _height)
 	{
 		return getActiveBatchManager()->createPolygon(_shapeID, _planeDepth, _width, _height);
 	}
-	Polygon* Polygon::create(std::vector<spehs::Vertex> _vertexData, const PlaneDepth &_planeDepth, const float &_width, const float &_height)
+	Polygon* Polygon::create(const std::vector<spehs::Vertex>& _vertexData, const PlaneDepth _planeDepth, const float _width, const float _height)
 	{
 		return getActiveBatchManager()->createPolygon(_vertexData, _planeDepth, _width, _height);
 	}
-	Polygon* Polygon::create(std::vector<spehs::Vertex> _vertexData, const float &_width, const float &_height)
+	Polygon* Polygon::create(const std::vector<spehs::Vertex>& _vertexData, const float _width, const float _height)
 	{
 		return getActiveBatchManager()->createPolygon(_vertexData, _width, _height);
 	}
-	Polygon* Polygon::create(std::vector<glm::vec2> _cuspData, const PlaneDepth &_planeDepth, const float &_width, const float &_height)
+	Polygon* Polygon::create(const std::vector<glm::vec2>& _cuspData, const PlaneDepth _planeDepth, const float _width, const float _height)
 	{
 		return getActiveBatchManager()->createPolygon(_cuspData, _planeDepth, _width, _height);
 	}
-	Polygon::Polygon(const int &_shapeID, const PlaneDepth &_planeDepth, const float &_width, const float &_height) : Polygon(_width, _height)
+	Polygon::Polygon(const int _shapeID, const PlaneDepth _planeDepth, const float _width, const float _height) : Polygon(_width, _height)
 	{
 		planeDepth = _planeDepth;
 		if (_shapeID >= 3) //Regular Convex Polygons
@@ -49,9 +48,9 @@ namespace spehs
 			//firstPosition adjusts initial the rotation for even numbered polygons
 			//Initial rotation is set so that the "lowest" (bottom) line is drawn horizontally
 			if (_shapeID % 2)
-				firstPosition = HALF_PI;
+				firstPosition = 0;
 			else
-				firstPosition = HALF_PI + (TWO_PI / _shapeID) / 2.0f;
+				firstPosition = (TWO_PI / _shapeID) / 2.0f;
 			vertexArray[0].position = glm::vec2(cos(firstPosition), sin(firstPosition));
 			float minX = vertexArray[0].position.x, minY = vertexArray[0].position.y, maxX = vertexArray[0].position.x, maxY = vertexArray[0].position.y;
 			for (int i = 1; i < _shapeID; i++)
@@ -102,7 +101,7 @@ namespace spehs
 			}
 		}
 	}
-	Polygon::Polygon(std::vector<spehs::Vertex> _vertexData, const PlaneDepth &_planeDepth, const float &_width, const float &_height) : Polygon(_width, _height)
+	Polygon::Polygon(const std::vector<spehs::Vertex>& _vertexData, const PlaneDepth _planeDepth, const float _width, const float _height) : Polygon(_width, _height)
 	{
 		planeDepth = _planeDepth;
 		if (_vertexData.size() < 3)
@@ -113,11 +112,11 @@ namespace spehs
 
 		setUVCoords();
 	}
-	Polygon::Polygon(std::vector<spehs::Vertex> _vertexData, const float &_width, const float &_height) : Polygon(_vertexData, 0, _width, _height)
+	Polygon::Polygon(const std::vector<spehs::Vertex>& _vertexData, const float _width, const float _height) : Polygon(_vertexData, 0, _width, _height)
 	{
 		blending = false;
 	}
-	Polygon::Polygon(std::vector<glm::vec2> _positionData, const PlaneDepth &_planeDepth, const float &_width, const float &_height) : Polygon(_width, _height)
+	Polygon::Polygon(const std::vector<glm::vec2>& _positionData, const PlaneDepth _planeDepth, const float _width, const float _height) : Polygon(_width, _height)
 	{
 		planeDepth = _planeDepth;
 		if (_positionData.size() < 3)
@@ -132,7 +131,7 @@ namespace spehs
 
 		setUVCoords();
 	}
-	Polygon::Polygon(const float &_width, const float &_height)
+	Polygon::Polygon(const float _width, const float _height)
 	{
 		drawMode = TRIANGLE;
 		width = _width;
@@ -229,9 +228,9 @@ namespace spehs
 		return value;
 	}
 
-	TextureData* Polygon::setTexture(const size_t &_textureID)
+	TextureData* Polygon::setTexture(const size_t &_hash)
 	{
-		TextureData* value = textureManager->getTextureData(_textureID);
+		TextureData* value = textureManager->getTextureData(_hash);
 		textureDataID = value->textureDataID;
 		if (shaderIndex == DefaultPolygon)
 			shaderIndex = DefaultTexture;
@@ -241,6 +240,13 @@ namespace spehs
 	void Polygon::setTexture(TextureData* _textureDataPtr)
 	{
 		textureDataID = _textureDataPtr->textureDataID;
+		if (shaderIndex == DefaultPolygon)
+			shaderIndex = DefaultTexture;
+	}
+
+	void Polygon::setTextureID(const unsigned int &_textureID)
+	{
+		textureDataID = _textureID;
 		if (shaderIndex == DefaultPolygon)
 			shaderIndex = DefaultTexture;
 	}

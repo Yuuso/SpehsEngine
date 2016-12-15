@@ -4,10 +4,10 @@
 #include <glm/vec3.hpp>
 
 #include <vector>
+#include <stack>
 #include <string>
 
 #include "Depth.h"
-
 
 
 namespace spehs
@@ -29,8 +29,15 @@ namespace spehs
 	*/
 	class BatchManager
 	{
+	//Batch section management
+	private:
+		std::stack<BatchManager*> previousSections;///Stack of batches that were active during each call to beginSection(). Stack resolves as endSection() is being called one by one
 	public:
-		BatchManager(Camera2D* _camera);
+		void beginSection();
+		void endSection();
+
+	public:
+		BatchManager(Camera2D* _camera, const std::string _name = "unnamed batch manager");
 		~BatchManager();
 
 		Polygon* createPolygon(const int &_shapeID, const PlaneDepth &_planeDepth, const float &_width, const float &_height);
@@ -50,7 +57,9 @@ namespace spehs
 
 		Camera2D* getCamera2D(){ return camera2D; }
 
+
 	protected:
+		const std::string name;
 		std::vector<Batch*> batches;
 
 		std::vector<Primitive*> primitives;

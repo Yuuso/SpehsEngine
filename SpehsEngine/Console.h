@@ -21,7 +21,7 @@ namespace spehs
 
 		//Update cycle
 		void update();
-		void render();
+		void render(std::string customDebugText = "");
 
 		//Variables, commands
 		void addVariable(std::string identifier, bool& var);
@@ -45,7 +45,7 @@ namespace spehs
 		std::string getTextEntered();///< Returns latest text executed to console
 
 		//Other
-		void setPlaneDepth(uint16_t depth);
+		void setPlaneDepth(int16_t depth);
 
 		extern unsigned long drawCalls;
 		extern unsigned long vertexDrawCount;
