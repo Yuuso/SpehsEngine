@@ -31,7 +31,7 @@ namespace spehs
 			}
 			else
 			{
-				exceptions::fatalError("Cannot uninit audio engine, instance not initialized!");
+				exceptions::warning("Cannot uninit audio engine, instance not initialized!");
 			}
 		}
 

@@ -27,6 +27,15 @@ namespace spehs
 			~AudioEngine();
 
 			//TODO: Source pool management
+			//TODO: priorities and memory management and stuff
+			
+			//Listener
+
+
+			//amount of sources at the start & absolute max sources
+			//when to increase that number
+
+			//How to snatch sources away from playback
 
 			ALCdevice* device;
 			ALCcontext* context;
