@@ -81,7 +81,7 @@ namespace spehs
 		void setColor(glm::vec4& _col);
 		void setColor(CommonColor& _col);
 		void setColor(float _red, float _green, float _blue, float _alpha = 1.0f);
-		void setColor(unsigned char _r, unsigned char _g, unsigned char _b, unsigned char _a = 1.0f);
+		void setColor(unsigned char _r, unsigned char _g, unsigned char _b, unsigned char _a = 255);
 		void setAlpha(float _alpha);
 		void setAlpha(unsigned char _a);
 
