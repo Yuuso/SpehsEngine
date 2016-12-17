@@ -70,7 +70,6 @@ namespace spehs
 
 		void deleteAllAudio();
 
-	protected:
 		AudioClip getAudioClip(const std::string _filepath);
 		AudioClip getAudioClip(const size_t &_hashID);
 

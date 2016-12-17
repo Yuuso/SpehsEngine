@@ -10,6 +10,8 @@
 #include "RNG.h"
 #include "ShaderManager.h"
 #include "Console.h"
+#include "AudioManager.h"
+#include "AudioEngine.h"
 #include "OpenGLError.h"
 
 #include <string>
@@ -83,7 +85,9 @@ namespace spehs
 		inputManager->initialize();
 		textureManager = new TextureManager();
 		shaderManager = new ShaderManager();
+		AudioManager::instance = new AudioManager;
 		rng::initializeRNG();
+		audio::AudioEngine::init();
 
 		checkOpenGLErrors(__FILE__, __LINE__);
 
@@ -99,7 +103,9 @@ namespace spehs
 		delete inputManager;
 		delete textureManager;
 		delete shaderManager;
+		delete AudioManager::instance;
 		console::unitialize();
+		audio::AudioEngine::uninit();
 		uninitText();
 		SDL_Quit();
 	}
