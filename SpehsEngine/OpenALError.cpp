@@ -10,7 +10,7 @@
 
 namespace spehs
 {
-	void checkOpenGLErrors(const std::string &_file, int _line)
+	void checkOpenALErrors(const std::string &_file, int _line)
 	{
 #ifdef _DEBUG
 		ALenum errorCode = alGetError();

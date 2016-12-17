@@ -535,7 +535,6 @@ namespace spehs
 			visibility = 1.0f;
 			for (unsigned i = 0; i < lines.size(); i++)
 				lines[i]->setRenderState(true);
-			consoleText->setRenderState(false);
 
 			updateLinePositions();
 		}

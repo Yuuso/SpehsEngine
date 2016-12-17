@@ -119,7 +119,7 @@ namespace spehs
 					{
 						//Need to generate source
 						alGenSources(1, &sourcePool[i].sourceID);
-						checkOpenALError(__FILE__, __LINE__);
+						checkOpenALErrors(__FILE__, __LINE__);
 						if (sourcePool[i].sourceID != 0)
 						{
 							sourcePool[i].soundPtr = _soundSource;

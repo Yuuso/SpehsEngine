@@ -39,7 +39,7 @@ namespace spehs
 				spehs::console::warning("Cannot play sound, no sound buffer!");
 				return;
 			}
-			if (source)
+			if (!source)
 			{
 				if (!AudioEngine::instance->getFreeSource(this))
 				{
@@ -62,7 +62,7 @@ namespace spehs
 		}
 		void SoundSource::pause()
 		{
-			if (source)
+			if (!source)
 			{
 				spehs::console::warning("Cannot pause sound, no source!");
 				return;
@@ -72,7 +72,7 @@ namespace spehs
 		}
 		void SoundSource::stop()
 		{
-			if (source)
+			if (!source)
 			{
 				spehs::console::warning("Cannot pause sound, no source!");
 				return;

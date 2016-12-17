@@ -108,7 +108,7 @@ namespace spehs
 		}
 
 		//Read WAVE data
-		fread(&waveFile, sizeof(WAVE::WAVEData), 1, fileData);
+		fread(&waveFile.waveData, sizeof(WAVE::WAVEData), 1, fileData);
 
 		//Check for correct data tag
 		if (waveFile.waveData.subChunkID[0] != 'd' ||
@@ -134,11 +134,11 @@ namespace spehs
 
 		//Generate OpenAL buffer
 		alGenBuffers(1, &clip.buffer);
-		checkOpenALError(__FILE__, __LINE__);
+		checkOpenALErrors(__FILE__, __LINE__);
 
 		//Data into the buffer
 		alBufferData(clip.buffer, clip.format, (void*) waveFile.data, clip.size, clip.freq);
-		checkOpenALError(__FILE__, __LINE__);
+		checkOpenALErrors(__FILE__, __LINE__);
 
 		//Clean ups
 		fclose(fileData);
