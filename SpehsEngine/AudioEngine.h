@@ -48,10 +48,14 @@ namespace spehs
 		private:
 			struct SourceObject
 			{
+				~SourceObject()
+				{
+					int a = 0;
+				}
 				ALuint sourceID = 0;
 				SoundSource* soundPtr = nullptr;
 			};
-			std::vector<SourceObject> sourcePool;
+			std::vector<SourceObject*> sourcePool;
 			
 
 			/*

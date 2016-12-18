@@ -92,7 +92,8 @@ namespace spehs
 
 			checkOpenALCError(device, __FILE__, __LINE__);
 
-			sourcePool.resize(16);
+			for (unsigned i = 0; i < 16; i++) //Bit of a messy solution but this isn't called very often so what ever.
+				sourcePool.push_back(new SourceObject());
 		}
 		AudioEngine::~AudioEngine()
 		{
@@ -106,27 +107,27 @@ namespace spehs
 		{
 			for (unsigned i = 0; i < sourcePool.size(); i++)
 			{
-				if (!sourcePool[i].soundPtr)
+				if (!sourcePool[i]->soundPtr)
 				{
-					if (sourcePool[i].sourceID != 0)
+					if (sourcePool[i]->sourceID != 0)
 					{
 						//Found free source!
-						sourcePool[i].soundPtr = _soundSource;
-						_soundSource->source = &sourcePool[i];
+						sourcePool[i]->soundPtr = _soundSource;
+						_soundSource->source = sourcePool[i];
 						return true;
 					}
 					else
 					{
 						//Need to generate source
-						alGenSources(1, &sourcePool[i].sourceID);
+						alGenSources(1, &sourcePool[i]->sourceID);
 						checkOpenALErrors(__FILE__, __LINE__);
-						if (sourcePool[i].sourceID != 0)
+						if (sourcePool[i]->sourceID != 0)
 						{
-							sourcePool[i].soundPtr = _soundSource;
-							_soundSource->source = &sourcePool[i];
+							sourcePool[i]->soundPtr = _soundSource;
+							_soundSource->source = sourcePool[i];
 							return true;
 						}
-						assert(sourcePool[i].sourceID);//FOR DEBUG TESTING PURPOSES ONLY REMOVE LATER!!!!!
+						assert(sourcePool[i]->sourceID);//FOR DEBUG TESTING PURPOSES ONLY REMOVE LATER!!!!!
 					}
 				}
 			}
@@ -134,25 +135,26 @@ namespace spehs
 			if (sourcePool.size() < maxSources)
 			{
 				//Try making more sources
-				sourcePool.resize(std::min(maxSources, sourcePool.size() * 2));
-				getFreeSource(_soundSource);
-				return;
+				int amount = std::min(maxSources, sourcePool.size() * 2);
+				for (unsigned i = sourcePool.size(); i < amount; i++) //Bit of a messy solution but this isn't called very often so what ever.
+					sourcePool.push_back(new SourceObject());
+				return getFreeSource(_soundSource);
 			}
 
 			//If nothing else > steal it from someone with 'lower' priority
-			std::sort(sourcePool.begin(), sourcePool.end(), [](const SourceObject& _a, const SourceObject& _b)
+			std::sort(sourcePool.begin(), sourcePool.end(), [](SourceObject* _a, SourceObject* _b)
 			{
-				return _a.soundPtr->getPriority() > _b.soundPtr->getPriority();
+				return _a->soundPtr->getPriority() > _b->soundPtr->getPriority();
 			});
 			for (unsigned i = 0; i < sourcePool.size(); i++)
 			{
-				if (sourcePool[i].soundPtr->getPriority() > _soundSource->getPriority())
+				if (sourcePool[i]->soundPtr->getPriority() > _soundSource->getPriority())
 				{
-					if (sourcePool[i].soundPtr->getPriority() != 0)
+					if (sourcePool[i]->soundPtr->getPriority() != 0)
 					{
-						sourcePool[i].soundPtr->removeSource();
-						sourcePool[i].soundPtr = _soundSource;
-						_soundSource->source = &sourcePool[i];
+						sourcePool[i]->soundPtr->removeSource();
+						sourcePool[i]->soundPtr = _soundSource;
+						_soundSource->source = sourcePool[i];
 						return true;
 					}
 				}
