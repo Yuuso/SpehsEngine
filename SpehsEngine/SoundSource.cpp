@@ -152,12 +152,20 @@ namespace spehs
 
 		bool SoundSource::isPlaying()
 		{
+			if (!source)
+			{
+				return false;
+			}
 			ALint state;
 			alGetSourcei(source->sourceID, AL_SOURCE_STATE, &state);
 			return state == AL_PLAYING;
 		}
 		bool SoundSource::isPaused()
 		{
+			if (!source)
+			{
+				return false;
+			}
 			ALint state;
 			alGetSourcei(source->sourceID, AL_SOURCE_STATE, &state);
 			return state == AL_PAUSED;
@@ -165,6 +173,10 @@ namespace spehs
 
 		void SoundSource::removeSource()
 		{
+			if (!source)
+			{
+				return;
+			}
 			stop();
 			source->soundPtr = nullptr;
 			source = nullptr;
