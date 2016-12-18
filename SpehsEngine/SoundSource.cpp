@@ -3,6 +3,7 @@
 
 #include "AudioManager.h"
 #include "Console.h"
+#include "OpenALError.h"
 
 #include <AL\al.h>
 
@@ -11,7 +12,7 @@ namespace spehs
 {
 	namespace audio
 	{
-		SoundSource::SoundSource() : position(0.0f), velocity(0.0f), direction(0.0f), pitch(1.0f), gain(1.0f), maxGain(1.0f), minGain(0.0f), loop(false), source(0), buffer(0)
+		SoundSource::SoundSource() : position(0.0f), velocity(0.0f), direction(0.0f), pitch(1.0f), gain(1.0f), maxGain(1.0f), minGain(0.0f), loop(false), source(nullptr), buffer(0)
 		{
 		}
 		SoundSource::~SoundSource()
@@ -25,11 +26,17 @@ namespace spehs
 			if (source)
 			{
 				alSourcei(source->sourceID, AL_BUFFER, buffer);
+				checkOpenALErrors(__FILE__, __LINE__);
 			}
 		}
 		void SoundSource::setSound(const std::string _filepath)
 		{
 			buffer = AudioManager::instance->getAudioClip(_filepath).buffer;
+			if (source)
+			{
+				alSourcei(source->sourceID, AL_BUFFER, buffer);
+				checkOpenALErrors(__FILE__, __LINE__);
+			}
 		}
 
 		void SoundSource::play()
@@ -56,9 +63,11 @@ namespace spehs
 				alSourcei(source->sourceID, AL_LOOPING, loop);
 
 				alSourcei(source->sourceID, AL_BUFFER, buffer);
+				checkOpenALErrors(__FILE__, __LINE__);
 			}
 
 			alSourcePlay(source->sourceID);
+			checkOpenALErrors(__FILE__, __LINE__);
 		}
 		void SoundSource::pause()
 		{
@@ -69,6 +78,7 @@ namespace spehs
 			}
 
 			alSourcePause(source->sourceID);
+			checkOpenALErrors(__FILE__, __LINE__);
 		}
 		void SoundSource::stop()
 		{
@@ -79,6 +89,7 @@ namespace spehs
 			}
 
 			alSourceStop(source->sourceID);
+			checkOpenALErrors(__FILE__, __LINE__);
 		}
 
 		void SoundSource::setPosition(const glm::vec2& _pos)
