@@ -15,7 +15,7 @@
 #define GUIRECT_MIN_SIZE_UPDATED_BIT		0x00000008
 #define GUIRECT_INPUT_ENABLED_BIT			0x00000010//Enables all user interaction
 #define GUIRECT_REMOVE_BIT					0x00000020//Does not actually remove element. Must have a higher level manager to monitor remove status and act accordingly to it
-#define GUIRECT_UNUSED1						0x00000040
+#define GUIRECT_MOUSE_HOVER_PREVIOUS		0x00000040
 #define GUIRECT_UNUSED2						0x00000080
 #define GUIRECT_UNUSED3						0x00000100
 #define GUIRECT_UNUSED4						0x00000200
@@ -38,6 +38,10 @@
 
 namespace spehs
 {
+	namespace audio
+	{
+		class SoundSource;
+	}
 	class Text;
 	class Polygon;
 	class GUIWindow;
@@ -125,6 +129,10 @@ namespace spehs
 		void setDisplayTexture(std::string path);
 		//Rectangle texture
 		void setTexture(std::string path);
+		
+		//Audio
+		void setHoverSound(const std::string path);
+		void setPressSound(const std::string path);
 		
 		//Callback
 		/** Callback to function/method that returns void and accepts the button reference as an argument.
@@ -221,6 +229,8 @@ namespace spehs
 		GUIRectangle* tooltip;
 		Polygon* polygon;
 		Text* text;
+		spehs::audio::SoundSource* hoverSound;
+		spehs::audio::SoundSource* pressSound;
 		GUIRECT_STATE_TYPE state;
 		GUIRECT_ID_TYPE id;///<GUI rectangles can be given IDs for identification
 		std::function<void(GUIRectangle&)>* pressCallbackFunction;//Called when pressed

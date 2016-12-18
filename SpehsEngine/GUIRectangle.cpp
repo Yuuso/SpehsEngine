@@ -1,4 +1,6 @@
 #include <iostream>
+#include "AudioManager.h"
+#include "SoundSource.h"
 #include "ApplicationData.h"
 #include "Polygon.h"
 #include "InputManager.h"
@@ -27,7 +29,7 @@ namespace spehs
 	{
 		polygon->destroy();
 	}
-	GUIRectangle::GUIRectangle() : position(0), size(0), minSize(0), displayTexture(nullptr), pressCallbackFunction(nullptr),
+	GUIRectangle::GUIRectangle() : position(0), size(0), minSize(0), displayTexture(nullptr), pressCallbackFunction(nullptr), pressSound(nullptr), hoverSound(nullptr),
 		state(GUIRECT_INPUT_ENABLED_BIT | GUIRECT_HOVER_COLOR | GUIRECT_TEXT_JUSTIFICATION_LEFT)
 	{//Default constructor
 #ifdef _DEBUG
@@ -71,6 +73,10 @@ namespace spehs
 			delete displayTexture;
 		if (pressCallbackFunction)
 			delete pressCallbackFunction;
+		if (pressSound)
+			delete pressSound;
+		if (hoverSound)
+			delete hoverSound;
 	}
 	void GUIRectangle::inputUpdate()
 	{
@@ -83,15 +89,27 @@ namespace spehs
 		}
 
 		updateMouseHover();
-		if (pressCallbackFunction && getMouseHover() && inputManager->isKeyPressed(MOUSEBUTTON_LEFT))
-			(*pressCallbackFunction)(*this);
-
-		//Tooltip update
-		if (tooltip)
+		if (getMouseHover())
 		{
-			if (getMouseHover())
-			{//Tooltip positioning
+			if (hoverSound)
+			{//Hover sound
+				if (!checkState(GUIRECT_MOUSE_HOVER_PREVIOUS))
+					hoverSound->play();
+			}
 
+			if (inputManager->isKeyPressed(MOUSEBUTTON_LEFT))
+			{//Pressed
+
+				if (pressSound)
+					pressSound->play();
+
+				if (pressCallbackFunction)
+					(*pressCallbackFunction)(*this);
+			}
+
+			//Tooltip update
+			if (tooltip)
+			{
 				if (inputManager->getMouseX() > applicationData->getWindowWidthHalf())
 				{//Mouse on the right
 					if (inputManager->getMouseX() - tooltip->size.x < 0)
@@ -108,8 +126,14 @@ namespace spehs
 				}
 				tooltip->setRenderState(true);
 			}
-			else
+
+			enableState(GUIRECT_MOUSE_HOVER_PREVIOUS);
+		}
+		else
+		{//No mouse hover
+			if (tooltip)
 				tooltip->setRenderState(false);
+			disableState(GUIRECT_MOUSE_HOVER_PREVIOUS);
 		}
 	}
 	void GUIRectangle::visualUpdate()
@@ -462,5 +486,21 @@ namespace spehs
 	{
 		if (parent)
 			return parent->getYGlobal() + position.y; return position.y;
+	}
+	void GUIRectangle::setHoverSound(const std::string path)
+	{
+		if (!hoverSound)
+			hoverSound = new spehs::audio::SoundSource();
+		hoverSound->setSound(AudioManager::instance->loadWAVE(path));
+		hoverSound->setPriority(1);
+		hoverSound->setGain(1.0f);
+	}
+	void GUIRectangle::setPressSound(const std::string path)
+	{
+		if (!pressSound)
+			pressSound = new spehs::audio::SoundSource();
+		pressSound->setSound(AudioManager::instance->loadWAVE(path));
+		pressSound->setPriority(1);
+		pressSound->setGain(1.0f);
 	}
 }
