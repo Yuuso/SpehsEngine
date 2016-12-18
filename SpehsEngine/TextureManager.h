@@ -44,8 +44,8 @@ namespace spehs
 		TextureData* getTextureData(const size_t& _hash); //Get texture data from hash
 		size_t preloadTexture(const std::string& _texturePath, const TextureFiltering minScaleFiltering = spehs::TextureFiltering::LinearMipMapLinear, const TextureFiltering magScaleFiltering = spehs::TextureFiltering::Linear); //Loads texture and returns hash
 
-		TextureData* getNoiseTexture(const int& _width, const int& _height, const unsigned int& _seed, const int& _factor, const bool _turbulence, const TextureFiltering minScaleFiltering = spehs::TextureFiltering::LinearMipMapLinear, const TextureFiltering magScaleFiltering = spehs::TextureFiltering::Linear);
-		size_t preloadNoiseTexture(const int& _width, const int& _height, const unsigned int& _seed, const int& _factor, const bool _turbulence, const TextureFiltering minScaleFiltering = spehs::TextureFiltering::LinearMipMapLinear, const TextureFiltering magScaleFiltering = spehs::TextureFiltering::Linear);
+		TextureData* getNoiseTexture(const int& _width, const int& _height, const unsigned int& _seed, const int& _factor, const TextureFiltering minScaleFiltering = spehs::TextureFiltering::LinearMipMapLinear, const TextureFiltering magScaleFiltering = spehs::TextureFiltering::Linear);
+		size_t preloadNoiseTexture(const int& _width, const int& _height, const unsigned int& _seed, const int& _factor, const TextureFiltering minScaleFiltering = spehs::TextureFiltering::LinearMipMapLinear, const TextureFiltering magScaleFiltering = spehs::TextureFiltering::Linear);
 
 		TextureData* createTexture(const std::string &_ID, const void* _uint8data, const int _width, const int _height, const TextureFiltering minScaleFiltering = spehs::TextureFiltering::LinearMipMapLinear, const TextureFiltering magScaleFiltering = spehs::TextureFiltering::Linear);
 		size_t preloadDataTexture(const std::string &_ID, const void* _uint8data, const int _width, const int _height, const TextureFiltering minScaleFiltering = spehs::TextureFiltering::LinearMipMapLinear, const TextureFiltering magScaleFiltering = spehs::TextureFiltering::Linear);

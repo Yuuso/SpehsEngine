@@ -21,7 +21,7 @@ namespace spehs
 {
 	TextureManager::TextureManager()
 	{
-		defaultTexture = getNoiseTexture(16, 16, DEFAULT_TEXTURE_SEED, 4, false);
+		defaultTexture = getNoiseTexture(16, 16, DEFAULT_TEXTURE_SEED, 4);
 	}
 	TextureManager::~TextureManager()
 	{
@@ -79,16 +79,16 @@ namespace spehs
 	}
 
 
-	TextureData* TextureManager::getNoiseTexture(const int& _width, const int& _height, const unsigned int& _seed, const int& _factor, const bool _turbulence, const TextureFiltering minScaleFiltering, const TextureFiltering magScaleFiltering)
+	TextureData* TextureManager::getNoiseTexture(const int& _width, const int& _height, const unsigned int& _seed, const int& _factor, const TextureFiltering minScaleFiltering, const TextureFiltering magScaleFiltering)
 	{
 		size_t hash = std::hash<unsigned>()(_seed);
 		auto it = textureDataMap.find(hash);
 		if (it != textureDataMap.end())
 			return it->second;
 
-		return textureDataMap.find(preloadNoiseTexture(_width, _height, _seed, _factor, _turbulence, minScaleFiltering, magScaleFiltering))->second;
+		return textureDataMap.find(preloadNoiseTexture(_width, _height, _seed, _factor, minScaleFiltering, magScaleFiltering))->second;
 	}
-	size_t TextureManager::preloadNoiseTexture(const int& _width, const int& _height, const unsigned int& _seed, const int& _factor, const bool _turbulence, const TextureFiltering minScaleFiltering, const TextureFiltering magScaleFiltering)
+	size_t TextureManager::preloadNoiseTexture(const int& _width, const int& _height, const unsigned int& _seed, const int& _factor, const TextureFiltering minScaleFiltering, const TextureFiltering magScaleFiltering)
 	{
 		if (_factor == 0)
 		{
@@ -168,18 +168,9 @@ namespace spehs
 			for (unsigned y = 0; y < _height; y++)
 			{
 				COLOR color;
-				if (!_turbulence)
-				{
-					color.r = color.g = color.b = GLubyte(256 * smoothNoise(x / _factor, y / _factor));
-					color.a = (color.r + color.g + color.b) / 3;
-					noiseTextureData.push_back(color);
-				}
-				else
-				{
-					color.r = color.g = color.b = GLubyte(turbulence(x, y));
-					color.a = (color.r + color.g + color.b) / 3;
-					noiseTextureData.push_back(color);
-				}
+				color.r = color.g = color.b = GLubyte(turbulence(x, y));
+				color.a = (color.r + color.g + color.b) / 3;
+				noiseTextureData.push_back(color);
 			}
 		}
 
