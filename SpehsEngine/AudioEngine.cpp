@@ -136,9 +136,10 @@ namespace spehs
 				//Try making more sources
 				sourcePool.resize(std::min(maxSources, sourcePool.size() * 2));
 				getFreeSource(_soundSource);
+				return;
 			}
 
-			//If nothing else > steal if from someone with 'lower' priority
+			//If nothing else > steal it from someone with 'lower' priority
 			std::sort(sourcePool.begin(), sourcePool.end(), [](const SourceObject& _a, const SourceObject& _b)
 			{
 				return _a.soundPtr->getPriority() > _b.soundPtr->getPriority();
