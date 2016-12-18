@@ -24,6 +24,7 @@ namespace spehs
 		class AudioEngine
 		{
 			friend class SoundSource;
+			friend class ActiveSoundSource;
 		public:
 			static void init();
 			static void uninit();

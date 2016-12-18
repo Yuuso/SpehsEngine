@@ -12,7 +12,7 @@ namespace spehs
 {
 	namespace audio
 	{
-		SoundSource::SoundSource() : position(0.0f), velocity(0.0f), direction(0.0f), pitch(1.0f), gain(1.0f), maxGain(1.0f), minGain(0.0f), loop(false), source(nullptr), buffer(0)
+		SoundSource::SoundSource() : pitch(1.0f), gain(1.0f), maxGain(1.0f), minGain(0.0f), loop(false), source(nullptr), buffer(0)
 		{
 		}
 		SoundSource::~SoundSource()
@@ -38,6 +38,18 @@ namespace spehs
 				checkOpenALErrors(__FILE__, __LINE__);
 			}
 		}
+		
+		void SoundSource::setParameters()
+		{
+			alSourcef(source->sourceID, AL_PITCH, pitch);
+			alSourcef(source->sourceID, AL_GAIN, gain);
+			alSourcef(source->sourceID, AL_MAX_GAIN, maxGain);
+			alSourcef(source->sourceID, AL_MIN_GAIN, minGain);
+			alSourcei(source->sourceID, AL_LOOPING, loop);
+
+			alSourcei(source->sourceID, AL_BUFFER, buffer);
+			checkOpenALErrors(__FILE__, __LINE__);
+		}
 
 		void SoundSource::play()
 		{
@@ -52,18 +64,7 @@ namespace spehs
 				{
 					return;
 				}
-
-				alSource3f(source->sourceID, AL_POSITION, position.x, position.y, 0.0f);
-				alSource3f(source->sourceID, AL_VELOCITY, velocity.x, velocity.y, 0.0f);
-				alSource3f(source->sourceID, AL_DIRECTION, direction.x, direction.y, 0.0f);
-				alSourcef(source->sourceID, AL_PITCH, pitch);
-				alSourcef(source->sourceID, AL_GAIN, gain);
-				alSourcef(source->sourceID, AL_MAX_GAIN, maxGain);
-				alSourcef(source->sourceID, AL_MIN_GAIN, minGain);
-				alSourcei(source->sourceID, AL_LOOPING, loop);
-
-				alSourcei(source->sourceID, AL_BUFFER, buffer);
-				checkOpenALErrors(__FILE__, __LINE__);
+				setParameters();
 			}
 
 			alSourcePlay(source->sourceID);
@@ -92,30 +93,6 @@ namespace spehs
 			checkOpenALErrors(__FILE__, __LINE__);
 		}
 
-		void SoundSource::setPosition(const glm::vec2& _pos)
-		{
-			position = _pos;
-			if (source)
-			{
-				alSource3f(source->sourceID, AL_POSITION, position.x, position.y, 0.0f);
-			}
-		}
-		void SoundSource::setVelocity(const glm::vec2& _vel)
-		{
-			velocity = _vel;
-			if (source)
-			{
-				alSource3f(source->sourceID, AL_VELOCITY, velocity.x, velocity.y, 0.0f);
-			}
-		}
-		void SoundSource::setDirection(const glm::vec2& _direction)
-		{
-			direction = _direction;
-			if (source)
-			{
-				alSource3f(source->sourceID, AL_DIRECTION, direction.x, direction.y, 0.0f);
-			}
-		}
 		void SoundSource::setPitch(const float _pitch)
 		{
 			pitch = _pitch;
@@ -191,6 +168,49 @@ namespace spehs
 			stop();
 			source->soundPtr = nullptr;
 			source = nullptr;
+		}
+
+
+		ActiveSoundSource::ActiveSoundSource() : position(0.0f), velocity(0.0f), direction(0.0f)
+		{
+
+		}
+		ActiveSoundSource::~ActiveSoundSource()
+		{
+
+		}
+
+		void ActiveSoundSource::setParameters()
+		{
+			alSource3f(source->sourceID, AL_POSITION, position.x, position.y, 0.0f);
+			alSource3f(source->sourceID, AL_VELOCITY, velocity.x, velocity.y, 0.0f);
+			alSource3f(source->sourceID, AL_DIRECTION, direction.x, direction.y, 0.0f);
+			SoundSource::setParameters();
+		}
+
+		void ActiveSoundSource::setPosition(const glm::vec2& _pos)
+		{
+			position = _pos;
+			if (source)
+			{
+				alSource3f(source->sourceID, AL_POSITION, position.x, position.y, 0.0f);
+			}
+		}
+		void ActiveSoundSource::setVelocity(const glm::vec2& _vel)
+		{
+			velocity = _vel;
+			if (source)
+			{
+				alSource3f(source->sourceID, AL_VELOCITY, velocity.x, velocity.y, 0.0f);
+			}
+		}
+		void ActiveSoundSource::setDirection(const glm::vec2& _direction)
+		{
+			direction = _direction;
+			if (source)
+			{
+				alSource3f(source->sourceID, AL_DIRECTION, direction.x, direction.y, 0.0f);
+			}
 		}
 	}
 }

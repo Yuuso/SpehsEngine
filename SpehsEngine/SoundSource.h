@@ -20,18 +20,17 @@ namespace spehs
 			friend class AudioEngine;
 		public:
 			SoundSource();
-			~SoundSource();
+			virtual ~SoundSource();
 
 			void setSound(const size_t _hashID);
 			void setSound(const std::string _filepath);
+
+			virtual void setParameters();
 
 			void play();
 			void pause();
 			void stop();
 
-			void setPosition(const glm::vec2& _pos);
-			void setVelocity(const glm::vec2& _vel);
-			void setDirection(const glm::vec2& _direction);
 			void setPitch(const float _pitch);
 			void setGain(const float _gain);
 			void setMaxGain(const float _maxGain);
@@ -41,9 +40,6 @@ namespace spehs
 
 			bool isPlaying();
 			bool isPaused();
-			glm::vec2 getPosition(){ return position; }
-			glm::vec2 getVelocity(){ return velocity; }
-			glm::vec2 getDirection(){ return direction; }
 			float getPitch(){ return pitch; }
 			float getGain(){ return gain; }
 			float getMaxGain(){ return maxGain; }
@@ -51,24 +47,9 @@ namespace spehs
 			bool getLooping(){ return loop; }
 			unsigned int getPriority(){ return priority; }
 
-		private:
+		protected:
 
 			void removeSource();
-
-			/*
-			default: {0, 0, 0}
-			*/
-			glm::vec2 position;
-			
-			/*
-			default: {0, 0, 0}
-			*/
-			glm::vec2 velocity;
-			
-			/*
-			default: {0, 0, 0}
-			*/
-			glm::vec2 direction; //Cone stuff to be effective?
 
 			/*
 			range: 0.5 - 2.0
@@ -118,6 +99,40 @@ namespace spehs
 
 			AudioEngine::SourceObject* source;
 			ALuint buffer;
+		};
+
+		class ActiveSoundSource : public SoundSource
+		{
+		public:
+			ActiveSoundSource();
+			~ActiveSoundSource();
+
+			void setParameters();
+			
+			void setPosition(const glm::vec2& _pos);
+			void setVelocity(const glm::vec2& _vel);
+			void setDirection(const glm::vec2& _direction);
+
+			glm::vec2 getPosition(){ return position; }
+			glm::vec2 getVelocity(){ return velocity; }
+			glm::vec2 getDirection(){ return direction; }
+
+		private:
+
+			/*
+			default: {0, 0, 0}
+			*/
+			glm::vec2 position;
+
+			/*
+			default: {0, 0, 0}
+			*/
+			glm::vec2 velocity;
+
+			/*
+			default: {0, 0, 0}
+			*/
+			glm::vec2 direction; //Cone stuff to be effective?
 		};
 	}
 }
