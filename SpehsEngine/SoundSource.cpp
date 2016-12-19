@@ -53,6 +53,7 @@ namespace spehs
 
 		void SoundSource::play()
 		{
+			return;
 			if (buffer == 0)
 			{
 				spehs::console::warning("Cannot play sound, no sound buffer!");

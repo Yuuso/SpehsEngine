@@ -162,13 +162,13 @@ namespace spehs
 
 		alDeleteBuffers(1, &it->second.buffer);
 
-		audioClips.erase(it);
+		audioClips.erase(_hashID);
 	}
 	void AudioManager::deleteAllAudio()
 	{
-		for (unsigned i = 0; i < audioClips.size(); i++)
+		for (auto &it : audioClips)
 		{
-			alDeleteBuffers(1, &audioClips[i].buffer);
+			alDeleteBuffers(1, &it.second.buffer);
 		}
 		audioClips.clear();
 	}

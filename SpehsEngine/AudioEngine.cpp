@@ -47,10 +47,10 @@ namespace spehs
 			AudioEngine::instance->maxSources = _maxSources;
 		}
 
-		void AudioEngine::setListenerPosition(const glm::vec2& _pos)
+		void AudioEngine::setListenerPosition(const glm::vec2& _pos, const float _z)
 		{
 			AudioEngine::instance->listenerPosition = _pos;
-			alListener3f(AL_POSITION, _pos.x, _pos.y, 0.0f);
+			alListener3f(AL_POSITION, _pos.x, _pos.y, _z);
 		}
 		void AudioEngine::setListenerVelocity(const glm::vec2& _vel)
 		{

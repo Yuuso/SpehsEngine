@@ -31,7 +31,7 @@ namespace spehs
 
 			static void setMaxSources(const unsigned int _maxSources);
 
-			static void setListenerPosition(const glm::vec2& _pos);
+			static void setListenerPosition(const glm::vec2& _pos, const float _z = 1.0f);
 			static void setListenerVelocity(const glm::vec2& _vel);
 			static void setListenerGain(const float _gain);
 
