@@ -1,4 +1,5 @@
 #include "Exceptions.h"
+#include "Console.h"
 
 #include <cstdlib>
 #include <iostream>
@@ -9,7 +10,8 @@ namespace spehs
 {
 	namespace exceptions
 	{
-		void fatalError(std::string errorString)
+		static bool consoleLoggingEnabled = true;
+		void fatalError(const std::string errorString)
 		{
 			std::cout << std::endl;
 			std::cout << "Fatal Error: " << errorString << std::endl;
@@ -18,15 +20,19 @@ namespace spehs
 			SDL_Quit();
 			exit(1);
 		}
-		void unexpectedError(std::string errorString)
+		void unexpectedError(const std::string errorString)
 		{
+			if (consoleLoggingEnabled)
+				console::log("Unexpected Error: " + errorString, glm::vec3(1.0f, 0.0f, 0.0f));
 			std::cout << std::endl;
 			std::cout << "Unexpected Error: " << errorString << std::endl;
 			std::cout << "Press 'Enter' to continue." << std::endl;
 			std::cin.ignore();
 		}
-		void warning(std::string warningString)
+		void warning(const std::string warningString)
 		{
+			if (consoleLoggingEnabled)
+				console::log("Warning: " + warningString, glm::vec3(0.9f, 0.6f, 0.1f));
 			std::cout << std::endl;
 			std::cout << "Warning: " << warningString << std::endl;
 		}

@@ -68,7 +68,7 @@ namespace spehs
 		alphaSliderBack->destroy();
 		alphaSliderFront->destroy();
 	}
-	void GUIColorEditor::setDepth(int16_t _depth)
+	void GUIColorEditor::setDepth(const int16_t _depth)
 	{
 		GUIRectangle::setDepth(_depth);
 		palette->setPlaneDepth(_depth + 1);
@@ -249,17 +249,17 @@ namespace spehs
 			alphaSliderFront->setPosition(alphaSliderBack->getX(), alphaSliderBack->getY());
 		}
 	}
-	bool GUIColorEditor::checkPaletteHover()
+	bool GUIColorEditor::checkPaletteHover() const
 	{
 		return inputManager->getMouseX() > palette->getX() && inputManager->getMouseX() < palette->getX() + palette->getWidth() &&
 			inputManager->getMouseY() > palette->getY() && inputManager->getMouseY() < palette->getY() + palette->getHeight();
 	}
-	bool GUIColorEditor::checkSliderHover()
+	bool GUIColorEditor::checkSliderHover() const
 	{
 		return inputManager->getMouseX() > sliderRG->getX() && inputManager->getMouseX() < sliderRG->getX() + sliderRG->getWidth() &&
 			inputManager->getMouseY() > sliderRG->getY() && inputManager->getMouseY() < sliderBR->getY() + sliderBR->getHeight();
 	}
-	bool GUIColorEditor::checkAlphaHover()
+	bool GUIColorEditor::checkAlphaHover() const
 	{
 		return inputManager->getMouseX() > alphaSliderBack->getX() && inputManager->getMouseX() < alphaSliderBack->getX() + alphaSliderBack->getWidth() &&
 			inputManager->getMouseY() > alphaSliderBack->getY() && inputManager->getMouseY() < alphaSliderBack->getY() + alphaSliderBack->getHeight();

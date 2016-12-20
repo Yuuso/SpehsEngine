@@ -6,14 +6,14 @@ namespace spehs
 	{
 		disableBit(state, GUIRECT_HOVER_COLOR);
 	}
-	GUIRectangleRow::GUIRectangleRow(GUIRECT_ID_TYPE _id) : GUIRectangleRow()
+	GUIRectangleRow::GUIRectangleRow(const GUIRECT_ID_TYPE _id) : GUIRectangleRow()
 	{
 		setID(_id);
 	}
 	GUIRectangleRow::~GUIRectangleRow()
 	{
 	}
-	void GUIRectangleRow::setEvenElementWidth(bool setting)
+	void GUIRectangleRow::setEvenElementWidth(const bool setting)
 	{
 		if (evenElementWidth == setting)
 			return;
@@ -21,7 +21,7 @@ namespace spehs
 		disableBit(state, GUIRECT_SCALE_UPDATED_BIT);
 		disableBit(state, GUIRECT_POSITION_UPDATED_BIT);
 	}
-	void GUIRectangleRow::setElementPositionMode(PositionMode mode)
+	void GUIRectangleRow::setElementPositionMode(const PositionMode mode)
 	{
 		if (elementPositionMode == mode)
 			return;

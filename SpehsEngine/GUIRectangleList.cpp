@@ -29,7 +29,7 @@ namespace spehs
 		scrollDown->setRenderState(getRenderState());
 		setDepth(getDepth());
 	}
-	GUIRectangleList::GUIRectangleList(GUIRECT_ID_TYPE id) : GUIRectangleList()
+	GUIRectangleList::GUIRectangleList(const GUIRECT_ID_TYPE id) : GUIRectangleList()
 	{
 		setID(id);
 	}
@@ -289,7 +289,7 @@ namespace spehs
 			incrementUpdateElementCount(1);
 		elements.back()->setRenderState(getRenderState() && checkState(GUIRECT_OPEN_BIT) && (beginElementIndex + updateElementCount == elements.size()/*is updated*/));
 	}
-	void GUIRectangleList::setDepth(int16_t depth)
+	void GUIRectangleList::setDepth(const int16_t depth)
 	{
 		GUIRectangleContainer::setDepth(depth);
 		scrollUp->setDepth(depth + 1);

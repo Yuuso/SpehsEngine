@@ -42,19 +42,19 @@ namespace spehs
 		
 		setColor(defaultColor);
 	}
-	GUIRectangle::GUIRectangle(GUIRECT_ID_TYPE ID) : GUIRectangle()
+	GUIRectangle::GUIRectangle(const GUIRECT_ID_TYPE ID) : GUIRectangle()
 	{
 		setID(ID);
 	}
-	GUIRectangle::GUIRectangle(std::string str) : GUIRectangle()
+	GUIRectangle::GUIRectangle(const std::string str) : GUIRectangle()
 	{
 		setString(str);
 	}
-	GUIRectangle::GUIRectangle(glm::ivec2& _size) : GUIRectangle()
+	GUIRectangle::GUIRectangle(const glm::ivec2& _size) : GUIRectangle()
 	{
 		setSize(_size);
 	}
-	GUIRectangle::GUIRectangle(int width, int height) : GUIRectangle()
+	GUIRectangle::GUIRectangle(const int width, const int height) : GUIRectangle()
 	{
 		setSize(width, height);
 	}
@@ -110,20 +110,14 @@ namespace spehs
 			//Tooltip update
 			if (tooltip)
 			{
-				if (inputManager->getMouseX() > applicationData->getWindowWidthHalf())
-				{//Mouse on the right
-					if (inputManager->getMouseX() - tooltip->size.x < 0)
-						tooltip->setPositionGlobal(0, inputManager->getMouseY());
-					else
-						tooltip->setPositionGlobal(inputManager->getMouseX() - tooltip->size.x, inputManager->getMouseY());
-				}
-				else
-				{//Mouse on the left
-					if (inputManager->getMouseX() + tooltip->size.x > applicationData->getWindowWidth())
-						tooltip->setPositionGlobal(applicationData->getWindowWidth() - tooltip->size.x, inputManager->getMouseY());
-					else
-						tooltip->setPositionGlobal(inputManager->getMouseX(), inputManager->getMouseY());
-				}
+				int _x = inputManager->getMouseX() - tooltip->getWidth(), _y = inputManager->getMouseY();
+				if (_x < 0)
+					_x = inputManager->getMouseX();
+				if (_x + tooltip->getWidth() > applicationData->getWindowWidth())
+					_x = applicationData->getWindowWidth() - tooltip->getWidth();
+				if (_y + tooltip->getHeight() > applicationData->getWindowHeight())
+					_y = applicationData->getWindowHeight() - tooltip->getHeight();
+				tooltip->setPositionGlobal(_x, _y);
 				tooltip->setRenderState(true);
 			}
 
@@ -193,7 +187,7 @@ namespace spehs
 		if (tooltip && !_state)
 			tooltip->setRenderState(false);
 	}
-	bool GUIRectangle::getRenderState()
+	bool GUIRectangle::getRenderState() const
 	{
 		return polygon->getRenderState();
 	}
@@ -281,7 +275,7 @@ namespace spehs
 
 		enableState(GUIRECT_POSITION_UPDATED_BIT);
 	}
-	void GUIRectangle::setColor(glm::vec3& c)
+	void GUIRectangle::setColor(const glm::vec3& c)
 	{
 		color.r = c.r;
 		color.g = c.g;
@@ -289,12 +283,12 @@ namespace spehs
 		color.a = 1.0f;
 		polygon->setColor(color);
 	}
-	void GUIRectangle::setColor(glm::vec4& c)
+	void GUIRectangle::setColor(const glm::vec4& c)
 	{
 		color = c;
 		polygon->setColor(color);
 	}
-	void GUIRectangle::setColor(int r, int g, int b, int a)
+	void GUIRectangle::setColor(const unsigned char r, const unsigned char g, const unsigned char b, const unsigned char a)
 	{
 		color[0] = r / 255.0f;
 		color[1] = g / 255.0f;
@@ -302,7 +296,7 @@ namespace spehs
 		color[3] = a / 255.0f;
 		polygon->setColor(color);
 	}
-	void GUIRectangle::setDepth(int16_t depth)
+	void GUIRectangle::setDepth(const int16_t depth)
 	{
 		polygon->setPlaneDepth(depth);
 		if (displayTexture)
@@ -312,7 +306,7 @@ namespace spehs
 		if (tooltip)
 			tooltip->setDepth(depth + tooltipDepthRelative);
 	}
-	int16_t GUIRectangle::getDepth()
+	int16_t GUIRectangle::getDepth() const
 	{
 		return polygon->getPlaneDepth();
 	}
@@ -329,7 +323,7 @@ namespace spehs
 			return getAsGUIRectangleContainerPtr();
 		return nullptr;
 	}
-	bool GUIRectangle::isDescendantOf(GUIRectangleContainer* ascendant)
+	bool GUIRectangle::isDescendantOf(GUIRectangleContainer* ascendant) const
 	{
 		if (parent)
 		{
@@ -339,7 +333,7 @@ namespace spehs
 		}
 		return false;
 	}
-	void GUIRectangle::setJustification(GUIRECT_STATE_TYPE justificationBit)
+	void GUIRectangle::setJustification(const GUIRECT_STATE_TYPE justificationBit)
 	{
 		disableBit(state, GUIRECT_TEXT_JUSTIFICATION_LEFT);
 		disableBit(state, GUIRECT_TEXT_JUSTIFICATION_CENTER);
@@ -348,7 +342,7 @@ namespace spehs
 	}
 
 	//Setters
-	void GUIRectangle::setString(std::string str)
+	void GUIRectangle::setString(const std::string str)
 	{
 		if (str.size() == 0)
 			return;
@@ -360,7 +354,7 @@ namespace spehs
 		disableStateRecursiveUpwards(GUIRECT_MIN_SIZE_UPDATED_BIT);
 		disableStateRecursiveUpwards(GUIRECT_POSITION_UPDATED_BIT);
 	}
-	void GUIRectangle::setStringSize(int size)
+	void GUIRectangle::setStringSize(const int size)
 	{
 		if (!text)
 			createText();
@@ -372,11 +366,11 @@ namespace spehs
 		disableStateRecursiveUpwards(GUIRECT_MIN_SIZE_UPDATED_BIT);
 		disableStateRecursiveUpwards(GUIRECT_POSITION_UPDATED_BIT);
 	}
-	void GUIRectangle::setStringSizeRelative(int relativeSize)
+	void GUIRectangle::setStringSizeRelative(const int relativeSize)
 	{
 		setStringSize(applicationData->GUITextSize + relativeSize);
 	}
-	void GUIRectangle::setTooltip(std::string tooltipString)
+	void GUIRectangle::setTooltip(const std::string tooltipString)
 	{
 		//Create tooltip object if one does not exist already
 		if (!tooltip)
@@ -394,35 +388,35 @@ namespace spehs
 		tooltip->setRenderState(false);
 		tooltip->setDepth(getDepth() + tooltipDepthRelative);
 	}
-	void GUIRectangle::setStringColor(glm::vec4& col)
+	void GUIRectangle::setStringColor(const glm::vec4& col)
 	{
 		if (!text)
 			createText();
 		text->setColor(col); 
 	}
-	void GUIRectangle::setStringColor(unsigned char r, unsigned char g, unsigned char b, unsigned char a)
+	void GUIRectangle::setStringColor(const unsigned char r, const unsigned char g, const unsigned char b, const unsigned char a)
 	{
 		if (!text)
 			createText();
 		text->setColor(r, g, b, a);
 	}
-	void GUIRectangle::setStringAlpha(float alpha)
+	void GUIRectangle::setStringAlpha(const float alpha)
 	{
 		if (!text)
 			createText();
 		text->setAlpha(alpha);
 	}
-	void GUIRectangle::setStringAlpha(unsigned char a)
+	void GUIRectangle::setStringAlpha(const unsigned char a)
 	{
 		if (!text)
 			createText();
 		text->setAlpha(a);
 	}
-	std::string GUIRectangle::getString()
+	std::string GUIRectangle::getString() const
 	{
 		if (text)
 			return text->getString();
-		return std::string("");
+		return "";
 	}
 	void GUIRectangle::createText()
 	{
@@ -433,7 +427,7 @@ namespace spehs
 		text->setFont(applicationData->GUITextFontPath, applicationData->GUITextSize);
 		text->setColor(defaultStringColor);
 	}
-	void GUIRectangle::setDisplayTexture(std::string path)
+	void GUIRectangle::setDisplayTexture(const std::string path)
 	{
 		if (displayTexture)
 			delete displayTexture;
@@ -449,7 +443,7 @@ namespace spehs
 		disableStateRecursiveUpwards(GUIRECT_POSITION_UPDATED_BIT);
 		disableStateRecursiveUpwards(GUIRECT_SCALE_UPDATED_BIT);
 	}
-	void GUIRectangle::setTexture(std::string path)
+	void GUIRectangle::setTexture(const std::string path)
 	{
 		polygon->setTexture(path);
 	}
@@ -460,29 +454,29 @@ namespace spehs
 		else
 			pressCallbackFunction = new std::function<void(GUIRectangle&)>(callbackFunction);
 	}
-	void GUIRectangle::enableStateRecursiveUpwards(GUIRECT_STATE_TYPE stateBit)
+	void GUIRectangle::enableStateRecursiveUpwards(const GUIRECT_STATE_TYPE stateBit)
 	{
 		enableState(stateBit);
 		if (parent)
 			parent->enableStateRecursiveUpwards(stateBit);
 	}
-	void GUIRectangle::disableStateRecursiveUpwards(GUIRECT_STATE_TYPE stateBit)
+	void GUIRectangle::disableStateRecursiveUpwards(const GUIRECT_STATE_TYPE stateBit)
 	{
 		disableState(stateBit);
 		if (parent)
 			parent->disableStateRecursiveUpwards(stateBit);
 	}
-	glm::ivec2 GUIRectangle::getPositionGlobal()
+	glm::ivec2 GUIRectangle::getPositionGlobal() const
 	{
 		if (parent)
 			return parent->getPositionGlobal() + position; return position;
 	}
-	int GUIRectangle::getXGlobal()
+	int GUIRectangle::getXGlobal() const
 	{
 		if (parent)
 			return parent->getXGlobal() + position.x; return position.x;
 	}
-	int GUIRectangle::getYGlobal()
+	int GUIRectangle::getYGlobal() const
 	{
 		if (parent)
 			return parent->getYGlobal() + position.y; return position.y;

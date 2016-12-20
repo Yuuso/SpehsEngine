@@ -2,7 +2,7 @@
 
 namespace spehs
 {
-	GUIRectangleTable::GUIRectangleTable(int _columns) : columns(_columns)
+	GUIRectangleTable::GUIRectangleTable(const int _columns) : columns(_columns)
 	{
 		disableBit(state, GUIRECT_HOVER_COLOR);
 	}

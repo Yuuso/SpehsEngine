@@ -7,15 +7,17 @@ namespace spehs
 	class GUIRectangleTable : public GUIRectangleContainer
 	{
 	public:
-		GUIRectangleTable(int columns);
-		~GUIRectangleTable();
+		GUIRectangleTable(const int columns);
+		~GUIRectangleTable() override;
 		
-		void updateMinSize();
-		void updateScale();
-		void updatePosition();
+		void updateMinSize() override;
+		void updateScale() override;
+		void updatePosition() override;
 
-		void setColumnCount(int _columns){ columns = _columns; disableBit(state, GUIRECT_POSITION_UPDATED_BIT); disableBit(state, GUIRECT_SCALE_UPDATED_BIT); }
-		int getColumnCount(){ return columns; }
+		void setColumnCount(const int _columns){ columns = _columns; disableBit(state, GUIRECT_POSITION_UPDATED_BIT); disableBit(state, GUIRECT_SCALE_UPDATED_BIT); }
+		int getColumnCount() const { return columns; }
+
+		spehs::GUIRectangleTable* getAsGUIRectangleTablePtr() override { return this; }
 
 	private:
 		int columns;

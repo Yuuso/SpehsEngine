@@ -60,37 +60,37 @@ namespace spehs
 		void destroy();
 
 		void update(); //Called from batch manager when drawing
-		void setRenderState(bool _state);
-		bool getRenderState(){ return renderState; }
+		void setRenderState(const bool _state);
+		bool getRenderState() const { return renderState; }
 
-		void translate(glm::vec2& _vec);
-		void setPosition(glm::vec2& _vec);
-		void setPosition(float, float);
+		void translate(const glm::vec2& _vec);
+		void setPosition(const glm::vec2& _vec);
+		void setPosition(const float x, const float y);
 
-		void setPlaneDepth(PlaneDepth _depth);
+		void setPlaneDepth(const PlaneDepth _depth);
 
-		void setString(std::string _str);
-		void setString(char* str, unsigned _length);
-		void incrementString(std::string _str);
-		void incrementFrontString(std::string _str);
+		void setString(const std::string _str);
+		void setString(const char* str, const unsigned _length);
+		void incrementString(const std::string _str);
+		void incrementFrontString(const std::string _str);
 
 		void setFont(const std::string &_fontPath, const int &_size);
 		void setFont(Font* _font);
-		void setFontSize(int _size);
+		void setFontSize(const int _size);
 
-		void setColor(glm::vec4& _col);
-		void setColor(CommonColor& _col);
-		void setColor(float _red, float _green, float _blue, float _alpha = 1.0f);
-		void setColor(unsigned char _r, unsigned char _g, unsigned char _b, unsigned char _a = 255);
-		void setAlpha(float _alpha);
-		void setAlpha(unsigned char _a);
+		void setColor(const glm::vec4& _col);
+		void setColor(const CommonColor& _col);
+		void setColor(const float _red, const float _green, const float _blue, const float _alpha = 1.0f);
+		void setColor(const unsigned char _r, const unsigned char _g, const unsigned char _b, const unsigned char _a = 255);
+		void setAlpha(const float _alpha);
+		void setAlpha(const unsigned char _a);
 
 		void setShader(const int &_shaderIndex);
 		void setCameraMatrixState(const bool _state) { cameraMatrixState = _state; }
 
 
 		//Getters
-		std::string getString(){ return string; }
+		std::string getString() const { return string; }
 
 		int getTextWidth() const;
 		int getTextHeight() const;
@@ -111,8 +111,8 @@ namespace spehs
 		std::vector<spehs::Vertex> worldVertexArray;
 
 	protected:
-		Text(PlaneDepth _depth);
-		Text(const std::string &_string, PlaneDepth _depth);
+		Text(const PlaneDepth _depth);
+		Text(const std::string &_string, const PlaneDepth _depth);
 		//Text(const Text& _original);
 		~Text();
 

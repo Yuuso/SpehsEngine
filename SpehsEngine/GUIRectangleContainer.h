@@ -22,40 +22,40 @@ namespace spehs
 	{
 	public:
 		GUIRectangleContainer();
-		virtual ~GUIRectangleContainer();
+		~GUIRectangleContainer() override;
 
-		virtual void inputUpdate();
-		virtual void visualUpdate();
-		virtual void setRenderState(const bool _state);
+		void inputUpdate() override;
+		void visualUpdate() override;
+		void setRenderState(const bool _state) override;
 
 		/*These pure virtual methods MUST be implemented by the derived class*/
 		virtual void updatePosition() = 0;
 		virtual void updateScale() = 0;
 		virtual void updateMinSize() = 0;
 
-		virtual bool isReceivingInput();
+		bool isReceivingInput() const override;
 		virtual bool open();//Open container dimension
 		virtual bool close();//Close container dimension
 		virtual void toggleOpen();//Open/close container dimension
-		virtual void setDepth(int16_t depth);
+		void setDepth(const int16_t depth) override;
 
 		//Element management
 		virtual void addElement(GUIRectangle* element);
-		bool removeElement(GUIRectangle* element);//Searches elements list and removes element. If element is not found, returns false
-		virtual GUIRectangle* back(){ return elements.back(); }
-		virtual GUIRectangle* front(){ return elements.front(); }
-		GUIRectangle* at(int index){ if (index < 0 || index >= elements.size()) return nullptr; return elements[index]; }
-		GUIRectangle* operator[](int index){ return elements[index]; }
+		virtual bool removeElement(GUIRectangle* element);//Searches elements list and removes element. If element is not found, returns false
+		virtual GUIRectangle* back() const { return elements.back(); }
+		virtual GUIRectangle* front() const { return elements.front(); }
+		GUIRectangle* at(int index) const { if (index < 0 || index >= elements.size()) return nullptr; return elements[index]; }
+		GUIRectangle* operator[](int index) const { return elements[index]; }
 		/*Returns the size of the elements vector*/
-		unsigned elementsSize(){ return elements.size(); }
+		unsigned elementsSize() const { return elements.size(); }
 		virtual void clear();
 
 		//Hierarchy
-		bool isDescendant(GUIRectangle* element);
+		bool isDescendant(GUIRectangle* element) const;
 		
 		//State
-		virtual void enableStateRecursive(GUIRECT_STATE_TYPE stateBit);
-		virtual void disableStateRecursive(GUIRECT_STATE_TYPE stateBit);
+		void enableStateRecursive(const GUIRECT_STATE_TYPE stateBit) override;
+		void disableStateRecursive(const GUIRECT_STATE_TYPE stateBit) override;
 		
 		////Templates
 		//Closes all GUI rectangles except the specified exclude and all elements in a parent chain above it any of its parents
@@ -83,7 +83,7 @@ namespace spehs
 		}
 
 		//Identity
-		GUIRectangleContainer* getAsGUIRectangleContainerPtr(){ return this; }
+		GUIRectangleContainer* getAsGUIRectangleContainerPtr() override { return this; }
 
 	protected:
 		void onEnableInput() override;

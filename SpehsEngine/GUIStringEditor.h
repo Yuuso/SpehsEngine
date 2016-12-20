@@ -8,24 +8,24 @@ namespace spehs
 	{
 	public:
 		GUIStringEditor();
-		GUIStringEditor(std::string str);
-		GUIStringEditor(GUIRECT_ID_TYPE id);
-		GUIStringEditor(int, int);
-		~GUIStringEditor();
+		GUIStringEditor(const std::string str);
+		GUIStringEditor(const GUIRECT_ID_TYPE id);
+		GUIStringEditor(const int width, const int height);
+		~GUIStringEditor() override;
 
-		void inputUpdate();
-		void setString(std::string str);
-		void onDisableInput();
+		void inputUpdate() override;
+		void setString(const std::string str) override;
+		void onDisableInput() override;
 
 
 		//Editor
-		bool valueEdited();
-		std::string retrieveString();
-		float retrieveStringAsFloat();
-		int retrieveStringAsInt();
+		bool valueEdited() const override;
+		std::string retrieveString() const;
+		float retrieveStringAsFloat() const;
+		int retrieveStringAsInt() const;
 
 		//Identity
-		GUIStringEditor* getAsGUIStringEditorPtr(){ return this; }
+		GUIStringEditor* getAsGUIStringEditorPtr() override { return this; }
 
 	protected:
 		//Text field specific

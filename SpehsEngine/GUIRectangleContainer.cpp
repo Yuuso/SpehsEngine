@@ -62,7 +62,7 @@ namespace spehs
 				elements[i]->setRenderState(false);
 		}
 	}
-	bool GUIRectangleContainer::isReceivingInput()
+	bool GUIRectangleContainer::isReceivingInput() const
 	{
 		if (!checkState(GUIRECT_OPEN_BIT) || !checkState(GUIRECT_INPUT_ENABLED_BIT))
 			return false;
@@ -124,13 +124,13 @@ namespace spehs
 		}
 		return false;
 	}
-	void GUIRectangleContainer::enableStateRecursive(GUIRECT_STATE_TYPE stateBit)
+	void GUIRectangleContainer::enableStateRecursive(const GUIRECT_STATE_TYPE stateBit)
 	{
 		GUIRectangle::enableState(stateBit);
 		for (unsigned i = 0; i < elements.size(); i++)
 			elements[i]->enableStateRecursive(stateBit);
 	}
-	void GUIRectangleContainer::disableStateRecursive(GUIRECT_STATE_TYPE stateBit)
+	void GUIRectangleContainer::disableStateRecursive(const GUIRECT_STATE_TYPE stateBit)
 	{
 		GUIRectangle::disableState(stateBit);
 		for (unsigned i = 0; i < elements.size(); i++)
@@ -178,13 +178,13 @@ namespace spehs
 		else
 			open();
 	}
-	void GUIRectangleContainer::setDepth(int16_t depth)
+	void GUIRectangleContainer::setDepth(const int16_t depth)
 	{
 		GUIRectangle::setDepth(depth);
 		for (unsigned i = 0; i < elements.size(); i++)
 			elements[i]->setDepth(depth + 10);
 	}
-	bool GUIRectangleContainer::isDescendant(GUIRectangle* element)
+	bool GUIRectangleContainer::isDescendant(GUIRectangle* element) const
 	{
 		for (unsigned i = 0; i < elements.size(); i++)
 		{

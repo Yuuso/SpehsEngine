@@ -17,7 +17,7 @@ namespace spehs
 	public:
 		enum class EditorType { Slider, Ticks};
 	public:
-		GUIScalarEditor(std::string scalarName, Scalar& scalarReference) : 
+		GUIScalarEditor(const std::string scalarName, Scalar& scalarReference) :
 			scalar(scalarReference), floatPrecision(2), tickAmount(1), onHold(false), holdTimer(0.0f), holdTime(0.15f), initialHoldTime(1.0f),
 			nameRect(new GUIRectangle(scalarName)), valueRect(new GUIStringEditor()), decreaseRect(new GUIRectangle("-")), increaseRect(new GUIRectangle("+"))
 		{
@@ -34,24 +34,24 @@ namespace spehs
 		}
 		~GUIScalarEditor(){}
 
-		void setValueRange(Scalar _min, Scalar _max)
+		void setValueRange(const Scalar _min, const Scalar _max)
 		{
 			min = _min;
 			max = _max;
 			setValue(scalar);
 		}
-		void setMinValue(Scalar _min)
+		void setMinValue(const Scalar _min)
 		{
 			min = _min;
 			setValue(scalar);
 		}
-		void setMaxValue(Scalar _max)
+		void setMaxValue(const Scalar _max)
 		{
 			max = _max;
 			setValue(scalar);
 		}
-		void setTickAmount(Scalar _tickAmount){ tickAmount = _tickAmount; }
-		void inputUpdate()
+		void setTickAmount(const Scalar _tickAmount){ tickAmount = _tickAmount; }
+		void inputUpdate() override
 		{
 			GUIRectangleRow::inputUpdate();
 
@@ -100,7 +100,7 @@ namespace spehs
 		}
 
 	private:
-		Scalar getValueFromTextField()
+		Scalar getValueFromTextField() const
 		{
 			std::string str(valueRect->retrieveString());
 			if (std::is_integral<Scalar>::value)
@@ -118,7 +118,7 @@ namespace spehs
 			else
 				valueRect->setString("# Invalid value type #");
 		}
-		void setValue(Scalar newValue)
+		void setValue(const Scalar newValue)
 		{
 			if (newValue > max)
 				scalar = max;

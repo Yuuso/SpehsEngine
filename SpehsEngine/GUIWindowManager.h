@@ -18,21 +18,22 @@ namespace spehs
 		void addWindow(GUIWindow* window);
 		void addPopup(GUIPopup* popup);
 		void refreshWindows();
-		GUIWindow* getFocusedWindow(){ return focusedWindow; }
+		GUIWindow* getFocusedWindow() const { return focusedWindow; }
 		void toggleWindow(GUIWindow* window);
 		void openWindow(GUIWindow* window);
 		void closeWindow(GUIWindow* window);//Does not modify window order
-		bool receivingInput();
-		bool getMouseHoverAny();/// Returns true if any window is under the mouse
-		unsigned getWindowCount(){ return windows.size(); }
-		unsigned getPopupCount(){ return popups.size(); }
-		GUIWindow* back(){ return windows.back(); }
-		GUIWindow* at(int index){ if (index < 0 || index >= windows.size()) return nullptr; return windows[index]; }
-		void setSystemDepth(int16_t depth);
-		void setDepthPerWindow(int16_t depth);
-		int16_t getSystemDepth(){ return systemDepth; }
-		int16_t getDepthPerWindow(){ return depthPerWindow; }
-		void setPopupShadeColor(unsigned char r, unsigned char g, unsigned char b, unsigned char a = 255);
+		bool isReceivingInput() const;
+		bool getMouseHoverAny() const;/// Returns true if any window is under the mouse
+		unsigned getWindowCount() const { return windows.size(); }
+		unsigned getPopupCount() const { return popups.size(); }
+		GUIWindow* back() const { return windows.back(); }
+		GUIWindow* at(const int index) const { if (index < 0 || index >= windows.size()) return nullptr; return windows[index]; }
+		void setSystemDepth(const int16_t depth);
+		void setDepthPerWindow(const int16_t depth);
+		int16_t getSystemDepth() const { return systemDepth; }
+		int16_t getTopDepth() const { return systemDepth + depthPerWindow * windows.size(); }
+		int16_t getDepthPerWindow() const { return depthPerWindow; }
+		void setPopupShadeColor(const unsigned char r, const unsigned char g, const unsigned char b, const unsigned char a = 255);
 
 	private:
 		void updateDepths();

@@ -31,16 +31,16 @@ namespace spehs
 	{
 	public:
 		template<typename ... Args>
-		GUIPopup(std::string _message, GUIPopupOption& _option, Args& ... _moreOptions) : GUIPopup(_message)
+		GUIPopup(const std::string _message, const GUIPopupOption& _option, const Args& ... _moreOptions) : GUIPopup(_message)
 		{
 			addOptions(_option, _moreOptions...);
 		}
-		GUIPopup(std::string _message);
+		GUIPopup(const std::string _message);
 		~GUIPopup();
 
-		void addOptions(GUIPopupOption& option);
+		void addOptions(const GUIPopupOption& option);
 		template<typename ... Args>
-		void addOptions(GUIPopupOption& option, Args& ... moreOptions)
+		void addOptions(const GUIPopupOption& option, const Args& ... moreOptions)
 		{
 			addOptions(option);
 			addOptions(moreOptions...);
@@ -52,9 +52,9 @@ namespace spehs
 		void updateScale();
 		void updatePosition();
 
-		void setBackgroundColor(glm::vec3& rgb);
-		void setBackgroundColor(glm::vec4& rgba);
-		void setBackgroundColor(unsigned char r, unsigned char g, unsigned char b, unsigned char a = 255);
+		void setBackgroundColor(const glm::vec3& rgb);
+		void setBackgroundColor(const glm::vec4& rgba);
+		void setBackgroundColor(const unsigned char r, const unsigned char g, const unsigned char b, const unsigned char a = 255);
 		void enableEscape(){ escapeEnabled = true; }
 		void disableEscape(){ escapeEnabled = false; }
 

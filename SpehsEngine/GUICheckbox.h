@@ -10,23 +10,21 @@ namespace spehs
 	{
 	public:
 		GUICheckbox();
-		GUICheckbox(int _ID);
-		GUICheckbox(std::string str);
-		~GUICheckbox();
+		GUICheckbox(const GUIRECT_ID_TYPE _ID);
+		GUICheckbox(const std::string str);
+		~GUICheckbox() override;
 		
-		void inputUpdate();
+		void inputUpdate() override;
+		void updateMinSize() override;
+		void updateScale() override;
+		void updatePosition() override;
+		void setRenderState(const bool _state) override;
+		void setDepth(const int16_t depth) override;
 
-		void updateMinSize();
-		void updateScale();
-		void updatePosition();
-
-		void setRenderState(const bool _state);
-		void setDepth(int16_t depth);
-		void setCheckboxSize(int _size){ checkboxSize = _size; disableStateRecursiveUpwards(GUIRECT_SCALE_UPDATED_BIT); }
-
+		void setCheckboxSize(const int _size){ checkboxSize = _size; disableStateRecursiveUpwards(GUIRECT_SCALE_UPDATED_BIT); }
 		void setEditorState(const bool _state){ selectedState = _state; previousSelectedState = _state; }
-		bool valueEdited();
-		bool retrieveEditorState(){ return selectedState; }
+		bool valueEdited() const;
+		bool retrieveEditorState() const { return selectedState; }
 
 		//Identity
 		GUICheckbox* getAsGUICheckboxPtr(){ return this; }

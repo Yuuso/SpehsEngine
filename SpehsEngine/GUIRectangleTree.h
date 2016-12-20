@@ -12,8 +12,8 @@ namespace spehs
 	{
 	public:
 		GUIRectangleTree();
-		GUIRectangleTree(int _ID);
-		GUIRectangleTree(std::string str);
+		GUIRectangleTree(const int _ID);
+		GUIRectangleTree(const std::string str);
 		virtual ~GUIRectangleTree();
 
 		void inputUpdate();
@@ -23,16 +23,16 @@ namespace spehs
 		void setOpenTreeButton(int buttonID){ openTreeButton = buttonID; }
 		bool open();
 		bool close();			
-		void addElement(std::string str, int _ID);///< Creates new node with given string and id
+		void addElement(const std::string str, const GUIRECT_ID_TYPE _ID);///< Creates new node with given string and id
 		void addElement(GUIRectangle* element);
 
 		//Tree
 		int getPressedLeafNodeID(){ return pressedLeafNodeID; }
-		void leafNodePressed(int _ID);///< Sets pressed leaf node recursively upwards
+		void leafNodePressed(const GUIRECT_ID_TYPE _ID);///< Sets pressed leaf node recursively upwards
 		GUIRectangleTree* getRootTree();
 
 		//Identity
-		GUIRectangleTree* getAsGUIRectangleTreePtr(){ return this; }
+		GUIRectangleTree* getAsGUIRectangleTreePtr() override { return this; }
 
 	protected:
 		void onDisableInput() override;

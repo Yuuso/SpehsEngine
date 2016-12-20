@@ -23,11 +23,11 @@ namespace spehs
 
 		setJustification(GUIRECT_TEXT_JUSTIFICATION_LEFT);
 	}
-	GUICheckbox::GUICheckbox(int _ID) : GUICheckbox()
+	GUICheckbox::GUICheckbox(const GUIRECT_ID_TYPE _ID) : GUICheckbox()
 	{
 		setID(_ID);
 	}
-	GUICheckbox::GUICheckbox(std::string str) : GUICheckbox()
+	GUICheckbox::GUICheckbox(const std::string str) : GUICheckbox()
 	{
 		setString(str);
 	}
@@ -65,7 +65,7 @@ namespace spehs
 			checkboxFilling->setRenderState(false);
 		}
 	}
-	void GUICheckbox::setDepth(int16_t depth)
+	void GUICheckbox::setDepth(const int16_t depth)
 	{
 		GUIRectangle::setDepth(depth);
 		checkboxBackground->setPlaneDepth(depth + 1);
@@ -113,7 +113,7 @@ namespace spehs
 			text->setPosition(textX, getYGlobal() + 0.5f * (size.y + text->getTextHeight()) - text->getFontHeight() - text->getFontDescender());
 		}
 	}
-	bool GUICheckbox::valueEdited()
+	bool GUICheckbox::valueEdited() const
 	{
 		return selectedState != previousSelectedState;
 	}

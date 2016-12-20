@@ -9,8 +9,9 @@ namespace spehs
 {
 	namespace exceptions
 	{
-		extern void fatalError(std::string errorString);
-		extern void unexpectedError(std::string errorString);
-		extern void warning(std::string warningString);
+		extern bool consoleLoggingEnabled;
+		extern void warning(const std::string warningString);
+		extern void unexpectedError(const std::string errorString);//Program execution may continue
+		extern void fatalError(const std::string errorString);//Program must terminate execution
 	}
 }

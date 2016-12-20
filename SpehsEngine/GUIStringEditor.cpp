@@ -10,15 +10,15 @@ namespace spehs
 	GUIStringEditor::GUIStringEditor() : stringUpdated(false), defaultString(""), input(""), storedString(""), disableInputReceiveOnNextUpdate(false)
 	{
 	}
-	GUIStringEditor::GUIStringEditor(std::string str) : GUIStringEditor()
+	GUIStringEditor::GUIStringEditor(const std::string str) : GUIStringEditor()
 	{
 		setString(str);
 	}
-	GUIStringEditor::GUIStringEditor(GUIRECT_ID_TYPE ID) : GUIStringEditor()
+	GUIStringEditor::GUIStringEditor(const GUIRECT_ID_TYPE ID) : GUIStringEditor()
 	{
 		setID(ID);
 	}
-	GUIStringEditor::GUIStringEditor(int w, int h) : GUIStringEditor()
+	GUIStringEditor::GUIStringEditor(const int w, const int h) : GUIStringEditor()
 	{
 		setSize(w, h);
 	}
@@ -81,7 +81,7 @@ namespace spehs
 		disableStateRecursiveUpwards(GUIRECT_POSITION_UPDATED_BIT);
 		disableStateRecursiveUpwards(GUIRECT_SCALE_UPDATED_BIT);
 	}
-	void GUIStringEditor::setString(std::string str)
+	void GUIStringEditor::setString(const std::string str)
 	{
 		GUIRectangle::setString(str);
 		defaultString = str;
@@ -206,19 +206,19 @@ namespace spehs
 
 	}
 
-	bool GUIStringEditor::valueEdited()
+	bool GUIStringEditor::valueEdited() const
 	{
 		return storedString.size() > 0;
 	}
-	std::string GUIStringEditor::retrieveString()
+	std::string GUIStringEditor::retrieveString() const
 	{
 		return storedString;
 	}
-	float GUIStringEditor::retrieveStringAsFloat()
+	float GUIStringEditor::retrieveStringAsFloat() const
 	{
 		return getStringAsFloat(storedString);
 	}
-	int GUIStringEditor::retrieveStringAsInt()
+	int GUIStringEditor::retrieveStringAsInt() const
 	{
 		return getStringAsInt(storedString);
 	}

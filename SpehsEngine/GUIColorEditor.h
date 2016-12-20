@@ -16,25 +16,25 @@ namespace spehs
 		GUIColorEditor();
 		~GUIColorEditor();
 
-		void setDepth(int16_t _depth);
-		void setRenderState(const bool _state);
-		void inputUpdate();
-		void visualUpdate();
-		void updateMinSize();
-		void updateScale();
-		void updatePosition();
+		void setDepth(const int16_t _depth) override;
+		void setRenderState(const bool _state) override;
+		void inputUpdate() override;
+		void visualUpdate() override;
+		void updateMinSize() override;
+		void updateScale() override;
+		void updatePosition() override;
 
 		void enableAlphaEditing();
 		void disableAlphaEditing();
 		void toggleAlphaEditing();
-		bool colorChanged(){ return stateChanged; }
-		glm::vec4 retrieveColor(){ return selectedColor; }
-		void setEditorColor(glm::vec4 _color){ selectedColor = _color; }
+		bool colorChanged() const { return stateChanged; }
+		glm::vec4 retrieveColor() const { return selectedColor; }
+		void setEditorColor(const glm::vec4 _color){ selectedColor = _color; }
 
 	private:
-		bool checkPaletteHover();
-		bool checkSliderHover();
-		bool checkAlphaHover();
+		bool checkPaletteHover() const;
+		bool checkSliderHover() const;
+		bool checkAlphaHover()const;
 
 		Polygon* palette;
 		Polygon* sliderRG;

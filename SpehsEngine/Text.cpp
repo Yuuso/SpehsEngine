@@ -1,12 +1,11 @@
 
-#include "Text.h"
-#include "Exceptions.h"
-#include "GLSLProgram.h"
 #include "ApplicationData.h"
 #include "ShaderManager.h"
 #include "BatchManager.h"
+#include "GLSLProgram.h"
 #include "OpenGLError.h"
-#include "Console.h"
+#include "Exceptions.h"
+#include "Text.h"
 
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtx/transform.hpp>
@@ -32,13 +31,13 @@ namespace spehs
 
 		if (textRenderingInitialized)
 		{
-			console::error("Text rendering already initialized!");
+			exceptions::unexpectedError("Text rendering already initialized!");
 			return;
 		}
 
 		if (ft)
 		{
-			console::error("Freetype library already exists!");
+			exceptions::unexpectedError("Freetype library already exists!");
 			return;
 		}
 		ft = new FT_Library;
@@ -56,7 +55,7 @@ namespace spehs
 
 		if (!textRenderingInitialized)
 		{//Validate uninitialization
-			console::error("Text rendering already uninitialized");
+			exceptions::unexpectedError("Text rendering already uninitialized");
 			return;
 		}
 
@@ -83,7 +82,7 @@ namespace spehs
 					std::string errorString = "Freetype error: Failed to unload font ";
 					errorString += fontPath;
 					errorString += " code: " + error;
-					console::error(errorString);
+					exceptions::unexpectedError(errorString);
 				}
 				delete ftFace;
 
@@ -163,7 +162,7 @@ namespace spehs
 			//Load character glyph
 			if (FT_Load_Char(*ftFace, c, FT_LOAD_RENDER))
 			{
-				console::error("FreeType error: Failed to load Glyph");
+				exceptions::unexpectedError("FreeType error: Failed to load Glyph");
 				return nullptr;
 			}
 
@@ -243,14 +242,14 @@ namespace spehs
 		textDeallocations++;
 #endif
 	}
-	Text::Text(PlaneDepth depth) : lineCount(0), scale(1.0f), lineSpacing(0), font(nullptr), needTextUpdate(false), needPositionUpdate(false), renderState(true), readyForDelete(false),
+	Text::Text(const PlaneDepth depth) : lineCount(0), scale(1.0f), lineSpacing(0), font(nullptr), needTextUpdate(false), needPositionUpdate(false), renderState(true), readyForDelete(false),
 		shaderIndex(DefaultText), planeDepth(depth), cameraMatrixState(false)
 	{
 #ifdef _DEBUG
 		textAllocations++;
 #endif
 	}
-	Text::Text(const std::string &_string, PlaneDepth _depth) : Text(_depth)
+	Text::Text(const std::string &_string, const PlaneDepth _depth) : Text(_depth)
 	{
 		setString(_string);
 	}
@@ -365,7 +364,7 @@ namespace spehs
 		needTextUpdate = false;
 	}
 
-	void Text::setRenderState(bool _state)
+	void Text::setRenderState(const bool _state)
 	{
 		renderState = _state;
 	}
@@ -384,7 +383,7 @@ namespace spehs
 		font = _font;
 		font->referenceCount++;
 	}
-	void Text::setFontSize(int _size)
+	void Text::setFontSize(const int _size)
 	{
 		//No font loaded
 		if (font == nullptr)
@@ -408,7 +407,7 @@ namespace spehs
 		string = _str;
 		needTextUpdate = true;
 	}
-	void Text::setString(char* _str, unsigned length)
+	void Text::setString(const char* _str, const unsigned length)
 	{
 		//Set line count
 		if (length > 0) lineCount = 1; else lineCount = 0;
@@ -418,7 +417,7 @@ namespace spehs
 		string = _str;
 		needTextUpdate = true;
 	}
-	void Text::incrementString(std::string _str)
+	void Text::incrementString(const std::string _str)
 	{
 		//Increase line count
 		for (unsigned i = 0; i < _str.size(); i++)
@@ -427,7 +426,7 @@ namespace spehs
 		string += _str;
 		needTextUpdate = true;
 	}
-	void Text::incrementFrontString(std::string _str)
+	void Text::incrementFrontString(const std::string _str)
 	{
 		//Increase line count
 		for (unsigned i = 0; i < _str.size(); i++)
@@ -436,34 +435,34 @@ namespace spehs
 		string = _str + string;
 		needTextUpdate = true;
 	}
-	void Text::setPosition(glm::vec2& _vec)
+	void Text::setPosition(const glm::vec2& _vec)
 	{
 		position.x = _vec.x;
 		position.y = _vec.y;
 		needPositionUpdate = true;
 	}
-	void Text::setPosition(float _x, float _y)
+	void Text::setPosition(const float _x, const float _y)
 	{
 		position.x = _x;
 		position.y = _y;
 		needPositionUpdate = true;
 	}
-	void Text::setPlaneDepth(PlaneDepth _depth)
+	void Text::setPlaneDepth(const PlaneDepth _depth)
 	{
 		planeDepth = _depth;
 	}
-	void Text::translate(glm::vec2& _vec)
+	void Text::translate(const glm::vec2& _vec)
 	{
 		position.x += _vec.x;
 		position.y += _vec.y;
 		needPositionUpdate = true;
 	}
-	void Text::setColor(glm::vec4& _vec)
+	void Text::setColor(const glm::vec4& _vec)
 	{
 		color = _vec;
 		needTextUpdate = true;
 	}
-	void Text::setColor(float _r, float _g, float _b, float _a)
+	void Text::setColor(const float _r, const float _g, const float _b, const float _a)
 	{
 		color.rgba.r = _r;
 		color.rgba.g = _g;
@@ -471,7 +470,7 @@ namespace spehs
 		color.rgba.a = _a;
 		needTextUpdate = true;
 	}
-	void Text::setColor(unsigned char _r, unsigned char _g, unsigned char _b, unsigned char _a)
+	void Text::setColor(const unsigned char _r, const unsigned char _g, const unsigned char _b, const unsigned char _a)
 	{
 		color.rgba.r = _r / 255.0f;
 		color.rgba.g = _g / 255.0f;
@@ -479,12 +478,12 @@ namespace spehs
 		color.rgba.a = _a / 255.0f;
 		needTextUpdate = true;
 	}
-	void Text::setAlpha(float _alpha)
+	void Text::setAlpha(const float _alpha)
 	{
 		color.rgba.a = _alpha;
 		needTextUpdate = true;
 	}
-	void Text::setAlpha(unsigned char _a)
+	void Text::setAlpha(const unsigned char _a)
 	{
 		color.rgba.a = _a / 255.0f;
 		needTextUpdate = true;
@@ -518,7 +517,7 @@ namespace spehs
 			{//Increase current line width
 #ifdef _DEBUG
 				if (font->characters[string[i]].advance > 10000)
-					spehs::console::warning("Character width might be invalid!");
+					spehs::exceptions::warning("Character width might be invalid!");
 #endif
 				currentLineWidth += font->characters[string[i]].advance;
 			}

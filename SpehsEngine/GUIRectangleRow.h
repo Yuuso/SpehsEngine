@@ -13,18 +13,18 @@ namespace spehs
 		};
 
 		GUIRectangleRow();
-		GUIRectangleRow(GUIRECT_ID_TYPE _id);
-		~GUIRectangleRow();
+		GUIRectangleRow(const GUIRECT_ID_TYPE _id);
+		~GUIRectangleRow() override;
 
-		void updateMinSize();
-		void updateScale();
-		void updatePosition();
+		void updateMinSize() override;
+		void updateScale() override;
+		void updatePosition() override;
 
-		void setEvenElementWidth(bool setting);
-		void setElementPositionMode(PositionMode mode);
+		void setEvenElementWidth(const bool setting);
+		void setElementPositionMode(const PositionMode mode);
 		
 		//Identity
-		GUIRectangleRow* getAsGUIRectangleRowPtr(){ return this; }
+		GUIRectangleRow* getAsGUIRectangleRowPtr() override { return this; }
 	private:
 		bool evenElementWidth;
 		PositionMode elementPositionMode;

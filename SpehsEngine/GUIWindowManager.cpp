@@ -2,9 +2,9 @@
 #include "InputManager.h"
 #include "BatchManager.h"
 #include "GUIWindowManager.h"
+#include "Exceptions.h"
 #include "GUIWindow.h"
 #include "GUIPopup.h"
-#include "Console.h"
 #include "Polygon.h"
 #include "Time.h"
 
@@ -194,7 +194,7 @@ namespace spehs
 			batchManager.endSection();
 			return;
 		}
-		spehs::console::warning("Trying to toggle window that is not under window manager!");
+		spehs::exceptions::warning("Trying to toggle window that is not under window manager!");
 		batchManager.endSection();
 	}
 	void GUIWindowManager::openWindow(spehs::GUIWindow* window)
@@ -223,7 +223,7 @@ namespace spehs
 				return;
 			}
 		}
-		spehs::console::warning("Trying to open window that is not under window manager!");
+		spehs::exceptions::warning("Trying to open window that is not under window manager!");
 		batchManager.endSection();
 	}
 	void GUIWindowManager::closeWindow(GUIWindow* window)
@@ -240,10 +240,10 @@ namespace spehs
 				return;
 			}
 		}
-		spehs::console::warning("Trying to close window that is not under window manager!");
+		spehs::exceptions::warning("Trying to close window that is not under window manager!");
 		batchManager.endSection();
 	}
-	bool GUIWindowManager::receivingInput()
+	bool GUIWindowManager::isReceivingInput() const
 	{
 		if (!focusedWindow)
 			return false;
@@ -252,7 +252,7 @@ namespace spehs
 		batchManager.endSection();
 		return value;
 	}
-	bool GUIWindowManager::getMouseHoverAny()
+	bool GUIWindowManager::getMouseHoverAny() const
 	{
 		batchManager.beginSection();
 		for (unsigned i = 0; i < windows.size(); i++)
@@ -266,7 +266,7 @@ namespace spehs
 		batchManager.endSection();
 		return false;
 	}
-	void GUIWindowManager::setSystemDepth(int16_t depth)
+	void GUIWindowManager::setSystemDepth(const int16_t depth)
 	{
 		if (systemDepth != depth)
 		{
@@ -274,7 +274,7 @@ namespace spehs
 			updateDepths();
 		}
 	}
-	void GUIWindowManager::setDepthPerWindow(int16_t depth)
+	void GUIWindowManager::setDepthPerWindow(const int16_t depth)
 	{
 		if (depthPerWindow != depth)
 		{
@@ -292,7 +292,7 @@ namespace spehs
 			popups[i]->setDepth(systemDepth + windows.size() * depthPerWindow + 1 + (popups.size() - 1) * 20 - i * 20);
 		batchManager.endSection();
 	}
-	void GUIWindowManager::setPopupShadeColor(unsigned char r, unsigned char g, unsigned char b, unsigned char a)
+	void GUIWindowManager::setPopupShadeColor(const unsigned char r, const unsigned char g, const unsigned char b, const unsigned char a)
 	{
 		popupShade->setColor(r, g, b, a);
 		popupShadeAlpha = a / 255.0f;

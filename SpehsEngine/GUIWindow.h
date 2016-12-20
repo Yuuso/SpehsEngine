@@ -35,7 +35,7 @@ namespace spehs
 		void updateMinSize() override;//Updates min size variable based on element requirements
 		void updateScale() override;
 		void updatePosition() override;
-		void setDepth(int16_t) override;
+		void setDepth(const int16_t) override;
 		void onEnableInput() override;
 		void onDisableInput() override;
 		void clear() override;

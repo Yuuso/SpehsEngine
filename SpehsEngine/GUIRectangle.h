@@ -52,6 +52,7 @@ namespace spehs
 	class GUIRectangleTree;
 	class GUIRectangleList;
 	class GUIRectangleGrid;
+	class GUIRectangleTable;
 	class GUIRectangleContainer;
 
 	/**Base class for every GUI element\n\n
@@ -68,15 +69,15 @@ namespace spehs
 		static glm::vec4 defaultTooltipColor;//Newly created tooltips will have this color by default
 		static glm::vec4 defaultTooltipStringColor;//Newly created tooltip string will have this color by default
 		friend class GUIRectangleContainer;
+		friend class GUIWindow;
 
 	public:
 		GUIRectangle();
-		GUIRectangle(GUIRECT_ID_TYPE ID);
-		GUIRectangle(std::string str);
-		GUIRectangle(glm::ivec2& _size);
-		GUIRectangle(int width, int height);
+		GUIRectangle(const GUIRECT_ID_TYPE ID);
+		GUIRectangle(const std::string str);
+		GUIRectangle(const glm::ivec2& _size);
+		GUIRectangle(const int width, const int height);
 		virtual ~GUIRectangle();
-		friend class GUIWindow;
 		
 		/// During GUI's input update the element's size and/or min size may change even so that it might affect parents above.
 		virtual void inputUpdate();
@@ -93,42 +94,42 @@ namespace spehs
 		virtual void updatePosition();
 
 		virtual void setRenderState(const bool _state);
-		virtual bool getRenderState();
+		virtual bool getRenderState() const;
 		/// Checks whether the mouse is above this rectangle. Returns mouse hover value
 		virtual bool updateMouseHover();
 		/// Range [0.0f, 1.0f]
-		void setColor(glm::vec3& color);
-		void setColor(glm::vec4& color);
+		void setColor(const glm::vec3& color);
+		void setColor(const glm::vec4& color);
 		/// Range [0, 255]
-		void setColor(int r, int g, int b, int a = 255);
+		void setColor(const unsigned char r, const unsigned char g, const unsigned char b, const unsigned char a = 255);
 		void setParent(GUIRectangleContainer* Parent);
-		virtual void setDepth(int16_t depth);
-		int16_t getDepth();
-		spehs::Polygon* getPolygonPtr(){ return polygon; }
+		virtual void setDepth(const int16_t depth);
+		int16_t getDepth() const;
+		spehs::Polygon* getPolygonPtr() const { return polygon; }
 		//Hierarchy
-		GUIRectangleContainer* getParentPtr(){ return parent; }
+		GUIRectangleContainer* getParentPtr() const { return parent; }
 		GUIRectangleContainer* getFirstGenerationParent();
-		bool isDescendantOf(GUIRectangleContainer* ascendant);
+		bool isDescendantOf(GUIRectangleContainer* ascendant) const;
 		//ID
-		void setID(int newID){ id = newID; }
-		int getID(){ return id; }
+		void setID(const int newID){ id = newID; }
+		int getID() const { return id; }
 		//Text
-		virtual void setString(std::string str);
-		void setStringSize(int size);
-		void setStringSizeRelative(int relativeSize);///< Set string size relative to global default GUI text size.
-		void setStringColor(glm::vec4& col);
-		void setStringColor(unsigned char r, unsigned char g, unsigned char b, unsigned char a = 255);
-		void setStringAlpha(float alpha);
-		void setStringAlpha(unsigned char a);
-		std::string getString();
-		virtual void setJustification(GUIRECT_STATE_TYPE justificationBit);///<NOTE: if non-justification bit is given, all justification bits will be cleared and given bit will be enabled
+		virtual void setString(const std::string str);
+		void setStringSize(const int size);
+		void setStringSizeRelative(const int relativeSize);///< Set string size relative to global default GUI text size.
+		void setStringColor(const glm::vec4& col);
+		void setStringColor(const unsigned char r, const unsigned char g, const unsigned char b, const unsigned char a = 255);
+		void setStringAlpha(const float alpha);
+		void setStringAlpha(const unsigned char a);
+		std::string getString() const;
+		virtual void setJustification(const GUIRECT_STATE_TYPE justificationBit);///<NOTE: if non-justification bit is given, all justification bits will be cleared and given bit will be enabled
 		//Tooltip
-		void setTooltip(std::string tooltipString);
-		GUIRectangle* getTooltipPtr(){ return tooltip; }
+		void setTooltip(const std::string tooltipString);
+		GUIRectangle* getTooltipPtr() const { return tooltip; }
 		//Display texture
-		void setDisplayTexture(std::string path);
+		void setDisplayTexture(const std::string path);
 		//Rectangle texture
-		void setTexture(std::string path);
+		void setTexture(const std::string path);
 		
 		//Audio
 		void setHoverSound(const std::string path);
@@ -147,23 +148,23 @@ namespace spehs
 
 		////State
 		//Getters
-		GUIRECT_STATE_TYPE getState(){ return state; }
-		bool checkState(GUIRECT_STATE_TYPE bit){ return checkBit(state, bit); }
+		GUIRECT_STATE_TYPE getState() const { return state; }
+		bool checkState(GUIRECT_STATE_TYPE bit) const { return checkBit(state, bit); }
 		//"Shortcut" getters
-		bool getMouseHover(){ return checkBit(state, GUIRECT_MOUSE_HOVER); }
-		bool getMouseHoverContainer(){ return checkBit(state, GUIRECT_MOUSE_HOVER_CONTAINER); }
-		bool getMouseHoverAny(){ return checkBit(state, GUIRECT_MOUSE_HOVER) | checkBit(state, GUIRECT_MOUSE_HOVER_CONTAINER); }
-		virtual bool isReceivingInput(){ return checkBit(state, GUIRECT_RECEIVING_INPUT); }
-		bool isSelected(){ return checkBit(state, GUIRECT_SELECTED); }
-		bool isOpen(){ return checkBit(state, GUIRECT_OPEN_BIT); }
+		bool getMouseHover() const { return checkBit(state, GUIRECT_MOUSE_HOVER); }
+		bool getMouseHoverContainer() const { return checkBit(state, GUIRECT_MOUSE_HOVER_CONTAINER); }
+		bool getMouseHoverAny() const { return checkBit(state, GUIRECT_MOUSE_HOVER) | checkBit(state, GUIRECT_MOUSE_HOVER_CONTAINER); }
+		virtual bool isReceivingInput() const { return checkBit(state, GUIRECT_INPUT_ENABLED_BIT) && checkBit(state, GUIRECT_RECEIVING_INPUT); }
+		virtual bool isSelected() const { return checkBit(state, GUIRECT_SELECTED); }
+		virtual bool isOpen() const { return checkBit(state, GUIRECT_OPEN_BIT); }
 		//Setters
-		virtual void enableStateRecursive(GUIRECT_STATE_TYPE stateBit){ enableBit(state, stateBit); }
-		virtual void disableStateRecursive(GUIRECT_STATE_TYPE stateBit){ disableBit(state, stateBit); }
-		void enableStateRecursiveUpwards(GUIRECT_STATE_TYPE stateBit);
-		void disableStateRecursiveUpwards(GUIRECT_STATE_TYPE stateBit);
-		virtual void enableState(GUIRECT_STATE_TYPE stateBit){ enableBit(state, stateBit); }
-		virtual void disableState(GUIRECT_STATE_TYPE stateBit){ disableBit(state, stateBit); }
-		virtual void toggleState(GUIRECT_STATE_TYPE stateBit){ toggleBit(state, stateBit); }
+		virtual void enableStateRecursive(const GUIRECT_STATE_TYPE stateBit){ enableBit(state, stateBit); }
+		virtual void disableStateRecursive(const GUIRECT_STATE_TYPE stateBit){ disableBit(state, stateBit); }
+		void enableStateRecursiveUpwards(const GUIRECT_STATE_TYPE stateBit);
+		void disableStateRecursiveUpwards(const GUIRECT_STATE_TYPE stateBit);
+		virtual void enableState(const GUIRECT_STATE_TYPE stateBit){ enableBit(state, stateBit); }
+		virtual void disableState(const GUIRECT_STATE_TYPE stateBit){ disableBit(state, stateBit); }
+		virtual void toggleState(const GUIRECT_STATE_TYPE stateBit){ toggleBit(state, stateBit); }
 
 		//Enabling
 		void enableInput(){ if (checkState(GUIRECT_INPUT_ENABLED_BIT)) return; onEnableInput(); }
@@ -171,32 +172,32 @@ namespace spehs
 		
 		////Managing element position
 		//Setting both coordinates
-		virtual void setPositionLocal(glm::ivec2& pos){ setXLocal(pos.x); setYLocal(pos.y); }
-		virtual void setPositionLocal(int x, int y){ setXLocal(x); setYLocal(y); }
-		virtual void setPositionGlobal(glm::ivec2& pos){ setXLocal(getXLocal() + pos.x - getXGlobal()); setYLocal(getYLocal() + pos.y - getYGlobal()); }
-		virtual void setPositionGlobal(int x, int y){ setXLocal(getXLocal() + x - getXGlobal()); setYLocal(getYLocal() + y - getYGlobal()); }
-		virtual void translate(glm::ivec2& translation){ setXLocal(position.x + translation.x); setYLocal(position.y + translation.y); }
-		virtual void translate(int x, int y){ setXLocal(position.x + x); setYLocal(position.y + y); }
+		virtual void setPositionLocal(const glm::ivec2& pos){ setXLocal(pos.x); setYLocal(pos.y); }
+		virtual void setPositionLocal(const int x, const int y){ setXLocal(x); setYLocal(y); }
+		virtual void setPositionGlobal(const glm::ivec2& pos){ setXLocal(getXLocal() + pos.x - getXGlobal()); setYLocal(getYLocal() + pos.y - getYGlobal()); }
+		virtual void setPositionGlobal(const int x, const int y){ setXLocal(getXLocal() + x - getXGlobal()); setYLocal(getYLocal() + y - getYGlobal()); }
+		virtual void translate(const glm::ivec2& translation){ setXLocal(position.x + translation.x); setYLocal(position.y + translation.y); }
+		virtual void translate(const int x, const int y){ setXLocal(position.x + x); setYLocal(position.y + y); }
 		//Setting only one coordinate
-		virtual void incrementX(int incrementation){ setXLocal(position.x + incrementation); }
-		virtual void incrementY(int incrementation){ setYLocal(position.y + incrementation); }
-		virtual void setXLocal(int x){ position.x = x; disableBit(state, GUIRECT_POSITION_UPDATED_BIT); }
-		virtual void setYLocal(int y){ position.y = y; disableBit(state, GUIRECT_POSITION_UPDATED_BIT); }
+		virtual void incrementX(const int incrementation){ setXLocal(position.x + incrementation); }
+		virtual void incrementY(const int incrementation){ setYLocal(position.y + incrementation); }
+		virtual void setXLocal(const int x){ position.x = x; disableBit(state, GUIRECT_POSITION_UPDATED_BIT); }
+		virtual void setYLocal(const int y){ position.y = y; disableBit(state, GUIRECT_POSITION_UPDATED_BIT); }
 		//Getting the GUIRectangle screen position (global)
-		glm::ivec2 getPositionGlobal();
-		int getXGlobal();
-		int getYGlobal();
+		glm::ivec2 getPositionGlobal() const;
+		int getXGlobal() const;
+		int getYGlobal() const;
 		//Local position getters
-		glm::ivec2 getPositionLocal(){ return position; }
-		int getXLocal(){ return position.x; }
-		int getYLocal(){ return position.y; }
+		glm::ivec2 getPositionLocal() const { return position; }
+		int getXLocal() const { return position.x; }
+		int getYLocal() const { return position.y; }
 
 		//Managing element scale
 		//Scale managament
-		virtual void setSize(int width, int height){ setWidth(width); setHeight(height); }
-		virtual void setSize(glm::ivec2& newSize){ setWidth(newSize.x); setHeight(newSize.y); }
-		virtual void setWidth(int width){ if (size.x == width) return; size.x = width; disableStateRecursiveUpwards(GUIRECT_SCALE_UPDATED_BIT); }
-		virtual void setHeight(int height){ if (size.y == height) return; size.y = height; disableStateRecursiveUpwards(GUIRECT_SCALE_UPDATED_BIT); }
+		virtual void setSize(const int width, const int height){ setWidth(width); setHeight(height); }
+		virtual void setSize(const glm::ivec2& newSize){ setWidth(newSize.x); setHeight(newSize.y); }
+		virtual void setWidth(const int width){ if (size.x == width) return; size.x = width; disableStateRecursiveUpwards(GUIRECT_SCALE_UPDATED_BIT); }
+		virtual void setHeight(const int height){ if (size.y == height) return; size.y = height; disableStateRecursiveUpwards(GUIRECT_SCALE_UPDATED_BIT); }
 		//Getters
 		virtual glm::ivec2 getSize(){ if (!(state & GUIRECT_SCALE_UPDATED_BIT)) updateScale(); return size; }
 		virtual int getWidth(){ if (!(state & GUIRECT_SCALE_UPDATED_BIT)) updateScale(); return size.x; }
@@ -206,15 +207,16 @@ namespace spehs
 		virtual int getMinHeight(){ if (!(state & GUIRECT_MIN_SIZE_UPDATED_BIT)) updateMinSize(); return minSize.y; }
 		
 		//Identity
-		GUIRectangle* getAsGUIRectanglePtr(){ return this; }
-		virtual GUIWindow* getAsGUIWindowPtr(){ return nullptr; }
-		virtual GUICheckbox* getAsGUICheckboxPtr(){ return nullptr; }
-		virtual GUIStringEditor* getAsGUIStringEditorPtr(){ return nullptr; }
-		virtual GUIRectangleRow* getAsGUIRectangleRowPtr(){ return nullptr; }
-		virtual GUIRectangleTree* getAsGUIRectangleTreePtr(){ return nullptr; }
-		virtual GUIRectangleList* getAsGUIRectangleListPtr(){ return nullptr; }
-		virtual GUIRectangleGrid* getAsGUIRectangleGridPtr(){ return nullptr; }
-		virtual GUIRectangleContainer* getAsGUIRectangleContainerPtr(){ return nullptr; }
+		virtual GUIWindow* getAsGUIWindowPtr() { return nullptr; }
+		virtual GUICheckbox* getAsGUICheckboxPtr() { return nullptr; }
+		virtual GUIStringEditor* getAsGUIStringEditorPtr() { return nullptr; }
+		virtual GUIRectangleRow* getAsGUIRectangleRowPtr() { return nullptr; }
+		virtual GUIRectangleTree* getAsGUIRectangleTreePtr() { return nullptr; }
+		virtual GUIRectangleList* getAsGUIRectangleListPtr() { return nullptr; }
+		virtual GUIRectangleGrid* getAsGUIRectangleGridPtr() { return nullptr; }
+		virtual GUIRectangleTable* getAsGUIRectangleTablePtr() { return nullptr; }
+		virtual GUIRectangleContainer* getAsGUIRectangleContainerPtr() { return nullptr; }
+
 
 	protected:
 		void createText();

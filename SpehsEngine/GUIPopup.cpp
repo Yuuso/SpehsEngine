@@ -11,7 +11,7 @@
 
 namespace spehs
 {
-	GUIPopup::GUIPopup(std::string _message) : escapeEnabled(true)
+	GUIPopup::GUIPopup(const std::string _message) : escapeEnabled(true)
 	{
 		//Background rect
 		addElement(new GUIRectangle());
@@ -26,7 +26,7 @@ namespace spehs
 	GUIPopup::~GUIPopup()
 	{
 	}
-	void GUIPopup::addOptions(GUIPopupOption& option)
+	void GUIPopup::addOptions(const GUIPopupOption& option)
 	{
 		options.push_back(option);
 		addElement(new GUIRectangle(option.string));
@@ -121,11 +121,11 @@ namespace spehs
 		}
 		elements[MESSAGE_INDEX]->setPositionLocal(0, elements[OPTION1_INDEX]->getHeight() + BORDER_WIDTH);
 	}
-	void GUIPopup::setBackgroundColor(glm::vec3& rgb)
+	void GUIPopup::setBackgroundColor(const glm::vec3& rgb)
 	{
 		elements[BACKGROUND_INDEX]->setColor(rgb);
 	}
-	void GUIPopup::setBackgroundColor(glm::vec4& rgba)
+	void GUIPopup::setBackgroundColor(const glm::vec4& rgba)
 	{
 		elements[BACKGROUND_INDEX]->setColor(rgba);
 	}

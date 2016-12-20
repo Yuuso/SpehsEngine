@@ -2,8 +2,8 @@
 #include "SoundSource.h"
 
 #include "AudioManager.h"
-#include "Console.h"
 #include "OpenALError.h"
+#include "Exceptions.h"
 
 #include <AL\al.h>
 
@@ -56,7 +56,7 @@ namespace spehs
 			return;
 			if (buffer == 0)
 			{
-				spehs::console::warning("Cannot play sound, no sound buffer!");
+				spehs::exceptions::warning("Cannot play sound, no sound buffer!");
 				return;
 			}
 			if (!source)
@@ -75,7 +75,7 @@ namespace spehs
 		{
 			if (!source)
 			{
-				spehs::console::warning("Cannot pause sound, no source!");
+				spehs::exceptions::warning("Cannot pause sound, no source!");
 				return;
 			}
 
@@ -86,7 +86,7 @@ namespace spehs
 		{
 			if (!source)
 			{
-				spehs::console::warning("Cannot pause sound, no source!");
+				spehs::exceptions::warning("Cannot pause sound, no source!");
 				return;
 			}
 

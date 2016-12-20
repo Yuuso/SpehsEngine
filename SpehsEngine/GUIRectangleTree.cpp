@@ -13,11 +13,11 @@ namespace spehs
 	{
 		close();
 	}
-	GUIRectangleTree::GUIRectangleTree(int _ID) : GUIRectangleTree()
+	GUIRectangleTree::GUIRectangleTree(const int _ID) : GUIRectangleTree()
 	{
 		setID(_ID);
 	}
-	GUIRectangleTree::GUIRectangleTree(std::string str) : GUIRectangleTree()
+	GUIRectangleTree::GUIRectangleTree(const std::string str) : GUIRectangleTree()
 	{
 		setString(str);
 	}
@@ -143,7 +143,7 @@ namespace spehs
 				elements[i]->setPositionGlobal(getXGlobal() + branchX, branchY + i * minElementSize.y);
 		}
 	}
-	void GUIRectangleTree::leafNodePressed(int _ID)
+	void GUIRectangleTree::leafNodePressed(const GUIRECT_ID_TYPE _ID)
 	{
 		if (parent->getAsGUIRectangleTreePtr())
 		{
@@ -160,7 +160,7 @@ namespace spehs
 		//By default, make tree to open on mouse hover when node element is added
 		openTreeButton = 0;
 	}
-	void GUIRectangleTree::addElement(std::string str, int _ID)
+	void GUIRectangleTree::addElement(const std::string str, const GUIRECT_ID_TYPE _ID)
 	{
 		addElement(new GUIRectangleTree(str));
 		elements.back()->setID(_ID);
