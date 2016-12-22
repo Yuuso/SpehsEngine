@@ -7,6 +7,11 @@
 
 #include <GL/glew.h>
 
+#ifdef _DEBUG //Debug includes
+#include "BatchManager.h"
+#endif
+
+
 
 int64_t primitiveAllocations;
 int64_t primitiveDeallocations;
@@ -15,6 +20,9 @@ int64_t primitiveDeallocations;
 namespace spehs
 {
 	Primitive::Primitive()
+#ifdef _DEBUG
+		: myBatchManager(getActiveBatchManager())
+#endif
 	{
 #ifdef _DEBUG
 		primitiveAllocations++;

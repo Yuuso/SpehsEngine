@@ -15,6 +15,7 @@ namespace spehs
 	class GUIScalarEditor : public GUIRectangleRow
 	{
 	public:
+		static_assert(std::is_arithmetic<Scalar>::value, "Scalar editor type must be of either integral or floating type!");
 		enum class EditorType { Slider, Ticks};
 	public:
 		GUIScalarEditor(const std::string scalarName, Scalar& scalarReference) :

@@ -137,5 +137,10 @@ namespace spehs
 
 		glm::vec2 position;
 		std::vector<spehs::Vertex> vertexArray; //Original vertices
+
+#ifdef _DEBUG //Take a batch manager pointer for improved debug information
+	public:
+		const BatchManager* myBatchManager;
+#endif
 	};
 }

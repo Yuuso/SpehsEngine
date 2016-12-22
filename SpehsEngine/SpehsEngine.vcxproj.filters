@@ -167,6 +167,12 @@
     <ClCompile Include="SoundSource.cpp">
       <Filter>Audio</Filter>
     </ClCompile>
+    <ClCompile Include="Serializable.cpp">
+      <Filter>Filestream</Filter>
+    </ClCompile>
+    <ClCompile Include="SerializableDirectory.cpp">
+      <Filter>Filestream</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GLSLProgram.h">
@@ -355,6 +361,15 @@
     </ClInclude>
     <ClInclude Include="SoundSource.h">
       <Filter>Audio</Filter>
+    </ClInclude>
+    <ClInclude Include="Serializable.h">
+      <Filter>Filestream</Filter>
+    </ClInclude>
+    <ClInclude Include="SerializableDirectory.h">
+      <Filter>Filestream</Filter>
+    </ClInclude>
+    <ClInclude Include="SerializableVector.h">
+      <Filter>Filestream</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -98,6 +98,8 @@
     <ClCompile Include="Arrow.cpp" />
     <ClCompile Include="AudioEngine.cpp" />
     <ClCompile Include="AudioManager.cpp" />
+    <ClCompile Include="Serializable.cpp" />
+    <ClCompile Include="SerializableDirectory.cpp" />
     <ClCompile Include="SoundSource.cpp" />
     <ClCompile Include="Batch.cpp" />
     <ClCompile Include="BatchManager.cpp" />
@@ -155,6 +157,9 @@
     <ClInclude Include="Arrow.h" />
     <ClInclude Include="AudioEngine.h" />
     <ClInclude Include="AudioManager.h" />
+    <ClInclude Include="Serializable.h" />
+    <ClInclude Include="SerializableDirectory.h" />
+    <ClInclude Include="SerializableVector.h" />
     <ClInclude Include="SoundSource.h" />
     <ClInclude Include="Batch.h" />
     <ClInclude Include="BatchManager.h" />
