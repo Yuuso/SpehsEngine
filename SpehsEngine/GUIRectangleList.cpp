@@ -47,7 +47,7 @@ namespace spehs
 	}
 	void GUIRectangleList::inputUpdate()
 	{
-		if (checkState(GUIRECT_INPUT_ENABLED_BIT))
+		if (getInputEnabled())
 		{
 			scrollUp->inputUpdate();
 			scrollBar->inputUpdate();

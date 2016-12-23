@@ -49,7 +49,7 @@ namespace spehs
 			}
 			else
 			{//Open when mouse is hovering over
-				if (checkState(GUIRECT_MOUSE_HOVER_CONTAINER) && checkState(GUIRECT_INPUT_ENABLED_BIT))
+				if (checkState(GUIRECT_MOUSE_HOVER_CONTAINER) && getInputEnabled())
 				{
 					open();
 					if (getString() == "def")

@@ -64,7 +64,7 @@ namespace spehs
 	}
 	bool GUIRectangleContainer::isReceivingInput() const
 	{
-		if (!checkState(GUIRECT_OPEN_BIT) || !checkState(GUIRECT_INPUT_ENABLED_BIT))
+		if (!checkState(GUIRECT_OPEN_BIT) || !getInputEnabled())
 			return false;
 		if (checkState(GUIRECT_RECEIVING_INPUT))
 			return true;
@@ -101,10 +101,7 @@ namespace spehs
 		element->setRenderState(getRenderState() && checkState(GUIRECT_OPEN_BIT));
 
 		//Enabled state
-		if (checkState(GUIRECT_INPUT_ENABLED_BIT))
-			element->enableStateRecursive(GUIRECT_INPUT_ENABLED_BIT);
-		else
-			element->disableStateRecursive(GUIRECT_INPUT_ENABLED_BIT);
+		element->setInputEnabled(getInputEnabled());
 
 		//Min size must be updated for everything above
 		disableStateRecursiveUpwards(GUIRECT_MIN_SIZE_UPDATED_BIT);

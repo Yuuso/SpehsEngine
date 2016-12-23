@@ -93,7 +93,7 @@ namespace spehs
 		if (checkState(GUIRECT_DRAGGING_BIT) && inputManager->isKeyDown(MOUSE_BUTTON_LEFT))
 			translate(inputManager->getMouseMovementX(), inputManager->getMouseMovementY());
 		//Set dragging boolean
-		if (checkState(GUIRECT_INPUT_ENABLED_BIT) && !checkState(GUIRECT_DRAGGING_BIT) && header->getMouseHover() && inputManager->isKeyPressed(MOUSE_BUTTON_LEFT))
+		if (getInputEnabled() && !checkState(GUIRECT_DRAGGING_BIT) && header->getMouseHover() && inputManager->isKeyPressed(MOUSE_BUTTON_LEFT))
 			enableState(GUIRECT_DRAGGING_BIT);//Begin dragging
 		else if (checkState(GUIRECT_DRAGGING_BIT) && !inputManager->isKeyDown(MOUSE_BUTTON_LEFT))
 		{//Stop dragging
@@ -204,7 +204,7 @@ namespace spehs
 		}
 
 		//Handle strech state bit
-		if (checkState(GUIRECT_INPUT_ENABLED_BIT) &&
+		if (getInputEnabled() &&
 			!checkState(GUIRECT_STRECHING_BIT) &&
 			inputManager->isKeyPressed(MOUSE_BUTTON_LEFT) &&
 			mouseOverStrechArea())
@@ -245,7 +245,7 @@ namespace spehs
 			}
 		}
 		else if (checkState(GUIRECT_STRECHING_BIT) &&
-			(!checkState(GUIRECT_INPUT_ENABLED_BIT) || !inputManager->isKeyDown(MOUSE_BUTTON_LEFT)))
+			(!getInputEnabled() || !inputManager->isKeyDown(MOUSE_BUTTON_LEFT)))
 		{//Conditions not met to continue streching, set to false
 			disableState(GUIRECT_STRECHING_BIT);
 			strechState = 0;
@@ -256,7 +256,7 @@ namespace spehs
 		if (doubleClickTimer > 0)
 			doubleClickTimer -= time::getDeltaTimeAsMilliseconds();
 		//Check header double click
-		if (checkState(GUIRECT_INPUT_ENABLED_BIT) && inputManager->isKeyPressed(MOUSE_BUTTON_LEFT) && header->getMouseHover())
+		if (getInputEnabled() && inputManager->isKeyPressed(MOUSE_BUTTON_LEFT) && header->getMouseHover())
 		{//Header has been clicked
 			if (doubleClickTimer > 0)
 			{//Header double click detected
@@ -293,7 +293,7 @@ namespace spehs
 		}
 
 		//Check exit button
-		if (checkState(GUIRECT_INPUT_ENABLED_BIT) && inputManager->isKeyPressed(MOUSE_BUTTON_LEFT) && exit->getMouseHover())
+		if (getInputEnabled() && inputManager->isKeyPressed(MOUSE_BUTTON_LEFT) && exit->getMouseHover())
 			close();
 
 	}

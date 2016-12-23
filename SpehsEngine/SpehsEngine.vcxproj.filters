@@ -37,12 +37,6 @@
     <ClCompile Include="GUIRectangle.cpp">
       <Filter>Rendering\GUI</Filter>
     </ClCompile>
-    <ClCompile Include="GUIRectangleContainer.cpp">
-      <Filter>Rendering\GUI</Filter>
-    </ClCompile>
-    <ClCompile Include="GUIRectangleList.cpp">
-      <Filter>Rendering\GUI</Filter>
-    </ClCompile>
     <ClCompile Include="GUIWindow.cpp">
       <Filter>Rendering\GUI</Filter>
     </ClCompile>
@@ -55,13 +49,7 @@
     <ClCompile Include="SATCollision.cpp">
       <Filter>Physics</Filter>
     </ClCompile>
-    <ClCompile Include="GUIRectangleTree.cpp">
-      <Filter>Rendering\GUI</Filter>
-    </ClCompile>
     <ClCompile Include="GUIWindowManager.cpp">
-      <Filter>Rendering\GUI</Filter>
-    </ClCompile>
-    <ClCompile Include="GUIRectangleRow.cpp">
       <Filter>Rendering\GUI</Filter>
     </ClCompile>
     <ClCompile Include="GUID.cpp">
@@ -96,9 +84,6 @@
     </ClCompile>
     <ClCompile Include="ShaderManager.cpp">
       <Filter>Resource Management</Filter>
-    </ClCompile>
-    <ClCompile Include="GUIRectangleTable.cpp">
-      <Filter>Rendering\GUI</Filter>
     </ClCompile>
     <ClCompile Include="Vertex.cpp">
       <Filter>Rendering</Filter>
@@ -173,6 +158,21 @@
     <ClCompile Include="SerializableDirectory.cpp">
       <Filter>Filestream</Filter>
     </ClCompile>
+    <ClCompile Include="GUIRectangleContainer.cpp">
+      <Filter>Rendering\GUI\Commonly used container</Filter>
+    </ClCompile>
+    <ClCompile Include="GUIRectangleList.cpp">
+      <Filter>Rendering\GUI\Commonly used container</Filter>
+    </ClCompile>
+    <ClCompile Include="GUIRectangleRow.cpp">
+      <Filter>Rendering\GUI\Commonly used container</Filter>
+    </ClCompile>
+    <ClCompile Include="GUIRectangleTable.cpp">
+      <Filter>Rendering\GUI\Commonly used container</Filter>
+    </ClCompile>
+    <ClCompile Include="GUIRectangleTree.cpp">
+      <Filter>Rendering\GUI\Commonly used container</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GLSLProgram.h">
@@ -220,12 +220,6 @@
     <ClInclude Include="GUIRectangle.h">
       <Filter>Rendering\GUI</Filter>
     </ClInclude>
-    <ClInclude Include="GUIRectangleContainer.h">
-      <Filter>Rendering\GUI</Filter>
-    </ClInclude>
-    <ClInclude Include="GUIRectangleList.h">
-      <Filter>Rendering\GUI</Filter>
-    </ClInclude>
     <ClInclude Include="GUIWindow.h">
       <Filter>Rendering\GUI</Filter>
     </ClInclude>
@@ -238,13 +232,7 @@
     <ClInclude Include="Arrow.h">
       <Filter>Rendering\Geometric Rendering</Filter>
     </ClInclude>
-    <ClInclude Include="GUIRectangleTree.h">
-      <Filter>Rendering\GUI</Filter>
-    </ClInclude>
     <ClInclude Include="GUIWindowManager.h">
-      <Filter>Rendering\GUI</Filter>
-    </ClInclude>
-    <ClInclude Include="GUIRectangleRow.h">
       <Filter>Rendering\GUI</Filter>
     </ClInclude>
     <ClInclude Include="ConsoleVariable.h">
@@ -279,9 +267,6 @@
     </ClInclude>
     <ClInclude Include="ShaderManager.h">
       <Filter>Resource Management</Filter>
-    </ClInclude>
-    <ClInclude Include="GUIRectangleTable.h">
-      <Filter>Rendering\GUI</Filter>
     </ClInclude>
     <ClInclude Include="Vertex.h">
       <Filter>Rendering</Filter>
@@ -371,6 +356,21 @@
     <ClInclude Include="SerializableVector.h">
       <Filter>Filestream</Filter>
     </ClInclude>
+    <ClInclude Include="GUIRectangleContainer.h">
+      <Filter>Rendering\GUI\Commonly used container</Filter>
+    </ClInclude>
+    <ClInclude Include="GUIRectangleList.h">
+      <Filter>Rendering\GUI\Commonly used container</Filter>
+    </ClInclude>
+    <ClInclude Include="GUIRectangleRow.h">
+      <Filter>Rendering\GUI\Commonly used container</Filter>
+    </ClInclude>
+    <ClInclude Include="GUIRectangleTable.h">
+      <Filter>Rendering\GUI\Commonly used container</Filter>
+    </ClInclude>
+    <ClInclude Include="GUIRectangleTree.h">
+      <Filter>Rendering\GUI\Commonly used container</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Physics">
@@ -411,6 +411,9 @@
     </Filter>
     <Filter Include="Rendering\GUI\Editors">
       <UniqueIdentifier>{4a18de41-53a8-4609-a74f-6625aa3af945}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\GUI\Commonly used container">
+      <UniqueIdentifier>{c3f6a7dd-77b8-4dc5-8967-7cd7ddbad90f}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

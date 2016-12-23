@@ -30,7 +30,7 @@ namespace spehs
 		polygon->destroy();
 	}
 	GUIRectangle::GUIRectangle() : position(0), size(0), minSize(0), displayTexture(nullptr), pressCallbackFunction(nullptr), pressSound(nullptr), hoverSound(nullptr),
-		state(GUIRECT_INPUT_ENABLED_BIT | GUIRECT_HOVER_COLOR | GUIRECT_TEXT_JUSTIFICATION_LEFT)
+		state(GUIRECT_HOVER_COLOR | GUIRECT_TEXT_JUSTIFICATION_LEFT), inputEnabled(true)
 	{//Default constructor
 #ifdef _DEBUG
 		++guiRectangleAllocations;
@@ -81,7 +81,7 @@ namespace spehs
 	void GUIRectangle::inputUpdate()
 	{
 		disableBit(state, GUIRECT_MOUSE_HOVER);
-		if (!checkState(GUIRECT_INPUT_ENABLED_BIT))
+		if (!inputEnabled)
 		{
 			if (tooltip)
 				tooltip->setRenderState(false);
@@ -141,7 +141,7 @@ namespace spehs
 			tooltip->visualUpdate();
 		
 		//Hover color
-		if (checkState(GUIRECT_HOVER_COLOR) && checkState(GUIRECT_INPUT_ENABLED_BIT))
+		if (checkState(GUIRECT_HOVER_COLOR) && inputEnabled)
 		{
 			if (getMouseHover())
 			{
@@ -342,6 +342,24 @@ namespace spehs
 	}
 
 	//Setters
+	void GUIRectangle::setTooltip(const std::string tooltipString)
+	{
+		//Create tooltip object if one does not exist already
+		if (!tooltip)
+		{
+			tooltip = new GUIRectangle();
+			tooltip->setStringColor(defaultTooltipStringColor);
+			tooltip->setStringSize(applicationData->GUITextSize);
+			tooltip->setColor(defaultTooltipColor);
+		}
+
+		tooltip->setString(tooltipString);
+		tooltip->setJustification(GUIRECT_TEXT_JUSTIFICATION_LEFT);
+		tooltip->updateScale();
+		tooltip->setSize(tooltip->minSize);
+		tooltip->setRenderState(false);
+		tooltip->setDepth(getDepth() + tooltipDepthRelative);
+	}
 	void GUIRectangle::setString(const std::string str)
 	{
 		if (str.size() == 0)
@@ -369,24 +387,6 @@ namespace spehs
 	void GUIRectangle::setStringSizeRelative(const int relativeSize)
 	{
 		setStringSize(applicationData->GUITextSize + relativeSize);
-	}
-	void GUIRectangle::setTooltip(const std::string tooltipString)
-	{
-		//Create tooltip object if one does not exist already
-		if (!tooltip)
-		{
-			tooltip = new GUIRectangle();
-			tooltip->setStringColor(defaultTooltipStringColor);
-			tooltip->setStringSize(applicationData->GUITextSize);
-			tooltip->setColor(defaultTooltipColor);
-		}
-
-		tooltip->setString(tooltipString);
-		tooltip->setJustification(GUIRECT_TEXT_JUSTIFICATION_LEFT);
-		tooltip->updateScale();
-		tooltip->setSize(tooltip->minSize);
-		tooltip->setRenderState(false);
-		tooltip->setDepth(getDepth() + tooltipDepthRelative);
 	}
 	void GUIRectangle::setStringColor(const glm::vec4& col)
 	{

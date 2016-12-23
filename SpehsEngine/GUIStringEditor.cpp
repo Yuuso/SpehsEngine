@@ -7,8 +7,13 @@
 
 namespace spehs
 {
-	GUIStringEditor::GUIStringEditor() : stringUpdated(false), defaultString(""), input(""), storedString(""), disableInputReceiveOnNextUpdate(false)
+	GUIStringEditor::GUIStringEditor() : stringEdited(false), stringUpdated(false), defaultString(""), input(""), storedString(""), disableInputReceiveOnNextUpdate(false)
 	{
+		setString("");//Create text object
+		typeCharacter = spehs::Text::create("<", getDepth() + 1);
+		typeCharacter->setRenderState(getRenderState() && isReceivingInput());
+		typeCharacter->setFont(applicationData->GUITextFontPath, applicationData->GUITextSize);
+		typeCharacter->setColor((unsigned char)255,0,0,255);// defaultStringColor);
 	}
 	GUIStringEditor::GUIStringEditor(const std::string str) : GUIStringEditor()
 	{
@@ -25,8 +30,54 @@ namespace spehs
 	GUIStringEditor::~GUIStringEditor()
 	{
 	}
+	void GUIStringEditor::setRenderState(const bool _state)
+	{
+		GUIEditor::setRenderState(_state);
+		typeCharacter->setRenderState(_state && isReceivingInput());
+	}
+	void GUIStringEditor::setDepth(const int16_t depth)
+	{
+		GUIEditor::setDepth(depth);
+		typeCharacter->setPlaneDepth(depth + 1);
+	}	
+	void GUIStringEditor::setStringSize(const int size)
+	{
+		GUIEditor::setStringSize(size);
+		typeCharacter->setFontSize(size);
+	}
+	void GUIStringEditor::setStringSizeRelative(const int relativeSize)
+	{
+		GUIEditor::setStringSizeRelative(relativeSize);
+		typeCharacter->setFontSize(applicationData->GUITextSize + relativeSize);
+	}
+	void GUIStringEditor::setStringColor(const glm::vec4& col)
+	{
+		GUIEditor::setStringColor(col);
+		typeCharacter->setColor(col);
+	}
+	void GUIStringEditor::setStringColor(const unsigned char r, const unsigned char g, const unsigned char b, const unsigned char a)
+	{
+		GUIEditor::setStringColor(r, g, b, a);
+		typeCharacter->setColor((unsigned char)r, g, b, a);
+	}
+	void GUIStringEditor::setStringAlpha(const float alpha)
+	{
+		GUIEditor::setStringAlpha(alpha);
+		typeCharacter->setAlpha(alpha);
+	}
+	void GUIStringEditor::setStringAlpha(const unsigned char a)
+	{
+		GUIEditor::setStringAlpha(a);
+		typeCharacter->setAlpha(a);
+	}
+	void GUIStringEditor::updatePosition()
+	{
+		GUIEditor::updatePosition();
+		typeCharacter->setPosition(text->getX() + text->getTextWidth(), text->getY());
+	}
 	void GUIStringEditor::inputUpdate()
 	{
+		stringEdited = false;
 		GUIRectangle::inputUpdate();
 
 		//Disable input receive?
@@ -37,17 +88,14 @@ namespace spehs
 			disableInputReceiveOnNextUpdate = false;
 		}
 
-		//Clear edited state
-		storedString.clear();
-
-		if (checkState(GUIRECT_INPUT_ENABLED_BIT))
+		if (getInputEnabled())
 		{//When enabled
 
 			//Receiving input
 			if (isReceivingInput())
 				recordInput();
 
-			if (getMouseHover() && inputManager->isKeyPressed(MOUSE_BUTTON_LEFT))
+			if (!stringEdited && getMouseHover() && inputManager->isKeyPressed(MOUSE_BUTTON_LEFT))
 			{//Mouse press
 				toggleTyping();
 			}
@@ -83,18 +131,14 @@ namespace spehs
 	}
 	void GUIStringEditor::setString(const std::string str)
 	{
-		GUIRectangle::setString(str);
+		GUIEditor::setString(str);
 		defaultString = str;
 		stringUpdated = false;
 	}
 	void GUIStringEditor::toggleTyping()
 	{
 		if (isReceivingInput())
-		{
-			//Store input and end typing process
-			storedString = input;
 			endTyping();
-		}
 		else
 			beginTyping();
 	}
@@ -111,6 +155,8 @@ namespace spehs
 			return;
 		//NOTE: Do not disable input receive here! Must remain receiving until end of update loop!
 		disableInputReceiveOnNextUpdate = true;
+		storedString = input;//Store input string
+		stringEdited = true;
 		input = "";//Reset input string
 	}
 	void GUIStringEditor::recordInput()
@@ -191,7 +237,6 @@ namespace spehs
 			inputManager->isKeyPressed(KEYBOARD_KP_ENTER) ||
 			(inputManager->isKeyPressed(MOUSEBUTTON_LEFT) && getMouseHover()))
 		{
-			storedString = input;//Store input string
 			endTyping();
 
 			//Make press callback call
@@ -206,10 +251,6 @@ namespace spehs
 
 	}
 
-	bool GUIStringEditor::valueEdited() const
-	{
-		return storedString.size() > 0;
-	}
 	std::string GUIStringEditor::retrieveString() const
 	{
 		return storedString;

@@ -53,7 +53,7 @@ namespace spehs
 
 		if (focusedWindow)
 		{
-			if (!focusedWindow->checkState(GUIRECT_INPUT_ENABLED_BIT) ||	//Check if focused window yielded focus internally
+			if (!focusedWindow->getInputEnabled() ||	//Check if focused window yielded focus internally
 				(!focusedWindow->getMouseHoverAny() &&						//Focused window is no longer under mouse 
 				!focusedWindow->isReceivingInput()))						//Focused window does not receive input
 				focusedWindow = nullptr;

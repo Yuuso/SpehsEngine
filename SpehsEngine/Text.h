@@ -92,6 +92,10 @@ namespace spehs
 		//Getters
 		std::string getString() const { return string; }
 
+		glm::vec2 getPosition() const { return position; }
+		float getX() const { return position.x; }
+		float getY() const { return position.y; }
+
 		int getTextWidth() const;
 		int getTextHeight() const;
 		int getLineCount() const { return lineCount; }

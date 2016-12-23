@@ -6,6 +6,7 @@ namespace spehs
 {
 	class GUIStringEditor : public GUIEditor
 	{
+		static int defaultMaxStringEditorStringWidth;
 	public:
 		GUIStringEditor();
 		GUIStringEditor(const std::string str);
@@ -13,13 +14,22 @@ namespace spehs
 		GUIStringEditor(const int width, const int height);
 		~GUIStringEditor() override;
 
-		void inputUpdate() override;
+		void setRenderState(const bool _state) override;
+		void setDepth(const int16_t depth) override;
 		void setString(const std::string str) override;
+		void setStringSize(const int size) override;
+		void setStringSizeRelative(const int relativeSize) override;
+		void setStringColor(const glm::vec4& col) override;
+		void setStringColor(const unsigned char r, const unsigned char g, const unsigned char b, const unsigned char a = 255) override;
+		void setStringAlpha(const float alpha) override;
+		void setStringAlpha(const unsigned char a) override;
+		void updatePosition() override;
+		void inputUpdate() override;
 		void onDisableInput() override;
 
 
 		//Editor
-		bool valueEdited() const override;
+		bool valueEdited() const override { return stringEdited; }
 		std::string retrieveString() const;
 		float retrieveStringAsFloat() const;
 		int retrieveStringAsInt() const;
@@ -33,12 +43,15 @@ namespace spehs
 		void beginTyping();
 		void recordInput();
 		void updateString();
-		void endTyping();
+		void endTyping();///< Ends input receiving, storing any input that had been received until now
 
+		bool stringEdited;
 		bool stringUpdated;
 		bool disableInputReceiveOnNextUpdate;
+		int maxStringWidth;//TODO1
 		std::string defaultString;
 		std::string input;
 		std::string storedString;
+		spehs::Text* typeCharacter;
 	};
 }

@@ -14,7 +14,7 @@ namespace spehs
 	/**Extended std::to_string() function. Crops out extra precision given by std::to_string(). Maximum precision 6!*/
 	std::string toString(float value, int precision);
 
-	/**Replaces spaces in the string with newline characters so that no row exceeds given maximum row width in character count, if possible.*/
+	/**Replaces some spaces in the string with newline characters so that no row exceeds given maximum row width in character count, if possible.*/
 	void arrangeIntoRows(std::string& string, int maxRowWidth);
 
 	/**Returns a string representing the integer in hex format. NOTES: 1: no '0x'-prefix will be given, 2: all zero bits will be filled in and represented in '0' characters*/

@@ -13,9 +13,9 @@
 #define GUIRECT_SCALE_UPDATED_BIT			0x00000002
 #define GUIRECT_POSITION_UPDATED_BIT		0x00000004
 #define GUIRECT_MIN_SIZE_UPDATED_BIT		0x00000008
-#define GUIRECT_INPUT_ENABLED_BIT			0x00000010//Enables all user interaction
-#define GUIRECT_REMOVE_BIT					0x00000020//Does not actually remove element. Must have a higher level manager to monitor remove status and act accordingly to it
-#define GUIRECT_MOUSE_HOVER_PREVIOUS		0x00000040
+#define GUIRECT_REMOVE_BIT					0x00000010//Does not actually remove element. Must have a higher level manager to monitor remove status and act accordingly to it
+#define GUIRECT_MOUSE_HOVER_PREVIOUS		0x00000020
+#define GUIRECT_UNUSED1						0x00000040
 #define GUIRECT_UNUSED2						0x00000080
 #define GUIRECT_UNUSED3						0x00000100
 #define GUIRECT_UNUSED4						0x00000200
@@ -115,12 +115,12 @@ namespace spehs
 		int getID() const { return id; }
 		//Text
 		virtual void setString(const std::string str);
-		void setStringSize(const int size);
-		void setStringSizeRelative(const int relativeSize);///< Set string size relative to global default GUI text size.
-		void setStringColor(const glm::vec4& col);
-		void setStringColor(const unsigned char r, const unsigned char g, const unsigned char b, const unsigned char a = 255);
-		void setStringAlpha(const float alpha);
-		void setStringAlpha(const unsigned char a);
+		virtual void setStringSize(const int size);
+		virtual void setStringSizeRelative(const int relativeSize);///< Set string size relative to global default GUI text size.
+		virtual void setStringColor(const glm::vec4& col);
+		virtual void setStringColor(const unsigned char r, const unsigned char g, const unsigned char b, const unsigned char a = 255);
+		virtual void setStringAlpha(const float alpha);
+		virtual void setStringAlpha(const unsigned char a);
 		std::string getString() const;
 		virtual void setJustification(const GUIRECT_STATE_TYPE justificationBit);///<NOTE: if non-justification bit is given, all justification bits will be cleared and given bit will be enabled
 		//Tooltip
@@ -154,7 +154,7 @@ namespace spehs
 		bool getMouseHover() const { return checkBit(state, GUIRECT_MOUSE_HOVER); }
 		bool getMouseHoverContainer() const { return checkBit(state, GUIRECT_MOUSE_HOVER_CONTAINER); }
 		bool getMouseHoverAny() const { return checkBit(state, GUIRECT_MOUSE_HOVER) | checkBit(state, GUIRECT_MOUSE_HOVER_CONTAINER); }
-		virtual bool isReceivingInput() const { return checkBit(state, GUIRECT_INPUT_ENABLED_BIT) && checkBit(state, GUIRECT_RECEIVING_INPUT); }
+		virtual bool isReceivingInput() const { return inputEnabled && checkBit(state, GUIRECT_RECEIVING_INPUT); }
 		virtual bool isSelected() const { return checkBit(state, GUIRECT_SELECTED); }
 		virtual bool isOpen() const { return checkBit(state, GUIRECT_OPEN_BIT); }
 		//Setters
@@ -167,8 +167,10 @@ namespace spehs
 		virtual void toggleState(const GUIRECT_STATE_TYPE stateBit){ toggleBit(state, stateBit); }
 
 		//Enabling
-		void enableInput(){ if (checkState(GUIRECT_INPUT_ENABLED_BIT)) return; onEnableInput(); }
-		void disableInput(){ if (!checkState(GUIRECT_INPUT_ENABLED_BIT)) return; onDisableInput(); }
+		void enableInput(){ if (inputEnabled) return; onEnableInput(); }
+		void disableInput(){ if (!inputEnabled) return; onDisableInput(); }
+		bool getInputEnabled() const { return inputEnabled; }
+		void setInputEnabled(const bool _state){ if (_state) enableInput(); else disableInput(); }
 		
 		////Managing element position
 		//Setting both coordinates
@@ -220,8 +222,8 @@ namespace spehs
 
 	protected:
 		void createText();
-		virtual void onEnableInput(){ enableState(GUIRECT_INPUT_ENABLED_BIT); }
-		virtual void onDisableInput(){ disableState(GUIRECT_INPUT_ENABLED_BIT); }
+		virtual void onEnableInput(){ inputEnabled = true; }
+		virtual void onDisableInput(){ inputEnabled = false; }
 
 		glm::vec4 color;///<Color values given to polygon. Ranges from 0.0f - 1.0f
 		glm::ivec2 position;///<The position of the rectangle, originating from the lower left corner, given in screen coordinates. Relative to parent's position
@@ -248,6 +250,6 @@ namespace spehs
 		DisplayTexture* displayTexture;
 
 	private:
-
+		bool inputEnabled;
 	};
 }

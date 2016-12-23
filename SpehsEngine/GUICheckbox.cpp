@@ -13,11 +13,11 @@ namespace spehs
 {
 	GUICheckbox::GUICheckbox() : checkboxSize(20), selectedState(false)
 	{
-		checkboxBackground = spehs::Polygon::create(Shape::BUTTON, 0, 1.0f, 1.0f);
+		checkboxBackground = spehs::Polygon::create(Shape::BUTTON, getDepth() + 1, 1.0f, 1.0f);
 		checkboxBackground->setColor(30, 30, 30);
 		checkboxBackground->setCameraMatrixState(false);
 
-		checkboxFilling = spehs::Polygon::create(Shape::BUTTON, 0, 1.0f, 1.0f);
+		checkboxFilling = spehs::Polygon::create(Shape::BUTTON, getDepth() + 2, 1.0f, 1.0f);
 		checkboxFilling->setColor(160, 170, 180);
 		checkboxFilling->setCameraMatrixState(false);
 
@@ -42,7 +42,7 @@ namespace spehs
 
 		//Check mouse press
 		previousSelectedState = selectedState;
-		if (checkState(GUIRECT_INPUT_ENABLED_BIT) && getMouseHover() && inputManager->isKeyPressed(MOUSE_BUTTON_LEFT))
+		if (getInputEnabled() && getMouseHover() && inputManager->isKeyPressed(MOUSE_BUTTON_LEFT))
 			selectedState = !selectedState;
 
 		//Filling color

@@ -18,8 +18,8 @@ namespace spehs
 		static_assert(std::is_arithmetic<Scalar>::value, "Scalar editor type must be of either integral or floating type!");
 		enum class EditorType { Slider, Ticks};
 	public:
-		GUIScalarEditor(const std::string scalarName, Scalar& scalarReference) :
-			scalar(scalarReference), floatPrecision(2), tickAmount(1), onHold(false), holdTimer(0.0f), holdTime(0.15f), initialHoldTime(1.0f),
+		GUIScalarEditor(const std::string scalarName, Scalar scalarEditorValue) :
+			scalar(scalarEditorValue), scalarEdited(false), floatPrecision(2), tickAmount(1), onHold(false), holdTimer(0.0f), holdTime(0.15f), initialHoldTime(1.0f),
 			nameRect(new GUIRectangle(scalarName)), valueRect(new GUIStringEditor()), decreaseRect(new GUIRectangle("-")), increaseRect(new GUIRectangle("+"))
 		{
 			setElementPositionMode(spehs::GUIRectangleRow::PositionMode::Right);
@@ -39,17 +39,17 @@ namespace spehs
 		{
 			min = _min;
 			max = _max;
-			setValue(scalar);
+			setEditorScalar(scalar);
 		}
 		void setMinValue(const Scalar _min)
 		{
 			min = _min;
-			setValue(scalar);
+			setEditorScalar(scalar);
 		}
 		void setMaxValue(const Scalar _max)
 		{
 			max = _max;
-			setValue(scalar);
+			setEditorScalar(scalar);
 		}
 		void setTickAmount(const Scalar _tickAmount){ tickAmount = _tickAmount; }
 		void inputUpdate() override
@@ -57,7 +57,7 @@ namespace spehs
 			GUIRectangleRow::inputUpdate();
 
 			if (valueRect->valueEdited())
-				setValue(getValueFromTextField());
+				setEditorScalar(getValueFromTextField());
 			
 			//+/- buttons
 			if (inputManager->isKeyPressed(MOUSE_BUTTON_LEFT))
@@ -66,13 +66,13 @@ namespace spehs
 				{//+
 					onHold = true;
 					holdTimer = initialHoldTime;
-					setValue(scalar + tickAmount);
+					setEditorScalar(scalar + tickAmount);
 				}
 				else if (decreaseRect->getMouseHover())
 				{//-
 					onHold = true;
 					holdTimer = initialHoldTime;
-					setValue(scalar - tickAmount);
+					setEditorScalar(scalar - tickAmount);
 				}
 			}
 			else if (inputManager->isKeyDown(MOUSE_BUTTON_LEFT) && onHold)
@@ -83,7 +83,7 @@ namespace spehs
 					if (holdTimer <= 0.0f)
 					{
 						holdTimer = holdTime;
-						setValue(scalar + tickAmount);
+						setEditorScalar(scalar + tickAmount);
 					}
 				}
 				else if (decreaseRect->getMouseHover())
@@ -92,12 +92,31 @@ namespace spehs
 					if (holdTimer <= 0.0f)
 					{
 						holdTimer = holdTime;
-						setValue(scalar - tickAmount);
+						setEditorScalar(scalar - tickAmount);
 					}
 				}
 				else
 					onHold = false;
 			}
+		}
+		bool valueEdited()
+		{
+			return scalarEdited;
+		}
+		Scalar retrieveScalar()
+		{
+			return scalar;
+		}
+		void setEditorScalar(const Scalar newValue)
+		{
+			if (newValue > max)
+				scalar = max;
+			else if (newValue < min)
+				scalar = min;
+			else
+				scalar = newValue;
+			scalarEdited = true;
+			updateValueTextfieldString();
 		}
 
 	private:
@@ -119,18 +138,8 @@ namespace spehs
 			else
 				valueRect->setString("# Invalid value type #");
 		}
-		void setValue(const Scalar newValue)
-		{
-			if (newValue > max)
-				scalar = max;
-			else if (newValue < min)
-				scalar = min;
-			else
-				scalar = newValue;
-			updateValueTextfieldString();
-		}
 
-		Scalar& scalar;
+		Scalar scalar;
 		Scalar min;
 		Scalar max;
 		Scalar tickAmount;
@@ -139,6 +148,7 @@ namespace spehs
 		float holdTimer;
 		float holdTime;
 		float initialHoldTime;
+		bool scalarEdited;
 
 		GUIRectangle* nameRect;
 		GUIStringEditor* valueRect;

@@ -95,7 +95,7 @@ namespace spehs
 		GUIRectangle::inputUpdate();
 		stateChanged = false;
 		
-		if (checkState(GUIRECT_INPUT_ENABLED_BIT))
+		if (getInputEnabled())
 		{
 			//Palette
 			if (paletteOnHold && !inputManager->isKeyDown(MOUSE_BUTTON_LEFT))
