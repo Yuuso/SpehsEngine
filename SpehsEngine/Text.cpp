@@ -1,4 +1,4 @@
-
+#include <algorithm>
 #include "ApplicationData.h"
 #include "ShaderManager.h"
 #include "BatchManager.h"
@@ -499,6 +499,25 @@ namespace spehs
 	int Text::getFontDescender() const
 	{
 		return font->descender;
+	}
+	float Text::getX(unsigned characterIndex) const
+	{
+		characterIndex = std::min(characterIndex, string.size());
+		int currentLineWidth(0.0f);
+		for (unsigned i = 0; i < characterIndex; i++)
+		{
+			if (string[i] == '\n')
+				currentLineWidth = 0.0f;
+			else
+			{//Increase current line width
+#ifdef _DEBUG
+				if (font->characters[string[i]].advance > 10000)
+					spehs::exceptions::warning("Character width might be invalid!");
+#endif
+				currentLineWidth += font->characters[string[i]].advance;
+			}
+		}
+		return position.x + (float)(currentLineWidth >> 6);
 	}
 	int Text::getTextWidth() const
 	{

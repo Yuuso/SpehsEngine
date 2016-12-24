@@ -6,7 +6,7 @@ namespace spehs
 {
 	class GUIStringEditor : public GUIEditor
 	{
-		static int defaultMaxStringEditorStringWidth;
+		static int defaultMaxStringEditorStringLength;
 	public:
 		GUIStringEditor();
 		GUIStringEditor(const std::string str);
@@ -24,6 +24,7 @@ namespace spehs
 		void setStringAlpha(const float alpha) override;
 		void setStringAlpha(const unsigned char a) override;
 		void updatePosition() override;
+		void updateMinSize() override;
 		void inputUpdate() override;
 		void onDisableInput() override;
 
@@ -33,6 +34,7 @@ namespace spehs
 		std::string retrieveString() const;
 		float retrieveStringAsFloat() const;
 		int retrieveStringAsInt() const;
+		void setMaxStringLength(const int length) { maxStringLength = length; }
 
 		//Identity
 		GUIStringEditor* getAsGUIStringEditorPtr() override { return this; }
@@ -48,7 +50,12 @@ namespace spehs
 		bool stringEdited;
 		bool stringUpdated;
 		bool disableInputReceiveOnNextUpdate;
-		int maxStringWidth;//TODO1
+		bool firstBackspace;
+		float backspaceTimer;
+		int maxStringLength;
+		int typerPosition;
+		char lastInputChar;
+		float keyRepeatTimer;
 		std::string defaultString;
 		std::string input;
 		std::string storedString;

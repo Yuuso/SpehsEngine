@@ -94,6 +94,7 @@ namespace spehs
 
 		glm::vec2 getPosition() const { return position; }
 		float getX() const { return position.x; }
+		float getX(unsigned characterIndex) const;//Returns x position at given character index. Character width is not included. If index is out of bounds, returns x position of the last character instead.
 		float getY() const { return position.y; }
 
 		int getTextWidth() const;
