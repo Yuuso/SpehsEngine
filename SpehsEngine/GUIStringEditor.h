@@ -1,6 +1,8 @@
 #pragma once
+#include "KeyboardRecorder.h"
 #include "GUIEditor.h"
 #include <string>
+#include <vector>
 
 namespace spehs
 {
@@ -35,6 +37,7 @@ namespace spehs
 		float retrieveStringAsFloat() const;
 		int retrieveStringAsInt() const;
 		void setMaxStringLength(const int length) { maxStringLength = length; }
+		void setTyperBlinkTime(const int milliSeconds) { typerBlinkTime = 2 * milliSeconds; }
 
 		//Identity
 		GUIStringEditor* getAsGUIStringEditorPtr() override { return this; }
@@ -50,15 +53,14 @@ namespace spehs
 		bool stringEdited;
 		bool stringUpdated;
 		bool disableInputReceiveOnNextUpdate;
-		bool firstBackspace;
-		float backspaceTimer;
 		int maxStringLength;
 		int typerPosition;
-		char lastInputChar;
-		float keyRepeatTimer;
+		int typerBlinkTime;
+		int typerBlinkTimer;
 		std::string defaultString;
 		std::string input;
 		std::string storedString;
 		spehs::Text* typeCharacter;
+		KeyboardRecorder keyboardRecorder;
 	};
 }

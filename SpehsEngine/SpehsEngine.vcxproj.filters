@@ -173,6 +173,12 @@
     <ClCompile Include="GUIRectangleTree.cpp">
       <Filter>Rendering\GUI\Commonly used container</Filter>
     </ClCompile>
+    <ClCompile Include="OS.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="KeyboardRecorder.cpp">
+      <Filter>HID</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GLSLProgram.h">
@@ -370,6 +376,12 @@
     </ClInclude>
     <ClInclude Include="GUIRectangleTree.h">
       <Filter>Rendering\GUI\Commonly used container</Filter>
+    </ClInclude>
+    <ClInclude Include="OS.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="KeyboardRecorder.h">
+      <Filter>HID</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

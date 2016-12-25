@@ -5,15 +5,16 @@
 #include "InputManager.h"
 #include "Text.h"
 #include "Time.h"
+#include "OS.h"
 
 
 namespace spehs
 {
 	int GUIStringEditor::defaultMaxStringEditorStringLength = 32;
 	GUIStringEditor::GUIStringEditor() : stringEdited(false), stringUpdated(false), defaultString(""), input(""), storedString(""),
-		disableInputReceiveOnNextUpdate(false), maxStringLength(defaultMaxStringEditorStringLength),
-		backspaceTimer(0.0f), firstBackspace(false), keyRepeatTimer(0.0f), lastInputChar(0), typerPosition(0)
+		disableInputReceiveOnNextUpdate(false), maxStringLength(defaultMaxStringEditorStringLength), typerPosition(0), typerBlinkTime(0), typerBlinkTimer(0)
 	{
+		setTyperBlinkTime(512);
 		createText();
 		typeCharacter = spehs::Text::create("|", getDepth() + 1);
 		typeCharacter->setRenderState(getRenderState() && isReceivingInput());
@@ -105,8 +106,11 @@ namespace spehs
 			if (isReceivingInput())
 			{
 				recordInput();
-				typeCharacter->setRenderState(getRenderState() && ((spehs::time::getRunTime().asMilliseconds % 1024) >= 512));
+				typeCharacter->setRenderState(getRenderState() && ((typerBlinkTimer % typerBlinkTime) < typerBlinkTime / 2));
+				typerBlinkTimer += time::getDeltaTimeAsMilliseconds();
 			}
+			else
+				keyboardRecorder.stop();
 
 			if (!stringEdited && getMouseHover() && inputManager->isKeyPressed(MOUSE_BUTTON_LEFT))
 			{//Mouse press
@@ -115,7 +119,10 @@ namespace spehs
 
 		}
 		else
+		{
 			typeCharacter->setRenderState(false);
+			keyboardRecorder.stop();
+		}
 
 		if (!stringUpdated)
 			updateString();
@@ -162,6 +169,7 @@ namespace spehs
 		enableBit(state, GUIRECT_RECEIVING_INPUT);
 		input = storedString;
 		typerPosition = input.size();
+		typerBlinkTimer = 0;
 		stringUpdated = false;
 	}
 	void GUIStringEditor::endTyping()
@@ -174,162 +182,135 @@ namespace spehs
 		stringEdited = true;
 		input = "";//Reset input string
 		typerPosition = 0;
+		typerBlinkTimer = 0;
 	}
 	void GUIStringEditor::recordInput()
 	{
+		keyboardRecorder.update();
+
+		//CHARACTER INPUT
 		if (input.size() < maxStringLength)
-		{//Increment charater
-
-			char inputChar(0);
-
-			//Alphabet
-			int capital = 0;
-			if (inputManager->isKeyDown(KEYBOARD_LSHIFT) || inputManager->isKeyDown(KEYBOARD_RSHIFT))
-				capital = -32;
-			for (unsigned i = 97; i <= 122; i++)
-			{
-				if (inputManager->isKeyDown(i))
-				{
-					inputChar = char(i + capital);
-					if (inputManager->isKeyPressed(i))
-						keyRepeatTimer = 0.0f;
-				}
-			}
-
-			//Numbers
-			for (int i = 48; i <= 57; i++)
-			{
-				if (inputManager->isKeyDown(i))
-				{
-					inputChar = char(i);
-					if (inputManager->isKeyPressed(i))
-						keyRepeatTimer = 0.0f;
-				}
-			}
-			for (int i = KEYBOARD_KP_1; i <= KEYBOARD_KP_9; i++)
-			{
-				if (inputManager->isKeyDown(i))
-				{
-					inputChar = char(i - KEYBOARD_KP_1 + 49);
-					if (inputManager->isKeyPressed(i))
-						keyRepeatTimer = 0.0f;
-				}
-			}
-			if (inputManager->isKeyDown(KEYBOARD_KP_0))
-			{
-				inputChar = '0';
-				if (inputManager->isKeyPressed(KEYBOARD_KP_0))
-					keyRepeatTimer = 0.0f;
-			}
-
-			//Special characters
-			if (inputManager->isKeyDown(KEYBOARD_SPACE))
-			{
-				inputChar = ' ';
-				if (inputManager->isKeyPressed(KEYBOARD_SPACE))
-					keyRepeatTimer = 0.0f;
-			}
-			if (inputManager->isKeyDown(KEYBOARD_COMMA))
-			{
-				inputChar = ',';
-				if (inputManager->isKeyPressed(KEYBOARD_COMMA))
-					keyRepeatTimer = 0.0f;
-			}
-			if (inputManager->isKeyDown(KEYBOARD_KP_PERIOD) || inputManager->isKeyDown(KEYBOARD_PERIOD))
-			{
-				inputChar = '.';
-				if (inputManager->isKeyPressed(KEYBOARD_KP_PERIOD) || inputManager->isKeyPressed(KEYBOARD_PERIOD))
-					keyRepeatTimer = 0.0f;
-			}
-			if (inputManager->isKeyDown(KEYBOARD_KP_MINUS) || inputManager->isKeyDown(KEYBOARD_MINUS))
-			{
-				inputChar = '-';
-				if (inputManager->isKeyPressed(KEYBOARD_KP_MINUS) || inputManager->isKeyPressed(KEYBOARD_MINUS))
-					keyRepeatTimer = 0.0f;
-			}
-
-			if (inputChar)
-			{//Input detected
-
-				if (inputChar == lastInputChar)
-				{
-					keyRepeatTimer -= spehs::time::getDeltaTimeAsSeconds();
-					if (keyRepeatTimer <= 0.0f)
-					{
-						input.insert(input.begin() + typerPosition, inputChar);
-						stringUpdated = false;
-						keyRepeatTimer = 0.5f;
-						typerPosition++;
-					}
-				}
-				else
-				{//Different input char
-					input.insert(input.begin() + typerPosition, inputChar);
-					stringUpdated = false;
-					keyRepeatTimer = 0.5f;
-					typerPosition++;
-				}
-
-				lastInputChar = inputChar;
-			}
-		}
-
-		//Backspace/character deletion
-		if (inputManager->isKeyDown(KEYBOARD_BACKSPACE) && typerPosition > 0)
 		{
-			if (backspaceTimer <= 0.0f)
+			for (unsigned i = 0; i < keyboardRecorder.characterInput.size(); i++)
 			{
-				input.erase(input.begin() + --typerPosition);
+				input.insert(input.begin() + typerPosition, keyboardRecorder.characterInput[i]);
 				stringUpdated = false;
-				if (firstBackspace)
-					backspaceTimer = 1.0f;
-				else
-					backspaceTimer = 0.05f;
-				firstBackspace = false;
+				typerPosition++;
+				typerBlinkTimer = 0;
 			}
-			else
-				backspaceTimer -= spehs::time::getDeltaTimeAsSeconds();
-		}
-		else
-		{
-			backspaceTimer = 0.0f;
-			firstBackspace = true;
-		}
-		if (inputManager->isKeyPressed(KEYBOARD_DELETE) && typerPosition <= input.size())
-		{
-			input.erase(input.begin() + typerPosition);
-			stringUpdated = false;
 		}
 
-		//Moving the typer
-		if (inputManager->isKeyPressed(KEYBOARD_LEFT))
+		//COMMAND INPUT
+		const bool ctrl(inputManager->isKeyDown(KEYBOARD_LCTRL) || inputManager->isKeyDown(KEYBOARD_RCTRL));
+		const bool shift(inputManager->isKeyDown(KEYBOARD_LSHIFT) || inputManager->isKeyDown(KEYBOARD_RSHIFT));
+		for (unsigned i = 0; i < keyboardRecorder.commandInput.size(); i++)
 		{
-			typerPosition = std::max(0, typerPosition - 1);
-			stringUpdated = false;
-		}
-		if (inputManager->isKeyPressed(KEYBOARD_RIGHT))
-		{
-			typerPosition = std::min((int)input.size(), typerPosition + 1);
-			stringUpdated = false;
+			switch (keyboardRecorder.commandInput[i])
+			{
+			case KEYBOARD_BACKSPACE:
+				if (typerPosition > 0)
+				{
+					int length(1);
+					if (ctrl)
+					{
+						length = 0;
+						for (int i = typerPosition - 1; i >= 0; i--)
+						{
+							if (input[i] == ' ')
+								break;
+							length++;
+						}
+						if (length == 0)
+							length = 1;//Erase the space
+					}
+
+					typerPosition -= length;
+					typerBlinkTimer = 0;
+
+					input.erase(input.begin() + typerPosition, input.begin() + typerPosition + length);
+					stringUpdated = false;
+				}
+				break;
+			case KEYBOARD_DELETE:
+				if (typerPosition < input.size())
+				{
+					int length(1);
+					if (ctrl)
+					{//Erase to the end of current word
+						length = 0;
+						for (unsigned i = typerPosition; i < input.size(); i++)
+						{
+							if (input[i] == ' ')
+								break;
+							length++;
+						}
+						if (length == 0)
+							length = 1;//Erase the space
+					}
+					input.erase(input.begin() + typerPosition, input.begin() + typerPosition + length);
+					stringUpdated = false;
+				}
+				break;
+			case KEYBOARD_LEFT:
+			{
+				int length = 1;
+				if (ctrl)
+				{
+					length = 0;
+					for (int i = typerPosition - 1; i >= 0; i--)
+					{
+						if (input[i] == ' ')
+							break;
+						length++;
+					}
+					if (length == 0)
+						length = 1;//Skip the space
+				}
+				typerPosition = std::max(0, typerPosition - length);
+				typerBlinkTimer = 0;
+				stringUpdated = false;
+			}
+			break;
+			case KEYBOARD_RIGHT:
+			{
+				int length = 1;
+				if (ctrl)
+				{
+					length = 0;
+					for (int i = typerPosition; i < input.size(); i++)
+					{
+						if (input[i] == ' ')
+							break;
+						length++;
+					}
+					if (length == 0)
+						length = 1;
+				}
+				typerPosition = std::min((int)input.size(), typerPosition + length);
+				typerBlinkTimer = 0;
+				stringUpdated = false;
+			}
+			break;
+			case KEYBOARD_END:
+				typerPosition = input.size();
+				typerBlinkTimer = 0;
+				stringUpdated = false;
+				break;
+			case KEYBOARD_HOME:
+				typerPosition = 0;
+				typerBlinkTimer = 0;
+				stringUpdated = false;
+				break;
+			case KEYBOARD_RETURN:
+			case KEYBOARD_KP_ENTER:
+				endTyping();
+				break;
+			}
 		}
 
 		//End typing
-		if (inputManager->isKeyPressed(KEYBOARD_RETURN) ||
-			inputManager->isKeyPressed(KEYBOARD_KP_ENTER) ||
-			(inputManager->isKeyPressed(MOUSEBUTTON_LEFT) && getMouseHover()))
-		{
+		if (inputManager->isKeyPressed(MOUSEBUTTON_LEFT))
 			endTyping();
-
-			//Make press callback call
-			if (pressCallbackFunction)
-				(*pressCallbackFunction)(*this);
-		}
-		if (inputManager->isKeyPressed(KEYBOARD_ESCAPE) ||
-			inputManager->isKeyPressed(MOUSEBUTTON_LEFT) && !getMouseHover())
-		{
-			endTyping();
-		}
-
 	}
 
 	std::string GUIStringEditor::retrieveString() const
