@@ -11,7 +11,7 @@
 
 namespace spehs
 {
-	GUICheckbox::GUICheckbox() : checkboxSize(20), selectedState(false)
+	GUICheckbox::GUICheckbox() : checkboxSize(20)
 	{
 		checkboxBackground = spehs::Polygon::create(Shape::BUTTON, getDepth() + 1, 1.0f, 1.0f);
 		checkboxBackground->setColor(30, 30, 30);
@@ -21,6 +21,7 @@ namespace spehs
 		checkboxFilling->setColor(160, 170, 180);
 		checkboxFilling->setCameraMatrixState(false);
 
+		onEditorValueChange();
 		setJustification(GUIRECT_TEXT_JUSTIFICATION_LEFT);
 	}
 	GUICheckbox::GUICheckbox(const GUIRECT_ID_TYPE _ID) : GUICheckbox()
@@ -41,12 +42,15 @@ namespace spehs
 		GUIRectangle::inputUpdate();
 
 		//Check mouse press
-		previousSelectedState = selectedState;
 		if (getInputEnabled() && getMouseHover() && inputManager->isKeyPressed(MOUSE_BUTTON_LEFT))
-			selectedState = !selectedState;
+			editorValue = !editorValue;
 
+		ValueEditor::update();
+	}
+	void GUICheckbox::onEditorValueChange()
+	{
 		//Filling color
-		if (selectedState)
+		if (editorValue)
 			checkboxFilling->setColorAlpha(SELECTED_ALPHA);
 		else
 			checkboxFilling->setColorAlpha(UNSELECTED_ALPHA);
@@ -54,22 +58,14 @@ namespace spehs
 	void GUICheckbox::setRenderState(const bool _state)
 	{
 		GUIRectangle::setRenderState(_state);
-		if (getRenderState())
-		{
-			checkboxBackground->setRenderState(true);
-			checkboxFilling->setRenderState(true);
-		}
-		else
-		{
-			checkboxBackground->setRenderState(false);
-			checkboxFilling->setRenderState(false);
-		}
+		checkboxFilling->setRenderState(_state && getRenderState());
+		checkboxBackground->setRenderState(_state && getRenderState());
 	}
 	void GUICheckbox::setDepth(const int16_t depth)
 	{
 		GUIRectangle::setDepth(depth);
-		checkboxBackground->setPlaneDepth(depth + 1);
 		checkboxFilling->setPlaneDepth(depth + 2);
+		checkboxBackground->setPlaneDepth(depth + 1);
 	}
 	void GUICheckbox::updateMinSize()
 	{
@@ -110,11 +106,7 @@ namespace spehs
 				textX += size.x - size.y - CHECKBOX_BORDER - text->getTextWidth() - TEXT_PREFERRED_SIZE_BORDER;
 			else
 				textX += 0.5f *(size.x - size.y - CHECKBOX_BORDER - text->getTextWidth());
-			text->setPosition(textX, getYGlobal() + 0.5f * (size.y + text->getTextHeight()) - text->getFontHeight() - text->getFontDescender());
+			text->setPosition(std::round(textX), std::round(getYGlobal() + 0.5f * size.y - 0.5f * text->getTextHeight() - text->getFontDescender()));
 		}
-	}
-	bool GUICheckbox::valueEdited() const
-	{
-		return selectedState != previousSelectedState;
 	}
 }

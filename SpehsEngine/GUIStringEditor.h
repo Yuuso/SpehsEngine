@@ -1,12 +1,13 @@
 #pragma once
 #include "KeyboardRecorder.h"
-#include "GUIEditor.h"
+#include "GUIRectangle.h"
+#include "ValueEditor.h"
 #include <string>
 #include <vector>
 
 namespace spehs
 {
-	class GUIStringEditor : public GUIEditor
+	class GUIStringEditor : public GUIRectangle, public ValueEditor<std::string>
 	{
 		static int defaultMaxStringEditorStringLength;
 	public:
@@ -30,12 +31,9 @@ namespace spehs
 		void inputUpdate() override;
 		void onDisableInput() override;
 
-
 		//Editor
-		bool valueEdited() const override { return stringEdited; }
-		std::string retrieveString() const;
-		float retrieveStringAsFloat() const;
-		int retrieveStringAsInt() const;
+		float getEditorValueAsFloat() const;
+		int getEditorValueAsInt() const;
 		void setMaxStringLength(const int length) { maxStringLength = length; }
 		void setTyperBlinkTime(const int milliSeconds) { typerBlinkTime = 2 * milliSeconds; }
 
@@ -43,6 +41,8 @@ namespace spehs
 		GUIStringEditor* getAsGUIStringEditorPtr() override { return this; }
 
 	protected:
+		void onEditorValueChange() override;
+
 		//Text field specific
 		void toggleTyping();
 		void beginTyping();
@@ -50,7 +50,6 @@ namespace spehs
 		void updateString();
 		void endTyping();///< Ends input receiving, storing any input that had been received until now
 
-		bool stringEdited;
 		bool stringUpdated;
 		bool disableInputReceiveOnNextUpdate;
 		int maxStringLength;
@@ -58,8 +57,7 @@ namespace spehs
 		int typerBlinkTime;
 		int typerBlinkTimer;
 		std::string defaultString;
-		std::string input;
-		std::string storedString;
+		std::string input;//Temporal storage for edited value so that value won't appear changed after each individual typed character
 		spehs::Text* typeCharacter;
 		KeyboardRecorder keyboardRecorder;
 	};

@@ -337,9 +337,6 @@
     <ClInclude Include="GUIStringEditor.h">
       <Filter>Rendering\GUI\Editors</Filter>
     </ClInclude>
-    <ClInclude Include="GUIEditor.h">
-      <Filter>Rendering\GUI\Editors</Filter>
-    </ClInclude>
     <ClInclude Include="Textbox.h" />
     <ClInclude Include="AudioManager.h">
       <Filter>Resource Management</Filter>
@@ -382,6 +379,9 @@
     </ClInclude>
     <ClInclude Include="KeyboardRecorder.h">
       <Filter>HID</Filter>
+    </ClInclude>
+    <ClInclude Include="ValueEditor.h">
+      <Filter>Rendering\GUI\Editors</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

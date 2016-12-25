@@ -3,6 +3,7 @@
 #include "GUIRectangleRow.h"
 #include "GUIStringEditor.h"
 #include "InputManager.h"
+#include "ValueEditor.h"
 #include "Time.h"
 
 
@@ -12,18 +13,17 @@ namespace spehs
 	For integer and floating point variables.
 	*/
 	template <typename Scalar>
-	class GUIScalarEditor : public GUIRectangleRow
+	class GUIScalarEditor : public GUIRectangleRow, public ValueEditor<Scalar>
 	{
 	public:
 		static_assert(std::is_arithmetic<Scalar>::value, "Scalar editor type must be of either integral or floating type!");
 		enum class EditorType { Slider, Ticks};
 	public:
 		GUIScalarEditor(const std::string scalarName, Scalar scalarEditorValue) :
-			scalar(scalarEditorValue), scalarEdited(false), floatPrecision(2), tickAmount(1), onHold(false), holdTimer(0.0f), holdTime(0.15f), initialHoldTime(1.0f),
+			floatPrecision(2), tickAmount(1), onHold(false), holdTimer(0.0f), holdTime(0.15f), initialHoldTime(1.0f),
 			nameRect(new GUIRectangle(scalarName)), valueRect(new GUIStringEditor()), decreaseRect(new GUIRectangle("-")), increaseRect(new GUIRectangle("+"))
 		{
 			setElementPositionMode(spehs::GUIRectangleRow::PositionMode::Right);
-			updateValueTextfieldString();
 			min = std::numeric_limits<Scalar>::min();
 			max = std::numeric_limits<Scalar>::max();
 
@@ -54,9 +54,10 @@ namespace spehs
 		void setTickAmount(const Scalar _tickAmount){ tickAmount = _tickAmount; }
 		void inputUpdate() override
 		{
+			ValueEditor::update();
 			GUIRectangleRow::inputUpdate();
 
-			if (valueRect->valueEdited())
+			if (valueRect->editorValueChanged())
 				setEditorScalar(getValueFromTextField());
 			
 			//+/- buttons
@@ -66,13 +67,13 @@ namespace spehs
 				{//+
 					onHold = true;
 					holdTimer = initialHoldTime;
-					setEditorScalar(scalar + tickAmount);
+					setEditorScalar(editorValue + tickAmount);
 				}
 				else if (decreaseRect->getMouseHover())
 				{//-
 					onHold = true;
 					holdTimer = initialHoldTime;
-					setEditorScalar(scalar - tickAmount);
+					setEditorScalar(editorValue - tickAmount);
 				}
 			}
 			else if (inputManager->isKeyDown(MOUSE_BUTTON_LEFT) && onHold)
@@ -83,7 +84,7 @@ namespace spehs
 					if (holdTimer <= 0.0f)
 					{
 						holdTimer = holdTime;
-						setEditorScalar(scalar + tickAmount);
+						setEditorScalar(editorValue + tickAmount);
 					}
 				}
 				else if (decreaseRect->getMouseHover())
@@ -92,44 +93,25 @@ namespace spehs
 					if (holdTimer <= 0.0f)
 					{
 						holdTimer = holdTime;
-						setEditorScalar(scalar - tickAmount);
+						setEditorScalar(editorValue - tickAmount);
 					}
 				}
 				else
 					onHold = false;
 			}
 		}
-		bool valueEdited()
-		{
-			return scalarEdited;
-		}
-		Scalar retrieveScalar()
-		{
-			return scalar;
-		}
 		void setEditorScalar(const Scalar newValue)
 		{
 			if (newValue > max)
-				scalar = max;
+				editorValue = max;
 			else if (newValue < min)
-				scalar = min;
+				editorValue = min;
 			else
-				scalar = newValue;
-			scalarEdited = true;
-			updateValueTextfieldString();
+				editorValue = newValue;
 		}
 
-	private:
-		Scalar getValueFromTextField() const
-		{
-			std::string str(valueRect->retrieveString());
-			if (std::is_integral<Scalar>::value)
-				return getStringAsInt(str);
-			else if (std::is_floating_point<Scalar>::value)
-				return getStringAsFloat(str);
-			return scalar;
-		}
-		void updateValueTextfieldString()
+	protected:
+		void onEditorValueChange() override
 		{
 			if (std::is_integral<Scalar>::value)
 				valueRect->setString(std::to_string(scalar));
@@ -137,6 +119,17 @@ namespace spehs
 				valueRect->setString(spehs::toString(scalar, floatPrecision));
 			else
 				valueRect->setString("# Invalid value type #");
+		}
+
+	private:
+		Scalar getValueFromTextField() const
+		{
+			std::string str(valueRect->getEditorValue());
+			if (std::is_integral<Scalar>::value)
+				return getStringAsInt(str);
+			else if (std::is_floating_point<Scalar>::value)
+				return getStringAsFloat(str);
+			return scalar;
 		}
 
 		Scalar scalar;
@@ -148,7 +141,6 @@ namespace spehs
 		float holdTimer;
 		float holdTime;
 		float initialHoldTime;
-		bool scalarEdited;
 
 		GUIRectangle* nameRect;
 		GUIStringEditor* valueRect;

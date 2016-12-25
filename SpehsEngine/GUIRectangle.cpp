@@ -264,7 +264,7 @@ namespace spehs
 				textX += size.x - text->getTextWidth() - TEXT_PREFERRED_SIZE_BORDER;
 			else
 				textX += 0.5f * (size.x - text->getTextWidth());
-			text->setPosition(std::round(textX), std::round(getYGlobal() + 0.5f * (size.y - text->getFontHeight())));
+			text->setPosition(std::round(textX), std::round(getYGlobal() + 0.5f * size.y - 0.5f * text->getTextHeight() - text->getFontDescender()));
 		}
 
 		//Display texture position

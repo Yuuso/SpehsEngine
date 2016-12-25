@@ -99,6 +99,7 @@ namespace spehs
 		std::map<GLchar, Character> characters;
 		int referenceCount = 0;
 		int height = 0;
+		int ascender = 0;
 		int descender = 0;
 	};
 
@@ -202,6 +203,7 @@ namespace spehs
 		checkOpenGLErrors(__FILE__, __LINE__);
 
 		font->height = (*font->ftFace)->size->metrics.height >> 6;
+		font->ascender = (*font->ftFace)->ascender >> 6;
 		font->descender = (*font->ftFace)->descender >> 6;
 
 		return font;
@@ -311,7 +313,7 @@ namespace spehs
 	void Text::updateText()
 	{
 		int x = 0.0f;
-		int y = (lineCount - 1) * font->height + lineSpacing;
+		int y = (lineCount - 1) * (font->height + lineSpacing);
 
 		textureIDs.clear();
 		vertexArray.clear();
@@ -488,6 +490,12 @@ namespace spehs
 		color.rgba.a = _a / 255.0f;
 		needTextUpdate = true;
 	}
+	void Text::setLineSpacing(const int _lineSpacing)
+	{
+		lineSpacing = _lineSpacing;
+		needTextUpdate = true;
+		needPositionUpdate = true;
+	}
 	int Text::getFontSize() const
 	{
 		return font->fontSize;
@@ -495,6 +503,10 @@ namespace spehs
 	int Text::getFontHeight() const
 	{
 		return font->height;
+	}
+	int Text::getFontAscender() const
+	{
+		return font->ascender;
 	}
 	int Text::getFontDescender() const
 	{
@@ -548,10 +560,6 @@ namespace spehs
 	}
 	int Text::getTextHeight() const
 	{
-		int w = getFontHeight() * lineCount;
-		if (lineCount > 1)
-			w += (lineCount - 1) * lineSpacing;
-
-		return w;
+		return (getFontHeight() + lineSpacing) * (lineCount - 1) + font->ascender - font->descender;
 	}
 }

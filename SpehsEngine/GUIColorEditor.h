@@ -1,11 +1,13 @@
 #pragma once
+#include <glm/vec4.hpp>
 #include "GUIRectangle.h"
+#include "ValueEditor.h"
 
 
 namespace spehs
 {
 	/** retriveColor() method returns the color being edited at its latest state. */
-	class GUIColorEditor : public GUIRectangle
+	class GUIColorEditor : public GUIRectangle, public ValueEditor<glm::vec4>
 	{
 	public:
 		static float paletteWidth;
@@ -27,11 +29,9 @@ namespace spehs
 		void enableAlphaEditing();
 		void disableAlphaEditing();
 		void toggleAlphaEditing();
-		bool colorChanged() const { return stateChanged; }
-		glm::vec4 retrieveColor() const { return selectedColor; }
-		void setEditorColor(const glm::vec4 _color){ selectedColor = _color; }
 
 	private:
+		void onEditorValueChange() override;
 		bool checkPaletteHover() const;
 		bool checkSliderHover() const;
 		bool checkAlphaHover()const;
@@ -48,7 +48,5 @@ namespace spehs
 		bool sliderOnHold;
 		bool paletteOnHold;
 		bool alphaOnHold;
-		bool stateChanged;
-		glm::vec4 selectedColor;
 	};
 }

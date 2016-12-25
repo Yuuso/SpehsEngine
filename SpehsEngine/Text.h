@@ -87,7 +87,7 @@ namespace spehs
 
 		void setShader(const int &_shaderIndex);
 		void setCameraMatrixState(const bool _state) { cameraMatrixState = _state; }
-
+		void setLineSpacing(const int _lineSpacing);
 
 		//Getters
 		std::string getString() const { return string; }
@@ -100,10 +100,12 @@ namespace spehs
 		int getTextWidth() const;
 		int getTextHeight() const;
 		int getLineCount() const { return lineCount; }
+		int getLineSpacing() const { return lineSpacing; }
 
 		Font* getFontPtr() const { return font; }
 		int getFontSize() const;
 		int getFontHeight() const;
+		int getFontAscender() const;
 		int getFontDescender() const;
 
 		int getShaderIndex() const { return shaderIndex; }

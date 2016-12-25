@@ -57,6 +57,7 @@ namespace spehs
 
 		setDepth(getDepth());
 		setRenderState(getRenderState());
+		onEditorValueChange();
 	}
 	GUIColorEditor::~GUIColorEditor()
 	{
@@ -93,7 +94,6 @@ namespace spehs
 	void GUIColorEditor::inputUpdate()
 	{
 		GUIRectangle::inputUpdate();
-		stateChanged = false;
 		
 		if (getInputEnabled())
 		{
@@ -101,8 +101,7 @@ namespace spehs
 			if (paletteOnHold && !inputManager->isKeyDown(MOUSE_BUTTON_LEFT))
 			{//Mouse press released
 				paletteOnHold = false;
-				stateChanged = true;
-				selectedColor = preview->getColor();
+				editorValue = preview->getColor();
 			}
 			if (checkPaletteHover())
 			{
@@ -113,7 +112,7 @@ namespace spehs
 				hoverColor.r = (palette->worldVertexArray[2].color.rgba.r + horizontal * (1.0f - palette->worldVertexArray[2].color.rgba.r)) * vertical;
 				hoverColor.g = (palette->worldVertexArray[2].color.rgba.g + horizontal * (1.0f - palette->worldVertexArray[2].color.rgba.g)) * vertical;
 				hoverColor.b = (palette->worldVertexArray[2].color.rgba.b + horizontal * (1.0f - palette->worldVertexArray[2].color.rgba.b)) * vertical;
-				hoverColor.a = selectedColor.a;
+				hoverColor.a = editorValue.a;
 				preview->setColor(hoverColor);
 
 				if (inputManager->isKeyPressed(MOUSE_BUTTON_LEFT) || (paletteOnHold && inputManager->isKeyDown(MOUSE_BUTTON_LEFT)))
@@ -169,7 +168,6 @@ namespace spehs
 				if (alphaOnHold && !inputManager->isKeyDown(MOUSE_BUTTON_LEFT))
 				{//End alpha hold
 					alphaOnHold = false;
-					stateChanged = true;
 				}
 
 				if (checkAlphaHover())
@@ -181,7 +179,7 @@ namespace spehs
 
 					if (alphaOnHold)
 					{
-						selectedColor.a = (inputManager->getMouseY() - alphaSliderBack->getY()) / alphaSliderBack->getHeight();
+						editorValue.a = (inputManager->getMouseY() - alphaSliderBack->getY()) / alphaSliderBack->getHeight();
 					}
 				}
 			}
@@ -192,6 +190,9 @@ namespace spehs
 			sliderOnHold = false;
 			alphaOnHold = false;
 		}
+
+		//Check changes in editor value
+		ValueEditor::update();
 	}
 	void GUIColorEditor::visualUpdate()
 	{
@@ -206,8 +207,13 @@ namespace spehs
 
 		if (alphaEnabled)
 		{
-			alphaSliderFront->resize(size.x / float(minSize.x) * sliderWidth, (size.y - 2 * colorEditorBorder) * selectedColor.a);
+			alphaSliderFront->resize(size.x / float(minSize.x) * sliderWidth, (size.y - 2 * colorEditorBorder) * editorValue.a);
 		}
+	}
+	void GUIColorEditor::onEditorValueChange()
+	{
+		int der(0);
+		der++;
 	}
 	void GUIColorEditor::updateMinSize()
 	{
@@ -277,7 +283,7 @@ namespace spehs
 	{
 		if (!alphaEnabled)
 			return;
-		selectedColor.a = 1.0f;
+		editorValue.a = 1.0f;
 		alphaEnabled = false;
 		alphaOnHold = false;
 		alphaSliderBack->setRenderState(false);

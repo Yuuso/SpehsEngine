@@ -183,7 +183,7 @@
     <ClInclude Include="GUICheckbox.h" />
     <ClInclude Include="GUIColorEditor.h" />
     <ClInclude Include="GUID.h" />
-    <ClInclude Include="GUIEditor.h" />
+    <ClInclude Include="ValueEditor.h" />
     <ClInclude Include="GUIPopup.h" />
     <ClInclude Include="GUIRectangle.h" />
     <ClInclude Include="GUIRectangleContainer.h" />

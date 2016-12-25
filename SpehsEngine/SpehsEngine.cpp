@@ -17,6 +17,7 @@
 #include <string>
 #include <thread>
 #include <iostream>
+#include <stdint.h>
 
 #include <SDL/SDL.h>
 #include <GL/glew.h>
@@ -90,6 +91,16 @@ namespace spehs
 		audio::AudioEngine::init();
 
 		checkOpenGLErrors(__FILE__, __LINE__);
+
+		//Check available integer widths
+		if (sizeof(int8_t) != 1 || sizeof(uint8_t) != 1)
+			spehs::console::warning("8 bit integer width not available!");
+		if (sizeof(int16_t) != 2 || sizeof(uint16_t) != 2)
+			spehs::console::warning("16 bit integer width not available!");
+		if (sizeof(int32_t) != 4 || sizeof(uint32_t) != 4)
+			spehs::console::warning("32 bit integer width not available!");
+		if (sizeof(int64_t) != 8 || sizeof(uint64_t) != 8)
+			spehs::console::warning("64 bit integer width not available!");
 
 		return 0;
 	}

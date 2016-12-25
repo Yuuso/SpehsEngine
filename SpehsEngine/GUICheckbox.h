@@ -1,12 +1,13 @@
 #pragma once
 #include <string>
-#include "GUIEditor.h"
+#include "GUIRectangle.h"
+#include "ValueEditor.h"
 
 
 namespace spehs
 {
 	class Polygon;
-	class GUICheckbox : public GUIEditor
+	class GUICheckbox : public GUIRectangle, public ValueEditor<bool>
 	{
 	public:
 		GUICheckbox();
@@ -22,18 +23,15 @@ namespace spehs
 		void setDepth(const int16_t depth) override;
 
 		void setCheckboxSize(const int _size){ checkboxSize = _size; disableStateRecursiveUpwards(GUIRECT_SCALE_UPDATED_BIT); }
-		void setEditorState(const bool _state){ selectedState = _state; previousSelectedState = _state; }
-		bool valueEdited() const;
-		bool retrieveEditorState() const { return selectedState; }
 
 		//Identity
 		GUICheckbox* getAsGUICheckboxPtr(){ return this; }
 
 	protected:
+		void onEditorValueChange() override;
+
 		Polygon* checkboxBackground;
 		Polygon* checkboxFilling;
 		int checkboxSize;
-		bool selectedState;
-		bool previousSelectedState;
 	};
 }
