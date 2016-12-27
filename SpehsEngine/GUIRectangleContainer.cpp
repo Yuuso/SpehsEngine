@@ -114,6 +114,7 @@ namespace spehs
 			{
 				delete elements[i];
 				elements.erase(elements.begin() + i);
+				disableStateRecursiveUpwards(GUIRECT_MIN_SIZE_UPDATED_BIT);
 				disableStateRecursiveUpwards(GUIRECT_SCALE_UPDATED_BIT);
 				disableStateRecursiveUpwards(GUIRECT_POSITION_UPDATED_BIT);
 				return true;

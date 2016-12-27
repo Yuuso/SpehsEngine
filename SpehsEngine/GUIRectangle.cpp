@@ -29,8 +29,10 @@ namespace spehs
 	{
 		polygon->destroy();
 	}
-	GUIRectangle::GUIRectangle() : position(0), size(0), minSize(0), displayTexture(nullptr), pressCallbackFunction(nullptr), pressSound(nullptr), hoverSound(nullptr),
-		state(GUIRECT_HOVER_COLOR | GUIRECT_TEXT_JUSTIFICATION_LEFT), inputEnabled(true)
+	GUIRectangle::GUIRectangle() : position(0), size(0), minSize(0),
+		state(GUIRECT_HOVER_COLOR | GUIRECT_TEXT_JUSTIFICATION_LEFT), inputEnabled(true),
+		parent(nullptr), text(nullptr), displayTexture(nullptr), tooltip(nullptr),
+		pressCallbackFunction(nullptr), pressSound(nullptr), hoverSound(nullptr)
 	{//Default constructor
 #ifdef _DEBUG
 		++guiRectangleAllocations;
@@ -230,6 +232,7 @@ namespace spehs
 			setWidth(minSize.y);
 
 		enableState(GUIRECT_MIN_SIZE_UPDATED_BIT);
+		disableState(GUIRECT_SCALE_UPDATED_BIT);
 	}
 	void GUIRectangle::updateScale()
 	{
@@ -244,6 +247,7 @@ namespace spehs
 
 		polygon->resize(size.x, size.y);
 		enableState(GUIRECT_SCALE_UPDATED_BIT);
+		disableState(GUIRECT_POSITION_UPDATED_BIT);
 	}
 	void GUIRectangle::updatePosition()
 	{

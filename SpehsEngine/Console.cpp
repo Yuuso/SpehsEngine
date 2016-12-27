@@ -1,4 +1,4 @@
-
+#include <algorithm>
 #include <iostream>
 #include <mutex>
 
@@ -12,6 +12,7 @@
 #include "ConsoleVariable.h"
 #include "Text.h"
 #include "BatchManager.h"
+#include "Polygon.h"
 
 //State
 #define CONSOLE_INITIALIZED_BIT				0x0001
@@ -58,6 +59,7 @@ namespace spehs
 		unsigned long vertexDrawCount;
 		static Text* consoleText;
 		spehs::Text* fpsCounter;
+		spehs::Polygon* backgroundShade;
 		static std::recursive_mutex consoleMutex;
 		static std::string input;
 		static std::string textExecuted;///< Text executed without '/'
@@ -94,7 +96,17 @@ namespace spehs
 
 			consoleCamera = new Camera2D();
 			consoleBatchManager = new BatchManager(consoleCamera, "console");
-			
+
+			backgroundShade = consoleBatchManager->createPolygon(Shape::BUTTON, planeDepth, 1.0f, 1.0f);
+			if (!backgroundShade)
+			{
+				std::cout << "\nInitialization failed! Failed to create backgroundShade!";
+				return false;
+			}
+			backgroundShade->setCameraMatrixState(false);
+			backgroundShade->setPosition(0.0f, 0.0f);
+			backgroundShade->setColor(0.05f, 0.1f, 0.15f, 0.5f);
+
 			fpsCounter = consoleBatchManager->createText(10000);
 			if (!fpsCounter)
 			{
@@ -102,7 +114,6 @@ namespace spehs
 				return false;
 			}
 			fpsCounter->setFont(applicationData->GUITextFontPath, applicationData->consoleTextSize);
-
 			fpsCounter->setColor(glm::vec4(1.0f, 0.3f, 0.0f, 0.85f));
 			fpsCounter->setString("FPS:0123456789\nDraw calls:0123456789\nVertices:0123456789");
 			fpsCounter->setPosition(glm::vec2(5, applicationData->getWindowHeight() - fpsCounter->getTextHeight()));
@@ -113,7 +124,7 @@ namespace spehs
 			consoleText->setPosition(glm::vec2(CONSOLE_BORDER, CONSOLE_BORDER));
 			consoleText->setString("><");
 			consoleText->setRenderState(checkState(CONSOLE_OPEN_BIT));
-			setPlaneDepth(planeDepth);
+			setPlaneDepth(planeDepth + 1);
 
 			enableState(CONSOLE_INITIALIZED_BIT);
 			log("Console initialized");
@@ -128,18 +139,21 @@ namespace spehs
 				return;
 			}
 
-			if (fpsCounter != nullptr)
-			{
-				fpsCounter->destroy();
-				fpsCounter = nullptr;
-			}
+			if (backgroundShade)
+				backgroundShade->destroy();
+			backgroundShade = nullptr;
 
-			delete consoleBatchManager;
-			delete consoleCamera;
+			if (fpsCounter)
+				fpsCounter->destroy();
+			fpsCounter = nullptr;
 
 			if (consoleText)
 				consoleText->destroy();
 			consoleText = nullptr;
+
+			delete consoleBatchManager;
+			delete consoleCamera;
+
 			clearLog();
 			disableState(CONSOLE_INITIALIZED_BIT);
 		}
@@ -402,14 +416,12 @@ namespace spehs
 				if (++frameCounter >= FPS_REFRESH_RATE)
 				{
 					fpsCounter->setString("FPS: " + std::to_string(int(time::getFPS())) + "\nDraw calls: " + std::to_string(drawCalls) + "\nVertices: " + std::to_string(vertexDrawCount) + "\n" + customDebugText);
-					fpsCounter->setPosition(glm::vec2(5, applicationData->getWindowHeight() - fpsCounter->getTextHeight()));
+					fpsCounter->setPosition(glm::vec2(CONSOLE_BORDER, applicationData->getWindowHeight() - fpsCounter->getTextHeight()));
 					frameCounter = 0;
 				}
 			}
 			else
-			{
 				fpsCounter->setRenderState(false);
-			}
 
 			drawCalls = 0;
 			vertexDrawCount = 0;
@@ -422,6 +434,30 @@ namespace spehs
 
 			//Console text
 			consoleText->setAlpha(visibility * (applicationData->consoleTextAlpha / 255.0f));
+
+			//Console background shade
+			if (consoleText->getRenderState() || (lines.size() > 0 && lines.front()->getRenderState()))
+			{
+				backgroundShade->setRenderState(true);
+				backgroundShade->setColorAlpha(visibility * 0.8f);
+				int w = 0.0f, h = 0.0f;
+				if (consoleText->getRenderState())
+				{
+					w = consoleText->getTextWidth();
+					h = consoleText->getTextHeight();
+				}
+				for (unsigned i = 0; i < lines.size(); i++)
+				{
+					w = std::max(w, lines[i]->getTextWidth());
+					h += lines[i]->getTextHeight();
+				}
+				w += CONSOLE_BORDER * 2;
+				h += CONSOLE_BORDER * 2;
+				if (abs(backgroundShade->getWidth() - w) > 0.9f || abs(backgroundShade->getHeight() - h) > 0.9f)
+					backgroundShade->resize(w, h);
+			}
+			else
+				backgroundShade->setRenderState(false);
 		}
 
 

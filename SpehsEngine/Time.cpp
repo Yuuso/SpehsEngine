@@ -51,11 +51,10 @@ namespace spehs
 			previousTicks = currentTicks;
 
 			//Limit delta time
-			if (maxDeltaTime.asMilliseconds > 0 && deltaTime.asMilliseconds > maxDeltaTime.asMilliseconds)
+			if (maxDeltaTime.asMilliseconds > 0 && deltaTime > maxDeltaTime)
 			{
 				deltaTimeMutex.lock();
-				deltaTime.asMilliseconds = maxDeltaTime.asMilliseconds;
-				deltaTime.asSeconds = maxDeltaTime.asSeconds;
+				deltaTime = maxDeltaTime;
 				deltaTimeMutex.unlock();
 			}
 
@@ -94,8 +93,10 @@ namespace spehs
 			{
 				//Limit FPS = delay return
 				if (applicationData->maxFps > 0)
+				{
 					if ((1000.0f / applicationData->maxFps) > deltaTime.asMilliseconds)
 						SDL_Delay(uint32_t(1000.0f / applicationData->maxFps) - deltaTime.asMilliseconds);
+				}
 			}
 		}
 
