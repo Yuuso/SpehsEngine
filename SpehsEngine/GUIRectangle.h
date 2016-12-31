@@ -50,7 +50,7 @@ namespace spehs
 	class GUIStringEditor;
 	class GUIRectangleRow;
 	class GUIRectangleTree;
-	class GUIRectangleList;
+	class GUIRectangleScrollList;
 	class GUIRectangleGrid;
 	class GUIRectangleTable;
 	class GUIRectangleContainer;
@@ -214,7 +214,7 @@ namespace spehs
 		virtual GUIStringEditor* getAsGUIStringEditorPtr() { return nullptr; }
 		virtual GUIRectangleRow* getAsGUIRectangleRowPtr() { return nullptr; }
 		virtual GUIRectangleTree* getAsGUIRectangleTreePtr() { return nullptr; }
-		virtual GUIRectangleList* getAsGUIRectangleListPtr() { return nullptr; }
+		virtual GUIRectangleScrollList* getAsGUIRectangleScrollListPtr() { return nullptr; }
 		virtual GUIRectangleGrid* getAsGUIRectangleGridPtr() { return nullptr; }
 		virtual GUIRectangleTable* getAsGUIRectangleTablePtr() { return nullptr; }
 		virtual GUIRectangleContainer* getAsGUIRectangleContainerPtr() { return nullptr; }

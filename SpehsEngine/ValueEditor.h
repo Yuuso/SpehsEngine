@@ -39,7 +39,7 @@ namespace spehs
 		}
 
 		/**Outside source sets the editor's value*/
-		void setEditorValue(const ValueType newValue)
+		virtual void setEditorValue(const ValueType newValue)
 		{
 			if (editorValue != newValue)
 			{

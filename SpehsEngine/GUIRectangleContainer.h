@@ -6,7 +6,7 @@
 namespace spehs
 {
 	class GUIWindow;
-	class GUIRectangleList;
+	class GUIRectangleScrollList;
 	class GUIRectangleTree;
 
 	/**Base class for GUI rectangle containers\n
@@ -90,8 +90,6 @@ namespace spehs
 		void onDisableInput() override;
 
 		std::vector<GUIRectangle*> elements;
-		glm::ivec2 elementSize;///<Current size of a single element, if uniform size exists
-		glm::ivec2 minElementSize;///<The size fitted to the largest min-size dimensions so that every element fits
 
 	};
 }

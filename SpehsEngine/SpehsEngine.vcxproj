@@ -98,6 +98,7 @@
     <ClCompile Include="Arrow.cpp" />
     <ClCompile Include="AudioEngine.cpp" />
     <ClCompile Include="AudioManager.cpp" />
+    <ClCompile Include="GUIRectangleColumn.cpp" />
     <ClCompile Include="KeyboardRecorder.cpp" />
     <ClCompile Include="OS.cpp" />
     <ClCompile Include="Serializable.cpp" />
@@ -120,7 +121,7 @@
     <ClCompile Include="GUIPopup.cpp" />
     <ClCompile Include="GUIRectangle.cpp" />
     <ClCompile Include="GUIRectangleContainer.cpp" />
-    <ClCompile Include="GUIRectangleList.cpp" />
+    <ClCompile Include="GUIRectangleScrollList.cpp" />
     <ClCompile Include="GUIRectangleRow.cpp" />
     <ClCompile Include="GUIRectangleTable.cpp" />
     <ClCompile Include="GUIRectangleTree.cpp" />
@@ -159,6 +160,8 @@
     <ClInclude Include="Arrow.h" />
     <ClInclude Include="AudioEngine.h" />
     <ClInclude Include="AudioManager.h" />
+    <ClInclude Include="GUIRectangleColumn.h" />
+    <ClInclude Include="GUIRectangleUnisizeContainer.h" />
     <ClInclude Include="KeyboardRecorder.h" />
     <ClInclude Include="OS.h" />
     <ClInclude Include="Serializable.h" />
@@ -187,7 +190,7 @@
     <ClInclude Include="GUIPopup.h" />
     <ClInclude Include="GUIRectangle.h" />
     <ClInclude Include="GUIRectangleContainer.h" />
-    <ClInclude Include="GUIRectangleList.h" />
+    <ClInclude Include="GUIRectangleScrollList.h" />
     <ClInclude Include="GUIRectangleRow.h" />
     <ClInclude Include="GUIRectangleTable.h" />
     <ClInclude Include="GUIRectangleTree.h" />

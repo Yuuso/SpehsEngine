@@ -6,7 +6,7 @@
 namespace spehs
 {
 	class GUIStringEditor;
-	class GUIRectangleList;
+	class GUIRectangleScrollList;
 	class GUIWindow : public GUIRectangleContainer
 	{
 	public:
@@ -31,7 +31,6 @@ namespace spehs
 		~GUIWindow() override;
 		
 		void inputUpdate() override;
-		void visualUpdate() override;
 		void updateMinSize() override;//Updates min size variable based on element requirements
 		void updateScale() override;
 		void updatePosition() override;

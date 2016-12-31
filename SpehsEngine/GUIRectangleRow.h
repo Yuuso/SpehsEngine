@@ -9,7 +9,7 @@ namespace spehs
 	public:
 		enum class PositionMode
 		{
-			Left, Right, Standard
+			Standard, StackLeft, StackRight, StackEdges
 		};
 
 		GUIRectangleRow();
@@ -21,7 +21,7 @@ namespace spehs
 		void updatePosition() override;
 
 		void setEvenElementWidth(const bool setting);
-		void setElementPositionMode(const PositionMode mode);
+		void setElementPositionMode(const PositionMode mode);///< Elements can be "stacked" to one end of the row, only edges or none at all (If possible, elements in stacked area are given their minimum width requirement)
 		
 		//Identity
 		GUIRectangleRow* getAsGUIRectangleRowPtr() override { return this; }

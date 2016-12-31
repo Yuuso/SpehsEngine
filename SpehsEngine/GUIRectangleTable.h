@@ -1,10 +1,10 @@
 #pragma once
-#include "GUIRectangleContainer.h"
+#include "GUIRectangleUnisizeContainer.h"
 
 namespace spehs
 {
 	/**Stores elements in a nice even cell size table. Column count defines the number of columns*/
-	class GUIRectangleTable : public GUIRectangleContainer
+	class GUIRectangleTable : public GUIRectangleUnisizeContainer
 	{
 	public:
 		GUIRectangleTable(const int columns);

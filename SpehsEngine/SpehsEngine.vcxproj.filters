@@ -161,9 +161,6 @@
     <ClCompile Include="GUIRectangleContainer.cpp">
       <Filter>Rendering\GUI\Commonly used container</Filter>
     </ClCompile>
-    <ClCompile Include="GUIRectangleList.cpp">
-      <Filter>Rendering\GUI\Commonly used container</Filter>
-    </ClCompile>
     <ClCompile Include="GUIRectangleRow.cpp">
       <Filter>Rendering\GUI\Commonly used container</Filter>
     </ClCompile>
@@ -178,6 +175,12 @@
     </ClCompile>
     <ClCompile Include="KeyboardRecorder.cpp">
       <Filter>HID</Filter>
+    </ClCompile>
+    <ClCompile Include="GUIRectangleScrollList.cpp">
+      <Filter>Rendering\GUI\Commonly used container</Filter>
+    </ClCompile>
+    <ClCompile Include="GUIRectangleColumn.cpp">
+      <Filter>Rendering\GUI\Commonly used container</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -362,9 +365,6 @@
     <ClInclude Include="GUIRectangleContainer.h">
       <Filter>Rendering\GUI\Commonly used container</Filter>
     </ClInclude>
-    <ClInclude Include="GUIRectangleList.h">
-      <Filter>Rendering\GUI\Commonly used container</Filter>
-    </ClInclude>
     <ClInclude Include="GUIRectangleRow.h">
       <Filter>Rendering\GUI\Commonly used container</Filter>
     </ClInclude>
@@ -382,6 +382,15 @@
     </ClInclude>
     <ClInclude Include="ValueEditor.h">
       <Filter>Rendering\GUI\Editors</Filter>
+    </ClInclude>
+    <ClInclude Include="GUIRectangleScrollList.h">
+      <Filter>Rendering\GUI\Commonly used container</Filter>
+    </ClInclude>
+    <ClInclude Include="GUIRectangleColumn.h">
+      <Filter>Rendering\GUI\Commonly used container</Filter>
+    </ClInclude>
+    <ClInclude Include="GUIRectangleUnisizeContainer.h">
+      <Filter>Rendering\GUI\Commonly used container</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

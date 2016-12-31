@@ -1,5 +1,5 @@
 #pragma once
-#include "GUIRectangleContainer.h"
+#include "GUIRectangleUnisizeContainer.h"
 #include <vector>
 
 /*
@@ -8,7 +8,7 @@ Elements are always in min element size, freely going ot of the main window if e
 
 namespace spehs
 {
-	class GUIRectangleTree : public GUIRectangleContainer
+	class GUIRectangleTree : public GUIRectangleUnisizeContainer
 	{
 	public:
 		GUIRectangleTree();

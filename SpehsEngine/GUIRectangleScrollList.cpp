@@ -1,6 +1,6 @@
 #include "InputManager.h"
 #include "ApplicationData.h"
-#include "GUIRectangleList.h"
+#include "GUIRectangleScrollList.h"
 #include "GUIWindow.h"
 #include "GUIStringEditor.h"
 #include "GUIRectangle.h"
@@ -10,7 +10,7 @@
 namespace spehs
 {
 	namespace ScrollButtons{ enum ScrollButtons{ up, bar, down }; }
-	GUIRectangleList::GUIRectangleList() : GUIRectangleContainer(), beginElementIndex(0), updateElementCount(0)
+	GUIRectangleScrollList::GUIRectangleScrollList() : beginElementIndex(0), updateElementCount(0)
 	{
 		setColor(50, 50, 50);
 		disableState(GUIRECT_HOVER_COLOR);
@@ -29,23 +29,23 @@ namespace spehs
 		scrollDown->setRenderState(getRenderState());
 		setDepth(getDepth());
 	}
-	GUIRectangleList::GUIRectangleList(const GUIRECT_ID_TYPE id) : GUIRectangleList()
+	GUIRectangleScrollList::GUIRectangleScrollList(const GUIRECT_ID_TYPE id) : GUIRectangleScrollList()
 	{
 		setID(id);
 	}
-	GUIRectangleList::~GUIRectangleList()
+	GUIRectangleScrollList::~GUIRectangleScrollList()
 	{
 		delete scrollUp;
 		delete scrollBar;
 		delete scrollDown;
 	}
-	void GUIRectangleList::clear()
+	void GUIRectangleScrollList::clear()
 	{
 		GUIRectangleContainer::clear();
 		beginElementIndex = 0;
 		updateElementCount = 0;
 	}
-	void GUIRectangleList::inputUpdate()
+	void GUIRectangleScrollList::inputUpdate()
 	{
 		if (getInputEnabled())
 		{
@@ -89,14 +89,14 @@ namespace spehs
 			}
 		}
 	}
-	void GUIRectangleList::visualUpdate()
+	void GUIRectangleScrollList::visualUpdate()
 	{
+		GUIRectangleContainer::visualUpdate();
 		scrollUp->visualUpdate();
 		scrollBar->visualUpdate();
 		scrollDown->visualUpdate();
-		GUIRectangleContainer::visualUpdate();
 	}
-	void GUIRectangleList::setRenderState(const bool _state)
+	void GUIRectangleScrollList::setRenderState(const bool _state)
 	{
 		GUIRectangle::setRenderState(_state);
 		if (checkState(GUIRECT_OPEN_BIT))
@@ -121,27 +121,18 @@ namespace spehs
 			scrollDown->setRenderState(false);
 		}
 	}
-	void GUIRectangleList::updateMinSize()
+	void GUIRectangleScrollList::updateMinSize()
 	{
-		minElementSize.x = 0;
-		minElementSize.y = 0;
-		for (unsigned i = 0; i < elements.size(); i++)
-		{
-			elements[i]->updateMinSize();
-			if (elements[i]->getMinWidth() > minElementSize.x)
-				minElementSize.x = elements[i]->getMinWidth();
-			if (elements[i]->getMinHeight() > minElementSize.y)
-				minElementSize.y = elements[i]->getMinHeight();
-		}
+		GUIRectangleUnisizeContainer::updateMinSize();
+
 		minSize.x = minElementSize.x;
-		minSize.y = updateElementCount * minElementSize.y;
+		minSize.y = minElementSize.y * updateElementCount;
 
 		//Account scroll button width into min width
 		if (invisibleElements())
 			minSize.x += SCROLL_BUTTON_WIDTH;
-		enableState(GUIRECT_MIN_SIZE_UPDATED_BIT);
 	}
-	void GUIRectangleList::updateScale()
+	void GUIRectangleScrollList::updateScale()
 	{
 		updateUpdateElementCount();
 		GUIRectangle::updateScale();
@@ -171,7 +162,7 @@ namespace spehs
 			}
 		}
 	}
-	void GUIRectangleList::updatePosition()
+	void GUIRectangleScrollList::updatePosition()
 	{
 		GUIRectangle::updatePosition();
 		if (updateElementCount <= 0)
@@ -205,7 +196,7 @@ namespace spehs
 			scrollBar->setPositionLocal(scrollButtonX, elements[beginElementIndex]->getYLocal() - elementSize.y - scrollPercentage * barSpace);
 		}
 	}
-	void GUIRectangleList::incrementUpdateElementCount(int incrementation)
+	void GUIRectangleScrollList::incrementUpdateElementCount(int incrementation)
 	{
 		if (incrementation == 0)
 			return;
@@ -249,7 +240,7 @@ namespace spehs
 		elementSize.y = size.y / float(updateElementCount);
 		disableStateRecursiveUpwards(GUIRECT_MIN_SIZE_UPDATED_BIT);
 	}
-	void GUIRectangleList::updateUpdateElementCount()
+	void GUIRectangleScrollList::updateUpdateElementCount()
 	{
 		//If reached min size, reduce visible element count by 1
 		if (minSize.y == size.y && updateElementCount > MIN_VISIBLE_COUNT)
@@ -282,21 +273,21 @@ namespace spehs
 			scrollDown->setRenderState(false);
 		}
 	}
-	void GUIRectangleList::addElement(GUIRectangle* element)
+	void GUIRectangleScrollList::addElement(GUIRectangle* element)
 	{
 		GUIRectangleContainer::addElement(element);
 		if (updateElementCount < MIN_VISIBLE_COUNT)
 			incrementUpdateElementCount(1);
 		elements.back()->setRenderState(getRenderState() && checkState(GUIRECT_OPEN_BIT) && (beginElementIndex + updateElementCount == elements.size()/*is updated*/));
 	}
-	void GUIRectangleList::setDepth(const int16_t depth)
+	void GUIRectangleScrollList::setDepth(const int16_t depth)
 	{
 		GUIRectangleContainer::setDepth(depth);
 		scrollUp->setDepth(depth + 1);
 		scrollDown->setDepth(depth + 1);
 		scrollBar->setDepth(depth + 1);
 	}
-	void GUIRectangleList::scroll(int amount)
+	void GUIRectangleScrollList::scroll(int amount)
 	{
 		if (amount > 0)
 		{//Scroll down

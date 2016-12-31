@@ -11,16 +11,8 @@ namespace spehs
 	}
 	void GUIRectangleTable::updateMinSize()
 	{
-		minElementSize.x = 0;
-		minElementSize.y = 0;
-		for (unsigned i = 0; i < elements.size(); i++)
-		{
-			elements[i]->updateMinSize();
-			if (elements[i]->getMinWidth() > minElementSize.x)
-				minElementSize.x = elements[i]->getMinWidth();
-			if (elements[i]->getMinHeight() > minElementSize.y)
-				minElementSize.y = elements[i]->getMinHeight();
-		}
+		GUIRectangleUnisizeContainer::updateMinSize();
+
 		if (columns > 0)
 		{
 			if (elements.size() >= columns)

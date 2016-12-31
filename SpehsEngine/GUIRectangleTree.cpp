@@ -78,23 +78,11 @@ namespace spehs
 	}
 	void GUIRectangleTree::updateMinSize()
 	{
-		/*Min size is retrieved from rectangle, update it*/
-		GUIRectangle::updateMinSize();
+		//Update uniform element size
+		GUIRectangleUnisizeContainer::updateMinSize();
 
-		if (isOpen())
-		{
-			//Min element size
-			minElementSize.x = 0;
-			minElementSize.y = 0;
-			for (unsigned i = 0; i < elements.size(); i++)
-			{
-				elements[i]->updateMinSize();
-				if (elements[i]->getMinWidth() > minElementSize.x)
-					minElementSize.x = elements[i]->getMinWidth();
-				if (elements[i]->getMinHeight() > minElementSize.y)
-					minElementSize.y = elements[i]->getMinHeight();
-			}
-		}
+		//Min size is retrieved from rectangle, update it
+		GUIRectangle::updateMinSize();
 	}
 	void GUIRectangleTree::updateScale()
 	{

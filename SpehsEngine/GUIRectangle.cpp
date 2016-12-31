@@ -195,12 +195,12 @@ namespace spehs
 	}
 	bool GUIRectangle::updateMouseHover()
 	{
-		if (inputManager->getMouseX() < getXGlobal() || inputManager->getMouseX() > getXGlobal() + size.x)
+		if (inputManager->getMouseX() < getXGlobal() || inputManager->getMouseX() >= getXGlobal() + size.x)
 		{
 			disableBit(state, GUIRECT_MOUSE_HOVER);
 			return false;
 		}
-		else if (round(inputManager->getMouseY()) <= getYGlobal() || round(inputManager->getMouseY()) > getYGlobal() + size.y)
+		else if (inputManager->getMouseY() <= getYGlobal() || inputManager->getMouseY() >= getYGlobal() + size.y)
 		{
 			disableBit(state, GUIRECT_MOUSE_HOVER);
 			return false;

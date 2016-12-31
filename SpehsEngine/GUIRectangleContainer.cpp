@@ -41,12 +41,15 @@ namespace spehs
 	}
 	void GUIRectangleContainer::visualUpdate()
 	{
+		//Call input update on self
+		GUIRectangle::visualUpdate();
+
+		//Call visual update for all the elements AFTER my input
 		if (checkState(GUIRECT_OPEN_BIT))
 		{
 			for (unsigned i = 0; i < elements.size(); i++)
 				elements[i]->visualUpdate();
 		}
-		GUIRectangle::visualUpdate();
 	}
 	void GUIRectangleContainer::setRenderState(const bool _state)
 	{
@@ -86,8 +89,6 @@ namespace spehs
 		for (unsigned i = 0; i < elements.size(); i++)
 			delete elements[i];
 		elements.clear();
-		minElementSize.x = 0;
-		minElementSize.y = 0;
 		if (parent)
 			parent->disableStateRecursive(GUIRECT_SCALE_UPDATED_BIT);
 	}

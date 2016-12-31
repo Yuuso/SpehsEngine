@@ -32,25 +32,31 @@ namespace spehs
 	void GUIRectangleRow::updateMinSize()
 	{
 		minSize.x = 0;
-		minElementSize.x = 0;
-		minElementSize.y = 0;
-		for (unsigned i = 0; i < elements.size(); i++)
-		{
-			elements[i]->updateMinSize();
-			if (elements[i]->getMinWidth() > minElementSize.x)
-				minElementSize.x = elements[i]->getMinWidth();
-			if (elements[i]->getMinHeight() > minElementSize.y)
-				minElementSize.y = elements[i]->getMinHeight();
+		minSize.y = 0;
 
-			//Increment min width
-			if (!evenElementWidth)
-				minSize.x += elements[i]->getMinWidth();
-		}
 		if (evenElementWidth)
-			minSize.x = minElementSize.x * elements.size();
-
-		//Set min height to highest min height found in elements
-		minSize.y = minElementSize.y;
+		{//Uniform size
+			for (unsigned i = 0; i < elements.size(); i++)
+			{
+				elements[i]->updateMinSize();
+				if (elements[i]->getMinWidth() > minSize.x)
+					minSize.x = elements[i]->getMinWidth();
+				if (elements[i]->getMinHeight() > minSize.y)
+					minSize.y = elements[i]->getMinHeight();
+			}
+			minSize.x *= elements.size();
+		}
+		else
+		{//Dynamic size
+			for (unsigned i = 0; i < elements.size(); i++)
+			{
+				elements[i]->updateMinSize();
+				minSize.x += elements[i]->getMinWidth();
+				if (elements[i]->getMinHeight() > minSize.y)
+					minSize.y = elements[i]->getMinHeight();
+			}
+		}
+		enableState(GUIRECT_MIN_SIZE_UPDATED_BIT);
 	}
 	void GUIRectangleRow::updateScale()
 	{
@@ -60,55 +66,109 @@ namespace spehs
 			return;
 		if (size == minSize)
 		{//Set each element to it's minimum size
-			for (unsigned i = 0; i < elements.size(); i++)
+			if (evenElementWidth)
 			{
-				if (evenElementWidth)
-					elements[i]->setSize(minElementSize);
-				else
+				int w = 0;
+				for (unsigned i = 0; i < elements.size(); i++)
+				{
+					if (elements[i]->getMinWidth() > w)
+						w = elements[i]->getMinWidth();
+				}
+				for (unsigned i = 0; i < elements.size(); i++)
+					elements[i]->setSize(w, minSize.y);
+			}
+			else
+			{//Each to its own size
+				for (unsigned i = 0; i < elements.size(); i++)
 					elements[i]->setSize(elements[i]->getMinWidth(), minSize.y);
 			}
 		}
-		else //size > min size
+		else//size > min size
 		{
-			int allocatedWidth, w;
-			if (elementPositionMode == PositionMode::Standard || evenElementWidth)
-			{//Scale each element scaling relative to element min size : this->min size
-				allocatedWidth = 0;
-				for (unsigned i = 1; i < elements.size(); i++)
-				{
-					if (evenElementWidth)
-						w = minElementSize.x / float(minSize.x) * size.x;
-					else
-						w = elements[i]->getMinWidth() / float(minSize.x) * size.x;
-					elements[i]->setSize(w, size.y);
-					allocatedWidth += w;
-				}
-				elements.front()->setSize(size.x - allocatedWidth, size.y);//Allocate excess width to the first element
-			}
-			else if (elementPositionMode == PositionMode::Left)
+			if (evenElementWidth)
 			{
-				allocatedWidth = 0;
+				const int w = size.x / elements.size();
+				for (unsigned i = 0; i < elements.size() - 1; i++)
+					elements[i]->setSize(w, size.y);
+				elements.back()->setSize(size.x - w * (elements.size() - 1), size.y);
+			}
+			else if (elementPositionMode == PositionMode::StackLeft)
+			{
+				int allocatedWidth = 0;
 				for (unsigned i = 0; i < elements.size(); i++)
 				{
 					if (i == elements.size() - 1)
-						elements[i]->setSize(size.x - allocatedWidth, size.y);//Allocate excess width to the last element
+					{//The last element
+						elements[i]->setSize(size.x - allocatedWidth, size.y);
+					}
 					else
-					{
+					{//Other elements get allocated their minimum size
 						elements[i]->setSize(elements[i]->getMinWidth(), size.y);
 						allocatedWidth += elements[i]->getMinWidth();
 					}
 				}
 			}
-			else if (elementPositionMode == PositionMode::Right)
+			else if (elementPositionMode == PositionMode::StackRight)
 			{
-				allocatedWidth = 0;
-				for (unsigned i = 1; i < elements.size(); i++)
+				int allocatedWidth = 0;
+				for (int i = elements.size() - 1; i >= 0; i--)
 				{
-					elements[i]->setSize(elements[i]->getMinWidth(), size.y);
-					allocatedWidth += elements[i]->getMinWidth();
+					if (i == 0)
+					{//First element
+						elements[i]->setSize(size.x - allocatedWidth, size.y);
+					}
+					else
+					{//Other elements get allocated their min size
+						elements[i]->setSize(elements[i]->getMinWidth(), size.y);
+						allocatedWidth += elements[i]->getMinWidth();
+					}
 				}
-				if (elements.size() > 0)
-					elements[0]->setSize(size.x - allocatedWidth, size.y);//Allocate excess width to the first element
+			}
+			else if (elementPositionMode == PositionMode::StackEdges)
+			{
+				if (elements.size() == 1)
+				{//Only one element
+					elements.front()->setSize(size.x, size.y);
+				}
+				else if (elements.size() == 2)
+				{//Only edges
+					int w1 = (float)elements.front()->getMinWidth() / ((float)elements.front()->getMinWidth() + (float)elements.back()->getMinWidth()) * size.x;
+					elements.front()->setSize(w1, size.y);
+					elements.back()->setSize(size.x - w1, size.y);
+				}
+				else
+				{//Middle elements exist
+					elements.front()->setSize(elements.front()->getMinWidth(), size.y);
+					elements.back()->setSize(elements.back()->getMinWidth(), size.y);
+
+					const int dynamicWidth = size.x - elements.front()->getMinWidth() - elements.back()->getMinWidth();
+					const int dynamicMinWidth = minSize.x - elements.front()->getMinWidth() - elements.back()->getMinWidth();
+					int allocatedWidth = 0;
+					for (unsigned i = 1; i < elements.size() - 1; i++)
+					{
+						if (i == elements.size() - 2)
+						{//The last dynamicly scaled element gets rest of the available width
+							elements[i]->setSize(dynamicWidth - allocatedWidth, size.y);
+						}
+						else
+						{
+							const int w = (float)elements[i]->getMinWidth() / (float)dynamicMinWidth * dynamicWidth;
+							elements[i]->setSize(w, size.y);
+							allocatedWidth += w;
+						}
+					}
+				}
+			}
+			else //PositionMode::Standard
+			{//Scale each element relative to element min size : this->min size
+				int allocatedWidth = 0;
+				for (unsigned i = 0; i < elements.size() - 1; i++)
+				{
+					const int w = (float)elements[i]->getMinWidth() / (float)minSize.x * size.x;
+					elements[i]->setSize(w, size.y);
+					allocatedWidth += w;
+				}
+				elements.back()->setSize(size.x - allocatedWidth, size.y);
 			}
 		}
 	}

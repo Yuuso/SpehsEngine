@@ -1,18 +1,23 @@
 #pragma once
 #include <vector>
-#include "GUIRectangleContainer.h"
+#include "GUIRectangleUnisizeContainer.h"
 #define SCROLL_BUTTON_WIDTH 20
 #define SCROLLBAR_CLICK_THRESHOLD 5
 
 
 namespace spehs
 {
-	class GUIRectangleList : public GUIRectangleContainer
+	/**
+	A similar container class to the GUIRectangleColumn container,
+	ScrollList will automatically limit its size and hide elements when necessary.
+	When elements are hidden, scroll bar functionality is added for the user to interact.
+	*/
+	class GUIRectangleScrollList : public GUIRectangleUnisizeContainer
 	{
 	public:
-		GUIRectangleList();
-		GUIRectangleList(const GUIRECT_ID_TYPE id);
-		~GUIRectangleList() override;
+		GUIRectangleScrollList();
+		GUIRectangleScrollList(const GUIRECT_ID_TYPE id);
+		~GUIRectangleScrollList() override;
 
 		//Overriding methods
 		void setRenderState(const bool _state) override;
@@ -30,19 +35,19 @@ namespace spehs
 		/*Returns index to the last visible element on the list*/
 		int getUpdateElementCount() const { return updateElementCount; }
 		virtual void incrementUpdateElementCount(int incrementation);
-		bool invisibleElements() const { if (elements.size() > updateElementCount) return true; return false; }
+		bool invisibleElements() const { return elements.size() > updateElementCount; }
 		void scroll(int amount);
 		/*Updates update element count based on current dimensions. Element size is also updated.*/
 		virtual void updateUpdateElementCount();
 		
 		//Identity
-		GUIRectangleList* getAsGUIRectangleListPtr() override { return this; }
+		GUIRectangleScrollList* getAsGUIRectangleScrollListPtr() override { return this; }
 
 	protected:
 		GUIRectangle* scrollUp;
 		GUIRectangle* scrollBar;
 		GUIRectangle* scrollDown;
-		int beginElementIndex;///<Index of the first updated/rendered element
-		int updateElementCount;///<Amount of elements updated/rendered beginning from begin element index
+		int beginElementIndex;///< Index of the first updated/rendered element
+		int updateElementCount;///< Amount of elements updated/rendered beginning from begin element index
 	};
 }

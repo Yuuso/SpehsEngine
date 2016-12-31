@@ -36,6 +36,7 @@ namespace spehs
 	}
 	GUIStringEditor::~GUIStringEditor()
 	{
+		typeCharacter->destroy();
 	}
 	void GUIStringEditor::setRenderState(const bool _state)
 	{
@@ -114,7 +115,10 @@ namespace spehs
 				typerBlinkTimer += time::getDeltaTimeAsMilliseconds();
 			}
 			else
+			{
+				typeCharacter->setRenderState(false);
 				keyboardRecorder.stop();
+			}
 
 			if (!editorValueChanged() && getMouseHover() && inputManager->isKeyPressed(MOUSE_BUTTON_LEFT))
 			{//Mouse press

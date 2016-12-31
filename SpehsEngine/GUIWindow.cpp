@@ -5,7 +5,7 @@
 #include "applicationData.h"
 #include "GUIWindow.h"
 #include "GUIStringEditor.h"
-#include "GUIRectangleList.h"
+#include "GUIRectangleScrollList.h"
 #define EXIT_WIDTH 20
 //#define DOCK_BORDER 50
 #define DOUBLE_CLICK_TIME 200
@@ -295,18 +295,6 @@ namespace spehs
 		//Check exit button
 		if (getInputEnabled() && inputManager->isKeyPressed(MOUSE_BUTTON_LEFT) && exit->getMouseHover())
 			close();
-
-	}
-	void GUIWindow::visualUpdate()
-	{
-		//Check size and positioning elements (strech)
-		if (!checkBit(state, GUIRECT_MIN_SIZE_UPDATED_BIT))
-			updateMinSize();
-		if (!checkBit(state, GUIRECT_SCALE_UPDATED_BIT))
-			updateScale();
-		if (!checkBit(state, GUIRECT_POSITION_UPDATED_BIT))
-			updatePosition();
-		GUIRectangleContainer::visualUpdate();
 	}
 	void GUIWindow::onEnableInput()
 	{
