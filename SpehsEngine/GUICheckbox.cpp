@@ -11,7 +11,7 @@
 
 namespace spehs
 {
-	GUICheckbox::GUICheckbox() : checkboxSize(20)
+	GUICheckbox::GUICheckbox(const bool checkboxStateEnabled) : ValueEditor(checkboxStateEnabled), checkboxSize(20)
 	{
 		checkboxBackground = spehs::Polygon::create(Shape::BUTTON, getDepth() + 1, 1.0f, 1.0f);
 		checkboxBackground->setColor(30, 30, 30);
@@ -24,11 +24,11 @@ namespace spehs
 		onEditorValueChange();
 		setJustification(GUIRECT_TEXT_JUSTIFICATION_LEFT);
 	}
-	GUICheckbox::GUICheckbox(const GUIRECT_ID_TYPE _ID) : GUICheckbox()
+	GUICheckbox::GUICheckbox(const GUIRECT_ID_TYPE _ID) : GUICheckbox(false)
 	{
 		setID(_ID);
 	}
-	GUICheckbox::GUICheckbox(const std::string str) : GUICheckbox()
+	GUICheckbox::GUICheckbox(const char* str) : GUICheckbox(false)
 	{
 		setString(str);
 	}

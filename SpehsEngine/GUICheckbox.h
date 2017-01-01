@@ -10,9 +10,9 @@ namespace spehs
 	class GUICheckbox : public GUIRectangle, public ValueEditor<bool>
 	{
 	public:
-		GUICheckbox();
+		GUICheckbox(const bool checkboxStateEnabled);
 		GUICheckbox(const GUIRECT_ID_TYPE _ID);
-		GUICheckbox(const std::string str);
+		GUICheckbox(const char* str);
 		~GUICheckbox() override;
 		
 		void inputUpdate() override;

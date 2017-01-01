@@ -17,9 +17,9 @@ namespace spehs
 	{
 	public:
 		static_assert(std::is_arithmetic<Scalar>::value, "Scalar editor type must be of either integral or floating type!");
-		enum class EditorType { Slider, Ticks};
+		enum class EditorType { Slider, Ticks };
 	public:
-		GUIScalarEditor(const std::string scalarName, Scalar scalarEditorValue) :
+		GUIScalarEditor(const std::string scalarName, Scalar scalarEditorValue) : ValueEditor(scalarEditorValue),
 			floatPrecision(2), tickAmount(1), onHold(false), holdTimer(0.0f), holdTime(0.15f), initialHoldTime(1.0f),
 			nameRect(new GUIRectangle(scalarName)), valueRect(new GUIStringEditor()), decreaseRect(new GUIRectangle("-")), increaseRect(new GUIRectangle("+"))
 		{

@@ -10,7 +10,7 @@ namespace spehs
 	int GUIColorEditor::colorEditorBorder = 3;
 	float GUIColorEditor::colorPreviewWidth = 20.0f;
 
-	GUIColorEditor::GUIColorEditor() : sliderState(0.0f), sliderOnHold(false), paletteOnHold(false)
+	GUIColorEditor::GUIColorEditor(const glm::vec4 color) : ValueEditor(color), sliderState(0.0f), sliderOnHold(false), paletteOnHold(false)
 	{
 		palette = Polygon::create(Shape::BUTTON, getDepth(), 1.0f, 1.0f);
 		sliderRG = Polygon::create(Shape::BUTTON, getDepth(), 1.0f, 1.0f);

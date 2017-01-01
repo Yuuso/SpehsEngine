@@ -9,13 +9,19 @@ namespace spehs
 	class ValueEditor
 	{
 	public:
-		ValueEditor() : _valueChanged(false)
+		ValueEditor(ValueType initialValue) : _initialized(false), _valueChanged(false), editorValue(initialValue), previousEditorValue(initialValue)
 		{
 		}
 
 		/**Input update will detect value change. Deriving class is responsible for calling the update method! */
 		virtual void update()
 		{
+			if (!_initialized)
+			{
+				_initialized = true;
+				onEditorValueChange();
+			}
+
 			if (editorValue == previousEditorValue)
 				_valueChanged = false;
 			else
@@ -58,6 +64,7 @@ namespace spehs
 		ValueType editorValue;
 
 	private:
+		bool _initialized;
 		bool _valueChanged;
 		ValueType previousEditorValue;//Used to automatically detect a change in the editor value between the loops (This is donw using the != operator)
 	};

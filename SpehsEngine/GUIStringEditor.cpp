@@ -11,8 +11,10 @@
 namespace spehs
 {
 	int GUIStringEditor::defaultMaxStringEditorStringLength = 32;
-	GUIStringEditor::GUIStringEditor() : stringUpdated(false), defaultString(""), input(""),
-		disableInputReceiveOnNextUpdate(false), maxStringLength(defaultMaxStringEditorStringLength), typerPosition(0), typerBlinkTime(0), typerBlinkTimer(0)
+
+	GUIStringEditor::GUIStringEditor() : ValueEditor(""),
+		stringUpdated(false), defaultString(""), input(""), disableInputReceiveOnNextUpdate(false),
+		maxStringLength(defaultMaxStringEditorStringLength), typerPosition(0), typerBlinkTime(0), typerBlinkTimer(0)
 	{
 		setTyperBlinkTime(512);
 		createText();

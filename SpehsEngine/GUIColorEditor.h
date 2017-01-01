@@ -15,7 +15,7 @@ namespace spehs
 		static float colorPreviewWidth;
 		static int colorEditorBorder;
 	public:
-		GUIColorEditor();
+		GUIColorEditor(const glm::vec4 color = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
 		~GUIColorEditor();
 
 		void setDepth(const int16_t _depth) override;
