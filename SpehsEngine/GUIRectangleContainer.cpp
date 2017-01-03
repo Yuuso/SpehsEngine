@@ -90,7 +90,7 @@ namespace spehs
 			delete elements[i];
 		elements.clear();
 		if (parent)
-			parent->disableStateRecursive(GUIRECT_SCALE_UPDATED_BIT);
+			parent->disableStateRecursive(GUIRECT_MIN_SIZE_UPDATED_BIT);
 	}
 	void GUIRectangleContainer::addElement(GUIRectangle* element)
 	{

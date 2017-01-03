@@ -10,6 +10,7 @@ namespace spehs
 		GUIRectangleUnisizeContainer() : elementSize(0, 0), minElementSize(0, 0) {}
 		void clear() override
 		{
+			GUIRectangleContainer::clear();
 			elementSize.x = 0;
 			elementSize.x = 0;
 			minElementSize.x = 0;
