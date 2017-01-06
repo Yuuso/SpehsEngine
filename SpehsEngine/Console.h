@@ -23,6 +23,10 @@ namespace spehs
 		void update();
 		void render(std::string customDebugText = "");
 
+		//Render state
+		void setRenderState(const bool _state);
+		bool getRenderState();
+
 		//Variables, commands
 		void addVariable(std::string identifier, bool& var);
 		void addVariable(std::string identifier, float& var);

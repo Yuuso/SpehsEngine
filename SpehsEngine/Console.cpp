@@ -18,6 +18,7 @@
 #define CONSOLE_INITIALIZED_BIT				0x0001
 #define CONSOLE_OPEN_BIT					0x0002
 #define CONSOLE_TEXT_EXECUTED_BIT			0x0004
+#define CONSOLE_RENDER_STATE_BIT			0x0008
 //Misc
 #define CONSOLE_COMMANDS_KEPT_IN_MEMORY 10
 #define LOG_LINES_KEPT_IN_MEMORY 25
@@ -48,7 +49,7 @@ namespace spehs
 	namespace console
 	{
 		//Static console data
-		static int16_t state = 0;
+		static int16_t state = CONSOLE_RENDER_STATE_BIT;
 		static uint16_t planeDepth = 10000;
 		static int backspaceTimer = 0;
 		static int backspaceAcceleration = 0;
@@ -176,9 +177,19 @@ namespace spehs
 			updateLinePositions();
 			input.clear();
 		}
+		void setRenderState(const bool _state)
+		{
+			if (_state)
+				enableState(CONSOLE_RENDER_STATE_BIT);
+			else
+				disableState(CONSOLE_RENDER_STATE_BIT);
+		}
+		bool getRenderState()
+		{
+			return checkState(CONSOLE_RENDER_STATE_BIT);
+		}
 		bool isOpen()
 		{
-			LockGuardRecursive regionLock(consoleMutex);
 			return checkState(CONSOLE_OPEN_BIT);
 		}
 		bool checkState(uint16_t bits)
@@ -408,6 +419,13 @@ namespace spehs
 		{
 			LockGuardRecursive regionLock(consoleMutex);
 
+			if (!checkState(CONSOLE_RENDER_STATE_BIT))
+			{
+				drawCalls = 0;
+				vertexDrawCount = 0;
+				return;
+			}
+
 			if (applicationData->showFps)
 			{
 				fpsCounter->setRenderState(true);
@@ -459,8 +477,6 @@ namespace spehs
 			else
 				backgroundShade->setRenderState(false);
 		}
-
-
 
 		//Console variables/commands
 		void addVariable(std::string str, bool& var)
