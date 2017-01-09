@@ -17,10 +17,10 @@ namespace spehs
 	extern inline float distance(const glm::vec2& origin, const glm::vec2& destination);
 
 	/**Returns angle from origin to destination*/
-	extern inline float getAngle(const glm::vec2& origin, const glm::vec2& destination);
+	extern inline float getAcuteAngle(const glm::vec2& vector1, const glm::vec2& vector2);
 
 	/**Returns angle from origin to destination*/
-	extern inline float getAcuteAngle(const glm::vec2& vector1, const glm::vec2& vector2);
+	extern inline float getAngle(const glm::vec2& origin, const glm::vec2& destination);
 	
 	/**Returns angle from 0,0 to destination*/
 	extern inline float getAngle(const glm::vec2& destination);
