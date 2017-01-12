@@ -34,7 +34,7 @@ namespace spehs
 		{
 			if (_min > _max)
 			{
-				spehs::console::warning("Min value is greater than Max value! (irandom)");
+				spehs::console::error("Min value is greater than Max value! (irandom)");
 				return _min;
 			}
 			return sirandom(_min, _max);
@@ -47,7 +47,7 @@ namespace spehs
 		{
 			if (_min > _max)
 			{
-				spehs::console::warning("Min value is greater than max value! (uirandom)");
+				spehs::console::error("Min value is greater than max value! (uirandom)");
 				return _min;
 			}
 			if (_min == _max)
@@ -59,12 +59,12 @@ namespace spehs
 		{
 			if (_maxmin >= _minmax)
 			{
-				spehs::console::warning("Maxmin value is greater than minmax value! (uirandom)");
+				spehs::console::error("Maxmin value is greater than minmax value! (uirandom)");
 				return _min;
 			}
 			if (_maxmin < _min || _minmax > _max)
 			{
-				spehs::console::warning("Ranges of min-max stuff is wrong!! (uirandom)");
+				spehs::console::error("Ranges of min-max stuff is wrong!! (uirandom)");
 				return _min;
 			}
 
@@ -85,7 +85,7 @@ namespace spehs
 		{
 			if (_min > _max)
 			{
-				spehs::console::warning("Min value is greater than max value! (sirandom)");
+				spehs::console::error("Min value is greater than max value! (sirandom)");
 				return _min;
 			}
 			if (_min == _max)
@@ -97,12 +97,12 @@ namespace spehs
 		{
 			if (_maxmin >= _minmax)
 			{
-				spehs::console::warning("Maxmin value is greater than minmax value! (sirandom)");
+				spehs::console::error("Maxmin value is greater than minmax value! (sirandom)");
 				return _min;
 			}
 			if (_maxmin < _min || _minmax > _max)
 			{
-				spehs::console::warning("Ranges of min-max stuff is wrong!! (sirandom)");
+				spehs::console::error("Ranges of min-max stuff is wrong!! (sirandom)");
 				return _min;
 			}
 
@@ -123,7 +123,7 @@ namespace spehs
 		{
 			if (_min > _max)
 			{
-				spehs::console::warning("Min value is greater than max value! (frandom)");
+				spehs::console::error("Min value is greater than max value! (frandom)");
 				return _min;
 			}
 			return floatDist(randomMTEngine, { _min, _max });
@@ -132,12 +132,12 @@ namespace spehs
 		{
 			if (_maxmin >= _minmax)
 			{
-				spehs::console::warning("Maxmin value is greater than minmax value! (frandom)");
+				spehs::console::error("Maxmin value is greater than minmax value! (frandom)");
 				return _min;
 			}
 			if (_maxmin < _min || _minmax > _max)
 			{
-				spehs::console::warning("Ranges of min-max stuff is wrong!! (frandom)");
+				spehs::console::error("Ranges of min-max stuff is wrong!! (frandom)");
 				return _min;
 			}
 
@@ -158,7 +158,7 @@ namespace spehs
 		{
 			if (_min > _max)
 			{
-				spehs::console::warning("Min value is greater than max value! (drandom)");
+				spehs::console::error("Min value is greater than max value! (drandom)");
 				return _min;
 			}
 			return doubleDist(randomMTEngine, { _min, _max });
@@ -167,12 +167,12 @@ namespace spehs
 		{
 			if (_maxmin >= _minmax)
 			{
-				spehs::console::warning("Maxmin value is greater than minmax value! (drandom)");
+				spehs::console::error("Maxmin value is greater than minmax value! (drandom)");
 				return _min;
 			}
 			if (_maxmin < _min || _minmax > _max)
 			{
-				spehs::console::warning("Ranges of min-max stuff is wrong!! (drandom)");
+				spehs::console::error("Ranges of min-max stuff is wrong!! (drandom)");
 				return _min;
 			}
 
@@ -222,7 +222,7 @@ namespace spehs
 		{
 			if (_min > _max)
 			{
-				spehs::console::warning("Min value is greater than Max value! (PRNG32.sirandom)");
+				spehs::console::error("Min value is greater than Max value! (PRNG32.sirandom)");
 				return _min;
 			}
 			if (_min == _max)
@@ -234,12 +234,12 @@ namespace spehs
 		{
 			if (_maxmin >= _minmax)
 			{
-				spehs::console::warning("Maxmin value is greater than minmax value! (PRNG32.uirandom)");
+				spehs::console::error("Maxmin value is greater than minmax value! (PRNG32.uirandom)");
 				return _min;
 			}
 			if (_maxmin < _min || _minmax > _max)
 			{
-				spehs::console::warning("Ranges of min-max stuff is wrong!! (PRNG32.uirandom)");
+				spehs::console::error("Ranges of min-max stuff is wrong!! (PRNG32.uirandom)");
 				return _min;
 			}
 
@@ -260,7 +260,7 @@ namespace spehs
 		{
 			if (_min > _max)
 			{
-				spehs::console::warning("Min value is greater than Max value! (PRNG32.sirandom)");
+				spehs::console::error("Min value is greater than Max value! (PRNG32.sirandom)");
 				return _min;
 			}
 			if (_min == _max)
@@ -272,12 +272,12 @@ namespace spehs
 		{
 			if (_maxmin >= _minmax)
 			{
-				spehs::console::warning("Maxmin value is greater than minmax value! (PRNG32.sirandom)");
+				spehs::console::error("Maxmin value is greater than minmax value! (PRNG32.sirandom)");
 				return _min;
 			}
 			if (_maxmin < _min || _minmax > _max)
 			{
-				spehs::console::warning("Ranges of min-max stuff is wrong!! (PRNG32.sirandom)");
+				spehs::console::error("Ranges of min-max stuff is wrong!! (PRNG32.sirandom)");
 				return _min;
 			}
 
@@ -298,7 +298,7 @@ namespace spehs
 		{
 			if (_min > _max)
 			{
-				spehs::console::warning("Min value is greater than Max value! (PRNG32.frandom)");
+				spehs::console::error("Min value is greater than Max value! (PRNG32.frandom)");
 				return _min;
 			}
 			if (_min == _max)
@@ -310,12 +310,12 @@ namespace spehs
 		{
 			if (_maxmin >= _minmax)
 			{
-				spehs::console::warning("Maxmin value is greater than minmax value! (PRNG32.frandom)");
+				spehs::console::error("Maxmin value is greater than minmax value! (PRNG32.frandom)");
 				return _min;
 			}
 			if (_maxmin < _min || _minmax > _max)
 			{
-				spehs::console::warning("Ranges of min-max stuff is wrong!! (PRNG32.frandom)");
+				spehs::console::error("Ranges of min-max stuff is wrong!! (PRNG32.frandom)");
 				return _min;
 			}
 
@@ -336,7 +336,7 @@ namespace spehs
 		{
 			if (_min > _max)
 			{
-				spehs::console::warning("Min value is greater than Max value! (PRNG32.drandom)");
+				spehs::console::error("Min value is greater than Max value! (PRNG32.drandom)");
 				return _min;
 			}
 			if (_min == _max)
@@ -348,12 +348,12 @@ namespace spehs
 		{
 			if (_maxmin >= _minmax)
 			{
-				spehs::console::warning("Maxmin value is greater than minmax value! (PRNG32.drandom)");
+				spehs::console::error("Maxmin value is greater than minmax value! (PRNG32.drandom)");
 				return _min;
 			}
 			if (_maxmin < _min || _minmax > _max)
 			{
-				spehs::console::warning("Ranges of min-max stuff is wrong!! (PRNG32.drandom)");
+				spehs::console::error("Ranges of min-max stuff is wrong!! (PRNG32.drandom)");
 				return _min;
 			}
 
@@ -415,7 +415,7 @@ namespace spehs
 		{
 			if (_min > _max)
 			{
-				spehs::console::warning("Min value is greater than Max value! (PRNG64.uirandom)");
+				spehs::console::error("Min value is greater than Max value! (PRNG64.uirandom)");
 				return _min;
 			}
 			if (_min == _max)
@@ -427,12 +427,12 @@ namespace spehs
 		{
 			if (_maxmin >= _minmax)
 			{
-				spehs::console::warning("Maxmin value is greater than minmax value! (PRNG64.uirandom)");
+				spehs::console::error("Maxmin value is greater than minmax value! (PRNG64.uirandom)");
 				return _min;
 			}
 			if (_maxmin < _min || _minmax > _max)
 			{
-				spehs::console::warning("Ranges of min-max stuff is wrong!! (PRNG64.uirandom)");
+				spehs::console::error("Ranges of min-max stuff is wrong!! (PRNG64.uirandom)");
 				return _min;
 			}
 
@@ -453,7 +453,7 @@ namespace spehs
 		{
 			if (_min > _max)
 			{
-				spehs::console::warning("Min value is greater than Max value! (PRNG64.sirandom)");
+				spehs::console::error("Min value is greater than Max value! (PRNG64.sirandom)");
 				return _min;
 			}
 			if (_min == _max)
@@ -465,12 +465,12 @@ namespace spehs
 		{
 			if (_maxmin >= _minmax)
 			{
-				spehs::console::warning("Maxmin value is greater than minmax value! (PRNG64.sirandom)");
+				spehs::console::error("Maxmin value is greater than minmax value! (PRNG64.sirandom)");
 				return _min;
 			}
 			if (_maxmin < _min || _minmax > _max)
 			{
-				spehs::console::warning("Ranges of min-max stuff is wrong!! (PRNG64.sirandom)");
+				spehs::console::error("Ranges of min-max stuff is wrong!! (PRNG64.sirandom)");
 				return _min;
 			}
 
@@ -491,7 +491,7 @@ namespace spehs
 		{
 			if (_min > _max)
 			{
-				spehs::console::warning("Min value is greater than Max value! (PRNG32.frandom)");
+				spehs::console::error("Min value is greater than Max value! (PRNG32.frandom)");
 				return _min;
 			}
 			if (_min == _max)
@@ -503,12 +503,12 @@ namespace spehs
 		{
 			if (_maxmin >= _minmax)
 			{
-				spehs::console::warning("Maxmin value is greater than minmax value! (PRNG32.frandom)");
+				spehs::console::error("Maxmin value is greater than minmax value! (PRNG32.frandom)");
 				return _min;
 			}
 			if (_maxmin < _min || _minmax > _max)
 			{
-				spehs::console::warning("Ranges of min-max stuff is wrong!! (PRNG32.frandom)");
+				spehs::console::error("Ranges of min-max stuff is wrong!! (PRNG32.frandom)");
 				return _min;
 			}
 
@@ -529,7 +529,7 @@ namespace spehs
 		{
 			if (_min > _max)
 			{
-				spehs::console::warning("Min value is greater than Max value! (PRNG32.drandom)");
+				spehs::console::error("Min value is greater than Max value! (PRNG32.drandom)");
 				return _min;
 			}
 			if (_min == _max)
@@ -541,12 +541,12 @@ namespace spehs
 		{
 			if (_maxmin >= _minmax)
 			{
-				spehs::console::warning("Maxmin value is greater than minmax value! (PRNG32.drandom)");
+				spehs::console::error("Maxmin value is greater than minmax value! (PRNG32.drandom)");
 				return _min;
 			}
 			if (_maxmin < _min || _minmax > _max)
 			{
-				spehs::console::warning("Ranges of min-max stuff is wrong!! (PRNG32.drandom)");
+				spehs::console::error("Ranges of min-max stuff is wrong!! (PRNG32.drandom)");
 				return _min;
 			}
 
