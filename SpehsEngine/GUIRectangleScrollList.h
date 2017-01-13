@@ -31,6 +31,7 @@ namespace spehs
 		void clear() override;
 		bool open() override;
 		bool close() override;
+		bool removeElement(GUIRectangle* element) override;
 
 		/*Returns index to the first visible element on the element list*/
 		int getBeginElementIndex() const { return beginElementIndex; }

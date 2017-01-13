@@ -105,7 +105,7 @@ namespace spehs
 		element->setInputEnabled(getInputEnabled());
 
 		//Min size must be updated for everything above
-		disableStateRecursiveUpwards(GUIRECT_MIN_SIZE_UPDATED_BIT);
+		disableStateRecursiveUpwards(GUIRECT_MIN_SIZE_UPDATED_BIT | GUIRECT_SCALE_UPDATED_BIT | GUIRECT_POSITION_UPDATED_BIT);
 	}
 	bool GUIRectangleContainer::removeElement(GUIRectangle* element)
 	{

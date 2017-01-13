@@ -63,6 +63,37 @@ namespace spehs
 		scrollDown->setRenderState(false);
 		return true;
 	}
+	bool GUIRectangleScrollList::removeElement(GUIRectangle* element)
+	{
+		for (unsigned i = 0; i < elements.size(); i++)
+		{
+			if (elements[i] == element)
+			{
+				if (beginElementIndex + updateElementCount >= elements.size())
+				{//Must decrease begin element index or visible element count
+					if (beginElementIndex > 0)
+					{//First visible element index decreases
+						--beginElementIndex;
+						elements[beginElementIndex]->setRenderState(getRenderState() && checkState(GUIRECT_OPEN_BIT));
+					}
+					else
+					{//Visible element count decreases
+						--updateElementCount;
+					}
+					disableStateRecursiveUpwards(GUIRECT_MIN_SIZE_UPDATED_BIT | GUIRECT_SCALE_UPDATED_BIT | GUIRECT_POSITION_UPDATED_BIT);
+				}
+				else
+				{//Next element in the list becomes visible
+					elements[beginElementIndex + updateElementCount]->setRenderState(getRenderState() && checkState(GUIRECT_OPEN_BIT));
+				}
+				delete elements[i];
+				elements.erase(elements.begin() + i);
+				disableStateRecursiveUpwards(GUIRECT_MIN_SIZE_UPDATED_BIT | GUIRECT_SCALE_UPDATED_BIT | GUIRECT_POSITION_UPDATED_BIT);
+				return true;
+			}
+		}
+		return false;
+	}
 	void GUIRectangleScrollList::inputUpdate()
 	{
 		if (getInputEnabled() && checkState(GUIRECT_OPEN_BIT))
@@ -268,7 +299,7 @@ namespace spehs
 		}
 
 		elementSize.y = size.y / float(updateElementCount);
-		disableStateRecursiveUpwards(GUIRECT_MIN_SIZE_UPDATED_BIT);
+		disableStateRecursiveUpwards(GUIRECT_MIN_SIZE_UPDATED_BIT | GUIRECT_SCALE_UPDATED_BIT | GUIRECT_POSITION_UPDATED_BIT);
 	}
 	void GUIRectangleScrollList::setMinVisibleElementCount(const int count)
 	{
@@ -278,7 +309,7 @@ namespace spehs
 		if (updateElementCount < minVisibleElementCount && updateElementCount < elements.size())
 			incrementUpdateElementCount(std::min((int)elements.size() - updateElementCount, minVisibleElementCount - updateElementCount));
 		
-		disableState(GUIRECT_MIN_SIZE_UPDATED_BIT);
+		disableState(GUIRECT_MIN_SIZE_UPDATED_BIT | GUIRECT_SCALE_UPDATED_BIT | GUIRECT_POSITION_UPDATED_BIT);
 	}
 	void GUIRectangleScrollList::updateUpdateElementCount()
 	{
