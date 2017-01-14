@@ -501,4 +501,18 @@ namespace spehs
 		pressSound->setPriority(1);
 		pressSound->setGain(1.0f);
 	}
+	void GUIRectangle::setWidth(const int width)
+	{
+		if (size.x == width)
+			return;
+		size.x = width;
+		disableStateRecursiveUpwards(GUIRECT_SCALE_UPDATED_BIT);
+	}
+	void GUIRectangle::setHeight(const int height)
+	{
+		if (size.y == height)
+			return;
+		size.y = height;
+		disableStateRecursiveUpwards(GUIRECT_SCALE_UPDATED_BIT);
+	}
 }

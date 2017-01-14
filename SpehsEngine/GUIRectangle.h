@@ -198,8 +198,8 @@ namespace spehs
 		//Scale managament
 		virtual void setSize(const int width, const int height){ setWidth(width); setHeight(height); }
 		virtual void setSize(const glm::ivec2& newSize){ setWidth(newSize.x); setHeight(newSize.y); }
-		virtual void setWidth(const int width){ if (size.x == width) return; size.x = width; disableStateRecursiveUpwards(GUIRECT_SCALE_UPDATED_BIT); }
-		virtual void setHeight(const int height){ if (size.y == height) return; size.y = height; disableStateRecursiveUpwards(GUIRECT_SCALE_UPDATED_BIT); }
+		virtual void setWidth(const int width);
+		virtual void setHeight(const int height);
 		//Getters
 		virtual glm::ivec2 getSize(){ if (!(state & GUIRECT_SCALE_UPDATED_BIT)) updateScale(); return size; }
 		virtual int getWidth(){ if (!(state & GUIRECT_SCALE_UPDATED_BIT)) updateScale(); return size.x; }

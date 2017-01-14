@@ -419,7 +419,7 @@ namespace spehs
 		{
 			LockGuardRecursive regionLock(consoleMutex);
 
-			if (!checkState(CONSOLE_RENDER_STATE_BIT))
+			if (!checkState(CONSOLE_RENDER_STATE_BIT) && !isOpen())
 			{
 				drawCalls = 0;
 				vertexDrawCount = 0;
