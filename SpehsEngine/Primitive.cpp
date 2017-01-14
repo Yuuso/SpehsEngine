@@ -326,7 +326,7 @@ namespace spehs
 		}
 	}
 
-	void Primitive::setColorAlpha(const float &_a)
+	void Primitive::setColorAlpha(const float _a)
 	{
 		primitiveColor.a = _a;
 		for (unsigned i = 0; i < worldVertexArray.size(); i++)
