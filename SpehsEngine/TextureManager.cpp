@@ -5,9 +5,14 @@
 #include "Exceptions.h"
 #include "Console.h"
 #include "RNG.h"
+#include "ApplicationData.h"
 
 #include <functional>
 #include <algorithm>
+#include <iomanip>
+#include <ctime>
+#include <sstream>
+#include <string>
 
 #include <SOIL\SOIL.h>
 #include <GL\glew.h>
@@ -313,5 +318,21 @@ namespace spehs
 		checkOpenGLErrors(__FILE__, __LINE__);
 
 		return newTexData;
+	}
+
+	void TextureManager::takeScreenShot()
+	{
+		//TODO: http://www.lonesock.net/soil.html
+
+		auto t = std::time(nullptr);
+		auto tm = *std::localtime(&t);
+
+		std::ostringstream oss;
+		oss << std::put_time(&tm, "%H-%M-%S_%d-%m-%Y");
+		std::string str = "screenshot-";
+		str += oss.str();
+
+		int screenshot;
+		screenshot = SOIL_save_screenshot(str.c_str(), SOIL_SAVE_TYPE_BMP, 0, 0, applicationData->getWindowWidth(), applicationData->getWindowHeight());
 	}
 }

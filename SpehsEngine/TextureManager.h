@@ -54,6 +54,8 @@ namespace spehs
 		void removeTextureData(const size_t& _hash);
 		void clearAllTextureData();
 
+		void takeScreenShot();
+
 	private:
 		TextureData* toTexture(const std::string& _filepath, const TextureFiltering minScaleFiltering, const TextureFiltering magScaleFiltering);
 
