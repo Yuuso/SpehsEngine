@@ -54,7 +54,8 @@ namespace spehs
 		void removeTextureData(const size_t& _hash);
 		void clearAllTextureData();
 
-		void takeScreenShot();
+		void takeScreenShot(std::string directory);//Takes a screenshot and writes it to the specified directory
+		void takeScreenShot();//Takes screenshot and writes it to the default screenshot directory, specified in the application data
 
 	private:
 		TextureData* toTexture(const std::string& _filepath, const TextureFiltering minScaleFiltering, const TextureFiltering magScaleFiltering);

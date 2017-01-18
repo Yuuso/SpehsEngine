@@ -1,8 +1,9 @@
 
 #include "InputManager.h"
-#include "Console.h"
 #include "ApplicationData.h"
+#include "TextureManager.h"
 #include "SpehsEngine.h"
+#include "Console.h"
 #include "Window.h"
 
 #include <SDL/SDL.h>
@@ -73,6 +74,10 @@ namespace spehs
 			case SDL_KEYDOWN:
 				pressKey(mEvent.key.keysym.sym);
 				latestKeyboardPress = mEvent.key.keysym.sym;
+
+				//Taking a screenshot. NOTE: for some reason, when the printscreen button is pressed, it triggers the key release in the same update cycle, therefore is key down method cannot be used to capture this button's press event!
+				if (mEvent.key.keysym.sym == KEYBOARD_PRINTSCREEN)
+					textureManager->takeScreenShot();
 				break;
 			case SDL_KEYUP:
 				releaseKey(mEvent.key.keysym.sym);

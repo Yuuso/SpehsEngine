@@ -53,7 +53,7 @@ namespace spehs
 		//Other
 		consoleTextSize(12), consoleTextAlpha(900),
 		GUITextSize(12), GUITextFontPath("Fonts/Anonymous.ttf"),
-		dataDirectory("data/"),
+		dataDirectory("data/"), screenshotDirectory("screenshots/"),
 		windowWidth(1280), windowHeight(720)
 	{
 
@@ -95,6 +95,7 @@ namespace spehs
 		*stream << "GUI text size: " << GUITextSize << "\n";
 		*stream << "GUI text font path: " << GUITextFontPath << "\n";
 		*stream << "Data directory: " << dataDirectory << "\n";
+		*stream << "Screenshot directory: " << screenshotDirectory << "\n";
 
 		if (streamOwner)
 		{
@@ -151,6 +152,7 @@ namespace spehs
 		readValueIntoInt(*stream, GUITextSize);
 		readValueIntoString(*stream, GUITextFontPath);
 		readValueIntoString(*stream, dataDirectory);
+		readValueIntoString(*stream, screenshotDirectory);
 
 		//Limit values
 		if (windowWidth < 1)
@@ -178,9 +180,11 @@ namespace spehs
 		if (GUITextSize < 1)
 			GUITextSize = 1;
 		
-		//Create data directory
+		//Verify directories
 		if (dataDirectory.size() > 0)
-			createDirectory(dataDirectory);
+			verifyDirectory(dataDirectory);
+		if (screenshotDirectory.size() > 0)
+			verifyDirectory(screenshotDirectory);
 
 		if (streamOwner)
 		{
