@@ -567,11 +567,11 @@ namespace spehs
 
 
 		//Console logging
-		void log(std::string str, glm::vec3& color)
+		void log(const std::string str, const glm::vec3& color)
 		{
 			log(&str[0], str.size(), color);
 		}
-		void log(char* str, unsigned length, glm::vec3& color)
+		void log(const char* str, const unsigned length, const glm::vec3& color)
 		{
 			LockGuardRecursive regionLock(consoleMutex);
 
@@ -583,20 +583,20 @@ namespace spehs
 			lines.push_back(consoleBatchManager->createText(planeDepth));
 			lines.back()->setFont(applicationData->GUITextFontPath, applicationData->consoleTextSize);
 			lines.back()->setColor(glm::vec4(color, applicationData->consoleTextAlpha / 255.0f));
-			lines.back()->setString(str);
+			lines.back()->setString(str, length);
 			visibility = 1.0f;
 			for (unsigned i = 0; i < lines.size(); i++)
 				lines[i]->setRenderState(true);
 
 			updateLinePositions();
 		}
-		void warning(std::string str)
+		void warning(const std::string str)
 		{
 			LockGuardRecursive regionLock(consoleMutex);
 			log("[Warning] " + str, glm::vec3(1.0f, 0.3f, 0.0f));
 			spehs::exceptions::warning(str);
 		}
-		void error(std::string str)
+		void error(const std::string str)
 		{
 			LockGuardRecursive regionLock(consoleMutex);
 			log("[Error] " + str, glm::vec3(1.0f, 0.0f, 0.0f));

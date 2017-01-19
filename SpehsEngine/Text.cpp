@@ -416,7 +416,9 @@ namespace spehs
 		for (unsigned i = 0; i < length; i++)
 			if (_str[i] == '\n') lineCount++;
 
-		string = _str;
+		string.resize(length);
+		if (length > 0)
+			memcpy(&string[0], _str, sizeof(char) * length);
 		needTextUpdate = true;
 	}
 	void Text::incrementString(const std::string _str)
