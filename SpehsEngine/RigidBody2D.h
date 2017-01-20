@@ -14,14 +14,7 @@ namespace spehs
 	class GameObject;
 	class PhysicsWorld2D;
 	class Vertex;
-
-	enum Collider : char
-	{
-		CIRCLE,
-		BOX,
-		SPRITE,
-	};
-	
+		
 	class RigidBody2D : public Component
 	{
 		friend PhysicsWorld2D;
@@ -40,9 +33,6 @@ namespace spehs
 
 		//Setters
 		void setMass(const float& _newMass);
-		void setSpriteCollider();
-		void setBoxCollider(const float& _width, const float& _height);
-		void setCircleCollider(const float& _radius);
 		void setStatic(const bool _value);
 		void setFreezeRotation(const bool _value);
 		void setFreezePosition(const bool _value);
@@ -70,7 +60,6 @@ namespace spehs
 		bool freezePosition;
 		bool useGravity;
 
-		Collider collider;
 		float circleRadius;
 		float boxX, boxY;
 		int numVertices;

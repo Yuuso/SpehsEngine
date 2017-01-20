@@ -1,5 +1,7 @@
 
 #include "AnimatedSprite.h"
+#include "TextureManager.h"
+#include "Exceptions.h"
 
 #include "Polygon.h"
 #include "Time.h"
@@ -22,10 +24,10 @@ namespace spehs
 
 	void AnimatedSprite::update()
 	{
-		speedCounter - time::getDeltaTimeAsSeconds();
+		speedCounter -= time::getDeltaTimeAsSeconds();
 		if (speedCounter <= 0.0f)
 		{
-			if (currentFrame < maxFrames)
+			if (currentFrame < maxFrames - 1)
 			{
 				currentFrame++;
 			}
@@ -35,10 +37,35 @@ namespace spehs
 			}
 			speedCounter = animationSpeed;
 		}
-
-		//sprite;
+		
+		glm::vec2 currentFramePosition(currentFrame, 0);
+		while (currentFramePosition.x >= frameStructure[0])
+		{
+			currentFramePosition.x -= frameStructure[0];
+			currentFramePosition.y++;
+		}
+		
+		sprite->worldVertexArray[0].uv.u = float(spriteFrameSize[0]) / float(textureData->width) * currentFramePosition.x;
+		sprite->worldVertexArray[0].uv.v = float(spriteFrameSize[1]) / float(textureData->height) * currentFramePosition.y;
+		sprite->worldVertexArray[1].uv.u = sprite->worldVertexArray[0].uv.u + float(spriteFrameSize[0]) / float(textureData->width);
+		sprite->worldVertexArray[1].uv.v = sprite->worldVertexArray[0].uv.v;
+		sprite->worldVertexArray[2].uv.u = sprite->worldVertexArray[0].uv.u + float(spriteFrameSize[0]) / float(textureData->width);
+		sprite->worldVertexArray[2].uv.v = sprite->worldVertexArray[0].uv.v + float(spriteFrameSize[1]) / float(textureData->height);
+		sprite->worldVertexArray[3].uv.u = sprite->worldVertexArray[0].uv.u;
+		sprite->worldVertexArray[3].uv.v = sprite->worldVertexArray[0].uv.v + float(spriteFrameSize[1]) / float(textureData->height);
 
 		Sprite::update();
+	}
+
+	void AnimatedSprite::setTexture(TextureData* _textureDataPtr)
+	{
+		textureData = _textureDataPtr;
+		Sprite::setTexture(_textureDataPtr);
+	}
+	void AnimatedSprite::setTextureID(const unsigned int _textureID)
+	{
+		textureData = textureManager->getTextureData(_textureID);
+		Sprite::setTextureID(_textureID);
 	}
 
 	void AnimatedSprite::setAnimation(const glm::ivec2& _frameSize, const uint8_t _rows, const uint8_t _columns, const uint16_t _amountOfFrames, const uint16_t _startingFrame)

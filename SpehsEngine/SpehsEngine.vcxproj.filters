@@ -185,6 +185,9 @@
     <ClCompile Include="AnimatedSprite.cpp">
       <Filter>Object System</Filter>
     </ClCompile>
+    <ClCompile Include="Collider.cpp">
+      <Filter>Object System</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GLSLProgram.h">
@@ -396,6 +399,9 @@
       <Filter>Rendering\GUI\Commonly used container</Filter>
     </ClInclude>
     <ClInclude Include="AnimatedSprite.h">
+      <Filter>Object System</Filter>
+    </ClInclude>
+    <ClInclude Include="Collider.h">
       <Filter>Object System</Filter>
     </ClInclude>
   </ItemGroup>

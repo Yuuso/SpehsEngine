@@ -99,6 +99,7 @@
     <ClCompile Include="Arrow.cpp" />
     <ClCompile Include="AudioEngine.cpp" />
     <ClCompile Include="AudioManager.cpp" />
+    <ClCompile Include="Collider.cpp" />
     <ClCompile Include="GUIRectangleColumn.cpp" />
     <ClCompile Include="KeyboardRecorder.cpp" />
     <ClCompile Include="OS.cpp" />
@@ -162,6 +163,7 @@
     <ClInclude Include="Arrow.h" />
     <ClInclude Include="AudioEngine.h" />
     <ClInclude Include="AudioManager.h" />
+    <ClInclude Include="Collider.h" />
     <ClInclude Include="GUIRectangleColumn.h" />
     <ClInclude Include="GUIRectangleUnisizeContainer.h" />
     <ClInclude Include="KeyboardRecorder.h" />

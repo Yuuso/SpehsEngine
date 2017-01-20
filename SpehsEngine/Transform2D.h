@@ -38,9 +38,9 @@ namespace spehs
 		void setScale(float _scale);
 
 	private:
-		glm::vec2 position;
-		float rotation;
-		float scale;
+		glm::vec2 position = glm::vec2(0.0f);
+		float rotation = 0.0f;
+		float scale = 1.0f;
 
 		glm::vec2 lastSetPosition;
 		float lastSetRotation;

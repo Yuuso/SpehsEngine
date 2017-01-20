@@ -3,7 +3,7 @@
 #include "PhysicsWorld2D.h"
 #include "GameObject.h"
 #include "Transform2D.h"
-#include "Sprite.h"
+#include "Collider.h"
 #include "Exceptions.h"
 #include "Time.h"
 #include "Polygon.h"
@@ -36,7 +36,6 @@ namespace spehs
 		freezeRotation = false;
 		freezePosition = false;
 		useGravity = true;
-		collider = SPRITE;
 
 		circleRadius = 0.0f;
 		boxX = 0.0f;
@@ -74,17 +73,17 @@ namespace spehs
 		Transform2D* transform = ownerObject->getComponent<Transform2D>();
 		if (!transform)
 			exceptions::fatalError("Object doesn't have transform component!");
-		Sprite* sprite = ownerObject->getComponent<Sprite>();
-		if (!sprite)
+		Collider* collider = ownerObject->getComponent<Collider>();
+		if (!collider)
 			exceptions::fatalError("Object doesn't have sprite component!");
 
-		//Update from sprite (this really needs to be done only when the sprite has changed)
-		mass = sprite->sprite->getArea() * DEFAULT_MASS_MULTIPLIER;
-		centerOfMass = getCenter(sprite->sprite->worldVertexArray.data(), sprite->sprite->worldVertexArray.size());
-		circleRadius = sprite->sprite->getRadius();
+		//Update from sprite (this really needs to be done only when the collider has changed)
+		mass = collider->collisionPolygon->getArea() * DEFAULT_MASS_MULTIPLIER;
+		centerOfMass = getCenter(collider->collisionPolygon->worldVertexArray.data(), collider->collisionPolygon->worldVertexArray.size());
+		circleRadius = collider->collisionPolygon->getRadius();
 		calculateMOI();
-		numVertices = sprite->sprite->worldVertexArray.size();
-		vertexData = sprite->sprite->worldVertexArray.data();
+		numVertices = collider->collisionPolygon->worldVertexArray.size();
+		vertexData = collider->collisionPolygon->worldVertexArray.data();
 
 		//Apply resultant force and torque
 		acceleration = resultantForce / mass;
@@ -175,30 +174,6 @@ namespace spehs
 		mass = _newMass;
 	}
 
-	void RigidBody2D::setSpriteCollider()
-	{
-		//The GameObject needs a sprite component
-		if (ownerObject->getComponent<Sprite>() == nullptr)
-			exceptions::fatalError("GameObject needs to have a sprite component for the RigidBody to use SpriteCollider");
-
-		collider = SPRITE;
-	}
-
-	void RigidBody2D::setBoxCollider(const float& _width, const float& _height)
-	{
-		exceptions::fatalError("Collision mode not supported at the moment!");
-		collider = BOX;
-		boxX = _width;
-		boxY = _height;
-	}
-
-	void RigidBody2D::setCircleCollider(const float& _radius)
-	{
-		exceptions::fatalError("Collision mode not supported at the moment!");
-		collider = CIRCLE;
-		circleRadius = _radius;
-	}
-
 	void RigidBody2D::setStatic(const bool _value)
 	{
 		isStatic = _value;
@@ -270,12 +245,12 @@ namespace spehs
 	void RigidBody2D::calculateMOI()
 	{
 		float sum1 = 0.0f, sum2 = 0.0f;
-		Sprite* sprite = ownerObject->getComponent<Sprite>();
-		std::vector<Vertex> vArray = sprite->sprite->vertexArray;
+		Collider* collider = ownerObject->getComponent<Collider>();
+		std::vector<Vertex> vArray = collider->collisionPolygon->vertexArray;
 		for (unsigned i = 0; i < vArray.size(); i++)
 		{
-			vArray[i].position.x *= sprite->sprite->width;
-			vArray[i].position.y *= sprite->sprite->height;
+			vArray[i].position.x *= collider->collisionPolygon->width;
+			vArray[i].position.y *= collider->collisionPolygon->height;
 		}
 
 		//For regular convex polygons:
