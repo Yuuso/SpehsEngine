@@ -343,19 +343,5 @@ namespace spehs
 		int screenshot;
 		screenshot = SOIL_save_screenshot(path.c_str(), SOIL_SAVE_TYPE_BMP, 0, 0, applicationData->getWindowWidth(), applicationData->getWindowHeight());
 		console::log("Screenshot saved to \"" + path + "\"", glm::vec3(0.35f, 1.0f, 0.9f));
-
-		/*
-		//TODO: http://www.lonesock.net/soil.html		
-		auto t = std::time(nullptr);
-		auto tm = *std::localtime(&t);
-		
-		std::ostringstream oss;
-		oss << std::put_time(&tm, "%H-%M-%S_%d-%m-%Y");
-		std::string str = "screenshot-";
-		str += oss.str();
-		
-		int screenshot;
-		screenshot = SOIL_save_screenshot(str.c_str(), SOIL_SAVE_TYPE_BMP, 0, 0, applicationData->getWindowWidth(), applicationData->getWindowHeight());
-		*/
 	}
 }

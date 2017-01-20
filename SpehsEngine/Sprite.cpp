@@ -12,7 +12,7 @@ namespace spehs
 	{
 		sprite = spehs::Polygon::create(4, 0, 1.0f, 1.0f);
 	}
-	Sprite::Sprite(GameObject& _owner) : Component(_owner) 
+	Sprite::Sprite(GameObject& _owner) : Component(_owner)
 	{
 		sprite = spehs::Polygon::create(4, 0, 1.0f, 1.0f);
 	}
@@ -30,11 +30,23 @@ namespace spehs
 
 		sprite->setPosition(transform->getPosition());
 		sprite->setRotation(transform->getRotation());
+		sprite->setScale(transform->getScale());
 	}
 
-	void Sprite::setPolygon(float _x, float _y, int _numVertices)
+	void Sprite::setSize(const float _x, const float _y)
 	{
-		sprite->destroy();
-		sprite = spehs::Polygon::create(_numVertices, 0, _x, _y);
+		sprite->resize(_x, _y);
+	}
+	void Sprite::setTexture(TextureData* _textureDataPtr)
+	{
+		sprite->setTexture(_textureDataPtr);
+	}
+	void Sprite::setTextureID(const unsigned int _textureID)
+	{
+		sprite->setTexture(_textureID);
+	}
+	void Sprite::setDepth(const int _depth)
+	{
+		sprite->setPlaneDepth(_depth);
 	}
 }

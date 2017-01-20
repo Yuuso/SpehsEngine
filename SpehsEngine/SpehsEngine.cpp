@@ -22,8 +22,7 @@
 #include <SDL/SDL.h>
 #include <GL/glew.h>
 
-//[MR].[mR].[B].[A].[pA]
-#define CURRENT_BUILD "0.0.0.0.0."
+#define CURRENT_BUILD "0.0.1"
 std::string buildVersion;
 
 

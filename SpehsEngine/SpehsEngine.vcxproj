@@ -94,6 +94,7 @@
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="AnimatedSprite.cpp" />
     <ClCompile Include="ApplicationData.cpp" />
     <ClCompile Include="Arrow.cpp" />
     <ClCompile Include="AudioEngine.cpp" />
@@ -156,6 +157,7 @@
     <ClCompile Include="Window.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="AnimatedSprite.h" />
     <ClInclude Include="ApplicationData.h" />
     <ClInclude Include="Arrow.h" />
     <ClInclude Include="AudioEngine.h" />

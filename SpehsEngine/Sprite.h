@@ -3,8 +3,6 @@
 
 #include "Component.h"
 
-#include <string>
-
 
 namespace spehs
 {
@@ -16,12 +14,16 @@ namespace spehs
 	public:
 		Sprite();
 		Sprite(GameObject& _owner);
-		~Sprite();
+		virtual ~Sprite();
 
-		void update();
+		virtual void update();
 
-		void setPolygon(float _x, float _y, int _numVertices);
+		void setSize(const float _x, const float _y);
+		void setTexture(TextureData* _textureDataPtr);
+		void setTextureID(const unsigned int _textureID);
+		void setDepth(const int _depth);
 
+	protected:
 		Polygon* sprite;
 	};
 }
