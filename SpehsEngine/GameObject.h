@@ -19,7 +19,7 @@ namespace spehs
 
 		void update();
 
-		template <typename type> void addComponent();
+		template <typename type> type* addComponent();
 		template <typename type> type* getComponent();
 
 		//Setters
@@ -34,7 +34,7 @@ namespace spehs
 	//Templates:
 
 	template <typename type>
-	void GameObject::addComponent()
+	type* GameObject::addComponent()
 	{
 		type* cast = new type(*this);
 
@@ -44,6 +44,7 @@ namespace spehs
 		}
 		
 		components.push_back(cast);
+		return cast;
 	}
 
 	template <typename type>

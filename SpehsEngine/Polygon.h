@@ -46,8 +46,8 @@ namespace spehs
 		//Getters
 		float getArea();
 		float getRadius();
-		float getWidth(){ return width; }
-		float getHeight(){ return height; }
+		float getWidth() const { return width; }
+		float getHeight() const { return height; }
 
 	protected:
 		Polygon(const int _shapeID, const PlaneDepth _planeDepth, const float _width, const float _height);
