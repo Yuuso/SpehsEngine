@@ -22,7 +22,7 @@
 #include <SDL/SDL.h>
 #include <GL/glew.h>
 
-#define CURRENT_BUILD "0.0.1"
+#define CURRENT_BUILD "0.0.1."
 std::string buildVersion;
 
 
