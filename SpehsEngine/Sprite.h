@@ -30,6 +30,8 @@ namespace spehs
 		void setColorAlpha(const float _a);
 		void setColorAlpha(const unsigned char _a);
 		void setDepth(const int _depth);
+		void setRenderState(const bool _state);
+		void updateVertices();
 		const Polygon* getSpritePolygon(){ return sprite; }
 
 	protected:

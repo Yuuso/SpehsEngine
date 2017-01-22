@@ -112,6 +112,7 @@ namespace spehs
 			void setPosition(const glm::vec2& _pos);
 			void setVelocity(const glm::vec2& _vel);
 			void setDirection(const glm::vec2& _direction);
+			void setZ(const float _z);
 
 			glm::vec2 getPosition(){ return position; }
 			glm::vec2 getVelocity(){ return velocity; }
@@ -123,6 +124,7 @@ namespace spehs
 			default: {0, 0, 0}
 			*/
 			glm::vec2 position;
+			float z = 0.0f;
 
 			/*
 			default: {0, 0, 0}

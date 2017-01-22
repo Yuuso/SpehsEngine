@@ -76,4 +76,12 @@ namespace spehs
 	{
 		sprite->setPlaneDepth(_depth);
 	}
+	void Sprite::setRenderState(const bool _state)
+	{
+		sprite->setRenderState(_state);
+	}
+	void Sprite::updateVertices()
+	{
+		sprite->updateVertices();
+	}
 }

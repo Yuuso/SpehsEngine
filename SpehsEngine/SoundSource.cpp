@@ -182,7 +182,7 @@ namespace spehs
 
 		void ActiveSoundSource::setParameters()
 		{
-			alSource3f(source->sourceID, AL_POSITION, position.x, position.y, 0.0f);
+			alSource3f(source->sourceID, AL_POSITION, position.x, position.y, z);
 			alSource3f(source->sourceID, AL_VELOCITY, velocity.x, velocity.y, 0.0f);
 			alSource3f(source->sourceID, AL_DIRECTION, direction.x, direction.y, 0.0f);
 			SoundSource::setParameters();
@@ -193,7 +193,7 @@ namespace spehs
 			position = _pos;
 			if (source)
 			{
-				alSource3f(source->sourceID, AL_POSITION, position.x, position.y, 0.0f);
+				alSource3f(source->sourceID, AL_POSITION, position.x, position.y, z);
 			}
 		}
 		void ActiveSoundSource::setVelocity(const glm::vec2& _vel)
@@ -211,6 +211,10 @@ namespace spehs
 			{
 				alSource3f(source->sourceID, AL_DIRECTION, direction.x, direction.y, 0.0f);
 			}
+		}
+		void ActiveSoundSource::setZ(const float _z)
+		{
+			z = _z;
 		}
 	}
 }
