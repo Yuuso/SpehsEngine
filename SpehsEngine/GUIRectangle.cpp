@@ -162,6 +162,8 @@ namespace spehs
 			else
 				polygon->setColor(color);
 		}
+		else
+			polygon->setColor(color);
 
 		if (!checkState(GUIRECT_MIN_SIZE_UPDATED_BIT))
 		{//Recalculate min size + rescale + reposition
