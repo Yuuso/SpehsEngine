@@ -35,7 +35,8 @@ namespace spehs
 		/**Returns true when user has edited the value and the value is ready to be processed. Should return true during a full program loop cycle (from input update to the next)*/
 		bool editorValueChanged()
 		{
-			return _valueChanged || !(editorValue == previousEditorValue);
+			return _valueChanged/*Update has been run, value change was automatically detected*/ ||
+				!(editorValue == previousEditorValue)/*Update hasn't run yet, but change can be detected using previous value data*/;
 		}
 
 		/**Retrieves the editor's value*/
@@ -52,7 +53,6 @@ namespace spehs
 				editorValue = newValue;
 				onEditorValueChange();
 			}
-			previousEditorValue = newValue;
 		}
 
 	protected:

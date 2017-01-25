@@ -35,6 +35,7 @@ namespace spehs
 			if (AudioEngine::instance)
 			{
 				delete AudioEngine::instance;
+				AudioEngine::instance = nullptr;
 			}
 			else
 			{

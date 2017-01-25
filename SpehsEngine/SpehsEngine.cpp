@@ -29,6 +29,7 @@ std::string buildVersion;
 spehs::Window* mainWindow = nullptr;
 namespace spehs
 {
+	bool deallocateApplicationData;
 	extern void initText();
 	extern void uninitText();
 	namespace rng
@@ -52,10 +53,12 @@ namespace spehs
 		if (customApplicationDataInstance)
 		{//Set application data pointer to custom instance
 			applicationData = customApplicationDataInstance;
+			deallocateApplicationData = false;
 		}
 		else
 		{//Create a basic application data instance
 			applicationData = new ApplicationData();
+			deallocateApplicationData = true;
 		}
 		applicationData->read();//Load application data
 
@@ -108,7 +111,8 @@ namespace spehs
 	void uninitialize()
 	{
 		applicationData->write();
-		delete applicationData;
+		if (deallocateApplicationData)
+			delete applicationData;
 		inputManager->uninitialize();
 		delete inputManager;
 		delete textureManager;
