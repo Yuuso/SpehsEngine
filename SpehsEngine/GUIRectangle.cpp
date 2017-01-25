@@ -433,13 +433,13 @@ namespace spehs
 		text->setFont(applicationData->GUITextFontPath, applicationData->GUITextSize);
 		text->setColor(defaultStringColor);
 	}
-	void GUIRectangle::setDisplayTexture(const std::string path)
+	void GUIRectangle::setDisplayTexture(const std::string path, const TextureFiltering minScaleFiltering, const TextureFiltering magScaleFiltering)
 	{
 		if (displayTexture)
 			delete displayTexture;
 		displayTexture = new DisplayTexture();
 		displayTexture->polygon = spehs::Polygon::create(4, 0, 1, 1);
-		TextureData* texData = textureManager->getTextureData(path);
+		TextureData* texData = textureManager->getTextureData(path, minScaleFiltering, magScaleFiltering);
 		displayTexture->polygon->setTexture(texData);
 		displayTexture->polygon->resize(texData->width, texData->height);
 		displayTexture->polygon->setCameraMatrixState(false);
@@ -449,9 +449,9 @@ namespace spehs
 		disableStateRecursiveUpwards(GUIRECT_POSITION_UPDATED_BIT);
 		disableStateRecursiveUpwards(GUIRECT_SCALE_UPDATED_BIT);
 	}
-	void GUIRectangle::setTexture(const std::string path)
+	void GUIRectangle::setTexture(const std::string path, const spehs::TextureFiltering minScaleFiltering, const spehs::TextureFiltering magScaleFiltering)
 	{
-		polygon->setTexture(path);
+		polygon->setTexture(textureManager->getTextureData(path, minScaleFiltering, magScaleFiltering));
 	}
 	void GUIRectangle::setPressCallback(std::function<void(GUIRectangle&)> callbackFunction)
 	{
