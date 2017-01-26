@@ -131,6 +131,7 @@ namespace spehs
 		void setDisplayTexture(const std::string path, const TextureFiltering minScaleFiltering = TextureFiltering::Nearest, const TextureFiltering magScaleFiltering = TextureFiltering::Nearest);
 		//Rectangle texture
 		void setTexture(const std::string path, const TextureFiltering minScaleFiltering = TextureFiltering::Nearest, const TextureFiltering magScaleFiltering = TextureFiltering::Nearest);
+		void setTextureID(const unsigned int _textureID);
 		
 		//Audio
 		void setHoverSound(const std::string path);

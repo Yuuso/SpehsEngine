@@ -453,6 +453,10 @@ namespace spehs
 	{
 		polygon->setTexture(textureManager->getTextureData(path, minScaleFiltering, magScaleFiltering));
 	}
+	void GUIRectangle::setTextureID(const unsigned int _textureID)
+	{
+		polygon->setTextureID(_textureID);
+	}
 	void GUIRectangle::setPressCallback(std::function<void(GUIRectangle&)> callbackFunction)
 	{
 		if (pressCallbackFunction)
