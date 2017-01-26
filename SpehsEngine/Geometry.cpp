@@ -162,9 +162,9 @@ namespace spehs
 
 			//Initial rotation is set so that the "lowest" (bottom) line is drawn horizontally
 			if (shape % 2)
-				firstPosition = HALF_PI;
+				firstPosition = 0;
 			else
-				firstPosition = HALF_PI + (TWO_PI / shape) / 2;
+				firstPosition = (TWO_PI / shape) / 2.0f;
 			cusps[0] = glm::vec2(cos(firstPosition), sin(firstPosition));
 
 			//Take record of min/max cusp values so that it can be streched to match the desired width/height
