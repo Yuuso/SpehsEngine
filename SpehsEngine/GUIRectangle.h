@@ -103,6 +103,8 @@ namespace spehs
 		void setColor(const glm::vec4& color);
 		/// Range [0, 255]
 		void setColor(const unsigned char r, const unsigned char g, const unsigned char b, const unsigned char a = 255);
+		void setColorAlpha(const float a);
+		void setColorAlpha(const unsigned char a);
 		void setParent(GUIRectangleContainer* Parent);
 		virtual void setDepth(const int16_t depth);
 		int16_t getDepth() const;

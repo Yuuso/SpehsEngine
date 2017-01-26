@@ -19,6 +19,7 @@ namespace spehs
 			if (!_initialized)
 			{
 				_initialized = true;
+				previousEditorValue = editorValue;
 				onEditorValueChange();
 			}
 
@@ -28,19 +29,19 @@ namespace spehs
 			{//Value change detected
 				onEditorValueChange();//Implementation reacts visually to the change
 				_valueChanged = true;
+				previousEditorValue = editorValue;
 			}
-			previousEditorValue = editorValue;
 		}
 
 		/**Returns true when user has edited the value and the value is ready to be processed. Should return true during a full program loop cycle (from input update to the next)*/
-		bool editorValueChanged()
+		bool editorValueChanged() const
 		{
 			return _valueChanged/*Update has been run, value change was automatically detected*/ ||
 				!(editorValue == previousEditorValue)/*Update hasn't run yet, but change can be detected using previous value data*/;
 		}
 
 		/**Retrieves the editor's value*/
-		ValueType getEditorValue()
+		ValueType getEditorValue() const
 		{
 			return editorValue;
 		}
