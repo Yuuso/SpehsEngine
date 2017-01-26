@@ -302,6 +302,16 @@ namespace spehs
 		color[3] = a / 255.0f;
 		polygon->setColor(color);
 	}
+	void GUIRectangle::setColorAlpha(const float a)
+	{
+		color.a = a;
+		polygon->setColorAlpha(a);
+	}
+	void GUIRectangle::setColorAlpha(const unsigned char a)
+	{
+		color.a = a / 255.0f;
+		polygon->setColorAlpha(color.a);
+	}
 	void GUIRectangle::setDepth(const int16_t depth)
 	{
 		polygon->setPlaneDepth(depth);
