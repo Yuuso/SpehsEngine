@@ -46,7 +46,9 @@ namespace spehs
 		//Class containing parameters for textures
 		//Can be expanded to include more in the future if needed
 	public:
-		TextureParameter();
+		static const spehs::TextureParameter defaultParameters;
+
+		TextureParameter(){}
 		TextureParameter(const TextureFiltering _minFilter, const TextureFiltering _magFilter)
 			: minFilter(_minFilter), magFilter(_magFilter){}
 		TextureParameter(const TextureFiltering _minFilter, const TextureFiltering _magFilter, const TextureWrapping _xWrapping, const TextureWrapping _yWrapping)
@@ -79,17 +81,24 @@ namespace spehs
 		TextureManager();
 		~TextureManager();
 
-		void setDefaultTexture(const std::string& _filepath, const TextureParameter* _parameters = nullptr, const bool _deleteParamPointer = true);
+		void setDefaultTexture(const std::string& _filepath, const TextureParameter& _parameters);
+		void setDefaultTexture(const std::string& _filepath);
 
-		TextureData* getTextureData(const std::string& _texturePath, const TextureParameter* _parameters = nullptr, const bool _deleteParamPointer = true); //Get texture data from path
+		TextureData* getTextureData(const std::string& _texturePath, const TextureParameter& _parameters); //Get texture data from path
+		TextureData* getTextureData(const std::string& _texturePath);
 		TextureData* getTextureData(const size_t& _hash); //Get texture data from hash
-		size_t preloadTexture(const std::string& _texturePath, const TextureParameter* _parameters = nullptr, const bool _deleteParamPointer = true); //Loads texture and returns hash
+		size_t preloadTexture(const std::string& _texturePath, const TextureParameter& _parameters); //Loads texture and returns hash
+		size_t preloadTexture(const std::string& _texturePath); //Loads texture and returns hash
 
-		TextureData* getNoiseTexture(const int& _width, const int& _height, const unsigned int& _seed, const int& _factor, const TextureParameter* _parameters = nullptr, const bool _deleteParamPointer = true);
-		size_t preloadNoiseTexture(const int& _width, const int& _height, const unsigned int& _seed, const int& _factor, const TextureParameter* _parameters = nullptr, const bool _deleteParamPointer = true);
+		TextureData* getNoiseTexture(const int& _width, const int& _height, const unsigned int& _seed, const int& _factor, const TextureParameter& _parameters);
+		TextureData* getNoiseTexture(const int& _width, const int& _height, const unsigned int& _seed, const int& _factor);
+		size_t preloadNoiseTexture(const int& _width, const int& _height, const unsigned int& _seed, const int& _factor, const TextureParameter& _parameters);
+		size_t preloadNoiseTexture(const int& _width, const int& _height, const unsigned int& _seed, const int& _factor);
 
-		TextureData* createTexture(const std::string &_ID, const void* _uint8data, const int _width, const int _height, const TextureParameter* _parameters = nullptr, const bool _deleteParamPointer = true);
-		size_t preloadDataTexture(const std::string &_ID, const void* _uint8data, const int _width, const int _height, const TextureParameter* _parameters = nullptr, const bool _deleteParamPointer = true);
+		TextureData* createTexture(const std::string &_ID, const void* _uint8data, const int _width, const int _height, const TextureParameter& _parameters);
+		TextureData* createTexture(const std::string &_ID, const void* _uint8data, const int _width, const int _height);
+		size_t preloadDataTexture(const std::string &_ID, const void* _uint8data, const int _width, const int _height, const TextureParameter& _parameters);
+		size_t preloadDataTexture(const std::string &_ID, const void* _uint8data, const int _width, const int _height);
 
 		void removeTextureData(const std::string& _texturePath);
 		void removeTextureData(const size_t& _hash);
@@ -99,7 +108,7 @@ namespace spehs
 		void takeScreenShot();//Takes screenshot and writes it to the default screenshot directory, specified in the application data
 
 	private:
-		TextureData* toTexture(const std::string& _filepath, const TextureParameter* _parameters = nullptr, const bool _deleteParamPointer = true);
+		TextureData* toTexture(const std::string& _filepath, const TextureParameter& _parameters);
 
 		TextureData* defaultTexture;
 		std::unordered_map<size_t, TextureData*> textureDataMap;

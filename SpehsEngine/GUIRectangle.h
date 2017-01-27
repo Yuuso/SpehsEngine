@@ -5,7 +5,7 @@
 #include <glm/vec3.hpp>
 #include <glm/vec4.hpp>
 #include "BitwiseOperations.h"
-#include "TextureManager.h"//Used to get TextureFiltering...
+#include "TextureManager.h"//Used to get TextureParameter...
 #define GUIRECT_ID_TYPE						uint32_t
 #define TEXT_PREFERRED_SIZE_BORDER			2
 ////GUI rectangle states
@@ -130,9 +130,11 @@ namespace spehs
 		void setTooltip(const std::string tooltipString);
 		GUIRectangle* getTooltipPtr() const { return tooltip; }
 		//Display texture
-		void setDisplayTexture(const std::string path, const TextureParameter* _parameters = nullptr, const bool _deleteParamPointer = true);
+		void setDisplayTexture(const std::string path, const TextureParameter& _parameters);
+		void setDisplayTexture(const std::string path);
 		//Rectangle texture
-		void setTexture(const std::string path, const TextureParameter* _parameters = nullptr, const bool _deleteParamPointer = true);
+		void setTexture(const std::string path, const TextureParameter& _parameters);
+		void setTexture(const std::string path);
 		void setTextureID(const unsigned int _textureID);
 		
 		//Audio

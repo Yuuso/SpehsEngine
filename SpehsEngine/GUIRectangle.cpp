@@ -443,13 +443,13 @@ namespace spehs
 		text->setFont(applicationData->GUITextFontPath, applicationData->GUITextSize);
 		text->setColor(defaultStringColor);
 	}
-	void GUIRectangle::setDisplayTexture(const std::string path, const TextureParameter* _parameters, const bool _deleteParamPointer)
+	void GUIRectangle::setDisplayTexture(const std::string path, const TextureParameter& _parameters)
 	{
 		if (displayTexture)
 			delete displayTexture;
 		displayTexture = new DisplayTexture();
 		displayTexture->polygon = spehs::Polygon::create(4, 0, 1, 1);
-		TextureData* texData = textureManager->getTextureData(path, _parameters, _deleteParamPointer);
+		TextureData* texData = textureManager->getTextureData(path, _parameters);
 		displayTexture->polygon->setTexture(texData);
 		displayTexture->polygon->resize(texData->width, texData->height);
 		displayTexture->polygon->setCameraMatrixState(false);
@@ -459,9 +459,17 @@ namespace spehs
 		disableStateRecursiveUpwards(GUIRECT_POSITION_UPDATED_BIT);
 		disableStateRecursiveUpwards(GUIRECT_SCALE_UPDATED_BIT);
 	}
-	void GUIRectangle::setTexture(const std::string path, const TextureParameter* _parameters, const bool _deleteParamPointer)
+	void GUIRectangle::setDisplayTexture(const std::string path)
 	{
-		polygon->setTexture(textureManager->getTextureData(path, _parameters, _deleteParamPointer));
+		setDisplayTexture(path, spehs::TextureParameter::defaultParameters);
+	}
+	void GUIRectangle::setTexture(const std::string path, const TextureParameter& _parameters)
+	{
+		polygon->setTexture(textureManager->getTextureData(path, _parameters));
+	}
+	void GUIRectangle::setTexture(const std::string path)
+	{
+		setTexture(path, spehs::TextureParameter::defaultParameters);
 	}
 	void GUIRectangle::setTextureID(const unsigned int _textureID)
 	{
