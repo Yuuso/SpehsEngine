@@ -11,7 +11,7 @@
 #include <algorithm>
 
 
-#define DEFAULT_MAX_SOURCES 512
+#define DEFAULT_MAX_SOURCES 256
 
 
 namespace spehs
