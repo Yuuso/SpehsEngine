@@ -36,6 +36,7 @@ namespace spehs
 		int getEditorValueAsInt() const;
 		void setMaxStringLength(const int length) { maxStringLength = length; }
 		void setTyperBlinkTime(const int milliSeconds) { typerBlinkTime = 2 * milliSeconds; }
+		void setMultiLineEditing(const bool _state) { multilineEditing = _state; }
 
 		//Identity
 		GUIStringEditor* getAsGUIStringEditorPtr() override { return this; }
@@ -52,6 +53,7 @@ namespace spehs
 
 		bool stringUpdated;
 		bool disableInputReceiveOnNextUpdate;
+		bool multilineEditing;
 		int maxStringLength;
 		int typerPosition;
 		int typerBlinkTime;

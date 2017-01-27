@@ -533,6 +533,17 @@ namespace spehs
 		}
 		return position.x + (float)(currentLineWidth >> 6);
 	}
+	float Text::getY(const unsigned characterIndex) const
+	{
+		const int end = std::min((int)characterIndex, (int)string.size() - 1);
+		int currentHeight(0);
+		for (int i = string.size() - 1; i >= end; i--)
+		{
+			if (string[i] == '\n')
+				currentHeight += font->height + lineSpacing;
+		}
+		return position.y + currentHeight;
+	}
 	int Text::getTextWidth() const
 	{
 		int record = 0;

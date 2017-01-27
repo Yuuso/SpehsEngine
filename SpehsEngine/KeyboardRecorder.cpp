@@ -21,6 +21,7 @@ namespace spehs
 		commandKeys.push_back(KEYBOARD_PAGEUP);
 		commandKeys.push_back(KEYBOARD_PAGEDOWN);
 		commandKeys.push_back(KEYBOARD_TAB);
+		commandKeys.push_back(KEYBOARD_ESCAPE);
 	}
 	KeyboardRecorder::~KeyboardRecorder()
 	{

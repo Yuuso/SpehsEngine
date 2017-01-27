@@ -54,8 +54,8 @@ namespace spehs
 		if (focusedWindow)
 		{
 			if (!focusedWindow->getInputEnabled() ||	//Check if focused window yielded focus internally
-				(!focusedWindow->getMouseHoverAny() &&						//Focused window is no longer under mouse 
-				!focusedWindow->isReceivingInput()))						//Focused window does not receive input
+				(!focusedWindow->getMouseHoverAny() &&	//Focused window is no longer under mouse 
+				!focusedWindow->isReceivingInput()))	//Focused window does not receive input
 				focusedWindow = nullptr;
 		}
 
@@ -95,7 +95,6 @@ namespace spehs
 		}
 		
 		//Update windows in order
-		//focusedWindow = nullptr;
 		bool focusWindowUpdated(false);
 		if (updateWindows)
 		{
@@ -130,7 +129,7 @@ namespace spehs
 			if (focusedWindow)
 			{//Yielding focus
 
-				if (!focusedWindow->checkState(GUIRECT_MOUSE_HOVER_CONTAINER))
+				if (!focusedWindow->checkState(GUIRECT_MOUSE_HOVER_CONTAINER) && !focusedWindow->isReceivingInput())
 				{//Window not under mouse, do not continue focus status
 					focusedWindow = nullptr;
 				}

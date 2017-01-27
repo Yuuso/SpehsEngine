@@ -14,7 +14,7 @@ namespace spehs
 
 	GUIStringEditor::GUIStringEditor() : ValueEditor(""),
 		stringUpdated(false), defaultString(""), input(""), disableInputReceiveOnNextUpdate(false),
-		maxStringLength(defaultMaxStringEditorStringLength), typerPosition(0), typerBlinkTime(0), typerBlinkTimer(0)
+		maxStringLength(defaultMaxStringEditorStringLength), typerPosition(0), typerBlinkTime(0), typerBlinkTimer(0), multilineEditing(false)
 	{
 		setTyperBlinkTime(512);
 		createText();
@@ -84,7 +84,7 @@ namespace spehs
 	{
 		GUIRectangle::updatePosition();
 		if (text->getString().size() > 0)
-			typeCharacter->setPosition(text->getX(typerPosition) - typeCharacter->getTextWidth() * 0.5f, text->getY());
+			typeCharacter->setPosition(text->getX(typerPosition) - typeCharacter->getTextWidth() * 0.5f, text->getY(typerPosition));
 		else//No characters written
 			typeCharacter->setPosition(text->getX(typerPosition) - typeCharacter->getTextWidth() * 0.5f, text->getY() - 0.5f * text->getFontHeight());
 	}
@@ -309,6 +309,17 @@ namespace spehs
 				break;
 			case KEYBOARD_RETURN:
 			case KEYBOARD_KP_ENTER:
+				if (multilineEditing)
+				{
+					input.insert(input.begin() + typerPosition, '\n');
+					stringUpdated = false;
+					typerPosition++;
+					typerBlinkTimer = 0;
+				}
+				else
+					endTyping();
+				break;
+			case KEYBOARD_ESCAPE:
 				endTyping();
 				break;
 			}
