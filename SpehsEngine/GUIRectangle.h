@@ -130,9 +130,9 @@ namespace spehs
 		void setTooltip(const std::string tooltipString);
 		GUIRectangle* getTooltipPtr() const { return tooltip; }
 		//Display texture
-		void setDisplayTexture(const std::string path, const TextureFiltering minScaleFiltering = TextureFiltering::Nearest, const TextureFiltering magScaleFiltering = TextureFiltering::Nearest);
+		void setDisplayTexture(const std::string path, const TextureParameter* _parameters = nullptr, const bool _deleteParamPointer = true);
 		//Rectangle texture
-		void setTexture(const std::string path, const TextureFiltering minScaleFiltering = TextureFiltering::Nearest, const TextureFiltering magScaleFiltering = TextureFiltering::Nearest);
+		void setTexture(const std::string path, const TextureParameter* _parameters = nullptr, const bool _deleteParamPointer = true);
 		void setTextureID(const unsigned int _textureID);
 		
 		//Audio
