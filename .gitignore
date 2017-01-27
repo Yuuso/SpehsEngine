@@ -3,6 +3,7 @@ Thumbs.db
 ehthumbs.db
 
 #Meid�n ignoret
+*.TMP
 *.log
 *.dll
 *.sdf
