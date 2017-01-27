@@ -526,7 +526,10 @@ namespace spehs
 			{//Increase current line width
 #ifdef _DEBUG
 				if (font->characters[string[i]].advance > 10000)
-					spehs::exceptions::unexpectedError("Character width might be invalid!");
+				{
+					spehs::exceptions::warning("Character width might be invalid!");
+					currentLineWidth -= font->characters[string[i]].advance;//Reverse width
+				}
 #endif
 				currentLineWidth += font->characters[string[i]].advance;
 			}
@@ -561,7 +564,10 @@ namespace spehs
 			{//Increase current line width
 #ifdef _DEBUG
 				if (font->characters[string[i]].advance > 10000)
-					spehs::exceptions::unexpectedError("Character width might be invalid!");
+				{
+					spehs::exceptions::warning("Character width might be invalid!");
+					currentLineWidth -= font->characters[string[i]].advance;//Reverse width
+				}
 #endif
 				currentLineWidth += font->characters[string[i]].advance;
 			}

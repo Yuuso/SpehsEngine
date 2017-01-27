@@ -32,7 +32,7 @@ namespace spehs
 			void stop();
 
 			void setPitch(const float _pitch);
-			void setGain(const float _gain);
+			virtual void setGain(const float _gain);
 			void setMaxGain(const float _maxGain);
 			void setMinGain(const float _minGain);
 			void setLooping(const bool _loop);

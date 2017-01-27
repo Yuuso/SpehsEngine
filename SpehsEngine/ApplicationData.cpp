@@ -49,7 +49,7 @@ namespace spehs
 		//Video
 		windowMode(0), showFps(1), maxFps(200), vSync(0), MSAA(4),
 		//Audio
-		masterVolume(100), musicVolume(100), sfxVolume(100),
+		masterVolume(100),
 		//Other
 		consoleTextSize(12), consoleTextAlpha(900),
 		GUITextSize(12), GUITextFontPath("Fonts/Anonymous.ttf"),
@@ -87,8 +87,6 @@ namespace spehs
 		*stream << "MSAA: " << MSAA << "\n";
 		//Audio
 		*stream << "Master volume: " << int(100 * masterVolume) << "\n";
-		*stream << "Music volume: " << int(100 * musicVolume) << "\n";
-		*stream << "SFX volume: " << int(100 * sfxVolume) << "\n";
 		//Other
 		*stream << "Console text size: " << consoleTextSize << "\n";
 		*stream << "ConsoleTextAlpha (0-255): " << consoleTextAlpha << "\n";
@@ -144,8 +142,6 @@ namespace spehs
 		//Audio
 		int intVal;
 		readValueIntoInt(*stream, intVal);		masterVolume = std::min(1.0f, std::max(0.0f, intVal * 0.01f));
-		readValueIntoInt(*stream, intVal);		musicVolume = std::min(1.0f, std::max(0.0f, intVal * 0.01f));
-		readValueIntoInt(*stream, intVal);		sfxVolume = std::min(1.0f, std::max(0.0f, intVal * 0.01f));
 		//Other
 		readValueIntoInt(*stream, consoleTextSize);
 		readValueIntoInt(*stream, consoleTextAlpha);
@@ -163,14 +159,6 @@ namespace spehs
 			masterVolume = 0;
 		else if (masterVolume > 100)
 			masterVolume = 100;
-		if (musicVolume < 0)
-			musicVolume = 0;
-		else if (musicVolume > 100)
-			musicVolume = 100;
-		if (sfxVolume < 0)
-			sfxVolume = 0;
-		else if (sfxVolume > 100)
-			sfxVolume = 100;
 		if (consoleTextAlpha < 0)
 			consoleTextAlpha = 0;
 		else if (consoleTextAlpha > 255)

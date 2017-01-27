@@ -33,8 +33,6 @@ namespace spehs
 		int MSAA;
 		//Audio
 		float masterVolume;
-		float musicVolume;
-		float sfxVolume;
 		//Other
 		int consoleTextSize;
 		int consoleTextAlpha;
