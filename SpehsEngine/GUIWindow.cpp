@@ -33,7 +33,7 @@ namespace spehs
 	glm::vec4 GUIWindow::exitBackgroundColor = glm::vec4(0.6f, 0.05f, 0.05f, 1.0f);
 	glm::vec4 GUIWindow::exitStringColor = glm::vec4(0.2f, 0.2f, 0.2f, 1.0f);
 
-	GUIWindow::GUIWindow() : doubleClickTimer(0), strechState(0)
+	GUIWindow::GUIWindow() : doubleClickTimer(0), strechState(0), refreshRequests(0)
 	{
 		//Header bar
 		header = new GUIRectangle(-1);
@@ -470,6 +470,10 @@ namespace spehs
 		disableBit(state, GUIRECT_MIN_SIZE_UPDATED_BIT);
 		disableBit(state, GUIRECT_SCALE_UPDATED_BIT);
 		disableBit(state, GUIRECT_POSITION_UPDATED_BIT);
-		disableBit(state, GUIRECT_REFRESH_BIT);
+		refreshRequests = 0;
+	}
+	void GUIWindow::requestRefresh()
+	{
+		refreshRequests++;
 	}
 }

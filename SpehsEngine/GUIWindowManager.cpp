@@ -93,6 +93,13 @@ namespace spehs
 			popupShade->setRenderState(false);
 			popupShade->setColorAlpha(0.0f);
 		}
+
+		//Refresh requests before updates: if done after the updates, render would end up displaying un-updated GUI
+		for (unsigned i = 0; i < windows.size(); i++)
+		{
+			if (windows[i]->refreshRequests > 0 && windows[i]->isOpen())
+				windows[i]->refresh();
+		}
 		
 		//Update windows in order
 		bool focusWindowUpdated(false);
@@ -165,12 +172,6 @@ namespace spehs
 			}
 		}
 
-		//Refresh requested
-		for (unsigned i = 0; i < windows.size(); i++)
-		{
-			if (windows[i]->checkState(GUIRECT_REFRESH_BIT) && windows[i]->isOpen())
-				windows[i]->refresh();
-		}
 		batchManager.endSection();
 	}
 	void GUIWindowManager::refreshWindows()

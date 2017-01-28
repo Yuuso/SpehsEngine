@@ -27,7 +27,6 @@
 //GUI window specific
 #define GUIRECT_DRAGGING_BIT				0x00004000
 #define GUIRECT_STRECHING_BIT				0x00008000
-#define GUIRECT_REFRESH_BIT					0x00010000//Prevents multiple refreshes within a single update cycle. Checked at GUIWindow post update. Make refreshing the window within element update possible, otherwise resfresh would deallocate the element being updated!
 //Text justification
 #define GUIRECT_TEXT_JUSTIFICATION_LEFT		0x00020000
 #define GUIRECT_TEXT_JUSTIFICATION_CENTER	0x00040000

@@ -10,6 +10,7 @@ namespace spehs
 	class GUIWindow : public GUIRectangleContainer
 	{
 	public:
+		friend class GUIWindowManager;
 		//Borders before application window where the window should not be located at
 		static int upBorder;
 		static int downBorder;
@@ -41,8 +42,8 @@ namespace spehs
 
 		bool close() override;
 		bool open() override;
-		virtual void refresh();
 		virtual void limitWithinMainWindow();//Reposition window so that it doesn't escape the viewport
+		virtual void requestRefresh();//Request refresh within the next loop cycle
 
 		//Getters
 		GUIRectangle* getHeaderPtr(){ return header; }
@@ -53,6 +54,7 @@ namespace spehs
 		GUIWindow* getAsGUIWindowPtr() override { return this; }
 
 	protected:
+		virtual void refresh();//Elements must not have direct access to refresh!
 
 		GUIRectangle* header;//The header bar, located above the window
 		GUIRectangle* exit;//The exit button, located in the top right corner of the window
@@ -61,6 +63,6 @@ namespace spehs
 		int doubleClickTimer;//Timer in milliseconds of how much time is left to carry out a double click
 		bool mouseOverStrechArea();//Returns true if mouse is hovering over the strech area
 		int8_t strechState;
-		
+		int refreshRequests;
 	};
 }
