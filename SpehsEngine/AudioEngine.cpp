@@ -149,7 +149,7 @@ namespace spehs
 			});
 			for (unsigned i = 0; i < sourcePool.size(); i++)
 			{
-				if (sourcePool[i]->soundPtr->getPriority() > _soundSource->getPriority())
+				if (sourcePool[i]->soundPtr->getPriority() >= _soundSource->getPriority())
 				{
 					if (sourcePool[i]->soundPtr->getPriority() != 0)
 					{

@@ -25,7 +25,7 @@ namespace spehs
 
 	/*
 	Class that handles the management and rendering of batches and batchobjects.
-	BatchManager creates and deletes all batchobjects (primitives and meshes).
+	BatchManager creates and deletes all batchobjects (primitives and texts).
 	*/
 	class BatchManager
 	{
