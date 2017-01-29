@@ -313,7 +313,7 @@ namespace spehs
 	void Text::updateText()
 	{
 		int x = 0.0f;
-		int y = (lineCount - 1) * (font->height + lineSpacing);
+		int y = ((lineCount - 1) * (font->height + lineSpacing)) * scale;
 
 		textureIDs.clear();
 		vertexArray.clear();
@@ -325,7 +325,7 @@ namespace spehs
 			{
 				//new line
 				x = 0.0f;
-				y -= font->height + lineSpacing;
+				y -= (font->height + lineSpacing) * scale;
 			}
 			else if (string[c] == '\t')
 			{
@@ -547,7 +547,7 @@ namespace spehs
 		}
 		return position.y + currentHeight;
 	}
-	int Text::getTextWidth() const
+	float Text::getTextWidth() const
 	{
 		int record = 0;
 		int currentLineWidth = 0;
@@ -574,11 +574,11 @@ namespace spehs
 		}
 
 		if (currentLineWidth > record)
-			return currentLineWidth >> 6;
-		return record >> 6;
+			return float(currentLineWidth >> 6) * scale;
+		return float(record >> 6) * scale;
 	}
-	int Text::getTextHeight() const
+	float Text::getTextHeight() const
 	{
-		return (getFontHeight() + lineSpacing) * (lineCount - 1) + font->ascender - font->descender;
+		return ((getFontHeight() + lineSpacing) * (lineCount - 1) + font->ascender - font->descender) * scale;
 	}
 }

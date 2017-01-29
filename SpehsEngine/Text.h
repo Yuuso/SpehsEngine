@@ -88,7 +88,7 @@ namespace spehs
 		void setShader(const int &_shaderIndex);
 		void setCameraMatrixState(const bool _state) { cameraMatrixState = _state; }
 		void setLineSpacing(const int _lineSpacing);
-
+		void setScale(const float _scale) { scale = _scale; needTextUpdate = true; }
 		//Getters
 		std::string getString() const { return string; }
 
@@ -98,10 +98,11 @@ namespace spehs
 		float getY() const { return position.y; }
 		float getY(const unsigned characterIndex) const;//Returns y position at given character index. Character height is not included. If index is out of bounds, returns y position of the last character instead.
 
-		int getTextWidth() const;
-		int getTextHeight() const;
+		float getTextWidth() const;
+		float getTextHeight() const;
 		int getLineCount() const { return lineCount; }
 		int getLineSpacing() const { return lineSpacing; }
+		float getScale() const { return scale; }
 
 		Font* getFontPtr() const { return font; }
 		int getFontSize() const;

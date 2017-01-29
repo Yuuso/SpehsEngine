@@ -466,7 +466,7 @@ namespace spehs
 				}
 				for (unsigned i = 0; i < lines.size(); i++)
 				{
-					w = std::max(w, lines[i]->getTextWidth());
+					w = std::max(w, (int)lines[i]->getTextWidth());
 					h += lines[i]->getTextHeight();
 				}
 				w += CONSOLE_BORDER * 2;
