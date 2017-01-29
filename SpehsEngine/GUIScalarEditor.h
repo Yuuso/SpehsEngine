@@ -35,6 +35,10 @@ namespace spehs
 		}
 		~GUIScalarEditor(){}
 
+		void setString(const std::string scalarName) override
+		{
+			nameRect->setString(scalarName);
+		}
 		void setValueRange(const Scalar _min, const Scalar _max)
 		{
 			min = _min;
