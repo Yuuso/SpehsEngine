@@ -573,6 +573,14 @@ namespace spehs
 		}
 		void log(const char* str, const unsigned length, const glm::vec3& color)
 		{
+			//Validate string characters
+			std::string string(str, length);
+			for (unsigned i = 0; i < length; i++)
+			{
+				if (string[i] < 32)
+					string[i] = 32;
+			}
+
 			LockGuardRecursive regionLock(consoleMutex);
 
 			if (lines.size() >= LOG_LINES_KEPT_IN_MEMORY)
@@ -583,7 +591,7 @@ namespace spehs
 			lines.push_back(consoleBatchManager->createText(planeDepth));
 			lines.back()->setFont(applicationData->GUITextFontPath, applicationData->consoleTextSize);
 			lines.back()->setColor(glm::vec4(color, applicationData->consoleTextAlpha / 255.0f));
-			lines.back()->setString(str, length);
+			lines.back()->setString(&string[0], length);
 			visibility = 1.0f;
 			for (unsigned i = 0; i < lines.size(); i++)
 				lines[i]->setRenderState(true);
