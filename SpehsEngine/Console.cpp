@@ -65,6 +65,7 @@ namespace spehs
 		static std::string input;
 		static std::string textExecuted;///< Text executed without '/'
 		static std::vector<Text*> lines;
+		static std::vector<std::pair<std::string, glm::vec3>> newLines;
 		static std::vector<ConsoleCommand> commands;
 		static std::vector<std::string> consoleWords;
 		static std::vector<ConsoleVariable<int>> intVariables;
@@ -222,6 +223,27 @@ namespace spehs
 		void update()
 		{
 			LockGuardRecursive regionLock(consoleMutex);
+
+			//Process new lines entered during the cycle
+			for (unsigned i = 0; i < newLines.size(); i++)
+			{
+				if (lines.size() >= LOG_LINES_KEPT_IN_MEMORY)
+				{
+					lines.front()->destroy();
+					lines.erase(lines.begin());
+				}
+				lines.push_back(consoleBatchManager->createText(planeDepth));
+				lines.back()->setFont(applicationData->GUITextFontPath, applicationData->consoleTextSize);
+				lines.back()->setColor(glm::vec4(newLines[i].second, applicationData->consoleTextAlpha / 255.0f));
+				lines.back()->setString(&newLines[i].first[0], newLines[i].first.size());
+				visibility = 1.0f;
+				for (unsigned i = 0; i < lines.size(); i++)
+					lines[i]->setRenderState(true);
+
+				updateLinePositions();
+			}
+			newLines.clear();
+
 			disableState(CONSOLE_TEXT_EXECUTED_BIT);
 			if (visibility > 0.0f)
 			{
@@ -577,26 +599,12 @@ namespace spehs
 			std::string string(str, length);
 			for (unsigned i = 0; i < length; i++)
 			{
-				if (string[i] < 32)
+				if (string[i] < 32 && string[i] != '\n')
 					string[i] = 32;
 			}
 
 			LockGuardRecursive regionLock(consoleMutex);
-
-			if (lines.size() >= LOG_LINES_KEPT_IN_MEMORY)
-			{
-				lines.front()->destroy();
-				lines.erase(lines.begin());
-			}
-			lines.push_back(consoleBatchManager->createText(planeDepth));
-			lines.back()->setFont(applicationData->GUITextFontPath, applicationData->consoleTextSize);
-			lines.back()->setColor(glm::vec4(color, applicationData->consoleTextAlpha / 255.0f));
-			lines.back()->setString(&string[0], length);
-			visibility = 1.0f;
-			for (unsigned i = 0; i < lines.size(); i++)
-				lines[i]->setRenderState(true);
-
-			updateLinePositions();
+			newLines.push_back(std::make_pair(string, color));
 		}
 		void warning(const std::string str)
 		{
