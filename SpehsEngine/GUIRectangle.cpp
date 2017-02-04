@@ -329,7 +329,7 @@ namespace spehs
 	void GUIRectangle::setParent(GUIRectangleContainer* Parent)
 	{
 		parent = Parent;
-		setDepth(parent->getDepth() + 3);
+		setDepth(parent->getDepth() + 10);
 	}
 	GUIRectangleContainer* GUIRectangle::getFirstGenerationParent()
 	{
@@ -438,7 +438,7 @@ namespace spehs
 	{
 		if (text)
 			return;
-		text = Text::create(polygon->getPlaneDepth() + 1);
+		text = Text::create(polygon->getPlaneDepth() + 2);
 		text->setRenderState(getRenderState());
 		text->setFont(applicationData->GUITextFontPath, applicationData->GUITextSize);
 		text->setColor(defaultStringColor);
@@ -456,6 +456,7 @@ namespace spehs
 		displayTexture->polygon->setRenderState(polygon->getRenderState());
 		displayTexture->width = texData->width;
 		displayTexture->height = texData->height;
+		displayTexture->polygon->setPlaneDepth(getDepth() + 1);
 		disableStateRecursiveUpwards(GUIRECT_POSITION_UPDATED_BIT);
 		disableStateRecursiveUpwards(GUIRECT_SCALE_UPDATED_BIT);
 	}
