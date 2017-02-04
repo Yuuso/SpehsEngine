@@ -188,6 +188,9 @@
     <ClCompile Include="Collider.cpp">
       <Filter>Object System</Filter>
     </ClCompile>
+    <ClCompile Include="Thread.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GLSLProgram.h">
@@ -403,6 +406,9 @@
     </ClInclude>
     <ClInclude Include="Collider.h">
       <Filter>Object System</Filter>
+    </ClInclude>
+    <ClInclude Include="Thread.h">
+      <Filter>Core</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
