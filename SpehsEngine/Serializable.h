@@ -1,4 +1,7 @@
 #pragma once
+#ifdef _DEBUG
+#define SERIALIZABLE_DEBUG_INFO
+#endif
 
 namespace spehs
 {
@@ -13,6 +16,8 @@ namespace spehs
 	public:
 
 		Serializable();
+		Serializable(const spehs::Serializable& copy);
+		Serializable(spehs::Serializable&& move);
 		virtual ~Serializable();
 
 		virtual Serializable* newMyType() const = 0;

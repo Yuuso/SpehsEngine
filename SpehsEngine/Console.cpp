@@ -1,5 +1,6 @@
 #include <algorithm>
 #include <iostream>
+#include <atomic>
 #include <mutex>
 
 #include "BitwiseOperations.h"
@@ -13,6 +14,7 @@
 #include "Text.h"
 #include "BatchManager.h"
 #include "Polygon.h"
+#include "Serializable.h"
 
 //State
 #define CONSOLE_INITIALIZED_BIT				0x0001
@@ -46,6 +48,8 @@ typedef std::lock_guard<std::recursive_mutex> LockGuardRecursive;
 
 namespace spehs
 {
+	extern std::atomic<int> serializableAllocations;
+	extern std::atomic<int> serializableDeallocations;
 	namespace console
 	{
 		//Static console data
@@ -745,6 +749,7 @@ namespace spehs
 					log("Primitives: " + std::to_string(primitiveAllocations - primitiveDeallocations) + "/" + std::to_string(primitiveAllocations), color);
 					log("PrimitiveBatches: " + std::to_string(BatchAllocations - BatchDeallocations) + "/" + std::to_string(BatchAllocations), color);
 					log("CollisionPoints: " + std::to_string(collisionPointAllocations - collisionPointDeallocations) + "/" + std::to_string(collisionPointAllocations), color);
+					log("Serializables: " + std::to_string(serializableAllocations - serializableDeallocations) + "/" + std::to_string(serializableAllocations), color);
 					log("-------------------", color);
 					return;
 				}
