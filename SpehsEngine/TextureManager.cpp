@@ -366,7 +366,7 @@ namespace spehs
 
 		//Determining file name/path
 		char string[64];
-		std::strftime(string, 64, "%H-%M-%S_%d-%m-%Y", &tm);
+		std::strftime(string, 64, "%Y-%m-%d_%H-%M-%S", &tm);
 		std::string path = directory + "screenshot_" + string + ".png";
 
 		int screenshot;
