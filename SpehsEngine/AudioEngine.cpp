@@ -4,6 +4,7 @@
 #include "OpenALError.h"
 #include "SoundSource.h"
 #include "Console.h"
+#include "ApplicationData.h"
 
 #include <AL\al.h>
 #include <AL\alc.h>
@@ -12,6 +13,12 @@
 
 
 #define DEFAULT_MAX_SOURCES 256
+
+
+glm::vec2 positionCorrectionFactor = glm::vec2(1.0f);
+float scaleCorrectionFactor = 1.0f;
+
+extern const float defaultRollOffFactor = 1.75f;
 
 
 namespace spehs
@@ -29,6 +36,9 @@ namespace spehs
 			{
 				exceptions::fatalError("Audio engine already initialized!");
 			}
+
+			//alListenerf(AL_ROLLOFF_FACTOR, 500.0f);
+			alDistanceModel(AL_EXPONENT_DISTANCE_CLAMPED);
 		}
 		void AudioEngine::uninit()
 		{
@@ -48,36 +58,69 @@ namespace spehs
 			AudioEngine::instance->maxSources = _maxSources;
 		}
 
+		void AudioEngine::setListenerPosition(const glm::vec2& _pos)
+		{
+			AudioEngine::instance->listenerPosition.x = _pos.x;
+			AudioEngine::instance->listenerPosition.y = _pos.y;
+			alListener3f(AL_POSITION, _pos.x * positionCorrectionFactor.x, _pos.y * positionCorrectionFactor.y, AudioEngine::instance->listenerPosition.z * scaleCorrectionFactor);
+		}
 		void AudioEngine::setListenerPosition(const glm::vec2& _pos, const float _z)
 		{
-			AudioEngine::instance->listenerPosition = _pos;
-			alListener3f(AL_POSITION, _pos.x, _pos.y, _z);
+			AudioEngine::instance->listenerPosition.x = _pos.x;
+			AudioEngine::instance->listenerPosition.y = _pos.y;
+			AudioEngine::instance->listenerPosition.z = _z;
+			alListener3f(AL_POSITION, _pos.x * positionCorrectionFactor.x, _pos.y * positionCorrectionFactor.y, _z * scaleCorrectionFactor);
 		}
 		void AudioEngine::setListenerVelocity(const glm::vec2& _vel)
 		{
-			AudioEngine::instance->listenerVelocity = _vel;
-			alListener3f(AL_VELOCITY, _vel.x, _vel.y, 0.0f);
+			AudioEngine::instance->listenerVelocity.x = _vel.x;
+			AudioEngine::instance->listenerVelocity.y = _vel.y;
+			alListener3f(AL_VELOCITY, _vel.x * positionCorrectionFactor.x, _vel.y * positionCorrectionFactor.y, AudioEngine::instance->listenerVelocity.z * scaleCorrectionFactor);
+		}
+		void AudioEngine::setListenerVelocity(const glm::vec2& _vel, const float _z)
+		{
+			AudioEngine::instance->listenerVelocity.x = _vel.x;
+			AudioEngine::instance->listenerVelocity.y = _vel.y;
+			AudioEngine::instance->listenerVelocity.z = _z;
+			alListener3f(AL_VELOCITY, _vel.x * positionCorrectionFactor.x, _vel.y * positionCorrectionFactor.y, _z * scaleCorrectionFactor);
 		}
 		void AudioEngine::setListenerGain(const float _gain)
 		{
 			AudioEngine::instance->listenerGain = _gain;
-			alListenerf(AL_GAIN, _gain);
+			alListenerf(AL_GAIN, _gain * applicationData->masterVolume);
+		}
+		void AudioEngine::setPositionCorrectionFactor(const glm::vec2& _poscor)
+		{
+			positionCorrectionFactor = _poscor;
+			alListener3f(AL_POSITION, AudioEngine::instance->listenerPosition.x * positionCorrectionFactor.x, AudioEngine::instance->listenerPosition.y * positionCorrectionFactor.y, AudioEngine::instance->listenerPosition.z * scaleCorrectionFactor);
+			alListener3f(AL_VELOCITY, AudioEngine::instance->listenerVelocity.x * positionCorrectionFactor.x, AudioEngine::instance->listenerVelocity.y * positionCorrectionFactor.y, AudioEngine::instance->listenerVelocity.z * scaleCorrectionFactor);
+		}
+		void AudioEngine::setScaleCorrectionFactor(const float _sclcor)
+		{
+			scaleCorrectionFactor = _sclcor;
+			alListener3f(AL_POSITION, AudioEngine::instance->listenerPosition.x * positionCorrectionFactor.x, AudioEngine::instance->listenerPosition.y * positionCorrectionFactor.y, AudioEngine::instance->listenerPosition.z * scaleCorrectionFactor);
+			alListener3f(AL_VELOCITY, AudioEngine::instance->listenerVelocity.x * positionCorrectionFactor.x, AudioEngine::instance->listenerVelocity.y * positionCorrectionFactor.y, AudioEngine::instance->listenerVelocity.z * scaleCorrectionFactor);
 		}
 		glm::vec2 AudioEngine::getListenerPosition()
 		{
-			return AudioEngine::instance->listenerPosition;
+			return glm::vec2(AudioEngine::instance->listenerPosition);
 		}
 		glm::vec2 AudioEngine::getListenerVelocity()
 		{
-			return AudioEngine::instance->listenerVelocity;
+			return glm::vec2(AudioEngine::instance->listenerVelocity);
 		}
 		float AudioEngine::getListenerGain()
 		{
 			return AudioEngine::instance->listenerGain;
 		}
 
+		void AudioEngine::updateGain()
+		{
+			alListenerf(AL_GAIN, AudioEngine::instance->listenerGain * applicationData->masterVolume);
+		}
 
-		AudioEngine::AudioEngine() : maxSources(DEFAULT_MAX_SOURCES), listenerGain(1.0f), listenerPosition(0.0f), listenerVelocity(0.0f)
+
+		AudioEngine::AudioEngine() : maxSources(DEFAULT_MAX_SOURCES), listenerGain(1.0f), listenerPosition(0.0f, 0.0f, 1.0f), listenerVelocity(0.0f)
 		{
 			device = alcOpenDevice(NULL);
 			if (!device)
@@ -122,6 +165,7 @@ namespace spehs
 						//Need to generate source
 						alGenSources(1, &sourcePool[i]->sourceID);
 						checkOpenALErrors(__FILE__, __LINE__);
+						alSourcef(sourcePool[i]->sourceID, AL_ROLLOFF_FACTOR, defaultRollOffFactor);
 						if (sourcePool[i]->sourceID != 0)
 						{
 							sourcePool[i]->soundPtr = _soundSource;

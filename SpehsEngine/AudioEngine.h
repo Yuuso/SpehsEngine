@@ -2,6 +2,7 @@
 #pragma once
 
 #include <glm/vec2.hpp>
+#include <glm/vec3.hpp>
 
 #include <vector>
 
@@ -31,13 +32,21 @@ namespace spehs
 
 			static void setMaxSources(const unsigned int _maxSources);
 
-			static void setListenerPosition(const glm::vec2& _pos, const float _z = 1.0f);
+			static void setListenerPosition(const glm::vec2& _pos);
+			static void setListenerPosition(const glm::vec2& _pos, const float _z);
 			static void setListenerVelocity(const glm::vec2& _vel);
+			static void setListenerVelocity(const glm::vec2& _vel, const float _z);
 			static void setListenerGain(const float _gain);
+
+			//These correction factors are applied to all sound and the listener positions and velocities. They are used to set the scale of the units used in positions.
+			static void setPositionCorrectionFactor(const glm::vec2& _poscor);
+			static void setScaleCorrectionFactor(const float _sclcor); //z
 
 			static glm::vec2 getListenerPosition();
 			static glm::vec2 getListenerVelocity();
 			static float getListenerGain();
+
+			static void updateGain(); //Call when master volume has changed
 
 		protected:
 			static AudioEngine* instance;
@@ -60,14 +69,14 @@ namespace spehs
 			
 
 			/*
-			default: {0, 0}
+			default: {0, 0, 1}
 			*/
-			glm::vec2 listenerPosition;
+			glm::vec3 listenerPosition;
 
 			/*
-			default: {0, 0}
+			default: {0, 0, 0}
 			*/
-			glm::vec2 listenerVelocity;
+			glm::vec3 listenerVelocity;
 
 			/*
 			range: 0.0 -

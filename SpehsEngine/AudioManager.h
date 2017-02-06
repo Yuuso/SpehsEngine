@@ -58,11 +58,20 @@ namespace spehs
 		};
 
 	public:
+		enum class AudioFormat
+		{
+			Mono8bit = 0x1100,
+			Mono16bit = 0x1101,
+			Stereo8bit = 0x1102,
+			Stereo16bit = 0x1103
+		};
+
 		static AudioManager* instance;
 		AudioManager();
 		~AudioManager();
 
 		size_t loadWAVE(const std::string &_filepath);
+		size_t loadData(const std::string& _identifier, const unsigned char* _data, const int _size, const int _frequency, const AudioFormat _format);
 
 		//TODO: Better memory management
 		void deleteAudio(const std::string &_filepath);

@@ -106,6 +106,11 @@ namespace spehs
 				exceptions::fatalError("Bit depth of loaded stereo audio file not supported! (File name : " + _filepath + ")");
 			}
 		}
+		else
+		{
+			fclose(fileData);
+			exceptions::fatalError("Invalid number of channels! (File name : " + _filepath + ")");
+		}
 
 		//Read WAVE data
 		fread(&waveFile.waveData, sizeof(WAVE::WAVEData), 1, fileData);
@@ -144,6 +149,29 @@ namespace spehs
 		fclose(fileData);
 		delete[] waveFile.data;
 		
+		audioClips.insert(std::pair<size_t, AudioClip>(hash, clip));
+		return hash;
+	}
+	size_t AudioManager::loadData(const std::string& _identifier, const unsigned char* _data, const int _size, const int _frequency, const AudioFormat _format)
+	{
+		size_t hash = std::hash<std::string>()(_identifier);
+		if (audioClips.find(hash) != audioClips.end())
+			return hash;
+
+		AudioClip clip;
+
+		clip.format = (ALenum)_format;
+		clip.freq = (ALsizei)_frequency;
+		clip.size = (ALsizei)_size;
+		
+		//Generate OpenAL buffer
+		alGenBuffers(1, &clip.buffer);
+		checkOpenALErrors(__FILE__, __LINE__);
+
+		//Data into the buffer
+		alBufferData(clip.buffer, clip.format, (void*) _data, clip.size, clip.freq);
+		checkOpenALErrors(__FILE__, __LINE__);
+
 		audioClips.insert(std::pair<size_t, AudioClip>(hash, clip));
 		return hash;
 	}
