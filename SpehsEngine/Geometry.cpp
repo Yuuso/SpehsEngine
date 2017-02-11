@@ -20,7 +20,7 @@ namespace spehs
 	{
 		return magnitude(origin - destination);
 	}
-	inline float getAngle(glm::vec2& origin, glm::vec2& destination)
+	inline float getAngle(const glm::vec2& origin, const glm::vec2& destination)
 	{
 		glm::vec2 angle = destination - origin;
 		float pointDirection = atan2(angle.y, angle.x);
