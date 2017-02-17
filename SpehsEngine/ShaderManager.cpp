@@ -335,6 +335,12 @@ namespace spehs
 
 		checkOpenGLErrors(__FILE__, __LINE__);
 	}
+	void setUniform_uint(const GLuint &_location, const int &_value)
+	{
+		glUniform1ui(_location, _value);
+
+		checkOpenGLErrors(__FILE__, __LINE__);
+	}
 	void setUniform_float(const GLint &_location, const float &_value)
 	{
 		glUniform1f(_location, _value);
