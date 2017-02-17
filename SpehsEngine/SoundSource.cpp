@@ -95,8 +95,11 @@ namespace spehs
 				return;
 			}
 
-			alSourceStop(source->sourceID);
-			checkOpenALErrors(__FILE__, __LINE__);
+			if (isPlaying())
+			{
+				alSourceStop(source->sourceID);
+				checkOpenALErrors(__FILE__, __LINE__);
+			}
 		}
 
 		void SoundSource::setPitch(const float _pitch)

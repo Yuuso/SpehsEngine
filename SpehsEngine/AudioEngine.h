@@ -30,6 +30,8 @@ namespace spehs
 			static void init();
 			static void uninit();
 
+			static void update();
+
 			static void setMaxSources(const unsigned int _maxSources);
 
 			static void setListenerPosition(const glm::vec2& _pos);

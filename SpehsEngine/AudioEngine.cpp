@@ -53,6 +53,20 @@ namespace spehs
 			}
 		}
 
+		void AudioEngine::update()
+		{
+			for (unsigned i = 0; i < AudioEngine::instance->sourcePool.size(); i++)
+			{
+				if (AudioEngine::instance->sourcePool[i]->soundPtr)
+				{
+					if (!AudioEngine::instance->sourcePool[i]->soundPtr->isPlaying())
+					{
+						AudioEngine::instance->sourcePool[i]->soundPtr->removeSource();
+					}
+				}
+			}
+		}
+
 		void AudioEngine::setMaxSources(const unsigned int _maxSources)
 		{
 			AudioEngine::instance->maxSources = _maxSources;
@@ -141,6 +155,10 @@ namespace spehs
 		}
 		AudioEngine::~AudioEngine()
 		{
+			for (unsigned i = 0; i < sourcePool.size(); i++)
+			{
+				delete sourcePool[i];
+			}
 			device = alcGetContextsDevice(context);
 			alcMakeContextCurrent(NULL);
 			alcDestroyContext(context);
@@ -172,7 +190,6 @@ namespace spehs
 							_soundSource->source = sourcePool[i];
 							return true;
 						}
-						assert(sourcePool[i]->sourceID);//FOR DEBUG TESTING PURPOSES ONLY REMOVE LATER!!!!!
 					}
 				}
 			}
@@ -202,6 +219,18 @@ namespace spehs
 						_soundSource->source = sourcePool[i];
 						return true;
 					}
+				}
+			}
+
+			//For now just steal something...
+			for (unsigned i = 0; i < sourcePool.size(); i++)
+			{
+				if (sourcePool[i]->soundPtr->getPriority() != 0)
+				{
+					sourcePool[i]->soundPtr->removeSource();
+					sourcePool[i]->soundPtr = _soundSource;
+					_soundSource->source = sourcePool[i];
+					return true;
 				}
 			}
 
