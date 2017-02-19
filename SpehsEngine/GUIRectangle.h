@@ -6,35 +6,35 @@
 #include <glm/vec4.hpp>
 #include "BitwiseOperations.h"
 #include "TextureManager.h"//Used to get TextureParameter...
-#define GUIRECT_ID_TYPE						uint32_t
-#define TEXT_PREFERRED_SIZE_BORDER			2
+#define GUIRECT_ID_TYPE							uint32_t
+#define TEXT_PREFERRED_SIZE_BORDER				2
 ////GUI rectangle states
-#define GUIRECT_STATE_TYPE					uint32_t
-#define GUIRECT_MOUSE_HOVER					0x00000001
-#define GUIRECT_SCALE_UPDATED_BIT			0x00000002
-#define GUIRECT_POSITION_UPDATED_BIT		0x00000004
-#define GUIRECT_MIN_SIZE_UPDATED_BIT		0x00000008
-#define GUIRECT_REMOVE_BIT					0x00000010//Does not actually remove element. Must have a higher level manager to monitor remove status and act accordingly to it
-#define GUIRECT_MOUSE_HOVER_PREVIOUS		0x00000020
-#define GUIRECT_UNUSED1						0x00000040
-#define GUIRECT_UNUSED2						0x00000080
-#define GUIRECT_UNUSED3						0x00000100
-#define GUIRECT_UNUSED4						0x00000200
-#define GUIRECT_UNUSED5						0x00000400
+#define GUIRECT_STATE_TYPE						uint32_t
+#define GUIRECT_MOUSE_HOVER_BIT					0x00000001
+#define GUIRECT_SCALE_UPDATED_BIT				0x00000002
+#define GUIRECT_POSITION_UPDATED_BIT			0x00000004
+#define GUIRECT_MIN_SIZE_UPDATED_BIT			0x00000008
+#define GUIRECT_REMOVE_BIT						0x00000010//Does not actually remove element. Must have a higher level manager to monitor remove status and act accordingly to it
+#define GUIRECT_MOUSE_HOVER_PREVIOUS_BIT		0x00000020
+#define GUIRECT_UNUSED1							0x00000040
+#define GUIRECT_UNUSED2							0x00000080
+#define GUIRECT_UNUSED3							0x00000100
+#define GUIRECT_UNUSED4							0x00000200
+#define GUIRECT_UNUSED5							0x00000400
 //GUI rectangle container
-#define GUIRECT_MOUSE_HOVER_CONTAINER		0x00000800//Whether mouse hover has been detected inside an element of the container
-#define GUIRECT_OPEN_BIT					0x00001000//Open containers update elements inside
+#define GUIRECT_MOUSE_HOVER_CONTAINER_BIT		0x00000800//Whether mouse hover has been detected inside an element of the container
+#define GUIRECT_OPEN_BIT						0x00001000//Open containers update elements inside
 //GUI window specific
-#define GUIRECT_DRAGGING_BIT				0x00004000
-#define GUIRECT_STRECHING_BIT				0x00008000
+#define GUIRECT_DRAGGING_BIT					0x00004000
+#define GUIRECT_STRECHING_BIT					0x00008000
 //Text justification
-#define GUIRECT_TEXT_JUSTIFICATION_LEFT		0x00020000
-#define GUIRECT_TEXT_JUSTIFICATION_CENTER	0x00040000
-#define GUIRECT_TEXT_JUSTIFICATION_RIGHT	0x00080000
+#define GUIRECT_TEXT_JUSTIFICATION_LEFT_BIT		0x00020000
+#define GUIRECT_TEXT_JUSTIFICATION_CENTER_BIT	0x00040000
+#define GUIRECT_TEXT_JUSTIFICATION_RIGHT_BIT	0x00080000
 ////Misc
-#define GUIRECT_RECEIVING_INPUT				0x00100000//Underlings should inform their first generation parents when receiving input
-#define GUIRECT_SELECTED					0x00200000
-#define GUIRECT_HOVER_COLOR					0x00400000//If enabled, rectangle will highlight when under mouse
+#define GUIRECT_RECEIVING_INPUT_BIT				0x00100000//Underlings should inform their first generation parents when receiving input
+#define GUIRECT_SELECTED_BIT					0x00200000
+#define GUIRECT_HOVER_COLOR_BIT					0x00400000//If enabled, rectangle will highlight when under mouse
 
 namespace spehs
 {
@@ -156,11 +156,11 @@ namespace spehs
 		GUIRECT_STATE_TYPE getState() const { return state; }
 		bool checkState(GUIRECT_STATE_TYPE bit) const { return checkBit(state, bit); }
 		//"Shortcut" getters
-		bool getMouseHover() const { return checkBit(state, GUIRECT_MOUSE_HOVER); }
-		bool getMouseHoverContainer() const { return checkBit(state, GUIRECT_MOUSE_HOVER_CONTAINER); }
-		bool getMouseHoverAny() const { return checkBit(state, GUIRECT_MOUSE_HOVER) | checkBit(state, GUIRECT_MOUSE_HOVER_CONTAINER); }
-		virtual bool isReceivingInput() const { return inputEnabled && checkBit(state, GUIRECT_RECEIVING_INPUT); }
-		virtual bool isSelected() const { return checkBit(state, GUIRECT_SELECTED); }
+		bool getMouseHover() const { return checkBit(state, GUIRECT_MOUSE_HOVER_BIT); }
+		bool getMouseHoverContainer() const { return checkBit(state, GUIRECT_MOUSE_HOVER_CONTAINER_BIT); }
+		bool getMouseHoverAny() const { return checkBit(state, GUIRECT_MOUSE_HOVER_BIT) | checkBit(state, GUIRECT_MOUSE_HOVER_CONTAINER_BIT); }
+		virtual bool isReceivingInput() const { return inputEnabled && checkBit(state, GUIRECT_RECEIVING_INPUT_BIT); }
+		virtual bool isSelected() const { return checkBit(state, GUIRECT_SELECTED_BIT); }
 		virtual bool isOpen() const { return checkBit(state, GUIRECT_OPEN_BIT); }
 		//Setters
 		virtual void enableStateRecursive(const GUIRECT_STATE_TYPE stateBit){ enableBit(state, stateBit); }

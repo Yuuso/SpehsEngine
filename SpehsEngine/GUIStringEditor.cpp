@@ -102,7 +102,7 @@ namespace spehs
 		if (disableInputReceiveOnNextUpdate)
 		{
 			stringUpdated = false;
-			disableState(GUIRECT_RECEIVING_INPUT);
+			disableState(GUIRECT_RECEIVING_INPUT_BIT);
 			disableInputReceiveOnNextUpdate = false;
 		}
 
@@ -174,7 +174,7 @@ namespace spehs
 	{
 		if (isReceivingInput())
 			return;
-		enableBit(state, GUIRECT_RECEIVING_INPUT);
+		enableBit(state, GUIRECT_RECEIVING_INPUT_BIT);
 		typerPosition = editorValue.size();
 		typerBlinkTimer = 0;
 		stringUpdated = false;

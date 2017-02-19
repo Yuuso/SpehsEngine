@@ -4,7 +4,7 @@ namespace spehs
 {
 	GUIRectangleTable::GUIRectangleTable(const int _columns) : columns(_columns)
 	{
-		disableBit(state, GUIRECT_HOVER_COLOR);
+		disableBit(state, GUIRECT_HOVER_COLOR_BIT);
 	}
 	GUIRectangleTable::~GUIRectangleTable()
 	{

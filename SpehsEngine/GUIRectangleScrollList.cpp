@@ -13,7 +13,7 @@ namespace spehs
 	GUIRectangleScrollList::GUIRectangleScrollList() : beginElementIndex(0), updateElementCount(0), minVisibleElementCount(4)
 	{
 		setColor(50, 50, 50);
-		disableState(GUIRECT_HOVER_COLOR);
+		disableState(GUIRECT_HOVER_COLOR_BIT);
 
 		scrollUp = new GUIRectangle(ScrollButtons::up);
 		scrollBar = new GUIRectangle(ScrollButtons::bar);
@@ -126,7 +126,7 @@ namespace spehs
 				scroll(-inputManager->getMouseWheelDelta());
 		}
 
-		disableState(GUIRECT_MOUSE_HOVER_CONTAINER);
+		disableState(GUIRECT_MOUSE_HOVER_CONTAINER_BIT);
 		GUIRectangle::inputUpdate();
 		if (checkState(GUIRECT_OPEN_BIT))
 		{
@@ -134,7 +134,7 @@ namespace spehs
 			{
 				elements[beginElementIndex + i]->inputUpdate();
 				if (elements[beginElementIndex + i]->getMouseHoverAny())
-					enableState(GUIRECT_MOUSE_HOVER_CONTAINER);
+					enableState(GUIRECT_MOUSE_HOVER_CONTAINER_BIT);
 			}
 		}
 	}

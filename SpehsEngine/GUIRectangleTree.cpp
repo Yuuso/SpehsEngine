@@ -49,7 +49,7 @@ namespace spehs
 			}
 			else
 			{//Open when mouse is hovering over
-				if (checkState(GUIRECT_MOUSE_HOVER_CONTAINER) && getInputEnabled())
+				if (checkState(GUIRECT_MOUSE_HOVER_CONTAINER_BIT) && getInputEnabled())
 				{
 					open();
 					if (getString() == "def")
@@ -63,7 +63,7 @@ namespace spehs
 			}
 		}
 
-		if (checkState(GUIRECT_MOUSE_HOVER_CONTAINER))
+		if (checkState(GUIRECT_MOUSE_HOVER_CONTAINER_BIT))
 		{//Mouse hovering over the container
 			treeOpenTimer = TREE_OPEN_TIME;
 		}
@@ -73,7 +73,7 @@ namespace spehs
 			if (treeOpenTimer <= 0)
 				close();
 			else
-				enableState(GUIRECT_MOUSE_HOVER_CONTAINER);//Keep container hover active for the duration of open timer
+				enableState(GUIRECT_MOUSE_HOVER_CONTAINER_BIT);//Keep container hover active for the duration of open timer
 		}
 	}
 	void GUIRectangleTree::updateMinSize()

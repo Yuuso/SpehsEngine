@@ -41,7 +41,7 @@ namespace spehs
 		header->setPositionLocal(0, size.y);
 		header->setColor(headerBackgroundColor);
 		header->setStringColor(headerStringColor);
-		header->setJustification(GUIRECT_TEXT_JUSTIFICATION_LEFT);
+		header->setJustification(GUIRECT_TEXT_JUSTIFICATION_LEFT_BIT);
 		header->setStringSize(applicationData->GUITextSize + 2);
 		header->setDepth(getDepth() + 1);
 		header->setRenderState(checkState(GUIRECT_OPEN_BIT) && getRenderState());
@@ -56,7 +56,7 @@ namespace spehs
 		exit->setColor(exitBackgroundColor);
 		exit->setString("X");
 		exit->setStringColor(exitStringColor);
-		exit->setJustification(GUIRECT_TEXT_JUSTIFICATION_CENTER);
+		exit->setJustification(GUIRECT_TEXT_JUSTIFICATION_CENTER_BIT);
 		exit->setDepth(getDepth() + 1);
 		exit->setRenderState(checkState(GUIRECT_OPEN_BIT) && getRenderState());
 		addElement(exit);
@@ -65,13 +65,13 @@ namespace spehs
 		strech = new GUIRectangle();
 		strech->setParent(this);
 		strech->setPositionLocal(-strechWidth, -strechWidth);
-		strech->disableState(GUIRECT_HOVER_COLOR);
+		strech->disableState(GUIRECT_HOVER_COLOR_BIT);
 		strech->setDepth(getDepth() - 1);
 		strech->setRenderState(checkState(GUIRECT_OPEN_BIT) && getRenderState());
 		addElement(strech);
 
 		setSize(minSize);
-		disableState(GUIRECT_HOVER_COLOR);
+		disableState(GUIRECT_HOVER_COLOR_BIT);
 		limitWithinMainWindow();
 	}
 	GUIWindow::~GUIWindow()
@@ -311,8 +311,8 @@ namespace spehs
 		if (!checkState(GUIRECT_OPEN_BIT))
 			return false;
 		disableState(GUIRECT_OPEN_BIT);
-		disableState(GUIRECT_MOUSE_HOVER);
-		disableState(GUIRECT_MOUSE_HOVER_CONTAINER);
+		disableState(GUIRECT_MOUSE_HOVER_BIT);
+		disableState(GUIRECT_MOUSE_HOVER_CONTAINER_BIT);
 		disableInput();
 		setRenderState(false);
 		return true;

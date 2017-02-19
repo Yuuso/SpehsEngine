@@ -30,7 +30,7 @@ namespace spehs
 		polygon->destroy();
 	}
 	GUIRectangle::GUIRectangle() : position(0), size(0), minSize(0),
-		state(GUIRECT_HOVER_COLOR | GUIRECT_TEXT_JUSTIFICATION_LEFT), inputEnabled(true),
+		state(GUIRECT_HOVER_COLOR_BIT | GUIRECT_TEXT_JUSTIFICATION_LEFT_BIT), inputEnabled(true),
 		parent(nullptr), text(nullptr), displayTexture(nullptr), tooltip(nullptr),
 		pressCallbackFunction(nullptr), pressSound(nullptr), hoverSound(nullptr)
 	{//Default constructor
@@ -82,7 +82,7 @@ namespace spehs
 	}
 	void GUIRectangle::inputUpdate()
 	{
-		disableBit(state, GUIRECT_MOUSE_HOVER);
+		disableBit(state, GUIRECT_MOUSE_HOVER_BIT);
 		if (!inputEnabled)
 		{
 			if (tooltip)
@@ -95,7 +95,7 @@ namespace spehs
 		{
 			if (hoverSound)
 			{//Hover sound
-				if (!checkState(GUIRECT_MOUSE_HOVER_PREVIOUS))
+				if (!checkState(GUIRECT_MOUSE_HOVER_PREVIOUS_BIT))
 					hoverSound->play();
 			}
 
@@ -123,13 +123,13 @@ namespace spehs
 				tooltip->setRenderState(true);
 			}
 
-			enableState(GUIRECT_MOUSE_HOVER_PREVIOUS);
+			enableState(GUIRECT_MOUSE_HOVER_PREVIOUS_BIT);
 		}
 		else
 		{//No mouse hover
 			if (tooltip)
 				tooltip->setRenderState(false);
-			disableState(GUIRECT_MOUSE_HOVER_PREVIOUS);
+			disableState(GUIRECT_MOUSE_HOVER_PREVIOUS_BIT);
 		}
 	}
 	void GUIRectangle::visualUpdate()
@@ -143,7 +143,7 @@ namespace spehs
 			tooltip->visualUpdate();
 		
 		//Hover color
-		if (checkState(GUIRECT_HOVER_COLOR) && inputEnabled)
+		if (checkState(GUIRECT_HOVER_COLOR_BIT) && inputEnabled)
 		{
 			if (getMouseHover())
 			{
@@ -199,15 +199,15 @@ namespace spehs
 	{
 		if (inputManager->getMouseX() < getXGlobal() || inputManager->getMouseX() >= getXGlobal() + size.x)
 		{
-			disableBit(state, GUIRECT_MOUSE_HOVER);
+			disableBit(state, GUIRECT_MOUSE_HOVER_BIT);
 			return false;
 		}
 		else if (inputManager->getMouseY() <= getYGlobal() || inputManager->getMouseY() >= getYGlobal() + size.y)
 		{
-			disableBit(state, GUIRECT_MOUSE_HOVER);
+			disableBit(state, GUIRECT_MOUSE_HOVER_BIT);
 			return false;
 		}
-		enableBit(state, GUIRECT_MOUSE_HOVER);
+		enableBit(state, GUIRECT_MOUSE_HOVER_BIT);
 		return true;
 	}
 	void GUIRectangle::updateMinSize()
@@ -264,9 +264,9 @@ namespace spehs
 		if (text)
 		{
 			float textX(getXGlobal());
-			if (checkBit(state, GUIRECT_TEXT_JUSTIFICATION_LEFT))
+			if (checkBit(state, GUIRECT_TEXT_JUSTIFICATION_LEFT_BIT))
 				textX += TEXT_PREFERRED_SIZE_BORDER;
-			else if (checkBit(state, GUIRECT_TEXT_JUSTIFICATION_RIGHT))
+			else if (checkBit(state, GUIRECT_TEXT_JUSTIFICATION_RIGHT_BIT))
 				textX += size.x - text->getTextWidth() - TEXT_PREFERRED_SIZE_BORDER;
 			else
 				textX += 0.5f * (size.x - text->getTextWidth());
@@ -351,9 +351,9 @@ namespace spehs
 	}
 	void GUIRectangle::setJustification(const GUIRECT_STATE_TYPE justificationBit)
 	{
-		disableBit(state, GUIRECT_TEXT_JUSTIFICATION_LEFT);
-		disableBit(state, GUIRECT_TEXT_JUSTIFICATION_CENTER);
-		disableBit(state, GUIRECT_TEXT_JUSTIFICATION_RIGHT);
+		disableBit(state, GUIRECT_TEXT_JUSTIFICATION_LEFT_BIT);
+		disableBit(state, GUIRECT_TEXT_JUSTIFICATION_CENTER_BIT);
+		disableBit(state, GUIRECT_TEXT_JUSTIFICATION_RIGHT_BIT);
 		enableBit(state, justificationBit);
 	}
 
@@ -370,7 +370,7 @@ namespace spehs
 		}
 
 		tooltip->setString(tooltipString);
-		tooltip->setJustification(GUIRECT_TEXT_JUSTIFICATION_LEFT);
+		tooltip->setJustification(GUIRECT_TEXT_JUSTIFICATION_LEFT_BIT);
 		tooltip->updateScale();
 		tooltip->setSize(tooltip->minSize);
 		tooltip->setRenderState(false);

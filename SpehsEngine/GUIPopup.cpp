@@ -15,13 +15,13 @@ namespace spehs
 	{
 		//Background rect
 		addElement(new GUIRectangle());
-		elements[BACKGROUND_INDEX]->disableState(GUIRECT_HOVER_COLOR);
+		elements[BACKGROUND_INDEX]->disableState(GUIRECT_HOVER_COLOR_BIT);
 		elements[BACKGROUND_INDEX]->setColor(30, 35, 37, 200);
 
 		//Message rect
 		addElement(new GUIRectangle(_message));
-		elements[MESSAGE_INDEX]->disableState(GUIRECT_HOVER_COLOR);
-		elements[MESSAGE_INDEX]->setJustification(GUIRECT_TEXT_JUSTIFICATION_CENTER);
+		elements[MESSAGE_INDEX]->disableState(GUIRECT_HOVER_COLOR_BIT);
+		elements[MESSAGE_INDEX]->setJustification(GUIRECT_TEXT_JUSTIFICATION_CENTER_BIT);
 	}
 	GUIPopup::~GUIPopup()
 	{
@@ -30,7 +30,7 @@ namespace spehs
 	{
 		options.push_back(option);
 		addElement(new GUIRectangle(option.string));
-		elements.back()->setJustification(GUIRECT_TEXT_JUSTIFICATION_CENTER);
+		elements.back()->setJustification(GUIRECT_TEXT_JUSTIFICATION_CENTER_BIT);
 	}
 	void GUIPopup::inputUpdate()
 	{

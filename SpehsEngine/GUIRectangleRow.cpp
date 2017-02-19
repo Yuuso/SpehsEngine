@@ -4,7 +4,7 @@ namespace spehs
 {
 	GUIRectangleRow::GUIRectangleRow() : evenElementWidth(false), elementPositionMode(PositionMode::Standard)
 	{
-		disableBit(state, GUIRECT_HOVER_COLOR);
+		disableBit(state, GUIRECT_HOVER_COLOR_BIT);
 	}
 	GUIRectangleRow::GUIRectangleRow(const GUIRECT_ID_TYPE _id) : GUIRectangleRow()
 	{

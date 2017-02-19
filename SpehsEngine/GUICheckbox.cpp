@@ -22,7 +22,7 @@ namespace spehs
 		checkboxFilling->setCameraMatrixState(false);
 
 		onEditorValueChange();
-		setJustification(GUIRECT_TEXT_JUSTIFICATION_LEFT);
+		setJustification(GUIRECT_TEXT_JUSTIFICATION_LEFT_BIT);
 	}
 	GUICheckbox::GUICheckbox(const GUIRECT_ID_TYPE _ID) : GUICheckbox(false)
 	{
@@ -100,9 +100,9 @@ namespace spehs
 		if (text)
 		{
 			float textX = getXGlobal();
-			if (checkBit(state, GUIRECT_TEXT_JUSTIFICATION_LEFT))
+			if (checkBit(state, GUIRECT_TEXT_JUSTIFICATION_LEFT_BIT))
 				textX += CHECKBOX_BORDER;
-			else if (checkBit(state, GUIRECT_TEXT_JUSTIFICATION_RIGHT))
+			else if (checkBit(state, GUIRECT_TEXT_JUSTIFICATION_RIGHT_BIT))
 				textX += size.x - size.y - CHECKBOX_BORDER - text->getTextWidth() - TEXT_PREFERRED_SIZE_BORDER;
 			else
 				textX += 0.5f *(size.x - size.y - CHECKBOX_BORDER - text->getTextWidth());

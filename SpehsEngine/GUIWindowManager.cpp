@@ -117,7 +117,7 @@ namespace spehs
 					windows[i]->inputUpdate();
 					windows[i]->visualUpdate();
 
-					if ((windows[i]->checkState(GUIRECT_MOUSE_HOVER_CONTAINER) ||
+					if ((windows[i]->checkState(GUIRECT_MOUSE_HOVER_CONTAINER_BIT) ||
 						windows[i]->checkState(GUIRECT_DRAGGING_BIT) ||
 						windows[i]->checkState(GUIRECT_STRECHING_BIT) ||
 						windows[i]->isReceivingInput()) && !focusedWindow)
@@ -136,7 +136,7 @@ namespace spehs
 			if (focusedWindow)
 			{//Yielding focus
 
-				if (!focusedWindow->checkState(GUIRECT_MOUSE_HOVER_CONTAINER) && !focusedWindow->isReceivingInput())
+				if (!focusedWindow->checkState(GUIRECT_MOUSE_HOVER_CONTAINER_BIT) && !focusedWindow->isReceivingInput())
 				{//Window not under mouse, do not continue focus status
 					focusedWindow = nullptr;
 				}
