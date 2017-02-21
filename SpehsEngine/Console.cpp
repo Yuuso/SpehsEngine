@@ -31,16 +31,16 @@
 #define FPS_REFRESH_RATE 5
 
 
-extern int64_t guiRectangleAllocations;
-extern int64_t guiRectangleDeallocations;
-extern int64_t primitiveAllocations;
-extern int64_t primitiveDeallocations;
-extern int64_t BatchAllocations;
-extern int64_t BatchDeallocations;
-extern int64_t textAllocations;
-extern int64_t textDeallocations;
-extern int64_t collisionPointAllocations;
-extern int64_t collisionPointDeallocations;
+extern std::atomic<int> guiRectangleAllocations;
+extern std::atomic<int> guiRectangleDeallocations;
+extern std::atomic<int> primitiveAllocations;
+extern std::atomic<int> primitiveDeallocations;
+extern std::atomic<int> BatchAllocations;
+extern std::atomic<int> BatchDeallocations;
+extern std::atomic<int> textAllocations;
+extern std::atomic<int> textDeallocations;
+extern std::atomic<int> collisionPointAllocations;
+extern std::atomic<int> collisionPointDeallocations;
 typedef std::lock_guard<std::recursive_mutex> LockGuardRecursive;
 
 

@@ -12,10 +12,11 @@
 
 #include <GL/glew.h>
 #include <algorithm>
+#include <atomic>
 
 
-int64_t BatchAllocations;
-int64_t BatchDeallocations;
+std::atomic<int> BatchAllocations;
+std::atomic<int> BatchDeallocations;
 
 
 namespace spehs

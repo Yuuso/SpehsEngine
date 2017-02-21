@@ -7,14 +7,16 @@
 
 #include <GL/glew.h>
 
+#include <atomic>
+
 #ifdef _DEBUG //Debug includes
 #include "BatchManager.h"
 #endif
 
 
 
-int64_t primitiveAllocations;
-int64_t primitiveDeallocations;
+std::atomic<int> primitiveAllocations;
+std::atomic<int> primitiveDeallocations;
 
 
 namespace spehs

@@ -11,7 +11,7 @@
 
 namespace spehs
 {
-	GUIPopup::GUIPopup(const std::string _message) : escapeEnabled(true)
+	GUIPopup::GUIPopup(const std::string& _message) : escapeEnabled(true)
 	{
 		//Background rect
 		addElement(new GUIRectangle());

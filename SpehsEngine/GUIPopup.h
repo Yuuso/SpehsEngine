@@ -8,10 +8,10 @@ namespace spehs
 	//Popup option
 	struct GUIPopupOption
 	{
-		GUIPopupOption(std::string _string) : string(_string), hasCallback(false)
+		GUIPopupOption(const std::string& _string) : string(_string), hasCallback(false)
 		{
 		}
-		GUIPopupOption(std::string _string, std::function<void()> _callback) : string(_string), callback(_callback), hasCallback(true)
+		GUIPopupOption(const std::string& _string, std::function<void()> _callback) : string(_string), callback(_callback), hasCallback(true)
 		{			
 		}
 		~GUIPopupOption()
@@ -31,11 +31,11 @@ namespace spehs
 	{
 	public:
 		template<typename ... Args>
-		GUIPopup(const std::string _message, const GUIPopupOption& _option, const Args& ... _moreOptions) : GUIPopup(_message)
+		GUIPopup(const std::string& _message, const GUIPopupOption& _option, const Args& ... _moreOptions) : GUIPopup(_message)
 		{
 			addOptions(_option, _moreOptions...);
 		}
-		GUIPopup(const std::string _message);
+		GUIPopup(const std::string& _message);
 		~GUIPopup();
 
 		void addOptions(const GUIPopupOption& option);

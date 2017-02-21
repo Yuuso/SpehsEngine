@@ -7,10 +7,11 @@
 #include "glm/vec2.hpp"
 #include "glm/gtx/vector_query.hpp"
 
+#include <atomic>
 
 
-int64_t collisionPointAllocations;
-int64_t collisionPointDeallocations;
+std::atomic<int> collisionPointAllocations;
+std::atomic<int> collisionPointDeallocations;
 
 
 

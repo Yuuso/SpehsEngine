@@ -1,4 +1,5 @@
 #include <iostream>
+#include <atomic>
 #include "AudioManager.h"
 #include "SoundSource.h"
 #include "ApplicationData.h"
@@ -13,8 +14,8 @@
 
 #define TEXT_MAX_STRING_LENGTH 32
 
-int64_t guiRectangleAllocations = 0;
-int64_t guiRectangleDeallocations = 0;
+std::atomic<int> guiRectangleAllocations = 0;
+std::atomic<int> guiRectangleDeallocations = 0;
 
 namespace spehs
 {
@@ -48,7 +49,7 @@ namespace spehs
 	{
 		setID(ID);
 	}
-	GUIRectangle::GUIRectangle(const std::string str) : GUIRectangle()
+	GUIRectangle::GUIRectangle(const std::string& str) : GUIRectangle()
 	{
 		setString(str);
 	}
@@ -358,7 +359,7 @@ namespace spehs
 	}
 
 	//Setters
-	void GUIRectangle::setTooltip(const std::string tooltipString)
+	void GUIRectangle::setTooltip(const std::string& tooltipString)
 	{
 		//Create tooltip object if one does not exist already
 		if (!tooltip)
@@ -376,7 +377,7 @@ namespace spehs
 		tooltip->setRenderState(false);
 		tooltip->setDepth(getDepth() + tooltipDepthRelative);
 	}
-	void GUIRectangle::setString(const std::string str)
+	void GUIRectangle::setString(const std::string& str)
 	{
 		if (str.size() == 0)
 			return;
@@ -443,7 +444,7 @@ namespace spehs
 		text->setFont(applicationData->GUITextFontPath, applicationData->GUITextSize);
 		text->setColor(defaultStringColor);
 	}
-	void GUIRectangle::setDisplayTexture(const std::string path, const TextureParameter& _parameters)
+	void GUIRectangle::setDisplayTexture(const std::string& path, const TextureParameter& _parameters)
 	{
 		if (displayTexture)
 			delete displayTexture;
@@ -460,15 +461,15 @@ namespace spehs
 		disableStateRecursiveUpwards(GUIRECT_POSITION_UPDATED_BIT);
 		disableStateRecursiveUpwards(GUIRECT_SCALE_UPDATED_BIT);
 	}
-	void GUIRectangle::setDisplayTexture(const std::string path)
+	void GUIRectangle::setDisplayTexture(const std::string& path)
 	{
 		setDisplayTexture(path, spehs::TextureParameter::defaultParameters);
 	}
-	void GUIRectangle::setTexture(const std::string path, const TextureParameter& _parameters)
+	void GUIRectangle::setTexture(const std::string& path, const TextureParameter& _parameters)
 	{
 		polygon->setTexture(textureManager->getTextureData(path, _parameters));
 	}
-	void GUIRectangle::setTexture(const std::string path)
+	void GUIRectangle::setTexture(const std::string& path)
 	{
 		setTexture(path, spehs::TextureParameter::defaultParameters);
 	}
@@ -510,7 +511,7 @@ namespace spehs
 		if (parent)
 			return parent->getYGlobal() + position.y; return position.y;
 	}
-	void GUIRectangle::setHoverSound(const std::string path)
+	void GUIRectangle::setHoverSound(const std::string& path)
 	{
 		if (!hoverSound)
 			hoverSound = new spehs::audio::SoundSource();
@@ -518,7 +519,7 @@ namespace spehs
 		hoverSound->setPriority(1);
 		hoverSound->setGain(1.0f);
 	}
-	void GUIRectangle::setPressSound(const std::string path)
+	void GUIRectangle::setPressSound(const std::string& path)
 	{
 		if (!pressSound)
 			pressSound = new spehs::audio::SoundSource();

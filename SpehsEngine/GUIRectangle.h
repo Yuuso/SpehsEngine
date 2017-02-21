@@ -74,7 +74,7 @@ namespace spehs
 	public:
 		GUIRectangle();
 		GUIRectangle(const GUIRECT_ID_TYPE ID);
-		GUIRectangle(const std::string str);
+		GUIRectangle(const std::string& str);
 		GUIRectangle(const glm::ivec2& _size);
 		GUIRectangle(const int width, const int height);
 		virtual ~GUIRectangle();
@@ -116,7 +116,7 @@ namespace spehs
 		void setID(const int newID){ id = newID; }
 		int getID() const { return id; }
 		//Text
-		virtual void setString(const std::string str);
+		virtual void setString(const std::string& str);
 		virtual void setStringSize(const int size);
 		virtual void setStringSizeRelative(const int relativeSize);///< Set string size relative to global default GUI text size.
 		virtual void setStringColor(const glm::vec4& col);
@@ -126,19 +126,19 @@ namespace spehs
 		std::string getString() const;
 		virtual void setJustification(const GUIRECT_STATE_TYPE justificationBit);///<NOTE: if non-justification bit is given, all justification bits will be cleared and given bit will be enabled
 		//Tooltip
-		void setTooltip(const std::string tooltipString);
+		void setTooltip(const std::string& tooltipString);
 		GUIRectangle* getTooltipPtr() const { return tooltip; }
 		//Display texture
-		void setDisplayTexture(const std::string path, const TextureParameter& _parameters);
-		void setDisplayTexture(const std::string path);
+		void setDisplayTexture(const std::string& path, const TextureParameter& _parameters);
+		void setDisplayTexture(const std::string& path);
 		//Rectangle texture
-		void setTexture(const std::string path, const TextureParameter& _parameters);
-		void setTexture(const std::string path);
+		void setTexture(const std::string& path, const TextureParameter& _parameters);
+		void setTexture(const std::string& path);
 		void setTextureID(const unsigned int _textureID);
 		
 		//Audio
-		void setHoverSound(const std::string path);
-		void setPressSound(const std::string path);
+		void setHoverSound(const std::string& path);
+		void setPressSound(const std::string& path);
 		
 		//Callback
 		/** Callback to function/method that returns void and accepts the button reference as an argument.

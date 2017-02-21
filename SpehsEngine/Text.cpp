@@ -15,9 +15,10 @@
 #include FT_FREETYPE_H
 
 #include <iostream>
+#include <atomic>
 
-int64_t textAllocations;
-int64_t textDeallocations;
+std::atomic<int> textAllocations;
+std::atomic<int> textDeallocations;
 
 
 namespace spehs

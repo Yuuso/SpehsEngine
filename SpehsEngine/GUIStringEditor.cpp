@@ -24,7 +24,7 @@ namespace spehs
 		typeCharacter->setColor(text->getColor());
 		onEditorValueChange();
 	}
-	GUIStringEditor::GUIStringEditor(const std::string str) : GUIStringEditor()
+	GUIStringEditor::GUIStringEditor(const std::string& str) : GUIStringEditor()
 	{
 		setString(str);
 	}
@@ -157,7 +157,7 @@ namespace spehs
 		disableStateRecursiveUpwards(GUIRECT_POSITION_UPDATED_BIT);
 		disableStateRecursiveUpwards(GUIRECT_SCALE_UPDATED_BIT);
 	}
-	void GUIStringEditor::setString(const std::string str)
+	void GUIStringEditor::setString(const std::string& str)
 	{
 		GUIRectangle::setString(str);
 		defaultString = str;

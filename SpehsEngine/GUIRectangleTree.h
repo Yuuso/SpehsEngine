@@ -13,7 +13,7 @@ namespace spehs
 	public:
 		GUIRectangleTree();
 		GUIRectangleTree(const int _ID);
-		GUIRectangleTree(const std::string str);
+		GUIRectangleTree(const std::string& str);
 		virtual ~GUIRectangleTree();
 
 		void inputUpdate();
@@ -23,7 +23,7 @@ namespace spehs
 		void setOpenTreeButton(int buttonID){ openTreeButton = buttonID; }
 		bool open();
 		bool close();			
-		void addElement(const std::string str, const GUIRECT_ID_TYPE _ID);///< Creates new node with given string and id
+		void addElement(const std::string& str, const GUIRECT_ID_TYPE _ID);///< Creates new node with given string and id
 		void addElement(GUIRectangle* element);
 
 		//Tree

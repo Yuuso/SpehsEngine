@@ -12,14 +12,14 @@ namespace spehs
 		static int defaultMaxStringEditorStringLength;
 	public:
 		GUIStringEditor();
-		GUIStringEditor(const std::string title);
+		GUIStringEditor(const std::string& title);
 		GUIStringEditor(const GUIRECT_ID_TYPE id);
 		GUIStringEditor(const int width, const int height);
 		~GUIStringEditor() override;
 
 		void setRenderState(const bool _state) override;
 		void setDepth(const int16_t depth) override;
-		void setString(const std::string str) override;
+		void setString(const std::string& str) override;
 		void setStringSize(const int size) override;
 		void setStringSizeRelative(const int relativeSize) override;
 		void setStringColor(const glm::vec4& col) override;
