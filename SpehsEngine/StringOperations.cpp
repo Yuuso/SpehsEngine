@@ -1,6 +1,6 @@
 #include <string>
 #include <stdint.h>
-#include "Console.h"
+#include "Exceptions.h"
 #include "BitwiseOperations.h"
 #include "StringOperations.h"
 
@@ -103,7 +103,7 @@ namespace spehs
 	std::string toString(float value, int precision)
 	{
 #ifdef _DEBUG
-		if (precision > 6)	spehs::console::error(__FUNCTION__" precision too high! Maximum precision 6!");
+		if (precision > 6)	spehs::exceptions::unexpectedError(__FUNCTION__" precision too high! Maximum precision 6!");
 #endif
 		std::string str(std::to_string(value));
 		for (unsigned i = 0; i < str.size(); i++)

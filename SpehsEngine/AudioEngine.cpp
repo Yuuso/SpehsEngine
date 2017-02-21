@@ -3,7 +3,6 @@
 #include "Exceptions.h"
 #include "OpenALError.h"
 #include "SoundSource.h"
-#include "Console.h"
 #include "ApplicationData.h"
 
 #include <AL\al.h>
@@ -235,7 +234,7 @@ namespace spehs
 			}
 
 			//This should be quite rare
-			spehs::console::warning("Could not find a free sound source object!");
+			spehs::exceptions::warning("Could not find a free sound source object!");
 			return false;
 		}
 	}

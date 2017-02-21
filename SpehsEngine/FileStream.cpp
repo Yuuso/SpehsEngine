@@ -1,7 +1,7 @@
 #include <mutex>
 #include <boost/filesystem.hpp>
+#include "Exceptions.h"
 #include "FileStream.h"
-#include "Console.h"
 
 namespace spehs
 {
@@ -94,7 +94,7 @@ namespace spehs
 		{
 			if (!spehs::createDirectory(path))
 			{
-				spehs::console::warning("Failed to create directory: \"" + path + "\"!");
+				spehs::exceptions::warning("Failed to create directory: \"" + path + "\"!");
 				return false;
 			}
 		}
@@ -108,12 +108,12 @@ namespace spehs
 		boost::filesystem::path path(directoryPath);
 		if (!boost::filesystem::exists(path))
 		{
-			spehs::console::warning("listFilesInDirectory failed: directory does not exist! : " + directoryPath);
+			spehs::exceptions::warning("listFilesInDirectory failed: directory does not exist! : " + directoryPath);
 			return files;
 		}
 		if (!boost::filesystem::is_directory(path))
 		{
-			spehs::console::warning("listFilesInDirectory failed: directory path leads to a non-directory file! : " + directoryPath);
+			spehs::exceptions::warning("listFilesInDirectory failed: directory path leads to a non-directory file! : " + directoryPath);
 			return files;
 		}
 
@@ -162,12 +162,12 @@ namespace spehs
 		boost::filesystem::path path(directoryPath);
 		if (!boost::filesystem::exists(path))
 		{
-			spehs::console::warning("listSubDirectoriesInDirectory failed: directory does not exist! : " + directoryPath);
+			spehs::exceptions::warning("listSubDirectoriesInDirectory failed: directory does not exist! : " + directoryPath);
 			return subDirectories;
 		}
 		if (!boost::filesystem::is_directory(path))
 		{
-			spehs::console::warning("listSubDirectoriesInDirectory failed: directory path leads to a non-directory file! : " + directoryPath);
+			spehs::exceptions::warning("listSubDirectoriesInDirectory failed: directory path leads to a non-directory file! : " + directoryPath);
 			return subDirectories;
 		}
 		

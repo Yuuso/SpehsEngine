@@ -3,7 +3,7 @@
 #include "Polygon.h"
 #include "TextureManager.h"
 #include "Shapes.h"
-#include "Console.h"
+#include "Exceptions.h"
 #include "BatchManager.h"
 #include "ShaderManager.h"
 #include "Exceptions.h"
@@ -175,7 +175,7 @@ namespace spehs
 		}
 		else
 		{
-			spehs::console::error("Camera state not enabled, screen vertices function is useless.");
+			spehs::exceptions::unexpectedError("Camera state not enabled, screen vertices function is useless.");
 		}
 	}
 

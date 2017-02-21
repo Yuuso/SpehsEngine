@@ -1,7 +1,7 @@
 #include <algorithm>
 #include "InputManager.h"
+#include "Exceptions.h"
 #include "GUIPopup.h"
-#include "Console.h"
 #define BORDER_WIDTH 2
 #define BACKGROUND_INDEX 0
 #define MESSAGE_INDEX 1
@@ -36,7 +36,7 @@ namespace spehs
 	{
 		GUIRectangleContainer::inputUpdate();
 		if (checkState(GUIRECT_REMOVE_BIT))
-			console::warning("GUIRECT_REMOVE_BIT is enabled!\nPopup should be removed by a higher authority!");
+			exceptions::warning("GUIRECT_REMOVE_BIT is enabled!\nPopup should be removed by a higher authority!");
 		else if (inputManager->isKeyPressed(MOUSE_BUTTON_LEFT))
 		{
 			for (unsigned i = OPTION1_INDEX; i < elementsSize(); i++)

@@ -1,6 +1,6 @@
 #define ZLIB_WINAPI//Needed for linkage
 #include "Compression.h"
-#include "Console.h"
+#include "Exceptions.h"
 #include "zlib/zlib.h"
 //#pragma comment(lib, "zlibwapi.lib") // for access to the DLL
 
@@ -28,10 +28,10 @@ namespace spehs
 				if (error == Z_STREAM_END)
 					compressedBytes = zInfo.total_out;
 				else
-					console::error("Failed to compress source data! Error code: " + error);
+					exceptions::unexpectedError("Failed to compress source data! Error code: " + error);
 			}
 			else
-				console::error("Failed to compress source data! Error code: " + error);
+				exceptions::unexpectedError("Failed to compress source data! Error code: " + error);
 			deflateEnd(&zInfo);
 			return(compressedBytes);
 		}
@@ -51,10 +51,10 @@ namespace spehs
 				if (error == Z_STREAM_END)
 					uncompressedBytes = zInfo.total_out;
 				else
-					console::error("Failed to uncompress source data! Error code: " + error);
+					exceptions::unexpectedError("Failed to uncompress source data! Error code: " + error);
 			}
 			else
-				console::error("Failed to uncompress source data! Error code: " + error);
+				exceptions::unexpectedError("Failed to uncompress source data! Error code: " + error);
 			inflateEnd(&zInfo);
 			return(uncompressedBytes);
 		}

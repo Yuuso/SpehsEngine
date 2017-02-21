@@ -4,7 +4,6 @@
 #include <GL/glew.h>
 
 #include "GLSLProgram.h"
-#include "Console.h"
 #include "OpenGLError.h"
 #include "Exceptions.h"
 
@@ -108,7 +107,7 @@ namespace spehs
 
 		if (location == GL_INVALID_INDEX)
 		{
-			spehs::console::warning("Uniform " + uniformName + " not found in shader!");
+			spehs::exceptions::warning("Uniform " + uniformName + " not found in shader!");
 			return NULL;
 		}
 

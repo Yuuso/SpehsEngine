@@ -1,6 +1,6 @@
 
 #include "Vertex.h"
-#include "Console.h"
+#include "Exceptions.h"
 #include "Primitive.h" //color
 
 
@@ -73,7 +73,7 @@ namespace spehs
 			setColor(1.0f, 0, 1.0f, 1.0f);
 			break;
 		default:
-			console::error("Invalid CommonColor: " + std::to_string(_color));
+			exceptions::unexpectedError("Invalid CommonColor: " + std::to_string(_color));
 			break;
 		}
 	}

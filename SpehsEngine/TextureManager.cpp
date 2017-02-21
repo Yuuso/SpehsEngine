@@ -74,7 +74,7 @@ namespace spehs
 		{
 			return it->second;
 		}
-		console::warning("Texture not found, using default.");
+		exceptions::warning("Texture not found, using default.");
 		return defaultTexture;
 	}
 	size_t TextureManager::preloadTexture(const std::string& _texturePath, const TextureParameter& _parameters)
@@ -88,7 +88,7 @@ namespace spehs
 		}
 		else
 		{
-			console::warning("Trying to preload already existing texture!");
+			exceptions::warning("Trying to preload already existing texture!");
 		}
 		return hash;
 	}
@@ -115,14 +115,14 @@ namespace spehs
 	{
 		if (_factor == 0)
 		{
-			console::error("Factor can't be 0! Using default texture. (TextureManager->preloadNoiseTexture)");
+			exceptions::unexpectedError("Factor can't be 0! Using default texture. (TextureManager->preloadNoiseTexture)");
 			return std::hash<unsigned int>()(DEFAULT_TEXTURE_SEED);
 		}
 
 		size_t hash = std::hash<unsigned>()(_seed);
 		if (textureDataMap.find(hash) != textureDataMap.end())
 		{
-			console::warning("Tryng to preload already existing noisetexture!");
+			exceptions::warning("Tryng to preload already existing noisetexture!");
 			return hash;
 		}
 
@@ -247,7 +247,7 @@ namespace spehs
 		size_t hash = std::hash<std::string>()(_ID);
 		if (textureDataMap.find(hash) != textureDataMap.end())
 		{
-			console::warning("Tryng to preload already existing datatexture!");
+			exceptions::warning("Tryng to preload already existing datatexture!");
 			return hash;
 		}
 
@@ -296,7 +296,7 @@ namespace spehs
 		}
 		else
 		{
-			console::warning("Texture not found, cannot remove!");
+			exceptions::warning("Texture not found, cannot remove!");
 		}
 	}
 	void TextureManager::clearAllTextureData()
@@ -326,7 +326,7 @@ namespace spehs
 
 		if (!image)
 		{
-			console::warning("Failed to load image file: " + _filepath);
+			exceptions::warning("Failed to load image file: " + _filepath);
 			return nullptr;
 		}
 

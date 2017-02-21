@@ -1,7 +1,7 @@
 
 #pragma once
 
-#include "Console.h"
+#include "Exceptions.h"
 
 #include <glm/vec4.hpp>
 
@@ -46,7 +46,7 @@ namespace spehs
 		case MAGENTA:
 			return glm::vec4(1.0f, 0.0f, 1.0f, 1.0f);
 		default:
-			console::error("Invalid CommonColor: " + std::to_string(_color));
+			exceptions::unexpectedError("Invalid CommonColor: " + std::to_string(_color));
 			break;
 		}
 	}

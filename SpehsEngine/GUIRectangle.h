@@ -234,7 +234,7 @@ namespace spehs
 		glm::ivec2 position;///<The position of the rectangle, originating from the lower left corner, given in screen coordinates. Relative to parent's position
 		glm::ivec2 size;///<Current size of the rectangle
 		glm::ivec2 minSize;///<The minimum size of the rectangle. Checked whenever rezising the polygon.
-		GUIRectangleContainer* parent;///<Rectangle inherits position from parent chain. NOTE: parent must be ractangle container
+		GUIRectangleContainer* parent;///<Rectangle inherits position from parent chain. NOTE: parent must be a rectangle container
 		GUIRectangle* tooltip;
 		Polygon* polygon;
 		Text* text;

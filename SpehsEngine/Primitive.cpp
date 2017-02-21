@@ -2,7 +2,7 @@
 #include "Primitive.h"
 #include "Vertex.h"
 #include "ShaderManager.h"
-#include "Console.h"
+#include "Exceptions.h"
 #include "Batch.h"
 
 #include <GL/glew.h>
@@ -63,7 +63,7 @@ namespace spehs
 #ifdef _DEBUG
 		if (_x != _x || _y != _y)
 		{
-			console::error("Position values corrupted!");
+			exceptions::unexpectedError("Position values corrupted!");
 		}
 #endif
 		position = glm::vec2(_x, _y);
@@ -75,7 +75,7 @@ namespace spehs
 #ifdef _DEBUG
 		if (_newPosition.x != _newPosition.x || _newPosition.y != _newPosition.y)
 		{
-			console::error("Position values corrupted!");
+			exceptions::unexpectedError("Position values corrupted!");
 		}
 #endif
 		position = glm::vec2(_newPosition.x, _newPosition.y);
@@ -87,7 +87,7 @@ namespace spehs
 #ifdef _DEBUG
 		if (_other.position.x != _other.position.x || _other.position.y != _other.position.y)
 		{
-			console::error("Position values corrupted!");
+			exceptions::unexpectedError("Position values corrupted!");
 		}
 #endif
 		position.x = _other.position.x;
@@ -100,7 +100,7 @@ namespace spehs
 #ifdef _DEBUG
 		if (_x != _x || _y != _y)
 		{
-			console::error("Position values corrupted!");
+			exceptions::unexpectedError("Position values corrupted!");
 		}
 #endif
 		position.x += _x;
@@ -113,7 +113,7 @@ namespace spehs
 #ifdef _DEBUG
 		if (_translation.x != _translation.x || _translation.y != _translation.y)
 		{
-			console::error("Position values corrupted!");
+			exceptions::unexpectedError("Position values corrupted!");
 		}
 #endif
 		position.x += _translation.x;
@@ -126,7 +126,7 @@ namespace spehs
 #ifdef _DEBUG
 		if (_newScale != _newScale)
 		{
-			console::error("Scale values corrupted!");
+			exceptions::unexpectedError("Scale values corrupted!");
 		}
 #endif
 		scaleX = _newScale;
@@ -139,7 +139,7 @@ namespace spehs
 #ifdef _DEBUG
 		if (_newScaleX != _newScaleX || _newScaleY != _newScaleY)
 		{
-			console::error("Scale values corrupted!");
+			exceptions::unexpectedError("Scale values corrupted!");
 		}
 #endif
 		scaleX = _newScaleX;
@@ -152,7 +152,7 @@ namespace spehs
 #ifdef _DEBUG
 		if (_newScale.x != _newScale.x || _newScale.y != _newScale.y)
 		{
-			console::error("Scale values corrupted!");
+			exceptions::unexpectedError("Scale values corrupted!");
 		}
 #endif
 		scaleX = _newScale.x;
@@ -165,7 +165,7 @@ namespace spehs
 #ifdef _DEBUG
 		if (_newScaleX != _newScaleX)
 		{
-			console::error("Scale value corrupted!");
+			exceptions::unexpectedError("Scale value corrupted!");
 		}
 #endif
 		scaleX = _newScaleX;
@@ -177,7 +177,7 @@ namespace spehs
 #ifdef _DEBUG
 		if (_newScaleY != _newScaleY)
 		{
-			console::error("Scale value corrupted!");
+			exceptions::unexpectedError("Scale value corrupted!");
 		}
 #endif
 		scaleY = _newScaleY;
@@ -189,7 +189,7 @@ namespace spehs
 #ifdef _DEBUG
 		if (_newRotation != _newRotation)
 		{
-			console::error("Rotation values corrupted!");
+			exceptions::unexpectedError("Rotation values corrupted!");
 		}
 #endif
 		rotation = _newRotation;
@@ -201,7 +201,7 @@ namespace spehs
 #ifdef _DEBUG
 		if (_newRotation != _newRotation || _newRotationVector.x != _newRotationVector.x || _newRotationVector.y != _newRotationVector.y || _newRotationVector.z != _newRotationVector.z)
 		{
-			console::error("Rotation values corrupted!");
+			exceptions::unexpectedError("Rotation values corrupted!");
 		}
 #endif
 		rotation = _newRotation;
@@ -214,7 +214,7 @@ namespace spehs
 #ifdef _DEBUG
 		if (_other.rotation != _other.rotation)
 		{
-			console::error("Rotation values corrupted!");
+			exceptions::unexpectedError("Rotation values corrupted!");
 		}
 #endif
 		rotation = _other.rotation;
@@ -226,7 +226,7 @@ namespace spehs
 #ifdef _DEBUG
 		if (_rotation != _rotation)
 		{
-			console::error("Rotation values corrupted!");
+			exceptions::unexpectedError("Rotation values corrupted!");
 		}
 #endif
 		rotation += _rotation;
@@ -238,7 +238,7 @@ namespace spehs
 #ifdef _DEBUG
 		if (_newRotationVector.x != _newRotationVector.x || _newRotationVector.y != _newRotationVector.y || _newRotationVector.z != _newRotationVector.z)
 		{
-			console::error("Rotation values corrupted!");
+			exceptions::unexpectedError("Rotation values corrupted!");
 		}
 #endif
 		rotationVector = _newRotationVector;
@@ -303,7 +303,7 @@ namespace spehs
 			setColor(255, 0, 255);
 			break;
 		default:
-			console::error("Invalid CommonColor: " + std::to_string(_color));
+			exceptions::unexpectedError("Invalid CommonColor: " + std::to_string(_color));
 			break;
 		}
 	}
@@ -354,7 +354,7 @@ namespace spehs
 #ifdef _DEBUG
 		if (_newPlaneDepth != _newPlaneDepth)
 		{
-			console::error("Depth values corrupted!");
+			exceptions::unexpectedError("Depth values corrupted!");
 		}
 #endif
 		planeDepth = _newPlaneDepth;
@@ -379,7 +379,7 @@ namespace spehs
 	{
 		if (shaderManager->getShader(_newShaderIndex) == nullptr)
 		{
-			console::error("Trying to set a non-existing shader to Primitive!");
+			exceptions::unexpectedError("Trying to set a non-existing shader to Primitive!");
 			return;
 		}
 		shaderIndex = _newShaderIndex;

@@ -42,8 +42,6 @@ namespace spehs
 		//Console log / exceptions
 		void log(const std::string str, const glm::vec3& color = glm::vec3(CONSOLE_FONT_COLOR));
 		void log(const char* str, const unsigned length, const glm::vec3& color = glm::vec3(CONSOLE_FONT_COLOR));
-		void warning(const std::string warning);///<Exception: warning: inform through console. For direct warning without console, use spehs::exceptions::warning()
-		void error(const std::string error);///<Exception: error: inform through console. For direct error without console, use spehs::exceptions::unexpectedError()
 		void clearLog();
 		bool textEntered();///< Returns true if text was "executed" to console during the last update cycle (text without '/' (command) prefix)
 		std::string getTextEntered();///< Returns latest text executed to console

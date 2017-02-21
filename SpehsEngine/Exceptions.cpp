@@ -10,7 +10,7 @@ namespace spehs
 {
 	namespace exceptions
 	{
-		static bool consoleLoggingEnabled = false;
+		static bool consoleLoggingEnabled = true;
 		void fatalError(const std::string errorString)
 		{
 			std::cout << std::endl;

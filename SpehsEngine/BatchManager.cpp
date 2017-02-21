@@ -1,11 +1,11 @@
 
 #include "BatchManager.h"
+#include "Exceptions.h"
 #include "Primitive.h"
 #include "Batch.h"
 #include "Polygon.h"
 #include "Line.h"
 #include "Point.h"
-#include "Console.h"
 
 #include <algorithm>
 
@@ -40,11 +40,11 @@ namespace spehs
 	{
 		if (previousSections.empty())
 		{
-			spehs::console::warning("A batch manager (" + name + ") called endSection()! All sections have already been ended!");
+			spehs::exceptions::warning("A batch manager (" + name + ") called endSection()! All sections have already been ended!");
 			return;
 		}
 		if (batchSectionCurrentBatch != this)
-			spehs::console::error("A batch manager (" + batchSectionCurrentBatch->name + ") did not end its batch section! (BatchManager::endSection() was never called for a batch manager that began a section)");
+			spehs::exceptions::unexpectedError("A batch manager (" + batchSectionCurrentBatch->name + ") did not end its batch section! (BatchManager::endSection() was never called for a batch manager that began a section)");
 
 		//Set currently active section pointer
 		batchSectionCurrentBatch = previousSections.top();
@@ -73,7 +73,7 @@ namespace spehs
 		}
 
 		if (cleanUpPrimitives != 0)
-			console::warning("BatchManager cleaned up " + std::to_string(cleanUpPrimitives) + " primitives!");
+			exceptions::warning("BatchManager cleaned up " + std::to_string(cleanUpPrimitives) + " primitives!");
 
 		if (getActiveBatchManager() == this)
 			resetActiveBatchManager();

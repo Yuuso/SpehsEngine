@@ -3,7 +3,7 @@
 #include "ApplicationData.h"
 #include "TextureManager.h"
 #include "SpehsEngine.h"
-#include "Console.h"
+#include "Exceptions.h"
 #include "Window.h"
 
 #include <SDL/SDL.h>
@@ -150,7 +150,7 @@ namespace spehs
 		//}
 		//else
 		//{
-		//	console::warning("Mouse locking not supported!");
+		//	exceptions::warning("Mouse locking not supported!");
 		//	return false;
 		//}
 	}
@@ -225,7 +225,7 @@ namespace spehs
 					{
 						std::string error = "Couldn't open SDL joystick! ";
 						error += SDL_GetError();
-						spehs::console::error(error);
+						spehs::exceptions::unexpectedError(error);
 					}
 					joysticks[i]->goOnline(js);
 					foundOffline = true;
@@ -307,7 +307,7 @@ namespace spehs
 		{
 			std::string error = "Failed to open SDL_joystick! ";
 			error += SDL_GetError();
-			spehs::console::error(error);
+			spehs::exceptions::unexpectedError(error);
 			return;
 		}
 

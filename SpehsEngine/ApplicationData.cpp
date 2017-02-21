@@ -2,6 +2,7 @@
 #include <string>
 #include "ApplicationData.h"
 #include "FileStream.h"
+#include "Exceptions.h"
 #include "Console.h"
 
 spehs::ApplicationData* applicationData;
@@ -72,7 +73,7 @@ namespace spehs
 			//stream->open("ApplicationData.txt", std::ios::trunc);
 			if (stream->fail())
 			{
-				spehs::console::error("Failed to write application data!");
+				spehs::exceptions::unexpectedError("Failed to write application data!");
 				return;
 			}
 		}
@@ -115,7 +116,7 @@ namespace spehs
 				ofstream.open("ApplicationData.txt", std::ios::trunc);
 				if (ofstream.fail())
 				{
-					spehs::console::error("Failed to write application data!");
+					spehs::exceptions::unexpectedError("Failed to write application data!");
 					delete stream;
 					return;
 				}
@@ -124,7 +125,7 @@ namespace spehs
 				stream->open("ApplicationData.txt");
 				if (stream->fail())
 				{
-					spehs::console::error("Failed to create (SpehsData)application data");
+					spehs::exceptions::unexpectedError("Failed to create (SpehsData)application data");
 					delete stream;
 					return;
 				}

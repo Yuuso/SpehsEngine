@@ -219,7 +219,7 @@ namespace spehs
 	{
 		if (shaderPrograms.size() < _index + 1)
 		{
-			spehs::console::error("Trying to access a non-existing shader!");
+			spehs::exceptions::unexpectedError("Trying to access a non-existing shader!");
 			return;
 		}
 		delete shaderPrograms[_index];
@@ -229,7 +229,7 @@ namespace spehs
 	{
 		if (shaderPrograms.size() < _index + 1)
 		{
-			spehs::console::error("Trying to access a non-existing shader!");
+			spehs::exceptions::unexpectedError("Trying to access a non-existing shader!");
 			return nullptr;
 		}
 		return shaderPrograms[_index];
@@ -238,7 +238,7 @@ namespace spehs
 	{
 		if (shaderPrograms.size() < _index + 1)
 		{
-			spehs::console::error("Trying to access a non-existing shader!");
+			spehs::exceptions::unexpectedError("Trying to access a non-existing shader!");
 			return;
 		}
 		shaderPrograms[_index]->uniforms->setUniforms();
@@ -247,7 +247,7 @@ namespace spehs
 	{
 		if (shaderPrograms.size() < _index + 1)
 		{
-			spehs::console::error("Trying to access a non-existing shader!");
+			spehs::exceptions::unexpectedError("Trying to access a non-existing shader!");
 			return;
 		}
 		shaderPrograms[_index]->shader->use();
@@ -256,7 +256,7 @@ namespace spehs
 	{
 		if (shaderPrograms.size() < _index + 1)
 		{
-			spehs::console::error("Trying to access a non-existing shader!");
+			spehs::exceptions::unexpectedError("Trying to access a non-existing shader!");
 			return;
 		}
 		shaderPrograms[_index]->shader->unuse();

@@ -4,7 +4,6 @@
 #include <mutex>
 
 #include "BitwiseOperations.h"
-#include "Exceptions.h"
 #include "InputManager.h"
 #include "ApplicationData.h"
 #include "Time.h"
@@ -609,18 +608,6 @@ namespace spehs
 
 			LockGuardRecursive regionLock(consoleMutex);
 			newLines.push_back(std::make_pair(string, color));
-		}
-		void warning(const std::string str)
-		{
-			LockGuardRecursive regionLock(consoleMutex);
-			log("[Warning] " + str, glm::vec3(1.0f, 0.3f, 0.0f));
-			spehs::exceptions::warning(str);
-		}
-		void error(const std::string str)
-		{
-			LockGuardRecursive regionLock(consoleMutex);
-			log("[Error] " + str, glm::vec3(1.0f, 0.0f, 0.0f));
-			spehs::exceptions::unexpectedError(str);
 		}
 		void clearLog()
 		{
