@@ -257,7 +257,15 @@ namespace spehs
 
 	void Primitive::setColor(const glm::vec3 &_newColor)
 	{
-		primitiveColor = glm::vec4(_newColor, 1.0f);
+		primitiveColor = glm::vec4(_newColor, primitiveColor.a);
+		for (unsigned i = 0; i < worldVertexArray.size(); i++)
+		{
+			worldVertexArray[i].color.setColor(primitiveColor);
+		}
+	}
+	void Primitive::setColor(const unsigned char _r, const unsigned char _g, const unsigned char _b)
+	{
+		primitiveColor = glm::vec4((float) _r / 255.0f, (float) _g / 255.0f, (float) _b / 255.0f, primitiveColor.a);
 		for (unsigned i = 0; i < worldVertexArray.size(); i++)
 		{
 			worldVertexArray[i].color.setColor(primitiveColor);

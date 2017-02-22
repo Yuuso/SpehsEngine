@@ -85,7 +85,8 @@ namespace spehs
 		void setRotationVector(const glm::vec3 &_newRotationVector);
 		void setColor(const glm::vec4 &_newColor);
 		void setColor(const glm::vec3 &_newColor);
-		void setColor(const unsigned char _r, const unsigned char _g, const unsigned char _b, const unsigned char _a = 255);
+		void setColor(const unsigned char _r, const unsigned char _g, const unsigned char _b);
+		void setColor(const unsigned char _r, const unsigned char _g, const unsigned char _b, const unsigned char _a);
 		void setColor(const CommonColor& _color);
 		void setColor(const unsigned char* _rgbaArray);///< Reads 4 bytes from array. Channel value ranges are from 0 to 255.
 		void setColor(const Primitive& other);
