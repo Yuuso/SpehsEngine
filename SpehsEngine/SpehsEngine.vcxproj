@@ -165,6 +165,7 @@
     <ClInclude Include="AudioEngine.h" />
     <ClInclude Include="AudioManager.h" />
     <ClInclude Include="Collider.h" />
+    <ClInclude Include="Colors.h" />
     <ClInclude Include="GUIRectangleColumn.h" />
     <ClInclude Include="GUIRectangleUnisizeContainer.h" />
     <ClInclude Include="KeyboardRecorder.h" />
@@ -177,7 +178,6 @@
     <ClInclude Include="BatchManager.h" />
     <ClInclude Include="BitwiseOperations.h" />
     <ClInclude Include="Camera2D.h" />
-    <ClInclude Include="CommonColor.h" />
     <ClInclude Include="Component.h" />
     <ClInclude Include="Compression.h" />
     <ClInclude Include="Console.h" />

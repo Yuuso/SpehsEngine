@@ -2,7 +2,7 @@
 
 #include "Vertex.h"
 #include "Depth.h"
-#include "CommonColor.h"
+#include "Colors.h"
 
 #include <glm/vec2.hpp>
 #include <glm/vec3.hpp>

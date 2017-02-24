@@ -3,7 +3,7 @@
 
 #include "Depth.h"
 #include "Vertex.h"
-#include "CommonColor.h"
+#include "Colors.h"
 
 #include <glm/glm.hpp>
 

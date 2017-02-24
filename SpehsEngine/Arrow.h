@@ -1,6 +1,6 @@
 #pragma once
 
-#include "CommonColor.h"
+#include "Colors.h"
 #include "Depth.h"
 
 #include <glm\vec2.hpp>
