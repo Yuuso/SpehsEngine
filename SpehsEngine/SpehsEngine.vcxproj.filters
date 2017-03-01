@@ -194,7 +194,6 @@
     <ClCompile Include="Triangulation.cpp">
       <Filter>Algorithm</Filter>
     </ClCompile>
-    <ClCompile Include="TriangulationTest.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GLSLProgram.h">
@@ -417,7 +416,6 @@
     <ClInclude Include="Triangulation.h">
       <Filter>Algorithm</Filter>
     </ClInclude>
-    <ClInclude Include="TriangulationTest.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Physics">

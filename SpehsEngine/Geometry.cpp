@@ -212,4 +212,8 @@ namespace spehs
 			return nullptr;
 		}
 	}
+	float getTriangleArea(const glm::vec2& v0, const glm::vec2& v1, const glm::vec2& v2)
+	{
+		return abs(((v1.x - v0.x) * (v2.y - v0.y) - (v2.x - v0.x) * (v1.y - v0.y)) / 2.0f);
+	}
 }

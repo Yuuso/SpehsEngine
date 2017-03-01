@@ -58,4 +58,7 @@ namespace spehs
 
 	/**Returns a generated position array. Assigns length of array into numCusps*/
 	glm::vec2* generateCusps(unsigned& numCusps, int shape, float width, float height);
+
+	/*Get triangle area*/
+	float getTriangleArea(const glm::vec2& v0, const glm::vec2& v1, const glm::vec2& v2);
 }

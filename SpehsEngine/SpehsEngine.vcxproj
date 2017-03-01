@@ -156,7 +156,6 @@
     <ClCompile Include="Time.cpp" />
     <ClCompile Include="Transform2D.cpp" />
     <ClCompile Include="Triangulation.cpp" />
-    <ClCompile Include="TriangulationTest.cpp" />
     <ClCompile Include="Vertex.cpp" />
     <ClCompile Include="Window.cpp" />
   </ItemGroup>
@@ -195,7 +194,6 @@
     <ClInclude Include="GUID.h" />
     <ClInclude Include="Thread.h" />
     <ClInclude Include="Triangulation.h" />
-    <ClInclude Include="TriangulationTest.h" />
     <ClInclude Include="ValueEditor.h" />
     <ClInclude Include="GUIPopup.h" />
     <ClInclude Include="GUIRectangle.h" />
