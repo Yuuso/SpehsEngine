@@ -1,0 +1,70 @@
+/*
+Implementation by Teo Hiltunen, based on theory provided by: http://www.academicpub.org/jao/paperInfo.aspx?PaperID=15630
+*/
+#pragma once
+#include <vector>
+#include <glm/vec2.hpp>
+
+namespace spehs
+{
+	struct Triangle;
+	struct DirectionalEdge
+	{
+		DirectionalEdge(glm::vec2* _begin, glm::vec2* _end, DirectionalEdge* _prev);
+		~DirectionalEdge();
+
+		void setPrev(DirectionalEdge* _prev)
+		{
+			if (prev)
+				prev->next = nullptr;
+			prev = _prev;
+			if (prev)
+				prev->next = this;
+		}
+		void setNext(DirectionalEdge* _next)
+		{
+			if (next)
+				next->prev = nullptr;
+			next = _next;
+			if (next)
+				next->prev = this;
+		}
+		glm::vec2* begin;
+		glm::vec2* end;
+		DirectionalEdge* next;
+		DirectionalEdge* prev;
+		Triangle* innerTriangle;
+	};
+	struct Triangle
+	{
+		Triangle();
+		~Triangle();
+		void build(glm::vec2* p0, glm::vec2* p1, glm::vec2* p2, Triangle* parent);
+		bool legalize();
+		glm::vec2* points[3];
+		Triangle* neighbours[3];
+		Triangle*& neighbour(int index) { if (index < 0) return neighbours[3 + /*NOTE: works only for indices -1 and -2...*/(index % 3)]; return neighbours[index % 3]; }
+		glm::vec2*& point(int index) { if (index < 0) return points[3 + /*NOTE: works only for indices -1 and -2...*/(index % 3)]; return points[index % 3]; }
+		int index3(int index) { if (index < 0) return 3 + /*NOTE: works only for indices -1 and -2...*/(index % 3); return index % 3; }
+		//-1>2 -2>1 -3>0
+		//Hierarchy
+		Triangle* parent;
+		std::vector<Triangle*> children;
+	};
+
+	/* Constructs triangles based on input points. points do not need to be ordered in any way. */
+	class Triangulation
+	{
+	public:
+		/* Performs triangulation on given points. */
+		Triangulation(std::vector<glm::vec2>& points);
+		~Triangulation();
+
+		/* Results of the triangulation algorithm are stored here. */
+		std::vector<Triangle> triangles;
+
+	private:
+		/* Points to the first element in the hull */
+		DirectionalEdge* hull;
+	};
+}

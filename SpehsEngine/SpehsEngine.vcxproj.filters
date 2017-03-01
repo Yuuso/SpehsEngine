@@ -191,6 +191,10 @@
     <ClCompile Include="Thread.cpp">
       <Filter>Core</Filter>
     </ClCompile>
+    <ClCompile Include="Triangulation.cpp">
+      <Filter>Algorithm</Filter>
+    </ClCompile>
+    <ClCompile Include="TriangulationTest.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GLSLProgram.h">
@@ -410,6 +414,10 @@
     <ClInclude Include="Colors.h">
       <Filter>Core</Filter>
     </ClInclude>
+    <ClInclude Include="Triangulation.h">
+      <Filter>Algorithm</Filter>
+    </ClInclude>
+    <ClInclude Include="TriangulationTest.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Physics">
@@ -453,6 +461,9 @@
     </Filter>
     <Filter Include="Object System">
       <UniqueIdentifier>{d2fdada1-b4b1-403b-9166-08f0a4118180}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Algorithm">
+      <UniqueIdentifier>{bcc75cab-4787-44fc-9a61-382a4e431095}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>
