@@ -185,6 +185,10 @@ namespace spehs
 				return doubleDist(randomMTEngine, { _minmax, _max });
 			}
 		}
+		bool coin()
+		{
+			return uintDist(randomMTEngine, { 0, 1 });
+		}
 
 
 		PRNG32::PRNG32()

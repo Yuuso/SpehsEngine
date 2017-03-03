@@ -24,6 +24,7 @@ namespace spehs
 		double drandom();
 		double drandom(const double& _min, const double& _max);
 		double drandom(const double& _min, const double& _max, const double& _maxmin, const double& _minmax);
+		bool coin();
 		
 
 		//Pseudo random classes

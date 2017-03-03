@@ -84,6 +84,9 @@ namespace spehs
 		void setDefaultTexture(const std::string& _filepath, const TextureParameter& _parameters);
 		void setDefaultTexture(const std::string& _filepath);
 
+		bool isTexture(const std::string& _ID);
+		bool isTexture(const size_t _hash);
+
 		TextureData* getTextureData(const std::string& _texturePath, const TextureParameter& _parameters); //Get texture data from path
 		TextureData* getTextureData(const std::string& _texturePath);
 		TextureData* getTextureData(const size_t& _hash); //Get texture data from hash

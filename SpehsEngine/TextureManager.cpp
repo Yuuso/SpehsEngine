@@ -47,6 +47,26 @@ namespace spehs
 	{
 		setDefaultTexture(_filepath, TextureParameter::defaultParameters);
 	}
+	
+	bool TextureManager::isTexture(const std::string& _ID)
+	{
+		size_t hash = std::hash<std::string>()(_ID);
+		auto it = textureDataMap.find(hash);
+		if (it != textureDataMap.end())
+		{
+			return true;
+		}
+		return false;
+	}
+	bool TextureManager::isTexture(const size_t _hash)
+	{
+		auto it = textureDataMap.find(_hash);
+		if (it != textureDataMap.end())
+		{
+			return true;
+		}
+		return false;
+	}
 
 
 	TextureData* TextureManager::getTextureData(const std::string& _texturePath, const TextureParameter& _parameters)
