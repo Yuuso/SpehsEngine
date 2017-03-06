@@ -48,7 +48,7 @@ namespace spehs
 		return offset;
 	}
 
-	bool directoryExists(std::string& path)
+	bool directoryExists(const std::string& path)
 	{
 		std::lock_guard<std::recursive_mutex> lock(filestreamMutex);
 		if (boost::filesystem::exists(path))
@@ -62,7 +62,7 @@ namespace spehs
 			return false;
 	}
 
-	bool fileExists(std::string& path)
+	bool fileExists(const std::string& path)
 	{
 		std::lock_guard<std::recursive_mutex> lock(filestreamMutex);
 		if (boost::filesystem::exists(path))
@@ -76,18 +76,18 @@ namespace spehs
 			return false;
 	}
 
-	bool removeFile(std::string& path)
+	bool removeFile(const std::string& path)
 	{
 		return boost::filesystem::remove(path);
 	}
 
-	bool createDirectory(std::string& path)
+	bool createDirectory(const std::string& path)
 	{
 		std::lock_guard<std::recursive_mutex> lock(filestreamMutex);
 		return boost::filesystem::create_directory(path);
 	}
 
-	bool verifyDirectory(std::string& path)
+	bool verifyDirectory(const std::string& path)
 	{
 		std::lock_guard<std::recursive_mutex> lock(filestreamMutex);
 		if (!spehs::directoryExists(path))
@@ -101,7 +101,7 @@ namespace spehs
 		return true;
 	}
 	
-	std::vector<std::string> listFilesInDirectory(std::string directoryPath, std::string fileType)
+	std::vector<std::string> listFilesInDirectory(const std::string& directoryPath, std::string fileType)
 	{
 		std::lock_guard<std::recursive_mutex> lock(filestreamMutex);
 		std::vector<std::string> files;
@@ -155,7 +155,7 @@ namespace spehs
 		return files;
 	}
 
-	std::vector<std::string> listSubDirectoriesInDirectory(std::string directoryPath)
+	std::vector<std::string> listSubDirectoriesInDirectory(const std::string& directoryPath)
 	{
 		std::lock_guard<std::recursive_mutex> lock(filestreamMutex);
 		std::vector<std::string> subDirectories;

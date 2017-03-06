@@ -15,26 +15,26 @@ namespace spehs
 	size_t readString(std::string& string, unsigned char* buffer);
 
 	/**Returns true if directory exists at given path*/
-	bool directoryExists(std::string& path);
+	bool directoryExists(const std::string& path);
 
 	/**Returns true if file exists at given path*/
-	bool fileExists(std::string& path);
+	bool fileExists(const std::string& path);
 
 	/**Returns true if file exists and was removed succesfully*/
-	bool removeFile(std::string& path);
+	bool removeFile(const std::string& path);
 
 	/**Returns false if failed to create directory at given path*/
-	bool createDirectory(std::string& path);
+	bool createDirectory(const std::string& path);
 
 	/**If directory doesn't exist, creates one. If creation fails, returns false*/
-	bool verifyDirectory(std::string& path);
+	bool verifyDirectory(const std::string& path);
 
 	/**Returns a vector of strings, each string representing a file found in the given directory.
 	Directory path is not included in the file string. If file type is specified, the file type will not be included in the file string.
 	If file type is specified, only files of that type are returned.*/
-	std::vector<std::string> listFilesInDirectory(std::string directoryPath, std::string fileType = "");
+	std::vector<std::string> listFilesInDirectory(const std::string& directoryPath, std::string fileType = "");
 
 	/**Returns a vector of strings, each string representing a sub directory found in the given directory.
 	Directory path is not included in the sub directory string.*/
-	std::vector<std::string> listSubDirectoriesInDirectory(std::string directoryPath);
+	std::vector<std::string> listSubDirectoriesInDirectory(const std::string& directoryPath);
 }
