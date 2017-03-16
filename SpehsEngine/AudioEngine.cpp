@@ -58,10 +58,7 @@ namespace spehs
 			{
 				if (AudioEngine::instance->sourcePool[i]->soundPtr)
 				{
-					if (!AudioEngine::instance->sourcePool[i]->soundPtr->isPlaying())
-					{
-						AudioEngine::instance->sourcePool[i]->soundPtr->removeSource();
-					}
+					AudioEngine::instance->sourcePool[i]->soundPtr->update();
 				}
 			}
 		}

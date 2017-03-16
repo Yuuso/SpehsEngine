@@ -4,8 +4,11 @@
 #include "AudioManager.h"
 #include "OpenALError.h"
 #include "Exceptions.h"
+#include "Time.h"
 
 #include <AL\al.h>
+
+#include <algorithm>
 
 
 extern glm::vec2 positionCorrectionFactor;
@@ -18,7 +21,8 @@ namespace spehs
 {
 	namespace audio
 	{
-		SoundSource::SoundSource() : pitch(1.0f), gain(1.0f), maxGain(1.0f), minGain(0.0f), loop(false), source(nullptr), buffer(0)
+		SoundSource::SoundSource() : pitch(1.0f), gain(1.0f), maxGain(1.0f), minGain(0.0f), loop(false), source(nullptr), buffer(0), relativeToSource(true),
+			gainAutomationTimer(0.0f), fadeToPause(false), fadeToStop(false), fadeIn(false)
 		{
 		}
 		SoundSource::~SoundSource()
@@ -52,9 +56,76 @@ namespace spehs
 			alSourcef(source->sourceID, AL_MAX_GAIN, maxGain);
 			alSourcef(source->sourceID, AL_MIN_GAIN, minGain);
 			alSourcei(source->sourceID, AL_LOOPING, loop);
+			alSourcei(source->sourceID, AL_SOURCE_RELATIVE, relativeToSource);
+			checkOpenALErrors(__FILE__, __LINE__);
 
 			alSourcei(source->sourceID, AL_BUFFER, buffer);
 			checkOpenALErrors(__FILE__, __LINE__);
+		}
+
+		void SoundSource::update()
+		{
+			if (!isPlaying())
+			{
+				//This too brutal?
+				removeSource();
+			}
+
+			if (!source)
+			{
+				resetAutomation();
+			}
+			//Automations
+			if (gainAutomationTimer > 0.0f)
+			{
+				float currentGain, currentPitch;
+				alGetSourcef(source->sourceID, AL_GAIN, &currentGain);
+				alGetSourcef(source->sourceID, AL_PITCH, &currentPitch);
+
+				//Gain
+				if (fadeIn)
+				{
+					float deltaGain = (time::getDeltaTimeAsSeconds() / gainAutomationTimer) * (gain - currentGain);
+					alSourcef(source->sourceID, AL_GAIN, std::max(0.0f, currentGain + deltaGain));
+					checkOpenALErrors(__FILE__, __LINE__);
+				}
+				else if (fadeToPause)
+				{
+					float deltaGain = (time::getDeltaTimeAsSeconds() / gainAutomationTimer) * -currentGain;
+					alSourcef(source->sourceID, AL_GAIN, std::max(0.0f, currentGain + deltaGain));
+					checkOpenALErrors(__FILE__, __LINE__);
+				}
+				else if (fadeToStop)
+				{
+
+				}
+				else
+				{
+					if (gain != currentGain)
+					{
+						float deltaGain = (time::getDeltaTimeAsSeconds() / gainAutomationTimer) * -currentGain;
+						alSourcef(source->sourceID, AL_GAIN, std::max(0.0f, currentGain + deltaGain));
+						checkOpenALErrors(__FILE__, __LINE__);
+					}
+				}
+				gainAutomationTimer -= time::getDeltaTimeAsSeconds();
+			}
+			else if (fadeToPause)
+			{
+				alSourcef(source->sourceID, AL_GAIN, gain);
+				pause();
+			}
+			else if (fadeToStop)
+			{
+				alSourcef(source->sourceID, AL_GAIN, gain);
+				stop();
+			}
+			else if (fadeIn)
+			{
+				alSourcef(source->sourceID, AL_GAIN, gain);
+				checkOpenALErrors(__FILE__, __LINE__);
+				fadeIn = false;
+			}
 		}
 
 		void SoundSource::play()
@@ -73,6 +144,31 @@ namespace spehs
 				setParameters();
 			}
 
+			resetAutomation();
+			alSourcePlay(source->sourceID);
+			checkOpenALErrors(__FILE__, __LINE__);
+		}
+		void SoundSource::play(const float _fadeTimer)
+		{
+			if (buffer == 0)
+			{
+				spehs::exceptions::warning("Cannot play sound, no sound buffer!");
+				return;
+			}
+			if (!source)
+			{
+				if (!AudioEngine::instance->getFreeSource(this))
+				{
+					return;
+				}
+				setParameters();
+			}
+
+			resetAutomation();
+			alSourcef(source->sourceID, AL_GAIN, 0.0f);
+			gainAutomationTimer = _fadeTimer;
+			fadeIn = true;
+
 			alSourcePlay(source->sourceID);
 			checkOpenALErrors(__FILE__, __LINE__);
 		}
@@ -84,10 +180,11 @@ namespace spehs
 				return;
 			}
 
+			resetAutomation();
 			alSourcePause(source->sourceID);
 			checkOpenALErrors(__FILE__, __LINE__);
 		}
-		void SoundSource::stop()
+		void SoundSource::pause(const float _fadeTimer)
 		{
 			if (!source)
 			{
@@ -95,16 +192,42 @@ namespace spehs
 				return;
 			}
 
+			resetAutomation();
+			gainAutomationTimer = _fadeTimer;
+			fadeToPause = true;
+		}
+		void SoundSource::stop()
+		{
+			if (!source)
+			{
+				spehs::exceptions::warning("Cannot stop sound, no source!");
+				return;
+			}
+
+			resetAutomation();
 			if (isPlaying())
 			{
 				alSourceStop(source->sourceID);
 				checkOpenALErrors(__FILE__, __LINE__);
 			}
 		}
+		void SoundSource::stop(const float _fadeTimer)
+		{
+			if (!source)
+			{
+				spehs::exceptions::warning("Cannot stop sound, no source!");
+				return;
+			}
 
+			resetAutomation();
+			gainAutomationTimer = _fadeTimer;
+			fadeToStop = true;
+		}
+		
 		void SoundSource::setPitch(const float _pitch)
 		{
 			pitch = _pitch;
+			resetAutomation();
 			if (source)
 			{
 				alSourcef(source->sourceID, AL_PITCH, pitch);
@@ -113,14 +236,22 @@ namespace spehs
 		void SoundSource::setGain(const float _gain)
 		{
 			gain = _gain;
+			resetAutomation();
 			if (source)
 			{
 				alSourcef(source->sourceID, AL_GAIN, gain);
 			}
 		}
+		void SoundSource::setGain(const float _gain, const float _fadeTimer)
+		{
+			resetAutomation();
+			gain = _gain;
+			gainAutomationTimer = _fadeTimer;
+		}
 		void SoundSource::setMaxGain(const float _maxGain)
 		{
 			maxGain = _maxGain;
+			resetAutomation();
 			if (source)
 			{
 				alSourcef(source->sourceID, AL_MAX_GAIN, maxGain);
@@ -145,6 +276,10 @@ namespace spehs
 		void SoundSource::setPriority(const unsigned int _prio)
 		{
 			priority = _prio;
+		}
+		void SoundSource::setRelative(const bool _value)
+		{
+			relativeToSource = _value;
 		}
 
 		bool SoundSource::isPlaying()
@@ -178,10 +313,18 @@ namespace spehs
 			source->soundPtr = nullptr;
 			source = nullptr;
 		}
-
-
-		ActiveSoundSource::ActiveSoundSource() : position(0.0f), velocity(0.0f), direction(0.0f), rollOffFactor(defaultRollOffFactor)
+		void SoundSource::resetAutomation()
 		{
+			gainAutomationTimer = 0.0f;
+			fadeToPause = false;
+			fadeToStop = false;
+			fadeIn = false;
+		}
+
+
+		ActiveSoundSource::ActiveSoundSource() : SoundSource(), position(0.0f), velocity(0.0f), direction(0.0f), rollOffFactor(defaultRollOffFactor)
+		{
+			relativeToSource = false;
 		}
 		ActiveSoundSource::~ActiveSoundSource()
 		{

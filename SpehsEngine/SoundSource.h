@@ -28,16 +28,23 @@ namespace spehs
 
 			virtual void setParameters();
 
+			void update();
+
 			void play();
+			void play(const float _fadeTimer);
 			void pause();
+			void pause(const float _fadeTimer);
 			void stop();
+			void stop(const float _fadeTimer);
 
 			void setPitch(const float _pitch);
 			virtual void setGain(const float _gain);
+			virtual void setGain(const float _gain, const float _fadeTimer);
 			void setMaxGain(const float _maxGain);
 			void setMinGain(const float _minGain);
 			void setLooping(const bool _loop);
 			void setPriority(const unsigned int _prio);
+			void setRelative(const bool _value);
 
 			bool isPlaying();
 			bool isPaused();
@@ -47,10 +54,11 @@ namespace spehs
 			float getMinGain(){ return minGain; }
 			bool getLooping(){ return loop; }
 			unsigned int getPriority(){ return priority; }
+			bool getRelative(){ return relativeToSource; }
 
 		protected:
-
 			void removeSource();
+			void resetAutomation();
 
 			/*
 			range: 0.5 - 2.0
@@ -98,6 +106,20 @@ namespace spehs
 			*/
 			unsigned int priority;
 
+			/*
+			range: bool, false
+			default: true, false for active sound sources
+			Is sound position relative to listener
+			Basically, set to false if you want directional sounds
+			*/
+			bool relativeToSource;
+
+			//Automation
+			float gainAutomationTimer;
+			bool fadeToPause;
+			bool fadeToStop;
+			bool fadeIn;
+
 			AudioEngine::SourceObject* source;
 			ALuint buffer;
 		};
@@ -125,7 +147,6 @@ namespace spehs
 			float getRollOffFactor(){ return rollOffFactor; }
 
 		private:
-
 			/*
 			default: {0, 0, 0}
 			*/
