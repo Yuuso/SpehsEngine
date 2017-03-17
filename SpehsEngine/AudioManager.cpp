@@ -161,7 +161,7 @@ namespace spehs
 
 		FILE* fileData = nullptr;
 		AudioClip clip;
-		static const int endian = 0; //little is 0, big is 1
+		static const int endian = 0; //little is 0, big is 1; ogg should always be little-endian
 		static const int BUFFER_SIZE = 32768;
 		int bitStream;
 		long bytes;
