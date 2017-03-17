@@ -70,17 +70,18 @@ namespace spehs
 		AudioManager();
 		~AudioManager();
 
-		size_t loadWAVE(const std::string &_filepath);
+		size_t loadWAVE(const std::string& _filepath);
+		size_t loadOGG(const std::string& _filepath);
 		size_t loadData(const std::string& _identifier, const unsigned char* _data, const int _size, const int _frequency, const AudioFormat _format);
 
 		//TODO: Better memory management
-		void deleteAudio(const std::string &_filepath);
-		void deleteAudio(const size_t &_hashID);
+		void deleteAudio(const std::string& _filepath);
+		void deleteAudio(const size_t& _hashID);
 
 		void deleteAllAudio();
 
 		AudioClip getAudioClip(const std::string _filepath);
-		AudioClip getAudioClip(const size_t &_hashID);
+		AudioClip getAudioClip(const size_t& _hashID);
 
 	private:
 		std::unordered_map<size_t, AudioClip> audioClips;

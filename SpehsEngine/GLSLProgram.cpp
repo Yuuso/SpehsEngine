@@ -19,37 +19,51 @@ namespace spehs
 	}
 
 
-	void GLSLProgram::compileShaders(const std::string& vertexShaderPath, const std::string& fragmentShaderPath)
+	bool GLSLProgram::compileShaders(const std::string& vertexShaderPath, const std::string& fragmentShaderPath)
 	{
 		programID = glCreateProgram();
 
 		vertexShaderID = glCreateShader(GL_VERTEX_SHADER);
 		if (vertexShaderID == 0)
-			exceptions::fatalError("Failed to create vertex shader!");
+		{
+			exceptions::unexpectedError("Failed to create vertex shader!");
+			return false;
+		}
 		fragmentShaderID = glCreateShader(GL_FRAGMENT_SHADER);
 		if (fragmentShaderID == 0)
-			exceptions::fatalError("Failed to create fragment shader!");
+		{
+			exceptions::unexpectedError("Failed to create fragment shader!");
+			return false;
+		}
 
 		compileShader(vertexShaderPath, vertexShaderID);
 		compileShader(fragmentShaderPath, fragmentShaderID);
 
 		checkOpenGLErrors(__FILE__, __LINE__);
+		return true;
 	}
-	void GLSLProgram::compileShadersFromSource(const std::string& vertexShader, const std::string& fragmentShader)
+	bool GLSLProgram::compileShadersFromSource(const std::string& vertexShader, const std::string& fragmentShader)
 	{
 		programID = glCreateProgram();
 
 		vertexShaderID = glCreateShader(GL_VERTEX_SHADER);
 		if (vertexShaderID == 0)
-			exceptions::fatalError("Failed to create vertex shader!");
+		{
+			exceptions::unexpectedError("Failed to create vertex shader!");
+			return false;
+		}
 		fragmentShaderID = glCreateShader(GL_FRAGMENT_SHADER);
 		if (fragmentShaderID == 0)
-			exceptions::fatalError("Failed to create fragment shader!");
+		{
+			exceptions::unexpectedError("Failed to create fragment shader!");
+			return false;
+		}
 
 		compileShaderFromSource(vertexShader, vertexShaderID);
 		compileShaderFromSource(fragmentShader, fragmentShaderID);
 
 		checkOpenGLErrors(__FILE__, __LINE__);
+		return true;
 	}
 
 	
@@ -171,7 +185,7 @@ namespace spehs
 
 			if (errorLog.size() > 0)
 				std::printf("\n%s", &errorLog[0]);
-			exceptions::fatalError("Shader " + filePath + " failed to compile!");
+			exceptions::unexpectedError("Shader " + filePath + " failed to compile!");
 		}
 	}
 	void GLSLProgram::compileShaderFromSource(const std::string& shader, GLuint id)
@@ -199,7 +213,7 @@ namespace spehs
 
 			if (errorLog.size() > 0)
 				std::printf("\n%s", &errorLog[0]);
-			exceptions::fatalError("Default shader failed to compile!");
+			exceptions::unexpectedError("Default shader failed to compile!");
 		}
 	}
 }

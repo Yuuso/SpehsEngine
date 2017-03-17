@@ -4,6 +4,7 @@
 #include "OpenALError.h"
 
 #include <AL\al.h>
+#include <vorbis\vorbisfile.h>
 
 #include <functional>
 
@@ -149,6 +150,83 @@ namespace spehs
 		fclose(fileData);
 		delete[] waveFile.data;
 		
+		audioClips.insert(std::pair<size_t, AudioClip>(hash, clip));
+		return hash;
+	}
+	size_t AudioManager::loadOGG(const std::string& _filepath)
+	{
+		size_t hash = std::hash<std::string>()(_filepath);
+		if (audioClips.find(hash) != audioClips.end())
+			return hash;
+
+		FILE* fileData = nullptr;
+		AudioClip clip;
+		static const int endian = 0; //little is 0, big is 1
+		static const int BUFFER_SIZE = 32768;
+		int bitStream;
+		long bytes;
+		char fixedBuffer[BUFFER_SIZE];
+		std::vector<unsigned char> data;
+		
+		//Open file and make visual studio happy by doind it safely...
+#ifdef WIN32
+		errno_t error = fopen_s(&fileData, _filepath.c_str(), "rb");
+		if (error != 0)
+		{
+			exceptions::fatalError("Failed to open OGG file, error: " + std::to_string(error));
+		}
+#else
+		fileData = fopen(_filepath.c_str(), "rb");
+		if (!fileData)
+		{
+			exceptions::fatalError("Failed to open WAVE file!");
+		}
+#endif
+
+		vorbis_info* info;
+		OggVorbis_File oggFile;
+
+		ov_open(fileData, &oggFile, NULL, 0);
+
+		//Get header info
+		info = ov_info(&oggFile, -1);
+
+		//Channels
+		if (info->channels == 1)
+		{
+			clip.format = AL_FORMAT_MONO16;
+		}
+		else
+		{
+			clip.format = AL_FORMAT_STEREO16;
+		}
+
+		//Frequency
+		clip.freq = info->rate;
+		
+		//Decoding
+		do
+		{
+			//Read up to the buffers size of decoded data
+			bytes = ov_read(&oggFile, fixedBuffer, BUFFER_SIZE, endian, 2, 1, &bitStream);
+
+			//Add to end of data buffer
+			data.insert(data.end(), fixedBuffer, fixedBuffer + bytes);
+		} while (bytes > 0);
+
+		ov_clear(&oggFile);
+		//Apparently no need to call fclose
+
+		clip.size = data.size();
+
+		//Generate OpenAL buffer
+		alGenBuffers(1, &clip.buffer);
+		checkOpenALErrors(__FILE__, __LINE__);
+
+		//Data into the buffer
+		alBufferData(clip.buffer, clip.format, (void*) data.data(), clip.size, clip.freq);
+		checkOpenALErrors(__FILE__, __LINE__);
+
 		audioClips.insert(std::pair<size_t, AudioClip>(hash, clip));
 		return hash;
 	}

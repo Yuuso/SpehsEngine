@@ -23,8 +23,8 @@ namespace spehs
 		~GLSLProgram();
 
 
-		void compileShaders(const std::string& vertexShaderPath, const std::string& fragmentShaderPath);
-		void compileShadersFromSource(const std::string& vertexShader, const std::string& fragmentShader); //Used for default shaders
+		bool compileShaders(const std::string& vertexShaderPath, const std::string& fragmentShaderPath);
+		bool compileShadersFromSource(const std::string& vertexShader, const std::string& fragmentShader); //Used for default shaders
 		void linkShaders();
 		void addAttribute(const VertexAttributePosition _attrib, const std::string& _attributeName);
 
