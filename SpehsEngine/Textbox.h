@@ -5,22 +5,36 @@ namespace spehs
 	class Polygon;
 	class Text;
 
-	///A class for simply a box filled with static text. Uses GUI color settings as default. Polygon and text members visible for public
-	struct Textbox
+	///A simple class for creating a text surrounded with a background polygon
+	class Textbox
 	{
-		Textbox(std::string& string);
-		Textbox(std::string& string, int16_t depth);
+	public:
+		Textbox(const std::string& string, const unsigned textBorder, const int16_t depth);
 		~Textbox();
 
-		virtual bool checkPointCollision(const int x, const int y);
-		virtual bool checkPointCollision(const glm::vec2& point);
-		virtual void setPosition(const int x, const int y);
-		virtual void setRenderState(const bool state);
-		virtual void setDepth(int16_t depth);
-		virtual uint16_t getDepthBack();
-		virtual uint16_t getDepthFront();
+		//Setters
+		void setPosition(const int x, const int y);
+		void setRenderState(const bool state);
+		void setDepth(int16_t depth);
+		void setString(const std::string& string);
+		void setTextColor(unsigned char r, unsigned char g, unsigned char b, unsigned char a = 255);
+		void setBackgroundColor(unsigned char r, unsigned char g, unsigned char b, unsigned char a = 255);
 
+		//Getters
+		int getWidth() const;
+		int getHeight() const;
+		bool getRenderState() const;
+		uint16_t getDepthBack() const;
+		uint16_t getDepthFront() const;
+		glm::vec2 getPosition() const;
+		int getX() const;
+		int getY() const;
+		bool checkPointCollision(const int x, const int y) const;
+		bool checkPointCollision(const glm::vec2& point) const;
+
+	protected:
 		spehs::Polygon* polygon;
 		spehs::Text* text;
+		const unsigned textBorder;
 	};
 }

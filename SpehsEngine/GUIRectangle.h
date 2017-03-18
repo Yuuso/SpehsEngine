@@ -25,8 +25,9 @@
 #define GUIRECT_MOUSE_HOVER_CONTAINER_BIT		0x00000800//Whether mouse hover has been detected inside an element of the container
 #define GUIRECT_OPEN_BIT						0x00001000//Open containers update elements inside
 //GUI window specific
-#define GUIRECT_DRAGGING_BIT					0x00004000
-#define GUIRECT_STRECHING_BIT					0x00008000
+#define GUIWINDOW_DRAGGING_BIT					0x00004000
+#define GUIWINDOW_STRECHING_BIT					0x00008000
+#define GUIWINDOW_LIMIT_WITHIN_MAIN_WINDOW_BIT	0x00010000//Request a limit within the main window
 //Text justification
 #define GUIRECT_TEXT_JUSTIFICATION_LEFT_BIT		0x00020000
 #define GUIRECT_TEXT_JUSTIFICATION_CENTER_BIT	0x00040000

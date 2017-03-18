@@ -72,7 +72,7 @@ namespace spehs
 
 		setSize(minSize);
 		disableState(GUIRECT_HOVER_COLOR_BIT);
-		limitWithinMainWindow();
+		enableState(GUIWINDOW_LIMIT_WITHIN_MAIN_WINDOW_BIT);
 	}
 	GUIWindow::~GUIWindow()
 	{
@@ -90,12 +90,12 @@ namespace spehs
 
 		////DRAGGING
 		//Handle previous frame dragging
-		if (checkState(GUIRECT_DRAGGING_BIT) && inputManager->isKeyDown(MOUSE_BUTTON_LEFT))
+		if (checkState(GUIWINDOW_DRAGGING_BIT) && inputManager->isKeyDown(MOUSE_BUTTON_LEFT))
 			translate(inputManager->getMouseMovementX(), inputManager->getMouseMovementY());
 		//Set dragging boolean
-		if (getInputEnabled() && !checkState(GUIRECT_DRAGGING_BIT) && header->getMouseHover() && inputManager->isKeyPressed(MOUSE_BUTTON_LEFT))
-			enableState(GUIRECT_DRAGGING_BIT);//Begin dragging
-		else if (checkState(GUIRECT_DRAGGING_BIT) && !inputManager->isKeyDown(MOUSE_BUTTON_LEFT))
+		if (getInputEnabled() && !checkState(GUIWINDOW_DRAGGING_BIT) && header->getMouseHover() && inputManager->isKeyPressed(MOUSE_BUTTON_LEFT))
+			enableState(GUIWINDOW_DRAGGING_BIT);//Begin dragging
+		else if (checkState(GUIWINDOW_DRAGGING_BIT) && !inputManager->isKeyDown(MOUSE_BUTTON_LEFT))
 		{//Stop dragging
 #ifdef DOCK_BORDER
 			//Check docking
@@ -121,13 +121,13 @@ namespace spehs
 				setPositionLocal(strechWidth + leftBorder, applicationData->getWindowHeight() - header->getHeight() - strechWidth - size.y - upBorder);
 			}
 #endif
-			limitWithinMainWindow();
-			disableState(GUIRECT_DRAGGING_BIT);
+			enableState(GUIWINDOW_LIMIT_WITHIN_MAIN_WINDOW_BIT);
+			disableState(GUIWINDOW_DRAGGING_BIT);
 		}
 
 		////STRECHING
 		//Handle previous frame strech
-		if (/*Starting streching requires window to be enabled for interaction! -> No need for checking herer*/checkState(GUIRECT_STRECHING_BIT) && inputManager->isKeyDown(MOUSE_BUTTON_LEFT))
+		if (/*Starting streching requires window to be enabled for interaction! -> No need for checking here*/checkState(GUIWINDOW_STRECHING_BIT) && inputManager->isKeyDown(MOUSE_BUTTON_LEFT))
 		{
 			//Take record of current dimensions
 			float w = size.x;
@@ -199,19 +199,18 @@ namespace spehs
 			//Set size to the calculated dimensions
 			setSize(w, h);
 
-			//position within main application window
-			limitWithinMainWindow();
+			enableState(GUIWINDOW_LIMIT_WITHIN_MAIN_WINDOW_BIT);
 		}
 
 		//Handle strech state bit
 		if (getInputEnabled() &&
-			!checkState(GUIRECT_STRECHING_BIT) &&
+			!checkState(GUIWINDOW_STRECHING_BIT) &&
 			inputManager->isKeyPressed(MOUSE_BUTTON_LEFT) &&
 			mouseOverStrechArea())
 		{//Begin streching
 
 			////Define state variables
-			enableState(GUIRECT_STRECHING_BIT);
+			enableState(GUIWINDOW_STRECHING_BIT);
 			strechState = 0;
 			//Horizontal
 			if (inputManager->getMouseX() < getXGlobal() + size.x * STRECH_CORNER_PERCENTAGE)
@@ -244,10 +243,10 @@ namespace spehs
 				enableBit(strechState, STRECH_STATE_N);
 			}
 		}
-		else if (checkState(GUIRECT_STRECHING_BIT) &&
+		else if (checkState(GUIWINDOW_STRECHING_BIT) &&
 			(!getInputEnabled() || !inputManager->isKeyDown(MOUSE_BUTTON_LEFT)))
 		{//Conditions not met to continue streching, set to false
-			disableState(GUIRECT_STRECHING_BIT);
+			disableState(GUIWINDOW_STRECHING_BIT);
 			strechState = 0;
 		}
 
@@ -260,7 +259,7 @@ namespace spehs
 		{//Header has been clicked
 			if (doubleClickTimer > 0)
 			{//Header double click detected
-				disableState(GUIRECT_DRAGGING_BIT);
+				disableState(GUIWINDOW_DRAGGING_BIT);
 
 				if (size == minSize)
 				{//Set to full window
@@ -269,8 +268,7 @@ namespace spehs
 					setSize(applicationData->getWindowWidth() - rightBorder - leftBorder, applicationData->getWindowHeight() - upBorder - downBorder - header->getHeight());
 					setPositionLocal(0, 0);
 
-					//Position window so that it won't go out of the application window
-					limitWithinMainWindow();
+					enableState(GUIWINDOW_LIMIT_WITHIN_MAIN_WINDOW_BIT);
 				}
 				else
 				{//Set to min size
@@ -284,8 +282,7 @@ namespace spehs
 					//Reposition relative to old center position (recorded earlier)
 					setPositionLocal(oldCenterPos.x - size.x / 2.0f, oldCenterPos.y - size.y / 2.0f);
 
-					//Position window so that it won't go out of the application window
-					limitWithinMainWindow();
+					enableState(GUIWINDOW_LIMIT_WITHIN_MAIN_WINDOW_BIT);
 				}
 			}
 			else
@@ -295,6 +292,20 @@ namespace spehs
 		//Check exit button
 		if (getInputEnabled() && inputManager->isKeyPressed(MOUSE_BUTTON_LEFT) && exit->getMouseHover())
 			close();
+	}
+	void GUIWindow::visualUpdate()
+	{
+		//Perform rescaling/positioning
+		GUIRectangleContainer::visualUpdate();
+
+		//If limitation within main window is requested, do it now
+		if (checkState(GUIWINDOW_LIMIT_WITHIN_MAIN_WINDOW_BIT))
+		{
+			limitWithinMainWindow();
+
+			//Re-run visual update to apply limitation within main window
+			GUIRectangleContainer::visualUpdate();
+		}
 	}
 	void GUIWindow::onEnableInput()
 	{
@@ -441,6 +452,7 @@ namespace spehs
 
 		updateScale();
 		updatePosition();
+		disableState(GUIWINDOW_LIMIT_WITHIN_MAIN_WINDOW_BIT);
 	}
 	void GUIWindow::setDepth(int16_t depth)
 	{
@@ -470,6 +482,7 @@ namespace spehs
 		disableBit(state, GUIRECT_MIN_SIZE_UPDATED_BIT);
 		disableBit(state, GUIRECT_SCALE_UPDATED_BIT);
 		disableBit(state, GUIRECT_POSITION_UPDATED_BIT);
+		enableBit(state, GUIWINDOW_LIMIT_WITHIN_MAIN_WINDOW_BIT);
 		refreshRequests = 0;
 	}
 	void GUIWindow::requestRefresh()

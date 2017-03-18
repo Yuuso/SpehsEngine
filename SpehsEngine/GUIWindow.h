@@ -32,6 +32,7 @@ namespace spehs
 		~GUIWindow() override;
 		
 		void inputUpdate() override;
+		void visualUpdate() override;
 		void updateMinSize() override;//Updates min size variable based on element requirements
 		void updateScale() override;
 		void updatePosition() override;

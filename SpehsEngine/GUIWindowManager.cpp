@@ -118,8 +118,8 @@ namespace spehs
 					windows[i]->visualUpdate();
 
 					if ((windows[i]->checkState(GUIRECT_MOUSE_HOVER_CONTAINER_BIT) ||
-						windows[i]->checkState(GUIRECT_DRAGGING_BIT) ||
-						windows[i]->checkState(GUIRECT_STRECHING_BIT) ||
+						windows[i]->checkState(GUIWINDOW_DRAGGING_BIT) ||
+						windows[i]->checkState(GUIWINDOW_STRECHING_BIT) ||
 						windows[i]->isReceivingInput()) && !focusedWindow)
 					{//First window to be under focus
 						focusedWindow = windows[i];
