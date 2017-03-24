@@ -45,6 +45,7 @@ namespace spehs
 		bool open() override;
 		virtual void limitWithinMainWindow();//Reposition window so that it doesn't escape the viewport
 		virtual void requestRefresh();//Request refresh within the next loop cycle
+		inline int getRefreshRequestCount() const { return refreshRequests; }
 
 		//Getters
 		GUIRectangle* getHeaderPtr(){ return header; }
