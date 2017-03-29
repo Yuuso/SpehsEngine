@@ -120,7 +120,9 @@ namespace spehs
 		virtual void setString(const std::string& str);
 		virtual void setStringSize(const int size);
 		virtual void setStringSizeRelative(const int relativeSize);///< Set string size relative to global default GUI text size.
+		virtual void setStringColor(const glm::vec3& col);
 		virtual void setStringColor(const glm::vec4& col);
+		virtual void setStringColor(const float r, const float g, const float b, const float a = 1.0f);
 		virtual void setStringColor(const unsigned char r, const unsigned char g, const unsigned char b, const unsigned char a = 255);
 		virtual void setStringAlpha(const float alpha);
 		virtual void setStringAlpha(const unsigned char a);

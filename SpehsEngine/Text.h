@@ -78,6 +78,7 @@ namespace spehs
 		void setFont(Font* _font);
 		void setFontSize(const int _size);
 
+		void setColor(const glm::vec3& _col);
 		void setColor(const glm::vec4& _col);
 		void setColor(const CommonColor& _col);
 		void setColor(const float _red, const float _green, const float _blue, const float _alpha = 1.0f);

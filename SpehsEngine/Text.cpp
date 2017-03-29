@@ -462,6 +462,14 @@ namespace spehs
 		position.y += _vec.y;
 		needPositionUpdate = true;
 	}
+	void Text::setColor(const glm::vec3& _vec)
+	{
+		color.rgba.r = _vec.r;
+		color.rgba.g = _vec.g;
+		color.rgba.b = _vec.b;
+		color.rgba.a = 1.0f;
+		needTextUpdate = true;
+	}
 	void Text::setColor(const glm::vec4& _vec)
 	{
 		color = _vec;

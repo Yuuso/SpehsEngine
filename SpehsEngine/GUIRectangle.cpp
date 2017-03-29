@@ -405,11 +405,23 @@ namespace spehs
 	{
 		setStringSize(applicationData->GUITextSize + relativeSize);
 	}
+	void GUIRectangle::setStringColor(const glm::vec3& col)
+	{
+		if (!text)
+			createText();
+		text->setColor(col);
+	}
 	void GUIRectangle::setStringColor(const glm::vec4& col)
 	{
 		if (!text)
 			createText();
 		text->setColor(col); 
+	}
+	void GUIRectangle::setStringColor(const float r, const float g, const float b, const float a)
+	{
+		if (!text)
+			createText();
+		text->setColor(r, g, b, a);
 	}
 	void GUIRectangle::setStringColor(const unsigned char r, const unsigned char g, const unsigned char b, const unsigned char a)
 	{
