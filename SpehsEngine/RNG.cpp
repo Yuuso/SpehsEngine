@@ -185,6 +185,10 @@ namespace spehs
 				return doubleDist(randomMTEngine, { _minmax, _max });
 			}
 		}
+		bool brandom()
+		{
+			return uintDist(randomMTEngine, { 0, 1 });
+		}
 		bool coin()
 		{
 			return uintDist(randomMTEngine, { 0, 1 });
@@ -370,6 +374,11 @@ namespace spehs
 				return doubleDist(MTEngine, { _minmax, _max });
 			}
 		}
+		bool PRNG32::brandom()
+		{
+			return uintDist(MTEngine, { 0, 1 });
+		}
+		
 		void PRNG32::discardNext(const int _amount)
 		{
 			MTEngine.discard(_amount);
@@ -562,6 +571,10 @@ namespace spehs
 			{
 				return doubleDist(MTEngine, { _minmax, _max });
 			}
+		}
+		bool PRNG64::brandom()
+		{
+			return uintDist(MTEngine, { 0, 1 });
 		}
 		void PRNG64::discardNext(const int _amount)
 		{
