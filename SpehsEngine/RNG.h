@@ -5,8 +5,7 @@
 #include <stdint.h>
 //#include <type_traits>
 //#include <string>
-//
-//#include "Exceptions.h"
+//#include <assert.h>
 
 
 namespace spehs
@@ -36,38 +35,23 @@ namespace spehs
 		//	PiecewiseLinear,
 		//};
 
-		//template <typename SeedType> //SeedType = Unsigned Integer Type
+		//template <typename SeedType>
 		//class PRNG
 		//{
-		//	static_assert(std::is_unsigned(SeedType)::value, "SeedType needs to be an unsigned integer value!");
+		//	static_assert(std::is_unsigned<SeedType>::value && (sizeof(SeedType) == 4 || sizeof(SeedType) == 8), "SeedType needs to be either 32bit or 64bit unsigned integer value!");
+		//	typedef typename std::conditional<sizeof(SeedType) == 4, std::mt19937, std::mt19937_64>::type MTEngine;
 
 		//public:
 		//	PRNG(const SeedType _seed = std::mt19937::default_seed)
 		//	{
-		//		switch (sizeof(SeedType))
-		//		{
-		//		case 4:
-		//			randomEngine = new RandomEngine32;
-		//			break;
-		//		case 8:
-		//			randomEngine = new RandomEngine64;
-		//			break;
-		//		default:
-		//			spehs::exceptions::fatalError("Unknown size of SeedType: " + std::to_string(sizeof(SeedType)));
-		//			break;
-		//		}
 		//		randomSeed = _seed;
-		//		randomEngine->engine()->seed(randomSeed);
-		//	}
-		//	~PRNG()
-		//	{
-		//		delete randomEngine;
+		//		engine.seed(randomSeed);
 		//	}
 
 		//	void seed(const SeedType _seed)
 		//	{
 		//		randomSeed = _seed;
-		//		randomEngine->engine()->seed(_seed);
+		//		engine.seed(randomSeed);
 		//	}
 		//	SeedType seed()
 		//	{
@@ -75,60 +59,286 @@ namespace spehs
 		//	}
 		//	void reset()
 		//	{
-		//		randomEngine->engine()->seed(randomSeed);
+		//		engine.seed(randomSeed);
 		//	}
 		//	void discard(const unsigned _amount = 1)
 		//	{
-		//		randomEngine->engine()->discard(_amount);
+		//		engine.discard(_amount);
 		//	}
 
 		//	template <typename ReturnType>
-		//	ReturnType operator()(const spehs::rng::RandomDistribution _distribution = Uniform)
+		//	ReturnType random(const RandomDistribution _distribution = Uniform)
 		//	{
-
+		//		static_assert(std::is_arithmetic<ReturnType>::value, "ReturnType needs to be an arithmetic value!");
+		//		return random<ReturnType>(std::numeric_limits<ReturnType>::min(), std::numeric_limits<ReturnType>::max(), _distribution);
 		//	}
-		//	template <typename ReturnType>
-		//	ReturnType operator()(const ReturnType _min, const ReturnType _max, const spehs::rng::RandomDistribution _distribution = Uniform)
-		//	{
 
+		//	template <typename ReturnType>
+		//	ReturnType random(const ReturnType _min, const ReturnType _max, const RandomDistribution _distribution = Uniform)
+		//	{
+		//		static_assert(std::is_arithmetic<ReturnType>::value, "ReturnType needs to be an arithmetic value!");
+		//		switch (_distribution)
+		//		{
+		//		case Uniform:
+		//		{
+		//			typedef std::conditional<std::is_integral<ReturnType>::value, std::uniform_int_distribution<ReturnType>, std::uniform_real_distribution<ReturnType>>::type uniform_distribution;
+		//			uniform_distribution dist;
+		//			return dist(engine, { _min, _max });
+		//		}
+
+		//		case Geometric:
+		//		{
+
+		//		}
+		//		case Pascal:
+		//		{
+
+		//		}
+		//		case Poisson:
+		//		{
+
+		//		}
+		//		case Exponential:
+		//		{
+
+		//		}
+		//		case Gamma:
+		//		{
+
+		//		}
+		//		case Weibull:
+		//		{
+
+		//		}
+		//		case ExtremeValue:
+		//		{
+
+		//		}
+		//		case Normal:
+		//		{
+
+		//		}
+		//		case Lognormal:
+		//		{
+
+		//		}
+		//		case ChiSquared:
+		//		{
+
+		//		}
+		//		case Cauchy:
+		//		{
+
+		//		}
+		//		case FisherF:
+		//		{
+
+		//		}
+		//		case StudentT:
+		//		{
+
+		//		}
+		//		case Discrete:
+		//		{
+
+		//		}
+		//		case PiecewiseConstant:
+		//		{
+
+		//		}
+		//		case PiecewiseLinear:
+		//		{
+
+		//		}
+
+		//		case Bernoulli:
+		//		case Binomial:
+		//		default:
+		//			assert(false);
+		//			break;
+		//		}
+		//	}
+
+		//	template <typename ReturnType>
+		//	ReturnType random(const double _probability, const RandomDistribution _distribution)
+		//	{
+		//		static_assert(std::is_same<ReturnType, bool>::value, "Invalid return type for Bernoulli random!");
+
+		//		switch (_distribution)
+		//		{
+		//		case Bernoulli:
+		//		{
+		//			std::bernoulli_distribution dist(_probability);
+		//			return dist(engine);
+		//		}
+		//		case Binomial:
+		//		{
+		//			return random<ReturnType>(std::numeric_limits<ReturnType>::min(), std::numeric_limits<ReturnType>::max(), _probability, _distribution);
+		//		}
+
+		//		case Geometric:
+		//		{
+
+		//		}
+		//		case Pascal:
+		//		{
+
+		//		}
+		//		case Poisson:
+		//		{
+
+		//		}
+		//		case Exponential:
+		//		{
+
+		//		}
+		//		case Gamma:
+		//		{
+
+		//		}
+		//		case Weibull:
+		//		{
+
+		//		}
+		//		case ExtremeValue:
+		//		{
+
+		//		}
+		//		case Normal:
+		//		{
+
+		//		}
+		//		case Lognormal:
+		//		{
+
+		//		}
+		//		case ChiSquared:
+		//		{
+
+		//		}
+		//		case Cauchy:
+		//		{
+
+		//		}
+		//		case FisherF:
+		//		{
+
+		//		}
+		//		case StudentT:
+		//		{
+
+		//		}
+		//		case Discrete:
+		//		{
+
+		//		}
+		//		case PiecewiseConstant:
+		//		{
+
+		//		}
+		//		case PiecewiseLinear:
+		//		{
+
+		//		}
+
+		//		case Uniform:
+		//		default:
+		//			assert(false);
+		//			break;
+		//		}
+		//	}
+
+		//	template <typename ReturnType>
+		//	ReturnType random(const ReturnType _min, const ReturnType _max, const double _probability, const RandomDistribution _distribution)
+		//	{
+		//		static_assert(std::is_same<ReturnType, bool>::value, "Invalid return type for Bernoulli random!");
+
+		//		switch (_distribution)
+		//		{
+		//		case Binomial:
+		//		{
+		//			std::binomial_distribution<ReturnType> dist(_probability, double(_max - _min));
+		//			return _min + dist(engine);
+		//		}
+
+		//		case Geometric:
+		//		{
+
+		//		}
+		//		case Pascal:
+		//		{
+
+		//		}
+		//		case Poisson:
+		//		{
+
+		//		}
+		//		case Exponential:
+		//		{
+
+		//		}
+		//		case Gamma:
+		//		{
+
+		//		}
+		//		case Weibull:
+		//		{
+
+		//		}
+		//		case ExtremeValue:
+		//		{
+
+		//		}
+		//		case Normal:
+		//		{
+
+		//		}
+		//		case Lognormal:
+		//		{
+
+		//		}
+		//		case ChiSquared:
+		//		{
+
+		//		}
+		//		case Cauchy:
+		//		{
+
+		//		}
+		//		case FisherF:
+		//		{
+
+		//		}
+		//		case StudentT:
+		//		{
+
+		//		}
+		//		case Discrete:
+		//		{
+
+		//		}
+		//		case PiecewiseConstant:
+		//		{
+
+		//		}
+		//		case PiecewiseLinear:
+		//		{
+
+		//		}
+
+		//		case Uniform:
+		//		case Bernoulli:
+		//		default:
+		//			assert(false);
+		//			break;
+		//		}
 		//	}
 
 		//private:
 		//	SeedType randomSeed;
-		//	std::enable_if<sizeof(SeedType) == 4, std::mt19937> engine;
-		//	std::enable_if<sizeof(SeedType) == 8, std::mt19937_64> engine;
+		//	MTEngine engine;
 		//};
-
-		//class RandomEngine
-		//{
-		//	template <typename EngineType>
-		//	virtual EngineType* engine()
-		//	{
-		//		return nullptr;
-		//	}
-		//};
-		//class RandomEngine32 : public RandomEngine
-		//{
-		//	template <typename EngineType>
-		//	EngineType* engine() override
-		//	{
-		//		return &mtengine;
-		//	}
-		//private:
-		//	std::mt19937 mtengine;
-		//};
-		//class RandomEngine64 : public RandomEngine
-		//{
-		//public:
-		//	template <typename EngineType>
-		//	EngineType* engine() override
-		//	{
-		//		return &mtengine;
-		//	}
-		//private:
-		//	std::mt19937_64 mtengine;
-		//};
-		//
+		//		
 
 		//template <typename ReturnType>
 		//ReturnType random(const spehs::rng::RandomDistribution _distribution = Uniform)
