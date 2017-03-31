@@ -46,6 +46,9 @@ namespace spehs
 		virtual void limitWithinMainWindow();//Reposition window so that it doesn't escape the viewport
 		virtual void requestRefresh();//Request refresh within the next loop cycle
 		inline int getRefreshRequestCount() const { return refreshRequests; }
+		inline bool isDragging() const { return (state & GUIWINDOW_DRAGGING_BIT) != 0; }
+		inline bool isStreching() const { return (state & GUIWINDOW_STRECHING_BIT) != 0; }
+		bool isReceivingInput() const override;
 
 		//Getters
 		GUIRectangle* getHeaderPtr(){ return header; }

@@ -17,8 +17,18 @@ namespace spehs
 		void setRenderState(const bool state);
 		void setDepth(int16_t depth);
 		void setString(const std::string& string);
-		void setTextColor(unsigned char r, unsigned char g, unsigned char b, unsigned char a = 255);
-		void setBackgroundColor(unsigned char r, unsigned char g, unsigned char b, unsigned char a = 255);
+		void setTextColor(const glm::vec3& rgb);
+		void setTextColor(const glm::vec4& rgba);
+		void setTextColor(const float r, const float g, const float b, const float a = 1.0f);
+		void setTextColor(const unsigned char r, const unsigned char g, const unsigned char b, const unsigned char a = 255);
+		void setTextColorAlpha(const unsigned char a);
+		void setTextColorAlpha(const float a);
+		void setBackgroundColor(const glm::vec3& rgb);
+		void setBackgroundColor(const glm::vec4& rgba);
+		void setBackgroundColor(const float r, const float g, const float b, const float a = 1.0f);
+		void setBackgroundColor(const unsigned char r, const unsigned char g, const unsigned char b, const unsigned char a = 255);
+		void setBackgroundColorAlpha(const unsigned char a);
+		void setBackgroundColorAlpha(const float a);
 
 		//Getters
 		int getWidth() const;

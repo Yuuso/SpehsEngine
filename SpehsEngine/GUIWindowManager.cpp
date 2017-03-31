@@ -51,15 +51,15 @@ namespace spehs
 	{
 		batchManager.beginSection();
 
+		const bool focusedWindowReceivingInput(focusedWindow ? focusedWindow->isReceivingInput() : false);
 		if (focusedWindow)
 		{
 			if (!focusedWindow->getInputEnabled() ||	//Check if focused window yielded focus internally
 				(!focusedWindow->getMouseHoverAny() &&	//Focused window is no longer under mouse 
-				!focusedWindow->isReceivingInput()))	//Focused window does not receive input
+				!focusedWindowReceivingInput))			//Focused window does not receive input
 				focusedWindow = nullptr;
 		}
 
-		const bool focusedWindowReceivingInput(focusedWindow ? focusedWindow->isReceivingInput() : false);
 		bool updateWindows(true);
 
 		//Update front popup
@@ -248,7 +248,7 @@ namespace spehs
 		if (!focusedWindow)
 			return false;
 		batchManager.beginSection();
-		bool value(focusedWindow->isReceivingInput());
+		const bool value(focusedWindow->isReceivingInput());
 		batchManager.endSection();
 		return value;
 	}
@@ -265,6 +265,24 @@ namespace spehs
 		}
 		batchManager.endSection();
 		return false;
+	}
+	bool GUIWindowManager::isDragging() const
+	{
+		if (!focusedWindow)
+			return false;
+		batchManager.beginSection();
+		const bool value = focusedWindow->isDragging();
+		batchManager.endSection();
+		return value;
+	}
+	bool GUIWindowManager::isStreching() const
+	{
+		if (!focusedWindow)
+			return false;
+		batchManager.beginSection();
+		const bool value = focusedWindow->isStreching();
+		batchManager.endSection();
+		return value;
 	}
 	void GUIWindowManager::setSystemDepth(const int16_t depth)
 	{

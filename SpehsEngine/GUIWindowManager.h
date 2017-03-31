@@ -24,6 +24,8 @@ namespace spehs
 		void closeWindow(GUIWindow* window);//Does not modify window order
 		bool isReceivingInput() const;
 		bool getMouseHoverAny() const;/// Returns true if any window is under the mouse
+		bool isDragging() const;///Returns true if a window is being dragged
+		bool isStreching() const;///Returns true if a window is being streched
 		unsigned getWindowCount() const { return windows.size(); }
 		unsigned getPopupCount() const { return popups.size(); }
 		GUIWindow* back() const { return windows.back(); }

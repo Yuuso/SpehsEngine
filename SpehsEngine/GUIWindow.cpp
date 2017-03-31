@@ -489,4 +489,9 @@ namespace spehs
 	{
 		refreshRequests++;
 	}
+	bool GUIWindow::isReceivingInput() const
+	{
+		return isDragging() || isStreching() || GUIRectangleContainer::isReceivingInput();
+	}
+
 }

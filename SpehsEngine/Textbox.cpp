@@ -44,13 +44,53 @@ namespace spehs
 		polygon->resize(text->getTextWidth() + 2 * textBorder, text->getTextHeight() + 2 * textBorder);
 		setPosition(polygon->getX(), polygon->getY());
 	}
-	void Textbox::setTextColor(unsigned char r, unsigned char g, unsigned char b, unsigned char a)
+	void Textbox::setTextColor(const glm::vec3& rgb)
+	{
+		text->setColor(rgb);
+	}
+	void Textbox::setTextColor(const glm::vec4& rgba)
+	{
+		text->setColor(rgba);
+	}
+	void Textbox::setTextColor(const float r, const float g, const float b, const float a)
+	{
+		text->setColor(r, g, b, a);
+	}
+	void Textbox::setTextColor(const unsigned char r, const unsigned char g, const unsigned char b, const unsigned char a)
 	{
 		text->setColor(r,g,b,a);
 	}
-	void Textbox::setBackgroundColor(unsigned char r, unsigned char g, unsigned char b, unsigned char a)
+	void Textbox::setTextColorAlpha(const unsigned char a)
+	{
+		text->setAlpha(a);
+	}
+	void Textbox::setTextColorAlpha(const float a)
+	{
+		text->setAlpha(a);
+	}
+	void Textbox::setBackgroundColor(const glm::vec3& rgb)
+	{
+		polygon->setColor(rgb);
+	}
+	void Textbox::setBackgroundColor(const glm::vec4& rgba)
+	{
+		polygon->setColor(rgba);
+	}
+	void Textbox::setBackgroundColor(const float r, const float g, const float b, const float a)
 	{
 		polygon->setColor(r, g, b, a);
+	}
+	void Textbox::setBackgroundColor(const unsigned char r, const unsigned char g, const unsigned char b, const unsigned char a)
+	{
+		polygon->setColor(r, g, b, a);
+	}
+	void Textbox::setBackgroundColorAlpha(const unsigned char a)
+	{
+		polygon->setColorAlpha(a);
+	}
+	void Textbox::setBackgroundColorAlpha(const float a)
+	{
+		polygon->setColorAlpha(a);
 	}
 
 
