@@ -111,7 +111,8 @@ namespace spehs
 		int getShaderIndex() const { return shaderIndex; }
 		glm::vec4 getColor() const { return primitiveColor; }
 		float getColorAlpha() const { return primitiveColor.a; }
-
+		float getScaleX() const { return scaleX; }
+		float getScaleY() const { return scaleY; }
 		//Public Variables
 		std::vector<spehs::Vertex> worldVertexArray; //Transformed vertices
 
