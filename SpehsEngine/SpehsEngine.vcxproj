@@ -105,6 +105,7 @@
     <ClCompile Include="OS.cpp" />
     <ClCompile Include="Serializable.cpp" />
     <ClCompile Include="SerializableDirectory.cpp" />
+    <ClCompile Include="SerializableString.cpp" />
     <ClCompile Include="SoundSource.cpp" />
     <ClCompile Include="Batch.cpp" />
     <ClCompile Include="BatchManager.cpp" />
@@ -173,6 +174,7 @@
     <ClInclude Include="OS.h" />
     <ClInclude Include="Serializable.h" />
     <ClInclude Include="SerializableDirectory.h" />
+    <ClInclude Include="SerializableString.h" />
     <ClInclude Include="SerializableVector.h" />
     <ClInclude Include="SoundSource.h" />
     <ClInclude Include="Batch.h" />

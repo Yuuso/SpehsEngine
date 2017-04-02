@@ -10,7 +10,7 @@ namespace spehs
 	/**
 	Class for reading/writing/storing vectors of data.
 	Vector width type must be provided. Providing a shorter width will decrease data usage but limit the maximum element count of the vector!
-	Push back/erase WON'T invalidate pointers or references to data vectors
+	Push back/erase won't invalidate pointers or references to data vectors.
 	*/
 	template <class TSerializable, typename WidthType>
 	class SerializableVector : public Serializable
@@ -74,10 +74,6 @@ namespace spehs
 		void push_back(TSerializable* dataPtr)
 		{
 			data.push_back(dataPtr);
-		}
-		void reserve(unsigned elementCount)
-		{
-			data.reserve(elementCount);
 		}
 		template <typename T>//Allows overridden == operators to be used...
 		bool contains(const T& value) const

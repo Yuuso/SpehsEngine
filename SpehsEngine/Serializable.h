@@ -1,4 +1,5 @@
 #pragma once
+#include <string>
 #ifdef _DEBUG
 #define SERIALIZABLE_DEBUG_INFO
 #endif
@@ -25,5 +26,7 @@ namespace spehs
 		virtual size_t write(unsigned char* buffer) const = 0;///< Writes relevant data to buffer. Returns number of bytes written.
 		virtual size_t read(const unsigned char* buffer) = 0;///< Reads relevant data from buffer into the data class. Returns number of bytes read.
 
+		/* Serializable class may want to implement a toString method. */
+		virtual std::string toString() const { return ""; }
 	};
 }
