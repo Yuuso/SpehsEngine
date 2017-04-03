@@ -33,7 +33,7 @@ namespace spehs
 			for (unsigned i = 0; i < other.data.size(); i++)
 				data.push_back(new TSerializable(*other.data[i]));
 		}
-		Serializable* newMyType() const override { return new SerializableVector<TSerializable, WidthType>(); }
+		Serializable* clone() const override { return new SerializableVector<TSerializable, WidthType>(*this); }
 		size_t packetSize() const override
 		{
 			size_t bytes = sizeof(WidthType);

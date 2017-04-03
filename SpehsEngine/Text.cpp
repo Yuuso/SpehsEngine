@@ -102,6 +102,7 @@ namespace spehs
 		int height = 0;
 		int ascender = 0;
 		int descender = 0;
+		int maxAdvanceWidth = 0;
 	};
 
 
@@ -206,6 +207,7 @@ namespace spehs
 		font->height = (*font->ftFace)->size->metrics.height >> 6;
 		font->ascender = (*font->ftFace)->ascender >> 6;
 		font->descender = (*font->ftFace)->descender >> 6;
+		font->maxAdvanceWidth = (*font->ftFace)->max_advance_width >> 6;
 
 		return font;
 	}
@@ -522,6 +524,10 @@ namespace spehs
 	int Text::getFontDescender() const
 	{
 		return font->descender;
+	}
+	int Text::getFontMaxAdvanceWidth() const
+	{
+		return font->maxAdvanceWidth;
 	}
 	float Text::getX(unsigned characterIndex) const
 	{

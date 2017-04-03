@@ -110,6 +110,7 @@ namespace spehs
 		int getFontHeight() const;
 		int getFontAscender() const;
 		int getFontDescender() const;
+		int getFontMaxAdvanceWidth() const;
 
 		int getShaderIndex() const { return shaderIndex; }
 		PlaneDepth getPlaneDepth() const { return planeDepth; }

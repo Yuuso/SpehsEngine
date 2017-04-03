@@ -9,7 +9,7 @@ namespace spehs
 	public:
 		SerializableString();
 		SerializableString(const std::string& other);
-		Serializable* newMyType() const { return new SerializableString(); }
+		Serializable* clone() const { return new SerializableString(*this); }
 		size_t packetSize() const override;
 		size_t write(unsigned char* buffer) const override;
 		size_t read(const unsigned char* buffer) override;

@@ -4,14 +4,18 @@
 
 namespace spehs
 {
+	SerializableDirectory::SerializableDirectory() : parent(nullptr)
+	{
+
+	}
 	SerializableDirectory::SerializableDirectory(std::string _name) : parent(nullptr), name(_name)
 	{
 		if (name.size() == 0)
 			spehs::exceptions::unexpectedError(__FUNCTION__" Serializable directory name cannot be null!");
 	}
-	SerializableDirectory::SerializableDirectory() : parent(nullptr)
+	SerializableDirectory::SerializableDirectory(const SerializableDirectory& other)
 	{
-
+		spehs::exceptions::warning(__FUNCTION__": TODO");
 	}
 	SerializableDirectory::~SerializableDirectory()
 	{

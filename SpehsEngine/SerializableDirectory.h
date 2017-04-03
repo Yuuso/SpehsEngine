@@ -16,8 +16,9 @@ namespace spehs
 		friend class std::vector < SerializableDirectory > ;
 	public:
 		SerializableDirectory(std::string _name);
+		SerializableDirectory(const SerializableDirectory& other);
 		~SerializableDirectory() override;
-		Serializable* newMyType() const override { return new SerializableDirectory(nullptr); }
+		Serializable* clone() const override { return new SerializableDirectory(*this); }
 		size_t packetSize() const override;
 		size_t write(unsigned char* buffer) const override;
 		size_t read(const unsigned char* buffer) override;

@@ -21,7 +21,7 @@ namespace spehs
 		Serializable(spehs::Serializable&& move);
 		virtual ~Serializable();
 
-		virtual Serializable* newMyType() const = 0;
+		virtual Serializable* clone() const = 0;///< Make a dynamic copy of the original object
 		virtual size_t packetSize() const = 0;///< Returns number of bytes required for relevant data to be sent over network/ stored on disk
 		virtual size_t write(unsigned char* buffer) const = 0;///< Writes relevant data to buffer. Returns number of bytes written.
 		virtual size_t read(const unsigned char* buffer) = 0;///< Reads relevant data from buffer into the data class. Returns number of bytes read.

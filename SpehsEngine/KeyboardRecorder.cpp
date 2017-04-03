@@ -104,8 +104,8 @@ namespace spehs
 	{
 		characterInput.clear();
 		commandInput.clear();
-		bool ctrlDown = inputManager->isKeyDown(KEYBOARD_LCTRL) || inputManager->isKeyDown(KEYBOARD_RCTRL);
-		bool shiftDown = inputManager->isKeyDown(KEYBOARD_LSHIFT) || inputManager->isKeyDown(KEYBOARD_RSHIFT);
+		const bool ctrlDown = inputManager->isKeyDown(KEYBOARD_LCTRL) || inputManager->isKeyDown(KEYBOARD_RCTRL);
+		const bool shiftDown = inputManager->isKeyDown(KEYBOARD_LSHIFT) || inputManager->isKeyDown(KEYBOARD_RSHIFT);
 
 		//Decrease held key timers - if still held
 		for (unsigned i = 0; i < heldKeys.size();)
@@ -136,7 +136,12 @@ namespace spehs
 			for (int i = 48; i <= 57; i++)
 			{
 				if (tryKey(i))
-					characterInput.push_back(i);
+				{
+					if (shiftDown)
+						characterInput.push_back(i - 10);
+					else
+						characterInput.push_back(i);
+				}
 			}
 			for (int i = KEYBOARD_KP_1; i <= KEYBOARD_KP_9; i++)
 			{//Keypad numbers 1-9
@@ -152,12 +157,20 @@ namespace spehs
 			characterInput.push_back(' ');
 		if (tryKey(KEYBOARD_COMMA))
 			characterInput.push_back(',');
-		if ((inputManager->isKeyDown(KEYBOARD_KP_PERIOD) && tryKey(KEYBOARD_KP_PERIOD)) ||
-			(inputManager->isKeyDown(KEYBOARD_PERIOD) && tryKey(KEYBOARD_PERIOD)))
+		if (tryKey(KEYBOARD_KP_PERIOD) || tryKey(KEYBOARD_PERIOD))
 			characterInput.push_back('.');
-		if ((inputManager->isKeyDown(KEYBOARD_KP_MINUS) && tryKey(KEYBOARD_KP_MINUS)) ||
-			(inputManager->isKeyDown(KEYBOARD_MINUS) && tryKey(KEYBOARD_MINUS)))
+		if (tryKey(KEYBOARD_KP_MINUS) || tryKey(KEYBOARD_MINUS))
 			characterInput.push_back('-');
+		if (tryKey(KEYBOARD_AMPERSAND))
+			characterInput.push_back('&');
+		if (tryKey(KEYBOARD_SLASH))
+			characterInput.push_back('/');
+		if (tryKey(KEYBOARD_QUESTION))
+			characterInput.push_back('?');
+		if (tryKey(KEYBOARD_EXCLAIM))
+			characterInput.push_back('!');
+		if (tryKey(KEYBOARD_EQUALS))
+			characterInput.push_back('=');
 
 		//COMMAND INPUT
 		for (unsigned i = 0; i < commandKeys.size(); i++)
