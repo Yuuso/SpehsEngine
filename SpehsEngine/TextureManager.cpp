@@ -154,7 +154,7 @@ namespace spehs
 			GLubyte a;
 		};
 		
-		rng::PRNG32 noiseRNG(_seed);
+		rng::PRNG<uint32_t> noiseRNG(_seed);
 		std::vector<COLOR> noiseTextureData;
 		noiseTextureData.reserve(_width*_height);
 		double** noise = new double*[_width];
@@ -165,7 +165,7 @@ namespace spehs
 			noise[x] = new double[_height];
 			for (unsigned y = 0; y < _height; y++)
 			{
-				noise[x][y] = noiseRNG.drandom(0.0, 1.0);
+				noise[x][y] = noiseRNG.unit<double>();
 			}
 		}
 
