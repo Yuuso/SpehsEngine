@@ -27,6 +27,16 @@ namespace spehs
 			friend class SoundSource;
 			friend class ActiveSoundSource;
 		public:
+			struct SourceObject
+			{
+				~SourceObject()
+				{
+					int a = 0;
+				}
+				ALuint sourceID = 0;
+				SoundSource* soundPtr = nullptr;
+			};
+
 			static void init();
 			static void uninit();
 
@@ -50,52 +60,8 @@ namespace spehs
 
 			static void updateGain(); //Call when master volume has changed
 
-		protected:
-			static AudioEngine* instance;
-			AudioEngine();
-			~AudioEngine();
-			
-			bool getFreeSource(SoundSource* _soundSource);
-
-		private:
-			struct SourceObject
-			{
-				~SourceObject()
-				{
-					int a = 0;
-				}
-				ALuint sourceID = 0;
-				SoundSource* soundPtr = nullptr;
-			};
-			std::vector<SourceObject*> sourcePool;
-			
-
-			/*
-			default: {0, 0, 1}
-			*/
-			glm::vec3 listenerPosition;
-
-			/*
-			default: {0, 0, 0}
-			*/
-			glm::vec3 listenerVelocity;
-
-			/*
-			range: 0.0 -
-			default: 1.0
-
-			Each division by 2 equals an attenuation of about -6dB.
-			Each multiplicaton by 2 equals an amplification of about +6dB.
-
-			0.0 is silent.
-			*/
-			float listenerGain;
-
-
-			unsigned int maxSources;
-
-			ALCdevice* device;
-			ALCcontext* context;
+		protected:			
+			static bool getFreeSource(SoundSource* _soundSource);
 		};
 	}
 }

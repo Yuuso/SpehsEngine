@@ -90,7 +90,6 @@ namespace spehs
 		shaderManager = new ShaderManager();
 		AudioManager::instance = new AudioManager;
 		rng::initialize();
-		audio::AudioEngine::init();
 
 		checkOpenGLErrors(__FILE__, __LINE__);
 
@@ -119,7 +118,6 @@ namespace spehs
 		delete shaderManager;
 		delete AudioManager::instance;
 		console::unitialize();
-		audio::AudioEngine::uninit();
 		uninitText();
 		SDL_Quit();
 	}

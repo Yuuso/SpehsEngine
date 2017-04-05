@@ -33,6 +33,10 @@ namespace spehs
 		void SoundSource::setSound(const size_t _hashID)
 		{
 			buffer = AudioManager::instance->getAudioClip(_hashID).buffer;
+			if (buffer == 0)
+			{
+				spehs::exceptions::warning("Buffer loading error maybe possibly?..!");
+			}
 			if (source)
 			{
 				alSourcei(source->sourceID, AL_BUFFER, buffer);
@@ -137,7 +141,7 @@ namespace spehs
 			}
 			if (!source)
 			{
-				if (!AudioEngine::instance->getFreeSource(this))
+				if (!AudioEngine::getFreeSource(this))
 				{
 					return;
 				}
@@ -157,7 +161,7 @@ namespace spehs
 			}
 			if (!source)
 			{
-				if (!AudioEngine::instance->getFreeSource(this))
+				if (!AudioEngine::getFreeSource(this))
 				{
 					return;
 				}

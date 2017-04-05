@@ -7,6 +7,7 @@
 #include <stdint.h>
 #include <type_traits>
 #include <assert.h>
+#include <mutex>
 
 #define PI 3.14159265358f
 
@@ -87,16 +88,20 @@ namespace spehs
 		}
 
 		//General 'true' random functions
+		extern std::mutex rngmutex;
+
 		template <typename ReturnType, typename DistributionType =
 			std::conditional<std::is_floating_point<ReturnType>::value, Distribution::UniformReal<ReturnType>, Distribution::UniformInt<ReturnType>>::type>
 		typename std::enable_if<sizeof(ReturnType) != 1, ReturnType>::type random()
 		{
+			std::lock_guard<std::mutex> rnglock(rngmutex);
 			return defaultRandom.random<ReturnType, DistributionType>(std::numeric_limits<ReturnType>::min(), std::numeric_limits<ReturnType>::max());
 		}
 
 		template <typename ReturnType, typename DistributionType = Distribution::UniformInt<int>>
 			typename std::enable_if<sizeof(ReturnType) == 1, ReturnType>::type random()
 		{
+			std::lock_guard<std::mutex> rnglock(rngmutex);
 			return (ReturnType)defaultRandom.random<int, DistributionType>(std::numeric_limits<ReturnType>::min(), std::numeric_limits<ReturnType>::max());
 		}
 
@@ -104,35 +109,41 @@ namespace spehs
 			std::conditional<std::is_floating_point<ReturnType>::value, Distribution::UniformReal<ReturnType>, Distribution::UniformInt<ReturnType>>::type>
 			typename std::enable_if<sizeof(ReturnType) != 1, ReturnType>::type random(const ReturnType _min, const ReturnType _max)
 		{
+			std::lock_guard<std::mutex> rnglock(rngmutex);
 			return defaultRandom.random<ReturnType, DistributionType>(_min, _max);
 		}
 
 		template <typename ReturnType, typename DistributionType = Distribution::UniformInt<int>>
 			typename std::enable_if<sizeof(ReturnType) == 1, ReturnType>::type random(const ReturnType _min, const ReturnType _max)
 		{
+			std::lock_guard<std::mutex> rnglock(rngmutex);
 			return (ReturnType) defaultRandom.random<int, DistributionType>((int) _min, (int) _max);
 		}
 
 		template <typename ReturnType, typename DistributionType = Distribution::Bernoulli>
 		ReturnType random(const double _probability)
 		{
+			std::lock_guard<std::mutex> rnglock(rngmutex);
 			return defaultRandom.random<ReturnType, DistributionType>(_probability);
 		}
 
 		template <typename ReturnType, typename DistributionType = Distribution::Binomial<ReturnType>>
 		ReturnType random(const double _probability, const ReturnType _min, const ReturnType _max)
 		{
+			std::lock_guard<std::mutex> rnglock(rngmutex);
 			return defaultRandom.random<ReturnType, DistributionType>(_probability, _min, _max);
 		}
 
 		template<typename FloatingPointType = float>
 		FloatingPointType unit()
 		{
+			std::lock_guard<std::mutex> rnglock(rngmutex);
 			return defaultRandom.unit<FloatingPointType>();
 		}
 		template<typename FloatingPointType = float>
 		FloatingPointType angle()
 		{
+			std::lock_guard<std::mutex> rnglock(rngmutex);
 			return defaultRandom.angle<FloatingPointType>();
 		}
 		bool coin();
@@ -198,7 +209,7 @@ namespace spehs
 				typename std::enable_if<sizeof(ReturnType) != 1, ReturnType>::type random(const ReturnType _min, const ReturnType _max)
 			{
 				static_assert(std::is_arithmetic<ReturnType>::value, "ReturnType needs to be an arithmetic value!");
-				assert(_min > _max);
+				assert(_min <= _max);
 				DistributionType dist;
 				return dist(engine, { _min, _max });
 			}
@@ -207,7 +218,7 @@ namespace spehs
 				typename std::enable_if<sizeof(ReturnType) == 1, ReturnType>::type random(const ReturnType _min, const ReturnType _max)
 			{
 				static_assert(std::is_arithmetic<ReturnType>::value, "ReturnType needs to be an arithmetic value!");
-				assert(_min > _max);
+				assert(_min <= _max);
 				DistributionType dist;
 				return dist(engine, { _min, _max });
 			}
@@ -225,7 +236,7 @@ namespace spehs
 			ReturnType random(const double _probability, const ReturnType _min, const ReturnType _max)
 			{
 				static_assert(std::is_arithmetic<ReturnType>::value, "ReturnType needs to be an arithmetic value!");
-				assert(_min > _max);
+				assert(_min <= _max);
 				DistributionType dist(double(_max - _min), _probability);
 				return _min + dist(engine);
 			}
