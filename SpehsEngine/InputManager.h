@@ -66,8 +66,14 @@ namespace spehs
 		//manging keyboard
 		void pressKey(unsigned int keyID);
 		void releaseKey(unsigned int keyID);
-		bool isKeyDown(unsigned int keyID);
-		bool isKeyPressed(unsigned int keyID);
+		bool isKeyDown(unsigned int keyID) const;
+		bool isKeyPressed(unsigned int keyID) const;
+
+		//Special input query
+		bool isCtrlDown() const;///< Returns true if left or right ctrl button is down
+		bool isShiftDown() const;///< Returns true if left or right ctrl button is down
+		bool isCtrlPressed() const;///< Returns true if left or right ctrl button is pressed
+		bool isShiftPressed() const;///< Returns true if left or right ctrl button is pressed
 
 		//Managing mouse
 		void setMouseCoords(int _x, int _y);
@@ -79,14 +85,14 @@ namespace spehs
 
 		//Getters
 		glm::vec2 getMouseCoords() const { return mouseCoords; }
-		glm::vec2 getMouseMovement(){ return mouseMovement; }
-		float getMouseX(){ return mouseCoords.x; }
-		float getMouseY(){ return mouseCoords.y; }
-		float getMouseMovementX(){ return mouseMovement.x; }
-		float getMouseMovementY(){ return mouseMovement.y; }
+		glm::vec2 getMouseMovement() const { return mouseMovement; }
+		float getMouseX() const { return mouseCoords.x; }
+		float getMouseY() const { return mouseCoords.y; }
+		float getMouseMovementX() const { return mouseMovement.x; }
+		float getMouseMovementY() const { return mouseMovement.y; }
 		int getMouseWheelDelta() const { return mouseWheelDelta; }
 		bool isQuitRequested() const { return quitRequested; }
-		bool fileDropped();
+		bool fileDropped() const;
 		std::string getDroppedFilePath(){ std::string path = droppedFilePath; droppedFilePath.clear();/*Reset dropped file path*/ return path; }
 
 		//Public access members
@@ -101,7 +107,7 @@ namespace spehs
 		std::string droppedFilePath;///<Dropped file path is retrievable until any source retrieves(getDroppedFilePath()) it once.
 		
 		//Keyboard
-		bool wasKeyDown(unsigned int keyID);
+		bool wasKeyDown(unsigned int keyID) const;
 
 		//Mouse
 		bool mouseLocked = false;
