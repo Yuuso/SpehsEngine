@@ -34,7 +34,7 @@ namespace spehs
 	extern void uninitText();
 	namespace rng
 	{
-		extern void initializeRNG();
+		extern void initialize();
 	}
 
 	int initialize(std::string _windowName, ApplicationData* customApplicationDataInstance)
@@ -89,7 +89,7 @@ namespace spehs
 		textureManager = new TextureManager();
 		shaderManager = new ShaderManager();
 		AudioManager::instance = new AudioManager;
-		rng::initializeRNG();
+		rng::initialize();
 		audio::AudioEngine::init();
 
 		checkOpenGLErrors(__FILE__, __LINE__);
