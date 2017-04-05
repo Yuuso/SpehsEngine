@@ -156,7 +156,7 @@ namespace spehs
 	}
 
 
-	bool InputManager::isKeyDown(unsigned int keyID)
+	bool InputManager::isKeyDown(unsigned int keyID) const
 	{
 		auto it = keyMap.find(keyID);
 		if (it != keyMap.end())
@@ -166,7 +166,7 @@ namespace spehs
 	}
 
 
-	bool InputManager::isKeyPressed(unsigned int keyID)
+	bool InputManager::isKeyPressed(unsigned int keyID) const
 	{
 		if (isKeyDown(keyID) == true && wasKeyDown(keyID) == false)
 		{
@@ -176,7 +176,7 @@ namespace spehs
 	}
 
 
-	bool InputManager::wasKeyDown(unsigned int keyID)
+	bool InputManager::wasKeyDown(unsigned int keyID) const
 	{
 		auto it = previousKeyMap.find(keyID);
 		if (it != previousKeyMap.end())
@@ -185,11 +185,36 @@ namespace spehs
 			return false;
 	}
 
-	bool InputManager::fileDropped()
+
+	bool InputManager::fileDropped() const
 	{
 		if (droppedFilePath.empty())
 			return false;
 		return true;
+	}
+
+
+	bool InputManager::isCtrlDown() const
+	{
+		return isKeyDown(KEYBOARD_LCTRL) || isKeyDown(KEYBOARD_RCTRL);
+	}
+
+
+	bool InputManager::isShiftDown() const
+	{
+		return isKeyDown(KEYBOARD_LSHIFT) || isKeyDown(KEYBOARD_RSHIFT);
+	}
+
+
+	bool InputManager::isCtrlPressed() const
+	{
+		return isKeyPressed(KEYBOARD_LCTRL) || isKeyPressed(KEYBOARD_RCTRL);
+	}
+
+
+	bool InputManager::isShiftPressed() const
+	{
+		return isKeyPressed(KEYBOARD_LSHIFT) || isKeyPressed(KEYBOARD_RSHIFT);
 	}
 
 	///////////////////////////

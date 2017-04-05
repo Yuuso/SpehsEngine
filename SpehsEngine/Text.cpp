@@ -529,11 +529,11 @@ namespace spehs
 	{
 		return font->maxAdvanceWidth;
 	}
-	float Text::getX(unsigned characterIndex) const
+	float Text::getX(int characterIndex) const
 	{
-		characterIndex = std::min(characterIndex, string.size());
+		characterIndex = std::min(characterIndex, (int)string.size() - 1);
 		int currentLineWidth(0.0f);
-		for (unsigned i = 0; i < characterIndex; i++)
+		for (unsigned i = 0; i <= characterIndex; i++)
 		{
 			if (string[i] == '\n')
 				currentLineWidth = 0.0f;
@@ -541,17 +541,15 @@ namespace spehs
 			{//Increase current line width
 #ifdef _DEBUG
 				if (font->characters[string[i]].advance > 10000)
-				{
 					spehs::exceptions::warning("Character width might be invalid!");
-					currentLineWidth -= font->characters[string[i]].advance;//Reverse width
-				}
+				else
 #endif
-				currentLineWidth += font->characters[string[i]].advance;
+					currentLineWidth += font->characters[string[i]].advance;
 			}
 		}
 		return position.x + (float)(currentLineWidth >> 6);
 	}
-	float Text::getY(const unsigned characterIndex) const
+	float Text::getY(const int characterIndex) const
 	{
 		const int end = std::min((int)characterIndex, (int)string.size() - 1);
 		int currentHeight(0);
