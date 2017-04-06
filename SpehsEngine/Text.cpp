@@ -533,7 +533,7 @@ namespace spehs
 	{
 		characterIndex = std::min(characterIndex, (int)string.size() - 1);
 		int currentLineWidth(0.0f);
-		for (unsigned i = 0; i <= characterIndex; i++)
+		for (int i = 0; i <= characterIndex; i++)
 		{
 			if (string[i] == '\n')
 				currentLineWidth = 0.0f;

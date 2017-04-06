@@ -380,7 +380,12 @@ namespace spehs
 	void GUIRectangle::setString(const std::string& str)
 	{
 		if (str.size() == 0)
+		{
+			if (text)
+				text->destroy();
+			text = nullptr;
 			return;
+		}
 		if (!text)
 			createText();
 		text->setString(str);
