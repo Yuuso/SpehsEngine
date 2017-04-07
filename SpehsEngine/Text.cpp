@@ -529,12 +529,14 @@ namespace spehs
 	{
 		return font->maxAdvanceWidth;
 	}
-	float Text::getX(int characterIndex) const
+	float Text::getX(const int characterIndex) const
 	{
-		characterIndex = std::min(characterIndex, (int)string.size() - 1);
 		int currentLineWidth(0.0f);
-		for (int i = 0; i <= characterIndex; i++)
+		for (int i = 0; i <= string.size(); i++)
 		{
+			if (i >= characterIndex)
+				break;
+
 			if (string[i] == '\n')
 				currentLineWidth = 0.0f;
 			else

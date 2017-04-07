@@ -9,6 +9,7 @@
 #include <SDL/SDL.h>
 #include <SDL/SDL_joystick.h>
 #include <SDL/SDL_events.h>
+#include <glm/vec4.hpp>
 
 #include <iostream>
 
@@ -191,6 +192,33 @@ namespace spehs
 		if (droppedFilePath.empty())
 			return false;
 		return true;
+	}
+
+
+	bool InputManager::mouseCollision(const glm::vec4& AABB) const
+	{
+		return mouseCoords.x >= AABB.x &&
+			mouseCoords.x <= AABB.x + AABB.z &&
+			mouseCoords.y >= AABB.y &&
+			mouseCoords.y <= AABB.y + AABB.w;
+	}
+
+
+	bool InputManager::mouseCollision(const glm::vec2& AABBMin, const glm::vec2& AABBMax) const
+	{
+		return mouseCoords.x >= AABBMin.x &&
+			mouseCoords.x <= AABBMax.x &&
+			mouseCoords.y >= AABBMin.y &&
+			mouseCoords.y <= AABBMax.y;
+	}
+
+
+	bool InputManager::mouseCollision(const float left, const float right, const float top, const float bottom) const
+	{
+		return mouseCoords.x >= left &&
+			mouseCoords.x <= right &&
+			mouseCoords.y >= bottom &&
+			mouseCoords.y <= top;
 	}
 
 

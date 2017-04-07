@@ -91,6 +91,9 @@ namespace spehs
 		float getMouseMovementX() const { return mouseMovement.x; }
 		float getMouseMovementY() const { return mouseMovement.y; }
 		int getMouseWheelDelta() const { return mouseWheelDelta; }
+		bool mouseCollision(const glm::vec4& AABB_leftX_bottomY_width_height) const;
+		bool mouseCollision(const glm::vec2& minAABB, const glm::vec2& maxAABB) const;
+		bool mouseCollision(const float leftAABB, const float rightAABB, const float topAABB, const float bottomAABB) const;
 		bool isQuitRequested() const { return quitRequested; }
 		bool fileDropped() const;
 		std::string getDroppedFilePath(){ std::string path = droppedFilePath; droppedFilePath.clear();/*Reset dropped file path*/ return path; }
