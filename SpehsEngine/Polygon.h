@@ -40,7 +40,7 @@ namespace spehs
 		void setDrawMode(const DrawMode &_newDrawMode);
 		TextureData* setTexture(const std::string &_texturePath);
 		TextureData* setTexture(const size_t &_hash);
-		void setTexture(TextureData* _textureDataPtr);
+		void setTexture(const TextureData* _textureDataPtr);
 		void setTextureID(const unsigned int &_textureID);
 
 		//Getters

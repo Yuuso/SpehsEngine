@@ -12,10 +12,12 @@ namespace spehs
 		text->setFont("Fonts/Anonymous.ttf", 12);
 		text->setCameraMatrixState(false);
 		text->setColor(spehs::GUIRectangle::defaultTooltipStringColor);
-		polygon = spehs::Polygon::create(spehs::Shape::BUTTON, GUIRectangle::defaultDepth + 1, text->getTextWidth() + 2 * textBorder, text->getTextHeight() + 2 * textBorder);
+		polygon = spehs::Polygon::create(spehs::Shape::BUTTON, GUIRectangle::defaultDepth + 1,
+			2 * textBorder + std::max(text->getTextWidth(), (float)text->getFontMaxAdvanceWidth()),
+			(1 + text->getLineCount()) * textBorder - text->getFontDescender() + text->getFontHeight() * text->getLineCount());
 		polygon->setCameraMatrixState(false);
 		polygon->setColor(spehs::GUIRectangle::defaultTooltipColor);
-		setRenderState(false);
+		setRenderState(true);
 		setDepth(depth);
 	}
 	Textbox::~Textbox()
@@ -41,7 +43,9 @@ namespace spehs
 	void Textbox::setString(const std::string& string)
 	{
 		text->setString(string);
-		polygon->resize(text->getTextWidth() + 2 * textBorder, text->getTextHeight() + 2 * textBorder);
+		polygon->resize(
+			2 * textBorder + std::max(text->getTextWidth(), (float)text->getFontMaxAdvanceWidth()),
+			(1 + text->getLineCount()) * textBorder - text->getFontDescender() + text->getFontHeight() * text->getLineCount());
 		setPosition(polygon->getX(), polygon->getY());
 	}
 	void Textbox::setTextColor(const glm::vec3& rgb)

@@ -237,7 +237,7 @@ namespace spehs
 		return value;
 	}
 
-	void Polygon::setTexture(TextureData* _textureDataPtr)
+	void Polygon::setTexture(const TextureData* _textureDataPtr)
 	{
 		textureDataID = _textureDataPtr->textureDataID;
 		if (shaderIndex == DefaultPolygon)
