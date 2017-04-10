@@ -7,6 +7,7 @@
 #include <glm/vec3.hpp>
 
 #include <string>
+#include <utility>
 
 
 typedef unsigned int ALuint;
@@ -55,6 +56,8 @@ namespace spehs
 			bool getLooping(){ return loop; }
 			unsigned int getPriority(){ return priority; }
 			bool getRelative(){ return relativeToSource; }
+
+			bool soundQueued();
 
 		protected:
 			void removeSource();
@@ -119,9 +122,10 @@ namespace spehs
 			bool fadeToPause;
 			bool fadeToStop;
 			bool fadeIn;
-
+			
 			AudioEngine::SourceObject* source;
-			ALuint buffer;
+			std::pair<size_t /*hash*/, ALuint /*buffer*/> sound;
+			bool playQueued;
 		};
 
 		class ActiveSoundSource : public SoundSource

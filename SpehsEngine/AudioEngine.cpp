@@ -9,9 +9,10 @@
 #include <AL\alc.h>
 
 #include <algorithm>
+#include <iostream>
 
 
-#define DEFAULT_MAX_SOURCES 256
+#define DEFAULT_MAX_SOURCES 255
 
 
 glm::vec2 positionCorrectionFactor = glm::vec2(1.0f);

@@ -88,7 +88,8 @@ namespace spehs
 		inputManager->initialize();
 		textureManager = new TextureManager();
 		shaderManager = new ShaderManager();
-		AudioManager::instance = new AudioManager;
+		audio::AudioEngine::init();
+		AudioManager::init();
 		rng::initialize();
 
 		checkOpenGLErrors(__FILE__, __LINE__);
@@ -116,7 +117,8 @@ namespace spehs
 		delete inputManager;
 		delete textureManager;
 		delete shaderManager;
-		delete AudioManager::instance;
+		audio::AudioEngine::uninit();
+		AudioManager::uninit();
 		console::unitialize();
 		uninitText();
 		SDL_Quit();

@@ -4,6 +4,7 @@
 #include <stdint.h>
 #include <string>
 #include <unordered_map>
+#include <mutex>
 
 
 typedef unsigned int ALuint;
@@ -48,16 +49,17 @@ namespace spehs
 			unsigned char* data;
 		};
 
+	public:
 		class AudioClip
 		{
 		public:
+			bool ready = false;
 			ALuint buffer = 0;
 			ALsizei size = 0;
 			ALsizei freq = 0;
 			ALenum format = 0;
 		};
 
-	public:
 		enum class AudioFormat
 		{
 			Mono8bit = 0x1100,
@@ -66,25 +68,32 @@ namespace spehs
 			Stereo16bit = 0x1103
 		};
 
-		static AudioManager* instance;
-		AudioManager();
-		~AudioManager();
+		static void init();
+		static void uninit();
+		
+		//Check if sound loading is ready, returns 0 is not and buffer ID if yes, if sound doesn't exist gives a warning
+		static ALuint isReady(const size_t& _hashID);
 
-		size_t loadWAVE(const std::string& _filepath);
-		size_t loadOGG(const std::string& _filepath);
-		size_t loadData(const std::string& _identifier, const unsigned char* _data, const int _size, const int _frequency, const AudioFormat _format);
+		//Starts loading in another thread
+		static size_t load(const std::string& _filepath);
+		static size_t loadWAVE(const std::string& _filepath);
+		static size_t loadOGG(const std::string& _filepath);
 
-		//TODO: Better memory management
-		void deleteAudio(const std::string& _filepath);
-		void deleteAudio(const size_t& _hashID);
+		//Not loaded in the background
+		static size_t loadData(const std::string& _identifier, const unsigned char* _data, const int _size, const int _frequency, const AudioFormat _format);
 
-		void deleteAllAudio();
+		//TODO: Better memory management?
+		static void deleteAudio(const std::string& _filepath);
+		static void deleteAudio(const size_t& _hashID);
 
-		AudioClip getAudioClip(const std::string _filepath);
-		AudioClip getAudioClip(const size_t& _hashID);
+		static void deleteAllAudio();
+
+		static AudioClip getAudioClip(const std::string _filepath);
+		static AudioClip getAudioClip(const size_t& _hashID);
 
 	private:
-		std::unordered_map<size_t, AudioClip> audioClips;
+		static void bgloadWAVE(const std::string& _filepath);
+		static void bgloadOGG(const std::string& _filepath);
 	};
 }
 

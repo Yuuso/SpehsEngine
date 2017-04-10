@@ -532,7 +532,7 @@ namespace spehs
 	{
 		if (!hoverSound)
 			hoverSound = new spehs::audio::SoundSource();
-		hoverSound->setSound(AudioManager::instance->loadWAVE(path));
+		hoverSound->setSound(AudioManager::load(path));
 		hoverSound->setPriority(1);
 		hoverSound->setGain(1.0f);
 	}
@@ -540,7 +540,7 @@ namespace spehs
 	{
 		if (!pressSound)
 			pressSound = new spehs::audio::SoundSource();
-		pressSound->setSound(AudioManager::instance->loadWAVE(path));
+		pressSound->setSound(AudioManager::load(path));
 		pressSound->setPriority(1);
 		pressSound->setGain(1.0f);
 	}

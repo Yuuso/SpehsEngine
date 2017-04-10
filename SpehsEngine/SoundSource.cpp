@@ -21,8 +21,8 @@ namespace spehs
 {
 	namespace audio
 	{
-		SoundSource::SoundSource() : pitch(1.0f), gain(1.0f), maxGain(1.0f), minGain(0.0f), loop(false), source(nullptr), buffer(0), relativeToSource(true),
-			gainAutomationTimer(0.0f), fadeToPause(false), fadeToStop(false), fadeIn(false)
+		SoundSource::SoundSource() : pitch(1.0f), gain(1.0f), maxGain(1.0f), minGain(0.0f), loop(false), source(nullptr), relativeToSource(true),
+			gainAutomationTimer(0.0f), fadeToPause(false), fadeToStop(false), fadeIn(false), playQueued(false)
 		{
 		}
 		SoundSource::~SoundSource()
@@ -32,25 +32,13 @@ namespace spehs
 
 		void SoundSource::setSound(const size_t _hashID)
 		{
-			buffer = AudioManager::instance->getAudioClip(_hashID).buffer;
-			if (buffer == 0)
-			{
-				spehs::exceptions::warning("Buffer loading error maybe possibly?..!");
-			}
-			if (source)
-			{
-				alSourcei(source->sourceID, AL_BUFFER, buffer);
-				checkOpenALErrors(__FILE__, __LINE__);
-			}
+			sound.first = _hashID;
+			sound.second = AudioManager::isReady(_hashID);
 		}
 		void SoundSource::setSound(const std::string _filepath)
 		{
-			buffer = AudioManager::instance->getAudioClip(_filepath).buffer;
-			if (source)
-			{
-				alSourcei(source->sourceID, AL_BUFFER, buffer);
-				checkOpenALErrors(__FILE__, __LINE__);
-			}
+			sound.first = AudioManager::load(_filepath);
+			sound.second = 0;
 		}
 		
 		void SoundSource::setParameters()
@@ -63,7 +51,8 @@ namespace spehs
 			alSourcei(source->sourceID, AL_SOURCE_RELATIVE, relativeToSource);
 			checkOpenALErrors(__FILE__, __LINE__);
 
-			alSourcei(source->sourceID, AL_BUFFER, buffer);
+			if (sound.second != 0)
+				alSourcei(source->sourceID, AL_BUFFER, sound.second);
 			checkOpenALErrors(__FILE__, __LINE__);
 		}
 
@@ -71,70 +60,92 @@ namespace spehs
 		{
 			if (!isPlaying())
 			{
-				//This too brutal?
-				removeSource();
+				if (!playQueued)
+				{
+					//This too brutal?
+					removeSource();
+				}
+				if (soundQueued())
+				{
+					sound.second = AudioManager::isReady(sound.first);
+					if (sound.second != 0)
+					{
+						if (playQueued)
+						{
+							playQueued = false;
+							setParameters();
+							alSourcePlay(source->sourceID);
+							checkOpenALErrors(__FILE__, __LINE__);
+						}
+					}
+				}
 			}
 
-			if (!source)
+			if (!soundQueued())
 			{
-				resetAutomation();
-			}
-			//Automations
-			if (gainAutomationTimer > 0.0f)
-			{
-				float currentGain, currentPitch;
-				alGetSourcef(source->sourceID, AL_GAIN, &currentGain);
-				alGetSourcef(source->sourceID, AL_PITCH, &currentPitch);
+				if (!source)
+				{
+					resetAutomation();
+				}
+				//Automations
+				if (gainAutomationTimer > 0.0f)
+				{
+					float currentGain, currentPitch;
+					alGetSourcef(source->sourceID, AL_GAIN, &currentGain);
+					alGetSourcef(source->sourceID, AL_PITCH, &currentPitch);
 
-				//Gain
-				if (fadeIn)
-				{
-					float deltaGain = (time::getDeltaTimeAsSeconds() / gainAutomationTimer) * (gain - currentGain);
-					alSourcef(source->sourceID, AL_GAIN, std::max(0.0f, currentGain + deltaGain));
-					checkOpenALErrors(__FILE__, __LINE__);
-				}
-				else if (fadeToPause)
-				{
-					float deltaGain = (time::getDeltaTimeAsSeconds() / gainAutomationTimer) * -currentGain;
-					alSourcef(source->sourceID, AL_GAIN, std::max(0.0f, currentGain + deltaGain));
-					checkOpenALErrors(__FILE__, __LINE__);
-				}
-				else if (fadeToStop)
-				{
-
-				}
-				else
-				{
-					if (gain != currentGain)
+					//Gain
+					if (fadeIn)
+					{
+						float deltaGain = (time::getDeltaTimeAsSeconds() / gainAutomationTimer) * (gain - currentGain);
+						alSourcef(source->sourceID, AL_GAIN, std::max(0.0f, currentGain + deltaGain));
+						checkOpenALErrors(__FILE__, __LINE__);
+					}
+					else if (fadeToPause)
 					{
 						float deltaGain = (time::getDeltaTimeAsSeconds() / gainAutomationTimer) * -currentGain;
 						alSourcef(source->sourceID, AL_GAIN, std::max(0.0f, currentGain + deltaGain));
 						checkOpenALErrors(__FILE__, __LINE__);
 					}
+					else if (fadeToStop)
+					{
+						float deltaGain = (time::getDeltaTimeAsSeconds() / gainAutomationTimer) * -currentGain;
+						alSourcef(source->sourceID, AL_GAIN, std::max(0.0f, currentGain + deltaGain));
+						checkOpenALErrors(__FILE__, __LINE__);
+					}
+					else
+					{
+						if (gain != currentGain)
+						{
+							float deltaGain = (time::getDeltaTimeAsSeconds() / gainAutomationTimer) * -currentGain;
+							alSourcef(source->sourceID, AL_GAIN, std::max(0.0f, currentGain + deltaGain));
+							checkOpenALErrors(__FILE__, __LINE__);
+						}
+					}
+					gainAutomationTimer -= time::getDeltaTimeAsSeconds();
 				}
-				gainAutomationTimer -= time::getDeltaTimeAsSeconds();
-			}
-			else if (fadeToPause)
-			{
-				alSourcef(source->sourceID, AL_GAIN, gain);
-				pause();
-			}
-			else if (fadeToStop)
-			{
-				alSourcef(source->sourceID, AL_GAIN, gain);
-				stop();
-			}
-			else if (fadeIn)
-			{
-				alSourcef(source->sourceID, AL_GAIN, gain);
-				checkOpenALErrors(__FILE__, __LINE__);
-				fadeIn = false;
+				else if (fadeToPause)
+				{
+					alSourcef(source->sourceID, AL_GAIN, gain);
+					pause();
+				}
+				else if (fadeToStop)
+				{
+					alSourcef(source->sourceID, AL_GAIN, gain);
+					stop();
+				}
+				else if (fadeIn)
+				{
+					alSourcef(source->sourceID, AL_GAIN, gain);
+					checkOpenALErrors(__FILE__, __LINE__);
+					fadeIn = false;
+				}
 			}
 		}
 
 		void SoundSource::play()
 		{
-			if (buffer == 0)
+			if (sound.second == 0 && !soundQueued())
 			{
 				spehs::exceptions::warning("Cannot play sound, no sound buffer!");
 				return;
@@ -145,16 +156,23 @@ namespace spehs
 				{
 					return;
 				}
-				setParameters();
 			}
 
 			resetAutomation();
-			alSourcePlay(source->sourceID);
-			checkOpenALErrors(__FILE__, __LINE__);
+			if (!soundQueued())
+			{
+				setParameters();
+				alSourcePlay(source->sourceID);
+				checkOpenALErrors(__FILE__, __LINE__);
+			}
+			else
+			{
+				playQueued = true;
+			}
 		}
 		void SoundSource::play(const float _fadeTimer)
 		{
-			if (buffer == 0)
+			if (sound.second == 0 && !soundQueued())
 			{
 				spehs::exceptions::warning("Cannot play sound, no sound buffer!");
 				return;
@@ -165,7 +183,6 @@ namespace spehs
 				{
 					return;
 				}
-				setParameters();
 			}
 
 			resetAutomation();
@@ -173,8 +190,16 @@ namespace spehs
 			gainAutomationTimer = _fadeTimer;
 			fadeIn = true;
 
-			alSourcePlay(source->sourceID);
-			checkOpenALErrors(__FILE__, __LINE__);
+			if (!soundQueued())
+			{
+				setParameters();
+				alSourcePlay(source->sourceID);
+				checkOpenALErrors(__FILE__, __LINE__);
+			}
+			else
+			{
+				playQueued = true;
+			}
 		}
 		void SoundSource::pause()
 		{
@@ -323,6 +348,11 @@ namespace spehs
 			fadeToPause = false;
 			fadeToStop = false;
 			fadeIn = false;
+		}
+		bool SoundSource::soundQueued()
+		{
+			//If hashID for sounds exists but there is no buffer, the sound is still loading
+			return sound.first != 0 && sound.second == 0;
 		}
 
 

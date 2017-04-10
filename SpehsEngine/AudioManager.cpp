@@ -2,34 +2,96 @@
 #include "AudioManager.h"
 #include "Exceptions.h"
 #include "OpenALError.h"
+#include "Thread.h"
 
 #include <AL\al.h>
 #include <vorbis\vorbisfile.h>
 
 #include <functional>
+#include <thread>
 
+
+namespace audioVar
+{
+	std::mutex mutex;
+	std::unordered_map<size_t, spehs::AudioManager::AudioClip> audioClips;
+}
 
 namespace spehs
 {
-	AudioManager* AudioManager::instance = nullptr;
-	AudioManager::AudioManager()
+	void AudioManager::init()
 	{
 
 	}
-	AudioManager::~AudioManager()
+	void AudioManager::uninit()
 	{
 		deleteAllAudio();
 	}
 
+	
+	ALuint AudioManager::isReady(const size_t& _hashID)
+	{
+		audioVar::mutex.lock();
+		auto it = audioVar::audioClips.find(_hashID);
+		if (it == audioVar::audioClips.end())
+		{
+			exceptions::warning("Sound doesn't exist!");
+			audioVar::mutex.unlock();
+			return 0;
+		}
+		ALuint value = 0;
+		if (it->second.ready)
+		{
+			value = it->second.buffer;
+		}
+		audioVar::mutex.unlock();
+		return value;
+	}
+
+	size_t AudioManager::load(const std::string& _filepath)
+	{
+		std::string fileEnding = _filepath.substr(_filepath.size() - 3);
+
+		if (fileEnding == "wav")
+		{
+			return loadWAVE(_filepath);
+		}
+		else if (fileEnding == "ogg")
+		{
+			return loadOGG(_filepath);
+		}
+		else
+		{
+			exceptions::fatalError("Unsupported audio file!");
+		}
+		return 0;
+	}
 	size_t AudioManager::loadWAVE(const std::string &_filepath)
 	{
 		size_t hash = std::hash<std::string>()(_filepath);
-		if (audioClips.find(hash) != audioClips.end())
+		audioVar::mutex.lock();
+		if (audioVar::audioClips.find(hash) != audioVar::audioClips.end())
+		{
+			audioVar::mutex.unlock();
 			return hash;
+		}
 
+		AudioClip clip;
+		audioVar::audioClips.insert(std::pair<size_t, AudioClip>(hash, clip));
+		audioVar::mutex.unlock();
+		std::thread bgLoaderThread(bgloadWAVE, _filepath);
+		spehs::setThreadName(&bgLoaderThread, "Wave Loader Thread");
+		bgLoaderThread.detach();
+		return hash;
+	}
+
+	void AudioManager::bgloadWAVE(const std::string& _filepath)
+	{
 		FILE* fileData = nullptr;
 		WAVE waveFile;
-		AudioClip clip;
+		audioVar::mutex.lock();
+		auto it = audioVar::audioClips.find(std::hash<std::string>()(_filepath));
+		audioVar::mutex.unlock();
 
 		//Open file and make visual studio happy by doind it safely...
 #ifdef WIN32
@@ -82,13 +144,14 @@ namespace spehs
 			fseek(fileData, sizeof(uint16_t), SEEK_CUR);
 		}
 
+		audioVar::mutex.lock();
 		//The format is worked out by looking at the number of channels and the bits per sample
 		if (waveFile.waveFormat.numChannels == 1)
 		{
 			if (waveFile.waveFormat.bitsPerSample == 8)
-				clip.format = AL_FORMAT_MONO8;
+				it->second.format = AL_FORMAT_MONO8;
 			else if (waveFile.waveFormat.bitsPerSample == 16)
-				clip.format = AL_FORMAT_MONO16;
+				it->second.format = AL_FORMAT_MONO16;
 			else
 			{
 				fclose(fileData);
@@ -98,9 +161,9 @@ namespace spehs
 		else if (waveFile.waveFormat.numChannels == 2)
 		{
 			if (waveFile.waveFormat.bitsPerSample == 8)
-				clip.format = AL_FORMAT_STEREO8;
+				it->second.format = AL_FORMAT_STEREO8;
 			else if (waveFile.waveFormat.bitsPerSample == 16)
-				clip.format = AL_FORMAT_STEREO16;
+				it->second.format = AL_FORMAT_STEREO16;
 			else
 			{
 				fclose(fileData);
@@ -112,6 +175,7 @@ namespace spehs
 			fclose(fileData);
 			exceptions::fatalError("Invalid number of channels! (File name : " + _filepath + ")");
 		}
+		audioVar::mutex.unlock();
 
 		//Read WAVE data
 		fread(&waveFile.waveData, sizeof(WAVE::WAVEData), 1, fileData);
@@ -127,8 +191,10 @@ namespace spehs
 		}
 
 		//Set variables
-		clip.size = waveFile.waveData.subChunkSize;
-		clip.freq = waveFile.waveFormat.sampleRate;
+		audioVar::mutex.lock();
+		it->second.size = waveFile.waveData.subChunkSize;
+		it->second.freq = waveFile.waveFormat.sampleRate;
+		audioVar::mutex.unlock();
 
 		//Read sound data
 		waveFile.data = new unsigned char[waveFile.waveData.subChunkSize];
@@ -138,29 +204,48 @@ namespace spehs
 			exceptions::fatalError("Error loading WAVE sound file!");
 		}
 
+		audioVar::mutex.lock();
 		//Generate OpenAL buffer
-		alGenBuffers(1, &clip.buffer);
+		checkOpenALErrors(__FILE__, __LINE__);
+		alGenBuffers(1, &it->second.buffer);
 		checkOpenALErrors(__FILE__, __LINE__);
 
 		//Data into the buffer
-		alBufferData(clip.buffer, clip.format, (void*) waveFile.data, clip.size, clip.freq);
+		alBufferData(it->second.buffer, it->second.format, (void*) waveFile.data, it->second.size, it->second.freq);
 		checkOpenALErrors(__FILE__, __LINE__);
+		it->second.ready = true;
+		audioVar::mutex.unlock();
 
 		//Clean ups
 		fclose(fileData);
-		delete[] waveFile.data;
-		
-		audioClips.insert(std::pair<size_t, AudioClip>(hash, clip));
-		return hash;
+		delete [] waveFile.data;
 	}
 	size_t AudioManager::loadOGG(const std::string& _filepath)
 	{
 		size_t hash = std::hash<std::string>()(_filepath);
-		if (audioClips.find(hash) != audioClips.end())
+		audioVar::mutex.lock();
+		if (audioVar::audioClips.find(hash) != audioVar::audioClips.end())
+		{
+			audioVar::mutex.unlock();
 			return hash;
+		}
 
-		FILE* fileData = nullptr;
 		AudioClip clip;
+		audioVar::audioClips.insert(std::pair<size_t, AudioClip>(hash, clip));
+		audioVar::mutex.unlock();
+		std::thread bgLoaderThread(bgloadOGG, _filepath);
+		spehs::setThreadName(&bgLoaderThread, "Ogg Loader Thread");
+		bgLoaderThread.detach();
+		return hash;
+	}
+
+	void AudioManager::bgloadOGG(const std::string& _filepath)
+	{
+		FILE* fileData = nullptr;
+		audioVar::mutex.lock();
+		auto it = audioVar::audioClips.find(std::hash<std::string>()(_filepath));
+		audioVar::mutex.unlock();
+
 		static const int endian = 0; //little is 0, big is 1; ogg should always be little-endian
 		static const int BUFFER_SIZE = 32768;
 		int bitStream;
@@ -191,18 +276,20 @@ namespace spehs
 		//Get header info
 		info = ov_info(&oggFile, -1);
 
+		audioVar::mutex.lock();
 		//Channels
 		if (info->channels == 1)
 		{
-			clip.format = AL_FORMAT_MONO16;
+			it->second.format = AL_FORMAT_MONO16;
 		}
 		else
 		{
-			clip.format = AL_FORMAT_STEREO16;
+			it->second.format = AL_FORMAT_STEREO16;
 		}
 
 		//Frequency
-		clip.freq = info->rate;
+		it->second.freq = info->rate;
+		audioVar::mutex.unlock();
 		
 		//Decoding
 		do
@@ -217,24 +304,29 @@ namespace spehs
 		ov_clear(&oggFile);
 		//Apparently no need to call fclose
 
-		clip.size = data.size();
+		audioVar::mutex.lock();
+		it->second.size = data.size();
 
 		//Generate OpenAL buffer
-		alGenBuffers(1, &clip.buffer);
+		alGenBuffers(1, &it->second.buffer);
 		checkOpenALErrors(__FILE__, __LINE__);
 
 		//Data into the buffer
-		alBufferData(clip.buffer, clip.format, (void*) data.data(), clip.size, clip.freq);
+		alBufferData(it->second.buffer, it->second.format, (void*) data.data(), it->second.size, it->second.freq);
 		checkOpenALErrors(__FILE__, __LINE__);
-
-		audioClips.insert(std::pair<size_t, AudioClip>(hash, clip));
-		return hash;
+		it->second.ready = true;
+		audioVar::mutex.unlock();
 	}
 	size_t AudioManager::loadData(const std::string& _identifier, const unsigned char* _data, const int _size, const int _frequency, const AudioFormat _format)
 	{
+		audioVar::mutex.lock();
 		size_t hash = std::hash<std::string>()(_identifier);
-		if (audioClips.find(hash) != audioClips.end())
+		if (audioVar::audioClips.find(hash) != audioVar::audioClips.end())
+		{
+			audioVar::mutex.unlock();
 			return hash;
+		}
+		audioVar::mutex.unlock();
 
 		AudioClip clip;
 
@@ -250,7 +342,9 @@ namespace spehs
 		alBufferData(clip.buffer, clip.format, (void*) _data, clip.size, clip.freq);
 		checkOpenALErrors(__FILE__, __LINE__);
 
-		audioClips.insert(std::pair<size_t, AudioClip>(hash, clip));
+		audioVar::mutex.lock();
+		audioVar::audioClips.insert(std::pair<size_t, AudioClip>(hash, clip));
+		audioVar::mutex.unlock();
 		return hash;
 	}
 
@@ -260,23 +354,27 @@ namespace spehs
 	}
 	void AudioManager::deleteAudio(const size_t &_hashID)
 	{
-		auto it = audioClips.find(_hashID);
-		if (it == audioClips.end())
+		audioVar::mutex.lock();
+		auto it = audioVar::audioClips.find(_hashID);
+		if (it == audioVar::audioClips.end())
 		{
 			exceptions::fatalError("Trying to delete a WAVE file that doesn't exist!");
 		}
 
 		alDeleteBuffers(1, &it->second.buffer);
 
-		audioClips.erase(_hashID);
+		audioVar::audioClips.erase(_hashID);
+		audioVar::mutex.unlock();
 	}
 	void AudioManager::deleteAllAudio()
 	{
-		for (auto &it : audioClips)
+		audioVar::mutex.lock();
+		for (auto &it : audioVar::audioClips)
 		{
 			alDeleteBuffers(1, &it.second.buffer);
 		}
-		audioClips.clear();
+		audioVar::audioClips.clear();
+		audioVar::mutex.unlock();
 	}
 
 	AudioManager::AudioClip AudioManager::getAudioClip(const std::string _filepath)
@@ -285,8 +383,9 @@ namespace spehs
 	}
 	AudioManager::AudioClip AudioManager::getAudioClip(const size_t &_hashID)
 	{
-		auto it = audioClips.find(_hashID);
-		if (it == audioClips.end())
+		std::lock_guard<std::mutex> amlock(audioVar::mutex);
+		auto it = audioVar::audioClips.find(_hashID);
+		if (it == audioVar::audioClips.end())
 		{
 			exceptions::fatalError("Trying to access non existent audio clip!");
 		}
