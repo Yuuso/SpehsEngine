@@ -148,9 +148,6 @@ namespace spehs
 
 			if (neighbours[n])
 			{
-				//Calculate the sum of the angles
-				float sum = 0.0f;
-
 				int neighbourPointIndex = -1;
 				for (unsigned np = 0; np < 3; np++)
 				{//For each of the neighbour's points
