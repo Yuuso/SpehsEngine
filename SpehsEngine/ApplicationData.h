@@ -31,8 +31,6 @@ namespace spehs
 		int maxFps;
 		int vSync;
 		int MSAA;
-		//Audio
-		float masterVolume;
 		//Other
 		int consoleTextSize;
 		int consoleTextAlpha;
@@ -44,16 +42,21 @@ namespace spehs
 		//Window dimensions
 		void setWindowWidth(int w){ windowWidth = w; windowWidthHalf = w / 2; }
 		void setWindowHeight(int h){ windowHeight = h; windowHeightHalf = h / 2; }
-		int getWindowWidth(){ return windowWidth; }
-		int getWindowHeight(){ return windowHeight; }
-		int getWindowWidthHalf(){ return windowWidthHalf; }
-		int getWindowHeightHalf(){ return windowHeightHalf; }
+		int getWindowWidth() const { return windowWidth; }
+		int getWindowHeight() const { return windowHeight; }
+		int getWindowWidthHalf() const { return windowWidthHalf; }
+		int getWindowHeightHalf() const { return windowHeightHalf; }
+
+		//Master volume
+		void setMasterVolume(const float amount);
+		float getMasterVolume() const { return masterVolume; }
 
 	private:
 		int windowWidth;
 		int windowHeight;
 		int windowWidthHalf;
 		int windowHeightHalf;
+		float masterVolume;
 	};
 }
 extern spehs::ApplicationData* applicationData;

@@ -1,6 +1,7 @@
 #include <algorithm>
 #include <string>
 #include "ApplicationData.h"
+#include "AudioEngine.h"
 #include "FileStream.h"
 #include "Exceptions.h"
 #include "Console.h"
@@ -180,5 +181,10 @@ namespace spehs
 			stream->close();
 			delete stream;
 		}
+	}
+	void ApplicationData::setMasterVolume(const float amount)
+	{
+		masterVolume = amount;
+		audio::AudioEngine::updateGain();
 	}
 }

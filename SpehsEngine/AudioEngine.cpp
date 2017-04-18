@@ -86,6 +86,7 @@ namespace spehs
 			{
 				delete audioVar::sourcePool[i];
 			}
+			audioVar::sourcePool.clear();
 			audioVar::device = alcGetContextsDevice(audioVar::context);
 			alcMakeContextCurrent(NULL);
 			alcDestroyContext(audioVar::context);
@@ -137,7 +138,7 @@ namespace spehs
 		void AudioEngine::setListenerGain(const float _gain)
 		{
 			audioVar::listenerGain = _gain;
-			alListenerf(AL_GAIN, _gain * applicationData->masterVolume);
+			alListenerf(AL_GAIN, _gain * applicationData->getMasterVolume());
 		}
 		void AudioEngine::setPositionCorrectionFactor(const glm::vec2& _poscor)
 		{
@@ -166,7 +167,7 @@ namespace spehs
 
 		void AudioEngine::updateGain()
 		{
-			alListenerf(AL_GAIN, audioVar::listenerGain * applicationData->masterVolume);
+			alListenerf(AL_GAIN, audioVar::listenerGain * applicationData->getMasterVolume());
 		}
 
 		bool AudioEngine::getFreeSource(SoundSource* _soundSource)
@@ -208,6 +209,7 @@ namespace spehs
 			}
 
 			//If nothing else > steal it from someone with 'lower' priority
+			//TODO: Remove unnecessary sorting
 			std::sort(audioVar::sourcePool.begin(), audioVar::sourcePool.end(), [](SourceObject* _a, SourceObject* _b)
 			{
 				return _a->soundPtr->getPriority() > _b->soundPtr->getPriority();

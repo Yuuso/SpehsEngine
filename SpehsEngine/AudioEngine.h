@@ -25,14 +25,11 @@ namespace spehs
 		class AudioEngine
 		{
 			friend class SoundSource;
+			friend class ApplicationData;
 			friend class ActiveSoundSource;
 		public:
 			struct SourceObject
 			{
-				~SourceObject()
-				{
-					int a = 0;
-				}
 				ALuint sourceID = 0;
 				SoundSource* soundPtr = nullptr;
 			};
@@ -57,10 +54,9 @@ namespace spehs
 			static glm::vec2 getListenerPosition();
 			static glm::vec2 getListenerVelocity();
 			static float getListenerGain();
-
-			static void updateGain(); //Call when master volume has changed
-
+			
 		protected:			
+			static void updateGain(); //Call when master volume has changed
 			static bool getFreeSource(SoundSource* _soundSource);
 		};
 	}
