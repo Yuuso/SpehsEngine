@@ -25,6 +25,7 @@ namespace spehs
 	glm::vec4 GUIRectangle::defaultStringColor(0.0f, 0.0f, 0.0f, 1.0f);
 	glm::vec4 GUIRectangle::defaultTooltipColor(1.0f, 1.0f, 1.0f, 1.0f);
 	glm::vec4 GUIRectangle::defaultTooltipStringColor(0.0f, 0.0f, 0.0f, 1.0f);
+	spehs::TextureParameter GUIRectangle::defaultTextureParameters(spehs::TextureFiltering::Nearest, spehs::TextureFiltering::Nearest);
 
 	GUIRectangle::DisplayTexture::~DisplayTexture()
 	{
@@ -480,7 +481,7 @@ namespace spehs
 	}
 	void GUIRectangle::setDisplayTexture(const std::string& path)
 	{
-		setDisplayTexture(path, spehs::TextureParameter::defaultParameters);
+		setDisplayTexture(path, defaultTextureParameters);
 	}
 	void GUIRectangle::setTexture(const std::string& path, const TextureParameter& _parameters)
 	{

@@ -29,9 +29,9 @@ namespace spehs
 		void setRenderState(const bool _state) override;
 
 		/*These pure virtual methods MUST be implemented by the derived class*/
-		virtual void updatePosition() = 0;
-		virtual void updateScale() = 0;
 		virtual void updateMinSize() = 0;
+		virtual void updateScale() = 0;
+		virtual void updatePosition() = 0;
 
 		bool isReceivingInput() const override;
 		virtual bool open();//Open container dimension

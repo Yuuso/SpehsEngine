@@ -65,6 +65,7 @@ namespace spehs
 	public:
 		static int16_t defaultDepth;//Default depth where GUI rectangles will be arranged
 		static int16_t tooltipDepthRelative;//Default depth modifier for tooltips relative to their parent GUI rectangle
+		static spehs::TextureParameter defaultTextureParameters;
 		static glm::vec4 defaultColor;//Newly created GUI rectangles will have this color by default
 		static glm::vec4 defaultStringColor;//Newly created GUI rectangle strings will have this color by default
 		static glm::vec4 defaultTooltipColor;//Newly created tooltips will have this color by default

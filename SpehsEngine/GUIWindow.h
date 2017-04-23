@@ -27,6 +27,8 @@ namespace spehs
 		//Exit colouring
 		static glm::vec4 exitBackgroundColor;
 		static glm::vec4 exitStringColor;
+
+		enum class PositionMode { StackUp, StackDown, Spread };
 	public:
 		GUIWindow();
 		~GUIWindow() override;
@@ -49,6 +51,7 @@ namespace spehs
 		inline bool isDragging() const { return (state & GUIWINDOW_DRAGGING_BIT) != 0; }
 		inline bool isStreching() const { return (state & GUIWINDOW_STRECHING_BIT) != 0; }
 		bool isReceivingInput() const override;
+		void setPositionMode(const PositionMode mode);
 
 		//Getters
 		GUIRectangle* getHeaderPtr(){ return header; }
@@ -69,5 +72,6 @@ namespace spehs
 		bool mouseOverStrechArea();//Returns true if mouse is hovering over the strech area
 		int8_t strechState;
 		int refreshRequests;
+		PositionMode positionMode;
 	};
 }

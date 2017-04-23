@@ -337,6 +337,14 @@ namespace spehs
 		refresh();
 		return true;
 	}
+	void GUIWindow::setPositionMode(const PositionMode mode)
+	{
+		if (positionMode != mode)
+		{
+			positionMode = mode;
+			disableState(GUIRECT_MIN_SIZE_UPDATED_BIT | GUIRECT_SCALE_UPDATED_BIT | GUIRECT_POSITION_UPDATED_BIT);
+		}
+	}
 	void GUIWindow::updateMinSize()
 	{
 		//Initialize min dimensions
@@ -370,10 +378,9 @@ namespace spehs
 		exit->setHeight(header->getHeight());
 
 		////Resize and position elements
-		if (elements.size() < GUIWINDOW_BASE_ELEMENT_COUNT + 1)
+		if (elements.size() <= GUIWINDOW_BASE_ELEMENT_COUNT)
 			return;
-		bool minY = false;//Use minimal y value for every element
-		if (size.y == minSize.y)
+		if (size.y == minSize.y || positionMode == PositionMode::StackUp || positionMode == PositionMode::StackDown)
 		{//Automatically use minimal size for every element
 			for (unsigned i = GUIWINDOW_BASE_ELEMENT_COUNT; i < elements.size(); i++)
 				elements[i]->setSize(size.x, elements[i]->getMinHeight());
@@ -408,7 +415,7 @@ namespace spehs
 		strech->disableState(GUIRECT_POSITION_UPDATED_BIT);
 
 		////Reposition and update all elements
-		if (elements.size() < 4)
+		if (elements.size() <= GUIWINDOW_BASE_ELEMENT_COUNT)
 			return;
 		//Position first element
 		elements[GUIWINDOW_BASE_ELEMENT_COUNT]->setPositionLocal(0, size.y - header->getHeight() - elements[GUIWINDOW_BASE_ELEMENT_COUNT]->getHeight());

@@ -37,9 +37,6 @@
     <ClCompile Include="GUIRectangle.cpp">
       <Filter>Rendering\GUI</Filter>
     </ClCompile>
-    <ClCompile Include="GUIWindow.cpp">
-      <Filter>Rendering\GUI</Filter>
-    </ClCompile>
     <ClCompile Include="Console.cpp">
       <Filter>Core</Filter>
     </ClCompile>
@@ -197,6 +194,12 @@
     <ClCompile Include="SerializableString.cpp">
       <Filter>Filestream</Filter>
     </ClCompile>
+    <ClCompile Include="GUIRectangleGrid.cpp">
+      <Filter>Rendering\GUI\Commonly used container</Filter>
+    </ClCompile>
+    <ClCompile Include="GUIWindow.cpp">
+      <Filter>Rendering\GUI\Commonly used container</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GLSLProgram.h">
@@ -242,9 +245,6 @@
       <Filter>Core</Filter>
     </ClInclude>
     <ClInclude Include="GUIRectangle.h">
-      <Filter>Rendering\GUI</Filter>
-    </ClInclude>
-    <ClInclude Include="GUIWindow.h">
       <Filter>Rendering\GUI</Filter>
     </ClInclude>
     <ClInclude Include="Console.h">
@@ -421,6 +421,12 @@
     </ClInclude>
     <ClInclude Include="SerializableString.h">
       <Filter>Filestream</Filter>
+    </ClInclude>
+    <ClInclude Include="GUIRectangleGrid.h">
+      <Filter>Rendering\GUI\Commonly used container</Filter>
+    </ClInclude>
+    <ClInclude Include="GUIWindow.h">
+      <Filter>Rendering\GUI\Commonly used container</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

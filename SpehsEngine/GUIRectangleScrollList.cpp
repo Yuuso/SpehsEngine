@@ -10,20 +10,36 @@
 namespace spehs
 {
 	namespace ScrollButtons{ enum ScrollButtons{ up, bar, down }; }
+	int GUIRectangleScrollList::defaultScrollBarWidth = 20;
+	glm::vec4 GUIRectangleScrollList::defaultScrollElementColor(1.0f, 1.0f, 1.0f, 1.0f);
+	std::string GUIRectangleScrollList::scrollUpTexturePath;
+	std::string GUIRectangleScrollList::scrollBarTexturePath;
+	std::string GUIRectangleScrollList::scrollDownTexturePath;
 	GUIRectangleScrollList::GUIRectangleScrollList() : beginElementIndex(0), updateElementCount(0), minVisibleElementCount(4)
 	{
-		setColor(50, 50, 50);
 		disableState(GUIRECT_HOVER_COLOR_BIT);
-
 		scrollUp = new GUIRectangle(ScrollButtons::up);
 		scrollBar = new GUIRectangle(ScrollButtons::bar);
 		scrollDown = new GUIRectangle(ScrollButtons::down);
+		scrollBar->setWidth(defaultScrollBarWidth);
 		scrollUp->setParent(this);
 		scrollBar->setParent(this);
 		scrollDown->setParent(this);
-		scrollUp->setString("U");
-		scrollBar->setString("B");
-		scrollDown->setString("D");
+		if (scrollUpTexturePath.size() > 0)
+			scrollUp->setTexture(scrollUpTexturePath, defaultTextureParameters);
+		else
+			scrollUp->setString("U");
+		if (scrollBarTexturePath.size() > 0)
+			scrollBar->setTexture(scrollBarTexturePath, defaultTextureParameters);
+		else
+			scrollBar->setString("B");
+		if (scrollDownTexturePath.size() > 0)
+			scrollDown->setTexture(scrollDownTexturePath, defaultTextureParameters);
+		else
+			scrollDown->setString("D");
+		scrollUp->setColor(defaultScrollElementColor);
+		scrollBar->setColor(defaultScrollElementColor);
+		scrollDown->setColor(defaultScrollElementColor);
 		scrollUp->setRenderState(false);
 		scrollBar->setRenderState(false);
 		scrollDown->setRenderState(false);
@@ -184,7 +200,7 @@ namespace spehs
 
 			//Account scroll button width into min width
 			if (invisibleElements())
-				minSize.x += SCROLL_BUTTON_WIDTH;
+				minSize.x += scrollBar->getWidth();
 		}
 		else
 		{
@@ -202,11 +218,11 @@ namespace spehs
 		if (elements.size() > updateElementCount)
 		{
 			if (size.y - updateElementCount * elementSize.y > 0)
-				scrollUp->setSize(SCROLL_BUTTON_WIDTH, elementSize.y + 1); //Topmost element has 1 excess y allocated to height
+				scrollUp->setSize(scrollBar->getWidth(), elementSize.y + 1); //Topmost element has 1 excess y allocated to height
 			else
-				scrollUp->setSize(SCROLL_BUTTON_WIDTH, elementSize.y);
-			scrollBar->setSize(SCROLL_BUTTON_WIDTH, elementSize.y);
-			scrollDown->setSize(SCROLL_BUTTON_WIDTH, elementSize.y);
+				scrollUp->setSize(scrollBar->getWidth(), elementSize.y);
+			scrollBar->setSize(scrollBar->getWidth(), elementSize.y);
+			scrollDown->setSize(scrollBar->getWidth(), elementSize.y);
 		}
 
 		//Resizing the elements
@@ -235,7 +251,7 @@ namespace spehs
 			listOnLeftSideOfMainWindow = false;
 		int _x = 0;
 		if (invisibleElements() && listOnLeftSideOfMainWindow)
-			_x = SCROLL_BUTTON_WIDTH;
+			_x = scrollBar->getWidth();
 		for (int i = beginElementIndex + updateElementCount - 1/*last*/; i >= beginElementIndex; i--)
 		{
 			if (i == beginElementIndex + updateElementCount - 1/*last*/)
@@ -249,7 +265,7 @@ namespace spehs
 		{//Relative to list position
 			float scrollButtonX = 0;
 			if (!listOnLeftSideOfMainWindow)
-				scrollButtonX = size.x - SCROLL_BUTTON_WIDTH;
+				scrollButtonX = size.x - scrollBar->getWidth();
 			scrollDown->setPositionLocal(scrollButtonX, 0);
 			scrollUp->setPositionLocal(scrollButtonX, elements[beginElementIndex]->getPositionLocal().y);
 			float barSpace = scrollUp->getYLocal() - scrollDown->getHeight() - elementSize.y;
@@ -332,7 +348,7 @@ namespace spehs
 		//Resize width if scroll bar is displayed
 		if (elements.size() > updateElementCount && checkState(GUIRECT_OPEN_BIT))
 		{//Hidden elements
-			elementSize.x -= SCROLL_BUTTON_WIDTH;
+			elementSize.x -= scrollBar->getWidth();
 			scrollUp->setRenderState(getRenderState());
 			scrollBar->setRenderState(getRenderState());
 			scrollDown->setRenderState(getRenderState());

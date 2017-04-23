@@ -33,6 +33,7 @@ namespace spehs
 					minElementSize.y = elements[i]->getMinHeight();
 			}
 			enableState(GUIRECT_MIN_SIZE_UPDATED_BIT);
+			disableState(GUIRECT_SCALE_UPDATED_BIT);
 		}
 
 		/*These pure virtual methods MUST be implemented by the derived class*/

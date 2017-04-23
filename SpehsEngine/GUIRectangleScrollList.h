@@ -1,7 +1,6 @@
 #pragma once
 #include <vector>
 #include "GUIRectangleUnisizeContainer.h"
-#define SCROLL_BUTTON_WIDTH 20
 #define SCROLLBAR_CLICK_THRESHOLD 5
 
 
@@ -14,6 +13,12 @@ namespace spehs
 	*/
 	class GUIRectangleScrollList : public GUIRectangleUnisizeContainer
 	{
+	public:
+		static int defaultScrollBarWidth;
+		static std::string scrollUpTexturePath;
+		static std::string scrollBarTexturePath;
+		static std::string scrollDownTexturePath;
+		static glm::vec4 defaultScrollElementColor;
 	public:
 		GUIRectangleScrollList();
 		GUIRectangleScrollList(const GUIRECT_ID_TYPE id);
