@@ -133,7 +133,7 @@ namespace spehs
 		if (minElementSize.x <= 0 || elements.empty())
 			return 0;
 		const int wCount = (getWidth() - scrollBarWidth) / minElementSize.x;
-		return std::ceil(elements.size() / wCount);
+		return std::ceil((float)elements.size() / (float)wCount);
 	}
 	int GUIRectangleGrid::getMaxScrollState()
 	{
