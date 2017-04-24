@@ -1,4 +1,5 @@
 #include <iostream>
+#include <algorithm>
 #include "inputManager.h"
 #include "Time.h"
 #include "Geometry.h"
@@ -290,7 +291,7 @@ namespace spehs
 		}
 
 		//Check exit button
-		if (getInputEnabled() && inputManager->isKeyPressed(MOUSE_BUTTON_LEFT) && exit->getMouseHover())
+		if (getInputEnabled() && inputManager->isKeyPressed(MOUSE_BUTTON_LEFT) && exit->getMouseHover() && inputManager->tryClaimMouseAvailability())
 			close();
 	}
 	void GUIWindow::visualUpdate()
@@ -349,8 +350,9 @@ namespace spehs
 	{
 		//Initialize min dimensions
 		header->updateMinSize();
+		exit->updateMinSize();
 		minSize.x = header->getMinWidth() + exit->getWidth();
-		minSize.y = header->getMinHeight();
+		minSize.y = std::max(header->getMinHeight(), exit->getMinHeight());
 
 		//Go through every element...
 		for (unsigned i = GUIWINDOW_BASE_ELEMENT_COUNT; i < elements.size(); i++)
@@ -373,27 +375,65 @@ namespace spehs
 
 		//Resize and reposition header
 		header->setWidth(size.x - exit->getWidth());
+		header->setHeight(std::max(header->getMinHeight(), exit->getMinHeight()));
 
 		//Resize exit
-		exit->setHeight(header->getHeight());
+		exit->setHeight(std::max(header->getMinHeight(), exit->getMinHeight()));
 
 		////Resize and position elements
 		if (elements.size() <= GUIWINDOW_BASE_ELEMENT_COUNT)
 			return;
 		if (size.y == minSize.y || positionMode == PositionMode::StackUp || positionMode == PositionMode::StackDown)
-		{//Automatically use minimal size for every element
+		{
+			//Determine preferred reservation total
+			float preferredReservation = 0;
 			for (unsigned i = GUIWINDOW_BASE_ELEMENT_COUNT; i < elements.size(); i++)
-				elements[i]->setSize(size.x, elements[i]->getMinHeight());
+				preferredReservation += elements[i]->getPreferredHeight() - elements[i]->getMinHeight();
+		
+			//Resize
+			const float extraHeight = size.y - minSize.y;
+			for (unsigned i = GUIWINDOW_BASE_ELEMENT_COUNT; i < elements.size(); i++)
+			{
+				const int min = elements[i]->getMinHeight();
+				const int preferred = elements[i]->getPreferredHeight();
+				if (min == preferred)
+					elements[i]->setSize(size.x, min);
+				else
+				{
+					const float reservation = preferred - min;
+					const float percentage = reservation / preferredReservation;
+					elements[i]->setSize(size.x, min + std::min(reservation, std::floor(extraHeight * percentage)));
+				}
+			}
 		}
 		else
 		{//Use scaled size for every element
-			int hAllocated(0), hElement;
-			float scalePercentage = (size.y - header->getHeight()) / float(minSize.y - header->getMinHeight());//How many % of min size should each element scale
-			for (std::vector<spehs::GUIRectangle*>::iterator i = elements.begin() + GUIWINDOW_BASE_ELEMENT_COUNT; i != elements.end() - 1; i++)
+
+			/*
+			//Determine preferred and min height
+			float preferredHeight = 0;
+			const float minHeight = minSize.y - header->getHeight();
+			for (unsigned i = GUIWINDOW_BASE_ELEMENT_COUNT; i < elements.size(); i++)
+				preferredHeight += elements[i]->getPreferredHeight();
+			//Determine something
+			const float availableHeight = size.y - header->getHeight();
+			for (unsigned i = GUIWINDOW_BASE_ELEMENT_COUNT; i < elements.size(); i++)
 			{
-				hElement = scalePercentage * (*i)->getMinHeight();
+				const float percentage = (float)elements[i]->getPreferredHeight() / preferredHeight;
+				if (int(percentage * size.y / availableHeight) < elements[i]->getMinHeight())
+				{//Percentage below minimum required!
+
+				}
+			}
+			*/
+
+			int hAllocated(0), hElement;
+			float scalePercentage = float(size.y - header->getHeight()) / float(minSize.y - header->getMinHeight());//How many % of min size should each element scale
+			for (int i = GUIWINDOW_BASE_ELEMENT_COUNT; i < (int)elements.size() - 1; i++)
+			{
+				hElement = scalePercentage * elements[i]->getMinHeight();
 				hAllocated += hElement;
-				(*i)->setSize(size.x, hElement);
+				elements[i]->setSize(size.x, hElement);
 			}
 			//Allocate excess h to last element
 			elements.back()->setSize(size.x, size.y - header->getHeight() - hAllocated);

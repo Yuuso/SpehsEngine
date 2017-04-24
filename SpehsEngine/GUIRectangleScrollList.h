@@ -37,6 +37,7 @@ namespace spehs
 		bool open() override;
 		bool close() override;
 		bool removeElement(GUIRectangle* element) override;
+		int getPreferredHeight() override;
 
 		/*Returns index to the first visible element on the element list*/
 		int getBeginElementIndex() const { return beginElementIndex; }
@@ -51,13 +52,12 @@ namespace spehs
 		bool invisibleElements() const { return elements.size() > updateElementCount; }
 		/*Scrolls the list in either direction*/
 		void scroll(int amount);
-		/*Updates update element count based on current dimensions. Element size is also updated.*/
-		virtual void updateUpdateElementCount();
 		
 		//Identity
 		GUIRectangleScrollList* getAsGUIRectangleScrollListPtr() override { return this; }
 
 	protected:
+
 		GUIRectangle* scrollUp;
 		GUIRectangle* scrollBar;
 		GUIRectangle* scrollDown;

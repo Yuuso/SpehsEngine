@@ -16,6 +16,7 @@ namespace spehs
 		void updateScale() override;
 		void updatePosition() override;
 		void scroll(const int amount);
+		int getPreferredHeight() override;
 
 	protected:
 		int getRowCount();

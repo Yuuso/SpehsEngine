@@ -87,6 +87,9 @@ namespace spehs
 				popups.erase(popups.begin());
 				updateDepths();
 			}
+
+			//Prevent mouse access outside popups
+			inputManager->tryClaimMouseAvailability();
 		}
 		else if (popupShade->getRenderState())
 		{
@@ -171,6 +174,10 @@ namespace spehs
 				}
 			}
 		}
+
+		//Claim mouse availability if mouse is hovering over a window
+		if (getMouseHoverAny())
+			inputManager->tryClaimMouseAvailability();
 
 		batchManager.endSection();
 	}

@@ -128,6 +128,10 @@ namespace spehs
 			}
 		}
 	}
+	int GUIRectangleGrid::getPreferredHeight()
+	{
+		return getMinHeight() * getRowCount();
+	}
 	int GUIRectangleGrid::getRowCount()
 	{
 		if (minElementSize.x <= 0 || elements.empty())

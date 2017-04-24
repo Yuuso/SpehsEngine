@@ -78,6 +78,8 @@ namespace spehs
 		//Managing mouse
 		void setMouseCoords(int _x, int _y);
 		bool lockMouse(const bool _value);
+		bool tryClaimMouseAvailability();
+		bool checkMouseAvailability() const;
 
 		//Managing joysticks
 		Joystick* getJoystick(GUID guid, int preferredIndex = 0);
@@ -114,6 +116,7 @@ namespace spehs
 
 		//Mouse
 		bool mouseLocked = false;
+		bool mouseAvailable = false;//This boolean indicates global mouse availability during an update cycle. Update cycles should run according to depth from top to bottom. The first source to claim the mouse availability can do so.
 		int mouseWheelDelta = 0;
 		glm::ivec2 mouseCoords;
 		glm::ivec2 mouseMovement;

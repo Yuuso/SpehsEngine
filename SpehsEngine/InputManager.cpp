@@ -48,6 +48,7 @@ namespace spehs
 
 	void InputManager::update()
 	{
+		mouseAvailable = true;
 		for (auto& it : keyMap) //foreach loop, c++11
 		{
 			previousKeyMap[it.first] = it.second;
@@ -154,6 +155,21 @@ namespace spehs
 		//	exceptions::warning("Mouse locking not supported!");
 		//	return false;
 		//}
+	}
+
+
+	bool InputManager::tryClaimMouseAvailability()
+	{
+		if (!mouseAvailable)
+			return false;
+		mouseAvailable = false;
+		return true;
+	}
+
+
+	bool InputManager::checkMouseAvailability() const
+	{
+		return mouseAvailable;
 	}
 
 

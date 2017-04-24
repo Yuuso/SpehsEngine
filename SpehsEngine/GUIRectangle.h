@@ -216,6 +216,9 @@ namespace spehs
 		virtual glm::ivec2 getMinSize(){ if (!(state & GUIRECT_MIN_SIZE_UPDATED_BIT)) updateMinSize(); return minSize; }
 		virtual int getMinWidth(){ if (!(state & GUIRECT_MIN_SIZE_UPDATED_BIT)) updateMinSize(); return minSize.x; }
 		virtual int getMinHeight(){ if (!(state & GUIRECT_MIN_SIZE_UPDATED_BIT)) updateMinSize(); return minSize.y; }
+		glm::ivec2 getPreferredSize(){ return glm::ivec2(getPreferredWidth(), getPreferredHeight()); }
+		virtual int getPreferredWidth()/*Can implement custom preferred width*/{ return getMinWidth(); }
+		virtual int getPreferredHeight()/*Can implement custom preferred height*/{ return getMinHeight(); }
 		
 		//Identity
 		virtual GUIWindow* getAsGUIWindowPtr() { return nullptr; }
