@@ -5,28 +5,29 @@
 #include "GUIRectangleTree.h"
 #include "GUIRectangle.h"
 #include "Time.h"
-#define TREE_OPEN_TIME 500
 
 namespace spehs
 {
-	GUIRectangleTree::GUIRectangleTree() : pressedLeafNodeID(0), openTreeButton(MOUSE_BUTTON_LEFT)
+	float GUIRectangleTree::defaultTreeOpenTime = 0.5f;
+	GUIRectangleTree::GUIRectangleTree() : pressedLeafNodeID(0), openTreeButton(MOUSE_BUTTON_LEFT), treeOpenTimer(0.0), treeOpenTime(defaultTreeOpenTime)
 	{
 		close();
 	}
-	GUIRectangleTree::GUIRectangleTree(const int _ID) : GUIRectangleTree()
+	GUIRectangleTree::GUIRectangleTree(const int _ID) : pressedLeafNodeID(0), openTreeButton(MOUSE_BUTTON_LEFT), treeOpenTimer(0.0), treeOpenTime(defaultTreeOpenTime)
 	{
 		setID(_ID);
+		close();
 	}
-	GUIRectangleTree::GUIRectangleTree(const std::string& str) : GUIRectangleTree()
+	GUIRectangleTree::GUIRectangleTree(const std::string& str) : pressedLeafNodeID(0), openTreeButton(MOUSE_BUTTON_LEFT), treeOpenTimer(0.0), treeOpenTime(defaultTreeOpenTime)
 	{
 		setString(str);
+		close();
 	}
 	GUIRectangleTree::~GUIRectangleTree()
 	{
 	}
 	void GUIRectangleTree::inputUpdate()
-	{//NOTE: do not use container update, tree requires special function call ordering
-		
+	{
 		pressedLeafNodeID = 0;
 		GUIRectangleContainer::inputUpdate();
 		
@@ -58,19 +59,19 @@ namespace spehs
 						der++;
 					}
 				}
-				else if (treeOpenTimer <= 0)
+				else if (treeOpenTimer <= 0.0f)
 					close();
 			}
 		}
 
-		if (checkState(GUIRECT_MOUSE_HOVER_CONTAINER_BIT))
+		if (checkState(GUIRECT_MOUSE_HOVER_CONTAINER_BIT) && isOpen())
 		{//Mouse hovering over the container
-			treeOpenTimer = TREE_OPEN_TIME;
+			treeOpenTimer = treeOpenTime;
 		}
 		else if (treeOpenTimer > 0)
 		{//If mouse is outside the container, close over time
-			treeOpenTimer -= time::getDeltaTimeAsMilliseconds();
-			if (treeOpenTimer <= 0)
+			treeOpenTimer -= time::getDeltaTimeAsSeconds();
+			if (treeOpenTimer <= 0.0f)
 				close();
 			else
 				enableState(GUIRECT_MOUSE_HOVER_CONTAINER_BIT);//Keep container hover active for the duration of open timer
@@ -144,9 +145,6 @@ namespace spehs
 	{
 		GUIRectangleContainer::addElement(element);
 		element->setRenderState(checkState(GUIRECT_OPEN_BIT) && getRenderState());
-
-		//By default, make tree to open on mouse hover when node element is added
-		openTreeButton = 0;
 	}
 	void GUIRectangleTree::addElement(const std::string& str, const GUIRECT_ID_TYPE _ID)
 	{
@@ -163,7 +161,7 @@ namespace spehs
 			getFirstGenerationParent()->closeElementsOfType<GUIRectangleTree>(this);
 
 		//Open this
-		treeOpenTimer = TREE_OPEN_TIME;
+		treeOpenTimer = treeOpenTime;
 		return true;
 	}
 	bool GUIRectangleTree::close()

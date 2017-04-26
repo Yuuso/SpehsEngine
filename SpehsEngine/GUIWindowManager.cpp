@@ -10,7 +10,8 @@
 
 namespace spehs
 {
-	GUIWindowManager::GUIWindowManager(BatchManager& _batchManager) : focusedWindow(nullptr), depthPerWindow(256), batchManager(_batchManager)
+	GUIWindowManager::GUIWindowManager(BatchManager& _batchManager) : focusedWindow(nullptr), depthPerWindow(256), batchManager(_batchManager),
+		receivingInput(false), mouseHoverAny(false), streching(false), dragging(false)
 	{
 		batchManager.beginSection();
 		popupShade = Polygon::create(Shape::BUTTON, 0, applicationData->getWindowWidth(), applicationData->getWindowHeight());
@@ -51,16 +52,29 @@ namespace spehs
 	{
 		batchManager.beginSection();
 
-		const bool focusedWindowReceivingInput(focusedWindow ? focusedWindow->isReceivingInput() : false);
+		const bool focusedWindowReceivingInput = focusedWindow ? focusedWindow->isReceivingInput() : false;
+		bool updateWindows = true;
+		receivingInput = focusedWindowReceivingInput;
+		mouseHoverAny = false;
+		streching = false;
+		dragging = false;
+
 		if (focusedWindow)
 		{
 			if (!focusedWindow->getInputEnabled() ||	//Check if focused window yielded focus internally
 				(!focusedWindow->getMouseHoverAny() &&	//Focused window is no longer under mouse 
 				!focusedWindowReceivingInput))			//Focused window does not receive input
 				focusedWindow = nullptr;
+			else
+			{
+				if (focusedWindow->isStreching())
+					streching = true;
+				if (focusedWindow->isDragging())
+					dragging = true;
+				if (focusedWindow->getMouseHoverAny())
+					mouseHoverAny = true;
+			}
 		}
-
-		bool updateWindows(true);
 
 		//Update front popup
 		if (!popups.empty())
@@ -79,7 +93,10 @@ namespace spehs
 			popups.front()->inputUpdate();
 			popups.front()->visualUpdate();
 			if (popups.front()->getMouseHoverAny())
+			{
 				updateWindows = false;
+				mouseHoverAny = true;
+			}
 			
 			if (popups.front()->checkState(GUIRECT_REMOVE_BIT))
 			{//Remove requested
@@ -120,12 +137,25 @@ namespace spehs
 					windows[i]->inputUpdate();
 					windows[i]->visualUpdate();
 
-					if ((windows[i]->checkState(GUIRECT_MOUSE_HOVER_CONTAINER_BIT) ||
-						windows[i]->checkState(GUIWINDOW_DRAGGING_BIT) ||
-						windows[i]->checkState(GUIWINDOW_STRECHING_BIT) ||
-						windows[i]->isReceivingInput()) && !focusedWindow)
-					{//First window to be under focus
+					if (windows[i]->getMouseHoverAny() && !focusedWindow)
+					{
 						focusedWindow = windows[i];
+						mouseHoverAny = true;
+					}
+					else if (windows[i]->isDragging() && !focusedWindow)
+					{
+						focusedWindow = windows[i];
+						dragging = true;
+					}
+					else if (windows[i]->isStreching() && !focusedWindow)
+					{
+						focusedWindow = windows[i];
+						streching = true;
+					}
+					else if (windows[i]->isReceivingInput() && !focusedWindow)
+					{
+						focusedWindow = windows[i];
+						receivingInput = true;
 					}
 					else if (windows[i] != focusedWindow)
 						windows[i]->disableInput();//Yield enabled input for the next in loop
@@ -249,47 +279,6 @@ namespace spehs
 		}
 		spehs::exceptions::warning("Trying to close window that is not under window manager!");
 		batchManager.endSection();
-	}
-	bool GUIWindowManager::isReceivingInput() const
-	{
-		if (!focusedWindow)
-			return false;
-		batchManager.beginSection();
-		const bool value(focusedWindow->isReceivingInput());
-		batchManager.endSection();
-		return value;
-	}
-	bool GUIWindowManager::getMouseHoverAny() const
-	{
-		batchManager.beginSection();
-		for (unsigned i = 0; i < windows.size(); i++)
-		{
-			if (windows[i]->getMouseHoverAny())
-			{
-				batchManager.endSection();
-				return true;
-			}
-		}
-		batchManager.endSection();
-		return false;
-	}
-	bool GUIWindowManager::isDragging() const
-	{
-		if (!focusedWindow)
-			return false;
-		batchManager.beginSection();
-		const bool value = focusedWindow->isDragging();
-		batchManager.endSection();
-		return value;
-	}
-	bool GUIWindowManager::isStreching() const
-	{
-		if (!focusedWindow)
-			return false;
-		batchManager.beginSection();
-		const bool value = focusedWindow->isStreching();
-		batchManager.endSection();
-		return value;
 	}
 	void GUIWindowManager::setSystemDepth(const int16_t depth)
 	{

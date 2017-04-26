@@ -22,10 +22,10 @@ namespace spehs
 		void toggleWindow(GUIWindow* window);
 		void openWindow(GUIWindow* window);
 		void closeWindow(GUIWindow* window);//Does not modify window order
-		bool isReceivingInput() const;
-		bool getMouseHoverAny() const;/// Returns true if any window is under the mouse
-		bool isDragging() const;///Returns true if a window is being dragged
-		bool isStreching() const;///Returns true if a window is being streched
+		bool isReceivingInput() const { return receivingInput; }
+		bool getMouseHoverAny() const { return mouseHoverAny; }
+		bool isDragging() const { return dragging; }
+		bool isStreching() const{ return streching; }
 		unsigned getWindowCount() const { return windows.size(); }
 		unsigned getPopupCount() const { return popups.size(); }
 		GUIWindow* back() const { return windows.back(); }
@@ -48,5 +48,9 @@ namespace spehs
 		Polygon* popupShade;
 		float popupShadeAlpha;
 		BatchManager& batchManager;
+		bool receivingInput;
+		bool mouseHoverAny;
+		bool streching;
+		bool dragging;
 	};
 }
