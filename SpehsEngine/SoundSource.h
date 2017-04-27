@@ -56,6 +56,7 @@ namespace spehs
 			bool getLooping(){ return loop; }
 			unsigned int getPriority(){ return priority; }
 			bool getRelative(){ return relativeToSource; }
+			size_t getSoundHash() const { return sound.first; }
 
 			bool soundQueued();
 

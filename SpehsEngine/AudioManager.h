@@ -71,7 +71,7 @@ namespace spehs
 		static void init();
 		static void uninit();
 		
-		//Check if sound loading is ready, returns 0 is not and buffer ID if yes, if sound doesn't exist gives a warning
+		//Check if sound loading is ready. Returns 0 if not ready. Returns buffer ID if ready. If sound doesn't exist gives a warning.
 		static ALuint isReady(const size_t& _hashID);
 
 		//Starts loading in another thread
