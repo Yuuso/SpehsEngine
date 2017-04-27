@@ -22,7 +22,7 @@ namespace spehs
 	namespace audio
 	{
 		SoundSource::SoundSource() : pitch(1.0f), gain(1.0f), maxGain(1.0f), minGain(0.0f), loop(false), source(nullptr), relativeToSource(true),
-			gainAutomationTimer(0.0f), fadeToPause(false), fadeToStop(false), fadeIn(false), playQueued(false)
+			gainAutomationTimer(0.0f), fadeToPause(false), fadeToStop(false), fadeIn(false), playQueued(false), sound(0, 0)
 		{
 		}
 		SoundSource::~SoundSource()
