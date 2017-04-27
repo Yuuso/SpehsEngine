@@ -51,7 +51,7 @@ namespace spehs
 			alSourcei(source->sourceID, AL_SOURCE_RELATIVE, relativeToSource);
 			checkOpenALErrors(__FILE__, __LINE__);
 
-			if (sound.second != 0)
+			if (sound.second != 0 && !isPlaying())
 				alSourcei(source->sourceID, AL_BUFFER, sound.second);
 			checkOpenALErrors(__FILE__, __LINE__);
 		}
