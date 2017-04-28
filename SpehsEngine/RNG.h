@@ -150,7 +150,8 @@ namespace spehs
 		bool weightedCoin(const double _trueProbability = 0.5);
 		unsigned dice(const unsigned _sides);
 		unsigned weightedDice(const std::initializer_list<double> _propabilities);
-		//todo: circle, square...
+		glm::vec2 circle(const float _radius = 1.0f);
+		glm::vec2 square(const float _side = 1.0f);
 
 		
 		//Pseudo random number generator class
