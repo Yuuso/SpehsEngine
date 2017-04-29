@@ -103,6 +103,7 @@
     <ClCompile Include="GUIRectangleColumn.cpp" />
     <ClCompile Include="GUIRectangleGrid.cpp" />
     <ClCompile Include="KeyboardRecorder.cpp" />
+    <ClCompile Include="Mathematics.cpp" />
     <ClCompile Include="OS.cpp" />
     <ClCompile Include="Serializable.cpp" />
     <ClCompile Include="SerializableDirectory.cpp" />

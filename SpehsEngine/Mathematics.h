@@ -1,10 +1,11 @@
-
 #pragma once
-
-#include "Geometry.h"
-#include "Console.h"
-
 #include <glm/vec2.hpp>
+#ifndef PI
+#define PI 3.14159265359f
+#endif
+#ifndef TWO_PI
+#define TWO_PI 6.28318530718f
+#endif
 
 
 
@@ -21,7 +22,7 @@ namespace spehs
 	template <typename type>
 	type bilerp(const glm::vec2& _x, const glm::vec2& _p1, const glm::vec2& _p2, const glm::vec2& _p3, const glm::vec2& _p4, const type _v1, const type _v2, const type _v3, const type _v4)
 	{
-		spehs::console::error("Don't use this stupid algorithm...");
+		//spehs::console::error("Don't use this stupid algorithm...");
 		return;
 
 		//glm::vec2 UV;
@@ -67,4 +68,6 @@ namespace spehs
 
 		//return _v1 + (_v2 - _v1) * UV.x + (_v4 - _v1) * UV.y + (_v1 - _v2 + _v3 - _v4) * UV.x *UV.y;
 	}
+
+	int factorial(int number);
 }

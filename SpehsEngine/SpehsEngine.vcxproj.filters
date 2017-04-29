@@ -200,6 +200,9 @@
     <ClCompile Include="GUIWindow.cpp">
       <Filter>Rendering\GUI\Commonly used container</Filter>
     </ClCompile>
+    <ClCompile Include="Mathematics.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GLSLProgram.h">
