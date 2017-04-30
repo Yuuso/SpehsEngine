@@ -3,6 +3,8 @@
 #include <string>
 #include <stdint.h>
 #include <fstream>
+#include <functional>
+#define APPLICATION_DATA_FILENAME "ApplicationData.ini"
 
 
 /*Purpose of this class:
@@ -18,45 +20,41 @@ namespace spehs
 	class ApplicationData
 	{
 	public:
-		ApplicationData();
-		virtual ~ApplicationData();
-		///Writes application data to a txt file. If a stream pointer is given, writes to that stream instead.
-		virtual void write(std::ofstream* stream = nullptr);
-		///Writes application data to a txt file. If a stream pointer is given, reads from that stream instead.
-		virtual void read(std::ifstream* stream = nullptr);
-
-		//Video
-		int windowMode;// 0 windowed / 1 fullscreen
-		int showFps;
-		int maxFps;
-		int vSync;
-		int MSAA;
-		//Other
-		int consoleTextSize;
-		int consoleTextAlpha;
-		int GUITextSize;
-		std::string GUITextFontPath;
-		std::string dataDirectory;//Specified directory where data should be stored. Contains the forward slash suffix
-		std::string screenshotDirectory;
+		/**Writes application data to a file*/
+		static bool write();
+		/**Reads application data from a file*/
+		static bool read();
+		/**Set a callback function to call when writing to a stream. Set before spehs engine initialization. */
+		static void setWriteCallback(const std::function<void(std::ofstream&)> callbackFunction);
+		/**Set a callback function to call when reading from a stream. Set before spehs engine initialization. */
+		static void setReadCallback(const std::function<void(std::ifstream&)> callbackFunction);
 
 		//Window dimensions
-		void setWindowWidth(int w){ windowWidth = w; windowWidthHalf = w / 2; }
-		void setWindowHeight(int h){ windowHeight = h; windowHeightHalf = h / 2; }
-		int getWindowWidth() const { return windowWidth; }
-		int getWindowHeight() const { return windowHeight; }
-		int getWindowWidthHalf() const { return windowWidthHalf; }
-		int getWindowHeightHalf() const { return windowHeightHalf; }
+		static void setWindowWidth(int w);
+		static void setWindowHeight(int h);
+		static int getWindowWidth();
+		static int getWindowHeight();
+		static int getWindowWidthHalf();
+		static int getWindowHeightHalf();
 
 		//Master volume
-		void setMasterVolume(const float amount);
-		float getMasterVolume() const { return masterVolume; }
+		static void setMasterVolume(const float amount);
+		static float getMasterVolume();
 
-	private:
-		int windowWidth;
-		int windowHeight;
-		int windowWidthHalf;
-		int windowHeightHalf;
-		float masterVolume;
+		//Video
+		static int windowMode;// 0 windowed / 1 fullscreen
+		static int showFps;
+		static int maxFps;
+		static int vSync;
+		static int MSAA;
+
+		//Other
+		static int consoleTextSize;
+		static float consoleTextAlpha;
+		static int GUITextSize;
+		static std::string GUITextFontPath;
+		static std::string dataDirectory;//Specified directory where data should be stored. Contains the forward slash suffix
+		static std::string screenshotDirectory;
+
 	};
 }
-extern spehs::ApplicationData* applicationData;

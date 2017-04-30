@@ -118,14 +118,14 @@ namespace spehs
 				std::cout << "\nInitialization failed! Failed to create fpsCounter!";
 				return false;
 			}
-			fpsCounter->setFont(applicationData->GUITextFontPath, applicationData->consoleTextSize);
+			fpsCounter->setFont(spehs::ApplicationData::GUITextFontPath, spehs::ApplicationData::consoleTextSize);
 			fpsCounter->setColor(glm::vec4(1.0f, 0.3f, 0.0f, 0.85f));
 			fpsCounter->setString("FPS:0123456789\nDraw calls:0123456789\nVertices:0123456789");
-			fpsCounter->setPosition(glm::vec2(5, applicationData->getWindowHeight() - fpsCounter->getTextHeight()));
+			fpsCounter->setPosition(glm::vec2(5, spehs::ApplicationData::getWindowHeight() - fpsCounter->getTextHeight()));
 
 			consoleText = consoleBatchManager->createText();
-			consoleText->setFont(applicationData->GUITextFontPath, applicationData->consoleTextSize);
-			consoleText->setColor(glm::vec4(1.0f, 0.6f, 0.0f, applicationData->consoleTextAlpha / 255.0f));
+			consoleText->setFont(spehs::ApplicationData::GUITextFontPath, spehs::ApplicationData::consoleTextSize);
+			consoleText->setColor(glm::vec4(1.0f, 0.6f, 0.0f, spehs::ApplicationData::consoleTextAlpha));
 			consoleText->setPosition(glm::vec2(CONSOLE_BORDER, CONSOLE_BORDER));
 			consoleText->setString("><");
 			consoleText->setRenderState(checkState(CONSOLE_OPEN_BIT));
@@ -236,8 +236,8 @@ namespace spehs
 					lines.erase(lines.begin());
 				}
 				lines.push_back(consoleBatchManager->createText(planeDepth));
-				lines.back()->setFont(applicationData->GUITextFontPath, applicationData->consoleTextSize);
-				lines.back()->setColor(glm::vec4(newLines[i].second, applicationData->consoleTextAlpha / 255.0f));
+				lines.back()->setFont(spehs::ApplicationData::GUITextFontPath, spehs::ApplicationData::consoleTextSize);
+				lines.back()->setColor(glm::vec4(newLines[i].second, spehs::ApplicationData::consoleTextAlpha));
 				lines.back()->setString(&newLines[i].first[0], newLines[i].first.size());
 				visibility = 1.0f;
 				for (unsigned i = 0; i < lines.size(); i++)
@@ -251,13 +251,13 @@ namespace spehs
 			if (visibility > 0.0f)
 			{
 				//Update console font size if needed
-				if (previousFontSize != applicationData->consoleTextSize)
+				if (previousFontSize != spehs::ApplicationData::consoleTextSize)
 				{
-					fpsCounter->setFont(applicationData->GUITextFontPath, applicationData->consoleTextSize);
-					consoleText->setFont(applicationData->GUITextFontPath, applicationData->consoleTextSize);
+					fpsCounter->setFont(spehs::ApplicationData::GUITextFontPath, spehs::ApplicationData::consoleTextSize);
+					consoleText->setFont(spehs::ApplicationData::GUITextFontPath, spehs::ApplicationData::consoleTextSize);
 					for (unsigned i = 0; i < lines.size(); i++)
-						lines[i]->setFont(applicationData->GUITextFontPath, applicationData->consoleTextSize);
-					previousFontSize = applicationData->consoleTextSize;
+						lines[i]->setFont(spehs::ApplicationData::GUITextFontPath, spehs::ApplicationData::consoleTextSize);
+					previousFontSize = spehs::ApplicationData::consoleTextSize;
 
 				}
 
@@ -451,7 +451,7 @@ namespace spehs
 				return;
 			}
 
-			if (applicationData->showFps)
+			if (spehs::ApplicationData::showFps)
 			{
 				fpsCounter->setRenderState(true);
 
@@ -459,7 +459,7 @@ namespace spehs
 				if (++frameCounter >= FPS_REFRESH_RATE)
 				{
 					fpsCounter->setString("FPS: " + std::to_string(int(time::getFPS())) + "\nDraw calls: " + std::to_string(drawCalls) + "\nVertices: " + std::to_string(vertexDrawCount) + "\n" + customDebugText);
-					fpsCounter->setPosition(glm::vec2(CONSOLE_BORDER, applicationData->getWindowHeight() - fpsCounter->getTextHeight()));
+					fpsCounter->setPosition(glm::vec2(CONSOLE_BORDER, spehs::ApplicationData::getWindowHeight() - fpsCounter->getTextHeight()));
 					frameCounter = 0;
 				}
 			}
@@ -473,10 +473,10 @@ namespace spehs
 
 			//Render lines
 			for (unsigned i = 0; i < lines.size(); i++)
-				lines[i]->setAlpha(visibility * (applicationData->consoleTextAlpha / 255.0f));
+				lines[i]->setAlpha(visibility * (spehs::ApplicationData::consoleTextAlpha));
 
 			//Console text
-			consoleText->setAlpha(visibility * (applicationData->consoleTextAlpha / 255.0f));
+			consoleText->setAlpha(visibility * (spehs::ApplicationData::consoleTextAlpha));
 
 			//Console background shade
 			if (consoleText->getRenderState() || (lines.size() > 0 && lines.front()->getRenderState()))

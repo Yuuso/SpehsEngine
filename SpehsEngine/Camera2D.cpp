@@ -12,11 +12,11 @@ namespace spehs
 {
 	Camera2D::Camera2D() : zoomSpeed(50.0f), scale(1.0f), orthoMatrix(1.0f), cameraMatrix(1.0f), position(0.0f, 0.0f), previousPosition(0.0f, 0.0f), rotation(0.0f), up(0.0f, 1.0f, 0.0f, 1.0f)
 	{
-		orthoMatrix = glm::ortho(0.0f, (float) applicationData->getWindowWidth(), 0.0f, (float) applicationData->getWindowHeight());
+		orthoMatrix = glm::ortho(0.0f, (float) spehs::ApplicationData::getWindowWidth(), 0.0f, (float) spehs::ApplicationData::getWindowHeight());
 		staticMatrix = orthoMatrix;
 
 		//Camera translation
-		glm::vec3 translation(applicationData->getWindowWidth()*0.5f, applicationData->getWindowHeight()*0.5f, 0);
+		glm::vec3 translation(spehs::ApplicationData::getWindowWidth()*0.5f, spehs::ApplicationData::getWindowHeight()*0.5f, 0);
 		cameraMatrix = glm::translate(orthoMatrix, translation);
 
 

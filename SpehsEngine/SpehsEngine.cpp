@@ -29,7 +29,6 @@ std::string buildVersion;
 spehs::Window* mainWindow = nullptr;
 namespace spehs
 {
-	bool deallocateApplicationData;
 	extern void initText();
 	extern void uninitText();
 	namespace rng
@@ -37,8 +36,11 @@ namespace spehs
 		extern void initialize();
 	}
 
-	int initialize(std::string _windowName, ApplicationData* customApplicationDataInstance)
+	int initialize(std::string _windowName)
 	{
+		//ApplicationData
+		spehs::ApplicationData::read();
+
 		if (SDL_Init(SDL_INIT_VIDEO) < 0)
 		{
 			exceptions::fatalError("\nVideo initialization failed!");
@@ -48,20 +50,7 @@ namespace spehs
 		SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_COMPATIBILITY);
 		SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
 		SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 2);
-
-		//ApplicationData
-		if (customApplicationDataInstance)
-		{//Set application data pointer to custom instance
-			applicationData = customApplicationDataInstance;
-			deallocateApplicationData = false;
-		}
-		else
-		{//Create a basic application data instance
-			applicationData = new ApplicationData();
-			deallocateApplicationData = true;
-		}
-		applicationData->read();//Load application data
-
+		
 		SDL_GL_SetAttribute(SDL_GL_RED_SIZE, 8);
 		SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE, 8);
 		SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE, 8);
@@ -72,10 +61,10 @@ namespace spehs
 
 		//Multisampling
 		SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, 1);
-		SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, applicationData->MSAA);
+		SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, spehs::ApplicationData::MSAA);
 
 		mainWindow = new spehs::Window();
-		mainWindow->create(_windowName, applicationData->getWindowWidth(), applicationData->getWindowHeight(), applicationData->windowMode);
+		mainWindow->create(_windowName, spehs::ApplicationData::getWindowWidth(), spehs::ApplicationData::getWindowHeight(), spehs::ApplicationData::windowMode);
 
 		std::cout << "\nHardware threads: " + std::to_string(std::thread::hardware_concurrency());
 		std::cout << "\nCurrent SpehsEngine build: " << getEngineVersion() << std::endl;
@@ -110,9 +99,6 @@ namespace spehs
 
 	void uninitialize()
 	{
-		applicationData->write();
-		if (deallocateApplicationData)
-			delete applicationData;
 		inputManager->uninitialize();
 		delete inputManager;
 		delete textureManager;
@@ -122,6 +108,7 @@ namespace spehs
 		console::unitialize();
 		uninitText();
 		SDL_Quit();
+		spehs::ApplicationData::write();
 	}
 
 

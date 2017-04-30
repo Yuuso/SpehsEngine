@@ -14,13 +14,13 @@ int getAsWindowXCoordinate(float xValue)
 {
 	xValue += 1.0f;
 	xValue /= 2.0f;
-	return int(std::floor(xValue * applicationData->getWindowWidth()));
+	return int(std::floor(xValue * spehs::ApplicationData::getWindowWidth()));
 }
 int getAsWindowYCoordinate(float yValue)
 {
 	yValue -= 1.0f;
 	yValue /= -2.0f;
-	return int(std::floor(yValue * applicationData->getWindowHeight()));
+	return int(std::floor(yValue * spehs::ApplicationData::getWindowHeight()));
 }
 std::pair<float, float> getAsGLCoordinates(int xValue, int yValue)
 {
@@ -28,21 +28,21 @@ std::pair<float, float> getAsGLCoordinates(int xValue, int yValue)
 }
 float getAsGLXCoordinate(int xValue)
 {
-	float returnValue = float(xValue) / applicationData->getWindowWidth();
+	float returnValue = float(xValue) / spehs::ApplicationData::getWindowWidth();
 	returnValue *= 2.0f;
 	return --returnValue;
 }
 float getAsGLYCoordinate(int yValue)
 {
-	float returnValue = float(yValue) / applicationData->getWindowHeight();
+	float returnValue = float(yValue) / spehs::ApplicationData::getWindowHeight();
 	returnValue *= -2.0f;
 	return ++returnValue;
 }
 float getAsGLWidth(int widthInWindowPixels)
 {
-	return 2.0f * (float(widthInWindowPixels) / applicationData->getWindowWidth());
+	return 2.0f * (float(widthInWindowPixels) / spehs::ApplicationData::getWindowWidth());
 }
 float getAsGLHeight(int heightInWindowPixels)
 {
-	return 2.0f * (float(heightInWindowPixels) / applicationData->getWindowHeight());
+	return 2.0f * (float(heightInWindowPixels) / spehs::ApplicationData::getWindowHeight());
 }

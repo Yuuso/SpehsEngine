@@ -283,7 +283,7 @@ namespace spehs
 
 		//Position visible elements
 		bool listOnLeftSideOfMainWindow = true;
-		if (getXGlobal() + size.x / 2.0f > applicationData->getWindowWidthHalf())
+		if (getXGlobal() + size.x / 2.0f > spehs::ApplicationData::getWindowWidthHalf())
 			listOnLeftSideOfMainWindow = false;
 		int _x = 0;
 		if (invisibleElements() && listOnLeftSideOfMainWindow)

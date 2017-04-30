@@ -20,7 +20,7 @@ namespace spehs
 		createText();
 		typeCharacter = spehs::Text::create("|", getDepth() + 1);
 		typeCharacter->setRenderState(getRenderState() && isReceivingInput());
-		typeCharacter->setFont(applicationData->GUITextFontPath, applicationData->GUITextSize);
+		typeCharacter->setFont(spehs::ApplicationData::GUITextFontPath, spehs::ApplicationData::GUITextSize);
 		typeCharacter->setColor(text->getColor());
 		onEditorValueChange();
 	}
@@ -58,7 +58,7 @@ namespace spehs
 	void GUIStringEditor::setStringSizeRelative(const int relativeSize)
 	{
 		GUIRectangle::setStringSizeRelative(relativeSize);
-		typeCharacter->setFontSize(applicationData->GUITextSize + relativeSize);
+		typeCharacter->setFontSize(spehs::ApplicationData::GUITextSize + relativeSize);
 	}
 	void GUIStringEditor::setStringColor(const glm::vec4& col)
 	{
@@ -147,7 +147,7 @@ namespace spehs
 			if (!text)
 			{
 				text = Text::create(getDepth() + 2);
-				text->setFont(applicationData->GUITextFontPath, applicationData->GUITextSize);
+				text->setFont(spehs::ApplicationData::GUITextFontPath, spehs::ApplicationData::GUITextSize);
 			}
 			text->setString(defaultString);
 		}

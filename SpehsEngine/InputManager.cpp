@@ -85,7 +85,7 @@ namespace spehs
 				releaseKey(mEvent.key.keysym.sym);
 				break;
 			case SDL_MOUSEMOTION:
-				setMouseCoords(int(mEvent.motion.x), int(applicationData->getWindowHeight() - mEvent.motion.y));
+				setMouseCoords(int(mEvent.motion.x), int(spehs::ApplicationData::getWindowHeight() - mEvent.motion.y));
 				break;
 			case SDL_MOUSEBUTTONDOWN:
 				pressKey(mEvent.button.button);
@@ -113,7 +113,7 @@ namespace spehs
 		if (mouseLocked)
 		{
 			//If mouse is locked, keep mouse in the center of the screen without creating a mousemotion event
-			//SDL_WarpMouseInWindow(mainWindow->sdlWindow, applicationData->getWindowWidthHalf(), applicationData->getWindowHeightHalf());
+			//SDL_WarpMouseInWindow(mainWindow->sdlWindow, spehs::ApplicationData::getWindowWidthHalf(), spehs::ApplicationData::getWindowHeightHalf());
 		}
 	}
 

@@ -43,7 +43,7 @@ namespace spehs
 		header->setColor(headerBackgroundColor);
 		header->setStringColor(headerStringColor);
 		header->setJustification(GUIRECT_TEXT_JUSTIFICATION_LEFT_BIT);
-		header->setStringSize(applicationData->GUITextSize + 2);
+		header->setStringSize(spehs::ApplicationData::GUITextSize + 2);
 		header->setDepth(getDepth() + 1);
 		header->setRenderState(checkState(GUIRECT_OPEN_BIT) && getRenderState());
 		addElement(header);
@@ -102,24 +102,24 @@ namespace spehs
 			//Check docking
 			if (inputManager->getMouseX() < DOCK_BORDER)
 			{//Dock left
-				setSize(minSize.x, applicationData->getWindowHeight() - upBorder - downBorder - header->getHeight() - 2 * strechWidth);
+				setSize(minSize.x, spehs::ApplicationData::getWindowHeight() - upBorder - downBorder - header->getHeight() - 2 * strechWidth);
 				setPositionLocal(strechWidth + leftBorder, strechWidth + downBorder);
 			}
-			else if (inputManager->getMouseX() > applicationData->getWindowWidth() - DOCK_BORDER)
+			else if (inputManager->getMouseX() > spehs::ApplicationData::getWindowWidth() - DOCK_BORDER)
 			{//Dock right
-				setSize(minSize.x, applicationData->getWindowHeight() - upBorder - downBorder - header->getWidth() - 2 * strechWidth);
-				setPositionLocal(applicationData->getWindowWidth() - size.x - strechWidth - rightBorder, strechWidth + downBorder);
+				setSize(minSize.x, spehs::ApplicationData::getWindowHeight() - upBorder - downBorder - header->getWidth() - 2 * strechWidth);
+				setPositionLocal(spehs::ApplicationData::getWindowWidth() - size.x - strechWidth - rightBorder, strechWidth + downBorder);
 			}
 
 			if (inputManager->getMouseY() < DOCK_BORDER)
 			{//Dock down
-				setSize(applicationData->getWindowWidth() - 2 * strechWidth - leftBorder - rightBorder, minSize.y);
+				setSize(spehs::ApplicationData::getWindowWidth() - 2 * strechWidth - leftBorder - rightBorder, minSize.y);
 				setPositionLocal(strechWidth + leftBorder, strechWidth + downBorder);
 			}
-			else if (inputManager->getMouseY() > applicationData->getWindowHeight() - DOCK_BORDER)
+			else if (inputManager->getMouseY() > spehs::ApplicationData::getWindowHeight() - DOCK_BORDER)
 			{//Dock up
-				setSize(applicationData->getWindowWidth() - 2 * strechWidth - leftBorder - rightBorder, minSize.y);
-				setPositionLocal(strechWidth + leftBorder, applicationData->getWindowHeight() - header->getHeight() - strechWidth - size.y - upBorder);
+				setSize(spehs::ApplicationData::getWindowWidth() - 2 * strechWidth - leftBorder - rightBorder, minSize.y);
+				setPositionLocal(strechWidth + leftBorder, spehs::ApplicationData::getWindowHeight() - header->getHeight() - strechWidth - size.y - upBorder);
 			}
 #endif
 			enableState(GUIWINDOW_LIMIT_WITHIN_MAIN_WINDOW_BIT);
@@ -266,7 +266,7 @@ namespace spehs
 				{//Set to full window
 
 					//Set size according to application data's window dimensions
-					setSize(applicationData->getWindowWidth() - rightBorder - leftBorder, applicationData->getWindowHeight() - upBorder - downBorder - header->getHeight());
+					setSize(spehs::ApplicationData::getWindowWidth() - rightBorder - leftBorder, spehs::ApplicationData::getWindowHeight() - upBorder - downBorder - header->getHeight());
 					setPositionLocal(0, 0);
 
 					enableState(GUIWINDOW_LIMIT_WITHIN_MAIN_WINDOW_BIT);
@@ -468,29 +468,29 @@ namespace spehs
 	{//Prevent window going out of application window
 
 		//Limit size
-		if (size.y + header->getHeight() > applicationData->getWindowHeight() - upBorder - downBorder)
+		if (size.y + header->getHeight() > spehs::ApplicationData::getWindowHeight() - upBorder - downBorder)
 		{//Window too high
-			setSize(size.x, applicationData->getWindowHeight() - header->getHeight() - upBorder - downBorder);
+			setSize(size.x, spehs::ApplicationData::getWindowHeight() - header->getHeight() - upBorder - downBorder);
 		}
-		if (size.x > applicationData->getWindowWidth() - leftBorder - rightBorder)
+		if (size.x > spehs::ApplicationData::getWindowWidth() - leftBorder - rightBorder)
 		{//Window too wide
-			setSize(applicationData->getWindowWidth() - leftBorder - rightBorder, size.y);
+			setSize(spehs::ApplicationData::getWindowWidth() - leftBorder - rightBorder, size.y);
 		}
 
 		//////Limit position
 		////Y
-		if (getYGlobal() > applicationData->getWindowHeight() - size.y - upBorder - header->getHeight())
+		if (getYGlobal() > spehs::ApplicationData::getWindowHeight() - size.y - upBorder - header->getHeight())
 		{//Window too up
-			setPositionGlobal(position.x, applicationData->getWindowHeight() - size.y - upBorder - header->getHeight());
+			setPositionGlobal(position.x, spehs::ApplicationData::getWindowHeight() - size.y - upBorder - header->getHeight());
 		}
 		else if (getYGlobal() < downBorder)
 		{//Window too down
 			setPositionGlobal(position.x, downBorder);
 		}
 		////X
-		if (getXGlobal() > applicationData->getWindowWidth() - size.x - rightBorder)
+		if (getXGlobal() > spehs::ApplicationData::getWindowWidth() - size.x - rightBorder)
 		{//Window too right
-			setPositionGlobal(applicationData->getWindowWidth() - size.x - rightBorder, position.y);
+			setPositionGlobal(spehs::ApplicationData::getWindowWidth() - size.x - rightBorder, position.y);
 		}
 		else if (getXGlobal() < leftBorder)
 		{//Window too left

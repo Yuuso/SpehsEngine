@@ -117,10 +117,10 @@ namespace spehs
 				int _x = inputManager->getMouseX() - tooltip->getWidth(), _y = inputManager->getMouseY();
 				if (_x < 0)
 					_x = inputManager->getMouseX();
-				if (_x + tooltip->getWidth() > applicationData->getWindowWidth())
-					_x = applicationData->getWindowWidth() - tooltip->getWidth();
-				if (_y + tooltip->getHeight() > applicationData->getWindowHeight())
-					_y = applicationData->getWindowHeight() - tooltip->getHeight();
+				if (_x + tooltip->getWidth() > spehs::ApplicationData::getWindowWidth())
+					_x = spehs::ApplicationData::getWindowWidth() - tooltip->getWidth();
+				if (_y + tooltip->getHeight() > spehs::ApplicationData::getWindowHeight())
+					_y = spehs::ApplicationData::getWindowHeight() - tooltip->getHeight();
 				tooltip->setPositionGlobal(_x, _y);
 				tooltip->setRenderState(true);
 			}
@@ -367,7 +367,7 @@ namespace spehs
 		{
 			tooltip = new GUIRectangle();
 			tooltip->setStringColor(defaultTooltipStringColor);
-			tooltip->setStringSize(applicationData->GUITextSize);
+			tooltip->setStringSize(spehs::ApplicationData::GUITextSize);
 			tooltip->setColor(defaultTooltipColor);
 		}
 
@@ -409,7 +409,7 @@ namespace spehs
 	}
 	void GUIRectangle::setStringSizeRelative(const int relativeSize)
 	{
-		setStringSize(applicationData->GUITextSize + relativeSize);
+		setStringSize(spehs::ApplicationData::GUITextSize + relativeSize);
 	}
 	void GUIRectangle::setStringColor(const glm::vec3& col)
 	{
@@ -459,7 +459,7 @@ namespace spehs
 			return;
 		text = Text::create(polygon->getPlaneDepth() + 2);
 		text->setRenderState(getRenderState());
-		text->setFont(applicationData->GUITextFontPath, applicationData->GUITextSize);
+		text->setFont(spehs::ApplicationData::GUITextFontPath, spehs::ApplicationData::GUITextSize);
 		text->setColor(defaultStringColor);
 	}
 	void GUIRectangle::setDisplayTexture(const std::string& path, const TextureParameter& _parameters)
@@ -495,7 +495,7 @@ namespace spehs
 	{
 		polygon->setTextureID(_textureID);
 	}
-	void GUIRectangle::setPressCallback(std::function<void(GUIRectangle&)> callbackFunction)
+	void GUIRectangle::setPressCallback(const std::function<void(GUIRectangle&)> callbackFunction)
 	{
 		if (pressCallbackFunction)
 			*pressCallbackFunction = callbackFunction;

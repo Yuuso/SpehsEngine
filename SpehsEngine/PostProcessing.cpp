@@ -47,7 +47,7 @@ namespace spehs
 				{
 					glBindFramebuffer(GL_READ_FRAMEBUFFER, frameBufferObjectMS);
 					glBindFramebuffer(GL_DRAW_FRAMEBUFFER, frameBufferObject);
-					glBlitFramebuffer(0, 0, applicationData->getWindowWidth(), applicationData->getWindowHeight(), 0, 0, applicationData->getWindowWidth(), applicationData->getWindowHeight(), GL_COLOR_BUFFER_BIT, GL_NEAREST);
+					glBlitFramebuffer(0, 0, spehs::ApplicationData::getWindowWidth(), spehs::ApplicationData::getWindowHeight(), 0, 0, spehs::ApplicationData::getWindowWidth(), spehs::ApplicationData::getWindowHeight(), GL_COLOR_BUFFER_BIT, GL_NEAREST);
 
 					glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
@@ -89,7 +89,7 @@ namespace spehs
 					glGenTextures(1, &frameBufferObjectTextureIDMS);
 					glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, frameBufferObjectTextureIDMS);
 
-					glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, 8, GL_RGBA, applicationData->getWindowWidth(), applicationData->getWindowHeight(), GL_TRUE);
+					glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, 8, GL_RGBA, spehs::ApplicationData::getWindowWidth(), spehs::ApplicationData::getWindowHeight(), GL_TRUE);
 
 					glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, 0);
 
@@ -100,14 +100,14 @@ namespace spehs
 					//Color Buffer
 					glGenRenderbuffers(1, &colorBufferObjectMS);
 					glBindRenderbuffer(GL_RENDERBUFFER, colorBufferObjectMS);
-					glRenderbufferStorageMultisample(GL_RENDERBUFFER, 8, GL_RGBA, applicationData->getWindowWidth(), applicationData->getWindowHeight());
+					glRenderbufferStorageMultisample(GL_RENDERBUFFER, 8, GL_RGBA, spehs::ApplicationData::getWindowWidth(), spehs::ApplicationData::getWindowHeight());
 					glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_RENDERBUFFER, colorBufferObjectMS);
 					glBindRenderbuffer(GL_RENDERBUFFER, 0);
 
 					//Depth Render Buffer
 					glGenRenderbuffers(1, &renderBufferObjectMS);
 					glBindRenderbuffer(GL_RENDERBUFFER, renderBufferObjectMS);
-					glRenderbufferStorageMultisample(GL_RENDERBUFFER, 8, GL_DEPTH24_STENCIL8, applicationData->getWindowWidth(), applicationData->getWindowHeight());
+					glRenderbufferStorageMultisample(GL_RENDERBUFFER, 8, GL_DEPTH24_STENCIL8, spehs::ApplicationData::getWindowWidth(), spehs::ApplicationData::getWindowHeight());
 					glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, renderBufferObjectMS);
 					glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_STENCIL_ATTACHMENT, GL_RENDERBUFFER, renderBufferObjectMS);
 
@@ -133,7 +133,7 @@ namespace spehs
 				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
-				glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, applicationData->getWindowWidth(), applicationData->getWindowHeight(), 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+				glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, spehs::ApplicationData::getWindowWidth(), spehs::ApplicationData::getWindowHeight(), 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
 
 				glBindTexture(GL_TEXTURE_2D, 0);
 
@@ -144,7 +144,7 @@ namespace spehs
 				//Color Buffer
 				glGenRenderbuffers(1, &colorBufferObject);
 				glBindRenderbuffer(GL_RENDERBUFFER, colorBufferObject);
-				glRenderbufferStorage(GL_RENDERBUFFER, GL_RGBA8, applicationData->getWindowWidth(), applicationData->getWindowHeight());
+				glRenderbufferStorage(GL_RENDERBUFFER, GL_RGBA8, spehs::ApplicationData::getWindowWidth(), spehs::ApplicationData::getWindowHeight());
 				glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_RENDERBUFFER, colorBufferObject);
 
 				glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, frameBufferObjectTextureID, 0);
@@ -206,11 +206,11 @@ namespace spehs
 				if (usePostProcessing)
 				{
 					glBindTexture(GL_TEXTURE_2D, frameBufferObject);
-					glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, applicationData->getWindowWidth(), applicationData->getWindowHeight(), 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+					glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, spehs::ApplicationData::getWindowWidth(), spehs::ApplicationData::getWindowHeight(), 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
 					glBindTexture(GL_TEXTURE_2D, 0);
 
 					glBindRenderbuffer(GL_RENDERBUFFER, colorBufferObject);
-					glRenderbufferStorage(GL_RENDERBUFFER, GL_RGBA8, applicationData->getWindowWidth(), applicationData->getWindowHeight());
+					glRenderbufferStorage(GL_RENDERBUFFER, GL_RGBA8, spehs::ApplicationData::getWindowWidth(), spehs::ApplicationData::getWindowHeight());
 					glBindRenderbuffer(GL_RENDERBUFFER, 0);
 				}
 			}

@@ -153,7 +153,7 @@ namespace spehs
 		#include <functional>
 		guirect->setPressCallback(std::bind(&ShipEditor::methodTaking1Argument, ShipEditor::instancePtr, std::placeholders::_1));
 		*/
-		void setPressCallback(std::function<void(GUIRectangle&)> callbackFunction);
+		void setPressCallback(const std::function<void(GUIRectangle&)> callbackFunction);
 
 		////State
 		//Getters

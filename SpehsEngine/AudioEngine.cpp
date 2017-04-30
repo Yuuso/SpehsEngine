@@ -138,7 +138,7 @@ namespace spehs
 		void AudioEngine::setListenerGain(const float _gain)
 		{
 			audioVar::listenerGain = _gain;
-			alListenerf(AL_GAIN, _gain * applicationData->getMasterVolume());
+			alListenerf(AL_GAIN, _gain * spehs::ApplicationData::getMasterVolume());
 		}
 		void AudioEngine::setPositionCorrectionFactor(const glm::vec2& _poscor)
 		{
@@ -167,7 +167,7 @@ namespace spehs
 
 		void AudioEngine::updateGain()
 		{
-			alListenerf(AL_GAIN, audioVar::listenerGain * applicationData->getMasterVolume());
+			alListenerf(AL_GAIN, audioVar::listenerGain * spehs::ApplicationData::getMasterVolume());
 		}
 
 		bool AudioEngine::getFreeSource(SoundSource* _soundSource)

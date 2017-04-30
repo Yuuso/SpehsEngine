@@ -45,8 +45,8 @@ namespace spehs
 		
 		int w, h;
 		SDL_GetWindowSize(sdlWindow, &w, &h);
-		applicationData->setWindowWidth(w);
-		applicationData->setWindowHeight(h);
+		spehs::ApplicationData::setWindowWidth(w);
+		spehs::ApplicationData::setWindowHeight(h);
 
 		SDL_GLContext glContext = SDL_GL_CreateContext(sdlWindow);
 		if (glContext == nullptr)
@@ -78,7 +78,7 @@ namespace spehs
 		glEnable(GL_CULL_FACE);
 
 		//MSAA Antialiasing
-		if (applicationData->MSAA > 0)
+		if (spehs::ApplicationData::MSAA > 0)
 			glEnable(GL_MULTISAMPLE);
 		
 		checkOpenGLErrors(__FILE__, __LINE__);

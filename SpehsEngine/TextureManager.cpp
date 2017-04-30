@@ -372,7 +372,7 @@ namespace spehs
 
 	void TextureManager::takeScreenShot()
 	{
-		takeScreenShot(applicationData->screenshotDirectory);
+		takeScreenShot(spehs::ApplicationData::screenshotDirectory);
 	}
 
 	void TextureManager::takeScreenShot(std::string directory)
@@ -390,7 +390,7 @@ namespace spehs
 		std::string path = directory + "screenshot_" + string + ".png";
 
 		int screenshot;
-		screenshot = SOIL_save_screenshot(path.c_str(), SOIL_SAVE_TYPE_BMP, 0, 0, applicationData->getWindowWidth(), applicationData->getWindowHeight());
+		screenshot = SOIL_save_screenshot(path.c_str(), SOIL_SAVE_TYPE_BMP, 0, 0, spehs::ApplicationData::getWindowWidth(), spehs::ApplicationData::getWindowHeight());
 		console::log("Screenshot saved to \"" + path + "\"", glm::vec3(0.35f, 1.0f, 0.9f));
 	}
 }

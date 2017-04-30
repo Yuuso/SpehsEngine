@@ -14,7 +14,7 @@ namespace spehs
 		receivingInput(false), mouseHoverAny(false), streching(false), dragging(false)
 	{
 		batchManager.beginSection();
-		popupShade = Polygon::create(Shape::BUTTON, 0, applicationData->getWindowWidth(), applicationData->getWindowHeight());
+		popupShade = Polygon::create(Shape::BUTTON, 0, spehs::ApplicationData::getWindowWidth(), spehs::ApplicationData::getWindowHeight());
 		popupShade->setCameraMatrixState(false);
 		popupShade->setPosition(0, 0);
 		setPopupShadeColor(40, 55, 45, 80);
@@ -41,7 +41,7 @@ namespace spehs
 	{
 		batchManager.beginSection();
 		popup->setRenderState(true);
-		popup->setPositionGlobal(applicationData->getWindowWidthHalf() - popup->getWidth() * 0.5f, applicationData->getWindowHeightHalf() - popup->getHeight() * 0.5f);
+		popup->setPositionGlobal(spehs::ApplicationData::getWindowWidthHalf() - popup->getWidth() * 0.5f, spehs::ApplicationData::getWindowHeightHalf() - popup->getHeight() * 0.5f);
 		popups.push_back(popup);
 		updateDepths();
 		popup->GUIRectangleContainer::inputUpdate();

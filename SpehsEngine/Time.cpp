@@ -89,14 +89,11 @@ namespace spehs
 			}
 			FPSMutex.unlock();
 
-			if (applicationData)
+			//Limit FPS = delay return
+			if (spehs::ApplicationData::maxFps > 0)
 			{
-				//Limit FPS = delay return
-				if (applicationData->maxFps > 0)
-				{
-					if ((1000.0f / applicationData->maxFps) > deltaTime.asMilliseconds)
-						SDL_Delay(uint32_t(1000.0f / applicationData->maxFps) - deltaTime.asMilliseconds);
-				}
+				if ((1000.0f / spehs::ApplicationData::maxFps) > deltaTime.asMilliseconds)
+					SDL_Delay(uint32_t(1000.0f / spehs::ApplicationData::maxFps) - deltaTime.asMilliseconds);
 			}
 		}
 
