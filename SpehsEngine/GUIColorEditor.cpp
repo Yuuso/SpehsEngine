@@ -57,6 +57,8 @@ namespace spehs
 
 		setDepth(getDepth());
 		setRenderState(getRenderState());
+		disableState(GUIRECT_HOVER_COLOR_BIT);
+
 		onEditorValueChange();
 	}
 	GUIColorEditor::~GUIColorEditor()
@@ -217,7 +219,7 @@ namespace spehs
 	}
 	void GUIColorEditor::updateMinSize()
 	{
-		minSize.x = paletteWidth + sliderWidth + 2 * colorEditorBorder;
+		minSize.x = paletteWidth + sliderWidth + 3 * colorEditorBorder;
 		if (alphaEnabled)
 			minSize.x += colorEditorBorder + sliderWidth;
 		minSize.y = paletteWidth + 2 * colorEditorBorder;
@@ -227,16 +229,17 @@ namespace spehs
 	{
 		GUIRectangle::updateScale();
 
-		float scaleX(size.x / float(minSize.x));
-
-		int sizeX(size.x - colorEditorBorder * (alphaEnabled ? 3 : 2));
-		palette->resize(std::floor(scaleX * paletteWidth), size.y - 2 * colorEditorBorder);
-		float sliderThirdHeight(std::floor(size.y / 3.0f));
-		sliderRG->resize(std::floor(scaleX * sliderWidth), sliderThirdHeight);
-		sliderGB->resize(std::floor(scaleX * sliderWidth), sliderThirdHeight);
-		sliderBR->resize(std::floor(scaleX * sliderWidth), sliderThirdHeight);
+		const float widthForElements = alphaEnabled ? size.x - 4 * colorEditorBorder : size.x - 3 * colorEditorBorder;
+		const float widthForPalette = alphaEnabled ? widthForElements * (paletteWidth / (paletteWidth + 2 * sliderWidth)) : widthForElements * (paletteWidth / (paletteWidth + sliderWidth));
+		const float widthPerSlider = std::floor((widthForElements - widthForPalette) / (alphaEnabled ? 2.0f : 1.0f));
+		const float elementHeight = std::floor(size.y - 2 * colorEditorBorder);
+		const float sliderThirdHeight = elementHeight / 3.0f;
+		palette->resize(widthForPalette, elementHeight);
+		sliderRG->resize(widthPerSlider, sliderThirdHeight);
+		sliderGB->resize(widthPerSlider, sliderThirdHeight);
+		sliderBR->resize(widthPerSlider, sliderThirdHeight);
 		if (alphaEnabled)
-			alphaSliderBack->resize(std::floor(scaleX * sliderWidth), size.y - 2 * colorEditorBorder);
+			alphaSliderBack->resize(widthPerSlider, elementHeight);
 	}
 	void GUIColorEditor::updatePosition()
 	{
