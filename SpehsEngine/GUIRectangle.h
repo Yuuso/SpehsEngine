@@ -135,6 +135,8 @@ namespace spehs
 		//Display texture
 		void setDisplayTexture(const std::string& path, const TextureParameter& _parameters);
 		void setDisplayTexture(const std::string& path);
+		enum class DisplayTexturePositionMode { left, right, center };
+		void setDisplayTexturePositionMode(const DisplayTexturePositionMode mode){ displayTexturePositionMode = mode; disableStateRecursiveUpwards(GUIRECT_MIN_SIZE_UPDATED_BIT | GUIRECT_SCALE_UPDATED_BIT | GUIRECT_POSITION_UPDATED_BIT); }
 		//Rectangle texture
 		void setTexture(const std::string& path, const TextureParameter& _parameters);
 		void setTexture(const std::string& path);
@@ -260,6 +262,7 @@ namespace spehs
 			uint16_t height;
 		};
 		DisplayTexture* displayTexture;
+		DisplayTexturePositionMode displayTexturePositionMode;
 
 	private:
 		bool inputEnabled;

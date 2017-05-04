@@ -203,6 +203,7 @@
     <ClCompile Include="Mathematics.cpp">
       <Filter>Core</Filter>
     </ClCompile>
+    <ClCompile Include="GUIProgressBar.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GLSLProgram.h">
@@ -431,6 +432,7 @@
     <ClInclude Include="GUIWindow.h">
       <Filter>Rendering\GUI\Commonly used container</Filter>
     </ClInclude>
+    <ClInclude Include="GUIProgressBar.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Physics">

@@ -34,7 +34,8 @@ namespace spehs
 	GUIRectangle::GUIRectangle() : position(0), size(0), minSize(0),
 		state(GUIRECT_HOVER_COLOR_BIT | GUIRECT_TEXT_JUSTIFICATION_LEFT_BIT), inputEnabled(true),
 		parent(nullptr), text(nullptr), displayTexture(nullptr), tooltip(nullptr),
-		pressCallbackFunction(nullptr), pressSound(nullptr), hoverSound(nullptr)
+		pressCallbackFunction(nullptr), pressSound(nullptr), hoverSound(nullptr),
+		displayTexturePositionMode(DisplayTexturePositionMode::center)
 	{//Default constructor
 #ifdef _DEBUG
 		++guiRectangleAllocations;
@@ -219,13 +220,19 @@ namespace spehs
 
 		if (text)
 		{
-			minSize.x = text->getTextWidth() + 2 * TEXT_PREFERRED_SIZE_BORDER;
-			minSize.y = text->getTextHeight() + 2 * TEXT_PREFERRED_SIZE_BORDER;
+			minSize.x += text->getTextWidth() + 2 * TEXT_PREFERRED_SIZE_BORDER;
+			minSize.y += text->getTextHeight() + 2 * TEXT_PREFERRED_SIZE_BORDER;
 		}
+
 		if (displayTexture)
 		{
-			if (minSize.x < displayTexture->width)
-				minSize.x = displayTexture->width;
+			if (displayTexturePositionMode == DisplayTexturePositionMode::center)
+			{//Overlaps with text
+				if (minSize.x < displayTexture->width)
+					minSize.x += displayTexture->width;
+			}
+			else
+				minSize.x += displayTexture->width;//Separate from text
 			if (minSize.y < displayTexture->height)
 				minSize.y = displayTexture->height;
 		}
@@ -263,22 +270,58 @@ namespace spehs
 		polygon->setPosition(getXGlobal(), getYGlobal());
 
 		//Text position
+		float textWidth = 0.0f;
 		if (text)
 		{
-			float textX(getXGlobal());
+			textWidth = text->getTextWidth();
+			float left = getXGlobal();
+			float width = size.x;
+			if (displayTexture)
+			{
+				if (displayTexturePositionMode != DisplayTexturePositionMode::center)
+					width -= displayTexture->width;
+				if (displayTexturePositionMode == DisplayTexturePositionMode::left)
+					left += displayTexture->width;
+			}
+
+			float textX = left;
 			if (checkBit(state, GUIRECT_TEXT_JUSTIFICATION_LEFT_BIT))
+			{//LEFT
 				textX += TEXT_PREFERRED_SIZE_BORDER;
+			}
 			else if (checkBit(state, GUIRECT_TEXT_JUSTIFICATION_RIGHT_BIT))
-				textX += size.x - text->getTextWidth() - TEXT_PREFERRED_SIZE_BORDER;
+			{//RIGHT
+				textX += width - TEXT_PREFERRED_SIZE_BORDER - textWidth;
+			}
 			else
-				textX += 0.5f * (size.x - text->getTextWidth());
+			{//CENTER
+				textX += 0.5f * width - 0.5f * textWidth;
+			}
 			text->setPosition(std::round(textX), std::round(getYGlobal() + 0.5f * size.y - 0.5f * text->getTextHeight() - text->getFontDescender()));
+			textWidth += 2 * TEXT_PREFERRED_SIZE_BORDER;
 		}
 
 		//Display texture position
 		if (displayTexture)
 		{
-			displayTexture->polygon->setPosition(getXGlobal() + size.x / 2, getYGlobal() + size.y / 2);
+			switch (displayTexturePositionMode)
+			{
+			case DisplayTexturePositionMode::left:
+			{
+				const int border = std::floor((text->getX() - TEXT_PREFERRED_SIZE_BORDER - getXGlobal() - displayTexture->width) * 0.5f);
+				displayTexture->polygon->setPosition(getXGlobal() + displayTexture->width / 2 + border, getYGlobal() + size.y / 2);
+			}
+				break;
+			case DisplayTexturePositionMode::right:
+			{
+				const int border = std::floor((getXGlobal() + size.x - text->getX() - textWidth - TEXT_PREFERRED_SIZE_BORDER - displayTexture->width) * 0.5f);
+				displayTexture->polygon->setPosition(getXGlobal() + size.x - displayTexture->width / 2 - border, getYGlobal() + size.y / 2);
+			}
+				break;
+			case DisplayTexturePositionMode::center:
+				displayTexture->polygon->setPosition(getXGlobal() + size.x / 2, getYGlobal() + size.y / 2);
+				break;
+			}
 		}
 
 		enableState(GUIRECT_POSITION_UPDATED_BIT);
@@ -467,17 +510,15 @@ namespace spehs
 		if (displayTexture)
 			delete displayTexture;
 		displayTexture = new DisplayTexture();
-		displayTexture->polygon = spehs::Polygon::create(4, 0, 1, 1);
 		TextureData* texData = textureManager->getTextureData(path, _parameters);
+		displayTexture->polygon = spehs::Polygon::create(4, 0, texData->width, texData->height);
 		displayTexture->polygon->setTexture(texData);
-		displayTexture->polygon->resize(texData->width, texData->height);
 		displayTexture->polygon->setCameraMatrixState(false);
 		displayTexture->polygon->setRenderState(polygon->getRenderState());
 		displayTexture->width = texData->width;
 		displayTexture->height = texData->height;
 		displayTexture->polygon->setPlaneDepth(getDepth() + 1);
-		disableStateRecursiveUpwards(GUIRECT_POSITION_UPDATED_BIT);
-		disableStateRecursiveUpwards(GUIRECT_SCALE_UPDATED_BIT);
+		disableStateRecursiveUpwards(GUIRECT_POSITION_UPDATED_BIT | GUIRECT_SCALE_UPDATED_BIT);
 	}
 	void GUIRectangle::setDisplayTexture(const std::string& path)
 	{
