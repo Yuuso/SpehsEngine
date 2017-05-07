@@ -216,4 +216,21 @@ namespace spehs
 	{
 		return abs(((v1.x - v0.x) * (v2.y - v0.y) - (v2.x - v0.x) * (v1.y - v0.y)) / 2.0f);
 	}
+	glm::vec2 getTriangleCircumcircleCenter(const glm::vec2& A, const glm::vec2& B, const glm::vec2& C)
+	{/* https://www.easycalculation.com/analytical/circumcenter-triangle.php */
+		const glm::vec2 midAB = (A + B) * 0.5f;
+		const glm::vec2 midBC = (B + C) * 0.5f;
+		const glm::vec2 midCA = (C + A) * 0.5f;
+		const float slopeAB = (B.y - A.y) / (B.x - A.x);
+		const float slopeBC = (C.y - B.y) / (C.x - B.x);
+		const float slopeCA = (A.y - C.y) / (A.x - C.x);
+		const float perpendicularBisectorSlopeAB = -1.0f / slopeAB;
+		const float perpendicularBisectorSlopeBC = -1.0f / slopeBC;
+		const float perpendicularBisectorSlopeCA = -1.0f / slopeCA;
+
+		glm::vec2 center;
+		center.x = (-perpendicularBisectorSlopeAB * midAB.x + midAB.y + perpendicularBisectorSlopeBC * midBC.x - midBC.y) / (perpendicularBisectorSlopeBC - perpendicularBisectorSlopeAB);
+		center.y = perpendicularBisectorSlopeBC * center.x - perpendicularBisectorSlopeBC * midBC.x + midBC.y;
+		return center;
+	}
 }

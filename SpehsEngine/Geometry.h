@@ -61,4 +61,7 @@ namespace spehs
 
 	/*Get triangle area*/
 	float getTriangleArea(const glm::vec2& v0, const glm::vec2& v1, const glm::vec2& v2);
+
+	/*Get triangle circumcircle center*/
+	glm::vec2 getTriangleCircumcircleCenter(const glm::vec2& A, const glm::vec2& B, const glm::vec2& C);
 }
