@@ -169,7 +169,10 @@ namespace spehs
 		{
 			glLineWidth(lineWidth);
 		}
-		glDrawElements(drawMode, indices.size(), GL_UNSIGNED_SHORT, (GLvoid*) NULL);
+		if (drawMode == LINE_TRIANGLE)
+			glDrawElements(GL_LINES, indices.size(), GL_UNSIGNED_SHORT, (GLvoid*) NULL);
+		else
+			glDrawElements(drawMode, indices.size(), GL_UNSIGNED_SHORT, (GLvoid*) NULL);
 		glBindVertexArray(0);
 
 		checkOpenGLErrors(__FILE__, __LINE__);
@@ -297,6 +300,30 @@ namespace spehs
 				indices[index++] = ((GLushort) currentIndex);
 				indices[index++] = ((GLushort) (currentIndex + i++));
 				indices[index++] = ((GLushort) (currentIndex + i));
+			}
+			break;
+
+		case LINE_TRIANGLE:
+			if (_numVertices > 2)
+			{
+				indices.resize(indices.size() + _numVertices * 2);
+				for (unsigned i = 0; index < (numIndices + _numVertices * 2);)
+				{
+					indices[index++] = (GLushort) currentIndex;
+					indices[index++] = (GLushort) currentIndex + ++i;
+					indices[index++] = (GLushort) currentIndex + i;
+					indices[index++] = (GLushort) currentIndex + ++i;
+					indices[index++] = (GLushort) currentIndex + i++;
+					indices[index++] = (GLushort) currentIndex;
+				}
+			}
+			else
+			{
+				indices.resize(indices.size() + _numVertices);
+				for (unsigned i = numIndices; i < numIndices + _numVertices; i++)
+				{
+					indices[i] = (GLushort) currentIndex + (i - numIndices);
+				}
 			}
 			break;
 

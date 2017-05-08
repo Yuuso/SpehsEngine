@@ -49,6 +49,9 @@ namespace spehs
 		QUAD = 0x0007,
 		QUAD_STRIP = 0x0008,
 		POLYGON = 0x0009,
+
+		//Special case for drawing batched polygons with lines
+		LINE_TRIANGLE = 0x1003,
 	};
 
 	//Base class for polygon, line and point
