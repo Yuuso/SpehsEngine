@@ -100,7 +100,7 @@ namespace spehs
 		return intValue;
 	}
 
-	std::string toString(float value, int precision)
+	std::string toString(const float value, const int precision)
 	{
 #ifdef _DEBUG
 		if (precision > 6)	spehs::exceptions::unexpectedError(__FUNCTION__" precision too high! Maximum precision 6!");
@@ -116,7 +116,7 @@ namespace spehs
 		}
 	}
 
-	void arrangeIntoRows(std::string& string, int maxRowWidth)
+	void arrangeIntoRows(std::string& string, const int maxRowWidth)
 	{
 		int lastNewLineIndex(0);
 		int lastSpaceIndex(0);
@@ -151,21 +151,21 @@ namespace spehs
 	}
 
 	char hexTable[16] = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F' };
-	std::string toHexString(uint8_t integer)
+	std::string toHexString(const uint8_t integer)
 	{
 		std::string str(2, '0');
 		str[0] = hexTable[integer >> 4];
 		str[1] = hexTable[uint8_t(integer << 4) >> 4];
 		return str;
 	}
-	std::string toHexString(int8_t integer)
+	std::string toHexString(const int8_t integer)
 	{
 		std::string str(2, '0');
 		str[0] = hexTable[integer >> 4];
 		str[1] = hexTable[uint8_t(integer << 4) >> 4];
 		return str;
 	}
-	std::string toHexString(uint16_t integer)
+	std::string toHexString(const uint16_t integer)
 	{
 		std::string str(4, '0');
 		str[0] = hexTable[integer >> 12];
@@ -174,7 +174,7 @@ namespace spehs
 		str[3] = hexTable[uint16_t(integer << 12) >> 12];
 		return str;
 	}
-	std::string toHexString(int16_t integer)
+	std::string toHexString(const int16_t integer)
 	{
 		std::string str(4, '0');
 		str[0] = hexTable[integer >> 12];
@@ -183,7 +183,7 @@ namespace spehs
 		str[3] = hexTable[int16_t(integer << 12) >> 12];
 		return str;
 	}
-	std::string toHexString(uint32_t integer)
+	std::string toHexString(const uint32_t integer)
 	{
 		std::string str(8, '0');
 		str[0] = hexTable[integer >> 28];
@@ -196,7 +196,7 @@ namespace spehs
 		str[7] = hexTable[uint32_t(integer << 28) >> 28];
 		return str;
 	}
-	std::string toHexString(int32_t integer)
+	std::string toHexString(const int32_t integer)
 	{
 		std::string str(8, '0');
 		str[0] = hexTable[integer >> 28];
@@ -209,7 +209,7 @@ namespace spehs
 		str[7] = hexTable[int32_t(integer << 28) >> 28];
 		return str;
 	}
-	std::string toHexString(uint64_t integer)
+	std::string toHexString(const uint64_t integer)
 	{
 		std::string str(16, '0');
 		str[0] = hexTable[integer >> 60];
@@ -230,7 +230,7 @@ namespace spehs
 		str[15] = hexTable[(integer << 60) >> 60];
 		return str;
 	}
-	std::string toHexString(int64_t integer)
+	std::string toHexString(const int64_t integer)
 	{
 		std::string str(16, '0');
 		str[0] = hexTable[integer >> 60];
@@ -250,5 +250,15 @@ namespace spehs
 		str[14] = hexTable[(integer << 56) >> 60];
 		str[15] = hexTable[(integer << 60) >> 60];
 		return str;
+	}
+	std::string secondsToStopwatchNotation(int seconds)
+	{
+		int minutes = seconds / 60;
+		seconds -= minutes * 60;
+		int hours = minutes / 60;
+		minutes -= hours * 60;
+		return (hours < 10 ? "0" : "") + std::to_string(hours) + ":" +
+			(minutes < 10 ? "0" : "") + std::to_string(minutes) + ":" +
+			(seconds < 10 ? "0" : "") + std::to_string(seconds);
 	}
 }
