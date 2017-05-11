@@ -524,6 +524,11 @@ namespace spehs
 	{
 		setDisplayTexture(path, defaultTextureParameters);
 	}
+	void GUIRectangle::setDisplayTextureColor(const glm::vec4& color)
+	{
+		if (displayTexture)
+			displayTexture->polygon->setColor(color);
+	}
 	void GUIRectangle::setTexture(const std::string& path, const TextureParameter& _parameters)
 	{
 		polygon->setTexture(textureManager->getTextureData(path, _parameters));
