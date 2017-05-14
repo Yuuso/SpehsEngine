@@ -199,7 +199,7 @@ namespace spehs
 	void GUIColorEditor::visualUpdate()
 	{
 		GUIRectangle::visualUpdate();
-		if (getMouseHoverAny() && paletteOnHold)
+		if (inputManager->mouseCollision(palette->getX(), palette->getX() + palette->getWidth(), palette->getY() + palette->getHeight(), palette->getY()) && paletteOnHold)
 		{
 			preview->setRenderState(getRenderState());
 			preview->setPosition(inputManager->getMouseCoords());
