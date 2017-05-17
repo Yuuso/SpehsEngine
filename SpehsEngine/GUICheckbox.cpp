@@ -103,7 +103,7 @@ namespace spehs
 			if (checkBit(state, GUIRECT_TEXT_JUSTIFICATION_LEFT_BIT))
 				textX += CHECKBOX_BORDER;
 			else if (checkBit(state, GUIRECT_TEXT_JUSTIFICATION_RIGHT_BIT))
-				textX += size.x - size.y - CHECKBOX_BORDER - text->getTextWidth() - TEXT_PREFERRED_SIZE_BORDER;
+				textX += size.x - size.y - CHECKBOX_BORDER - text->getTextWidth() - borderWidth;
 			else
 				textX += 0.5f *(size.x - size.y - CHECKBOX_BORDER - text->getTextWidth());
 			text->setPosition(std::round(textX), std::round(getYGlobal() + 0.5f * size.y - 0.5f * text->getTextHeight() - text->getFontDescender()));

@@ -35,7 +35,8 @@ namespace spehs
 		state(GUIRECT_HOVER_COLOR_BIT | GUIRECT_TEXT_JUSTIFICATION_LEFT_BIT), inputEnabled(true),
 		parent(nullptr), text(nullptr), displayTexture(nullptr), tooltip(nullptr),
 		pressCallbackFunction(nullptr), pressSound(nullptr), hoverSound(nullptr),
-		displayTexturePositionMode(DisplayTexturePositionMode::center)
+		displayTexturePositionMode(DisplayTexturePositionMode::center),
+		borderWidth(2)
 	{//Default constructor
 #ifdef _DEBUG
 		++guiRectangleAllocations;
@@ -217,15 +218,15 @@ namespace spehs
 	{
 		minSize.x = 0;
 		minSize.y = 0;
-
+		
 		if (text)
-		{
-			minSize.x += text->getTextWidth() + 2 * TEXT_PREFERRED_SIZE_BORDER;
-			minSize.y += text->getTextHeight() + 2 * TEXT_PREFERRED_SIZE_BORDER;
+		{//Text
+			minSize.x += text->getTextWidth() + 2 * borderWidth;
+			minSize.y += text->getTextHeight() + 2 * borderWidth;
 		}
 
 		if (displayTexture)
-		{
+		{//Display texture
 			if (displayTexturePositionMode == DisplayTexturePositionMode::center)
 			{//Overlaps with text
 				if (minSize.x < displayTexture->width)
@@ -235,6 +236,12 @@ namespace spehs
 				minSize.x += displayTexture->width;//Separate from text
 			if (minSize.y < displayTexture->height)
 				minSize.y = displayTexture->height;
+		}
+
+		if (text || displayTexture)
+		{//Add border
+			minSize.x += 2 * borderWidth;
+			minSize.y += 2 * borderWidth;
 		}
 
 		if (minSize.x > size.x)
@@ -287,18 +294,18 @@ namespace spehs
 			float textX = left;
 			if (checkBit(state, GUIRECT_TEXT_JUSTIFICATION_LEFT_BIT))
 			{//LEFT
-				textX += TEXT_PREFERRED_SIZE_BORDER;
+				textX += borderWidth;
 			}
 			else if (checkBit(state, GUIRECT_TEXT_JUSTIFICATION_RIGHT_BIT))
 			{//RIGHT
-				textX += width - TEXT_PREFERRED_SIZE_BORDER - textWidth;
+				textX += width - borderWidth - textWidth;
 			}
 			else
 			{//CENTER
 				textX += 0.5f * width - 0.5f * textWidth;
 			}
 			text->setPosition(std::round(textX), std::round(getYGlobal() + 0.5f * size.y - 0.5f * text->getTextHeight() - text->getFontDescender()));
-			textWidth += 2 * TEXT_PREFERRED_SIZE_BORDER;
+			textWidth += 2 * borderWidth;
 		}
 
 		//Display texture position
@@ -308,13 +315,13 @@ namespace spehs
 			{
 			case DisplayTexturePositionMode::left:
 			{
-				const int border = std::floor((text->getX() - TEXT_PREFERRED_SIZE_BORDER - getXGlobal() - displayTexture->width) * 0.5f);
+				const int border = std::floor((text->getX() - borderWidth - getXGlobal() - displayTexture->width) * 0.5f);
 				displayTexture->polygon->setPosition(getXGlobal() + displayTexture->width / 2 + border, getYGlobal() + size.y / 2);
 			}
 				break;
 			case DisplayTexturePositionMode::right:
 			{
-				const int border = std::floor((getXGlobal() + size.x - text->getX() - textWidth - TEXT_PREFERRED_SIZE_BORDER - displayTexture->width) * 0.5f);
+				const int border = std::floor((getXGlobal() + size.x - text->getX() - textWidth - borderWidth - displayTexture->width) * 0.5f);
 				displayTexture->polygon->setPosition(getXGlobal() + size.x - displayTexture->width / 2 - border, getYGlobal() + size.y / 2);
 			}
 				break;
@@ -604,5 +611,10 @@ namespace spehs
 			return;
 		size.y = height;
 		disableStateRecursiveUpwards(GUIRECT_SCALE_UPDATED_BIT);
+	}
+	void GUIRectangle::setBorderWidth(const int w)
+	{
+		borderWidth = w;
+		disableState(GUIRECT_MIN_SIZE_UPDATED_BIT | GUIRECT_SCALE_UPDATED_BIT | GUIRECT_POSITION_UPDATED_BIT);
 	}
 }

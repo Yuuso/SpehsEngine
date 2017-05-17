@@ -7,7 +7,6 @@
 #include "BitwiseOperations.h"
 #include "TextureManager.h"//Used to get TextureParameter...
 #define GUIRECT_ID_TYPE							uint32_t
-#define TEXT_PREFERRED_SIZE_BORDER				2
 ////GUI rectangle states
 #define GUIRECT_STATE_TYPE						uint32_t
 #define GUIRECT_MOUSE_HOVER_BIT					0x00000001
@@ -99,11 +98,11 @@ namespace spehs
 		virtual bool getRenderState() const;
 		/// Checks whether the mouse is above this rectangle. Returns mouse hover value
 		virtual bool updateMouseHover();
-		/// Range [0.0f, 1.0f]
+		//Color
 		void setColor(const glm::vec3& color);
 		void setColor(const glm::vec4& color);
-		/// Range [0, 255]
 		void setColor(const unsigned char r, const unsigned char g, const unsigned char b, const unsigned char a = 255);
+		glm::vec4 getColor() const { return color; }
 		void setColorAlpha(const float a);
 		void setColorAlpha(const unsigned char a);
 		void setParent(GUIRectangleContainer* Parent);
@@ -177,6 +176,7 @@ namespace spehs
 		virtual void enableState(const GUIRECT_STATE_TYPE stateBit){ enableBit(state, stateBit); }
 		virtual void disableState(const GUIRECT_STATE_TYPE stateBit){ disableBit(state, stateBit); }
 		virtual void toggleState(const GUIRECT_STATE_TYPE stateBit){ toggleBit(state, stateBit); }
+		virtual void setBorderWidth(const int w);
 
 		//Enabling
 		void enableInput(){ if (inputEnabled) return; onEnableInput(); }
@@ -244,6 +244,7 @@ namespace spehs
 		glm::ivec2 position;///<The position of the rectangle, originating from the lower left corner, given in screen coordinates. Relative to parent's position
 		glm::ivec2 size;///<Current size of the rectangle
 		glm::ivec2 minSize;///<The minimum size of the rectangle. Checked whenever rezising the polygon.
+		int borderWidth;//Border added after text/display texture per each side of the rectangle
 		GUIRectangleContainer* parent;///<Rectangle inherits position from parent chain. NOTE: parent must be a rectangle container
 		GUIRectangle* tooltip;
 		Polygon* polygon;
