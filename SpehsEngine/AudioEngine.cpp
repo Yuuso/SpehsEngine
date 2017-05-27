@@ -45,6 +45,46 @@ namespace audioVar
 	*/
 	float listenerGain;
 
+	/*
+	Sound sources can belong to an audio channel.
+	Each channel can have their gain level set separately, and the engine automatically updates these changes in the update().
+	A negative channel index refers to plain master channel.
+	*/
+	class AudioChannel
+	{
+	public:
+		/*Enables need to update gain for sound sources, if change is detected*/
+		void setGain(const float gain)
+		{
+			if (_gain == gain)
+				return;
+			_gain = gain;
+			_modified = true;
+		}
+		/*NOTE: query clears modified state*/
+		bool channelModified()
+		{
+			if (_modified)
+			{
+				_modified = false;
+				return true;
+			}
+			return false;
+		}
+		float getGain() const
+		{
+			return _gain;
+		}
+	private:
+		float _gain = 1.0f;
+		bool _modified = false;
+	};
+	/*
+	Audio channels exist in a vector, not visible to outside.
+	Channel indices can be referred to without "instantiating a channel"
+	*/
+	std::vector<AudioChannel> audioChannels;
+
 	unsigned int maxSources;
 
 	ALCdevice* device;
@@ -88,6 +128,7 @@ namespace spehs
 			}
 			audioVar::sourcePool.clear();
 			audioVar::device = alcGetContextsDevice(audioVar::context);
+			audioVar::audioChannels.clear();
 			alcMakeContextCurrent(NULL);
 			alcDestroyContext(audioVar::context);
 			alcCloseDevice(audioVar::device);
@@ -95,6 +136,23 @@ namespace spehs
 
 		void AudioEngine::update()
 		{
+			//Audio channel gain change detection
+			for (unsigned c = 0; c < audioVar::audioChannels.size(); c++)
+			{
+				if (audioVar::audioChannels[c].channelModified())
+				{
+					//Notify every sound source that belongs to this channel
+					for (unsigned s = 0; s < audioVar::sourcePool.size(); s++)
+					{
+						if (audioVar::sourcePool[s]->soundPtr)
+						{
+							audioVar::sourcePool[s]->soundPtr->onChannelModified();
+						}
+					}
+				}
+			}
+
+			//Source pool
 			for (unsigned i = 0; i < audioVar::sourcePool.size(); i++)
 			{
 				if (audioVar::sourcePool[i]->soundPtr)
@@ -139,6 +197,51 @@ namespace spehs
 		{
 			audioVar::listenerGain = _gain;
 			alListenerf(AL_GAIN, _gain * spehs::ApplicationData::getMasterVolume());
+		}
+		void AudioEngine::setChannelGain(const int _channelIndex, float _gain)
+		{
+			/*Notify user if creating absurdly large channels quantities*/
+#ifdef _DEBUG
+			if (_channelIndex > 10000)
+				spehs::exceptions::warning("Using over 10000 audio channels!");
+#endif
+
+			/*Prevent channel gain from going below 0*/
+			if (_gain < 0.0f)
+				_gain = 0.0f;
+
+			if (_channelIndex < 0)
+			{//Default, master channel
+				setListenerGain(_gain);
+				return;
+			}
+			else if (_channelIndex >= audioVar::audioChannels.size())
+			{/*Automatically resize the channel vector if referring to a channel that does not exist yet*/
+				audioVar::audioChannels.resize(_channelIndex + 1);
+			}
+
+			/*Set channel gain*/
+			audioVar::audioChannels[_channelIndex].setGain(_gain);
+		}
+		float AudioEngine::getChannelGain(const int _channelIndex)
+		{
+			/*Notify user if creating absurdly large channels quantities*/
+#ifdef _DEBUG
+			if (_channelIndex > 10000)
+				spehs::exceptions::warning("Using over 10000 audio channels!");
+#endif
+
+			if (_channelIndex < 0)
+			{//Default, master channel
+				return getListenerGain();
+			}
+			else if (_channelIndex >= audioVar::audioChannels.size())
+			{/*Automatically resize the channel vector if referring to a channel that does not exist yet*/
+				audioVar::audioChannels.resize(_channelIndex + 1);
+			}
+
+			/*Get channel gain*/
+			return audioVar::audioChannels[_channelIndex].getGain();
 		}
 		void AudioEngine::setPositionCorrectionFactor(const glm::vec2& _poscor)
 		{

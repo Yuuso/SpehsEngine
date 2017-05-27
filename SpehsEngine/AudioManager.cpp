@@ -258,13 +258,15 @@ namespace spehs
 		errno_t error = fopen_s(&fileData, _filepath.c_str(), "rb");
 		if (error != 0)
 		{
-			exceptions::fatalError("Failed to open OGG file, error: " + std::to_string(error));
+			char errorString[100];
+			strerror_s(errorString, 100, error);
+			exceptions::fatalError("Failed to open OGG file: " + _filepath + "\n\terrno: " + std::to_string(error) + ", " + errorString);
 		}
 #else
 		fileData = fopen(_filepath.c_str(), "rb");
 		if (!fileData)
 		{
-			exceptions::fatalError("Failed to open WAVE file!");
+			exceptions::fatalError("Failed to open OGG file!");
 		}
 #endif
 

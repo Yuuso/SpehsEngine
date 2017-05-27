@@ -54,7 +54,13 @@ namespace spehs
 			static glm::vec2 getListenerPosition();
 			static glm::vec2 getListenerVelocity();
 			static float getListenerGain();
-			
+
+			//Audio channels
+			/**If referencing previously non-existing channel, channel is created. A negative channel index refers to plain master channel.*/
+			static void setChannelGain(const int _channelIndex, float _gain);
+			/**If referencing previously non-existing channel, channel is created. A negative channel index refers to plain master channel.*/
+			static float getChannelGain(const int _channelIndex);
+
 		protected:			
 			static void updateGain(); //Call when master volume has changed
 			static bool getFreeSource(SoundSource* _soundSource);

@@ -2,6 +2,7 @@
 #include "SoundSource.h"
 
 #include "AudioManager.h"
+#include "AudioEngine.h"
 #include "OpenALError.h"
 #include "Exceptions.h"
 #include "Time.h"
@@ -21,8 +22,8 @@ namespace spehs
 {
 	namespace audio
 	{
-		SoundSource::SoundSource() : pitch(1.0f), gain(1.0f), maxGain(1.0f), minGain(0.0f), loop(false), source(nullptr), relativeToSource(true),
-			gainAutomationTimer(0.0f), fadeToPause(false), fadeToStop(false), fadeIn(false), playQueued(false), sound(0, 0)
+		SoundSource::SoundSource(const int _audioChannel) : pitch(1.0f), gain(1.0f), maxGain(1.0f), minGain(0.0f), loop(false), source(nullptr), relativeToSource(true),
+			gainAutomationTimer(0.0f), gainAutomationTime(0.0f), automationType(AutomationType::none), playQueued(false), sound(0, 0), audioChannel(_audioChannel)
 		{
 		}
 		SoundSource::~SoundSource()
@@ -43,17 +44,22 @@ namespace spehs
 		
 		void SoundSource::setParameters()
 		{
-			alSourcef(source->sourceID, AL_PITCH, pitch);
-			alSourcef(source->sourceID, AL_GAIN, gain);
-			alSourcef(source->sourceID, AL_MAX_GAIN, maxGain);
-			alSourcef(source->sourceID, AL_MIN_GAIN, minGain);
-			alSourcei(source->sourceID, AL_LOOPING, loop);
-			alSourcei(source->sourceID, AL_SOURCE_RELATIVE, relativeToSource);
-			checkOpenALErrors(__FILE__, __LINE__);
+			if (source)
+			{
+				const float channelGain = AudioEngine::getChannelGain(audioChannel);
 
-			if (sound.second != 0 && !isPlaying())
-				alSourcei(source->sourceID, AL_BUFFER, sound.second);
-			checkOpenALErrors(__FILE__, __LINE__);
+				alSourcef(source->sourceID, AL_PITCH, pitch);
+				alSourcef(source->sourceID, AL_GAIN, gain * channelGain);
+				alSourcef(source->sourceID, AL_MAX_GAIN, maxGain * channelGain);
+				alSourcef(source->sourceID, AL_MIN_GAIN, minGain * channelGain);
+				alSourcei(source->sourceID, AL_LOOPING, loop);
+				alSourcei(source->sourceID, AL_SOURCE_RELATIVE, relativeToSource);
+				checkOpenALErrors(__FILE__, __LINE__);
+
+				if (sound.second != 0 && !isPlaying())
+					alSourcei(source->sourceID, AL_BUFFER, sound.second);
+				checkOpenALErrors(__FILE__, __LINE__);
+			}
 		}
 
 		void SoundSource::update()
@@ -87,64 +93,60 @@ namespace spehs
 				{
 					resetAutomation();
 				}
-				//Automations
-				if (gainAutomationTimer > 0.0f)
-				{
-					float currentGain, currentPitch;
-					alGetSourcef(source->sourceID, AL_GAIN, &currentGain);
-					alGetSourcef(source->sourceID, AL_PITCH, &currentPitch);
 
-					//Gain
-					if (fadeIn)
-					{
-						float deltaGain = (time::getDeltaTimeAsSeconds() / gainAutomationTimer) * (gain - currentGain);
-						alSourcef(source->sourceID, AL_GAIN, std::max(0.0f, currentGain + deltaGain));
-						checkOpenALErrors(__FILE__, __LINE__);
-					}
-					else if (fadeToPause)
-					{
-						float deltaGain = (time::getDeltaTimeAsSeconds() / gainAutomationTimer) * -currentGain;
-						alSourcef(source->sourceID, AL_GAIN, std::max(0.0f, currentGain + deltaGain));
-						checkOpenALErrors(__FILE__, __LINE__);
-					}
-					else if (fadeToStop)
-					{
-						float deltaGain = (time::getDeltaTimeAsSeconds() / gainAutomationTimer) * -currentGain;
-						alSourcef(source->sourceID, AL_GAIN, std::max(0.0f, currentGain + deltaGain));
-						checkOpenALErrors(__FILE__, __LINE__);
-					}
-					else
-					{
-						if (gain != currentGain)
-						{
-							float deltaGain = (time::getDeltaTimeAsSeconds() / gainAutomationTimer) * -currentGain;
-							alSourcef(source->sourceID, AL_GAIN, std::max(0.0f, currentGain + deltaGain));
-							checkOpenALErrors(__FILE__, __LINE__);
-						}
-					}
-					gainAutomationTimer -= time::getDeltaTimeAsSeconds();
-				}
-				else if (fadeToPause)
+				//Gain automation
+				if (automationType != AutomationType::none)
 				{
-					alSourcef(source->sourceID, AL_GAIN, gain);
-					pause();
-				}
-				else if (fadeToStop)
-				{
-					alSourcef(source->sourceID, AL_GAIN, gain);
-					stop();
-				}
-				else if (fadeIn)
-				{
-					alSourcef(source->sourceID, AL_GAIN, gain);
+					/*State of automation on a scale from 0.0 to 1.0*/
+					const float automationState = (gainAutomationTime - gainAutomationTimer) / gainAutomationTime;
+
+					/*Linearly fade gain*/
+					const float automationGain = (1.0f - automationState) * gainAutomationBegin + automationState * gainAutomationEnd;
+
+					/*Set calculated gain*/
+					alSourcef(source->sourceID, AL_GAIN, automationGain);
 					checkOpenALErrors(__FILE__, __LINE__);
-					fadeIn = false;
+
+					/*Decrement automation timer*/
+					gainAutomationTimer -= time::getDeltaTimeAsSeconds();
+
+					/*Check end of automation*/
+					if (gainAutomationTimer <= 0.0f)
+					{//End of automation
+
+						/*Take an end action*/
+						switch (automationType)
+						{
+						case AutomationType::pause:
+							alSourcef(source->sourceID, AL_GAIN, 0.0f);
+							pause();
+							break;
+						case AutomationType::stop:
+							alSourcef(source->sourceID, AL_GAIN, 0.0f);
+							stop();
+							break;
+						case AutomationType::play:
+							alSourcef(source->sourceID, AL_GAIN, gain);
+							checkOpenALErrors(__FILE__, __LINE__);
+							break;
+						default:
+							exceptions::unexpectedError(__FUNCTION__": Invalid automation type!");
+							break;
+						}
+						automationType = AutomationType::none;
+					}
 				}
 			}
+		}
+
+		void SoundSource::onChannelModified()
+		{//Audio channel was modified since last update, called from AudioEngine::update()
+			setParameters();
 		}
 
 		void SoundSource::play()
 		{
+			resetAutomation();
 			if (sound.second == 0 && !soundQueued())
 			{
 				spehs::exceptions::warning("Cannot play sound, no sound buffer!");
@@ -158,20 +160,20 @@ namespace spehs
 				}
 			}
 
-			resetAutomation();
-			if (!soundQueued())
+			if (soundQueued())
+			{
+				playQueued = true;
+			}
+			else
 			{
 				setParameters();
 				alSourcePlay(source->sourceID);
 				checkOpenALErrors(__FILE__, __LINE__);
-			}
-			else
-			{
-				playQueued = true;
 			}
 		}
 		void SoundSource::play(const float _fadeTimer)
 		{
+			resetAutomation();
 			if (sound.second == 0 && !soundQueued())
 			{
 				spehs::exceptions::warning("Cannot play sound, no sound buffer!");
@@ -185,55 +187,65 @@ namespace spehs
 				}
 			}
 
-			resetAutomation();
-			alSourcef(source->sourceID, AL_GAIN, 0.0f);
+			/*Set type to play*/
+			automationType = AutomationType::play;
+			/*Set begin and end gain levels*/
+			gainAutomationBegin = 0.0f;
+			gainAutomationEnd = gain;
+			/*Set automation timers*/
+			gainAutomationTime = _fadeTimer;
 			gainAutomationTimer = _fadeTimer;
-			fadeIn = true;
 
-			if (!soundQueued())
+			if (soundQueued())
+			{
+				playQueued = true;
+			}
+			else
 			{
 				setParameters();
 				alSourcePlay(source->sourceID);
 				checkOpenALErrors(__FILE__, __LINE__);
 			}
-			else
-			{
-				playQueued = true;
-			}
 		}
 		void SoundSource::pause()
 		{
+			resetAutomation();
 			if (!source)
 			{
 				spehs::exceptions::warning("Cannot pause sound, no source!");
 				return;
 			}
 
-			resetAutomation();
 			alSourcePause(source->sourceID);
 			checkOpenALErrors(__FILE__, __LINE__);
 		}
 		void SoundSource::pause(const float _fadeTimer)
 		{
+			resetAutomation();
 			if (!source)
 			{
 				spehs::exceptions::warning("Cannot pause sound, no source!");
 				return;
 			}
 
-			resetAutomation();
+			/*Set type to pause*/
+			automationType = AutomationType::pause;
+			/*Set begin and end gain levels*/
+			gainAutomationBegin = gain;
+			gainAutomationEnd = 0.0f;
+			/*Set automation timers*/
+			gainAutomationTime = _fadeTimer;
 			gainAutomationTimer = _fadeTimer;
-			fadeToPause = true;
 		}
 		void SoundSource::stop()
 		{
+			resetAutomation();
 			if (!source)
 			{
 				spehs::exceptions::warning("Cannot stop sound, no source!");
 				return;
 			}
 
-			resetAutomation();
 			if (isPlaying())
 			{
 				alSourceStop(source->sourceID);
@@ -242,15 +254,21 @@ namespace spehs
 		}
 		void SoundSource::stop(const float _fadeTimer)
 		{
+			resetAutomation();
 			if (!source)
 			{
 				spehs::exceptions::warning("Cannot stop sound, no source!");
 				return;
 			}
 
-			resetAutomation();
+			/*Set type to stop*/
+			automationType = AutomationType::stop;
+			/*Set begin and end gain levels*/
+			gainAutomationBegin = gain;
+			gainAutomationEnd = 0.0f;
+			/*Set automation timers*/
+			gainAutomationTime = _fadeTimer;
 			gainAutomationTimer = _fadeTimer;
-			fadeToStop = true;
 		}
 		
 		void SoundSource::setPitch(const float _pitch)
@@ -268,22 +286,26 @@ namespace spehs
 			resetAutomation();
 			if (source)
 			{
-				alSourcef(source->sourceID, AL_GAIN, gain);
+				alSourcef(source->sourceID, AL_GAIN, gain * AudioEngine::getChannelGain(audioChannel));
 			}
 		}
 		void SoundSource::setGain(const float _gain, const float _fadeTimer)
 		{
-			resetAutomation();
-			gain = _gain;
+			/*Set type to play*/
+			automationType = AutomationType::play;
+			/*Set begin and end gain levels*/
+			gainAutomationBegin = gain;
+			gainAutomationEnd = _gain;
+			/*Set automation timers*/
+			gainAutomationTime = _fadeTimer;
 			gainAutomationTimer = _fadeTimer;
 		}
 		void SoundSource::setMaxGain(const float _maxGain)
 		{
 			maxGain = _maxGain;
-			resetAutomation();
 			if (source)
 			{
-				alSourcef(source->sourceID, AL_MAX_GAIN, maxGain);
+				alSourcef(source->sourceID, AL_MAX_GAIN, maxGain * AudioEngine::getChannelGain(audioChannel));
 			}
 		}
 		void SoundSource::setMinGain(const float _minGain)
@@ -291,7 +313,7 @@ namespace spehs
 			minGain = _minGain;
 			if (source)
 			{
-				alSourcef(source->sourceID, AL_MIN_GAIN, minGain);
+				alSourcef(source->sourceID, AL_MIN_GAIN, minGain * AudioEngine::getChannelGain(audioChannel));
 			}
 		}
 		void SoundSource::setLooping(const bool _loop)
@@ -309,6 +331,15 @@ namespace spehs
 		void SoundSource::setRelative(const bool _value)
 		{
 			relativeToSource = _value;
+		}
+		void SoundSource::setAudioChannel(const int _audioChannel)
+		{
+			if (audioChannel != _audioChannel)
+			{
+				audioChannel = _audioChannel;
+				/*Channel changed, update parameters*/
+				setParameters();
+			}
 		}
 
 		bool SoundSource::isPlaying()
@@ -345,9 +376,7 @@ namespace spehs
 		void SoundSource::resetAutomation()
 		{
 			gainAutomationTimer = 0.0f;
-			fadeToPause = false;
-			fadeToStop = false;
-			fadeIn = false;
+			automationType = AutomationType::none;
 		}
 		bool SoundSource::soundQueued()
 		{
@@ -356,7 +385,7 @@ namespace spehs
 		}
 
 
-		ActiveSoundSource::ActiveSoundSource() : SoundSource(), position(0.0f), velocity(0.0f), direction(0.0f), rollOffFactor(defaultRollOffFactor)
+		ActiveSoundSource::ActiveSoundSource(const int _audioChannel) : SoundSource(_audioChannel), position(0.0f), velocity(0.0f), direction(0.0f), rollOffFactor(defaultRollOffFactor)
 		{
 			relativeToSource = false;
 		}

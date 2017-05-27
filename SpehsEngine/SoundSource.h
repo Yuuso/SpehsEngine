@@ -21,7 +21,7 @@ namespace spehs
 		{
 			friend class AudioEngine;
 		public:
-			SoundSource();
+			SoundSource(const int _audioChannel = -1/*by default, no channel*/);
 			virtual ~SoundSource();
 
 			void setSound(const size_t _hashID);
@@ -29,13 +29,23 @@ namespace spehs
 
 			virtual void setParameters();
 
+			/**Automatically called by SpehsEngine from AudioEngine::update()*/
 			void update();
 
+			/**Automatically called by SpehsEngine when audio channel has been modified*/
+			void onChannelModified();
+
+			/*Immediately start playing at the current gain level*/
 			void play();
+			/*Fade to play from 0 gain level*/
 			void play(const float _fadeTimer);
+			/*Immediately pause playing*/
 			void pause();
+			/*Fade to pause from current gain level*/
 			void pause(const float _fadeTimer);
+			/*Immediately stop playing*/
 			void stop();
+			/*Fade to stop from current gain level*/
 			void stop(const float _fadeTimer);
 
 			void setPitch(const float _pitch);
@@ -46,6 +56,7 @@ namespace spehs
 			void setLooping(const bool _loop);
 			void setPriority(const unsigned int _prio);
 			void setRelative(const bool _value);
+			void setAudioChannel(const int _audioChannel);
 
 			bool isPlaying();
 			bool isPaused();
@@ -57,6 +68,7 @@ namespace spehs
 			unsigned int getPriority(){ return priority; }
 			bool getRelative(){ return relativeToSource; }
 			size_t getSoundHash() const { return sound.first; }
+			int getAudioChannel() const { return audioChannel; }
 
 			bool soundQueued();
 
@@ -76,6 +88,8 @@ namespace spehs
 
 			Each division by 2 equals an attenuation of about -6dB.
 			Each multiplicaton by 2 equals an amplification of about +6dB.
+
+			Refers to currently set gain. Pausing and stopping should not change the gain setting.
 
 			0.0 is silent.
 			*/
@@ -118,12 +132,23 @@ namespace spehs
 			*/
 			bool relativeToSource;
 
+			/*
+			The sound source gain is affected (multiplied) by the channel's gain level
+			*/
+			int audioChannel;
+
 			//Automation
+			/**Time needed until gain automation is completed*/
 			float gainAutomationTimer;
-			bool fadeToPause;
-			bool fadeToStop;
-			bool fadeIn;
-			
+			/**Total seconds to complete the last set gain automation*/
+			float gainAutomationTime;
+			/**Gain automation begin gain*/
+			float gainAutomationBegin;
+			/**Gain automation end gain*/
+			float gainAutomationEnd;
+			/**Automation state*/
+			enum class AutomationType : char { none = 0, pause, stop, play } automationType;
+
 			AudioEngine::SourceObject* source;
 			std::pair<size_t /*hash*/, ALuint /*buffer*/> sound;
 			bool playQueued;
@@ -132,7 +157,7 @@ namespace spehs
 		class ActiveSoundSource : public SoundSource
 		{
 		public:
-			ActiveSoundSource();
+			ActiveSoundSource(const int _audioChannel = -1/*by default, no channel*/);
 			~ActiveSoundSource();
 
 			void setParameters();
