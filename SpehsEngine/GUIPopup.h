@@ -5,23 +5,6 @@
 
 namespace spehs
 {
-	//Popup option
-	struct GUIPopupOption
-	{
-		GUIPopupOption(const std::string& _string) : string(_string), hasCallback(false)
-		{
-		}
-		GUIPopupOption(const std::string& _string, std::function<void()> _callback) : string(_string), callback(_callback), hasCallback(true)
-		{			
-		}
-		~GUIPopupOption()
-		{
-		}
-		const std::function<void()> callback;
-		const std::string string;
-		const bool hasCallback;
-	};
-
 	///GUI Popup
 	/*
 	First element in the elements vector is the message/header element. Other elements are option buttons displayed in a row under the header.
@@ -30,17 +13,40 @@ namespace spehs
 	class GUIPopup : public GUIRectangleContainer
 	{
 	public:
+		//Button popup option
+		struct Option
+		{
+			//Textfield constructor
+			Option() : string(), hasPressCallback(false)
+			{
+			}
+			//Cancel constructor
+			Option(const std::string& _string) : string(_string), hasPressCallback(false)
+			{
+			}
+			//Press callback constructor
+			Option(const std::string& _string, std::function<void()> _callback) : string(_string), callback(_callback), hasPressCallback(true)
+			{
+			}
+			~Option()
+			{
+			}
+			const std::string string;
+			const std::function<void()> callback;
+			const bool hasPressCallback;
+		};
+	public:
 		template<typename ... Args>
-		GUIPopup(const std::string& _message, const GUIPopupOption& _option, const Args& ... _moreOptions) : GUIPopup(_message)
+		GUIPopup(const std::string& _message, const Option& _option, const Args& ... _moreOptions) : GUIPopup(_message)
 		{
 			addOptions(_option, _moreOptions...);
 		}
 		GUIPopup(const std::string& _message);
 		~GUIPopup();
 
-		void addOptions(const GUIPopupOption& option);
+		void addOptions(const Option& option);
 		template<typename ... Args>
-		void addOptions(const GUIPopupOption& option, const Args& ... moreOptions)
+		void addOptions(const Option& option, const Args& ... moreOptions)
 		{
 			addOptions(option);
 			addOptions(moreOptions...);
@@ -59,7 +65,7 @@ namespace spehs
 		void disableEscape(){ escapeEnabled = false; }
 
 	private:
-		std::vector<GUIPopupOption> options;
+		std::vector<Option> options;
 		bool escapeEnabled;
 	};
 }

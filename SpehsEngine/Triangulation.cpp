@@ -5,12 +5,6 @@
 #include "Triangulation.h"
 #include "Exceptions.h"
 #include "Geometry.h"
-#ifndef PI
-#define PI 3.14159265359f
-#endif
-#ifndef TWO_PI
-#define TWO_PI 6.28318530718f
-#endif
 #define PERFORM_TRIANGULATION_VALIDITY_CHECKS
 
 namespace spehs

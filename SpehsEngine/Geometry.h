@@ -2,9 +2,15 @@
 #include <glm/vec2.hpp>
 #include <glm/vec3.hpp>
 #define GLM_FORCE_RADIANS
+#ifndef PI
 #define PI 3.14159265f
+#endif
+#ifndef HALF_PI
 #define HALF_PI 1.57079632679f
+#endif
+#ifndef TWO_PI
 #define TWO_PI 6.28318530718f
+#endif
 
 namespace spehs
 {

@@ -3,7 +3,7 @@
 
 namespace spehs
 {
-	class GUIPopup;
+	class GUIRectangle;
 	class GUIWindow;
 	class Polygon;
 	class BatchManager;
@@ -16,7 +16,7 @@ namespace spehs
 
 		void update();
 		void addWindow(GUIWindow* window);
-		void addPopup(GUIPopup* popup);
+		void addPopup(GUIRectangle* popup);
 		void refreshWindows();
 		GUIWindow* getFocusedWindow() const { return focusedWindow; }
 		void toggleWindow(GUIWindow* window);
@@ -42,7 +42,7 @@ namespace spehs
 
 		GUIWindow* focusedWindow;
 		std::vector<GUIWindow*> windows;
-		std::vector<GUIPopup*> popups;
+		std::vector<GUIRectangle*> popups;
 		int16_t systemDepth;
 		int16_t depthPerWindow;
 		Polygon* popupShade;

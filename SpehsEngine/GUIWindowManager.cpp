@@ -32,20 +32,27 @@ namespace spehs
 	}
 	void GUIWindowManager::addWindow(GUIWindow* window)
 	{
+#ifdef _DEBUG
+		if (window->getPolygonPtr()->myBatchManager != &batchManager)
+			spehs::exceptions::warning("Window batch manager is different from window manager batch manager!");
+#endif
 		batchManager.beginSection();
 		windows.push_back(window);
 		updateDepths();
 		batchManager.endSection();
 	}
-	void GUIWindowManager::addPopup(GUIPopup* popup)
+	void GUIWindowManager::addPopup(GUIRectangle* popup)
 	{
+#ifdef _DEBUG
+		if (popup->getPolygonPtr()->myBatchManager != &batchManager)
+			spehs::exceptions::warning("Popup batch manager is different from window manager batch manager!");
+#endif
 		batchManager.beginSection();
 		popup->setRenderState(true);
 		popup->setPositionGlobal(spehs::ApplicationData::getWindowWidthHalf() - popup->getWidth() * 0.5f, spehs::ApplicationData::getWindowHeightHalf() - popup->getHeight() * 0.5f);
 		popups.push_back(popup);
 		updateDepths();
-		popup->GUIRectangleContainer::inputUpdate();
-		popup->GUIRectangleContainer::visualUpdate();
+		popup->visualUpdate();
 		batchManager.endSection();
 	}
 	void GUIWindowManager::update()

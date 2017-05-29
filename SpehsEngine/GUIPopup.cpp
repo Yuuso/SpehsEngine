@@ -26,7 +26,7 @@ namespace spehs
 	GUIPopup::~GUIPopup()
 	{
 	}
-	void GUIPopup::addOptions(const GUIPopupOption& option)
+	void GUIPopup::addOptions(const Option& option)
 	{
 		options.push_back(option);
 		addElement(new GUIRectangle(option.string));
@@ -41,10 +41,10 @@ namespace spehs
 		{
 			for (unsigned i = OPTION1_INDEX; i < elementsSize(); i++)
 			{
-				if (elements[i]->getMouseHover())
+				if (elements[i]->getMouseHover() && inputManager->tryClaimMouseAvailability())
 				{
-					//Make callback
-					if (options[i - OPTION1_INDEX].hasCallback)
+					//Make callback?
+					if (options[i - OPTION1_INDEX].hasPressCallback)
 						options[i - OPTION1_INDEX].callback();
 					enableState(GUIRECT_REMOVE_BIT);
 				}
