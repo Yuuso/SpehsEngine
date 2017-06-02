@@ -188,6 +188,7 @@ namespace spehs
 	void GUIRectangle::setRenderState(const bool _state)
 	{
 		polygon->setRenderState(_state);
+		disableState(GUIRECT_MOUSE_HOVER_BIT | GUIRECT_MOUSE_HOVER_CONTAINER_BIT);
 		if (text)
 			text->setRenderState(_state);
 		if (displayTexture)

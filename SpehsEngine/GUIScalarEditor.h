@@ -32,6 +32,8 @@ namespace spehs
 			addElement(valueRect);
 			addElement(decreaseRect);
 			addElement(increaseRect);
+
+			nameRect->disableState(GUIRECT_HOVER_COLOR_BIT);
 		}
 		~GUIScalarEditor(){}
 
