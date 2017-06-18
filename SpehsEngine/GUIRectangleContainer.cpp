@@ -164,8 +164,7 @@ namespace spehs
 			return false;
 
 		disableState(GUIRECT_OPEN_BIT);
-		disableStateRecursiveUpwards(GUIRECT_MIN_SIZE_UPDATED_BIT);//Make all above update size
-		disableStateRecursiveUpwards(GUIRECT_SCALE_UPDATED_BIT);//Make all above update scale and therefore position
+		disableStateRecursiveUpwards(GUIRECT_MIN_SIZE_UPDATED_BIT | GUIRECT_SCALE_UPDATED_BIT | GUIRECT_POSITION_UPDATED_BIT);//All above must update min size, scale and position
 		for (unsigned i = 0; i < elements.size(); i++)
 			elements[i]->setRenderState(false);
 		return true;

@@ -51,14 +51,7 @@ namespace spehs
 			else
 			{//Open when mouse is hovering over
 				if (checkState(GUIRECT_MOUSE_HOVER_CONTAINER_BIT) && getInputEnabled())
-				{
 					open();
-					if (getString() == "def")
-					{
-						int der(0);
-						der++;
-					}
-				}
 				else if (treeOpenTimer <= 0.0f)
 					close();
 			}
