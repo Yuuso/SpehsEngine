@@ -433,6 +433,9 @@
       <Filter>Rendering\GUI\Commonly used container</Filter>
     </ClInclude>
     <ClInclude Include="GUIProgressBar.h" />
+    <ClInclude Include="Singleton.h">
+      <Filter>Core</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Physics">

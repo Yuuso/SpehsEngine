@@ -3,6 +3,10 @@
 #ifdef _DEBUG
 #define SERIALIZABLE_DEBUG_INFO
 #endif
+#define SPEHS_WRITE_VAR(bufferBeginPtr, offsetVar, dataVar) { memcpy(&bufferBeginPtr[offset], &dataVar, sizeof(dataVar)); offset += sizeof(dataVar); }
+#define SPEHS_READ_VAR(bufferBeginPtr, offsetVar, dataVar) { memcpy(&dataVar, &bufferBeginPtr[offset], sizeof(dataVar)); offset += sizeof(dataVar); }
+#define SPEHS_WRITE_ARRAY(bufferBeginPtr, offsetVar, dataPtr, arrayLength) { memcpy(&bufferBeginPtr[offset], dataPtr, sizeof(*dataPtr) * arrayLength); offset += sizeof(*dataPtr) * arrayLength; }
+#define SPEHS_READ_ARRAY(bufferBeginPtr, offsetVar, dataPtr, arrayLength) { memcpy(dataPtr, &bufferBeginPtr[offset], sizeof(*dataPtr) * arrayLength); offset += sizeof(*dataPtr) * arrayLength; }
 
 namespace spehs
 {

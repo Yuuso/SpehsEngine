@@ -181,6 +181,7 @@
     <ClInclude Include="SerializableDirectory.h" />
     <ClInclude Include="SerializableString.h" />
     <ClInclude Include="SerializableVector.h" />
+    <ClInclude Include="Singleton.h" />
     <ClInclude Include="SoundSource.h" />
     <ClInclude Include="Batch.h" />
     <ClInclude Include="BatchManager.h" />
