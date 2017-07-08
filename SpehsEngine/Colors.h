@@ -115,4 +115,37 @@ namespace spehs
 			break;
 		}
 	}
+
+
+	//TODO: a single color class to rule them all?
+	/*
+
+		unsigned char:
+			+low memory consumption (4 bytes)
+			-needs conversion to floating point for animating colors
+
+		float:
+			-high memory consumption (16 bytes)
+			+easy to do all kinds of animation, since animation is easiest to handle with floating points
+			+native format to pass on to shader?
+
+	*/
+	class Color
+	{
+
+	public:
+		unsigned char& operator[](const int index)
+		{
+			return *((unsigned char*)this + index);
+		}
+		const unsigned char& operator[](const int index) const
+		{
+			return *((const unsigned char*)this + index);
+		}
+
+		unsigned char r;
+		unsigned char g;
+		unsigned char b;
+		unsigned char a;
+	};
 }

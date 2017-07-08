@@ -160,6 +160,7 @@
     <ClCompile Include="Time.cpp" />
     <ClCompile Include="Transform2D.cpp" />
     <ClCompile Include="Triangulation.cpp" />
+    <ClCompile Include="Vector.cpp" />
     <ClCompile Include="Vertex.cpp" />
     <ClCompile Include="Window.cpp" />
   </ItemGroup>
@@ -239,6 +240,7 @@
     <ClInclude Include="TextureManager.h" />
     <ClInclude Include="Time.h" />
     <ClInclude Include="Transform2D.h" />
+    <ClInclude Include="Vector.h" />
     <ClInclude Include="Vertex.h" />
     <ClInclude Include="Window.h" />
   </ItemGroup>
