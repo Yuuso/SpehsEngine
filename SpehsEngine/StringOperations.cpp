@@ -261,4 +261,45 @@ namespace spehs
 			(minutes < 10 ? "0" : "") + std::to_string(minutes) + ":" +
 			(seconds < 10 ? "0" : "") + std::to_string(seconds);
 	}
+	
+	unsigned getStringAsIPv4Address(const std::string& string)
+	{
+		unsigned address = 0;
+		int byteIndex = 0;
+		std::string currentByteString;
+		for (unsigned i = 0; i < string.size(); i++)
+		{
+			if (string[i] == '.')
+			{//Next byte
+				const int byteToInt = std::atoi(currentByteString.c_str());
+				if (byteToInt < 0 || byteToInt > 255)
+				{//Invalid "byte"
+					spehs::exceptions::warning("getStringAsIPv4Address() failed! A byte value is too big (larger than 255)!");
+					return 0;
+				}
+				address |= unsigned char(byteToInt) << (24 - 8 * byteIndex++);
+				currentByteString.clear();
+			}
+			else if (string[i] >= 48 && string[i] <= 57)
+			{//Append current byte
+				currentByteString += string[i];
+			}
+			else
+			{
+				spehs::exceptions::warning("getStringAsIPv4Address() failed! Address contains invalid characters!");
+				return 0;
+			}
+		}
+
+		//Append last byte...
+		const int byteToInt = std::atoi(currentByteString.c_str());
+		if (byteToInt < 0 || byteToInt > 255)
+		{//Invalid "byte"
+			spehs::exceptions::warning("getStringAsIPv4Address() failed! A byte value is too big (larger than 255)!");
+			return 0;
+		}
+		address |= unsigned char(byteToInt) << (24 - 8 * byteIndex++);
+
+		return address;
+	}
 }

@@ -29,4 +29,7 @@ namespace spehs
 
 	/**Returns seconds expressed in 'stopwatch notation' string. Format: hh:mm:ss */
 	std::string secondsToStopwatchNotation(int seconds);
+
+	/**Returns IPv4 address given in string format as an unsigned integer*/
+	unsigned getStringAsIPv4Address(const std::string& string);
 }
