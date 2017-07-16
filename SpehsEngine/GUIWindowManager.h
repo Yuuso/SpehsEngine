@@ -1,5 +1,6 @@
 #pragma once
 #include <vector>
+#include "Color.h"
 
 namespace spehs
 {
@@ -35,7 +36,7 @@ namespace spehs
 		int16_t getSystemDepth() const { return systemDepth; }
 		int16_t getTopDepth() const { return systemDepth + depthPerWindow * windows.size(); }
 		int16_t getDepthPerWindow() const { return depthPerWindow; }
-		void setPopupShadeColor(const unsigned char r, const unsigned char g, const unsigned char b, const unsigned char a = 255);
+		void setPopupShadeColor(const spehs::Color& color);
 
 	private:
 		void updateDepths();
@@ -46,7 +47,7 @@ namespace spehs
 		int16_t systemDepth;
 		int16_t depthPerWindow;
 		Polygon* popupShade;
-		float popupShadeAlpha;
+		Color::Component popupShadeAlpha;
 		BatchManager& batchManager;
 		bool receivingInput;
 		bool mouseHoverAny;

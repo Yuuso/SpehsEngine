@@ -1,7 +1,7 @@
 
 #pragma once
 
-#include "Colors.h"
+#include "Color.h"
 
 #include <glm/vec4.hpp>
 #include <glm/vec3.hpp>
@@ -31,10 +31,10 @@ namespace spehs
 		Vertex();
 		Vertex(const glm::vec2 &_position);
 		Vertex(const glm::vec2 &_position, const UV &_uv);
-		Vertex(const glm::vec2 &_position, const ColorRGBA &_color, const UV &_uv);
+		Vertex(const glm::vec2 &_position, const Color &_color, const UV &_uv);
 
 		glm::vec2 position;
-		ColorRGBA color;
+		Color color;
 		UV uv;
 	};
 

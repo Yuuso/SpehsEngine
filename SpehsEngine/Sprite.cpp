@@ -48,29 +48,13 @@ namespace spehs
 	{
 		sprite->setTexture(_textureID);
 	}
-	void Sprite::setColor(const glm::vec4 &_newColor)
+	void Sprite::setColor(const spehs::Color& _newColor)
 	{
 		sprite->setColor(_newColor);
 	}
-	void Sprite::setColor(const glm::vec3 &_newColor)
+	void Sprite::setAlpha(const spehs::Color::Component& _a)
 	{
-		sprite->setColor(_newColor);
-	}
-	void Sprite::setColor(const unsigned char _r, const unsigned char _g, const unsigned char _b, const unsigned char _a)
-	{
-		sprite->setColor(_r, _g, _b, _a);
-	}
-	void Sprite::setColor(const CommonColor& _color)
-	{
-		sprite->setColor(_color);
-	}
-	void Sprite::setColorAlpha(const float _a)
-	{
-		sprite->setColorAlpha(_a);
-	}
-	void Sprite::setColorAlpha(const unsigned char _a)
-	{
-		sprite->setColorAlpha(_a);
+		sprite->setAlpha(_a);
 	}
 	void Sprite::setDepth(const int _depth)
 	{

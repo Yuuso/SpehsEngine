@@ -7,7 +7,7 @@
 namespace spehs
 {
 	/** retriveColor() method returns the color being edited at its latest state. */
-	class GUIColorEditor : public GUIRectangle, public ValueEditor<glm::vec4>
+	class GUIColorEditor : public GUIRectangle, public ValueEditor<Color>
 	{
 	public:
 		static float paletteWidth;
@@ -15,7 +15,7 @@ namespace spehs
 		static float colorPreviewWidth;
 		static int colorEditorBorder;
 	public:
-		GUIColorEditor(const glm::vec4 color = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
+		GUIColorEditor(const Color color = Color(1.0f, 1.0f, 1.0f, 1.0f));
 		~GUIColorEditor();
 
 		void setDepth(const int16_t _depth) override;

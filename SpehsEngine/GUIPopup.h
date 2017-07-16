@@ -58,9 +58,7 @@ namespace spehs
 		void updateScale();
 		void updatePosition();
 
-		void setBackgroundColor(const glm::vec3& rgb);
-		void setBackgroundColor(const glm::vec4& rgba);
-		void setBackgroundColor(const unsigned char r, const unsigned char g, const unsigned char b, const unsigned char a = 255);
+		void setBackgroundColor(const spehs::Color& rgb);
 		void enableEscape(){ escapeEnabled = true; }
 		void disableEscape(){ escapeEnabled = false; }
 

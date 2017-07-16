@@ -6,6 +6,7 @@
 #include <glm/vec4.hpp>
 #include "BitwiseOperations.h"
 #include "TextureManager.h"//Used to get TextureParameter...
+#include "Color.h"
 #define GUIRECT_ID_TYPE							uint32_t
 ////GUI rectangle states
 #define GUIRECT_STATE_TYPE						uint32_t
@@ -65,10 +66,10 @@ namespace spehs
 		static int16_t defaultDepth;//Default depth where GUI rectangles will be arranged
 		static int16_t tooltipDepthRelative;//Default depth modifier for tooltips relative to their parent GUI rectangle
 		static spehs::TextureParameter defaultTextureParameters;
-		static glm::vec4 defaultColor;//Newly created GUI rectangles will have this color by default
-		static glm::vec4 defaultStringColor;//Newly created GUI rectangle strings will have this color by default
-		static glm::vec4 defaultTooltipColor;//Newly created tooltips will have this color by default
-		static glm::vec4 defaultTooltipStringColor;//Newly created tooltip string will have this color by default
+		static Color defaultColor;//Newly created GUI rectangles will have this color by default
+		static Color defaultStringColor;//Newly created GUI rectangle strings will have this color by default
+		static Color defaultTooltipColor;//Newly created tooltips will have this color by default
+		static Color defaultTooltipStringColor;//Newly created tooltip string will have this color by default
 		friend class GUIRectangleContainer;
 		friend class GUIWindow;
 
@@ -99,17 +100,16 @@ namespace spehs
 		/// Checks whether the mouse is above this rectangle. Returns mouse hover value
 		virtual bool updateMouseHover();
 		//Color
-		void setColor(const glm::vec3& color);
-		void setColor(const glm::vec4& color);
-		void setColor(const unsigned char r, const unsigned char g, const unsigned char b, const unsigned char a = 255);
-		glm::vec4 getColor() const { return color; }
-		void setColorAlpha(const float a);
-		void setColorAlpha(const unsigned char a);
-		void setParent(GUIRectangleContainer* Parent);
+		void setColor(const Color& color);
+		Color getColor() const { return color; }
+		void setAlpha(const Color::Component& a);
+		//Depth
 		virtual void setDepth(const int16_t depth);
 		int16_t getDepth() const;
+		//Access base polygon
 		spehs::Polygon* getPolygonPtr() const { return polygon; }
 		//Hierarchy
+		void setParent(GUIRectangleContainer* Parent);
 		GUIRectangleContainer* getParentPtr() const { return parent; }
 		GUIRectangleContainer* getFirstGenerationParent();
 		bool isDescendantOf(GUIRectangleContainer* ascendant) const;
@@ -120,12 +120,8 @@ namespace spehs
 		virtual void setString(const std::string& str);
 		virtual void setStringSize(const int size);
 		virtual void setStringSizeRelative(const int relativeSize);///< Set string size relative to global default GUI text size.
-		virtual void setStringColor(const glm::vec3& col);
-		virtual void setStringColor(const glm::vec4& col);
-		virtual void setStringColor(const float r, const float g, const float b, const float a = 1.0f);
-		virtual void setStringColor(const unsigned char r, const unsigned char g, const unsigned char b, const unsigned char a = 255);
-		virtual void setStringAlpha(const float alpha);
-		virtual void setStringAlpha(const unsigned char a);
+		virtual void setStringColor(const Color& col);
+		virtual void setStringAlpha(const Color::Component& alpha);
 		std::string getString() const;
 		virtual void setJustification(const GUIRECT_STATE_TYPE justificationBit);///<NOTE: if non-justification bit is given, all justification bits will be cleared and given bit will be enabled
 		//Tooltip
@@ -134,7 +130,7 @@ namespace spehs
 		//Display texture
 		void setDisplayTexture(const std::string& path, const TextureParameter& _parameters);
 		void setDisplayTexture(const std::string& path);
-		void setDisplayTextureColor(const glm::vec4& color);
+		void setDisplayTextureColor(const Color& color);
 		enum class DisplayTexturePositionMode { left, right, center };
 		void setDisplayTexturePositionMode(const DisplayTexturePositionMode mode){ displayTexturePositionMode = mode; disableStateRecursiveUpwards(GUIRECT_MIN_SIZE_UPDATED_BIT | GUIRECT_SCALE_UPDATED_BIT | GUIRECT_POSITION_UPDATED_BIT); }
 		//Rectangle texture
@@ -240,7 +236,7 @@ namespace spehs
 		virtual void onEnableInput(){ inputEnabled = true; }
 		virtual void onDisableInput(){ inputEnabled = false; }
 
-		glm::vec4 color;///<Color values given to polygon. Ranges from 0.0f - 1.0f
+		Color color;///<Color values given to polygon. Ranges from 0.0f - 1.0f
 		glm::ivec2 position;///<The position of the rectangle, originating from the lower left corner, given in screen coordinates. Relative to parent's position
 		glm::ivec2 size;///<Current size of the rectangle
 		glm::ivec2 minSize;///<The minimum size of the rectangle. Checked whenever rezising the polygon.

@@ -27,52 +27,20 @@ namespace spehs
 		enableState(GUIRECT_POSITION_UPDATED_BIT);
 	}
 	//PROGRESS BAR COLOR SETTING
-	void GUIProgressBar::setProgressBarFrontColor(const glm::vec3& color)
+	void GUIProgressBar::setProgressBarFrontColor(const spehs::Color& color)
 	{
 		progressBarFront->setColor(color);
 	}
-	void GUIProgressBar::setProgressBarFrontColor(const glm::vec4& color)
+	void GUIProgressBar::setProgressBarFrontAlpha(const spehs::Color::Component& a)
 	{
-		progressBarFront->setColor(color);
+		progressBarFront->setAlpha(a);
 	}
-	void GUIProgressBar::setProgressBarFrontColor(const unsigned char r, const unsigned char g, const unsigned char b, const unsigned char a)
-	{
-		progressBarFront->setColor(r, g, b, a);
-	}
-	void GUIProgressBar::setProgressBarFrontColor(const float r, const float g, const float b, const float a)
-	{
-		progressBarFront->setColor(r, g, b, a);
-	}
-	void GUIProgressBar::setProgressBarFrontColorAlpha(const unsigned char a)
-	{
-		progressBarFront->setColorAlpha(a);
-	}
-	void GUIProgressBar::setProgressBarFrontColorAlpha(const float a)
-	{
-		progressBarFront->setColorAlpha(a);
-	}
-	void GUIProgressBar::setProgressBarBackColor(const glm::vec3& color)
+	void GUIProgressBar::setProgressBarBackColor(const spehs::Color& color)
 	{
 		progressBarBack->setColor(color);
 	}
-	void GUIProgressBar::setProgressBarBackColor(const glm::vec4& color)
+	void GUIProgressBar::setProgressBarBackAlpha(const spehs::Color::Component& a)
 	{
-		progressBarBack->setColor(color);
-	}
-	void GUIProgressBar::setProgressBarBackColor(const unsigned char r, const unsigned char g, const unsigned char b, const unsigned char a)
-	{
-		progressBarBack->setColor(r, g, b, a);
-	}
-	void GUIProgressBar::setProgressBarBackColor(const float r, const float g, const float b, const float a)
-	{
-		progressBarBack->setColor(r, g, b, a);
-	}
-	void GUIProgressBar::setProgressBarBackColorAlpha(const unsigned char a)
-	{
-		progressBarBack->setColorAlpha(a);
-	}
-	void GUIProgressBar::setProgressBarBackColorAlpha(const float a)
-	{
-		progressBarBack->setColorAlpha(a);
+		progressBarBack->setAlpha(a);
 	}
 }

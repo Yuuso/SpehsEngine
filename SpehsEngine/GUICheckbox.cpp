@@ -11,14 +11,17 @@
 
 namespace spehs
 {
+	const spehs::Color GUICheckbox::defaultCheckboxFillingColor(30, 30, 30);
+	const spehs::Color GUICheckbox::defaultCheckboxOuterColor(160, 170, 180);
+
 	GUICheckbox::GUICheckbox(const bool checkboxStateEnabled) : ValueEditor(checkboxStateEnabled), checkboxSize(20)
 	{
 		checkboxBackground = spehs::Polygon::create(Shape::BUTTON, getDepth() + 1, 1.0f, 1.0f);
-		checkboxBackground->setColor(30, 30, 30);
+		checkboxBackground->setColor(defaultCheckboxFillingColor);
 		checkboxBackground->setCameraMatrixState(false);
 
 		checkboxFilling = spehs::Polygon::create(Shape::BUTTON, getDepth() + 2, 1.0f, 1.0f);
-		checkboxFilling->setColor(160, 170, 180);
+		checkboxFilling->setColor(defaultCheckboxOuterColor);
 		checkboxFilling->setCameraMatrixState(false);
 
 		onEditorValueChange();
@@ -51,9 +54,9 @@ namespace spehs
 	{
 		//Filling color
 		if (editorValue)
-			checkboxFilling->setColorAlpha(SELECTED_ALPHA);
+			checkboxFilling->setAlpha(SELECTED_ALPHA);
 		else
-			checkboxFilling->setColorAlpha(UNSELECTED_ALPHA);
+			checkboxFilling->setAlpha(UNSELECTED_ALPHA);
 	}
 	void GUICheckbox::setRenderState(const bool _state)
 	{

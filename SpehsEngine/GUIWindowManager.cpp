@@ -17,7 +17,7 @@ namespace spehs
 		popupShade = Polygon::create(Shape::BUTTON, 0, spehs::ApplicationData::getWindowWidth(), spehs::ApplicationData::getWindowHeight());
 		popupShade->setCameraMatrixState(false);
 		popupShade->setPosition(0, 0);
-		setPopupShadeColor(40, 55, 45, 80);
+		setPopupShadeColor(spehs::Color(40, 55, 45, 80));
 
 		setSystemDepth(GUIRectangle::defaultDepth);
 		batchManager.endSection();
@@ -88,12 +88,12 @@ namespace spehs
 		{
 			//Render state & alpha
 			popupShade->setRenderState(true);
-			if (popupShade->getColorAlpha() < popupShadeAlpha)
+			if (popupShade->getAlpha() < popupShadeAlpha)
 			{
-				float a(popupShade->getColorAlpha() + time::getDeltaTimeAsSeconds());
-				if (a > popupShadeAlpha)
+				float a(popupShade->getAlpha() + time::getDeltaTimeAsSeconds());
+				if (a > (float)popupShadeAlpha)
 					a = popupShadeAlpha;
-				popupShade->setColorAlpha(a);
+				popupShade->setAlpha(a);
 			}
 
 			//Update
@@ -118,7 +118,7 @@ namespace spehs
 		else if (popupShade->getRenderState())
 		{
 			popupShade->setRenderState(false);
-			popupShade->setColorAlpha(0.0f);
+			popupShade->setAlpha(0.0f);
 		}
 
 		//Refresh requests before updates: if done after the updates, render would end up displaying un-updated GUI
@@ -313,9 +313,9 @@ namespace spehs
 			popups[i]->setDepth(systemDepth + windows.size() * depthPerWindow + 1 + (popups.size() - 1) * 20 - i * 20);
 		batchManager.endSection();
 	}
-	void GUIWindowManager::setPopupShadeColor(const unsigned char r, const unsigned char g, const unsigned char b, const unsigned char a)
+	void GUIWindowManager::setPopupShadeColor(const spehs::Color& col)
 	{
-		popupShade->setColor(r, g, b, a);
-		popupShadeAlpha = a / 255.0f;
+		popupShade->setColor(col);
+		popupShadeAlpha = col.a;
 	}
 }

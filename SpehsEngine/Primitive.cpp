@@ -44,7 +44,7 @@ namespace spehs
 		scaleX = 1.0f;
 		scaleY = 1.0f;
 		rotationVector = glm::vec3(0.0f, 0.0f, 1.0f);//?
-		primitiveColor = glm::vec4(1.0f);
+		primitiveColor = spehs::Color(255, 255, 255, 255);
 		scaledMatrix = glm::mat4(1.0f);
 		scaledRotatedMatrix = glm::mat4(1.0f);
 	}
@@ -245,112 +245,31 @@ namespace spehs
 #endif
 		rotationVector = _newRotationVector;
 	}
-
-	void Primitive::setColor(const glm::vec4 &_newColor)
-	{
-		primitiveColor = _newColor;
-		for (unsigned i = 0; i < worldVertexArray.size(); i++)
-		{
-			worldVertexArray[i].color.setColor(primitiveColor);
-		}
-	}
-
-	void Primitive::setColor(const glm::vec3 &_newColor)
-	{
-		primitiveColor = glm::vec4(_newColor, primitiveColor.a);
-		for (unsigned i = 0; i < worldVertexArray.size(); i++)
-		{
-			worldVertexArray[i].color.setColor(primitiveColor);
-		}
-	}
-	void Primitive::setColor(const unsigned char _r, const unsigned char _g, const unsigned char _b)
-	{
-		primitiveColor = glm::vec4((float) _r / 255.0f, (float) _g / 255.0f, (float) _b / 255.0f, primitiveColor.a);
-		for (unsigned i = 0; i < worldVertexArray.size(); i++)
-		{
-			worldVertexArray[i].color.setColor(primitiveColor);
-		}
-	}
-
-	void Primitive::setColor(const unsigned char _r, const unsigned char _g, const unsigned char _b, const unsigned char _a)
-	{
-		primitiveColor = glm::vec4((float) _r / 255.0f, (float) _g / 255.0f, (float) _b / 255.0f, (float) _a / 255.0f);
-		for (unsigned i = 0; i < worldVertexArray.size(); i++)
-		{
-			worldVertexArray[i].color.setColor(primitiveColor);
-		}
-	}
-
-	void Primitive::setColor(const CommonColor& _color)
-	{
-		switch (_color)
-		{
-		case WHITE:
-			setColor(255, 255, 255);
-			break;
-		case BLACK:
-			setColor(0, 0, 0);
-			break;
-		case RED:
-			setColor(255, 0, 0);
-			break;
-		case ORANGE:
-			setColor(255, 128, 0);
-			break;
-		case YELLOW:
-			setColor(255, 255, 0);
-			break;
-		case GREEN:
-			setColor(0, 255, 0);
-			break;
-		case CYAN:
-			setColor(0, 255, 255);
-			break;
-		case BLUE:
-			setColor(0, 0, 255);
-			break;
-		case MAGENTA:
-			setColor(255, 0, 255);
-			break;
-		default:
-			exceptions::unexpectedError("Invalid CommonColor: " + std::to_string(_color));
-			break;
-		}
-	}
-
-	void Primitive::setColor(const unsigned char* _rgbaArray)
-	{
-		primitiveColor = glm::vec4((float)_rgbaArray[0] / 255.0f, (float)_rgbaArray[1] / 255.0f, (float)_rgbaArray[2] / 255.0f, (float)_rgbaArray[3] / 255.0f);
-		for (unsigned i = 0; i < worldVertexArray.size(); i++)
-		{
-			worldVertexArray[i].color.setColor(primitiveColor);
-		}
-	}
 	
 	void Primitive::setColor(const Primitive& other)
 	{
 		primitiveColor = other.primitiveColor;
 		for (unsigned i = 0; i < worldVertexArray.size(); i++)
 		{
-			worldVertexArray[i].color.setColor(primitiveColor);
+			worldVertexArray[i].color = primitiveColor;
 		}
 	}
 
-	void Primitive::setColorAlpha(const float _a)
+	void Primitive::setColor(const spehs::Color& _newColor)
 	{
-		primitiveColor.a = _a;
+		primitiveColor = _newColor;
 		for (unsigned i = 0; i < worldVertexArray.size(); i++)
 		{
-			worldVertexArray[i].color.rgba.a = primitiveColor.a;
+			worldVertexArray[i].color = primitiveColor;
 		}
 	}
 
-	void Primitive::setColorAlpha(const unsigned char _a)
+	void Primitive::setAlpha(const spehs::Color::Component& _newAlpha)
 	{
-		primitiveColor.a = (float) _a / 255.0f;
+		primitiveColor.a = _newAlpha;
 		for (unsigned i = 0; i < worldVertexArray.size(); i++)
 		{
-			worldVertexArray[i].color.rgba.a = primitiveColor.a;
+			worldVertexArray[i].color.a = primitiveColor.a;
 		}
 	}
 

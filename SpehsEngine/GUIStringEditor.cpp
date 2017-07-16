@@ -60,22 +60,12 @@ namespace spehs
 		GUIRectangle::setStringSizeRelative(relativeSize);
 		typeCharacter->setFontSize(spehs::ApplicationData::GUITextSize + relativeSize);
 	}
-	void GUIStringEditor::setStringColor(const glm::vec4& col)
+	void GUIStringEditor::setStringColor(const Color& col)
 	{
 		GUIRectangle::setStringColor(col);
 		typeCharacter->setColor(col);
 	}
-	void GUIStringEditor::setStringColor(const unsigned char r, const unsigned char g, const unsigned char b, const unsigned char a)
-	{
-		GUIRectangle::setStringColor(r, g, b, a);
-		typeCharacter->setColor(r, g, b, a);
-	}
-	void GUIStringEditor::setStringAlpha(const float alpha)
-	{
-		GUIRectangle::setStringAlpha(alpha);
-		typeCharacter->setAlpha(alpha);
-	}
-	void GUIStringEditor::setStringAlpha(const unsigned char a)
+	void GUIStringEditor::setStringAlpha(const Color::Component& a)
 	{
 		GUIRectangle::setStringAlpha(a);
 		typeCharacter->setAlpha(a);

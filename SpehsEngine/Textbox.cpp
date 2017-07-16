@@ -1,3 +1,4 @@
+#include <algorithm>
 #include "StringOperations.h"
 #include "GUIRectangle.h"
 #include "Textbox.h"
@@ -48,53 +49,21 @@ namespace spehs
 			(1 + text->getLineCount()) * textBorder - text->getFontDescender() + text->getFontHeight() * text->getLineCount());
 		setPosition(polygon->getX(), polygon->getY());
 	}
-	void Textbox::setTextColor(const glm::vec3& rgb)
+	void Textbox::setTextColor(const spehs::Color& color)
 	{
-		text->setColor(rgb);
+		text->setColor(color);
 	}
-	void Textbox::setTextColor(const glm::vec4& rgba)
+	void Textbox::setTextAlpha(const spehs::Color::Component& alpha)
 	{
-		text->setColor(rgba);
+		text->setAlpha(alpha);
 	}
-	void Textbox::setTextColor(const float r, const float g, const float b, const float a)
+	void Textbox::setBackgroundColor(const spehs::Color& color)
 	{
-		text->setColor(r, g, b, a);
+		polygon->setColor(color);
 	}
-	void Textbox::setTextColor(const unsigned char r, const unsigned char g, const unsigned char b, const unsigned char a)
+	void Textbox::setBackgroundAlpha(const spehs::Color::Component& alpha)
 	{
-		text->setColor(r,g,b,a);
-	}
-	void Textbox::setTextColorAlpha(const unsigned char a)
-	{
-		text->setAlpha(a);
-	}
-	void Textbox::setTextColorAlpha(const float a)
-	{
-		text->setAlpha(a);
-	}
-	void Textbox::setBackgroundColor(const glm::vec3& rgb)
-	{
-		polygon->setColor(rgb);
-	}
-	void Textbox::setBackgroundColor(const glm::vec4& rgba)
-	{
-		polygon->setColor(rgba);
-	}
-	void Textbox::setBackgroundColor(const float r, const float g, const float b, const float a)
-	{
-		polygon->setColor(r, g, b, a);
-	}
-	void Textbox::setBackgroundColor(const unsigned char r, const unsigned char g, const unsigned char b, const unsigned char a)
-	{
-		polygon->setColor(r, g, b, a);
-	}
-	void Textbox::setBackgroundColorAlpha(const unsigned char a)
-	{
-		polygon->setColorAlpha(a);
-	}
-	void Textbox::setBackgroundColorAlpha(const float a)
-	{
-		polygon->setColorAlpha(a);
+		polygon->setAlpha(alpha);
 	}
 
 

@@ -1,5 +1,6 @@
 #include "Exceptions.h"
 #include "Console.h"
+#include "Color.h"
 
 #include <cstdlib>
 #include <iostream>
@@ -23,7 +24,7 @@ namespace spehs
 		void unexpectedError(const std::string errorString)
 		{
 			if (consoleLoggingEnabled)
-				console::log("Unexpected Error: " + errorString, glm::vec3(1.0f, 0.0f, 0.0f));
+				console::log("Unexpected Error: " + errorString, Color(1.0f, 0.0f, 0.0f));
 			std::cout << std::endl;
 			std::cout << "Unexpected Error: " << errorString << std::endl;
 			std::cout << "Press 'Enter' to continue." << std::endl;
@@ -32,7 +33,7 @@ namespace spehs
 		void warning(const std::string warningString)
 		{
 			if (consoleLoggingEnabled)
-				console::log("Warning: " + warningString, glm::vec3(0.9f, 0.6f, 0.1f));
+				console::log("Warning: " + warningString, Color(0.9f, 0.6f, 0.1f));
 			std::cout << std::endl;
 			std::cout << "Warning: " << warningString << std::endl;
 		}

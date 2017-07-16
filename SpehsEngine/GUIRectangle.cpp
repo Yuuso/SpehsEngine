@@ -21,10 +21,10 @@ namespace spehs
 {
 	int16_t GUIRectangle::defaultDepth = 10000;
 	int16_t GUIRectangle::tooltipDepthRelative = 1000;
-	glm::vec4 GUIRectangle::defaultColor(1.0f, 1.0f, 1.0f, 1.0f);
-	glm::vec4 GUIRectangle::defaultStringColor(0.0f, 0.0f, 0.0f, 1.0f);
-	glm::vec4 GUIRectangle::defaultTooltipColor(1.0f, 1.0f, 1.0f, 1.0f);
-	glm::vec4 GUIRectangle::defaultTooltipStringColor(0.0f, 0.0f, 0.0f, 1.0f);
+	Color GUIRectangle::defaultColor(1.0f, 1.0f, 1.0f, 1.0f);
+	Color GUIRectangle::defaultStringColor(0.0f, 0.0f, 0.0f, 1.0f);
+	Color GUIRectangle::defaultTooltipColor(1.0f, 1.0f, 1.0f, 1.0f);
+	Color GUIRectangle::defaultTooltipStringColor(0.0f, 0.0f, 0.0f, 1.0f);
 	spehs::TextureParameter GUIRectangle::defaultTextureParameters(spehs::TextureFiltering::Nearest, spehs::TextureFiltering::Nearest);
 
 	GUIRectangle::DisplayTexture::~DisplayTexture()
@@ -152,7 +152,7 @@ namespace spehs
 			if (getMouseHover())
 			{
 				//Create temp vec4 col, lighten it a bit from color
-				glm::vec4 col = color;
+				Color col = color;
 				for (unsigned i = 0; i < 3; i++)
 				{
 					col[i] += 0.07f;
@@ -334,36 +334,15 @@ namespace spehs
 
 		enableState(GUIRECT_POSITION_UPDATED_BIT);
 	}
-	void GUIRectangle::setColor(const glm::vec3& c)
-	{
-		color.r = c.r;
-		color.g = c.g;
-		color.b = c.b;
-		color.a = 1.0f;
-		polygon->setColor(color);
-	}
-	void GUIRectangle::setColor(const glm::vec4& c)
+	void GUIRectangle::setColor(const Color& c)
 	{
 		color = c;
-		polygon->setColor(color);
+		polygon->setColor(c);
 	}
-	void GUIRectangle::setColor(const unsigned char r, const unsigned char g, const unsigned char b, const unsigned char a)
-	{
-		color[0] = r / 255.0f;
-		color[1] = g / 255.0f;
-		color[2] = b / 255.0f;
-		color[3] = a / 255.0f;
-		polygon->setColor(color);
-	}
-	void GUIRectangle::setColorAlpha(const float a)
+	void GUIRectangle::setAlpha(const Color::Component& a)
 	{
 		color.a = a;
-		polygon->setColorAlpha(a);
-	}
-	void GUIRectangle::setColorAlpha(const unsigned char a)
-	{
-		color.a = a / 255.0f;
-		polygon->setColorAlpha(color.a);
+		polygon->setAlpha(a);
 	}
 	void GUIRectangle::setDepth(const int16_t depth)
 	{
@@ -462,41 +441,17 @@ namespace spehs
 	{
 		setStringSize(spehs::ApplicationData::GUITextSize + relativeSize);
 	}
-	void GUIRectangle::setStringColor(const glm::vec3& col)
+	void GUIRectangle::setStringColor(const Color& col)
 	{
 		if (!text)
 			createText();
 		text->setColor(col);
 	}
-	void GUIRectangle::setStringColor(const glm::vec4& col)
-	{
-		if (!text)
-			createText();
-		text->setColor(col); 
-	}
-	void GUIRectangle::setStringColor(const float r, const float g, const float b, const float a)
-	{
-		if (!text)
-			createText();
-		text->setColor(r, g, b, a);
-	}
-	void GUIRectangle::setStringColor(const unsigned char r, const unsigned char g, const unsigned char b, const unsigned char a)
-	{
-		if (!text)
-			createText();
-		text->setColor(r, g, b, a);
-	}
-	void GUIRectangle::setStringAlpha(const float alpha)
+	void GUIRectangle::setStringAlpha(const Color::Component& alpha)
 	{
 		if (!text)
 			createText();
 		text->setAlpha(alpha);
-	}
-	void GUIRectangle::setStringAlpha(const unsigned char a)
-	{
-		if (!text)
-			createText();
-		text->setAlpha(a);
 	}
 	std::string GUIRectangle::getString() const
 	{
@@ -532,7 +487,7 @@ namespace spehs
 	{
 		setDisplayTexture(path, defaultTextureParameters);
 	}
-	void GUIRectangle::setDisplayTextureColor(const glm::vec4& color)
+	void GUIRectangle::setDisplayTextureColor(const Color& color)
 	{
 		if (displayTexture)
 			displayTexture->polygon->setColor(color);

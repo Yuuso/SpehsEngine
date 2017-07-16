@@ -22,10 +22,8 @@ namespace spehs
 		void setString(const std::string& str) override;
 		void setStringSize(const int size) override;
 		void setStringSizeRelative(const int relativeSize) override;
-		void setStringColor(const glm::vec4& col) override;
-		void setStringColor(const unsigned char r, const unsigned char g, const unsigned char b, const unsigned char a = 255) override;
-		void setStringAlpha(const float alpha) override;
-		void setStringAlpha(const unsigned char a) override;
+		void setStringColor(const spehs::Color& col) override;
+		void setStringAlpha(const spehs::Color::Component& a) override;
 		void updatePosition() override;
 		void updateMinSize() override;
 		void inputUpdate() override;

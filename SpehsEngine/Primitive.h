@@ -2,7 +2,7 @@
 
 #include "Vertex.h"
 #include "Depth.h"
-#include "Colors.h"
+#include "Color.h"
 
 #include <glm/vec2.hpp>
 #include <glm/vec3.hpp>
@@ -55,7 +55,7 @@ namespace spehs
 	};
 
 	//Base class for polygon, line and point
-	class Primitive
+	class Primitive : public Colorable
 	{
 		friend class BatchManager;
 		friend class PrimitiveBatch;
@@ -86,15 +86,9 @@ namespace spehs
 		void setRotation(const Primitive& _other);
 		void rotate(const float _rotation);
 		void setRotationVector(const glm::vec3 &_newRotationVector);
-		void setColor(const glm::vec4 &_newColor);
-		void setColor(const glm::vec3 &_newColor);
-		void setColor(const unsigned char _r, const unsigned char _g, const unsigned char _b);
-		void setColor(const unsigned char _r, const unsigned char _g, const unsigned char _b, const unsigned char _a);
-		void setColor(const CommonColor& _color);
-		void setColor(const unsigned char* _rgbaArray);///< Reads 4 bytes from array. Channel value ranges are from 0 to 255.
 		void setColor(const Primitive& other);
-		void setColorAlpha(const float _a);
-		void setColorAlpha(const unsigned char _a);
+		void setColor(const spehs::Color& _newColor) override;
+		void setAlpha(const spehs::Color::Component& _newAlpha) override;
 		void setCameraMatrixState(const bool _newState);
 		void setPlaneDepth(const PlaneDepth &_newPlaneDepth);
 		void setLineWidth(const float &_newWidth);
@@ -112,8 +106,8 @@ namespace spehs
 		bool getRenderState() const { return renderState; }
 		PlaneDepth getPlaneDepth() const { return planeDepth; }
 		int getShaderIndex() const { return shaderIndex; }
-		glm::vec4 getColor() const { return primitiveColor; }
-		float getColorAlpha() const { return primitiveColor.a; }
+		spehs::Color getColor() const { return primitiveColor; }
+		spehs::Color::Component getAlpha() const { return primitiveColor.a; }
 		float getScaleX() const { return scaleX; }
 		float getScaleY() const { return scaleY; }
 		//Public Variables
@@ -136,7 +130,7 @@ namespace spehs
 		float rotation;
 		float scaleX, scaleY;
 		glm::vec3 rotationVector;
-		glm::vec4 primitiveColor;
+		Color primitiveColor;
 		glm::mat4 scaledMatrix;
 		glm::mat4 scaledRotatedMatrix;
 

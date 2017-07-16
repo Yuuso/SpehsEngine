@@ -27,12 +27,12 @@ namespace spehs
 	int GUIWindow::leftBorder = 0;
 	int GUIWindow::rightBorder = 0;
 	int GUIWindow::strechWidth = 5;
-	glm::vec4 GUIWindow::strechColorFocused = glm::vec4(1.0f, 0.22f, 0.0f, 1.0f);
-	glm::vec4 GUIWindow::strechColorUnfocused = glm::vec4(0.05f, 0.05f, 0.7f, 1.0f);
-	glm::vec4 GUIWindow::headerBackgroundColor = glm::vec4(0.8f, 0.8f, 0.8f, 1.0f);
-	glm::vec4 GUIWindow::headerStringColor = glm::vec4(0.2f, 0.2f, 0.2f, 1.0f);
-	glm::vec4 GUIWindow::exitBackgroundColor = glm::vec4(0.6f, 0.05f, 0.05f, 1.0f);
-	glm::vec4 GUIWindow::exitStringColor = glm::vec4(0.2f, 0.2f, 0.2f, 1.0f);
+	spehs::Color GUIWindow::strechColorFocused(1.0f, 0.22f, 0.0f, 1.0f);
+	spehs::Color GUIWindow::strechColorUnfocused(0.05f, 0.05f, 0.7f, 1.0f);
+	spehs::Color GUIWindow::headerBackgroundColor(0.8f, 0.8f, 0.8f, 1.0f);
+	spehs::Color GUIWindow::headerStringColor(0.2f, 0.2f, 0.2f, 1.0f);
+	spehs::Color GUIWindow::exitBackgroundColor(0.6f, 0.05f, 0.05f, 1.0f);
+	spehs::Color GUIWindow::exitStringColor(0.2f, 0.2f, 0.2f, 1.0f);
 
 	GUIWindow::GUIWindow() : doubleClickTimer(0), strechState(0), refreshRequests(0)
 	{

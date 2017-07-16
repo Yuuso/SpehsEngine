@@ -115,29 +115,17 @@ namespace spehs
 			else
 				ValueEditor::setEditorValue(newValue);
 		}
-		void setColor(const unsigned char r, const unsigned char g, const unsigned char b, const unsigned char a = 255)
-		{
-			GUIRectangle::setColor(r, g, b, a);
-			for (unsigned i = 0; i < elements.size(); i++)
-				elements[i]->setColor(r, g, b, a);
-		}
-		void setColor(const float r, const float g, const float b, const float a = 1.0f)
-		{
-			GUIRectangle::setColor(r, g, b, a);
-			for (unsigned i = 0; i < elements.size(); i++)
-				elements[i]->setColor(r, g, b, a);
-		}
-		void setColor(const glm::vec3& color)
+		void setColor(const spehs::Color& color)
 		{
 			GUIRectangle::setColor(color);
 			for (unsigned i = 0; i < elements.size(); i++)
 				elements[i]->setColor(color);
 		}
-		void setColor(const glm::vec4& color)
+		void setAlpha(const spehs::Color::Component& alpha)
 		{
-			GUIRectangle::setColor(color);
+			GUIRectangle::setAlpha(alpha);
 			for (unsigned i = 0; i < elements.size(); i++)
-				elements[i]->setColor(color);
+				elements[i]->setAlpha(alpha);
 		}
 		void addElement(spehs::GUIRectangle* element) override
 		{

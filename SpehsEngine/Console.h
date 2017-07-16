@@ -1,8 +1,9 @@
 #pragma once
 #include <vector>
 #include <string>
-#include <glm/vec3.hpp>
+#include <stdint.h>
 #include "ConsoleVariable.h"
+#include "Color.h"
 #define CONSOLE_FONT_COLOR 1.0f, 0.6f, 0.0f
 
 /**Console is accessed through these functions.
@@ -40,8 +41,8 @@ namespace spehs
 		void clearCommands();
 
 		//Console log / exceptions
-		void log(const std::string str, const glm::vec3& color = glm::vec3(CONSOLE_FONT_COLOR));
-		void log(const char* str, const unsigned length, const glm::vec3& color = glm::vec3(CONSOLE_FONT_COLOR));
+		void log(const std::string str, const Color color = Color(CONSOLE_FONT_COLOR));
+		void log(const char* str, const unsigned length, const Color color = Color(CONSOLE_FONT_COLOR));
 		void clearLog();
 		bool textEntered();///< Returns true if text was "executed" to console during the last update cycle (text without '/' (command) prefix)
 		std::string getTextEntered();///< Returns latest text executed to console

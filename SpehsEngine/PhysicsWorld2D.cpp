@@ -116,8 +116,8 @@ namespace spehs
 								//DEbug colors
 								if (SHOW_COLORS)
 								{
-									bodies[cycle1]->ownerObject->getComponent<Sprite>()->setColor(spehs::RED);
-									bodies[cycle2]->ownerObject->getComponent<Sprite>()->setColor(spehs::RED);
+									bodies[cycle1]->ownerObject->getComponent<Sprite>()->setColor(spehs::Color(255,0,0,255));
+									bodies[cycle2]->ownerObject->getComponent<Sprite>()->setColor(spehs::Color(255,0,0,255));
 								}
 
 								//Positional Correction
@@ -199,8 +199,8 @@ namespace spehs
 								//DEbug colors
 								if (SHOW_COLORS)
 								{
-									bodies[cycle1]->ownerObject->getComponent<Sprite>()->setColor(spehs::GREEN);
-									bodies[cycle2]->ownerObject->getComponent<Sprite>()->setColor(spehs::GREEN);
+									bodies[cycle1]->ownerObject->getComponent<Sprite>()->setColor(spehs::Color(0,255,0,255));
+									bodies[cycle2]->ownerObject->getComponent<Sprite>()->setColor(spehs::Color(0,255,0,255));
 								}
 								//Positional Correction
 								const float percentage = 0.25f;
@@ -216,8 +216,8 @@ namespace spehs
 								//DEbug colors
 								if (SHOW_COLORS)
 								{
-									bodies[cycle1]->ownerObject->getComponent<Sprite>()->setColor(spehs::WHITE);
-									bodies[cycle2]->ownerObject->getComponent<Sprite>()->setColor(spehs::WHITE);
+									bodies[cycle1]->ownerObject->getComponent<Sprite>()->setColor(spehs::Color(255,255,255,255));
+									bodies[cycle2]->ownerObject->getComponent<Sprite>()->setColor(spehs::Color(255,255,255,255));
 								}
 								//Ignore
 								char breakpoint = 0;

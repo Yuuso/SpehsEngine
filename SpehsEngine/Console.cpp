@@ -68,7 +68,7 @@ namespace spehs
 		static std::string input;
 		static std::string textExecuted;///< Text executed without '/'
 		static std::vector<Text*> lines;
-		static std::vector<std::pair<std::string, glm::vec3>> newLines;
+		static std::vector<std::pair<std::string, Color>> newLines;
 		static std::vector<ConsoleCommand> commands;
 		static std::vector<std::string> consoleWords;
 		static std::vector<ConsoleVariable<int>> intVariables;
@@ -110,7 +110,7 @@ namespace spehs
 			}
 			backgroundShade->setCameraMatrixState(false);
 			backgroundShade->setPosition(0.0f, 0.0f);
-			backgroundShade->setColor(0.05f, 0.1f, 0.15f, 0.5f);
+			backgroundShade->setColor(spehs::Color(0.05f, 0.1f, 0.15f, 0.5f));
 
 			fpsCounter = consoleBatchManager->createText(10000);
 			if (!fpsCounter)
@@ -119,13 +119,13 @@ namespace spehs
 				return false;
 			}
 			fpsCounter->setFont(spehs::ApplicationData::GUITextFontPath, spehs::ApplicationData::consoleTextSize);
-			fpsCounter->setColor(glm::vec4(1.0f, 0.3f, 0.0f, 0.85f));
+			fpsCounter->setColor(Color(1.0f, 0.3f, 0.0f, 0.85f));
 			fpsCounter->setString("FPS:0123456789\nDraw calls:0123456789\nVertices:0123456789");
 			fpsCounter->setPosition(glm::vec2(5, spehs::ApplicationData::getWindowHeight() - fpsCounter->getTextHeight()));
 
 			consoleText = consoleBatchManager->createText();
 			consoleText->setFont(spehs::ApplicationData::GUITextFontPath, spehs::ApplicationData::consoleTextSize);
-			consoleText->setColor(glm::vec4(1.0f, 0.6f, 0.0f, spehs::ApplicationData::consoleTextAlpha));
+			consoleText->setColor(Color(1.0f, 0.6f, 0.0f, spehs::ApplicationData::consoleTextAlpha));
 			consoleText->setPosition(glm::vec2(CONSOLE_BORDER, CONSOLE_BORDER));
 			consoleText->setString("><");
 			consoleText->setRenderState(checkState(CONSOLE_OPEN_BIT));
@@ -237,7 +237,8 @@ namespace spehs
 				}
 				lines.push_back(consoleBatchManager->createText(planeDepth));
 				lines.back()->setFont(spehs::ApplicationData::GUITextFontPath, spehs::ApplicationData::consoleTextSize);
-				lines.back()->setColor(glm::vec4(newLines[i].second, spehs::ApplicationData::consoleTextAlpha));
+				lines.back()->setColor(newLines[i].second);
+				lines.back()->setAlpha(spehs::ApplicationData::consoleTextAlpha);
 				lines.back()->setString(&newLines[i].first[0], newLines[i].first.size());
 				visibility = 1.0f;
 				for (unsigned i = 0; i < lines.size(); i++)
@@ -482,7 +483,7 @@ namespace spehs
 			if (consoleText->getRenderState() || (lines.size() > 0 && lines.front()->getRenderState()))
 			{
 				backgroundShade->setRenderState(true);
-				backgroundShade->setColorAlpha(visibility * 0.8f);
+				backgroundShade->setAlpha(visibility * 0.8f);
 				int w = 0.0f, h = 0.0f;
 				if (consoleText->getRenderState())
 				{
@@ -592,11 +593,11 @@ namespace spehs
 
 
 		//Console logging
-		void log(const std::string str, const glm::vec3& color)
+		void log(const std::string str, const Color color)
 		{
 			log(&str[0], str.size(), color);
 		}
-		void log(const char* str, const unsigned length, const glm::vec3& color)
+		void log(const char* str, const unsigned length, const Color color)
 		{
 			//Validate string characters
 			std::string string(str, length);
@@ -728,9 +729,9 @@ namespace spehs
 			{
 				if (consoleWords.size() > 1 && consoleWords[1] == "memory")
 				{
-					glm::vec3 color(0.8f, 0.8f, 0.8f);
+					static const Color color(0.8f, 0.8f, 0.8f);
 					log("-------------------", color);
-					log("Spehs Engine select memory allocations:", color * 0.75f);
+					log("Spehs Engine select memory allocations:", color);
 					log("Remaining allocations / Total (runtime) allocations", color);
 					log("GUI Rectangles: " + std::to_string(guiRectangleAllocations - guiRectangleDeallocations) + "/" + std::to_string(guiRectangleAllocations), color);
 					log("Primitives: " + std::to_string(primitiveAllocations - primitiveDeallocations) + "/" + std::to_string(primitiveAllocations), color);

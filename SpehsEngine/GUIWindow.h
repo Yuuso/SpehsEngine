@@ -19,14 +19,14 @@ namespace spehs
 		//Strech rectangle width
 		static int strechWidth;
 		//Strech colouring
-		static glm::vec4 strechColorFocused;
-		static glm::vec4 strechColorUnfocused;
+		static spehs::Color strechColorFocused;
+		static spehs::Color strechColorUnfocused;
 		//Header colouring
-		static glm::vec4 headerBackgroundColor;
-		static glm::vec4 headerStringColor;
+		static spehs::Color headerBackgroundColor;
+		static spehs::Color headerStringColor;
 		//Exit colouring
-		static glm::vec4 exitBackgroundColor;
-		static glm::vec4 exitStringColor;
+		static spehs::Color exitBackgroundColor;
+		static spehs::Color exitStringColor;
 
 		enum class PositionMode { StackUp, StackDown, Spread };
 	public:

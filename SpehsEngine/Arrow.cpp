@@ -82,27 +82,17 @@ namespace spehs
 			linePart->setRenderState(polygonPart->getRenderState());
 	}
 
-
-	void Arrow::setColor(const int _r, const int _b, const int _g, const int _a)
+	void Arrow::setColor(const spehs::Color& _col)
 	{
-		linePart->setColor(_r, _b, _g, _a);
-		polygonPart->setColor(_r, _b, _g, _a);
+		linePart->setColor(_col);
+		polygonPart->setColor(_col);
 	}
 
-
-	void Arrow::setColor(const glm::vec4 &_color)
+	void Arrow::setAlpha(const spehs::Color::Component& _alpha)
 	{
-		linePart->setColor(_color);
-		polygonPart->setColor(_color);
+		linePart->setAlpha(_alpha);
+		polygonPart->setAlpha(_alpha);
 	}
-
-
-	void Arrow::setColor(const CommonColor &_color)
-	{
-		linePart->setColor(_color);
-		polygonPart->setColor(_color);
-	}
-
 
 	void Arrow::setRenderState(const bool _value)
 	{

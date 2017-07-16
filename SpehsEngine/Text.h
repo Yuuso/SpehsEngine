@@ -3,7 +3,7 @@
 
 #include "Depth.h"
 #include "Vertex.h"
-#include "Colors.h"
+#include "Color.h"
 
 #include <glm/glm.hpp>
 
@@ -47,7 +47,7 @@ namespace spehs
 	};
 
 
-	class Text
+	class Text : public Colorable
 	{
 		friend class BatchManager;
 
@@ -78,13 +78,8 @@ namespace spehs
 		void setFont(Font* _font);
 		void setFontSize(const int _size);
 
-		void setColor(const glm::vec3& _col);
-		void setColor(const glm::vec4& _col);
-		void setColor(const CommonColor& _col);
-		void setColor(const float _red, const float _green, const float _blue, const float _alpha = 1.0f);
-		void setColor(const unsigned char _r, const unsigned char _g, const unsigned char _b, const unsigned char _a = 255);
-		void setAlpha(const float _alpha);
-		void setAlpha(const unsigned char _a);
+		void setColor(const spehs::Color& _newColor);
+		void setAlpha(const spehs::Color::Component& _newAlpha);
 
 		void setShader(const int &_shaderIndex);
 		void setCameraMatrixState(const bool _state) { cameraMatrixState = _state; }
@@ -116,7 +111,8 @@ namespace spehs
 		PlaneDepth getPlaneDepth() const { return planeDepth; }
 		bool getCameraMatrixState() const { return cameraMatrixState; }
 
-		glm::vec4 getColor() const { return color.rgba; }
+		spehs::Color getColor() const { return color; }
+		spehs::Color::Component getAlpha() const { return color.a; }
 
 		std::vector<GLuint> textureIDs;
 		std::vector<spehs::Vertex> worldVertexArray;
@@ -136,7 +132,7 @@ namespace spehs
 
 		std::string string;
 		glm::vec2 position;
-		spehs::ColorRGBA color;
+		spehs::Color color;
 		float scale;
 
 		int lineCount;

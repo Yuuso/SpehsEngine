@@ -16,7 +16,7 @@ namespace spehs
 		//Background rect
 		addElement(new GUIRectangle());
 		elements[BACKGROUND_INDEX]->disableState(GUIRECT_HOVER_COLOR_BIT);
-		elements[BACKGROUND_INDEX]->setColor(30, 35, 37, 200);
+		elements[BACKGROUND_INDEX]->setColor(spehs::Color(30, 35, 37, 200));
 
 		//Message rect
 		addElement(new GUIRectangle(_message));
@@ -121,16 +121,8 @@ namespace spehs
 		}
 		elements[MESSAGE_INDEX]->setPositionLocal(0, elements[OPTION1_INDEX]->getHeight() + BORDER_WIDTH);
 	}
-	void GUIPopup::setBackgroundColor(const glm::vec3& rgb)
+	void GUIPopup::setBackgroundColor(const spehs::Color& rgb)
 	{
 		elements[BACKGROUND_INDEX]->setColor(rgb);
-	}
-	void GUIPopup::setBackgroundColor(const glm::vec4& rgba)
-	{
-		elements[BACKGROUND_INDEX]->setColor(rgba);
-	}
-	void GUIPopup::setBackgroundColor(unsigned char r, unsigned char g, unsigned char b, unsigned char a)
-	{
-		elements[BACKGROUND_INDEX]->setColor(r, g, b, a);
 	}
 }

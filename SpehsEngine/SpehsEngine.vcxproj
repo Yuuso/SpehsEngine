@@ -173,7 +173,7 @@
     <ClInclude Include="AudioEngine.h" />
     <ClInclude Include="AudioManager.h" />
     <ClInclude Include="Collider.h" />
-    <ClInclude Include="Colors.h" />
+    <ClInclude Include="Color.h" />
     <ClInclude Include="GUIProgressBar.h" />
     <ClInclude Include="GUIRectangleColumn.h" />
     <ClInclude Include="GUIRectangleGrid.h" />

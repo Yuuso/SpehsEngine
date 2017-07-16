@@ -464,43 +464,14 @@ namespace spehs
 		position.y += _vec.y;
 		needPositionUpdate = true;
 	}
-	void Text::setColor(const glm::vec3& _vec)
+	void Text::setColor(const spehs::Color& _col)
 	{
-		color.rgba.r = _vec.r;
-		color.rgba.g = _vec.g;
-		color.rgba.b = _vec.b;
-		color.rgba.a = 1.0f;
+		color = _col;
 		needTextUpdate = true;
 	}
-	void Text::setColor(const glm::vec4& _vec)
+	void Text::setAlpha(const spehs::Color::Component& _a)
 	{
-		color = _vec;
-		needTextUpdate = true;
-	}
-	void Text::setColor(const float _r, const float _g, const float _b, const float _a)
-	{
-		color.rgba.r = _r;
-		color.rgba.g = _g;
-		color.rgba.b = _b;
-		color.rgba.a = _a;
-		needTextUpdate = true;
-	}
-	void Text::setColor(const unsigned char _r, const unsigned char _g, const unsigned char _b, const unsigned char _a)
-	{
-		color.rgba.r = _r / 255.0f;
-		color.rgba.g = _g / 255.0f;
-		color.rgba.b = _b / 255.0f;
-		color.rgba.a = _a / 255.0f;
-		needTextUpdate = true;
-	}
-	void Text::setAlpha(const float _alpha)
-	{
-		color.rgba.a = _alpha;
-		needTextUpdate = true;
-	}
-	void Text::setAlpha(const unsigned char _a)
-	{
-		color.rgba.a = _a / 255.0f;
+		color.a = _a;
 		needTextUpdate = true;
 	}
 	void Text::setLineSpacing(const int _lineSpacing)

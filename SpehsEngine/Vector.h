@@ -19,6 +19,58 @@ namespace spehs
 			: x(_x), y(_y), z(_z), w(_w)
 		{//Member initializizer constructor
 		}
+		
+		void operator+=(const Vector4<T>& other)
+		{
+			x += other.x;
+			y += other.y;
+			z += other.z;
+			w += other.w;
+		}
+
+		void operator-=(const Vector4<T>& other)
+		{
+			x -= other.x;
+			y -= other.y;
+			z -= other.z;
+			w -= other.w;
+		}
+
+		void operator*=(const T componentMultiplier)
+		{
+			x *= componentMultiplier;
+			y *= componentMultiplier;
+			z *= componentMultiplier;
+			w *= componentMultiplier;
+		}
+
+		void operator/=(const T componentDivider)
+		{
+			x /= componentDivider;
+			y /= componentDivider;
+			z /= componentDivider;
+			w /= componentDivider;
+		}
+
+		Vector4<T> operator+(const Vector4<T>& other)
+		{
+			return Vector4<T>(x + other.x, y + other.y, z + other.z, w + other.w);
+		}
+
+		Vector4<T> operator-(const Vector4<T>& other)
+		{
+			return Vector4<T>(x - other.x, y - other.y, z - other.z, w - other.w);
+		}
+
+		Vector4<T> operator*(const T componentMultiplier) const
+		{
+			return Vector4<T>(x * componentMultiplier, y * componentMultiplier, z * componentMultiplier, w * componentMultiplier);
+		}
+
+		Vector4<T> operator/(const T componentDivider) const
+		{
+			return Vector4<T>(x / componentDivider, y / componentDivider, z / componentDivider, w / componentDivider);
+		}
 
 		T& operator[](const int index)
 		{
@@ -72,6 +124,54 @@ namespace spehs
 		{//Member initializizer constructor
 		}
 
+		void operator+=(const Vector3<T>& other)
+		{
+			x += other.x;
+			y += other.y;
+			z += other.z;
+		}
+
+		void operator-=(const Vector3<T>& other)
+		{
+			x -= other.x;
+			y -= other.y;
+			z -= other.z;
+		}
+
+		void operator*=(const T componentMultiplier)
+		{
+			x *= componentMultiplier;
+			y *= componentMultiplier;
+			z *= componentMultiplier;
+		}
+
+		void operator/=(const T componentDivider)
+		{
+			x /= componentDivider;
+			y /= componentDivider;
+			z /= componentDivider;
+		}
+
+		Vector3<T> operator+(const Vector3<T>& other)
+		{
+			return Vector3<T>(x + other.x, y + other.y, z + other.z);
+		}
+
+		Vector3<T> operator-(const Vector3<T>& other)
+		{
+			return Vector3<T>(x - other.x, y - other.y, z - other.z);
+		}
+
+		Vector3<T> operator*(const T componentMultiplier) const
+		{
+			return Vector3<T>(x * componentMultiplier, y * componentMultiplier, z * componentMultiplier);
+		}
+
+		Vector3<T> operator/(const T componentDivider) const
+		{
+			return Vector3<T>(x / componentDivider, y / componentDivider, z / componentDivider);
+		}
+
 		T& operator[](const int index)
 		{
 			return *((T*)this + index);
@@ -120,6 +220,50 @@ namespace spehs
 		Vector2(const T _x, const T _y)
 			: x(_x), y(_y)
 		{//Member initializizer constructor
+		}
+
+		void operator+=(const Vector2<T>& other)
+		{
+			x += other.x;
+			y += other.y;
+		}
+
+		void operator-=(const Vector2<T>& other)
+		{
+			x -= other.x;
+			y -= other.y;
+		}
+
+		void operator*=(const T componentMultiplier)
+		{
+			x *= componentMultiplier;
+			y *= componentMultiplier;
+		}
+
+		void operator/=(const T componentDivider)
+		{
+			x /= componentDivider;
+			y /= componentDivider;
+		}
+
+		Vector2<T> operator+(const Vector2<T>& other)
+		{
+			return Vector2<T>(x + other.x, y + other.y, z + other.z);
+		}
+
+		Vector2<T> operator-(const Vector2<T>& other)
+		{
+			return Vector2<T>(x - other.x, y - other.y, z - other.z);
+		}
+
+		Vector2<T> operator*(const T componentMultiplier) const
+		{
+			return Vector2<T>(x * componentMultiplier, y * componentMultiplier);
+		}
+
+		Vector2<T> operator/(const T componentDivider) const
+		{
+			return Vector2<T>(x / componentDivider, y / componentDivider);
 		}
 
 		T& operator[](const int index)

@@ -18,7 +18,7 @@ namespace spehs
 		static std::string scrollUpTexturePath;
 		static std::string scrollBarTexturePath;
 		static std::string scrollDownTexturePath;
-		static glm::vec4 defaultScrollElementColor;
+		static spehs::Color defaultScrollElementColor;
 	public:
 		GUIRectangleScrollList();
 		GUIRectangleScrollList(const GUIRECT_ID_TYPE id);
