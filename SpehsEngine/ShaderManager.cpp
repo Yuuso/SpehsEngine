@@ -48,8 +48,8 @@ namespace spehs
 		{
 			"#version 150\n"
 			"in vec3 vertexPosition;\n"
-			"in vec4 vertexColor;\n"
-			"out vec4 fragmentColor;\n"
+			"in lowp vec4 vertexColor;\n"
+			"out lowp vec4 fragmentColor;\n"
 			"uniform mat4 cameraMatrix;\n"
 			"void main()\n"
 			"{\n"
@@ -60,7 +60,7 @@ namespace spehs
 		const std::string defaultPolygonFrag =
 		{
 			"#version 150\n"
-			"in vec4 fragmentColor;\n"
+			"in lowp vec4 fragmentColor;\n"
 			"out vec4 color;\n"
 			"void main()\n"
 			"{\n"
@@ -72,9 +72,9 @@ namespace spehs
 		{
 			"#version 150\n"
 			"in vec3 vertexPosition;\n"
-			"in vec4 vertexColor;\n"
+			"in lowp vec4 vertexColor;\n"
 			"in vec2 vertexUV;\n"
-			"out vec4 fragmentColor;\n"
+			"out lowp vec4 fragmentColor;\n"
 			"out vec2 texCoord;\n"
 			"uniform mat4 cameraMatrix;\n"
 			"void main()\n"
@@ -88,7 +88,7 @@ namespace spehs
 		{
 			"#version 150\n"
 			"in vec2 texCoord;\n"
-			"in vec4 fragmentColor;\n"
+			"in lowp vec4 fragmentColor;\n"
 			"out vec4 color;\n"
 			"uniform sampler2D tex;\n"
 			"void main()\n"
@@ -125,9 +125,9 @@ namespace spehs
 		{
 			"#version 150\n"
 			"in vec2 vertexPosition;\n"
-			"in vec4 vertexColor;"
+			"in lowp vec4 vertexColor;"
 			"in vec2 vertexUV;\n"
-			"out vec4 fragColor;\n"
+			"out lowp vec4 fragColor;\n"
 			"out vec2 texCoord;\n"
 			"uniform mat4 cameraMatrix;\n"
 			"void main()\n"
@@ -141,7 +141,7 @@ namespace spehs
 		{
 			"#version 150\n"
 			"in vec2 texCoord;\n"
-			"in vec4 fragColor;"
+			"in lowp vec4 fragColor;"
 			"out vec4 color;\n"
 			"uniform sampler2D tex;\n"
 			"void main()\n"
