@@ -6,6 +6,11 @@
 
 #include <GL/glew.h>
 
+#if (SPEHS_COLOR_COMPONENT_TYPE == SPEHS_COLOR_COMPONENT_TYPE_FLOAT)
+#define GLSL_COLOR_VEC_TYPE "vec4"
+#elif (SPEHS_COLOR_COMPONENT_TYPE == SPEHS_COLOR_COMPONENT_TYPE_BYTE)
+#define GLSL_COLOR_VEC_TYPE "lowp vec4"
+#endif
 
 
 spehs::ShaderManager* shaderManager;
@@ -47,24 +52,20 @@ namespace spehs
 		const std::string defaultPolygonVert =
 		{
 			"#version 150\n"
-			"in vec3 vertexPosition;\n"
-			"in lowp vec4 vertexColor;\n"
-			"out lowp vec4 fragmentColor;\n"
+			"in vec2 vertexPosition;\n"
+			"in "GLSL_COLOR_VEC_TYPE" vertexColor;\n"
+			"out "GLSL_COLOR_VEC_TYPE" fragmentColor;\n"
 			"uniform mat4 cameraMatrix;\n"
 			"void main()\n"
 			"{\n"
-			"	gl_Position = cameraMatrix * vec4(vertexPosition.xyz, 1.0);\n"
+			"	gl_Position = cameraMatrix * vec4(vertexPosition.xy, 0.0, 1.0);\n"
 			"	fragmentColor = vertexColor;\n"
 			"}\n"
 		};
 		const std::string defaultPolygonFrag =
 		{
 			"#version 150\n"
-#if (SPEHS_COLOR_COMPONENT_TYPE == SPEHS_COLOR_COMPONENT_TYPE_FLOAT)
-			"in vec4 fragmentColor;\n"
-#elif (SPEHS_COLOR_COMPONENT_TYPE == SPEHS_COLOR_COMPONENT_TYPE_BYTE)
-			"in lowp vec4 fragmentColor;\n"
-#endif
+			"in "GLSL_COLOR_VEC_TYPE" fragmentColor;\n"
 			"out vec4 color;\n"
 			"void main()\n"
 			"{\n"
@@ -75,23 +76,15 @@ namespace spehs
 		const std::string defaultTextureVert =
 		{
 			"#version 150\n"
-			"in vec3 vertexPosition;\n"
-#if (SPEHS_COLOR_COMPONENT_TYPE == SPEHS_COLOR_COMPONENT_TYPE_FLOAT)
-			"in vec4 vertexColor;\n"
-#elif (SPEHS_COLOR_COMPONENT_TYPE == SPEHS_COLOR_COMPONENT_TYPE_BYTE)
-			"in lowp vec4 vertexColor;\n"
-#endif
+			"in vec2 vertexPosition;\n"
+			"in "GLSL_COLOR_VEC_TYPE" vertexColor;\n"
 			"in vec2 vertexUV;\n"
-#if (SPEHS_COLOR_COMPONENT_TYPE == SPEHS_COLOR_COMPONENT_TYPE_FLOAT)
-			"out vec4 fragmentColor;\n"
-#elif (SPEHS_COLOR_COMPONENT_TYPE == SPEHS_COLOR_COMPONENT_TYPE_BYTE)
-			"out lowp vec4 fragmentColor;\n"
-#endif
+			"out "GLSL_COLOR_VEC_TYPE" fragmentColor;\n"
 			"out vec2 texCoord;\n"
 			"uniform mat4 cameraMatrix;\n"
 			"void main()\n"
 			"{\n"
-			"	gl_Position = cameraMatrix * vec4(vertexPosition.xyz, 1.0);\n"
+			"	gl_Position = cameraMatrix * vec4(vertexPosition.xy, 0.0, 1.0);\n"
 			"	fragmentColor = vertexColor;\n"
 			"	texCoord = vertexUV;\n"
 			"}\n"
@@ -100,11 +93,7 @@ namespace spehs
 		{
 			"#version 150\n"
 			"in vec2 texCoord;\n"
-#if (SPEHS_COLOR_COMPONENT_TYPE == SPEHS_COLOR_COMPONENT_TYPE_FLOAT)
-			"in vec4 fragmentColor;\n"
-#elif (SPEHS_COLOR_COMPONENT_TYPE == SPEHS_COLOR_COMPONENT_TYPE_BYTE)
-			"in lowp vec4 fragmentColor;\n"
-#endif
+			"in "GLSL_COLOR_VEC_TYPE" fragmentColor; \n"
 			"out vec4 color;\n"
 			"uniform sampler2D tex;\n"
 			"void main()\n"
@@ -141,13 +130,9 @@ namespace spehs
 		{
 			"#version 150\n"
 			"in vec2 vertexPosition;\n"
-#if (SPEHS_COLOR_COMPONENT_TYPE == SPEHS_COLOR_COMPONENT_TYPE_FLOAT)
-			"in vec4 vertexColor;"
-#elif (SPEHS_COLOR_COMPONENT_TYPE == SPEHS_COLOR_COMPONENT_TYPE_BYTE)
-			"in lowp vec4 vertexColor;"
-#endif
+			"in "GLSL_COLOR_VEC_TYPE" vertexColor;"
+			"out "GLSL_COLOR_VEC_TYPE" fragColor;\n"
 			"in vec2 vertexUV;\n"
-			"out lowp vec4 fragColor;\n"
 			"out vec2 texCoord;\n"
 			"uniform mat4 cameraMatrix;\n"
 			"void main()\n"
@@ -161,11 +146,7 @@ namespace spehs
 		{
 			"#version 150\n"
 			"in vec2 texCoord;\n"
-#if (SPEHS_COLOR_COMPONENT_TYPE == SPEHS_COLOR_COMPONENT_TYPE_FLOAT)
-			"in vec4 fragColor;"
-#elif (SPEHS_COLOR_COMPONENT_TYPE == SPEHS_COLOR_COMPONENT_TYPE_BYTE)
-			"in lowp vec4 fragColor;"
-#endif
+			"in "GLSL_COLOR_VEC_TYPE" fragColor;"
 			"out vec4 color;\n"
 			"uniform sampler2D tex;\n"
 			"void main()\n"

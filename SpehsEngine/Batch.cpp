@@ -229,7 +229,7 @@ namespace spehs
 		glEnableVertexAttribArray(VertexAttributePosition::VERTEX_COLOR);
 		glEnableVertexAttribArray(VertexAttributePosition::VERTEX_UV);
 		
-		glVertexAttribPointer(VertexAttributePosition::VERTEX_POSITION, 3, GL_FLOAT, GL_FALSE, sizeof(spehs::Vertex), reinterpret_cast<void*>(offsetof(spehs::Vertex, position)));
+		glVertexAttribPointer(VertexAttributePosition::VERTEX_POSITION, 2, GL_FLOAT, GL_FALSE, sizeof(spehs::Vertex), reinterpret_cast<void*>(offsetof(spehs::Vertex, position)));
 #if (SPEHS_COLOR_COMPONENT_TYPE == SPEHS_COLOR_COMPONENT_TYPE_FLOAT)
 		glVertexAttribPointer(VertexAttributePosition::VERTEX_COLOR, 4, GL_FLOAT, GL_FALSE, sizeof(spehs::Vertex), reinterpret_cast<void*>(offsetof(spehs::Vertex, color)));
 #elif (SPEHS_COLOR_COMPONENT_TYPE == SPEHS_COLOR_COMPONENT_TYPE_BYTE)
