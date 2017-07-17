@@ -230,7 +230,11 @@ namespace spehs
 		glEnableVertexAttribArray(VertexAttributePosition::VERTEX_UV);
 		
 		glVertexAttribPointer(VertexAttributePosition::VERTEX_POSITION, 3, GL_FLOAT, GL_FALSE, sizeof(spehs::Vertex), reinterpret_cast<void*>(offsetof(spehs::Vertex, position)));
+#if (SPEHS_COLOR_COMPONENT_TYPE == SPEHS_COLOR_COMPONENT_TYPE_FLOAT)
+		glVertexAttribPointer(VertexAttributePosition::VERTEX_COLOR, 4, GL_FLOAT, GL_FALSE, sizeof(spehs::Vertex), reinterpret_cast<void*>(offsetof(spehs::Vertex, color)));
+#elif (SPEHS_COLOR_COMPONENT_TYPE == SPEHS_COLOR_COMPONENT_TYPE_BYTE)
 		glVertexAttribPointer(VertexAttributePosition::VERTEX_COLOR, 4, GL_UNSIGNED_BYTE, GL_TRUE, sizeof(spehs::Vertex), reinterpret_cast<void*>(offsetof(spehs::Vertex, color)));
+#endif
 		glVertexAttribPointer(VertexAttributePosition::VERTEX_UV, 2, GL_FLOAT, GL_FALSE, sizeof(spehs::Vertex), reinterpret_cast<void*>(offsetof(spehs::Vertex, uv)));
 
 		//Unbind
@@ -477,7 +481,11 @@ namespace spehs
 		glEnableVertexAttribArray(VertexAttributePosition::VERTEX_UV);
 
 		glVertexAttribPointer(VertexAttributePosition::VERTEX_POSITION, 3, GL_FLOAT, GL_FALSE, sizeof(spehs::Vertex), reinterpret_cast<void*>(offsetof(spehs::Vertex, position)));
+#if (SPEHS_COLOR_COMPONENT_TYPE == SPEHS_COLOR_COMPONENT_TYPE_FLOAT)
+		glVertexAttribPointer(VertexAttributePosition::VERTEX_COLOR, 4, GL_FLOAT, GL_FALSE, sizeof(spehs::Vertex), reinterpret_cast<void*>(offsetof(spehs::Vertex, color)));
+#elif (SPEHS_COLOR_COMPONENT_TYPE == SPEHS_COLOR_COMPONENT_TYPE_BYTE)
 		glVertexAttribPointer(VertexAttributePosition::VERTEX_COLOR, 4, GL_UNSIGNED_BYTE, GL_TRUE, sizeof(spehs::Vertex), reinterpret_cast<void*>(offsetof(spehs::Vertex, color)));
+#endif
 		glVertexAttribPointer(VertexAttributePosition::VERTEX_UV, 2, GL_FLOAT, GL_FALSE, sizeof(spehs::Vertex), reinterpret_cast<void*>(offsetof(spehs::Vertex, uv)));
 
 		//Unbind

@@ -102,6 +102,7 @@
     <ClCompile Include="AudioEngine.cpp" />
     <ClCompile Include="AudioManager.cpp" />
     <ClCompile Include="Collider.cpp" />
+    <ClCompile Include="Color.cpp" />
     <ClCompile Include="GUIProgressBar.cpp" />
     <ClCompile Include="GUIRectangleColumn.cpp" />
     <ClCompile Include="GUIRectangleGrid.cpp" />

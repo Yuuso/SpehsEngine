@@ -60,7 +60,11 @@ namespace spehs
 		const std::string defaultPolygonFrag =
 		{
 			"#version 150\n"
+#if (SPEHS_COLOR_COMPONENT_TYPE == SPEHS_COLOR_COMPONENT_TYPE_FLOAT)
+			"in vec4 fragmentColor;\n"
+#elif (SPEHS_COLOR_COMPONENT_TYPE == SPEHS_COLOR_COMPONENT_TYPE_BYTE)
 			"in lowp vec4 fragmentColor;\n"
+#endif
 			"out vec4 color;\n"
 			"void main()\n"
 			"{\n"
@@ -72,9 +76,17 @@ namespace spehs
 		{
 			"#version 150\n"
 			"in vec3 vertexPosition;\n"
+#if (SPEHS_COLOR_COMPONENT_TYPE == SPEHS_COLOR_COMPONENT_TYPE_FLOAT)
+			"in vec4 vertexColor;\n"
+#elif (SPEHS_COLOR_COMPONENT_TYPE == SPEHS_COLOR_COMPONENT_TYPE_BYTE)
 			"in lowp vec4 vertexColor;\n"
+#endif
 			"in vec2 vertexUV;\n"
+#if (SPEHS_COLOR_COMPONENT_TYPE == SPEHS_COLOR_COMPONENT_TYPE_FLOAT)
+			"out vec4 fragmentColor;\n"
+#elif (SPEHS_COLOR_COMPONENT_TYPE == SPEHS_COLOR_COMPONENT_TYPE_BYTE)
 			"out lowp vec4 fragmentColor;\n"
+#endif
 			"out vec2 texCoord;\n"
 			"uniform mat4 cameraMatrix;\n"
 			"void main()\n"
@@ -88,7 +100,11 @@ namespace spehs
 		{
 			"#version 150\n"
 			"in vec2 texCoord;\n"
+#if (SPEHS_COLOR_COMPONENT_TYPE == SPEHS_COLOR_COMPONENT_TYPE_FLOAT)
+			"in vec4 fragmentColor;\n"
+#elif (SPEHS_COLOR_COMPONENT_TYPE == SPEHS_COLOR_COMPONENT_TYPE_BYTE)
 			"in lowp vec4 fragmentColor;\n"
+#endif
 			"out vec4 color;\n"
 			"uniform sampler2D tex;\n"
 			"void main()\n"
@@ -125,7 +141,11 @@ namespace spehs
 		{
 			"#version 150\n"
 			"in vec2 vertexPosition;\n"
+#if (SPEHS_COLOR_COMPONENT_TYPE == SPEHS_COLOR_COMPONENT_TYPE_FLOAT)
+			"in vec4 vertexColor;"
+#elif (SPEHS_COLOR_COMPONENT_TYPE == SPEHS_COLOR_COMPONENT_TYPE_BYTE)
 			"in lowp vec4 vertexColor;"
+#endif
 			"in vec2 vertexUV;\n"
 			"out lowp vec4 fragColor;\n"
 			"out vec2 texCoord;\n"
@@ -141,7 +161,11 @@ namespace spehs
 		{
 			"#version 150\n"
 			"in vec2 texCoord;\n"
+#if (SPEHS_COLOR_COMPONENT_TYPE == SPEHS_COLOR_COMPONENT_TYPE_FLOAT)
+			"in vec4 fragColor;"
+#elif (SPEHS_COLOR_COMPONENT_TYPE == SPEHS_COLOR_COMPONENT_TYPE_BYTE)
 			"in lowp vec4 fragColor;"
+#endif
 			"out vec4 color;\n"
 			"uniform sampler2D tex;\n"
 			"void main()\n"

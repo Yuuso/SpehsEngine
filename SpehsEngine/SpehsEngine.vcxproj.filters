@@ -207,6 +207,9 @@
     <ClCompile Include="Vector.cpp">
       <Filter>Core</Filter>
     </ClCompile>
+    <ClCompile Include="Color.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GLSLProgram.h">
