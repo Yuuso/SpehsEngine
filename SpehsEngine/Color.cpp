@@ -25,7 +25,7 @@ namespace spehs
 #if (SPEHS_COLOR_COMPONENT_TYPE == SPEHS_COLOR_COMPONENT_TYPE_FLOAT)
 		value(float(c) / 255.0f)
 #elif (SPEHS_COLOR_COMPONENT_TYPE == SPEHS_COLOR_COMPONENT_TYPE_BYTE)
-		value(i)
+		value(c)
 #endif
 	{
 	}
@@ -33,7 +33,7 @@ namespace spehs
 #if (SPEHS_COLOR_COMPONENT_TYPE == SPEHS_COLOR_COMPONENT_TYPE_FLOAT)
 		value(float(uc) / 255.0f)
 #elif (SPEHS_COLOR_COMPONENT_TYPE == SPEHS_COLOR_COMPONENT_TYPE_BYTE)
-		value(i)
+		value(uc)
 #endif
 	{
 	}
@@ -41,7 +41,7 @@ namespace spehs
 #if (SPEHS_COLOR_COMPONENT_TYPE == SPEHS_COLOR_COMPONENT_TYPE_FLOAT)
 		value(float(u) / 255.0f)
 #elif (SPEHS_COLOR_COMPONENT_TYPE == SPEHS_COLOR_COMPONENT_TYPE_BYTE)
-		value(i)
+		value(u)
 #endif
 	{
 	}
