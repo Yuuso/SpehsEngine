@@ -252,7 +252,7 @@ namespace spehs
 #endif
 	}
 
-	bool Color::Component::operator>(const float f)
+	bool Color::Component::operator>(const float f) const
 	{
 #if (SPEHS_COLOR_COMPONENT_TYPE == SPEHS_COLOR_COMPONENT_TYPE_FLOAT)
 		return value > f;
@@ -261,7 +261,7 @@ namespace spehs
 #endif
 	}
 
-	bool Color::Component::operator<(const float f)
+	bool Color::Component::operator<(const float f) const
 	{
 #if (SPEHS_COLOR_COMPONENT_TYPE == SPEHS_COLOR_COMPONENT_TYPE_FLOAT)
 		return value < f;
@@ -270,7 +270,7 @@ namespace spehs
 #endif
 	}
 
-	bool Color::Component::operator>=(const float f)
+	bool Color::Component::operator>=(const float f) const
 	{
 #if (SPEHS_COLOR_COMPONENT_TYPE == SPEHS_COLOR_COMPONENT_TYPE_FLOAT)
 		return value >= f;
@@ -279,7 +279,7 @@ namespace spehs
 #endif
 	}
 
-	bool Color::Component::operator<=(const float f)
+	bool Color::Component::operator<=(const float f) const
 	{
 #if (SPEHS_COLOR_COMPONENT_TYPE == SPEHS_COLOR_COMPONENT_TYPE_FLOAT)
 		return value <= f;

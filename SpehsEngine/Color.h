@@ -50,10 +50,10 @@ namespace spehs
 			Component operator-(const float f);
 			Component operator*(const float f);
 			Component operator/(const float f);
-			bool operator>(const float f);
-			bool operator<(const float f);
-			bool operator>=(const float f);
-			bool operator<=(const float f);
+			bool operator>(const float f) const;
+			bool operator<(const float f) const;
+			bool operator>=(const float f) const;
+			bool operator<=(const float f) const;
 
 		private:
 #if (SPEHS_COLOR_COMPONENT_TYPE == SPEHS_COLOR_COMPONENT_TYPE_FLOAT)

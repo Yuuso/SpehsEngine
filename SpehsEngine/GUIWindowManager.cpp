@@ -10,8 +10,10 @@
 
 namespace spehs
 {
-	GUIWindowManager::GUIWindowManager(BatchManager& _batchManager) : focusedWindow(nullptr), depthPerWindow(256), batchManager(_batchManager),
-		receivingInput(false), mouseHoverAny(false), streching(false), dragging(false)
+	GUIWindowManager::GUIWindowManager(BatchManager& _batchManager) :
+		focusedWindow(nullptr), depthPerWindow(256), batchManager(_batchManager),
+		receivingInput(false), mouseHoverAny(false), streching(false), dragging(false),
+		popupShadeCurrentAlpha(0.0f)
 	{
 		batchManager.beginSection();
 		popupShade = Polygon::create(Shape::BUTTON, 0, spehs::ApplicationData::getWindowWidth(), spehs::ApplicationData::getWindowHeight());
@@ -88,12 +90,12 @@ namespace spehs
 		{
 			//Render state & alpha
 			popupShade->setRenderState(true);
-			if (popupShade->getAlpha() < popupShadeAlpha)
+			if (popupShadeCurrentAlpha < popupShadeTargetAlpha)
 			{
-				float a(popupShade->getAlpha() + time::getDeltaTimeAsSeconds());
-				if (a > (float)popupShadeAlpha)
-					a = popupShadeAlpha;
-				popupShade->setAlpha(a);
+				popupShadeCurrentAlpha += time::getDeltaTimeAsSeconds();
+				if (popupShadeCurrentAlpha > popupShadeTargetAlpha)
+					popupShadeCurrentAlpha = popupShadeTargetAlpha;
+				popupShade->setAlpha(popupShadeCurrentAlpha);
 			}
 
 			//Update
@@ -119,6 +121,7 @@ namespace spehs
 		{
 			popupShade->setRenderState(false);
 			popupShade->setAlpha(0.0f);
+			popupShadeCurrentAlpha = 0.0;
 		}
 
 		//Refresh requests before updates: if done after the updates, render would end up displaying un-updated GUI
@@ -316,6 +319,6 @@ namespace spehs
 	void GUIWindowManager::setPopupShadeColor(const spehs::Color& col)
 	{
 		popupShade->setColor(col);
-		popupShadeAlpha = col.a;
+		popupShadeTargetAlpha = col.a;
 	}
 }

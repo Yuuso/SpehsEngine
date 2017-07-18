@@ -1,3 +1,4 @@
+#ifdef _DEBUG
 #include "OpenGLError.h"
 
 #include <iostream>
@@ -9,9 +10,8 @@
 
 namespace spehs
 {
-	void checkOpenGLErrors(const std::string &_file, int _line)
+	void debugOpenGLError(const std::string &_file, int _line)
 	{
-#ifdef _DEBUG
 		GLenum errorCode(glGetError());
 
 		switch (errorCode)
@@ -93,6 +93,6 @@ namespace spehs
 			}
 			break;
 		}
-#endif
 	}
 }
+#endif

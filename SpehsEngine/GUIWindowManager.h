@@ -47,7 +47,8 @@ namespace spehs
 		int16_t systemDepth;
 		int16_t depthPerWindow;
 		Polygon* popupShade;
-		Color::Component popupShadeAlpha;
+		float popupShadeCurrentAlpha;
+		float popupShadeTargetAlpha;
 		BatchManager& batchManager;
 		bool receivingInput;
 		bool mouseHoverAny;
