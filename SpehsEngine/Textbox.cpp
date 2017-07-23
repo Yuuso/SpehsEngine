@@ -88,7 +88,7 @@ namespace spehs
 	{
 		return text->getRenderState() && polygon->getRenderState();
 	}
-	glm::vec2 Textbox::getPosition() const
+	spehs::vec2 Textbox::getPosition() const
 	{
 		return polygon->getPosition();
 	}
@@ -104,7 +104,7 @@ namespace spehs
 	{
 		return !(x < polygon->getX() || y < polygon->getY() || x > polygon->getX() + polygon->getWidth() || y > polygon->getY() + polygon->getHeight());
 	}
-	bool Textbox::checkPointCollision(const glm::vec2& point) const
+	bool Textbox::checkPointCollision(const spehs::vec2& point) const
 	{
 		return !(point.x < polygon->getX() || point.y < polygon->getY() || point.x > polygon->getX() + polygon->getWidth() || point.y > polygon->getY() + polygon->getHeight());
 	}

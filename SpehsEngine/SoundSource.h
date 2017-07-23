@@ -2,9 +2,7 @@
 #pragma once
 
 #include "AudioEngine.h"
-
-#include <glm/vec2.hpp>
-#include <glm/vec3.hpp>
+#include "Vector.h"
 
 #include <string>
 #include <utility>
@@ -162,17 +160,17 @@ namespace spehs
 
 			void setParameters();
 			
-			void setPosition(const glm::vec2& _pos);
-			void setPosition(const glm::vec2& _pos, const float _z);
-			void setVelocity(const glm::vec2& _vel);
-			void setVelocity(const glm::vec2& _vel, const float _z);
-			void setDirection(const glm::vec2& _direction);
+			void setPosition(const spehs::vec2& _pos);
+			void setPosition(const spehs::vec2& _pos, const float _z);
+			void setVelocity(const spehs::vec2& _vel);
+			void setVelocity(const spehs::vec2& _vel, const float _z);
+			void setDirection(const spehs::vec2& _direction);
 			void setZ(const float _z);
 			void setRollOffFactor(const float _rollOff);
 
-			glm::vec2 getPosition(){ return glm::vec2(position); }
-			glm::vec2 getVelocity(){ return glm::vec2(velocity); }
-			glm::vec2 getDirection(){ return direction; }
+			spehs::vec2 getPosition(){ return spehs::vec2(position.x, position.y); }
+			spehs::vec2 getVelocity(){ return spehs::vec2(velocity.x, velocity.y); }
+			spehs::vec2 getDirection(){ return direction; }
 			float getZ(){ return position.z; }
 			float getRollOffFactor(){ return rollOffFactor; }
 
@@ -180,17 +178,17 @@ namespace spehs
 			/*
 			default: {0, 0, 0}
 			*/
-			glm::vec3 position;
+			spehs::vec3 position;
 
 			/*
 			default: {0, 0, 0}
 			*/
-			glm::vec3 velocity;
+			spehs::vec3 velocity;
 
 			/*
 			default: {0, 0}
 			*/
-			glm::vec2 direction; //Cone stuff to be effective?
+			spehs::vec2 direction; //Cone stuff to be effective?
 
 			/*
 			default: 1.75 (AudioEngine.cpp)

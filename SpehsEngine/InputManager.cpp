@@ -9,7 +9,6 @@
 #include <SDL/SDL.h>
 #include <SDL/SDL_joystick.h>
 #include <SDL/SDL_events.h>
-#include <glm/vec4.hpp>
 
 #include <iostream>
 
@@ -63,7 +62,7 @@ namespace spehs
 			joystickConnected();
 
 		mouseWheelDelta = 0;
-		static glm::ivec2 prevMouseCoords;
+		static spehs::ivec2 prevMouseCoords;
 		prevMouseCoords = mouseCoords;
 		latestKeyboardPress = 0;
 		latestMouseButtonPress = 0;
@@ -211,7 +210,7 @@ namespace spehs
 	}
 
 
-	bool InputManager::mouseCollision(const glm::vec4& AABB) const
+	bool InputManager::mouseCollision(const spehs::vec4& AABB) const
 	{
 		return mouseCoords.x >= AABB.x &&
 			mouseCoords.x <= AABB.x + AABB.z &&
@@ -220,7 +219,7 @@ namespace spehs
 	}
 
 
-	bool InputManager::mouseCollision(const glm::vec2& AABBMin, const glm::vec2& AABBMax) const
+	bool InputManager::mouseCollision(const spehs::vec2& AABBMin, const spehs::vec2& AABBMax) const
 	{
 		return mouseCoords.x >= AABBMin.x &&
 			mouseCoords.x <= AABBMax.x &&

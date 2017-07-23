@@ -15,7 +15,7 @@
 #define DEFAULT_MAX_SOURCES 255
 
 
-glm::vec2 positionCorrectionFactor = glm::vec2(1.0f);
+spehs::vec2 positionCorrectionFactor = spehs::vec2(1.0f, 1.0f);
 float scaleCorrectionFactor = 1.0f;
 
 extern const float defaultRollOffFactor = 1.75f;
@@ -27,12 +27,12 @@ namespace audioVar
 	/*
 	default: {0, 0, 1}
 	*/
-	glm::vec3 listenerPosition;
+	spehs::vec3 listenerPosition;
 
 	/*
 	default: {0, 0, 0}
 	*/
-	glm::vec3 listenerVelocity;
+	spehs::vec3 listenerVelocity;
 
 	/*
 	range: 0.0 -
@@ -100,8 +100,8 @@ namespace spehs
 		{
 			audioVar::maxSources = DEFAULT_MAX_SOURCES;
 			audioVar::listenerGain = 1.0f;
-			audioVar::listenerPosition = glm::vec3(0.0f, 0.0f, 1.0f);
-			audioVar::listenerVelocity = glm::vec3(0.0f, 0.0f, 0.0f);
+			audioVar::listenerPosition = spehs::vec3(0.0f, 0.0f, 1.0f);
+			audioVar::listenerVelocity = spehs::vec3(0.0f, 0.0f, 0.0f);
 
 			audioVar::device = alcOpenDevice(NULL);
 			if (!audioVar::device)
@@ -167,26 +167,26 @@ namespace spehs
 			audioVar::maxSources = _maxSources;
 		}
 
-		void AudioEngine::setListenerPosition(const glm::vec2& _pos)
+		void AudioEngine::setListenerPosition(const spehs::vec2& _pos)
 		{
 			audioVar::listenerPosition.x = _pos.x;
 			audioVar::listenerPosition.y = _pos.y;
 			alListener3f(AL_POSITION, _pos.x * positionCorrectionFactor.x, _pos.y * positionCorrectionFactor.y, audioVar::listenerPosition.z * scaleCorrectionFactor);
 		}
-		void AudioEngine::setListenerPosition(const glm::vec2& _pos, const float _z)
+		void AudioEngine::setListenerPosition(const spehs::vec2& _pos, const float _z)
 		{
 			audioVar::listenerPosition.x = _pos.x;
 			audioVar::listenerPosition.y = _pos.y;
 			audioVar::listenerPosition.z = _z;
 			alListener3f(AL_POSITION, _pos.x * positionCorrectionFactor.x, _pos.y * positionCorrectionFactor.y, _z * scaleCorrectionFactor);
 		}
-		void AudioEngine::setListenerVelocity(const glm::vec2& _vel)
+		void AudioEngine::setListenerVelocity(const spehs::vec2& _vel)
 		{
 			audioVar::listenerVelocity.x = _vel.x;
 			audioVar::listenerVelocity.y = _vel.y;
 			alListener3f(AL_VELOCITY, _vel.x * positionCorrectionFactor.x, _vel.y * positionCorrectionFactor.y, audioVar::listenerVelocity.z * scaleCorrectionFactor);
 		}
-		void AudioEngine::setListenerVelocity(const glm::vec2& _vel, const float _z)
+		void AudioEngine::setListenerVelocity(const spehs::vec2& _vel, const float _z)
 		{
 			audioVar::listenerVelocity.x = _vel.x;
 			audioVar::listenerVelocity.y = _vel.y;
@@ -243,7 +243,7 @@ namespace spehs
 			/*Get channel gain*/
 			return audioVar::audioChannels[_channelIndex].getGain();
 		}
-		void AudioEngine::setPositionCorrectionFactor(const glm::vec2& _poscor)
+		void AudioEngine::setPositionCorrectionFactor(const spehs::vec2& _poscor)
 		{
 			positionCorrectionFactor = _poscor;
 			alListener3f(AL_POSITION, audioVar::listenerPosition.x * positionCorrectionFactor.x, audioVar::listenerPosition.y * positionCorrectionFactor.y, audioVar::listenerPosition.z * scaleCorrectionFactor);
@@ -255,13 +255,13 @@ namespace spehs
 			alListener3f(AL_POSITION, audioVar::listenerPosition.x * positionCorrectionFactor.x, audioVar::listenerPosition.y * positionCorrectionFactor.y, audioVar::listenerPosition.z * scaleCorrectionFactor);
 			alListener3f(AL_VELOCITY, audioVar::listenerVelocity.x * positionCorrectionFactor.x, audioVar::listenerVelocity.y * positionCorrectionFactor.y, audioVar::listenerVelocity.z * scaleCorrectionFactor);
 		}
-		glm::vec2 AudioEngine::getListenerPosition()
+		spehs::vec2 AudioEngine::getListenerPosition()
 		{
-			return glm::vec2(audioVar::listenerPosition);
+			return spehs::vec2(audioVar::listenerPosition.x, audioVar::listenerPosition.y);
 		}
-		glm::vec2 AudioEngine::getListenerVelocity()
+		spehs::vec2 AudioEngine::getListenerVelocity()
 		{
-			return glm::vec2(audioVar::listenerVelocity);
+			return spehs::vec2(audioVar::listenerVelocity.x, audioVar::listenerVelocity.y);
 		}
 		float AudioEngine::getListenerGain()
 		{

@@ -38,7 +38,7 @@ namespace spehs
 			speedCounter = animationSpeed;
 		}
 		
-		glm::vec2 currentFramePosition(currentFrame, 0);
+		spehs::vec2 currentFramePosition(currentFrame, 0);
 		while (currentFramePosition.x >= frameStructure[0])
 		{
 			currentFramePosition.x -= frameStructure[0];
@@ -68,7 +68,7 @@ namespace spehs
 		Sprite::setTextureID(_textureID);
 	}
 
-	void AnimatedSprite::setAnimation(const glm::ivec2& _frameSize, const uint8_t _rows, const uint8_t _columns, const uint16_t _amountOfFrames, const uint16_t _startingFrame)
+	void AnimatedSprite::setAnimation(const spehs::ivec2& _frameSize, const uint8_t _rows, const uint8_t _columns, const uint16_t _amountOfFrames, const uint16_t _startingFrame)
 	{
 		spriteFrameSize[0] = _frameSize.x;
 		spriteFrameSize[1] = _frameSize.y;

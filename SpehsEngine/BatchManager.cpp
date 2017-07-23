@@ -95,13 +95,13 @@ namespace spehs
 		primitives.push_back(new Polygon(_vertexData, _width, _height));
 		return primitives.back()->getPolygonPtr();
 	}
-	Polygon* BatchManager::createPolygon(std::vector<glm::vec2> _cuspData, const PlaneDepth &_planeDepth, const float &_width, const float &_height)
+	Polygon* BatchManager::createPolygon(std::vector<spehs::vec2> _cuspData, const PlaneDepth &_planeDepth, const float &_width, const float &_height)
 	{
 		primitives.push_back(new Polygon(_cuspData, _planeDepth, _width, _height));
 		return primitives.back()->getPolygonPtr();
 	}
 
-	Line* BatchManager::createLine(const glm::vec2 &_startPoint, const glm::vec2 &_endPoint, const PlaneDepth &_planeDepth)
+	Line* BatchManager::createLine(const spehs::vec2 &_startPoint, const spehs::vec2 &_endPoint, const PlaneDepth &_planeDepth)
 	{
 		primitives.push_back(new Line(_startPoint, _endPoint, _planeDepth));
 		return primitives.back()->getLinePtr();

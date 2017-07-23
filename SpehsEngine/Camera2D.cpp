@@ -3,9 +3,8 @@
 #include "ApplicationData.h"
 
 #include <glm/gtc/matrix_transform.hpp>
+#include <glm/vec3.hpp>
 
-
-#define GLM_FORCE_RADIANS
 
 
 namespace spehs
@@ -28,7 +27,7 @@ namespace spehs
 	}
 
 
-	void Camera2D::translate(const glm::vec2& _vec)
+	void Camera2D::translate(const spehs::vec2& _vec)
 	{
 		position += _vec;
 		//?rotation
@@ -37,7 +36,7 @@ namespace spehs
 	void Camera2D::setRotation(const float &_rotation)
 	{
 		rotation = _rotation;
-		//up = glm::normalize(glm::rotate(glm::mat4(), rotation, glm::vec3(0.0f, 0.0f, 1.0f)) * up);
+		//up = glm::normalize(glm::rotate(glm::mat4(), rotation, spehs::vec3(0.0f, 0.0f, 1.0f)) * up);
 	}
 
 	void Camera2D::update()

@@ -16,7 +16,7 @@ namespace spehs
 	int triangulationTestSeed = 0;
 	int triangulationTestIteration = 0;
 
-	DirectionalEdge::DirectionalEdge(glm::vec2* _begin, glm::vec2* _end, DirectionalEdge* _prev) : begin(_begin), end(_end), prev(nullptr), next(nullptr), innerTriangle(nullptr)
+	DirectionalEdge::DirectionalEdge(spehs::vec2* _begin, spehs::vec2* _end, DirectionalEdge* _prev) : begin(_begin), end(_end), prev(nullptr), next(nullptr), innerTriangle(nullptr)
 	{
 #ifdef _DEBUG
 		edgeAllocations++;
@@ -52,7 +52,7 @@ namespace spehs
 		children[1] = nullptr;
 		children[2] = nullptr;
 	}
-	void Triangle::build(glm::vec2* p0, glm::vec2* p1, glm::vec2* p2, Triangle* _parent)
+	void Triangle::build(spehs::vec2* p0, spehs::vec2* p1, spehs::vec2* p2, Triangle* _parent)
 	{
 		parent = _parent;
 		if (parent)
@@ -157,8 +157,8 @@ namespace spehs
 #endif
 
 				//Determine begin and end arcs
-				glm::vec2 begin;
-				glm::vec2 end;
+				spehs::vec2 begin;
+				spehs::vec2 end;
 				//For common vertex 1
 				begin = *neighbours[n]->point(neighbourPointIndex + 1) - *neighbours[n]->point(neighbourPointIndex);
 				end = *point(n - 1) - *point(n);
@@ -234,12 +234,12 @@ namespace spehs
 		}
 		return true;
 	}
-	Triangulation::Triangulation(std::vector<glm::vec2>& points)
+	Triangulation::Triangulation(std::vector<spehs::vec2>& points)
 	{
 		if (points.size() < 3)
 			spehs::exceptions::fatalError("Triangulation must have at least 3 input points!");
 
-		std::sort(points.begin(), points.end(), [](const glm::vec2 a, const glm::vec2 b) -> bool
+		std::sort(points.begin(), points.end(), [](const spehs::vec2 a, const spehs::vec2 b) -> bool
 		{
 			return a.x < b.x;
 		});

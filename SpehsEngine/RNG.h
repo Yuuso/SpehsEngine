@@ -1,15 +1,13 @@
 
 #pragma once
 
-#include <glm/vec2.hpp>
+#include "Vector.h"
 
 #include <random>
 #include <stdint.h>
 #include <type_traits>
 #include <assert.h>
 #include <mutex>
-
-#define PI 3.14159265358f
 
 
 namespace spehs
@@ -150,8 +148,8 @@ namespace spehs
 		bool weightedCoin(const double _trueProbability = 0.5);
 		unsigned dice(const unsigned _sides);
 		unsigned weightedDice(const std::initializer_list<double> _propabilities);
-		glm::vec2 circle(const float _radius = 1.0f);
-		glm::vec2 square(const float _side = 1.0f);
+		spehs::vec2 circle(const float _radius = 1.0f);
+		spehs::vec2 square(const float _side = 1.0f);
 
 		
 		//Pseudo random number generator class
@@ -244,15 +242,15 @@ namespace spehs
 			}
 
 			//Special functions
-			glm::vec2 circle(const float _radius = 1.0f)
+			spehs::vec2 circle(const float _radius = 1.0f)
 			{
 				float angle = random<float>(0.0f, 2.0f * PI);
-				return glm::vec2(cos(angle) * _radius, sin(angle) * _radius);
+				return spehs::vec2(cos(angle) * _radius, sin(angle) * _radius);
 			}
 
-			glm::vec2 square(const float _side = 1.0f)
+			spehs::vec2 square(const float _side = 1.0f)
 			{
-				return glm::vec2(random<float>(0.0f, _side), random<float>(0.0f, _side));
+				return spehs::vec2(random<float>(0.0f, _side), random<float>(0.0f, _side));
 			}
 
 			template<typename FloatingPointType = float>

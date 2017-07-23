@@ -1,5 +1,3 @@
-#define PI 3.14159265358979323846264338
-
 #include "Arrow.h"
 #include "Line.h"
 #include "Polygon.h"
@@ -10,17 +8,17 @@
 
 namespace spehs
 {
-	static std::vector<glm::vec2> pointerVertices = { glm::vec2(-0.5f, 0.5f), glm::vec2(-0.5f, -0.5f), glm::vec2(0.5f, 0.0f) };
+	static std::vector<spehs::vec2> pointerVertices = { spehs::vec2(-0.5f, 0.5f), spehs::vec2(-0.5f, -0.5f), spehs::vec2(0.5f, 0.0f) };
 	Arrow::Arrow(const int16_t planeDepth) : linePart(nullptr), polygonPart(nullptr), pointerWidth(1.0f), pointerHeight(1.0f), length(0.0f)
 	{
 		//Create needed primitive components
 		polygonPart = getActiveBatchManager()->createPolygon(pointerVertices, planeDepth, pointerWidth, pointerHeight);
 		polygonPart->setCameraMatrixState(false);
-		linePart = getActiveBatchManager()->createLine(glm::vec2(0), glm::vec2(0), planeDepth);
+		linePart = getActiveBatchManager()->createLine(spehs::vec2::zero, spehs::vec2::zero, planeDepth);
 		linePart->setCameraMatrixState(false);
 		linePart->setRenderState(false);//Length == 0
 	}
-	Arrow::Arrow(const glm::vec2& _startPoint, const glm::vec2& _endPoint) : Arrow()
+	Arrow::Arrow(const spehs::vec2& _startPoint, const spehs::vec2& _endPoint) : Arrow()
 	{
 		setPosition(_startPoint, _endPoint);
 	}
@@ -31,10 +29,10 @@ namespace spehs
 	}
 
 
-	void Arrow::setPosition(const glm::vec2& _startPoint, const glm::vec2& _endPoint)
+	void Arrow::setPosition(const spehs::vec2& _startPoint, const spehs::vec2& _endPoint)
 	{
 		float angle = atan2(_endPoint.y - _startPoint.y, _endPoint.x - _startPoint.x);
-		glm::vec2 arrowVector(_endPoint - _startPoint);
+		spehs::vec2 arrowVector(_endPoint - _startPoint);
 
 		//Arrow length changed
 		length = magnitude(arrowVector);
@@ -44,7 +42,7 @@ namespace spehs
 			linePart->setRenderState(polygonPart->getRenderState());
 
 		//End of line position
-		arrowVector -= glm::vec2(cos(angle) * pointerHeight, sin(angle) * pointerHeight);
+		arrowVector -= spehs::vec2(cos(angle) * pointerHeight, sin(angle) * pointerHeight);
 
 		//Primitive positioning
 		linePart->setPoints(_startPoint, _startPoint + arrowVector);
@@ -71,7 +69,7 @@ namespace spehs
 		else
 			linePart->setRenderState(polygonPart->getRenderState());
 	}
-	void Arrow::setArrowPointerSize(const glm::vec2 &_ref)
+	void Arrow::setArrowPointerSize(const spehs::vec2 &_ref)
 	{
 		pointerWidth = _ref.x;
 		pointerHeight = _ref.y;

@@ -81,7 +81,7 @@ namespace spehs
 	void GUIStringEditor::updateMinSize()
 	{
 		GUIRectangle::updateMinSize();
-		minSize += typeCharacter->getTextWidth();
+		minSize.x += typeCharacter->getTextWidth();
 	}
 	void GUIStringEditor::inputUpdate()
 	{

@@ -2,8 +2,8 @@
 #pragma once
 
 #include "Sprite.h"
+#include "Vector.h"
 
-#include <glm/vec2.hpp>
 #include <stdint.h>
 
 
@@ -23,7 +23,7 @@ namespace spehs
 		void setTexture(TextureData* _textureDataPtr) override;
 		void setTextureID(const unsigned int _textureID) override;
 
-		void setAnimation(const glm::ivec2& _frameSize, const uint8_t _rows, const uint8_t _columns, const uint16_t _amountOfFrames, const uint16_t _startingFrame = 0);
+		void setAnimation(const spehs::ivec2& _frameSize, const uint8_t _rows, const uint8_t _columns, const uint16_t _amountOfFrames, const uint16_t _startingFrame = 0);
 		void setAnimationSpeed(const float _speed);
 
 	private:

@@ -5,6 +5,7 @@
 #include "GameObject.h"
 #include "Transform2D.h"
 #include "Geometry.h"
+#include "Vector.h"
 
 #include "Sprite.h"
 #include "Polygon.h"
@@ -61,7 +62,7 @@ namespace spehs
 			//Apply gravity
 			if (useGravity)
 			{
-				if (!glm::isNull(gravity, ZERO_EPSILON))
+				if (!gravity.isNull(ZERO_EPSILON))
 				{
 					if (!bodies[cycle1]->isStatic && bodies[cycle1]->useGravity)
 						bodies[cycle1]->applyForce(gravity * bodies[cycle1]->getMass());
@@ -105,10 +106,10 @@ namespace spehs
 					{
 						for (unsigned i = 0; i < collisionPoint->point.size(); i++)
 						{
-							glm::vec2 body1VelocityBefore = bodies[cycle1]->getVelocityAtPosition(collisionPoint->point[i]);
-							glm::vec2 body2VelocityBefore = bodies[cycle2]->getVelocityAtPosition(collisionPoint->point[i]);
-							glm::vec2 relativeVelocity = (body1VelocityBefore - body2VelocityBefore);
-							float relativeNormalVelocity = glm::dot(relativeVelocity, collisionPoint->normal[i]);
+							spehs::vec2 body1VelocityBefore = bodies[cycle1]->getVelocityAtPosition(collisionPoint->point[i]);
+							spehs::vec2 body2VelocityBefore = bodies[cycle2]->getVelocityAtPosition(collisionPoint->point[i]);
+							spehs::vec2 relativeVelocity = (body1VelocityBefore - body2VelocityBefore);
+							float relativeNormalVelocity = relativeVelocity.dot(collisionPoint->normal[i]);
 
 							//Resolve collisions
 							if (relativeNormalVelocity < -ZERO_EPSILON) //Point are colliding
@@ -123,28 +124,28 @@ namespace spehs
 								//Positional Correction
 								const float percentage = 0.25f;
 								const float slop = 0.04f;
-								glm::vec2 correction = std::max(collisionPoint->MTV.length() - slop, 0.0f) / (bodies[cycle1]->getInvMass() + bodies[cycle2]->getInvMass()) * percentage * collisionPoint->normal[i];
+								spehs::vec2 correction = std::max(collisionPoint->MTV.getLength() - slop, 0.0f) / (bodies[cycle1]->getInvMass() + bodies[cycle2]->getInvMass()) * percentage * collisionPoint->normal[i];
 								if (!bodies[cycle1]->freezePosition && !bodies[cycle1]->isStatic)
 									bodies[cycle1]->ownerObject->getComponent<Transform2D>()->setPosition(bodies[cycle1]->ownerObject->getComponent<Transform2D>()->getPosition() + correction * bodies[cycle1]->getInvMass());
 								if (!bodies[cycle2]->freezePosition && !bodies[cycle2]->isStatic)
 									bodies[cycle2]->ownerObject->getComponent<Transform2D>()->setPosition(bodies[cycle2]->ownerObject->getComponent<Transform2D>()->getPosition() - correction * bodies[cycle2]->getInvMass());
 
 								//Impulses
-								glm::vec2 body1VelocityAfter;
-								glm::vec2 body2VelocityAfter;
+								spehs::vec2 body1VelocityAfter;
+								spehs::vec2 body2VelocityAfter;
 								float body1AngularVelocityAfter;
 								float body2AngularVelocityAfter;
-								glm::vec2 body1LinearFrictionAfter;
-								glm::vec2 body2LinearFrictionAfter;
+								spehs::vec2 body1LinearFrictionAfter;
+								spehs::vec2 body2LinearFrictionAfter;
 								float body1AngularFrictionAfter;
 								float body2AngularFrictionAfter;
 								
 								float e = std::min(bodies[cycle1]->elasticity, bodies[cycle2]->elasticity);
 
-								glm::vec2 rVecAP = glm::vec2(-(collisionPoint->point[i] - bodies[cycle1]->centerOfMass).y, (collisionPoint->point[i] - bodies[cycle1]->centerOfMass).x);
-								glm::vec2 rVecBP = glm::vec2(-(collisionPoint->point[i] - bodies[cycle2]->centerOfMass).y, (collisionPoint->point[i] - bodies[cycle2]->centerOfMass).x);
-								glm::vec2 tangent = glm::vec2(-collisionPoint->normal[i].y, collisionPoint->normal[i].x);
-								if (glm::dot(tangent, relativeVelocity) < 0.0f)
+								spehs::vec2 rVecAP = spehs::vec2(-(collisionPoint->point[i] - bodies[cycle1]->centerOfMass).y, (collisionPoint->point[i] - bodies[cycle1]->centerOfMass).x);
+								spehs::vec2 rVecBP = spehs::vec2(-(collisionPoint->point[i] - bodies[cycle2]->centerOfMass).y, (collisionPoint->point[i] - bodies[cycle2]->centerOfMass).x);
+								spehs::vec2 tangent = spehs::vec2(-collisionPoint->normal[i].y, collisionPoint->normal[i].x);
+								if (tangent.dot(relativeVelocity) < 0.0f)
 									tangent = -tangent;
 
 								float jL = j_lin(e, relativeVelocity, collisionPoint->normal[i], bodies[cycle1]->getInvMass(), bodies[cycle2]->getInvMass());
@@ -156,13 +157,13 @@ namespace spehs
 								body1VelocityAfter = body1VelocityBefore + (jL * bodies[cycle1]->getInvMass()) * collisionPoint->normal[i];
 								body2VelocityAfter = body2VelocityBefore + (-jL * bodies[cycle2]->getInvMass()) * collisionPoint->normal[i];
 
-								body1AngularVelocityAfter = bodies[cycle1]->angularVelocity + glm::dot(rVecAP, jR * collisionPoint->normal[i]) * bodies[cycle1]->getInvMoI();
-								body2AngularVelocityAfter = bodies[cycle2]->angularVelocity + glm::dot(rVecBP, -jR * collisionPoint->normal[i]) * bodies[cycle2]->getInvMoI();
+								body1AngularVelocityAfter = bodies[cycle1]->angularVelocity + rVecAP.dot(jR * collisionPoint->normal[i]) * bodies[cycle1]->getInvMoI();
+								body2AngularVelocityAfter = bodies[cycle2]->angularVelocity + rVecBP.dot(-jR * collisionPoint->normal[i]) * bodies[cycle2]->getInvMoI();
 
 								//Friction impulses
 								float mu = (bodies[cycle1]->staticFriction + bodies[cycle2]->staticFriction) / 2.0f;
 
-								glm::vec2 linearFrictionImpulse;
+								spehs::vec2 linearFrictionImpulse;
 								if (abs(jLt) < jL * mu)
 									linearFrictionImpulse = jLt * tangent;
 								else
@@ -205,7 +206,7 @@ namespace spehs
 								//Positional Correction
 								const float percentage = 0.25f;
 								const float slop = 0.04f;
-								glm::vec2 correction = std::max(collisionPoint->MTV.length() - slop, 0.0f) / (bodies[cycle1]->getInvMass() + bodies[cycle2]->getInvMass()) * percentage * collisionPoint->normal[i];
+								spehs::vec2 correction = std::max(collisionPoint->MTV.getLength() - slop, 0.0f) / (bodies[cycle1]->getInvMass() + bodies[cycle2]->getInvMass()) * percentage * collisionPoint->normal[i];
 								if (!bodies[cycle1]->freezePosition && !bodies[cycle1]->isStatic)
 									bodies[cycle1]->ownerObject->getComponent<Transform2D>()->setPosition(bodies[cycle1]->ownerObject->getComponent<Transform2D>()->getPosition() + correction * bodies[cycle1]->getInvMass());
 								if (!bodies[cycle2]->freezePosition && !bodies[cycle2]->isStatic)
@@ -234,18 +235,18 @@ namespace spehs
 		useGravity = _value;
 	}
 
-	void PhysicsWorld2D::setGravity(const glm::vec2& _gravity)
+	void PhysicsWorld2D::setGravity(const spehs::vec2& _gravity)
 	{
 		gravity = _gravity;
 	}
 
-	float PhysicsWorld2D::j_lin(const float& _e, const glm::vec2& _velocity, const glm::vec2& _normal, const float& _invmass1, const float& _invmass2)
+	float PhysicsWorld2D::j_lin(const float& _e, const spehs::vec2& _velocity, const spehs::vec2& _normal, const float& _invmass1, const float& _invmass2)
 	{
-		return -(1 + _e)*glm::dot(_velocity, _normal) / (glm::dot(_normal, _normal*((_invmass1) +(_invmass2))));
+		return -(1 + _e) * _velocity.dot(_normal) / _normal.dot(_normal * (_invmass1 + _invmass2));
 	}
 
-	float PhysicsWorld2D::j_rot(const float& _e, const glm::vec2& _velocity, const glm::vec2& _normal, const float& _invmass1, const float& _invmass2, const glm::vec2& _rVecAP, const glm::vec2& _rVecBP, const float& _InvMoIA, const float& _InvMoIB)
+	float PhysicsWorld2D::j_rot(const float& _e, const spehs::vec2& _velocity, const spehs::vec2& _normal, const float& _invmass1, const float& _invmass2, const spehs::vec2& _rVecAP, const spehs::vec2& _rVecBP, const float& _InvMoIA, const float& _InvMoIB)
 	{
-		return (-(1 + _e)*glm::dot(_velocity, _normal)) / (glm::dot(_normal, _normal*((_invmass1) +(_invmass2))) + (pow(glm::dot(_rVecAP, _normal), 2) * _InvMoIA) + (pow(glm::dot(_rVecBP, _normal), 2) * _InvMoIB));
+		return (-(1 + _e) * _velocity.dot(_normal)) / (_normal.dot(_normal * (_invmass1 + _invmass2)) + (std::pow(_rVecAP.dot(_normal), 2) * _InvMoIA) + (std::pow(_rVecBP.dot(_normal), 2) * _InvMoIB));
 	}
 }

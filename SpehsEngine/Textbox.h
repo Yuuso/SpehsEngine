@@ -1,6 +1,7 @@
 #pragma once
 #include <string>
 #include "Color.h"
+#include "Vector.h"
 
 namespace spehs
 {
@@ -30,11 +31,11 @@ namespace spehs
 		bool getRenderState() const;
 		uint16_t getDepthBack() const;
 		uint16_t getDepthFront() const;
-		glm::vec2 getPosition() const;
+		spehs::vec2 getPosition() const;
 		int getX() const;
 		int getY() const;
 		bool checkPointCollision(const int x, const int y) const;
-		bool checkPointCollision(const glm::vec2& point) const;
+		bool checkPointCollision(const spehs::vec2& point) const;
 
 	protected:
 		spehs::Polygon* polygon;

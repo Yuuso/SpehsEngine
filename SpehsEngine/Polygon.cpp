@@ -15,10 +15,6 @@
 #include <glm/gtx/transform.hpp>
 
 
-#define TWO_PI 6.28318530718f
-
-#define GLM_FORCE_RADIANS
-
 
 namespace spehs
 {
@@ -34,7 +30,7 @@ namespace spehs
 	{
 		return getActiveBatchManager()->createPolygon(_vertexData, _width, _height);
 	}
-	Polygon* Polygon::create(const std::vector<glm::vec2>& _cuspData, const PlaneDepth _planeDepth, const float _width, const float _height)
+	Polygon* Polygon::create(const std::vector<spehs::vec2>& _cuspData, const PlaneDepth _planeDepth, const float _width, const float _height)
 	{
 		return getActiveBatchManager()->createPolygon(_cuspData, _planeDepth, _width, _height);
 	}
@@ -51,12 +47,12 @@ namespace spehs
 				firstPosition = 0;
 			else
 				firstPosition = (TWO_PI / _shapeID) / 2.0f;
-			vertexArray[0].position = glm::vec2(cos(firstPosition), sin(firstPosition));
+			vertexArray[0].position = spehs::vec2(cos(firstPosition), sin(firstPosition));
 			float minX = vertexArray[0].position.x, minY = vertexArray[0].position.y, maxX = vertexArray[0].position.x, maxY = vertexArray[0].position.y;
 			for (int i = 1; i < _shapeID; i++)
 			{
 				//Set position
-				vertexArray[i].position = glm::vec2(cos(firstPosition + i * (TWO_PI / _shapeID)), sin(firstPosition + i * (TWO_PI / _shapeID)));
+				vertexArray[i].position = spehs::vec2(cos(firstPosition + i * (TWO_PI / _shapeID)), sin(firstPosition + i * (TWO_PI / _shapeID)));
 
 				//Check min/max
 				if (vertexArray[i].position.x > maxX)
@@ -116,7 +112,7 @@ namespace spehs
 	{
 		blending = false;
 	}
-	Polygon::Polygon(const std::vector<glm::vec2>& _positionData, const PlaneDepth _planeDepth, const float _width, const float _height) : Polygon(_width, _height)
+	Polygon::Polygon(const std::vector<spehs::vec2>& _positionData, const PlaneDepth _planeDepth, const float _width, const float _height) : Polygon(_width, _height)
 	{
 		planeDepth = _planeDepth;
 		if (_positionData.size() < 3)
@@ -151,25 +147,26 @@ namespace spehs
 		{
 			glm::vec4 vertex;
 			scaledMatrix = glm::scale(glm::mat4(1.0f), glm::vec3(scaleX, scaleY, 0.0f));
-			scaledRotatedMatrix = glm::rotate(scaledMatrix, rotation, rotationVector);
+			scaledRotatedMatrix = glm::rotate(scaledMatrix, rotation, /*TODO1*/glm::vec3(rotationVector.x, rotationVector.y, rotationVector.z));
 			for (unsigned int i = 0; i < worldVertexArray.size(); i++)
 			{
 				vertex = scaledRotatedMatrix * glm::vec4(vertexArray[i].position.x * width, vertexArray[i].position.y * height, 0.0f, 1.0f);
-				worldVertexArray[i].position = glm::vec2(vertex.x + position.x, vertex.y + position.y);
+				worldVertexArray[i].position = spehs::vec2(vertex.x + position.x, vertex.y + position.y);
 			}
 			needUpdate = false;
 		}
 	}
 
 
-	std::vector<glm::vec2>* Polygon::getScreenVertices(spehs::Camera2D* _camera)
+	std::vector<spehs::vec2>* Polygon::getScreenVertices(spehs::Camera2D* _camera)
 	{
 		if (cameraMatrixState)
 		{
-			std::vector<glm::vec2>* result = new std::vector<glm::vec2>;
+			std::vector<spehs::vec2>* result = new std::vector<spehs::vec2>;
 			for (unsigned i = 0; i < worldVertexArray.size(); i++)
 			{
-				result->push_back(glm::vec2(*_camera->projectionMatrix * glm::vec4(worldVertexArray[i].position.x, worldVertexArray[i].position.y, 0.0f, 1.0f)));
+				glm::vec2 vec(glm::vec2(*_camera->projectionMatrix * glm::vec4(worldVertexArray[i].position.x, worldVertexArray[i].position.y, 0.0f, 1.0f)));
+				result->push_back(spehs::vec2(vec.x, vec.y));
 			}
 			return result; //User handles deletion
 		}
@@ -205,7 +202,7 @@ namespace spehs
 		}
 	}
 
-	void Polygon::setUVScale(const glm::vec2 &_newScale)
+	void Polygon::setUVScale(const spehs::vec2 &_newScale)
 	{
 		for (unsigned int i = 0; i < worldVertexArray.size(); i++)
 		{
@@ -266,12 +263,12 @@ namespace spehs
 	float Polygon::getRadius()
 	{
 		//Seems like this needs to be updated every time
-		float max = glm::distance(glm::vec2(position.x, position.y), glm::vec2(worldVertexArray[0].position.x, worldVertexArray[0].position.y));
+		float max = (spehs::vec2(position.x, position.y) - spehs::vec2(worldVertexArray[0].position.x, worldVertexArray[0].position.y)).getLength();
 		for (unsigned int i = 1; i < worldVertexArray.size(); i++)
 		{
-			if (glm::distance(glm::vec2(position.x, position.y), glm::vec2(worldVertexArray[i].position.x, worldVertexArray[i].position.y)) > max)
+			if ((spehs::vec2(position.x, position.y) - spehs::vec2(worldVertexArray[i].position.x, worldVertexArray[i].position.y)).getLength() > max)
 			{
-				max = glm::distance(glm::vec2(position.x, position.y), glm::vec2(worldVertexArray[i].position.x, worldVertexArray[i].position.y));
+				max = (spehs::vec2(position.x, position.y) - spehs::vec2(worldVertexArray[i].position.x, worldVertexArray[i].position.y)).getLength();
 			}
 		}
 		radius = max;

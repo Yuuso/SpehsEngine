@@ -36,7 +36,7 @@ namespace spehs
 		extern void initialize();
 	}
 
-	int initialize(std::string _windowName)
+	int initialize(const std::string& _windowName)
 	{
 		//ApplicationData
 		spehs::ApplicationData::read();

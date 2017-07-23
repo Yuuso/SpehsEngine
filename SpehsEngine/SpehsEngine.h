@@ -4,9 +4,16 @@
 namespace spehs
 {
 	class Window;
-	///Initializes rebuut. If a pointer to a custom instance of application data is given, application data is read and set there.
-	int initialize(std::string _windowName);
+
+	/* Initializes Spehs Engine */
+	int initialize(const std::string& _windowName);
+
+	/* Uninitializes Spehs Engine */
 	void uninitialize();
+
+	/* Get a pointer to the main window */
 	spehs::Window* getMainWindow();
+
+	/* Returns engine version in a readable string format */
 	std::string getEngineVersion();
 }

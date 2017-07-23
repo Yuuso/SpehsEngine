@@ -275,7 +275,7 @@ namespace spehs
 				{//Set to min size
 
 					//Take record of the window's old center position so that resized window can be nicely centered at the same position
-					glm::vec2 oldCenterPos(getXGlobal() + size.x / 2.0f, getYGlobal() + size.y / 2.0f);
+					spehs::vec2 oldCenterPos(getXGlobal() + size.x / 2.0f, getYGlobal() + size.y / 2.0f);
 
 					//Rezise to min size
 					setSize(minSize);

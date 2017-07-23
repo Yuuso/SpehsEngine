@@ -18,11 +18,11 @@
 
 namespace spehs
 {
-	float projectForce(const glm::vec2& _force, const glm::vec2& _support)
+	float projectForce(const spehs::vec2& _force, const spehs::vec2& _support)
 	{
-		if (glm::dot(_force, glm::normalize(_support)) < 0.0f)
+		if (_force.dot(_support.getNormalized()) < 0.0f)
 		{
-			return abs(glm::dot(_force, glm::normalize(_support)));
+			return abs(_force.dot(_support.getNormalized()));
 		}
 		return 0.0f;
 	}
@@ -52,13 +52,13 @@ namespace spehs
 		angularVelocity = 0.0f;
 		angularAcceleration = 0.0f;
 
-		position = glm::vec2(0.0f);
-		centerOfMass = glm::vec2(0.0f);
-		velocity = glm::vec2(0.0f);
-		acceleration = glm::vec2(0.0f);
+		position = spehs::vec2::zero;
+		centerOfMass = spehs::vec2::zero;
+		velocity = spehs::vec2::zero;
+		acceleration = spehs::vec2::zero;
 
 		resultantTorque = 0.0f;
-		resultantForce = glm::vec2(0.0f);
+		resultantForce = spehs::vec2::zero;
 
 		update();
 	}
@@ -92,7 +92,7 @@ namespace spehs
 		//Apply impulses
 		if (resultantImpulseForce.size() && !freezePosition)
 		{
-			glm::vec2 resultForce(0.0f);
+			spehs::vec2 resultForce = spehs::vec2::zero;
 			for (unsigned i = 0; i < resultantImpulseForce.size(); i++)
 				resultForce += resultantImpulseForce[i];
 			resultForce /= resultantImpulseForce.size();
@@ -130,31 +130,31 @@ namespace spehs
 		rotation = transform->getRotation();
 
 		//Reset forces
-		resultantForce = glm::vec2(0.0f);
+		resultantForce = spehs::vec2::zero;
 		resultantTorque = 0.0f;
 		resultantImpulseForce.clear();
 		resultantImpulseTorque.clear();
 
 		//Apply drag
-		if (!glm::isNull(velocity, NULL_EPSILON))
-			applyForce(-glm::normalize(velocity) * drag);
+		if (!velocity.isNull(NULL_EPSILON))
+			applyForce(-(velocity.getNormalized()) * drag);
 		if (abs(angularVelocity) > NULL_EPSILON)
 			applyTorque(-(angularVelocity / abs(angularVelocity)) * angularDrag);
 	}
 
-	void RigidBody2D::applyForce(const glm::vec2& _force)
+	void RigidBody2D::applyForce(const spehs::vec2& _force)
 	{
 		applyForceAtPosition(_force, centerOfMass);
 	}
 
-	void RigidBody2D::applyForceAtPosition(const glm::vec2& _force, const glm::vec2& _position)
+	void RigidBody2D::applyForceAtPosition(const spehs::vec2& _force, const spehs::vec2& _position)
 	{
 		resultantForce += _force;
-		glm::vec2 AtoB = glm::vec2(_position - centerOfMass);
+		spehs::vec2 AtoB = spehs::vec2(_position - centerOfMass);
 		applyTorque(cross2(AtoB, _force));
 	}
 
-	void RigidBody2D::applyVelocityImpulse(const glm::vec2& _impulse)
+	void RigidBody2D::applyVelocityImpulse(const spehs::vec2& _impulse)
 	{
 		resultantImpulseForce.push_back(_impulse);
 	}
@@ -211,10 +211,10 @@ namespace spehs
 			elasticity = 0.0f;
 	}
 	
-	glm::vec2 RigidBody2D::getVelocityAtPosition(const glm::vec2& _position)
+	spehs::vec2 RigidBody2D::getVelocityAtPosition(const spehs::vec2& _position)
 	{
 		//Angular Velocity
-		glm::vec2 result = _position - centerOfMass;
+		spehs::vec2 result = _position - centerOfMass;
 		float x = result.x;
 		result.x = -result.y;
 		result.y = x;
@@ -258,23 +258,23 @@ namespace spehs
 		{
 			if (i < vArray.size() - 1)
 			{
-				sum1 += abs(glm::length(glm::cross(toVec3(vArray[i + 1]), toVec3(vArray[i])))) *
+				sum1 += abs(toVec3(vArray[i + 1]).cross(toVec3(vArray[i])).getLength()) *
 					(
-					(glm::dot(toVec3(vArray[i]), toVec3(vArray[i]))) +
-					(glm::dot(toVec3(vArray[i]), toVec3(vArray[i + 1]))) +
-					(glm::dot(toVec3(vArray[i + 1]), toVec3(vArray[i + 1])))
+					toVec3(vArray[i]).dot(toVec3(vArray[i])) +
+					toVec3(vArray[i]).dot(toVec3(vArray[i + 1])) +
+					toVec3(vArray[i + 1]).dot(toVec3(vArray[i + 1]))
 					);
-				sum2 += abs(glm::length(glm::cross(toVec3(vArray[i + 1]), toVec3(vArray[i]))));
+				sum2 += abs(toVec3(vArray[i + 1]).cross(toVec3(vArray[i])).getLength());
 			}
 			else if (i == vArray.size() - 1)
 			{
-				sum1 += abs(glm::length(glm::cross(toVec3(vArray[0]), toVec3(vArray[i])))) *
+				sum1 += abs((toVec3(vArray[0]).cross(toVec3(vArray[i])).getLength())) *
 					(
-					(glm::dot(toVec3(vArray[i]), toVec3(vArray[i]))) +
-					(glm::dot(toVec3(vArray[i]), toVec3(vArray[0]))) +
-					(glm::dot(toVec3(vArray[0]), toVec3(vArray[0])))
+					toVec3(vArray[i]).dot(toVec3(vArray[i])) +
+					toVec3(vArray[i]).dot(toVec3(vArray[0])) +
+					toVec3(vArray[0]).dot(toVec3(vArray[0]))
 					);
-				sum2 += abs(glm::length(glm::cross(toVec3(vArray[0]), toVec3(vArray[i]))));
+				sum2 += abs(toVec3(vArray[0]).cross(toVec3(vArray[i])).getLength());
 			}
 		}
 

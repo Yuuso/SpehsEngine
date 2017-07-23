@@ -1,7 +1,7 @@
 #pragma once
-#include <glm/vec4.hpp>
 #include "GUIRectangle.h"
 #include "ValueEditor.h"
+#include "Color.h"
 
 
 namespace spehs

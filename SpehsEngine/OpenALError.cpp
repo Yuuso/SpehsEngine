@@ -1,4 +1,4 @@
-
+#ifdef _DEBUG
 #include "OpenALError.h"
 
 #include <iostream>
@@ -10,9 +10,8 @@
 
 namespace spehs
 {
-	void checkOpenALErrors(const std::string &_file, int _line)
+	void debugOpenALErrors(const std::string &_file, int _line)
 	{
-#ifdef _DEBUG
 		ALenum errorCode = alGetError();
 
 		switch (errorCode)
@@ -76,12 +75,10 @@ namespace spehs
 			}
 			break;
 		}
-#endif
 	}
 
-	void checkOpenALCError(ALCdevice* _device, const std::string &_file, int _line)
+	void debugOpenALCError(ALCdevice* _device, const std::string &_file, int _line)
 	{
-#ifdef _DEBUG
 		ALCenum errorCode = alcGetError(_device);
 
 		switch (errorCode)
@@ -145,6 +142,6 @@ namespace spehs
 			}
 			break;
 		}
-#endif
 	}
 }
+#endif

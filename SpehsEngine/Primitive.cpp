@@ -43,7 +43,7 @@ namespace spehs
 		rotation = 0.0f;
 		scaleX = 1.0f;
 		scaleY = 1.0f;
-		rotationVector = glm::vec3(0.0f, 0.0f, 1.0f);//?
+		rotationVector = spehs::vec3(0.0f, 0.0f, 1.0f);//?
 		primitiveColor = spehs::Color(255, 255, 255, 255);
 		scaledMatrix = glm::mat4(1.0f);
 		scaledRotatedMatrix = glm::mat4(1.0f);
@@ -68,11 +68,11 @@ namespace spehs
 			exceptions::unexpectedError("Position values corrupted!");
 		}
 #endif
-		position = glm::vec2(_x, _y);
+		position = spehs::vec2(_x, _y);
 		needUpdate = true;
 	}
 
-	void Primitive::setPosition(const glm::vec2 &_newPosition)
+	void Primitive::setPosition(const spehs::vec2 &_newPosition)
 	{
 #ifdef _DEBUG
 		if (_newPosition.x != _newPosition.x || _newPosition.y != _newPosition.y)
@@ -80,7 +80,7 @@ namespace spehs
 			exceptions::unexpectedError("Position values corrupted!");
 		}
 #endif
-		position = glm::vec2(_newPosition.x, _newPosition.y);
+		position = spehs::vec2(_newPosition.x, _newPosition.y);
 		needUpdate = true;
 	}
 
@@ -110,7 +110,7 @@ namespace spehs
 		needUpdate = true;
 	}
 
-	void Primitive::translate(const glm::vec2& _translation)
+	void Primitive::translate(const spehs::vec2& _translation)
 	{
 #ifdef _DEBUG
 		if (_translation.x != _translation.x || _translation.y != _translation.y)
@@ -149,7 +149,7 @@ namespace spehs
 		needUpdate = true;
 	}
 
-	void Primitive::setScale(const glm::vec2 &_newScale)
+	void Primitive::setScale(const spehs::vec2 &_newScale)
 	{
 #ifdef _DEBUG
 		if (_newScale.x != _newScale.x || _newScale.y != _newScale.y)
@@ -198,7 +198,7 @@ namespace spehs
 		needUpdate = true;
 	}
 
-	void Primitive::setRotation(const float &_newRotation, const glm::vec3 &_newRotationVector)
+	void Primitive::setRotation(const float &_newRotation, const spehs::vec3 &_newRotationVector)
 	{
 #ifdef _DEBUG
 		if (_newRotation != _newRotation || _newRotationVector.x != _newRotationVector.x || _newRotationVector.y != _newRotationVector.y || _newRotationVector.z != _newRotationVector.z)
@@ -235,7 +235,7 @@ namespace spehs
 		needUpdate = true;
 	}
 
-	void Primitive::setRotationVector(const glm::vec3 &_newRotationVector)
+	void Primitive::setRotationVector(const spehs::vec3 &_newRotationVector)
 	{
 #ifdef _DEBUG
 		if (_newRotationVector.x != _newRotationVector.x || _newRotationVector.y != _newRotationVector.y || _newRotationVector.z != _newRotationVector.z)

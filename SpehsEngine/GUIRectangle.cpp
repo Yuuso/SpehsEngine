@@ -31,7 +31,7 @@ namespace spehs
 	{
 		polygon->destroy();
 	}
-	GUIRectangle::GUIRectangle() : position(0), size(0), minSize(0),
+	GUIRectangle::GUIRectangle() : position(0, 0), size(0, 0), minSize(0, 0),
 		state(GUIRECT_HOVER_COLOR_BIT | GUIRECT_TEXT_JUSTIFICATION_LEFT_BIT), inputEnabled(true),
 		parent(nullptr), text(nullptr), displayTexture(nullptr), tooltip(nullptr),
 		pressCallbackFunction(nullptr), pressSound(nullptr), hoverSound(nullptr),
@@ -56,7 +56,7 @@ namespace spehs
 	{
 		setString(str);
 	}
-	GUIRectangle::GUIRectangle(const glm::ivec2& _size) : GUIRectangle()
+	GUIRectangle::GUIRectangle(const spehs::ivec2& _size) : GUIRectangle()
 	{
 		setSize(_size);
 	}
@@ -523,7 +523,7 @@ namespace spehs
 		if (parent)
 			parent->disableStateRecursiveUpwards(stateBit);
 	}
-	glm::ivec2 GUIRectangle::getPositionGlobal() const
+	spehs::ivec2 GUIRectangle::getPositionGlobal() const
 	{
 		if (parent)
 			return parent->getPositionGlobal() + position; return position;

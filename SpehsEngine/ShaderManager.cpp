@@ -3,6 +3,7 @@
 #include "TextureManager.h"
 #include "OpenGLError.h"
 #include "Console.h"
+#include "Vector.h"
 
 #include <GL/glew.h>
 
@@ -352,37 +353,37 @@ namespace spehs
 
 		checkOpenGLErrors(__FILE__, __LINE__);
 	}
-	void setUniform_vec2(const GLint &_location, const glm::vec2 &_value)
+	void setUniform_vec2(const GLint &_location, const spehs::vec2 &_value)
 	{
 		glUniform2fv(_location, 1, &_value[0]);
 
 		checkOpenGLErrors(__FILE__, __LINE__);
 	}
-	void setUniform_vec3(const GLint &_location, const glm::vec3 &_value)
+	void setUniform_vec3(const GLint &_location, const spehs::vec3 &_value)
 	{
 		glUniform3fv(_location, 1, &_value[0]);
 
 		checkOpenGLErrors(__FILE__, __LINE__);
 	}
-	void setUniform_vec4(const GLint &_location, const glm::vec4 &_value)
+	void setUniform_vec4(const GLint &_location, const spehs::vec4 &_value)
 	{
 		glUniform4fv(_location, 1, &_value[0]);
 
 		checkOpenGLErrors(__FILE__, __LINE__);
 	}
-	void setUniform_ivec2(const GLint &_location, const glm::ivec2 &_value)
+	void setUniform_ivec2(const GLint &_location, const spehs::ivec2 &_value)
 	{
 		glUniform2iv(_location, 1, &_value[0]);
 
 		checkOpenGLErrors(__FILE__, __LINE__);
 	}
-	void setUniform_ivec3(const GLint &_location, const glm::ivec3 &_value)
+	void setUniform_ivec3(const GLint &_location, const spehs::ivec3 &_value)
 	{
 		glUniform3iv(_location, 1, &_value[0]);
 
 		checkOpenGLErrors(__FILE__, __LINE__);
 	}
-	void setUniform_ivec4(const GLint &_location, const glm::ivec4 &_value)
+	void setUniform_ivec4(const GLint &_location, const spehs::ivec4 &_value)
 	{
 		glUniform4iv(_location, 1, &_value[0]);
 

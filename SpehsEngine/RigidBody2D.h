@@ -2,8 +2,7 @@
 #pragma once
 
 #include "Component.h"
-
-#include <glm/vec2.hpp>
+#include "Vector.h"
 
 #include <vector>
 #include <algorithm>
@@ -25,10 +24,10 @@ namespace spehs
 
 		void update();
 
-		void applyForce(const glm::vec2& _force);
-		void applyForceAtPosition(const glm::vec2& _force, const glm::vec2& _position);
+		void applyForce(const spehs::vec2& _force);
+		void applyForceAtPosition(const spehs::vec2& _force, const spehs::vec2& _position);
 		void applyTorque(const float& _torque);
-		void applyVelocityImpulse(const glm::vec2& _impulse);
+		void applyVelocityImpulse(const spehs::vec2& _impulse);
 		void applyAngularImpulse(const float& _impulse);
 
 		//Setters
@@ -41,7 +40,7 @@ namespace spehs
 		void setElasticity(const float& _e);
 
 		//Getters
-		glm::vec2 getVelocityAtPosition(const glm::vec2& _position);
+		spehs::vec2 getVelocityAtPosition(const spehs::vec2& _position);
 		float getMass() const { return mass; }
 		float getInvMass() const { if (isStatic || freezePosition) return 0.0f; else return 1 / mass; }
 		float getInvMoI() const { if (isStatic || freezeRotation) return 0.0f; else return 1 / momentOfInertia; }
@@ -76,15 +75,15 @@ namespace spehs
 		float angularVelocity;
 		float angularAcceleration;
 
-		glm::vec2 position;
-		glm::vec2 centerOfMass;
-		glm::vec2 velocity;
-		glm::vec2 acceleration;
+		spehs::vec2 position;
+		spehs::vec2 centerOfMass;
+		spehs::vec2 velocity;
+		spehs::vec2 acceleration;
 
 		float resultantTorque;
-		glm::vec2 resultantForce;
+		spehs::vec2 resultantForce;
 		std::vector<float> resultantImpulseTorque;
-		std::vector<glm::vec2> resultantImpulseForce;
+		std::vector<spehs::vec2> resultantImpulseForce;
 	};
 }
 

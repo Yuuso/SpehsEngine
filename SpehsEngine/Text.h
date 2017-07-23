@@ -4,8 +4,7 @@
 #include "Depth.h"
 #include "Vertex.h"
 #include "Color.h"
-
-#include <glm/glm.hpp>
+#include "Vector.h"
 
 #include <map>
 #include <string>
@@ -23,8 +22,8 @@ namespace spehs
 	struct Character
 	{
 		GLuint     textureID;  // ID handle of the glyph texture
-		glm::ivec2 size;       // Size of glyph
-		glm::ivec2 bearing;    // Offset from baseline to left/top of glyph
+		spehs::ivec2 size;       // Size of glyph
+		spehs::ivec2 bearing;    // Offset from baseline to left/top of glyph
 		GLuint     advance;    // Offset to advance to next glyph
 	};
 
@@ -63,8 +62,8 @@ namespace spehs
 		void setRenderState(const bool _state);
 		bool getRenderState() const { return renderState; }
 
-		void translate(const glm::vec2& _vec);
-		void setPosition(const glm::vec2& _vec);
+		void translate(const spehs::vec2& _vec);
+		void setPosition(const spehs::vec2& _vec);
 		void setPosition(const float x, const float y);
 
 		void setPlaneDepth(const PlaneDepth _depth);
@@ -88,7 +87,7 @@ namespace spehs
 		//Getters
 		std::string getString() const { return string; }
 
-		glm::vec2 getPosition() const { return position; }
+		spehs::vec2 getPosition() const { return position; }
 		float getX() const { return position.x; }
 		float getX(const int characterIndex) const;//Returns x position at given character index. Character width is not included. If index is out of bounds, returns x position of the last character instead.
 		float getY() const { return position.y; }
@@ -131,7 +130,7 @@ namespace spehs
 		void updateText();
 
 		std::string string;
-		glm::vec2 position;
+		spehs::vec2 position;
 		spehs::Color color;
 		float scale;
 

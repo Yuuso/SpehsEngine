@@ -13,9 +13,6 @@
     <ClCompile Include="Time.cpp">
       <Filter>Core</Filter>
     </ClCompile>
-    <ClCompile Include="LengthConversion.cpp">
-      <Filter>Core</Filter>
-    </ClCompile>
     <ClCompile Include="InputManager.cpp">
       <Filter>HID</Filter>
     </ClCompile>
@@ -114,9 +111,6 @@
     </ClCompile>
     <ClCompile Include="Compression.cpp">
       <Filter>Filestream</Filter>
-    </ClCompile>
-    <ClCompile Include="Position64.cpp">
-      <Filter>Core</Filter>
     </ClCompile>
     <ClCompile Include="Text.cpp">
       <Filter>Rendering\Geometric Rendering\Batch Rendering</Filter>
@@ -227,9 +221,6 @@
     <ClInclude Include="Time.h">
       <Filter>Core</Filter>
     </ClInclude>
-    <ClInclude Include="LengthConversion.h">
-      <Filter>Core</Filter>
-    </ClInclude>
     <ClInclude Include="InputManager.h">
       <Filter>HID</Filter>
     </ClInclude>
@@ -334,9 +325,6 @@
     </ClInclude>
     <ClInclude Include="Compression.h">
       <Filter>Filestream</Filter>
-    </ClInclude>
-    <ClInclude Include="Position64.h">
-      <Filter>Core</Filter>
     </ClInclude>
     <ClInclude Include="Text.h">
       <Filter>Rendering\Geometric Rendering\Batch Rendering</Filter>

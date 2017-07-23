@@ -3,7 +3,7 @@
 #ifdef _DEBUG
 //Generate function call when debug configuration is used
 #include <string>
-#define checkOpenGLErrors(file, line) spehs::debugOpenGLError(_file, _line)
+#define checkOpenGLErrors(_file, _line) spehs::debugOpenGLError(_file, _line)
 namespace spehs
 {
 	extern void debugOpenGLError(const std::string &_file, int _line);

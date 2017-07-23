@@ -3,8 +3,6 @@
 #include "Primitive.h"
 #include "Vertex.h"
 
-#include <glm/vec2.hpp>
-
 #include <string>
 
 
@@ -24,19 +22,19 @@ namespace spehs
 		static Polygon* create(const int _shapeID, const PlaneDepth _planeDepth, const float _width, const float _height);
 		static Polygon* create(const std::vector<spehs::Vertex>& _vertexData, const PlaneDepth _planeDepth, const float _width, const float _height);
 		static Polygon* create(const std::vector<spehs::Vertex>& _vertexData, const float _width, const float _height);
-		static Polygon* create(const std::vector<glm::vec2>& _cuspData, const PlaneDepth _planeDepth, const float _width, const float _height);
+		static Polygon* create(const std::vector<spehs::vec2>& _cuspData, const PlaneDepth _planeDepth, const float _width, const float _height);
 
 		Polygon* getPolygonPtr(){ return this; }
 
 		void updateVertices();
 
-		std::vector<glm::vec2>* getScreenVertices(spehs::Camera2D* _camera);
+		std::vector<spehs::vec2>* getScreenVertices(spehs::Camera2D* _camera);
 
 		void resize(const float &_width, const float &_height);
 		//Setters
 		void setUVScale(const float &_newScale);
 		void setUVScale(const float &_newScaleX, const float &_newScaleY);
-		void setUVScale(const glm::vec2 &_newScale);
+		void setUVScale(const spehs::vec2 &_newScale);
 		void setDrawMode(const DrawMode &_newDrawMode);
 		TextureData* setTexture(const std::string &_texturePath);
 		TextureData* setTexture(const size_t &_hash);
@@ -53,7 +51,7 @@ namespace spehs
 		Polygon(const int _shapeID, const PlaneDepth _planeDepth, const float _width, const float _height);
 		Polygon(const std::vector<spehs::Vertex>& _vertexData, const PlaneDepth _planeDepth, const float _width, const float _height); //For 2DPolygons
 		Polygon(const std::vector<spehs::Vertex>& _vertexData, const float _width, const float _height);
-		Polygon(const std::vector<glm::vec2>& _cuspData, const PlaneDepth _planeDepth, const float _width, const float _height);
+		Polygon(const std::vector<spehs::vec2>& _cuspData, const PlaneDepth _planeDepth, const float _width, const float _height);
 		~Polygon();
 
 		void setUVCoords();

@@ -2,8 +2,7 @@
 #pragma once
 
 #include "Component.h"
-
-#include <glm/vec2.hpp>
+#include "Vector.h"
 
 
 namespace spehs
@@ -18,31 +17,31 @@ namespace spehs
 		~Transform2D();
 
 		//Getters
-		glm::vec2 getPosition();
+		spehs::vec2 getPosition();
 		float getXPosition();
 		float getYPosition();
 		float getRotation();
 		float getScale();
 
-		glm::vec2 getLastSetPosition();
+		spehs::vec2 getLastSetPosition();
 		float getXLastSetPosition();
 		float getYLastSetPosition();
 		float getLastSetRotation();
 
 
 		//Setters
-		void setPosition(glm::vec2 _position);
+		void setPosition(spehs::vec2 _position);
 		void setXPosition(float _xpos);
 		void setYPosition(float _ypos);
 		void setRotation(float _rotation);
 		void setScale(float _scale);
 
 	private:
-		glm::vec2 position = glm::vec2(0.0f);
+		spehs::vec2 position = spehs::vec2(0.0f, 0.0f);
 		float rotation = 0.0f;
 		float scale = 1.0f;
 
-		glm::vec2 lastSetPosition;
+		spehs::vec2 lastSetPosition;
 		float lastSetRotation;
 	};
 }

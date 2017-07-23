@@ -5,7 +5,6 @@
 #include "Vertex.h"
 #include "Depth.h"
 
-#include <glm/vec3.hpp>
 
 #include <vector>
 #include <stdint.h>

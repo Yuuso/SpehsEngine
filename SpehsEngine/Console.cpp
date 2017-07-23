@@ -121,12 +121,12 @@ namespace spehs
 			fpsCounter->setFont(spehs::ApplicationData::GUITextFontPath, spehs::ApplicationData::consoleTextSize);
 			fpsCounter->setColor(Color(1.0f, 0.3f, 0.0f, 0.85f));
 			fpsCounter->setString("FPS:0123456789\nDraw calls:0123456789\nVertices:0123456789");
-			fpsCounter->setPosition(glm::vec2(5, spehs::ApplicationData::getWindowHeight() - fpsCounter->getTextHeight()));
+			fpsCounter->setPosition(spehs::vec2(5, spehs::ApplicationData::getWindowHeight() - fpsCounter->getTextHeight()));
 
 			consoleText = consoleBatchManager->createText();
 			consoleText->setFont(spehs::ApplicationData::GUITextFontPath, spehs::ApplicationData::consoleTextSize);
 			consoleText->setColor(Color(1.0f, 0.6f, 0.0f, spehs::ApplicationData::consoleTextAlpha));
-			consoleText->setPosition(glm::vec2(CONSOLE_BORDER, CONSOLE_BORDER));
+			consoleText->setPosition(spehs::vec2(CONSOLE_BORDER, CONSOLE_BORDER));
 			consoleText->setString("><");
 			consoleText->setRenderState(checkState(CONSOLE_OPEN_BIT));
 			setPlaneDepth(planeDepth + 1);
@@ -460,7 +460,7 @@ namespace spehs
 				if (++frameCounter >= FPS_REFRESH_RATE)
 				{
 					fpsCounter->setString("FPS: " + std::to_string(int(time::getFPS())) + "\nDraw calls: " + std::to_string(drawCalls) + "\nVertices: " + std::to_string(vertexDrawCount) + "\n" + customDebugText);
-					fpsCounter->setPosition(glm::vec2(CONSOLE_BORDER, spehs::ApplicationData::getWindowHeight() - fpsCounter->getTextHeight()));
+					fpsCounter->setPosition(spehs::vec2(CONSOLE_BORDER, spehs::ApplicationData::getWindowHeight() - fpsCounter->getTextHeight()));
 					frameCounter = 0;
 				}
 			}
@@ -641,7 +641,7 @@ namespace spehs
 				y += consoleText->getTextHeight();
 			for (int i = int(lines.size()) - 1; i >= 0; i--)
 			{
-				lines[i]->setPosition(glm::vec2(CONSOLE_BORDER, CONSOLE_BORDER + y));
+				lines[i]->setPosition(spehs::vec2(CONSOLE_BORDER, CONSOLE_BORDER + y));
 				y += lines[i]->getTextHeight();
 			}
 		}

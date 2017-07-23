@@ -20,7 +20,7 @@ namespace spehs
 	}
 
 
-	glm::vec2 Transform2D::getPosition()
+	spehs::vec2 Transform2D::getPosition()
 	{
 		return position;
 	}
@@ -45,7 +45,7 @@ namespace spehs
 		return scale;
 	}
 	
-	glm::vec2 Transform2D::getLastSetPosition()
+	spehs::vec2 Transform2D::getLastSetPosition()
 	{
 		return lastSetPosition;
 	}
@@ -66,7 +66,7 @@ namespace spehs
 	}
 
 
-	void Transform2D::setPosition(glm::vec2 _position)
+	void Transform2D::setPosition(spehs::vec2 _position)
 	{
 #ifdef _DEBUG
 		if (_position != _position)

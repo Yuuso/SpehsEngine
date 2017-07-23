@@ -195,8 +195,8 @@ namespace spehs
 			Character character =
 			{
 				texture,
-				glm::ivec2((*ftFace)->glyph->bitmap.width, (*ftFace)->glyph->bitmap.rows),
-				glm::ivec2((*ftFace)->glyph->bitmap_left, (*ftFace)->glyph->bitmap_top),
+				spehs::ivec2((*ftFace)->glyph->bitmap.width, (*ftFace)->glyph->bitmap.rows),
+				spehs::ivec2((*ftFace)->glyph->bitmap_left, (*ftFace)->glyph->bitmap_top),
 				(*ftFace)->glyph->advance.x
 			};
 			font->characters.insert(std::pair<GLchar, Character>(c, character));
@@ -352,10 +352,10 @@ namespace spehs
 				GLfloat w = ch.size.x * scale;
 				GLfloat h = ch.size.y * scale;
 
-				vertexArray.push_back(Vertex(glm::vec2(xpos, ypos + h), color, spehs::UV(0.0f, 0.0f)));
-				vertexArray.push_back(Vertex(glm::vec2(xpos, ypos), color, spehs::UV(0.0f, 1.0f)));
-				vertexArray.push_back(Vertex(glm::vec2(xpos + w, ypos), color, spehs::UV(1.0f, 1.0f)));
-				vertexArray.push_back(Vertex(glm::vec2(xpos + w, ypos + h), color, spehs::UV(1.0f, 0.0f)));
+				vertexArray.push_back(Vertex(spehs::vec2(xpos, ypos + h), color, spehs::UV(0.0f, 0.0f)));
+				vertexArray.push_back(Vertex(spehs::vec2(xpos, ypos), color, spehs::UV(0.0f, 1.0f)));
+				vertexArray.push_back(Vertex(spehs::vec2(xpos + w, ypos), color, spehs::UV(1.0f, 1.0f)));
+				vertexArray.push_back(Vertex(spehs::vec2(xpos + w, ypos + h), color, spehs::UV(1.0f, 0.0f)));
 
 				textureIDs.push_back(ch.textureID);
 
@@ -442,7 +442,7 @@ namespace spehs
 		string = _str + string;
 		needTextUpdate = true;
 	}
-	void Text::setPosition(const glm::vec2& _vec)
+	void Text::setPosition(const spehs::vec2& _vec)
 	{
 		position.x = _vec.x;
 		position.y = _vec.y;
@@ -458,7 +458,7 @@ namespace spehs
 	{
 		planeDepth = _depth;
 	}
-	void Text::translate(const glm::vec2& _vec)
+	void Text::translate(const spehs::vec2& _vec)
 	{
 		position.x += _vec.x;
 		position.y += _vec.y;

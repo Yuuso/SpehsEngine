@@ -3,10 +3,8 @@
 #include "Vertex.h"
 #include "Depth.h"
 #include "Color.h"
+#include "Vector.h"
 
-#include <glm/vec2.hpp>
-#include <glm/vec3.hpp>
-#include <glm/vec4.hpp>
 #include <glm/mat4x4.hpp>
 
 #include <vector>
@@ -72,20 +70,20 @@ namespace spehs
 
 		//Setters
 		void setPosition(const float _x, const float _y);
-		void setPosition(const glm::vec2 &_newPosition);
+		void setPosition(const spehs::vec2 &_newPosition);
 		void setPosition(const Primitive& _other);
 		void translate(const float &_x, const float &_y);
-		void translate(const glm::vec2& _translation);
+		void translate(const spehs::vec2& _translation);
 		void setScale(const float &_newScale);
 		void setScale(const float &_newScaleX, const float &_newScaleY);
-		void setScale(const glm::vec2 &_newScale);
+		void setScale(const spehs::vec2 &_newScale);
 		void setScaleX(const float _newScaleX);
 		void setScaleY(const float _newScaleX);
 		void setRotation(const float &_newRotation);
-		void setRotation(const float &_newRotation, const glm::vec3 &_newRotationVector);
+		void setRotation(const float &_newRotation, const spehs::vec3 &_newRotationVector);
 		void setRotation(const Primitive& _other);
 		void rotate(const float _rotation);
-		void setRotationVector(const glm::vec3 &_newRotationVector);
+		void setRotationVector(const spehs::vec3 &_newRotationVector);
 		void setColor(const Primitive& other);
 		void setColor(const spehs::Color& _newColor) override;
 		void setAlpha(const spehs::Color::Component& _newAlpha) override;
@@ -98,7 +96,7 @@ namespace spehs
 		void setBlending(const bool _newState);
 
 		//Getters
-		glm::vec2 getPosition() const { return position; }
+		spehs::vec2 getPosition() const { return position; }
 		float getX() const { return position.x; }
 		float getY() const { return position.y; }
 		float getRotation() const { return rotation; }
@@ -129,12 +127,12 @@ namespace spehs
 		float lineWidth;
 		float rotation;
 		float scaleX, scaleY;
-		glm::vec3 rotationVector;
+		spehs::vec3 rotationVector;
 		Color primitiveColor;
 		glm::mat4 scaledMatrix;
 		glm::mat4 scaledRotatedMatrix;
 
-		glm::vec2 position;
+		spehs::vec2 position;
 		std::vector<spehs::Vertex> vertexArray; //Original vertices
 
 #ifdef _DEBUG //Take a batch manager pointer for improved debug information

@@ -55,7 +55,7 @@
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>NOMINMAX;PI=3.14159265359f;TWO_PI=6.28318530718f;WIN32;_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>GLM_FORCE_RADIANS;NOMINMAX;PI=3.14159265359f;TWO_PI=6.28318530718f;HALF_PI=1.57079632679f;WIN32;_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
       <AdditionalIncludeDirectories>$(ProjectDir)/../Dependencies/include/;$(ProjectDir)/../Dependencies/include/Freetype;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <BrowseInformation>true</BrowseInformation>
@@ -80,7 +80,7 @@
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>NOMINMAX;PI=3.14159265359f;TWO_PI=6.28318530718f;WIN32;NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>GLM_FORCE_RADIANS;NOMINMAX;PI=3.14159265359f;TWO_PI=6.28318530718f;HALF_PI=1.57079632679f;WIN32;NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
       <AdditionalIncludeDirectories>$(ProjectDir)/../Dependencies/include/;$(ProjectDir)/../Dependencies/include/Freetype;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
@@ -138,14 +138,12 @@
     <ClCompile Include="GUIWindow.cpp" />
     <ClCompile Include="GUIWindowManager.cpp" />
     <ClCompile Include="InputManager.cpp" />
-    <ClCompile Include="LengthConversion.cpp" />
     <ClCompile Include="Line.cpp" />
     <ClCompile Include="OpenALError.cpp" />
     <ClCompile Include="OpenGLError.cpp" />
     <ClCompile Include="PhysicsWorld2D.cpp" />
     <ClCompile Include="Point.cpp" />
     <ClCompile Include="Polygon.cpp" />
-    <ClCompile Include="Position64.cpp" />
     <ClCompile Include="PostProcessing.cpp" />
     <ClCompile Include="Primitive.cpp" />
     <ClCompile Include="RigidBody2D.cpp" />
@@ -219,7 +217,6 @@
     <ClInclude Include="GUIWindow.h" />
     <ClInclude Include="GUIWindowManager.h" />
     <ClInclude Include="InputManager.h" />
-    <ClInclude Include="LengthConversion.h" />
     <ClInclude Include="Line.h" />
     <ClInclude Include="Mathematics.h" />
     <ClInclude Include="OpenALError.h" />
@@ -227,7 +224,6 @@
     <ClInclude Include="PhysicsWorld2D.h" />
     <ClInclude Include="Point.h" />
     <ClInclude Include="Polygon.h" />
-    <ClInclude Include="Position64.h" />
     <ClInclude Include="PostProcessing.h" />
     <ClInclude Include="Primitive.h" />
     <ClInclude Include="RigidBody2D.h" />

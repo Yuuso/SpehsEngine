@@ -1,9 +1,9 @@
 #pragma once
 
 #include <unordered_map>
+#include <string>
 
-#include <glm/vec2.hpp>
-
+#include "Vector.h"
 #include "GUID.h"
 
 #define SINT16_MIN -32768
@@ -86,15 +86,15 @@ namespace spehs
 		int getGUIDIndex(int joystickIndex);///<Searches for joysticks with the same GUID as given joystick. Returns index of given joystick among devices with the same GUID. Returns -1 on failure
 
 		//Getters
-		glm::vec2 getMouseCoords() const { return mouseCoords; }
-		glm::vec2 getMouseMovement() const { return mouseMovement; }
+		spehs::vec2 getMouseCoords() const { return mouseCoords; }
+		spehs::vec2 getMouseMovement() const { return mouseMovement; }
 		float getMouseX() const { return mouseCoords.x; }
 		float getMouseY() const { return mouseCoords.y; }
 		float getMouseMovementX() const { return mouseMovement.x; }
 		float getMouseMovementY() const { return mouseMovement.y; }
 		int getMouseWheelDelta() const { return mouseWheelDelta; }
-		bool mouseCollision(const glm::vec4& AABB_leftX_bottomY_width_height) const;
-		bool mouseCollision(const glm::vec2& minAABB, const glm::vec2& maxAABB) const;
+		bool mouseCollision(const spehs::vec4& AABB_leftX_bottomY_width_height) const;
+		bool mouseCollision(const spehs::vec2& minAABB, const spehs::vec2& maxAABB) const;
 		bool mouseCollision(const float leftAABB, const float rightAABB, const float topAABB, const float bottomAABB) const;
 		bool isQuitRequested() const { return quitRequested; }
 		bool fileDropped() const;
@@ -118,8 +118,8 @@ namespace spehs
 		bool mouseLocked = false;
 		bool mouseAvailable = false;//This boolean indicates global mouse availability during an update cycle. Update cycles should run according to depth from top to bottom. The first source to claim the mouse availability can do so.
 		int mouseWheelDelta = 0;
-		glm::ivec2 mouseCoords;
-		glm::ivec2 mouseMovement;
+		spehs::ivec2 mouseCoords;
+		spehs::ivec2 mouseMovement;
 		
 		//Joystick(s)
 		void joystickConnected();

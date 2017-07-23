@@ -12,7 +12,7 @@
 #include <algorithm>
 
 
-extern glm::vec2 positionCorrectionFactor;
+extern spehs::vec2 positionCorrectionFactor;
 extern float scaleCorrectionFactor;
 
 extern const float defaultRollOffFactor;
@@ -385,7 +385,7 @@ namespace spehs
 		}
 
 
-		ActiveSoundSource::ActiveSoundSource(const int _audioChannel) : SoundSource(_audioChannel), position(0.0f), velocity(0.0f), direction(0.0f), rollOffFactor(defaultRollOffFactor)
+		ActiveSoundSource::ActiveSoundSource(const int _audioChannel) : SoundSource(_audioChannel), position(spehs::vec3::zero), velocity(spehs::vec3::zero), direction(spehs::vec2::zero), rollOffFactor(defaultRollOffFactor)
 		{
 			relativeToSource = false;
 		}
@@ -403,7 +403,7 @@ namespace spehs
 			SoundSource::setParameters();
 		}
 
-		void ActiveSoundSource::setPosition(const glm::vec2& _pos)
+		void ActiveSoundSource::setPosition(const spehs::vec2& _pos)
 		{
 			position.x = _pos.x;
 			position.y = _pos.y;
@@ -412,7 +412,7 @@ namespace spehs
 				alSource3f(source->sourceID, AL_POSITION, position.x * positionCorrectionFactor.x, position.y * positionCorrectionFactor.y, position.z * scaleCorrectionFactor);
 			}
 		}
-		void ActiveSoundSource::setPosition(const glm::vec2& _pos, const float _z)
+		void ActiveSoundSource::setPosition(const spehs::vec2& _pos, const float _z)
 		{
 			position.x = _pos.x;
 			position.y = _pos.y;
@@ -422,7 +422,7 @@ namespace spehs
 				alSource3f(source->sourceID, AL_POSITION, position.x * positionCorrectionFactor.x, position.y * positionCorrectionFactor.y, position.z * scaleCorrectionFactor);
 			}
 		}
-		void ActiveSoundSource::setVelocity(const glm::vec2& _vel)
+		void ActiveSoundSource::setVelocity(const spehs::vec2& _vel)
 		{
 			velocity.x = _vel.x;
 			velocity.y = _vel.y;
@@ -431,7 +431,7 @@ namespace spehs
 				alSource3f(source->sourceID, AL_VELOCITY, velocity.x * positionCorrectionFactor.x, velocity.y * positionCorrectionFactor.y, velocity.z * scaleCorrectionFactor);
 			}
 		}
-		void ActiveSoundSource::setVelocity(const glm::vec2& _vel, const float _z)
+		void ActiveSoundSource::setVelocity(const spehs::vec2& _vel, const float _z)
 		{
 			velocity.x = _vel.x;
 			velocity.y = _vel.y;
@@ -441,7 +441,7 @@ namespace spehs
 				alSource3f(source->sourceID, AL_VELOCITY, velocity.x * positionCorrectionFactor.x, velocity.y * positionCorrectionFactor.y, velocity.z * scaleCorrectionFactor);
 			}
 		}
-		void ActiveSoundSource::setDirection(const glm::vec2& _direction)
+		void ActiveSoundSource::setDirection(const spehs::vec2& _direction)
 		{
 			direction = _direction;
 			if (source)
