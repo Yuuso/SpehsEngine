@@ -156,7 +156,7 @@ namespace spehs
 		template <typename SeedType>
 		class PRNG
 		{
-			static_assert(std::is_unsigned<SeedType>::value && (sizeof(SeedType) == 4 || sizeof(SeedType) == 8), "SeedType needs to be either 32bit or 64bit unsigned integer value!");
+			static_assert(std::is_unsigned<SeedType>::value && (sizeof(SeedType) == 4 || sizeof(SeedType) == 8), "SeedType needs to be either 32bit or 64bit unsigned integer type!");
 			typedef typename std::conditional<sizeof(SeedType) == 4, std::mt19937, std::mt19937_64>::type MTEngine;
 
 		public:
@@ -191,8 +191,9 @@ namespace spehs
 			}
 
 			//Default random functions
-			template <typename ReturnType, typename DistributionType = 
-				std::conditional<std::is_floating_point<ReturnType>::value, Distribution::UniformReal<ReturnType>, Distribution::UniformInt<ReturnType>>::type>
+			template <
+				typename ReturnType,
+				typename DistributionType = std::conditional<std::is_floating_point<ReturnType>::value, Distribution::UniformReal<ReturnType>, Distribution::UniformInt<ReturnType>>::type>
 			typename std::enable_if<sizeof(ReturnType) != 1, ReturnType>::type random()
 			{
 				return random<ReturnType>(std::numeric_limits<ReturnType>::min(), std::numeric_limits<ReturnType>::max());
@@ -204,30 +205,31 @@ namespace spehs
 				return (ReturnType) random<int>(std::numeric_limits<ReturnType>::min(), std::numeric_limits<ReturnType>::max());
 			}
 
-			template <typename ReturnType, typename DistributionType = 
-				std::conditional<std::is_integral<ReturnType>::value, Distribution::UniformInt<ReturnType>, Distribution::UniformReal<ReturnType>>::type>
-				typename std::enable_if<sizeof(ReturnType) != 1, ReturnType>::type random(const ReturnType _min, const ReturnType _max)
+			template <
+				typename ReturnType,
+				typename DistributionType = std::conditional<std::is_integral<ReturnType>::value, Distribution::UniformInt<ReturnType>, Distribution::UniformReal<ReturnType>>::type>
+			typename std::enable_if<sizeof(ReturnType) != 1, ReturnType>::type random(const ReturnType _min, const ReturnType _max)
 			{
-				static_assert(std::is_arithmetic<ReturnType>::value, "ReturnType needs to be an arithmetic value!");
+				static_assert(std::is_arithmetic<ReturnType>::value, "ReturnType needs to be an arithmetic type!");
 				assert(_min <= _max);
 				DistributionType dist;
-				return dist(engine, { _min, _max });
+				return dist(engine, DistributionType::param_type{ _min, _max });
 			}
 
 			template <typename ReturnType, typename DistributionType = Distribution::UniformInt<int>>
-				typename std::enable_if<sizeof(ReturnType) == 1, ReturnType>::type random(const ReturnType _min, const ReturnType _max)
+			typename std::enable_if<sizeof(ReturnType) == 1, ReturnType>::type random(const ReturnType _min, const ReturnType _max)
 			{
-				static_assert(std::is_arithmetic<ReturnType>::value, "ReturnType needs to be an arithmetic value!");
+				static_assert(std::is_arithmetic<ReturnType>::value, "ReturnType needs to be an arithmetic type!");
 				assert(_min <= _max);
 				DistributionType dist;
-				return dist(engine, { _min, _max });
+				return dist(engine, DistributionType::param_type{ _min, _max });
 			}
 
 			//Functions for certain distirbutions
 			template <typename ReturnType, typename DistributionType = Distribution::Bernoulli>
 			ReturnType random(const double _probability)
 			{
-				static_assert(std::is_arithmetic<ReturnType>::value, "ReturnType needs to be an arithmetic value!");
+				static_assert(std::is_arithmetic<ReturnType>::value, "ReturnType needs to be an arithmetic type!");
 				DistributionType dist(_probability);
 				return dist(engine);
 			}
@@ -235,7 +237,7 @@ namespace spehs
 			template <typename ReturnType, typename DistributionType = Distribution::Binomial<ReturnType>>
 			ReturnType random(const double _probability, const ReturnType _min, const ReturnType _max)
 			{
-				static_assert(std::is_arithmetic<ReturnType>::value, "ReturnType needs to be an arithmetic value!");
+				static_assert(std::is_arithmetic<ReturnType>::value, "ReturnType needs to be an arithmetic type!");
 				assert(_min <= _max);
 				DistributionType dist(double(_max - _min), _probability);
 				return _min + dist(engine);

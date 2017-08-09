@@ -16,7 +16,7 @@ namespace spehs
 	namespace time
 	{
 		//Global variables
-		Time maxDeltaTime(1000);
+		Time maxDeltaTime(0);
 
 		//Mutex
 		std::mutex deltaTimeMutex;

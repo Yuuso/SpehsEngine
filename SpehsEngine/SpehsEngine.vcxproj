@@ -14,6 +14,7 @@
     <ProjectGuid>{545A88BB-7447-428B-8A73-A1E8F2BBDB33}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>SpehsEngine</RootNamespace>
+    <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">

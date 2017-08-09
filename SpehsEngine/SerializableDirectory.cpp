@@ -22,6 +22,11 @@ namespace spehs
 		for (unsigned i = 0; i < data.size(); i++)
 			delete data[i];
 	}
+	SerializableDirectory& SerializableDirectory::operator=(const SerializableDirectory& other)
+	{
+		//TODO2
+		return *this;
+	}
 	size_t SerializableDirectory::packetSize() const
 	{
 		size_t bytes = sizeof(unsigned/*name char count*/) + sizeof(char) * name.size() + sizeof(unsigned/*child count*/);

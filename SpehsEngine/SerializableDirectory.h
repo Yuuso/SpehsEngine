@@ -18,6 +18,7 @@ namespace spehs
 		SerializableDirectory(std::string _name);
 		SerializableDirectory(const SerializableDirectory& other);
 		~SerializableDirectory() override;
+		SerializableDirectory& operator=(const SerializableDirectory& other);
 		Serializable* clone() const override { return new SerializableDirectory(*this); }
 		size_t packetSize() const override;
 		size_t write(unsigned char* buffer) const override;

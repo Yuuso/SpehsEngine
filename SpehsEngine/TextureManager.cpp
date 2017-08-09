@@ -166,7 +166,7 @@ namespace spehs
 			noise[x] = new double[_height];
 			for (unsigned y = 0; y < _height; y++)
 			{
-				noise[x][y] = noiseRNG.unit<double>();
+				//noise[x][y] = noiseRNG.unit<double>();
 			}
 		}
 

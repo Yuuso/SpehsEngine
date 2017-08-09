@@ -11,7 +11,10 @@
 #define GLSL_COLOR_VEC_TYPE "vec4"
 #elif (SPEHS_COLOR_COMPONENT_TYPE == SPEHS_COLOR_COMPONENT_TYPE_BYTE)
 #define GLSL_COLOR_VEC_TYPE "lowp vec4"
+#else
+#define GLSL_COLOR_VEC_TYPE "..."
 #endif
+
 
 
 spehs::ShaderManager* shaderManager;
@@ -54,8 +57,8 @@ namespace spehs
 		{
 			"#version 150\n"
 			"in vec2 vertexPosition;\n"
-			"in "GLSL_COLOR_VEC_TYPE" vertexColor;\n"
-			"out "GLSL_COLOR_VEC_TYPE" fragmentColor;\n"
+			"in " GLSL_COLOR_VEC_TYPE " vertexColor;\n"
+			"out " GLSL_COLOR_VEC_TYPE " fragmentColor;\n"
 			"uniform mat4 cameraMatrix;\n"
 			"void main()\n"
 			"{\n"
@@ -66,7 +69,7 @@ namespace spehs
 		const std::string defaultPolygonFrag =
 		{
 			"#version 150\n"
-			"in "GLSL_COLOR_VEC_TYPE" fragmentColor;\n"
+			"in " GLSL_COLOR_VEC_TYPE " fragmentColor;\n"
 			"out vec4 color;\n"
 			"void main()\n"
 			"{\n"
@@ -78,9 +81,9 @@ namespace spehs
 		{
 			"#version 150\n"
 			"in vec2 vertexPosition;\n"
-			"in "GLSL_COLOR_VEC_TYPE" vertexColor;\n"
+			"in " GLSL_COLOR_VEC_TYPE" vertexColor;\n"
 			"in vec2 vertexUV;\n"
-			"out "GLSL_COLOR_VEC_TYPE" fragmentColor;\n"
+			"out " GLSL_COLOR_VEC_TYPE " fragmentColor;\n"
 			"out vec2 texCoord;\n"
 			"uniform mat4 cameraMatrix;\n"
 			"void main()\n"
@@ -94,7 +97,7 @@ namespace spehs
 		{
 			"#version 150\n"
 			"in vec2 texCoord;\n"
-			"in "GLSL_COLOR_VEC_TYPE" fragmentColor; \n"
+			"in " GLSL_COLOR_VEC_TYPE " fragmentColor; \n"
 			"out vec4 color;\n"
 			"uniform sampler2D tex;\n"
 			"void main()\n"
@@ -131,8 +134,8 @@ namespace spehs
 		{
 			"#version 150\n"
 			"in vec2 vertexPosition;\n"
-			"in "GLSL_COLOR_VEC_TYPE" vertexColor;"
-			"out "GLSL_COLOR_VEC_TYPE" fragColor;\n"
+			"in " GLSL_COLOR_VEC_TYPE " vertexColor;"
+			"out " GLSL_COLOR_VEC_TYPE " fragColor;\n"
 			"in vec2 vertexUV;\n"
 			"out vec2 texCoord;\n"
 			"uniform mat4 cameraMatrix;\n"
@@ -147,7 +150,7 @@ namespace spehs
 		{
 			"#version 150\n"
 			"in vec2 texCoord;\n"
-			"in "GLSL_COLOR_VEC_TYPE" fragColor;"
+			"in " GLSL_COLOR_VEC_TYPE " fragColor;"
 			"out vec4 color;\n"
 			"uniform sampler2D tex;\n"
 			"void main()\n"
