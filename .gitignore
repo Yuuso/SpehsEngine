@@ -7,9 +7,9 @@ ehthumbs.db
 *.log
 *.dll
 *.sdf
-bin/
 Dependencies/
-SpehsEngine/obj/
+bin/
+obj/
 
 
 # Folder config file

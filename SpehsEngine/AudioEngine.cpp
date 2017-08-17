@@ -85,7 +85,7 @@ namespace audioVar
 	*/
 	std::vector<AudioChannel> audioChannels;
 
-	unsigned int maxSources;
+	size_t maxSources;
 
 	ALCdevice* device;
 	ALCcontext* context;

@@ -41,14 +41,14 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <OutDir>$(SolutionDir)\Dependencies\lib\</OutDir>
-    <IntDir>$(ProjectDir)\obj\$(Configuration)\</IntDir>
-    <TargetName>SpehsEngine-d</TargetName>
+    <OutDir>$(SPEHSENGINE_ROOT)/bin/$(Platform)/$(Configuration)/$(PlatformToolset)</OutDir>
+    <IntDir>$(SPEHSENGINE_ROOT)/obj/$(Platform)/$(Configuration)/$(PlatformToolset)</IntDir>
+    <TargetName>$(ProjectName)</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <OutDir>$(SolutionDir)\Dependencies\lib\</OutDir>
-    <IntDir>$(ProjectDir)\obj\$(Configuration)\</IntDir>
-    <TargetName>SpehsEngine</TargetName>
+    <OutDir>$(SPEHSENGINE_ROOT)/bin/$(Platform)/$(Configuration)/$(PlatformToolset)</OutDir>
+    <IntDir>$(SPEHSENGINE_ROOT)/obj/$(Platform)/$(Configuration)/$(PlatformToolset)</IntDir>
+    <TargetName>$(ProjectName)</TargetName>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -68,6 +68,7 @@
     <Lib>
       <AdditionalDependencies>SDL2.lib;SDL2main.lib;glew32.lib;glew32s.lib;opengl32.lib;freetype.lib;SOIL.lib;OpenAL32.lib;libogg_static.lib;libvorbis_static.lib;libvorbisfile_static.lib</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(ProjectDir)/../Dependencies/lib/</AdditionalLibraryDirectories>
+      <TargetMachine>MachineX86</TargetMachine>
     </Lib>
     <Bscmake>
       <PreserveSbr>true</PreserveSbr>
@@ -94,6 +95,7 @@
     <Lib>
       <AdditionalDependencies>SDL2.lib;SDL2main.lib;glew32.lib;glew32s.lib;opengl32.lib;freetype.lib;SOIL.lib;OpenAL32.lib;libogg_static.lib;libvorbis_static.lib;libvorbisfile_static.lib</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(ProjectDir)/../Dependencies/lib/</AdditionalLibraryDirectories>
+      <TargetMachine>MachineX86</TargetMachine>
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
