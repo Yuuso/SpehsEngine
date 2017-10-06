@@ -39,8 +39,6 @@ extern std::atomic<int> BatchAllocations;
 extern std::atomic<int> BatchDeallocations;
 extern std::atomic<int> textAllocations;
 extern std::atomic<int> textDeallocations;
-extern std::atomic<int> collisionPointAllocations;
-extern std::atomic<int> collisionPointDeallocations;
 typedef std::lock_guard<std::recursive_mutex> LockGuardRecursive;
 
 
@@ -736,7 +734,6 @@ namespace spehs
 					log("GUI Rectangles: " + std::to_string(guiRectangleAllocations - guiRectangleDeallocations) + "/" + std::to_string(guiRectangleAllocations), color);
 					log("Primitives: " + std::to_string(primitiveAllocations - primitiveDeallocations) + "/" + std::to_string(primitiveAllocations), color);
 					log("PrimitiveBatches: " + std::to_string(BatchAllocations - BatchDeallocations) + "/" + std::to_string(BatchAllocations), color);
-					log("CollisionPoints: " + std::to_string(collisionPointAllocations - collisionPointDeallocations) + "/" + std::to_string(collisionPointAllocations), color);
 					log("Serializables: " + std::to_string(serializableAllocations - serializableDeallocations) + "/" + std::to_string(serializableAllocations), color);
 					log("-------------------", color);
 					return;

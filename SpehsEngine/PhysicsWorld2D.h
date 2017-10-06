@@ -2,6 +2,7 @@
 #pragma once
 
 #include "Vector.h"
+#include "SATCollision.h"
 
 #include <vector>
 #include <memory>
@@ -10,7 +11,6 @@
 namespace spehs
 {
 	class RigidBody2D;
-	struct CollisionPoint;
 
 	class PhysicsWorld2D
 	{
@@ -41,7 +41,7 @@ namespace spehs
 
 		bool useGravity;
 
-		std::shared_ptr<CollisionPoint> collisionPoint;
+		spehs::CollisionPoint collisionPoint;
 		std::vector<RigidBody2D*> bodies;
 		spehs::vec2 gravity;
 	};

@@ -7,29 +7,11 @@
 #include "glm/vec2.hpp"
 #include "glm/gtx/vector_query.hpp"
 
-#include <atomic>
-
-
-std::atomic<int> collisionPointAllocations;
-std::atomic<int> collisionPointDeallocations;
 
 
 
 namespace spehs
 {
-	CollisionPoint::CollisionPoint()
-	{
-#ifdef _DEBUG
-		collisionPointAllocations++;
-#endif
-	}
-	CollisionPoint::~CollisionPoint()
-	{
-#ifdef _DEBUG
-		collisionPointDeallocations++;
-#endif
-	}
-
 	Projection projectPolygon(const spehs::vec2& _axis, Vertex* _vertexArray, const unsigned int _size)
 	{
 		float min = _axis.dot(spehs::vec2(_vertexArray[0].position.x, _vertexArray[0].position.y));
@@ -345,7 +327,7 @@ namespace spehs
 
 	
 #pragma region COLLISIONPOINT COLLISIONS
-	std::shared_ptr<CollisionPoint> SATMTVCollision(Vertex* _vertexArray1, const unsigned int _size1, Vertex* _vertexArray2, const unsigned int _size2)
+	bool SATMTVCollision(CollisionPoint& deposit, Vertex* _vertexArray1, const unsigned int _size1, Vertex* _vertexArray2, const unsigned int _size2)
 	{
 		float overlap = FLT_MAX;
 		spehs::vec2 smallestAxis;
@@ -371,7 +353,7 @@ namespace spehs
 			{
 				delete [] axis1;
 				delete [] axis2;
-				return nullptr;
+				return false;
 			}
 			else
 			{
@@ -393,7 +375,7 @@ namespace spehs
 			{
 				delete [] axis1;
 				delete [] axis2;
-				return nullptr;
+				return false;
 			}
 			else
 			{
@@ -408,8 +390,7 @@ namespace spehs
 
 		//Here we know that no separating axis was found and there is a collision
 		//Calculate collision point
-		std::shared_ptr<CollisionPoint> result(new CollisionPoint);
-		result->MTV = smallestAxis * abs(overlap);
+		deposit.MTV = smallestAxis * abs(overlap);
 		
 		//Recalculate all axes without normalization
 		for (unsigned int i = 0; i < _size1; i++)
@@ -428,16 +409,16 @@ namespace spehs
 			//Find which points are colliding
 			if (SATCollision(_vertexArray2, _size2, testPoint, 0.0f))
 			{
-				result->point.push_back(testPoint);
+				deposit.point.push_back(testPoint);
 
 				//Find normal
-				spehs::vec2 pointVector = result->point.back() - getCenter(_vertexArray2, _size2);
-				result->normal.push_back(axis2[0]);
+				spehs::vec2 pointVector = deposit.point.back() - getCenter(_vertexArray2, _size2);
+				deposit.normal.push_back(axis2[0]);
 				for (unsigned i = 1; i < _size2; i++)
 				{
-					if (pointVector.dot(axis2[i]) > pointVector.dot(result->normal.back()))
+					if (pointVector.dot(axis2[i]) > pointVector.dot(deposit.normal.back()))
 					{
-						result->normal.back() = axis2[i];
+						deposit.normal.back() = axis2[i];
 					}
 				}
 			}
@@ -449,32 +430,32 @@ namespace spehs
 			//Find which points are colliding
 			if (SATCollision(_vertexArray1, _size1, testPoint, 0.0f))
 			{
-				result->point.push_back(testPoint);
+				deposit.point.push_back(testPoint);
 
 				//Find normal
-				spehs::vec2 pointVector = result->point.back() - getCenter(_vertexArray1, _size1);
-				result->normal.push_back(axis1[0]);
+				spehs::vec2 pointVector = deposit.point.back() - getCenter(_vertexArray1, _size1);
+				deposit.normal.push_back(axis1[0]);
 				for (unsigned i = 1; i < _size1; i++)
 				{
-					if (pointVector.dot(axis1[i]) > pointVector.dot(result->normal.back()))
+					if (pointVector.dot(axis1[i]) > pointVector.dot(deposit.normal.back()))
 					{
-						result->normal.back() = axis1[i];
+						deposit.normal.back() = axis1[i];
 					}
 				}
-				result->normal.back() = -result->normal.back(); //?
+				deposit.normal.back() = -deposit.normal.back(); //?
 			}
 		}
 
-		for (unsigned int i = 0; i < result->normal.size(); i++)
+		for (unsigned int i = 0; i < deposit.normal.size(); i++)
 		{
-			result->normal[i] = result->normal[i].getNormalized();
+			deposit.normal[i] = deposit.normal[i].getNormalized();
 		}
 
 		delete [] axis1;
 		delete [] axis2;
-		return result;
+		return true;
 	}
-	std::shared_ptr<CollisionPoint> SATMTVCollision(spehs::vec2* _vertexArray1, const unsigned int _size1, spehs::vec2* _vertexArray2, const unsigned int _size2)
+	bool SATMTVCollision(CollisionPoint& deposit, spehs::vec2* _vertexArray1, const unsigned int _size1, spehs::vec2* _vertexArray2, const unsigned int _size2)
 	{
 		float overlap = FLT_MAX;
 		spehs::vec2 smallestAxis;
@@ -500,7 +481,7 @@ namespace spehs
 			{
 				delete [] axis1;
 				delete [] axis2;
-				return nullptr;
+				return false;
 			}
 			else
 			{
@@ -522,7 +503,7 @@ namespace spehs
 			{
 				delete [] axis1;
 				delete [] axis2;
-				return nullptr;
+				return false;
 			}
 			else
 			{
@@ -537,8 +518,7 @@ namespace spehs
 
 		//Here we know that no separating axis was found and there is a collision
 		//Calculate collision point
-		std::shared_ptr<CollisionPoint> result(new CollisionPoint);
-		result->MTV = smallestAxis * abs(overlap);
+		deposit.MTV = smallestAxis * abs(overlap);
 
 		//Recalculate all axes without normalization
 		for (unsigned int i = 0; i < _size1; i++)
@@ -557,16 +537,16 @@ namespace spehs
 			//Find which points are colliding
 			if (SATCollision(_vertexArray2, _size2, testPoint, 0.0f))
 			{
-				result->point.push_back(testPoint);
+				deposit.point.push_back(testPoint);
 
 				//Find normal
-				spehs::vec2 pointVector = result->point.back() - getCenter(_vertexArray2, _size2);
-				result->normal.push_back(axis2[0]);
+				spehs::vec2 pointVector = deposit.point.back() - getCenter(_vertexArray2, _size2);
+				deposit.normal.push_back(axis2[0]);
 				for (unsigned i = 1; i < _size2; i++)
 				{
-					if (pointVector.dot(axis2[i]) > pointVector.dot(result->normal.back()))
+					if (pointVector.dot(axis2[i]) > pointVector.dot(deposit.normal.back()))
 					{
-						result->normal.back() = axis2[i];
+						deposit.normal.back() = axis2[i];
 					}
 				}
 			}
@@ -578,32 +558,32 @@ namespace spehs
 			//Find which points are colliding
 			if (SATCollision(_vertexArray1, _size1, testPoint, 0.0f))
 			{
-				result->point.push_back(testPoint);
+				deposit.point.push_back(testPoint);
 
 				//Find normal
-				spehs::vec2 pointVector = result->point.back() - getCenter(_vertexArray1, _size1);
-				result->normal.push_back(axis1[0]);
+				spehs::vec2 pointVector = deposit.point.back() - getCenter(_vertexArray1, _size1);
+				deposit.normal.push_back(axis1[0]);
 				for (unsigned i = 1; i < _size1; i++)
 				{
-					if (pointVector.dot(axis1[i]) > pointVector.dot(result->normal.back()))
+					if (pointVector.dot(axis1[i]) > pointVector.dot(deposit.normal.back()))
 					{
-						result->normal.back() = axis1[i];
+						deposit.normal.back() = axis1[i];
 					}
 				}
-				result->normal.back() = -result->normal.back(); //?
+				deposit.normal.back() = -deposit.normal.back(); //?
 			}
 		}
 
-		for (unsigned int i = 0; i < result->normal.size(); i++)
+		for (unsigned int i = 0; i < deposit.normal.size(); i++)
 		{
-			result->normal[i] = result->normal[i].getNormalized();
+			deposit.normal[i] = deposit.normal[i].getNormalized();
 		}
 
 		delete [] axis1;
 		delete [] axis2;
-		return result;
+		return true;
 	}
-	std::shared_ptr<CollisionPoint> SATMTVCollision(Vertex* _vertexArray, const unsigned int _size, const spehs::vec2& _circleCenterPoint, const float _circleRadius)
+	bool SATMTVCollision(CollisionPoint& deposit, Vertex* _vertexArray, const unsigned int _size, const spehs::vec2& _circleCenterPoint, const float _circleRadius)
 	{
 		float overlap = FLT_MAX;
 		spehs::vec2 smallestAxis;
@@ -623,7 +603,7 @@ namespace spehs
 		if (!p1.overlap(p2))
 		{
 			delete axis1;
-			return nullptr;
+			return false;
 		}
 		else
 		{
@@ -643,7 +623,7 @@ namespace spehs
 			if (!p1.overlap(p2))
 			{
 				delete axis1;
-				return nullptr;
+				return false;
 			}
 			else
 			{
@@ -658,8 +638,7 @@ namespace spehs
 
 		//Here we know that no separating axis was found and there is a collision
 		//Calculate collision point
-		std::shared_ptr<CollisionPoint> result(new CollisionPoint);
-		result->MTV = smallestAxis.getNormalized() * abs(overlap);
+		deposit.MTV = smallestAxis.getNormalized() * abs(overlap);
 		
 		//Recalculate all axes without normalizing
 		for (int i = 0; i < _size; i++)
@@ -676,11 +655,11 @@ namespace spehs
 			//Find which points are colliding
 			if (circleCollision(_circleCenterPoint, _circleRadius, testPoint, 0.0f))
 			{
-				result->point.push_back(testPoint);
+				deposit.point.push_back(testPoint);
 
 				//Find normal
-				result->normal.push_back(spehs::vec2(testPoint - _circleCenterPoint));
-				result->normal.back() = -result->normal.back(); //?
+				deposit.normal.push_back(spehs::vec2(testPoint - _circleCenterPoint));
+				deposit.normal.back() = -deposit.normal.back(); //?
 			}
 		}
 
@@ -689,30 +668,30 @@ namespace spehs
 		//Find which points are colliding
 		if (SATCollision(_vertexArray, _size, circlePoint, 0.0f))
 		{
-			result->point.push_back(circlePoint);
+			deposit.point.push_back(circlePoint);
 
 			//Find normal
-			spehs::vec2 pointVector = result->point.back() - getCenter(_vertexArray, _size);
-			result->normal.push_back(axis1[0]);
+			spehs::vec2 pointVector = deposit.point.back() - getCenter(_vertexArray, _size);
+			deposit.normal.push_back(axis1[0]);
 			for (unsigned i = 1; i < _size; i++)
 			{
-				if (pointVector.dot(axis1[i]) > pointVector.dot(result->normal.back()))
+				if (pointVector.dot(axis1[i]) > pointVector.dot(deposit.normal.back()))
 				{
-					result->normal.back() = axis1[i];
+					deposit.normal.back() = axis1[i];
 				}
 			}
 		}
 
 		//Normalize normals
-		for (unsigned int i = 0; i < result->normal.size(); i++)
+		for (unsigned int i = 0; i < deposit.normal.size(); i++)
 		{
-			result->normal[i] = result->normal[i].getNormalized();
+			deposit.normal[i] = deposit.normal[i].getNormalized();
 		}
 
 		delete [] axis1;
-		return result;
+		return true;
 	}
-	std::shared_ptr<CollisionPoint> SATMTVCollision(spehs::vec2* _vertexArray, const unsigned int _size, const spehs::vec2& _circleCenterPoint, const float _circleRadius)
+	bool SATMTVCollision(CollisionPoint& deposit, spehs::vec2* _vertexArray, const unsigned int _size, const spehs::vec2& _circleCenterPoint, const float _circleRadius)
 	{
 		float overlap = FLT_MAX;
 		spehs::vec2 smallestAxis;
@@ -732,7 +711,7 @@ namespace spehs
 		if (!p1.overlap(p2))
 		{
 			delete axis1;
-			return nullptr;
+			return false;
 		}
 		else
 		{
@@ -752,7 +731,7 @@ namespace spehs
 			if (!p1.overlap(p2))
 			{
 				delete axis1;
-				return nullptr;
+				return false;
 			}
 			else
 			{
@@ -767,8 +746,7 @@ namespace spehs
 
 		//Here we know that no separating axis was found and there is a collision
 		//Calculate collision point
-		std::shared_ptr<CollisionPoint> result(new CollisionPoint);
-		result->MTV = smallestAxis.getNormalized() * abs(overlap);
+		deposit.MTV = smallestAxis.getNormalized() * abs(overlap);
 
 		//Recalculate all axes without normalizing
 		for (int i = 0; i < _size; i++)
@@ -785,11 +763,11 @@ namespace spehs
 			//Find which points are colliding
 			if (circleCollision(_circleCenterPoint, _circleRadius, testPoint, 0.0f))
 			{
-				result->point.push_back(testPoint);
+				deposit.point.push_back(testPoint);
 
 				//Find normal
-				result->normal.push_back(spehs::vec2(testPoint - _circleCenterPoint));
-				result->normal.back() = -result->normal.back(); //?
+				deposit.normal.push_back(spehs::vec2(testPoint - _circleCenterPoint));
+				deposit.normal.back() = -deposit.normal.back(); //?
 			}
 		}
 
@@ -798,49 +776,48 @@ namespace spehs
 		//Find which points are colliding
 		if (SATCollision(_vertexArray, _size, circlePoint, 0.0f))
 		{
-			result->point.push_back(circlePoint);
+			deposit.point.push_back(circlePoint);
 
 			//Find normal
-			spehs::vec2 pointVector = result->point.back() - getCenter(_vertexArray, _size);
-			result->normal.push_back(axis1[0]);
+			spehs::vec2 pointVector = deposit.point.back() - getCenter(_vertexArray, _size);
+			deposit.normal.push_back(axis1[0]);
 			for (unsigned i = 1; i < _size; i++)
 			{
-				if (pointVector.dot(axis1[i]) > pointVector.dot(result->normal.back()))
+				if (pointVector.dot(axis1[i]) > pointVector.dot(deposit.normal.back()))
 				{
-					result->normal.back() = axis1[i];
+					deposit.normal.back() = axis1[i];
 				}
 			}
 		}
 
 		//Normalize normals
-		for (unsigned int i = 0; i < result->normal.size(); i++)
+		for (unsigned int i = 0; i < deposit.normal.size(); i++)
 		{
-			result->normal[i] = result->normal[i].getNormalized();
+			deposit.normal[i] = deposit.normal[i].getNormalized();
 		}
 
 		delete [] axis1;
-		return result;
+		return false;
 	}
-	std::shared_ptr<CollisionPoint> circleMTVCollision(const spehs::vec2& _circleCenterPoint1, const float _circleRadius1, const spehs::vec2& _circleCenterPoint2, const float _circleRadius2)
+	bool circleMTVCollision(CollisionPoint& deposit, const spehs::vec2& _circleCenterPoint1, const float _circleRadius1, const spehs::vec2& _circleCenterPoint2, const float _circleRadius2)
 	{
 		if ((_circleCenterPoint1 - _circleCenterPoint2).getLength() < (_circleRadius1 + _circleRadius2))
 		{
-			std::shared_ptr<CollisionPoint> result(new CollisionPoint);
 			if (_circleCenterPoint1 == _circleCenterPoint2) //Can't normalize 0 vectors
 			{
-				result->MTV = spehs::vec2(1.0f, 0.0f) * ((_circleCenterPoint1 - _circleCenterPoint2).getLength() - (_circleRadius1 + _circleRadius2));
-				result->point.push_back(_circleCenterPoint1 + spehs::vec2(1.0f, 0.0f) * _circleRadius1);
-				result->normal.push_back(result->MTV);
+				deposit.MTV = spehs::vec2(1.0f, 0.0f) * ((_circleCenterPoint1 - _circleCenterPoint2).getLength() - (_circleRadius1 + _circleRadius2));
+				deposit.point.push_back(_circleCenterPoint1 + spehs::vec2(1.0f, 0.0f) * _circleRadius1);
+				deposit.normal.push_back(deposit.MTV);
 			}
 			else
 			{
-				result->MTV = (_circleCenterPoint2 - _circleCenterPoint1).getNormalized() * ((_circleCenterPoint1, _circleCenterPoint2).getLength() - (_circleRadius1 + _circleRadius2));
-				result->point.push_back(_circleCenterPoint1 + (_circleCenterPoint2 - _circleCenterPoint1).normalize() * _circleRadius1);
-				result->normal.push_back(result->MTV);
+				deposit.MTV = (_circleCenterPoint2 - _circleCenterPoint1).getNormalized() * ((_circleCenterPoint1, _circleCenterPoint2).getLength() - (_circleRadius1 + _circleRadius2));
+				deposit.point.push_back(_circleCenterPoint1 + (_circleCenterPoint2 - _circleCenterPoint1).normalize() * _circleRadius1);
+				deposit.normal.push_back(deposit.MTV);
 			}
-			return result;
+			return true;
 		}
-		return nullptr;
+		return false;
 	}
 #pragma endregion
 }

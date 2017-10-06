@@ -21,7 +21,7 @@
 
 namespace spehs
 {
-	PhysicsWorld2D::PhysicsWorld2D() : gravity(0.0f, -3.0f), collisionPoint(nullptr), useGravity(true)
+	PhysicsWorld2D::PhysicsWorld2D() : gravity(0.0f, -3.0f), useGravity(true)
 	{
 	}
 	PhysicsWorld2D::~PhysicsWorld2D()
@@ -78,38 +78,40 @@ namespace spehs
 				//Radius collisions
 				if (circleCollision(bodies[cycle1]->position, bodies[cycle1]->circleRadius, bodies[cycle2]->position, bodies[cycle2]->circleRadius))
 				{
+					bool collisionResult = false;
+
 					//SAT Collision
 					if (bodies[cycle1]->numVertices > 10) //if circle
 					{
 						if (bodies[cycle2]->numVertices > 10) //both
 						{
-							collisionPoint = spehs::circleMTVCollision(bodies[cycle1]->position, bodies[cycle1]->circleRadius, bodies[cycle2]->position, bodies[cycle2]->circleRadius);
+							collisionResult = spehs::circleMTVCollision(collisionPoint, bodies[cycle1]->position, bodies[cycle1]->circleRadius, bodies[cycle2]->position, bodies[cycle2]->circleRadius);
 						}
 						else
 						{
-							collisionPoint = spehs::SATMTVCollision(bodies[cycle2]->vertexData, bodies[cycle2]->numVertices, bodies[cycle1]->position, bodies[cycle1]->circleRadius);
+							collisionResult = spehs::SATMTVCollision(collisionPoint, bodies[cycle2]->vertexData, bodies[cycle2]->numVertices, bodies[cycle1]->position, bodies[cycle1]->circleRadius);
 						}
 					}
 					else
 					{
 						if (bodies[cycle2]->numVertices > 10) //circle
 						{
-							collisionPoint = spehs::SATMTVCollision(bodies[cycle1]->vertexData, bodies[cycle1]->numVertices, bodies[cycle2]->position, bodies[cycle2]->circleRadius);
+							collisionResult = spehs::SATMTVCollision(collisionPoint, bodies[cycle1]->vertexData, bodies[cycle1]->numVertices, bodies[cycle2]->position, bodies[cycle2]->circleRadius);
 						}
 						else
 						{
-							collisionPoint = spehs::SATMTVCollision(bodies[cycle1]->vertexData, bodies[cycle1]->numVertices, bodies[cycle2]->vertexData, bodies[cycle2]->numVertices);
+							collisionResult = spehs::SATMTVCollision(collisionPoint, bodies[cycle1]->vertexData, bodies[cycle1]->numVertices, bodies[cycle2]->vertexData, bodies[cycle2]->numVertices);
 						}
 					}
 
-					if (collisionPoint != nullptr)
+					if (collisionResult)
 					{
-						for (unsigned i = 0; i < collisionPoint->point.size(); i++)
+						for (unsigned i = 0; i < collisionPoint.point.size(); i++)
 						{
-							spehs::vec2 body1VelocityBefore = bodies[cycle1]->getVelocityAtPosition(collisionPoint->point[i]);
-							spehs::vec2 body2VelocityBefore = bodies[cycle2]->getVelocityAtPosition(collisionPoint->point[i]);
+							spehs::vec2 body1VelocityBefore = bodies[cycle1]->getVelocityAtPosition(collisionPoint.point[i]);
+							spehs::vec2 body2VelocityBefore = bodies[cycle2]->getVelocityAtPosition(collisionPoint.point[i]);
 							spehs::vec2 relativeVelocity = (body1VelocityBefore - body2VelocityBefore);
-							float relativeNormalVelocity = relativeVelocity.dot(collisionPoint->normal[i]);
+							float relativeNormalVelocity = relativeVelocity.dot(collisionPoint.normal[i]);
 
 							//Resolve collisions
 							if (relativeNormalVelocity < -ZERO_EPSILON) //Point are colliding
@@ -124,7 +126,7 @@ namespace spehs
 								//Positional Correction
 								const float percentage = 0.25f;
 								const float slop = 0.04f;
-								spehs::vec2 correction = std::max(collisionPoint->MTV.getLength() - slop, 0.0f) / (bodies[cycle1]->getInvMass() + bodies[cycle2]->getInvMass()) * percentage * collisionPoint->normal[i];
+								spehs::vec2 correction = std::max(collisionPoint.MTV.getLength() - slop, 0.0f) / (bodies[cycle1]->getInvMass() + bodies[cycle2]->getInvMass()) * percentage * collisionPoint.normal[i];
 								if (!bodies[cycle1]->freezePosition && !bodies[cycle1]->isStatic)
 									bodies[cycle1]->ownerObject->getComponent<Transform2D>()->setPosition(bodies[cycle1]->ownerObject->getComponent<Transform2D>()->getPosition() + correction * bodies[cycle1]->getInvMass());
 								if (!bodies[cycle2]->freezePosition && !bodies[cycle2]->isStatic)
@@ -142,23 +144,23 @@ namespace spehs
 								
 								float e = std::min(bodies[cycle1]->elasticity, bodies[cycle2]->elasticity);
 
-								spehs::vec2 rVecAP = spehs::vec2(-(collisionPoint->point[i] - bodies[cycle1]->centerOfMass).y, (collisionPoint->point[i] - bodies[cycle1]->centerOfMass).x);
-								spehs::vec2 rVecBP = spehs::vec2(-(collisionPoint->point[i] - bodies[cycle2]->centerOfMass).y, (collisionPoint->point[i] - bodies[cycle2]->centerOfMass).x);
-								spehs::vec2 tangent = spehs::vec2(-collisionPoint->normal[i].y, collisionPoint->normal[i].x);
+								spehs::vec2 rVecAP = spehs::vec2(-(collisionPoint.point[i] - bodies[cycle1]->centerOfMass).y, (collisionPoint.point[i] - bodies[cycle1]->centerOfMass).x);
+								spehs::vec2 rVecBP = spehs::vec2(-(collisionPoint.point[i] - bodies[cycle2]->centerOfMass).y, (collisionPoint.point[i] - bodies[cycle2]->centerOfMass).x);
+								spehs::vec2 tangent = spehs::vec2(-collisionPoint.normal[i].y, collisionPoint.normal[i].x);
 								if (tangent.dot(relativeVelocity) < 0.0f)
 									tangent = -tangent;
 
-								float jL = j_lin(e, relativeVelocity, collisionPoint->normal[i], bodies[cycle1]->getInvMass(), bodies[cycle2]->getInvMass());
-								float jR = j_rot(e, relativeVelocity, collisionPoint->normal[i], bodies[cycle1]->getInvMass(), bodies[cycle2]->getInvMass(), rVecAP, rVecBP, bodies[cycle1]->getInvMoI(), bodies[cycle2]->getInvMoI());
+								float jL = j_lin(e, relativeVelocity, collisionPoint.normal[i], bodies[cycle1]->getInvMass(), bodies[cycle2]->getInvMass());
+								float jR = j_rot(e, relativeVelocity, collisionPoint.normal[i], bodies[cycle1]->getInvMass(), bodies[cycle2]->getInvMass(), rVecAP, rVecBP, bodies[cycle1]->getInvMoI(), bodies[cycle2]->getInvMoI());
 								float jLt = j_lin(e, relativeVelocity, tangent, bodies[cycle1]->getInvMass(), bodies[cycle2]->getInvMass());
 								float jRt = j_rot(e, relativeVelocity, tangent, bodies[cycle1]->getInvMass(), bodies[cycle2]->getInvMass(), rVecAP, rVecBP, bodies[cycle1]->getInvMoI(), bodies[cycle2]->getInvMoI());
 
 								//Collision impulses
-								body1VelocityAfter = body1VelocityBefore + (jL * bodies[cycle1]->getInvMass()) * collisionPoint->normal[i];
-								body2VelocityAfter = body2VelocityBefore + (-jL * bodies[cycle2]->getInvMass()) * collisionPoint->normal[i];
+								body1VelocityAfter = body1VelocityBefore + (jL * bodies[cycle1]->getInvMass()) * collisionPoint.normal[i];
+								body2VelocityAfter = body2VelocityBefore + (-jL * bodies[cycle2]->getInvMass()) * collisionPoint.normal[i];
 
-								body1AngularVelocityAfter = bodies[cycle1]->angularVelocity + rVecAP.dot(jR * collisionPoint->normal[i]) * bodies[cycle1]->getInvMoI();
-								body2AngularVelocityAfter = bodies[cycle2]->angularVelocity + rVecBP.dot(-jR * collisionPoint->normal[i]) * bodies[cycle2]->getInvMoI();
+								body1AngularVelocityAfter = bodies[cycle1]->angularVelocity + rVecAP.dot(jR * collisionPoint.normal[i]) * bodies[cycle1]->getInvMoI();
+								body2AngularVelocityAfter = bodies[cycle2]->angularVelocity + rVecBP.dot(-jR * collisionPoint.normal[i]) * bodies[cycle2]->getInvMoI();
 
 								//Friction impulses
 								float mu = (bodies[cycle1]->staticFriction + bodies[cycle2]->staticFriction) / 2.0f;
@@ -206,7 +208,7 @@ namespace spehs
 								//Positional Correction
 								const float percentage = 0.25f;
 								const float slop = 0.04f;
-								spehs::vec2 correction = std::max(collisionPoint->MTV.getLength() - slop, 0.0f) / (bodies[cycle1]->getInvMass() + bodies[cycle2]->getInvMass()) * percentage * collisionPoint->normal[i];
+								spehs::vec2 correction = std::max(collisionPoint.MTV.getLength() - slop, 0.0f) / (bodies[cycle1]->getInvMass() + bodies[cycle2]->getInvMass()) * percentage * collisionPoint.normal[i];
 								if (!bodies[cycle1]->freezePosition && !bodies[cycle1]->isStatic)
 									bodies[cycle1]->ownerObject->getComponent<Transform2D>()->setPosition(bodies[cycle1]->ownerObject->getComponent<Transform2D>()->getPosition() + correction * bodies[cycle1]->getInvMass());
 								if (!bodies[cycle2]->freezePosition && !bodies[cycle2]->isStatic)
