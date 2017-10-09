@@ -15,7 +15,7 @@ namespace spehs
 		for (unsigned i = 0; i < elements.size(); i++)
 			delete elements[i];
 	}
-	void GUIRectangleContainer::inputUpdate()
+	void GUIRectangleContainer::inputUpdate(InputUpdateData& data)
 	{
 		disableState(GUIRECT_MOUSE_HOVER_CONTAINER_BIT);
 
@@ -24,7 +24,7 @@ namespace spehs
 		{
 			for (unsigned i = 0; i < elements.size(); i++)
 			{
-				elements[i]->inputUpdate();
+				elements[i]->inputUpdate(data);
 				//If element is under mouse, mark this container as under mouse
 				if (elements[i]->getMouseHoverAny())
 					enableState(GUIRECT_MOUSE_HOVER_CONTAINER_BIT);
@@ -32,7 +32,7 @@ namespace spehs
 		}
 
 		//Update this
-		GUIRectangle::inputUpdate();
+		GUIRectangle::inputUpdate(data);
 
 		//If mouse is hovering over the base rectangle, enable container hovering bit
 		if (checkState(GUIRECT_MOUSE_HOVER_BIT))

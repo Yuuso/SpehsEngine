@@ -1,10 +1,11 @@
 #pragma once
 #include <string>
-#include <functional>
-#include "Vector.h"
 #include "BitwiseOperations.h"
 #include "TextureManager.h"//Used to get TextureParameter...
+#include <functional>
+#include "Vector.h"
 #include "Color.h"
+#include "Time.h"
 #define GUIRECT_ID_TYPE							uint32_t
 ////GUI rectangle states
 #define GUIRECT_STATE_TYPE						uint32_t
@@ -59,8 +60,20 @@ namespace spehs
 	GUI rectangles can be stored in GUI rectangle containers*/
 	class GUIRectangle
 	{
-	////Static
 	public:
+		struct InputUpdateData
+		{
+			InputUpdateData(const vec2 _mousePosition, const time::Time _deltaTime)
+				: mousePosition(_mousePosition)
+				, deltaTime(_deltaTime)
+			{
+			}
+			const vec2 mousePosition;
+			const time::Time deltaTime;
+
+		};
+
+	public://Static
 		static int16_t defaultDepth;//Default depth where GUI rectangles will be arranged
 		static int16_t tooltipDepthRelative;//Default depth modifier for tooltips relative to their parent GUI rectangle
 		static spehs::TextureParameter defaultTextureParameters;
@@ -80,7 +93,7 @@ namespace spehs
 		virtual ~GUIRectangle();
 		
 		/// During GUI's input update the element's size and/or min size may change even so that it might affect parents above.
-		virtual void inputUpdate();
+		virtual void inputUpdate(InputUpdateData& data);
 		/// During GUI's visual update the element's size and/or min size must not change!
 		virtual void visualUpdate();
 

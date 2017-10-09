@@ -18,7 +18,7 @@ namespace spehs
 		Sprite(GameObject& _owner);
 		~Sprite() override;
 
-		void update() override;
+		void update(const time::Time deltaTime) override;
 
 		virtual void setTexture(TextureData* _textureDataPtr);
 		virtual void setTextureID(const unsigned int _textureID);

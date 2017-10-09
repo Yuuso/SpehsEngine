@@ -23,6 +23,7 @@ namespace spehs
 
 		setSystemDepth(GUIRectangle::defaultDepth);
 		batchManager.endSection();
+		deltaTimeSystemInitialize();
 	}
 	GUIWindowManager::~GUIWindowManager()
 	{
@@ -61,6 +62,8 @@ namespace spehs
 	{
 		batchManager.beginSection();
 
+		deltaTimeSystemUpdate();
+
 		const bool focusedWindowReceivingInput = focusedWindow ? focusedWindow->isReceivingInput() : false;
 		bool updateWindows = true;
 		receivingInput = focusedWindowReceivingInput;
@@ -86,20 +89,21 @@ namespace spehs
 		}
 
 		//Update front popup
+		GUIRectangle::InputUpdateData inputUpdateData(inputManager->getMouseCoords(), deltaTime);
 		if (!popups.empty())
 		{
 			//Render state & alpha
 			popupShade->setRenderState(true);
 			if (popupShadeCurrentAlpha < popupShadeTargetAlpha)
 			{
-				popupShadeCurrentAlpha += time::getDeltaTimeAsSeconds();
+				popupShadeCurrentAlpha += deltaTime.asSeconds();
 				if (popupShadeCurrentAlpha > popupShadeTargetAlpha)
 					popupShadeCurrentAlpha = popupShadeTargetAlpha;
 				popupShade->setAlpha(popupShadeCurrentAlpha);
 			}
 
 			//Update
-			popups.front()->inputUpdate();
+			popups.front()->inputUpdate(inputUpdateData);
 			popups.front()->visualUpdate();
 			if (popups.front()->getMouseHoverAny())
 			{
@@ -144,7 +148,7 @@ namespace spehs
 					if (!focusedWindowReceivingInput &&
 						(!focusWindowUpdated || !focusedWindow))
 						windows[i]->enableInput();//Valid for input
-					windows[i]->inputUpdate();
+					windows[i]->inputUpdate(inputUpdateData);
 					windows[i]->visualUpdate();
 
 					if (windows[i]->getMouseHoverAny() && !focusedWindow)

@@ -40,9 +40,9 @@ namespace spehs
 		checkboxBackground->destroy();
 		checkboxFilling->destroy();
 	}
-	void GUICheckbox::inputUpdate()
+	void GUICheckbox::inputUpdate(InputUpdateData& data)
 	{
-		GUIRectangle::inputUpdate();
+		GUIRectangle::inputUpdate(data);
 
 		//Check mouse press
 		if (getInputEnabled() && getMouseHover() && inputManager->isKeyPressed(MOUSE_BUTTON_LEFT))

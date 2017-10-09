@@ -116,13 +116,13 @@ namespace spehs
 			updateMinSize();
 		return minElementSize.y * elements.size();
 	}
-	void GUIRectangleScrollList::inputUpdate()
+	void GUIRectangleScrollList::inputUpdate(InputUpdateData& data)
 	{
 		if (getInputEnabled() && checkState(GUIRECT_OPEN_BIT))
 		{
-			scrollUp->inputUpdate();
-			scrollBar->inputUpdate();
-			scrollDown->inputUpdate();
+			scrollUp->inputUpdate(data);
+			scrollBar->inputUpdate(data);
+			scrollDown->inputUpdate(data);
 
 			if (inputManager->isKeyDown(MOUSE_BUTTON_LEFT) && //Mouse left is held
 				inputManager->getMouseY() > scrollDown->getYGlobal() + scrollDown->getHeight() && //mouse is within scroll bar area of movement
@@ -149,12 +149,12 @@ namespace spehs
 		}
 
 		disableState(GUIRECT_MOUSE_HOVER_CONTAINER_BIT);
-		GUIRectangle::inputUpdate();
+		GUIRectangle::inputUpdate(data);
 		if (checkState(GUIRECT_OPEN_BIT))
 		{
 			for (unsigned i = 0; i < updateElementCount; i++)
 			{
-				elements[beginElementIndex + i]->inputUpdate();
+				elements[beginElementIndex + i]->inputUpdate(data);
 				if (elements[beginElementIndex + i]->getMouseHoverAny())
 					enableState(GUIRECT_MOUSE_HOVER_CONTAINER_BIT);
 			}

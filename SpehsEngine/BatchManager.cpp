@@ -128,7 +128,7 @@ namespace spehs
 
 	void BatchManager::render()
 	{
-		static bool batchFound;
+		bool batchFound = false;
 
 	//BATCHING:
 

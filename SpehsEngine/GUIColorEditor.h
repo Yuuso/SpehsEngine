@@ -20,7 +20,7 @@ namespace spehs
 
 		void setDepth(const int16_t _depth) override;
 		void setRenderState(const bool _state) override;
-		void inputUpdate() override;
+		void inputUpdate(InputUpdateData& data) override;
 		void visualUpdate() override;
 		void updateMinSize() override;
 		void updateScale() override;

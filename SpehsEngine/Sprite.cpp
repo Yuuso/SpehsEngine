@@ -25,7 +25,7 @@ namespace spehs
 	}
 
 
-	void Sprite::update()
+	void Sprite::update(const time::Time deltaTime)
 	{
 		Transform2D* transform = ownerObject->getComponent<Transform2D>();
 		if (!transform)

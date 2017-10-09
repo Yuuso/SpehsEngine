@@ -1,5 +1,6 @@
 #pragma once
 #include <vector>
+#include "Time.h"
 
 namespace spehs
 {
@@ -17,7 +18,7 @@ namespace spehs
 		KeyboardRecorder();
 		virtual ~KeyboardRecorder();
 
-		virtual void update();
+		virtual void update(const time::Time deltaTime);
 		void stop();///< Resets the recorder so that all ongoing recording is stopped
 		void setBeginKeyRepeatTimer(const float seconds);///< Time after the first keystroke of a pressed key to begin receiving keystrokes continuously
 		void setContinuousKeyRepeatTimer(const float seconds);///< Time between continuous keystrokes
@@ -38,11 +39,11 @@ namespace spehs
 		struct KeyHoldData
 		{
 			unsigned key;//Key ID
-			float timer;//Timer until re-press
+			time::Time timer;//Timer until re-press
 		};
 		std::vector<KeyHoldData> heldKeys;
 		std::vector<unsigned> commandKeys;
-		float beginKeyRepeatTime;
-		float continueKeyRepeatTime;
+		time::Time beginKeyRepeatTime;
+		time::Time continueKeyRepeatTime;
 	};
 }

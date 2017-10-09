@@ -85,9 +85,9 @@ namespace spehs
 			delete elements[i];
 		elements.resize(GUIWINDOW_BASE_ELEMENT_COUNT);
 	}
-	void GUIWindow::inputUpdate()
+	void GUIWindow::inputUpdate(InputUpdateData& data)
 	{
-		GUIRectangleContainer::inputUpdate();
+		GUIRectangleContainer::inputUpdate(data);
 
 		////DRAGGING
 		//Handle previous frame dragging
@@ -253,12 +253,12 @@ namespace spehs
 
 		////Header double clicking
 		//Timer decrease
-		if (doubleClickTimer > 0)
-			doubleClickTimer -= time::getDeltaTimeAsMilliseconds();
+		if (doubleClickTimer > time::Time::zero)
+			doubleClickTimer -= data.deltaTime;
 		//Check header double click
 		if (getInputEnabled() && inputManager->isKeyPressed(MOUSE_BUTTON_LEFT) && header->getMouseHover())
 		{//Header has been clicked
-			if (doubleClickTimer > 0)
+			if (doubleClickTimer > time::Time::zero)
 			{//Header double click detected
 				disableState(GUIWINDOW_DRAGGING_BIT);
 

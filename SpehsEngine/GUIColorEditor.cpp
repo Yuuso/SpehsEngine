@@ -93,9 +93,9 @@ namespace spehs
 		alphaSliderBack->setRenderState(_state && alphaEnabled);
 		alphaSliderFront->setRenderState(_state && alphaEnabled);
 	}
-	void GUIColorEditor::inputUpdate()
+	void GUIColorEditor::inputUpdate(InputUpdateData& data)
 	{
-		GUIRectangle::inputUpdate();
+		GUIRectangle::inputUpdate(data);
 		
 		if (getInputEnabled())
 		{

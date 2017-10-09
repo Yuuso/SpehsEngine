@@ -52,7 +52,7 @@ namespace spehs
 			addOptions(moreOptions...);
 		}
 
-		void inputUpdate();
+		void inputUpdate(InputUpdateData& data) override;
 
 		void updateMinSize();
 		void updateScale();

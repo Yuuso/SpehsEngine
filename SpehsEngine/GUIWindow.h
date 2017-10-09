@@ -33,7 +33,7 @@ namespace spehs
 		GUIWindow();
 		~GUIWindow() override;
 		
-		void inputUpdate() override;
+		void inputUpdate(InputUpdateData& data) override;
 		void visualUpdate() override;
 		void updateMinSize() override;//Updates min size variable based on element requirements
 		void updateScale() override;
@@ -68,7 +68,7 @@ namespace spehs
 		GUIRectangle* exit;//The exit button, located in the top right corner of the window
 		GUIRectangle* strech;//Background rectangle, used for streching the window
 
-		int doubleClickTimer;//Timer in milliseconds of how much time is left to carry out a double click
+		time::Time doubleClickTimer;//Timer in milliseconds of how much time is left to carry out a double click
 		bool mouseOverStrechArea();//Returns true if mouse is hovering over the strech area
 		int8_t strechState;
 		int refreshRequests;

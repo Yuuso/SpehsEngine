@@ -32,9 +32,9 @@ namespace spehs
 		addElement(new GUIRectangle(option.string));
 		elements.back()->setJustification(GUIRECT_TEXT_JUSTIFICATION_CENTER_BIT);
 	}
-	void GUIPopup::inputUpdate()
+	void GUIPopup::inputUpdate(InputUpdateData& data)
 	{
-		GUIRectangleContainer::inputUpdate();
+		GUIRectangleContainer::inputUpdate(data);
 		if (checkState(GUIRECT_REMOVE_BIT))
 			exceptions::warning("GUIRECT_REMOVE_BIT is enabled!\nPopup should be removed by a higher authority!");
 		else if (inputManager->isKeyPressed(MOUSE_BUTTON_LEFT))

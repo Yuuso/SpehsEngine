@@ -18,7 +18,7 @@ namespace spehs
 		GUICheckbox(const char* str);
 		~GUICheckbox() override;
 		
-		void inputUpdate() override;
+		void inputUpdate(InputUpdateData& data) override;
 		void updateMinSize() override;
 		void updateScale() override;
 		void updatePosition() override;

@@ -108,7 +108,7 @@ namespace spehs
 					checkOpenALErrors(__FILE__, __LINE__);
 
 					/*Decrement automation timer*/
-					gainAutomationTimer -= time::getDeltaTimeAsSeconds();
+					gainAutomationTimer -= AudioEngine::deltaSeconds;
 
 					/*Check end of automation*/
 					if (gainAutomationTimer <= 0.0f)

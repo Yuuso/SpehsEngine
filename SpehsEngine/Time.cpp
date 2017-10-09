@@ -1,8 +1,7 @@
-
-#include <SDL\SDL_timer.h>
-#include <iostream>
-#include <mutex>
 #include <algorithm>
+#include <iostream>
+#include <chrono>
+#include <mutex>
 
 #include "ApplicationData.h"
 #include "BatchManager.h"
@@ -15,114 +14,46 @@ namespace spehs
 {
 	namespace time
 	{
+		namespace conversionRate
+		{
+			const TimeValueType second = std::chrono::high_resolution_clock::time_point::period::den;
+			const TimeValueType millisecond = second / 1000;
+			const TimeValueType microsecond = millisecond / 1000;
+			const TimeValueType nanosecond = microsecond / 1000;
+		}
+
 		//Global variables
 		Time maxDeltaTime(0);
-
-		//Mutex
-		std::mutex deltaTimeMutex;
-		std::mutex runTimeMutex;
-		std::mutex FPSMutex;
-
+		
 		//Local variables
-		Time deltaTime;
-		Time runTime;
-		uint32_t startTicks = 0;
-		float fps = 0;
+		std::chrono::high_resolution_clock::rep initializationTime;
 
-		void update()
+		void initialize()
 		{
-			static const int NUM_SAMPLES = 20;
-			static uint32_t deltaTimes[NUM_SAMPLES];
-			static int currentFrame = 0;
-			static uint32_t previousTicks = SDL_GetTicks();
-			static uint32_t currentTicks;
-
-			runTimeMutex.lock();
-			runTime = (int) SDL_GetTicks();
-			runTimeMutex.unlock();
-			currentTicks = SDL_GetTicks();
-
-			deltaTimeMutex.lock();
-			deltaTime = int(currentTicks - previousTicks);
-			deltaTime = std::max(1, deltaTime.asMilliseconds);
-			deltaTimes[currentFrame % NUM_SAMPLES] = deltaTime.asMilliseconds;
-			deltaTimeMutex.unlock();
-
-			previousTicks = currentTicks;
-
-			//Limit delta time
-			if (maxDeltaTime.asMilliseconds > 0 && deltaTime > maxDeltaTime)
-			{
-				deltaTimeMutex.lock();
-				deltaTime = maxDeltaTime;
-				deltaTimeMutex.unlock();
-			}
-
-			int count;
-
-			currentFrame++;
-			if (currentFrame < NUM_SAMPLES)
-			{
-				count = currentFrame;
-			}
-			else
-			{
-				count = NUM_SAMPLES;
-			}
-
-			static float deltaTimeAverage;
-			deltaTimeAverage = 0;
-			for (int i = 0; i < count; i++)
-			{
-				deltaTimeAverage += deltaTimes[i];
-			}
-			deltaTimeAverage /= count;
-
-			FPSMutex.lock();
-			if (deltaTimeAverage > 0)
-			{
-				fps = 1000.0f / deltaTimeAverage;
-			}
-			else
-			{
-				fps = 0;
-			}
-			FPSMutex.unlock();
-
-			//Limit FPS = delay return
-			if (spehs::ApplicationData::maxFps > 0)
-			{
-				if ((1000.0f / spehs::ApplicationData::maxFps) > deltaTime.asMilliseconds)
-					SDL_Delay(uint32_t(1000.0f / spehs::ApplicationData::maxFps) - deltaTime.asMilliseconds);
-			}
+			initializationTime = std::chrono::high_resolution_clock::now().time_since_epoch().count();
+			std::cout << "SpehsEngine time accuracy is " + std::to_string(conversionRate::second) + " ticks per second.";
+		}
+		
+		Time now()
+		{
+			return std::chrono::high_resolution_clock::now().time_since_epoch().count();
 		}
 
-		Time getDeltaTime()
-		{
-			std::lock_guard<std::mutex> lock(deltaTimeMutex);
-			return deltaTime;
-		}
-		float getDeltaTimeAsSeconds()
-		{
-			std::lock_guard<std::mutex> lock(deltaTimeMutex);
-			return deltaTime.asSeconds;
-		}
-		int getDeltaTimeAsMilliseconds()
-		{
-			std::lock_guard<std::mutex> lock(deltaTimeMutex);
-			return deltaTime.asMilliseconds;
-		}
 		Time getRunTime()
 		{
-			std::lock_guard<std::mutex> lock(runTimeMutex);
-			return runTime;
-		}
-		float getFPS()
-		{
-			std::lock_guard<std::mutex> lock(FPSMutex);
-			return fps;
+			return std::chrono::high_resolution_clock::now().time_since_epoch().count() - initializationTime;
 		}
 
+		void delay(const Time& time)
+		{
+			const Time begin(std::chrono::high_resolution_clock::now().time_since_epoch().count());
+			while (true)
+			{
+				const Time now(std::chrono::high_resolution_clock::now().time_since_epoch().count());
+				if (now - begin >= time)
+					return;
+			}
+		}
 
 		std::string engineBuildYear()
 		{
@@ -174,196 +105,93 @@ namespace spehs
 			second.push_back(__TIME__[7]);
 			return second;
 		}
-		
 
 		//TIME STRUCT
 #pragma region TIME STRUCT
-		Time::Time() : asMilliseconds(0), asSeconds(0) {}
-		Time::Time(const Time& other) : asMilliseconds(other.asMilliseconds), asSeconds(other.asSeconds) {}
-		Time::Time(const float _asSeconds) : asMilliseconds(_asSeconds * 1000), asSeconds(_asSeconds) {}
-		Time::Time(const int _asMilliSeconds) : asMilliseconds(_asMilliSeconds), asSeconds(float(_asMilliSeconds) / 1000.0f) {}
-		Time Time::operator*(const Time& other)
+		const Time Time::zero(0);
+		Time::Time()
+			: value(0)
 		{
-			return Time(asSeconds * other.asSeconds);
 		}
-		Time Time::operator*(const float _asSeconds)
+		Time::Time(const TimeValueType _value)
+			: value(_value)
 		{
-			return Time(asSeconds * _asSeconds);
 		}
-		Time Time::operator*(const int _asMilliseconds)
+		Time::Time(const Time& other)
+			: value(other.value)
 		{
-			return Time(asSeconds * float(_asMilliseconds * 1000.0f));
 		}
-		Time Time::operator/(const Time& other)
+		Time Time::operator*(const float factor) const
 		{
-			return Time(asSeconds / other.asSeconds);
+			return Time(value * factor);
 		}
-		Time Time::operator/(const float _asSeconds)
+		Time Time::operator*(const int factor) const
 		{
-			return Time(asSeconds / _asSeconds);
+			return Time(value * factor);
 		}
-		Time Time::operator/(const int _asMilliseconds)
+		Time Time::operator/(const float factor) const
 		{
-			return Time(float(asMilliseconds * 1000) / float(_asMilliseconds * 1000));
+			return Time(value / factor);
 		}
-		Time Time::operator+(const Time& other)
+		Time Time::operator/(const int factor) const
 		{
-			return Time(asMilliseconds + other.asMilliseconds);
+			return Time(value / factor);
 		}
-		Time Time::operator+(const float _asSeconds)
+		Time Time::operator+(const Time& other) const
 		{
-			return Time(asSeconds + _asSeconds);
+			return Time(value + other.value);
 		}
-		Time Time::operator+(const int _asMilliseconds)
+		Time Time::operator-(const Time& other) const
 		{
-			return Time(asMilliseconds + _asMilliseconds);
-		}
-		Time Time::operator-(const Time& other)
-		{
-			return Time(asMilliseconds - other.asMilliseconds);
-		}
-		Time Time::operator-(const float _asSeconds)
-		{
-			return Time(asSeconds - _asSeconds);
-		}
-		Time Time::operator-(const int _asMilliseconds)
-		{
-			return Time(asMilliseconds - _asMilliseconds);
+			return Time(value - other.value);
 		}
 		void Time::operator=(const Time& other)
 		{
-			asMilliseconds = other.asMilliseconds;
-			asSeconds = other.asSeconds;
+			value = other.value;
 		}
-		void Time::operator=(const float _asSeconds)
+		void Time::operator*=(const float factor)
 		{
-			asMilliseconds = _asSeconds * 1000.0f;
-			asSeconds = _asSeconds;
+			value *= factor;
 		}
-		void Time::operator=(const int _asMilliseconds)
+		void Time::operator*=(const int factor)
 		{
-			asMilliseconds = _asMilliseconds;
-			asSeconds = _asMilliseconds / 1000.0f;
+			value *= factor;
 		}
-		void Time::operator*=(const Time& other)
+		void Time::operator/=(const float factor)
 		{
-			asMilliseconds = float(asMilliseconds * 1000.0f) * float(other.asMilliseconds * 1000.0f);
-			asSeconds *= other.asSeconds;
+			value /= factor;
 		}
-		void Time::operator*=(const float _asSeconds)
+		void Time::operator/=(const int factor)
 		{
-			asMilliseconds = float(asMilliseconds * 1000.0f) * _asSeconds;
-			asSeconds *= _asSeconds;
-		}
-		void Time::operator*=(const int _asMilliseconds)
-		{
-			asMilliseconds = float(asMilliseconds * 1000.0f) * float(_asMilliseconds * 1000.0f);
-			asSeconds *= float(_asMilliseconds * 1000.0f);
-		}
-		void Time::operator/=(const Time& other)
-		{
-			asMilliseconds = float(asMilliseconds * 1000.0f) / float(other.asMilliseconds * 1000.0f);
-			asSeconds /= other.asSeconds;
-		}
-		void Time::operator/=(const float _asSeconds)
-		{
-			asMilliseconds = float(asMilliseconds * 1000.0f) / _asSeconds;
-			asSeconds /= _asSeconds;
-		}
-		void Time::operator/=(const int _asMilliseconds)
-		{
-			asMilliseconds = float(asMilliseconds * 1000.0f) / float(_asMilliseconds * 1000.0f);
-			asSeconds /= float(_asMilliseconds * 1000.0f);
+			value /= factor;
 		}
 		void Time::operator+=(const Time& other)
 		{
-			asSeconds += other.asSeconds;
-			asMilliseconds += other.asMilliseconds;
-		}
-		void Time::operator+=(const float _asSeconds)
-		{
-			asSeconds += _asSeconds;
-			asMilliseconds += int(_asSeconds * 1000.0f);
-		}
-		void Time::operator+=(const int _asMilliseconds)
-		{
-			asSeconds += float(_asMilliseconds) / 1000.0f;
-			asMilliseconds += _asMilliseconds;
+			value += other.value;
 		}
 		void Time::operator-=(const Time& other)
 		{
-			asSeconds -= other.asSeconds;
-			asMilliseconds -= other.asMilliseconds;
+			value -= other.value;
 		}
-		void Time::operator-=(const float _asSeconds)
+		bool Time::operator==(const Time& other) const
 		{
-			asSeconds -= _asSeconds;
-			asMilliseconds -= int(_asSeconds * 1000.0f);
+			return value == other.value;
 		}
-		void Time::operator-=(const int _asMilliseconds)
+		bool Time::operator>(const Time& other) const
 		{
-			asSeconds -= float(_asMilliseconds) / 1000.0f;
-			asMilliseconds -= _asMilliseconds;
+			return value > other.value;
 		}
-		bool Time::operator==(const Time& other)
+		bool Time::operator<(const Time& other) const
 		{
-			return asMilliseconds == other.asMilliseconds;
+			return value < other.value;
 		}
-		bool Time::operator==(const float _asSeconds)
+		bool Time::operator>=(const Time& other) const
 		{
-			return abs(asSeconds - _asSeconds) < 0.0005;
+			return value >= other.value;
 		}
-		bool Time::operator==(const int _asMilliseconds)
+		bool Time::operator<=(const Time& other) const
 		{
-			return asMilliseconds == _asMilliseconds;
-		}
-		bool Time::operator>(const Time& other)
-		{
-			return asMilliseconds > other.asMilliseconds;
-		}
-		bool Time::operator>(const float _asSeconds)
-		{
-			return _asSeconds > _asSeconds;
-		}
-		bool Time::operator>(const int _asMilliseconds)
-		{
-			return asMilliseconds > _asMilliseconds;
-		}
-		bool Time::operator<(const Time& other)
-		{
-			return asMilliseconds < other.asMilliseconds;
-		}
-		bool Time::operator<(const float _asSeconds)
-		{
-			return _asSeconds < _asSeconds;
-		}
-		bool Time::operator<(const int _asMilliseconds)
-		{
-			return asMilliseconds < _asMilliseconds;
-		}
-		bool Time::operator>=(const Time& other)
-		{
-			return asMilliseconds >= other.asMilliseconds;
-		}
-		bool Time::operator>=(const float _asSeconds)
-		{
-			return asSeconds >= _asSeconds;
-		}
-		bool Time::operator>=(const int _asMilliseconds)
-		{
-			return asMilliseconds >= _asMilliseconds;
-		}
-		bool Time::operator<=(const Time& other)
-		{
-			return asMilliseconds <= other.asMilliseconds;
-		}
-		bool Time::operator<=(const float _asSeconds)
-		{
-			return asSeconds <= _asSeconds;
-		}
-		bool Time::operator<=(const int _asMilliseconds)
-		{
-			return asMilliseconds <= _asMilliseconds;
+			return value <= other.value;
 		}
 #pragma endregion
 	}

@@ -26,14 +26,14 @@ namespace spehs
 		void setStringAlpha(const spehs::Color::Component& a) override;
 		void updatePosition() override;
 		void updateMinSize() override;
-		void inputUpdate() override;
+		void inputUpdate(InputUpdateData& data) override;
 		void onDisableInput() override;
 
 		//Editor
 		float getEditorValueAsFloat() const;
 		int getEditorValueAsInt() const;
 		void setMaxStringLength(const int length) { maxStringLength = length; }
-		void setTyperBlinkTime(const int milliSeconds) { typerBlinkTime = 2 * milliSeconds; }
+		void setTyperBlinkTime(const time::Time time) { typerBlinkTime = time * 2; }
 		void setMultiLineEditing(const bool _state) { multilineEditing = _state; }
 
 		//Identity
@@ -45,7 +45,7 @@ namespace spehs
 		//Text field specific
 		void toggleTyping();
 		void beginTyping();
-		void recordInput();
+		void recordInput(const time::Time deltaTime);
 		void updateString();
 		void endTyping();///< Ends input receiving, storing any input that had been received until now
 
@@ -54,8 +54,8 @@ namespace spehs
 		bool multilineEditing;
 		int maxStringLength;
 		int typerPosition;
-		int typerBlinkTime;
-		int typerBlinkTimer;
+		time::Time typerBlinkTime;
+		time::Time typerBlinkTimer;
 		std::string defaultString;
 		std::string input;//Temporal storage for edited value so that value won't appear changed after each individual typed character
 		spehs::Text* typeCharacter;

@@ -52,9 +52,9 @@ namespace spehs
 		scrollBar->setDepth(depth + 1);
 		scrollDown->setDepth(depth + 1);
 	}
-	void GUIRectangleGrid::inputUpdate()
+	void GUIRectangleGrid::inputUpdate(InputUpdateData& data)
 	{
-		spehs::GUIRectangle::inputUpdate();
+		spehs::GUIRectangle::inputUpdate(data);
 		
 		if (draggingScrollBar)
 		{//Dragging in progress?
@@ -78,9 +78,9 @@ namespace spehs
 		{
 			if (scrollingEnabled)
 			{
-				scrollUp->inputUpdate();
-				scrollBar->inputUpdate();
-				scrollDown->inputUpdate();
+				scrollUp->inputUpdate(data);
+				scrollBar->inputUpdate(data);
+				scrollDown->inputUpdate(data);
 				if (getMouseHover())
 				{
 					if (inputManager->isKeyPressed(MOUSEBUTTON_LEFT))
@@ -103,7 +103,7 @@ namespace spehs
 			for (unsigned i = 0; i < elements.size(); i++)
 			{
 				if (elements[i]->getRenderState())
-					elements[i]->inputUpdate();
+					elements[i]->inputUpdate(data);
 			}
 		}
 		else

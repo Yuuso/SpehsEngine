@@ -60,6 +60,8 @@ namespace spehs
 			/**If referencing previously non-existing channel, channel is created. A negative channel index refers to plain master channel.*/
 			static float getChannelGain(const int _channelIndex);
 
+			static float deltaSeconds;
+
 		protected:			
 			static void updateGain(); //Call when master volume has changed
 			static bool getFreeSource(SoundSource* _soundSource);

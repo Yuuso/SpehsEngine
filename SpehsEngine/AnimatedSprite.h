@@ -18,7 +18,7 @@ namespace spehs
 		AnimatedSprite(GameObject& _owner);
 		~AnimatedSprite() override;
 
-		void update() override;
+		void update(const time::Time deltaTime) override;
 
 		void setTexture(TextureData* _textureDataPtr) override;
 		void setTextureID(const unsigned int _textureID) override;
@@ -33,8 +33,8 @@ namespace spehs
 		uint8_t frameStructure[2];
 		uint16_t maxFrames;
 		uint16_t currentFrame;
-		float animationSpeed = 1.0f;
-		float speedCounter = animationSpeed;
+		time::Time animationSpeed = 1.0f;
+		time::Time speedCounter = animationSpeed;
 	};
 }
 

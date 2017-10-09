@@ -18,7 +18,7 @@ namespace spehs
 
 	}
 
-	void Component::update()
+	void Component::update(const time::Time deltaTime)
 	{
 		//Default update
 	}

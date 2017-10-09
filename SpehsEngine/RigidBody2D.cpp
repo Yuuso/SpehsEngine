@@ -60,7 +60,7 @@ namespace spehs
 		resultantTorque = 0.0f;
 		resultantForce = spehs::vec2::zero;
 
-		update();
+		update(0);
 	}
 	RigidBody2D::~RigidBody2D()
 	{
@@ -68,7 +68,7 @@ namespace spehs
 			world->removeRigidBody(*this);
 	}
 
-	void RigidBody2D::update()
+	void RigidBody2D::update(const time::Time deltaTime)
 	{
 		Transform2D* transform = ownerObject->getComponent<Transform2D>();
 		if (!transform)
@@ -109,9 +109,9 @@ namespace spehs
 
 		//Apply acceleration
 		if (!freezePosition)
-			velocity += acceleration * time::getDeltaTimeAsSeconds();
+			velocity += acceleration * deltaTime.asSeconds();
 		if (!freezeRotation)
-			angularVelocity += angularAcceleration * time::getDeltaTimeAsSeconds();
+			angularVelocity += angularAcceleration * deltaTime.asSeconds();
 
 		//For static bodies (NOTE: Doesn't work atm)
 		if (isStatic)

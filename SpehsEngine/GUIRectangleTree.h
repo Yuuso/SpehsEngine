@@ -11,19 +11,19 @@ namespace spehs
 	class GUIRectangleTree : public GUIRectangleUnisizeContainer
 	{
 	public:
-		static float defaultTreeOpenTime;
+		static time::Time defaultTreeOpenTime;
 	public:
 		GUIRectangleTree();
 		GUIRectangleTree(const int _ID);
 		GUIRectangleTree(const std::string& str);
 		virtual ~GUIRectangleTree();
 
-		void inputUpdate();
+		void inputUpdate(InputUpdateData& data);
 		void updateMinSize();
 		void updateScale();
 		void updatePosition();
 		void setOpenTreeButton(const int buttonID){ openTreeButton = buttonID; }
-		void setTreeOpenTime(const float seconds){ treeOpenTime = seconds; }
+		void setTreeOpenTime(const float seconds){ treeOpenTime = time::seconds(seconds); }
 		bool open();
 		bool close();			
 		void addElement(const std::string& str, const GUIRECT_ID_TYPE _ID);///< Creates new node with given string and id
@@ -43,7 +43,7 @@ namespace spehs
 		int pressedLeafNodeID;//This id is cleared at the beginning of each update. If during that update a leaf node is pressed, its id will be stored in this variable until the next update.
 		unsigned openTreeButton;//Referring to input manager key index
 		float branchX;//Leaf node x position. If positive, branch towards right, else branch towards left
-		float treeOpenTimer;//How long, in milliseconds, the tree remains open after opening it
-		float treeOpenTime;
+		time::Time treeOpenTimer;//How long, in milliseconds, the tree remains open after opening it
+		time::Time treeOpenTime;
 	};
 }

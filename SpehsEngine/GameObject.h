@@ -2,6 +2,7 @@
 #pragma once
 
 #include "Exceptions.h"
+#include "Time.h"
 
 #include <string>
 #include <vector>
@@ -17,7 +18,7 @@ namespace spehs
 		GameObject(const std::string& _name);
 		~GameObject();
 
-		void update();
+		void update(const time::Time deltaTime);
 
 		template <typename type> type* addComponent();
 		template <typename type> type* getComponent();

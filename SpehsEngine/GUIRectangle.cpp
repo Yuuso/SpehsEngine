@@ -84,7 +84,7 @@ namespace spehs
 		if (hoverSound)
 			delete hoverSound;
 	}
-	void GUIRectangle::inputUpdate()
+	void GUIRectangle::inputUpdate(InputUpdateData& data)
 	{
 		disableBit(state, GUIRECT_MOUSE_HOVER_BIT);
 		if (!inputEnabled)

@@ -24,7 +24,7 @@ namespace spehs
 		GUIRectangleContainer();
 		~GUIRectangleContainer() override;
 
-		void inputUpdate() override;
+		void inputUpdate(InputUpdateData& data) override;
 		void visualUpdate() override;
 		void setRenderState(const bool _state) override;
 

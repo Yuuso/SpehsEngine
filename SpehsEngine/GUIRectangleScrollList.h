@@ -26,7 +26,7 @@ namespace spehs
 
 		//Overriding methods
 		void setRenderState(const bool _state) override;
-		void inputUpdate() override;
+		void inputUpdate(InputUpdateData& data) override;
 		void visualUpdate() override;
 		void updateMinSize() override;
 		void updateScale() override;

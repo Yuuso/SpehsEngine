@@ -22,7 +22,7 @@ namespace spehs
 		RigidBody2D(GameObject& _owner);
 		~RigidBody2D();
 
-		void update();
+		void update(const time::Time deltaTime) override;
 
 		void applyForce(const spehs::vec2& _force);
 		void applyForceAtPosition(const spehs::vec2& _force, const spehs::vec2& _position);

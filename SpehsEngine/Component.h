@@ -1,6 +1,6 @@
 
 #pragma once
-
+#include "Time.h"
 
 namespace spehs
 {
@@ -13,7 +13,7 @@ namespace spehs
 		Component(GameObject& _owner);
 		virtual ~Component();
 
-		virtual void update();
+		virtual void update(const time::Time deltaTime);
 
 	protected:
 		GameObject* ownerObject;

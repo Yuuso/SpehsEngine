@@ -19,13 +19,9 @@ namespace spehs
 
 	/**Returns a string representing the integer in hex format. NOTES: 1: no '0x'-prefix will be given, 2: all zero bits will be filled in and represented in '0' characters*/
 	std::string toHexString(const uint8_t integer);
-	std::string toHexString(const int8_t integer);
 	std::string toHexString(const uint16_t integer);
-	std::string toHexString(const int16_t integer);
 	std::string toHexString(const uint32_t integer);
-	std::string toHexString(const int32_t integer);
 	std::string toHexString(const uint64_t integer);
-	std::string toHexString(const int64_t integer);
 
 	/**Returns seconds expressed in 'stopwatch notation' string. Format: hh:mm:ss */
 	std::string secondsToStopwatchNotation(int seconds);

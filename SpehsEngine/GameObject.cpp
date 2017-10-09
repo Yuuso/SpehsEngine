@@ -22,11 +22,11 @@ namespace spehs
 	}
 
 
-	void GameObject::update()
+	void GameObject::update(const time::Time deltaTime)
 	{
 		for (unsigned i = 0; i < components.size(); i++)
 		{
-			components[i]->update();
+			components[i]->update(deltaTime);
 		}
 	}
 }

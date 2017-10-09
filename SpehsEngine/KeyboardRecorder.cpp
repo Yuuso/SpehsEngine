@@ -1,12 +1,11 @@
 #include <algorithm>
 #include "KeyboardRecorder.h"
 #include "InputManager.h"
-#include "Time.h"
 
 
 namespace spehs
 {
-	KeyboardRecorder::KeyboardRecorder() : beginKeyRepeatTime(0.66f), continueKeyRepeatTime(0.1f)
+	KeyboardRecorder::KeyboardRecorder() : beginKeyRepeatTime(time::seconds(0.66f)), continueKeyRepeatTime(time::seconds(0.1f))
 	{
 		commandKeys.push_back(KEYBOARD_RETURN);
 		commandKeys.push_back(KEYBOARD_KP_ENTER);
@@ -35,15 +34,15 @@ namespace spehs
 	}
 	void KeyboardRecorder::setBeginKeyRepeatTimer(const float seconds)
 	{
-		beginKeyRepeatTime = seconds;
+		beginKeyRepeatTime = time::seconds(seconds);
 		for (unsigned i = 0; i < heldKeys.size(); i++)
-			heldKeys[i].timer = std::min(seconds, heldKeys[i].timer);
+			heldKeys[i].timer = std::min(time::seconds(seconds), heldKeys[i].timer);
 	}
 	void KeyboardRecorder::setContinuousKeyRepeatTimer(const float seconds)
 	{
-		continueKeyRepeatTime = seconds;
+		continueKeyRepeatTime = time::seconds(seconds);
 		for (unsigned i = 0; i < heldKeys.size(); i++)
-			heldKeys[i].timer = std::min(seconds, heldKeys[i].timer);
+			heldKeys[i].timer = std::min(time::seconds(seconds), heldKeys[i].timer);
 	}
 	void KeyboardRecorder::addCommandKey(const unsigned key)
 	{
@@ -86,7 +85,7 @@ namespace spehs
 		{
 			if (heldKeys[i].key == key)
 			{
-				if (heldKeys[i].timer <= 0.0f)
+				if (heldKeys[i].timer <= time::Time::zero)
 				{//Ready to re-register key stroke
 					heldKeys[i].timer = continueKeyRepeatTime;//Repeated strike timer
 					return true;
@@ -100,7 +99,7 @@ namespace spehs
 		heldKeys.back().timer = beginKeyRepeatTime;//First stroke
 		return true;
 	}
-	void KeyboardRecorder::update()
+	void KeyboardRecorder::update(const time::Time time)
 	{
 		characterInput.clear();
 		commandInput.clear();
@@ -114,7 +113,7 @@ namespace spehs
 				heldKeys.erase(heldKeys.begin() + i);
 			else
 			{
-				heldKeys[i].timer -= time::getDeltaTimeAsSeconds();
+				heldKeys[i].timer -= time;
 				i++;
 			}
 		}
@@ -182,7 +181,7 @@ namespace spehs
 		//Clean up held keys that were not re-stroke
 		for (unsigned i = 0; i < heldKeys.size();)
 		{
-			if (heldKeys[i].timer <= 0.0f)
+			if (heldKeys[i].timer <= time::Time::zero)
 				heldKeys.erase(heldKeys.begin() + i);
 			else
 				i++;

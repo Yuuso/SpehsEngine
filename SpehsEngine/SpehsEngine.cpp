@@ -80,6 +80,7 @@ namespace spehs
 		audio::AudioEngine::init();
 		AudioManager::init();
 		rng::initialize();
+		time::initialize();
 
 		checkOpenGLErrors(__FILE__, __LINE__);
 

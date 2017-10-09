@@ -4,6 +4,7 @@
 #include "OpenALError.h"
 #include "SoundSource.h"
 #include "ApplicationData.h"
+#include "Time.h"
 
 #include <AL\al.h>
 #include <AL\alc.h>
@@ -89,6 +90,8 @@ namespace audioVar
 
 	ALCdevice* device;
 	ALCcontext* context;
+
+	spehs::time::DeltaTimeSystem deltaTimeSystem;
 }
 
 
@@ -96,12 +99,15 @@ namespace spehs
 {
 	namespace audio
 	{
+		float AudioEngine::deltaSeconds = 0.0f;
+
 		void AudioEngine::init()
 		{
 			audioVar::maxSources = DEFAULT_MAX_SOURCES;
 			audioVar::listenerGain = 1.0f;
 			audioVar::listenerPosition = spehs::vec3(0.0f, 0.0f, 1.0f);
 			audioVar::listenerVelocity = spehs::vec3(0.0f, 0.0f, 0.0f);
+			audioVar::deltaTimeSystem.deltaTimeSystemInitialize();
 
 			audioVar::device = alcOpenDevice(NULL);
 			if (!audioVar::device)
@@ -136,6 +142,10 @@ namespace spehs
 
 		void AudioEngine::update()
 		{
+			//Delta time system
+			audioVar::deltaTimeSystem.deltaTimeSystemUpdate();
+			deltaSeconds = audioVar::deltaTimeSystem.deltaSeconds;
+
 			//Audio channel gain change detection
 			for (unsigned c = 0; c < audioVar::audioChannels.size(); c++)
 			{

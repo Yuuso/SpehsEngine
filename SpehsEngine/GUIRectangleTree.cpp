@@ -8,17 +8,17 @@
 
 namespace spehs
 {
-	float GUIRectangleTree::defaultTreeOpenTime = 0.5f;
-	GUIRectangleTree::GUIRectangleTree() : pressedLeafNodeID(0), openTreeButton(MOUSE_BUTTON_LEFT), treeOpenTimer(0.0), treeOpenTime(defaultTreeOpenTime)
+	time::Time GUIRectangleTree::defaultTreeOpenTime = time::seconds(0.5f);
+	GUIRectangleTree::GUIRectangleTree() : pressedLeafNodeID(0), openTreeButton(MOUSE_BUTTON_LEFT), treeOpenTimer(0), treeOpenTime(defaultTreeOpenTime)
 	{
 		close();
 	}
-	GUIRectangleTree::GUIRectangleTree(const int _ID) : pressedLeafNodeID(0), openTreeButton(MOUSE_BUTTON_LEFT), treeOpenTimer(0.0), treeOpenTime(defaultTreeOpenTime)
+	GUIRectangleTree::GUIRectangleTree(const int _ID) : pressedLeafNodeID(0), openTreeButton(MOUSE_BUTTON_LEFT), treeOpenTimer(0), treeOpenTime(defaultTreeOpenTime)
 	{
 		setID(_ID);
 		close();
 	}
-	GUIRectangleTree::GUIRectangleTree(const std::string& str) : pressedLeafNodeID(0), openTreeButton(MOUSE_BUTTON_LEFT), treeOpenTimer(0.0), treeOpenTime(defaultTreeOpenTime)
+	GUIRectangleTree::GUIRectangleTree(const std::string& str) : pressedLeafNodeID(0), openTreeButton(MOUSE_BUTTON_LEFT), treeOpenTimer(0), treeOpenTime(defaultTreeOpenTime)
 	{
 		setString(str);
 		close();
@@ -26,10 +26,10 @@ namespace spehs
 	GUIRectangleTree::~GUIRectangleTree()
 	{
 	}
-	void GUIRectangleTree::inputUpdate()
+	void GUIRectangleTree::inputUpdate(InputUpdateData& data)
 	{
 		pressedLeafNodeID = 0;
-		GUIRectangleContainer::inputUpdate();
+		GUIRectangleContainer::inputUpdate(data);
 		
 		////Closing / Opening
 		if (pressedLeafNodeID)
@@ -52,7 +52,7 @@ namespace spehs
 			{//Open when mouse is hovering over
 				if (checkState(GUIRECT_MOUSE_HOVER_CONTAINER_BIT) && getInputEnabled())
 					open();
-				else if (treeOpenTimer <= 0.0f)
+				else if (treeOpenTimer <= time::Time::zero)
 					close();
 			}
 		}
@@ -63,8 +63,8 @@ namespace spehs
 		}
 		else if (treeOpenTimer > 0)
 		{//If mouse is outside the container, close over time
-			treeOpenTimer -= time::getDeltaTimeAsSeconds();
-			if (treeOpenTimer <= 0.0f)
+			treeOpenTimer -= data.deltaTime;
+			if (treeOpenTimer <= time::Time::zero)
 				close();
 			else
 				enableState(GUIRECT_MOUSE_HOVER_CONTAINER_BIT);//Keep container hover active for the duration of open timer
@@ -163,7 +163,7 @@ namespace spehs
 			return false;
 		
 		//Close timer reset
-		treeOpenTimer = 0.0f;
+		treeOpenTimer = time::Time::zero;
 
 		//Close all elements
 		for (unsigned i = 0; i < elements.size(); i++)

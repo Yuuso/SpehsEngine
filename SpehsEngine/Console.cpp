@@ -24,7 +24,7 @@
 #define CONSOLE_COMMANDS_KEPT_IN_MEMORY 10
 #define LOG_LINES_KEPT_IN_MEMORY 25
 #define CONSOLE_BORDER 5
-#define BACKSPACE_INITIAL_INTERVAL 500
+#define BACKSPACE_INITIAL_INTERVAL 0.5f
 #define BACKSPACE_INTERVAL 75
 #define FADE_OUT_TIME 2.5f
 //FPS
@@ -52,7 +52,7 @@ namespace spehs
 		//Static console data
 		static int16_t state = CONSOLE_RENDER_STATE_BIT;
 		static uint16_t planeDepth = 10000;
-		static int backspaceTimer = 0;
+		static time::Time backspaceTimer = 0;
 		static int backspaceAcceleration = 0;
 		static int previousCommandIndex = 0;
 		static int previousFontSize = 10;
@@ -221,10 +221,10 @@ namespace spehs
 			LockGuardRecursive regionLock(consoleMutex);
 			return textExecuted;
 		}
-		void update()
+		void update(const time::Time& deltaTime)
 		{
 			LockGuardRecursive regionLock(consoleMutex);
-
+			
 			//Process new lines entered during the cycle
 			for (unsigned i = 0; i < newLines.size(); i++)
 			{
@@ -262,7 +262,7 @@ namespace spehs
 
 				if (!isOpen())
 				{
-					visibility -= time::getDeltaTimeAsSeconds() / FADE_OUT_TIME;
+					visibility -= deltaTime.asSeconds() / FADE_OUT_TIME;
 					if (visibility <= 0.0f)
 					{
 						for (unsigned i = 0; i < lines.size(); i++)
@@ -289,7 +289,7 @@ namespace spehs
 						for (unsigned i = 0; i < lines.size(); i++)
 							lines[i]->setRenderState(true);
 					}
-					visibility += time::getDeltaTimeAsSeconds() * 5.0f;
+					visibility += deltaTime.asSeconds() * 5.0f;
 					if (visibility > 1.0f)
 						visibility = 1.0f;
 				}
@@ -356,7 +356,7 @@ namespace spehs
 				//Backspace
 				if (inputManager->isKeyDown(8))
 				{
-					if (backspaceTimer <= 0 && input.size() > 0)
+					if (backspaceTimer <= time::Time::zero && input.size() > 0)
 					{
 						if (inputManager->isKeyDown(KEYBOARD_LCTRL) || inputManager->isKeyDown(KEYBOARD_RCTRL))
 						{//Erase a word
@@ -368,7 +368,7 @@ namespace spehs
 									input.pop_back();
 								if (input.size() == 1 && input.back() == ' ')
 									input.pop_back();
-								backspaceTimer = BACKSPACE_INITIAL_INTERVAL;
+								backspaceTimer = time::seconds(BACKSPACE_INITIAL_INTERVAL);
 							}
 						}
 						else
@@ -376,11 +376,11 @@ namespace spehs
 							input.pop_back();
 							if (inputManager->isKeyPressed(8))
 							{
-								backspaceTimer = BACKSPACE_INITIAL_INTERVAL;
+								backspaceTimer = time::seconds(BACKSPACE_INITIAL_INTERVAL);
 							}
 							else
 							{
-								backspaceTimer = BACKSPACE_INTERVAL - backspaceAcceleration;
+								backspaceTimer = time::milliseconds(BACKSPACE_INTERVAL - backspaceAcceleration);
 								backspaceAcceleration += 3;
 							}
 						}
@@ -388,12 +388,12 @@ namespace spehs
 					}
 					else
 					{
-						backspaceTimer -= time::getDeltaTimeAsMilliseconds();
+						backspaceTimer -= deltaTime;
 					}
 				}
 				else
 				{
-					backspaceTimer = 0;
+					backspaceTimer = time::Time::zero;
 					backspaceAcceleration = 0;
 				}
 
@@ -457,7 +457,7 @@ namespace spehs
 				static int frameCounter = 0;
 				if (++frameCounter >= FPS_REFRESH_RATE)
 				{
-					fpsCounter->setString("FPS: " + std::to_string(int(time::getFPS())) + "\nDraw calls: " + std::to_string(drawCalls) + "\nVertices: " + std::to_string(vertexDrawCount) + "\n" + customDebugText);
+					fpsCounter->setString("\nDraw calls: " + std::to_string(drawCalls) + "\nVertices: " + std::to_string(vertexDrawCount) + "\n" + customDebugText);
 					fpsCounter->setPosition(spehs::vec2(CONSOLE_BORDER, spehs::ApplicationData::getWindowHeight() - fpsCounter->getTextHeight()));
 					frameCounter = 0;
 				}

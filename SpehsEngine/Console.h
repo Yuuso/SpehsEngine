@@ -11,6 +11,10 @@ The console is internally mutex locked and can thus be safely accessed from any 
 */
 namespace spehs
 {
+	namespace time
+	{
+		struct Time;
+	}
 	namespace console
 	{
 		//Console state
@@ -21,7 +25,7 @@ namespace spehs
 		bool isOpen();
 
 		//Update cycle
-		void update();
+		void update(const time::Time& deltaTime);
 		void render(std::string customDebugText = "");
 
 		//Render state

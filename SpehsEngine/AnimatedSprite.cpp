@@ -22,10 +22,10 @@ namespace spehs
 
 	}
 
-	void AnimatedSprite::update()
+	void AnimatedSprite::update(const time::Time deltaTime)
 	{
-		speedCounter -= time::getDeltaTimeAsSeconds();
-		if (speedCounter <= 0.0f)
+		speedCounter -= deltaTime;
+		if (speedCounter <= time::Time::zero)
 		{
 			if (currentFrame < maxFrames - 1)
 			{
@@ -54,7 +54,7 @@ namespace spehs
 		sprite->worldVertexArray[3].uv.u = sprite->worldVertexArray[0].uv.u;
 		sprite->worldVertexArray[3].uv.v = sprite->worldVertexArray[0].uv.v + float(spriteFrameSize[1]) / float(textureData->height);
 
-		Sprite::update();
+		Sprite::update(deltaTime);
 	}
 
 	void AnimatedSprite::setTexture(TextureData* _textureDataPtr)
@@ -79,7 +79,7 @@ namespace spehs
 	}
 	void AnimatedSprite::setAnimationSpeed(const float _speed)
 	{
-		animationSpeed = _speed;
-		speedCounter = _speed;
+		animationSpeed = time::seconds(_speed);
+		speedCounter = time::seconds(_speed);
 	}
 }

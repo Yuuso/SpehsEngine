@@ -20,7 +20,7 @@ namespace spehs
 		enum class EditorType { Slider, Ticks };
 	public:
 		GUIScalarEditor(const std::string& scalarName, Scalar scalarEditorValue) : ValueEditor(scalarEditorValue),
-			floatPrecision(2), tickAmount(1), onHold(false), holdTimer(0.0f), holdTime(0.15f), initialHoldTime(1.0f),
+			floatPrecision(2), tickAmount(1), onHold(false), holdTimer(0), holdTime(time::seconds(0.15f)), initialHoldTime(time::seconds(1.0f)),
 			nameRect(new GUIRectangle(scalarName)), valueRect(new GUIStringEditor()), decreaseRect(new GUIRectangle("-")), increaseRect(new GUIRectangle("+"))
 		{
 			setElementPositionMode(spehs::GUIRectangleRow::PositionMode::StackRight);
@@ -58,10 +58,10 @@ namespace spehs
 			setEditorValue(getEditorValue());
 		}
 		void setTickAmount(const Scalar _tickAmount){ tickAmount = _tickAmount; }
-		void inputUpdate() override
+		void inputUpdate(InputUpdateData& data) override
 		{
 			ValueEditor::update();
-			GUIRectangleRow::inputUpdate();
+			GUIRectangleRow::inputUpdate(data);
 
 			if (valueRect->editorValueChanged())
 				setEditorValue(getValueFromTextField());
@@ -86,7 +86,7 @@ namespace spehs
 			{//Hold
 				if (increaseRect->getMouseHover())
 				{//+
-					holdTimer -= time::getDeltaTimeAsSeconds();
+					holdTimer -= data.deltaTime;
 					if (holdTimer <= 0.0f)
 					{
 						holdTimer = holdTime;
@@ -95,7 +95,7 @@ namespace spehs
 				}
 				else if (decreaseRect->getMouseHover())
 				{//-
-					holdTimer -= time::getDeltaTimeAsSeconds();
+					holdTimer -= data.deltaTime;
 					if (holdTimer <= 0.0f)
 					{
 						holdTimer = holdTime;
@@ -161,9 +161,9 @@ namespace spehs
 		Scalar tickAmount;
 		int floatPrecision;
 		bool onHold;
-		float holdTimer;
-		float holdTime;
-		float initialHoldTime;
+		time::Time holdTimer;
+		time::Time holdTime;
+		time::Time initialHoldTime;
 
 		GUIRectangle* nameRect;
 		GUIStringEditor* valueRect;

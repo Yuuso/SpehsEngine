@@ -16,7 +16,7 @@ namespace spehs
 		stringUpdated(false), defaultString(""), input(""), disableInputReceiveOnNextUpdate(false),
 		maxStringLength(defaultMaxStringEditorStringLength), typerPosition(0), typerBlinkTime(0), typerBlinkTimer(0), multilineEditing(false)
 	{
-		setTyperBlinkTime(512);
+		setTyperBlinkTime(time::seconds(0.5f));
 		createText();
 		typeCharacter = spehs::Text::create("|", getDepth() + 1);
 		typeCharacter->setRenderState(getRenderState() && isReceivingInput());
@@ -83,10 +83,10 @@ namespace spehs
 		GUIRectangle::updateMinSize();
 		minSize.x += typeCharacter->getTextWidth();
 	}
-	void GUIStringEditor::inputUpdate()
+	void GUIStringEditor::inputUpdate(InputUpdateData& data)
 	{
 		ValueEditor::update();
-		GUIRectangle::inputUpdate();
+		GUIRectangle::inputUpdate(data);
 
 		//Disable input receive?
 		if (disableInputReceiveOnNextUpdate)
@@ -102,9 +102,9 @@ namespace spehs
 			//Receiving input
 			if (isReceivingInput())
 			{
-				recordInput();
-				typeCharacter->setRenderState(getRenderState() && ((typerBlinkTimer % typerBlinkTime) < typerBlinkTime / 2));
-				typerBlinkTimer += time::getDeltaTimeAsMilliseconds();
+				recordInput(data.deltaTime);
+				typeCharacter->setRenderState(getRenderState() && ((typerBlinkTimer.value % typerBlinkTime.value) < typerBlinkTime.value / 2));
+				typerBlinkTimer += data.deltaTime;
 			}
 			else
 			{
@@ -180,9 +180,9 @@ namespace spehs
 		typerBlinkTimer = 0;
 		editorValue = input;
 	}
-	void GUIStringEditor::recordInput()
+	void GUIStringEditor::recordInput(const time::Time deltaTime)
 	{
-		keyboardRecorder.update();
+		keyboardRecorder.update(deltaTime);
 
 		//CHARACTER INPUT
 		if (input.size() < maxStringLength)
