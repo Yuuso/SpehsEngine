@@ -54,11 +54,17 @@ namespace spehs
 			return NULL;
 		}
 	};
-	struct CollisionPoint
+	struct CollisionResults
 	{
 		spehs::vec2 MTV;
-		std::vector<spehs::vec2> point;
-		std::vector<spehs::vec2> normal;
+		struct Point
+		{
+			Point() = default;
+			Point(const spehs::vec2& _position, const spehs::vec2& _normal) : position(_position), normal(_normal) {}
+			spehs::vec2 position;
+			spehs::vec2 normal;
+		};
+		std::vector<Point> points;
 	};
 
 	//Function for projecting polygon onto axis
@@ -98,13 +104,13 @@ namespace spehs
 
 	//COLLISIONPOINT COLLISIONS
 	//Polygon x Polygon collision
-	bool SATMTVCollision(CollisionPoint& deposit, Vertex* _vertexArray1, const unsigned int _size1, Vertex* _vertexArray2, const unsigned int _size2);
-	bool SATMTVCollision(CollisionPoint& deposit, spehs::vec2* _vertexArray1, const unsigned int _size1, spehs::vec2* _vertexArray2, const unsigned int _size2);
+	bool SATMTVCollision(CollisionResults& deposit, Vertex* _vertexArray1, const unsigned int _size1, Vertex* _vertexArray2, const unsigned int _size2);
+	bool SATMTVCollision(CollisionResults& deposit, spehs::vec2* _vertexArray1, const unsigned int _size1, spehs::vec2* _vertexArray2, const unsigned int _size2);
 
 	//Polygon x Circle Collision
-	bool SATMTVCollision(CollisionPoint& deposit, Vertex* _vertexArray, const unsigned int _size, const spehs::vec2& _circleCenterPoint, const float _circleRadius);
-	bool SATMTVCollision(CollisionPoint& deposit, spehs::vec2* _vertexArray, const unsigned int _size, const spehs::vec2& _circleCenterPoint, const float _circleRadius);
+	bool SATMTVCollision(CollisionResults& deposit, Vertex* _vertexArray, const unsigned int _size, const spehs::vec2& _circleCenterPoint, const float _circleRadius);
+	bool SATMTVCollision(CollisionResults& deposit, spehs::vec2* _vertexArray, const unsigned int _size, const spehs::vec2& _circleCenterPoint, const float _circleRadius);
 
 	//Circle x Circle Collision
-	bool circleMTVCollision(CollisionPoint& deposit, const spehs::vec2& _circleCenterPoint1, const float _circleRadius1, const spehs::vec2& _circleCenterPoint2, const float _circleRadius2);
+	bool circleMTVCollision(CollisionResults& deposit, const spehs::vec2& _circleCenterPoint1, const float _circleRadius1, const spehs::vec2& _circleCenterPoint2, const float _circleRadius2);
 }

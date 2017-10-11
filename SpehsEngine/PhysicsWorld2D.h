@@ -41,7 +41,7 @@ namespace spehs
 
 		bool useGravity;
 
-		spehs::CollisionPoint collisionPoint;
+		spehs::CollisionResults collisionResults;
 		std::vector<RigidBody2D*> bodies;
 		spehs::vec2 gravity;
 	};

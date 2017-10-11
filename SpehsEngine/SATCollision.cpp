@@ -327,7 +327,7 @@ namespace spehs
 
 	
 #pragma region COLLISIONPOINT COLLISIONS
-	bool SATMTVCollision(CollisionPoint& deposit, Vertex* _vertexArray1, const unsigned int _size1, Vertex* _vertexArray2, const unsigned int _size2)
+	bool SATMTVCollision(CollisionResults& deposit, Vertex* _vertexArray1, const unsigned int _size1, Vertex* _vertexArray2, const unsigned int _size2)
 	{
 		float overlap = FLT_MAX;
 		spehs::vec2 smallestAxis;
@@ -409,16 +409,15 @@ namespace spehs
 			//Find which points are colliding
 			if (SATCollision(_vertexArray2, _size2, testPoint, 0.0f))
 			{
-				deposit.point.push_back(testPoint);
+				deposit.points.push_back(CollisionResults::Point(testPoint, axis2[0]));
 
 				//Find normal
-				spehs::vec2 pointVector = deposit.point.back() - getCenter(_vertexArray2, _size2);
-				deposit.normal.push_back(axis2[0]);
+				spehs::vec2 pointVector = testPoint - getCenter(_vertexArray2, _size2);
 				for (unsigned i = 1; i < _size2; i++)
 				{
-					if (pointVector.dot(axis2[i]) > pointVector.dot(deposit.normal.back()))
+					if (pointVector.dot(axis2[i]) > pointVector.dot(deposit.points.back().normal))
 					{
-						deposit.normal.back() = axis2[i];
+						deposit.points.back().normal = axis2[i];
 					}
 				}
 			}
@@ -430,32 +429,31 @@ namespace spehs
 			//Find which points are colliding
 			if (SATCollision(_vertexArray1, _size1, testPoint, 0.0f))
 			{
-				deposit.point.push_back(testPoint);
+				deposit.points.push_back(CollisionResults::Point(testPoint, axis1[0]));
 
 				//Find normal
-				spehs::vec2 pointVector = deposit.point.back() - getCenter(_vertexArray1, _size1);
-				deposit.normal.push_back(axis1[0]);
+				spehs::vec2 pointVector = deposit.points.back().position - getCenter(_vertexArray1, _size1);
 				for (unsigned i = 1; i < _size1; i++)
 				{
-					if (pointVector.dot(axis1[i]) > pointVector.dot(deposit.normal.back()))
+					if (pointVector.dot(axis1[i]) > pointVector.dot(deposit.points.back().normal))
 					{
-						deposit.normal.back() = axis1[i];
+						deposit.points.back().normal = axis1[i];
 					}
 				}
-				deposit.normal.back() = -deposit.normal.back(); //?
+				deposit.points.back().normal = -deposit.points.back().normal; //?
 			}
 		}
 
-		for (unsigned int i = 0; i < deposit.normal.size(); i++)
+		for (unsigned int i = 0; i < deposit.points.size(); i++)
 		{
-			deposit.normal[i] = deposit.normal[i].getNormalized();
+			deposit.points[i].normal.normalize();
 		}
 
 		delete [] axis1;
 		delete [] axis2;
 		return true;
 	}
-	bool SATMTVCollision(CollisionPoint& deposit, spehs::vec2* _vertexArray1, const unsigned int _size1, spehs::vec2* _vertexArray2, const unsigned int _size2)
+	bool SATMTVCollision(CollisionResults& deposit, spehs::vec2* _vertexArray1, const unsigned int _size1, spehs::vec2* _vertexArray2, const unsigned int _size2)
 	{
 		float overlap = FLT_MAX;
 		spehs::vec2 smallestAxis;
@@ -537,16 +535,15 @@ namespace spehs
 			//Find which points are colliding
 			if (SATCollision(_vertexArray2, _size2, testPoint, 0.0f))
 			{
-				deposit.point.push_back(testPoint);
+				deposit.points.push_back(CollisionResults::Point(testPoint, axis2[0]));
 
 				//Find normal
-				spehs::vec2 pointVector = deposit.point.back() - getCenter(_vertexArray2, _size2);
-				deposit.normal.push_back(axis2[0]);
+				spehs::vec2 pointVector = deposit.points.back().position - getCenter(_vertexArray2, _size2);
 				for (unsigned i = 1; i < _size2; i++)
 				{
-					if (pointVector.dot(axis2[i]) > pointVector.dot(deposit.normal.back()))
+					if (pointVector.dot(axis2[i]) > pointVector.dot(deposit.points.back().normal))
 					{
-						deposit.normal.back() = axis2[i];
+						deposit.points.back().normal = axis2[i];
 					}
 				}
 			}
@@ -558,32 +555,31 @@ namespace spehs
 			//Find which points are colliding
 			if (SATCollision(_vertexArray1, _size1, testPoint, 0.0f))
 			{
-				deposit.point.push_back(testPoint);
+				deposit.points.push_back(CollisionResults::Point(testPoint, axis1[0]));
 
 				//Find normal
-				spehs::vec2 pointVector = deposit.point.back() - getCenter(_vertexArray1, _size1);
-				deposit.normal.push_back(axis1[0]);
+				spehs::vec2 pointVector = deposit.points.back().position - getCenter(_vertexArray1, _size1);
 				for (unsigned i = 1; i < _size1; i++)
 				{
-					if (pointVector.dot(axis1[i]) > pointVector.dot(deposit.normal.back()))
+					if (pointVector.dot(axis1[i]) > pointVector.dot(deposit.points.back().normal))
 					{
-						deposit.normal.back() = axis1[i];
+						deposit.points.back().normal = axis1[i];
 					}
 				}
-				deposit.normal.back() = -deposit.normal.back(); //?
+				deposit.points.back().normal = -deposit.points.back().normal; //?
 			}
 		}
 
-		for (unsigned int i = 0; i < deposit.normal.size(); i++)
+		for (unsigned int i = 0; i < deposit.points.size(); i++)
 		{
-			deposit.normal[i] = deposit.normal[i].getNormalized();
+			deposit.points[i].normal.normalize();
 		}
 
 		delete [] axis1;
 		delete [] axis2;
 		return true;
 	}
-	bool SATMTVCollision(CollisionPoint& deposit, Vertex* _vertexArray, const unsigned int _size, const spehs::vec2& _circleCenterPoint, const float _circleRadius)
+	bool SATMTVCollision(CollisionResults& deposit, Vertex* _vertexArray, const unsigned int _size, const spehs::vec2& _circleCenterPoint, const float _circleRadius)
 	{
 		float overlap = FLT_MAX;
 		spehs::vec2 smallestAxis;
@@ -655,11 +651,10 @@ namespace spehs
 			//Find which points are colliding
 			if (circleCollision(_circleCenterPoint, _circleRadius, testPoint, 0.0f))
 			{
-				deposit.point.push_back(testPoint);
+				deposit.points.push_back(CollisionResults::Point(testPoint, testPoint - _circleCenterPoint));
 
 				//Find normal
-				deposit.normal.push_back(spehs::vec2(testPoint - _circleCenterPoint));
-				deposit.normal.back() = -deposit.normal.back(); //?
+				deposit.points.back().normal = -deposit.points.back().normal; //?
 			}
 		}
 
@@ -668,30 +663,29 @@ namespace spehs
 		//Find which points are colliding
 		if (SATCollision(_vertexArray, _size, circlePoint, 0.0f))
 		{
-			deposit.point.push_back(circlePoint);
+			deposit.points.push_back(CollisionResults::Point(circlePoint, axis1[0]));
 
 			//Find normal
-			spehs::vec2 pointVector = deposit.point.back() - getCenter(_vertexArray, _size);
-			deposit.normal.push_back(axis1[0]);
+			spehs::vec2 pointVector = deposit.points.back().position - getCenter(_vertexArray, _size);
 			for (unsigned i = 1; i < _size; i++)
 			{
-				if (pointVector.dot(axis1[i]) > pointVector.dot(deposit.normal.back()))
+				if (pointVector.dot(axis1[i]) > pointVector.dot(deposit.points.back().normal))
 				{
-					deposit.normal.back() = axis1[i];
+					deposit.points.back().normal = axis1[i];
 				}
 			}
 		}
 
 		//Normalize normals
-		for (unsigned int i = 0; i < deposit.normal.size(); i++)
+		for (unsigned int i = 0; i < deposit.points.size(); i++)
 		{
-			deposit.normal[i] = deposit.normal[i].getNormalized();
+			deposit.points[i].normal.normalize();
 		}
 
 		delete [] axis1;
 		return true;
 	}
-	bool SATMTVCollision(CollisionPoint& deposit, spehs::vec2* _vertexArray, const unsigned int _size, const spehs::vec2& _circleCenterPoint, const float _circleRadius)
+	bool SATMTVCollision(CollisionResults& deposit, spehs::vec2* _vertexArray, const unsigned int _size, const spehs::vec2& _circleCenterPoint, const float _circleRadius)
 	{
 		float overlap = FLT_MAX;
 		spehs::vec2 smallestAxis;
@@ -763,11 +757,10 @@ namespace spehs
 			//Find which points are colliding
 			if (circleCollision(_circleCenterPoint, _circleRadius, testPoint, 0.0f))
 			{
-				deposit.point.push_back(testPoint);
+				deposit.points.push_back(CollisionResults::Point(testPoint, testPoint - _circleCenterPoint));
 
 				//Find normal
-				deposit.normal.push_back(spehs::vec2(testPoint - _circleCenterPoint));
-				deposit.normal.back() = -deposit.normal.back(); //?
+				deposit.points.back().normal = -deposit.points.back().normal; //?
 			}
 		}
 
@@ -776,44 +769,41 @@ namespace spehs
 		//Find which points are colliding
 		if (SATCollision(_vertexArray, _size, circlePoint, 0.0f))
 		{
-			deposit.point.push_back(circlePoint);
+			deposit.points.push_back(CollisionResults::Point(circlePoint, axis1[0]));
 
 			//Find normal
-			spehs::vec2 pointVector = deposit.point.back() - getCenter(_vertexArray, _size);
-			deposit.normal.push_back(axis1[0]);
+			spehs::vec2 pointVector = deposit.points.back().position - getCenter(_vertexArray, _size);
 			for (unsigned i = 1; i < _size; i++)
 			{
-				if (pointVector.dot(axis1[i]) > pointVector.dot(deposit.normal.back()))
+				if (pointVector.dot(axis1[i]) > pointVector.dot(deposit.points.back().normal))
 				{
-					deposit.normal.back() = axis1[i];
+					deposit.points.back().normal = axis1[i];
 				}
 			}
 		}
 
 		//Normalize normals
-		for (unsigned int i = 0; i < deposit.normal.size(); i++)
+		for (unsigned int i = 0; i < deposit.points.size(); i++)
 		{
-			deposit.normal[i] = deposit.normal[i].getNormalized();
+			deposit.points[i].normal.normalize();
 		}
 
 		delete [] axis1;
 		return false;
 	}
-	bool circleMTVCollision(CollisionPoint& deposit, const spehs::vec2& _circleCenterPoint1, const float _circleRadius1, const spehs::vec2& _circleCenterPoint2, const float _circleRadius2)
+	bool circleMTVCollision(CollisionResults& deposit, const spehs::vec2& _circleCenterPoint1, const float _circleRadius1, const spehs::vec2& _circleCenterPoint2, const float _circleRadius2)
 	{
 		if ((_circleCenterPoint1 - _circleCenterPoint2).getLength() < (_circleRadius1 + _circleRadius2))
 		{
 			if (_circleCenterPoint1 == _circleCenterPoint2) //Can't normalize 0 vectors
 			{
 				deposit.MTV = spehs::vec2(1.0f, 0.0f) * ((_circleCenterPoint1 - _circleCenterPoint2).getLength() - (_circleRadius1 + _circleRadius2));
-				deposit.point.push_back(_circleCenterPoint1 + spehs::vec2(1.0f, 0.0f) * _circleRadius1);
-				deposit.normal.push_back(deposit.MTV);
+				deposit.points.push_back(CollisionResults::Point(_circleCenterPoint1 + spehs::vec2(1.0f, 0.0f) * _circleRadius1, deposit.MTV));
 			}
 			else
 			{
 				deposit.MTV = (_circleCenterPoint2 - _circleCenterPoint1).getNormalized() * ((_circleCenterPoint1, _circleCenterPoint2).getLength() - (_circleRadius1 + _circleRadius2));
-				deposit.point.push_back(_circleCenterPoint1 + (_circleCenterPoint2 - _circleCenterPoint1).normalize() * _circleRadius1);
-				deposit.normal.push_back(deposit.MTV);
+				deposit.points.push_back(CollisionResults::Point(_circleCenterPoint1 + (_circleCenterPoint2 - _circleCenterPoint1).normalize() * _circleRadius1, deposit.MTV));
 			}
 			return true;
 		}
