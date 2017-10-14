@@ -7,8 +7,8 @@
 #define SPEHS_DEBUG_DURATION_BEGIN(timeDurationVariable) timeDurationVariable = spehs::time::now();
 #define SPEHS_DEBUG_DURATION_END(timeDurationVariable) timeDurationVariable = spehs::time::now() - timeDurationVariable;
 #else
-#define SPEHS_DEBUG_DURATION_BEGIN(timeDurationVariable) (void)
-#define SPEHS_DEBUG_DURATION_END(timeDurationVariable) (void)
+#define SPEHS_DEBUG_DURATION_BEGIN(timeDurationVariable) (void)0
+#define SPEHS_DEBUG_DURATION_END(timeDurationVariable) (void)0
 #endif
 
 namespace spehs

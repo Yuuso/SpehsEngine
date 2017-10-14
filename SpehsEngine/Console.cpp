@@ -457,7 +457,7 @@ namespace spehs
 				static int frameCounter = 0;
 				if (++frameCounter >= FPS_REFRESH_RATE)
 				{
-					fpsCounter->setString("\nDraw calls: " + std::to_string(drawCalls) + "\nVertices: " + std::to_string(vertexDrawCount) + "\n" + customDebugText);
+					fpsCounter->setString("Draw calls: " + std::to_string(drawCalls) + "\nVertices: " + std::to_string(vertexDrawCount) + "\n" + customDebugText);
 					fpsCounter->setPosition(spehs::vec2(CONSOLE_BORDER, spehs::ApplicationData::getWindowHeight() - fpsCounter->getTextHeight()));
 					frameCounter = 0;
 				}

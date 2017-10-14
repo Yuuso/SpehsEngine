@@ -211,7 +211,7 @@ namespace spehs
 			typename std::enable_if<sizeof(ReturnType) != 1, ReturnType>::type random(const ReturnType _min, const ReturnType _max)
 			{
 				static_assert(std::is_arithmetic<ReturnType>::value, "ReturnType needs to be an arithmetic type!");
-				assert(_min <= _max);
+				_ASSERT(_min <= _max);
 				DistributionType dist;
 				return dist(engine, DistributionType::param_type{ _min, _max });
 			}
@@ -220,7 +220,7 @@ namespace spehs
 			typename std::enable_if<sizeof(ReturnType) == 1, ReturnType>::type random(const ReturnType _min, const ReturnType _max)
 			{
 				static_assert(std::is_arithmetic<ReturnType>::value, "ReturnType needs to be an arithmetic type!");
-				assert(_min <= _max);
+				_ASSERT(_min <= _max);
 				DistributionType dist;
 				return dist(engine, DistributionType::param_type{ _min, _max });
 			}
@@ -238,7 +238,7 @@ namespace spehs
 			ReturnType random(const double _probability, const ReturnType _min, const ReturnType _max)
 			{
 				static_assert(std::is_arithmetic<ReturnType>::value, "ReturnType needs to be an arithmetic type!");
-				assert(_min <= _max);
+				_ASSERT(_min <= _max);
 				DistributionType dist(double(_max - _min), _probability);
 				return _min + dist(engine);
 			}

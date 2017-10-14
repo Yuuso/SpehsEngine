@@ -451,7 +451,7 @@ namespace spehs
 	bool TextBatch::isEnoughRoom(const unsigned int &_numVertices)
 	{
 		if (_numVertices > DEFAULT_MAX_BATCH_SIZE)
-			exceptions::fatalError("The number of vertices in the text exceeds the max amount allowed in the batch!");
+			exceptions::fatalError("The number of vertices in the text exceeds the max amount allowed in the batch! Vertices: " + std::to_string(_numVertices));
 		return (vertices.size() + _numVertices) <= DEFAULT_MAX_BATCH_SIZE;
 	}
 

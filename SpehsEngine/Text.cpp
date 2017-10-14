@@ -404,6 +404,8 @@ namespace spehs
 	}
 	void Text::setString(std::string _str)
 	{
+		if (_str.size() > 2048)
+			spehs::exceptions::unexpectedError("set string is suspiciously big?");
 		//Set line count
 		if (_str.size() > 0) lineCount = 1; else lineCount = 0;
 		for (unsigned i = 0; i < _str.size(); i++)
@@ -414,6 +416,8 @@ namespace spehs
 	}
 	void Text::setString(const char* _str, const unsigned length)
 	{
+		if (length > 2048)
+			spehs::exceptions::unexpectedError("set string is suspiciously big?");
 		//Set line count
 		if (length > 0) lineCount = 1; else lineCount = 0;
 		for (unsigned i = 0; i < length; i++)
