@@ -99,7 +99,7 @@ namespace spehs
 				popupShadeCurrentAlpha += deltaTime.asSeconds();
 				if (popupShadeCurrentAlpha > popupShadeTargetAlpha)
 					popupShadeCurrentAlpha = popupShadeTargetAlpha;
-				popupShade->setAlpha(popupShadeCurrentAlpha);
+				popupShade->setAlpha(int(255.0f * popupShadeCurrentAlpha));
 			}
 
 			//Update
@@ -124,7 +124,7 @@ namespace spehs
 		else if (popupShade->getRenderState())
 		{
 			popupShade->setRenderState(false);
-			popupShade->setAlpha(0.0f);
+			popupShade->setAlpha(0);
 			popupShadeCurrentAlpha = 0.0;
 		}
 

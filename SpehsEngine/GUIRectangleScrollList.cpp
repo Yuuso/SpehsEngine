@@ -11,7 +11,7 @@ namespace spehs
 {
 	namespace ScrollButtons{ enum ScrollButtons{ up, bar, down }; }
 	int GUIRectangleScrollList::defaultScrollBarWidth = 20;
-	spehs::Color GUIRectangleScrollList::defaultScrollElementColor(1.0f, 1.0f, 1.0f, 1.0f);
+	spehs::Color GUIRectangleScrollList::defaultScrollElementColor(255, 255, 255, 255);
 	std::string GUIRectangleScrollList::scrollUpTexturePath;
 	std::string GUIRectangleScrollList::scrollBarTexturePath;
 	std::string GUIRectangleScrollList::scrollDownTexturePath;

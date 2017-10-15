@@ -392,6 +392,6 @@ namespace spehs
 
 		int screenshot;
 		screenshot = SOIL_save_screenshot(path.c_str(), SOIL_SAVE_TYPE_BMP, 0, 0, spehs::ApplicationData::getWindowWidth(), spehs::ApplicationData::getWindowHeight());
-		console::log("Screenshot saved to \"" + path + "\"", spehs::Color(0.35f, 1.0f, 0.9f));
+		console::log("Screenshot saved to \"" + path + "\"", spehs::Color(90, 255, 230));
 	}
 }

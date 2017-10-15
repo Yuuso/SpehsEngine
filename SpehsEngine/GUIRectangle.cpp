@@ -21,10 +21,10 @@ namespace spehs
 {
 	int16_t GUIRectangle::defaultDepth = 10000;
 	int16_t GUIRectangle::tooltipDepthRelative = 1000;
-	Color GUIRectangle::defaultColor(1.0f, 1.0f, 1.0f, 1.0f);
-	Color GUIRectangle::defaultStringColor(0.0f, 0.0f, 0.0f, 1.0f);
-	Color GUIRectangle::defaultTooltipColor(1.0f, 1.0f, 1.0f, 1.0f);
-	Color GUIRectangle::defaultTooltipStringColor(0.0f, 0.0f, 0.0f, 1.0f);
+	Color GUIRectangle::defaultColor(255, 255, 255, 255);
+	Color GUIRectangle::defaultStringColor(0, 0, 0, 255);
+	Color GUIRectangle::defaultTooltipColor(255, 255, 255, 255);
+	Color GUIRectangle::defaultTooltipStringColor(0, 0, 0, 255);
 	spehs::TextureParameter GUIRectangle::defaultTextureParameters(spehs::TextureFiltering::Nearest, spehs::TextureFiltering::Nearest);
 
 	GUIRectangle::DisplayTexture::~DisplayTexture()
@@ -153,14 +153,10 @@ namespace spehs
 			{
 				//Create temp vec4 col, lighten it a bit from color
 				Color col = color;
-				for (unsigned i = 0; i < 3; i++)
-				{
-					col[i] += 0.07f;
-
-					//Limit channel value to 1.0
-					if (col[i] > 1.0f)
-						col[i] = 1.0f;
-				}
+				col.brightness(1.1f);
+				col.r += 13;
+				col.g += 13;
+				col.b += 13;
 				polygon->setColor(col);
 			}
 			else

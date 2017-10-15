@@ -7,13 +7,8 @@
 
 #include <GL/glew.h>
 
-#if (SPEHS_COLOR_COMPONENT_TYPE == SPEHS_COLOR_COMPONENT_TYPE_FLOAT)
-#define GLSL_COLOR_VEC_TYPE "vec4"
-#elif (SPEHS_COLOR_COMPONENT_TYPE == SPEHS_COLOR_COMPONENT_TYPE_BYTE)
-#define GLSL_COLOR_VEC_TYPE "lowp vec4"
-#else
-#define GLSL_COLOR_VEC_TYPE "..."
-#endif
+/*FLOAT*///#define GLSL_COLOR_VEC_TYPE "vec4"
+/*UBYTE*/#define GLSL_COLOR_VEC_TYPE "lowp vec4"
 
 
 

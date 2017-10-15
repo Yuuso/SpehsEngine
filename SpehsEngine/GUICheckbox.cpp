@@ -6,8 +6,8 @@
 
 
 #define CHECKBOX_BORDER 2
-#define SELECTED_ALPHA 1.0f
-#define UNSELECTED_ALPHA 0.1f
+#define SELECTED_ALPHA 255
+#define UNSELECTED_ALPHA 25
 
 namespace spehs
 {

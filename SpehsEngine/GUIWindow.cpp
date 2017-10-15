@@ -27,12 +27,12 @@ namespace spehs
 	int GUIWindow::leftBorder = 0;
 	int GUIWindow::rightBorder = 0;
 	int GUIWindow::strechWidth = 5;
-	spehs::Color GUIWindow::strechColorFocused(1.0f, 0.22f, 0.0f, 1.0f);
-	spehs::Color GUIWindow::strechColorUnfocused(0.05f, 0.05f, 0.7f, 1.0f);
-	spehs::Color GUIWindow::headerBackgroundColor(0.8f, 0.8f, 0.8f, 1.0f);
-	spehs::Color GUIWindow::headerStringColor(0.2f, 0.2f, 0.2f, 1.0f);
-	spehs::Color GUIWindow::exitBackgroundColor(0.6f, 0.05f, 0.05f, 1.0f);
-	spehs::Color GUIWindow::exitStringColor(0.2f, 0.2f, 0.2f, 1.0f);
+	spehs::Color GUIWindow::strechColorFocused(255, 57, 0, 255);
+	spehs::Color GUIWindow::strechColorUnfocused(13, 13, 179, 255);
+	spehs::Color GUIWindow::headerBackgroundColor(204, 204, 204, 255);
+	spehs::Color GUIWindow::headerStringColor(51, 51, 51, 255);
+	spehs::Color GUIWindow::exitBackgroundColor(153, 13, 13, 255);
+	spehs::Color GUIWindow::exitStringColor(51, 51, 51, 255);
 
 	GUIWindow::GUIWindow() : doubleClickTimer(0), strechState(0), refreshRequests(0)
 	{

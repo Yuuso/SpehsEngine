@@ -50,7 +50,7 @@ namespace spehs
 
 		//Other
 		static int consoleTextSize;
-		static float consoleTextAlpha;
+		static int consoleTextAlpha;
 		static int GUITextSize;
 		static std::string GUITextFontPath;
 		static std::string dataDirectory;//Specified directory where data should be stored. Contains the forward slash suffix

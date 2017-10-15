@@ -108,7 +108,7 @@ namespace spehs
 			}
 			backgroundShade->setCameraMatrixState(false);
 			backgroundShade->setPosition(0.0f, 0.0f);
-			backgroundShade->setColor(spehs::Color(0.05f, 0.1f, 0.15f, 0.5f));
+			backgroundShade->setColor(spehs::Color(13, 26, 39, 128));
 
 			fpsCounter = consoleBatchManager->createText(10000);
 			if (!fpsCounter)
@@ -117,13 +117,13 @@ namespace spehs
 				return false;
 			}
 			fpsCounter->setFont(spehs::ApplicationData::GUITextFontPath, spehs::ApplicationData::consoleTextSize);
-			fpsCounter->setColor(Color(1.0f, 0.3f, 0.0f, 0.85f));
+			fpsCounter->setColor(Color(255, 77, 0, 217));
 			fpsCounter->setString("FPS:0123456789\nDraw calls:0123456789\nVertices:0123456789");
 			fpsCounter->setPosition(spehs::vec2(5, spehs::ApplicationData::getWindowHeight() - fpsCounter->getTextHeight()));
 
 			consoleText = consoleBatchManager->createText();
 			consoleText->setFont(spehs::ApplicationData::GUITextFontPath, spehs::ApplicationData::consoleTextSize);
-			consoleText->setColor(Color(1.0f, 0.6f, 0.0f, spehs::ApplicationData::consoleTextAlpha));
+			consoleText->setColor(Color(255, 153, 0, spehs::ApplicationData::consoleTextAlpha));
 			consoleText->setPosition(spehs::vec2(CONSOLE_BORDER, CONSOLE_BORDER));
 			consoleText->setString("><");
 			consoleText->setRenderState(checkState(CONSOLE_OPEN_BIT));
@@ -472,16 +472,16 @@ namespace spehs
 
 			//Render lines
 			for (unsigned i = 0; i < lines.size(); i++)
-				lines[i]->setAlpha(visibility * (spehs::ApplicationData::consoleTextAlpha));
+				lines[i]->setAlpha(int(visibility * (spehs::ApplicationData::consoleTextAlpha)));
 
 			//Console text
-			consoleText->setAlpha(visibility * (spehs::ApplicationData::consoleTextAlpha));
+			consoleText->setAlpha(int(visibility * (spehs::ApplicationData::consoleTextAlpha)));
 
 			//Console background shade
 			if (consoleText->getRenderState() || (lines.size() > 0 && lines.front()->getRenderState()))
 			{
 				backgroundShade->setRenderState(true);
-				backgroundShade->setAlpha(visibility * 0.8f);
+				backgroundShade->setAlpha(int(visibility * 204));
 				int w = 0.0f, h = 0.0f;
 				if (consoleText->getRenderState())
 				{
@@ -727,7 +727,7 @@ namespace spehs
 			{
 				if (consoleWords.size() > 1 && consoleWords[1] == "memory")
 				{
-					static const Color color(0.8f, 0.8f, 0.8f);
+					static const Color color(204, 204, 204);
 					log("-------------------", color);
 					log("Spehs Engine select memory allocations:", color);
 					log("Remaining allocations / Total (runtime) allocations", color);

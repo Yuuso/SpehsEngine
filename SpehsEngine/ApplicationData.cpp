@@ -16,7 +16,7 @@ namespace spehs
 	int ApplicationData::vSync = 0;
 	int ApplicationData::MSAA = 4;
 	int ApplicationData::consoleTextSize = 12;
-	float ApplicationData::consoleTextAlpha = 0.9f;
+	int ApplicationData::consoleTextAlpha = 0.9f;
 	int ApplicationData::GUITextSize = 12;
 	std::string ApplicationData::GUITextFontPath = "Fonts/Anonymous.ttf";
 	std::string ApplicationData::dataDirectory = "data/";
@@ -90,7 +90,7 @@ namespace spehs
 		stream << "Master volume=" << int(100 * masterVolume) << "\n";
 		//Other
 		stream << "Console text size=" << consoleTextSize << "\n";
-		stream << "ConsoleTextAlpha (0-255)=" << int(consoleTextAlpha * 255) << "\n";
+		stream << "ConsoleTextAlpha (0-255)=" << consoleTextAlpha << "\n";
 		stream << "GUI text size=" << GUITextSize << "\n";
 		stream << "GUI text font path=" << GUITextFontPath << "\n";
 		stream << "Data directory=" << dataDirectory << "\n";
@@ -138,7 +138,7 @@ namespace spehs
 		readValueIntoInt(stream, intVal);					masterVolume = std::min(1.0f, std::max(0.0f, intVal * 0.01f));
 		//Other
 		readValueIntoInt(stream, consoleTextSize);			consoleTextSize = std::max(11, consoleTextSize);
-		readValueIntoInt(stream, intVal);					consoleTextAlpha = std::min(1.0f, std::max(0.0f, float(intVal) / 255.0f));
+		readValueIntoInt(stream, intVal);					consoleTextAlpha = std::min(255, std::max(0, intVal));
 		readValueIntoInt(stream, GUITextSize);				GUITextSize = std::max(11, GUITextSize);
 		readValueIntoString(stream, GUITextFontPath);
 		readValueIntoString(stream, dataDirectory);

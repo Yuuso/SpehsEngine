@@ -4,7 +4,7 @@
 #include <stdint.h>
 #include "ConsoleVariable.h"
 #include "Color.h"
-#define CONSOLE_FONT_COLOR 1.0f, 0.6f, 0.0f
+#define CONSOLE_FONT_COLOR 255, 153, 0
 
 /**Console is accessed through these functions.
 The console is internally mutex locked and can thus be safely accessed from any thread.

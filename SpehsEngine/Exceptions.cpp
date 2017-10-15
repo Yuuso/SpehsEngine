@@ -24,7 +24,7 @@ namespace spehs
 		void unexpectedError(const std::string errorString)
 		{
 			if (consoleLoggingEnabled)
-				console::log("Unexpected Error: " + errorString, Color(1.0f, 0.0f, 0.0f));
+				console::log("Unexpected Error: " + errorString, Color(255, 0, 0));
 			std::cout << std::endl;
 			std::cout << "Unexpected Error: " << errorString << std::endl;
 			std::cout << "Press 'Enter' to continue." << std::endl;
@@ -33,7 +33,7 @@ namespace spehs
 		void warning(const std::string warningString)
 		{
 			if (consoleLoggingEnabled)
-				console::log("Warning: " + warningString, Color(0.9f, 0.6f, 0.1f));
+				console::log("Warning: " + warningString, Color(230, 153, 25));
 			std::cout << std::endl;
 			std::cout << "Warning: " << warningString << std::endl;
 		}
