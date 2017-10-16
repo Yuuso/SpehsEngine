@@ -67,9 +67,27 @@ namespace spehs
 	};
 
 	/*
-	Active BatchManager needs to be set when using some parts of the engine!
+		Active BatchManager needs to be set when using some parts of the engine!
 	*/
 	void setActiveBatchManager(BatchManager* _active);
 	void resetActiveBatchManager();
 	BatchManager* getActiveBatchManager();
+	/*
+		RAII style batch section
+	*/
+	class BatchSection
+	{
+	public:
+		BatchSection(BatchManager& _batchManager)
+			: batchManager(_batchManager)
+		{
+			batchManager.beginSection();
+		}
+		~BatchSection()
+		{
+			batchManager.endSection();
+		}
+	private:
+		BatchManager& batchManager;
+	};
 }

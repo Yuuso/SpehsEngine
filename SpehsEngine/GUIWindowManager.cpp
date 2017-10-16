@@ -10,10 +10,15 @@
 
 namespace spehs
 {
-	GUIWindowManager::GUIWindowManager(BatchManager& _batchManager) :
-		focusedWindow(nullptr), depthPerWindow(256), batchManager(_batchManager),
-		receivingInput(false), mouseHoverAny(false), streching(false), dragging(false),
-		popupShadeCurrentAlpha(0.0f)
+	GUIWindowManager::GUIWindowManager(BatchManager& _batchManager)
+		: batchManager(_batchManager)
+		, focusedWindow(nullptr)
+		, depthPerWindow(256)
+		, receivingInput(false)
+		, mouseHoverAny(false)
+		, streching(false)
+		, dragging(false)
+		, popupShadeCurrentAlpha(0.0f)
 	{
 		batchManager.beginSection();
 		popupShade = Polygon::create(Shape::BUTTON, 0, spehs::ApplicationData::getWindowWidth(), spehs::ApplicationData::getWindowHeight());
@@ -35,10 +40,6 @@ namespace spehs
 	}
 	void GUIWindowManager::addWindow(GUIWindow* window)
 	{
-#ifdef _DEBUG
-		if (window->getPolygonPtr()->myBatchManager != &batchManager)
-			spehs::exceptions::warning("Window batch manager is different from window manager batch manager!");
-#endif
 		batchManager.beginSection();
 		windows.push_back(window);
 		updateDepths();
@@ -46,10 +47,6 @@ namespace spehs
 	}
 	void GUIWindowManager::addPopup(GUIRectangle* popup)
 	{
-#ifdef _DEBUG
-		if (popup->getPolygonPtr()->myBatchManager != &batchManager)
-			spehs::exceptions::warning("Popup batch manager is different from window manager batch manager!");
-#endif
 		batchManager.beginSection();
 		popup->setRenderState(true);
 		popup->setPositionGlobal(spehs::ApplicationData::getWindowWidthHalf() - popup->getWidth() * 0.5f, spehs::ApplicationData::getWindowHeightHalf() - popup->getHeight() * 0.5f);

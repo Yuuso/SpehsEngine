@@ -22,31 +22,28 @@ std::atomic<int> primitiveDeallocations;
 namespace spehs
 {
 	Primitive::Primitive()
-#ifdef _DEBUG
-		: myBatchManager(getActiveBatchManager())
-#endif
+		: readyForDelete(false)
+		, blending(false)
+		, renderState(true)
+		, cameraMatrixState(true)
+		, needUpdate(true)
+		, textureDataID(0)
+		, planeDepth(0)
+		, drawMode(UNDEFINED)
+		, shaderIndex(DefaultPolygon)
+		, lineWidth(0.0f)
+		, rotation(0.0f)
+		, scaleX(1.0f)
+		, scaleY(1.0f)
+		, rotationVector(0.0f, 0.0f, 1.0f)//?
+		, primitiveColor(255, 255, 255, 255)
+		, scaledMatrix(1.0f)
+		, scaledRotatedMatrix(1.0f)
+		, position(0.0f, 0.0f)
 	{
 #ifdef _DEBUG
 		primitiveAllocations++;
 #endif
-
-		blending = false;
-		cameraMatrixState = true;
-		readyForDelete = false;
-		renderState = true;
-		needUpdate = true;
-		shaderIndex = DefaultPolygon;
-		drawMode = UNDEFINED;
-		textureDataID = 0;
-		planeDepth = 0;
-		lineWidth = 0.0f;
-		rotation = 0.0f;
-		scaleX = 1.0f;
-		scaleY = 1.0f;
-		rotationVector = spehs::vec3(0.0f, 0.0f, 1.0f);//?
-		primitiveColor = spehs::Color(255, 255, 255, 255);
-		scaledMatrix = glm::mat4(1.0f);
-		scaledRotatedMatrix = glm::mat4(1.0f);
 	}
 	Primitive::~Primitive()
 	{
@@ -68,7 +65,8 @@ namespace spehs
 			exceptions::unexpectedError("Position values corrupted!");
 		}
 #endif
-		position = spehs::vec2(_x, _y);
+		position.x = _x;
+		position.y = _y;
 		needUpdate = true;
 	}
 
@@ -80,7 +78,8 @@ namespace spehs
 			exceptions::unexpectedError("Position values corrupted!");
 		}
 #endif
-		position = spehs::vec2(_newPosition.x, _newPosition.y);
+		position.x = _newPosition.x;
+		position.y = _newPosition.y;
 		needUpdate = true;
 	}
 

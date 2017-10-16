@@ -34,7 +34,8 @@ namespace spehs
 	{
 		return getActiveBatchManager()->createPolygon(_cuspData, _planeDepth, _width, _height);
 	}
-	Polygon::Polygon(const int _shapeID, const PlaneDepth _planeDepth, const float _width, const float _height) : Polygon(_width, _height)
+	Polygon::Polygon(const int _shapeID, const PlaneDepth _planeDepth, const float _width, const float _height)
+		: Polygon(_width, _height)
 	{
 		planeDepth = _planeDepth;
 		if (_shapeID >= 3) //Regular Convex Polygons
@@ -97,7 +98,8 @@ namespace spehs
 			}
 		}
 	}
-	Polygon::Polygon(const std::vector<spehs::Vertex>& _vertexData, const PlaneDepth _planeDepth, const float _width, const float _height) : Polygon(_width, _height)
+	Polygon::Polygon(const std::vector<spehs::Vertex>& _vertexData, const PlaneDepth _planeDepth, const float _width, const float _height)
+		: Polygon(_width, _height)
 	{
 		planeDepth = _planeDepth;
 		if (_vertexData.size() < 3)
@@ -108,11 +110,13 @@ namespace spehs
 
 		setUVCoords();
 	}
-	Polygon::Polygon(const std::vector<spehs::Vertex>& _vertexData, const float _width, const float _height) : Polygon(_vertexData, 0, _width, _height)
+	Polygon::Polygon(const std::vector<spehs::Vertex>& _vertexData, const float _width, const float _height)
+		: Polygon(_vertexData, 0, _width, _height)
 	{
 		blending = false;
 	}
-	Polygon::Polygon(const std::vector<spehs::vec2>& _positionData, const PlaneDepth _planeDepth, const float _width, const float _height) : Polygon(_width, _height)
+	Polygon::Polygon(const std::vector<spehs::vec2>& _positionData, const PlaneDepth _planeDepth, const float _width, const float _height)
+		: Polygon(_width, _height)
 	{
 		planeDepth = _planeDepth;
 		if (_positionData.size() < 3)
@@ -128,11 +132,11 @@ namespace spehs
 		setUVCoords();
 	}
 	Polygon::Polygon(const float _width, const float _height)
+		: width(_width)
+		, height(_height)
+		, radius(0.0f)
 	{
 		drawMode = TRIANGLE;
-		width = _width;
-		height = _height;
-		radius = 0.0f;
 		blending = true;
 	}
 	Polygon::~Polygon()
@@ -158,17 +162,15 @@ namespace spehs
 	}
 
 
-	std::vector<spehs::vec2>* Polygon::getScreenVertices(spehs::Camera2D* _camera)
+	void Polygon::getScreenVertices(spehs::Camera2D* _camera, std::vector<spehs::vec2>& deposit)
 	{
 		if (cameraMatrixState)
 		{
-			std::vector<spehs::vec2>* result = new std::vector<spehs::vec2>;
 			for (unsigned i = 0; i < worldVertexArray.size(); i++)
 			{
-				glm::vec2 vec(glm::vec2(*_camera->projectionMatrix * glm::vec4(worldVertexArray[i].position.x, worldVertexArray[i].position.y, 0.0f, 1.0f)));
-				result->push_back(spehs::vec2(vec.x, vec.y));
+				glm::vec2 vec(*_camera->projectionMatrix * glm::vec4(worldVertexArray[i].position.x, worldVertexArray[i].position.y, 0.0f, 1.0f));
+				deposit.push_back(spehs::vec2(vec.x, vec.y));
 			}
-			return result; //User handles deletion
 		}
 		else
 		{

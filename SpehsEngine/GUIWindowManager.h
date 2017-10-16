@@ -39,6 +39,8 @@ namespace spehs
 		int16_t getDepthPerWindow() const { return depthPerWindow; }
 		void setPopupShadeColor(const spehs::Color& color);
 
+		BatchManager& batchManager;
+
 	private:
 		void updateDepths();
 
@@ -50,7 +52,6 @@ namespace spehs
 		Polygon* popupShade;
 		float popupShadeCurrentAlpha;
 		float popupShadeTargetAlpha;
-		BatchManager& batchManager;
 		bool receivingInput;
 		bool mouseHoverAny;
 		bool streching;

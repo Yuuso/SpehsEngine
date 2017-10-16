@@ -28,7 +28,7 @@ namespace spehs
 
 		void updateVertices();
 
-		std::vector<spehs::vec2>* getScreenVertices(spehs::Camera2D* _camera);
+		void getScreenVertices(spehs::Camera2D* _camera, std::vector<spehs::vec2>& deposit);
 
 		void resize(const float &_width, const float &_height);
 		//Setters

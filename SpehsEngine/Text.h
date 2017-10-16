@@ -112,7 +112,7 @@ namespace spehs
 
 		spehs::Color getColor() const { return color; }
 		spehs::Color::Component getAlpha() const { return color.a; }
-
+		
 		std::vector<GLuint> textureIDs;
 		std::vector<spehs::Vertex> worldVertexArray;
 

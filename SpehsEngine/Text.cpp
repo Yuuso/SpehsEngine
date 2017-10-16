@@ -247,14 +247,25 @@ namespace spehs
 		textDeallocations++;
 #endif
 	}
-	Text::Text(const PlaneDepth depth) : lineCount(0), scale(1.0f), lineSpacing(0), font(nullptr), needTextUpdate(false), needPositionUpdate(false), renderState(true), readyForDelete(false),
-		shaderIndex(DefaultText), planeDepth(depth), cameraMatrixState(false)
+	Text::Text(const PlaneDepth depth)
+		: lineCount(0)
+		, scale(1.0f)
+		, lineSpacing(0)
+		, font(nullptr)
+		, needTextUpdate(false)
+		, needPositionUpdate(false)
+		, renderState(true)
+		, readyForDelete(false)
+		, shaderIndex(DefaultText)
+		, planeDepth(depth)
+		, cameraMatrixState(false)
 	{
 #ifdef _DEBUG
 		textAllocations++;
 #endif
 	}
-	Text::Text(const std::string &_string, const PlaneDepth _depth) : Text(_depth)
+	Text::Text(const std::string &_string, const PlaneDepth _depth)
+		: Text(_depth)
 	{
 		setString(_string);
 	}

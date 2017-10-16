@@ -165,7 +165,6 @@
     <ClCompile Include="Time.cpp" />
     <ClCompile Include="Transform2D.cpp" />
     <ClCompile Include="Triangulation.cpp" />
-    <ClCompile Include="Vector.cpp" />
     <ClCompile Include="Vertex.cpp" />
     <ClCompile Include="Window.cpp" />
   </ItemGroup>

@@ -1,19 +1,21 @@
 #include <algorithm>
 #include "StringOperations.h"
 #include "GUIRectangle.h"
+#include "BatchManager.h"
 #include "Textbox.h"
 #include "Polygon.h"
 #include "Text.h"
 
 namespace spehs
 {
-	Textbox::Textbox(const std::string& string, const unsigned _textBorder, const int16_t depth) : textBorder(_textBorder)
+	Textbox::Textbox(BatchManager& batchManager, const std::string& string, const unsigned _textBorder, const int16_t depth)
+		: textBorder(_textBorder)
 	{
-		text = spehs::Text::create(string, GUIRectangle::defaultDepth);
+		text = batchManager.createText(string, GUIRectangle::defaultDepth);
 		text->setFont("Fonts/Anonymous.ttf", 12);
 		text->setCameraMatrixState(false);
 		text->setColor(spehs::GUIRectangle::defaultTooltipStringColor);
-		polygon = spehs::Polygon::create(spehs::Shape::BUTTON, GUIRectangle::defaultDepth + 1,
+		polygon = batchManager.createPolygon(spehs::Shape::BUTTON, GUIRectangle::defaultDepth + 1,
 			2 * textBorder + std::max(text->getTextWidth(), (float)text->getFontMaxAdvanceWidth()),
 			(1 + text->getLineCount()) * textBorder - text->getFontDescender() + text->getFontHeight() * text->getLineCount());
 		polygon->setCameraMatrixState(false);

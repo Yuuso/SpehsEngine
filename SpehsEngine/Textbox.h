@@ -5,6 +5,7 @@
 
 namespace spehs
 {
+	class BatchManager;
 	class Polygon;
 	class Text;
 
@@ -12,7 +13,7 @@ namespace spehs
 	class Textbox
 	{
 	public:
-		Textbox(const std::string& string, const unsigned textBorder, const int16_t depth);
+		Textbox(BatchManager& batchManager, const std::string& string, const unsigned textBorder, const int16_t depth);
 		~Textbox();
 
 		//Setters
