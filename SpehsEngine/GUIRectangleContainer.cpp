@@ -6,7 +6,8 @@
 
 namespace spehs
 {
-	GUIRectangleContainer::GUIRectangleContainer()
+	GUIRectangleContainer::GUIRectangleContainer(BatchManager& _batchManager)
+		: GUIRectangle(_batchManager)
 	{
 		open();
 	}

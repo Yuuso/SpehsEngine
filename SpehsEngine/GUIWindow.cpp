@@ -34,10 +34,15 @@ namespace spehs
 	spehs::Color GUIWindow::exitBackgroundColor(153, 13, 13, 255);
 	spehs::Color GUIWindow::exitStringColor(51, 51, 51, 255);
 
-	GUIWindow::GUIWindow() : doubleClickTimer(0), strechState(0), refreshRequests(0)
+	GUIWindow::GUIWindow(BatchManager& _batchManager)
+		: GUIRectangleContainer(_batchManager)
+		, doubleClickTimer(0)
+		, strechState(0)
+		, refreshRequests(0)
 	{
 		//Header bar
-		header = new GUIRectangle(-1);
+		header = new GUIRectangle(batchManager);
+		header->setID(-1);
 		header->setParent(this);
 		header->setPositionLocal(0, size.y);
 		header->setColor(headerBackgroundColor);
@@ -49,7 +54,8 @@ namespace spehs
 		addElement(header);
 
 		//Exit button
-		exit = new GUIRectangle(-2);
+		exit = new GUIRectangle(batchManager);
+		exit->setID(-2);
 		exit->setParent(this);
 		exit->setPositionLocal(size.x - EXIT_WIDTH, size.y);
 		exit->setSize(EXIT_WIDTH, header->getHeight());
@@ -63,7 +69,7 @@ namespace spehs
 		addElement(exit);
 
 		//Strech background rectangle
-		strech = new GUIRectangle();
+		strech = new GUIRectangle(batchManager);
 		strech->setParent(this);
 		strech->setPositionLocal(-strechWidth, -strechWidth);
 		strech->disableState(GUIRECT_HOVER_COLOR_BIT);
@@ -75,9 +81,11 @@ namespace spehs
 		disableState(GUIRECT_HOVER_COLOR_BIT);
 		enableState(GUIWINDOW_LIMIT_WITHIN_MAIN_WINDOW_BIT);
 	}
+
 	GUIWindow::~GUIWindow()
 	{
 	}
+
 	void GUIWindow::clear()
 	{
 		//Do not clear header, strech and exit elements located on front of the elements vector
@@ -85,6 +93,7 @@ namespace spehs
 			delete elements[i];
 		elements.resize(GUIWINDOW_BASE_ELEMENT_COUNT);
 	}
+
 	void GUIWindow::inputUpdate(InputUpdateData& data)
 	{
 		GUIRectangleContainer::inputUpdate(data);
@@ -294,6 +303,7 @@ namespace spehs
 		if (getInputEnabled() && inputManager->isKeyPressed(MOUSE_BUTTON_LEFT) && exit->getMouseHover() && inputManager->tryClaimMouseAvailability())
 			close();
 	}
+
 	void GUIWindow::visualUpdate()
 	{
 		//Perform rescaling/positioning
@@ -308,16 +318,19 @@ namespace spehs
 			GUIRectangleContainer::visualUpdate();
 		}
 	}
+
 	void GUIWindow::onEnableInput()
 	{
 		GUIRectangleContainer::onEnableInput();
 		strech->setColor(strechColorFocused);
 	}
+
 	void GUIWindow::onDisableInput()
 	{
 		GUIRectangleContainer::onDisableInput();
 		strech->setColor(strechColorUnfocused);
 	}
+
 	bool GUIWindow::close()
 	{
 		if (!checkState(GUIRECT_OPEN_BIT))
@@ -329,6 +342,7 @@ namespace spehs
 		setRenderState(false);
 		return true;
 	}
+
 	bool GUIWindow::open()
 	{
 		if (checkState(GUIRECT_OPEN_BIT))
@@ -338,6 +352,7 @@ namespace spehs
 		refresh();
 		return true;
 	}
+
 	void GUIWindow::setPositionMode(const PositionMode mode)
 	{
 		if (positionMode != mode)
@@ -346,6 +361,7 @@ namespace spehs
 			disableState(GUIRECT_MIN_SIZE_UPDATED_BIT | GUIRECT_SCALE_UPDATED_BIT | GUIRECT_POSITION_UPDATED_BIT);
 		}
 	}
+
 	void GUIWindow::updateMinSize()
 	{
 		//Initialize min dimensions
@@ -366,6 +382,7 @@ namespace spehs
 			minSize.y += elements[i]->getMinHeight();
 		}
 	}
+
 	void GUIWindow::updateScale()
 	{
 		GUIRectangle::updateScale();
@@ -441,6 +458,7 @@ namespace spehs
 
 		disableBit(state, GUIRECT_POSITION_UPDATED_BIT);
 	}
+
 	void GUIWindow::updatePosition()
 	{
 		GUIRectangle::updatePosition();
@@ -464,6 +482,7 @@ namespace spehs
 			elements[i]->setPositionLocal(0, elements[i - 1]->getYLocal() - elements[i]->getHeight());
 		}
 	}
+
 	void GUIWindow::limitWithinMainWindow()
 	{//Prevent window going out of application window
 
@@ -501,12 +520,14 @@ namespace spehs
 		updatePosition();
 		disableState(GUIWINDOW_LIMIT_WITHIN_MAIN_WINDOW_BIT);
 	}
+
 	void GUIWindow::setDepth(int16_t depth)
 	{
 		GUIRectangleContainer::setDepth(depth + 1);
 		if (strech)
 			strech->setDepth(depth);
 	}
+
 	bool GUIWindow::mouseOverStrechArea()
 	{
 		//Mouse not overlapping strech rect, no hovering
@@ -524,6 +545,7 @@ namespace spehs
 			return true;
 		return false;
 	}
+
 	void GUIWindow::refresh()
 	{
 		disableBit(state, GUIRECT_MIN_SIZE_UPDATED_BIT);
@@ -532,10 +554,12 @@ namespace spehs
 		enableBit(state, GUIWINDOW_LIMIT_WITHIN_MAIN_WINDOW_BIT);
 		refreshRequests = 0;
 	}
+
 	void GUIWindow::requestRefresh()
 	{
 		refreshRequests++;
 	}
+
 	bool GUIWindow::isReceivingInput() const
 	{
 		return isDragging() || isStreching() || GUIRectangleContainer::isReceivingInput();

@@ -2,17 +2,18 @@
 
 namespace spehs
 {
-	GUIRectangleRow::GUIRectangleRow() : evenElementWidth(false), elementPositionMode(PositionMode::Standard)
+	GUIRectangleRow::GUIRectangleRow(BatchManager& _batchManager)
+		: GUIRectangleContainer(_batchManager)
+		, evenElementWidth(false)
+		, elementPositionMode(PositionMode::Standard)
 	{
 		disableBit(state, GUIRECT_HOVER_COLOR_BIT);
 	}
-	GUIRectangleRow::GUIRectangleRow(const GUIRECT_ID_TYPE _id) : GUIRectangleRow()
-	{
-		setID(_id);
-	}
+
 	GUIRectangleRow::~GUIRectangleRow()
 	{
 	}
+
 	void GUIRectangleRow::setEvenElementWidth(const bool setting)
 	{
 		if (evenElementWidth == setting)
@@ -21,6 +22,7 @@ namespace spehs
 		disableBit(state, GUIRECT_SCALE_UPDATED_BIT);
 		disableBit(state, GUIRECT_POSITION_UPDATED_BIT);
 	}
+
 	void GUIRectangleRow::setElementPositionMode(const PositionMode mode)
 	{
 		if (elementPositionMode == mode)
@@ -29,6 +31,7 @@ namespace spehs
 		disableStateRecursiveUpwards(GUIRECT_SCALE_UPDATED_BIT);
 		disableBit(state, GUIRECT_POSITION_UPDATED_BIT);
 	}
+
 	void GUIRectangleRow::updateMinSize()
 	{
 		minSize.x = 0;
@@ -58,6 +61,7 @@ namespace spehs
 		}
 		enableState(GUIRECT_MIN_SIZE_UPDATED_BIT);
 	}
+
 	void GUIRectangleRow::updateScale()
 	{
 		GUIRectangle::updateScale();
@@ -172,6 +176,7 @@ namespace spehs
 			}
 		}
 	}
+
 	void GUIRectangleRow::updatePosition()
 	{
 		GUIRectangle::updatePosition();

@@ -9,16 +9,16 @@
 namespace spehs
 {
 	static std::vector<spehs::vec2> pointerVertices = { spehs::vec2(-0.5f, 0.5f), spehs::vec2(-0.5f, -0.5f), spehs::vec2(0.5f, 0.0f) };
-	Arrow::Arrow(const int16_t planeDepth) : linePart(nullptr), polygonPart(nullptr), pointerWidth(1.0f), pointerHeight(1.0f), length(0.0f)
+	Arrow::Arrow(BatchManager& batchManager, const int16_t planeDepth) : linePart(nullptr), polygonPart(nullptr), pointerWidth(1.0f), pointerHeight(1.0f), length(0.0f)
 	{
 		//Create needed primitive components
-		polygonPart = getActiveBatchManager()->createPolygon(pointerVertices, planeDepth, pointerWidth, pointerHeight);
+		polygonPart = batchManager.createPolygon(pointerVertices, planeDepth, pointerWidth, pointerHeight);
 		polygonPart->setCameraMatrixState(false);
-		linePart = getActiveBatchManager()->createLine(spehs::vec2::zero, spehs::vec2::zero, planeDepth);
+		linePart = batchManager.createLine(spehs::vec2::zero, spehs::vec2::zero, planeDepth);
 		linePart->setCameraMatrixState(false);
 		linePart->setRenderState(false);//Length == 0
 	}
-	Arrow::Arrow(const spehs::vec2& _startPoint, const spehs::vec2& _endPoint) : Arrow()
+	Arrow::Arrow(BatchManager& batchManager, const spehs::vec2& _startPoint, const spehs::vec2& _endPoint, const int16_t planeDepth) : Arrow(batchManager)
 	{
 		setPosition(_startPoint, _endPoint);
 	}

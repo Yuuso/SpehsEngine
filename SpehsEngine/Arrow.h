@@ -4,15 +4,20 @@
 #include "Depth.h"
 #include "Vector.h"
 
-namespace spehs{ class Line; class Polygon; }
+namespace spehs
+{
+	class Line;
+	class Polygon;
+	class BatchManager;
+}
 
 namespace spehs
 {
 	class Arrow : public Colorable
 	{
 	public:
-		Arrow(const int16_t planeDepth = 0);
-		Arrow(const spehs::vec2& _startPoint, const spehs::vec2& _endPoint);
+		Arrow(BatchManager& batchManager, const int16_t planeDepth = 0);
+		Arrow(BatchManager& batchManager, const spehs::vec2& _startPoint, const spehs::vec2& _endPoint, const int16_t planeDepth = 0);
 		~Arrow();
 
 		void setPosition(const spehs::vec2& _startPoint, const spehs::vec2& _endPoint);

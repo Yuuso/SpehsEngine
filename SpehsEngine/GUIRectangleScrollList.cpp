@@ -15,12 +15,19 @@ namespace spehs
 	std::string GUIRectangleScrollList::scrollUpTexturePath;
 	std::string GUIRectangleScrollList::scrollBarTexturePath;
 	std::string GUIRectangleScrollList::scrollDownTexturePath;
-	GUIRectangleScrollList::GUIRectangleScrollList() : beginElementIndex(0), updateElementCount(0), minVisibleElementCount(4)
+	GUIRectangleScrollList::GUIRectangleScrollList(BatchManager& _batchManager)
+		: GUIRectangleUnisizeContainer(_batchManager)
+		, beginElementIndex(0)
+		, updateElementCount(0)
+		, minVisibleElementCount(4)
 	{
 		disableState(GUIRECT_HOVER_COLOR_BIT);
-		scrollUp = new GUIRectangle(ScrollButtons::up);
-		scrollBar = new GUIRectangle(ScrollButtons::bar);
-		scrollDown = new GUIRectangle(ScrollButtons::down);
+		scrollUp = new GUIRectangle(_batchManager);
+		scrollUp->setID(ScrollButtons::up);
+		scrollBar = new GUIRectangle(_batchManager);
+		scrollBar->setID(ScrollButtons::bar);
+		scrollDown = new GUIRectangle(_batchManager);
+		scrollDown->setID(ScrollButtons::down);
 		scrollBar->setWidth(defaultScrollBarWidth);
 		scrollUp->setParent(this);
 		scrollBar->setParent(this);
@@ -45,22 +52,21 @@ namespace spehs
 		scrollDown->setRenderState(false);
 		setDepth(getDepth());
 	}
-	GUIRectangleScrollList::GUIRectangleScrollList(const GUIRECT_ID_TYPE id) : GUIRectangleScrollList()
-	{
-		setID(id);
-	}
+
 	GUIRectangleScrollList::~GUIRectangleScrollList()
 	{
 		delete scrollUp;
 		delete scrollBar;
 		delete scrollDown;
 	}
+
 	void GUIRectangleScrollList::clear()
 	{
 		GUIRectangleContainer::clear();
 		beginElementIndex = 0;
 		updateElementCount = 0;
 	}
+
 	bool GUIRectangleScrollList::open()
 	{
 		if (!GUIRectangleUnisizeContainer::open())
@@ -70,6 +76,7 @@ namespace spehs
 		scrollDown->setRenderState(invisibleElements());
 		return true;
 	}
+
 	bool GUIRectangleScrollList::close()
 	{
 		if (!GUIRectangleUnisizeContainer::close())
@@ -79,6 +86,7 @@ namespace spehs
 		scrollDown->setRenderState(false);
 		return true;
 	}
+
 	bool GUIRectangleScrollList::removeElement(GUIRectangle* element)
 	{
 		for (unsigned i = 0; i < elements.size(); i++)
@@ -110,12 +118,14 @@ namespace spehs
 		}
 		return false;
 	}
+
 	int GUIRectangleScrollList::getPreferredHeight()
 	{
 		if (!checkState(GUIRECT_MIN_SIZE_UPDATED_BIT))
 			updateMinSize();
 		return minElementSize.y * elements.size();
 	}
+
 	void GUIRectangleScrollList::inputUpdate(InputUpdateData& data)
 	{
 		if (getInputEnabled() && checkState(GUIRECT_OPEN_BIT))
@@ -160,6 +170,7 @@ namespace spehs
 			}
 		}
 	}
+
 	void GUIRectangleScrollList::visualUpdate()
 	{
 		GUIRectangleContainer::visualUpdate();
@@ -170,6 +181,7 @@ namespace spehs
 			scrollDown->visualUpdate();
 		}
 	}
+
 	void GUIRectangleScrollList::setRenderState(const bool _state)
 	{
 		GUIRectangle::setRenderState(_state);
@@ -195,6 +207,7 @@ namespace spehs
 			scrollDown->setRenderState(false);
 		}
 	}
+
 	void GUIRectangleScrollList::updateMinSize()
 	{
 		if (checkState(GUIRECT_OPEN_BIT))
@@ -215,6 +228,7 @@ namespace spehs
 			enableState(GUIRECT_MIN_SIZE_UPDATED_BIT);
 		}
 	}
+
 	void GUIRectangleScrollList::updateScale()
 	{
 		/*Update update element count based on current dimensions. Element size is also updated.*/
@@ -275,6 +289,7 @@ namespace spehs
 			}
 		}
 	}
+
 	void GUIRectangleScrollList::updatePosition()
 	{
 		GUIRectangle::updatePosition();
@@ -309,6 +324,7 @@ namespace spehs
 			scrollBar->setPositionLocal(scrollButtonX, elements[beginElementIndex]->getYLocal() - elementSize.y - scrollPercentage * barSpace);
 		}
 	}
+
 	void GUIRectangleScrollList::incrementUpdateElementCount(int incrementation)
 	{
 		if (incrementation == 0)
@@ -353,6 +369,7 @@ namespace spehs
 		elementSize.y = size.y / float(updateElementCount);
 		disableStateRecursiveUpwards(GUIRECT_MIN_SIZE_UPDATED_BIT | GUIRECT_SCALE_UPDATED_BIT | GUIRECT_POSITION_UPDATED_BIT);
 	}
+
 	void GUIRectangleScrollList::setMinVisibleElementCount(const int count)
 	{
 		minVisibleElementCount = count;
@@ -363,6 +380,7 @@ namespace spehs
 		
 		disableState(GUIRECT_MIN_SIZE_UPDATED_BIT | GUIRECT_SCALE_UPDATED_BIT | GUIRECT_POSITION_UPDATED_BIT);
 	}
+
 	void GUIRectangleScrollList::addElement(GUIRectangle* element)
 	{
 		GUIRectangleContainer::addElement(element);
@@ -370,6 +388,7 @@ namespace spehs
 			incrementUpdateElementCount(1);
 		elements.back()->setRenderState(getRenderState() && checkState(GUIRECT_OPEN_BIT) && (beginElementIndex + updateElementCount == elements.size()/*is updated*/));
 	}
+
 	void GUIRectangleScrollList::setDepth(const int16_t depth)
 	{
 		GUIRectangleContainer::setDepth(depth);
@@ -377,6 +396,7 @@ namespace spehs
 		scrollDown->setDepth(depth + 1);
 		scrollBar->setDepth(depth + 1);
 	}
+
 	void GUIRectangleScrollList::scroll(int amount)
 	{
 		if (amount > 0)

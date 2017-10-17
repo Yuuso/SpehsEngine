@@ -30,7 +30,7 @@ namespace spehs
 
 		enum class PositionMode { StackUp, StackDown, Spread };
 	public:
-		GUIWindow();
+		GUIWindow(BatchManager& _batchManager);
 		~GUIWindow() override;
 		
 		void inputUpdate(InputUpdateData& data) override;

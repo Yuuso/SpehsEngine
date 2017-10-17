@@ -37,11 +37,12 @@ namespace spehs
 		};
 	public:
 		template<typename ... Args>
-		GUIPopup(const std::string& _message, const Option& _option, const Args& ... _moreOptions) : GUIPopup(_message)
+		GUIPopup(BatchManager& _batchManager, const std::string& _message, const Option& _option, const Args& ... _moreOptions)
+			: GUIPopup(_batchManager, _message)
 		{
 			addOptions(_option, _moreOptions...);
 		}
-		GUIPopup(const std::string& _message);
+		GUIPopup(BatchManager& _batchManager, const std::string& _message);
 		~GUIPopup();
 
 		void addOptions(const Option& option);

@@ -106,6 +106,11 @@ namespace spehs
 		primitives.push_back(new Line(_startPoint, _endPoint, _planeDepth));
 		return primitives.back()->getLinePtr();
 	}
+	Line* BatchManager::createLine(const PlaneDepth &_planeDepth)
+	{
+		primitives.push_back(new Line(_planeDepth));
+		return primitives.back()->getLinePtr();
+	}
 
 	Point* BatchManager::createPoint(const PlaneDepth &_planeDepth)
 	{

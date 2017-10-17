@@ -13,9 +13,7 @@ namespace spehs
 	public:
 		static time::Time defaultTreeOpenTime;
 	public:
-		GUIRectangleTree();
-		GUIRectangleTree(const int _ID);
-		GUIRectangleTree(const std::string& str);
+		GUIRectangleTree(BatchManager& _batchManager);
 		virtual ~GUIRectangleTree();
 
 		void inputUpdate(InputUpdateData& data);

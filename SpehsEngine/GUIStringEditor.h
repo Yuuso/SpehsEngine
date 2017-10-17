@@ -11,10 +11,7 @@ namespace spehs
 	{
 		static int defaultMaxStringEditorStringLength;
 	public:
-		GUIStringEditor();
-		GUIStringEditor(const std::string& title);
-		GUIStringEditor(const GUIRECT_ID_TYPE id);
-		GUIStringEditor(const int width, const int height);
+		GUIStringEditor(BatchManager& _batchManager);
 		~GUIStringEditor() override;
 
 		void setRenderState(const bool _state) override;

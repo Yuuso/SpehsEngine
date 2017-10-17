@@ -19,10 +19,23 @@ namespace spehs
 		static_assert(std::is_arithmetic<Scalar>::value, "Scalar editor type must be of either integral or floating type!");
 		enum class EditorType { Slider, Ticks };
 	public:
-		GUIScalarEditor(const std::string& scalarName, Scalar scalarEditorValue) : ValueEditor(scalarEditorValue),
-			floatPrecision(2), tickAmount(1), onHold(false), holdTimer(0), holdTime(time::seconds(0.15f)), initialHoldTime(time::seconds(1.0f)),
-			nameRect(new GUIRectangle(scalarName)), valueRect(new GUIStringEditor()), decreaseRect(new GUIRectangle("-")), increaseRect(new GUIRectangle("+"))
+		GUIScalarEditor(BatchManager& _batchManager, const std::string& scalarName, Scalar scalarEditorValue)
+			: ValueEditor(scalarEditorValue)
+			, GUIRectangleRow(_batchManager)
+			, floatPrecision(2)
+			, tickAmount(1)
+			, onHold(false)
+			, holdTimer(0)
+			, holdTime(time::seconds(0.15f))
+			, initialHoldTime(time::seconds(1.0f))
+			, nameRect(new GUIRectangle(_batchManager))
+			, valueRect(new GUIStringEditor(_batchManager))
+			, decreaseRect(new GUIRectangle(_batchManager))
+			, increaseRect(new GUIRectangle(_batchManager))
 		{
+			nameRect->setString("");
+			decreaseRect->setString("-");
+			increaseRect->setString("+");
 			setElementPositionMode(spehs::GUIRectangleRow::PositionMode::StackRight);
 			min = std::numeric_limits<Scalar>::min();
 			max = std::numeric_limits<Scalar>::max();

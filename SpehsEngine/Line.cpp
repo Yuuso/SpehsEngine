@@ -15,10 +15,26 @@ namespace spehs
 	{
 		return getActiveBatchManager()->createLine(_startPoint, _endPoint, _planeDepth);
 	}
+
 	Line* Line::create(const PlaneDepth &_planeDepth)
 	{
 		return getActiveBatchManager()->createLine(spehs::vec2(0.0f, 0.0f), spehs::vec2(0.0f, 0.0f), _planeDepth);
 	}
+
+	Line::Line(const PlaneDepth& _planeDepth)
+	{
+		vertexArray.resize(2);
+		vertexArray[0].position = spehs::vec2::zero;
+		vertexArray[1].position = spehs::vec2::zero;
+
+		worldVertexArray = vertexArray;
+
+		lineWidth = 1.0f;
+		planeDepth = _planeDepth;
+		blending = true;
+		drawMode = LINE;
+	}
+
 	Line::Line(const spehs::vec2& _startPoint, const spehs::vec2& _endPoint, const PlaneDepth& _planeDepth)
 	{
 		vertexArray.resize(2);
@@ -32,6 +48,7 @@ namespace spehs
 		blending = true;
 		drawMode = LINE;
 	}
+
 	Line::~Line()
 	{
 

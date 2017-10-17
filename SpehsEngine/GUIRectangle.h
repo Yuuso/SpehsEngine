@@ -44,6 +44,7 @@ namespace spehs
 	}
 	class Text;
 	class Polygon;
+	class BatchManager;
 	class GUIWindow;
 	class GUIButton;
 	class GUICheckbox;
@@ -85,11 +86,7 @@ namespace spehs
 		friend class GUIWindow;
 
 	public:
-		GUIRectangle();
-		GUIRectangle(const GUIRECT_ID_TYPE ID);
-		GUIRectangle(const std::string& str);
-		GUIRectangle(const spehs::ivec2& _size);
-		GUIRectangle(const int width, const int height);
+		GUIRectangle(BatchManager& _batchManager);
 		virtual ~GUIRectangle();
 		
 		/// During GUI's input update the element's size and/or min size may change even so that it might affect parents above.
@@ -241,6 +238,7 @@ namespace spehs
 		virtual GUIRectangleTable* getAsGUIRectangleTablePtr() { return nullptr; }
 		virtual GUIRectangleContainer* getAsGUIRectangleContainerPtr() { return nullptr; }
 
+		BatchManager& batchManager;
 
 	protected:
 		void createText();

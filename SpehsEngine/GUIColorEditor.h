@@ -15,7 +15,7 @@ namespace spehs
 		static float colorPreviewWidth;
 		static int colorEditorBorder;
 	public:
-		GUIColorEditor(const Color color = Color(255, 255, 255, 255));
+		GUIColorEditor(BatchManager& _batchManager);
 		~GUIColorEditor();
 
 		void setDepth(const int16_t _depth) override;

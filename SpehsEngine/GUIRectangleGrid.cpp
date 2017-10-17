@@ -6,13 +6,19 @@
 namespace spehs
 {
 	unsigned GUIRectangleGrid::defaultBorderWidth = 0;
-	GUIRectangleGrid::GUIRectangleGrid() : scrollingEnabled(false), scrollBarWidth(spehs::GUIRectangleScrollList::defaultScrollBarWidth),
-		scrollState(0), draggingScrollBar(false), scrollBarAccumulatedDragY(0.0f), borderWidth(defaultBorderWidth)
+	GUIRectangleGrid::GUIRectangleGrid(BatchManager& _batchManager)
+		: GUIRectangleUnisizeContainer(_batchManager)
+		, scrollingEnabled(false)
+		, scrollBarWidth(spehs::GUIRectangleScrollList::defaultScrollBarWidth)
+		, scrollState(0)
+		, draggingScrollBar(false)
+		, scrollBarAccumulatedDragY(0.0f)
+		, borderWidth(defaultBorderWidth)
 	{
 		disableState(GUIRECT_HOVER_COLOR_BIT);
-		scrollUp = new spehs::GUIRectangle();
-		scrollBar = new spehs::GUIRectangle();
-		scrollDown = new spehs::GUIRectangle();
+		scrollUp = new spehs::GUIRectangle(batchManager);
+		scrollBar = new spehs::GUIRectangle(batchManager);
+		scrollDown = new spehs::GUIRectangle(batchManager);
 		scrollUp->setWidth(scrollBarWidth);
 		scrollBar->setWidth(scrollBarWidth);
 		scrollDown->setWidth(scrollBarWidth);

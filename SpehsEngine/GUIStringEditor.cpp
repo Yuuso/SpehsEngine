@@ -2,6 +2,7 @@
 #include "StringOperations.h"
 #include "GUIStringEditor.h"
 #include "ApplicationData.h"
+#include "BatchManager.h"
 #include "InputManager.h"
 #include "Text.h"
 #include "Time.h"
@@ -12,64 +13,69 @@ namespace spehs
 {
 	int GUIStringEditor::defaultMaxStringEditorStringLength = 32;
 
-	GUIStringEditor::GUIStringEditor() : ValueEditor(""),
-		stringUpdated(false), defaultString(""), input(""), disableInputReceiveOnNextUpdate(false),
-		maxStringLength(defaultMaxStringEditorStringLength), typerPosition(0), typerBlinkTime(0), typerBlinkTimer(0), multilineEditing(false)
+	GUIStringEditor::GUIStringEditor(BatchManager& _batchManager)
+		: GUIRectangle(_batchManager)
+		, ValueEditor("")
+		, stringUpdated(false)
+		, defaultString("")
+		, input("")
+		, disableInputReceiveOnNextUpdate(false)
+		, maxStringLength(defaultMaxStringEditorStringLength)
+		, typerPosition(0)
+		, typerBlinkTime(0)
+		, typerBlinkTimer(0)
+		, multilineEditing(false)
 	{
 		setTyperBlinkTime(time::seconds(0.5f));
 		createText();
-		typeCharacter = spehs::Text::create("|", getDepth() + 1);
+		typeCharacter = batchManager.createText("|", getDepth() + 1);
 		typeCharacter->setRenderState(getRenderState() && isReceivingInput());
 		typeCharacter->setFont(spehs::ApplicationData::GUITextFontPath, spehs::ApplicationData::GUITextSize);
 		typeCharacter->setColor(text->getColor());
 		onEditorValueChange();
 	}
-	GUIStringEditor::GUIStringEditor(const std::string& str) : GUIStringEditor()
-	{
-		setString(str);
-	}
-	GUIStringEditor::GUIStringEditor(const GUIRECT_ID_TYPE ID) : GUIStringEditor()
-	{
-		setID(ID);
-	}
-	GUIStringEditor::GUIStringEditor(const int w, const int h) : GUIStringEditor()
-	{
-		setSize(w, h);
-	}
+
 	GUIStringEditor::~GUIStringEditor()
 	{
 		typeCharacter->destroy();
 	}
+
 	void GUIStringEditor::setRenderState(const bool _state)
 	{
 		GUIRectangle::setRenderState(_state);
 		typeCharacter->setRenderState(_state && isReceivingInput());
 	}
+
 	void GUIStringEditor::setDepth(const int16_t depth)
 	{
 		GUIRectangle::setDepth(depth);
 		typeCharacter->setPlaneDepth(depth + 1);
 	}	
+
 	void GUIStringEditor::setStringSize(const int size)
 	{
 		GUIRectangle::setStringSize(size);
 		typeCharacter->setFontSize(size);
 	}
+
 	void GUIStringEditor::setStringSizeRelative(const int relativeSize)
 	{
 		GUIRectangle::setStringSizeRelative(relativeSize);
 		typeCharacter->setFontSize(spehs::ApplicationData::GUITextSize + relativeSize);
 	}
+
 	void GUIStringEditor::setStringColor(const Color& col)
 	{
 		GUIRectangle::setStringColor(col);
 		typeCharacter->setColor(col);
 	}
+
 	void GUIStringEditor::setStringAlpha(const Color::Component& a)
 	{
 		GUIRectangle::setStringAlpha(a);
 		typeCharacter->setAlpha(a);
 	}
+
 	void GUIStringEditor::updatePosition()
 	{
 		GUIRectangle::updatePosition();
@@ -78,11 +84,13 @@ namespace spehs
 		else//No characters written
 			typeCharacter->setPosition(text->getX(typerPosition) - typeCharacter->getTextWidth() * 0.5f, text->getY() - 0.5f * text->getFontHeight());
 	}
+
 	void GUIStringEditor::updateMinSize()
 	{
 		GUIRectangle::updateMinSize();
 		minSize.x += typeCharacter->getTextWidth();
 	}
+
 	void GUIStringEditor::inputUpdate(InputUpdateData& data)
 	{
 		ValueEditor::update();
@@ -126,6 +134,7 @@ namespace spehs
 		if (!stringUpdated)
 			updateString();
 	}
+
 	void GUIStringEditor::updateString()
 	{
 		if (isReceivingInput())
@@ -136,7 +145,7 @@ namespace spehs
 		{
 			if (!text)
 			{
-				text = Text::create(getDepth() + 2);
+				text = batchManager.createText(getDepth() + 2);
 				text->setFont(spehs::ApplicationData::GUITextFontPath, spehs::ApplicationData::GUITextSize);
 			}
 			text->setString(defaultString);
@@ -147,12 +156,14 @@ namespace spehs
 		disableStateRecursiveUpwards(GUIRECT_POSITION_UPDATED_BIT);
 		disableStateRecursiveUpwards(GUIRECT_SCALE_UPDATED_BIT);
 	}
+
 	void GUIStringEditor::setString(const std::string& str)
 	{
 		GUIRectangle::setString(str);
 		defaultString = str;
 		stringUpdated = false;
 	}
+
 	void GUIStringEditor::toggleTyping()
 	{
 		if (isReceivingInput())
@@ -160,6 +171,7 @@ namespace spehs
 		else
 			beginTyping();
 	}
+
 	void GUIStringEditor::beginTyping()
 	{
 		if (isReceivingInput())
@@ -170,6 +182,7 @@ namespace spehs
 		stringUpdated = false;
 		input = editorValue;
 	}
+
 	void GUIStringEditor::endTyping()
 	{
 		if (!isReceivingInput())
@@ -180,6 +193,7 @@ namespace spehs
 		typerBlinkTimer = 0;
 		editorValue = input;
 	}
+
 	void GUIStringEditor::recordInput(const time::Time deltaTime)
 	{
 		keyboardRecorder.update(deltaTime);
@@ -319,20 +333,24 @@ namespace spehs
 		if (inputManager->isKeyPressed(MOUSEBUTTON_LEFT))
 			endTyping();
 	}
+
 	float GUIStringEditor::getEditorValueAsFloat() const
 	{
 		return getStringAsFloat(editorValue);
 	}
+
 	int GUIStringEditor::getEditorValueAsInt() const
 	{
 		return getStringAsInt(editorValue);
 	}
+
 	void GUIStringEditor::onDisableInput()
 	{
 		endTyping();
 		stringUpdated = false;
 		GUIRectangle::onDisableInput();
 	}
+
 	void GUIStringEditor::onEditorValueChange()
 	{
 		stringUpdated = false;

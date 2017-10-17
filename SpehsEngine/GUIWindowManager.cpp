@@ -20,16 +20,15 @@ namespace spehs
 		, dragging(false)
 		, popupShadeCurrentAlpha(0.0f)
 	{
-		batchManager.beginSection();
-		popupShade = Polygon::create(Shape::BUTTON, 0, spehs::ApplicationData::getWindowWidth(), spehs::ApplicationData::getWindowHeight());
+		popupShade = batchManager.createPolygon(Shape::BUTTON, 0, spehs::ApplicationData::getWindowWidth(), spehs::ApplicationData::getWindowHeight());
 		popupShade->setCameraMatrixState(false);
 		popupShade->setPosition(0, 0);
 		setPopupShadeColor(spehs::Color(40, 55, 45, 80));
 
 		setSystemDepth(GUIRectangle::defaultDepth);
-		batchManager.endSection();
 		deltaTimeSystemInitialize();
 	}
+
 	GUIWindowManager::~GUIWindowManager()
 	{
 		for (unsigned i = 0; i < windows.size(); i++)
@@ -38,27 +37,24 @@ namespace spehs
 			delete popups[i];
 		popupShade->destroy();
 	}
+
 	void GUIWindowManager::addWindow(GUIWindow* window)
 	{
-		batchManager.beginSection();
 		windows.push_back(window);
 		updateDepths();
-		batchManager.endSection();
 	}
+
 	void GUIWindowManager::addPopup(GUIRectangle* popup)
 	{
-		batchManager.beginSection();
 		popup->setRenderState(true);
 		popup->setPositionGlobal(spehs::ApplicationData::getWindowWidthHalf() - popup->getWidth() * 0.5f, spehs::ApplicationData::getWindowHeightHalf() - popup->getHeight() * 0.5f);
 		popups.push_back(popup);
 		updateDepths();
 		popup->visualUpdate();
-		batchManager.endSection();
 	}
+
 	void GUIWindowManager::update()
 	{
-		batchManager.beginSection();
-
 		deltaTimeSystemUpdate();
 
 		const bool focusedWindowReceivingInput = focusedWindow ? focusedWindow->isReceivingInput() : false;
@@ -169,7 +165,9 @@ namespace spehs
 						receivingInput = true;
 					}
 					else if (windows[i] != focusedWindow)
+					{
 						windows[i]->disableInput();//Yield enabled input for the next in loop
+					}
 
 					//Mark focused window updated
 					if (windows[i] == focusedWindow)
@@ -219,19 +217,16 @@ namespace spehs
 		//Claim mouse availability if mouse is hovering over a window
 		if (getMouseHoverAny())
 			inputManager->tryClaimMouseAvailability();
-
-		batchManager.endSection();
 	}
+
 	void GUIWindowManager::refreshWindows()
 	{
-		batchManager.beginSection();
 		for (unsigned i = 0; i < windows.size(); i++)
 			windows[i]->refresh();
-		batchManager.endSection();
 	}
+
 	void GUIWindowManager::toggleWindow(spehs::GUIWindow* window)
 	{
-		batchManager.beginSection();
 		for (unsigned i = 0; i < windows.size(); i++)
 			if (windows[i] == window)
 		{
@@ -239,15 +234,13 @@ namespace spehs
 				closeWindow(window);
 			else
 				openWindow(window);
-			batchManager.endSection();
 			return;
 		}
 		spehs::exceptions::warning("Trying to toggle window that is not under window manager!");
-		batchManager.endSection();
 	}
+
 	void GUIWindowManager::openWindow(spehs::GUIWindow* window)
 	{
-		batchManager.beginSection();
 		for (unsigned i = 0; i < windows.size(); i++)
 		{
 			if (windows[i] == window)
@@ -262,21 +255,18 @@ namespace spehs
 							windows.erase(windows.begin() + i);
 							windows.push_back(window);
 							updateDepths();
-							batchManager.endSection();
 							return;
 						}
 					}
 				}
-				batchManager.endSection();
 				return;
 			}
 		}
 		spehs::exceptions::warning("Trying to open window that is not under window manager!");
-		batchManager.endSection();
 	}
+
 	void GUIWindowManager::closeWindow(GUIWindow* window)
 	{
-		batchManager.beginSection();
 		for (unsigned i = 0; i < windows.size(); i++)
 		{
 			if (windows[i] == window)
@@ -284,13 +274,12 @@ namespace spehs
 				window->close();
 				if (focusedWindow == window)
 					focusedWindow = nullptr;
-				batchManager.endSection();
 				return;
 			}
 		}
 		spehs::exceptions::warning("Trying to close window that is not under window manager!");
-		batchManager.endSection();
 	}
+
 	void GUIWindowManager::setSystemDepth(const int16_t depth)
 	{
 		if (systemDepth != depth)
@@ -299,6 +288,7 @@ namespace spehs
 			updateDepths();
 		}
 	}
+
 	void GUIWindowManager::setDepthPerWindow(const int16_t depth)
 	{
 		if (depthPerWindow != depth)
@@ -307,16 +297,16 @@ namespace spehs
 			updateDepths();
 		}
 	}
+
 	void GUIWindowManager::updateDepths()
 	{
-		batchManager.beginSection();
 		for (unsigned i = 0; i < windows.size(); i++)
 			windows[i]->setDepth(systemDepth + i * depthPerWindow);
 		popupShade->setPlaneDepth(systemDepth + windows.size() * depthPerWindow);
 		for (unsigned i = 0; i < popups.size(); i++)
 			popups[i]->setDepth(systemDepth + windows.size() * depthPerWindow + 1 + (popups.size() - 1) * 20 - i * 20);
-		batchManager.endSection();
 	}
+
 	void GUIWindowManager::setPopupShadeColor(const spehs::Color& col)
 	{
 		popupShade->setColor(col);

@@ -1,6 +1,7 @@
 #include "ApplicationData.h"
 #include "Polygon.h"
 #include "InputManager.h"
+#include "BatchManager.h"
 #include "GUICheckbox.h"
 #include "Text.h"
 
@@ -14,32 +15,29 @@ namespace spehs
 	const spehs::Color GUICheckbox::defaultCheckboxFillingColor(30, 30, 30);
 	const spehs::Color GUICheckbox::defaultCheckboxOuterColor(160, 170, 180);
 
-	GUICheckbox::GUICheckbox(const bool checkboxStateEnabled) : ValueEditor(checkboxStateEnabled), checkboxSize(20)
+	GUICheckbox::GUICheckbox(BatchManager& _batchManager)
+		: GUIRectangle(_batchManager)
+		, ValueEditor(false)
+		, checkboxSize(20)
 	{
-		checkboxBackground = spehs::Polygon::create(Shape::BUTTON, getDepth() + 1, 1.0f, 1.0f);
+		checkboxBackground = batchManager.createPolygon(Shape::BUTTON, getDepth() + 1, 1.0f, 1.0f);
 		checkboxBackground->setColor(defaultCheckboxFillingColor);
 		checkboxBackground->setCameraMatrixState(false);
 
-		checkboxFilling = spehs::Polygon::create(Shape::BUTTON, getDepth() + 2, 1.0f, 1.0f);
+		checkboxFilling = batchManager.createPolygon(Shape::BUTTON, getDepth() + 2, 1.0f, 1.0f);
 		checkboxFilling->setColor(defaultCheckboxOuterColor);
 		checkboxFilling->setCameraMatrixState(false);
 
 		onEditorValueChange();
 		setJustification(GUIRECT_TEXT_JUSTIFICATION_LEFT_BIT);
 	}
-	GUICheckbox::GUICheckbox(const GUIRECT_ID_TYPE _ID) : GUICheckbox(false)
-	{
-		setID(_ID);
-	}
-	GUICheckbox::GUICheckbox(const char* str) : GUICheckbox(false)
-	{
-		setString(str);
-	}
+
 	GUICheckbox::~GUICheckbox()
 	{
 		checkboxBackground->destroy();
 		checkboxFilling->destroy();
 	}
+
 	void GUICheckbox::inputUpdate(InputUpdateData& data)
 	{
 		GUIRectangle::inputUpdate(data);
@@ -50,6 +48,7 @@ namespace spehs
 
 		ValueEditor::update();
 	}
+
 	void GUICheckbox::onEditorValueChange()
 	{
 		//Filling color
@@ -58,18 +57,21 @@ namespace spehs
 		else
 			checkboxFilling->setAlpha(UNSELECTED_ALPHA);
 	}
+
 	void GUICheckbox::setRenderState(const bool _state)
 	{
 		GUIRectangle::setRenderState(_state);
 		checkboxFilling->setRenderState(_state && getRenderState());
 		checkboxBackground->setRenderState(_state && getRenderState());
 	}
+
 	void GUICheckbox::setDepth(const int16_t depth)
 	{
 		GUIRectangle::setDepth(depth);
 		checkboxFilling->setPlaneDepth(depth + 2);
 		checkboxBackground->setPlaneDepth(depth + 1);
 	}
+
 	void GUICheckbox::updateMinSize()
 	{
 		minSize.x = 2 * CHECKBOX_BORDER + checkboxSize;
@@ -79,6 +81,7 @@ namespace spehs
 		if (text && text->getTextHeight() > minSize.y)
 			minSize.y = text->getTextHeight();
 	}
+
 	void GUICheckbox::updateScale()
 	{
 		GUIRectangle::updateScale();
@@ -86,6 +89,7 @@ namespace spehs
 		checkboxBackground->resize(checkboxSize, checkboxSize);
 		checkboxFilling->resize(checkboxSize - 2 * CHECKBOX_BORDER, checkboxSize - 2 * CHECKBOX_BORDER);
 	}
+
 	void GUICheckbox::updatePosition()
 	{
 		//Checkbox has to exceptionally scale first before positioning

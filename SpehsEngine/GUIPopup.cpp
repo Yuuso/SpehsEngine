@@ -11,27 +11,34 @@
 
 namespace spehs
 {
-	GUIPopup::GUIPopup(const std::string& _message) : escapeEnabled(true)
+	GUIPopup::GUIPopup(BatchManager& _batchManager, const std::string& _message)
+		: GUIRectangleContainer(_batchManager)
+		, escapeEnabled(true)
 	{
 		//Background rect
-		addElement(new GUIRectangle());
+		addElement(new GUIRectangle(batchManager));
 		elements[BACKGROUND_INDEX]->disableState(GUIRECT_HOVER_COLOR_BIT);
 		elements[BACKGROUND_INDEX]->setColor(spehs::Color(30, 35, 37, 200));
 
 		//Message rect
-		addElement(new GUIRectangle(_message));
+		addElement(new GUIRectangle(batchManager));
+		back()->setString(_message);
 		elements[MESSAGE_INDEX]->disableState(GUIRECT_HOVER_COLOR_BIT);
 		elements[MESSAGE_INDEX]->setJustification(GUIRECT_TEXT_JUSTIFICATION_CENTER_BIT);
 	}
+
 	GUIPopup::~GUIPopup()
 	{
 	}
+
 	void GUIPopup::addOptions(const Option& option)
 	{
 		options.push_back(option);
-		addElement(new GUIRectangle(option.string));
+		addElement(new GUIRectangle(batchManager));
+		back()->setString(option.string);
 		elements.back()->setJustification(GUIRECT_TEXT_JUSTIFICATION_CENTER_BIT);
 	}
+
 	void GUIPopup::inputUpdate(InputUpdateData& data)
 	{
 		GUIRectangleContainer::inputUpdate(data);
@@ -53,6 +60,7 @@ namespace spehs
 		if (inputManager->isKeyPressed(KEYBOARD_ESCAPE) && escapeEnabled)
 			enableState(GUIRECT_REMOVE_BIT);
 	}
+
 	void GUIPopup::updateMinSize()
 	{
 		GUIRectangle::updateMinSize();
@@ -74,6 +82,7 @@ namespace spehs
 		if (minSize.y > size.y)
 			setWidth(minSize.y);
 	}
+
 	void GUIPopup::updateScale()
 	{
 		GUIRectangle::updateScale();
@@ -102,6 +111,7 @@ namespace spehs
 				elements[i]->setSize(std::floor(elements[i]->getMinWidth() / float(optionsWidth) * size.x), optionHeight);
 		}
 	}
+
 	void GUIPopup::updatePosition()
 	{
 		GUIRectangle::updatePosition();
@@ -121,6 +131,7 @@ namespace spehs
 		}
 		elements[MESSAGE_INDEX]->setPositionLocal(0, elements[OPTION1_INDEX]->getHeight() + BORDER_WIDTH);
 	}
+
 	void GUIPopup::setBackgroundColor(const spehs::Color& rgb)
 	{
 		elements[BACKGROUND_INDEX]->setColor(rgb);

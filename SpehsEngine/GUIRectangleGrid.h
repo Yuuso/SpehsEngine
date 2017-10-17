@@ -8,8 +8,9 @@ namespace spehs
 	public:
 		static unsigned defaultBorderWidth;
 	public:
-		GUIRectangleGrid();
+		GUIRectangleGrid(BatchManager& _batchManager);
 		~GUIRectangleGrid();
+
 		void setRenderState(const bool _state) override;
 		void setDepth(const int16_t depth) override;
 		void inputUpdate(InputUpdateData& data) override;

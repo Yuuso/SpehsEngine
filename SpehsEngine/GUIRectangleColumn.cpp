@@ -3,14 +3,18 @@
 
 namespace spehs
 {
-	GUIRectangleColumn::GUIRectangleColumn(const bool _uniformHeight) : uniformHeight(_uniformHeight)
+	GUIRectangleColumn::GUIRectangleColumn(BatchManager& _batchManager)
+		: GUIRectangleContainer(_batchManager)
+		, uniformHeight(false)
 	{
 
 	}
+
 	GUIRectangleColumn::~GUIRectangleColumn()
 	{
 
 	}
+
 	void GUIRectangleColumn::setUniformHeight(const bool _state)
 	{
 		if (_state == uniformHeight)
@@ -18,6 +22,7 @@ namespace spehs
 		uniformHeight = _state;
 		disableState(GUIRECT_MIN_SIZE_UPDATED_BIT);
 	}
+
 	void GUIRectangleColumn::updateMinSize()
 	{
 		minSize.x = 0;
@@ -46,6 +51,7 @@ namespace spehs
 		}
 		enableState(GUIRECT_MIN_SIZE_UPDATED_BIT);
 	}
+
 	void GUIRectangleColumn::updateScale()
 	{
 		GUIRectangle::updateScale();
@@ -72,6 +78,7 @@ namespace spehs
 			}
 		}
 	}
+
 	void GUIRectangleColumn::updatePosition()
 	{
 		GUIRectangle::updatePosition();

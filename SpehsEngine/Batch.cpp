@@ -276,8 +276,11 @@ namespace spehs
 			break;
 
 		case POINT:
-			if (cameraMatrixState)
+			if (cameraMatrixState && getActiveBatchManager())
+			{
+				//TODO: remove active batch manager dependecy from here?
 				glPointSize(getActiveBatchManager()->getCamera2D()->scale * 2);
+			}
 			else
 				glPointSize(1.0f);
 		case LINE:

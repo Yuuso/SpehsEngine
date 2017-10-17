@@ -44,6 +44,7 @@ namespace spehs
 		Polygon* createPolygon(std::vector<spehs::vec2> _cuspData, const PlaneDepth &_planeDepth, const float &_width, const float &_height);
 
 		Line* createLine(const spehs::vec2 &_startPoint, const spehs::vec2 &_endPoint, const PlaneDepth &_planeDepth);
+		Line* createLine(const PlaneDepth &_planeDepth);
 
 		Point* createPoint(const PlaneDepth &_planeDepth);
 

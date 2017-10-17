@@ -1,5 +1,6 @@
 #include <algorithm>
 #include "GUIColorEditor.h"
+#include "BatchManager.h"
 #include "InputManager.h"
 #include "Polygon.h"
 
@@ -10,15 +11,20 @@ namespace spehs
 	int GUIColorEditor::colorEditorBorder = 3;
 	float GUIColorEditor::colorPreviewWidth = 20.0f;
 
-	GUIColorEditor::GUIColorEditor(const Color color) : ValueEditor(color), sliderState(0.0f), sliderOnHold(false), paletteOnHold(false)
+	GUIColorEditor::GUIColorEditor(BatchManager& _batchManager)
+		: GUIRectangle(_batchManager)
+		, ValueEditor(Color(255,255,255,255))
+		, sliderState(0.0f)
+		, sliderOnHold(false)
+		, paletteOnHold(false)
 	{
-		palette = Polygon::create(Shape::BUTTON, getDepth(), 1.0f, 1.0f);
-		sliderRG = Polygon::create(Shape::BUTTON, getDepth(), 1.0f, 1.0f);
-		sliderGB = Polygon::create(Shape::BUTTON, getDepth(), 1.0f, 1.0f);
-		sliderBR = Polygon::create(Shape::BUTTON, getDepth(), 1.0f, 1.0f);
-		preview = Polygon::create(6, getDepth(), colorPreviewWidth, colorPreviewWidth);
-		alphaSliderBack = Polygon::create(Shape::BUTTON, getDepth(), 1.0f, 1.0f);
-		alphaSliderFront = Polygon::create(Shape::BUTTON, getDepth(), 1.0f, 1.0f);
+		palette = batchManager.createPolygon(Shape::BUTTON, getDepth(), 1.0f, 1.0f);
+		sliderRG = batchManager.createPolygon(Shape::BUTTON, getDepth(), 1.0f, 1.0f);
+		sliderGB = batchManager.createPolygon(Shape::BUTTON, getDepth(), 1.0f, 1.0f);
+		sliderBR = batchManager.createPolygon(Shape::BUTTON, getDepth(), 1.0f, 1.0f);
+		preview = batchManager.createPolygon(6, getDepth(), colorPreviewWidth, colorPreviewWidth);
+		alphaSliderBack = batchManager.createPolygon(Shape::BUTTON, getDepth(), 1.0f, 1.0f);
+		alphaSliderFront = batchManager.createPolygon(Shape::BUTTON, getDepth(), 1.0f, 1.0f);
 
 		palette->setCameraMatrixState(false);
 		sliderRG->setCameraMatrixState(false);

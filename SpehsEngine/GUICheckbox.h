@@ -13,9 +13,7 @@ namespace spehs
 		static const spehs::Color defaultCheckboxOuterColor;
 		static const spehs::Color defaultCheckboxFillingColor;
 	public:
-		GUICheckbox(const bool checkboxStateEnabled);
-		GUICheckbox(const GUIRECT_ID_TYPE _ID);
-		GUICheckbox(const char* str);
+		GUICheckbox(BatchManager& _batchManager);
 		~GUICheckbox() override;
 		
 		void inputUpdate(InputUpdateData& data) override;

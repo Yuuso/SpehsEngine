@@ -9,23 +9,20 @@
 namespace spehs
 {
 	time::Time GUIRectangleTree::defaultTreeOpenTime = time::seconds(0.5f);
-	GUIRectangleTree::GUIRectangleTree() : pressedLeafNodeID(0), openTreeButton(MOUSE_BUTTON_LEFT), treeOpenTimer(0), treeOpenTime(defaultTreeOpenTime)
+	GUIRectangleTree::GUIRectangleTree(BatchManager& _batchManager)
+		: GUIRectangleUnisizeContainer(_batchManager)
+		, pressedLeafNodeID(0)
+		, openTreeButton(MOUSE_BUTTON_LEFT)
+		, treeOpenTimer(0)
+		, treeOpenTime(defaultTreeOpenTime)
 	{
 		close();
 	}
-	GUIRectangleTree::GUIRectangleTree(const int _ID) : pressedLeafNodeID(0), openTreeButton(MOUSE_BUTTON_LEFT), treeOpenTimer(0), treeOpenTime(defaultTreeOpenTime)
-	{
-		setID(_ID);
-		close();
-	}
-	GUIRectangleTree::GUIRectangleTree(const std::string& str) : pressedLeafNodeID(0), openTreeButton(MOUSE_BUTTON_LEFT), treeOpenTimer(0), treeOpenTime(defaultTreeOpenTime)
-	{
-		setString(str);
-		close();
-	}
+
 	GUIRectangleTree::~GUIRectangleTree()
 	{
 	}
+
 	void GUIRectangleTree::inputUpdate(InputUpdateData& data)
 	{
 		pressedLeafNodeID = 0;
@@ -70,6 +67,7 @@ namespace spehs
 				enableState(GUIRECT_MOUSE_HOVER_CONTAINER_BIT);//Keep container hover active for the duration of open timer
 		}
 	}
+
 	void GUIRectangleTree::updateMinSize()
 	{
 		//Update uniform element size
@@ -78,6 +76,7 @@ namespace spehs
 		//Min size is retrieved from rectangle, update it
 		GUIRectangle::updateMinSize();
 	}
+
 	void GUIRectangleTree::updateScale()
 	{
 		GUIRectangle::updateScale();
@@ -88,6 +87,7 @@ namespace spehs
 				elements[i]->setSize(minElementSize.x, minElementSize.y);
 		}
 	}
+
 	void GUIRectangleTree::updatePosition()
 	{
 		GUIRectangle::updatePosition();
@@ -125,6 +125,7 @@ namespace spehs
 				elements[i]->setPositionGlobal(getXGlobal() + branchX, branchY + i * minElementSize.y);
 		}
 	}
+
 	void GUIRectangleTree::leafNodePressed(const GUIRECT_ID_TYPE _ID)
 	{
 		if (parent->getAsGUIRectangleTreePtr())
@@ -134,16 +135,20 @@ namespace spehs
 		}
 		pressedLeafNodeID = _ID;
 	}
+
 	void GUIRectangleTree::addElement(GUIRectangle* element)
 	{
 		GUIRectangleContainer::addElement(element);
 		element->setRenderState(checkState(GUIRECT_OPEN_BIT) && getRenderState());
 	}
+
 	void GUIRectangleTree::addElement(const std::string& str, const GUIRECT_ID_TYPE _ID)
 	{
-		addElement(new GUIRectangleTree(str));
+		addElement(new GUIRectangleTree(batchManager));
+		elements.back()->setString(str);
 		elements.back()->setID(_ID);
 	}
+
 	bool GUIRectangleTree::open()
 	{
 		if (GUIRectangleContainer::open())
@@ -157,6 +162,7 @@ namespace spehs
 		treeOpenTimer = treeOpenTime;
 		return true;
 	}
+
 	bool GUIRectangleTree::close()
 	{
 		if (!GUIRectangleContainer::close())
@@ -171,12 +177,14 @@ namespace spehs
 
 		return true;
 	}
+
 	GUIRectangleTree* GUIRectangleTree::getRootTree()
 	{
 		if (parent && parent->getAsGUIRectangleTreePtr())
 			return parent->getAsGUIRectangleTreePtr()->getRootTree();
 		return this;
 	}
+
 	void GUIRectangleTree::onDisableInput()
 	{
 		GUIRectangleContainer::onDisableInput();

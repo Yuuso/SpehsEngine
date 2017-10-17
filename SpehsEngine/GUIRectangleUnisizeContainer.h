@@ -7,7 +7,14 @@ namespace spehs
 	class GUIRectangleUnisizeContainer : public GUIRectangleContainer
 	{
 	public:
-		GUIRectangleUnisizeContainer() : elementSize(0, 0), minElementSize(0, 0) {}
+		GUIRectangleUnisizeContainer(BatchManager& _batchManager)
+			: GUIRectangleContainer(_batchManager)
+			, elementSize(0, 0)
+			, minElementSize(0, 0)
+		{
+
+		}
+
 		void clear() override
 		{
 			GUIRectangleContainer::clear();
