@@ -10,12 +10,13 @@ namespace spehs
 	class GameObject;
 	class Polygon;
 	class TextureData;
+	class BatchManager;
 
 	class Sprite : public Component, public Colorable
 	{
 	public:
-		Sprite();
-		Sprite(GameObject& _owner);
+		Sprite(BatchManager& batchManager);
+		Sprite(BatchManager& batchManager, GameObject& _owner);
 		~Sprite() override;
 
 		void update(const time::Time deltaTime) override;

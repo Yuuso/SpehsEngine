@@ -19,10 +19,6 @@ namespace spehs
 		friend class RigidBody2D;
 
 	public:
-		static Polygon* create(const int _shapeID, const PlaneDepth _planeDepth, const float _width, const float _height);
-		static Polygon* create(const std::vector<spehs::Vertex>& _vertexData, const PlaneDepth _planeDepth, const float _width, const float _height);
-		static Polygon* create(const std::vector<spehs::Vertex>& _vertexData, const float _width, const float _height);
-		static Polygon* create(const std::vector<spehs::vec2>& _cuspData, const PlaneDepth _planeDepth, const float _width, const float _height);
 
 		Polygon* getPolygonPtr(){ return this; }
 

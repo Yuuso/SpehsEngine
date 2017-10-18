@@ -9,14 +9,18 @@
 
 namespace spehs
 {
-	AnimatedSprite::AnimatedSprite()
+	AnimatedSprite::AnimatedSprite(BatchManager& _batchManager)
+		: Sprite(_batchManager)
 	{
 
 	}
-	AnimatedSprite::AnimatedSprite(GameObject& _owner) : Sprite(_owner)
+
+	AnimatedSprite::AnimatedSprite(BatchManager& _batchManager, GameObject& _owner)
+		: Sprite(_batchManager, _owner)
 	{
 
 	}
+
 	AnimatedSprite::~AnimatedSprite()
 	{
 
@@ -62,6 +66,7 @@ namespace spehs
 		textureData = _textureDataPtr;
 		Sprite::setTexture(_textureDataPtr);
 	}
+
 	void AnimatedSprite::setTextureID(const unsigned int _textureID)
 	{
 		textureData = textureManager->getTextureData(_textureID);
@@ -77,6 +82,7 @@ namespace spehs
 		maxFrames = _amountOfFrames;
 		currentFrame = _startingFrame;
 	}
+
 	void AnimatedSprite::setAnimationSpeed(const float _speed)
 	{
 		animationSpeed = time::seconds(_speed);

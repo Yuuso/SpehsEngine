@@ -232,14 +232,6 @@ namespace spehs
 	}
 	
 
-	Text* Text::create(const PlaneDepth &_depth)
-	{
-		return getActiveBatchManager()->createText(_depth);
-	}
-	Text* Text::create(const std::string &_string, const PlaneDepth &_depth)
-	{
-		return getActiveBatchManager()->createText(_string, _depth);
-	}
 	Text::~Text()
 	{
 		FontManager::instance->unreferenceFont(font);
@@ -247,6 +239,7 @@ namespace spehs
 		textDeallocations++;
 #endif
 	}
+
 	Text::Text(const PlaneDepth depth)
 		: lineCount(0)
 		, scale(1.0f)
@@ -264,6 +257,7 @@ namespace spehs
 		textAllocations++;
 #endif
 	}
+
 	Text::Text(const std::string &_string, const PlaneDepth _depth)
 		: Text(_depth)
 	{
@@ -313,6 +307,7 @@ namespace spehs
 			updatePosition();
 		}
 	}
+
 	void Text::updatePosition()
 	{
 		worldVertexArray = vertexArray;
@@ -324,6 +319,7 @@ namespace spehs
 
 		needPositionUpdate = false;
 	}
+
 	void Text::updateText()
 	{
 		int x = 0.0f;
@@ -394,11 +390,13 @@ namespace spehs
 
 		font = FontManager::instance->getFont(_fontPath, _size);
 	}
+
 	void Text::setFont(Font* _font)
 	{
 		font = _font;
 		font->referenceCount++;
 	}
+
 	void Text::setFontSize(const int _size)
 	{
 		//No font loaded
@@ -413,6 +411,7 @@ namespace spehs
 		FontManager::instance->unreferenceFont(font);
 		font = FontManager::instance->getFont(font->fontPath, _size);
 	}
+
 	void Text::setString(std::string _str)
 	{
 		if (_str.size() > 2048)
@@ -425,6 +424,7 @@ namespace spehs
 		string = _str;
 		needTextUpdate = true;
 	}
+
 	void Text::setString(const char* _str, const unsigned length)
 	{
 		if (length > 2048)
@@ -439,6 +439,7 @@ namespace spehs
 			memcpy(&string[0], _str, sizeof(char) * length);
 		needTextUpdate = true;
 	}
+
 	void Text::incrementString(const std::string _str)
 	{
 		//Increase line count
@@ -448,6 +449,7 @@ namespace spehs
 		string += _str;
 		needTextUpdate = true;
 	}
+
 	void Text::incrementFrontString(const std::string _str)
 	{
 		//Increase line count
@@ -457,64 +459,77 @@ namespace spehs
 		string = _str + string;
 		needTextUpdate = true;
 	}
+
 	void Text::setPosition(const spehs::vec2& _vec)
 	{
 		position.x = _vec.x;
 		position.y = _vec.y;
 		needPositionUpdate = true;
 	}
+
 	void Text::setPosition(const float _x, const float _y)
 	{
 		position.x = _x;
 		position.y = _y;
 		needPositionUpdate = true;
 	}
+
 	void Text::setPlaneDepth(const PlaneDepth _depth)
 	{
 		planeDepth = _depth;
 	}
+
 	void Text::translate(const spehs::vec2& _vec)
 	{
 		position.x += _vec.x;
 		position.y += _vec.y;
 		needPositionUpdate = true;
 	}
+
 	void Text::setColor(const spehs::Color& _col)
 	{
 		color = _col;
 		needTextUpdate = true;
 	}
+
 	void Text::setAlpha(const spehs::Color::Component& _a)
 	{
 		color.a = _a;
 		needTextUpdate = true;
 	}
+
 	void Text::setLineSpacing(const int _lineSpacing)
 	{
 		lineSpacing = _lineSpacing;
 		needTextUpdate = true;
 		needPositionUpdate = true;
 	}
+
 	int Text::getFontSize() const
 	{
 		return font->fontSize;
 	}
+
 	int Text::getFontHeight() const
 	{
 		return font->height;
 	}
+
 	int Text::getFontAscender() const
 	{
 		return font->ascender;
 	}
+
 	int Text::getFontDescender() const
 	{
 		return font->descender;
 	}
+
 	int Text::getFontMaxAdvanceWidth() const
 	{
 		return font->maxAdvanceWidth;
 	}
+
 	float Text::getX(const int characterIndex) const
 	{
 		int currentLineWidth(0.0f);
@@ -537,6 +552,7 @@ namespace spehs
 		}
 		return position.x + (float)(currentLineWidth >> 6);
 	}
+
 	float Text::getY(const int characterIndex) const
 	{
 		const int end = std::min((int)characterIndex, (int)string.size() - 1);
@@ -548,6 +564,7 @@ namespace spehs
 		}
 		return position.y + currentHeight;
 	}
+
 	float Text::getTextWidth() const
 	{
 		int record = 0;
@@ -578,6 +595,7 @@ namespace spehs
 			return float(currentLineWidth >> 6) * scale;
 		return float(record >> 6) * scale;
 	}
+
 	float Text::getTextHeight() const
 	{
 		return ((getFontHeight() + lineSpacing) * (lineCount - 1) + font->ascender - font->descender) * scale;

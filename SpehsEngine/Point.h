@@ -13,7 +13,6 @@ namespace spehs
 		friend class BatchManager;
 
 	public:
-		static Point* create(const PlaneDepth &_planeDepth);
 
 		Point* getPointPtr(){ return this; }
 

@@ -12,48 +12,6 @@
 
 namespace spehs
 {
-	BatchManager* activeBatchManager;
-	void setActiveBatchManager(BatchManager* _active)
-	{
-		activeBatchManager = _active;
-	}
-	void resetActiveBatchManager()
-	{
-		activeBatchManager = nullptr;
-	}
-	BatchManager* getActiveBatchManager()
-	{
-		return activeBatchManager;
-	}
-	
-	static BatchManager* batchSectionCurrentBatch(nullptr);
-	void BatchManager::beginSection()
-	{
-		//Record previously active batch manager and activate this
-		previousSections.emplace(getActiveBatchManager());
-		setActiveBatchManager(this);
-
-		//Mark this batch as the currently running batch
-		batchSectionCurrentBatch = this;
-	}
-	void BatchManager::endSection()
-	{
-		if (previousSections.empty())
-		{
-			spehs::exceptions::warning("A batch manager (" + name + ") called endSection()! All sections have already been ended!");
-			return;
-		}
-		if (batchSectionCurrentBatch != this)
-			spehs::exceptions::unexpectedError("A batch manager (" + batchSectionCurrentBatch->name + ") did not end its batch section! (BatchManager::endSection() was never called for a batch manager that began a section)");
-
-		//Set currently active section pointer
-		batchSectionCurrentBatch = previousSections.top();
-		previousSections.pop();
-		
-		//Restore active batch manager to the one active when beginSection() was called
-		setActiveBatchManager(batchSectionCurrentBatch);
-	}
-
 	BatchManager::BatchManager(Camera2D* _camera, const std::string _name) : name(_name)
 	{
 		camera2D = _camera;
@@ -74,9 +32,6 @@ namespace spehs
 
 		if (cleanUpPrimitives != 0)
 			exceptions::warning("BatchManager cleaned up " + std::to_string(cleanUpPrimitives) + " primitives!");
-
-		if (getActiveBatchManager() == this)
-			resetActiveBatchManager();
 	}
 
 

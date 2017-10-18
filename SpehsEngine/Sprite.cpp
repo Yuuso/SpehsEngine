@@ -4,6 +4,7 @@
 #include "Transform2D.h"
 #include "Polygon.h"
 #include "TextureManager.h"
+#include "BatchManager.h"
 #include "Exceptions.h"
 
 
@@ -11,13 +12,13 @@
 
 namespace spehs
 {
-	Sprite::Sprite()
+	Sprite::Sprite(BatchManager& batchManager)
 	{
-		sprite = spehs::Polygon::create(4, 0, DEFAULT_SIZE, DEFAULT_SIZE);
+		sprite = batchManager.createPolygon(4, 0, DEFAULT_SIZE, DEFAULT_SIZE);
 	}
-	Sprite::Sprite(GameObject& _owner) : Component(_owner)
+	Sprite::Sprite(BatchManager& batchManager, GameObject& _owner) : Component(_owner)
 	{
-		sprite = spehs::Polygon::create(4, 0, DEFAULT_SIZE, DEFAULT_SIZE);
+		sprite = batchManager.createPolygon(4, 0, DEFAULT_SIZE, DEFAULT_SIZE);
 	}
 	Sprite::~Sprite()
 	{

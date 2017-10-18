@@ -14,8 +14,8 @@ namespace spehs
 	class AnimatedSprite : public Sprite
 	{
 	public:
-		AnimatedSprite();
-		AnimatedSprite(GameObject& _owner);
+		AnimatedSprite(BatchManager& batchManager);
+		AnimatedSprite(BatchManager& batchManager, GameObject& _owner);
 		~AnimatedSprite() override;
 
 		void update(const time::Time deltaTime) override;

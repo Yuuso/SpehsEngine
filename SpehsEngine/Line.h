@@ -12,8 +12,6 @@ namespace spehs
 		friend class BatchManager;
 
 	public:
-		static Line* create(const spehs::vec2& _startPoint, const spehs::vec2& _endPoint, const PlaneDepth& _planeDepth);
-		static Line* create(const PlaneDepth& _planeDepth);
 
 		Line* getLinePtr() override { return this; }
 

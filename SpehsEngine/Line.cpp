@@ -11,16 +11,6 @@
 
 namespace spehs
 {
-	Line* Line::create(const spehs::vec2& _startPoint, const spehs::vec2& _endPoint, const PlaneDepth& _planeDepth)
-	{
-		return getActiveBatchManager()->createLine(_startPoint, _endPoint, _planeDepth);
-	}
-
-	Line* Line::create(const PlaneDepth &_planeDepth)
-	{
-		return getActiveBatchManager()->createLine(spehs::vec2(0.0f, 0.0f), spehs::vec2(0.0f, 0.0f), _planeDepth);
-	}
-
 	Line::Line(const PlaneDepth& _planeDepth)
 	{
 		vertexArray.resize(2);

@@ -27,13 +27,6 @@ namespace spehs
 	*/
 	class BatchManager
 	{
-	//Batch section management
-	private:
-		std::stack<BatchManager*> previousSections;///Stack of batches that were active during each call to beginSection(). Stack resolves as endSection() is being called one by one
-	public:
-		void beginSection();
-		void endSection();
-
 	public:
 		BatchManager(Camera2D* _camera, const std::string _name = "unnamed batch manager");
 		~BatchManager();
@@ -65,30 +58,5 @@ namespace spehs
 		std::vector<Text*> texts;
 
 		Camera2D* camera2D;
-	};
-
-	/*
-		Active BatchManager needs to be set when using some parts of the engine!
-	*/
-	void setActiveBatchManager(BatchManager* _active);
-	void resetActiveBatchManager();
-	BatchManager* getActiveBatchManager();
-	/*
-		RAII style batch section
-	*/
-	class BatchSection
-	{
-	public:
-		BatchSection(BatchManager& _batchManager)
-			: batchManager(_batchManager)
-		{
-			batchManager.beginSection();
-		}
-		~BatchSection()
-		{
-			batchManager.endSection();
-		}
-	private:
-		BatchManager& batchManager;
 	};
 }
