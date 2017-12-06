@@ -94,6 +94,7 @@ namespace spehs
 		if (sizeof(int64_t) != 8 || sizeof(uint64_t) != 8)
 			spehs::exceptions::warning("64 bit integer width not available!");
 
+		std::cout << std::endl;
 		return 0;
 	}
 

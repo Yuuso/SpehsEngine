@@ -28,6 +28,7 @@ namespace spehs
 	InputManager::InputManager() : mouseCoords(0, 0), mouseMovement(0, 0), droppedFilePath("")
 	{
 	}
+
 	InputManager::~InputManager()
 	{
 	}
@@ -54,6 +55,7 @@ namespace spehs
 		}
 		processEvents();
 	}
+
 	void InputManager::processEvents()
 	{
 		if (SDL_NumJoysticks() < joystickCount)
@@ -115,20 +117,17 @@ namespace spehs
 			//SDL_WarpMouseInWindow(mainWindow->sdlWindow, spehs::ApplicationData::getWindowWidthHalf(), spehs::ApplicationData::getWindowHeightHalf());
 		}
 	}
-
-
+	
 	void InputManager::pressKey(unsigned int keyID)
 	{
 		keyMap[keyID] = true;
 	}
-
-
+	
 	void InputManager::releaseKey(unsigned int keyID)
 	{
 		keyMap[keyID] = false;
 	}
-
-
+	
 	void InputManager::setMouseCoords(int _x, int _y)
 	{
 		mouseCoords.x = _x;
@@ -156,7 +155,6 @@ namespace spehs
 		//}
 	}
 
-
 	bool InputManager::tryClaimMouseAvailability()
 	{
 		if (!mouseAvailable)
@@ -164,14 +162,12 @@ namespace spehs
 		mouseAvailable = false;
 		return true;
 	}
-
-
+	
 	bool InputManager::checkMouseAvailability() const
 	{
 		return mouseAvailable;
 	}
-
-
+	
 	bool InputManager::isKeyDown(unsigned int keyID) const
 	{
 		auto it = keyMap.find(keyID);
@@ -180,8 +176,7 @@ namespace spehs
 		else
 			return false;
 	}
-
-
+	
 	bool InputManager::isKeyPressed(unsigned int keyID) const
 	{
 		if (isKeyDown(keyID) == true && wasKeyDown(keyID) == false)
@@ -190,8 +185,7 @@ namespace spehs
 		}
 		return false;
 	}
-
-
+	
 	bool InputManager::wasKeyDown(unsigned int keyID) const
 	{
 		auto it = previousKeyMap.find(keyID);
@@ -201,15 +195,13 @@ namespace spehs
 			return false;
 	}
 
-
 	bool InputManager::fileDropped() const
 	{
 		if (droppedFilePath.empty())
 			return false;
 		return true;
 	}
-
-
+	
 	bool InputManager::mouseCollision(const spehs::vec4& AABB) const
 	{
 		return mouseCoords.x >= AABB.x &&
@@ -217,8 +209,7 @@ namespace spehs
 			mouseCoords.y >= AABB.y &&
 			mouseCoords.y <= AABB.y + AABB.w;
 	}
-
-
+	
 	bool InputManager::mouseCollision(const spehs::vec2& AABBMin, const spehs::vec2& AABBMax) const
 	{
 		return mouseCoords.x >= AABBMin.x &&
@@ -226,7 +217,6 @@ namespace spehs
 			mouseCoords.y >= AABBMin.y &&
 			mouseCoords.y <= AABBMax.y;
 	}
-
 
 	bool InputManager::mouseCollision(const float left, const float right, const float top, const float bottom) const
 	{
@@ -236,29 +226,58 @@ namespace spehs
 			mouseCoords.y <= top;
 	}
 
-
 	bool InputManager::isCtrlDown() const
 	{
 		return isKeyDown(KEYBOARD_LCTRL) || isKeyDown(KEYBOARD_RCTRL);
 	}
-
 
 	bool InputManager::isShiftDown() const
 	{
 		return isKeyDown(KEYBOARD_LSHIFT) || isKeyDown(KEYBOARD_RSHIFT);
 	}
 
-
 	bool InputManager::isCtrlPressed() const
 	{
 		return isKeyPressed(KEYBOARD_LCTRL) || isKeyPressed(KEYBOARD_RCTRL);
 	}
 
-
 	bool InputManager::isShiftPressed() const
 	{
 		return isKeyPressed(KEYBOARD_LSHIFT) || isKeyPressed(KEYBOARD_RSHIFT);
 	}
+
+	void InputManager::update(InputState& inputState)
+	{
+		//Update pointer position and movement
+		inputState.pointer.position.x = mouseCoords.x;
+		inputState.pointer.position.y = mouseCoords.y;
+		inputState.pointer.movement.x = mouseMovement.x;
+		inputState.pointer.movement.y = mouseMovement.y;
+
+		//Update key states
+		std::unordered_map<unsigned, InputState::Key>::iterator keyIt = inputState.keys.begin();
+		while (keyIt != inputState.keys.end())
+		{
+			const bool down = isKeyDown(keyIt->first);
+			const bool pressed = !keyIt->second.down && down;
+			const bool released = keyIt->second.down && !down;
+
+			keyIt->second.down.value = down;
+			keyIt->second.press.value = pressed;
+			keyIt->second.release.value = released;
+
+			keyIt->second.down.used = false;
+			keyIt->second.press.used = false;
+			keyIt->second.release.used = false;
+
+			keyIt++;
+		}
+
+		inputState.ctrlModifier = isCtrlDown();
+		inputState.shiftModifier = isShiftDown();
+	}
+
+
 
 	///////////////////////////
 	//  JOYSTICK MANAGEMENT  //
@@ -450,250 +469,4 @@ namespace spehs
 				index++;//Found same guid among joysticks before this
 		}
 	}
-}
-
-
-std::string getKeyboardKeyAsString(KeyboardKey key)
-{
-	switch (key)
-	{
-	case KEYBOARD_UNKNOWN: return "Unknown";
-	case KEYBOARD_RETURN: return"Return";
-	case KEYBOARD_ESCAPE: return"Escape";
-	case KEYBOARD_BACKSPACE: return"KP_3";
-	case KEYBOARD_TAB: return"Tab";
-	case KEYBOARD_SPACE: return"Space";
-	case KEYBOARD_EXCLAIM: return"Exclaim";
-	case KEYBOARD_QUOTEDBL: return"\"";
-	case KEYBOARD_HASH: return"#";
-	case KEYBOARD_PERCENT: return"%";
-	case KEYBOARD_DOLLAR: return"$";
-	case KEYBOARD_AMPERSAND: return"&";
-	case KEYBOARD_QUOTE: return"'";
-	case KEYBOARD_LEFTPAREN: return "(";
-	case KEYBOARD_RIGHTPAREN: return ")";
-	case KEYBOARD_ASTERISK: return "*";
-	case KEYBOARD_PLUS: return "+";
-	case KEYBOARD_COMMA: return ",";
-	case KEYBOARD_MINUS: return "-";
-	case KEYBOARD_PERIOD: return ".";
-	case KEYBOARD_SLASH: return "/";
-	case KEYBOARD_0: return "0";
-	case KEYBOARD_1: return "1";
-	case KEYBOARD_2: return "2";
-	case KEYBOARD_3: return "3";
-	case KEYBOARD_4: return "4";
-	case KEYBOARD_5: return "5";
-	case KEYBOARD_6: return "6";
-	case KEYBOARD_7: return "7";
-	case KEYBOARD_8: return "8";
-	case KEYBOARD_9: return "9";
-	case KEYBOARD_COLON: return ":";
-	case KEYBOARD_SEMICOLON: return ";";
-	case KEYBOARD_LESS: return "<";
-	case KEYBOARD_EQUALS: return "=";
-	case KEYBOARD_GREATER: return ">";
-	case KEYBOARD_QUESTION: return "?";
-	case KEYBOARD_AT: return "@";
-	case KEYBOARD_LEFTBRACKET: return "{";
-	case KEYBOARD_BACKSLASH: return "\\";
-	case KEYBOARD_RIGHTBRACKET: return "}";
-	case KEYBOARD_CARET: return "^";
-	case KEYBOARD_UNDERSCORE: return "_";
-	case KEYBOARD_BACKQUOTE: return "`";
-	case KEYBOARD_A: return "A";
-	case KEYBOARD_B: return "B";
-	case KEYBOARD_C: return "C";
-	case KEYBOARD_D: return "D";
-	case KEYBOARD_E: return "E";
-	case KEYBOARD_F: return "F";
-	case KEYBOARD_G: return "G";
-	case KEYBOARD_H: return "H";
-	case KEYBOARD_I: return "I";
-	case KEYBOARD_J: return "J";
-	case KEYBOARD_K: return "K";
-	case KEYBOARD_L: return "L";
-	case KEYBOARD_M: return "M";
-	case KEYBOARD_N: return "N";
-	case KEYBOARD_O: return "O";
-	case KEYBOARD_P: return "P";
-	case KEYBOARD_Q: return "Q";
-	case KEYBOARD_R: return "R";
-	case KEYBOARD_S: return "S";
-	case KEYBOARD_T: return "T";
-	case KEYBOARD_U: return "U";
-	case KEYBOARD_V: return "V";
-	case KEYBOARD_W: return "W";
-	case KEYBOARD_X: return "X";
-	case KEYBOARD_Y: return "Y";
-	case KEYBOARD_Z: return "Z";
-	case KEYBOARD_CAPSLOCK: return "Caps lock";
-	case KEYBOARD_F1: return "F1";
-	case KEYBOARD_F2: return "F2";
-	case KEYBOARD_F3: return "F3";
-	case KEYBOARD_F4: return "F4";
-	case KEYBOARD_F5: return "F5";
-	case KEYBOARD_F6: return "F6";
-	case KEYBOARD_F7: return "F7";
-	case KEYBOARD_F8: return "F8";
-	case KEYBOARD_F9: return "F9";
-	case KEYBOARD_F10: return "F10";
-	case KEYBOARD_F11: return "F11";
-	case KEYBOARD_F12: return "F12";
-	case KEYBOARD_PRINTSCREEN: return "Print screen";
-	case KEYBOARD_SCROLLLOCK: return "Scroll lock";
-	case KEYBOARD_PAUSE: return "Pause";
-	case KEYBOARD_INSERT: return "Insert";
-	case KEYBOARD_HOME: return "Home";
-	case KEYBOARD_PAGEUP: return "Page up";
-	case KEYBOARD_DELETE: return "Delete";
-	case KEYBOARD_END: return "End";
-	case KEYBOARD_PAGEDOWN: return "Page down";
-	case KEYBOARD_RIGHT: return "Right arrow";
-	case KEYBOARD_LEFT: return "Left arrow";
-	case KEYBOARD_DOWN: return "Down arrow";
-	case KEYBOARD_UP: return "Up arrow";
-	case KEYBOARD_NUMLOCKCLEAR: return "Num lock/clear";
-	case KEYBOARD_KP_DIVIDE: return "KP /";
-	case KEYBOARD_KP_MULTIPLY: return "KP *";
-	case KEYBOARD_KP_MINUS: return "KP -";
-	case KEYBOARD_KP_PLUS: return "KP +";
-	case KEYBOARD_KP_ENTER: return "KP Enter";
-	case KEYBOARD_KP_1: return "KP 1";
-	case KEYBOARD_KP_2: return "KP 2";
-	case KEYBOARD_KP_3: return "KP 3";
-	case KEYBOARD_KP_4: return "KP 4";
-	case KEYBOARD_KP_5: return "KP 5";
-	case KEYBOARD_KP_6: return "KP 6";
-	case KEYBOARD_KP_7: return "KP 7";
-	case KEYBOARD_KP_8: return "KP 8";
-	case KEYBOARD_KP_9: return "KP 9";
-	case KEYBOARD_KP_0: return "KP 0";
-	case KEYBOARD_KP_PERIOD: return "KP .";
-	case KEYBOARD_APPLICATION: return "Application";
-	case KEYBOARD_POWER: return "Power";
-	case KEYBOARD_KP_EQUALS: return "KP =";
-	case KEYBOARD_F13: return "F13";
-	case KEYBOARD_F14: return "F14";
-	case KEYBOARD_F15: return "F15";
-	case KEYBOARD_F16: return "F16";
-	case KEYBOARD_F17: return "F17";
-	case KEYBOARD_F18: return "F18";
-	case KEYBOARD_F19: return "F19";
-	case KEYBOARD_F20: return "F20";
-	case KEYBOARD_F21: return "F21";
-	case KEYBOARD_F22: return "F22";
-	case KEYBOARD_F23: return "F23";
-	case KEYBOARD_F24: return "F24";
-	case KEYBOARD_EXECUTE: return "Execute";
-	case KEYBOARD_HELP: return "Help";
-	case KEYBOARD_MENU: return "Menu";
-	case KEYBOARD_SELECT: return "Select";
-	case KEYBOARD_STOP: return "Stop";
-	case KEYBOARD_AGAIN: return "Again";
-	case KEYBOARD_UNDO: return "Undo";
-	case KEYBOARD_CUT: return "Cut";
-	case KEYBOARD_COPY:return "Copy";
-	case KEYBOARD_PASTE: return "Paste";
-	case KEYBOARD_FIND: return "Find";
-	case KEYBOARD_MUTE: return "Mute";
-	case KEYBOARD_VOLUMEUP: return "Volume up";
-	case KEYBOARD_VOLUMEDOWN: return "Volume down";
-	case KEYBOARD_KP_COMMA: return "KP ,";
-	case KEYBOARD_KP_EQUALSAS400: return "KP EQUALSAS400";
-	case KEYBOARD_ALTERASE: return "Alterbase";
-	case KEYBOARD_SYSREQ: return "Sysreq";
-	case KEYBOARD_CANCEL: return "Cancel";
-	case KEYBOARD_CLEAR: return "Clear";
-	case KEYBOARD_PRIOR: return "Prior";
-	case KEYBOARD_RETURN2: return "Return2";
-	case KEYBOARD_SEPARATOR: return "Separator";
-	case KEYBOARD_OUT: return "Out";
-	case KEYBOARD_OPER: return "Oper";
-	case KEYBOARD_CLEARAGAIN: return "Clear again";
-	case KEYBOARD_CRSEL: return "Crsel";
-	case KEYBOARD_EXSEL: return "Exsel";
-	case KEYBOARD_KP_00: return "KP 00";
-	case KEYBOARD_KP_000: return "KP 000";
-	case KEYBOARD_THOUSANDSSEPARATOR: return "Thousands separator";
-	case KEYBOARD_DECIMALSEPARATOR: return "Decimal separator";
-	case KEYBOARD_CURRENCYUNIT: return "Currency unit";
-	case KEYBOARD_CURRENCYSUBUNIT: return "Currency sub unit";
-	case KEYBOARD_KP_LEFTPAREN: return "KP (";
-	case KEYBOARD_KP_RIGHTPAREN: return "KP )";
-	case KEYBOARD_KP_LEFTBRACE: return "KP {";
-	case KEYBOARD_KP_RIGHTBRACE: return "KP }";
-	case KEYBOARD_KP_TAB: return "KP Tab";
-	case KEYBOARD_KP_BACKSPACE: return "KP Backspace";
-	case KEYBOARD_KP_A: return "KP A";
-	case KEYBOARD_KP_B: return "KP B";
-	case KEYBOARD_KP_C: return "KP C";
-	case KEYBOARD_KP_D: return "KP D";
-	case KEYBOARD_KP_E: return "KP E";
-	case KEYBOARD_KP_F: return "KP F";
-	case KEYBOARD_KP_XOR: return "KP XOR";
-	case KEYBOARD_KP_POWER: return "KP POWER";
-	case KEYBOARD_KP_PERCENT: return "KP %";
-	case KEYBOARD_KP_LESS: return "KP <";
-	case KEYBOARD_KP_GREATER: return "KP >";
-	case KEYBOARD_KP_AMPERSAND: return "KP &";
-	case KEYBOARD_KP_DBLAMPERSAND: return "KP Double ampersand";
-	case KEYBOARD_KP_VERTICALBAR: return "KP Vertical bar";
-	case KEYBOARD_KP_DBLVERTICALBAR: return "KP Double vertical bar";
-	case KEYBOARD_KP_COLON: return "KP :";
-	case KEYBOARD_KP_HASH: return "KP #";
-	case KEYBOARD_KP_SPACE: return "KP Space";
-	case KEYBOARD_KP_AT: return "KP @";
-	case KEYBOARD_KP_EXCLAM: return "KP !";
-	case KEYBOARD_KP_MEMSTORE: return "KP Mem store";
-	case KEYBOARD_KP_MEMRECALL: return "KP Mem recall";
-	case KEYBOARD_KP_MEMCLEAR: return "KP Mem clear";
-	case KEYBOARD_KP_MEMADD: return "KP Mem add";
-	case KEYBOARD_KP_MEMSUBTRACT: return "KP Mem subtract";
-	case KEYBOARD_KP_MEMMULTIPLY: return "KP Mem multiply";
-	case KEYBOARD_KP_MEMDIVIDE: return "KP Mem divide";
-	case KEYBOARD_KP_PLUSMINUS: return "KP Plus minus";
-	case KEYBOARD_KP_CLEAR: return "KP Clear";
-	case KEYBOARD_KP_CLEARENTRY: return "KP Clear entry";
-	case KEYBOARD_KP_BINARY: return "KP Binary";
-	case KEYBOARD_KP_OCTAL: return "KP Octal";
-	case KEYBOARD_KP_DECIMAL: return "KP Decimal";
-	case KEYBOARD_KP_HEXADECIMAL: return "KP Hexadecimal";
-	case KEYBOARD_LCTRL: return "Left ctrl";
-	case KEYBOARD_LSHIFT: return "Left shift";
-	case KEYBOARD_LALT: return "Left alt";
-	case KEYBOARD_LGUI: return "Left GUI";
-	case KEYBOARD_RCTRL: return "Right control";
-	case KEYBOARD_RSHIFT: return "Right shift";
-	case KEYBOARD_RALT: return "Right alt";
-	case KEYBOARD_RGUI: return "Right GUI";
-	case KEYBOARD_MODE: return "Mode";
-	case KEYBOARD_AUDIONEXT: return "Audio next";
-	case KEYBOARD_AUDIOPREV: return "Audio prev";
-	case KEYBOARD_AUDIOSTOP: return "Audio stop";
-	case KEYBOARD_AUDIOPLAY: return "Audio play";
-	case KEYBOARD_AUDIOMUTE: return "Audio mute";
-	case KEYBOARD_MEDIASELECT: return "Media select";
-	case KEYBOARD_WWW: return "www";
-	case KEYBOARD_MAIL: return "Mail";
-	case KEYBOARD_CALCULATOR: return "Calculator";
-	case KEYBOARD_COMPUTER: return "Computer";
-	case KEYBOARD_AC_SEARCH: return "AC Search";
-	case KEYBOARD_AC_HOME: return "AC Home";
-	case KEYBOARD_AC_BACK: return "AC Back";
-	case KEYBOARD_AC_FORWARD: return "AC Forward";
-	case KEYBOARD_AC_STOP: return "AC Stop";
-	case KEYBOARD_AC_REFRESH: return "AC Refresh";
-	case KEYBOARD_AC_BOOKMARKS: return "AC Bookmarks";
-	case KEYBOARD_BRIGHTNESSDOWN: return "Brightness down";
-	case KEYBOARD_BRIGHTNESSUP: return "Brightness up";
-	case KEYBOARD_DISPLAYSWITCH: return "Display switch";
-	case KEYBOARD_KBDILLUMTOGGLE: return "Illum toggle";
-	case KEYBOARD_KBDILLUMDOWN: return "Illum down";
-	case KEYBOARD_KBDILLUMUP: return "Illum up";
-	case KEYBOARD_EJECT: return "Eject";
-	case KEYBOARD_SLEEP: return "Sleep";
-	default: break;
-	}
-	return "unknown";
 }

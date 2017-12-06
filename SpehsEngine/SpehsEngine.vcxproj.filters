@@ -203,6 +203,21 @@
     <ClCompile Include="GUIProgressBar.cpp">
       <Filter>Rendering\GUI</Filter>
     </ClCompile>
+    <ClCompile Include="InputState.cpp">
+      <Filter>HID</Filter>
+    </ClCompile>
+    <ClCompile Include="InputEnumerations.cpp">
+      <Filter>HID</Filter>
+    </ClCompile>
+    <ClCompile Include="SystemState.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="TimeState.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="LineDiagram.cpp">
+      <Filter>Rendering</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GLSLProgram.h">
@@ -433,6 +448,21 @@
     </ClInclude>
     <ClInclude Include="GUIProgressBar.h">
       <Filter>Rendering\GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="InputState.h">
+      <Filter>HID</Filter>
+    </ClInclude>
+    <ClInclude Include="InputEnumerations.h">
+      <Filter>HID</Filter>
+    </ClInclude>
+    <ClInclude Include="SystemState.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="TimeState.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="LineDiagram.h">
+      <Filter>Rendering</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

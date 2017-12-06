@@ -20,7 +20,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v120</PlatformToolset>
+    <PlatformToolset>v140</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
@@ -110,7 +110,10 @@
     <ClCompile Include="GUIProgressBar.cpp" />
     <ClCompile Include="GUIRectangleColumn.cpp" />
     <ClCompile Include="GUIRectangleGrid.cpp" />
+    <ClCompile Include="InputEnumerations.cpp" />
+    <ClCompile Include="InputState.cpp" />
     <ClCompile Include="KeyboardRecorder.cpp" />
+    <ClCompile Include="LineDiagram.cpp" />
     <ClCompile Include="Mathematics.cpp" />
     <ClCompile Include="OS.cpp" />
     <ClCompile Include="Serializable.cpp" />
@@ -157,12 +160,14 @@
     <ClCompile Include="Shapes.cpp" />
     <ClCompile Include="SpehsEngine.cpp" />
     <ClCompile Include="Sprite.cpp" />
+    <ClCompile Include="SystemState.cpp" />
     <ClCompile Include="StringOperations.cpp" />
     <ClCompile Include="Text.cpp" />
     <ClCompile Include="Textbox.cpp" />
     <ClCompile Include="TextureManager.cpp" />
     <ClCompile Include="Thread.cpp" />
     <ClCompile Include="Time.cpp" />
+    <ClCompile Include="TimeState.cpp" />
     <ClCompile Include="Transform2D.cpp" />
     <ClCompile Include="Triangulation.cpp" />
     <ClCompile Include="Vertex.cpp" />
@@ -180,7 +185,10 @@
     <ClInclude Include="GUIRectangleColumn.h" />
     <ClInclude Include="GUIRectangleGrid.h" />
     <ClInclude Include="GUIRectangleUnisizeContainer.h" />
+    <ClInclude Include="InputEnumerations.h" />
+    <ClInclude Include="InputState.h" />
     <ClInclude Include="KeyboardRecorder.h" />
+    <ClInclude Include="LineDiagram.h" />
     <ClInclude Include="OS.h" />
     <ClInclude Include="Serializable.h" />
     <ClInclude Include="SerializableDirectory.h" />
@@ -205,7 +213,9 @@
     <ClInclude Include="GUICheckbox.h" />
     <ClInclude Include="GUIColorEditor.h" />
     <ClInclude Include="GUID.h" />
+    <ClInclude Include="SystemState.h" />
     <ClInclude Include="Thread.h" />
+    <ClInclude Include="TimeState.h" />
     <ClInclude Include="Triangulation.h" />
     <ClInclude Include="ValueEditor.h" />
     <ClInclude Include="GUIPopup.h" />

@@ -33,7 +33,7 @@ namespace spehs
 			, decreaseRect(new GUIRectangle(_batchManager))
 			, increaseRect(new GUIRectangle(_batchManager))
 		{
-			nameRect->setString("");
+			nameRect->setString(scalarName);
 			decreaseRect->setString("-");
 			increaseRect->setString("+");
 			setElementPositionMode(spehs::GUIRectangleRow::PositionMode::StackRight);
