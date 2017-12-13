@@ -9,6 +9,8 @@ namespace spehs
 	public:
 		SerializableString();
 		SerializableString(const std::string& other);
+		SerializableString& operator=(const std::string& other);
+		SerializableString& operator=(const SerializableString& other);
 		Serializable* clone() const { return new SerializableString(*this); }
 		size_t packetSize() const override;
 		size_t write(unsigned char* buffer) const override;

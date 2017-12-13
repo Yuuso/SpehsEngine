@@ -20,10 +20,7 @@ namespace spehs
 	{
 	public:
 
-		Serializable();
-		Serializable(const spehs::Serializable& copy);
-		Serializable(spehs::Serializable&& move);
-		virtual ~Serializable();
+		virtual ~Serializable() {}
 
 		virtual Serializable* clone() const = 0;///< Make a dynamic copy of the original object
 		virtual size_t packetSize() const = 0;///< Returns number of bytes required for relevant data to be sent over network/ stored on disk
