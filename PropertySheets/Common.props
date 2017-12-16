@@ -1,0 +1,22 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ImportGroup Label="PropertySheets" />
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <OutDir>$(SPEHSENGINE_ROOT)/bin/$(Platform)/$(Configuration)/$(PlatformToolset)</OutDir>
+    <IntDir>$(SPEHSENGINE_ROOT)/obj/$(ProjectName)/$(Platform)/$(Configuration)/$(PlatformToolset)</IntDir>
+  </PropertyGroup>
+  <ItemDefinitionGroup>
+    <ClCompile>
+      <AdditionalIncludeDirectories>$(SPEHSENGINE_ROOT)/;$(SPEHSENGINE_ROOT)/Dependencies/include/;</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>GLM_FORCE_RADIANS;NOMINMAX;PI=3.14159265359f;TWO_PI=6.28318530718f;HALF_PI=1.57079632679f;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <Lib>
+      <AdditionalLibraryDirectories>$(SPEHSENGINE_ROOT)/Dependencies/lib/</AdditionalLibraryDirectories>
+    </Lib>
+    <Link>
+      <AdditionalLibraryDirectories>$(OutDir);$(SPEHSENGINE_ROOT)/Dependencies/lib/;$(SPEHSENGINE_ROOT)/Dependencies/dll/;</AdditionalLibraryDirectories>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup />
+</Project>
