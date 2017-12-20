@@ -8,7 +8,7 @@ namespace spehs
 {
 	//DATA
 	//public
-	int ApplicationData::windowMode = 0;
+	int ApplicationData::fullscreen = 0;
 	int ApplicationData::showFps = 1;
 	int ApplicationData::maxFps = 200;
 	int ApplicationData::vSync = 0;
@@ -80,7 +80,7 @@ namespace spehs
 		stream << "[Engine]\n";
 		stream << "Window width=" << windowWidth << "\n";
 		stream << "Window height=" << windowHeight << "\n";
-		stream << "Window mode=" << windowMode << "\n";
+		stream << "Fullscreen=" << fullscreen << "\n";
 		stream << "Show FPS=" << showFps << "\n";
 		stream << "Max FPS=" << maxFps << "\n";
 		stream << "VSync=" << vSync << "\n";
@@ -126,9 +126,9 @@ namespace spehs
 		std::getline(stream, line);//Read section header [Engine]
 
 		//Video
-		readValueIntoInt(stream, windowWidth);				windowWidth = std::max(1, windowWidth);
-		readValueIntoInt(stream, windowHeight);				windowHeight = std::max(1, windowHeight);
-		readValueIntoInt(stream, windowMode);
+		readValueIntoInt(stream, windowWidth);				windowWidth = std::max(1, windowWidth);			windowWidthHalf = windowWidth / 2;
+		readValueIntoInt(stream, windowHeight);				windowHeight = std::max(1, windowHeight);		windowHeightHalf = windowHeight / 2;
+		readValueIntoInt(stream, fullscreen);
 		readValueIntoInt(stream, showFps);
 		readValueIntoInt(stream, maxFps);
 		readValueIntoInt(stream, vSync);
@@ -182,12 +182,14 @@ namespace spehs
 
 	void ApplicationData::setWindowWidth(int w)
 	{
-		windowWidth = w; windowWidthHalf = w / 2;
+		windowWidth = w;
+		windowWidthHalf = w / 2;
 	}
 
 	void ApplicationData::setWindowHeight(int h)
 	{
-		windowHeight = h; windowHeightHalf = h / 2;
+		windowHeight = h;
+		windowHeightHalf = h / 2;
 	}
 
 	int ApplicationData::getWindowWidth()

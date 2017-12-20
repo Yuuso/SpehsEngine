@@ -5,12 +5,10 @@ namespace spehs
 {
 	namespace input
 	{
-		class Window;
+		/* Initializes input library */
+		int initialize();
 
-		/* Initializes Input library */
-		int initialize(const std::string& _windowName);
-
-		/* Uninitializes Input library */
+		/* Uninitializes input library */
 		void uninitialize();
 
 		/* Returns whether the input library has successfully been initialized */
@@ -19,6 +17,7 @@ namespace spehs
 		/* Returns engine input libary version in a readable string format */
 		std::string getVersion();
 
+		class Window;
 		/* Get a pointer to the main window */
 		Window* getMainWindow();
 	}

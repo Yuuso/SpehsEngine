@@ -2,8 +2,9 @@
 #include "SpehsEngine/Core/ApplicationData.h"
 #include "SpehsEngine/Input/Input.h"
 #include "SpehsEngine/Core/Exceptions.h"
-#include "SpehsEngine/Core/Time.h"
+#include "SpehsEngine/Core/Core.h"
 #include "SpehsEngine/Core/Log.h"
+#include "SpehsEngine/Core/Time.h"
 #include "SpehsEngine/Input/InputManager.h"
 #include "SpehsEngine/Input/Window.h"
 
@@ -15,6 +16,8 @@
 #include <SDL/SDL.h>
 #include <GL/glew.h>
 
+#include <boost/bind.hpp>
+
 namespace spehs
 {
 	namespace input
@@ -25,13 +28,11 @@ namespace spehs
 			Window* mainWindow = nullptr;
 		}
 
-		int initialize(const std::string& _windowName)
+		int initialize()
 		{
+			_ASSERT(spehs::core::isInitialized() && "Spehs core must be initialized");
 			log::info("Current SpehsEngine input library version: " + getVersion());
-
-			//ApplicationData
-			spehs::ApplicationData::read();
-
+			
 			if (SDL_Init(SDL_INIT_VIDEO) < 0)
 			{
 				exceptions::fatalError("\nVideo initialization failed!");
@@ -53,9 +54,10 @@ namespace spehs
 			//Multisampling
 			SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, 1);
 			SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, spehs::ApplicationData::MSAA);
-
-			mainWindow = new Window();
-			mainWindow->create(_windowName, spehs::ApplicationData::getWindowWidth(), spehs::ApplicationData::getWindowHeight(), spehs::ApplicationData::windowMode);
+			
+			//Create the main window(?)
+			mainWindow = new Window(spehs::ApplicationData::getWindowWidth(), spehs::ApplicationData::getWindowHeight());
+			mainWindow->setFullscreen(spehs::ApplicationData::fullscreen);
 			
 			//INITIALIZATIONS
 			inputManager = new InputManager();

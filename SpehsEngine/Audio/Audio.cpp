@@ -1,5 +1,6 @@
 
 #include "SpehsEngine/Core/ApplicationData.h"
+#include "SpehsEngine/Core/Core.h"
 #include "SpehsEngine/Core/Exceptions.h"
 #include "SpehsEngine/Core/Log.h"
 #include "SpehsEngine/Core/Time.h"
@@ -23,6 +24,7 @@ namespace spehs
 
 		int initialize()
 		{
+			_ASSERT(spehs::core::isInitialized() && "Spehs core must be initialized");
 			log::info("Current SpehsEngine audio library build: " + getVersion());
 			
 			//INITIALIZATIONS

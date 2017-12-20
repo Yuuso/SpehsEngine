@@ -6,6 +6,7 @@
 #include "SpehsEngine/Core/Time.h"
 #include "SpehsEngine/Core/RNG.h"
 
+#include <algorithm>
 #include <string>
 #include <thread>
 #include <iostream>
@@ -20,6 +21,7 @@ namespace spehs
 
 	namespace core
 	{
+
 		namespace
 		{
 			bool initialized = false;
@@ -47,7 +49,7 @@ namespace spehs
 				log::warning("32 bit integer width not available!");
 			if (sizeof(int64_t) != 8 || sizeof(uint64_t) != 8)
 				log::warning("64 bit integer width not available!");
-
+			
 			initialized = true;
 			return 0;
 		}

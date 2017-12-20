@@ -1,4 +1,8 @@
 #include "SpehsEngine/Game/Game.h"
+#include "SpehsEngine/Core/Core.h"
+#include "SpehsEngine/Input/Input.h"
+#include "SpehsEngine/Rendering/Rendering.h"
+#include "SpehsEngine/Audio/Audio.h"
 #include "SpehsEngine/Core/Log.h"
 #include "SpehsEngine/Core/Time.h"
 
@@ -11,8 +15,12 @@ namespace spehs
 			bool initialized = false;
 		}
 
-		int initialize(const std::string& _windowName)
+		int initialize()
 		{
+			_ASSERT(spehs::core::isInitialized() && "Spehs core must be initialized");
+			_ASSERT(spehs::input::isInitialized() && "Spehs input must be initialized");
+			_ASSERT(spehs::rendering::isInitialized() && "Spehs rendering must be initialized");
+			_ASSERT(spehs::audio::isInitialized() && "Spehs audio must be initialized");
 			log::info("Current SpehsEngine game library build: " + getVersion());
 
 			initialized = true;

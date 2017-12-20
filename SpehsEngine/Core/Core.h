@@ -1,5 +1,6 @@
 #pragma once
 #include <string>
+#include <functional>
 
 namespace spehs
 {
@@ -16,5 +17,6 @@ namespace spehs
 		
 		/* Returns core library version in a readable string format */
 		std::string getVersion();
+
 	}
 }

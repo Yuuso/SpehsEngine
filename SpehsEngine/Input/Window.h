@@ -1,31 +1,30 @@
 
 #pragma once
 
-#include <string>
-
-
 struct SDL_Window;
 namespace spehs
 {
 	namespace input
 	{
-		enum SpehsEngine_WindowFlags
-		{
-			FULLSCREEN = 0x1,
-			BORDERLESS = 0x2,
-		};
-
 		class Window
 		{
+		public:
 			friend class InputManager;
 		public:
-			Window();
-			~Window();
 
-			int create(std::string windowName, int scrWidth, int scrHeight, unsigned int currentFlags);
+			Window(const int pixelWidth, const int pixelHeight);
+			~Window();
+			
 			void renderBegin();
 			void renderEnd();
-			void clearColor(float _r, float _g, float _b, float _a);
+
+			void setClearColor(const float _r, const float _g, const float _b, const float _a);
+			void setTitle(const char* title);
+			void setSize(const int pixelWidth, const int pixelHeight);
+			void setMinSize(const int minPixelWidth, const int minPixelHeight);
+			void setMaxSize(const int maxPixelWidth, const int maxPixelHeight);
+			void setFullscreen(const bool enabled);
+			void setBorderless(const bool enabled);
 
 		private:
 			SDL_Window* sdlWindow;

@@ -19,33 +19,35 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{14BC9A36-0173-4D60-B341-B92B6E3CA892}</ProjectGuid>
-    <RootNamespace>Rendering</RootNamespace>
+    <ProjectGuid>{5F7EC1B1-79D0-410B-AAA5-67AE29DD3843}</ProjectGuid>
+    <RootNamespace>GUI</RootNamespace>
     <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v140</PlatformToolset>
     <CharacterSet>MultiByte</CharacterSet>
-    <ConfigurationType>StaticLibrary</ConfigurationType>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v140</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v140</PlatformToolset>
     <CharacterSet>MultiByte</CharacterSet>
-    <ConfigurationType>StaticLibrary</ConfigurationType>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v140</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
@@ -75,44 +77,30 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <TargetName>SpehsRendering</TargetName>
+    <TargetName>SpehsGUI</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <TargetName>SpehsRendering</TargetName>
+    <TargetName>SpehsGUI</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <TargetName>SpehsRendering</TargetName>
+    <TargetName>SpehsGUI</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <TargetName>SpehsRendering</TargetName>
+    <TargetName>SpehsGUI</TargetName>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>$(SPEHSENGINE_ROOT)/;$(SPEHSENGINE_ROOT)/Dependencies/include/;$(SPEHSENGINE_ROOT)/Dependencies/include/freetype/;</AdditionalIncludeDirectories>
     </ClCompile>
-    <Link>
-      <AdditionalDependencies>SpehsCore$(TargetExt);SpehsInput$(TargetExt);glew32.lib;glew32s.lib;opengl32.lib;freetype.lib;SOIL.lib</AdditionalDependencies>
-    </Link>
-    <Lib>
-      <AdditionalDependencies>glew32.lib;glew32s.lib;SOIL.lib;freetype.lib;</AdditionalDependencies>
-    </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>$(SPEHSENGINE_ROOT)/;$(SPEHSENGINE_ROOT)/Dependencies/include/;$(SPEHSENGINE_ROOT)/Dependencies/include/freetype/;</AdditionalIncludeDirectories>
     </ClCompile>
-    <Link>
-      <AdditionalDependencies>SpehsCore$(TargetExt);SpehsInput$(TargetExt);glew32.lib;glew32s.lib;opengl32.lib;freetype.lib;SOIL.lib</AdditionalDependencies>
-    </Link>
-    <Lib>
-      <AdditionalDependencies>glew32.lib;glew32s.lib;SOIL.lib;freetype.lib;</AdditionalDependencies>
-    </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -121,16 +109,11 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>$(SPEHSENGINE_ROOT)/;$(SPEHSENGINE_ROOT)/Dependencies/include/;$(SPEHSENGINE_ROOT)/Dependencies/include/freetype/;</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>SpehsCore$(TargetExt);SpehsInput$(TargetExt);glew32.lib;glew32s.lib;opengl32.lib;freetype.lib;SOIL.lib</AdditionalDependencies>
     </Link>
-    <Lib>
-      <AdditionalDependencies>glew32.lib;glew32s.lib;SOIL.lib;freetype.lib;</AdditionalDependencies>
-    </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -139,54 +122,50 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>$(SPEHSENGINE_ROOT)/;$(SPEHSENGINE_ROOT)/Dependencies/include/;$(SPEHSENGINE_ROOT)/Dependencies/include/freetype/;</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>SpehsCore$(TargetExt);SpehsInput$(TargetExt);glew32.lib;glew32s.lib;opengl32.lib;freetype.lib;SOIL.lib</AdditionalDependencies>
     </Link>
-    <Lib>
-      <AdditionalDependencies>glew32.lib;glew32s.lib;SOIL.lib;freetype.lib;</AdditionalDependencies>
-    </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="Arrow.h" />
-    <ClInclude Include="Batch.h" />
-    <ClInclude Include="BatchManager.h" />
-    <ClInclude Include="Camera2D.h" />
-    <ClInclude Include="Console.h" />
-    <ClInclude Include="ConsoleVariable.h" />
-    <ClInclude Include="Depth.h" />
-    <ClInclude Include="GLSLProgram.h" />
-    <ClInclude Include="Line.h" />
-    <ClInclude Include="LineDiagram.h" />
-    <ClInclude Include="Point.h" />
-    <ClInclude Include="Polygon.h" />
-    <ClInclude Include="PostProcessing.h" />
-    <ClInclude Include="Primitive.h" />
-    <ClInclude Include="Rendering.h" />
-    <ClInclude Include="ShaderManager.h" />
-    <ClInclude Include="Text.h" />
-    <ClInclude Include="TextureManager.h" />
+    <ClCompile Include="GUICheckbox.cpp" />
+    <ClCompile Include="GUIColorEditor.cpp" />
+    <ClCompile Include="GUIPopup.cpp" />
+    <ClCompile Include="GUIProgressBar.cpp" />
+    <ClCompile Include="GUIRectangle.cpp" />
+    <ClCompile Include="GUIRectangleColumn.cpp" />
+    <ClCompile Include="GUIRectangleContainer.cpp" />
+    <ClCompile Include="GUIRectangleGrid.cpp" />
+    <ClCompile Include="GUIRectangleRow.cpp" />
+    <ClCompile Include="GUIRectangleScrollList.cpp" />
+    <ClCompile Include="GUIRectangleTable.cpp" />
+    <ClCompile Include="GUIRectangleTree.cpp" />
+    <ClCompile Include="GUIStringEditor.cpp" />
+    <ClCompile Include="GUIWindow.cpp" />
+    <ClCompile Include="GUIWindowManager.cpp" />
+    <ClCompile Include="Textbox.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Arrow.cpp" />
-    <ClCompile Include="Batch.cpp" />
-    <ClCompile Include="BatchManager.cpp" />
-    <ClCompile Include="Camera2D.cpp" />
-    <ClCompile Include="Console.cpp" />
-    <ClCompile Include="GLSLProgram.cpp" />
-    <ClCompile Include="Line.cpp" />
-    <ClCompile Include="LineDiagram.cpp" />
-    <ClCompile Include="Point.cpp" />
-    <ClCompile Include="Polygon.cpp" />
-    <ClCompile Include="PostProcessing.cpp" />
-    <ClCompile Include="Primitive.cpp" />
-    <ClCompile Include="Rendering.cpp" />
-    <ClCompile Include="ShaderManager.cpp" />
-    <ClCompile Include="Text.cpp" />
-    <ClCompile Include="TextureManager.cpp" />
+    <ClInclude Include="GUICheckbox.h" />
+    <ClInclude Include="GUIColorEditor.h" />
+    <ClInclude Include="GUIPopup.h" />
+    <ClInclude Include="GUIProgressBar.h" />
+    <ClInclude Include="GUIRectangle.h" />
+    <ClInclude Include="GUIRectangleColumn.h" />
+    <ClInclude Include="GUIRectangleContainer.h" />
+    <ClInclude Include="GUIRectangleGrid.h" />
+    <ClInclude Include="GUIRectangleRow.h" />
+    <ClInclude Include="GUIRectangleScrollList.h" />
+    <ClInclude Include="GUIRectangleTable.h" />
+    <ClInclude Include="GUIRectangleTree.h" />
+    <ClInclude Include="GUIRectangleUnisizeContainer.h" />
+    <ClInclude Include="GUIScalarEditor.h" />
+    <ClInclude Include="GUIStringEditor.h" />
+    <ClInclude Include="GUIWindow.h" />
+    <ClInclude Include="GUIWindowManager.h" />
+    <ClInclude Include="Textbox.h" />
+    <ClInclude Include="ValueEditor.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -1,7 +1,9 @@
 
 #include "SpehsEngine/Core/ApplicationData.h"
+#include "SpehsEngine/Core/Core.h"
 #include "SpehsEngine/Core/Time.h"
 #include "SpehsEngine/Core/Log.h"
+#include "SpehsEngine/Input/Input.h"
 #include "SpehsEngine/Input/Window.h"
 #include "SpehsEngine/Rendering/Rendering.h"
 #include "SpehsEngine/Rendering/Console.h"
@@ -32,6 +34,8 @@ namespace spehs
 
 		int initialize()
 		{
+			_ASSERT(spehs::core::isInitialized() && "Spehs core must be initialized");
+			_ASSERT(spehs::input::isInitialized() && "Spehs input must be initialized");
 			log::info("Current SpehsEngine rendering library build: " + getVersion());
 
 			initText();

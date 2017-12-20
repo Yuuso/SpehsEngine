@@ -42,7 +42,7 @@ namespace spehs
 		static float getMasterVolume();
 
 		//Video
-		static int windowMode;// 0 windowed / 1 fullscreen
+		static int fullscreen;// 0 windowed / 1 fullscreen
 		static int showFps;
 		static int maxFps;
 		static int vSync;
