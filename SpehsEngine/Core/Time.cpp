@@ -120,7 +120,7 @@ namespace spehs
 		}
 		Time Time::operator*(const float factor) const
 		{
-			return Time(value * factor);
+			return Time((float)value * factor);
 		}
 		Time Time::operator*(const int factor) const
 		{
@@ -128,7 +128,7 @@ namespace spehs
 		}
 		Time Time::operator/(const float factor) const
 		{
-			return Time(value / factor);
+			return Time((float)value / factor);
 		}
 		Time Time::operator/(const int factor) const
 		{
@@ -148,19 +148,19 @@ namespace spehs
 		}
 		void Time::operator*=(const float factor)
 		{
-			value *= factor;
+			value = (float)value * factor;
 		}
 		void Time::operator*=(const int factor)
 		{
 			value *= factor;
 		}
-		void Time::operator/=(const float factor)
+		void Time::operator/=(const float divisor)
 		{
-			value /= factor;
+			value = (float)value / divisor;
 		}
-		void Time::operator/=(const int factor)
+		void Time::operator/=(const int divisor)
 		{
-			value /= factor;
+			value /= divisor;
 		}
 		void Time::operator+=(const Time& other)
 		{

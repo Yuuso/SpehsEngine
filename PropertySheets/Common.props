@@ -3,8 +3,8 @@
   <ImportGroup Label="PropertySheets" />
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup>
-    <OutDir>$(SPEHSENGINE_ROOT)/bin/$(Platform)/$(Configuration)/$(PlatformToolset)</OutDir>
-    <IntDir>$(SPEHSENGINE_ROOT)/obj/$(ProjectName)/$(Platform)/$(Configuration)/$(PlatformToolset)</IntDir>
+    <OutDir>$(SPEHSENGINE_ROOT)/bin/$(Platform)/$(Configuration)/$(PlatformToolset)/</OutDir>
+    <IntDir>$(SPEHSENGINE_ROOT)/obj/$(ProjectName)/$(Platform)/$(Configuration)/$(PlatformToolset)/</IntDir>
   </PropertyGroup>
   <ItemDefinitionGroup>
     <ClCompile>

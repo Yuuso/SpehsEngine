@@ -34,8 +34,8 @@ namespace spehs
 
 			void operator*=(const float factor);
 			void operator*=(const int factor);
-			void operator/=(const float factor);
-			void operator/=(const int factor);
+			void operator/=(const float divisor);
+			void operator/=(const int divisor);
 			void operator+=(const Time& other);
 			void operator-=(const Time& other);
 			Time operator*(const float _asSeconds) const;
@@ -73,19 +73,19 @@ namespace spehs
 		
 		inline Time seconds(const float seconds)
 		{
-			return seconds * conversionRate::second;
+			return seconds * (float)conversionRate::second;
 		}
 		inline Time milliseconds(const float milliseconds)
 		{
-			return milliseconds * conversionRate::millisecond;
+			return milliseconds * (float)conversionRate::millisecond;
 		}
 		inline Time microseconds(const float microseconds)
 		{
-			return microseconds * conversionRate::microsecond;
+			return microseconds * (float)conversionRate::microsecond;
 		}
 		inline Time nanoseconds(const int64_t nanoseconds)
 		{
-			return nanoseconds * conversionRate::nanosecond;
+			return nanoseconds * (float)conversionRate::nanosecond;
 		}
 
 		/* Initializes the time system. */
@@ -144,6 +144,32 @@ namespace spehs
 		private:
 			std::string name;
 			spehs::time::Time deltaTimestamp;
+		};
+
+		/* Records time at the time of allocation. Elapsed time can be retrieved using get() at any time. */
+		class ScopeTimer
+		{
+		public:
+			ScopeTimer() : time(now()) {}
+			inline Time get() const { return now() - time; }
+		private:
+			Time time;
+		};
+
+		/* get() returns time since last get(), or time since allocation if get() hasn't been used. */
+		class LapTimer
+		{
+		public:
+			LapTimer() : time(now()) {}
+			Time get()
+			{
+				const Time n = now();
+				const Time lapTime = now() - time;
+				time = n;
+				return lapTime;
+			}
+		private:
+			Time time;
 		};
 	}
 }
