@@ -1,3 +1,4 @@
+#include <cstring>
 #include "SpehsEngine/Core/Color.h"
 #include "SpehsEngine/Core/Exceptions.h"
 #include "SpehsEngine/Core/StringOperations.h"

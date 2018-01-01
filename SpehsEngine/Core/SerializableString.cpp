@@ -1,4 +1,5 @@
 #include <stdint.h>
+#include <cstring>
 #include "SpehsEngine/Core/SerializableString.h"
 
 namespace spehs

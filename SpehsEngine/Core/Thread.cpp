@@ -1,6 +1,10 @@
 #include "SpehsEngine/Core/Thread.h"
-#include <windows.h>
 #include <thread>
+#ifdef _WIN32
+#include <windows.h>
+#endif
+
+
 
 namespace spehs
 {

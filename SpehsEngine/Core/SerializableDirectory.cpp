@@ -1,5 +1,6 @@
 #include "SpehsEngine/Core/Exceptions.h"
 #include "SpehsEngine/Core/SerializableDirectory.h"
+#include <cstring>
 
 
 namespace spehs
@@ -8,14 +9,9 @@ namespace spehs
 	{
 
 	}
-	SerializableDirectory::SerializableDirectory(std::string _name) : parent(nullptr), name(_name)
-	{
-		if (name.size() == 0)
-			spehs::exceptions::unexpectedError(__FUNCTION__" Serializable directory name cannot be null!");
-	}
 	SerializableDirectory::SerializableDirectory(const SerializableDirectory& other)
 	{
-		spehs::exceptions::warning(__FUNCTION__": TODO");
+		spehs::exceptions::unexpectedError("TODO");
 	}
 	SerializableDirectory::~SerializableDirectory()
 	{
@@ -24,7 +20,7 @@ namespace spehs
 	}
 	SerializableDirectory& SerializableDirectory::operator=(const SerializableDirectory& other)
 	{
-		//TODO2
+		spehs::exceptions::unexpectedError("TODO");
 		return *this;
 	}
 	size_t SerializableDirectory::packetSize() const
@@ -80,7 +76,7 @@ namespace spehs
 		}
 		return false;
 	}
-	bool SerializableDirectory::rename(const std::string newName)
+	bool SerializableDirectory::setName(const std::string newName)
 	{
 		if (newName.size() == 0)
 		{
@@ -105,7 +101,7 @@ namespace spehs
 	{
 		if (_name.size() == 0)
 		{
-			spehs::exceptions::warning(__FUNCTION__" Serializable directory name cannot be null!");
+			spehs::exceptions::warning("Serializable directory name cannot be null!");
 			return nullptr;
 		}
 		for (unsigned i = 0; i < subDirectories.size(); i++)

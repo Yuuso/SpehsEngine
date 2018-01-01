@@ -4,13 +4,14 @@
 #include "SpehsEngine/Core/Vector.h"
 
 #include <vector>
+#include <limits>
 
-
-const float RAYCAST_DISTANCE = FLT_MAX / 2.0f;
 
 
 namespace spehs
 {
+	constexpr float DEFAULT_RAYCAST_DISTANCE = std::numeric_limits<float>::max() / 2.0f;
+
 	struct Projection
 	{
 		Projection(const float _min, const float _max) : min(_min), max(_max){}
@@ -95,12 +96,12 @@ namespace spehs
 	bool circleCollision(const spehs::vec2& _circleCenterPoint1, const float _circleRadius1, const spehs::vec2& _circleCenterPoint2, const float _circleRadius2);
 
 	//Ray x Circle collision
-	bool rayCollision(const spehs::vec2 _rayPosition, const float _rayDirection, const spehs::vec2& _circleCenterPoint, const float _circleRadius, const float _rayDistance = RAYCAST_DISTANCE);
-	float rayCollisionDistance(const spehs::vec2 _rayPosition, const float _rayDirection, const spehs::vec2& _circleCenterPoint, const float _circleRadius, const float _rayDistance = RAYCAST_DISTANCE);
+	bool rayCollision(const spehs::vec2 _rayPosition, const float _rayDirection, const spehs::vec2& _circleCenterPoint, const float _circleRadius, const float _rayDistance = DEFAULT_RAYCAST_DISTANCE);
+	float rayCollisionDistance(const spehs::vec2 _rayPosition, const float _rayDirection, const spehs::vec2& _circleCenterPoint, const float _circleRadius, const float _rayDistance = DEFAULT_RAYCAST_DISTANCE);
 
 	//Ray x Polygon collision, returns 0.0f if no collision, otherwise > 0 (collision distance from point of ray origin)
-	bool rayCollision(const spehs::vec2 _rayCastPosition, float _rayDirection, spehs::vec2* _vertexArray, unsigned _vertexArrayLength, const float _rayDistance = RAYCAST_DISTANCE);
-	float rayCollisionDistance(const spehs::vec2 _rayCastPosition, float _rayDirection, spehs::vec2* _vertexArray, unsigned _vertexArrayLength, const float _rayDistance = RAYCAST_DISTANCE);
+	bool rayCollision(const spehs::vec2 _rayCastPosition, float _rayDirection, spehs::vec2* _vertexArray, unsigned _vertexArrayLength, const float _rayDistance = DEFAULT_RAYCAST_DISTANCE);
+	float rayCollisionDistance(const spehs::vec2 _rayCastPosition, float _rayDirection, spehs::vec2* _vertexArray, unsigned _vertexArrayLength, const float _rayDistance = DEFAULT_RAYCAST_DISTANCE);
 
 	//COLLISIONPOINT COLLISIONS
 	//Polygon x Polygon collision

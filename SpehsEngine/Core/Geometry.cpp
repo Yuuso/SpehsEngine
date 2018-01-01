@@ -2,6 +2,7 @@
 #include "SpehsEngine/Core/Exceptions.h"
 #include "SpehsEngine/Core/Geometry.h"
 #include "SpehsEngine/Core/Vertex.h"
+#include "SpehsEngine/Core/Log.h"
 
 #include <math.h>
 #include <algorithm>
@@ -59,7 +60,7 @@ namespace spehs
 	}
 	inline spehs::vec3 getRotation(const spehs::vec3& _a, const spehs::vec3& _b)
 	{
-		exceptions::fatalError(__FUNCTION__": unimplemented engine function!");
+		SPEHS_ASSERT(false && "Unimplemented engine function");
 		//spehs::vec3 v = glm::cross(_a, _b);
 		//float c = glm::dot(_a, _b)/(glm::length(_a)*glm::length(_b));
 
@@ -98,7 +99,7 @@ namespace spehs
 			area += (cusps[j].x * cusps[i].y) - (cusps[i].x * cusps[j].y);
 			j = i;
 		}
-		return std::max(abs((area * 0.5f)), 0.0001f);
+		return std::max(std::abs(area * 0.5f), 0.0001f);
 	}
 	inline float getRadius(spehs::vec2* cusps, unsigned numCusps)
 	{

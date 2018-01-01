@@ -52,6 +52,7 @@
   <ImportGroup Label="ExtensionSettings">
   </ImportGroup>
   <ImportGroup Label="Shared">
+    <Import Project="CoreShare.vcxitems" Label="Shared" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
@@ -138,57 +139,6 @@
       </AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
-  <ItemGroup>
-    <ClInclude Include="ApplicationData.h" />
-    <ClInclude Include="BitwiseOperations.h" />
-    <ClInclude Include="Color.h" />
-    <ClInclude Include="Compression.h" />
-    <ClInclude Include="Exceptions.h" />
-    <ClInclude Include="FileStream.h" />
-    <ClInclude Include="Geometry.h" />
-    <ClInclude Include="Log.h" />
-    <ClInclude Include="Mathematics.h" />
-    <ClInclude Include="OS.h" />
-    <ClInclude Include="RNG.h" />
-    <ClInclude Include="SATCollision.h" />
-    <ClInclude Include="Serializable.h" />
-    <ClInclude Include="SerializableDirectory.h" />
-    <ClInclude Include="SerializableString.h" />
-    <ClInclude Include="SerializableVector.h" />
-    <ClInclude Include="Shapes.h" />
-    <ClInclude Include="Core.h" />
-    <ClInclude Include="StringOperations.h" />
-    <ClInclude Include="Thread.h" />
-    <ClInclude Include="Time.h" />
-    <ClInclude Include="TimeState.h" />
-    <ClInclude Include="Triangulation.h" />
-    <ClInclude Include="Vector.h" />
-    <ClInclude Include="Vertex.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="ApplicationData.cpp" />
-    <ClCompile Include="Color.cpp" />
-    <ClCompile Include="Compression.cpp" />
-    <ClCompile Include="Exceptions.cpp" />
-    <ClCompile Include="FileStream.cpp" />
-    <ClCompile Include="Geometry.cpp" />
-    <ClCompile Include="Log.cpp" />
-    <ClCompile Include="Mathematics.cpp" />
-    <ClCompile Include="OS.cpp" />
-    <ClCompile Include="RNG.cpp" />
-    <ClCompile Include="SATCollision.cpp" />
-    <ClCompile Include="Serializable.cpp" />
-    <ClCompile Include="SerializableDirectory.cpp" />
-    <ClCompile Include="SerializableString.cpp" />
-    <ClCompile Include="Shapes.cpp" />
-    <ClCompile Include="Core.cpp" />
-    <ClCompile Include="StringOperations.cpp" />
-    <ClCompile Include="Thread.cpp" />
-    <ClCompile Include="Time.cpp" />
-    <ClCompile Include="TimeState.cpp" />
-    <ClCompile Include="Triangulation.cpp" />
-    <ClCompile Include="Vertex.cpp" />
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

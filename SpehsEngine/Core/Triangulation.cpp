@@ -9,10 +9,10 @@
 
 namespace spehs
 {
-	std::atomic<int> triangleAllocations = 0;
-	std::atomic<int> triangleDeallocations = 0;
-	std::atomic<int> edgeAllocations = 0;
-	std::atomic<int> edgeDeallocations = 0;
+	std::atomic<int> triangleAllocations(0);
+	std::atomic<int> triangleDeallocations(0);
+	std::atomic<int> edgeAllocations(0);
+	std::atomic<int> edgeDeallocations(0);
 	int triangulationTestSeed = 0;
 	int triangulationTestIteration = 0;
 

@@ -2,6 +2,7 @@
 #pragma once
 
 #include "SpehsEngine/Core/Vector.h"
+#include "SpehsEngine/Core/Log.h"
 
 #include <random>
 #include <stdint.h>
@@ -85,73 +86,6 @@ namespace spehs
 			using PiecewiseLinear = std::piecewise_linear_distribution<type>;
 		}
 
-		//General 'true' random functions
-		extern std::mutex rngmutex;
-
-		template <typename ReturnType, typename DistributionType =
-			std::conditional<std::is_floating_point<ReturnType>::value, Distribution::UniformReal<ReturnType>, Distribution::UniformInt<ReturnType>>::type>
-		typename std::enable_if<sizeof(ReturnType) != 1, ReturnType>::type random()
-		{
-			std::lock_guard<std::mutex> rnglock(rngmutex);
-			return defaultRandom.random<ReturnType, DistributionType>(std::numeric_limits<ReturnType>::min(), std::numeric_limits<ReturnType>::max());
-		}
-
-		template <typename ReturnType, typename DistributionType = Distribution::UniformInt<int>>
-			typename std::enable_if<sizeof(ReturnType) == 1, ReturnType>::type random()
-		{
-			std::lock_guard<std::mutex> rnglock(rngmutex);
-			return (ReturnType)defaultRandom.random<int, DistributionType>(std::numeric_limits<ReturnType>::min(), std::numeric_limits<ReturnType>::max());
-		}
-
-		template <typename ReturnType, typename DistributionType =
-			std::conditional<std::is_floating_point<ReturnType>::value, Distribution::UniformReal<ReturnType>, Distribution::UniformInt<ReturnType>>::type>
-			typename std::enable_if<sizeof(ReturnType) != 1, ReturnType>::type random(const ReturnType _min, const ReturnType _max)
-		{
-			std::lock_guard<std::mutex> rnglock(rngmutex);
-			return defaultRandom.random<ReturnType, DistributionType>(_min, _max);
-		}
-
-		template <typename ReturnType, typename DistributionType = Distribution::UniformInt<int>>
-			typename std::enable_if<sizeof(ReturnType) == 1, ReturnType>::type random(const ReturnType _min, const ReturnType _max)
-		{
-			std::lock_guard<std::mutex> rnglock(rngmutex);
-			return (ReturnType) defaultRandom.random<int, DistributionType>((int) _min, (int) _max);
-		}
-
-		template <typename ReturnType, typename DistributionType = Distribution::Bernoulli>
-		ReturnType random(const double _probability)
-		{
-			std::lock_guard<std::mutex> rnglock(rngmutex);
-			return defaultRandom.random<ReturnType, DistributionType>(_probability);
-		}
-
-		template <typename ReturnType, typename DistributionType = Distribution::Binomial<ReturnType>>
-		ReturnType random(const double _probability, const ReturnType _min, const ReturnType _max)
-		{
-			std::lock_guard<std::mutex> rnglock(rngmutex);
-			return defaultRandom.random<ReturnType, DistributionType>(_probability, _min, _max);
-		}
-
-		template<typename FloatingPointType = float>
-		FloatingPointType unit()
-		{
-			std::lock_guard<std::mutex> rnglock(rngmutex);
-			return defaultRandom.unit<FloatingPointType>();
-		}
-		template<typename FloatingPointType = float>
-		FloatingPointType angle()
-		{
-			std::lock_guard<std::mutex> rnglock(rngmutex);
-			return defaultRandom.angle<FloatingPointType>();
-		}
-		bool coin();
-		bool weightedCoin(const double _trueProbability = 0.5);
-		unsigned dice(const unsigned _sides);
-		unsigned weightedDice(const std::initializer_list<double> _propabilities);
-		spehs::vec2 circle(const float _radius = 1.0f);
-		spehs::vec2 square(const float _side = 1.0f);
-
-		
 		//Pseudo random number generator class
 		template <typename SeedType>
 		class PRNG
@@ -193,8 +127,8 @@ namespace spehs
 			//Default random functions
 			template <
 				typename ReturnType,
-				typename DistributionType = std::conditional<std::is_floating_point<ReturnType>::value, Distribution::UniformReal<ReturnType>, Distribution::UniformInt<ReturnType>>::type>
-			typename std::enable_if<sizeof(ReturnType) != 1, ReturnType>::type random()
+				typename DistributionType = typename std::conditional<std::is_floating_point<ReturnType>::value, Distribution::UniformReal<ReturnType>, Distribution::UniformInt<ReturnType>>::type>
+				typename std::enable_if<sizeof(ReturnType) != 1, ReturnType>::type random()
 			{
 				return random<ReturnType>(std::numeric_limits<ReturnType>::min(), std::numeric_limits<ReturnType>::max());
 			}
@@ -202,27 +136,27 @@ namespace spehs
 			template <typename ReturnType, typename DistributionType = Distribution::UniformInt<int>>
 			typename std::enable_if<sizeof(ReturnType) == 1, ReturnType>::type random()
 			{
-				return (ReturnType) random<int>(std::numeric_limits<ReturnType>::min(), std::numeric_limits<ReturnType>::max());
+				return (ReturnType)random<int>(std::numeric_limits<ReturnType>::min(), std::numeric_limits<ReturnType>::max());
 			}
 
 			template <
 				typename ReturnType,
-				typename DistributionType = std::conditional<std::is_integral<ReturnType>::value, Distribution::UniformInt<ReturnType>, Distribution::UniformReal<ReturnType>>::type>
-			typename std::enable_if<sizeof(ReturnType) != 1, ReturnType>::type random(const ReturnType _min, const ReturnType _max)
+				typename DistributionType = typename std::conditional<std::is_integral<ReturnType>::value, Distribution::UniformInt<ReturnType>, Distribution::UniformReal<ReturnType>>::type>
+				typename std::enable_if<sizeof(ReturnType) != 1, ReturnType>::type random(const ReturnType _min, const ReturnType _max)
 			{
 				static_assert(std::is_arithmetic<ReturnType>::value, "ReturnType needs to be an arithmetic type!");
-				_ASSERT(_min <= _max);
+				SPEHS_ASSERT(_min <= _max);
 				DistributionType dist;
-				return dist(engine, DistributionType::param_type{ _min, _max });
+				return dist(engine, typename DistributionType::param_type(_min, _max));
 			}
 
 			template <typename ReturnType, typename DistributionType = Distribution::UniformInt<int>>
 			typename std::enable_if<sizeof(ReturnType) == 1, ReturnType>::type random(const ReturnType _min, const ReturnType _max)
 			{
 				static_assert(std::is_arithmetic<ReturnType>::value, "ReturnType needs to be an arithmetic type!");
-				_ASSERT(_min <= _max);
+				SPEHS_ASSERT(_min <= _max);
 				DistributionType dist;
-				return dist(engine, DistributionType::param_type{ _min, _max });
+				return dist(engine, DistributionType::param_type(_min, _max));
 			}
 
 			//Functions for certain distirbutions
@@ -238,7 +172,7 @@ namespace spehs
 			ReturnType random(const double _probability, const ReturnType _min, const ReturnType _max)
 			{
 				static_assert(std::is_arithmetic<ReturnType>::value, "ReturnType needs to be an arithmetic type!");
-				_ASSERT(_min <= _max);
+				SPEHS_ASSERT(_min <= _max);
 				DistributionType dist(double(_max - _min), _probability);
 				return _min + dist(engine);
 			}
@@ -294,6 +228,72 @@ namespace spehs
 			SeedType randomSeed;
 			MTEngine engine;
 		};
+		
+		//General 'true' random functions
+		extern std::mutex rngmutex;
 		extern PRNG<uint32_t> defaultRandom;
+
+		template <typename ReturnType, typename DistributionType =
+			typename std::conditional<std::is_floating_point<ReturnType>::value, Distribution::UniformReal<ReturnType>, Distribution::UniformInt<ReturnType>>::type>
+		typename std::enable_if<sizeof(ReturnType) != 1, ReturnType>::type random()
+		{
+			std::lock_guard<std::mutex> rnglock(rngmutex);
+			return defaultRandom.random<ReturnType, DistributionType>(std::numeric_limits<ReturnType>::min(), std::numeric_limits<ReturnType>::max());
+		}
+
+		template <typename ReturnType, typename DistributionType = Distribution::UniformInt<int>>
+			typename std::enable_if<sizeof(ReturnType) == 1, ReturnType>::type random()
+		{
+			std::lock_guard<std::mutex> rnglock(rngmutex);
+			return (ReturnType)defaultRandom.random<int, DistributionType>(std::numeric_limits<ReturnType>::min(), std::numeric_limits<ReturnType>::max());
+		}
+
+		template <typename ReturnType, typename DistributionType =
+			typename std::conditional<std::is_floating_point<ReturnType>::value, Distribution::UniformReal<ReturnType>, Distribution::UniformInt<ReturnType>>::type>
+			typename std::enable_if<sizeof(ReturnType) != 1, ReturnType>::type random(const ReturnType _min, const ReturnType _max)
+		{
+			std::lock_guard<std::mutex> rnglock(rngmutex);
+			return defaultRandom.random<ReturnType, DistributionType>(_min, _max);
+		}
+
+		template <typename ReturnType, typename DistributionType = Distribution::UniformInt<int>>
+			typename std::enable_if<sizeof(ReturnType) == 1, ReturnType>::type random(const ReturnType _min, const ReturnType _max)
+		{
+			std::lock_guard<std::mutex> rnglock(rngmutex);
+			return (ReturnType) defaultRandom.random<int, DistributionType>((int) _min, (int) _max);
+		}
+
+		template <typename ReturnType, typename DistributionType = Distribution::Bernoulli>
+		ReturnType random(const double _probability)
+		{
+			std::lock_guard<std::mutex> rnglock(rngmutex);
+			return defaultRandom.random<ReturnType, DistributionType>(_probability);
+		}
+
+		template <typename ReturnType, typename DistributionType = Distribution::Binomial<ReturnType>>
+		ReturnType random(const double _probability, const ReturnType _min, const ReturnType _max)
+		{
+			std::lock_guard<std::mutex> rnglock(rngmutex);
+			return defaultRandom.random<ReturnType, DistributionType>(_probability, _min, _max);
+		}
+
+		template<typename FloatingPointType = float>
+		FloatingPointType unit()
+		{
+			std::lock_guard<std::mutex> rnglock(rngmutex);
+			return defaultRandom.unit<FloatingPointType>();
+		}
+		template<typename FloatingPointType = float>
+		FloatingPointType angle()
+		{
+			std::lock_guard<std::mutex> rnglock(rngmutex);
+			return defaultRandom.angle<FloatingPointType>();
+		}
+		bool coin();
+		bool weightedCoin(const double _trueProbability = 0.5);
+		unsigned dice(const unsigned _sides);
+		unsigned weightedDice(const std::initializer_list<double> _propabilities);
+		spehs::vec2 circle(const float _radius = 1.0f);
+		spehs::vec2 square(const float _side = 1.0f);
 	}
 }

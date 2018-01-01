@@ -103,7 +103,7 @@ namespace spehs
 	std::string toString(const float value, const int precision)
 	{
 #ifdef _DEBUG
-		if (precision > 6)	spehs::exceptions::unexpectedError(__FUNCTION__" precision too high! Maximum precision 6!");
+		if (precision > 6)	spehs::exceptions::unexpectedError("spehs::toString() precision too high! Maximum precision 6!");
 #endif
 		std::string str(std::to_string(value));
 		for (unsigned i = 0; i < str.size(); i++)
@@ -227,7 +227,7 @@ namespace spehs
 					spehs::exceptions::warning("getStringAsIPv4Address() failed! A byte value is too big (larger than 255)!");
 					return 0;
 				}
-				address |= unsigned char(byteToInt) << (24 - 8 * byteIndex++);
+				address |= (unsigned char)byteToInt << (24 - 8 * byteIndex++);
 				currentByteString.clear();
 			}
 			else if (string[i] >= 48 && string[i] <= 57)
@@ -248,7 +248,7 @@ namespace spehs
 			spehs::exceptions::warning("getStringAsIPv4Address() failed! A byte value is too big (larger than 255)!");
 			return 0;
 		}
-		address |= unsigned char(byteToInt) << (24 - 8 * byteIndex++);
+		address |= (unsigned char)byteToInt << (24 - 8 * byteIndex++);
 
 		return address;
 	}

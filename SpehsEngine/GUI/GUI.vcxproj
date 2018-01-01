@@ -129,6 +129,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="GUI.cpp" />
     <ClCompile Include="GUICheckbox.cpp" />
     <ClCompile Include="GUIColorEditor.cpp" />
     <ClCompile Include="GUIPopup.cpp" />
@@ -147,6 +148,7 @@
     <ClCompile Include="Textbox.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="GUI.h" />
     <ClInclude Include="GUICheckbox.h" />
     <ClInclude Include="GUIColorEditor.h" />
     <ClInclude Include="GUIPopup.h" />

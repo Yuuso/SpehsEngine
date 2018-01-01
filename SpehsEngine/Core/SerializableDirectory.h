@@ -15,7 +15,7 @@ namespace spehs
 		friend class std::allocator < SerializableDirectory > ;
 		friend class std::vector < SerializableDirectory > ;
 	public:
-		SerializableDirectory(std::string _name);
+		SerializableDirectory();
 		SerializableDirectory(const SerializableDirectory& other);
 		~SerializableDirectory() override;
 		SerializableDirectory& operator=(const SerializableDirectory& other);
@@ -26,7 +26,7 @@ namespace spehs
 
 		//Setters
 		bool deleteSubDirectory(const std::string _name);
-		bool rename(const std::string newName);///< Returns true if name was successfully renamed. Rename will fail if name contains no characters or directory already contains a sibling with the same name
+		bool setName(const std::string newName);///< Returns true if name was successfully renamed. Rename will fail if name contains no characters or directory already contains a sibling with the same name
 		SerializableDirectory* createSubDirectory(const std::string _name);
 		//Getters
 		SerializableDirectory* getDirectory(std::string directoryPath);//Returns directory based on given directory path if such directory exists
@@ -39,7 +39,6 @@ namespace spehs
 		std::vector<Serializable*> data;
 
 	private:
-		SerializableDirectory();//Hidden default constructor
 		std::string name;
 		std::vector<SerializableDirectory> subDirectories;
 		SerializableDirectory* parent;
