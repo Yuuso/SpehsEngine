@@ -46,6 +46,7 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)Exceptions.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)FileStream.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Geometry.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)HasMemberFunction.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Log.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Mathematics.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)OS.h" />

@@ -26,7 +26,7 @@ namespace spehs
 		, typerBlinkTimer(0)
 		, multilineEditing(false)
 	{
-		setTyperBlinkTime(time::seconds(0.5f));
+		setTyperBlinkTime(time::fromSeconds(0.5f));
 		createText();
 		typeCharacter = batchManager.createText("|", getDepth() + 1);
 		typeCharacter->setRenderState(getRenderState() && isReceivingInput());

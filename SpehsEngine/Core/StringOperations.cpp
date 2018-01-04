@@ -114,6 +114,7 @@ namespace spehs
 				return str;
 			}
 		}
+		return std::string("");
 	}
 
 	void arrangeIntoRows(std::string& string, const int maxRowWidth)

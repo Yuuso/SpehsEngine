@@ -5,7 +5,7 @@
 
 namespace spehs
 {
-	KeyboardRecorder::KeyboardRecorder() : beginKeyRepeatTime(time::seconds(0.66f)), continueKeyRepeatTime(time::seconds(0.1f))
+	KeyboardRecorder::KeyboardRecorder() : beginKeyRepeatTime(time::fromSeconds(0.66f)), continueKeyRepeatTime(time::fromSeconds(0.1f))
 	{
 		commandKeys.push_back(KEYBOARD_RETURN);
 		commandKeys.push_back(KEYBOARD_KP_ENTER);
@@ -34,15 +34,15 @@ namespace spehs
 	}
 	void KeyboardRecorder::setBeginKeyRepeatTimer(const float seconds)
 	{
-		beginKeyRepeatTime = time::seconds(seconds);
+		beginKeyRepeatTime = time::fromSeconds(seconds);
 		for (unsigned i = 0; i < heldKeys.size(); i++)
-			heldKeys[i].timer = std::min(time::seconds(seconds), heldKeys[i].timer);
+			heldKeys[i].timer = std::min(time::fromSeconds(seconds), heldKeys[i].timer);
 	}
 	void KeyboardRecorder::setContinuousKeyRepeatTimer(const float seconds)
 	{
-		continueKeyRepeatTime = time::seconds(seconds);
+		continueKeyRepeatTime = time::fromSeconds(seconds);
 		for (unsigned i = 0; i < heldKeys.size(); i++)
-			heldKeys[i].timer = std::min(time::seconds(seconds), heldKeys[i].timer);
+			heldKeys[i].timer = std::min(time::fromSeconds(seconds), heldKeys[i].timer);
 	}
 	void KeyboardRecorder::addCommandKey(const unsigned key)
 	{

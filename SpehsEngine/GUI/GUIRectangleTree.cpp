@@ -8,7 +8,7 @@
 
 namespace spehs
 {
-	time::Time GUIRectangleTree::defaultTreeOpenTime = time::seconds(0.5f);
+	time::Time GUIRectangleTree::defaultTreeOpenTime = time::fromSeconds(0.5f);
 	GUIRectangleTree::GUIRectangleTree(BatchManager& _batchManager)
 		: GUIRectangleUnisizeContainer(_batchManager)
 		, pressedLeafNodeID(0)
@@ -58,7 +58,7 @@ namespace spehs
 		{//Mouse hovering over the container
 			treeOpenTimer = treeOpenTime;
 		}
-		else if (treeOpenTimer > 0)
+		else if (treeOpenTimer > spehs::time::zero)
 		{//If mouse is outside the container, close over time
 			treeOpenTimer -= data.deltaTime;
 			if (treeOpenTimer <= time::Time::zero)

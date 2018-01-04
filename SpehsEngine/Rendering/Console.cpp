@@ -366,7 +366,7 @@ namespace spehs
 									input.pop_back();
 								if (input.size() == 1 && input.back() == ' ')
 									input.pop_back();
-								backspaceTimer = time::seconds(BACKSPACE_INITIAL_INTERVAL);
+								backspaceTimer = time::fromSeconds(BACKSPACE_INITIAL_INTERVAL);
 							}
 						}
 						else
@@ -374,11 +374,11 @@ namespace spehs
 							input.pop_back();
 							if (inputManager->isKeyPressed(8))
 							{
-								backspaceTimer = time::seconds(BACKSPACE_INITIAL_INTERVAL);
+								backspaceTimer = time::fromSeconds(BACKSPACE_INITIAL_INTERVAL);
 							}
 							else
 							{
-								backspaceTimer = time::milliseconds(BACKSPACE_INTERVAL - backspaceAcceleration);
+								backspaceTimer = time::fromMilliseconds(BACKSPACE_INTERVAL - backspaceAcceleration);
 								backspaceAcceleration += 3;
 							}
 						}

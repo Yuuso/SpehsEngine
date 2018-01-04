@@ -84,7 +84,7 @@ namespace spehs
 
 	void AnimatedSprite::setAnimationSpeed(const float _speed)
 	{
-		animationSpeed = time::seconds(_speed);
-		speedCounter = time::seconds(_speed);
+		animationSpeed = time::fromSeconds(_speed);
+		speedCounter = time::fromSeconds(_speed);
 	}
 }

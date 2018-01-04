@@ -21,7 +21,7 @@ namespace spehs
 		void updateScale();
 		void updatePosition();
 		void setOpenTreeButton(const int buttonID){ openTreeButton = buttonID; }
-		void setTreeOpenTime(const float seconds){ treeOpenTime = time::seconds(seconds); }
+		void setTreeOpenTime(const float seconds){ treeOpenTime = time::fromSeconds(seconds); }
 		bool open();
 		bool close();			
 		void addElement(const std::string& str, const GUIRECT_ID_TYPE _ID);///< Creates new node with given string and id

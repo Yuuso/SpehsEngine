@@ -26,8 +26,8 @@ namespace spehs
 			, tickAmount(1)
 			, onHold(false)
 			, holdTimer(0)
-			, holdTime(time::seconds(0.15f))
-			, initialHoldTime(time::seconds(1.0f))
+			, holdTime(time::fromSeconds(0.15f))
+			, initialHoldTime(time::fromSeconds(1.0f))
 			, nameRect(new GUIRectangle(_batchManager))
 			, valueRect(new GUIStringEditor(_batchManager))
 			, decreaseRect(new GUIRectangle(_batchManager))
@@ -100,7 +100,7 @@ namespace spehs
 				if (increaseRect->getMouseHover())
 				{//+
 					holdTimer -= data.deltaTime;
-					if (holdTimer <= 0.0f)
+					if (holdTimer <= spehs::time::zero)
 					{
 						holdTimer = holdTime;
 						setEditorValue(editorValue + tickAmount);
@@ -109,7 +109,7 @@ namespace spehs
 				else if (decreaseRect->getMouseHover())
 				{//-
 					holdTimer -= data.deltaTime;
-					if (holdTimer <= 0.0f)
+					if (holdTimer <= spehs::time::zero)
 					{
 						holdTimer = holdTime;
 						setEditorValue(editorValue - tickAmount);

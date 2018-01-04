@@ -15,9 +15,12 @@ namespace spehs
 }
 
 //Spehs assert
-#ifdef _DEBUG
-#define SPEHS_ASSERT(expression) { if (!(expression)) spehs::log::error("SPEHS_ASSERT failed.\nExpression: " #expression "\nFILE: " __FILE__ "\nLINE: " + std::to_string(__LINE__)); }
-#else
+#ifdef NDEBUG
 //Generate no code!
-#define SPEHS_ASSERT(_file, _line) ((void)0)
+#define SPEHS_ASSERT(_file) ((void)0)
+#else
+#ifndef _DEBUG
+#error Neither _DEBUG nor NDEBUG is defined!
+#endif
+#define SPEHS_ASSERT(expression) { if (!(expression)) spehs::log::error("SPEHS_ASSERT failed.\nExpression: " #expression "\nFILE: " __FILE__ "\nLINE: " + std::to_string(__LINE__)); }
 #endif

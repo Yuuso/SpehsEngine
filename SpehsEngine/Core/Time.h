@@ -11,6 +11,10 @@
 #define SPEHS_DEBUG_DURATION_END(timeDurationVariable) (void)0
 #endif
 
+#ifdef delay
+#undef delay
+#endif
+
 namespace spehs
 {
 	namespace time
@@ -32,16 +36,24 @@ namespace spehs
 			Time(const TimeValueType _value);
 			Time(const Time& other);
 
+			void operator*=(const double factor);
 			void operator*=(const float factor);
 			void operator*=(const int factor);
+			void operator*=(const TimeValueType factor);
+			void operator/=(const double divisor);
 			void operator/=(const float divisor);
 			void operator/=(const int divisor);
+			void operator/=(const TimeValueType divisor);
 			void operator+=(const Time& other);
 			void operator-=(const Time& other);
-			Time operator*(const float _asSeconds) const;
-			Time operator*(const int _asMilliseconds) const;
-			Time operator/(const float _asSeconds) const;
-			Time operator/(const int _asMilliseconds) const;
+			Time operator*(const double factor) const;
+			Time operator*(const float factor) const;
+			Time operator*(const int factor) const;
+			Time operator*(const TimeValueType factor) const;
+			Time operator/(const double divisor) const;
+			Time operator/(const float divisor) const;
+			Time operator/(const int divisor) const;
+			Time operator/(const TimeValueType divisor) const;
 			Time operator+(const Time& other) const;
 			Time operator-(const Time& other) const;
 			void operator=(const Time& other);
@@ -51,48 +63,39 @@ namespace spehs
 			bool operator>=(const Time& other) const;
 			bool operator<=(const Time& other) const;
 
-			inline float asSeconds() const
-			{
-				return (float)value / (float)conversionRate::second;
-			}
-			inline float asMilliseconds() const
-			{
-				return (float)value / conversionRate::millisecond;
-			}
-			inline float asMicroseconds() const
-			{
-				return (float)value / (float)conversionRate::microsecond;
-			}
-			inline float asNanoseconds() const
-			{
-				return (float)value / (float)conversionRate::nanosecond;
-			}
+			operator bool() const { return value != 0; }
+			inline float asSeconds() const { return (float)value / (float)conversionRate::second; }
+			inline float asMilliseconds() const { return (float)value / (float)conversionRate::millisecond; }
+			inline float asMicroseconds() const { return (float)value / (float)conversionRate::microsecond; }
+			inline float asNanoseconds() const { return (float)value / (float)conversionRate::nanosecond; }
 			
 			TimeValueType value;
 		};
+
+		Time operator*(const float multiplier, const Time time);
+		Time operator*(const int multiplier, const Time time);
 		
-		inline Time seconds(const float seconds)
-		{
-			return seconds * (float)conversionRate::second;
-		}
-		inline Time milliseconds(const float milliseconds)
-		{
-			return milliseconds * (float)conversionRate::millisecond;
-		}
-		inline Time microseconds(const float microseconds)
-		{
-			return microseconds * (float)conversionRate::microsecond;
-		}
-		inline Time nanoseconds(const int64_t nanoseconds)
-		{
-			return nanoseconds * (float)conversionRate::nanosecond;
-		}
+		inline float asSeconds(const Time time) { return (float)time.value / (float)conversionRate::second; }
+		inline float asMilliseconds(const Time time) { return (float)time.value / (float)conversionRate::millisecond; }
+		inline float asMicroseconds(const Time time) { return (float)time.value / (float)conversionRate::microsecond; }
+		inline float asNanoseconds(const Time time) { return (float)time.value / (float)conversionRate::nanosecond; }
+		
+		inline Time fromSeconds(const float seconds) { return seconds * (float)conversionRate::second; }
+		inline Time fromMilliseconds(const float milliseconds) { return milliseconds * (float)conversionRate::millisecond; }
+		inline Time fromMicroseconds(const float microseconds) { return microseconds * (float)conversionRate::microsecond; }
+		inline Time fromNanoseconds(const int64_t nanoseconds) { return nanoseconds * (float)conversionRate::nanosecond; }
+
+		static const Time zero(0);
+		static const Time second(conversionRate::second);
+		static const Time millisecond(conversionRate::millisecond);
+		static const Time microsecond(conversionRate::microsecond);
+		static const Time nanosecond(conversionRate::nanosecond);
 
 		/* Initializes the time system. */
 		void initialize();
 
 		/* Waits in a while loop until specified time has passed. */
-		void delay(const Time& time);
+		void delay(const Time time);
 
 		/* Returns the current time stamp, relative to 'some' context. See getRunTime() for an alternative. */
 		Time now();
@@ -100,7 +103,8 @@ namespace spehs
 		/* Returns current time since time was initialized. Less efficient than using now(). */
 		Time getRunTime();
 
-		//Get time and date of when the engine was built / TODO: this actually only ever updates when the time source files change/on complete rebuild?
+		//Get time and date of when the engine was built
+		//TODO: this actually only ever updates when the time source files are being rebuilt. And with the addition of split projects, this is ever less usefull.
 		std::string engineBuildYear();
 		std::string engineBuildMonth();
 		std::string engineBuildDay();

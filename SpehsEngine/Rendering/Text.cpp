@@ -11,7 +11,7 @@
 #include <glm/gtx/transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include <GL/glew.h>
-#include <Freetype/ft2build.h>
+#include <freetype/ft2build.h>
 #include FT_FREETYPE_H
 
 #include <iostream>
@@ -77,13 +77,10 @@ namespace spehs
 		{
 			if (ftFace != nullptr)
 			{
-				FT_Error error = FT_Done_Face(*ftFace);
+				const FT_Error error = FT_Done_Face(*ftFace);
 				if (error)
 				{
-					std::string errorString = "Freetype error: Failed to unload font ";
-					errorString += fontPath;
-					errorString += " code: " + error;
-					exceptions::unexpectedError(errorString);
+					exceptions::unexpectedError("Freetype error: Failed to unload font " + fontPath + " FT_Error: " + std::to_string(error));
 				}
 				delete ftFace;
 
@@ -142,13 +139,10 @@ namespace spehs
 		Font* font = fonts.back();
 		font->ftFace = new FT_Face;
 
-		FT_Error error = FT_New_Face(*ft, _fontPath.c_str(), 0, font->ftFace);
+		const FT_Error error = FT_New_Face(*ft, _fontPath.c_str(), 0, font->ftFace);
 		if (error)
-		{			
-			std::string errorString = "Freetype error: Failed to load font "; 
-			errorString += _fontPath; 
-			errorString += " code: " + error;
-			exceptions::fatalError(errorString);
+		{
+			exceptions::fatalError("Freetype error: Failed to load font " + _fontPath + " FT_Error: " + std::to_string(error));
 			return nullptr;
 		}
 
