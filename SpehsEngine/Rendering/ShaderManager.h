@@ -127,4 +127,3 @@ namespace spehs
 		return nullptr;
 	}
 }
-extern spehs::ShaderManager* shaderManager;

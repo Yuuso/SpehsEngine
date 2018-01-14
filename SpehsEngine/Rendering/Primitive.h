@@ -105,9 +105,10 @@ namespace spehs
 		float getScaleY() const { return scaleY; }
 		//Public Variables
 		std::vector<spehs::Vertex> worldVertexArray; //Transformed vertices
+		BatchManager& batchManager;
 
 	protected:
-		Primitive();
+		Primitive(BatchManager& batchManager);
 		virtual ~Primitive();
 
 		bool readyForDelete;

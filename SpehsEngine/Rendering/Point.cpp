@@ -8,7 +8,8 @@
 
 namespace spehs
 {
-	Point::Point(const PlaneDepth &_planeDepth)
+	Point::Point(BatchManager& _batchManager, const PlaneDepth &_planeDepth)
+		: Primitive(_batchManager)
 	{
 		vertexArray.push_back(Vertex());
 		vertexArray.back().position = spehs::vec2(0.0f, 0.0f);
@@ -39,7 +40,7 @@ namespace spehs
 
 	TextureData* Point::setTexture(const std::string &_texturePath)
 	{
-		TextureData* value = textureManager->getTextureData(_texturePath);
+		TextureData* value = batchManager.textureManager.getTextureData(_texturePath);
 		textureDataID = value->textureDataID;
 		if (shaderIndex == DefaultPolygon)
 			shaderIndex = DefaultTexture;
@@ -48,7 +49,7 @@ namespace spehs
 
 	TextureData* Point::setTexture(const size_t &_textureID)
 	{
-		TextureData* value = textureManager->getTextureData(_textureID);
+		TextureData* value = batchManager.textureManager.getTextureData(_textureID);
 		textureDataID = value->textureDataID;
 		if (shaderIndex == DefaultPolygon)
 			shaderIndex = DefaultTexture;

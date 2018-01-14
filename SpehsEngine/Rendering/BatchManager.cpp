@@ -12,10 +12,16 @@
 
 namespace spehs
 {
-	BatchManager::BatchManager(Camera2D* _camera, const std::string _name) : name(_name)
+	BatchManager::BatchManager(Window& _window, Camera2D& _camera, TextureManager& _textureManager, ShaderManager& _shaderManager, const std::string& _name)
+		: textureManager(_textureManager)
+		, shaderManager(_shaderManager)
+		, window(_window)
+		, camera2D(_camera)
+		, name(_name)
 	{
-		camera2D = _camera;
+
 	}
+
 	BatchManager::~BatchManager()
 	{
 		//Delete batches
@@ -37,56 +43,56 @@ namespace spehs
 
 	Polygon* BatchManager::createPolygon(const int &_shapeID, const PlaneDepth &_planeDepth, const float &_width, const float &_height)
 	{
-		primitives.push_back(new Polygon(_shapeID, _planeDepth, _width, _height));
+		primitives.push_back(new Polygon(*this, _shapeID, _planeDepth, _width, _height));
 		return primitives.back()->getPolygonPtr();
 	}
 	Polygon* BatchManager::createPolygon(std::vector<Vertex> _vertexData, const PlaneDepth &_planeDepth, const float &_width, const float &_height)
 	{
-		primitives.push_back(new Polygon(_vertexData, _planeDepth, _width, _height));
+		primitives.push_back(new Polygon(*this, _vertexData, _planeDepth, _width, _height));
 		return primitives.back()->getPolygonPtr();
 	}
 	Polygon* BatchManager::createPolygon(std::vector<Vertex> _vertexData, const float &_width, const float &_height)
 	{
-		primitives.push_back(new Polygon(_vertexData, _width, _height));
+		primitives.push_back(new Polygon(*this, _vertexData, _width, _height));
 		return primitives.back()->getPolygonPtr();
 	}
 	Polygon* BatchManager::createPolygon(std::vector<spehs::vec2> _cuspData, const PlaneDepth &_planeDepth, const float &_width, const float &_height)
 	{
-		primitives.push_back(new Polygon(_cuspData, _planeDepth, _width, _height));
+		primitives.push_back(new Polygon(*this, _cuspData, _planeDepth, _width, _height));
 		return primitives.back()->getPolygonPtr();
 	}
 
 	Line* BatchManager::createLine(const spehs::vec2 &_startPoint, const spehs::vec2 &_endPoint, const PlaneDepth &_planeDepth)
 	{
-		primitives.push_back(new Line(_startPoint, _endPoint, _planeDepth));
+		primitives.push_back(new Line(*this, _startPoint, _endPoint, _planeDepth));
 		return primitives.back()->getLinePtr();
 	}
 	Line* BatchManager::createLine(const PlaneDepth &_planeDepth)
 	{
-		primitives.push_back(new Line(_planeDepth));
+		primitives.push_back(new Line(*this, _planeDepth));
 		return primitives.back()->getLinePtr();
 	}
 
 	Point* BatchManager::createPoint(const PlaneDepth &_planeDepth)
 	{
-		primitives.push_back(new Point(_planeDepth));
+		primitives.push_back(new Point(*this, _planeDepth));
 		return primitives.back()->getPointPtr();
 	}
 	
 	Text* BatchManager::createText(const PlaneDepth &_planeDepth)
 	{
-		texts.push_back(new Text(_planeDepth));
+		texts.push_back(new Text(*this, _planeDepth));
 		return texts.back();
 	}
 	Text* BatchManager::createText(const std::string &_string, const PlaneDepth &_planeDepth)
 	{
-		texts.push_back(new Text(_string, _planeDepth));
+		texts.push_back(new Text(*this, _string, _planeDepth));
 		return texts.back();
 	}
 
 
 
-	void BatchManager::render()
+	void BatchManager::render(BatchRenderResults* results)
 	{
 		bool batchFound = false;
 
@@ -121,7 +127,7 @@ namespace spehs
 				//If none found create a new one
 				if (!batchFound)
 				{
-					batches.push_back(new PrimitiveBatch(primitives[i]->cameraMatrixState, primitives[i]->planeDepth, primitives[i]->blending, primitives[i]->shaderIndex,
+					batches.push_back(new PrimitiveBatch(*this, primitives[i]->cameraMatrixState, primitives[i]->planeDepth, primitives[i]->blending, primitives[i]->shaderIndex,
 						primitives[i]->textureDataID, primitives[i]->drawMode, primitives[i]->lineWidth));
 					batches.back()->push(primitives[i]);
 				}
@@ -159,7 +165,7 @@ namespace spehs
 				//If none found create a new one
 				if (!batchFound)
 				{
-					batches.push_back(new TextBatch(texts[i]->cameraMatrixState, texts[i]->planeDepth, texts[i]->shaderIndex));
+					batches.push_back(new TextBatch(*this, texts[i]->cameraMatrixState, texts[i]->planeDepth, texts[i]->shaderIndex));
 					batches.back()->push(texts[i]);
 				}
 				i++;
@@ -167,18 +173,17 @@ namespace spehs
 			else
 				i++;
 		}
-
-
-	//RENDERING:
-
-		//Sort and Render batches
+		
+		//Sort batches
 		std::sort(batches.begin(), batches.end(), [](Batch* first, Batch* second)
 		{
 			return first->getPriority() < second->getPriority();
 		});
+
+		//Render batches
 		for (unsigned i = 0; i < batches.size();)
 		{
-			if (!batches[i]->render(camera2D)) //If the batch is empty, delete it
+			if (!batches[i]->render(results)) //If the batch is empty, delete it
 			{
 				delete batches[i];
 				batches.erase(batches.begin() + i);

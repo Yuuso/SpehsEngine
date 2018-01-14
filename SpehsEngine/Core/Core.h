@@ -1,22 +1,21 @@
 #pragma once
 #include <string>
-#include <functional>
 
 namespace spehs
 {
-	namespace core
+	class CoreLib
 	{
+	public:
 		/* Initializes core library */
-		int initialize();
+		CoreLib();
 
 		/* Uninitializes core library */
-		void uninitialize();
+		~CoreLib();
 
 		/* Returns whether the core library has successfully been initialized */
-		bool isInitialized();
+		static bool isValid();
 		
 		/* Returns core library version in a readable string format */
-		std::string getVersion();
-
-	}
+		static std::string getVersion();
+	};
 }

@@ -1,5 +1,6 @@
 #pragma once
 
+#include "SpehsEngine/Rendering/BatchRenderResults.h"
 #include "SpehsEngine/Rendering/Primitive.h"
 #include "SpehsEngine/Rendering/Text.h"
 #include "SpehsEngine/Core/Vertex.h"
@@ -20,6 +21,7 @@ typedef unsigned short GLushort;
 namespace spehs
 {
 	class Camera2D;
+	class BatchManager;
 
 	int getIndexMultiplier(const GLenum &_drawMode, const unsigned int& _batchSize = DEFAULT_MAX_BATCH_SIZE); //Calculate max number of indices
 
@@ -27,17 +29,19 @@ namespace spehs
 	class Batch
 	{
 	public:
-		Batch(const PlaneDepth &_priority, const int &_shaderIndex);
+		Batch(BatchManager& batchManager, const PlaneDepth &_priority, const int &_shaderIndex);
 		virtual ~Batch();
 
 		virtual bool check(const Primitive &_primitive){ return false; }
 		virtual bool check(const Text &_text){ return false; }
 
-		virtual bool render(const Camera2D* _batchCamera) = 0; //Returns false if the batch is empty
+		virtual bool render(BatchRenderResults* results = nullptr) = 0;//NOTE: results are incremented rather than set.
 		virtual void push(Primitive* _primitive){}
 		virtual void push(Text* _text){}
 		
 		PlaneDepth getPriority() const{ return priority; }
+
+		BatchManager& batchManager;
 
 	protected:
 		PlaneDepth priority;
@@ -57,12 +61,12 @@ namespace spehs
 	class PrimitiveBatch : public Batch
 	{
 	public:
-		PrimitiveBatch(const bool _cameraMatrixState, const PlaneDepth &_priority, const bool _blending, const int &_shaderIndex, const GLuint &_textureDataID, const GLenum &_drawMode, float _lineWidth);
+		PrimitiveBatch(BatchManager& batchManager, const bool _cameraMatrixState, const PlaneDepth &_priority, const bool _blending, const int &_shaderIndex, const GLuint &_textureDataID, const GLenum &_drawMode, float _lineWidth);
 		~PrimitiveBatch();
 
 		bool check(const Primitive &_primitive);
 
-		bool render(const Camera2D* _batchCamera);
+		bool render(BatchRenderResults* results = nullptr) override;
 		void push(Primitive* _primitive);
 
 	protected:
@@ -82,12 +86,12 @@ namespace spehs
 	class TextBatch : public Batch
 	{
 	public:
-		TextBatch(const bool _cameraMatrixState, const PlaneDepth &_priority, const int &_shaderIndex);
+		TextBatch(BatchManager& batchManager, const bool _cameraMatrixState, const PlaneDepth &_priority, const int &_shaderIndex);
 		~TextBatch();
 
 		bool check(const Text &_text);
 
-		bool render(const Camera2D* _batchCamera);
+		bool render(BatchRenderResults* results = nullptr) override;
 		void push(Text* _text);
 
 	protected:

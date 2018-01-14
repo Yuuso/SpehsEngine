@@ -4,7 +4,6 @@
 #include <string>
 
 #include "SpehsEngine/Input/InputEnumerations.h"
-#include "SpehsEngine/Input/InputState.h"
 #include "SpehsEngine/Core/Vector.h"
 #include "SpehsEngine/Input/GUID.h"
 
@@ -17,6 +16,9 @@ typedef int32_t SDL_JoystickID;
 
 namespace spehs
 {
+	class Window;
+	class InputManager;
+
 	GUID getJoystickDeviceGUID(int _deviceIndex);
 	/**Joysticks can only be created during run time, they will not be removed but instead go into offline mode. \n
 	This is because parts of the program can be attached to a joystick through a pointer/reference and unknowingly could try to access the removed joystick's state*/
@@ -30,6 +32,7 @@ namespace spehs
 		int32_t queryButtonDown();///<Returns -1 if no button is pressed. Returns button index (>= 0) if a button is pressed. If multiple buttons are being pressed, returns the one with the lowerst index.
 		unsigned getGUIDIndex();///<Searches for joysticks with the same GUID. Returns my index among devices with the same GUID
 
+		InputManager& inputManager;
 		GUID guid;
 		SDL_Joystick* joystick;
 		SDL_JoystickID ID;
@@ -43,7 +46,7 @@ namespace spehs
 		void goOnline(SDL_Joystick* newJs);
 		bool offline;///<When joystick disconnects during runtime it goes into offline mode. In offline mode key pressed calls return false, axis states return 0.
 	private:
-		Joystick(int index);
+		Joystick(InputManager& inputManager, int index);
 		~Joystick();
 		friend class InputManager;
 	};
@@ -52,14 +55,11 @@ namespace spehs
 	class InputManager
 	{
 	public:
-		InputManager();
+		InputManager(Window& _window);
 		~InputManager();
 
-		void initialize();
-		void uninitialize();
 		void update();
 		void processEvents();
-		void update(InputState& inputState);
 
 		//manging keyboard
 		void pressKey(unsigned int keyID);
@@ -99,6 +99,7 @@ namespace spehs
 		std::string getDroppedFilePath(){ std::string path = droppedFilePath; droppedFilePath.clear();/*Reset dropped file path*/ return path; }
 
 		//Public access members
+		Window& window;
 		std::vector<Joystick*> joysticks;
 		int32_t latestKeyboardPress;///< Latest key pressed. Reset for each update (0) if nothing was pressed during that update
 		int32_t latestMouseButtonPress;///< Latest mouse buton pressed. Reset for each update (0) if nothing was pressed during that update
@@ -127,4 +128,4 @@ namespace spehs
 		int joystickCount = 0;
 	};
 }
-extern spehs::InputManager* inputManager;
+//extern spehs::InputManager* inputManager;

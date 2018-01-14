@@ -2,7 +2,9 @@
 #include "SpehsEngine/Core/Exceptions.h"
 #include "SpehsEngine/Core/Time.h"
 #include "SpehsEngine/Input/InputManager.h"
+#include "SpehsEngine/Input/Input.h"
 #include "SpehsEngine/Rendering/BatchManager.h"
+#include "SpehsEngine/Rendering/Window.h"
 #include "SpehsEngine/GUI/GUIWindowManager.h"
 #include "SpehsEngine/GUI/GUIWindow.h"
 #include "SpehsEngine/GUI/GUIPopup.h"
@@ -10,8 +12,10 @@
 
 namespace spehs
 {
-	GUIWindowManager::GUIWindowManager(BatchManager& _batchManager)
-		: batchManager(_batchManager)
+	GUIWindowManager::GUIWindowManager(GUIContext& context)
+		: batchManager(context.batchManager)
+		, inputManager(context.inputManager)
+		, deltaTimeSystem(context.deltaTimeSystem)
 		, focusedWindow(nullptr)
 		, depthPerWindow(256)
 		, receivingInput(false)
@@ -20,13 +24,12 @@ namespace spehs
 		, dragging(false)
 		, popupShadeCurrentAlpha(0.0f)
 	{
-		popupShade = batchManager.createPolygon(Shape::BUTTON, 0, spehs::ApplicationData::getWindowWidth(), spehs::ApplicationData::getWindowHeight());
+		popupShade = batchManager.createPolygon(Shape::BUTTON, 0, batchManager.window.getWidth(), batchManager.window.getHeight());
 		popupShade->setCameraMatrixState(false);
 		popupShade->setPosition(0, 0);
 		setPopupShadeColor(spehs::Color(40, 55, 45, 80));
 
 		setSystemDepth(GUIRectangle::defaultDepth);
-		deltaTimeSystemInitialize();
 	}
 
 	GUIWindowManager::~GUIWindowManager()
@@ -47,7 +50,7 @@ namespace spehs
 	void GUIWindowManager::addPopup(GUIRectangle* popup)
 	{
 		popup->setRenderState(true);
-		popup->setPositionGlobal(spehs::ApplicationData::getWindowWidthHalf() - popup->getWidth() * 0.5f, spehs::ApplicationData::getWindowHeightHalf() - popup->getHeight() * 0.5f);
+		popup->setPositionGlobal(batchManager.window.getWidth() / 2 - popup->getWidth() * 0.5f, batchManager.window.getHeight() / 2 - popup->getHeight() * 0.5f);
 		popups.push_back(popup);
 		updateDepths();
 		popup->visualUpdate();
@@ -55,8 +58,6 @@ namespace spehs
 
 	void GUIWindowManager::update()
 	{
-		deltaTimeSystemUpdate();
-
 		const bool focusedWindowReceivingInput = focusedWindow ? focusedWindow->isReceivingInput() : false;
 		bool updateWindows = true;
 		receivingInput = focusedWindowReceivingInput;
@@ -82,21 +83,20 @@ namespace spehs
 		}
 
 		//Update front popup
-		GUIRectangle::InputUpdateData inputUpdateData(inputManager->getMouseCoords(), deltaTime);
 		if (!popups.empty())
 		{
 			//Render state & alpha
 			popupShade->setRenderState(true);
 			if (popupShadeCurrentAlpha < popupShadeTargetAlpha)
 			{
-				popupShadeCurrentAlpha += deltaTime.asSeconds();
+				popupShadeCurrentAlpha += deltaTimeSystem.deltaTime.asSeconds();
 				if (popupShadeCurrentAlpha > popupShadeTargetAlpha)
 					popupShadeCurrentAlpha = popupShadeTargetAlpha;
 				popupShade->setAlpha(int(255.0f * popupShadeCurrentAlpha));
 			}
 
 			//Update
-			popups.front()->inputUpdate(inputUpdateData);
+			popups.front()->inputUpdate();
 			popups.front()->visualUpdate();
 			if (popups.front()->getMouseHoverAny())
 			{
@@ -112,7 +112,7 @@ namespace spehs
 			}
 
 			//Prevent mouse access outside popups
-			inputManager->tryClaimMouseAvailability();
+			inputManager.tryClaimMouseAvailability();
 		}
 		else if (popupShade->getRenderState())
 		{
@@ -141,7 +141,7 @@ namespace spehs
 					if (!focusedWindowReceivingInput &&
 						(!focusWindowUpdated || !focusedWindow))
 						windows[i]->enableInput();//Valid for input
-					windows[i]->inputUpdate(inputUpdateData);
+					windows[i]->inputUpdate();
 					windows[i]->visualUpdate();
 
 					if (windows[i]->getMouseHoverAny() && !focusedWindow)
@@ -182,7 +182,7 @@ namespace spehs
 				{//Window not under mouse, do not continue focus status
 					focusedWindow = nullptr;
 				}
-				else if (inputManager->isKeyPressed(MOUSE_BUTTON_LEFT))
+				else if (inputManager.isKeyPressed(MOUSE_BUTTON_LEFT))
 				{//Focused window was pressed, move window to the back of the vector if not there already
 					if (focusedWindow != windows.back())
 					{
@@ -216,7 +216,7 @@ namespace spehs
 
 		//Claim mouse availability if mouse is hovering over a window
 		if (getMouseHoverAny())
-			inputManager->tryClaimMouseAvailability();
+			inputManager.tryClaimMouseAvailability();
 	}
 
 	void GUIWindowManager::refreshWindows()

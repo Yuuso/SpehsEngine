@@ -2,6 +2,9 @@
 #include "SpehsEngine/Core/ApplicationData.h"
 #include "SpehsEngine/Core/Time.h"
 #include "SpehsEngine/Input/InputManager.h"
+#include "SpehsEngine/Input/Input.h"
+#include "SpehsEngine/Rendering/BatchManager.h"
+#include "SpehsEngine/Rendering/Window.h"
 #include "SpehsEngine/Rendering/Polygon.h"
 #include "SpehsEngine/GUI/GUIRectangleTree.h"
 #include "SpehsEngine/GUI/GUIRectangle.h"
@@ -9,8 +12,8 @@
 namespace spehs
 {
 	time::Time GUIRectangleTree::defaultTreeOpenTime = time::fromSeconds(0.5f);
-	GUIRectangleTree::GUIRectangleTree(BatchManager& _batchManager)
-		: GUIRectangleUnisizeContainer(_batchManager)
+	GUIRectangleTree::GUIRectangleTree(GUIContext& context)
+		: GUIRectangleUnisizeContainer(context)
 		, pressedLeafNodeID(0)
 		, openTreeButton(MOUSE_BUTTON_LEFT)
 		, treeOpenTimer(0)
@@ -23,10 +26,10 @@ namespace spehs
 	{
 	}
 
-	void GUIRectangleTree::inputUpdate(InputUpdateData& data)
+	void GUIRectangleTree::inputUpdate()
 	{
 		pressedLeafNodeID = 0;
-		GUIRectangleContainer::inputUpdate(data);
+		GUIRectangleContainer::inputUpdate();
 		
 		////Closing / Opening
 		if (pressedLeafNodeID)
@@ -37,7 +40,7 @@ namespace spehs
 		{//Button press handling ->open tree or inform root of leaf press
 			if (openTreeButton)
 			{//Toggle open when open button is pressed while mouse hovering
-				if (getMouseHover() && inputManager->isKeyPressed(openTreeButton))
+				if (getMouseHover() && inputManager.isKeyPressed(openTreeButton))
 				{//If button is a tree and was pressed...
 					if (elements.size() == 0)//If this is button tree, must not have nodes underneath to trigger leaf node press
 						leafNodePressed(id);
@@ -60,7 +63,7 @@ namespace spehs
 		}
 		else if (treeOpenTimer > spehs::time::zero)
 		{//If mouse is outside the container, close over time
-			treeOpenTimer -= data.deltaTime;
+			treeOpenTimer -= deltaTimeSystem.deltaTime;
 			if (treeOpenTimer <= time::Time::zero)
 				close();
 			else
@@ -105,7 +108,7 @@ namespace spehs
 			else
 			{//Parent TREE doesn't exist. Decide branching direction based on horizontal location/size
 				GUIRectangle* firstGenParent = getFirstGenerationParent();
-				if (firstGenParent->getXGlobal() + firstGenParent->getWidth() / 2.0f > spehs::ApplicationData::getWindowWidthHalf())
+				if (firstGenParent->getXGlobal() + firstGenParent->getWidth() / 2.0f > batchManager.window.getWidth() / 2)
 				{//Branch left
 					branchX = firstGenParent->getXGlobal() - getXGlobal() - minElementSize.x;
 				}
@@ -117,8 +120,8 @@ namespace spehs
 
 			////Element Y positioning
 			int branchY(getYGlobal());
-			if (branchY + elements.size() * minElementSize.y + 1 > spehs::ApplicationData::getWindowHeight())
-				branchY = spehs::ApplicationData::getWindowHeight() - elements.size() * minElementSize.y - 1;
+			if (branchY + elements.size() * minElementSize.y + 1 > batchManager.window.getHeight())
+				branchY = batchManager.window.getHeight() - elements.size() * minElementSize.y - 1;
 
 			//Position elements
 			for (unsigned i = 0; i < elements.size(); i++)
@@ -144,7 +147,7 @@ namespace spehs
 
 	void GUIRectangleTree::addElement(const std::string& str, const GUIRECT_ID_TYPE _ID)
 	{
-		addElement(new GUIRectangleTree(batchManager));
+		addElement(new GUIRectangleTree(getGUIContext()));
 		elements.back()->setString(str);
 		elements.back()->setID(_ID);
 	}

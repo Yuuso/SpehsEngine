@@ -15,12 +15,12 @@ namespace spehs
 		static float colorPreviewWidth;
 		static int colorEditorBorder;
 	public:
-		GUIColorEditor(BatchManager& _batchManager);
+		GUIColorEditor(GUIContext& context);
 		~GUIColorEditor();
 
 		void setDepth(const int16_t _depth) override;
 		void setRenderState(const bool _state) override;
-		void inputUpdate(InputUpdateData& data) override;
+		void inputUpdate() override;
 		void visualUpdate() override;
 		void updateMinSize() override;
 		void updateScale() override;

@@ -17,8 +17,8 @@
 
 namespace spehs
 {
-	Polygon::Polygon(const int _shapeID, const PlaneDepth _planeDepth, const float _width, const float _height)
-		: Polygon(_width, _height)
+	Polygon::Polygon(BatchManager& _batchManager, const int _shapeID, const PlaneDepth _planeDepth, const float _width, const float _height)
+		: Polygon(_batchManager, _width, _height)
 	{
 		planeDepth = _planeDepth;
 		if (_shapeID >= 3) //Regular Convex Polygons
@@ -81,8 +81,9 @@ namespace spehs
 			}
 		}
 	}
-	Polygon::Polygon(const std::vector<spehs::Vertex>& _vertexData, const PlaneDepth _planeDepth, const float _width, const float _height)
-		: Polygon(_width, _height)
+
+	Polygon::Polygon(BatchManager& _batchManager, const std::vector<spehs::Vertex>& _vertexData, const PlaneDepth _planeDepth, const float _width, const float _height)
+		: Polygon(_batchManager, _width, _height)
 	{
 		planeDepth = _planeDepth;
 		if (_vertexData.size() < 3)
@@ -93,13 +94,15 @@ namespace spehs
 
 		setUVCoords();
 	}
-	Polygon::Polygon(const std::vector<spehs::Vertex>& _vertexData, const float _width, const float _height)
-		: Polygon(_vertexData, 0, _width, _height)
+
+	Polygon::Polygon(BatchManager& _batchManager, const std::vector<spehs::Vertex>& _vertexData, const float _width, const float _height)
+		: Polygon(_batchManager, _vertexData, 0, _width, _height)
 	{
 		blending = false;
 	}
-	Polygon::Polygon(const std::vector<spehs::vec2>& _positionData, const PlaneDepth _planeDepth, const float _width, const float _height)
-		: Polygon(_width, _height)
+
+	Polygon::Polygon(BatchManager& _batchManager, const std::vector<spehs::vec2>& _positionData, const PlaneDepth _planeDepth, const float _width, const float _height)
+		: Polygon(_batchManager, _width, _height)
 	{
 		planeDepth = _planeDepth;
 		if (_positionData.size() < 3)
@@ -114,19 +117,21 @@ namespace spehs
 
 		setUVCoords();
 	}
-	Polygon::Polygon(const float _width, const float _height)
-		: width(_width)
+
+	Polygon::Polygon(BatchManager& _batchManager, const float _width, const float _height)
+		: Primitive(_batchManager)
+		, width(_width)
 		, height(_height)
 		, radius(0.0f)
 	{
 		drawMode = TRIANGLE;
 		blending = true;
 	}
+
 	Polygon::~Polygon()
 	{
 
 	}
-
 
 	void Polygon::updateVertices()
 	{
@@ -143,8 +148,7 @@ namespace spehs
 			needUpdate = false;
 		}
 	}
-
-
+	
 	void Polygon::getScreenVertices(spehs::Camera2D* _camera, std::vector<spehs::vec2>& deposit)
 	{
 		if (cameraMatrixState)
@@ -160,8 +164,7 @@ namespace spehs
 			spehs::exceptions::unexpectedError("Camera state not enabled, screen vertices function is useless.");
 		}
 	}
-
-
+	
 	void Polygon::resize(const float &_width, const float &_height)
 	{
 		width = _width;
@@ -203,7 +206,7 @@ namespace spehs
 
 	TextureData* Polygon::setTexture(const std::string &_texturePath)
 	{
-		TextureData* value = textureManager->getTextureData(_texturePath);
+		TextureData* value = batchManager.textureManager.getTextureData(_texturePath);
 		textureDataID = value->textureDataID;
 		if (shaderIndex == DefaultPolygon)
 			shaderIndex = DefaultTexture;
@@ -212,7 +215,7 @@ namespace spehs
 
 	TextureData* Polygon::setTexture(const size_t &_hash)
 	{
-		TextureData* value = textureManager->getTextureData(_hash);
+		TextureData* value = batchManager.textureManager.getTextureData(_hash);
 		textureDataID = value->textureDataID;
 		if (shaderIndex == DefaultPolygon)
 			shaderIndex = DefaultTexture;
@@ -260,8 +263,6 @@ namespace spehs
 		return radius;
 	}
 
-
-	//Private:
 	void Polygon::setUVCoords()
 	{
 		for (unsigned int i = 0; i < worldVertexArray.size(); i++)

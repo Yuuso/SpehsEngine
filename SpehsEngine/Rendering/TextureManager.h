@@ -10,6 +10,8 @@ typedef unsigned int GLuint;
 
 namespace spehs
 {
+	class GLContext;
+
 	enum class TextureFiltering : int
 	{
 		Nearest = 0x2600,
@@ -78,7 +80,7 @@ namespace spehs
 	class TextureManager
 	{
 	public:
-		TextureManager();
+		TextureManager(GLContext& glContext);
 		~TextureManager();
 
 		void setDefaultTexture(const std::string& _filepath, const TextureParameter& _parameters);
@@ -107,8 +109,10 @@ namespace spehs
 		void removeTextureData(const size_t& _hash);
 		void clearAllTextureData();
 
-		void takeScreenShot(std::string directory);//Takes a screenshot and writes it to the specified directory
-		void takeScreenShot();//Takes screenshot and writes it to the default screenshot directory, specified in the application data
+		void takeScreenshot(std::string directory);//Takes a screenshot and writes it to the specified directory
+		void takeScreenshot();//Takes screenshot and writes it to the default screenshot directory, specified in the application data
+
+		GLContext& glContext;
 
 	private:
 		TextureData* toTexture(const std::string& _filepath, const TextureParameter& _parameters);
@@ -117,4 +121,3 @@ namespace spehs
 		std::unordered_map<size_t, TextureData*> textureDataMap;
 	};
 }
-extern spehs::TextureManager* textureManager;

@@ -3,22 +3,20 @@
 
 namespace spehs
 {
-	namespace input
+	class RenderingLib;
+	class InputLib
 	{
+	public:
 		/* Initializes input library */
-		int initialize();
+		InputLib(const RenderingLib& renderingLib);
 
 		/* Uninitializes input library */
-		void uninitialize();
+		~InputLib();
 
 		/* Returns whether the input library has successfully been initialized */
-		bool isInitialized();
+		static bool isValid();
 
 		/* Returns engine input libary version in a readable string format */
-		std::string getVersion();
-
-		class Window;
-		/* Get a pointer to the main window */
-		Window* getMainWindow();
-	}
+		static std::string getVersion();
+	};
 }

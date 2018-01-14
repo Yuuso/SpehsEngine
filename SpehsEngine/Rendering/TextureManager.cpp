@@ -1,11 +1,14 @@
 
 #include "SpehsEngine/Core/ApplicationData.h"
 #include "SpehsEngine/Core/Exceptions.h"
-#include "SpehsEngine/Core/RNG.h"
-#include "SpehsEngine/Rendering/TextureManager.h"
-#include "SpehsEngine/Input/OpenGLError.h"
-#include "SpehsEngine/Rendering/Console.h"
 #include "SpehsEngine/Core/Color.h"
+#include "SpehsEngine/Core/RNG.h"
+#include "SpehsEngine/Input/Input.h"
+#include "SpehsEngine/Rendering/GLContext.h"
+#include "SpehsEngine/Rendering/Window.h"
+#include "SpehsEngine/Rendering/OpenGLError.h"
+#include "SpehsEngine/Rendering/TextureManager.h"
+#include "SpehsEngine/Rendering/Console.h"
 
 #include <functional>
 #include <algorithm>
@@ -24,13 +27,15 @@
 const spehs::TextureParameter spehs::TextureParameter::defaultParameters = spehs::TextureParameter();
 
 
-spehs::TextureManager* textureManager;
 namespace spehs
 {
-	TextureManager::TextureManager()
+	TextureManager::TextureManager(GLContext& _glContext)
+		: glContext(_glContext)
 	{
+		SPEHS_ASSERT(glContext.isValid());
 		defaultTexture = getNoiseTexture(4, 4, DEFAULT_TEXTURE_SEED, 4);
 	}
+
 	TextureManager::~TextureManager()
 	{
 		clearAllTextureData();
@@ -44,6 +49,7 @@ namespace spehs
 		else
 			exceptions::fatalError("Creating default texture failed!");
 	}
+
 	void TextureManager::setDefaultTexture(const std::string& _filepath)
 	{
 		setDefaultTexture(_filepath, TextureParameter::defaultParameters);
@@ -68,8 +74,7 @@ namespace spehs
 		}
 		return false;
 	}
-
-
+	
 	TextureData* TextureManager::getTextureData(const std::string& _texturePath, const TextureParameter& _parameters)
 	{
 		size_t hash = std::hash<std::string>()(_texturePath);
@@ -84,10 +89,12 @@ namespace spehs
 		else
 			return defaultTexture;
 	}
+
 	TextureData* TextureManager::getTextureData(const std::string& _texturePath)
 	{
 		return getTextureData(_texturePath, TextureParameter::defaultParameters);
 	}
+
 	TextureData* TextureManager::getTextureData(const size_t& _hash)
 	{
 		auto it = textureDataMap.find(_hash);
@@ -98,6 +105,7 @@ namespace spehs
 		exceptions::warning("Texture not found, using default.");
 		return defaultTexture;
 	}
+
 	size_t TextureManager::preloadTexture(const std::string& _texturePath, const TextureParameter& _parameters)
 	{
 		size_t hash = std::hash<std::string>()(_texturePath);
@@ -113,11 +121,11 @@ namespace spehs
 		}
 		return hash;
 	}
+
 	size_t TextureManager::preloadTexture(const std::string& _texturePath)
 	{
 		return preloadTexture(_texturePath, TextureParameter::defaultParameters);
 	}
-
 
 	TextureData* TextureManager::getNoiseTexture(const int& _width, const int& _height, const unsigned int& _seed, const int& _factor, const TextureParameter& _parameters)
 	{
@@ -128,10 +136,12 @@ namespace spehs
 
 		return textureDataMap.find(preloadNoiseTexture(_width, _height, _seed, _factor, _parameters))->second;
 	}
+
 	TextureData* TextureManager::getNoiseTexture(const int& _width, const int& _height, const unsigned int& _seed, const int& _factor)
 	{
 		return getNoiseTexture(_width, _height, _seed, _factor, TextureParameter::defaultParameters);
 	}
+
 	size_t TextureManager::preloadNoiseTexture(const int& _width, const int& _height, const unsigned int& _seed, const int& _factor, const TextureParameter& _parameters)
 	{
 		if (_factor == 0)
@@ -246,10 +256,12 @@ namespace spehs
 
 		return hash;
 	}
+
 	size_t TextureManager::preloadNoiseTexture(const int& _width, const int& _height, const unsigned int& _seed, const int& _factor)
 	{
 		return preloadNoiseTexture(_width, _height, _seed, _factor, TextureParameter::defaultParameters);
 	}
+
 	TextureData* TextureManager::createTexture(const std::string &_ID, const void* _uint8data, const int _width, const int _height, const TextureParameter& _parameters)
 	{
 		size_t hash = std::hash<std::string>()(_ID);
@@ -259,10 +271,12 @@ namespace spehs
 
 		return textureDataMap.find(preloadDataTexture(_ID, _uint8data, _width, _height, _parameters))->second;
 	}
+
 	TextureData* TextureManager::createTexture(const std::string &_ID, const void* _uint8data, const int _width, const int _height)
 	{
 		return createTexture(_ID, _uint8data, _width, _height, TextureParameter::defaultParameters);
 	}
+
 	size_t TextureManager::preloadDataTexture(const std::string &_ID, const void* _uint8data, const int _width, const int _height, const TextureParameter& _parameters)
 	{
 		size_t hash = std::hash<std::string>()(_ID);
@@ -297,16 +311,17 @@ namespace spehs
 
 		return hash;
 	}
+
 	size_t TextureManager::preloadDataTexture(const std::string &_ID, const void* _uint8data, const int _width, const int _height)
 	{
 		return preloadDataTexture(_ID, _uint8data, _width, _height, TextureParameter::defaultParameters);
 	}
 
-
 	void TextureManager::removeTextureData(const std::string& _texturePath)
 	{
 		removeTextureData(std::hash<std::string>()(_texturePath));
 	}
+
 	void TextureManager::removeTextureData(const size_t& _hash)
 	{
 		auto it = textureDataMap.find(_hash);
@@ -320,6 +335,7 @@ namespace spehs
 			exceptions::warning("Texture not found, cannot remove!");
 		}
 	}
+
 	void TextureManager::clearAllTextureData()
 	{
 		for (auto &it : textureDataMap)
@@ -328,7 +344,6 @@ namespace spehs
 		}
 		textureDataMap.clear();
 	}
-
 
 	//Private:
 	TextureData* TextureManager::toTexture(const std::string& _filepath, const TextureParameter& _parameters)
@@ -371,12 +386,12 @@ namespace spehs
 		return newTexData;
 	}
 
-	void TextureManager::takeScreenShot()
+	void TextureManager::takeScreenshot()
 	{
-		takeScreenShot(spehs::ApplicationData::screenshotDirectory);
+		takeScreenshot(spehs::ApplicationData::screenshotDirectory);
 	}
 
-	void TextureManager::takeScreenShot(std::string directory)
+	void TextureManager::takeScreenshot(std::string directory)
 	{
 		if (directory.size() > 0 && directory.back() != '/' && directory.back() != '\\')
 			directory.push_back('/');
@@ -391,7 +406,7 @@ namespace spehs
 		std::string path = directory + "screenshot_" + string + ".png";
 
 		int screenshot;
-		screenshot = SOIL_save_screenshot(path.c_str(), SOIL_SAVE_TYPE_BMP, 0, 0, spehs::ApplicationData::getWindowWidth(), spehs::ApplicationData::getWindowHeight());
-		console::log("Screenshot saved to \"" + path + "\"", spehs::Color(90, 255, 230));
+		screenshot = SOIL_save_screenshot(path.c_str(), SOIL_SAVE_TYPE_BMP, 0, 0, glContext.window.getWidth(), glContext.window.getHeight());
+		//console::log("Screenshot saved to \"" + path + "\"", spehs::Color(90, 255, 230));
 	}
 }

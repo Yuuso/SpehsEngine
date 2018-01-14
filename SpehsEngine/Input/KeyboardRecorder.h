@@ -4,6 +4,8 @@
 
 namespace spehs
 {
+	class InputManager;
+
 	/** This class can be used to record text input from the keyboard.
 	All input is divided into two types: character and command input.
 	Registered keystrokes can be obtained from the input vectors after the update.
@@ -15,7 +17,7 @@ namespace spehs
 	class KeyboardRecorder
 	{
 	public:
-		KeyboardRecorder();
+		KeyboardRecorder(InputManager& inputManager);
 		virtual ~KeyboardRecorder();
 
 		virtual void update(const time::Time deltaTime);
@@ -30,6 +32,7 @@ namespace spehs
 		bool isCommandKey(const unsigned key) const;///< Returns whether specified key is listened as a command key
 		std::vector<unsigned> getCommandKeys() const { return commandKeys; }
 
+		InputManager& inputManager;
 
 		//Registered keystroked will appear in these vector after the update
 		std::vector<char> characterInput;

@@ -15,8 +15,8 @@ namespace spehs
 	const spehs::Color GUICheckbox::defaultCheckboxFillingColor(30, 30, 30);
 	const spehs::Color GUICheckbox::defaultCheckboxOuterColor(160, 170, 180);
 
-	GUICheckbox::GUICheckbox(BatchManager& _batchManager)
-		: GUIRectangle(_batchManager)
+	GUICheckbox::GUICheckbox(GUIContext& context)
+		: GUIRectangle(context)
 		, ValueEditor(false)
 		, checkboxSize(20)
 	{
@@ -38,12 +38,12 @@ namespace spehs
 		checkboxFilling->destroy();
 	}
 
-	void GUICheckbox::inputUpdate(InputUpdateData& data)
+	void GUICheckbox::inputUpdate()
 	{
-		GUIRectangle::inputUpdate(data);
+		GUIRectangle::inputUpdate();
 
 		//Check mouse press
-		if (getInputEnabled() && getMouseHover() && inputManager->isKeyPressed(MOUSE_BUTTON_LEFT))
+		if (getInputEnabled() && getMouseHover() && inputManager.isKeyPressed(MOUSE_BUTTON_LEFT))
 			editorValue = !editorValue;
 
 		ValueEditor::update();

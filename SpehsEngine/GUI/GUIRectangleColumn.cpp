@@ -3,8 +3,8 @@
 
 namespace spehs
 {
-	GUIRectangleColumn::GUIRectangleColumn(BatchManager& _batchManager)
-		: GUIRectangleContainer(_batchManager)
+	GUIRectangleColumn::GUIRectangleColumn(GUIContext& context)
+		: GUIRectangleContainer(context)
 		, uniformHeight(false)
 	{
 

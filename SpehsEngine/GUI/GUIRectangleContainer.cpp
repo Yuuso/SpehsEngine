@@ -6,17 +6,19 @@
 
 namespace spehs
 {
-	GUIRectangleContainer::GUIRectangleContainer(BatchManager& _batchManager)
-		: GUIRectangle(_batchManager)
+	GUIRectangleContainer::GUIRectangleContainer(GUIContext& context)
+		: GUIRectangle(context)
 	{
 		open();
 	}
+
 	GUIRectangleContainer::~GUIRectangleContainer()
 	{
 		for (unsigned i = 0; i < elements.size(); i++)
 			delete elements[i];
 	}
-	void GUIRectangleContainer::inputUpdate(InputUpdateData& data)
+
+	void GUIRectangleContainer::inputUpdate()
 	{
 		disableState(GUIRECT_MOUSE_HOVER_CONTAINER_BIT);
 
@@ -25,7 +27,7 @@ namespace spehs
 		{
 			for (unsigned i = 0; i < elements.size(); i++)
 			{
-				elements[i]->inputUpdate(data);
+				elements[i]->inputUpdate();
 				//If element is under mouse, mark this container as under mouse
 				if (elements[i]->getMouseHoverAny())
 					enableState(GUIRECT_MOUSE_HOVER_CONTAINER_BIT);
@@ -33,13 +35,13 @@ namespace spehs
 		}
 
 		//Update this
-		GUIRectangle::inputUpdate(data);
+		GUIRectangle::inputUpdate();
 
 		//If mouse is hovering over the base rectangle, enable container hovering bit
 		if (checkState(GUIRECT_MOUSE_HOVER_BIT))
 			enableState(GUIRECT_MOUSE_HOVER_CONTAINER_BIT);
-
 	}
+
 	void GUIRectangleContainer::visualUpdate()
 	{
 		//Call input update on self
@@ -52,6 +54,7 @@ namespace spehs
 				elements[i]->visualUpdate();
 		}
 	}
+
 	void GUIRectangleContainer::setRenderState(const bool _state)
 	{
 		GUIRectangle::setRenderState(_state);
@@ -66,6 +69,7 @@ namespace spehs
 				elements[i]->setRenderState(false);
 		}
 	}
+
 	bool GUIRectangleContainer::isReceivingInput() const
 	{
 		if (!checkState(GUIRECT_OPEN_BIT) || !getInputEnabled())
@@ -85,6 +89,7 @@ namespace spehs
 
 		return false;
 	}
+
 	void GUIRectangleContainer::clear()
 	{
 		for (unsigned i = 0; i < elements.size(); i++)
@@ -93,6 +98,7 @@ namespace spehs
 		if (parent)
 			parent->disableStateRecursive(GUIRECT_MIN_SIZE_UPDATED_BIT);
 	}
+
 	void GUIRectangleContainer::addElement(GUIRectangle* element)
 	{
 		elements.push_back(element);
@@ -108,6 +114,7 @@ namespace spehs
 		//Min size must be updated for everything above
 		disableStateRecursiveUpwards(GUIRECT_MIN_SIZE_UPDATED_BIT | GUIRECT_SCALE_UPDATED_BIT | GUIRECT_POSITION_UPDATED_BIT);
 	}
+
 	bool GUIRectangleContainer::removeElement(GUIRectangle* element)
 	{
 		for (unsigned i = 0; i < elements.size(); i++)
@@ -124,30 +131,35 @@ namespace spehs
 		}
 		return false;
 	}
+
 	void GUIRectangleContainer::enableStateRecursive(const GUIRECT_STATE_TYPE stateBit)
 	{
 		GUIRectangle::enableState(stateBit);
 		for (unsigned i = 0; i < elements.size(); i++)
 			elements[i]->enableStateRecursive(stateBit);
 	}
+
 	void GUIRectangleContainer::disableStateRecursive(const GUIRECT_STATE_TYPE stateBit)
 	{
 		GUIRectangle::disableState(stateBit);
 		for (unsigned i = 0; i < elements.size(); i++)
 			elements[i]->disableStateRecursive(stateBit);
 	}
+
 	void GUIRectangleContainer::onEnableInput()
 	{
 		GUIRectangle::onEnableInput();
 		for (unsigned i = 0; i < elements.size(); i++)
 			elements[i]->enableInput();
 	}
+
 	void GUIRectangleContainer::onDisableInput()
 	{
 		GUIRectangle::onDisableInput();
 		for (unsigned i = 0; i < elements.size(); i++)
 			elements[i]->disableInput();
 	}
+
 	bool GUIRectangleContainer::open()
 	{//Open container dimension
 		if (checkState(GUIRECT_OPEN_BIT))
@@ -159,6 +171,7 @@ namespace spehs
 		setRenderState(true);
 		return true;
 	}
+
 	bool GUIRectangleContainer::close()
 	{//Close container dimension
 		if (!checkState(GUIRECT_OPEN_BIT))
@@ -170,6 +183,7 @@ namespace spehs
 			elements[i]->setRenderState(false);
 		return true;
 	}
+
 	void GUIRectangleContainer::toggleOpen()
 	{
 		if (checkState(GUIRECT_OPEN_BIT))
@@ -177,12 +191,14 @@ namespace spehs
 		else
 			open();
 	}
+
 	void GUIRectangleContainer::setDepth(const int16_t depth)
 	{
 		GUIRectangle::setDepth(depth);
 		for (unsigned i = 0; i < elements.size(); i++)
 			elements[i]->setDepth(depth + 10);
 	}
+
 	bool GUIRectangleContainer::isDescendant(GUIRectangle* element) const
 	{
 		for (unsigned i = 0; i < elements.size(); i++)

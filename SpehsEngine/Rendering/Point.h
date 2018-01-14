@@ -11,7 +11,6 @@ namespace spehs
 	class Point : public Primitive
 	{
 		friend class BatchManager;
-
 	public:
 
 		Point* getPointPtr(){ return this; }
@@ -26,7 +25,7 @@ namespace spehs
 
 	protected:
 		//NOTE: Point always in 2D (No Z-Depth), if there is need for 3D points for some reason -> call setBlending(false)
-		Point(const PlaneDepth &_planeDepth);
+		Point(BatchManager& _batchManager, const PlaneDepth &_planeDepth);
 		~Point();
 	};
 }

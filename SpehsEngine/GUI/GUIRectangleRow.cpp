@@ -2,8 +2,8 @@
 
 namespace spehs
 {
-	GUIRectangleRow::GUIRectangleRow(BatchManager& _batchManager)
-		: GUIRectangleContainer(_batchManager)
+	GUIRectangleRow::GUIRectangleRow(GUIContext& context)
+		: GUIRectangleContainer(context)
 		, evenElementWidth(false)
 		, elementPositionMode(PositionMode::Standard)
 	{

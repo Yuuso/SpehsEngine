@@ -30,10 +30,10 @@ namespace spehs
 
 		enum class PositionMode { StackUp, StackDown, Spread };
 	public:
-		GUIWindow(BatchManager& _batchManager);
+		GUIWindow(GUIContext& context);
 		~GUIWindow() override;
 		
-		void inputUpdate(InputUpdateData& data) override;
+		void inputUpdate() override;
 		void visualUpdate() override;
 		void updateMinSize() override;//Updates min size variable based on element requirements
 		void updateScale() override;

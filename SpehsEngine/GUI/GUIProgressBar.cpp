@@ -4,8 +4,8 @@
 
 namespace spehs
 {
-	GUIProgressBar::GUIProgressBar(BatchManager& _batchManager)
-		: GUIRectangle(_batchManager)
+	GUIProgressBar::GUIProgressBar(GUIContext& context)
+		: GUIRectangle(context)
 	{
 	}
 

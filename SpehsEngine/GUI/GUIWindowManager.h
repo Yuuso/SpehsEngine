@@ -8,12 +8,15 @@ namespace spehs
 	class GUIRectangle;
 	class GUIWindow;
 	class Polygon;
+	class GUIContext;
 	class BatchManager;
+	class InputManager;
+
 	///Windows are stored in a vector. This vector may change ordering based on performed actions, therefore external for loops and such should be used very carefully!
-	class GUIWindowManager : public time::DeltaTimeSystem
+	class GUIWindowManager
 	{
 	public:
-		GUIWindowManager(BatchManager& _batchManager);//Batch manager where the windows are drawn and where future primitives will be drawn by the window manager
+		GUIWindowManager(GUIContext& context);//Batch manager where the windows are drawn and where future primitives will be drawn by the window manager
 		~GUIWindowManager();
 
 		void update();
@@ -40,6 +43,8 @@ namespace spehs
 		void setPopupShadeColor(const spehs::Color& color);
 
 		BatchManager& batchManager;
+		InputManager& inputManager;
+		time::DeltaTimeSystem& deltaTimeSystem;
 
 	private:
 		void updateDepths();

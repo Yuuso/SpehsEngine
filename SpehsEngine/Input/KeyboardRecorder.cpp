@@ -5,7 +5,10 @@
 
 namespace spehs
 {
-	KeyboardRecorder::KeyboardRecorder() : beginKeyRepeatTime(time::fromSeconds(0.66f)), continueKeyRepeatTime(time::fromSeconds(0.1f))
+	KeyboardRecorder::KeyboardRecorder(InputManager& _inputManager)
+		: inputManager(_inputManager)
+		, beginKeyRepeatTime(time::fromSeconds(0.66f))
+		, continueKeyRepeatTime(time::fromSeconds(0.1f))
 	{
 		commandKeys.push_back(KEYBOARD_RETURN);
 		commandKeys.push_back(KEYBOARD_KP_ENTER);
@@ -22,28 +25,33 @@ namespace spehs
 		commandKeys.push_back(KEYBOARD_TAB);
 		commandKeys.push_back(KEYBOARD_ESCAPE);
 	}
+
 	KeyboardRecorder::~KeyboardRecorder()
 	{
 
 	}
+
 	void KeyboardRecorder::stop()
 	{
 		heldKeys.clear();
 		characterInput.clear();
 		commandInput.clear();
 	}
+
 	void KeyboardRecorder::setBeginKeyRepeatTimer(const float seconds)
 	{
 		beginKeyRepeatTime = time::fromSeconds(seconds);
 		for (unsigned i = 0; i < heldKeys.size(); i++)
 			heldKeys[i].timer = std::min(time::fromSeconds(seconds), heldKeys[i].timer);
 	}
+
 	void KeyboardRecorder::setContinuousKeyRepeatTimer(const float seconds)
 	{
 		continueKeyRepeatTime = time::fromSeconds(seconds);
 		for (unsigned i = 0; i < heldKeys.size(); i++)
 			heldKeys[i].timer = std::min(time::fromSeconds(seconds), heldKeys[i].timer);
 	}
+
 	void KeyboardRecorder::addCommandKey(const unsigned key)
 	{
 		for (unsigned i = 0; i < commandKeys.size(); i++)
@@ -53,6 +61,7 @@ namespace spehs
 		}
 		commandKeys.push_back(key);
 	}
+
 	void KeyboardRecorder::removeCommandKey(const unsigned key)
 	{
 		for (unsigned i = 0; i < commandKeys.size(); i++)
@@ -64,10 +73,12 @@ namespace spehs
 			}
 		}
 	}
+
 	void KeyboardRecorder::clearCommandKeys()
 	{
 		commandKeys.clear();
 	}
+
 	bool KeyboardRecorder::isCommandKey(const unsigned key) const
 	{
 		for (unsigned i = 0; i < commandKeys.size(); i++)
@@ -77,9 +88,10 @@ namespace spehs
 		}
 		return false;
 	}
+
 	bool KeyboardRecorder::tryKey(unsigned key)
 	{
-		if (!inputManager->isKeyDown(key))
+		if (!inputManager.isKeyDown(key))
 			return false;
 		for (unsigned i = 0; i < heldKeys.size(); i++)
 		{
@@ -99,17 +111,18 @@ namespace spehs
 		heldKeys.back().timer = beginKeyRepeatTime;//First stroke
 		return true;
 	}
+
 	void KeyboardRecorder::update(const time::Time time)
 	{
 		characterInput.clear();
 		commandInput.clear();
-		const bool ctrlDown = inputManager->isKeyDown(KEYBOARD_LCTRL) || inputManager->isKeyDown(KEYBOARD_RCTRL);
-		const bool shiftDown = inputManager->isKeyDown(KEYBOARD_LSHIFT) || inputManager->isKeyDown(KEYBOARD_RSHIFT);
+		const bool ctrlDown = inputManager.isKeyDown(KEYBOARD_LCTRL) || inputManager.isKeyDown(KEYBOARD_RCTRL);
+		const bool shiftDown = inputManager.isKeyDown(KEYBOARD_LSHIFT) || inputManager.isKeyDown(KEYBOARD_RSHIFT);
 
 		//Decrease held key timers - if still held
 		for (unsigned i = 0; i < heldKeys.size();)
 		{
-			if (!inputManager->isKeyDown(heldKeys[i].key))
+			if (!inputManager.isKeyDown(heldKeys[i].key))
 				heldKeys.erase(heldKeys.begin() + i);
 			else
 			{

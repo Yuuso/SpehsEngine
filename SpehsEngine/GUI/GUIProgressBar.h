@@ -7,7 +7,7 @@ namespace spehs
 	class GUIProgressBar : public GUIRectangle
 	{
 	public:
-		GUIProgressBar(BatchManager& _batchManager);
+		GUIProgressBar(GUIContext& context);
 		~GUIProgressBar();
 
 		void updateMinSize() override;

@@ -1,8 +1,10 @@
 #include <algorithm>
 #include <string>
+#include <cstring>
 #include "SpehsEngine/Core/ApplicationData.h"
 #include "SpehsEngine/Core/FileStream.h"
 #include "SpehsEngine/Core/Exceptions.h"
+#include "SpehsEngine/Core/Log.h"
 
 namespace spehs
 {
@@ -180,40 +182,268 @@ namespace spehs
 			readCallback = new std::function<void(std::ifstream&)>(callbackFunction);
 	}
 
-	void ApplicationData::setWindowWidth(int w)
-	{
-		windowWidth = w;
-		windowWidthHalf = w / 2;
-	}
+	//void ApplicationData::setWindowWidth(int w)
+	//{
+	//	windowWidth = w;
+	//	windowWidthHalf = w / 2;
+	//}
 
-	void ApplicationData::setWindowHeight(int h)
-	{
-		windowHeight = h;
-		windowHeightHalf = h / 2;
-	}
+	//void ApplicationData::setWindowHeight(int h)
+	//{
+	//	windowHeight = h;
+	//	windowHeightHalf = h / 2;
+	//}
 
-	int ApplicationData::getWindowWidth()
-	{
-		return windowWidth;
-	}
+	//int ApplicationData::getWindowWidth()
+	//{
+	//	return windowWidth;
+	//}
 
-	int ApplicationData::getWindowHeight()
-	{
-		return windowHeight;
-	}
+	//int ApplicationData::getWindowHeight()
+	//{
+	//	return windowHeight;
+	//}
 
-	int ApplicationData::getWindowWidthHalf()
-	{
-		return windowWidthHalf;
-	}
+	//int ApplicationData::getWindowWidthHalf()
+	//{
+	//	return windowWidthHalf;
+	//}
 
-	int ApplicationData::getWindowHeightHalf()
-	{
-		return windowHeightHalf;
-	}
+	//int ApplicationData::getWindowHeightHalf()
+	//{
+	//	return windowHeightHalf;
+	//}
 
 	float ApplicationData::getMasterVolume()
 	{
 		return masterVolume;
+	}
+	
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	const std::string Appvars::fileExtension(".ini");
+	Appvars::Appvars(const std::string& _name)
+		: name(_name)
+	{
+
+	}
+
+	bool Appvars::read()
+	{
+		if (name.size() == 0)
+		{
+			spehs::log::warning("Cannot write appvars, no fileName was specified.");
+			return false;
+		}
+
+		//Create file stream
+		std::ifstream stream(name + fileExtension);
+		if (stream.fail())
+		{//Application data does not exist
+			if (!write())
+			{
+				spehs::exceptions::unexpectedError("Could not write application data! Failed to read application data!");
+				return false;
+			}
+			stream.open(name + fileExtension);
+			if (stream.fail())
+			{
+				spehs::exceptions::unexpectedError("Failed to read Application data!");
+				return false;
+			}
+		}
+
+		Section* section = nullptr;
+		std::string line;
+		while (true)
+		{
+			std::getline(stream, line);
+			if (line.size() == 0)
+				break;
+			if (line.front() == '[' && line.back() == ']')
+			{//Section
+				if (line.size() > 2)
+				{
+					std::string name;
+					name.resize(line.size() - 2);
+					memcpy(&name[0], &line[1], name.size());
+					section = &getSection(name);
+				}
+				else
+				{
+					spehs::log::warning(name + fileExtension + " contains an empty section name. No section created.");
+				}
+			}
+			else
+			{//Search for a name-value pair
+				std::string name;
+				std::string value;
+				for (size_t i = 0; i < line.size(); i++)
+				{
+					if (line[i] == '=')
+					{//Reached the name-value assignment
+						if (name.size() == 0)
+						{
+							name.resize(i);
+							memcpy(&name[0], &line[0], i);
+						}
+						else
+						{
+							name.clear();
+							value.clear();
+							break;
+						}
+					}
+					else if (i == line.size() - 1)
+					{//reached the last character of the
+						if (name.size() > 0)
+						{
+							value.resize(i - name.size());
+							memcpy(&value[0], &line[name.size() + 1], value.size());
+						}
+					}
+				}
+				if (name.size() > 0 && value.size() > 0)
+				{
+					if (section)
+					{
+						section->readAppvars.push_back(Section::ReadAppvar(name, value));
+					}
+					else
+					{
+						spehs::log::warning("An appvar was read but no section was assigned. Name: '" + name + "', value: '" + value + "'.");
+					}
+				}
+			}
+		}
+
+		stream.close();
+	}
+
+	bool Appvars::write()
+	{
+		std::ofstream stream(name + fileExtension);
+		if (stream.fail())
+		{
+			spehs::exceptions::unexpectedError("Failed to write application data!");
+			return false;
+		}
+
+		std::string outputString;
+		for (size_t s = 0; s < sections.size(); s++)
+		{
+			outputString += "[" + sections[s]->name + "]\n";
+			for (size_t v = 0; v < sections[s]->appvarBases.size(); v++)
+				outputString += sections[s]->appvarBases[v]->name + "=" + sections[s]->appvarBases[v]->toString() + "\n";
+		}
+		if (outputString.size() > 0)
+			outputString.pop_back();//Remove the last newline
+		stream << outputString;
+
+		stream.close();
+		unwrittenChanges = false;
+	}
+
+	bool Appvars::hasUnwrittenChanges()
+	{
+		return unwrittenChanges;
+	}
+
+	Appvars::Section& Appvars::getSection(const std::string& name)
+	{
+		for (size_t s = 0; s < sections.size(); s++)
+		{
+			if (sections[s]->name == name)
+			{
+				return *sections[s];
+			}
+		}
+		sections.push_back(new Section(*this, name));
+		return *sections.back();
+	}
+
+	Appvars::Section::~Section()
+	{
+		for (size_t i = 0; i < appvarBases.size(); i++)
+		{
+			SPEHS_ASSERT(appvarBases[i]->section == this);
+			appvarBases[i]->section = nullptr;
+		}
+	}
+
+	bool Appvars::Section::add(AppvarBase& appvar)
+	{
+		for (size_t i = 0; i < appvarBases.size(); i++)
+		{
+			if (appvarBases[i] == &appvar)
+			{
+				spehs::log::error("This appvar has already been added to this section: '" + appvar.name + "'.");
+				return true;
+			}
+			if (appvarBases[i]->name == appvar.name)
+			{
+				spehs::log::error("An appvar with this name identifier already exists in this section: '" + appvar.name + "'.");
+				return false;
+			}
+		}
+		appvarBases.push_back(&appvar);
+		
+		//Check read values
+		for (size_t i = 0; i < readAppvars.size(); i++)
+		{
+			if (readAppvars[i].name == appvar.name)
+			{
+				if (appvar.fromString(readAppvars[i].value))
+				{
+					readAppvars[i] = readAppvars.back();
+					readAppvars.pop_back();
+				}
+				spehs::log::warning("Appvar::fromString() failed. Name: '" + readAppvars[i].name + "', value: '" + readAppvars[i].value + "'.");
+				break;
+			}
+		}
+
+		return true;
+	}
+
+	void Appvars::Section::remove(AppvarBase& appvar)
+	{
+		for (size_t i = 0; i < appvarBases.size(); i++)
+		{
+			if (appvarBases[i] == &appvar)
+			{
+				appvarBases.erase(appvarBases.begin() + i);
+				return;
+			}
+		}
+	}
+
+	AppvarBase::AppvarBase(Appvars& _appvars, const std::string& _section, const std::string& _name)
+		: section(&_appvars.getSection(_section))
+		, name(_name)
+	{
+		if (section)
+			section->add(*this);
+	}
+
+	AppvarBase::~AppvarBase()
+	{
+		if (section)
+			section->remove(*this);
 	}
 }

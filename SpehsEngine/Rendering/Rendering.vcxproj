@@ -154,21 +154,26 @@
     <ClInclude Include="Arrow.h" />
     <ClInclude Include="Batch.h" />
     <ClInclude Include="BatchManager.h" />
+    <ClInclude Include="BatchRenderResults.h" />
     <ClInclude Include="Camera2D.h" />
     <ClInclude Include="Console.h" />
     <ClInclude Include="ConsoleVariable.h" />
     <ClInclude Include="Depth.h" />
+    <ClInclude Include="GLContext.h" />
     <ClInclude Include="GLSLProgram.h" />
     <ClInclude Include="Line.h" />
     <ClInclude Include="LineDiagram.h" />
+    <ClInclude Include="OpenGLError.h" />
     <ClInclude Include="Point.h" />
     <ClInclude Include="Polygon.h" />
     <ClInclude Include="PostProcessing.h" />
     <ClInclude Include="Primitive.h" />
     <ClInclude Include="Rendering.h" />
+    <ClInclude Include="RenderingContext.h" />
     <ClInclude Include="ShaderManager.h" />
     <ClInclude Include="Text.h" />
     <ClInclude Include="TextureManager.h" />
+    <ClInclude Include="Window.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Arrow.cpp" />
@@ -176,9 +181,11 @@
     <ClCompile Include="BatchManager.cpp" />
     <ClCompile Include="Camera2D.cpp" />
     <ClCompile Include="Console.cpp" />
+    <ClCompile Include="GLContext.cpp" />
     <ClCompile Include="GLSLProgram.cpp" />
     <ClCompile Include="Line.cpp" />
     <ClCompile Include="LineDiagram.cpp" />
+    <ClCompile Include="OpenGLError.cpp" />
     <ClCompile Include="Point.cpp" />
     <ClCompile Include="Polygon.cpp" />
     <ClCompile Include="PostProcessing.cpp" />
@@ -187,6 +194,7 @@
     <ClCompile Include="ShaderManager.cpp" />
     <ClCompile Include="Text.cpp" />
     <ClCompile Include="TextureManager.cpp" />
+    <ClCompile Include="Window.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

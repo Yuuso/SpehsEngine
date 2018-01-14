@@ -20,12 +20,12 @@ namespace spehs
 		static std::string scrollDownTexturePath;
 		static spehs::Color defaultScrollElementColor;
 	public:
-		GUIRectangleScrollList(BatchManager& _batchManager);
+		GUIRectangleScrollList(GUIContext& context);
 		~GUIRectangleScrollList() override;
 
 		//Overriding methods
 		void setRenderState(const bool _state) override;
-		void inputUpdate(InputUpdateData& data) override;
+		void inputUpdate() override;
 		void visualUpdate() override;
 		void updateMinSize() override;
 		void updateScale() override;

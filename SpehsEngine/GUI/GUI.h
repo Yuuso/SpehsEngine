@@ -3,18 +3,21 @@
 
 namespace spehs
 {
-	namespace gui
+	class InputLib;
+	class AudioLib;
+	class GUILib
 	{
+	public:
 		/* Initializes gui library */
-		int initialize();
+		GUILib(const InputLib& inputLib, const AudioLib& audioLib);
 
 		/* Uninitializes gui library */
-		void uninitialize();
+		~GUILib();
 
 		/* Returns whether the gui library has successfully been initialized */
-		bool isInitialized();
+		static bool isValid();
 
 		/* Returns gui library version in a readable string format */
-		std::string getVersion();
-	}
+		static std::string getVersion();
+	};
 }

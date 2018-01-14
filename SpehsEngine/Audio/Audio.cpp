@@ -15,41 +15,50 @@
 
 namespace spehs
 {
-	namespace audio
+	namespace
 	{
-		namespace
-		{
-			bool initialized = false;
-		}
+		int instanceCount = 0;
+		bool valid = false;
+		std::string version("0");
+	}
 
-		int initialize()
+	AudioLib::AudioLib(const CoreLib& coreLib)
+	{
+		if (instanceCount++ == 0)
 		{
-			_ASSERT(spehs::core::isInitialized() && "Spehs core must be initialized");
+			if (!coreLib.isValid())
+			{
+				log::error("Cannot initialize audio library, core library is invalid.");
+				return;
+			}
+
 			log::info("Current SpehsEngine audio library build: " + getVersion());
-			
+
 			//INITIALIZATIONS
 			audio::AudioEngine::init();
 			AudioManager::init();
 
-			initialized = true;
-			return 0;
+			valid = true;
 		}
+	}
 		
-		void uninitialize()
+	AudioLib::~AudioLib()
+	{
+		if (--instanceCount == 0)
 		{
 			audio::AudioEngine::uninit();
 			AudioManager::uninit();
-			initialized = false;
+			valid = false;
 		}
+	}
 
-		bool isInitialized()
-		{
-			return initialized;
-		}
+	bool AudioLib::isValid()
+	{
+		return valid;
+	}
 
-		std::string getVersion()
-		{
-			return std::string("0");
-		}
+	std::string AudioLib::getVersion()
+	{
+		return version;
 	}
 }

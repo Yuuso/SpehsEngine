@@ -10,7 +10,6 @@ namespace spehs
 	class Line : public Primitive
 	{
 		friend class BatchManager;
-
 	public:
 
 		Line* getLinePtr() override { return this; }
@@ -20,8 +19,8 @@ namespace spehs
 		//void setPoints(const float &_newLength, const float &_newAngle);
 
 	protected:
-		Line(const PlaneDepth& _planeDepth);
-		Line(const spehs::vec2& _startPoint, const spehs::vec2& _endPoint, const PlaneDepth& _planeDepth);
+		Line(BatchManager& batchManager, const PlaneDepth& _planeDepth);
+		Line(BatchManager& batchManager, const spehs::vec2& _startPoint, const spehs::vec2& _endPoint, const PlaneDepth& _planeDepth);
 		//Line(const float &_length, const float &_angle); //Starting point is at 0,0
 		~Line();
 	};

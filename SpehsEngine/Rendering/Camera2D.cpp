@@ -1,7 +1,10 @@
 
 #include "SpehsEngine/Rendering/Camera2D.h"
+#include "SpehsEngine/Rendering/Window.h"
+#include "SpehsEngine/Input/Input.h"
 #include "SpehsEngine/Core/ApplicationData.h"
 
+#include <boost/bind.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/vec3.hpp>
 
@@ -9,23 +12,37 @@
 
 namespace spehs
 {
-	Camera2D::Camera2D() : zoomSpeed(50.0f), scale(1.0f), orthoMatrix(1.0f), cameraMatrix(1.0f), position(0.0f, 0.0f), previousPosition(0.0f, 0.0f), rotation(0.0f), up(0.0f, 1.0f, 0.0f, 1.0f)
+	Camera2D::Camera2D(const Window& _window)
+		: window(_window)
+		, zoomSpeed(50.0f)
+		, scale(1.0f)
+		, orthoMatrix(1.0f)
+		, cameraMatrix(1.0f)
+		, position(0.0f, 0.0f)
+		, previousPosition(0.0f, 0.0f)
+		, rotation(0.0f)
+		, up(0.0f, 1.0f, 0.0f, 1.0f)
 	{
-		orthoMatrix = glm::ortho(0.0f, (float) spehs::ApplicationData::getWindowWidth(), 0.0f, (float) spehs::ApplicationData::getWindowHeight());
-		staticMatrix = orthoMatrix;
-
-		//Camera translation
-		glm::vec3 translation(spehs::ApplicationData::getWindowWidth()*0.5f, spehs::ApplicationData::getWindowHeight()*0.5f, 0);
-		cameraMatrix = glm::translate(orthoMatrix, translation);
-
-
-		defaultMatrix = cameraMatrix;
-		projectionMatrix = &cameraMatrix;
+		//windowSizeChangedConnection = window.sizeChangedSignal.connect(boost::bind(&Camera2D::windowSizeChangedCallback, this));
+		windowSizeChangedCallback(window.getWidth(), window.getHeight());
 	}
+
 	Camera2D::~Camera2D()
 	{
 	}
 
+	void Camera2D::windowSizeChangedCallback(const int width, const int height)
+	{
+		orthoMatrix = glm::ortho(0.0f, (float)window.getWidth(), 0.0f, (float)window.getHeight());
+		staticMatrix = orthoMatrix;
+
+		//Camera translation
+		glm::vec3 translation((float)window.getWidth() * 0.5f, (float)window.getHeight() * 0.5f, 0);
+		cameraMatrix = glm::translate(orthoMatrix, translation);
+		
+		defaultMatrix = cameraMatrix;
+		projectionMatrix = &cameraMatrix;
+	}
 
 	void Camera2D::translate(const spehs::vec2& _vec)
 	{

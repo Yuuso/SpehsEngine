@@ -13,10 +13,10 @@ namespace spehs
 	public:
 		static time::Time defaultTreeOpenTime;
 	public:
-		GUIRectangleTree(BatchManager& _batchManager);
+		GUIRectangleTree(GUIContext& context);
 		virtual ~GUIRectangleTree();
 
-		void inputUpdate(InputUpdateData& data);
+		void inputUpdate();
 		void updateMinSize();
 		void updateScale();
 		void updatePosition();

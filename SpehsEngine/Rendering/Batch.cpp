@@ -5,7 +5,7 @@
 #include "SpehsEngine/Rendering/BatchManager.h"
 #include "SpehsEngine/Rendering/ShaderManager.h"
 #include "SpehsEngine/Rendering/GLSLProgram.h"
-#include "SpehsEngine/Input/OpenGLError.h"
+#include "SpehsEngine/Rendering/OpenGLError.h"
 #include "SpehsEngine/Core/Vertex.h"
 #include "SpehsEngine/Rendering/Camera2D.h"
 #include "SpehsEngine/Core/Time.h"
@@ -21,7 +21,10 @@ std::atomic<int> BatchDeallocations;
 
 namespace spehs
 {
-	Batch::Batch(const PlaneDepth &_priority, const int &_shaderIndex) : priority(_priority), shaderIndex(_shaderIndex)
+	Batch::Batch(BatchManager& _batchManager, const PlaneDepth &_priority, const int &_shaderIndex)
+		: batchManager(_batchManager)
+		, priority(_priority)
+		, shaderIndex(_shaderIndex)
 	{
 #ifdef _DEBUG
 		BatchAllocations++;
@@ -50,8 +53,8 @@ namespace spehs
 
 	//PRIMITIVE BATCH
 #pragma region PRIMITIVE BATCH
-	PrimitiveBatch::PrimitiveBatch(const bool _cameraMatrixState, const int16_t &_priority, const bool _blending, const int &_shaderIndex, const GLuint &_textureDataID, const GLenum &_drawMode, float _lineWidth)
-		: Batch(_priority, _shaderIndex)
+	PrimitiveBatch::PrimitiveBatch(BatchManager& _batchManager, const bool _cameraMatrixState, const int16_t &_priority, const bool _blending, const int &_shaderIndex, const GLuint &_textureDataID, const GLenum &_drawMode, float _lineWidth)
+		: Batch(_batchManager, _priority, _shaderIndex)
 	{
 		vertexArrayObjectID = 0;
 		vertexBufferID = 0;
@@ -120,7 +123,7 @@ namespace spehs
 	}
 
 
-	bool PrimitiveBatch::render(const Camera2D* _batchCamera)
+	bool PrimitiveBatch::render(BatchRenderResults* results)
 	{
 		if (vertices.size() == 0)
 			return false;
@@ -141,12 +144,12 @@ namespace spehs
 			glDepthMask(GL_TRUE);
 		}
 
-		shaderManager->use(shaderIndex);
+		batchManager.shaderManager.use(shaderIndex);
 
 		//Texture
 		if (textureDataID)
 		{
-			shaderManager->getShader(shaderIndex)->uniforms->textureDataID = textureDataID;
+			batchManager.shaderManager.getShader(shaderIndex)->uniforms->textureDataID = textureDataID;
 			if (drawMode == POINT)
 			{
 				glEnable(GL_POINT_SPRITE);
@@ -156,12 +159,12 @@ namespace spehs
 
 		//Camera Matrix
 		if (cameraMatrixState)
-			shaderManager->getShader(shaderIndex)->uniforms->cameraMatrix = *_batchCamera->projectionMatrix;
+			batchManager.shaderManager.getShader(shaderIndex)->uniforms->cameraMatrix = *batchManager.camera2D.projectionMatrix;
 		else
-			shaderManager->getShader(shaderIndex)->uniforms->cameraMatrix = _batchCamera->staticMatrix;
+			batchManager.shaderManager.getShader(shaderIndex)->uniforms->cameraMatrix = batchManager.camera2D.staticMatrix;
 
 		//Uniforms
-		shaderManager->setUniforms(shaderIndex);
+		batchManager.shaderManager.setUniforms(shaderIndex);
 
 		//Draw
 		glBindVertexArray(vertexArrayObjectID);
@@ -177,10 +180,13 @@ namespace spehs
 
 		checkOpenGLErrors(__FILE__, __LINE__);
 
-		shaderManager->unuse(shaderIndex);
+		batchManager.shaderManager.unuse(shaderIndex);
 
-		console::drawCalls++;
-		console::vertexDrawCount += vertices.size();
+		if (results)
+		{
+			results->drawCalls++;
+			results->vertexCount += vertices.size();
+		}
 
 		//Clean up
 		vertices.clear();
@@ -341,7 +347,8 @@ namespace spehs
 
 	//TEXT BATCH
 #pragma region TEXT BATCH
-	TextBatch::TextBatch(const bool _cameraMatrixState, const int16_t &_priority, const int &_shaderIndex) : Batch(_priority, _shaderIndex)
+	TextBatch::TextBatch(BatchManager& _batchManager, const bool _cameraMatrixState, const int16_t &_priority, const int &_shaderIndex)
+		: Batch(_batchManager, _priority, _shaderIndex)
 	{
 		vertexArrayObjectID = 0;
 		vertexBufferID = 0;
@@ -354,6 +361,7 @@ namespace spehs
 
 		initBuffers();
 	}
+
 	TextBatch::~TextBatch()
 	{
 		if (vertexBufferID != 0)
@@ -374,8 +382,7 @@ namespace spehs
 
 		checkOpenGLErrors(__FILE__, __LINE__);
 	}
-
-
+	
 	bool TextBatch::check(const Text &_text)
 	{
 		if (shaderIndex != _text.getShaderIndex() ||
@@ -390,11 +397,10 @@ namespace spehs
 		}
 		return true;
 	}
-
-
-	bool TextBatch::render(const Camera2D* _batchCamera)
+	
+	bool TextBatch::render(BatchRenderResults* results)
 	{
-		if (vertices.size() == 0)
+		if (vertices.empty())
 			return false;
 
 		setIndices();
@@ -405,16 +411,16 @@ namespace spehs
 		glDisable(GL_DEPTH_TEST);
 		glDepthMask(GL_FALSE);
 
-		shaderManager->use(shaderIndex);
+		batchManager.shaderManager.use(shaderIndex);
 
 		//Camera Matrix
 		if (cameraMatrixState)
-			shaderManager->getShader(shaderIndex)->uniforms->cameraMatrix = *_batchCamera->projectionMatrix;
+			batchManager.shaderManager.getShader(shaderIndex)->uniforms->cameraMatrix = *batchManager.camera2D.projectionMatrix;
 		else
-			shaderManager->getShader(shaderIndex)->uniforms->cameraMatrix = _batchCamera->staticMatrix;
+			batchManager.shaderManager.getShader(shaderIndex)->uniforms->cameraMatrix = batchManager.camera2D.staticMatrix;
 
 		//Uniforms
-		shaderManager->setUniforms(shaderIndex);
+		batchManager.shaderManager.setUniforms(shaderIndex);
 
 		//Draw
 		glBindVertexArray(vertexArrayObjectID);
@@ -422,21 +428,24 @@ namespace spehs
 		{
 			bind2DTexture(textureIDs[i], 0);
 			glDrawElements(TRIANGLE, 6, GL_UNSIGNED_SHORT, reinterpret_cast<void*>((i * 6) * sizeof(GLushort)));
-			console::drawCalls++;
 		}
 		glBindVertexArray(0);
 
 		checkOpenGLErrors(__FILE__, __LINE__);
 
-		shaderManager->unuse(shaderIndex);
+		batchManager.shaderManager.unuse(shaderIndex);
 
-		console::vertexDrawCount += vertices.size();
+		if (results)
+		{
+			results->drawCalls += textureIDs.size();
+			results->vertexCount += vertices.size();
+		}
 
 		//Clean up
 		vertices.clear();
 		indices.clear();
 		textureIDs.clear();
-		return true;
+		return results;
 	}
 
 	void TextBatch::push(Text* _text)

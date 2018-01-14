@@ -6,7 +6,9 @@
 #include "SpehsEngine/Core/Log.h"
 #include "SpehsEngine/Core/Time.h"
 #include "SpehsEngine/Input/InputManager.h"
-#include "SpehsEngine/Input/Window.h"
+#include "SpehsEngine/Rendering/Rendering.h"
+#include "SpehsEngine/Rendering/OpenGLError.h"
+#include "SpehsEngine/Rendering/Window.h"
 
 #include <string>
 #include <thread>
@@ -20,77 +22,45 @@
 
 namespace spehs
 {
-	namespace input
+	namespace
 	{
-		namespace
-		{
-			bool initialized = false;
-			Window* mainWindow = nullptr;
-		}
+		int instanceCount = 0;
+		bool valid = false;
+		std::string version("0");
+	}
 
-		int initialize()
+	InputLib::InputLib(const RenderingLib& renderingLib)
+	{
+		if (instanceCount++ == 0)
 		{
-			_ASSERT(spehs::core::isInitialized() && "Spehs core must be initialized");
-			log::info("Current SpehsEngine input library version: " + getVersion());
-			
-			if (SDL_Init(SDL_INIT_VIDEO) < 0)
+			if (!renderingLib.isValid())
 			{
-				exceptions::fatalError("\nVideo initialization failed!");
-				return 1;
+				log::error("Cannot initialize input library, rendering library is invalid.");
+				return;
 			}
 
-			SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_COMPATIBILITY);
-			SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
-			SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 2);
+			log::info("Current SpehsEngine input library version: " + getVersion());
 
-			SDL_GL_SetAttribute(SDL_GL_RED_SIZE, 8);
-			SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE, 8);
-			SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE, 8);
-			SDL_GL_SetAttribute(SDL_GL_ALPHA_SIZE, 8);
-
-			SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
-			SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
-
-			//Multisampling
-			SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, 1);
-			SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, spehs::ApplicationData::MSAA);
-			
-			//Create the main window(?)
-			mainWindow = new Window(spehs::ApplicationData::getWindowWidth(), spehs::ApplicationData::getWindowHeight());
-			mainWindow->setFullscreen(spehs::ApplicationData::fullscreen);
-			
-			//INITIALIZATIONS
-			inputManager = new InputManager();
-			inputManager->initialize();
-
-			initialized = true;
-			return 0;
+			valid = true;
 		}
+	}
 
-		void uninitialize()
+	InputLib::~InputLib()
+	{
+		if (--instanceCount == 0)
 		{
-			inputManager->uninitialize();
-			delete inputManager;
-			inputManager = nullptr;
-			delete mainWindow;
-			mainWindow = nullptr;
 			SDL_Quit();
-			initialized = false;
+			valid = false;
 		}
+	}
 
-		bool isInitialized()
-		{
-			return initialized;
-		}
+	bool InputLib::isValid()
+	{
+		return valid;
+	}
 		
-		Window* getMainWindow()
-		{
-			return mainWindow;
-		}
-		
-		std::string getVersion()
-		{
-			return std::string("0");
-		}
+	std::string InputLib::getVersion()
+	{
+		return version;
 	}
 }

@@ -3,18 +3,20 @@
 
 namespace spehs
 {
-	namespace rendering
+	class CoreLib;
+	class RenderingLib
 	{
+	public:
 		/* Initializes rendering library */
-		int initialize();
+		RenderingLib(const CoreLib& coreLib);
 
 		/* Uninitializes rendering library */
-		void uninitialize();
+		~RenderingLib();
 
 		/* Returns whether the rendering library has successfully been initialized */
-		bool isInitialized();
+		static bool isValid();
 
 		/* Returns rendering library version in a readable string format */
-		std::string getVersion();
-	}
+		static std::string getVersion();
+	};
 }

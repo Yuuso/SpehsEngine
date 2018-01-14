@@ -2,8 +2,8 @@
 
 namespace spehs
 {
-	GUIRectangleTable::GUIRectangleTable(BatchManager& _batchManager, const int _columns)
-		: GUIRectangleUnisizeContainer(_batchManager)
+	GUIRectangleTable::GUIRectangleTable(GUIContext& context, const int _columns)
+		: GUIRectangleUnisizeContainer(context)
 		, columns(_columns)
 	{
 		disableBit(state, GUIRECT_HOVER_COLOR_BIT);

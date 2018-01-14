@@ -3,8 +3,8 @@
 #include "SpehsEngine/Core/ApplicationData.h"
 //#include "SpehsEngine/Rendering/TextureManager.h" TODO!!!
 #include "SpehsEngine/Input/input.h"
-#include "SpehsEngine/Core/Exceptions.h"
-#include "SpehsEngine/Input/Window.h"
+#include "SpehsEngine/Core/Log.h"
+#include "SpehsEngine/Rendering/Window.h"
 
 #include <SDL/SDL.h>
 #include <SDL/SDL_joystick.h>
@@ -17,7 +17,7 @@
 #define SINT16_STATES 65536
 
 
-spehs::InputManager* inputManager;
+//spehs::InputManager* inputManager;
 namespace spehs
 {
 	spehs::GUID getJoystickDeviceGUID(int _deviceIndex)
@@ -25,19 +25,16 @@ namespace spehs
 		return SDL_JoystickGetDeviceGUID(_deviceIndex);
 	}
 
-	InputManager::InputManager() : mouseCoords(0, 0), mouseMovement(0, 0), droppedFilePath("")
-	{
-	}
-
-	InputManager::~InputManager()
-	{
-	}
-
-	void InputManager::initialize()
+	InputManager::InputManager(Window& _window)
+		: window(_window)
+		, mouseCoords(0, 0)
+		, mouseMovement(0, 0)
+		, droppedFilePath("")
 	{
 		SDL_InitSubSystem(SDL_INIT_JOYSTICK);
 	}
-	void InputManager::uninitialize()
+
+	InputManager::~InputManager()
 	{
 		while (!joysticks.empty())
 		{
@@ -86,7 +83,7 @@ namespace spehs
 				releaseKey(mEvent.key.keysym.sym);
 				break;
 			case SDL_MOUSEMOTION:
-				setMouseCoords(int(mEvent.motion.x), int(spehs::ApplicationData::getWindowHeight() - mEvent.motion.y));
+				setMouseCoords(int(mEvent.motion.x), int(window.getHeight() - mEvent.motion.y));
 				break;
 			case SDL_MOUSEBUTTONDOWN:
 				pressKey(mEvent.button.button);
@@ -114,7 +111,7 @@ namespace spehs
 		if (mouseLocked)
 		{
 			//If mouse is locked, keep mouse in the center of the screen without creating a mousemotion event
-			//SDL_WarpMouseInWindow(mainWindow->sdlWindow, spehs::ApplicationData::getWindowWidthHalf(), spehs::ApplicationData::getWindowHeightHalf());
+			//SDL_WarpMouseInWindow(mainWindow->sdlWindow, spehs::input::windowWidth / 2, spehs::input::windowHeight / 2);
 		}
 	}
 	
@@ -141,7 +138,7 @@ namespace spehs
 		else
 			mouseLocked = _value;
 
-		SDL_SetWindowGrab(input::getMainWindow()->sdlWindow, (SDL_bool) _value);
+		SDL_SetWindowGrab(window.sdlWindow, (SDL_bool) _value);
 		SDL_ShowCursor(!_value);
 		return true;
 		//if (SDL_SetRelativeMouseMode((SDL_bool) _value) == 0)
@@ -245,38 +242,7 @@ namespace spehs
 	{
 		return isKeyPressed(KEYBOARD_LSHIFT) || isKeyPressed(KEYBOARD_RSHIFT);
 	}
-
-	void InputManager::update(InputState& inputState)
-	{
-		//Update pointer position and movement
-		inputState.pointer.position.x = mouseCoords.x;
-		inputState.pointer.position.y = mouseCoords.y;
-		inputState.pointer.movement.x = mouseMovement.x;
-		inputState.pointer.movement.y = mouseMovement.y;
-
-		//Update key states
-		std::unordered_map<unsigned, InputState::Key>::iterator keyIt = inputState.keys.begin();
-		while (keyIt != inputState.keys.end())
-		{
-			const bool down = isKeyDown(keyIt->first);
-			const bool pressed = !keyIt->second.down && down;
-			const bool released = keyIt->second.down && !down;
-
-			keyIt->second.down.value = down;
-			keyIt->second.press.value = pressed;
-			keyIt->second.release.value = released;
-
-			keyIt->second.down.used = false;
-			keyIt->second.press.used = false;
-			keyIt->second.release.used = false;
-
-			keyIt++;
-		}
-
-		inputState.ctrlModifier = isCtrlDown();
-		inputState.shiftModifier = isShiftDown();
-	}
-
+	
 
 
 	///////////////////////////
@@ -312,7 +278,7 @@ namespace spehs
 					{
 						std::string error = "Couldn't open SDL joystick! ";
 						error += SDL_GetError();
-						spehs::exceptions::unexpectedError(error);
+						spehs::log::error(error);
 					}
 					joysticks[i]->goOnline(js);
 					foundOffline = true;
@@ -321,7 +287,7 @@ namespace spehs
 
 				if (!foundOffline)
 				{//No matching offline joystick found, create new
-					joysticks.push_back(new Joystick(c));
+					joysticks.push_back(new Joystick(*this, c));
 				}
 			}
 		}
@@ -332,6 +298,7 @@ namespace spehs
 			if (!joysticks[i]->offline)
 				joystickCount++;
 	}
+
 	void InputManager::joystickDisconnected()
 	{//Called when joystick count has decreased
 
@@ -351,6 +318,7 @@ namespace spehs
 			if (!joysticks[i]->offline)
 				joystickCount++;
 	}
+
 	Joystick* InputManager::getJoystick(GUID guid, int preferredIndex)
 	{
 		Joystick* js = nullptr;
@@ -367,6 +335,7 @@ namespace spehs
 		
 		return js;//Joystick is not connected, or preferred index not found
 	}
+
 	int InputManager::getGUIDIndex(int/*NOTE: i < joystickIndex - 1*/ joystickIndex)
 	{
 		if (joystickIndex >= joysticks.size() || joystickIndex < 0)
@@ -382,19 +351,17 @@ namespace spehs
 	}
 
 
-	//JOYSTICK STRUCT
-	Joystick::~Joystick()
-	{
-		goOffline();
-	}
-	Joystick::Joystick(int index)
+
+	//JOYSTICK
+	Joystick::Joystick(InputManager& _inputManager, int index)
+		: inputManager(_inputManager)
 	{
 		joystick = SDL_JoystickOpen(index);
 		if (joystick == NULL)
 		{
 			std::string error = "Failed to open SDL_joystick! ";
 			error += SDL_GetError();
-			spehs::exceptions::unexpectedError(error);
+			spehs::log::error(error);
 			return;
 		}
 
@@ -405,8 +372,16 @@ namespace spehs
 		axisCount = SDL_JoystickNumAxes(joystick);
 		hatCount = SDL_JoystickNumHats(joystick);
 		offline = false;
-		std::cout << "\nJoystick created: " << SDL_JoystickName(joystick);
+		std::string str("Joystick created: ");
+		str += SDL_JoystickName(joystick);
+		spehs::log::info(str);
 	}
+
+	Joystick::~Joystick()
+	{
+		goOffline();
+	}
+
 	void Joystick::goOffline()
 	{
 		if (joystick != NULL)
@@ -415,6 +390,7 @@ namespace spehs
 		offline = true;
 		std::cout << "\n" << name << " went offline!";
 	}
+
 	void Joystick::goOnline(SDL_Joystick* newJs)
 	{
 		joystick = newJs;
@@ -425,12 +401,14 @@ namespace spehs
 		else
 			std::cout << "\n" << name << " went online!";
 	}
+
 	float Joystick::getAxisState(int axisIndex)
 	{
 		if (offline)
 			return 0.0f;
 		return float(SDL_JoystickGetAxis(joystick, axisIndex))/SINT16_MAX;
 	}
+
 	bool Joystick::isButtonDown(int buttonIndex)
 	{
 		if (offline)
@@ -439,6 +417,7 @@ namespace spehs
 			return true;
 		return false;
 	}
+
 	bool Joystick::isHatInPosition(int hatIndex, uint8_t position)
 	{
 		if (offline)
@@ -447,6 +426,7 @@ namespace spehs
 			return true;
 		return false;
 	}
+
 	int32_t Joystick::queryButtonDown()
 	{
 		if (offline)
@@ -458,14 +438,15 @@ namespace spehs
 		}
 		return -1;
 	}
+
 	unsigned Joystick::getGUIDIndex()
 	{
 		unsigned index = 0;
-		for (unsigned i = 0; i < inputManager->joysticks.size(); i++)
+		for (unsigned i = 0; i < inputManager.joysticks.size(); i++)
 		{
-			if (inputManager->joysticks[i] == this)
+			if (inputManager.joysticks[i] == this)
 				return index;
-			else if (inputManager->joysticks[i]->guid == guid)
+			else if (inputManager.joysticks[i]->guid == guid)
 				index++;//Found same guid among joysticks before this
 		}
 	}

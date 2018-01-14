@@ -44,18 +44,17 @@ namespace spehs
 		float getHeight() const { return height; }
 
 	protected:
-		Polygon(const int _shapeID, const PlaneDepth _planeDepth, const float _width, const float _height);
-		Polygon(const std::vector<spehs::Vertex>& _vertexData, const PlaneDepth _planeDepth, const float _width, const float _height); //For 2DPolygons
-		Polygon(const std::vector<spehs::Vertex>& _vertexData, const float _width, const float _height);
-		Polygon(const std::vector<spehs::vec2>& _cuspData, const PlaneDepth _planeDepth, const float _width, const float _height);
+		Polygon(BatchManager& _batchManager, const int _shapeID, const PlaneDepth _planeDepth, const float _width, const float _height);
+		Polygon(BatchManager& _batchManager, const std::vector<spehs::Vertex>& _vertexData, const PlaneDepth _planeDepth, const float _width, const float _height); //For 2DPolygons
+		Polygon(BatchManager& _batchManager, const std::vector<spehs::Vertex>& _vertexData, const float _width, const float _height);
+		Polygon(BatchManager& _batchManager, const std::vector<spehs::vec2>& _cuspData, const PlaneDepth _planeDepth, const float _width, const float _height);
+		Polygon(BatchManager& _batchManager, const float _width, const float _height);
 		~Polygon();
 
 		void setUVCoords();
 
+		float width;
+		float height;
 		float radius;
-		float width, height;
-
-	private:
-		Polygon(const float _width, const float _height);
 	};
 }

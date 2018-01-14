@@ -6,8 +6,8 @@
 namespace spehs
 {
 	unsigned GUIRectangleGrid::defaultBorderWidth = 0;
-	GUIRectangleGrid::GUIRectangleGrid(BatchManager& _batchManager)
-		: GUIRectangleUnisizeContainer(_batchManager)
+	GUIRectangleGrid::GUIRectangleGrid(GUIContext& context)
+		: GUIRectangleUnisizeContainer(context)
 		, scrollingEnabled(false)
 		, scrollBarWidth(spehs::GUIRectangleScrollList::defaultScrollBarWidth)
 		, scrollState(0)
@@ -16,9 +16,9 @@ namespace spehs
 		, borderWidth(defaultBorderWidth)
 	{
 		disableState(GUIRECT_HOVER_COLOR_BIT);
-		scrollUp = new spehs::GUIRectangle(batchManager);
-		scrollBar = new spehs::GUIRectangle(batchManager);
-		scrollDown = new spehs::GUIRectangle(batchManager);
+		scrollUp = new spehs::GUIRectangle(context);
+		scrollBar = new spehs::GUIRectangle(context);
+		scrollDown = new spehs::GUIRectangle(context);
 		scrollUp->setWidth(scrollBarWidth);
 		scrollBar->setWidth(scrollBarWidth);
 		scrollDown->setWidth(scrollBarWidth);
@@ -58,17 +58,17 @@ namespace spehs
 		scrollBar->setDepth(depth + 1);
 		scrollDown->setDepth(depth + 1);
 	}
-	void GUIRectangleGrid::inputUpdate(InputUpdateData& data)
+	void GUIRectangleGrid::inputUpdate()
 	{
-		spehs::GUIRectangle::inputUpdate(data);
+		spehs::GUIRectangle::inputUpdate();
 		
 		if (draggingScrollBar)
 		{//Dragging in progress?
-			if (!inputManager->isKeyDown(MOUSEBUTTON_LEFT))
+			if (!inputManager.isKeyDown(MOUSEBUTTON_LEFT))
 				draggingScrollBar = false;
 			else
 			{//Drag scroll bar
-				scrollBarAccumulatedDragY += inputManager->getMouseMovementY();
+				scrollBarAccumulatedDragY += inputManager.getMouseMovementY();
 				const float scrollBarRail = scrollUp->getYGlobal(/*cannot use local position - not actually a child!*/) - getYGlobal() - scrollDown->getHeight() - scrollBar->getHeight();
 				const int maxStates = getMaxScrollState() + 1;
 				if (abs(scrollBarAccumulatedDragY) > scrollBarRail / float(maxStates))
@@ -84,12 +84,12 @@ namespace spehs
 		{
 			if (scrollingEnabled)
 			{
-				scrollUp->inputUpdate(data);
-				scrollBar->inputUpdate(data);
-				scrollDown->inputUpdate(data);
+				scrollUp->inputUpdate();
+				scrollBar->inputUpdate();
+				scrollDown->inputUpdate();
 				if (getMouseHover())
 				{
-					if (inputManager->isKeyPressed(MOUSEBUTTON_LEFT))
+					if (inputManager.isKeyPressed(MOUSEBUTTON_LEFT))
 					{
 						if (scrollUp->getMouseHover())
 							scroll(-1);
@@ -101,15 +101,15 @@ namespace spehs
 							scrollBarAccumulatedDragY = 0.0f;
 						}
 					}
-					if (inputManager->getMouseWheelDelta())
-						scroll(-inputManager->getMouseWheelDelta());
+					if (inputManager.getMouseWheelDelta())
+						scroll(-inputManager.getMouseWheelDelta());
 				}
 			}
 
 			for (unsigned i = 0; i < elements.size(); i++)
 			{
 				if (elements[i]->getRenderState())
-					elements[i]->inputUpdate(data);
+					elements[i]->inputUpdate();
 			}
 		}
 		else

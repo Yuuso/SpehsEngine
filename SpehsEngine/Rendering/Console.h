@@ -1,25 +1,38 @@
 #pragma once
 #include <vector>
 #include <string>
+#include <mutex>
 #include <stdint.h>
 #include "SpehsEngine/Rendering/ConsoleVariable.h"
 #include "SpehsEngine/Core/Color.h"
+#include "SpehsEngine/Core/Time.h"
 #define CONSOLE_FONT_COLOR 255, 153, 0
+//State
+#define CONSOLE_OPEN_BIT					0x0002
+#define CONSOLE_TEXT_EXECUTED_BIT			0x0004
+#define CONSOLE_RENDER_STATE_BIT			0x0008
 
 /**Console is accessed through these functions.
 The console is internally mutex locked and can thus be safely accessed from any thread.
 */
 namespace spehs
 {
+	class BatchManager;
+	class InputManager;
+	class Polygon;
+	class Text;
 	namespace time
 	{
 		struct Time;
 	}
-	namespace console
+
+	class Console
 	{
-		//Console state
-		int initialize();
-		void unitialize();
+	public:
+
+		Console(BatchManager& batchManager, InputManager& inputManager);
+		~Console();
+
 		void open();
 		void close();
 		bool isOpen();
@@ -54,7 +67,41 @@ namespace spehs
 		//Other
 		void setPlaneDepth(int16_t depth);
 
-		extern unsigned long drawCalls;
-		extern unsigned long vertexDrawCount;
-	}
+		unsigned long drawCalls;
+		unsigned long vertexDrawCount;
+
+		BatchManager& batchManager;
+		InputManager& inputManager;
+
+	private:
+		void updateLinePositions();
+		void setVariable();
+		void executeConsole();
+
+		std::recursive_mutex mutex;
+		int16_t state = CONSOLE_RENDER_STATE_BIT;
+		uint16_t planeDepth = 10000;
+		time::Time backspaceTimer = 0;
+		int backspaceAcceleration = 0;
+		int previousCommandIndex = 0;
+		int previousFontSize = 10;
+		float visibility = 1.0f;
+		Text* consoleText;
+		Text* fpsCounter;
+		Polygon* backgroundShade;
+		std::string input;
+		std::string textExecuted;///< Text executed without '/'
+		std::vector<Text*> lines;
+		std::vector<std::pair<std::string, Color>> newLines;
+		std::vector<ConsoleCommand> commands;
+		std::vector<std::string> consoleWords;
+		std::vector<ConsoleVariable<int>> intVariables;
+		std::vector<ConsoleVariable<float>> floatVariables;
+		std::vector<ConsoleVariable<bool>> boolVariables;
+		std::vector<ConsoleVariable<std::string>> stringVariables;
+		std::vector<std::string> previousCommands;
+		bool checkState(uint16_t bits);
+		void enableState(uint16_t bits);
+		void disableState(uint16_t bits);
+	};
 }

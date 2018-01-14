@@ -12,7 +12,7 @@ namespace spehs
 			Standard, StackLeft, StackRight, StackEdges
 		};
 
-		GUIRectangleRow(BatchManager& _batchManager);
+		GUIRectangleRow(GUIContext& context);
 		~GUIRectangleRow() override;
 
 		void updateMinSize() override;

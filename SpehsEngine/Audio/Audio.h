@@ -3,18 +3,20 @@
 
 namespace spehs
 {
-	namespace audio
+	class CoreLib;
+	class AudioLib
 	{
+	public:
 		/* Initializes audio library */
-		int initialize();
+		AudioLib(const CoreLib& coreLib);
 
 		/* Uninitializes audio library */
-		void uninitialize();
+		~AudioLib();
 
 		/* Returns whether the audio library has successfully been initialized */
-		bool isInitialized();
+		static bool isValid();
 
 		/* Returns audio library version in a readable string format */
-		std::string getVersion();
-	}
+		static std::string getVersion();
+	};
 }

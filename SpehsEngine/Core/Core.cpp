@@ -14,32 +14,31 @@
 
 namespace spehs
 {
+	namespace
+	{
+		int instanceCount = 0;
+		bool valid = false;
+		std::string version("0");
+	}
 	namespace rng
 	{
 		extern void initialize();
 	}
 
-	namespace core
+	CoreLib::CoreLib()
 	{
-
-		namespace
-		{
-			bool initialized = false;
-		}
-
-		int initialize()
+		if (instanceCount++ == 0)
 		{
 			log::info("Current SpehsEngine core library version: " + getVersion());
 
 			//ApplicationData
-			spehs::ApplicationData::read();
 
 			log::info("Hardware threads: " + std::to_string(std::thread::hardware_concurrency()));
 
 			//INITIALIZATIONS
 			rng::initialize();
 			time::initialize();
-			
+
 			//Check available integer widths
 			if (sizeof(int8_t) != 1 || sizeof(uint8_t) != 1)
 				log::warning("8 bit integer width not available!");
@@ -49,26 +48,28 @@ namespace spehs
 				log::warning("32 bit integer width not available!");
 			if (sizeof(int64_t) != 8 || sizeof(uint64_t) != 8)
 				log::warning("64 bit integer width not available!");
-			
-			initialized = true;
-			return 0;
+
+			valid = true;
 		}
+	}
 		
-		void uninitialize()
+	CoreLib::~CoreLib()
+	{
+		if (--instanceCount == 0)
 		{
 			rng::unit();
 			spehs::ApplicationData::write();
-			initialized = false;
+			valid = false;
 		}
+	}
 
-		bool isInitialized()
-		{
-			return initialized;
-		}
+	bool CoreLib::isValid()
+	{
+		return valid;
+	}
 		
-		std::string getVersion()
-		{
-			return std::string("0");
-		}
+	std::string CoreLib::getVersion()
+	{
+		return version;
 	}
 }

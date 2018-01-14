@@ -153,8 +153,6 @@
     <ClInclude Include="InputManager.h" />
     <ClInclude Include="InputState.h" />
     <ClInclude Include="KeyboardRecorder.h" />
-    <ClInclude Include="OpenGLError.h" />
-    <ClInclude Include="Window.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="GUID.cpp" />
@@ -163,8 +161,6 @@
     <ClCompile Include="InputManager.cpp" />
     <ClCompile Include="InputState.cpp" />
     <ClCompile Include="KeyboardRecorder.cpp" />
-    <ClCompile Include="OpenGLError.cpp" />
-    <ClCompile Include="Window.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

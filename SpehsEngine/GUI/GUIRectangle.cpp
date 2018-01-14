@@ -4,9 +4,12 @@
 #include "SpehsEngine/Audio/SoundSource.h"
 #include "SpehsEngine/Core/ApplicationData.h"
 #include "SpehsEngine/Input/InputManager.h"
+#include "SpehsEngine/Input/Input.h"
 #include "SpehsEngine/Rendering/Polygon.h"
 #include "SpehsEngine/GUI/GUIRectangle.h"
 #include "SpehsEngine/Rendering/TextureManager.h"
+#include "SpehsEngine/Rendering/BatchManager.h"
+#include "SpehsEngine/Rendering/Window.h"
 #include "SpehsEngine/GUI/GUIRectangleContainer.h"
 #include "SpehsEngine/Rendering/BatchManager.h"
 #include "SpehsEngine/Rendering/Text.h"
@@ -31,8 +34,11 @@ namespace spehs
 	{
 		polygon->destroy();
 	}
-	GUIRectangle::GUIRectangle(BatchManager& _batchManager)
-		: batchManager(_batchManager)
+
+	GUIRectangle::GUIRectangle(GUIContext& context)
+		: batchManager(context.batchManager)
+		, inputManager(context.inputManager)
+		, deltaTimeSystem(context.deltaTimeSystem)
 		, position(0, 0)
 		, size(0, 0)
 		, minSize(0, 0)
@@ -80,7 +86,7 @@ namespace spehs
 			delete hoverSound;
 	}
 
-	void GUIRectangle::inputUpdate(InputUpdateData& data)
+	void GUIRectangle::inputUpdate()
 	{
 		disableBit(state, GUIRECT_MOUSE_HOVER_BIT);
 		if (!inputEnabled)
@@ -99,7 +105,7 @@ namespace spehs
 					hoverSound->play();
 			}
 
-			if (inputManager->isKeyPressed(MOUSEBUTTON_LEFT))
+			if (inputManager.isKeyPressed(MOUSEBUTTON_LEFT))
 			{//Pressed
 
 				if (pressSound)
@@ -112,13 +118,13 @@ namespace spehs
 			//Tooltip update
 			if (tooltip)
 			{
-				int _x = inputManager->getMouseX() - tooltip->getWidth(), _y = inputManager->getMouseY();
+				int _x = inputManager.getMouseX() - tooltip->getWidth(), _y = inputManager.getMouseY();
 				if (_x < 0)
-					_x = inputManager->getMouseX();
-				if (_x + tooltip->getWidth() > spehs::ApplicationData::getWindowWidth())
-					_x = spehs::ApplicationData::getWindowWidth() - tooltip->getWidth();
-				if (_y + tooltip->getHeight() > spehs::ApplicationData::getWindowHeight())
-					_y = spehs::ApplicationData::getWindowHeight() - tooltip->getHeight();
+					_x = inputManager.getMouseX();
+				if (_x + tooltip->getWidth() > batchManager.window.getWidth())
+					_x = batchManager.window.getWidth() - tooltip->getWidth();
+				if (_y + tooltip->getHeight() > batchManager.window.getHeight())
+					_y = batchManager.window.getHeight() - tooltip->getHeight();
 				tooltip->setPositionGlobal(_x, _y);
 				tooltip->setRenderState(true);
 			}
@@ -198,12 +204,12 @@ namespace spehs
 
 	bool GUIRectangle::updateMouseHover()
 	{
-		if (inputManager->getMouseX() < getXGlobal() || inputManager->getMouseX() >= getXGlobal() + size.x)
+		if (inputManager.getMouseX() < getXGlobal() || inputManager.getMouseX() >= getXGlobal() + size.x)
 		{
 			disableBit(state, GUIRECT_MOUSE_HOVER_BIT);
 			return false;
 		}
-		else if (inputManager->getMouseY() <= getYGlobal() || inputManager->getMouseY() >= getYGlobal() + size.y)
+		else if (inputManager.getMouseY() <= getYGlobal() || inputManager.getMouseY() >= getYGlobal() + size.y)
 		{
 			disableBit(state, GUIRECT_MOUSE_HOVER_BIT);
 			return false;
@@ -401,7 +407,7 @@ namespace spehs
 		//Create tooltip object if one does not exist already
 		if (!tooltip)
 		{
-			tooltip = new GUIRectangle(batchManager);
+			tooltip = new GUIRectangle(getGUIContext());
 			tooltip->setStringColor(defaultTooltipStringColor);
 			tooltip->setStringSize(spehs::ApplicationData::GUITextSize);
 			tooltip->setColor(defaultTooltipColor);
@@ -487,7 +493,7 @@ namespace spehs
 		if (displayTexture)
 			delete displayTexture;
 		displayTexture = new DisplayTexture();
-		TextureData* texData = textureManager->getTextureData(path, _parameters);
+		TextureData* texData = batchManager.textureManager.getTextureData(path, _parameters);
 		displayTexture->polygon = batchManager.createPolygon(4, 0, texData->width, texData->height);
 		displayTexture->polygon->setTexture(texData);
 		displayTexture->polygon->setCameraMatrixState(false);
@@ -511,7 +517,7 @@ namespace spehs
 
 	void GUIRectangle::setTexture(const std::string& path, const TextureParameter& _parameters)
 	{
-		polygon->setTexture(textureManager->getTextureData(path, _parameters));
+		polygon->setTexture(batchManager.textureManager.getTextureData(path, _parameters));
 	}
 
 	void GUIRectangle::setTexture(const std::string& path)

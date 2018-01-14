@@ -11,17 +11,17 @@
 
 namespace spehs
 {
-	GUIPopup::GUIPopup(BatchManager& _batchManager, const std::string& _message)
-		: GUIRectangleContainer(_batchManager)
+	GUIPopup::GUIPopup(GUIContext& context, const std::string& _message)
+		: GUIRectangleContainer(context)
 		, escapeEnabled(true)
 	{
 		//Background rect
-		addElement(new GUIRectangle(batchManager));
+		addElement(new GUIRectangle(context));
 		elements[BACKGROUND_INDEX]->disableState(GUIRECT_HOVER_COLOR_BIT);
 		elements[BACKGROUND_INDEX]->setColor(spehs::Color(30, 35, 37, 200));
 
 		//Message rect
-		addElement(new GUIRectangle(batchManager));
+		addElement(new GUIRectangle(context));
 		back()->setString(_message);
 		elements[MESSAGE_INDEX]->disableState(GUIRECT_HOVER_COLOR_BIT);
 		elements[MESSAGE_INDEX]->setJustification(GUIRECT_TEXT_JUSTIFICATION_CENTER_BIT);
@@ -34,21 +34,21 @@ namespace spehs
 	void GUIPopup::addOptions(const Option& option)
 	{
 		options.push_back(option);
-		addElement(new GUIRectangle(batchManager));
+		addElement(new GUIRectangle(getGUIContext()));
 		back()->setString(option.string);
 		elements.back()->setJustification(GUIRECT_TEXT_JUSTIFICATION_CENTER_BIT);
 	}
 
-	void GUIPopup::inputUpdate(InputUpdateData& data)
+	void GUIPopup::inputUpdate()
 	{
-		GUIRectangleContainer::inputUpdate(data);
+		GUIRectangleContainer::inputUpdate();
 		if (checkState(GUIRECT_REMOVE_BIT))
 			exceptions::warning("GUIRECT_REMOVE_BIT is enabled!\nPopup should be removed by a higher authority!");
-		else if (inputManager->isKeyPressed(MOUSE_BUTTON_LEFT))
+		else if (inputManager.isKeyPressed(MOUSE_BUTTON_LEFT))
 		{
 			for (unsigned i = OPTION1_INDEX; i < elementsSize(); i++)
 			{
-				if (elements[i]->getMouseHover() && inputManager->tryClaimMouseAvailability())
+				if (elements[i]->getMouseHover() && inputManager.tryClaimMouseAvailability())
 				{
 					//Make callback?
 					if (options[i - OPTION1_INDEX].hasPressCallback)
@@ -57,7 +57,7 @@ namespace spehs
 				}
 			}
 		}
-		if (inputManager->isKeyPressed(KEYBOARD_ESCAPE) && escapeEnabled)
+		if (inputManager.isKeyPressed(KEYBOARD_ESCAPE) && escapeEnabled)
 			enableState(GUIRECT_REMOVE_BIT);
 	}
 

@@ -5,6 +5,7 @@
 #include <stack>
 #include <string>
 
+#include "SpehsEngine/Rendering/BatchRenderResults.h"
 #include "SpehsEngine/Rendering/Depth.h"
 #include "SpehsEngine/Core/Vector.h"
 
@@ -16,19 +17,23 @@ namespace spehs
 	class Point;
 	class Text;
 
+	class ShaderManager;
+	class TextureManager;
 	class Batch;
 	class Camera2D;
 	class Vertex;
 	class Position;
+	class Window;
 
 	/*
-	Class that handles the management and rendering of batches and batchobjects.
-	BatchManager creates and deletes all batchobjects (primitives and texts).
+		Class that handles the management and rendering of batches and batchobjects.
+		BatchManager creates and deletes all batchobjects (primitives and texts).
+		Supplied window and camera references must be valid throughout the batch manager's lifetime.
 	*/
 	class BatchManager
 	{
 	public:
-		BatchManager(Camera2D* _camera, const std::string _name = "unnamed batch manager");
+		BatchManager(Window& _window, Camera2D& _camera, TextureManager& _textureManger, ShaderManager& _shaderManager, const std::string& _name = "unnamed batch manager");
 		~BatchManager();
 
 		Polygon* createPolygon(const int &_shapeID, const PlaneDepth &_planeDepth, const float &_width, const float &_height);
@@ -44,19 +49,20 @@ namespace spehs
 		Text* createText(const PlaneDepth &_planeDepth = DEPTH_MAX);
 		Text* createText(const std::string &_string, const PlaneDepth &_planeDepth = DEPTH_MAX);
 
-		void render();
+		void render(BatchRenderResults* results = nullptr);
 		void clearBatches();
 
-		Camera2D* getCamera2D(){ return camera2D; }
-
+		TextureManager& textureManager;
+		ShaderManager& shaderManager;
+		Window& window;
+		Camera2D& camera2D;
+		const std::string name;
 
 	protected:
-		const std::string name;
-		std::vector<Batch*> batches;
 
+
+		std::vector<Batch*> batches;
 		std::vector<Primitive*> primitives;
 		std::vector<Text*> texts;
-
-		Camera2D* camera2D;
 	};
 }

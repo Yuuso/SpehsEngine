@@ -1,6 +1,9 @@
 #include <algorithm>
 #include "SpehsEngine/Core/ApplicationData.h"
 #include "SpehsEngine/Input/InputManager.h"
+#include "SpehsEngine/Input/Input.h"
+#include "SpehsEngine/Rendering/BatchManager.h"
+#include "SpehsEngine/Rendering/Window.h"
 #include "SpehsEngine/GUI/GUIRectangleScrollList.h"
 #include "SpehsEngine/GUI/GUIWindow.h"
 #include "SpehsEngine/GUI/GUIStringEditor.h"
@@ -15,18 +18,18 @@ namespace spehs
 	std::string GUIRectangleScrollList::scrollUpTexturePath;
 	std::string GUIRectangleScrollList::scrollBarTexturePath;
 	std::string GUIRectangleScrollList::scrollDownTexturePath;
-	GUIRectangleScrollList::GUIRectangleScrollList(BatchManager& _batchManager)
-		: GUIRectangleUnisizeContainer(_batchManager)
+	GUIRectangleScrollList::GUIRectangleScrollList(GUIContext& context)
+		: GUIRectangleUnisizeContainer(context)
 		, beginElementIndex(0)
 		, updateElementCount(0)
 		, minVisibleElementCount(4)
 	{
 		disableState(GUIRECT_HOVER_COLOR_BIT);
-		scrollUp = new GUIRectangle(_batchManager);
+		scrollUp = new GUIRectangle(context);
 		scrollUp->setID(ScrollButtons::up);
-		scrollBar = new GUIRectangle(_batchManager);
+		scrollBar = new GUIRectangle(context);
 		scrollBar->setID(ScrollButtons::bar);
-		scrollDown = new GUIRectangle(_batchManager);
+		scrollDown = new GUIRectangle(context);
 		scrollDown->setID(ScrollButtons::down);
 		scrollBar->setWidth(defaultScrollBarWidth);
 		scrollUp->setParent(this);
@@ -126,45 +129,45 @@ namespace spehs
 		return minElementSize.y * elements.size();
 	}
 
-	void GUIRectangleScrollList::inputUpdate(InputUpdateData& data)
+	void GUIRectangleScrollList::inputUpdate()
 	{
 		if (getInputEnabled() && checkState(GUIRECT_OPEN_BIT))
 		{
-			scrollUp->inputUpdate(data);
-			scrollBar->inputUpdate(data);
-			scrollDown->inputUpdate(data);
+			scrollUp->inputUpdate();
+			scrollBar->inputUpdate();
+			scrollDown->inputUpdate();
 
-			if (inputManager->isKeyDown(MOUSE_BUTTON_LEFT) && //Mouse left is held
-				inputManager->getMouseY() > scrollDown->getYGlobal() + scrollDown->getHeight() && //mouse is within scroll bar area of movement
-				inputManager->getMouseY() < scrollUp->getYGlobal() &&
-				inputManager->getMouseX() > scrollDown->getXGlobal() &&
-				inputManager->getMouseX() < scrollDown->getXGlobal() + scrollDown->getWidth())
+			if (inputManager.isKeyDown(MOUSE_BUTTON_LEFT) && //Mouse left is held
+				inputManager.getMouseY() > scrollDown->getYGlobal() + scrollDown->getHeight() && //mouse is within scroll bar area of movement
+				inputManager.getMouseY() < scrollUp->getYGlobal() &&
+				inputManager.getMouseX() > scrollDown->getXGlobal() &&
+				inputManager.getMouseX() < scrollDown->getXGlobal() + scrollDown->getWidth())
 			{//Mouse dragging scroll bar
 
 				//Calculate scroll based on mouse position relative to scroll area
 				float scrollAreaBegin = scrollDown->getYGlobal() + scrollDown->getHeight() + scrollBar->getHeight() / 2.0f;//Y value of the scrolling area beginning
 				float scrollAreaHeight = scrollUp->getYGlobal() - scrollDown->getYGlobal() - scrollDown->getHeight() - scrollBar->getHeight();//Height of the scrolling area in between min and max positions of scroll bar center
-				scroll(round((elements.size() - updateElementCount) * (1.0f - (inputManager->getMouseY() - scrollAreaBegin) / scrollAreaHeight)) - beginElementIndex);
+				scroll(round((elements.size() - updateElementCount) * (1.0f - (inputManager.getMouseY() - scrollAreaBegin) / scrollAreaHeight)) - beginElementIndex);
 			}
 
-			if (inputManager->isKeyPressed(MOUSE_BUTTON_LEFT) && invisibleElements())
+			if (inputManager.isKeyPressed(MOUSE_BUTTON_LEFT) && invisibleElements())
 			{
 				if (scrollUp->getMouseHover())
 					scroll(-1);
 				else if (scrollDown->getMouseHover())
 					scroll(1);
 			}
-			if (getMouseHover() && inputManager->getMouseWheelDelta())
-				scroll(-inputManager->getMouseWheelDelta());
+			if (getMouseHover() && inputManager.getMouseWheelDelta())
+				scroll(-inputManager.getMouseWheelDelta());
 		}
 
 		disableState(GUIRECT_MOUSE_HOVER_CONTAINER_BIT);
-		GUIRectangle::inputUpdate(data);
+		GUIRectangle::inputUpdate();
 		if (checkState(GUIRECT_OPEN_BIT))
 		{
 			for (unsigned i = 0; i < updateElementCount; i++)
 			{
-				elements[beginElementIndex + i]->inputUpdate(data);
+				elements[beginElementIndex + i]->inputUpdate();
 				if (elements[beginElementIndex + i]->getMouseHoverAny())
 					enableState(GUIRECT_MOUSE_HOVER_CONTAINER_BIT);
 			}
@@ -298,7 +301,7 @@ namespace spehs
 
 		//Position visible elements
 		bool listOnLeftSideOfMainWindow = true;
-		if (getXGlobal() + size.x / 2.0f > spehs::ApplicationData::getWindowWidthHalf())
+		if (getXGlobal() + size.x / 2.0f > batchManager.window.getWidth() / 2)
 			listOnLeftSideOfMainWindow = false;
 		int _x = 0;
 		if (invisibleElements() && listOnLeftSideOfMainWindow)

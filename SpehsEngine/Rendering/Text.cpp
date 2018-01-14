@@ -4,7 +4,7 @@
 #include "SpehsEngine/Rendering/ShaderManager.h"
 #include "SpehsEngine/Rendering/BatchManager.h"
 #include "SpehsEngine/Rendering/GLSLProgram.h"
-#include "SpehsEngine/Input/OpenGLError.h"
+#include "SpehsEngine/Rendering/OpenGLError.h"
 #include "SpehsEngine/Rendering/Text.h"
 
 #include <glm/gtc/matrix_transform.hpp>
@@ -26,29 +26,37 @@ namespace spehs
 	static bool textRenderingInitialized(false);
 	static FT_Library* ft = nullptr;
 
-	void initText()
+	bool initText()
 	{
-		FontManager::instance = new FontManager;
 
 		if (textRenderingInitialized)
 		{
 			exceptions::unexpectedError("Text rendering already initialized!");
-			return;
+			return false;
 		}
+
+		if (FontManager::instance)
+		{
+			exceptions::unexpectedError("Font manager already exists!");
+			return false;
+		}
+		FontManager::instance = new FontManager;
 
 		if (ft)
 		{
 			exceptions::unexpectedError("Freetype library already exists!");
-			return;
+			return false;
 		}
 		ft = new FT_Library;
+
 		if (FT_Init_FreeType(ft))
 		{
 			exceptions::fatalError("Freetype library initialization failed!");
-			return;
+			return false;
 		}
 
 		textRenderingInitialized = true;
+		return true;
 	}
 	void uninitText()
 	{
@@ -234,8 +242,9 @@ namespace spehs
 #endif
 	}
 
-	Text::Text(const PlaneDepth depth)
-		: lineCount(0)
+	Text::Text(BatchManager& _batchManager, const PlaneDepth depth)
+		: batchManager(_batchManager)
+		, lineCount(0)
 		, scale(1.0f)
 		, lineSpacing(0)
 		, font(nullptr)
@@ -252,8 +261,8 @@ namespace spehs
 #endif
 	}
 
-	Text::Text(const std::string &_string, const PlaneDepth _depth)
-		: Text(_depth)
+	Text::Text(BatchManager& _batchManager, const std::string &_string, const PlaneDepth _depth)
+		: Text(_batchManager, _depth)
 	{
 		setString(_string);
 	}

@@ -49,7 +49,6 @@ namespace spehs
 	class Text : public Colorable
 	{
 		friend class BatchManager;
-
 	public:
 
 		void operator=(const Text& _original);
@@ -113,10 +112,11 @@ namespace spehs
 		
 		std::vector<GLuint> textureIDs;
 		std::vector<spehs::Vertex> worldVertexArray;
+		BatchManager& batchManager;
 
 	protected:
-		Text(const PlaneDepth _depth);
-		Text(const std::string &_string, const PlaneDepth _depth);
+		Text(BatchManager& batchManager, const PlaneDepth _depth);
+		Text(BatchManager& batchManager, const std::string &_string, const PlaneDepth _depth);
 		//Text(const Text& _original);
 		~Text();
 

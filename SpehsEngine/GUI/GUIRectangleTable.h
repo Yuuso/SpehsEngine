@@ -7,7 +7,7 @@ namespace spehs
 	class GUIRectangleTable : public GUIRectangleUnisizeContainer
 	{
 	public:
-		GUIRectangleTable(BatchManager& _batchManager, const int columns);
+		GUIRectangleTable(GUIContext& context, const int columns);
 		~GUIRectangleTable() override;
 		
 		void updateMinSize() override;

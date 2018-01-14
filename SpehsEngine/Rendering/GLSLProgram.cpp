@@ -4,7 +4,7 @@
 #include <GL/glew.h>
 
 #include "SpehsEngine/Rendering/GLSLProgram.h"
-#include "SpehsEngine/Input/OpenGLError.h"
+#include "SpehsEngine/Rendering/OpenGLError.h"
 #include "SpehsEngine/Core/Exceptions.h"
 
 

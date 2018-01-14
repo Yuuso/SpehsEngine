@@ -13,8 +13,8 @@ namespace spehs
 {
 	int GUIStringEditor::defaultMaxStringEditorStringLength = 32;
 
-	GUIStringEditor::GUIStringEditor(BatchManager& _batchManager)
-		: GUIRectangle(_batchManager)
+	GUIStringEditor::GUIStringEditor(GUIContext& context)
+		: GUIRectangle(context)
 		, ValueEditor("")
 		, stringUpdated(false)
 		, defaultString("")
@@ -25,6 +25,7 @@ namespace spehs
 		, typerBlinkTime(0)
 		, typerBlinkTimer(0)
 		, multilineEditing(false)
+		, keyboardRecorder(context.inputManager)
 	{
 		setTyperBlinkTime(time::fromSeconds(0.5f));
 		createText();
@@ -91,10 +92,10 @@ namespace spehs
 		minSize.x += typeCharacter->getTextWidth();
 	}
 
-	void GUIStringEditor::inputUpdate(InputUpdateData& data)
+	void GUIStringEditor::inputUpdate()
 	{
 		ValueEditor::update();
-		GUIRectangle::inputUpdate(data);
+		GUIRectangle::inputUpdate();
 
 		//Disable input receive?
 		if (disableInputReceiveOnNextUpdate)
@@ -110,9 +111,9 @@ namespace spehs
 			//Receiving input
 			if (isReceivingInput())
 			{
-				recordInput(data.deltaTime);
+				recordInput(deltaTimeSystem.deltaTime);
 				typeCharacter->setRenderState(getRenderState() && ((typerBlinkTimer.value % typerBlinkTime.value) < typerBlinkTime.value / 2));
-				typerBlinkTimer += data.deltaTime;
+				typerBlinkTimer += deltaTimeSystem.deltaTime;
 			}
 			else
 			{
@@ -120,7 +121,7 @@ namespace spehs
 				keyboardRecorder.stop();
 			}
 
-			if (!editorValueChanged() && getMouseHover() && inputManager->isKeyPressed(MOUSE_BUTTON_LEFT))
+			if (!editorValueChanged() && getMouseHover() && inputManager.isKeyPressed(MOUSE_BUTTON_LEFT))
 			{//Mouse press
 				toggleTyping();
 			}
@@ -211,8 +212,8 @@ namespace spehs
 		}
 
 		//COMMAND INPUT
-		const bool ctrl(inputManager->isKeyDown(KEYBOARD_LCTRL) || inputManager->isKeyDown(KEYBOARD_RCTRL));
-		const bool shift(inputManager->isKeyDown(KEYBOARD_LSHIFT) || inputManager->isKeyDown(KEYBOARD_RSHIFT));
+		const bool ctrl(inputManager.isKeyDown(KEYBOARD_LCTRL) || inputManager.isKeyDown(KEYBOARD_RCTRL));
+		const bool shift(inputManager.isKeyDown(KEYBOARD_LSHIFT) || inputManager.isKeyDown(KEYBOARD_RSHIFT));
 		for (unsigned i = 0; i < keyboardRecorder.commandInput.size(); i++)
 		{
 			switch (keyboardRecorder.commandInput[i])
@@ -330,7 +331,7 @@ namespace spehs
 		}
 
 		//End typing
-		if (inputManager->isKeyPressed(MOUSEBUTTON_LEFT))
+		if (inputManager.isKeyPressed(MOUSEBUTTON_LEFT))
 			endTyping();
 	}
 

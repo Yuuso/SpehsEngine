@@ -7,8 +7,8 @@ namespace spehs
 	class GUIRectangleUnisizeContainer : public GUIRectangleContainer
 	{
 	public:
-		GUIRectangleUnisizeContainer(BatchManager& _batchManager)
-			: GUIRectangleContainer(_batchManager)
+		GUIRectangleUnisizeContainer(GUIContext& context)
+			: GUIRectangleContainer(context)
 			, elementSize(0, 0)
 			, minElementSize(0, 0)
 		{

@@ -3,18 +3,20 @@
 
 namespace spehs
 {
-	namespace game
+	class InputLib;
+	class AudioLib;
+	class GameLib
 	{
 		/* Initializes game library */
-		int initialize();
+		GameLib(const InputLib& inputLib, const AudioLib& audioLib);
 
 		/* Uninitializes game library */
-		void uninitialize();
+		~GameLib();
 
 		/* Returns whether the game library has successfully been initialized */
-		bool isInitialized();
+		static bool isValid();
 
 		/* Returns game library version in a readable string format */
-		std::string getVersion();
-	}
+		static std::string getVersion();
+	};
 }

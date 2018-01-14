@@ -4,12 +4,12 @@
 #include "SpehsEngine/Core/Time.h"
 #include "SpehsEngine/Core/Log.h"
 #include "SpehsEngine/Input/Input.h"
-#include "SpehsEngine/Input/Window.h"
+#include "SpehsEngine/Rendering/Window.h"
 #include "SpehsEngine/Rendering/Rendering.h"
 #include "SpehsEngine/Rendering/Console.h"
 #include "SpehsEngine/Rendering/TextureManager.h"
 #include "SpehsEngine/Rendering/ShaderManager.h"
-#include "SpehsEngine/Input/OpenGLError.h"
+#include "SpehsEngine/Rendering/OpenGLError.h"
 #include "SpehsEngine/Rendering/Text.h"
 
 #include <string>
@@ -22,54 +22,60 @@
 
 namespace spehs
 {
-	extern void initText();
+	extern bool initText();
 	extern void uninitText();
 
-	namespace rendering
+	namespace
 	{
-		namespace
-		{
-			bool initialized = false;
-		}
+		int instanceCount = 0;
+		bool valid = false;
+		std::string version("0");
+	}
 
-		int initialize()
+	RenderingLib::RenderingLib(const CoreLib& coreLib)
+	{
+		if (instanceCount++ == 0)
 		{
-			_ASSERT(spehs::core::isInitialized() && "Spehs core must be initialized");
-			_ASSERT(spehs::input::isInitialized() && "Spehs input must be initialized");
+			if (!coreLib.isValid())
+			{
+				log::error("Cannot initialize rendering library, core library is invalid.");
+				return;
+			}
+
 			log::info("Current SpehsEngine rendering library build: " + getVersion());
 
-			initText();
-			console::initialize();
+			if (SDL_Init(SDL_INIT_VIDEO) < 0)
+			{
+				spehs::log::info(SDL_GetError());
+				spehs::log::error("Video initialization failed!");
+				return;
+			}
 
-			//INITIALIZATIONS
-			textureManager = new TextureManager();
-			shaderManager = new ShaderManager();
+			if (!initText())
+			{
+				return;
+			}
 
-			checkOpenGLErrors(__FILE__, __LINE__);
-
-			initialized = true;
-			return 0;
+			valid = true;
 		}
+	}
 		
-		void uninitialize()
+	RenderingLib::~RenderingLib()
+	{
+		if (--instanceCount == 0)
 		{
-			delete textureManager;
-			textureManager = nullptr;
-			delete shaderManager;
-			shaderManager = nullptr;
-			console::unitialize();
 			uninitText();
-			initialized = false;
+			valid = false;
 		}
+	}
 
-		bool isInitialized()
-		{
-			return initialized;
-		}
-				
-		std::string getVersion()
-		{
-			return std::string("0");
-		}
+	bool RenderingLib::isValid()
+	{
+		return valid;
+	}
+		
+	std::string RenderingLib::getVersion()
+	{
+		return version;
 	}
 }

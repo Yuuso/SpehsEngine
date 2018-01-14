@@ -11,7 +11,8 @@
 
 namespace spehs
 {
-	Line::Line(const PlaneDepth& _planeDepth)
+	Line::Line(BatchManager& _batchManager, const PlaneDepth& _planeDepth)
+		: Primitive(_batchManager)
 	{
 		vertexArray.resize(2);
 		vertexArray[0].position = spehs::vec2::zero;
@@ -25,7 +26,8 @@ namespace spehs
 		drawMode = LINE;
 	}
 
-	Line::Line(const spehs::vec2& _startPoint, const spehs::vec2& _endPoint, const PlaneDepth& _planeDepth)
+	Line::Line(BatchManager& _batchManager, const spehs::vec2& _startPoint, const spehs::vec2& _endPoint, const PlaneDepth& _planeDepth)
+		: Primitive(_batchManager)
 	{
 		vertexArray.resize(2);
 		vertexArray[0].position = spehs::vec2(_startPoint.x, _startPoint.y);

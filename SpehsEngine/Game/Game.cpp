@@ -8,38 +8,49 @@
 
 namespace spehs
 {
-	namespace game
+	namespace
 	{
-		namespace
-		{
-			bool initialized = false;
-		}
+		int instanceCount = 0;
+		bool valid = false;
+		std::string version("0");
+	}
 
-		int initialize()
+	GameLib::GameLib(const InputLib& inputLib, const AudioLib& audioLib)
+	{
+		if (instanceCount++ == 0)
 		{
-			_ASSERT(spehs::core::isInitialized() && "Spehs core must be initialized");
-			_ASSERT(spehs::input::isInitialized() && "Spehs input must be initialized");
-			_ASSERT(spehs::rendering::isInitialized() && "Spehs rendering must be initialized");
-			_ASSERT(spehs::audio::isInitialized() && "Spehs audio must be initialized");
+			if (!inputLib.isValid())
+			{
+				log::error("Cannot initialize game library, input library is invalid.");
+				return;
+			}
+			if (!audioLib.isValid())
+			{
+				log::error("Cannot initialize game library, audio library is invalid.");
+				return;
+			}
+
 			log::info("Current SpehsEngine game library build: " + getVersion());
 
-			initialized = true;
-			return 0;
+			valid = true;
 		}
+	}
 		
-		void uninitialize()
+	GameLib::~GameLib()
+	{
+		if (--instanceCount == 0)
 		{
-			initialized = false;
+			valid = false;
 		}
+	}
 
-		bool isInitialized()
-		{
-			return initialized;
-		}
+	bool GameLib::isValid()
+	{
+		return valid;
+	}
 
-		std::string getVersion()
-		{
-			return std::string("0");
-		}
+	std::string GameLib::getVersion()
+	{
+		return version;
 	}
 }

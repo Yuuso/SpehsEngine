@@ -19,19 +19,19 @@ namespace spehs
 		static_assert(std::is_arithmetic<Scalar>::value, "Scalar editor type must be of either integral or floating type!");
 		enum class EditorType { Slider, Ticks };
 	public:
-		GUIScalarEditor(BatchManager& _batchManager, const std::string& scalarName, Scalar scalarEditorValue)
+		GUIScalarEditor(GUIContext& context, const std::string& scalarName, Scalar scalarEditorValue)
 			: ValueEditor(scalarEditorValue)
-			, GUIRectangleRow(_batchManager)
+			, GUIRectangleRow(context)
 			, floatPrecision(2)
 			, tickAmount(1)
 			, onHold(false)
 			, holdTimer(0)
 			, holdTime(time::fromSeconds(0.15f))
 			, initialHoldTime(time::fromSeconds(1.0f))
-			, nameRect(new GUIRectangle(_batchManager))
-			, valueRect(new GUIStringEditor(_batchManager))
-			, decreaseRect(new GUIRectangle(_batchManager))
-			, increaseRect(new GUIRectangle(_batchManager))
+			, nameRect(new GUIRectangle(context))
+			, valueRect(new GUIStringEditor(context))
+			, decreaseRect(new GUIRectangle(context))
+			, increaseRect(new GUIRectangle(context))
 		{
 			nameRect->setString(scalarName);
 			decreaseRect->setString("-");
@@ -71,16 +71,16 @@ namespace spehs
 			setEditorValue(getEditorValue());
 		}
 		void setTickAmount(const Scalar _tickAmount){ tickAmount = _tickAmount; }
-		void inputUpdate(InputUpdateData& data) override
+		void inputUpdate() override
 		{
 			ValueEditor::update();
-			GUIRectangleRow::inputUpdate(data);
+			GUIRectangleRow::inputUpdate();
 
 			if (valueRect->editorValueChanged())
 				setEditorValue(getValueFromTextField());
 			
 			//+/- buttons
-			if (inputManager->isKeyPressed(MOUSE_BUTTON_LEFT))
+			if (inputManager.isKeyPressed(MOUSE_BUTTON_LEFT))
 			{//Press
 				if (increaseRect->getMouseHover())
 				{//+
@@ -95,11 +95,11 @@ namespace spehs
 					setEditorValue(editorValue - tickAmount);
 				}
 			}
-			else if (inputManager->isKeyDown(MOUSE_BUTTON_LEFT) && onHold)
+			else if (inputManager.isKeyDown(MOUSE_BUTTON_LEFT) && onHold)
 			{//Hold
 				if (increaseRect->getMouseHover())
 				{//+
-					holdTimer -= data.deltaTime;
+					holdTimer -= deltaTimeSystem.deltaTime;
 					if (holdTimer <= spehs::time::zero)
 					{
 						holdTimer = holdTime;
@@ -108,7 +108,7 @@ namespace spehs
 				}
 				else if (decreaseRect->getMouseHover())
 				{//-
-					holdTimer -= data.deltaTime;
+					holdTimer -= deltaTimeSystem.deltaTime;
 					if (holdTimer <= spehs::time::zero)
 					{
 						holdTimer = holdTime;

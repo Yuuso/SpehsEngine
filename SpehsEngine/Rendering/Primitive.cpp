@@ -3,6 +3,7 @@
 #include "SpehsEngine/Rendering/Primitive.h"
 #include "SpehsEngine/Core/Vertex.h"
 #include "SpehsEngine/Rendering/ShaderManager.h"
+#include "SpehsEngine/Rendering/BatchManager.h"
 #include "SpehsEngine/Rendering/Batch.h"
 
 #include <GL/glew.h>
@@ -21,8 +22,9 @@ std::atomic<int> primitiveDeallocations;
 
 namespace spehs
 {
-	Primitive::Primitive()
-		: readyForDelete(false)
+	Primitive::Primitive(BatchManager& _batchManager)
+		: batchManager(_batchManager)
+		, readyForDelete(false)
 		, blending(false)
 		, renderState(true)
 		, cameraMatrixState(true)
@@ -305,7 +307,7 @@ namespace spehs
 
 	void Primitive::setShader(const int &_newShaderIndex)
 	{
-		if (shaderManager->getShader(_newShaderIndex) == nullptr)
+		if (batchManager.shaderManager.getShader(_newShaderIndex) == nullptr)
 		{
 			exceptions::unexpectedError("Trying to set a non-existing shader to Primitive!");
 			return;

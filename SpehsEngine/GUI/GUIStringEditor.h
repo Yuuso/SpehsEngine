@@ -11,7 +11,7 @@ namespace spehs
 	{
 		static int defaultMaxStringEditorStringLength;
 	public:
-		GUIStringEditor(BatchManager& _batchManager);
+		GUIStringEditor(GUIContext& context);
 		~GUIStringEditor() override;
 
 		void setRenderState(const bool _state) override;
@@ -23,7 +23,7 @@ namespace spehs
 		void setStringAlpha(const spehs::Color::Component& a) override;
 		void updatePosition() override;
 		void updateMinSize() override;
-		void inputUpdate(InputUpdateData& data) override;
+		void inputUpdate() override;
 		void onDisableInput() override;
 
 		//Editor

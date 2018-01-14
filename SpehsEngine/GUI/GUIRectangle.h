@@ -44,7 +44,6 @@ namespace spehs
 	}
 	class Text;
 	class Polygon;
-	class BatchManager;
 	class GUIWindow;
 	class GUIButton;
 	class GUICheckbox;
@@ -56,24 +55,35 @@ namespace spehs
 	class GUIRectangleTable;
 	class GUIRectangleContainer;
 
+	class BatchManager;
+	class InputManager;
+	namespace time
+	{
+		class DeltaTimeSystem;
+	}
+	/*
+		The GUI context is the caller's promise to the created GUIRectangle,
+		that the provided context members will be valid throughout the GUIRectangle's lifetime.
+	*/
+	struct GUIContext
+	{		
+		GUIContext(BatchManager& _batchManager, InputManager& _inputManager, time::DeltaTimeSystem& _deltaTimeSystem)
+			: batchManager(_batchManager)
+			, inputManager(_inputManager)
+			, deltaTimeSystem(_deltaTimeSystem)
+		{
+
+		}
+		BatchManager& batchManager;
+		InputManager& inputManager;
+		time::DeltaTimeSystem& deltaTimeSystem;
+	};
+
 	/**Base class for every GUI element\n\n
 	All GUI elements are expected to be derived from this class.\n
 	GUI rectangles can be stored in GUI rectangle containers*/
 	class GUIRectangle
 	{
-	public:
-		struct InputUpdateData
-		{
-			InputUpdateData(const vec2 _mousePosition, const time::Time _deltaTime)
-				: mousePosition(_mousePosition)
-				, deltaTime(_deltaTime)
-			{
-			}
-			const vec2 mousePosition;
-			const time::Time deltaTime;
-
-		};
-
 	public://Static
 		static int16_t defaultDepth;//Default depth where GUI rectangles will be arranged
 		static int16_t tooltipDepthRelative;//Default depth modifier for tooltips relative to their parent GUI rectangle
@@ -86,11 +96,11 @@ namespace spehs
 		friend class GUIWindow;
 
 	public:
-		GUIRectangle(BatchManager& _batchManager);
+		GUIRectangle(GUIContext& context);
 		virtual ~GUIRectangle();
 		
 		/// During GUI's input update the element's size and/or min size may change even so that it might affect parents above.
-		virtual void inputUpdate(InputUpdateData& data);
+		virtual void inputUpdate();
 		/// During GUI's visual update the element's size and/or min size must not change!
 		virtual void visualUpdate();
 
@@ -238,7 +248,11 @@ namespace spehs
 		virtual GUIRectangleTable* getAsGUIRectangleTablePtr() { return nullptr; }
 		virtual GUIRectangleContainer* getAsGUIRectangleContainerPtr() { return nullptr; }
 
+		GUIContext getGUIContext() { return GUIContext(batchManager, inputManager, deltaTimeSystem); }
+
 		BatchManager& batchManager;
+		InputManager& inputManager;
+		time::DeltaTimeSystem& deltaTimeSystem;
 
 	protected:
 		void createText();

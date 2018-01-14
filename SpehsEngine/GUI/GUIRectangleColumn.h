@@ -8,7 +8,7 @@ namespace spehs
 	class GUIRectangleColumn : public GUIRectangleContainer
 	{
 	public:
-		GUIRectangleColumn(BatchManager& _batchManager);
+		GUIRectangleColumn(GUIContext& context);
 		~GUIRectangleColumn() override;
 
 		void setUniformHeight(const bool _state);

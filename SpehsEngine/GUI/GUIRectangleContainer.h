@@ -21,10 +21,10 @@ namespace spehs
 	class GUIRectangleContainer : public GUIRectangle
 	{
 	public:
-		GUIRectangleContainer(BatchManager& _batchManager);
+		GUIRectangleContainer(GUIContext& context);
 		~GUIRectangleContainer() override;
 
-		void inputUpdate(InputUpdateData& data) override;
+		void inputUpdate() override;
 		void visualUpdate() override;
 		void setRenderState(const bool _state) override;
 
