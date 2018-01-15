@@ -59,18 +59,22 @@
       <PreprocessorDefinitions>NOMINMAX;PI=3.14159265359f;TWO_PI=6.28318530718f;_DEBUG;</PreprocessorDefinitions>
       <AdditionalOptions>-I /home/pi/SpehsEngine/ -I /usr/glm/ -I /usr/boost/ -I /home/pi/SpehsEngine/</AdditionalOptions>
     </ClCompile>
-    <Lib>
-      <AdditionalOptions> -l"pthread" -l"boost_system" -l"boost_thread" %(AdditionalOptions)</AdditionalOptions>
-    </Lib>
+    <Lib />
+    <Link>
+      <AdditionalLibraryDirectories>/usr/boost/stage/lib/static/;/home/pi/projects/Codex/bin/$(Platform)/$(Configuration);/home/pi/SpehsEngine/bin/$(Configuration)/;</AdditionalLibraryDirectories>
+      <LibraryDependencies>pthread;boost_system;boost_thread;SpehsCore;ShellCodex;bcm2835;</LibraryDependencies>
+    </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">
     <ClCompile>
       <PreprocessorDefinitions>NOMINMAX;PI=3.14159265359f;TWO_PI=6.28318530718f;NDEBUG;</PreprocessorDefinitions>
       <AdditionalOptions>-I /home/pi/SpehsEngine/ -I /usr/glm/ -I /usr/boost/ -I /home/pi/SpehsEngine/</AdditionalOptions>
     </ClCompile>
-    <Lib>
-      <AdditionalOptions> -l"pthread" -l"boost_system" -l"boost_thread" %(AdditionalOptions)</AdditionalOptions>
-    </Lib>
+    <Lib />
+    <Link>
+      <LibraryDependencies>pthread;boost_system;boost_thread;SpehsCore;ShellCodex;bcm2835;</LibraryDependencies>
+      <AdditionalLibraryDirectories>/usr/boost/stage/lib/static/;/home/pi/projects/Codex/bin/$(Platform)/$(Configuration);/home/pi/SpehsEngine/bin/$(Configuration)/;</AdditionalLibraryDirectories>
+    </Link>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets" />
