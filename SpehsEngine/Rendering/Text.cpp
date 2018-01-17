@@ -1,10 +1,13 @@
 #include <algorithm>
 #include "SpehsEngine/Core/ApplicationData.h"
 #include "SpehsEngine/Core/Exceptions.h"
+#include "SpehsEngine/Rendering/FontManager.h"
 #include "SpehsEngine/Rendering/ShaderManager.h"
 #include "SpehsEngine/Rendering/BatchManager.h"
 #include "SpehsEngine/Rendering/GLSLProgram.h"
 #include "SpehsEngine/Rendering/OpenGLError.h"
+#include "SpehsEngine/Rendering/FontManager.h"
+#include "SpehsEngine/Rendering/Font.h"
 #include "SpehsEngine/Rendering/Text.h"
 
 #include <glm/gtc/matrix_transform.hpp>
@@ -23,220 +26,9 @@ std::atomic<int> textDeallocations;
 
 namespace spehs
 {
-	static bool textRenderingInitialized(false);
-	static FT_Library* ft = nullptr;
-
-	bool initText()
-	{
-
-		if (textRenderingInitialized)
-		{
-			exceptions::unexpectedError("Text rendering already initialized!");
-			return false;
-		}
-
-		if (FontManager::instance)
-		{
-			exceptions::unexpectedError("Font manager already exists!");
-			return false;
-		}
-		FontManager::instance = new FontManager;
-
-		if (ft)
-		{
-			exceptions::unexpectedError("Freetype library already exists!");
-			return false;
-		}
-		ft = new FT_Library;
-
-		if (FT_Init_FreeType(ft))
-		{
-			exceptions::fatalError("Freetype library initialization failed!");
-			return false;
-		}
-
-		textRenderingInitialized = true;
-		return true;
-	}
-	void uninitText()
-	{
-		delete FontManager::instance;
-
-		if (!textRenderingInitialized)
-		{//Validate uninitialization
-			exceptions::unexpectedError("Text rendering already uninitialized");
-			return;
-		}
-
-		//Uninitialize FreeType
-		FT_Done_FreeType(*ft);
-		delete ft;
-		ft = nullptr;
-
-		//Uninitialization complete
-		std::cout << "\nText rendering uninitialized.";
-		textRenderingInitialized = false;
-	}
-
-
-	struct Font
-	{
-		~Font()
-		{
-			if (ftFace != nullptr)
-			{
-				const FT_Error error = FT_Done_Face(*ftFace);
-				if (error)
-				{
-					exceptions::unexpectedError("Freetype error: Failed to unload font " + fontPath + " FT_Error: " + std::to_string(error));
-				}
-				delete ftFace;
-
-				for (unsigned i = 0; i < characters.size(); i++)
-				{
-					glDeleteTextures(1, &characters[i].textureID);
-				}
-			}
-		}
-
-		FT_Face* ftFace = nullptr;
-		std::string fontPath;
-		int fontSize;
-		std::map<GLchar, Character> characters;
-		int referenceCount = 0;
-		int height = 0;
-		int ascender = 0;
-		int descender = 0;
-		int maxAdvanceWidth = 0;
-	};
-
-
-	FontManager* FontManager::instance = nullptr;
-	FontManager::FontManager()
-	{
-	}
-	FontManager::~FontManager()
-	{
-		//Inform (possible) memory leaks
-		if (fonts.size() != 0)
-		{
-			std::cout << "\nSome Font objects were not deallocated! Remaining font count: " << fonts.size();
-			for (unsigned i = 0; i < fonts.size(); i++)
-			{
-				delete fonts[i];
-			}
-		}
-	}
-	Font* FontManager::getFont(const std::string &_fontPath, const int &_size)
-	{
-		//Check for already existing font
-		for (unsigned int i = 0; i < fonts.size(); i++)
-		{
-			if (_fontPath == fonts[i]->fontPath)
-			{
-				if (_size == fonts[i]->fontSize)
-				{
-					fonts[i]->referenceCount++;
-					return fonts[i];
-				}
-			}
-		}
-
-		//Create a new font
-		fonts.push_back(new Font);
-		Font* font = fonts.back();
-		font->ftFace = new FT_Face;
-
-		const FT_Error error = FT_New_Face(*ft, _fontPath.c_str(), 0, font->ftFace);
-		if (error)
-		{
-			exceptions::fatalError("Freetype error: Failed to load font " + _fontPath + " FT_Error: " + std::to_string(error));
-			return nullptr;
-		}
-
-		font->fontPath = _fontPath;
-		font->fontSize = _size;
-		font->referenceCount = 1;
-
-		FT_Face* ftFace = font->ftFace;
-		FT_Set_Pixel_Sizes(*ftFace, 0, _size);
-		glPixelStorei(GL_UNPACK_ALIGNMENT, 1); //Disable byte-alignment restriction
-
-		for (GLubyte c = 32; c <= 126; c++)
-		{
-			//Load character glyph
-			if (FT_Load_Char(*ftFace, c, FT_LOAD_RENDER))
-			{
-				exceptions::unexpectedError("FreeType error: Failed to load Glyph");
-				return nullptr;
-			}
-
-			//Generate texture
-			GLuint texture;
-			glGenTextures(1, &texture);
-			glBindTexture(GL_TEXTURE_2D, texture);
-			glTexImage2D(
-				GL_TEXTURE_2D,
-				0,
-				GL_RED,
-				(*ftFace)->glyph->bitmap.width,
-				(*ftFace)->glyph->bitmap.rows,
-				0,
-				GL_RED,
-				GL_UNSIGNED_BYTE,
-				(*ftFace)->glyph->bitmap.buffer
-				);
-
-			//Set texture options
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-			//Now store character for later use
-			Character character =
-			{
-				texture,
-				spehs::ivec2((*ftFace)->glyph->bitmap.width, (*ftFace)->glyph->bitmap.rows),
-				spehs::ivec2((*ftFace)->glyph->bitmap_left, (*ftFace)->glyph->bitmap_top),
-				(*ftFace)->glyph->advance.x
-			};
-			font->characters.insert(std::pair<GLchar, Character>(c, character));
-		}
-
-		checkOpenGLErrors(__FILE__, __LINE__);
-
-		font->height = (*font->ftFace)->size->metrics.height >> 6;
-		font->ascender = (*font->ftFace)->ascender >> 6;
-		font->descender = (*font->ftFace)->descender >> 6;
-		font->maxAdvanceWidth = (*font->ftFace)->max_advance_width >> 6;
-
-		return font;
-	}
-	void FontManager::unreferenceFont(Font* _font)
-	{
-		if (_font == nullptr)
-			return;
-
-		//If face becomes useless, remove it
-		if (--_font->referenceCount <= 0)
-		{
-			for (unsigned int i = 0; i < fonts.size(); i++)
-			{
-				if (fonts[i] == _font)
-				{
-					fonts.erase(fonts.begin() + i);
-					delete _font;
-				}
-			}
-		}
-		_font = nullptr;
-	}
-	
-
 	Text::~Text()
 	{
-		FontManager::instance->unreferenceFont(font);
+		batchManager.fontManager.unreferenceFont(font);
 #ifdef _DEBUG
 		textDeallocations++;
 #endif
@@ -388,10 +180,10 @@ namespace spehs
 	{
 		if (font)
 		{
-			FontManager::instance->unreferenceFont(font);
+			batchManager.fontManager.unreferenceFont(font);
 		}
 
-		font = FontManager::instance->getFont(_fontPath, _size);
+		font = batchManager.fontManager.getFont(_fontPath, _size);
 	}
 
 	void Text::setFont(Font* _font)
@@ -411,8 +203,8 @@ namespace spehs
 			return;
 
 		//Get new font face
-		FontManager::instance->unreferenceFont(font);
-		font = FontManager::instance->getFont(font->fontPath, _size);
+		batchManager.fontManager.unreferenceFont(font);
+		font = batchManager.fontManager.getFont(font->fontPath, _size);
 	}
 
 	void Text::setString(std::string _str)

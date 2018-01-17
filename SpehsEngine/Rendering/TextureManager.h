@@ -10,7 +10,7 @@ typedef unsigned int GLuint;
 
 namespace spehs
 {
-	class GLContext;
+	class Window;
 
 	enum class TextureFiltering : int
 	{
@@ -80,8 +80,6 @@ namespace spehs
 	class TextureManager
 	{
 	public:
-		TextureManager(GLContext& glContext);
-		~TextureManager();
 
 		void setDefaultTexture(const std::string& _filepath, const TextureParameter& _parameters);
 		void setDefaultTexture(const std::string& _filepath);
@@ -112,9 +110,13 @@ namespace spehs
 		void takeScreenshot(std::string directory);//Takes a screenshot and writes it to the specified directory
 		void takeScreenshot();//Takes screenshot and writes it to the default screenshot directory, specified in the application data
 
-		GLContext& glContext;
+		Window& window;
 
 	private:
+		friend class Window;
+		TextureManager(Window& window);
+		~TextureManager();
+
 		TextureData* toTexture(const std::string& _filepath, const TextureParameter& _parameters);
 
 		TextureData* defaultTexture;

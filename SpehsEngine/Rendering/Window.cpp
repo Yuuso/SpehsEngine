@@ -3,6 +3,9 @@
 #include "SpehsEngine/Core/ApplicationData.h"
 #include "SpehsEngine/Core/Exceptions.h"
 #include "SpehsEngine/Core/Log.h"
+#include "SpehsEngine/Rendering/GLContext.h"
+#include "SpehsEngine/Rendering/TextureManager.h"
+#include "SpehsEngine/Rendering/FontManager.h"
 //#include "SpehsEngine/Rendering/PostProcessing.h" TODO!!!
 
 #include <SDL/SDL_video.h>
@@ -19,12 +22,23 @@ namespace spehs
 		}
 	}
 
+	thread_local int threadWindowCount = 0;
+
 	Window::Window(const int pixelWidth, const int pixelHeight)
 		: sdlWindow(nullptr)
 		, glContext(nullptr)
+		, textureManager(nullptr)
+		, fontManager(nullptr)
 		, width(pixelWidth)
 		, height(pixelHeight)
 	{
+		threadWindowCount++;
+		if (threadWindowCount > 1)
+		{
+			spehs::log::info("A single thread cannot have two windows active at the same time.");
+			return;
+		}
+
 		//Set some attributes before creating the SDL window
 		SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_COMPATIBILITY);
 		SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
@@ -47,14 +61,25 @@ namespace spehs
 			str += SDL_GetError();
 			log::error(str);
 		}
+
+		//Create open gl context specific to this window
+		glContext = new GLContext(*this);
 		
-		//Initial settings
-		setFullscreen(false);
-		setBorderless(true);
+		if (isValid())
+		{
+			//Initial settings
+			setFullscreen(false);
+			setBorderless(true);
+
+			//Initialize managers
+			textureManager = new TextureManager(*this);
+			fontManager = new FontManager(*this);
+		}
 	}
 
 	Window::~Window()
 	{
+		threadWindowCount--;
 		if (glContext)
 		{
 			SDL_GL_DeleteContext((SDL_GLContext)glContext);
@@ -77,10 +102,10 @@ namespace spehs
 		SDL_GL_SwapWindow(sdlWindow);
 		checkOpenGLErrors(__FILE__, __LINE__);
 	}
-		
-	void Window::setClearColor(const float _r, const float _g, const float _b, const float _a)
+	
+	void Window::setClearColor(const Color& color)
 	{
-		glClearColor(_r, _g, _b, _a);
+		glClearColor((float)color.r / 255.0f, (float)color.g / 255.0f, (float)color.b / 255.0f, (float)color.a / 255.0f);
 		checkOpenGLErrors(__FILE__, __LINE__);
 	}
 
@@ -144,6 +169,31 @@ namespace spehs
 	void Window::setBorderless(const bool enabled)
 	{
 		SDL_SetWindowBordered(sdlWindow, (SDL_bool)enabled);
+	}
+
+	bool Window::isValid() const
+	{
+		return glContext ? glContext->isValid() : false;
+	}
+
+	TextureManager* Window::getTextureManager()
+	{
+		return textureManager;
+	}
+
+	const TextureManager* Window::getTextureManager() const
+	{
+		return textureManager;
+	}
+
+	FontManager* Window::getFontManager()
+	{
+		return fontManager;
+	}
+
+	const FontManager* Window::getFontManager() const
+	{
+		return fontManager;
 	}
 
 	int Window::getWidth() const

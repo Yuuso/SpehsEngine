@@ -5,14 +5,15 @@ namespace spehs
 	class GLContext
 	{
 	public:
-		GLContext(Window& window);
-		~GLContext();
 
 		bool isValid() const { return valid; }
 
 		Window& window;
 
 	private:
+		friend class Window;
+		GLContext(Window& window);
+		~GLContext();
 		void* glContext;
 		bool valid;
 	};

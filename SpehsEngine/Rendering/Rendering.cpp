@@ -22,9 +22,6 @@
 
 namespace spehs
 {
-	extern bool initText();
-	extern void uninitText();
-
 	namespace
 	{
 		int instanceCount = 0;
@@ -34,7 +31,8 @@ namespace spehs
 
 	RenderingLib::RenderingLib(const CoreLib& coreLib)
 	{
-		if (instanceCount++ == 0)
+		instanceCount++;
+		if (!valid)
 		{
 			if (!coreLib.isValid())
 			{
@@ -51,11 +49,6 @@ namespace spehs
 				return;
 			}
 
-			if (!initText())
-			{
-				return;
-			}
-
 			valid = true;
 		}
 	}
@@ -64,7 +57,6 @@ namespace spehs
 	{
 		if (--instanceCount == 0)
 		{
-			uninitText();
 			valid = false;
 		}
 	}

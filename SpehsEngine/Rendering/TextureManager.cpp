@@ -29,10 +29,10 @@ const spehs::TextureParameter spehs::TextureParameter::defaultParameters = spehs
 
 namespace spehs
 {
-	TextureManager::TextureManager(GLContext& _glContext)
-		: glContext(_glContext)
+	TextureManager::TextureManager(Window& _window)
+		: window(_window)
 	{
-		SPEHS_ASSERT(glContext.isValid());
+		SPEHS_ASSERT(window.isValid());
 		defaultTexture = getNoiseTexture(4, 4, DEFAULT_TEXTURE_SEED, 4);
 	}
 
@@ -406,7 +406,7 @@ namespace spehs
 		std::string path = directory + "screenshot_" + string + ".png";
 
 		int screenshot;
-		screenshot = SOIL_save_screenshot(path.c_str(), SOIL_SAVE_TYPE_BMP, 0, 0, glContext.window.getWidth(), glContext.window.getHeight());
+		screenshot = SOIL_save_screenshot(path.c_str(), SOIL_SAVE_TYPE_BMP, 0, 0, window.getWidth(), window.getHeight());
 		//console::log("Screenshot saved to \"" + path + "\"", spehs::Color(90, 255, 230));
 	}
 }

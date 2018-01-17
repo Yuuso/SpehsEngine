@@ -85,6 +85,47 @@ namespace spehs
 		}
 	}
 
+	void LineDiagram::setRenderState(const bool state)
+	{
+		if (state != polygon->getRenderState())
+		{
+			polygon->setRenderState(state);
+			for (size_t i = 0; i < points.size(); i++)
+			{
+				if (points[i].line)
+					points[i].line->setRenderState(state);
+			}
+		}
+	}
+
+	void LineDiagram::setDepth(const int16_t depth)
+	{
+		if (depth != polygon->getPlaneDepth())
+		{
+			polygon->setPlaneDepth(depth);
+			for (size_t i = 0; i < points.size(); i++)
+			{
+				if (points[i].line)
+					points[i].line->setPlaneDepth(depth + 1);
+			}
+		}
+	}
+
+	void LineDiagram::setBackgroundColor(const Color& color)
+	{
+		polygon->setColor(color);
+	}
+
+	void LineDiagram::setLineColor(const Color& color)
+	{
+		lineColor = color;
+		for (size_t i = 0; i < points.size(); i++)
+		{
+			if (points[i].line)
+				points[i].line->setColor(color);
+		}
+	}
+
 	void LineDiagram::setSize(const float width, const float height)
 	{
 		const Color col = polygon->getColor();
@@ -101,6 +142,16 @@ namespace spehs
 	{
 		polygon->setPosition(x, y);
 		updateLineVisuals();
+	}
+
+	bool LineDiagram::getRenderState() const
+	{
+		return polygon->getRenderState();
+	}
+
+	int16_t LineDiagram::getDepth() const
+	{
+		return polygon->getPlaneDepth();
 	}
 
 	vec2 LineDiagram::getSize() const
@@ -159,8 +210,10 @@ namespace spehs
 				if (!points[p].line)
 				{
 					points[p].line = batchManager.createLine(polygon->getPlaneDepth());
+					points[p].line->setRenderState(polygon->getRenderState());
 					points[p].line->setCameraMatrixState(false);
 					points[p].line->setLineWidth(1.0f);
+					points[p].line->setPlaneDepth(polygon->getPlaneDepth() + 1);
 					points[p].line->setColor(lineColor);
 				}
 

@@ -1,50 +1,18 @@
-
 #pragma once
-
+#include <map>
+#include <string>
+#include <vector>
 #include "SpehsEngine/Rendering/Depth.h"
 #include "SpehsEngine/Core/Vertex.h"
 #include "SpehsEngine/Core/Color.h"
 #include "SpehsEngine/Core/Vector.h"
 
-#include <map>
-#include <string>
-#include <vector>
-
-
-typedef unsigned int GLuint;
-typedef char GLchar;
-
-class BatchManager;
-
-
 namespace spehs
 {
-	struct Character
-	{
-		GLuint     textureID;  // ID handle of the glyph texture
-		spehs::ivec2 size;       // Size of glyph
-		spehs::ivec2 bearing;    // Offset from baseline to left/top of glyph
-		GLuint     advance;    // Offset to advance to next glyph
-	};
-
-
-	struct Font;
-
-	class FontManager
-	{
-	public:
-		static FontManager* instance;
-
-		FontManager();
-		~FontManager();
-
-		Font* getFont(const std::string &_fontPath, const int &_size);
-		void unreferenceFont(Font* _font);
-
-	private:
-		std::vector<Font*> fonts;
-	};
-
+	class Font;
+	class BatchManager;
+	typedef unsigned int GLuint;
+	typedef char GLchar;
 
 	class Text : public Colorable
 	{

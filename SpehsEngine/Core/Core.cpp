@@ -27,7 +27,8 @@ namespace spehs
 
 	CoreLib::CoreLib()
 	{
-		if (instanceCount++ == 0)
+		instanceCount++;
+		if (!valid)
 		{
 			log::info("Current SpehsEngine core library version: " + getVersion());
 

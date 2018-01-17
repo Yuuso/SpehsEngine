@@ -1,9 +1,12 @@
 #pragma once
 #include <boost/signal.hpp>
+#include "SpehsEngine/Core/Color.h"
 
 struct SDL_Window;
 namespace spehs
 {
+	class TextureManager;
+	class FontManager;
 	class InputManager;
 	class GLContext;
 
@@ -16,17 +19,23 @@ namespace spehs
 
 		Window(const int pixelWidth, const int pixelHeight);
 		~Window();
-			
+		
 		void renderBegin();
 		void renderEnd();
 
-		void setClearColor(const float _r, const float _g, const float _b, const float _a);
+		void setClearColor(const Color& color);
 		void setTitle(const char* title);
 		void setSize(const int pixelWidth, const int pixelHeight);
 		void setMinSize(const int minPixelWidth, const int minPixelHeight);
 		void setMaxSize(const int maxPixelWidth, const int maxPixelHeight);
 		void setFullscreen(const bool enabled);
 		void setBorderless(const bool enabled);
+
+		bool isValid() const;
+		TextureManager* getTextureManager();
+		const TextureManager* getTextureManager() const;
+		FontManager* getFontManager();
+		const FontManager* getFontManager() const;
 
 		/* Returns window pixel width. */
 		int getWidth() const;
@@ -38,7 +47,11 @@ namespace spehs
 
 	private:
 		SDL_Window* sdlWindow;
-		void* glContext;
+		GLContext* glContext;
+		/* Each window must have its own texture manager. (OpenGL limitation) */
+		TextureManager* textureManager;
+		/* Each window must have its own font manager. (OpenGL limitation) */
+		FontManager* fontManager;
 		int width;
 		int height;
 	};

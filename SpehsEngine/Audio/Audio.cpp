@@ -24,7 +24,8 @@ namespace spehs
 
 	AudioLib::AudioLib(const CoreLib& coreLib)
 	{
-		if (instanceCount++ == 0)
+		instanceCount++;
+		if (!valid)
 		{
 			if (!coreLib.isValid())
 			{

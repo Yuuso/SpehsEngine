@@ -19,6 +19,7 @@ namespace spehs
 
 	class ShaderManager;
 	class TextureManager;
+	class FontManager;
 	class Batch;
 	class Camera2D;
 	class Vertex;
@@ -33,7 +34,7 @@ namespace spehs
 	class BatchManager
 	{
 	public:
-		BatchManager(Window& _window, Camera2D& _camera, TextureManager& _textureManger, ShaderManager& _shaderManager, const std::string& _name = "unnamed batch manager");
+		BatchManager(Window& _window, ShaderManager& _shaderManager, Camera2D& _camera, const std::string& _name = "unnamed batch manager");
 		~BatchManager();
 
 		Polygon* createPolygon(const int &_shapeID, const PlaneDepth &_planeDepth, const float &_width, const float &_height);
@@ -52,8 +53,9 @@ namespace spehs
 		void render(BatchRenderResults* results = nullptr);
 		void clearBatches();
 
-		TextureManager& textureManager;
 		ShaderManager& shaderManager;
+		TextureManager& textureManager;
+		FontManager& fontManager;
 		Window& window;
 		Camera2D& camera2D;
 		const std::string name;

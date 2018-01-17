@@ -5,6 +5,7 @@
 #include "SpehsEngine/Rendering/Polygon.h"
 #include "SpehsEngine/Rendering/Line.h"
 #include "SpehsEngine/Rendering/Point.h"
+#include "SpehsEngine/Rendering/Window.h"
 #include "SpehsEngine/Core/Exceptions.h"
 
 #include <algorithm>
@@ -12,9 +13,10 @@
 
 namespace spehs
 {
-	BatchManager::BatchManager(Window& _window, Camera2D& _camera, TextureManager& _textureManager, ShaderManager& _shaderManager, const std::string& _name)
-		: textureManager(_textureManager)
-		, shaderManager(_shaderManager)
+	BatchManager::BatchManager(Window& _window, ShaderManager& _shaderManager, Camera2D& _camera, const std::string& _name)
+		: shaderManager(_shaderManager)
+		, textureManager(*_window.getTextureManager())
+		, fontManager(*_window.getFontManager())
 		, window(_window)
 		, camera2D(_camera)
 		, name(_name)
@@ -39,8 +41,7 @@ namespace spehs
 		if (cleanUpPrimitives != 0)
 			exceptions::warning("BatchManager cleaned up " + std::to_string(cleanUpPrimitives) + " primitives!");
 	}
-
-
+	
 	Polygon* BatchManager::createPolygon(const int &_shapeID, const PlaneDepth &_planeDepth, const float &_width, const float &_height)
 	{
 		primitives.push_back(new Polygon(*this, _shapeID, _planeDepth, _width, _height));

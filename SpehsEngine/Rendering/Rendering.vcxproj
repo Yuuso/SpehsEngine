@@ -159,6 +159,8 @@
     <ClInclude Include="Console.h" />
     <ClInclude Include="ConsoleVariable.h" />
     <ClInclude Include="Depth.h" />
+    <ClInclude Include="Font.h" />
+    <ClInclude Include="FontManager.h" />
     <ClInclude Include="GLContext.h" />
     <ClInclude Include="GLSLProgram.h" />
     <ClInclude Include="Line.h" />
@@ -181,6 +183,8 @@
     <ClCompile Include="BatchManager.cpp" />
     <ClCompile Include="Camera2D.cpp" />
     <ClCompile Include="Console.cpp" />
+    <ClCompile Include="Font.cpp" />
+    <ClCompile Include="FontManager.cpp" />
     <ClCompile Include="GLContext.cpp" />
     <ClCompile Include="GLSLProgram.cpp" />
     <ClCompile Include="Line.cpp" />

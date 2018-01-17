@@ -17,7 +17,8 @@ namespace spehs
 
 	GUILib::GUILib(const InputLib& inputLib, const AudioLib& audioLib)
 	{
-		if (instanceCount++ == 0)
+		instanceCount++;
+		if (!valid)
 		{
 			if (!inputLib.isValid())
 			{

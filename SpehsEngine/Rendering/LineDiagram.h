@@ -28,9 +28,14 @@ namespace spehs
 		void setCapacity(const size_t newCapacity);
 		size_t getCapacity() const;
 
-		//Visual state
+		void setRenderState(const bool state);
 		void setSize(const float width, const float height);
 		void setPosition(const float x, const float y);
+		void setDepth(const int16_t depth);
+		void setBackgroundColor(const Color& color);
+		void setLineColor(const Color& color);
+		bool getRenderState() const;
+		int16_t getDepth() const;
 		vec2 getSize() const;
 		float getWidth() const;
 		float getHeight() const;

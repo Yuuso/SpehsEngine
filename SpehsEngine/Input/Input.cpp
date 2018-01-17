@@ -31,7 +31,8 @@ namespace spehs
 
 	InputLib::InputLib(const RenderingLib& renderingLib)
 	{
-		if (instanceCount++ == 0)
+		instanceCount++;
+		if (!valid)
 		{
 			if (!renderingLib.isValid())
 			{
