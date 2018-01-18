@@ -97,11 +97,15 @@ namespace spehs
 		/* Waits in a while loop until specified time has passed. */
 		void delay(const Time time);
 
+
 		/* Returns the current time stamp, relative to 'some' context. See getRunTime() for an alternative. */
 		Time now();
 
 		/* Returns current time since time was initialized. Less efficient than using now(). */
 		Time getRunTime();
+
+		/* Returns time when spehs::time was initialized. */
+		Time getInitializationTime();
 
 		//Get time and date of when the engine was built
 		//TODO: this actually only ever updates when the time source files are being rebuilt. And with the addition of split projects, this is ever less usefull.

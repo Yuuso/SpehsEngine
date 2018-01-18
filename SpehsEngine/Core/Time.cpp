@@ -19,15 +19,25 @@ namespace spehs
 		}
 
 		//Global variables
-		Time maxDeltaTime(0);
+		Time maxDeltaTime(0);		
 		
-		//Local variables
-		std::chrono::high_resolution_clock::rep initializationTime;
+		namespace
+		{//Local variables
+			bool initialized = false;
+			std::chrono::high_resolution_clock::rep initializationTime;
+		}
 
 		void initialize()
 		{
+			if (initialized)
+			{
+				spehs::log::warning("spehs::time has already been initialized!");
+				return;
+			}
+
 			initializationTime = std::chrono::high_resolution_clock::now().time_since_epoch().count();
 			log::info("SpehsEngine time accuracy is " + std::to_string(conversionRate::second) + " ticks per second.");
+			initialized = true;
 		}
 		
 		Time now()
@@ -37,7 +47,14 @@ namespace spehs
 
 		Time getRunTime()
 		{
+			SPEHS_ASSERT(initialized);
 			return std::chrono::high_resolution_clock::now().time_since_epoch().count() - initializationTime;
+		}
+
+		Time getInitializationTime()
+		{
+			SPEHS_ASSERT(initialized);
+			return initializationTime;
 		}
 
 		void delay(const Time time)
