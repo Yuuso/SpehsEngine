@@ -200,7 +200,7 @@ namespace spehs
 
 		PointData* previous = nullptr;
 		const float interval = polygon->getWidth() / (points.size() + 1);
-		const float variance = maxValue - minValue;
+		const float variance = (maxValue - minValue) > 0.0f ? maxValue - minValue : 0.5f;
 		for (size_t p = 0; p < points.size(); p++)
 		{
 			if (previous)
@@ -430,7 +430,11 @@ namespace spehs
 		}
 
 		PointData* previous = nullptr;
-		const spehs::vec2 variance = maxValue - minValue;
+		spehs::vec2 variance = maxValue - minValue;
+		if (variance.x <= 0.0f)
+			variance.x = 0.5f;
+		if (variance.y <= 0.0f)
+			variance.y = 0.5f;
 		for (size_t p = 0; p < points.size(); p++)
 		{
 			if (previous)
