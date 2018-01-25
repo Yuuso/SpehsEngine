@@ -13,9 +13,7 @@
 namespace spehs
 {
 	GUIWindowManager::GUIWindowManager(GUIContext& context)
-		: batchManager(context.batchManager)
-		, inputManager(context.inputManager)
-		, deltaTimeSystem(context.deltaTimeSystem)
+		: GUIContext(context)
 		, focusedWindow(nullptr)
 		, depthPerWindow(256)
 		, receivingInput(false)
@@ -24,7 +22,7 @@ namespace spehs
 		, dragging(false)
 		, popupShadeCurrentAlpha(0.0f)
 	{
-		popupShade = batchManager.createPolygon(Shape::BUTTON, 0, batchManager.window.getWidth(), batchManager.window.getHeight());
+		popupShade = getBatchManager().createPolygon(Shape::BUTTON, 0, getBatchManager().window.getWidth(), getWindow().getHeight());
 		popupShade->setCameraMatrixState(false);
 		popupShade->setPosition(0, 0);
 		setPopupShadeColor(spehs::Color(40, 55, 45, 80));
@@ -50,7 +48,7 @@ namespace spehs
 	void GUIWindowManager::addPopup(GUIRectangle* popup)
 	{
 		popup->setRenderState(true);
-		popup->setPositionGlobal(batchManager.window.getWidth() / 2 - popup->getWidth() * 0.5f, batchManager.window.getHeight() / 2 - popup->getHeight() * 0.5f);
+		popup->setPositionGlobal(getWindow().getWidth() / 2 - popup->getWidth() * 0.5f, getWindow().getHeight() / 2 - popup->getHeight() * 0.5f);
 		popups.push_back(popup);
 		updateDepths();
 		popup->visualUpdate();
@@ -89,7 +87,7 @@ namespace spehs
 			popupShade->setRenderState(true);
 			if (popupShadeCurrentAlpha < popupShadeTargetAlpha)
 			{
-				popupShadeCurrentAlpha += deltaTimeSystem.deltaTime.asSeconds();
+				popupShadeCurrentAlpha += getDeltaTimeSystem().deltaTime.asSeconds();
 				if (popupShadeCurrentAlpha > popupShadeTargetAlpha)
 					popupShadeCurrentAlpha = popupShadeTargetAlpha;
 				popupShade->setAlpha(int(255.0f * popupShadeCurrentAlpha));
@@ -112,7 +110,7 @@ namespace spehs
 			}
 
 			//Prevent mouse access outside popups
-			inputManager.tryClaimMouseAvailability();
+			getInputManager().tryClaimMouseAvailability();
 		}
 		else if (popupShade->getRenderState())
 		{
@@ -182,7 +180,7 @@ namespace spehs
 				{//Window not under mouse, do not continue focus status
 					focusedWindow = nullptr;
 				}
-				else if (inputManager.isKeyPressed(MOUSE_BUTTON_LEFT))
+				else if (getInputManager().isKeyPressed(MOUSE_BUTTON_LEFT))
 				{//Focused window was pressed, move window to the back of the vector if not there already
 					if (focusedWindow != windows.back())
 					{
@@ -216,7 +214,7 @@ namespace spehs
 
 		//Claim mouse availability if mouse is hovering over a window
 		if (getMouseHoverAny())
-			inputManager.tryClaimMouseAvailability();
+			getInputManager().tryClaimMouseAvailability();
 	}
 
 	void GUIWindowManager::refreshWindows()

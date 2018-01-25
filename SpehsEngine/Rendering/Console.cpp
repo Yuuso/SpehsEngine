@@ -7,6 +7,7 @@
 #include "SpehsEngine/Core/BitwiseOperations.h"
 #include "SpehsEngine/Core/Serializable.h"
 #include "SpehsEngine/Core/Time.h"
+#include "SpehsEngine/Core/Log.h"
 #include "SpehsEngine/Input/Input.h"
 #include "SpehsEngine/Input/InputManager.h"
 #include "SpehsEngine/Rendering/Console.h"
@@ -36,40 +37,35 @@ extern std::atomic<int> BatchAllocations;
 extern std::atomic<int> BatchDeallocations;
 extern std::atomic<int> textAllocations;
 extern std::atomic<int> textDeallocations;
-typedef std::lock_guard<std::recursive_mutex> LockGuardRecursive;
 
 
 
 namespace spehs
 {
-	Console::Console(BatchManager& _batchManager, InputManager& _inputManager)
-		: batchManager(_batchManager)
-		, inputManager(_inputManager)
+	Console::LineEntry::~LineEntry()
 	{
-		LockGuardRecursive regionLock(mutex);
-		backgroundShade = batchManager.createPolygon(Shape::BUTTON, planeDepth, 1.0f, 1.0f);
-		backgroundShade->setCameraMatrixState(false);
-		backgroundShade->setPosition(0.0f, 0.0f);
-		backgroundShade->setColor(spehs::Color(13, 26, 39, 128));
+		if (text)
+			text->destroy();
+		text = nullptr;
+	}
 
-		fpsCounter = batchManager.createText(10000);
-		fpsCounter->setFont(spehs::ApplicationData::GUITextFontPath, spehs::ApplicationData::consoleTextSize);
-		fpsCounter->setColor(Color(255, 77, 0, 217));
-		fpsCounter->setString("FPS:0123456789\nDraw calls:0123456789\nVertices:0123456789");
-		fpsCounter->setPosition(spehs::vec2(5, (float)batchManager.window.getHeight() - fpsCounter->getTextHeight()));
+	Console::Console(InputManager& _inputManager, BatchManager* _batchManager)
+		: inputManager(_inputManager)
+		, batchManager(nullptr)
+		, backgroundShade(nullptr)
+		, fpsCounter(nullptr)
+		, consoleText(nullptr)
+	{
+		std::lock_guard<std::recursive_mutex> lock(mutex);
 
-		consoleText = batchManager.createText();
-		consoleText->setFont(spehs::ApplicationData::GUITextFontPath, spehs::ApplicationData::consoleTextSize);
-		consoleText->setColor(Color(255, 153, 0, spehs::ApplicationData::consoleTextAlpha));
-		consoleText->setPosition(spehs::vec2(CONSOLE_BORDER, CONSOLE_BORDER));
-		consoleText->setString("><");
-		consoleText->setRenderState(checkState(CONSOLE_OPEN_BIT));
+		if (batchManager)
+			setBatchManager(_batchManager);
 		setPlaneDepth(planeDepth + 1);
 	}
 
 	Console::~Console()
 	{
-		LockGuardRecursive regionLock(mutex);
+		std::lock_guard<std::recursive_mutex> lock(mutex);
 
 		if (backgroundShade)
 			backgroundShade->destroy();
@@ -88,20 +84,20 @@ namespace spehs
 
 	void Console::open()
 	{
-		LockGuardRecursive regionLock(mutex);
-		if (checkState(CONSOLE_OPEN_BIT))
+		std::lock_guard<std::recursive_mutex> lock(mutex);
+		if (openState)
 			return;
-		enableState(CONSOLE_OPEN_BIT);
-		consoleText->setRenderState(true);
+		openState = true;
+		consoleText->setRenderState(renderState);
 		updateLinePositions();
 	}
 
 	void Console::close()
 	{
-		LockGuardRecursive regionLock(mutex);
-		if (!checkBit(state, CONSOLE_OPEN_BIT))
+		std::lock_guard<std::recursive_mutex> lock(mutex);
+		if (!openState)
 			return;
-		disableBit(state, CONSOLE_OPEN_BIT);
+		openState = false;
 		consoleText->setRenderState(false);
 		updateLinePositions();
 		input.clear();
@@ -109,128 +105,67 @@ namespace spehs
 
 	void Console::setRenderState(const bool _state)
 	{
-		if (_state)
-			enableState(CONSOLE_RENDER_STATE_BIT);
-		else
-			disableState(CONSOLE_RENDER_STATE_BIT);
+		std::lock_guard<std::recursive_mutex> lock(mutex);
+		if (_state != renderState)
+		{
+			renderState = _state;
+			if (batchManager)
+			{
+				fpsCounter->setRenderState(_state);
+				backgroundShade->setRenderState(_state);
+				for (size_t i = 0; i < lines.size(); i++)
+					lines[i].text->setRenderState(_state);
+			}
+		}
 	}
 
 	bool Console::getRenderState()
 	{
-		return checkState(CONSOLE_RENDER_STATE_BIT);
+		std::lock_guard<std::recursive_mutex> lock(mutex);
+		return renderState;
 	}
 
 	bool Console::isOpen()
 	{
-		return checkState(CONSOLE_OPEN_BIT);
-	}
-
-	bool Console::checkState(uint16_t bits)
-	{
-		LockGuardRecursive regionLock(mutex);
-		return checkBit(state, bits);
-	}
-
-	void Console::enableState(uint16_t bits)
-	{
-		mutex.lock();
-		enableBit(state, bits);
-		mutex.unlock();
-	}
-
-	void Console::disableState(uint16_t bits)
-	{
-		mutex.lock();
-		disableBit(state, bits);
-		mutex.unlock();
+		std::lock_guard<std::recursive_mutex> lock(mutex);
+		return openState;
 	}
 
 	bool Console::textEntered()
 	{
-		LockGuardRecursive regionLock(mutex);
-		return checkState(CONSOLE_TEXT_EXECUTED_BIT);
+		std::lock_guard<std::recursive_mutex> lock(mutex);
+		return textExecutedState;
 	}
 
 	std::string Console::getTextEntered()
 	{
-		LockGuardRecursive regionLock(mutex);
+		std::lock_guard<std::recursive_mutex> lock(mutex);
 		return textExecuted;
 	}
 
 	void Console::update(const time::Time& deltaTime)
 	{
-		LockGuardRecursive regionLock(mutex);
-			
-		//Process new lines entered during the cycle
-		for (unsigned i = 0; i < newLines.size(); i++)
-		{
-			if (lines.size() >= LOG_LINES_KEPT_IN_MEMORY)
-			{
-				lines.front()->destroy();
-				lines.erase(lines.begin());
-			}
-			lines.push_back(batchManager.createText(planeDepth));
-			lines.back()->setFont(spehs::ApplicationData::GUITextFontPath, spehs::ApplicationData::consoleTextSize);
-			lines.back()->setColor(newLines[i].second);
-			lines.back()->setAlpha(spehs::ApplicationData::consoleTextAlpha);
-			lines.back()->setString(&newLines[i].first[0], newLines[i].first.size());
-			visibility = 1.0f;
-			for (unsigned i = 0; i < lines.size(); i++)
-				lines[i]->setRenderState(true);
+		std::lock_guard<std::recursive_mutex> lock(mutex);
 
-			updateLinePositions();
+		//Reset the text executed state
+		textExecutedState = false;
+		
+		//Remove lines if needed
+		while (lines.size() >= LOG_LINES_KEPT_IN_MEMORY)
+		{
+			lines.erase(lines.begin());
 		}
-		newLines.clear();
-
-		disableState(CONSOLE_TEXT_EXECUTED_BIT);
-		if (visibility > 0.0f)
+		
+		if (openState)
 		{
-			//Update console font size if needed
-			if (previousFontSize != spehs::ApplicationData::consoleTextSize)
-			{
-				fpsCounter->setFont(spehs::ApplicationData::GUITextFontPath, spehs::ApplicationData::consoleTextSize);
-				consoleText->setFont(spehs::ApplicationData::GUITextFontPath, spehs::ApplicationData::consoleTextSize);
-				for (unsigned i = 0; i < lines.size(); i++)
-					lines[i]->setFont(spehs::ApplicationData::GUITextFontPath, spehs::ApplicationData::consoleTextSize);
-				previousFontSize = spehs::ApplicationData::consoleTextSize;
-
-			}
-
-			if (!isOpen())
-			{
-				visibility -= deltaTime.asSeconds() / FADE_OUT_TIME;
-				if (visibility <= 0.0f)
-				{
-					for (unsigned i = 0; i < lines.size(); i++)
-						lines[i]->setRenderState(false);
-				}
-			}
-		}
-
-		if (!isOpen())
-		{
-			//Console is not open, check opening key combination
-			if (inputManager.isKeyDown(KEYBOARD_LCTRL) && inputManager.isKeyDown(KEYBOARD_LALT) && inputManager.isKeyDown(KEYBOARD_BACKSPACE))
-			{
-				open();
-				input = "";
-			}
-		}
-		else
-		{
+			//Increase visibility
 			if (visibility < 1.0f)
 			{
-				if (visibility <= 0.0f)
-				{
-					for (unsigned i = 0; i < lines.size(); i++)
-						lines[i]->setRenderState(true);
-				}
 				visibility += deltaTime.asSeconds() * 5.0f;
 				if (visibility > 1.0f)
 					visibility = 1.0f;
 			}
 
-			//Console is open
 			////Receiving input
 			bool inputReceived = false;
 			//Alphabet
@@ -374,111 +309,148 @@ namespace spehs
 				consoleText->setString('>' + input + '<');
 			}
 		}
+		else
+		{
+			//Console is not open, check opening key combination
+			if (inputManager.isKeyDown(KEYBOARD_LCTRL) && inputManager.isKeyDown(KEYBOARD_LALT) && inputManager.isKeyDown(KEYBOARD_BACKSPACE))
+			{
+				open();
+				input = "";
+			}
+
+			//Decrease visibility over time
+			if (visibility > 0.0f)
+			{
+				visibility -= deltaTime.asSeconds() / FADE_OUT_TIME;
+				if (visibility < 0.0f)
+					visibility = 0.0f;
+			}
+		}
 	}
 
 	void Console::render(std::string customDebugText)
 	{
-		LockGuardRecursive regionLock(mutex);
-
-		if (!checkState(CONSOLE_RENDER_STATE_BIT) && !isOpen())
+		std::lock_guard<std::recursive_mutex> lock(mutex);
+		if (!batchManager || renderState == false || openState == false)
 		{
-			drawCalls = 0;
-			vertexDrawCount = 0;
 			return;
 		}
-
-		if (spehs::ApplicationData::showFps)
+		
+		//Create rendered elements if they dont already exist
+		if (batchManager)
 		{
-			fpsCounter->setRenderState(true);
-
-			static int frameCounter = 0;
-			if (++frameCounter >= FPS_REFRESH_RATE)
+			//Console background shade
+			if (openState || (lines.size() > 0 && lines.front().text && lines.front().text->getRenderState()))
 			{
-				fpsCounter->setString("Draw calls: " + std::to_string(drawCalls) + "\nVertices: " + std::to_string(vertexDrawCount) + "\n" + customDebugText);
-				fpsCounter->setPosition(spehs::vec2(CONSOLE_BORDER, batchManager.window.getHeight() - fpsCounter->getTextHeight()));
-				frameCounter = 0;
+				if (!backgroundShade)
+				{
+					backgroundShade = batchManager->createPolygon(Shape::BUTTON, planeDepth, 1.0f, 1.0f);
+					backgroundShade->setCameraMatrixState(false);
+					backgroundShade->setPosition(0.0f, 0.0f);
+					backgroundShade->setColor(spehs::Color(13, 26, 39, 128));
+				}
+				backgroundShade->setRenderState(true);
+				backgroundShade->setAlpha(int(visibility * 204));
+				int w = 0.0f, h = 0.0f;
+				if (consoleText->getRenderState())
+				{
+					w = consoleText->getTextWidth();
+					h = consoleText->getTextHeight();
+				}
+				for (unsigned i = 0; i < lines.size(); i++)
+				{
+					w = std::max(w, (int)lines[i].text->getTextWidth());
+					h += lines[i].text->getTextHeight();
+				}
+				w += CONSOLE_BORDER * 2;
+				h += CONSOLE_BORDER * 2;
+				if (abs(backgroundShade->getWidth() - w) > 0.9f || abs(backgroundShade->getHeight() - h) > 0.9f)
+					backgroundShade->resize(w, h);
+			}
+			else
+				backgroundShade->setRenderState(false);
+
+			//FPS counter
+			if (!fpsCounter)
+			{
+				fpsCounter = batchManager->createText(10000);
+				fpsCounter->setFont(spehs::ApplicationData::GUITextFontPath, spehs::ApplicationData::consoleTextSize);
+				fpsCounter->setColor(Color(255, 77, 0, 217));
+			}
+			fpsCounter->setString("FPS: TODO\n" + customDebugText);
+			fpsCounter->setPosition(spehs::vec2(CONSOLE_BORDER, (float)batchManager->window.getHeight() - fpsCounter->getTextHeight() - CONSOLE_BORDER));
+			fpsCounter->setRenderState(showStats);
+
+			//Console text
+			if (!consoleText)
+			{
+				consoleText = batchManager->createText();
+				consoleText->setFont(spehs::ApplicationData::GUITextFontPath, spehs::ApplicationData::consoleTextSize);
+				consoleText->setColor(Color(255, 153, 0, spehs::ApplicationData::consoleTextAlpha));
+				consoleText->setPosition(spehs::vec2(CONSOLE_BORDER, CONSOLE_BORDER));
+				consoleText->setString("><");
+			}
+			consoleText->setRenderState(openState);
+			consoleText->setAlpha(int(visibility * (spehs::ApplicationData::consoleTextAlpha)));
+
+			for (size_t i = 0; i < lines.size(); i++)
+			{
+				if (lines[i].text == nullptr)
+				{
+					lines[i].text = batchManager->createText();
+					lines[i].text->setFont(spehs::ApplicationData::GUITextFontPath, spehs::ApplicationData::consoleTextSize);
+					lines[i].text->setAlpha(spehs::ApplicationData::consoleTextAlpha);
+					lines[i].text->setPlaneDepth(planeDepth);
+					lines[i].text->setColor(lines[i].color);
+					lines[i].text->setString(lines[i].string);
+					lines[i].text->setRenderState(renderState);
+				}
+				lines[i].text->setAlpha(int(visibility * (spehs::ApplicationData::consoleTextAlpha)));
 			}
 		}
-		else
-			fpsCounter->setRenderState(false);
 
-		drawCalls = 0;
-		vertexDrawCount = 0;
-
-		batchManager.render();
-
-		//Render lines
-		for (unsigned i = 0; i < lines.size(); i++)
-			lines[i]->setAlpha(int(visibility * (spehs::ApplicationData::consoleTextAlpha)));
-
-		//Console text
-		consoleText->setAlpha(int(visibility * (spehs::ApplicationData::consoleTextAlpha)));
-
-		//Console background shade
-		if (consoleText->getRenderState() || (lines.size() > 0 && lines.front()->getRenderState()))
-		{
-			backgroundShade->setRenderState(true);
-			backgroundShade->setAlpha(int(visibility * 204));
-			int w = 0.0f, h = 0.0f;
-			if (consoleText->getRenderState())
-			{
-				w = consoleText->getTextWidth();
-				h = consoleText->getTextHeight();
-			}
-			for (unsigned i = 0; i < lines.size(); i++)
-			{
-				w = std::max(w, (int)lines[i]->getTextWidth());
-				h += lines[i]->getTextHeight();
-			}
-			w += CONSOLE_BORDER * 2;
-			h += CONSOLE_BORDER * 2;
-			if (abs(backgroundShade->getWidth() - w) > 0.9f || abs(backgroundShade->getHeight() - h) > 0.9f)
-				backgroundShade->resize(w, h);
-		}
-		else
-			backgroundShade->setRenderState(false);
 	}
 
 	//Console variables/commands
 	void Console::addVariable(std::string str, bool& var)
 	{
-		LockGuardRecursive regionLock(mutex);
+		std::lock_guard<std::recursive_mutex> lock(mutex);
 		boolVariables.push_back(ConsoleVariable<bool>(str, var));
 	}
 
 	void Console::addVariable(std::string str, float& var)
 	{
-		LockGuardRecursive regionLock(mutex);
+		std::lock_guard<std::recursive_mutex> lock(mutex);
 		floatVariables.push_back(ConsoleVariable<float>(str, var));
 	}
 
 	void Console::addVariable(std::string str, int& var)
 	{
-		LockGuardRecursive regionLock(mutex);
+		std::lock_guard<std::recursive_mutex> lock(mutex);
 		intVariables.push_back(ConsoleVariable<int>(str, var));
 	}
 
 	void Console::addVariable(std::string str, std::string& var)
 	{
-		LockGuardRecursive regionLock(mutex);
+		std::lock_guard<std::recursive_mutex> lock(mutex);
 		stringVariables.push_back(ConsoleVariable<std::string>(str, var));
 	}
 
 	void Console::addCommand(std::string str, void(*fnc)(void))
 	{
-		LockGuardRecursive regionLock(mutex);
+		std::lock_guard<std::recursive_mutex> lock(mutex);
 		commands.push_back(ConsoleCommand(str, fnc));
 	}
 
 	void Console::addCommand(std::string str, void(*fnc)(std::vector<std::string>&))
 	{
-		LockGuardRecursive regionLock(mutex);
+		std::lock_guard<std::recursive_mutex> lock(mutex);
 		commands.push_back(ConsoleCommand(str, fnc));
 	}
 
 	bool Console::removeCommand(std::string commandIdentifier)
 	{
-		LockGuardRecursive regionLock(mutex);
+		std::lock_guard<std::recursive_mutex> lock(mutex);
 		for (unsigned i = 0; i < commands.size(); i++)
 		{
 			if (commands[i]._identifier == commandIdentifier)
@@ -492,7 +464,7 @@ namespace spehs
 
 	bool Console::removeVariable(std::string identifier)
 	{
-		LockGuardRecursive regionLock(mutex);
+		std::lock_guard<std::recursive_mutex> lock(mutex);
 		for (unsigned i = 0; i < intVariables.size(); i++)
 		{
 			if (intVariables[i]._identifier == identifier)
@@ -522,7 +494,7 @@ namespace spehs
 
 	void Console::clearVariables()
 	{
-		LockGuardRecursive regionLock(mutex);
+		std::lock_guard<std::recursive_mutex> lock(mutex);
 		boolVariables.clear();
 		floatVariables.clear();
 		intVariables.clear();
@@ -531,7 +503,7 @@ namespace spehs
 
 	void Console::clearCommands()
 	{
-		LockGuardRecursive regionLock(mutex);
+		std::lock_guard<std::recursive_mutex> lock(mutex);
 		commands.clear();
 	}
 
@@ -551,47 +523,61 @@ namespace spehs
 				string[i] = 32;
 		}
 
-		LockGuardRecursive regionLock(mutex);
-		newLines.push_back(std::make_pair(string, color));
+		std::lock_guard<std::recursive_mutex> lock(mutex);
+		lines.push_back(LineEntry());
+		lines.back().string = string;
+		lines.back().color = color;
 	}
 
 	void Console::clearLog()
 	{
-		LockGuardRecursive regionLock(mutex);
-		while (!lines.empty())
-		{
-			lines.back()->destroy();
-			lines.pop_back();
-		}
+		std::lock_guard<std::recursive_mutex> lock(mutex);
+		lines.clear();
 	}
 
 	void Console::setPlaneDepth(int16_t depth)
 	{
+		std::lock_guard<std::recursive_mutex> lock(mutex);
 		planeDepth = depth;
 		consoleText->setPlaneDepth(depth);
 		for (unsigned i = 0; i < lines.size(); i++)
-			lines[i]->setPlaneDepth(depth);
+		{
+			if (lines[i].text)
+				lines[i].text->setPlaneDepth(depth);
+		}
+	}
+
+	void Console::setShowStats(const bool show)
+	{
+		std::lock_guard<std::recursive_mutex> lock(mutex);
+		showStats = show;
+	}
+
+	bool Console::getShowStats() const
+	{
+		std::lock_guard<std::recursive_mutex> lock(mutex);
+		return showStats;
 	}
 
 	void Console::updateLinePositions()
 	{
-		LockGuardRecursive regionLock(mutex);
-		if (lines.size() == 0)
+		std::lock_guard<std::recursive_mutex> lock(mutex);
+		if (lines.size() == 0 || !batchManager)
 			return;
 
 		int y = 0;
-		if (isOpen())
+		if (openState)
 			y += consoleText->getTextHeight();
 		for (int i = int(lines.size()) - 1; i >= 0; i--)
 		{
-			lines[i]->setPosition(spehs::vec2(CONSOLE_BORDER, CONSOLE_BORDER + y));
-			y += lines[i]->getTextHeight();
+			lines[i].text->setPosition(spehs::vec2(CONSOLE_BORDER, CONSOLE_BORDER + y));
+			y += lines[i].text->getTextHeight();
 		}
 	}
 
 	void Console::executeConsole()
 	{
-		LockGuardRecursive regionLock(mutex);
+		std::lock_guard<std::recursive_mutex> lock(mutex);
 		if (input.size() == 0)
 			return;
 
@@ -611,7 +597,7 @@ namespace spehs
 
 		if (input[0] != '/')
 		{//Plain text, not command
-			enableState(CONSOLE_TEXT_EXECUTED_BIT);
+			textExecutedState = true;
 			consoleText->setString("><");
 			textExecuted = input;
 			input.clear();
@@ -673,7 +659,7 @@ namespace spehs
 		{
 			if (consoleWords.size() > 1 && consoleWords[1] == "memory")
 			{
-				static const Color color(204, 204, 204);
+				const Color color(204, 204, 204);
 				log("-------------------", color);
 				log("Spehs Engine select memory allocations:", color);
 				log("Remaining allocations / Total (runtime) allocations", color);
@@ -709,9 +695,45 @@ namespace spehs
 		}
 	}
 
+	void Console::setBatchManager(BatchManager* _batchManager)
+	{
+		std::lock_guard<std::recursive_mutex> lock(mutex);
+		if (batchManager == _batchManager)
+			return;
+
+		//Remove renderables from previous batch manager
+		if (batchManager)
+		{
+			backgroundShade->destroy();
+			backgroundShade = nullptr;
+			fpsCounter->destroy();
+			fpsCounter = nullptr;
+			consoleText->destroy();
+			consoleText = nullptr;
+			for (size_t i = 0; i < lines.size(); i++)
+			{
+				lines[i].text->destroy();
+				lines[i].text = nullptr;
+			}
+		}
+		batchManager = _batchManager;
+	}
+
+	const BatchManager* Console::getBatchManager() const
+	{
+		std::lock_guard<std::recursive_mutex> lock(mutex);
+		return batchManager;
+	}
+
+	BatchManager* Console::getBatchManager()
+	{
+		std::lock_guard<std::recursive_mutex> lock(mutex);
+		return batchManager;
+	}
+	
 	void Console::setVariable()
 	{
-		LockGuardRecursive regionLock(mutex);
+		std::lock_guard<std::recursive_mutex> lock(mutex);
 		bool isFloat = false;
 		for (unsigned i = 0; i < consoleWords[2].size(); i++)
 		if ((consoleWords[2][i] < 48 || consoleWords[2][i] > 57) && consoleWords[2][i] != 45)//if the character is not "numeric" (number or -)

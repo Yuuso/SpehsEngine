@@ -103,32 +103,32 @@ namespace spehs
 
 		////DRAGGING
 		//Handle previous frame dragging
-		if (checkState(GUIWINDOW_DRAGGING_BIT) && inputManager.isKeyDown(MOUSE_BUTTON_LEFT))
-			translate(inputManager.getMouseMovementX(), inputManager.getMouseMovementY());
+		if (checkState(GUIWINDOW_DRAGGING_BIT) && getInputManager().isKeyDown(MOUSE_BUTTON_LEFT))
+			translate(getInputManager().getMouseMovementX(), getInputManager().getMouseMovementY());
 		//Set dragging boolean
-		if (getInputEnabled() && !checkState(GUIWINDOW_DRAGGING_BIT) && header->getMouseHover() && inputManager.isKeyPressed(MOUSE_BUTTON_LEFT))
+		if (getInputEnabled() && !checkState(GUIWINDOW_DRAGGING_BIT) && header->getMouseHover() && getInputManager().isKeyPressed(MOUSE_BUTTON_LEFT))
 			enableState(GUIWINDOW_DRAGGING_BIT);//Begin dragging
-		else if (checkState(GUIWINDOW_DRAGGING_BIT) && !inputManager.isKeyDown(MOUSE_BUTTON_LEFT))
+		else if (checkState(GUIWINDOW_DRAGGING_BIT) && !getInputManager().isKeyDown(MOUSE_BUTTON_LEFT))
 		{//Stop dragging
 #ifdef DOCK_BORDER
 			//Check docking
-			if (inputManager.getMouseX() < DOCK_BORDER)
+			if (getInputManager().getMouseX() < DOCK_BORDER)
 			{//Dock left
 				setSize(minSize.x, batchManager.window.getHeight() - upBorder - downBorder - header->getHeight() - 2 * strechWidth);
 				setPositionLocal(strechWidth + leftBorder, strechWidth + downBorder);
 			}
-			else if (inputManager.getMouseX() > batchManager.window.getWidth() - DOCK_BORDER)
+			else if (getInputManager().getMouseX() > batchManager.window.getWidth() - DOCK_BORDER)
 			{//Dock right
 				setSize(minSize.x, batchManager.window.getHeight() - upBorder - downBorder - header->getWidth() - 2 * strechWidth);
 				setPositionLocal(batchManager.window.getWidth() - size.x - strechWidth - rightBorder, strechWidth + downBorder);
 			}
 
-			if (inputManager.getMouseY() < DOCK_BORDER)
+			if (getInputManager().getMouseY() < DOCK_BORDER)
 			{//Dock down
 				setSize(batchManager.window.getWidth() - 2 * strechWidth - leftBorder - rightBorder, minSize.y);
 				setPositionLocal(strechWidth + leftBorder, strechWidth + downBorder);
 			}
-			else if (inputManager.getMouseY() > batchManager.window.getHeight() - DOCK_BORDER)
+			else if (getInputManager().getMouseY() > batchManager.window.getHeight() - DOCK_BORDER)
 			{//Dock up
 				setSize(batchManager.window.getWidth() - 2 * strechWidth - leftBorder - rightBorder, minSize.y);
 				setPositionLocal(strechWidth + leftBorder, batchManager.window.getHeight() - header->getHeight() - strechWidth - size.y - upBorder);
@@ -140,7 +140,7 @@ namespace spehs
 
 		////STRECHING
 		//Handle previous frame strech
-		if (/*Starting streching requires window to be enabled for interaction! -> No need for checking here*/checkState(GUIWINDOW_STRECHING_BIT) && inputManager.isKeyDown(MOUSE_BUTTON_LEFT))
+		if (/*Starting streching requires window to be enabled for interaction! -> No need for checking here*/checkState(GUIWINDOW_STRECHING_BIT) && getInputManager().isKeyDown(MOUSE_BUTTON_LEFT))
 		{
 			//Take record of current dimensions
 			float w = size.x;
@@ -153,27 +153,27 @@ namespace spehs
 				//Check if mouse has crossed over to the opposite side of the window -> break from strech
 				if (checkBit(strechState, STRECH_STATE_W))
 				{//Strech began from left side of the window
-					if (inputManager.getMouseX() > getXGlobal() + size.x / 2.0f)
+					if (getInputManager().getMouseX() > getXGlobal() + size.x / 2.0f)
 						breakFromStrech = true;
 				}
 				else
 				{//Strech began from the right side of the window
-					if (inputManager.getMouseX() < getXGlobal() + size.x / 2.0f)
+					if (getInputManager().getMouseX() < getXGlobal() + size.x / 2.0f)
 						breakFromStrech = true;
 				}
 
 				//Strech window based on mouse movement
 				if (!breakFromStrech)
 				{
-					if (inputManager.getMouseX() > position.x + size.x / 2.0f)
+					if (getInputManager().getMouseX() > position.x + size.x / 2.0f)
 					{
-						w += inputManager.getMouseMovementX();
+						w += getInputManager().getMouseMovementX();
 					}
 					else
 					{
-						w -= inputManager.getMouseMovementX();
+						w -= getInputManager().getMouseMovementX();
 						if (abs(size.x - minSize.x) > 0.01f)
-							translate(inputManager.getMouseMovementX(), 0);
+							translate(getInputManager().getMouseMovementX(), 0);
 					}
 				}
 			}
@@ -184,27 +184,27 @@ namespace spehs
 				//Check if mouse has crossed over to the opposite side of the window -> break from strech
 				if (checkBit(strechState, STRECH_STATE_N))
 				{//Strech began from upper side of the window
-					if (inputManager.getMouseY() < getYGlobal() + size.y / 2.0f + header->getHeight() / 2.0f)
+					if (getInputManager().getMouseY() < getYGlobal() + size.y / 2.0f + header->getHeight() / 2.0f)
 						breakFromStrech = true;
 				}
 				else
 				{//Strech began from the lower side of the window
-					if (inputManager.getMouseY() > getYGlobal() + size.y / 2.0f + header->getHeight() / 2.0f)
+					if (getInputManager().getMouseY() > getYGlobal() + size.y / 2.0f + header->getHeight() / 2.0f)
 						breakFromStrech = true;
 				}
 
 				//Strech window based on mouse movement
 				if (!breakFromStrech)
 				{
-					if (inputManager.getMouseY() > position.y + size.y / 2.0f)
+					if (getInputManager().getMouseY() > position.y + size.y / 2.0f)
 					{
-						h += inputManager.getMouseMovementY();
+						h += getInputManager().getMouseMovementY();
 					}
 					else
 					{
-						h -= inputManager.getMouseMovement().y;
+						h -= getInputManager().getMouseMovement().y;
 						if (abs(size.y - minSize.y) > 0.01f)
-						translate(0, inputManager.getMouseMovementY());
+						translate(0, getInputManager().getMouseMovementY());
 					}
 				}
 			}
@@ -218,7 +218,7 @@ namespace spehs
 		//Handle strech state bit
 		if (getInputEnabled() &&
 			!checkState(GUIWINDOW_STRECHING_BIT) &&
-			inputManager.isKeyPressed(MOUSE_BUTTON_LEFT) &&
+			getInputManager().isKeyPressed(MOUSE_BUTTON_LEFT) &&
 			mouseOverStrechArea())
 		{//Begin streching
 
@@ -226,14 +226,14 @@ namespace spehs
 			enableState(GUIWINDOW_STRECHING_BIT);
 			strechState = 0;
 			//Horizontal
-			if (inputManager.getMouseX() < getXGlobal() + size.x * STRECH_CORNER_PERCENTAGE)
+			if (getInputManager().getMouseX() < getXGlobal() + size.x * STRECH_CORNER_PERCENTAGE)
 			{
 				//Enable horizontal streching
 				enableBit(strechState, STRECH_STATE_HORIZONTAL);
 				//Take record that the streching began from the western side of the window
 				enableBit(strechState, STRECH_STATE_W);
 			}
-			else if (inputManager.getMouseX() > getXGlobal() + size.x * (1.0 - STRECH_CORNER_PERCENTAGE))
+			else if (getInputManager().getMouseX() > getXGlobal() + size.x * (1.0 - STRECH_CORNER_PERCENTAGE))
 			{
 				//Enable horizontal streching
 				enableBit(strechState, STRECH_STATE_HORIZONTAL);
@@ -241,14 +241,14 @@ namespace spehs
 				enableBit(strechState, STRECH_STATE_E);
 			}
 			//Vertical
-			if (inputManager.getMouseY() < getYGlobal() + size.y * STRECH_CORNER_PERCENTAGE)
+			if (getInputManager().getMouseY() < getYGlobal() + size.y * STRECH_CORNER_PERCENTAGE)
 			{
 				//Enable vertical streching
 				enableBit(strechState, STRECH_STATE_VERTICAL);
 				//Take record that the streching began from the southern side of the window
 				enableBit(strechState, STRECH_STATE_S);
 			}
-			else if (inputManager.getMouseY() > getYGlobal() + size.y * (1.0 - STRECH_CORNER_PERCENTAGE))
+			else if (getInputManager().getMouseY() > getYGlobal() + size.y * (1.0 - STRECH_CORNER_PERCENTAGE))
 			{
 				//Enable vertical streching
 				enableBit(strechState, STRECH_STATE_VERTICAL);
@@ -257,7 +257,7 @@ namespace spehs
 			}
 		}
 		else if (checkState(GUIWINDOW_STRECHING_BIT) &&
-			(!getInputEnabled() || !inputManager.isKeyDown(MOUSE_BUTTON_LEFT)))
+			(!getInputEnabled() || !getInputManager().isKeyDown(MOUSE_BUTTON_LEFT)))
 		{//Conditions not met to continue streching, set to false
 			disableState(GUIWINDOW_STRECHING_BIT);
 			strechState = 0;
@@ -266,9 +266,9 @@ namespace spehs
 		////Header double clicking
 		//Timer decrease
 		if (doubleClickTimer > time::Time::zero)
-			doubleClickTimer -= deltaTimeSystem.deltaTime;
+			doubleClickTimer -= getDeltaTimeSystem().deltaTime;
 		//Check header double click
-		if (getInputEnabled() && inputManager.isKeyPressed(MOUSE_BUTTON_LEFT) && header->getMouseHover())
+		if (getInputEnabled() && getInputManager().isKeyPressed(MOUSE_BUTTON_LEFT) && header->getMouseHover())
 		{//Header has been clicked
 			if (doubleClickTimer > time::Time::zero)
 			{//Header double click detected
@@ -278,7 +278,7 @@ namespace spehs
 				{//Set to full window
 
 					//Set size according to application data's window dimensions
-					setSize(batchManager.window.getWidth() - rightBorder - leftBorder, batchManager.window.getHeight() - upBorder - downBorder - header->getHeight());
+					setSize(getWindow().getWidth() - rightBorder - leftBorder, getWindow().getHeight() - upBorder - downBorder - header->getHeight());
 					setPositionLocal(0, 0);
 
 					enableState(GUIWINDOW_LIMIT_WITHIN_MAIN_WINDOW_BIT);
@@ -303,7 +303,7 @@ namespace spehs
 		}
 
 		//Check exit button
-		if (getInputEnabled() && inputManager.isKeyPressed(MOUSE_BUTTON_LEFT) && exit->getMouseHover() && inputManager.tryClaimMouseAvailability())
+		if (getInputEnabled() && getInputManager().isKeyPressed(MOUSE_BUTTON_LEFT) && exit->getMouseHover() && getInputManager().tryClaimMouseAvailability())
 			close();
 	}
 
@@ -490,29 +490,29 @@ namespace spehs
 	{//Prevent window going out of application window
 
 		//Limit size
-		if (size.y + header->getHeight() > batchManager.window.getHeight() - upBorder - downBorder)
+		if (size.y + header->getHeight() > getWindow().getHeight() - upBorder - downBorder)
 		{//Window too high
-			setSize(size.x, batchManager.window.getHeight() - header->getHeight() - upBorder - downBorder);
+			setSize(size.x, getWindow().getHeight() - header->getHeight() - upBorder - downBorder);
 		}
-		if (size.x > batchManager.window.getWidth() - leftBorder - rightBorder)
+		if (size.x > getWindow().getWidth() - leftBorder - rightBorder)
 		{//Window too wide
-			setSize(batchManager.window.getWidth() - leftBorder - rightBorder, size.y);
+			setSize(getWindow().getWidth() - leftBorder - rightBorder, size.y);
 		}
 
 		//////Limit position
 		////Y
-		if (getYGlobal() > batchManager.window.getHeight() - size.y - upBorder - header->getHeight())
+		if (getYGlobal() > getWindow().getHeight() - size.y - upBorder - header->getHeight())
 		{//Window too up
-			setPositionGlobal(position.x, batchManager.window.getHeight() - size.y - upBorder - header->getHeight());
+			setPositionGlobal(position.x, getWindow().getHeight() - size.y - upBorder - header->getHeight());
 		}
 		else if (getYGlobal() < downBorder)
 		{//Window too down
 			setPositionGlobal(position.x, downBorder);
 		}
 		////X
-		if (getXGlobal() > batchManager.window.getWidth() - size.x - rightBorder)
+		if (getXGlobal() > getWindow().getWidth() - size.x - rightBorder)
 		{//Window too right
-			setPositionGlobal(batchManager.window.getWidth() - size.x - rightBorder, position.y);
+			setPositionGlobal(getWindow().getWidth() - size.x - rightBorder, position.y);
 		}
 		else if (getXGlobal() < leftBorder)
 		{//Window too left
@@ -538,13 +538,13 @@ namespace spehs
 			return false;
 
 		//Check each border individually
-		if (inputManager.getMouseX() < getXGlobal())
+		if (getInputManager().getMouseX() < getXGlobal())
 			return true;
-		if (inputManager.getMouseY() < getYGlobal())
+		if (getInputManager().getMouseY() < getYGlobal())
 			return true;
-		if (inputManager.getMouseX() > getXGlobal() + size.x)
+		if (getInputManager().getMouseX() > getXGlobal() + size.x)
 			return true;
-		if (inputManager.getMouseY() > getYGlobal() + size.y)
+		if (getInputManager().getMouseY() > getYGlobal() + size.y)
 			return true;
 		return false;
 	}

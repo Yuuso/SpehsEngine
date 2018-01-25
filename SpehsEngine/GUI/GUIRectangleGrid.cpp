@@ -64,11 +64,11 @@ namespace spehs
 		
 		if (draggingScrollBar)
 		{//Dragging in progress?
-			if (!inputManager.isKeyDown(MOUSEBUTTON_LEFT))
+			if (!getInputManager().isKeyDown(MOUSEBUTTON_LEFT))
 				draggingScrollBar = false;
 			else
 			{//Drag scroll bar
-				scrollBarAccumulatedDragY += inputManager.getMouseMovementY();
+				scrollBarAccumulatedDragY += getInputManager().getMouseMovementY();
 				const float scrollBarRail = scrollUp->getYGlobal(/*cannot use local position - not actually a child!*/) - getYGlobal() - scrollDown->getHeight() - scrollBar->getHeight();
 				const int maxStates = getMaxScrollState() + 1;
 				if (abs(scrollBarAccumulatedDragY) > scrollBarRail / float(maxStates))
@@ -89,7 +89,7 @@ namespace spehs
 				scrollDown->inputUpdate();
 				if (getMouseHover())
 				{
-					if (inputManager.isKeyPressed(MOUSEBUTTON_LEFT))
+					if (getInputManager().isKeyPressed(MOUSEBUTTON_LEFT))
 					{
 						if (scrollUp->getMouseHover())
 							scroll(-1);
@@ -101,8 +101,8 @@ namespace spehs
 							scrollBarAccumulatedDragY = 0.0f;
 						}
 					}
-					if (inputManager.getMouseWheelDelta())
-						scroll(-inputManager.getMouseWheelDelta());
+					if (getInputManager().getMouseWheelDelta())
+						scroll(-getInputManager().getMouseWheelDelta());
 				}
 			}
 

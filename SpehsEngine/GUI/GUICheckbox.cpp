@@ -20,11 +20,11 @@ namespace spehs
 		, ValueEditor(false)
 		, checkboxSize(20)
 	{
-		checkboxBackground = batchManager.createPolygon(Shape::BUTTON, getDepth() + 1, 1.0f, 1.0f);
+		checkboxBackground = getBatchManager().createPolygon(Shape::BUTTON, getDepth() + 1, 1.0f, 1.0f);
 		checkboxBackground->setColor(defaultCheckboxFillingColor);
 		checkboxBackground->setCameraMatrixState(false);
 
-		checkboxFilling = batchManager.createPolygon(Shape::BUTTON, getDepth() + 2, 1.0f, 1.0f);
+		checkboxFilling = getBatchManager().createPolygon(Shape::BUTTON, getDepth() + 2, 1.0f, 1.0f);
 		checkboxFilling->setColor(defaultCheckboxOuterColor);
 		checkboxFilling->setCameraMatrixState(false);
 
@@ -43,7 +43,7 @@ namespace spehs
 		GUIRectangle::inputUpdate();
 
 		//Check mouse press
-		if (getInputEnabled() && getMouseHover() && inputManager.isKeyPressed(MOUSE_BUTTON_LEFT))
+		if (getInputEnabled() && getMouseHover() && getInputManager().isKeyPressed(MOUSE_BUTTON_LEFT))
 			editorValue = !editorValue;
 
 		ValueEditor::update();

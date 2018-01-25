@@ -1,6 +1,7 @@
 #pragma once
 #include <string>
 #include <functional>
+#include "SpehsEngine/GUI/GUIContext.h"
 #include "SpehsEngine/Core/BitwiseOperations.h"
 #include "SpehsEngine/Core/Vector.h"
 #include "SpehsEngine/Core/Time.h"
@@ -61,28 +62,11 @@ namespace spehs
 	{
 		class DeltaTimeSystem;
 	}
-	/*
-		The GUI context is the caller's promise to the created GUIRectangle,
-		that the provided context members will be valid throughout the GUIRectangle's lifetime.
-	*/
-	struct GUIContext
-	{		
-		GUIContext(BatchManager& _batchManager, InputManager& _inputManager, time::DeltaTimeSystem& _deltaTimeSystem)
-			: batchManager(_batchManager)
-			, inputManager(_inputManager)
-			, deltaTimeSystem(_deltaTimeSystem)
-		{
-
-		}
-		BatchManager& batchManager;
-		InputManager& inputManager;
-		time::DeltaTimeSystem& deltaTimeSystem;
-	};
 
 	/**Base class for every GUI element\n\n
 	All GUI elements are expected to be derived from this class.\n
 	GUI rectangles can be stored in GUI rectangle containers*/
-	class GUIRectangle
+	class GUIRectangle : public GUIContext
 	{
 	public://Static
 		static int16_t defaultDepth;//Default depth where GUI rectangles will be arranged
@@ -96,8 +80,12 @@ namespace spehs
 		friend class GUIWindow;
 
 	public:
+		GUIRectangle(const GUIRectangle& other) = delete;
+		GUIRectangle(const GUIRectangle&& other) = delete;
 		GUIRectangle(GUIContext& context);
 		virtual ~GUIRectangle();
+		GUIRectangle& operator=(const GUIRectangle& other) = delete;
+		GUIRectangle& operator=(const GUIRectangle&& other) = delete;
 		
 		/// During GUI's input update the element's size and/or min size may change even so that it might affect parents above.
 		virtual void inputUpdate();
@@ -247,13 +235,7 @@ namespace spehs
 		virtual GUIRectangleGrid* getAsGUIRectangleGridPtr() { return nullptr; }
 		virtual GUIRectangleTable* getAsGUIRectangleTablePtr() { return nullptr; }
 		virtual GUIRectangleContainer* getAsGUIRectangleContainerPtr() { return nullptr; }
-
-		GUIContext getGUIContext() { return GUIContext(batchManager, inputManager, deltaTimeSystem); }
-
-		BatchManager& batchManager;
-		InputManager& inputManager;
-		time::DeltaTimeSystem& deltaTimeSystem;
-
+		
 	protected:
 		void createText();
 		virtual void onEnableInput(){ inputEnabled = true; }

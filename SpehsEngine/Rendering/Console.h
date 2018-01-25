@@ -7,10 +7,6 @@
 #include "SpehsEngine/Core/Color.h"
 #include "SpehsEngine/Core/Time.h"
 #define CONSOLE_FONT_COLOR 255, 153, 0
-//State
-#define CONSOLE_OPEN_BIT					0x0002
-#define CONSOLE_TEXT_EXECUTED_BIT			0x0004
-#define CONSOLE_RENDER_STATE_BIT			0x0008
 
 /**Console is accessed through these functions.
 The console is internally mutex locked and can thus be safely accessed from any thread.
@@ -30,7 +26,7 @@ namespace spehs
 	{
 	public:
 
-		Console(BatchManager& batchManager, InputManager& inputManager);
+		Console(InputManager& inputManager, BatchManager* batchManager = nullptr);
 		~Console();
 
 		void open();
@@ -42,6 +38,9 @@ namespace spehs
 		void render(std::string customDebugText = "");
 
 		//Render state
+		void setBatchManager(BatchManager* batchManager);
+		const BatchManager*  getBatchManager() const;
+		BatchManager* getBatchManager();
 		void setRenderState(const bool _state);
 		bool getRenderState();
 
@@ -66,20 +65,31 @@ namespace spehs
 
 		//Other
 		void setPlaneDepth(int16_t depth);
-
-		unsigned long drawCalls;
-		unsigned long vertexDrawCount;
-
-		BatchManager& batchManager;
-		InputManager& inputManager;
-
+		void setShowStats(const bool show);
+		bool getShowStats() const;
+		
 	private:
+		struct LineEntry
+		{
+			LineEntry() : text(nullptr) {}
+			~LineEntry();
+			Text* text = nullptr;
+			std::string string;
+			Color color;
+		};
+		
 		void updateLinePositions();
 		void setVariable();
 		void executeConsole();
+		void createLineText(LineEntry& entry);
 
-		std::recursive_mutex mutex;
-		int16_t state = CONSOLE_RENDER_STATE_BIT;
+		mutable std::recursive_mutex mutex;
+		InputManager& inputManager;
+		BatchManager* batchManager;
+		bool renderState = true;
+		bool openState = false;
+		bool textExecutedState = false;
+		bool showStats = true;
 		uint16_t planeDepth = 10000;
 		time::Time backspaceTimer = 0;
 		int backspaceAcceleration = 0;
@@ -89,10 +99,9 @@ namespace spehs
 		Text* consoleText;
 		Text* fpsCounter;
 		Polygon* backgroundShade;
+		std::vector<LineEntry> lines;
 		std::string input;
 		std::string textExecuted;///< Text executed without '/'
-		std::vector<Text*> lines;
-		std::vector<std::pair<std::string, Color>> newLines;
 		std::vector<ConsoleCommand> commands;
 		std::vector<std::string> consoleWords;
 		std::vector<ConsoleVariable<int>> intVariables;
@@ -100,8 +109,5 @@ namespace spehs
 		std::vector<ConsoleVariable<bool>> boolVariables;
 		std::vector<ConsoleVariable<std::string>> stringVariables;
 		std::vector<std::string> previousCommands;
-		bool checkState(uint16_t bits);
-		void enableState(uint16_t bits);
-		void disableState(uint16_t bits);
 	};
 }

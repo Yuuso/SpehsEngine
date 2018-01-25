@@ -40,7 +40,7 @@ namespace spehs
 		{//Button press handling ->open tree or inform root of leaf press
 			if (openTreeButton)
 			{//Toggle open when open button is pressed while mouse hovering
-				if (getMouseHover() && inputManager.isKeyPressed(openTreeButton))
+				if (getMouseHover() && getInputManager().isKeyPressed(openTreeButton))
 				{//If button is a tree and was pressed...
 					if (elements.size() == 0)//If this is button tree, must not have nodes underneath to trigger leaf node press
 						leafNodePressed(id);
@@ -63,7 +63,7 @@ namespace spehs
 		}
 		else if (treeOpenTimer > spehs::time::zero)
 		{//If mouse is outside the container, close over time
-			treeOpenTimer -= deltaTimeSystem.deltaTime;
+			treeOpenTimer -= getDeltaTimeSystem().deltaTime;
 			if (treeOpenTimer <= time::Time::zero)
 				close();
 			else
@@ -108,7 +108,7 @@ namespace spehs
 			else
 			{//Parent TREE doesn't exist. Decide branching direction based on horizontal location/size
 				GUIRectangle* firstGenParent = getFirstGenerationParent();
-				if (firstGenParent->getXGlobal() + firstGenParent->getWidth() / 2.0f > batchManager.window.getWidth() / 2)
+				if (firstGenParent->getXGlobal() + firstGenParent->getWidth() / 2.0f > getWindow().getWidth() / 2)
 				{//Branch left
 					branchX = firstGenParent->getXGlobal() - getXGlobal() - minElementSize.x;
 				}
@@ -120,8 +120,8 @@ namespace spehs
 
 			////Element Y positioning
 			int branchY(getYGlobal());
-			if (branchY + elements.size() * minElementSize.y + 1 > batchManager.window.getHeight())
-				branchY = batchManager.window.getHeight() - elements.size() * minElementSize.y - 1;
+			if (branchY + elements.size() * minElementSize.y + 1 > getWindow().getHeight())
+				branchY = getWindow().getHeight() - elements.size() * minElementSize.y - 1;
 
 			//Position elements
 			for (unsigned i = 0; i < elements.size(); i++)

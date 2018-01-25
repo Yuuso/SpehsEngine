@@ -131,6 +131,7 @@
     <ClCompile Include="GUI.cpp" />
     <ClCompile Include="GUICheckbox.cpp" />
     <ClCompile Include="GUIColorEditor.cpp" />
+    <ClCompile Include="GUIContext.cpp" />
     <ClCompile Include="GUIPopup.cpp" />
     <ClCompile Include="GUIProgressBar.cpp" />
     <ClCompile Include="GUIRectangle.cpp" />
@@ -150,6 +151,7 @@
     <ClInclude Include="GUI.h" />
     <ClInclude Include="GUICheckbox.h" />
     <ClInclude Include="GUIColorEditor.h" />
+    <ClInclude Include="GUIContext.h" />
     <ClInclude Include="GUIPopup.h" />
     <ClInclude Include="GUIProgressBar.h" />
     <ClInclude Include="GUIRectangle.h" />

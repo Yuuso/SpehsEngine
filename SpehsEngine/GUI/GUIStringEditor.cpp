@@ -25,11 +25,11 @@ namespace spehs
 		, typerBlinkTime(0)
 		, typerBlinkTimer(0)
 		, multilineEditing(false)
-		, keyboardRecorder(context.inputManager)
+		, keyboardRecorder(context.getInputManager())
 	{
 		setTyperBlinkTime(time::fromSeconds(0.5f));
 		createText();
-		typeCharacter = batchManager.createText("|", getDepth() + 1);
+		typeCharacter = getBatchManager().createText("|", getDepth() + 1);
 		typeCharacter->setRenderState(getRenderState() && isReceivingInput());
 		typeCharacter->setFont(spehs::ApplicationData::GUITextFontPath, spehs::ApplicationData::GUITextSize);
 		typeCharacter->setColor(text->getColor());
@@ -111,9 +111,9 @@ namespace spehs
 			//Receiving input
 			if (isReceivingInput())
 			{
-				recordInput(deltaTimeSystem.deltaTime);
+				recordInput(getDeltaTimeSystem().deltaTime);
 				typeCharacter->setRenderState(getRenderState() && ((typerBlinkTimer.value % typerBlinkTime.value) < typerBlinkTime.value / 2));
-				typerBlinkTimer += deltaTimeSystem.deltaTime;
+				typerBlinkTimer += getDeltaTimeSystem().deltaTime;
 			}
 			else
 			{
@@ -121,7 +121,7 @@ namespace spehs
 				keyboardRecorder.stop();
 			}
 
-			if (!editorValueChanged() && getMouseHover() && inputManager.isKeyPressed(MOUSE_BUTTON_LEFT))
+			if (!editorValueChanged() && getMouseHover() && getInputManager().isKeyPressed(MOUSE_BUTTON_LEFT))
 			{//Mouse press
 				toggleTyping();
 			}
@@ -146,7 +146,7 @@ namespace spehs
 		{
 			if (!text)
 			{
-				text = batchManager.createText(getDepth() + 2);
+				text = getBatchManager().createText(getDepth() + 2);
 				text->setFont(spehs::ApplicationData::GUITextFontPath, spehs::ApplicationData::GUITextSize);
 			}
 			text->setString(defaultString);
@@ -212,8 +212,8 @@ namespace spehs
 		}
 
 		//COMMAND INPUT
-		const bool ctrl(inputManager.isKeyDown(KEYBOARD_LCTRL) || inputManager.isKeyDown(KEYBOARD_RCTRL));
-		const bool shift(inputManager.isKeyDown(KEYBOARD_LSHIFT) || inputManager.isKeyDown(KEYBOARD_RSHIFT));
+		const bool ctrl(getInputManager().isKeyDown(KEYBOARD_LCTRL) || getInputManager().isKeyDown(KEYBOARD_RCTRL));
+		const bool shift(getInputManager().isKeyDown(KEYBOARD_LSHIFT) || getInputManager().isKeyDown(KEYBOARD_RSHIFT));
 		for (unsigned i = 0; i < keyboardRecorder.commandInput.size(); i++)
 		{
 			switch (keyboardRecorder.commandInput[i])
@@ -331,7 +331,7 @@ namespace spehs
 		}
 
 		//End typing
-		if (inputManager.isKeyPressed(MOUSEBUTTON_LEFT))
+		if (getInputManager().isKeyPressed(MOUSEBUTTON_LEFT))
 			endTyping();
 	}
 

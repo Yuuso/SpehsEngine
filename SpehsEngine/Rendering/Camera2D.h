@@ -20,7 +20,7 @@ namespace spehs
 		void setRotation(const float &_rotation);
 		
 		//Public Variables
-		const Window& window;
+		const Window& window;//TODO: camera really doesn't depend on the window class...?
 		spehs::vec2 deltaMovement;
 		glm::mat4* projectionMatrix;
 		glm::mat4 staticMatrix;

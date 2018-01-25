@@ -36,9 +36,7 @@ namespace spehs
 	}
 
 	GUIRectangle::GUIRectangle(GUIContext& context)
-		: batchManager(context.batchManager)
-		, inputManager(context.inputManager)
-		, deltaTimeSystem(context.deltaTimeSystem)
+		: GUIContext(context)
 		, position(0, 0)
 		, size(0, 0)
 		, minSize(0, 0)
@@ -59,7 +57,7 @@ namespace spehs
 #endif
 
 		//Create polygon
-		polygon = batchManager.createPolygon(spehs::BUTTON, defaultDepth, 1.0f, 1.0f);
+		polygon = getBatchManager().createPolygon(spehs::BUTTON, defaultDepth, 1.0f, 1.0f);
 		polygon->setCameraMatrixState(false);
 		
 		setColor(defaultColor);
@@ -105,7 +103,7 @@ namespace spehs
 					hoverSound->play();
 			}
 
-			if (inputManager.isKeyPressed(MOUSEBUTTON_LEFT))
+			if (getInputManager().isKeyPressed(MOUSEBUTTON_LEFT))
 			{//Pressed
 
 				if (pressSound)
@@ -118,13 +116,13 @@ namespace spehs
 			//Tooltip update
 			if (tooltip)
 			{
-				int _x = inputManager.getMouseX() - tooltip->getWidth(), _y = inputManager.getMouseY();
+				int _x = getInputManager().getMouseX() - tooltip->getWidth(), _y = getInputManager().getMouseY();
 				if (_x < 0)
-					_x = inputManager.getMouseX();
-				if (_x + tooltip->getWidth() > batchManager.window.getWidth())
-					_x = batchManager.window.getWidth() - tooltip->getWidth();
-				if (_y + tooltip->getHeight() > batchManager.window.getHeight())
-					_y = batchManager.window.getHeight() - tooltip->getHeight();
+					_x = getInputManager().getMouseX();
+				if (_x + tooltip->getWidth() > getBatchManager().window.getWidth())
+					_x = getBatchManager().window.getWidth() - tooltip->getWidth();
+				if (_y + tooltip->getHeight() > getBatchManager().window.getHeight())
+					_y = getBatchManager().window.getHeight() - tooltip->getHeight();
 				tooltip->setPositionGlobal(_x, _y);
 				tooltip->setRenderState(true);
 			}
@@ -204,12 +202,12 @@ namespace spehs
 
 	bool GUIRectangle::updateMouseHover()
 	{
-		if (inputManager.getMouseX() < getXGlobal() || inputManager.getMouseX() >= getXGlobal() + size.x)
+		if (getInputManager().getMouseX() < getXGlobal() || getInputManager().getMouseX() >= getXGlobal() + size.x)
 		{
 			disableBit(state, GUIRECT_MOUSE_HOVER_BIT);
 			return false;
 		}
-		else if (inputManager.getMouseY() <= getYGlobal() || inputManager.getMouseY() >= getYGlobal() + size.y)
+		else if (getInputManager().getMouseY() <= getYGlobal() || getInputManager().getMouseY() >= getYGlobal() + size.y)
 		{
 			disableBit(state, GUIRECT_MOUSE_HOVER_BIT);
 			return false;
@@ -482,7 +480,7 @@ namespace spehs
 	{
 		if (text)
 			return;
-		text = batchManager.createText(polygon->getPlaneDepth() + 2);
+		text = getBatchManager().createText(polygon->getPlaneDepth() + 2);
 		text->setRenderState(getRenderState());
 		text->setFont(spehs::ApplicationData::GUITextFontPath, spehs::ApplicationData::GUITextSize);
 		text->setColor(defaultStringColor);
@@ -493,8 +491,8 @@ namespace spehs
 		if (displayTexture)
 			delete displayTexture;
 		displayTexture = new DisplayTexture();
-		TextureData* texData = batchManager.textureManager.getTextureData(path, _parameters);
-		displayTexture->polygon = batchManager.createPolygon(4, 0, texData->width, texData->height);
+		TextureData* texData = getBatchManager().textureManager.getTextureData(path, _parameters);
+		displayTexture->polygon = getBatchManager().createPolygon(4, 0, texData->width, texData->height);
 		displayTexture->polygon->setTexture(texData);
 		displayTexture->polygon->setCameraMatrixState(false);
 		displayTexture->polygon->setRenderState(polygon->getRenderState());
@@ -517,7 +515,7 @@ namespace spehs
 
 	void GUIRectangle::setTexture(const std::string& path, const TextureParameter& _parameters)
 	{
-		polygon->setTexture(batchManager.textureManager.getTextureData(path, _parameters));
+		polygon->setTexture(getBatchManager().textureManager.getTextureData(path, _parameters));
 	}
 
 	void GUIRectangle::setTexture(const std::string& path)

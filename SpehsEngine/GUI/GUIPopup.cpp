@@ -44,11 +44,11 @@ namespace spehs
 		GUIRectangleContainer::inputUpdate();
 		if (checkState(GUIRECT_REMOVE_BIT))
 			exceptions::warning("GUIRECT_REMOVE_BIT is enabled!\nPopup should be removed by a higher authority!");
-		else if (inputManager.isKeyPressed(MOUSE_BUTTON_LEFT))
+		else if (getInputManager().isKeyPressed(MOUSE_BUTTON_LEFT))
 		{
 			for (unsigned i = OPTION1_INDEX; i < elementsSize(); i++)
 			{
-				if (elements[i]->getMouseHover() && inputManager.tryClaimMouseAvailability())
+				if (elements[i]->getMouseHover() && getInputManager().tryClaimMouseAvailability())
 				{
 					//Make callback?
 					if (options[i - OPTION1_INDEX].hasPressCallback)
@@ -57,7 +57,7 @@ namespace spehs
 				}
 			}
 		}
-		if (inputManager.isKeyPressed(KEYBOARD_ESCAPE) && escapeEnabled)
+		if (getInputManager().isKeyPressed(KEYBOARD_ESCAPE) && escapeEnabled)
 			enableState(GUIRECT_REMOVE_BIT);
 	}
 

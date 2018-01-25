@@ -20,8 +20,8 @@ namespace spehs
 		enum class EditorType { Slider, Ticks };
 	public:
 		GUIScalarEditor(GUIContext& context, const std::string& scalarName, Scalar scalarEditorValue)
-			: ValueEditor(scalarEditorValue)
-			, GUIRectangleRow(context)
+			: GUIRectangleRow(context)
+			, ValueEditor<Scalar>(scalarEditorValue)
 			, floatPrecision(2)
 			, tickAmount(1)
 			, onHold(false)
@@ -80,7 +80,7 @@ namespace spehs
 				setEditorValue(getValueFromTextField());
 			
 			//+/- buttons
-			if (inputManager.isKeyPressed(MOUSE_BUTTON_LEFT))
+			if (getInputManager().isKeyPressed(MOUSE_BUTTON_LEFT))
 			{//Press
 				if (increaseRect->getMouseHover())
 				{//+
@@ -95,11 +95,11 @@ namespace spehs
 					setEditorValue(editorValue - tickAmount);
 				}
 			}
-			else if (inputManager.isKeyDown(MOUSE_BUTTON_LEFT) && onHold)
+			else if (getInputManager().isKeyDown(MOUSE_BUTTON_LEFT) && onHold)
 			{//Hold
 				if (increaseRect->getMouseHover())
 				{//+
-					holdTimer -= deltaTimeSystem.deltaTime;
+					holdTimer -= getDeltaTime();
 					if (holdTimer <= spehs::time::zero)
 					{
 						holdTimer = holdTime;
@@ -108,7 +108,7 @@ namespace spehs
 				}
 				else if (decreaseRect->getMouseHover())
 				{//-
-					holdTimer -= deltaTimeSystem.deltaTime;
+					holdTimer -= getDeltaTime();
 					if (holdTimer <= spehs::time::zero)
 					{
 						holdTimer = holdTime;

@@ -18,13 +18,13 @@ namespace spehs
 		, sliderOnHold(false)
 		, paletteOnHold(false)
 	{
-		palette = batchManager.createPolygon(Shape::BUTTON, getDepth(), 1.0f, 1.0f);
-		sliderRG = batchManager.createPolygon(Shape::BUTTON, getDepth(), 1.0f, 1.0f);
-		sliderGB = batchManager.createPolygon(Shape::BUTTON, getDepth(), 1.0f, 1.0f);
-		sliderBR = batchManager.createPolygon(Shape::BUTTON, getDepth(), 1.0f, 1.0f);
-		preview = batchManager.createPolygon(6, getDepth(), colorPreviewWidth, colorPreviewWidth);
-		alphaSliderBack = batchManager.createPolygon(Shape::BUTTON, getDepth(), 1.0f, 1.0f);
-		alphaSliderFront = batchManager.createPolygon(Shape::BUTTON, getDepth(), 1.0f, 1.0f);
+		palette = getBatchManager().createPolygon(Shape::BUTTON, getDepth(), 1.0f, 1.0f);
+		sliderRG = getBatchManager().createPolygon(Shape::BUTTON, getDepth(), 1.0f, 1.0f);
+		sliderGB = getBatchManager().createPolygon(Shape::BUTTON, getDepth(), 1.0f, 1.0f);
+		sliderBR = getBatchManager().createPolygon(Shape::BUTTON, getDepth(), 1.0f, 1.0f);
+		preview = getBatchManager().createPolygon(6, getDepth(), colorPreviewWidth, colorPreviewWidth);
+		alphaSliderBack = getBatchManager().createPolygon(Shape::BUTTON, getDepth(), 1.0f, 1.0f);
+		alphaSliderFront = getBatchManager().createPolygon(Shape::BUTTON, getDepth(), 1.0f, 1.0f);
 
 		palette->setCameraMatrixState(false);
 		sliderRG->setCameraMatrixState(false);
@@ -110,15 +110,15 @@ namespace spehs
 		if (getInputEnabled())
 		{
 			//Palette
-			if (paletteOnHold && !inputManager.isKeyDown(MOUSE_BUTTON_LEFT))
+			if (paletteOnHold && !getInputManager().isKeyDown(MOUSE_BUTTON_LEFT))
 			{//Mouse press released
 				paletteOnHold = false;
 				editorValue = preview->getColor();
 			}
 			if (checkPaletteHover())
 			{
-				float horizontal(1.0f - ((inputManager.getMouseX() - palette->getX()) / palette->getWidth()));
-				float vertical((inputManager.getMouseY() - palette->getY()) / palette->getHeight());
+				float horizontal(1.0f - ((getInputManager().getMouseX() - palette->getX()) / palette->getWidth()));
+				float vertical((getInputManager().getMouseY() - palette->getY()) / palette->getHeight());
 				
 				Color hoverColor;
 				hoverColor.r = int((float(palette->worldVertexArray[2].color.r) / 255.0f + horizontal * float(255 - palette->worldVertexArray[2].color.r) / 255.0f) * vertical * 255.0f);
@@ -127,17 +127,17 @@ namespace spehs
 				hoverColor.a = editorValue.a;
 				preview->setColor(hoverColor);
 
-				if (inputManager.isKeyPressed(MOUSE_BUTTON_LEFT) || (paletteOnHold && inputManager.isKeyDown(MOUSE_BUTTON_LEFT)))
+				if (getInputManager().isKeyPressed(MOUSE_BUTTON_LEFT) || (paletteOnHold && getInputManager().isKeyDown(MOUSE_BUTTON_LEFT)))
 					paletteOnHold = true;
 			}
 			else
 				paletteOnHold = false;
 
 			//Slider
-			if ((inputManager.isKeyPressed(MOUSE_BUTTON_LEFT) || (sliderOnHold && inputManager.isKeyDown(MOUSE_BUTTON_LEFT))) && checkSliderHover())
+			if ((getInputManager().isKeyPressed(MOUSE_BUTTON_LEFT) || (sliderOnHold && getInputManager().isKeyDown(MOUSE_BUTTON_LEFT))) && checkSliderHover())
 			{
 				sliderOnHold = true;
-				sliderState = (inputManager.getMouseY() - sliderRG->getY()) / (sliderBR->getY() + sliderBR->getHeight() - sliderRG->getY());
+				sliderState = (getInputManager().getMouseY() - sliderRG->getY()) / (sliderBR->getY() + sliderBR->getHeight() - sliderRG->getY());
 
 				static const float oneSixth(1.0f / 6.0f);
 				static const float fiveSixths(5.0f / 6.0f);
@@ -177,21 +177,21 @@ namespace spehs
 			//Alpha
 			if (alphaEnabled)
 			{
-				if (alphaOnHold && !inputManager.isKeyDown(MOUSE_BUTTON_LEFT))
+				if (alphaOnHold && !getInputManager().isKeyDown(MOUSE_BUTTON_LEFT))
 				{//End alpha hold
 					alphaOnHold = false;
 				}
 
 				if (checkAlphaHover())
 				{
-					if (inputManager.isKeyPressed(MOUSE_BUTTON_LEFT) || (alphaOnHold && inputManager.isKeyDown(MOUSE_BUTTON_LEFT)))
+					if (getInputManager().isKeyPressed(MOUSE_BUTTON_LEFT) || (alphaOnHold && getInputManager().isKeyDown(MOUSE_BUTTON_LEFT)))
 					{
 						alphaOnHold = true;
 					}
 
 					if (alphaOnHold)
 					{
-						editorValue.a = int((inputManager.getMouseY() - alphaSliderBack->getY()) / alphaSliderBack->getHeight() * 255);
+						editorValue.a = int((getInputManager().getMouseY() - alphaSliderBack->getY()) / alphaSliderBack->getHeight() * 255);
 					}
 				}
 			}
@@ -210,10 +210,10 @@ namespace spehs
 	void GUIColorEditor::visualUpdate()
 	{
 		GUIRectangle::visualUpdate();
-		if (inputManager.mouseCollision(palette->getX(), palette->getX() + palette->getWidth(), palette->getY() + palette->getHeight(), palette->getY()) && paletteOnHold)
+		if (getInputManager().mouseCollision(palette->getX(), palette->getX() + palette->getWidth(), palette->getY() + palette->getHeight(), palette->getY()) && paletteOnHold)
 		{
 			preview->setRenderState(getRenderState());
-			preview->setPosition(inputManager.getMouseCoords());
+			preview->setPosition(getInputManager().getMouseCoords());
 		}
 		else
 			preview->setRenderState(false);
@@ -276,20 +276,20 @@ namespace spehs
 
 	bool GUIColorEditor::checkPaletteHover() const
 	{
-		return inputManager.getMouseX() > palette->getX() && inputManager.getMouseX() < palette->getX() + palette->getWidth() &&
-			inputManager.getMouseY() > palette->getY() && inputManager.getMouseY() < palette->getY() + palette->getHeight();
+		return getInputManager().getMouseX() > palette->getX() && getInputManager().getMouseX() < palette->getX() + palette->getWidth() &&
+			getInputManager().getMouseY() > palette->getY() && getInputManager().getMouseY() < palette->getY() + palette->getHeight();
 	}
 
 	bool GUIColorEditor::checkSliderHover() const
 	{
-		return inputManager.getMouseX() > sliderRG->getX() && inputManager.getMouseX() < sliderRG->getX() + sliderRG->getWidth() &&
-			inputManager.getMouseY() > sliderRG->getY() && inputManager.getMouseY() < sliderBR->getY() + sliderBR->getHeight();
+		return getInputManager().getMouseX() > sliderRG->getX() && getInputManager().getMouseX() < sliderRG->getX() + sliderRG->getWidth() &&
+			getInputManager().getMouseY() > sliderRG->getY() && getInputManager().getMouseY() < sliderBR->getY() + sliderBR->getHeight();
 	}
 
 	bool GUIColorEditor::checkAlphaHover() const
 	{
-		return inputManager.getMouseX() > alphaSliderBack->getX() && inputManager.getMouseX() < alphaSliderBack->getX() + alphaSliderBack->getWidth() &&
-			inputManager.getMouseY() > alphaSliderBack->getY() && inputManager.getMouseY() < alphaSliderBack->getY() + alphaSliderBack->getHeight();
+		return getInputManager().getMouseX() > alphaSliderBack->getX() && getInputManager().getMouseX() < alphaSliderBack->getX() + alphaSliderBack->getWidth() &&
+			getInputManager().getMouseY() > alphaSliderBack->getY() && getInputManager().getMouseY() < alphaSliderBack->getY() + alphaSliderBack->getHeight();
 	}
 
 	void GUIColorEditor::enableAlphaEditing()
