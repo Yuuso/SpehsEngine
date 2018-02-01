@@ -243,12 +243,46 @@ namespace spehs
 
 	}
 
+	Appvars::~Appvars()
+	{
+		std::lock_guard<std::recursive_mutex> lock(mutex);
+		for (size_t i = 0; i < sections.size(); i++)
+			delete sections[i];
+		sections.clear();
+	}
+
 	void Appvars::update()
 	{
+		//std::lock_guard<std::recursive_mutex> lock(mutex);
 		if (hasUnwrittenChanges())
 		{
 			write();
 		}
+	}
+
+	bool Appvars::write()
+	{
+		std::lock_guard<std::recursive_mutex> lock(mutex);
+		std::ofstream stream(name + fileExtension);
+		if (stream.fail())
+		{
+			spehs::exceptions::unexpectedError("Failed to write appvar data! Appvars name: " + name);
+			return false;
+		}
+
+		std::string outputString;
+		for (size_t s = 0; s < sections.size(); s++)
+		{
+			outputString += "[" + sections[s]->name + "]\n";
+			for (size_t v = 0; v < sections[s]->vars.size(); v++)
+				outputString += sections[s]->vars[v]->type + " " + sections[s]->vars[v]->name + " = " + sections[s]->vars[v]->toString() + "\n";
+		}
+		if (outputString.size() > 0)
+			outputString.pop_back();//Remove the last newline
+		stream << outputString;
+
+		stream.close();
+		unwrittenChanges = false;
 	}
 
 	bool Appvars::read()
@@ -262,7 +296,7 @@ namespace spehs
 		
 		//Clear all previously read appvars
 		for (size_t i = 0; i < sections.size(); i++)
-			sections[i]->readAppvars.clear();
+			sections[i]->readVars.clear();
 
 		//Create file stream
 		std::ifstream stream(name + fileExtension);
@@ -302,73 +336,97 @@ namespace spehs
 			}
 			else
 			{//Search for a name-value pair
+				//type name = value
+				std::string type;
 				std::string name;
 				std::string value;
-				for (size_t i = 0; i < line.size(); i++)
+				size_t valueBeginIndex = 0;
+				if (line.size() >= 5/*line min size*/)
 				{
-					if (line[i] == '=')
-					{//Reached the name-value assignment
-						if (name.size() == 0)
-						{
-							name.resize(i);
-							memcpy(&name[0], &line[0], i);
+					for (size_t i = 0; i < line.size(); i++)
+					{
+						if (line[i] == ' ' && type.empty())
+						{//Reached type
+							if (i > 0)
+							{
+								type.resize(i);
+								memcpy(&type[0], &line[0], i);
+							}
+							else
+							{
+								type.clear();
+								name.clear();
+								value.clear();
+								break;
+							}
 						}
-						else
-						{
-							name.clear();
-							value.clear();
-							break;
+						else if (line[i] == '=')
+						{//Reached the name-value assignment
+							if (name.empty())
+							{
+								const size_t nameBeginIndex = type.size() + 1;
+								const size_t nameEndIndex = i - 1 - ((line[i - 1] == ' ') ? 1 : 0);
+								SPEHS_ASSERT(nameEndIndex >= nameBeginIndex);
+								const size_t nameLength = nameEndIndex - nameBeginIndex + 1;
+								SPEHS_ASSERT(nameLength > 0);
+								name.resize(nameLength);
+								memcpy(&name[0], &line[nameBeginIndex], nameLength);
+								if (line.size() - i - 1 > 0)
+								{
+									if (line[i + 1] == ' ')
+										valueBeginIndex = i + 2;
+									else
+										valueBeginIndex = i + 1;
+								}
+								else
+								{
+									type.clear();
+									name.clear();
+									value.clear();
+									break;
+								}
+							}
+							else
+							{
+								type.clear();
+								name.clear();
+								value.clear();
+								break;
+							}
 						}
-					}
-					else if (i == line.size() - 1)
-					{//reached the last character of the
-						if (name.size() > 0)
-						{
-							value.resize(i - name.size());
-							memcpy(&value[0], &line[name.size() + 1], value.size());
+						else if (i == line.size() - 1)
+						{//reached the last character of the line
+							if (valueBeginIndex == 0 || name.empty())
+							{
+								type.clear();
+								name.clear();
+								value.clear();
+								break;
+							}
+							else
+							{
+								const size_t valueLength = i - valueBeginIndex + 1;
+								value.resize(valueLength);
+								memcpy(&value[0], &line[valueBeginIndex], valueLength);
+							}
 						}
 					}
 				}
-				if (name.size() > 0 && value.size() > 0)
+				if (type.size() > 0 && name.size() > 0 && value.size() > 0)
 				{
 					if (section)
 					{
-						section->readAppvars.push_back(Section::ReadAppvar(name, value));
+						section->readVars.push_back(Section::ReadVar(type, name, value));
 					}
 					else
 					{
-						spehs::log::warning("An appvar was read but no section was assigned. Name: '" + name + "', value: '" + value + "'.");
+						spehs::log::warning("An appvar was read but no section was assigned. Type: '" + type + "', Name: '" + name + "', Value: '" + value + "'.");
 					}
 				}
 			}
 		}
 
 		stream.close();
-	}
-
-	bool Appvars::write()
-	{
-		std::lock_guard<std::recursive_mutex> lock(mutex);
-		std::ofstream stream(name + fileExtension);
-		if (stream.fail())
-		{
-			spehs::exceptions::unexpectedError("Failed to write application data!");
-			return false;
-		}
-
-		std::string outputString;
-		for (size_t s = 0; s < sections.size(); s++)
-		{
-			outputString += "[" + sections[s]->name + "]\n";
-			for (size_t v = 0; v < sections[s]->appvarBases.size(); v++)
-				outputString += sections[s]->appvarBases[v]->name + "=" + sections[s]->appvarBases[v]->toString() + "\n";
-		}
-		if (outputString.size() > 0)
-			outputString.pop_back();//Remove the last newline
-		stream << outputString;
-
-		stream.close();
-		unwrittenChanges = false;
 	}
 
 	bool Appvars::hasUnwrittenChanges()
@@ -396,81 +454,46 @@ namespace spehs
 	{
 
 	}
-
-	bool Appvars::Section::add(AppvarBase& appvar)
+	
+	Appvars::Section::ReadVar* Appvars::Section::findReadVar(const std::string& type, const std::string& name)
 	{
-		for (size_t i = 0; i < appvarBases.size(); i++)
+		for (size_t i = 0; i < readVars.size(); i++)
 		{
-			if (appvarBases[i] == &appvar)
-			{
-				spehs::log::error("This appvar has already been added to this section: '" + appvar.name + "'.");
-				return true;
-			}
-			if (appvarBases[i]->name == appvar.name)
-			{
-				spehs::log::error("An appvar with this name identifier already exists in this section: '" + appvar.name + "'.");
-				return false;
-			}
-		}
-		appvarBases.push_back(&appvar);
-		
-		//No read value exists, mark unwritten changes
-		if (findReadAppvar(appvar.name) == nullptr)
-			appvars.unwrittenChanges = true;
-
-		return true;
-	}
-
-	void Appvars::Section::remove(AppvarBase& appvar)
-	{
-		for (size_t i = 0; i < appvarBases.size(); i++)
-		{
-			if (appvarBases[i] == &appvar)
-			{
-				appvarBases.erase(appvarBases.begin() + i);
-				appvars.unwrittenChanges = true;
-				return;
-			}
-		}
-	}
-
-	Appvars::Section::ReadAppvar* Appvars::Section::findReadAppvar(const std::string& name)
-	{
-		for (size_t i = 0; i < readAppvars.size(); i++)
-		{
-			if (readAppvars[i].name == name)
-				return &readAppvars[i];
+			if (readVars[i].type == type && readVars[i].name == name)
+				return &readVars[i];
 		}
 		return nullptr;
 	}
 
-	AppvarBase::AppvarBase(Appvars& _appvars, const std::string& _section, const std::string& _name)
-		: appvars(_appvars)
-		, name(_name)
-		, section(_appvars.getSection(_section))
+	Appvars::VarBase::VarBase(Section& _section, const std::string& _name, const std::string& _type)
+		: name(_name)
+		, type(_type)
+		, section(_section)
 	{
-		std::lock_guard<std::recursive_mutex> lock(appvars.mutex);
-		section.add(*this);
 	}
 
-	AppvarBase::~AppvarBase()
+	Appvars::VarBase::~VarBase()
 	{
-		std::lock_guard<std::recursive_mutex> lock(appvars.mutex);
-		section.remove(*this);
 	}
 
-	bool AppvarBase::tryRetrieveValue()
+	void Appvars::VarBase::markForUnwrittenChanges()
 	{
-		Appvars::Section::ReadAppvar* readAppvar = section.findReadAppvar(name);
-		if (readAppvar)
+		std::lock_guard<std::recursive_mutex> lock(section.appvars.mutex);
+		section.appvars.unwrittenChanges = true;
+	}
+
+	bool Appvars::VarBase::tryRetrieveValue()
+	{
+		Appvars::Section::ReadVar* readVar = section.findReadVar(type, name);
+		if (readVar)
 		{
-			if (fromString(readAppvar->value))
+			if (fromString(readVar->value))
 			{
 				return true;
 			}
 			else
 			{
-				spehs::log::warning("Appvar::fromString() failed. Name: '" + readAppvar->name + "', value: '" + readAppvar->value + "'.");
+				spehs::log::warning("Appvar::fromString() failed. Name: '" + readVar->name + "', value: '" + readVar->value + "'.");
 				return false;
 			}
 		}

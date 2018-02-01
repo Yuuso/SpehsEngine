@@ -63,7 +63,6 @@ namespace spehs
 
 
 
-	class AppvarBase;
 	/*
 		static manager class for reading and writing appvars.
 		The appvars file is divided into sections.
@@ -72,9 +71,85 @@ namespace spehs
 	*/
 	class Appvars
 	{
+	private:
+		class Section;
+
+		class VarBase
+		{
+		public:
+
+			const std::string name;
+			const std::string type;
+
+		protected:
+			friend class Appvars;
+			friend class Section;
+			VarBase(Section& _section, const std::string& name, const std::string& type);
+			virtual ~VarBase();
+			void markForUnwrittenChanges();
+			bool tryRetrieveValue();
+
+			/* Called when the appvar is written to the human readable format file. */
+			virtual std::string toString() const = 0;
+			/* Called when the appvar is read from the human readable format file. */
+			virtual bool fromString(const std::string& string) = 0;
+		private:
+			Section& section;
+		};
+
+	public:
+		template<typename T>
+		class Var : public VarBase
+		{
+		public:
+			T operator=(const T newValue)
+			{
+				std::lock_guard<std::recursive_mutex> lock(mutex);
+				if (value != newValue)
+				{
+					value = newValue;
+					markForUnwrittenChanges();
+					changedSignal(*this);
+				}
+				return value;
+			}
+			operator T() const
+			{
+				std::lock_guard<std::recursive_mutex> lock(mutex);
+				return value;
+			}
+			std::string toString() const override
+			{
+				std::lock_guard<std::recursive_mutex> lock(mutex);
+				return std::to_string(value);
+			}
+			bool fromString(const std::string& string) override
+			{
+				std::lock_guard<std::recursive_mutex> lock(mutex);
+				value = std::atoi(string.c_str());
+				return true;
+			}
+			boost::signal<void(const Var<T>&)> changedSignal;
+		private:
+			friend class Section;
+			Var(Section& _section, const std::string& _name, const T& _value)
+				: VarBase(_section, _name, typeid(T).name())
+				, value(_value)
+			{
+			}
+			~Var() {}
+			Var(const Var<T>& other) = delete;
+			Var(const Var<T>&& other) = delete;
+			void operator=(const Var<T>& other) = delete;
+			void operator=(const Var<T>&& other) = delete;
+			mutable std::recursive_mutex mutex;
+			T value;
+		};
+
 	public:
 
 		Appvars(const std::string& fileName);
+		~Appvars();
 		Appvars() = delete;
 		Appvars(const Appvars& other) = delete;
 		Appvars(const Appvars&& other) = delete;
@@ -92,160 +167,59 @@ namespace spehs
 		bool read();
 		/* Writes all currently existing appvars into the appvars file. */
 		bool write();
-		
+
+
 	protected:
-		/*
-			Appvars are contained inside sections.
-			Two different sections can contain an appvar with the same name.
-		*/
+		friend class VarBase;
+		mutable std::recursive_mutex mutex;
+		bool unwrittenChanges;
+		
 		class Section
 		{
 		public:
-			Appvars& appvars;
-			const std::string name;
-		private:
-			friend class Appvars;
-			friend class AppvarBase;
-			struct ReadAppvar
-			{
-				ReadAppvar(const std::string& _name, const std::string& _value) : name(_name), value(_value) {}
-				std::string name;
-				std::string value;
-			};
-
 			Section(Appvars& _appvars, const std::string& _name) : appvars(_appvars), name(_name) {}
 			~Section();
 
-			/*
-				Returns false if the appvar's name identifier has already been taken, and the appvar cannot be added to this section.
-				If the appvar has a readable value waiting, it will be read.
-			*/
-			bool add(AppvarBase& appvar);
-			/* Removes the appvar from the list of appvars. */
-			void remove(AppvarBase& appvar);
-			/* Try to find a read appvar with the specified name. */
-			ReadAppvar* findReadAppvar(const std::string& name);
-
-			std::vector<AppvarBase*> appvarBases;
-			std::vector<ReadAppvar> readAppvars;
-		};
-		friend class AppvarBase;
-		mutable std::recursive_mutex mutex;
-		bool unwrittenChanges;
-		/*
-			NOTE: sections are dynamically allocated, and are never deallocated once created.
-		*/
-		std::vector<Section*> sections;
-		/*
-			Creates a new section with the provided name if one does not already exist.
-		*/
-		Section& getSection(const std::string& name);
-	};
-	
-	/*
-		Base class for creating custom appvars.
-		The deriving class can decide on the set/get implementations.
-		markForUnwrittenChanges() should be taken into consideration when writing a modifying method.
-		An appvar must have a name and a value, both of which must be representable in a human readable string.
-		The appvar is bound to the associated Appvars manager for the duration of its lifetime.
-	*/
-	class AppvarBase
-	{
-	public:
-		AppvarBase(Appvars& appvars, const std::string& section, const std::string& name);
-		~AppvarBase();
-
-		/*
-			Try to retrieve value from appvars' read values.
-		*/
-		bool tryRetrieveValue();
-		/*
-			Called when the appvar is written to the human readable format file.
-		*/
-		virtual std::string toString() const = 0;
-		/*
-			Called when the appvar is read from the human readable format file.
-		*/
-		virtual bool fromString(const std::string& string) = 0;
-		
-		Appvars& appvars;
-		const std::string name;
-		
-	protected:
-		/*
-			The derived class can call this method to indicate the system that there are unwritten changes, and the appvars should be written.
-		*/
-		void markForUnwrittenChanges()
-		{
-			std::lock_guard<std::recursive_mutex> lock(section.appvars.mutex);
-			section.appvars.unwrittenChanges = true;
-		}
-	private:
-		friend class Appvars::Section;
-		Appvars::Section& section;
-	};
-	
-	/*
-		Template class for creating generic appvars.
-	*/
-	template<typename T>
-	class Appvar : public AppvarBase
-	{
-	public:
-		Appvar(Appvars& _appvars, const std::string& _section, const std::string& _name, const T& defaultValue)
-			: AppvarBase(_appvars, _section, _name)
-			, value(defaultValue)
-		{
-			tryRetrieveValue();
-		}
-
-		T& operator=(const T& newValue)
-		{
-			std::lock_guard<std::recursive_mutex> lock(mutex);
-			if (value != newValue)
+			template<typename T>
+			Var<T>& get(const std::string& _type, const std::string& _name, const T& _defaultValue)
 			{
-				value = newValue;
-				markForUnwrittenChanges();
-				changedSignal(*this);
+				for (size_t i = 0; i < vars.size(); i++)
+				{
+					if (vars[i]->type == _type && vars[i]->name == _name)
+						return (Var<T>&)(*vars[i]);
+				}
+				Var<T>* var = new Var<T>(*this, _name, _defaultValue);
+				vars.push_back(var);
+				appvars.unwrittenChanges = true;
+				return *var;
 			}
-			return value;
-		}
 
-		operator const T&() const
+			const std::string name;
+			Appvars& appvars;
+			std::vector<VarBase*> vars;
+
+			struct ReadVar
+			{
+				ReadVar(const std::string& _type, const std::string& _name, const std::string& _value) : type(_type), name(_name), value(_value) {}
+				std::string type;
+				std::string name;
+				std::string value;
+			};
+			ReadVar* findReadVar(const std::string& type, const std::string& name);
+			std::vector<ReadVar> readVars;
+		};
+		std::vector<Section*> sections;
+		Section& getSection(const std::string& name);
+	public:
+		/* Returns a reference to a var. If var didn't exist before, it is added with the specified default value. */
+		template<typename T>
+		Var<T>& get(const std::string& section, const std::string& name, const T& defaultValue)
 		{
-			std::lock_guard<std::recursive_mutex> lock(mutex);
-			return value;
+			//Get/create section and var
+			const std::string type = typeid(T).name();
+			Var<T>& var = getSection(section).get<T>(type, name, defaultValue);
+			var.tryRetrieveValue();
+			return var;
 		}
-
-		operator T&()
-		{
-			std::lock_guard<std::recursive_mutex> lock(mutex);
-			return value;
-		}
-
-		operator T() const
-		{
-			std::lock_guard<std::recursive_mutex> lock(mutex);
-			return value;
-		}
-
-		std::string toString() const override
-		{
-			std::lock_guard<std::recursive_mutex> lock(mutex);
-			return std::to_string(value);
-		}
-
-		bool fromString(const std::string& string) override
-		{
-			std::lock_guard<std::recursive_mutex> lock(mutex);
-			value = std::atoi(string.c_str());
-			return true;
-		}
-
-		boost::signal<void(const Appvar<T>&)> changedSignal;
-
-	private:
-		mutable std::recursive_mutex mutex;
-		T value;
 	};
 }
