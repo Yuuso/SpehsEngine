@@ -243,13 +243,26 @@ namespace spehs
 
 	}
 
+	void Appvars::update()
+	{
+		if (hasUnwrittenChanges())
+		{
+			write();
+		}
+	}
+
 	bool Appvars::read()
 	{
+		std::lock_guard<std::recursive_mutex> lock(mutex);
 		if (name.size() == 0)
 		{
 			spehs::log::warning("Cannot write appvars, no fileName was specified.");
 			return false;
 		}
+		
+		//Clear all previously read appvars
+		for (size_t i = 0; i < sections.size(); i++)
+			sections[i]->readAppvars.clear();
 
 		//Create file stream
 		std::ifstream stream(name + fileExtension);
@@ -270,11 +283,9 @@ namespace spehs
 
 		Section* section = nullptr;
 		std::string line;
-		while (true)
+		while (!stream.eof())
 		{
 			std::getline(stream, line);
-			if (line.size() == 0)
-				break;
 			if (line.front() == '[' && line.back() == ']')
 			{//Section
 				if (line.size() > 2)
@@ -337,6 +348,7 @@ namespace spehs
 
 	bool Appvars::write()
 	{
+		std::lock_guard<std::recursive_mutex> lock(mutex);
 		std::ofstream stream(name + fileExtension);
 		if (stream.fail())
 		{
@@ -361,11 +373,13 @@ namespace spehs
 
 	bool Appvars::hasUnwrittenChanges()
 	{
+		std::lock_guard<std::recursive_mutex> lock(mutex);
 		return unwrittenChanges;
 	}
 
 	Appvars::Section& Appvars::getSection(const std::string& name)
 	{
+		std::lock_guard<std::recursive_mutex> lock(mutex);
 		for (size_t s = 0; s < sections.size(); s++)
 		{
 			if (sections[s]->name == name)
@@ -374,16 +388,13 @@ namespace spehs
 			}
 		}
 		sections.push_back(new Section(*this, name));
+		unwrittenChanges = true;
 		return *sections.back();
 	}
 
 	Appvars::Section::~Section()
 	{
-		for (size_t i = 0; i < appvarBases.size(); i++)
-		{
-			SPEHS_ASSERT(appvarBases[i]->section == this);
-			appvarBases[i]->section = nullptr;
-		}
+
 	}
 
 	bool Appvars::Section::add(AppvarBase& appvar)
@@ -403,20 +414,9 @@ namespace spehs
 		}
 		appvarBases.push_back(&appvar);
 		
-		//Check read values
-		for (size_t i = 0; i < readAppvars.size(); i++)
-		{
-			if (readAppvars[i].name == appvar.name)
-			{
-				if (appvar.fromString(readAppvars[i].value))
-				{
-					readAppvars[i] = readAppvars.back();
-					readAppvars.pop_back();
-				}
-				spehs::log::warning("Appvar::fromString() failed. Name: '" + readAppvars[i].name + "', value: '" + readAppvars[i].value + "'.");
-				break;
-			}
-		}
+		//No read value exists, mark unwritten changes
+		if (findReadAppvar(appvar.name) == nullptr)
+			appvars.unwrittenChanges = true;
 
 		return true;
 	}
@@ -428,22 +428,55 @@ namespace spehs
 			if (appvarBases[i] == &appvar)
 			{
 				appvarBases.erase(appvarBases.begin() + i);
+				appvars.unwrittenChanges = true;
 				return;
 			}
 		}
 	}
 
-	AppvarBase::AppvarBase(Appvars& _appvars, const std::string& _section, const std::string& _name)
-		: section(&_appvars.getSection(_section))
-		, name(_name)
+	Appvars::Section::ReadAppvar* Appvars::Section::findReadAppvar(const std::string& name)
 	{
-		if (section)
-			section->add(*this);
+		for (size_t i = 0; i < readAppvars.size(); i++)
+		{
+			if (readAppvars[i].name == name)
+				return &readAppvars[i];
+		}
+		return nullptr;
+	}
+
+	AppvarBase::AppvarBase(Appvars& _appvars, const std::string& _section, const std::string& _name)
+		: appvars(_appvars)
+		, name(_name)
+		, section(_appvars.getSection(_section))
+	{
+		std::lock_guard<std::recursive_mutex> lock(appvars.mutex);
+		section.add(*this);
 	}
 
 	AppvarBase::~AppvarBase()
 	{
-		if (section)
-			section->remove(*this);
+		std::lock_guard<std::recursive_mutex> lock(appvars.mutex);
+		section.remove(*this);
+	}
+
+	bool AppvarBase::tryRetrieveValue()
+	{
+		Appvars::Section::ReadAppvar* readAppvar = section.findReadAppvar(name);
+		if (readAppvar)
+		{
+			if (fromString(readAppvar->value))
+			{
+				return true;
+			}
+			else
+			{
+				spehs::log::warning("Appvar::fromString() failed. Name: '" + readAppvar->name + "', value: '" + readAppvar->value + "'.");
+				return false;
+			}
+		}
+		else
+		{
+			return false;
+		}
 	}
 }

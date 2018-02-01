@@ -389,6 +389,7 @@ namespace spehs
 				consoleText->setColor(Color(255, 153, 0, spehs::ApplicationData::consoleTextAlpha));
 				consoleText->setPosition(spehs::vec2(CONSOLE_BORDER, CONSOLE_BORDER));
 				consoleText->setString("><");
+				consoleText->setPlaneDepth(planeDepth);
 			}
 			consoleText->setRenderState(openState);
 			consoleText->setAlpha(int(visibility * (spehs::ApplicationData::consoleTextAlpha)));
@@ -539,7 +540,8 @@ namespace spehs
 	{
 		std::lock_guard<std::recursive_mutex> lock(mutex);
 		planeDepth = depth;
-		consoleText->setPlaneDepth(depth);
+		if (consoleText)
+			consoleText->setPlaneDepth(depth);
 		for (unsigned i = 0; i < lines.size(); i++)
 		{
 			if (lines[i].text)
