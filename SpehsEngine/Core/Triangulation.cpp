@@ -1,7 +1,6 @@
 #include <algorithm>
 #include <iostream>
 #include <atomic>
-#include "SpehsEngine/Core/ApplicationData.h"
 #include "SpehsEngine/Core/Triangulation.h"
 #include "SpehsEngine/Core/Exceptions.h"
 #include "SpehsEngine/Core/Geometry.h"

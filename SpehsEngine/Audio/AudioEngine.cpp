@@ -1,5 +1,3 @@
-
-#include "SpehsEngine/Core/ApplicationData.h"
 #include "SpehsEngine/Core/Exceptions.h"
 #include "SpehsEngine/Core/Time.h"
 #include "SpehsEngine/Audio/AudioEngine.h"
@@ -100,6 +98,7 @@ namespace spehs
 	namespace audio
 	{
 		float AudioEngine::deltaSeconds = 0.0f;
+		float AudioEngine::masterVolume = 1.0f;
 
 		void AudioEngine::init()
 		{
@@ -206,7 +205,7 @@ namespace spehs
 		void AudioEngine::setListenerGain(const float _gain)
 		{
 			audioVar::listenerGain = _gain;
-			alListenerf(AL_GAIN, _gain * spehs::ApplicationData::getMasterVolume());
+			alListenerf(AL_GAIN, _gain * masterVolume);
 		}
 		void AudioEngine::setChannelGain(const int _channelIndex, float _gain)
 		{
@@ -280,7 +279,7 @@ namespace spehs
 
 		void AudioEngine::updateGain()
 		{
-			alListenerf(AL_GAIN, audioVar::listenerGain * spehs::ApplicationData::getMasterVolume());
+			alListenerf(AL_GAIN, audioVar::listenerGain * masterVolume);
 		}
 
 		bool AudioEngine::getFreeSource(SoundSource* _soundSource)

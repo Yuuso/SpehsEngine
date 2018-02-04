@@ -1,5 +1,3 @@
-#include <iostream>
-#include "SpehsEngine/Core/ApplicationData.h"
 #include "SpehsEngine/Core/Time.h"
 #include "SpehsEngine/Input/InputManager.h"
 #include "SpehsEngine/Input/Input.h"

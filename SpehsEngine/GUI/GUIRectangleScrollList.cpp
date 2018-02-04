@@ -1,5 +1,4 @@
 #include <algorithm>
-#include "SpehsEngine/Core/ApplicationData.h"
 #include "SpehsEngine/Input/InputManager.h"
 #include "SpehsEngine/Input/Input.h"
 #include "SpehsEngine/Rendering/BatchManager.h"

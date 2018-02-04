@@ -1,5 +1,3 @@
-
-#include "SpehsEngine/Core/ApplicationData.h"
 #include "SpehsEngine/Core/Exceptions.h"
 #include "SpehsEngine/Rendering/PostProcessing.h"
 #include "SpehsEngine/Rendering/ShaderManager.h"

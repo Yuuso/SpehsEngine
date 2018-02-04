@@ -1,6 +1,5 @@
 #include "SpehsEngine/Rendering/Window.h"
 #include "SpehsEngine/Rendering/OpenGLError.h"
-#include "SpehsEngine/Core/ApplicationData.h"
 #include "SpehsEngine/Core/Exceptions.h"
 #include "SpehsEngine/Core/Log.h"
 #include "SpehsEngine/Rendering/GLContext.h"
@@ -50,7 +49,7 @@ namespace spehs
 		SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
 		SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
 		SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, 1);
-		SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, spehs::ApplicationData::MSAA);
+		SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, 4);
 
 		//Create SDL window
 		Uint32 sdlFlags = SDL_WINDOW_OPENGL;

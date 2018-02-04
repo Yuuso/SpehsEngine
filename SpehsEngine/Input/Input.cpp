@@ -1,5 +1,4 @@
 
-#include "SpehsEngine/Core/ApplicationData.h"
 #include "SpehsEngine/Input/Input.h"
 #include "SpehsEngine/Core/Exceptions.h"
 #include "SpehsEngine/Core/Core.h"

@@ -3,8 +3,10 @@
 #include <atomic>
 #include <mutex>
 
-#include "SpehsEngine/Core/ApplicationData.h"
+#include <boost/bind.hpp>
+
 #include "SpehsEngine/Core/BitwiseOperations.h"
+#include "SpehsEngine/Core/StringOperations.h"
 #include "SpehsEngine/Core/Serializable.h"
 #include "SpehsEngine/Core/Time.h"
 #include "SpehsEngine/Core/Log.h"
@@ -42,414 +44,53 @@ extern std::atomic<int> textDeallocations;
 
 namespace spehs
 {
-	Console::LineEntry::~LineEntry()
+	Console::Console()
 	{
-		if (text)
-			text->destroy();
-		text = nullptr;
-	}
-
-	Console::Console(InputManager& _inputManager, BatchManager* _batchManager)
-		: inputManager(_inputManager)
-		, batchManager(nullptr)
-		, backgroundShade(nullptr)
-		, fpsCounter(nullptr)
-		, consoleText(nullptr)
-	{
-		std::lock_guard<std::recursive_mutex> lock(mutex);
-
-		if (batchManager)
-			setBatchManager(_batchManager);
-		setPlaneDepth(planeDepth + 1);
 	}
 
 	Console::~Console()
 	{
 		std::lock_guard<std::recursive_mutex> lock(mutex);
-
-		if (backgroundShade)
-			backgroundShade->destroy();
-		backgroundShade = nullptr;
-
-		if (fpsCounter)
-			fpsCounter->destroy();
-		fpsCounter = nullptr;
-
-		if (consoleText)
-			consoleText->destroy();
-		consoleText = nullptr;
-
-		clearLog();
-	}
-
-	void Console::open()
-	{
-		std::lock_guard<std::recursive_mutex> lock(mutex);
-		if (openState)
-			return;
-		openState = true;
-		consoleText->setRenderState(renderState);
-		updateLinePositions();
-	}
-
-	void Console::close()
-	{
-		std::lock_guard<std::recursive_mutex> lock(mutex);
-		if (!openState)
-			return;
-		openState = false;
-		consoleText->setRenderState(false);
-		updateLinePositions();
-		input.clear();
-	}
-
-	void Console::setRenderState(const bool _state)
-	{
-		std::lock_guard<std::recursive_mutex> lock(mutex);
-		if (_state != renderState)
-		{
-			renderState = _state;
-			if (batchManager)
-			{
-				fpsCounter->setRenderState(_state);
-				backgroundShade->setRenderState(_state);
-				for (size_t i = 0; i < lines.size(); i++)
-					lines[i].text->setRenderState(_state);
-			}
-		}
-	}
-
-	bool Console::getRenderState()
-	{
-		std::lock_guard<std::recursive_mutex> lock(mutex);
-		return renderState;
-	}
-
-	bool Console::isOpen()
-	{
-		std::lock_guard<std::recursive_mutex> lock(mutex);
-		return openState;
-	}
-
-	bool Console::textEntered()
-	{
-		std::lock_guard<std::recursive_mutex> lock(mutex);
-		return textExecutedState;
-	}
-
-	std::string Console::getTextEntered()
-	{
-		std::lock_guard<std::recursive_mutex> lock(mutex);
-		return textExecuted;
-	}
-
-	void Console::update(const time::Time& deltaTime)
-	{
-		std::lock_guard<std::recursive_mutex> lock(mutex);
-
-		//Reset the text executed state
-		textExecutedState = false;
-		
-		//Remove lines if needed
-		while (lines.size() >= LOG_LINES_KEPT_IN_MEMORY)
-		{
-			lines.erase(lines.begin());
-		}
-		
-		if (openState)
-		{
-			//Increase visibility
-			if (visibility < 1.0f)
-			{
-				visibility += deltaTime.asSeconds() * 5.0f;
-				if (visibility > 1.0f)
-					visibility = 1.0f;
-			}
-
-			////Receiving input
-			bool inputReceived = false;
-			//Alphabet
-			unsigned char capital = 0;
-			if (inputManager.isKeyDown(KEYBOARD_LSHIFT) || inputManager.isKeyDown(KEYBOARD_RSHIFT))
-				capital = 32;
-			for (unsigned char i = 61; i <= 122; i++)
-			{
-				if (inputManager.isKeyPressed(i))
-				{
-					input += i - capital;
-					inputReceived = true;
-				}
-			}
-
-			//Numbers
-			if (!inputManager.isKeyDown(KEYBOARD_LSHIFT) && !inputManager.isKeyDown(KEYBOARD_RSHIFT))
-			{
-				for (unsigned char i = 48; i <= 57; i++)
-				{
-					if (inputManager.isKeyPressed(i))
-					{
-						input += i;
-						inputReceived = true;
-					}
-				}
-			}
-			else
-			{
-				//Special characters
-				for (unsigned char i = 48; i <= 59; i++)
-				{
-					if (inputManager.isKeyPressed(i))
-					{
-						input += i - 10;
-						inputReceived = true;
-					}
-				}
-			}
-
-			//Minus
-			if (inputManager.isKeyPressed(45))
-			{
-				input += 45;
-				inputReceived = true;
-			}
-			//Period
-			if (inputManager.isKeyPressed(46))
-			{
-				input += 46;
-				inputReceived = true;
-			}
-			//Space
-			if (inputManager.isKeyPressed(32))
-			{
-				input += 32;
-				inputReceived = true;
-			}
-			//Backspace
-			if (inputManager.isKeyDown(8))
-			{
-				if (backspaceTimer <= time::Time::zero && input.size() > 0)
-				{
-					if (inputManager.isKeyDown(KEYBOARD_LCTRL) || inputManager.isKeyDown(KEYBOARD_RCTRL))
-					{//Erase a word
-						if (input.back() == ' ')
-							input.pop_back();
-						else
-						{//Erase until space or empty
-							while (input.size() > 0 && input.back() != ' ')
-								input.pop_back();
-							if (input.size() == 1 && input.back() == ' ')
-								input.pop_back();
-							backspaceTimer = time::fromSeconds(BACKSPACE_INITIAL_INTERVAL);
-						}
-					}
-					else
-					{//Erase one character
-						input.pop_back();
-						if (inputManager.isKeyPressed(8))
-						{
-							backspaceTimer = time::fromSeconds(BACKSPACE_INITIAL_INTERVAL);
-						}
-						else
-						{
-							backspaceTimer = time::fromMilliseconds(BACKSPACE_INTERVAL - backspaceAcceleration);
-							backspaceAcceleration += 3;
-						}
-					}
-					inputReceived = true;
-				}
-				else
-				{
-					backspaceTimer -= deltaTime;
-				}
-			}
-			else
-			{
-				backspaceTimer = time::Time::zero;
-				backspaceAcceleration = 0;
-			}
-
-			//Enter
-			if (inputManager.isKeyPressed(KEYBOARD_RETURN))
-			{
-				executeConsole();
-				close();
-				inputReceived = true;
-			}
-
-			//Escape
-			if (inputManager.isKeyPressed(KEYBOARD_ESCAPE))
-			{
-				close();
-				inputReceived = true;
-			}
-
-			//Previous commands
-			if (inputManager.isKeyPressed(KEYBOARD_UP) && previousCommands.size() > 0)
-			{
-				if (previousCommandIndex == -1)
-					previousCommandIndex = previousCommands.size() - 1;
-				else if (--previousCommandIndex < 0)
-					previousCommandIndex = previousCommands.size() - 1;
-				input = previousCommands[previousCommandIndex];
-				inputReceived = true;
-			}
-			if (inputManager.isKeyPressed(KEYBOARD_DOWN) && previousCommands.size() > 0)
-			{
-				if (previousCommandIndex == -1)
-					previousCommandIndex = 0;
-				else if (++previousCommandIndex >= previousCommands.size())
-					previousCommandIndex = 0;
-				input = previousCommands[previousCommandIndex];
-				inputReceived = true;
-			}
-
-
-			if (inputReceived)
-			{
-				consoleText->setString('>' + input + '<');
-			}
-		}
-		else
-		{
-			//Console is not open, check opening key combination
-			if (inputManager.isKeyDown(KEYBOARD_LCTRL) && inputManager.isKeyDown(KEYBOARD_LALT) && inputManager.isKeyDown(KEYBOARD_BACKSPACE))
-			{
-				open();
-				input = "";
-			}
-
-			//Decrease visibility over time
-			if (visibility > 0.0f)
-			{
-				visibility -= deltaTime.asSeconds() / FADE_OUT_TIME;
-				if (visibility < 0.0f)
-					visibility = 0.0f;
-			}
-		}
-	}
-
-	void Console::render(std::string customDebugText)
-	{
-		std::lock_guard<std::recursive_mutex> lock(mutex);
-		if (!batchManager || renderState == false || openState == false)
-		{
-			return;
-		}
-		
-		//Create rendered elements if they dont already exist
-		if (batchManager)
-		{
-			//Console background shade
-			if (openState || (lines.size() > 0 && lines.front().text && lines.front().text->getRenderState()))
-			{
-				if (!backgroundShade)
-				{
-					backgroundShade = batchManager->createPolygon(Shape::BUTTON, planeDepth, 1.0f, 1.0f);
-					backgroundShade->setCameraMatrixState(false);
-					backgroundShade->setPosition(0.0f, 0.0f);
-					backgroundShade->setColor(spehs::Color(13, 26, 39, 128));
-				}
-				backgroundShade->setRenderState(true);
-				backgroundShade->setAlpha(int(visibility * 204));
-				int w = 0.0f, h = 0.0f;
-				if (consoleText->getRenderState())
-				{
-					w = consoleText->getTextWidth();
-					h = consoleText->getTextHeight();
-				}
-				for (unsigned i = 0; i < lines.size(); i++)
-				{
-					w = std::max(w, (int)lines[i].text->getTextWidth());
-					h += lines[i].text->getTextHeight();
-				}
-				w += CONSOLE_BORDER * 2;
-				h += CONSOLE_BORDER * 2;
-				if (abs(backgroundShade->getWidth() - w) > 0.9f || abs(backgroundShade->getHeight() - h) > 0.9f)
-					backgroundShade->resize(w, h);
-			}
-			else
-				backgroundShade->setRenderState(false);
-
-			//FPS counter
-			if (!fpsCounter)
-			{
-				fpsCounter = batchManager->createText(10000);
-				fpsCounter->setFont(spehs::ApplicationData::GUITextFontPath, spehs::ApplicationData::consoleTextSize);
-				fpsCounter->setColor(Color(255, 77, 0, 217));
-			}
-			fpsCounter->setString("FPS: TODO\n" + customDebugText);
-			fpsCounter->setPosition(spehs::vec2(CONSOLE_BORDER, (float)batchManager->window.getHeight() - fpsCounter->getTextHeight() - CONSOLE_BORDER));
-			fpsCounter->setRenderState(showStats);
-
-			//Console text
-			if (!consoleText)
-			{
-				consoleText = batchManager->createText();
-				consoleText->setFont(spehs::ApplicationData::GUITextFontPath, spehs::ApplicationData::consoleTextSize);
-				consoleText->setColor(Color(255, 153, 0, spehs::ApplicationData::consoleTextAlpha));
-				consoleText->setPosition(spehs::vec2(CONSOLE_BORDER, CONSOLE_BORDER));
-				consoleText->setString("><");
-				consoleText->setPlaneDepth(planeDepth);
-			}
-			consoleText->setRenderState(openState);
-			consoleText->setAlpha(int(visibility * (spehs::ApplicationData::consoleTextAlpha)));
-
-			for (size_t i = 0; i < lines.size(); i++)
-			{
-				if (lines[i].text == nullptr)
-				{
-					lines[i].text = batchManager->createText();
-					lines[i].text->setFont(spehs::ApplicationData::GUITextFontPath, spehs::ApplicationData::consoleTextSize);
-					lines[i].text->setAlpha(spehs::ApplicationData::consoleTextAlpha);
-					lines[i].text->setPlaneDepth(planeDepth);
-					lines[i].text->setColor(lines[i].color);
-					lines[i].text->setString(lines[i].string);
-					lines[i].text->setRenderState(renderState);
-				}
-				lines[i].text->setAlpha(int(visibility * (spehs::ApplicationData::consoleTextAlpha)));
-			}
-		}
-
 	}
 
 	//Console variables/commands
-	void Console::addVariable(std::string str, bool& var)
+	void Console::addVariable(const std::string& str, bool& var)
 	{
 		std::lock_guard<std::recursive_mutex> lock(mutex);
 		boolVariables.push_back(ConsoleVariable<bool>(str, var));
 	}
 
-	void Console::addVariable(std::string str, float& var)
+	void Console::addVariable(const std::string& str, float& var)
 	{
 		std::lock_guard<std::recursive_mutex> lock(mutex);
 		floatVariables.push_back(ConsoleVariable<float>(str, var));
 	}
 
-	void Console::addVariable(std::string str, int& var)
+	void Console::addVariable(const std::string& str, int& var)
 	{
 		std::lock_guard<std::recursive_mutex> lock(mutex);
 		intVariables.push_back(ConsoleVariable<int>(str, var));
 	}
 
-	void Console::addVariable(std::string str, std::string& var)
+	void Console::addVariable(const std::string& str, std::string& var)
 	{
 		std::lock_guard<std::recursive_mutex> lock(mutex);
 		stringVariables.push_back(ConsoleVariable<std::string>(str, var));
 	}
 
-	void Console::addCommand(std::string str, void(*fnc)(void))
+	void Console::addCommand(const std::string& str, void(*fnc)(void))
 	{
 		std::lock_guard<std::recursive_mutex> lock(mutex);
 		commands.push_back(ConsoleCommand(str, fnc));
 	}
 
-	void Console::addCommand(std::string str, void(*fnc)(std::vector<std::string>&))
+	void Console::addCommand(const std::string& str, void(*fnc)(std::vector<std::string>&))
 	{
 		std::lock_guard<std::recursive_mutex> lock(mutex);
 		commands.push_back(ConsoleCommand(str, fnc));
 	}
 
-	bool Console::removeCommand(std::string commandIdentifier)
+	bool Console::removeCommand(const std::string& commandIdentifier)
 	{
 		std::lock_guard<std::recursive_mutex> lock(mutex);
 		for (unsigned i = 0; i < commands.size(); i++)
@@ -463,7 +104,7 @@ namespace spehs
 		return false;
 	}
 
-	bool Console::removeVariable(std::string identifier)
+	bool Console::removeVariable(const std::string& identifier)
 	{
 		std::lock_guard<std::recursive_mutex> lock(mutex);
 		for (unsigned i = 0; i < intVariables.size(); i++)
@@ -493,147 +134,105 @@ namespace spehs
 		return false;
 	}
 
-	void Console::clearVariables()
+	void Console::log(const std::string& str, const Color color)
 	{
 		std::lock_guard<std::recursive_mutex> lock(mutex);
-		boolVariables.clear();
-		floatVariables.clear();
-		intVariables.clear();
-		stringVariables.clear();
-	}
-
-	void Console::clearCommands()
-	{
-		std::lock_guard<std::recursive_mutex> lock(mutex);
-		commands.clear();
-	}
-
-	//Console logging
-	void Console::log(const std::string str, const Color color)
-	{
-		log(&str[0], str.size(), color);
-	}
-
-	void Console::log(const char* str, const unsigned length, const Color color)
-	{
-		//Validate string characters
-		std::string string(str, length);
-		for (unsigned i = 0; i < length; i++)
-		{
-			if (string[i] < 32 && string[i] != '\n')
-				string[i] = 32;
-		}
-
-		std::lock_guard<std::recursive_mutex> lock(mutex);
-		lines.push_back(LineEntry());
-		lines.back().string = string;
+		lines.push_back(Line());
+		lines.back().string = str;
 		lines.back().color = color;
+		logSignal(lines.back());
 	}
 
-	void Console::clearLog()
+	void Console::execute(const std::string& str, const Color color)
 	{
 		std::lock_guard<std::recursive_mutex> lock(mutex);
-		lines.clear();
-	}
-
-	void Console::setPlaneDepth(int16_t depth)
-	{
-		std::lock_guard<std::recursive_mutex> lock(mutex);
-		planeDepth = depth;
-		if (consoleText)
-			consoleText->setPlaneDepth(depth);
-		for (unsigned i = 0; i < lines.size(); i++)
-		{
-			if (lines[i].text)
-				lines[i].text->setPlaneDepth(depth);
-		}
-	}
-
-	void Console::setShowStats(const bool show)
-	{
-		std::lock_guard<std::recursive_mutex> lock(mutex);
-		showStats = show;
-	}
-
-	bool Console::getShowStats() const
-	{
-		std::lock_guard<std::recursive_mutex> lock(mutex);
-		return showStats;
-	}
-
-	void Console::updateLinePositions()
-	{
-		std::lock_guard<std::recursive_mutex> lock(mutex);
-		if (lines.size() == 0 || !batchManager)
+		log(str, color);
+		std::vector<std::string> words;
+		getWords(str, words);
+		if (words.empty())
 			return;
-
-		int y = 0;
-		if (openState)
-			y += consoleText->getTextHeight();
-		for (int i = int(lines.size()) - 1; i >= 0; i--)
-		{
-			lines[i].text->setPosition(spehs::vec2(CONSOLE_BORDER, CONSOLE_BORDER + y));
-			y += lines[i].text->getTextHeight();
-		}
-	}
-
-	void Console::executeConsole()
-	{
-		std::lock_guard<std::recursive_mutex> lock(mutex);
-		if (input.size() == 0)
-			return;
-
-		//Record command
-		for (unsigned i = 0; i < previousCommands.size(); i++)
-		{//Erase if command already recorded
-			if (previousCommands[i] == input)
-			{
-				previousCommands.erase(previousCommands.begin() + i);
-				break;
-			}
-		}
-		previousCommands.push_back(input);
-		if (previousCommands.size() > CONSOLE_COMMANDS_KEPT_IN_MEMORY)
-			previousCommands.erase(previousCommands.begin());
-		previousCommandIndex = -1;
-
-		if (input[0] != '/')
-		{//Plain text, not command
-			textExecutedState = true;
-			consoleText->setString("><");
-			textExecuted = input;
-			input.clear();
-			return;
-		}
-		input.erase(input.begin());///Erase '/'
-
-
-		//Record each word as a different element in console words vector
+		
 		bool foundCommand = false;
-		consoleWords.clear();
-		consoleWords.push_back(std::string(""));
-		for (unsigned i = 0; i < input.size(); i++)
-		{
-			if (input[i] != '\0')
-			{
-				if (input[i] == ' ')
-					consoleWords.push_back(std::string(""));
-				else//Record character
-					consoleWords.back() += input[i];
-			}
-			else
-			{
-				break;
-			}
-		}
-
-
-		if (consoleWords[0] == "set")
+		if (words[0] == "set")
 		{//Set variables
-			if (consoleWords.size() >= 3)
+			if (words.size() >= 3)
 			{
-				setVariable();
-				foundCommand = true;
+				bool isFloat = false;
+				for (unsigned i = 0; i < words[2].size(); i++)
+					if ((words[2][i] < 48 || words[2][i] > 57) && words[2][i] != 45)//if the character is not "numeric" (number or -)
+					{//Value is not numeric
+
+						//Check booleans
+						if (words[2] == "true" || words[2] == "false")
+						{
+							for (unsigned i = 0; i < boolVariables.size(); i++)
+								if (words[1] == boolVariables[i]._identifier)
+								{
+									if (words[2] == "true")
+									{
+										log("Setting " + boolVariables[i]._identifier + " as true");
+										boolVariables[i].set(true);
+									}
+									else
+									{
+										log("Setting " + boolVariables[i]._identifier + " as false");
+										boolVariables[i].set(false);
+									}
+									return;
+								}
+							log("Invalid command!");
+							return;
+						}
+
+						//Check string variables
+						for (unsigned i = 0; i < stringVariables.size(); i++)
+						{
+							if (stringVariables[i]._identifier == words[1])
+							{
+								log("Setting " + stringVariables[i]._identifier + " to " + words[2]);
+								*stringVariables[i]._variablePtr = words[2];
+								return;
+							}
+						}
+						log("Invalid command!");
+						return;
+					}
+					else if (words[2][i] == 46)//Test for period (decimal numbers/aka floats)
+					{
+						if (isFloat == false)
+							isFloat = true;
+						else
+						{//Two periods -> invalid float
+							log("Invalid command!");
+							return;
+						}
+					}
+
+				if (isFloat)
+				{
+					for (unsigned i = 0; i < floatVariables.size(); i++)
+						if (floatVariables[i]._identifier == words[1])
+						{
+							{
+								log("Setting " + floatVariables[i]._identifier + " to " + words[2]);
+								floatVariables[i].set(atoi(words[2].c_str()));
+								return;
+							}
+						}
+				}
+				else
+				{
+					for (unsigned i = 0; i < intVariables.size(); i++)
+						if (intVariables[i]._identifier == words[1])
+						{
+							{
+								log("Setting " + intVariables[i]._identifier + " to " + words[2]);
+								intVariables[i].set(atoi(words[2].c_str()));
+								return;
+							}
+						}
+				}
+				return;
 			}
 			else
 			{
@@ -641,7 +240,7 @@ namespace spehs
 				return;
 			}
 		}
-		else if (consoleWords[0] == "?" || consoleWords[0] == "help")
+		else if (words[0] == "?" || words[0] == "help")
 		{//Help
 			log("Available variables <set variable value>");
 			for (unsigned i = 0; i < boolVariables.size(); i++)
@@ -657,9 +256,9 @@ namespace spehs
 				log("\\\\" + commands[i]._identifier);
 			return;
 		}
-		else if (consoleWords[0] == "engine")
+		else if (words[0] == "engine")
 		{
-			if (consoleWords.size() > 1 && consoleWords[1] == "memory")
+			if (words.size() > 1 && words[1] == "memory")
 			{
 				const Color color(204, 204, 204);
 				log("-------------------", color);
@@ -671,145 +270,463 @@ namespace spehs
 				log("-------------------", color);
 				return;
 			}
-			return;
 		}
 		else
 		{//Search for command with matching identifier
 			for (unsigned i = 0; i < commands.size(); i++)
 			{
-				if (commands[i]._identifier == consoleWords[0])
+				if (commands[i]._identifier == words[0])
 				{
 					if (commands[i]._functionVoid)
 						commands[i]._functionVoid();
 					else
-						commands[i]._functionWords(consoleWords);
-					foundCommand = true;
+						commands[i]._functionWords(words);
+					return;
 				}
 			}
 		}
-
-		input = "";
-		consoleText->setString("><");
-		if (!foundCommand)
-		{
-			log("Unknown command");
-			return;
-		}
+		log("Unknown command");
 	}
 
-	void Console::setBatchManager(BatchManager* _batchManager)
+	void Console::clearLog()
 	{
 		std::lock_guard<std::recursive_mutex> lock(mutex);
-		if (batchManager == _batchManager)
-			return;
-
-		//Remove renderables from previous batch manager
-		if (batchManager)
-		{
-			backgroundShade->destroy();
-			backgroundShade = nullptr;
-			fpsCounter->destroy();
-			fpsCounter = nullptr;
-			consoleText->destroy();
-			consoleText = nullptr;
-			for (size_t i = 0; i < lines.size(); i++)
-			{
-				lines[i].text->destroy();
-				lines[i].text = nullptr;
-			}
-		}
-		batchManager = _batchManager;
+		lines.clear();
 	}
 
-	const BatchManager* Console::getBatchManager() const
+	void Console::clearVariables()
 	{
 		std::lock_guard<std::recursive_mutex> lock(mutex);
-		return batchManager;
+		boolVariables.clear();
+		floatVariables.clear();
+		intVariables.clear();
+		stringVariables.clear();
 	}
 
-	BatchManager* Console::getBatchManager()
+	void Console::clearCommands()
 	{
 		std::lock_guard<std::recursive_mutex> lock(mutex);
-		return batchManager;
+		commands.clear();
+	}
+
+	const Console::Line& Console::getLine(const size_t index) const
+	{
+		SPEHS_ASSERT(index < lines.size());
+		return lines[index];
+	}
+
+	const size_t Console::getLineCount() const
+	{
+		return lines.size();
 	}
 	
-	void Console::setVariable()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	ConsoleVisualizer::ConsoleVisualizer(Console& _console, InputManager& _inputManager, BatchManager& _batchManager)
+		: console(_console)
+		, inputManager(_inputManager)
+		, batchManager(_batchManager)
+		, keyboardRecorder(_inputManager)
+		, backgroundShade(*_batchManager.createPolygon(Shape::BUTTON, 0, 1.0f, 1.0f))
+		, statsText(*_batchManager.createText())
+		, carotText(*_batchManager.createText())
 	{
 		std::lock_guard<std::recursive_mutex> lock(mutex);
-		bool isFloat = false;
-		for (unsigned i = 0; i < consoleWords[2].size(); i++)
-		if ((consoleWords[2][i] < 48 || consoleWords[2][i] > 57) && consoleWords[2][i] != 45)//if the character is not "numeric" (number or -)
-		{//Value is not numeric
 
-			//Check booleans
-			if (consoleWords[2] == "true" || consoleWords[2] == "false")
-			{
-				for (unsigned i = 0; i < boolVariables.size(); i++)
-				if (consoleWords[1] == boolVariables[i]._identifier)
-				{
-					if (consoleWords[2] == "true")
-					{
-						log("Setting " + boolVariables[i]._identifier + " as true");
-						boolVariables[i].set(true);
-					}
-					else
-					{
-						log("Setting " + boolVariables[i]._identifier + " as false");
-						boolVariables[i].set(false);
-					}
-					return;
-				}
-				log("Invalid command!");
-				return;
-			}
+		//Background shade
+		backgroundShade.setCameraMatrixState(false);
+		backgroundShade.setPosition(0.0f, 0.0f);
+		backgroundShade.setColor(spehs::Color(13, 26, 39, 128));
+		backgroundShade.setRenderState(true);
+		backgroundShade.setAlpha(204);
+		
+		//Stats text
+		statsText.setFont("Fonts/Anonymous.ttf", 12);
+		statsText.setColor(Color(255, 77, 0, 217));
 
-			//Check string variables
-			for (unsigned i = 0; i < stringVariables.size(); i++)
-			{
-				if (stringVariables[i]._identifier == consoleWords[1])
-				{
-					log("Setting " + stringVariables[i]._identifier + " to " + consoleWords[2]);
-					*stringVariables[i]._variablePtr = consoleWords[2];
-					return;
-				}
-			}
-			log("Invalid command!");
+		//Carot text
+		carotText.setFont("Fonts/Anonymous.ttf", 12);
+		carotText.setColor(Color(255, 77, 0, 217));
+		carotText.setString("|");
+
+		//Update some values
+		setPlaneDepth(0);
+		setLineCapacity(10);
+
+		//Connect log connection
+		logConnection = console.logSignal.connect(std::bind(&ConsoleVisualizer::logCallback, this, std::placeholders::_1));
+
+		scrollState = getMaxScrollState();
+		updateLines = true;
+	}
+
+	ConsoleVisualizer::~ConsoleVisualizer()
+	{
+		std::lock_guard<std::recursive_mutex> lock(mutex);
+		backgroundShade.destroy();
+		statsText.destroy();
+		carotText.destroy();
+		for (size_t i = 0; i < lines.size(); i++)
+			lines[i]->destroy();
+		lines.clear();
+	}
+
+	void ConsoleVisualizer::open()
+	{
+		std::lock_guard<std::recursive_mutex> lock(mutex);
+		if (openState)
 			return;
-		}
-		else if (consoleWords[2][i] == 46)//Test for period (decimal numbers/aka floats)
-		{
-			if (isFloat == false)
-				isFloat = true;
-			else
-			{//Two periods -> invalid float
-				log("Invalid command!");
-				return;
-			}
-		}
+		openState = true;
+		updateLines = true;
+		lines.back()->setString("");
+	}
 
-		if (isFloat)
+	void ConsoleVisualizer::close()
+	{
+		std::lock_guard<std::recursive_mutex> lock(mutex);
+		if (!openState)
+			return;
+		openState = false;
+		updateLines = true;
+	}
+
+	void ConsoleVisualizer::setRenderState(const bool _state)
+	{
+		std::lock_guard<std::recursive_mutex> lock(mutex);
+		backgroundShade.setRenderState(_state);
+	}
+
+	bool ConsoleVisualizer::getRenderState() const
+	{
+		std::lock_guard<std::recursive_mutex> lock(mutex);
+		return backgroundShade.getRenderState();
+	}
+
+	void ConsoleVisualizer::setPlaneDepth(const int16_t depth)
+	{
+		std::lock_guard<std::recursive_mutex> lock(mutex);
+		backgroundShade.setPlaneDepth(depth);
+		statsText.setPlaneDepth(depth + 1);
+		carotText.setPlaneDepth(depth + 1);
+		for (size_t i = 0; i < lines.size(); i++)
+			lines[i]->setPlaneDepth(depth + 1);
+	}
+
+	int16_t ConsoleVisualizer::getPlaneDepth() const
+	{
+		std::lock_guard<std::recursive_mutex> lock(mutex);
+		return backgroundShade.getPlaneDepth();
+	}
+
+	void ConsoleVisualizer::setShowStats(const bool show)
+	{
+		std::lock_guard<std::recursive_mutex> lock(mutex);
+		showStats = show;
+	}
+
+	bool ConsoleVisualizer::getShowStats() const
+	{
+		std::lock_guard<std::recursive_mutex> lock(mutex);
+		return showStats;
+	}
+
+	bool ConsoleVisualizer::isOpen()
+	{
+		std::lock_guard<std::recursive_mutex> lock(mutex);
+		return openState;
+	}
+	
+	void ConsoleVisualizer::update(const time::Time& deltaTime)
+	{
+		std::lock_guard<std::recursive_mutex> lock(mutex);
+		
+		if (openState)
 		{
-			for (unsigned i = 0; i < floatVariables.size(); i++)
-			if (floatVariables[i]._identifier == consoleWords[1])
+			//Carot visibility timer
+			carotTimer += deltaTime;
+
+			keyboardRecorder.update(deltaTime);
+			if (keyboardRecorder.characterInput.size() > 0 || keyboardRecorder.commandInput.size() > 0)
+				inputTime = time::now();
+
+			//Append character input
+			std::string inputString = lines.back()->getString();
+			for (size_t i = 0; i < keyboardRecorder.characterInput.size(); i++)
+				inputString += keyboardRecorder.characterInput[i];
+
+			//Command input
+			for (size_t i = 0; i < keyboardRecorder.commandInput.size(); i++)
 			{
+				switch (keyboardRecorder.commandInput[i])
 				{
-					log("Setting " + floatVariables[i]._identifier + " to " + consoleWords[2]);
-					floatVariables[i].set(atoi(consoleWords[2].c_str()));
-					return;
+				case KEYBOARD_RETURN:
+				{
+					const std::string input = lines.back()->getString();
+					if (input.size() > 0)
+						console.execute(input);
+					close();
 				}
+					break;
+				case KEYBOARD_BACKSPACE:
+					if (!inputString.empty())
+						inputString.pop_back();
+					break;
+				case KEYBOARD_ESCAPE:
+					close();
+					break;
+				case KEYBOARD_UP:
+					//TODO!
+					break;
+				case KEYBOARD_DOWN:
+					//TODO!
+					break;
+				case KEYBOARD_PAGEUP:
+					if (scrollState > 0)
+					{
+						scrollState--;
+						updateLines = true;
+					}
+					break;
+				case KEYBOARD_PAGEDOWN:
+					if (scrollState < getMaxScrollState())
+					{
+						scrollState++;
+						updateLines = true;
+					}
+					break;
+				case KEYBOARD_HOME:
+					scrollState = 0;
+					updateLines = true;
+					break;
+				case KEYBOARD_END:
+					const size_t maxScrollState = getMaxScrollState();
+					if (scrollState != maxScrollState)
+					{
+						scrollState = maxScrollState;
+						updateLines = true;
+					}
+					break;
+				}
+			}
+
+			if (inputString != lines.back()->getString())
+			{
+				lines.back()->setString(inputString);
+				updateCarotPosition();
 			}
 		}
 		else
 		{
-			for (unsigned i = 0; i < intVariables.size(); i++)
-			if (intVariables[i]._identifier == consoleWords[1])
+			//Console is not open, check opening key combination
+			if (inputManager.isKeyDown(KEYBOARD_LCTRL) && inputManager.isKeyDown(KEYBOARD_LALT) && inputManager.isKeyDown(KEYBOARD_BACKSPACE))
 			{
-				{
-					log("Setting " + intVariables[i]._identifier + " to " + consoleWords[2]);
-					intVariables[i].set(atoi(consoleWords[2].c_str()));
-					return;
-				}
+				open();
 			}
 		}
+	}
+
+	void ConsoleVisualizer::render(const std::string& customDebugText)
+	{
+		std::lock_guard<std::recursive_mutex> lock(mutex);
+		const bool renderState = getRenderState();
+		statsText.setRenderState(renderState && showStats);
+		static const time::Time carotInterval = time::fromSeconds(1.0f);
+		carotText.setRenderState(renderState && openState && ((((carotTimer.value / carotInterval.value) % 2) == 0) || (time::now() - inputTime) < spehs::time::fromSeconds(1.0f)));
+		for (size_t i = 0; i < lines.size(); i++)
+			lines[i]->setRenderState(renderState);
+
+		if (renderState)
+		{
+			//Lines
+			if (updateLines)
+			{
+				SPEHS_ASSERT(lines.size() > 0);
+
+				//Update positions
+				const size_t visibleLineCount = std::min(lines.size(), console.getLineCount() + (openState ? 1u : 0u));
+				float y = lines.back()->getFontHeight() * (int)visibleLineCount;
+				for (size_t i = 0; i < lines.size(); i++)
+				{
+					y -= (float)lines[i]->getFontHeight();
+					lines[i]->setPosition(spehs::vec2(CONSOLE_BORDER, CONSOLE_BORDER + (float)y));
+				}
+
+				//Update strings
+				const size_t count = openState ? (lines.size() - 1) : lines.size();
+				for (size_t i = 0; i < count; i++)
+				{
+					const size_t consoleLineIndex = std::max(0, scrollState + (int)i + (openState ? 1 : 0));
+					if (consoleLineIndex < console.getLineCount())
+					{
+						const Console::Line& line = console.getLine(consoleLineIndex);
+						lines[i]->setString(line.string);
+						lines[i]->setColor(line.color);
+					}
+					else
+					{
+						lines[i]->setString("");
+					}
+				}
+
+				//Carot position needs to be updated
+				updateCarotPosition();
+
+				updateLines = false;
+			}
+
+			//Background shade size
+			if (console.getLineCount() == 0 || !openState)
+			{
+				backgroundShade.resize(0.0f, 0.0f);
+			}
+			else
+			{
+				int w = 0.0f;
+				int h = 0.0f;
+				for (unsigned i = 0; i < lines.size(); i++)
+				{
+					if (lines[i]->getString().size() > 0)
+					{
+						w = std::max(w, (int)lines[i]->getTextWidth());
+						h += lines[i]->getTextHeight();
+					}
+				}
+				w += CONSOLE_BORDER * 2;
+				h += CONSOLE_BORDER * 2;
+				if (abs(backgroundShade.getWidth() - w) > 0.9f || abs(backgroundShade.getHeight() - h) > 0.9f)
+					backgroundShade.resize(w, h);
+			}
+
+			//Status text
+			statsText.setString("FPS: TODO\n" + customDebugText);
+			statsText.setPosition(spehs::vec2(CONSOLE_BORDER, (float)batchManager.window.getHeight() - statsText.getTextHeight() - CONSOLE_BORDER));
+		}
+	}
+
+	void ConsoleVisualizer::setLineCapacity(const size_t capacity)
+	{
+		std::lock_guard<std::recursive_mutex> lock(mutex);
+		if (capacity == lines.size())
+			return;
+
+		if (capacity > lines.size())
+		{
+			const size_t count = capacity - lines.size();
+			lines.reserve(capacity);
+			for (size_t i = 0; i < count; i++)
+			{
+				lines.push_back(batchManager.createText());
+				lines.back()->setFont("Fonts/Anonymous.ttf", 12);
+				lines.back()->setPlaneDepth(backgroundShade.getPlaneDepth() + 1);
+				lines.back()->setAlpha(229);
+			}
+		}
+		else if (lines.size() > capacity)
+		{
+			const size_t count = lines.size() - capacity;
+			const size_t backIndex = lines.size() - 1;
+			for (size_t i = 0; i < count; i++)
+				lines[backIndex - i]->destroy();
+			lines.resize(capacity);
+		}
+
+		//Update scroll state
+		scrollState = std::min(scrollState, (int)getMaxScrollState());
+
+		//Update caret position
+		updateCarotPosition();
+
+		//Queue line update
+		updateLines = true;
+	}
+
+	size_t ConsoleVisualizer::getLineCapacity() const
+	{
+		std::lock_guard<std::recursive_mutex> lock(mutex);
+		return lines.size();
+	}
+
+	void ConsoleVisualizer::logCallback(const Console::Line& line)
+	{
+		std::lock_guard<std::recursive_mutex> lock(mutex);
+		updateLines = true;
+		const size_t maxScrollState = getMaxScrollState();
+		if (maxScrollState != 0 && scrollState == maxScrollState - 1)
+			scrollState++;
+	}
+
+	size_t ConsoleVisualizer::getInputLineIndex() const
+	{
+		std::lock_guard<std::recursive_mutex> lock(mutex);
+		SPEHS_ASSERT(lines.size() > 0);
+		return lines.size() - 1;
+	}
+
+	size_t ConsoleVisualizer::getMaxScrollState() const
+	{
+		std::lock_guard<std::recursive_mutex> lock(mutex);
+		return std::max(0, int(console.getLineCount() - lines.size()));
+	}
+
+	void ConsoleVisualizer::updateCarotPosition()
+	{
+		std::lock_guard<std::recursive_mutex> lock(mutex);
+		carotText.setPosition(lines.back()->getPosition() + vec2(lines.back()->getTextWidth() - carotText.getTextWidth() / 2, 0.0f));
 	}
 }

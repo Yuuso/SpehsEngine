@@ -1,7 +1,6 @@
 #include "SpehsEngine/Rendering/GLContext.h"
 #include "SpehsEngine/Rendering/Window.h"
 #include "SpehsEngine/Rendering/OpenGLError.h"
-#include "SpehsEngine/Core/ApplicationData.h"
 #include "SpehsEngine/Core/Log.h"
 #include <SDL/SDL_video.h>
 #include <GL/glew.h>
@@ -51,7 +50,9 @@ namespace spehs
 		glEnable(GL_CULL_FACE);
 
 		//MSAA Antialiasing
-		if (spehs::ApplicationData::MSAA > 0)
+		int MSAA;
+		SDL_GL_GetAttribute(SDL_GL_MULTISAMPLESAMPLES, &MSAA);
+		if (MSAA > 0)
 			glEnable(GL_MULTISAMPLE);
 		
 		//Check OpenGL version

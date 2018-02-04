@@ -1,5 +1,4 @@
 
-#include "SpehsEngine/Core/ApplicationData.h"
 #include "SpehsEngine/Core/Core.h"
 #include "SpehsEngine/Core/Time.h"
 #include "SpehsEngine/Core/Log.h"

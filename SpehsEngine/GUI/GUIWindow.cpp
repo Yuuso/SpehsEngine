@@ -2,7 +2,6 @@
 #include <algorithm>
 #include "SpehsEngine/Core/Time.h"
 #include "SpehsEngine/Core/Geometry.h"
-#include "SpehsEngine/Core/ApplicationData.h"
 #include "SpehsEngine/Rendering/BatchManager.h"
 #include "SpehsEngine/Rendering/Window.h"
 #include "SpehsEngine/Input/InputManager.h"
@@ -51,7 +50,7 @@ namespace spehs
 		header->setColor(headerBackgroundColor);
 		header->setStringColor(headerStringColor);
 		header->setJustification(GUIRECT_TEXT_JUSTIFICATION_LEFT_BIT);
-		header->setStringSize(spehs::ApplicationData::GUITextSize + 2);
+		header->setStringSize(14);
 		header->setDepth(getDepth() + 1);
 		header->setRenderState(checkState(GUIRECT_OPEN_BIT) && getRenderState());
 		addElement(header);

@@ -33,10 +33,10 @@ namespace spehs
 
 		void setPlaneDepth(const PlaneDepth _depth);
 
-		void setString(const std::string _str);
+		void setString(const std::string& _str);
 		void setString(const char* str, const unsigned _length);
-		void incrementString(const std::string _str);
-		void incrementFrontString(const std::string _str);
+		void incrementString(const std::string& _str);
+		void incrementFrontString(const std::string& _str);
 
 		void setFont(const std::string &_fontPath, const int &_size);
 		void setFont(Font* _font);

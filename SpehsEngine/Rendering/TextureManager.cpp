@@ -1,5 +1,3 @@
-
-#include "SpehsEngine/Core/ApplicationData.h"
 #include "SpehsEngine/Core/Exceptions.h"
 #include "SpehsEngine/Core/Color.h"
 #include "SpehsEngine/Core/RNG.h"
@@ -388,7 +386,7 @@ namespace spehs
 
 	void TextureManager::takeScreenshot()
 	{
-		takeScreenshot(spehs::ApplicationData::screenshotDirectory);
+		takeScreenshot("screenshots/");
 	}
 
 	void TextureManager::takeScreenshot(std::string directory)

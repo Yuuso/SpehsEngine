@@ -117,40 +117,6 @@ namespace spehs
 		return std::string("");
 	}
 
-	void arrangeIntoRows(std::string& string, const int maxRowWidth)
-	{
-		int lastNewLineIndex(0);
-		int lastSpaceIndex(0);
-		int width(0);
-		for (unsigned i = 0; i < string.size(); i++)
-		{
-			if (string[i] == ' ')
-				lastSpaceIndex = i;
-
-			if (string[i] == '\n')
-			{//Newline
-				lastNewLineIndex = i;
-				width = 0;
-			}
-			else if (++width > maxRowWidth)
-			{//Exceeds row width, look for the last space index
-
-				if (lastSpaceIndex > lastNewLineIndex)
-				{//Space exists, set newline there
-					string[lastSpaceIndex] = '\n';
-					lastNewLineIndex = lastSpaceIndex;
-					width = i - lastSpaceIndex;
-				}
-				else if (string[i] == ' ')
-				{//Make a newline here
-					string[i] = '\n';
-					lastNewLineIndex = i;
-					width = 0;
-				}
-			}
-		}
-	}
-
 	static const char hexTable[16] = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F' };
 	std::string toHexString(const uint8_t integer)
 	{
@@ -252,5 +218,60 @@ namespace spehs
 		address |= (unsigned char)byteToInt << (24 - 8 * byteIndex++);
 
 		return address;
+	}
+
+	void arrangeIntoRows(std::string& string, const int maxRowWidth)
+	{
+		int lastNewLineIndex(0);
+		int lastSpaceIndex(0);
+		int width(0);
+		for (unsigned i = 0; i < string.size(); i++)
+		{
+			if (string[i] == ' ')
+				lastSpaceIndex = i;
+
+			if (string[i] == '\n')
+			{//Newline
+				lastNewLineIndex = i;
+				width = 0;
+			}
+			else if (++width > maxRowWidth)
+			{//Exceeds row width, look for the last space index
+
+				if (lastSpaceIndex > lastNewLineIndex)
+				{//Space exists, set newline there
+					string[lastSpaceIndex] = '\n';
+					lastNewLineIndex = lastSpaceIndex;
+					width = i - lastSpaceIndex;
+				}
+				else if (string[i] == ' ')
+				{//Make a newline here
+					string[i] = '\n';
+					lastNewLineIndex = i;
+					width = 0;
+				}
+			}
+		}
+	}
+
+	void getWords(const std::string& string, std::vector<std::string>& words)
+	{
+		size_t wordBeginIndex = 0;
+		for (size_t i = 0; i < string.size(); i++)
+		{
+			if (string[i] == ' ')
+			{
+				const size_t wordLength = i - wordBeginIndex;
+				if (wordLength > 0)
+					words.push_back(std::string(string.begin() + wordBeginIndex, string.begin() + i));
+				wordBeginIndex = i + 1;
+			}
+		}
+		if (!string.empty() && string.back() != ' ')
+		{
+			const size_t wordLength = string.size() - 1 - wordBeginIndex;
+			if (wordLength > 0)
+				words.push_back(std::string(string.begin() + wordBeginIndex, string.end()));
+		}
 	}
 }

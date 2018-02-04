@@ -1,5 +1,4 @@
 #include <algorithm>
-#include "SpehsEngine/Core/ApplicationData.h"
 #include "SpehsEngine/Core/StringOperations.h"
 #include "SpehsEngine/Core/OS.h"
 #include "SpehsEngine/Core/Time.h"
@@ -31,7 +30,7 @@ namespace spehs
 		createText();
 		typeCharacter = getBatchManager().createText("|", getDepth() + 1);
 		typeCharacter->setRenderState(getRenderState() && isReceivingInput());
-		typeCharacter->setFont(spehs::ApplicationData::GUITextFontPath, spehs::ApplicationData::GUITextSize);
+		typeCharacter->setFont("Fonts/Anonymous.ttf", 12);
 		typeCharacter->setColor(text->getColor());
 		onEditorValueChange();
 	}
@@ -62,7 +61,7 @@ namespace spehs
 	void GUIStringEditor::setStringSizeRelative(const int relativeSize)
 	{
 		GUIRectangle::setStringSizeRelative(relativeSize);
-		typeCharacter->setFontSize(spehs::ApplicationData::GUITextSize + relativeSize);
+		typeCharacter->setFontSize(12 + relativeSize);
 	}
 
 	void GUIStringEditor::setStringColor(const Color& col)
@@ -147,7 +146,7 @@ namespace spehs
 			if (!text)
 			{
 				text = getBatchManager().createText(getDepth() + 2);
-				text->setFont(spehs::ApplicationData::GUITextFontPath, spehs::ApplicationData::GUITextSize);
+				text->setFont("Fonts/Anonymous.ttf", 12);
 			}
 			text->setString(defaultString);
 		}

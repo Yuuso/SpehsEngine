@@ -2,7 +2,6 @@
 #include <chrono>
 #include <mutex>
 
-#include "SpehsEngine/Core/ApplicationData.h"
 #include "SpehsEngine/Core/Log.h"
 #include "SpehsEngine/Core/Time.h"
 

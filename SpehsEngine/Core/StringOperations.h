@@ -1,5 +1,6 @@
 #pragma once
 #include <string>
+#include <vector>
 #include <stdint.h>
 
 
@@ -14,9 +15,6 @@ namespace spehs
 	/**Extended std::to_string() function. Crops out extra precision given by std::to_string(). Maximum precision 6!*/
 	std::string toString(const float value, const int precision);
 
-	/**Replaces some spaces in the string with newline characters so that no row exceeds given maximum row width in character count, if possible.*/
-	void arrangeIntoRows(std::string& string, const int maxRowWidth);
-
 	/**Returns a string representing the integer in hex format. NOTES: 1: no '0x'-prefix will be given, 2: all zero bits will be filled in and represented in '0' characters*/
 	std::string toHexString(const uint8_t integer);
 	std::string toHexString(const uint16_t integer);
@@ -28,4 +26,10 @@ namespace spehs
 
 	/**Returns IPv4 address given in string format as an unsigned integer*/
 	unsigned getStringAsIPv4Address(const std::string& string);
+
+	/**Replaces some spaces in the string with newline characters so that no row exceeds given maximum row width in character count, if possible.*/
+	void arrangeIntoRows(std::string& string, const int maxRowWidth);
+
+	/** Process string into words (character sequences that are separated by the ' ' ascii character). Words are appended to the vector. */
+	void getWords(const std::string& string, std::vector<std::string>& wordsDeposit);
 }

@@ -2,7 +2,6 @@
 #include "SpehsEngine/Rendering/Camera2D.h"
 #include "SpehsEngine/Rendering/Window.h"
 #include "SpehsEngine/Input/Input.h"
-#include "SpehsEngine/Core/ApplicationData.h"
 
 #include <boost/bind.hpp>
 #include <glm/gtc/matrix_transform.hpp>

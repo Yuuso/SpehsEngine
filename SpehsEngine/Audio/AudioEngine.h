@@ -24,7 +24,6 @@ namespace spehs
 		class AudioEngine
 		{
 			friend class SoundSource;
-			friend class ApplicationData;
 			friend class ActiveSoundSource;
 		public:
 			struct SourceObject
@@ -61,6 +60,8 @@ namespace spehs
 			static float getChannelGain(const int _channelIndex);
 
 			static float deltaSeconds;
+
+			static float masterVolume;
 
 		protected:			
 			static void updateGain(); //Call when master volume has changed

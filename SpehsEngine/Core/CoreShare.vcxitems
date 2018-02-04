@@ -14,13 +14,14 @@
     <ProjectCapability Include="SourceItemsFromImports" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="$(MSBuildThisFileDirectory)ApplicationData.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Color.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Compression.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Core.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Exceptions.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)FileStream.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Geometry.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Inifile.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Inivar.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Log.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Mathematics.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)OS.cpp" />
@@ -38,7 +39,6 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)Vertex.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="$(MSBuildThisFileDirectory)ApplicationData.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)BitwiseOperations.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Color.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Compression.h" />
@@ -47,6 +47,8 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)FileStream.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Geometry.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)HasMemberFunction.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Inifile.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Inivar.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Log.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Mathematics.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)OS.h" />

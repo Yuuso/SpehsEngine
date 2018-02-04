@@ -1,5 +1,3 @@
-
-#include "SpehsEngine/Core/ApplicationData.h"
 #include "SpehsEngine/Core/Core.h"
 #include "SpehsEngine/Core/Log.h"
 #include "SpehsEngine/Core/Exceptions.h"
@@ -31,9 +29,7 @@ namespace spehs
 		if (!valid)
 		{
 			log::info("Current SpehsEngine core library version: " + getVersion());
-
-			//ApplicationData
-
+			
 			log::info("Hardware threads: " + std::to_string(std::thread::hardware_concurrency()));
 
 			//INITIALIZATIONS
@@ -59,7 +55,6 @@ namespace spehs
 		if (--instanceCount == 0)
 		{
 			rng::unit();
-			spehs::ApplicationData::write();
 			valid = false;
 		}
 	}

@@ -2,7 +2,6 @@
 #include <atomic>
 #include "SpehsEngine/Audio/AudioManager.h"
 #include "SpehsEngine/Audio/SoundSource.h"
-#include "SpehsEngine/Core/ApplicationData.h"
 #include "SpehsEngine/Input/InputManager.h"
 #include "SpehsEngine/Input/Input.h"
 #include "SpehsEngine/Rendering/Polygon.h"
@@ -407,7 +406,7 @@ namespace spehs
 		{
 			tooltip = new GUIRectangle(getGUIContext());
 			tooltip->setStringColor(defaultTooltipStringColor);
-			tooltip->setStringSize(spehs::ApplicationData::GUITextSize);
+			tooltip->setStringSize(12);
 			tooltip->setColor(defaultTooltipColor);
 		}
 
@@ -452,7 +451,7 @@ namespace spehs
 
 	void GUIRectangle::setStringSizeRelative(const int relativeSize)
 	{
-		setStringSize(spehs::ApplicationData::GUITextSize + relativeSize);
+		setStringSize(12 + relativeSize);
 	}
 
 	void GUIRectangle::setStringColor(const Color& col)
@@ -482,7 +481,7 @@ namespace spehs
 			return;
 		text = getBatchManager().createText(polygon->getPlaneDepth() + 2);
 		text->setRenderState(getRenderState());
-		text->setFont(spehs::ApplicationData::GUITextFontPath, spehs::ApplicationData::GUITextSize);
+		text->setFont("Fonts/Anonymous.ttf"/**/, 12);
 		text->setColor(defaultStringColor);
 	}
 

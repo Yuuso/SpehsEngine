@@ -1,5 +1,4 @@
 #include <algorithm>
-#include "SpehsEngine/Core/ApplicationData.h"
 #include "SpehsEngine/Core/Exceptions.h"
 #include "SpehsEngine/Rendering/FontManager.h"
 #include "SpehsEngine/Rendering/ShaderManager.h"
@@ -58,33 +57,6 @@ namespace spehs
 	{
 		setString(_string);
 	}
-	/*
-	Text::Text(const Text& original)
-	{//Copy constructor
-		*this = original;
-	}
-	void Text::operator=(const Text& original)
-	{
-		glDeleteBuffers(1, &vertexArrayData);
-		delete[] textures;
-		glGenBuffers(1, &vertexArrayData);
-		string = original.string;
-		position = original.position;
-		color = original.color;
-		updateGlyphsToRender();
-		textures = nullptr;
-		scale = original.scale;
-		lineSpacing = original.lineSpacing;
-		lineCount = original.lineCount;
-
-		//Font
-		unreferenceFont();
-		if (original.font != nullptr)
-		{
-			setFont(original.font->fontPath, original.font->fontSize);//Increases reference count
-			updateBuffers();
-		}
-	}*/
 
 	void Text::destroy()
 	{
@@ -117,8 +89,8 @@ namespace spehs
 
 	void Text::updateText()
 	{
-		int x = 0.0f;
-		int y = ((lineCount - 1) * (font->height + lineSpacing)) * scale;
+		float x = 0.0f;
+		float y = ((lineCount - 1) * (font->height + lineSpacing)) * scale;
 
 		textureIDs.clear();
 		vertexArray.clear();
@@ -135,7 +107,7 @@ namespace spehs
 			else if (string[c] == '\t')
 			{
 				//tab
-				x += ((font->characters[' '].advance >> 6) * scale) * 3;
+				x += (float(font->characters[' '].advance >> 6) * scale) * 4.0f;
 			}
 			else
 			{
@@ -144,15 +116,14 @@ namespace spehs
 				if (string[c] == ' ')
 				{
 					//Don't draw character if it's space, just move x instead
-					x += (ch.advance >> 6) * scale; //Bitshift by 6 to get value in pixels (2^6 = 64)
+					x += float(ch.advance >> 6) * scale; //Bitshift by 6 to get value in pixels (2^6 = 64)
 					continue;
 				}
 
-				GLfloat xpos = x + ch.bearing.x * scale;
-				GLfloat ypos = y - (ch.size.y - ch.bearing.y) * scale;
-
-				GLfloat w = ch.size.x * scale;
-				GLfloat h = ch.size.y * scale;
+				GLfloat xpos = std::round(x + ch.bearing.x * scale);
+				GLfloat ypos = std::round(y - (ch.size.y - ch.bearing.y) * scale);
+				GLfloat w = std::round(ch.size.x * scale);
+				GLfloat h = std::round(ch.size.y * scale);
 
 				vertexArray.push_back(Vertex(spehs::vec2(xpos, ypos + h), color, spehs::UV(0.0f, 0.0f)));
 				vertexArray.push_back(Vertex(spehs::vec2(xpos, ypos), color, spehs::UV(0.0f, 1.0f)));
@@ -161,8 +132,8 @@ namespace spehs
 
 				textureIDs.push_back(ch.textureID);
 
-				//Now advance cursors for next glyph (note that advance is number of 1/64 pixels)
-				x += (ch.advance >> 6) * scale; //Bitshift by 6 to get value in pixels (2^6 = 64)
+				//Advance cursor for the next glyph (note that advance is number of 1/64 pixels)
+				x += float(ch.advance >> 6) * scale; //Bitshift by 6 to get value in pixels (2^6 = 64)
 			}
 		}
 
@@ -207,14 +178,23 @@ namespace spehs
 		font = batchManager.fontManager.getFont(font->fontPath, _size);
 	}
 
-	void Text::setString(std::string _str)
+	void Text::setString(const std::string& _str)
 	{
+		if (_str == string)
+			return;
 		if (_str.size() > 2048)
 			spehs::exceptions::unexpectedError("set string is suspiciously big?");
-		//Set line count
-		if (_str.size() > 0) lineCount = 1; else lineCount = 0;
+
+		//Update line count
+		if (_str.size() == 0)
+			lineCount = 0;
+		else
+			lineCount = 1;
 		for (unsigned i = 0; i < _str.size(); i++)
-			if (_str[i] == '\n') lineCount++;
+		{
+			if (_str[i] == '\n')
+				lineCount++;
+		}
 
 		string = _str;
 		needTextUpdate = true;
@@ -222,12 +202,21 @@ namespace spehs
 
 	void Text::setString(const char* _str, const unsigned length)
 	{
+		if (length == string.size() && (length == 0 || memcmp(string.c_str(), _str, length) == 0))
+			return;
 		if (length > 2048)
 			spehs::exceptions::unexpectedError("set string is suspiciously big?");
-		//Set line count
-		if (length > 0) lineCount = 1; else lineCount = 0;
+
+		//Update line count
+		if (length == 0)
+			lineCount = 0;
+		else
+			lineCount = 1;
 		for (unsigned i = 0; i < length; i++)
-			if (_str[i] == '\n') lineCount++;
+		{
+			if (_str[i] == '\n')
+				lineCount++;
+		}
 
 		string.resize(length);
 		if (length > 0)
@@ -235,8 +224,11 @@ namespace spehs
 		needTextUpdate = true;
 	}
 
-	void Text::incrementString(const std::string _str)
+	void Text::incrementString(const std::string& _str)
 	{
+		if (_str.empty())
+			return;
+
 		//Increase line count
 		for (unsigned i = 0; i < _str.size(); i++)
 			if (_str[i] == '\n') lineCount++;
@@ -245,8 +237,11 @@ namespace spehs
 		needTextUpdate = true;
 	}
 
-	void Text::incrementFrontString(const std::string _str)
+	void Text::incrementFrontString(const std::string& _str)
 	{
+		if (_str.empty())
+			return;
+
 		//Increase line count
 		for (unsigned i = 0; i < _str.size(); i++)
 			if (_str[i] == '\n') lineCount++;

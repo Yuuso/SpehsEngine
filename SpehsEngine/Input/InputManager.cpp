@@ -1,6 +1,4 @@
-
 #include "SpehsEngine/Input/InputManager.h"
-#include "SpehsEngine/Core/ApplicationData.h"
 //#include "SpehsEngine/Rendering/TextureManager.h" TODO!!!
 #include "SpehsEngine/Input/input.h"
 #include "SpehsEngine/Core/Log.h"
