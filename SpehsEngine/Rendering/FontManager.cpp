@@ -10,8 +10,6 @@
 
 namespace spehs
 {
-	static bool textRenderingInitialized(false);
-
 	FontManager::FontManager(Window& _window)
 		: window(_window)
 		, ftLibrary(nullptr)
@@ -22,7 +20,7 @@ namespace spehs
 		if (error)
 		{
 			log::error("Freetype library initialization failed!");
-			FT_Done_FreeType(*(FT_Library*)ftLibrary);
+			FT_Done_FreeType(*(FT_Library*)ftLibrary);//Should this really be called here if the init failed?
 			delete ftLibrary;
 			ftLibrary = nullptr;
 		}
@@ -51,34 +49,42 @@ namespace spehs
 
 	Font* FontManager::getFont(const std::string &_fontPath, const int &_size)
 	{
-		//Check for already existing font
+		if (!ftLibrary)
+		{
+			log::warning("FontManager wasn't successfully initialized, cannot load fonts!");
+			return nullptr;
+		}
+
+		//Check for an already existing font
 		for (unsigned int i = 0; i < fonts.size(); i++)
 		{
 			if (_fontPath == fonts[i]->fontPath)
 			{
 				if (_size == fonts[i]->fontSize)
 				{
-					fonts[i]->referenceCount++;
 					return fonts[i];
 				}
 			}
 		}
 
 		//Create a new font
-		fonts.push_back(new Font);
-		Font* font = fonts.back();
+		Font* font = new Font();
 		font->ftFace = new FT_Face;
 
 		const FT_Error error = FT_New_Face(*(FT_Library*)ftLibrary, _fontPath.c_str(), 0, (FT_Face*)font->ftFace);
 		if (error)
 		{
-			log::warning("Freetype error: Failed to load font " + _fontPath + " FT_Error: " + std::to_string(error));
+			log::warning("Freetype error: Failed to load font '" + _fontPath + "', FT_Error: " + std::to_string(error));
+			//Manually deallocate the ft face so that the font destructor won't call FT_Done_Face() with it.
+			delete (FT_Face*)font->ftFace;
+			font->ftFace = nullptr;
+			delete font;
 			return nullptr;
 		}
-
+		
+		fonts.push_back(font);
 		font->fontPath = _fontPath;
 		font->fontSize = _size;
-		font->referenceCount = 1;
 
 		FT_Face* ftFace = (FT_Face*)font->ftFace;
 		FT_Set_Pixel_Sizes(*ftFace, 0, _size);
@@ -90,40 +96,41 @@ namespace spehs
 			if (FT_Load_Char(*(FT_Face*)ftFace, c, FT_LOAD_RENDER))
 			{
 				log::warning("FreeType error: Failed to load Glyph");
-				return nullptr;
 			}
-
-			//Generate texture
-			GLuint texture;
-			glGenTextures(1, &texture);
-			glBindTexture(GL_TEXTURE_2D, texture);
-			glTexImage2D(
-				GL_TEXTURE_2D,
-				0,
-				GL_RED,
-				(*(FT_Face*)ftFace)->glyph->bitmap.width,
-				(*(FT_Face*)ftFace)->glyph->bitmap.rows,
-				0,
-				GL_RED,
-				GL_UNSIGNED_BYTE,
-				(*(FT_Face*)ftFace)->glyph->bitmap.buffer
-			);
-
-			//Set texture options
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-			//Now store character for later use
-			Character character =
+			else
 			{
-				texture,
-				spehs::ivec2((*(FT_Face*)ftFace)->glyph->bitmap.width, (*(FT_Face*)ftFace)->glyph->bitmap.rows),
-				spehs::ivec2((*(FT_Face*)ftFace)->glyph->bitmap_left, (*(FT_Face*)ftFace)->glyph->bitmap_top),
-				(*(FT_Face*)ftFace)->glyph->advance.x
-			};
-			font->characters.insert(std::pair<GLchar, Character>(c, character));
+				//Generate texture
+				GLuint texture;
+				glGenTextures(1, &texture);
+				glBindTexture(GL_TEXTURE_2D, texture);
+				glTexImage2D(
+					GL_TEXTURE_2D,
+					0,
+					GL_RED,
+					(*(FT_Face*)ftFace)->glyph->bitmap.width,
+					(*(FT_Face*)ftFace)->glyph->bitmap.rows,
+					0,
+					GL_RED,
+					GL_UNSIGNED_BYTE,
+					(*(FT_Face*)ftFace)->glyph->bitmap.buffer
+				);
+
+				//Set texture options
+				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+				//Now store character for later use
+				Character character =
+				{
+					texture,
+					spehs::ivec2((*(FT_Face*)ftFace)->glyph->bitmap.width, (*(FT_Face*)ftFace)->glyph->bitmap.rows),
+					spehs::ivec2((*(FT_Face*)ftFace)->glyph->bitmap_left, (*(FT_Face*)ftFace)->glyph->bitmap_top),
+					(*(FT_Face*)ftFace)->glyph->advance.x
+				};
+				font->characters.insert(std::pair<GLchar, Character>(c, character));
+			}
 		}
 
 		checkOpenGLErrors(__FILE__, __LINE__);
@@ -134,24 +141,5 @@ namespace spehs
 		font->maxAdvanceWidth = (*(FT_Face*)font->ftFace)->max_advance_width >> 6;
 
 		return font;
-	}
-	void FontManager::unreferenceFont(Font* _font)
-	{
-		if (_font == nullptr)
-			return;
-
-		//If face becomes useless, remove it
-		if (--_font->referenceCount <= 0)
-		{
-			for (unsigned int i = 0; i < fonts.size(); i++)
-			{
-				if (fonts[i] == _font)
-				{
-					fonts.erase(fonts.begin() + i);
-					delete _font;
-				}
-			}
-		}
-		_font = nullptr;
 	}
 }

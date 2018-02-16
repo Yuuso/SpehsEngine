@@ -15,6 +15,7 @@
 #include "SpehsEngine/Rendering/Console.h"
 #include "SpehsEngine/Rendering/Camera2D.h"
 #include "SpehsEngine/Rendering/ConsoleVariable.h"
+#include "SpehsEngine/Rendering/FontManager.h"
 #include "SpehsEngine/Rendering/Text.h"
 #include "SpehsEngine/Rendering/BatchManager.h"
 #include "SpehsEngine/Rendering/Window.h"
@@ -397,23 +398,21 @@ namespace spehs
 		backgroundShade.setAlpha(204);
 		
 		//Stats text
-		statsText.setFont("Fonts/Anonymous.ttf", 12);
 		statsText.setColor(Color(255, 77, 0, 217));
 
 		//Carot text
-		carotText.setFont("Fonts/Anonymous.ttf", 12);
 		carotText.setColor(Color(255, 77, 0, 217));
 		carotText.setString("|");
 
 		//Update some values
+		setFont("Fonts/Anonymous.ttf", 12);
 		setPlaneDepth(0);
 		setLineCapacity(10);
+		scrollState = getMaxScrollState();
+		updateLines = true;
 
 		//Connect log connection
 		logConnection = console.logSignal.connect(std::bind(&ConsoleVisualizer::logCallback, this, std::placeholders::_1));
-
-		scrollState = getMaxScrollState();
-		updateLines = true;
 	}
 
 	ConsoleVisualizer::~ConsoleVisualizer()
@@ -653,10 +652,37 @@ namespace spehs
 					backgroundShade.resize(w, h);
 			}
 
+			//Determine render lap time
+			renderLapTimes.push_back(renderLapTimer.get());
+			if (renderLapTimes.size() > 20)
+				renderLapTimes.erase(renderLapTimes.begin());
+			const time::Time oldestLapTime = renderLapTimes.front();
+			time::Time renderLapTimesRelativeSum = 0;
+			for (size_t i = 0; i < renderLapTimes.size(); i++)
+				renderLapTimesRelativeSum += renderLapTimes[i] - oldestLapTime;
+			const time::Time averageLapTime = oldestLapTime + time::Time(time::TimeValueType(float(renderLapTimesRelativeSum) / float(renderLapTimes.size())));
+
 			//Status text
-			statsText.setString("FPS: TODO\n" + customDebugText);
+			statsText.setString("FPS: " + std::to_string(int(std::round(1.0f / averageLapTime.asSeconds()))) + "\n" + customDebugText);
 			statsText.setPosition(spehs::vec2(CONSOLE_BORDER, (float)batchManager.window.getHeight() - statsText.getTextHeight() - CONSOLE_BORDER));
 		}
+	}
+
+	void ConsoleVisualizer::setFont(const std::string& fontPath, const int fontSize)
+	{
+		setFont(batchManager.fontManager.getFont(fontPath, fontSize));
+	}
+
+	void ConsoleVisualizer::setFont(spehs::Font* fontParam)
+	{
+		std::lock_guard<std::recursive_mutex> lock(mutex);
+		if (font == fontParam)
+			return;
+		font = fontParam;
+		statsText.setFont(font);
+		carotText.setFont(font);
+		for (size_t i = 0; i < lines.size(); i++)
+			lines[i]->setFont(font);
 	}
 
 	void ConsoleVisualizer::setLineCapacity(const size_t capacity)
@@ -672,7 +698,7 @@ namespace spehs
 			for (size_t i = 0; i < count; i++)
 			{
 				lines.push_back(batchManager.createText());
-				lines.back()->setFont("Fonts/Anonymous.ttf", 12);
+				lines.back()->setFont(font);
 				lines.back()->setPlaneDepth(backgroundShade.getPlaneDepth() + 1);
 				lines.back()->setAlpha(229);
 			}

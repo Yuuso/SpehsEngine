@@ -29,7 +29,6 @@ namespace spehs
 		std::string fontPath;
 		int fontSize;
 		std::map<GLchar, Character> characters;
-		int referenceCount = 0;
 		int height = 0;
 		int ascender = 0;
 		int descender = 0;

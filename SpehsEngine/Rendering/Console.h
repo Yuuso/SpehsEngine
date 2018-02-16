@@ -94,7 +94,7 @@ namespace spehs
 
 		//Font
 		void setFont(const std::string& fontPath, const int fontSize);
-		void setFont(const spehs::Font& font);
+		void setFont(spehs::Font* font);
 
 		//Render state
 		void setRenderState(const bool state);
@@ -138,6 +138,8 @@ namespace spehs
 		boost::signals::scoped_connection logConnection;
 		time::Time carotTimer = 0;
 		time::Time inputTime = 0;//Point of time when the last input was received
+		time::LapTimer renderLapTimer;
+		std::vector<time::Time> renderLapTimes;
 
 		//Renderables
 		Polygon& backgroundShade;//Holds render state and depth

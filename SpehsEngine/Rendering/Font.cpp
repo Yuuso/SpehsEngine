@@ -13,7 +13,7 @@ namespace spehs
 
 	Font::~Font()
 	{
-		if (ftFace != nullptr)
+		if (ftFace)
 		{
 			const FT_Error error = FT_Done_Face(*(FT_Face*)ftFace);
 			if (error)

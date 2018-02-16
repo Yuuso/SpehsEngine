@@ -38,6 +38,7 @@ namespace spehs
 	public:
 		T operator=(const T newValue);
 		operator T() const;
+		
 		std::string toString() const override;
 		bool fromString(const std::string& string) override;
 
@@ -53,13 +54,24 @@ namespace spehs
 		T value;
 	};
 	
+	//Get nicely formated type name
+	template<typename T>
+	inline std::string getTypeName()
+	{
+		return typeid(T).name();
+	}
+	template<>
+	inline std::string getTypeName<std::string>()
+	{
+		return "std::string";
+	}
 
 
 	//TEMPLATE DEFINITIONS
 
 	template<typename T>
 	Inivar<T>::Inivar(Inisection& _section, const std::string& _name, const T& _value)
-		: AbstractInivar(_section, _name, typeid(T).name())
+		: AbstractInivar(_section, _name, getTypeName<T>())
 		, value(_value)
 	{
 	}
@@ -82,20 +94,5 @@ namespace spehs
 	{
 		std::lock_guard<std::recursive_mutex> lock(mutex);
 		return value;
-	}
-
-	template<typename T>
-	std::string Inivar<T>::toString() const
-	{
-		std::lock_guard<std::recursive_mutex> lock(mutex);
-		return std::to_string(value);
-	}
-
-	template<typename T>
-	bool Inivar<T>::fromString(const std::string& string)
-	{
-		std::lock_guard<std::recursive_mutex> lock(mutex);
-		value = std::atoi(string.c_str());
-		return true;
 	}
 }

@@ -1,5 +1,5 @@
 #include <algorithm>
-#include "SpehsEngine/Core/Exceptions.h"
+#include "SpehsEngine/Core/Log.h"
 #include "SpehsEngine/Rendering/FontManager.h"
 #include "SpehsEngine/Rendering/ShaderManager.h"
 #include "SpehsEngine/Rendering/BatchManager.h"
@@ -27,7 +27,6 @@ namespace spehs
 {
 	Text::~Text()
 	{
-		batchManager.fontManager.unreferenceFont(font);
 #ifdef _DEBUG
 		textDeallocations++;
 #endif
@@ -89,6 +88,11 @@ namespace spehs
 
 	void Text::updateText()
 	{
+		if (!font)
+		{
+			log::warning("Text::updateText(): no font set");
+			return;
+		}
 		float x = 0.0f;
 		float y = ((lineCount - 1) * (font->height + lineSpacing)) * scale;
 
@@ -149,33 +153,32 @@ namespace spehs
 
 	void Text::setFont(const std::string &_fontPath, const int &_size)
 	{
-		if (font)
+		setFont(batchManager.fontManager.getFont(_fontPath, _size));
+	}
+
+	void Text::setFont(Font *fontParam)
+	{
+		if (font == fontParam)
+			return;
+		font = fontParam;
+		needTextUpdate = true;
+		needPositionUpdate = true;
+	}
+
+	void Text::setFontSize(const int sizeParam)
+	{
+		if (!font)
 		{
-			batchManager.fontManager.unreferenceFont(font);
+			log::warning("Text::setFontSize(): no font set");
+			return;
 		}
 
-		font = batchManager.fontManager.getFont(_fontPath, _size);
-	}
-
-	void Text::setFont(Font* _font)
-	{
-		font = _font;
-		font->referenceCount++;
-	}
-
-	void Text::setFontSize(const int _size)
-	{
-		//No font loaded
-		if (font == nullptr)
+		//Check if the size already matches
+		if (font->fontSize == sizeParam)
 			return;
 
-		//The size already matches
-		if (font->fontSize == _size)
-			return;
-
-		//Get new font face
-		batchManager.fontManager.unreferenceFont(font);
-		font = batchManager.fontManager.getFont(font->fontPath, _size);
+		//Set font
+		setFont(font->fontPath, sizeParam);
 	}
 
 	void Text::setString(const std::string& _str)
@@ -252,13 +255,16 @@ namespace spehs
 
 	void Text::setPosition(const spehs::vec2& _vec)
 	{
-		position.x = _vec.x;
-		position.y = _vec.y;
+		if (position.x == _vec.x && position.y == _vec.y)
+			return;
+		position = _vec;
 		needPositionUpdate = true;
 	}
 
 	void Text::setPosition(const float _x, const float _y)
 	{
+		if (position.x == _x && position.y == _y)
+			return;
 		position.x = _x;
 		position.y = _y;
 		needPositionUpdate = true;
@@ -276,60 +282,101 @@ namespace spehs
 		needPositionUpdate = true;
 	}
 
-	void Text::setColor(const spehs::Color& _col)
+	void Text::setColor(const spehs::Color& colorParam)
 	{
-		color = _col;
+		if (color == colorParam)
+			return;
+		color = colorParam;
 		needTextUpdate = true;
 	}
 
-	void Text::setAlpha(const spehs::Color::Component& _a)
+	void Text::setAlpha(const spehs::Color::Component& alphaParam)
 	{
-		color.a = _a;
+		if (color.a == alphaParam)
+			return;
+		color.a = alphaParam;
 		needTextUpdate = true;
 	}
 
-	void Text::setLineSpacing(const int _lineSpacing)
+	void Text::setLineSpacing(const int lineSpacingParam)
 	{
-		lineSpacing = _lineSpacing;
+		if (lineSpacing == lineSpacingParam)
+			return;
+		lineSpacing = lineSpacingParam;
 		needTextUpdate = true;
 		needPositionUpdate = true;
 	}
 
 	int Text::getFontSize() const
 	{
-		return font->fontSize;
+		if (font)
+			return font->fontSize;
+		else
+		{
+			log::warning("Text::getFontSize(): no font set");
+			return 0;
+		}
 	}
 
 	int Text::getFontHeight() const
 	{
-		return font->height;
+		if (font)
+			return font->height;
+		else
+		{
+			log::warning("Text::getFontHeight(): no font set");
+			return 0;
+		}
 	}
 
 	int Text::getFontAscender() const
 	{
-		return font->ascender;
+		if (font)
+			return font->ascender;
+		else
+		{
+			log::warning("Text::getFontAscender(): no font set");
+			return 0;
+		}
 	}
 
 	int Text::getFontDescender() const
 	{
-		return font->descender;
+		if (font)
+			return font->descender;
+		else
+		{
+			log::warning("Text::getFontDescender(): no font set");
+			return 0;
+		}
 	}
 
 	int Text::getFontMaxAdvanceWidth() const
 	{
-		return font->maxAdvanceWidth;
+		if (font)
+			return font->maxAdvanceWidth;
+		else
+		{
+			log::warning("Text::getFontMaxAdvanceWidth(): no font set");
+			return 0;
+		}
 	}
 
 	float Text::getX(const int characterIndex) const
 	{
-		int currentLineWidth(0.0f);
+		if (!font)
+		{
+			log::warning("Text::getX(): no font set");
+			return 0.0f;
+		}
+		int currentLineWidth = 0;
 		for (int i = 0; i <= string.size(); i++)
 		{
 			if (i >= characterIndex)
 				break;
 
 			if (string[i] == '\n')
-				currentLineWidth = 0.0f;
+				currentLineWidth = 0;
 			else
 			{//Increase current line width
 #ifdef _DEBUG
@@ -345,18 +392,28 @@ namespace spehs
 
 	float Text::getY(const int characterIndex) const
 	{
+		if (!font)
+		{
+			log::warning("Text::getY(): no font set");
+			return 0.0f;
+		}
 		const int end = std::min((int)characterIndex, (int)string.size() - 1);
-		int currentHeight(0);
+		int currentHeight = 0;
 		for (int i = string.size() - 1; i >= end; i--)
 		{
 			if (string[i] == '\n')
 				currentHeight += font->height + lineSpacing;
 		}
-		return position.y + currentHeight;
+		return position.y + float(currentHeight);
 	}
 
 	float Text::getTextWidth() const
 	{
+		if (!font)
+		{
+			log::warning("Text::getTextWidth(): no font set");
+			return 0.0f;
+		}
 		int record = 0;
 		int currentLineWidth = 0;
 
@@ -388,6 +445,11 @@ namespace spehs
 
 	float Text::getTextHeight() const
 	{
-		return ((getFontHeight() + lineSpacing) * (lineCount - 1) + font->ascender - font->descender) * scale;
+		if (!font)
+		{
+			log::warning("Text::getX(): no font set");
+			return 0.0f;
+		}
+		return float((getFontHeight() + lineSpacing) * (lineCount - 1) + font->ascender - font->descender) * scale;
 	}
 }

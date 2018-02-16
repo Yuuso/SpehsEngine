@@ -92,6 +92,8 @@ namespace spehs
 		while (!stream.eof())
 		{
 			std::getline(stream, line);
+			if (line.empty())
+				break;
 			if (line.front() == '[' && line.back() == ']')
 			{//Section
 				if (line.size() > 2)

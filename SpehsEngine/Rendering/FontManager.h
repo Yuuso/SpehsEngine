@@ -12,7 +12,6 @@ namespace spehs
 	public:
 
 		Font* getFont(const std::string &_fontPath, const int &_size);
-		void unreferenceFont(Font* _font);
 
 		Window& window;
 
