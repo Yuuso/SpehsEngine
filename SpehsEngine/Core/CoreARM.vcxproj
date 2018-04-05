@@ -36,7 +36,14 @@
   <ImportGroup Label="Shared">
     <Import Project="CoreShare.vcxitems" Label="Shared" />
   </ImportGroup>
-  <ImportGroup Label="PropertySheets" />
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
+    <Import Project="..\..\PropertySheets\CommonARM.props" />
+    <Import Project="..\..\PropertySheets\CommonDebugARM.props" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">
+    <Import Project="..\..\PropertySheets\CommonARM.props" />
+    <Import Project="..\..\PropertySheets\CommonReleaseARM.props" />
+  </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
     <TargetName>libSpehsCore</TargetName>
@@ -50,7 +57,6 @@
     <RemoteProjectDir>~/SpehsEngine/SpehsEngine/Core/</RemoteProjectDir>
     <OutDir>/home/pi/SpehsEngine/bin/$(Configuration)/</OutDir>
     <IntDir>obj/$(Configuration)/</IntDir>
-    <IncludePath>$(SPEHSENGINE_ROOT)/;$(SPEHSENGINE_ROOT)/Dependencies/include/;$(IncludePath);$(ISenseIncludePath);</IncludePath>
   </PropertyGroup>
   <ItemGroup>
   </ItemGroup>
@@ -68,7 +74,6 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">
     <ClCompile>
       <PreprocessorDefinitions>NOMINMAX;PI=3.14159265359f;TWO_PI=6.28318530718f;NDEBUG;</PreprocessorDefinitions>
-      <AdditionalOptions>-I /home/pi/SpehsEngine/ -I /usr/glm/ -I /usr/boost/ -I /home/pi/SpehsEngine/</AdditionalOptions>
     </ClCompile>
     <Lib />
     <Link>

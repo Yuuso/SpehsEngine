@@ -1,0 +1,32 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup Label="Globals">
+    <MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+    <HasSharedItems>true</HasSharedItems>
+    <ItemsProjectGuid>{1E65A9FA-C973-42FE-AA97-CD08C94E9BB4}</ItemsProjectGuid>
+  </PropertyGroup>
+  <ItemDefinitionGroup>
+    <ClCompile>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(MSBuildThisFileDirectory)</AdditionalIncludeDirectories>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ProjectCapability Include="SourceItemsFromImports" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="$(MSBuildThisFileDirectory)Acceptor.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Aria.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)IOService.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Net.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Protocol.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)SocketTCP.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="$(MSBuildThisFileDirectory)Acceptor.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Aria.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)IOService.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Net.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Protocol.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)SocketTCP.h" />
+  </ItemGroup>
+</Project>

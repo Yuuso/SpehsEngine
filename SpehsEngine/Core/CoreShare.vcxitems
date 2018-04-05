@@ -52,6 +52,7 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)Log.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Mathematics.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)OS.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)RAIIVariableSetter.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)RNG.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)SATCollision.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Serializable.h" />
