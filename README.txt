@@ -16,6 +16,7 @@ Spehs libraries must be initialized in a set order by calling spehs::<libraryNam
 
 ### Core
 Minimal, generic functionality that can be useful in various projects.
+Some libraries come with an additional Visual Studio project file that has the -ARM suffix. They need the **Visual Studio For Linux Development** extension to work.
 
 ### Rendering
 Window management, opengl based text and polygon rendering.

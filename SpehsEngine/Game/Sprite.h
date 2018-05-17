@@ -11,6 +11,7 @@ namespace spehs
 	class Polygon;
 	class TextureData;
 	class BatchManager;
+	class TextureManager;
 
 	class Sprite : public Component, public Colorable
 	{
@@ -32,6 +33,7 @@ namespace spehs
 		const Polygon* getSpritePolygon(){ return sprite; }
 
 	protected:
+		TextureManager &textureManager;
 		Polygon* sprite;
 	};
 }

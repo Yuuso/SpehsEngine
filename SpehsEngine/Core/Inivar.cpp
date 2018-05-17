@@ -58,6 +58,23 @@ namespace spehs
 		value = string;
 		return true;
 	}
+
+
+
+	//T = int
+	template<>
+	std::string Inivar<int>::toString() const
+	{
+		std::lock_guard<std::recursive_mutex> lock(mutex);
+		return std::to_string(value);
+	}
+	template<>
+	bool Inivar<int>::fromString(const std::string& string)
+	{
+		std::lock_guard<std::recursive_mutex> lock(mutex);
+		value = std::atoi(string.c_str());
+		return true;
+	}
 	
 
 
@@ -72,7 +89,24 @@ namespace spehs
 	bool Inivar<unsigned>::fromString(const std::string& string)
 	{
 		std::lock_guard<std::recursive_mutex> lock(mutex);
-		value = std::atoi(string.c_str());
+		value = (unsigned)std::atoi(string.c_str());
+		return true;
+	}
+
+
+
+	//T = float
+	template<>
+	std::string Inivar<float>::toString() const
+	{
+		std::lock_guard<std::recursive_mutex> lock(mutex);
+		return std::to_string(value);
+	}
+	template<>
+	bool Inivar<float>::fromString(const std::string& string)
+	{
+		std::lock_guard<std::recursive_mutex> lock(mutex);
+		value = std::stof(string.c_str());
 		return true;
 	}
 

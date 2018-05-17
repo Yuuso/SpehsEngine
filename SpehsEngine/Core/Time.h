@@ -28,8 +28,9 @@ namespace spehs
 			extern const TimeValueType nanosecond;
 		}
 
-		struct Time
+		class Time
 		{
+		public:
 			static const Time zero;
 
 			Time();

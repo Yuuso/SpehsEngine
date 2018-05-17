@@ -112,6 +112,10 @@ namespace spehs
 		void setLineCapacity(const size_t capacity);
 		size_t getLineCapacity() const;
 		
+		Console& console;
+		InputManager& inputManager;
+		BatchManager& batchManager;
+
 	private:
 		
 		void updateCarotPosition();
@@ -122,9 +126,6 @@ namespace spehs
 		size_t getMaxScrollState() const;		
 
 		mutable std::recursive_mutex mutex;
-		Console& console;
-		InputManager& inputManager;
-		BatchManager& batchManager;
 
 		//Visual state
 		bool openState = false;

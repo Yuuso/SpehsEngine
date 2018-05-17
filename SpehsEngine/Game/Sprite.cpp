@@ -13,18 +13,22 @@
 namespace spehs
 {
 	Sprite::Sprite(BatchManager& batchManager)
+		: textureManager(batchManager.textureManager)
 	{
 		sprite = batchManager.createPolygon(4, 0, DEFAULT_SIZE, DEFAULT_SIZE);
 	}
-	Sprite::Sprite(BatchManager& batchManager, GameObject& _owner) : Component(_owner)
+
+	Sprite::Sprite(BatchManager& batchManager, GameObject& _owner)
+		: Component(_owner)
+		, textureManager(batchManager.textureManager)
 	{
 		sprite = batchManager.createPolygon(4, 0, DEFAULT_SIZE, DEFAULT_SIZE);
 	}
+
 	Sprite::~Sprite()
 	{
 		sprite->destroy();
 	}
-
 
 	void Sprite::update(const time::Time deltaTime)
 	{

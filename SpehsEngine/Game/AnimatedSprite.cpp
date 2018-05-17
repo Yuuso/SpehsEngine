@@ -68,7 +68,7 @@ namespace spehs
 
 	void AnimatedSprite::setTextureID(const unsigned int _textureID)
 	{
-		textureData = textureManager->getTextureData(_textureID);
+		textureData = textureManager.getTextureData(_textureID);
 		Sprite::setTextureID(_textureID);
 	}
 

@@ -38,6 +38,8 @@ namespace spehs
 	public:
 		T operator=(const T newValue);
 		operator T() const;
+		bool operator==(const T &other) const;
+		bool operator!=(const T &other) const;
 		
 		std::string toString() const override;
 		bool fromString(const std::string& string) override;
@@ -95,4 +97,37 @@ namespace spehs
 		std::lock_guard<std::recursive_mutex> lock(mutex);
 		return value;
 	}
+
+	template<typename T>
+	bool Inivar<T>::operator==(const T &other) const
+	{
+		std::lock_guard<std::recursive_mutex> lock(mutex);
+		return value == other;
+	}
+
+	template<typename T>
+	bool Inivar<T>::operator!=(const T &other) const
+	{
+		std::lock_guard<std::recursive_mutex> lock(mutex);
+		return value != other;
+
+	}
+
+	template<typename T>
+	bool operator==(const T &other, Inivar<T> &inivar)
+	{
+		return inivar.operator==(other);
+	}
+
+	template<typename T>
+	bool operator!=(const T &other, Inivar<T> &inivar)
+	{
+		return inivar.operator!=(other);
+	}
+
+	//template<typename T>
+	//T& operator=(const T &other, Inivar<T> &inivar)
+	//{
+	//	return other = (T)inivar;
+	//}
 }
