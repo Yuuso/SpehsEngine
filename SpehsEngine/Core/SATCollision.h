@@ -86,7 +86,7 @@ namespace spehs
 	//BOOL COLLISIONS
 	//Polygon x Polygon collision
 	bool SATCollision(Vertex* _vertexArray1, const unsigned int _size1, Vertex* _vertexArray2, const unsigned int _size2);
-	bool SATCollision(spehs::vec2* _vertexArray1, const unsigned int _size1, spehs::vec2* _vertexArray2, const unsigned int _size2);
+	bool SATCollision(const spehs::vec2* _vertexArray1, const size_t _size1, const spehs::vec2* _vertexArray2, const size_t _size2);
 
 	//Polygon x Circle Collision
 	bool SATCollision(Vertex* _vertexArray, const unsigned int _size, const spehs::vec2& _circleCenterPoint, const float _circleRadius);

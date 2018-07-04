@@ -1,8 +1,6 @@
 
 #include "SpehsEngine/Rendering/ShaderManager.h"
-#include "SpehsEngine/Rendering/TextureManager.h"
 #include "SpehsEngine/Rendering/OpenGLError.h"
-#include "SpehsEngine/Rendering/Console.h"
 #include "SpehsEngine/Core/Vector.h"
 
 #include <GL/glew.h>

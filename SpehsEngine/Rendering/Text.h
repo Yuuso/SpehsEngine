@@ -89,8 +89,6 @@ namespace spehs
 		~Text();
 
 	private:
-		bool needPositionUpdate;
-		bool needTextUpdate;
 		
 		void updatePosition();
 		void updateText();
@@ -98,19 +96,17 @@ namespace spehs
 		std::string string;
 		spehs::vec2 position;
 		spehs::Color color;
-		float scale;
-
-		int lineCount;
-		int lineSpacing;
-
-		PlaneDepth planeDepth;
+		float scale = 1.0f;
+		int lineCount = 0;
+		int lineSpacing = 0;
+		PlaneDepth planeDepth = 0;
 		int shaderIndex;
-		bool cameraMatrixState;
-		bool renderState;
-		bool readyForDelete;
-
+		bool cameraMatrixState = false;
+		bool renderState = true;
+		bool readyForDelete = false;
+		bool needPositionUpdate = false;
+		bool needTextUpdate = false;
 		std::vector<spehs::Vertex> vertexArray;
-
-		Font* font;
+		Font* font = nullptr;
 	};
 }

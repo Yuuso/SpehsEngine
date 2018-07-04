@@ -9,7 +9,6 @@
 #include "SpehsEngine/Core/Exceptions.h"
 #include "SpehsEngine/Core/Vector.h"
 #include "SpehsEngine/Rendering/GLSLProgram.h"
-#include "SpehsEngine/Rendering/Console.h"
 
 
 #define NEXT_SHADER_INDEX 4

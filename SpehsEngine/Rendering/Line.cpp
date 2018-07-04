@@ -1,7 +1,5 @@
 
 #include "SpehsEngine/Rendering/Line.h"
-#include "SpehsEngine/Rendering/Console.h"
-#include "SpehsEngine/Rendering/BatchManager.h"
 
 #include <glm/vec3.hpp>
 #include <glm/vec4.hpp>

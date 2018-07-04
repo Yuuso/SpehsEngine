@@ -1,10 +1,8 @@
 
 #include "SpehsEngine/Rendering/Batch.h"
-#include "SpehsEngine/Rendering/Console.h"
 #include "SpehsEngine/Rendering/Primitive.h"
 #include "SpehsEngine/Rendering/BatchManager.h"
 #include "SpehsEngine/Rendering/ShaderManager.h"
-#include "SpehsEngine/Rendering/GLSLProgram.h"
 #include "SpehsEngine/Rendering/OpenGLError.h"
 #include "SpehsEngine/Core/Vertex.h"
 #include "SpehsEngine/Rendering/Camera2D.h"

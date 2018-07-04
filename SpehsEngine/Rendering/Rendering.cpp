@@ -2,14 +2,7 @@
 #include "SpehsEngine/Core/Core.h"
 #include "SpehsEngine/Core/Time.h"
 #include "SpehsEngine/Core/Log.h"
-#include "SpehsEngine/Input/Input.h"
-#include "SpehsEngine/Rendering/Window.h"
 #include "SpehsEngine/Rendering/Rendering.h"
-#include "SpehsEngine/Rendering/Console.h"
-#include "SpehsEngine/Rendering/TextureManager.h"
-#include "SpehsEngine/Rendering/ShaderManager.h"
-#include "SpehsEngine/Rendering/OpenGLError.h"
-#include "SpehsEngine/Rendering/Text.h"
 
 #include <string>
 #include <thread>

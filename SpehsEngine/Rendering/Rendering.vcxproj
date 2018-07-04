@@ -156,8 +156,7 @@
     <ClInclude Include="BatchManager.h" />
     <ClInclude Include="BatchRenderResults.h" />
     <ClInclude Include="Camera2D.h" />
-    <ClInclude Include="Console.h" />
-    <ClInclude Include="ConsoleVariable.h" />
+    <ClInclude Include="ConsoleVisualizer.h" />
     <ClInclude Include="Depth.h" />
     <ClInclude Include="Font.h" />
     <ClInclude Include="FontManager.h" />
@@ -182,7 +181,7 @@
     <ClCompile Include="Batch.cpp" />
     <ClCompile Include="BatchManager.cpp" />
     <ClCompile Include="Camera2D.cpp" />
-    <ClCompile Include="Console.cpp" />
+    <ClCompile Include="ConsoleVisualizer.cpp" />
     <ClCompile Include="Font.cpp" />
     <ClCompile Include="FontManager.cpp" />
     <ClCompile Include="GLContext.cpp" />

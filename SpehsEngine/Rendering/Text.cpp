@@ -34,17 +34,8 @@ namespace spehs
 
 	Text::Text(BatchManager& _batchManager, const PlaneDepth depth)
 		: batchManager(_batchManager)
-		, lineCount(0)
-		, scale(1.0f)
-		, lineSpacing(0)
-		, font(nullptr)
-		, needTextUpdate(false)
-		, needPositionUpdate(false)
-		, renderState(true)
-		, readyForDelete(false)
-		, shaderIndex(DefaultText)
 		, planeDepth(depth)
-		, cameraMatrixState(false)
+		, shaderIndex(ShaderName::DefaultText)
 	{
 #ifdef _DEBUG
 		textAllocations++;

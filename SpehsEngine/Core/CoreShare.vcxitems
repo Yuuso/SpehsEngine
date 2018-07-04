@@ -16,6 +16,7 @@
   <ItemGroup>
     <ClCompile Include="$(MSBuildThisFileDirectory)Color.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Compression.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Console.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Core.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Exceptions.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)FileStream.cpp" />
@@ -42,6 +43,8 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)BitwiseOperations.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Color.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Compression.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Console.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)ConsoleVariable.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Core.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Exceptions.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)FileStream.h" />

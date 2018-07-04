@@ -6,7 +6,6 @@
 #include "SpehsEngine/Rendering/Window.h"
 #include "SpehsEngine/Rendering/OpenGLError.h"
 #include "SpehsEngine/Rendering/TextureManager.h"
-#include "SpehsEngine/Rendering/Console.h"
 
 #include <functional>
 #include <algorithm>
