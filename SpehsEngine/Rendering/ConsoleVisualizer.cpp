@@ -51,10 +51,10 @@ namespace spehs
 		backgroundShade.setAlpha(204);
 		
 		//Stats text
-		statsText.setColor(Color(255, 77, 0, 217));
+		statsText.setColor(Console::defaultLogColor);
 
 		//Carot text
-		carotText.setColor(Color(255, 77, 0, 217));
+		carotText.setColor(Console::defaultLogColor);
 		carotText.setString("|");
 
 		//Update some values
@@ -252,7 +252,7 @@ namespace spehs
 
 				//Update positions
 				const size_t visibleLineCount = std::min(lines.size(), console.getLineCount() + (openState ? 1u : 0u));
-				float y = lines.back()->getFontHeight() * (int)visibleLineCount;
+				float y = lines.back()->getFontHeight() * (int)lines.size();
 				for (size_t i = 0; i < lines.size(); i++)
 				{
 					y -= (float)lines[i]->getFontHeight();
@@ -406,6 +406,6 @@ namespace spehs
 	void ConsoleVisualizer::updateCarotPosition()
 	{
 		std::lock_guard<std::recursive_mutex> lock(mutex);
-		carotText.setPosition(lines.back()->getPosition() + vec2(lines.back()->getTextWidth() - carotText.getTextWidth() / 2, 0.0f));
+		carotText.setPosition(lines.back()->getPosition() + vec2(std::max(0.0f, lines.back()->getTextWidth() - carotText.getTextWidth() / 2), 0.0f));
 	}
 }

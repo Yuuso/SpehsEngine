@@ -36,6 +36,8 @@ extern std::atomic<int> textDeallocations;
 
 namespace spehs
 {
+	const Color Console::defaultLogColor = Color(255, 77, 0, 217);
+
 	Console::Console()
 	{
 	}

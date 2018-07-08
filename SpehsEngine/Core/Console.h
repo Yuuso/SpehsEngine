@@ -23,15 +23,16 @@ namespace spehs
 			std::string string;
 			Color color;
 		};
+		static const Color defaultLogColor;
 	public:
 
 		Console();
 		~Console();
 
 		/* Logs string into console memory. String is not considered for execution. */
-		void log(const std::string& string, const Color = Color(CONSOLE_FONT_COLOR));
+		void log(const std::string& string, const Color = defaultLogColor);
 		/* Logs string into console memory. String is evaluated for execution. */
-		void execute(const std::string& string, const Color = Color(CONSOLE_FONT_COLOR));
+		void execute(const std::string& string, const Color = defaultLogColor);
 
 		//Line access
 		const Line& getLine(const size_t index) const;
