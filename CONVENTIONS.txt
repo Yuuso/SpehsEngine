@@ -1,0 +1,25 @@
+//Quality of code
+1. Always use const when state is not modified.
+2. Prefer enum class over plain enum.
+3.1. Always pass by reference if possible (* or &).
+3.2. If a function expects a pointer, nullptr is assumed valid. Otherwise pass by reference.
+4. Container lengths and indices should be of type size_t.
+5. Class member attributes that do not depend on constructor parameters or additional includes should be assigned with a value in the header file (bool updateThing = false)).
+6. Use of auto keyword is discouraged.
+7. Use of lambdas is discouraged.
+8. Limit the scopes of classes, a single class should be responsible for a single "thing".
+9. Functions longer than a single screen are encouraged to be split into multiple functions.
+10. Source files longer than a thousand lines should be split into multiple source files/classes.
+
+//Visual style preference
+1. Pointer and reference sign next to the type (int& i, float* f).
+2. Class names upper camel case (MyClass).
+3. Function and variable names lower camel case (funcName).
+4. Class constructor member variable initializer lists with the following format:
+	MyClass(const int p1, const int p2, const int p3)
+	: var1(p1)
+	, var2(p2)
+	, var3(p3)
+5. Lines to fit within one screen (~200 characters).
+6. One class declaration per header.
+7. Prefer longer, descriptive variable/function names that are consistent with the rest of the code (BatchManager batchManager is better than BatchManager batchMan).
