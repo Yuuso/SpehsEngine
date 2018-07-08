@@ -73,16 +73,16 @@ namespace spehs
 		//Create file stream
 		std::ifstream stream(name + fileExtension);
 		if (stream.fail())
-		{//Application data does not exist
+		{//Inifile does not exist
 			if (!write())
 			{
-				log::error("Could not write application data! Failed to read application data!");
+				log::error("Could not write infile. Failed to read infile data!");
 				return false;
 			}
 			stream.open(name + fileExtension);
 			if (stream.fail())
 			{
-				log::error("Failed to read Application data!");
+				log::error("Failed to read infile data!");
 				return false;
 			}
 		}
