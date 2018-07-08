@@ -51,7 +51,7 @@ namespace spehs
 	{
 		setDefaultTexture(_filepath, TextureParameter::defaultParameters);
 	}
-	
+
 	bool TextureManager::isTexture(const std::string& _ID)
 	{
 		size_t hash = std::hash<std::string>()(_ID);
@@ -71,7 +71,7 @@ namespace spehs
 		}
 		return false;
 	}
-	
+
 	TextureData* TextureManager::getTextureData(const std::string& _texturePath, const TextureParameter& _parameters)
 	{
 		size_t hash = std::hash<std::string>()(_texturePath);
@@ -124,6 +124,41 @@ namespace spehs
 		return preloadTexture(_texturePath, TextureParameter::defaultParameters);
 	}
 
+	TextureData* TextureManager::getCubeMapData(const std::string& _negx, const std::string& _posx, const std::string& _negy, const std::string& _posy, const std::string& _negz, const std::string& _posz, const TextureParameter& _parameters)
+	{
+		size_t hash = std::hash<std::string>()(_negx + _posx + _posy + _negy + _negz + _posz);
+		auto it = textureDataMap.find(hash);
+		if (it != textureDataMap.end())
+		{
+			return it->second;
+		}
+		return toCubeMap(_negx, _posx, _negy, _posy, _negz, _posz, _parameters);
+	}
+	TextureData* TextureManager::getCubeMapData(const size_t& _hash)
+	{
+		auto it = textureDataMap.find(_hash);
+		if (it != textureDataMap.end())
+		{
+			return it->second;
+		}
+		exceptions::warning("CubeMap data not found! hash: " + std::to_string(_hash));
+		//TODO: Default Cube Map
+		return nullptr;
+	}
+	size_t TextureManager::preloadCubeMap(const std::string& _negx, const std::string& _posx, const std::string& _negy, const std::string& _posy, const std::string& _negz, const std::string& _posz, const TextureParameter& _parameters)
+	{
+		size_t hash = std::hash<std::string>()(_negx + _posx + _posy + _negy + _negz + _posz);
+		if (textureDataMap.find(hash) == textureDataMap.end())
+		{
+			toCubeMap(_negx, _posx, _negy, _posy, _negz, _posz, _parameters);
+		}
+		else
+		{
+			exceptions::warning("Trying to preload already existing cubemap!");
+		}
+		return hash;
+	}
+
 	TextureData* TextureManager::getNoiseTexture(const int& _width, const int& _height, const unsigned int& _seed, const int& _factor, const TextureParameter& _parameters)
 	{
 		size_t hash = std::hash<unsigned>()(_seed);
@@ -161,7 +196,7 @@ namespace spehs
 			GLubyte b;
 			GLubyte a;
 		};
-		
+
 		rng::PRNG<uint32_t> noiseRNG(_seed);
 		std::vector<COLOR> noiseTextureData;
 		noiseTextureData.reserve(_width*_height);
@@ -297,7 +332,7 @@ namespace spehs
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, (GLint) _parameters.minFilter);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, (GLint) _parameters.magFilter);
 		glGenerateMipmap(GL_TEXTURE_2D);
-		
+
 		glBindTexture(GL_TEXTURE_2D, 0);
 
 		checkOpenGLErrors(__FILE__, __LINE__);
@@ -363,19 +398,59 @@ namespace spehs
 			return nullptr;
 		}
 
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, (GLint) _parameters.xWrapping);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, (GLint) _parameters.yWrapping);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S,		(GLint) _parameters.xWrapping);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T,		(GLint) _parameters.yWrapping);
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, (GLint) _parameters.dataType, image);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, (GLint) _parameters.minFilter);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, (GLint) _parameters.magFilter);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,	(GLint) _parameters.minFilter);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER,	(GLint) _parameters.magFilter);
 		glGenerateMipmap(GL_TEXTURE_2D);
-		
+
 		SOIL_free_image_data(image);
 		glBindTexture(GL_TEXTURE_2D, 0);
 
 		//Create TextureData
 		size_t hash = std::hash<std::string>()(_filepath);
 		TextureData* newTexData = new TextureData(textureData, width, height);
+		textureDataMap.insert(std::pair<size_t, TextureData*>(hash, newTexData));
+
+		checkOpenGLErrors(__FILE__, __LINE__);
+
+		return newTexData;
+	}
+	TextureData* TextureManager::toCubeMap(const std::string& _negx, const std::string& _posx, const std::string& _negy, const std::string& _posy, const std::string& _negz, const std::string& _posz, const TextureParameter& _parameters)
+	{
+		GLuint cubemapData;
+
+		glActiveTexture(GL_TEXTURE0);
+		glEnable(GL_TEXTURE_CUBE_MAP);
+		glGenTextures(1, &cubemapData);
+		glBindTexture(GL_TEXTURE_CUBE_MAP, cubemapData);
+		glEnable(GL_BLEND);
+
+		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_GENERATE_MIPMAP, GL_TRUE);
+		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, (GLint) _parameters.magFilter);
+		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, (GLint) _parameters.minFilter);
+		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, (GLint) _parameters.xWrapping);
+		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, (GLint) _parameters.yWrapping);
+		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, (GLint) _parameters.rWrapping);
+
+		//texture coordinate generation
+		glTexGeni(GL_S, GL_TEXTURE_GEN_MODE, GL_REFLECTION_MAP);
+		glTexGeni(GL_T, GL_TEXTURE_GEN_MODE, GL_REFLECTION_MAP);
+		glTexGeni(GL_R, GL_TEXTURE_GEN_MODE, GL_REFLECTION_MAP);
+
+		glEnable(GL_TEXTURE_GEN_S);
+		glEnable(GL_TEXTURE_GEN_T);
+		glEnable(GL_TEXTURE_GEN_R);
+
+		// right, left, top, bottom, back, front
+		cubemapData = SOIL_load_OGL_cubemap(_negx.c_str(), _posx.c_str(), _posy.c_str(), _negy.c_str(), _negz.c_str(), _posz.c_str(), SOIL_LOAD_RGB, SOIL_CREATE_NEW_ID, SOIL_FLAG_MIPMAPS);
+
+		glBindTexture(GL_TEXTURE_2D, 0);
+
+		// Create TextureData
+		size_t hash = std::hash<std::string>()(_negx + _posx + _posy + _negy + _negz + _posz);
+		TextureData* newTexData = new TextureData(cubemapData, 0, 0);
 		textureDataMap.insert(std::pair<size_t, TextureData*>(hash, newTexData));
 
 		checkOpenGLErrors(__FILE__, __LINE__);

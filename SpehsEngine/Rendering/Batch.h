@@ -38,7 +38,7 @@ namespace spehs
 		virtual bool render(BatchRenderResults* results = nullptr) = 0;//NOTE: results are incremented rather than set.
 		virtual void push(Primitive* _primitive){}
 		virtual void push(Text* _text){}
-		
+
 		PlaneDepth getPriority() const{ return priority; }
 
 		BatchManager& batchManager;
@@ -57,11 +57,12 @@ namespace spehs
 		bool cameraMatrixState;
 	};
 
-	
+
 	class PrimitiveBatch : public Batch
 	{
 	public:
-		PrimitiveBatch(BatchManager& batchManager, const bool _cameraMatrixState, const PlaneDepth &_priority, const bool _blending, const int &_shaderIndex, const GLuint &_textureDataID, const GLenum &_drawMode, float _lineWidth);
+		PrimitiveBatch(BatchManager& batchManager, const bool _cameraMatrixState, const PlaneDepth &_priority, const bool _blending,
+						const int &_shaderIndex, const GLuint &_textureDataID, const GLenum &_drawMode, float _lineWidth);
 		~PrimitiveBatch();
 
 		bool check(const Primitive &_primitive);

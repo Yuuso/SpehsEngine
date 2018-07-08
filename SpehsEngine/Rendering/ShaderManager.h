@@ -11,9 +11,6 @@
 #include "SpehsEngine/Rendering/GLSLProgram.h"
 
 
-#define NEXT_SHADER_INDEX 4
-
-
 typedef int GLint;
 typedef unsigned int GLuint;
 namespace spehs
@@ -25,6 +22,12 @@ namespace spehs
 		DefaultTexture = 1,
 		DefaultPostProc = 2,
 		DefaultText = 3,
+		DefaultMesh = 4,
+		DefaultTextureMesh = 5,
+		DefaultSkybox = 6,
+		DefaultTransparentMesh = 7,
+
+		DefaultShaderCount
 	};
 
 	class Uniforms
@@ -48,6 +51,18 @@ namespace spehs
 	public:
 		DefaultTextureUniforms(spehs::GLSLProgram* _shader);
 		~DefaultTextureUniforms();
+
+		void setUniforms();
+
+	private:
+		GLint textureLocation = 0;
+	};
+
+	class DefaultSkyBoxUniforms : public spehs::Uniforms
+	{
+	public:
+		DefaultSkyBoxUniforms(spehs::GLSLProgram* _shader);
+		~DefaultSkyBoxUniforms();
 
 		void setUniforms();
 
@@ -85,7 +100,7 @@ namespace spehs
 
 		void pushShader(Shader* _newShader);
 		void reload(int _index, Shader* _newShader);
-		
+
 		Shader* getShader(int _index); //NOTE: Don't store shader pointers since it is possible that they expire. Always use getShader to access shaders.
 		void setUniforms(int _index);
 		void use(int _index);

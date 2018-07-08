@@ -65,6 +65,7 @@ namespace spehs
 		TextureFiltering magFilter = TextureFiltering::Linear;
 		TextureWrapping xWrapping = TextureWrapping::Repeat;
 		TextureWrapping yWrapping = TextureWrapping::Repeat;
+		TextureWrapping rWrapping = TextureWrapping::Repeat;
 		PixelDataType dataType = PixelDataType::UnsignedByte;
 	};
 
@@ -87,11 +88,19 @@ namespace spehs
 		bool isTexture(const std::string& _ID);
 		bool isTexture(const size_t _hash);
 
-		TextureData* getTextureData(const std::string& _texturePath, const TextureParameter& _parameters); //Get texture data from path
+		TextureData* getTextureData(const std::string& _texturePath, const TextureParameter& _parameters); // Get texture data from path
 		TextureData* getTextureData(const std::string& _texturePath);
-		TextureData* getTextureData(const size_t& _hash); //Get texture data from hash
-		size_t preloadTexture(const std::string& _texturePath, const TextureParameter& _parameters); //Loads texture and returns hash
-		size_t preloadTexture(const std::string& _texturePath); //Loads texture and returns hash
+		TextureData* getTextureData(const size_t& _hash); // Get texture data from hash
+		size_t preloadTexture(const std::string& _texturePath, const TextureParameter& _parameters); // Loads texture and returns hash
+		size_t preloadTexture(const std::string& _texturePath); // Loads texture and returns hash
+
+		TextureData* getCubeMapData(const std::string& _negx, const std::string& _posx, // Get CubeMap data from path
+									const std::string& _negy, const std::string& _posy,
+									const std::string& _negz, const std::string& _posz, const TextureParameter& _parameters = TextureParameter::defaultParameters);
+		TextureData* getCubeMapData(const size_t& _hash); // Get CubeMap data from hash
+		size_t preloadCubeMap(const std::string& _negx, const std::string& _posx, // Loads CubeMap and returns hash
+								const std::string& _negy, const std::string& _posy,
+								const std::string& _negz, const std::string& _posz, const TextureParameter& _parameters = TextureParameter::defaultParameters);
 
 		TextureData* getNoiseTexture(const int& _width, const int& _height, const unsigned int& _seed, const int& _factor, const TextureParameter& _parameters);
 		TextureData* getNoiseTexture(const int& _width, const int& _height, const unsigned int& _seed, const int& _factor);
@@ -107,8 +116,8 @@ namespace spehs
 		void removeTextureData(const size_t& _hash);
 		void clearAllTextureData();
 
-		void takeScreenshot(std::string directory);//Takes a screenshot and writes it to the specified directory
-		void takeScreenshot();//Takes screenshot and writes it to the default screenshot directory, specified in the application data
+		void takeScreenshot(std::string directory);// Takes a screenshot and writes it to the specified directory
+		void takeScreenshot();// Takes screenshot and writes it to the default screenshot directory, specified in the application data
 
 		Window& window;
 
@@ -118,6 +127,9 @@ namespace spehs
 		~TextureManager();
 
 		TextureData* toTexture(const std::string& _filepath, const TextureParameter& _parameters);
+		TextureData* toCubeMap(const std::string& _negx, const std::string& _posx,
+								const std::string& _negy, const std::string& _posy,
+								const std::string& _negz, const std::string& _posz, const TextureParameter& _parameters);
 
 		TextureData* defaultTexture;
 		std::unordered_map<size_t, TextureData*> textureDataMap;

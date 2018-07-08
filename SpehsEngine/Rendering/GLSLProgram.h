@@ -13,7 +13,8 @@ namespace spehs
 	{
 		VERTEX_POSITION = 0,
 		VERTEX_COLOR = 1,
-		VERTEX_UV = 2
+		VERTEX_UV = 2,
+		VERTEX_NORMAL = 3
 	};
 
 	class GLSLProgram

@@ -20,14 +20,14 @@ namespace spehs
 		: value(uc)
 	{
 	}
-	
+
 	Color::Component::operator unsigned char() const
 	{
 		return value;
 	}
-	
+
 	void Color::Component::operator+=(const int i)
-	{		
+	{
 		value = std::min(255, std::max(0, (int)value + i));
 	}
 
@@ -35,7 +35,7 @@ namespace spehs
 	{
 		value = std::min(255, std::max(0, (int)value - i));
 	}
-	
+
 	Color::Component Color::Component::operator+(const int i) const
 	{
 		return (Component)std::min(255, std::max(0, (int)value + i));
