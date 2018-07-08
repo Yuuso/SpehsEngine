@@ -25,7 +25,6 @@ namespace spehs
 		DefaultMesh = 4,
 		DefaultTextureMesh = 5,
 		DefaultSkybox = 6,
-		DefaultTransparentMesh = 7,
 
 		DefaultShaderCount
 	};

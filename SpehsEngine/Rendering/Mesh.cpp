@@ -216,6 +216,14 @@ namespace spehs
 			worldVertexArray[i].color = color;
 		}
 	}
+	void Mesh::setAlpha(const Color::Component _color)
+	{
+		color.a = _color;
+		for (unsigned i = 0; i < worldVertexArray.size(); i++)
+		{
+			worldVertexArray[i].color = color;
+		}
+	}
 	void Mesh::translate(const float _x, const float _y, const float _z)
 	{
 #ifdef _DEBUG

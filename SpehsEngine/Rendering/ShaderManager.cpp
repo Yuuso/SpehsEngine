@@ -212,7 +212,7 @@ namespace spehs
 			"	}\n"
 			"	diffuse = diffuse * lambertian;\n"
 			"	specular = specular * spec;\n"
-			"	color = vec4(ambient + attenuation * (diffuse + specular), 1.0);\n"
+			"	color = vec4(ambient + attenuation * (diffuse + specular), fragmentColor.a);\n"
 			"}\n"
 		};
 		//
@@ -298,58 +298,6 @@ namespace spehs
 			"}\n"
 		};
 		//
-		const std::string defaultTransparentMeshVert =
-		{
-			"#version 150\n"
-			"in vec3 vertexPosition;\n"
-			"in " GLSL_COLOR_VEC_TYPE " vertexColor;\n"
-			"in vec3 vertexNormal;\n"
-			"out vec3 fragmentPosition;\n"
-			"out " GLSL_COLOR_VEC_TYPE " fragmentColor;\n"
-			"out vec3 fragmentNormal;\n"
-			"uniform mat4 cameraMatrix;\n"
-			"void main()\n"
-			"{\n"
-			"	gl_Position = cameraMatrix * vec4(vertexPosition.xyz, 1.0);\n"
-			"	fragmentPosition = vertexPosition;\n"
-			"	fragmentColor = vertexColor;\n"
-			"	fragmentNormal = normalize(vertexNormal);\n"
-			"}\n"
-		};
-		const std::string defaultTransparentMeshFrag =
-		{
-			"#version 150\n"
-			"in vec3 fragmentPosition;\n"
-			"in " GLSL_COLOR_VEC_TYPE " fragmentColor;\n"
-			"in vec3 fragmentNormal;\n"
-			"out vec4 color;\n"
-			"void main()\n"
-			"{\n"
-			"	vec3 normal = (fragmentNormal);\n"
-			"	vec3 lightPosition = vec3(0.0, 0.0, 0.0);\n"
-			"	vec3 lightDirection = normalize(lightPosition - fragmentPosition);\n"
-			"	vec3 viewDirection = normalize(-fragmentPosition);\n"
-			"	float distance = length(lightPosition - fragmentPosition);\n"
-			"	float radius = 50.0;\n"
-			"	float attenuation = 1 - pow((distance / radius), 2);\n"
-			"	float shininess = 64.0;\n"
-			"	vec3 ambient = 0.25 * fragmentColor.rgb;\n"
-			"	vec3 diffuse = fragmentColor.rgb;\n"
-			"	vec3 specular = fragmentColor.rgb;\n"
-			"	float spec = 0.0;\n"
-			"	float lambertian = max(dot(lightDirection, normal), 0.0);\n"
-			"	if(lambertian > 0.0)\n"
-			"	{\n"
-			"		vec3 halfwayDirection = normalize(lightDirection + viewDirection);\n"
-			"		float specAngle = max(dot(normal, halfwayDirection), 0.0);\n"
-			"		spec = pow(specAngle, shininess);\n"
-			"	}\n"
-			"	diffuse = diffuse * lambertian;\n"
-			"	specular = specular * spec;\n"
-			"	color = vec4(ambient + attenuation * (diffuse + specular), 0.25);\n"
-			"}\n"
-		};
-		//
 #pragma endregion
 		Shader* result = nullptr;
 		spehs::GLSLProgram* defaultShader = new spehs::GLSLProgram();
@@ -407,15 +355,6 @@ namespace spehs
 			defaultShader->addAttribute(VertexAttributePosition::VERTEX_POSITION, "vertexPosition");
 			defaultShader->linkShaders();
 			result = new spehs::Shader(spehs::DefaultSkybox, defaultShader, new DefaultSkyBoxUniforms(defaultShader));
-			break;
-		case DefaultTransparentMesh:
-			defaultShader->compileShadersFromSource(defaultTransparentMeshVert, defaultTransparentMeshFrag);
-			defaultShader->addAttribute(VertexAttributePosition::VERTEX_POSITION, "vertexPosition");
-			defaultShader->addAttribute(VertexAttributePosition::VERTEX_COLOR, "vertexColor");
-			defaultShader->addAttribute(VertexAttributePosition::VERTEX_UV, "vertexUV");
-			defaultShader->addAttribute(VertexAttributePosition::VERTEX_NORMAL, "vertexNormal");
-			defaultShader->linkShaders();
-			result = new spehs::Shader(spehs::DefaultTransparentMesh, defaultShader, new Uniforms(defaultShader));
 			break;
 		default:
 			exceptions::fatalError("Default shader index out of reach!");

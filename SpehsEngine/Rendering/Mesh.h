@@ -45,6 +45,7 @@ namespace spehs
 		void setScale(const spehs::vec3& _newScale);
 		void setColor(const Mesh& _other);
 		void setColor(const Color _color);
+		void setAlpha(const Color::Component _color);
 		void translate(const float _x, const float _y, const float _z);
 		void translate(const spehs::vec3& _translation);
 		void setBlending (const bool _value);
