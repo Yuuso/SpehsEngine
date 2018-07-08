@@ -36,7 +36,7 @@ namespace spehs
 	extern inline void rotateAroundOrigin(spehs::vec2& point, float rotation);
 
 	/**Returns area of the shape formed by a number of cusps*/
-	extern inline float getArea(spehs::vec2* cusps, unsigned numCusps);
+	extern inline float getArea(spehs::vec2* cusps, const size_t numCusps);
 
 	/**Returns radius from 0,0 to the farthest away cusp in the array*/
 	extern inline float getRadius(spehs::vec2* cusps, unsigned numCusps);

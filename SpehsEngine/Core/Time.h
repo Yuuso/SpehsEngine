@@ -81,10 +81,10 @@ namespace spehs
 		inline float asMicroseconds(const Time time) { return (float)time.value / (float)conversionRate::microsecond; }
 		inline float asNanoseconds(const Time time) { return (float)time.value / (float)conversionRate::nanosecond; }
 		
-		inline Time fromSeconds(const float seconds) { return seconds * (float)conversionRate::second; }
-		inline Time fromMilliseconds(const float milliseconds) { return milliseconds * (float)conversionRate::millisecond; }
-		inline Time fromMicroseconds(const float microseconds) { return microseconds * (float)conversionRate::microsecond; }
-		inline Time fromNanoseconds(const int64_t nanoseconds) { return nanoseconds * (float)conversionRate::nanosecond; }
+		inline Time fromSeconds(const float seconds) { return TimeValueType(seconds * (float)conversionRate::second); }
+		inline Time fromMilliseconds(const float milliseconds) { return TimeValueType(milliseconds * (float)conversionRate::millisecond); }
+		inline Time fromMicroseconds(const float microseconds) { return TimeValueType(microseconds * (float)conversionRate::microsecond); }
+		inline Time fromNanoseconds(const float nanoseconds) { return TimeValueType(nanoseconds * (float)conversionRate::nanosecond); }
 
 		static const Time zero(0);
 		static const Time second(conversionRate::second);

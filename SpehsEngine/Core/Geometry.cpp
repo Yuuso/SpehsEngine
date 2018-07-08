@@ -18,10 +18,12 @@ namespace spehs
 	{
 		return sqrt(vec.x*vec.x + vec.y*vec.y);
 	}
+
 	inline float distance(const spehs::vec2& origin, const spehs::vec2& destination)
 	{
 		return magnitude(origin - destination);
 	}
+
 	inline float getAngle(const spehs::vec2& origin, const spehs::vec2& destination)
 	{
 		spehs::vec2 angle = destination - origin;
@@ -30,11 +32,13 @@ namespace spehs
 			pointDirection += TWO_PI;
 		return pointDirection;
 	}
+
 	inline float getAcuteAngle(const spehs::vec2& origin, const spehs::vec2& destination)
 	{
 		//TODO?
 		return NULL;
 	}
+
 	inline float getAngle(const spehs::vec2& destination)
 	{
 		float pointDirection = atan2(destination.y, destination.x);
@@ -42,6 +46,7 @@ namespace spehs
 			pointDirection += TWO_PI;
 		return pointDirection;
 	}
+
 	inline float getAngle(const float angle1, const float angle2)
 	{
 		float angle = angle2 - angle1;
@@ -49,6 +54,7 @@ namespace spehs
 			angle += TWO_PI;
 		return angle;
 	}
+
 	inline bool anglesParallel(float angle1, float angle2, const float radTolerance)
 	{
 		angle2 -= angle1;
@@ -58,6 +64,7 @@ namespace spehs
 			return true;
 		return false;
 	}
+
 	inline spehs::vec3 getRotation(const spehs::vec3& _a, const spehs::vec3& _b)
 	{
 		SPEHS_ASSERT(false && "Unimplemented engine function");
@@ -67,6 +74,7 @@ namespace spehs
 		//return glm::eulerAngles(glm::angleAxis(c, v));
 		return spehs::vec3::zero;
 	}
+
 	inline void rotateAroundAxis(spehs::vec2& point, const spehs::vec2& axis, float rotation)
 	{//Translates around the point
 		float dx = point.x - axis.x;
@@ -74,6 +82,7 @@ namespace spehs
 		point.x = axis.x + dx*cos(rotation) - dy*sin(rotation);
 		point.y = axis.y + dx*sin(rotation) + dy*cos(rotation);
 	}
+
 	inline void rotateAroundAxis(spehs::vec2& point, const float axisX, const float axisY, float rotation)
 	{//Translates around the point
 		float dx = point.x - axisX;
@@ -81,6 +90,7 @@ namespace spehs
 		point.x = axisX + dx*cos(rotation) - dy*sin(rotation);
 		point.y = axisY + dx*sin(rotation) + dy*cos(rotation);
 	}
+
 	inline void rotateAroundOrigin(spehs::vec2& point, float rotation)
 	{//Translates around origin
 		float dx = point.x;
@@ -88,19 +98,21 @@ namespace spehs
 		point.x = dx*cos(rotation) - dy*sin(rotation);
 		point.y = dx*sin(rotation) + dy*cos(rotation);
 	}
-	inline float getArea(spehs::vec2* cusps, unsigned numCusps)
+
+	inline float getArea(spehs::vec2* cusps, const size_t numCusps)
 	{
 		if (numCusps < 3)
 			return 0.000000001f;
 		float area(0.0f);
 		int j = numCusps - 1;
-		for (int i = 0; i < numCusps; i++)
+		for (size_t i = 0; i < numCusps; i++)
 		{
 			area += (cusps[j].x * cusps[i].y) - (cusps[i].x * cusps[j].y);
 			j = i;
 		}
 		return std::max(std::abs(area * 0.5f), 0.0001f);
 	}
+
 	inline float getRadius(spehs::vec2* cusps, unsigned numCusps)
 	{
 		if (numCusps == 0)
@@ -113,6 +125,7 @@ namespace spehs
 		}
 		return max;
 	}
+
 	inline spehs::vec2 getCenter(spehs::Vertex* cusps, unsigned numCusps)
 	{
 		spehs::vec2 result(0.0f, 0.0f);
@@ -122,6 +135,7 @@ namespace spehs
 		}
 		return result / (float)numCusps;
 	}
+
 	inline spehs::vec2 getCenter(spehs::vec2* cusps, unsigned numCusps)
 	{
 		spehs::vec2 result(0.0f, 0.0f);
@@ -131,23 +145,28 @@ namespace spehs
 		}
 		return result / (float)numCusps;
 	}
+
 	inline float cross2(const spehs::vec2& _vec1, const spehs::vec2& _vec2)
 	{
 		return _vec1.x * _vec2.y - _vec1.y * _vec2.x;
 	}
+
 	inline spehs::vec2 cross2(const float& _scalar, const spehs::vec2& _vec)
 	{
 		return spehs::vec2(_scalar * _vec.y, -_scalar * _vec.x);
 	}
+
 	inline spehs::vec2 cross2(const spehs::vec2& _vec, const float& _scalar)
 	{
 		return spehs::vec2(-_scalar * _vec.y, _scalar * _vec.x);
 	}
+
 	float pointToLineDistance(const spehs::vec2 &_begin, const spehs::vec2 &_end, const spehs::vec2 &_point)
 	{
 		float normalLength = sqrtf((_end.x - _begin.x) * (_end.x - _begin.x) + (_end.y - _begin.y) * (_end.y - _begin.y));
 		return abs((_point.x - _begin.x) * (_end.y - _begin.y) - (_point.y - _begin.y) * (_end.x - _begin.x)) / normalLength;
 	}
+
 	spehs::vec2* generateCusps(unsigned& numCusps, int shape, float width, float height)
 	{
 		if (!shape)
@@ -209,17 +228,22 @@ namespace spehs
 			numCusps = shape;
 			return cusps;
 		}
-		else switch (shape)
-		{//Predetermine shapes
-		default:
-			numCusps = 0;
-			return nullptr;
+		else
+		{
+			switch (shape)
+			{//Predetermine shapes
+			default:
+				numCusps = 0;
+				return nullptr;
+			}
 		}
 	}
+
 	float getTriangleArea(const spehs::vec2& v0, const spehs::vec2& v1, const spehs::vec2& v2)
 	{
 		return abs(((v1.x - v0.x) * (v2.y - v0.y) - (v2.x - v0.x) * (v1.y - v0.y)) / 2.0f);
 	}
+
 	spehs::vec2 getTriangleCircumcircleCenter(const spehs::vec2& A, const spehs::vec2& B, const spehs::vec2& C)
 	{/* https://www.easycalculation.com/analytical/circumcenter-triangle.php */
 		const spehs::vec2 midAB = (A + B) * 0.5f;

@@ -55,6 +55,7 @@ namespace spehs
 
 		stream.close();
 		unwrittenChanges = false;
+		return true;
 	}
 
 	bool Inifile::read()
@@ -116,7 +117,7 @@ namespace spehs
 				std::vector<std::string> words;
 				getWords(line, words);
 				const bool unsignedType = words.size() > 0 && words[0] == "unsigned";
-				const int wordsMinCount = (unsignedType ? 1 : 0)/*(unsigned)*/ + 4/*type + name + assignment + value*/;
+				const size_t wordsMinCount = (unsignedType ? 1 : 0)/*(unsigned)*/ + 4/*type + name + assignment + value*/;
 				if (words.size() >= wordsMinCount)
 				{
 					//Assignment word index
@@ -181,6 +182,7 @@ namespace spehs
 		}
 
 		stream.close();
+		return true;
 	}
 
 	bool Inifile::hasUnwrittenChanges()

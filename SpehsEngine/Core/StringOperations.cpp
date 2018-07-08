@@ -75,7 +75,7 @@ namespace spehs
 			{
 				if (checkBit(stringState, 1))
 				{//Second '-' character, return
-					return 0.0f;
+					return 0;
 				}
 				enableBit(stringState, 1);//Negative
 			}
@@ -83,13 +83,13 @@ namespace spehs
 			{
 				if (checkBit(stringState, 2))
 				{//Second ',/.' character, return
-					return 0.0f;
+					return 0;
 				}
 				enableBit(stringState, 2);//Begin decimal part
 			}
 			else
 			{//Character is unknown
-				return 0.0f;
+				return 0;
 			}
 		}
 

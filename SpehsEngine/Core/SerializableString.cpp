@@ -32,7 +32,7 @@ namespace spehs
 	size_t SerializableString::write(unsigned char* buffer) const
 	{
 		size_t offset = 0;
-		const uint16_t count = size();
+		const uint16_t count = (uint16_t)size();
 		memcpy(&buffer[offset], &count, sizeof(count));								offset += sizeof(count);
 		memcpy(&buffer[offset], data(), sizeof(char) * count);						offset += sizeof(char) * count;
 		return offset;

@@ -209,7 +209,7 @@ namespace spehs
 						{
 							{
 								log("Setting " + floatVariables[i]._identifier + " to " + words[2]);
-								floatVariables[i].set(atoi(words[2].c_str()));
+								floatVariables[i].set((float)atoi(words[2].c_str()));
 								return;
 							}
 						}
