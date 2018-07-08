@@ -40,6 +40,18 @@ namespace spehs
 		Uniforms::setUniforms();
 	}
 
+	DefaultSkyBoxUniforms::DefaultSkyBoxUniforms(spehs::GLSLProgram* _shader) : Uniforms(_shader)
+	{
+		textureLocation = shader->getUniformLocation("tex");
+	}
+	DefaultSkyBoxUniforms::~DefaultSkyBoxUniforms(){}
+	void DefaultSkyBoxUniforms::setUniforms()
+	{
+		spehs::bindCubeMapTexture(textureDataID, 0);
+		spehs::setUniform_int(textureLocation, 0);
+		Uniforms::setUniforms();
+	}
+
 
 	Shader* buildDefaultShader(const int _index)
 	{
@@ -151,6 +163,141 @@ namespace spehs
 			"	color = color * fragColor;\n"
 			"}\n"
 		};
+		//
+		const std::string defaultMeshVert =
+		{
+			"#version 150\n"
+			"in vec3 vertexPosition;\n"
+			"in " GLSL_COLOR_VEC_TYPE " vertexColor;\n"
+			"in vec3 vertexNormal;\n"
+			"out vec3 fragmentPosition;\n"
+			"out " GLSL_COLOR_VEC_TYPE " fragmentColor;\n"
+			"out vec3 fragmentNormal;\n"
+			"uniform mat4 cameraMatrix;\n"
+			"void main()\n"
+			"{\n"
+			"	gl_Position = cameraMatrix * vec4(vertexPosition.xyz, 1.0);\n"
+			"	fragmentPosition = vertexPosition;\n"
+			"	fragmentColor = vertexColor;\n"
+			"	fragmentNormal = normalize(vertexNormal);\n"
+			"}\n"
+		};
+		const std::string defaultMeshFrag =
+		{
+			"#version 150\n"
+			"in vec3 fragmentPosition;\n"
+			"in " GLSL_COLOR_VEC_TYPE " fragmentColor;\n"
+			"in vec3 fragmentNormal;\n"
+			"out vec4 color;\n"
+			"void main()\n"
+			"{\n"
+			"	vec3 normal = (fragmentNormal);\n"
+			"	vec3 lightPosition = vec3(0.0, 0.0, 0.0);\n"
+			"	vec3 lightDirection = normalize(lightPosition - fragmentPosition);\n"
+			"	vec3 viewDirection = normalize(-fragmentPosition);\n"
+			"	float distance = length(lightPosition - fragmentPosition);\n"
+			"	float radius = 50.0;\n"
+			"	float attenuation = 1 - pow((distance / radius), 2);\n"
+			"	float shininess = 64.0;\n"
+			"	vec3 ambient = 0.25 * fragmentColor.rgb;\n"
+			"	vec3 diffuse = fragmentColor.rgb;\n"
+			"	vec3 specular = fragmentColor.rgb;\n"
+			"	float spec = 0.0;\n"
+			"	float lambertian = max(dot(lightDirection, normal), 0.0);\n"
+			"	if(lambertian > 0.0)\n"
+			"	{\n"
+			"		vec3 halfwayDirection = normalize(lightDirection + viewDirection);\n"
+			"		float specAngle = max(dot(normal, halfwayDirection), 0.0);\n"
+			"		spec = pow(specAngle, shininess);\n"
+			"	}\n"
+			"	diffuse = diffuse * lambertian;\n"
+			"	specular = specular * spec;\n"
+			"	color = vec4(ambient + attenuation * (diffuse + specular), fragmentColor.a);\n"
+			"}\n"
+		};
+		//
+		const std::string defaultTextureMeshVert =
+		{
+			"#version 150\n"
+			"in vec3 vertexPosition;\n"
+			"in " GLSL_COLOR_VEC_TYPE " vertexColor;\n"
+			"in vec2 vertexUV;\n"
+			"in vec3 vertexNormal;\n"
+			"out vec3 fragmentPosition;\n"
+			"out vec4 fragmentColor;\n"
+			"out vec2 fragmentUV;\n"
+			"out vec3 fragmentNormal;\n"
+			"uniform mat4 cameraMatrix;\n"
+			"void main()\n"
+			"{\n"
+			"	gl_Position = cameraMatrix * vec4(vertexPosition.xyz, 1.0);\n"
+			"	fragmentPosition = vertexPosition;\n"
+			"	fragmentColor = vertexColor;\n"
+			"	fragmentNormal = vertexNormal;\n"
+			"	fragmentUV = vertexUV;\n"
+			"}\n"
+		};
+		const std::string defaultTextureMeshFrag =
+		{
+			"#version 150\n"
+			"in vec3 fragmentPosition;\n"
+			"in " GLSL_COLOR_VEC_TYPE " fragmentColor;\n"
+			"in vec2 fragmentUV;\n"
+			"in vec3 fragmentNormal;\n"
+			"out vec4 color;\n"
+			"uniform sampler2D tex;\n"
+			"void main()\n"
+			"{\n"
+			"	vec3 normal = (fragmentNormal);\n"
+			"	vec3 lightPosition = vec3(0.0, 5.0, 0.0);\n"
+			"	vec3 lightDirection = normalize(lightPosition - fragmentPosition);\n"
+			"	vec3 viewDirection = normalize(-fragmentPosition);\n"
+			"	float distance = length(lightPosition - fragmentPosition);\n"
+			"	float radius = 20.0;\n"
+			"	float attenuation = 1 - pow((distance / radius), 2);\n"
+			"	float shininess = 64.0;\n"
+			"	vec3 ambient = texture(tex, fragmentUV).rgb;\n"
+			"	vec3 diffuse = fragmentColor.rgb;\n"
+			"	vec3 specular = fragmentColor.rgb;\n"
+			"	float spec = 0.0;\n"
+			"	float lambertian = max(dot(lightDirection, normal), 0.0);\n"
+			"	if(lambertian > 0.0)\n"
+			"	{\n"
+			"		vec3 halfwayDirection = normalize(lightDirection + viewDirection);\n"
+			"		float specAngle = max(dot(normal, halfwayDirection), 0.0);\n"
+			"		spec = pow(specAngle, shininess);\n"
+			"	}\n"
+			"	diffuse = diffuse * lambertian;\n"
+			"	specular = specular * spec;\n"
+			"	color = vec4(ambient + attenuation * (diffuse + specular), 1.0);\n"
+			"}\n"
+		};
+		//
+		const std::string defaultSkyBoxVert =
+		{
+			"#version 150\n"
+			"in vec3 vertexPosition;\n"
+			"out vec3 fragmentPosition;\n"
+			"uniform mat4 cameraMatrix;\n"
+			"void main()\n"
+			"{\n"
+			"	vec4 pos = mat4(mat3(cameraMatrix)) * vec4(vertexPosition.xyz, 1.0);\n"
+			"	gl_Position = pos.xyww;\n"
+			"	fragmentPosition = vertexPosition;\n"
+			"}\n"
+		};
+		const std::string defaultSkyBoxFrag =
+		{
+			"#version 150\n"
+			"in vec3 fragmentPosition;\n"
+			"out vec4 color;\n"
+			"uniform samplerCube tex;\n"
+			"void main()\n"
+			"{\n"
+			"	color = texture(tex, fragmentPosition);\n"
+			"}\n"
+		};
+		//
 #pragma endregion
 		Shader* result = nullptr;
 		spehs::GLSLProgram* defaultShader = new spehs::GLSLProgram();
@@ -185,6 +332,30 @@ namespace spehs
 			defaultShader->linkShaders();
 			result = new spehs::Shader(spehs::DefaultText, defaultShader, new DefaultTextureUniforms(defaultShader));
 			break;
+		case DefaultMesh:
+			defaultShader->compileShadersFromSource(defaultMeshVert, defaultMeshFrag);
+			defaultShader->addAttribute(VertexAttributePosition::VERTEX_POSITION, "vertexPosition");
+			defaultShader->addAttribute(VertexAttributePosition::VERTEX_COLOR, "vertexColor");
+			defaultShader->addAttribute(VertexAttributePosition::VERTEX_UV, "vertexUV");
+			defaultShader->addAttribute(VertexAttributePosition::VERTEX_NORMAL, "vertexNormal");
+			defaultShader->linkShaders();
+			result = new spehs::Shader(spehs::DefaultMesh, defaultShader, new Uniforms(defaultShader));
+			break;
+		case DefaultTextureMesh:
+			defaultShader->compileShadersFromSource(defaultTextureMeshVert, defaultTextureMeshFrag);
+			defaultShader->addAttribute(VertexAttributePosition::VERTEX_POSITION, "vertexPosition");
+			defaultShader->addAttribute(VertexAttributePosition::VERTEX_COLOR, "vertexColor");
+			defaultShader->addAttribute(VertexAttributePosition::VERTEX_UV, "vertexUV");
+			defaultShader->addAttribute(VertexAttributePosition::VERTEX_NORMAL, "vertexNormal");
+			defaultShader->linkShaders();
+			result = new spehs::Shader(spehs::DefaultTextureMesh, defaultShader, new DefaultTextureUniforms(defaultShader));
+			break;
+		case DefaultSkybox:
+			defaultShader->compileShadersFromSource(defaultSkyBoxVert, defaultSkyBoxFrag);
+			defaultShader->addAttribute(VertexAttributePosition::VERTEX_POSITION, "vertexPosition");
+			defaultShader->linkShaders();
+			result = new spehs::Shader(spehs::DefaultSkybox, defaultShader, new DefaultSkyBoxUniforms(defaultShader));
+			break;
 		default:
 			exceptions::fatalError("Default shader index out of reach!");
 			break;
@@ -193,17 +364,10 @@ namespace spehs
 	}
 	ShaderManager::ShaderManager()
 	{
-		//DefaultPolygon
-		shaderPrograms.push_back(buildDefaultShader(DefaultPolygon));
-
-		//DefaultTexture
-		shaderPrograms.push_back(buildDefaultShader(DefaultTexture));
-
-		//DefaultPostProc
-		shaderPrograms.push_back(buildDefaultShader(DefaultPostProc));
-
-		//DefaultText
-		shaderPrograms.push_back(buildDefaultShader(DefaultText));
+		for (int i = 0; i < DefaultShaderCount; i++)
+		{
+			shaderPrograms.push_back(buildDefaultShader(i));
+		}
 	}
 	ShaderManager::~ShaderManager()
 	{

@@ -153,9 +153,12 @@
   <ItemGroup>
     <ClInclude Include="Arrow.h" />
     <ClInclude Include="Batch.h" />
+    <ClInclude Include="Batch3D.h" />
     <ClInclude Include="BatchManager.h" />
+    <ClInclude Include="BatchManager3D.h" />
     <ClInclude Include="BatchRenderResults.h" />
     <ClInclude Include="Camera2D.h" />
+    <ClInclude Include="Camera3D.h" />
     <ClInclude Include="ConsoleVisualizer.h" />
     <ClInclude Include="Depth.h" />
     <ClInclude Include="Font.h" />
@@ -164,6 +167,8 @@
     <ClInclude Include="GLSLProgram.h" />
     <ClInclude Include="Line.h" />
     <ClInclude Include="LineDiagram.h" />
+    <ClInclude Include="Mesh.h" />
+    <ClInclude Include="ModelManager.h" />
     <ClInclude Include="OpenGLError.h" />
     <ClInclude Include="Point.h" />
     <ClInclude Include="Polygon.h" />
@@ -172,15 +177,20 @@
     <ClInclude Include="Rendering.h" />
     <ClInclude Include="RenderingContext.h" />
     <ClInclude Include="ShaderManager.h" />
+    <ClInclude Include="Skybox.h" />
     <ClInclude Include="Text.h" />
     <ClInclude Include="TextureManager.h" />
+    <ClInclude Include="Vertex3D.h" />
     <ClInclude Include="Window.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Arrow.cpp" />
     <ClCompile Include="Batch.cpp" />
+    <ClCompile Include="Batch3D.cpp" />
     <ClCompile Include="BatchManager.cpp" />
+    <ClCompile Include="BatchManager3D.cpp" />
     <ClCompile Include="Camera2D.cpp" />
+    <ClCompile Include="Camera3D.cpp" />
     <ClCompile Include="ConsoleVisualizer.cpp" />
     <ClCompile Include="Font.cpp" />
     <ClCompile Include="FontManager.cpp" />
@@ -188,6 +198,7 @@
     <ClCompile Include="GLSLProgram.cpp" />
     <ClCompile Include="Line.cpp" />
     <ClCompile Include="LineDiagram.cpp" />
+    <ClCompile Include="ModelManager.cpp" />
     <ClCompile Include="OpenGLError.cpp" />
     <ClCompile Include="Point.cpp" />
     <ClCompile Include="Polygon.cpp" />
@@ -195,6 +206,8 @@
     <ClCompile Include="Primitive.cpp" />
     <ClCompile Include="Rendering.cpp" />
     <ClCompile Include="ShaderManager.cpp" />
+    <ClCompile Include="Mesh.cpp" />
+    <ClCompile Include="Skybox.cpp" />
     <ClCompile Include="Text.cpp" />
     <ClCompile Include="TextureManager.cpp" />
     <ClCompile Include="Window.cpp" />

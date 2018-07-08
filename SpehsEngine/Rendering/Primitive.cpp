@@ -10,10 +10,6 @@
 
 #include <atomic>
 
-#ifdef _DEBUG //Debug includes
-#include "SpehsEngine/Rendering/BatchManager.h"
-#endif
-
 
 
 std::atomic<int> primitiveAllocations;
@@ -246,7 +242,7 @@ namespace spehs
 #endif
 		rotationVector = _newRotationVector;
 	}
-	
+
 	void Primitive::setColor(const Primitive& other)
 	{
 		primitiveColor = other.primitiveColor;

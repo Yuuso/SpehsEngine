@@ -41,7 +41,7 @@ namespace spehs
 		if (cleanUpPrimitives != 0)
 			exceptions::warning("BatchManager cleaned up " + std::to_string(cleanUpPrimitives) + " primitives!");
 	}
-	
+
 	Polygon* BatchManager::createPolygon(const int &_shapeID, const PlaneDepth &_planeDepth, const float &_width, const float &_height)
 	{
 		primitives.push_back(new Polygon(*this, _shapeID, _planeDepth, _width, _height));
@@ -79,7 +79,7 @@ namespace spehs
 		primitives.push_back(new Point(*this, _planeDepth));
 		return primitives.back()->getPointPtr();
 	}
-	
+
 	Text* BatchManager::createText(const PlaneDepth &_planeDepth)
 	{
 		texts.push_back(new Text(*this, _planeDepth));
@@ -96,8 +96,6 @@ namespace spehs
 	void BatchManager::render(BatchRenderResults* results)
 	{
 		bool batchFound = false;
-
-	//BATCHING:
 
 		//Batch primitives
 		for (unsigned i = 0; i < primitives.size();)
@@ -174,7 +172,7 @@ namespace spehs
 			else
 				i++;
 		}
-		
+
 		//Sort batches
 		std::sort(batches.begin(), batches.end(), [](Batch* first, Batch* second)
 		{

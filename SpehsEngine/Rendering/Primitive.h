@@ -57,7 +57,7 @@ namespace spehs
 		virtual Polygon* getPolygonPtr(){ return nullptr; }
 		virtual Line* getLinePtr(){ return nullptr; }
 		virtual Point* getPointPtr(){ return nullptr; }
-		
+
 		virtual void updateVertices() = 0; //This is called automatically when rendering
 
 		void destroy(); //Primitives can only be deleted by BatchManager, user can request deletion by calling destroy()

@@ -33,6 +33,7 @@ namespace spehs
 		}
 
 		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+		glClearDepth(1.0f);
 
 		//Set VSync
 		SDL_GL_SetSwapInterval(0);//0 disable, 1 enable, -1 ???
@@ -54,7 +55,7 @@ namespace spehs
 		SDL_GL_GetAttribute(SDL_GL_MULTISAMPLESAMPLES, &MSAA);
 		if (MSAA > 0)
 			glEnable(GL_MULTISAMPLE);
-		
+
 		//Check OpenGL version
 		const GLubyte* glString = glGetString(GL_VERSION);
 		_ASSERT(glString);

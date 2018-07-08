@@ -109,20 +109,20 @@ namespace spehs
 		if (mouseLocked)
 		{
 			//If mouse is locked, keep mouse in the center of the screen without creating a mousemotion event
-			//SDL_WarpMouseInWindow(mainWindow->sdlWindow, spehs::input::windowWidth / 2, spehs::input::windowHeight / 2);
+			SDL_WarpMouseInWindow(window.sdlWindow, window.getWidth() / 2, window.getHeight() / 2);
 		}
 	}
-	
+
 	void InputManager::pressKey(unsigned int keyID)
 	{
 		keyMap[keyID] = true;
 	}
-	
+
 	void InputManager::releaseKey(unsigned int keyID)
 	{
 		keyMap[keyID] = false;
 	}
-	
+
 	void InputManager::setMouseCoords(int _x, int _y)
 	{
 		mouseCoords.x = _x;
@@ -136,18 +136,16 @@ namespace spehs
 		else
 			mouseLocked = _value;
 
-		SDL_SetWindowGrab(window.sdlWindow, (SDL_bool) _value);
-		SDL_ShowCursor(!_value);
-		return true;
-		//if (SDL_SetRelativeMouseMode((SDL_bool) _value) == 0)
-		//{
-		//	return true;
-		//}
-		//else
-		//{
-		//	exceptions::warning("Mouse locking not supported!");
-		//	return false;
-		//}
+		if (SDL_SetRelativeMouseMode((SDL_bool) _value) == 0)
+		{
+			return true;
+		}
+		else
+		{
+			SDL_SetWindowGrab(window.sdlWindow, (SDL_bool) _value);
+			SDL_ShowCursor(!_value);
+			return true;
+		}
 	}
 
 	bool InputManager::tryClaimMouseAvailability()
@@ -157,12 +155,12 @@ namespace spehs
 		mouseAvailable = false;
 		return true;
 	}
-	
+
 	bool InputManager::checkMouseAvailability() const
 	{
 		return mouseAvailable;
 	}
-	
+
 	bool InputManager::isKeyDown(unsigned int keyID) const
 	{
 		auto it = keyMap.find(keyID);
@@ -171,7 +169,7 @@ namespace spehs
 		else
 			return false;
 	}
-	
+
 	bool InputManager::isKeyPressed(unsigned int keyID) const
 	{
 		if (isKeyDown(keyID) == true && wasKeyDown(keyID) == false)
@@ -180,7 +178,7 @@ namespace spehs
 		}
 		return false;
 	}
-	
+
 	bool InputManager::wasKeyDown(unsigned int keyID) const
 	{
 		auto it = previousKeyMap.find(keyID);
@@ -196,7 +194,7 @@ namespace spehs
 			return false;
 		return true;
 	}
-	
+
 	bool InputManager::mouseCollision(const spehs::vec4& AABB) const
 	{
 		return mouseCoords.x >= AABB.x &&
@@ -204,7 +202,7 @@ namespace spehs
 			mouseCoords.y >= AABB.y &&
 			mouseCoords.y <= AABB.y + AABB.w;
 	}
-	
+
 	bool InputManager::mouseCollision(const spehs::vec2& AABBMin, const spehs::vec2& AABBMax) const
 	{
 		return mouseCoords.x >= AABBMin.x &&
@@ -240,7 +238,7 @@ namespace spehs
 	{
 		return isKeyPressed(KEYBOARD_LSHIFT) || isKeyPressed(KEYBOARD_RSHIFT);
 	}
-	
+
 
 
 	///////////////////////////
@@ -321,7 +319,7 @@ namespace spehs
 	{
 		Joystick* js = nullptr;
 		int index = 0;
-		for (unsigned i = 0; i < joysticks.size(); i++)			
+		for (unsigned i = 0; i < joysticks.size(); i++)
 			if (joysticks[i]->guid == guid)
 			{//Found GUID
 			if (index == preferredIndex)
@@ -330,7 +328,7 @@ namespace spehs
 			js = joysticks[i];
 			index++;
 			}
-		
+
 		return js;//Joystick is not connected, or preferred index not found
 	}
 

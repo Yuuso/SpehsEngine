@@ -63,7 +63,7 @@ namespace spehs
 
 		//Create open gl context specific to this window
 		glContext = new GLContext(*this);
-		
+
 		if (isValid())
 		{
 			//Initial settings
@@ -87,10 +87,11 @@ namespace spehs
 		//TODO!!! spehs::graphics::postproc::disablePostProcessing();
 		SDL_DestroyWindow(sdlWindow);
 	}
-				
+
 	void Window::renderBegin()
 	{
 		graphics::postproc::postProcessingBegin();
+		glDepthMask(GL_TRUE);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		checkOpenGLErrors(__FILE__, __LINE__);
 	}
@@ -101,7 +102,7 @@ namespace spehs
 		SDL_GL_SwapWindow(sdlWindow);
 		checkOpenGLErrors(__FILE__, __LINE__);
 	}
-	
+
 	void Window::setClearColor(const Color& color)
 	{
 		glClearColor((float)color.r / 255.0f, (float)color.g / 255.0f, (float)color.b / 255.0f, (float)color.a / 255.0f);

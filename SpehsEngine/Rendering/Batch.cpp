@@ -125,7 +125,7 @@ namespace spehs
 	{
 		if (vertices.size() == 0)
 			return false;
-		
+
 		updateBuffers();
 
 		//Blending
@@ -133,7 +133,7 @@ namespace spehs
 		{
 			glEnable(GL_BLEND);
 			glDisable(GL_DEPTH_TEST);
-			glDepthMask(GL_FALSE);
+			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 		}
 		else
 		{
@@ -199,7 +199,7 @@ namespace spehs
 		//VERTICES
 		vertices.insert(vertices.end(), _primitive->worldVertexArray.begin(), _primitive->worldVertexArray.end());
 	}
-	
+
 	//Private:
 	bool PrimitiveBatch::isEnoughRoom(const unsigned int &_numVertices)
 	{
@@ -232,11 +232,11 @@ namespace spehs
 		glEnableVertexAttribArray(VertexAttributePosition::VERTEX_POSITION);
 		glEnableVertexAttribArray(VertexAttributePosition::VERTEX_COLOR);
 		glEnableVertexAttribArray(VertexAttributePosition::VERTEX_UV);
-		
-		glVertexAttribPointer(VertexAttributePosition::VERTEX_POSITION, 2, GL_FLOAT, GL_FALSE, sizeof(spehs::Vertex), reinterpret_cast<void*>(offsetof(spehs::Vertex, position)));
-		/*FLOAT*///glVertexAttribPointer(VertexAttributePosition::VERTEX_COLOR, 4, GL_FLOAT, GL_FALSE, sizeof(spehs::Vertex), reinterpret_cast<void*>(offsetof(spehs::Vertex, color)));
-		/*UBYTE*/glVertexAttribPointer(VertexAttributePosition::VERTEX_COLOR, 4, GL_UNSIGNED_BYTE, GL_TRUE, sizeof(spehs::Vertex), reinterpret_cast<void*>(offsetof(spehs::Vertex, color)));
-		glVertexAttribPointer(VertexAttributePosition::VERTEX_UV, 2, GL_FLOAT, GL_FALSE, sizeof(spehs::Vertex), reinterpret_cast<void*>(offsetof(spehs::Vertex, uv)));
+
+					glVertexAttribPointer(VertexAttributePosition::VERTEX_POSITION, 2, GL_FLOAT,			GL_FALSE,	sizeof(spehs::Vertex), reinterpret_cast<void*>(offsetof(spehs::Vertex, position)));
+		/*FLOAT*///	glVertexAttribPointer(VertexAttributePosition::VERTEX_COLOR,	4, GL_FLOAT,			GL_FALSE,	sizeof(spehs::Vertex), reinterpret_cast<void*>(offsetof(spehs::Vertex, color)));
+		/*UBYTE*/	glVertexAttribPointer(VertexAttributePosition::VERTEX_COLOR,	4, GL_UNSIGNED_BYTE,	GL_TRUE,	sizeof(spehs::Vertex), reinterpret_cast<void*>(offsetof(spehs::Vertex, color)));
+					glVertexAttribPointer(VertexAttributePosition::VERTEX_UV,		2, GL_FLOAT,			GL_FALSE,	sizeof(spehs::Vertex), reinterpret_cast<void*>(offsetof(spehs::Vertex, uv)));
 
 		//Unbind
 		glBindVertexArray(0);
@@ -244,7 +244,7 @@ namespace spehs
 		glDisableVertexAttribArray(VertexAttributePosition::VERTEX_POSITION);
 		glDisableVertexAttribArray(VertexAttributePosition::VERTEX_COLOR);
 		glDisableVertexAttribArray(VertexAttributePosition::VERTEX_UV);
-		
+
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
@@ -380,7 +380,7 @@ namespace spehs
 
 		checkOpenGLErrors(__FILE__, __LINE__);
 	}
-	
+
 	bool TextBatch::check(const Text &_text)
 	{
 		if (shaderIndex != _text.getShaderIndex() ||
@@ -395,7 +395,7 @@ namespace spehs
 		}
 		return true;
 	}
-	
+
 	bool TextBatch::render(BatchRenderResults* results)
 	{
 		if (vertices.empty())
@@ -407,7 +407,7 @@ namespace spehs
 		//Blending
 		glEnable(GL_BLEND);
 		glDisable(GL_DEPTH_TEST);
-		glDepthMask(GL_FALSE);
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 		batchManager.shaderManager.use(shaderIndex);
 

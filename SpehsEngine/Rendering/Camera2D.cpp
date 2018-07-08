@@ -38,7 +38,7 @@ namespace spehs
 		//Camera translation
 		glm::vec3 translation((float)window.getWidth() * 0.5f, (float)window.getHeight() * 0.5f, 0);
 		cameraMatrix = glm::translate(orthoMatrix, translation);
-		
+
 		defaultMatrix = cameraMatrix;
 		projectionMatrix = &cameraMatrix;
 	}
@@ -59,7 +59,7 @@ namespace spehs
 	{
 		//1. Rotation
 		cameraMatrix = glm::rotate(defaultMatrix, -rotation, glm::vec3(0.0f, 0.0f, 1.0f));
-		
+
 		//2. Scaling
 		cameraMatrix = glm::scale(cameraMatrix, glm::vec3(scale, scale, 0.0f));
 

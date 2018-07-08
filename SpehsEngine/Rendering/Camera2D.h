@@ -18,7 +18,7 @@ namespace spehs
 
 		void translate(const spehs::vec2& _vec);
 		void setRotation(const float &_rotation);
-		
+
 		//Public Variables
 		const Window& window;//TODO: camera really doesn't depend on the window class...?
 		spehs::vec2 deltaMovement;
