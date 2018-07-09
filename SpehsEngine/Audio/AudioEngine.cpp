@@ -224,7 +224,7 @@ namespace spehs
 				setListenerGain(_gain);
 				return;
 			}
-			else if (_channelIndex >= audioVar::audioChannels.size())
+			else if (_channelIndex >= (int)audioVar::audioChannels.size()) // TODO negative channel index not ok!
 			{/*Automatically resize the channel vector if referring to a channel that does not exist yet*/
 				audioVar::audioChannels.resize(_channelIndex + 1);
 			}
@@ -244,7 +244,7 @@ namespace spehs
 			{//Default, master channel
 				return getListenerGain();
 			}
-			else if (_channelIndex >= audioVar::audioChannels.size())
+			else if (_channelIndex >= (int)audioVar::audioChannels.size()) // TODO negative channel index not ok!
 			{/*Automatically resize the channel vector if referring to a channel that does not exist yet*/
 				audioVar::audioChannels.resize(_channelIndex + 1);
 			}
@@ -314,8 +314,8 @@ namespace spehs
 			if (audioVar::sourcePool.size() < audioVar::maxSources)
 			{
 				//Try making more sources
-				int amount = std::min(audioVar::maxSources, audioVar::sourcePool.size() * 2);
-				for (unsigned i = audioVar::sourcePool.size(); i < amount; i++) //Bit of a messy solution but this isn't called very often so what ever.
+				size_t amount = std::min(audioVar::maxSources, audioVar::sourcePool.size() * 2);
+				for (size_t i = audioVar::sourcePool.size(); i < amount; i++) //Bit of a messy solution but this isn't called very often so what ever.
 					audioVar::sourcePool.push_back(new SourceObject());
 				return getFreeSource(_soundSource);
 			}
