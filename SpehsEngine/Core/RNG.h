@@ -136,7 +136,7 @@ namespace spehs
 			template <typename ReturnType, typename DistributionType = Distribution::UniformInt<int>>
 			typename std::enable_if<sizeof(ReturnType) == 1, ReturnType>::type random()
 			{
-				return (ReturnType)random<int>(std::numeric_limits<ReturnType>::min(), std::numeric_limits<ReturnType>::max());
+				return (ReturnType)random<ReturnType>(std::numeric_limits<ReturnType>::min(), std::numeric_limits<ReturnType>::max());
 			}
 
 			template <
@@ -157,6 +157,13 @@ namespace spehs
 				SPEHS_ASSERT(_min <= _max);
 				DistributionType dist;
 				return dist(engine, DistributionType::param_type(_min, _max));
+			}
+
+			template <>
+			bool random(const bool _min, const bool _max)
+			{
+				Distribution::UniformInt<int> dist;
+				return dist(engine, Distribution::UniformInt<int>::param_type(_min, _max)) != 0;
 			}
 
 			//Functions for certain distirbutions
@@ -228,7 +235,7 @@ namespace spehs
 			SeedType randomSeed;
 			MTEngine engine;
 		};
-		
+
 		//General 'true' random functions
 		extern std::mutex rngmutex;
 		extern PRNG<uint32_t> defaultRandom;
