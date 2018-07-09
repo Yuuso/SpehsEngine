@@ -117,8 +117,8 @@ namespace spehs
 		bool mouseLocked = false;
 		bool mouseAvailable = false;//This boolean indicates global mouse availability during an update cycle. Update cycles should run according to depth from top to bottom. The first source to claim the mouse availability can do so.
 		int mouseWheelDelta = 0;
-		spehs::ivec2 mouseCoords;
-		spehs::ivec2 mouseMovement;
+		spehs::vec2 mouseCoords;
+		spehs::vec2 mouseMovement;
 		
 		//Joystick(s)
 		void joystickConnected();

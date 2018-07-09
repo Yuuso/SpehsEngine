@@ -125,8 +125,8 @@ namespace spehs
 
 	void InputManager::setMouseCoords(int _x, int _y)
 	{
-		mouseCoords.x = _x;
-		mouseCoords.y = _y;
+		mouseCoords.x = (float)_x;
+		mouseCoords.y = (float)_y;
 	}
 
 	bool InputManager::lockMouse(const bool _value)
@@ -334,7 +334,7 @@ namespace spehs
 
 	int InputManager::getGUIDIndex(int/*NOTE: i < joystickIndex - 1*/ joystickIndex)
 	{
-		if (joystickIndex >= joysticks.size() || joystickIndex < 0)
+		if (joystickIndex >= (int)joysticks.size() || joystickIndex < 0)
 			return -1;
 		GUID guid = SDL_JoystickGetDeviceGUID(joystickIndex);
 		int index = 0;
@@ -445,5 +445,6 @@ namespace spehs
 			else if (inputManager.joysticks[i]->guid == guid)
 				index++;//Found same guid among joysticks before this
 		}
+		return ~0;
 	}
 }
