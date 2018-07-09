@@ -561,6 +561,7 @@ namespace spehs
 			return false;
 		}
 		}
+		return false;
 	}
 
 	bool SocketTCP::startAccepting(const net::PortType port, const std::function<void(SocketTCP&)> callbackFunction)
