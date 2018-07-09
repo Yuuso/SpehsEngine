@@ -230,12 +230,12 @@ namespace spehs
 		}
 		else
 		{
-			switch (shape)
-			{//Predetermine shapes
-			default:
-				numCusps = 0;
-				return nullptr;
-			}
+			//switch (shape)
+			//{//Predetermine shapes
+			//default: break;
+			//}
+			numCusps = 0;
+			return nullptr;
 		}
 	}
 

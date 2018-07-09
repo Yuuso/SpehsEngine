@@ -31,7 +31,7 @@ namespace spehs
 	{
 		float min = _axis.dot(spehs::vec2(_vertexArray[0].x, _vertexArray[0].y));
 		float max = min;
-		for (int i = 0; i < _size; i++)
+		for (size_t i = 0; i < _size; i++)
 		{
 			float x = _axis.dot(spehs::vec2(_vertexArray[i].x, _vertexArray[i].y));
 			if (x < min)
@@ -83,7 +83,7 @@ namespace spehs
 	spehs::vec2 getCircleAxis(Vertex* _vertexArray, const size_t _size, const spehs::vec2& _circleCenter)
 	{
 		spehs::vec2 polygonVertex = spehs::vec2(_vertexArray[0].position.x, _vertexArray[0].position.y);
-		for (int i = 1; i < _size; i++)
+		for (size_t i = 1; i < _size; i++)
 		{
 			if ((spehs::vec2(_vertexArray[i].position.x, _vertexArray[i].position.y) - _circleCenter).getLength() < (polygonVertex - _circleCenter).getLength())
 			{
@@ -98,7 +98,7 @@ namespace spehs
 	spehs::vec2 getCircleAxis(spehs::vec2* _vertexArray, const size_t _size, const spehs::vec2& _circleCenter)
 	{
 		spehs::vec2 polygonVertex = spehs::vec2(_vertexArray[0].x, _vertexArray[0].y);
-		for (int i = 1; i < _size; i++)
+		for (size_t i = 1; i < _size; i++)
 		{
 			if ((spehs::vec2(_vertexArray[i].x, _vertexArray[i].y) - _circleCenter).getLength() < (polygonVertex - _circleCenter).getLength())
 			{
@@ -329,7 +329,7 @@ namespace spehs
 			vec.x += _vertexArray[i].x;
 			vec.y += _vertexArray[i].y;
 		}
-		vec /= _vertexArrayLength;
+		vec /= (float)_vertexArrayLength;
 
 		return magnitude(vec - _rayCastPosition);
 	}
@@ -355,7 +355,7 @@ namespace spehs
 		}
 
 		//Loop through axes2
-		for (int i = 0; i < _size2; i++)
+		for (size_t i = 0; i < _size2; i++)
 		{
 			Projection p1 = projectPolygon(axis2[i], _vertexArray1, _size1);
 			Projection p2 = projectPolygon(axis2[i], _vertexArray2, _size2);
@@ -482,7 +482,7 @@ namespace spehs
 		}
 
 		//Loop through axes2
-		for (int i = 0; i < _size2; i++)
+		for (size_t i = 0; i < _size2; i++)
 		{
 			Projection p1 = projectPolygon(axis2[i], _vertexArray1, _size1);
 			Projection p2 = projectPolygon(axis2[i], _vertexArray2, _size2);
@@ -599,7 +599,7 @@ namespace spehs
 		spehs::vec2 axis2;
 
 		//Get all axes
-		for (int i = 0; i < _size; i++)
+		for (size_t i = 0; i < _size; i++)
 		{
 			axis1[i] = getAxis(_vertexArray, _size, i).normalize();
 		}
@@ -624,7 +624,7 @@ namespace spehs
 		}
 
 		//Loop through axes1
-		for (int i = 0; i < _size; i++)
+		for (size_t i = 0; i < _size; i++)
 		{
 			Projection p1 = projectPolygon(axis1[i], _vertexArray, _size);
 			Projection p2 = projectCircle(axis1[i], _circleCenterPoint, _circleRadius);
@@ -649,7 +649,7 @@ namespace spehs
 		deposit.MTV = smallestAxis.getNormalized() * abs(overlap);
 		
 		//Recalculate all axes without normalizing
-		for (int i = 0; i < _size; i++)
+		for (size_t i = 0; i < _size; i++)
 		{
 			axis1[i] = getAxis(_vertexArray, _size, i);
 		}
@@ -706,7 +706,7 @@ namespace spehs
 		spehs::vec2 axis2;
 
 		//Get all axes
-		for (int i = 0; i < _size; i++)
+		for (size_t i = 0; i < _size; i++)
 		{
 			axis1[i] = getAxis(_vertexArray, _size, i).normalize();
 		}
@@ -731,7 +731,7 @@ namespace spehs
 		}
 
 		//Loop through axes1
-		for (int i = 0; i < _size; i++)
+		for (size_t i = 0; i < _size; i++)
 		{
 			Projection p1 = projectPolygon(axis1[i], _vertexArray, _size);
 			Projection p2 = projectCircle(axis1[i], _circleCenterPoint, _circleRadius);
@@ -756,7 +756,7 @@ namespace spehs
 		deposit.MTV = smallestAxis.getNormalized() * abs(overlap);
 
 		//Recalculate all axes without normalizing
-		for (int i = 0; i < _size; i++)
+		for (size_t i = 0; i < _size; i++)
 		{
 			axis1[i] = getAxis(_vertexArray, _size, i);
 		}
