@@ -1,4 +1,4 @@
-#include "SpehsEngine/Core/Mathematics.h"
+#include "SpehsEngine/Math/Mathematics.h"
 
 
 namespace spehs
