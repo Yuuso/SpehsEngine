@@ -8,11 +8,7 @@ namespace spehs
 	unsigned GUIRectangleGrid::defaultBorderWidth = 0;
 	GUIRectangleGrid::GUIRectangleGrid(GUIContext& context)
 		: GUIRectangleUnisizeContainer(context)
-		, scrollingEnabled(false)
 		, scrollBarWidth(spehs::GUIRectangleScrollList::defaultScrollBarWidth)
-		, scrollState(0)
-		, draggingScrollBar(false)
-		, scrollBarAccumulatedDragY(0.0f)
 		, borderWidth(defaultBorderWidth)
 	{
 		disableState(GUIRECT_HOVER_COLOR_BIT);
@@ -38,12 +34,14 @@ namespace spehs
 		else
 			scrollDown->setString("D");
 	}
+
 	GUIRectangleGrid::~GUIRectangleGrid()
 	{
 		delete scrollUp;
 		delete scrollBar;
 		delete scrollDown;
 	}
+
 	void GUIRectangleGrid::setRenderState(const bool _state)
 	{
 		spehs::GUIRectangleUnisizeContainer::setRenderState(_state);
@@ -51,6 +49,7 @@ namespace spehs
 		scrollBar->setRenderState(scrollingEnabled && _state);
 		scrollDown->setRenderState(scrollingEnabled && _state);
 	}
+
 	void GUIRectangleGrid::setDepth(const int16_t depth)
 	{
 		spehs::GUIRectangleUnisizeContainer::setDepth(depth);
@@ -58,6 +57,7 @@ namespace spehs
 		scrollBar->setDepth(depth + 1);
 		scrollDown->setDepth(depth + 1);
 	}
+
 	void GUIRectangleGrid::inputUpdate()
 	{
 		spehs::GUIRectangle::inputUpdate();
@@ -69,12 +69,12 @@ namespace spehs
 			else
 			{//Drag scroll bar
 				scrollBarAccumulatedDragY += getInputManager().getMouseMovementY();
-				const float scrollBarRail = scrollUp->getYGlobal(/*cannot use local position - not actually a child!*/) - getYGlobal() - scrollDown->getHeight() - scrollBar->getHeight();
+				const float scrollBarRail = float(scrollUp->getYGlobal(/*cannot use local position - not actually a child!*/) - getYGlobal() - scrollDown->getHeight() - scrollBar->getHeight());
 				const int maxStates = getMaxScrollState() + 1;
 				if (abs(scrollBarAccumulatedDragY) > scrollBarRail / float(maxStates))
 				{
 					const int prevState = scrollState;
-					scroll(-scrollBarAccumulatedDragY / (scrollBarRail / (float)maxStates));
+					scroll(int(-scrollBarAccumulatedDragY / (scrollBarRail / (float)maxStates)));
 					scrollBarAccumulatedDragY += int((scrollBarRail / (float)maxStates) * (scrollState - prevState));
 				}
 			}
@@ -117,6 +117,7 @@ namespace spehs
 			draggingScrollBar = false;
 		}
 	}
+
 	void GUIRectangleGrid::visualUpdate()
 	{
 		spehs::GUIRectangle::visualUpdate();
@@ -135,23 +136,27 @@ namespace spehs
 			}
 		}
 	}
+
 	int GUIRectangleGrid::getPreferredHeight()
 	{
 		return getMinHeight() * getRowCount() + 2 * borderWidth;
 	}
+
 	int GUIRectangleGrid::getRowCount()
 	{
 		if (minElementSize.x <= 0 || elements.empty())
 			return 0;
 		const int wCount = (getWidth() - 2 * borderWidth - scrollBarWidth) / minElementSize.x;
-		return std::ceil((float)elements.size() / (float)wCount);
+		return int(std::ceil(float(elements.size()) / float(wCount)));
 	}
+
 	int GUIRectangleGrid::getMaxScrollState()
 	{
 		if (minElementSize.y == 0)
 			return 0;
 		return std::max(0, getRowCount() - (getHeight() - 2 * (int)borderWidth) / minElementSize.y);
 	}
+
 	void GUIRectangleGrid::scroll(const int amount)
 	{
 		scrollState += amount;
@@ -165,6 +170,7 @@ namespace spehs
 		}
 		disableState(GUIRECT_POSITION_UPDATED_BIT);
 	}
+
 	void GUIRectangleGrid::updateMinSize()
 	{
 		spehs::GUIRectangleUnisizeContainer::updateMinSize();
@@ -174,6 +180,7 @@ namespace spehs
 		if (elements.size() > 1)
 			minSize.x += scrollBarWidth;
 	}
+
 	void GUIRectangleGrid::updateScale()
 	{
 		spehs::GUIRectangle::updateScale();
@@ -187,6 +194,7 @@ namespace spehs
 		if (scrollState > maxScrollState)
 			scrollState = maxScrollState;
 	}
+
 	void GUIRectangleGrid::updatePosition()
 	{
 		spehs::GUIRectangle::updatePosition();
@@ -229,7 +237,7 @@ namespace spehs
 
 			elements[i]->setPositionLocal(x, y);
 			x += minElementSize.x + wInterval;
-			if (x + minElementSize.x + wInterval + wExtra + borderWidth > getWidth())
+			if (x + minElementSize.x + wInterval + wExtra + int(borderWidth) > getWidth())
 			{//change row
 				x = left;
 				y -= hInterval + minElementSize.y;
@@ -242,11 +250,12 @@ namespace spehs
 		{
 			scrollUp->setPositionLocal(getXGlobal() + borderWidth, getYGlobal() + getHeight() - scrollUp->getHeight() - borderWidth);
 			scrollDown->setPositionLocal(getXGlobal() + borderWidth, getYGlobal() + borderWidth);
-			const float barRailHeight = getHeight() - scrollUp->getHeight() - scrollBar->getHeight() - scrollDown->getHeight() - 2 * borderWidth;
-			const float percentage = (float)scrollState / (float)getMaxScrollState();
-			scrollBar->setPositionLocal(getXGlobal() + borderWidth, scrollDown->getYLocal() + scrollDown->getHeight() + (1.0f - percentage) * barRailHeight);
+			const float barRailHeight = float(getHeight() - scrollUp->getHeight() - scrollBar->getHeight() - scrollDown->getHeight() - 2 * borderWidth);
+			const float percentage = float(scrollState) / float(getMaxScrollState());
+			scrollBar->setPositionLocal(getXGlobal() + borderWidth, scrollDown->getYLocal() + scrollDown->getHeight() + int((1.0f - percentage) * barRailHeight));
 		}
 	}
+
 	void GUIRectangleGrid::setGridBorderWidth(const unsigned width)
 	{
 		borderWidth = width;

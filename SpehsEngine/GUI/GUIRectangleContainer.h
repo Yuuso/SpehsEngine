@@ -44,7 +44,7 @@ namespace spehs
 		virtual bool removeElement(GUIRectangle* element);//Searches elements list and removes element. If element is not found, returns false
 		virtual GUIRectangle* back() const { return elements.back(); }
 		virtual GUIRectangle* front() const { return elements.front(); }
-		GUIRectangle* at(int index) const { if (index < 0 || index >= elements.size()) return nullptr; return elements[index]; }
+		GUIRectangle* at(const size_t index) const { if (index >= elements.size()) return nullptr; return elements[index]; }
 		GUIRectangle* operator[](int index) const { return elements[index]; }
 		/*Returns the size of the elements vector*/
 		unsigned elementsSize() const { return elements.size(); }

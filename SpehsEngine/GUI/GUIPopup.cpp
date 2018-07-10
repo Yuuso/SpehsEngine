@@ -103,12 +103,12 @@ namespace spehs
 		if (optionsWidth == minSize.x)
 		{//Options row defines min width
 			for (unsigned i = OPTION1_INDEX; i < elements.size(); i++)
-				elements[i]->setSize(std::floor(size.x / float(minSize.x) * elements[i]->getMinWidth()), optionHeight);
+				elements[i]->setSize(int(std::floor(float(size.x) / float(minSize.x) * float(elements[i]->getMinWidth()))), optionHeight);
 		}
 		else
 		{//Message rect defines min width
 			for (unsigned i = OPTION1_INDEX; i < elements.size(); i++)
-				elements[i]->setSize(std::floor(elements[i]->getMinWidth() / float(optionsWidth) * size.x), optionHeight);
+				elements[i]->setSize(int(std::floor(float(elements[i]->getMinWidth()) / float(optionsWidth) * float(size.x))), optionHeight);
 		}
 	}
 

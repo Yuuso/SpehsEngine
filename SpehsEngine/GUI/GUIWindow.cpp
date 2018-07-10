@@ -103,7 +103,7 @@ namespace spehs
 		////DRAGGING
 		//Handle previous frame dragging
 		if (checkState(GUIWINDOW_DRAGGING_BIT) && getInputManager().isKeyDown(MOUSE_BUTTON_LEFT))
-			translate(getInputManager().getMouseMovementX(), getInputManager().getMouseMovementY());
+			translate(int(getInputManager().getMouseMovementX()), int(getInputManager().getMouseMovementY()));
 		//Set dragging boolean
 		if (getInputEnabled() && !checkState(GUIWINDOW_DRAGGING_BIT) && header->getMouseHover() && getInputManager().isKeyPressed(MOUSE_BUTTON_LEFT))
 			enableState(GUIWINDOW_DRAGGING_BIT);//Begin dragging
@@ -142,8 +142,8 @@ namespace spehs
 		if (/*Starting streching requires window to be enabled for interaction! -> No need for checking here*/checkState(GUIWINDOW_STRECHING_BIT) && getInputManager().isKeyDown(MOUSE_BUTTON_LEFT))
 		{
 			//Take record of current dimensions
-			float w = size.x;
-			float h = size.y;
+			float w = float(size.x);
+			float h = float(size.y);
 			bool breakFromStrech = false;
 
 			//Check horizontal strech movement
@@ -172,7 +172,7 @@ namespace spehs
 					{
 						w -= getInputManager().getMouseMovementX();
 						if (abs(size.x - minSize.x) > 0.01f)
-							translate(getInputManager().getMouseMovementX(), 0);
+							translate(int(getInputManager().getMouseMovementX()), 0);
 					}
 				}
 			}
@@ -203,13 +203,13 @@ namespace spehs
 					{
 						h -= getInputManager().getMouseMovement().y;
 						if (abs(size.y - minSize.y) > 0.01f)
-						translate(0, getInputManager().getMouseMovementY());
+						translate(0, int(getInputManager().getMouseMovementY()));
 					}
 				}
 			}
 
 			//Set size to the calculated dimensions
-			setSize(w, h);
+			setSize(int(w), int(h));
 
 			enableState(GUIWINDOW_LIMIT_WITHIN_MAIN_WINDOW_BIT);
 		}
@@ -292,7 +292,7 @@ namespace spehs
 					setSize(minSize);
 
 					//Reposition relative to old center position (recorded earlier)
-					setPositionLocal(oldCenterPos.x - size.x / 2.0f, oldCenterPos.y - size.y / 2.0f);
+					setPositionLocal(int(oldCenterPos.x - float(size.x) * 0.5f), int(oldCenterPos.y - float(size.y) * 0.5f));
 
 					enableState(GUIWINDOW_LIMIT_WITHIN_MAIN_WINDOW_BIT);
 				}
@@ -410,7 +410,7 @@ namespace spehs
 				preferredReservation += elements[i]->getPreferredHeight() - elements[i]->getMinHeight();
 		
 			//Resize
-			const float extraHeight = size.y - minSize.y;
+			const int extraHeight = size.y - minSize.y;
 			for (unsigned i = GUIWINDOW_BASE_ELEMENT_COUNT; i < elements.size(); i++)
 			{
 				const int min = elements[i]->getMinHeight();
@@ -419,9 +419,9 @@ namespace spehs
 					elements[i]->setSize(size.x, min);
 				else
 				{
-					const float reservation = preferred - min;
-					const float percentage = reservation / preferredReservation;
-					elements[i]->setSize(size.x, min + std::min(reservation, std::floor(extraHeight * percentage)));
+					const int reservation = preferred - min;
+					const float percentage = float(reservation) / preferredReservation;
+					elements[i]->setSize(size.x, min + int(std::min(float(reservation), std::floor(float(extraHeight) * percentage))));
 				}
 			}
 		}
@@ -446,11 +446,12 @@ namespace spehs
 			}
 			*/
 
-			int hAllocated(0), hElement;
+			int hAllocated = 0;
+			int hElement = 0;
 			float scalePercentage = float(size.y - header->getHeight()) / float(minSize.y - header->getMinHeight());//How many % of min size should each element scale
 			for (int i = GUIWINDOW_BASE_ELEMENT_COUNT; i < (int)elements.size() - 1; i++)
 			{
-				hElement = scalePercentage * elements[i]->getMinHeight();
+				hElement = int(scalePercentage * float(elements[i]->getMinHeight()));
 				hAllocated += hElement;
 				elements[i]->setSize(size.x, hElement);
 			}

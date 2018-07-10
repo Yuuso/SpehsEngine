@@ -20,6 +20,6 @@ namespace spehs
 		spehs::GUIRectangleTable* getAsGUIRectangleTablePtr() override { return this; }
 
 	private:
-		int columns;
+		size_t columns;
 	};
 }

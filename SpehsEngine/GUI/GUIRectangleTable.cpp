@@ -15,13 +15,13 @@ namespace spehs
 	{
 		GUIRectangleUnisizeContainer::updateMinSize();
 
-		if (columns > 0)
+		if (columns > 0u)
 		{
 			if (elements.size() >= columns)
 				minSize.x = minElementSize.x * columns;
 			else
 				minSize.x = minElementSize.x * elements.size();
-			minSize.y = minElementSize.y * ceil(elements.size() / columns);
+			minSize.y = minElementSize.y * (int)ceil(elements.size() / columns);
 		}
 		else
 		{
@@ -44,12 +44,12 @@ namespace spehs
 			//Y
 			yScaleFactor = size.y / float(minElementSize.y * ceil(float(elements.size()) / float(columns)));
 
-			elementSize.x = floor(minElementSize.x * xScaleFactor);
-			elementSize.y = floor(minElementSize.y * yScaleFactor);
-			int row = 0;
-			int col = 0;
+			elementSize.x = (int)floor((float)minElementSize.x * xScaleFactor);
+			elementSize.y = (int)floor((float)minElementSize.y * yScaleFactor);
+			size_t row = 0;
+			size_t col = 0;
 			//int w = 0, h = 0;
-			for (unsigned i = 0; i < elements.size(); i++)
+			for (size_t i = 0; i < elements.size(); i++)
 			{
 				elements[i]->setSize(elementSize);
 				col++;
@@ -66,9 +66,9 @@ namespace spehs
 		GUIRectangle::updatePosition();
 
 		int row = 0;
-		int col = 0;
-		int totalRowCount = ceil(float(elements.size()) / float(columns));
-		for (unsigned i = 0; i < elements.size(); i++)
+		size_t col = 0;
+		const int totalRowCount = (int)ceil(float(elements.size()) / float(columns));
+		for (size_t i = 0; i < elements.size(); i++)
 		{
 			elements[i]->setPositionLocal(col * elementSize.x, elementSize.y * (totalRowCount - row - 1));
 			col++;

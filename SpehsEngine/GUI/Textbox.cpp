@@ -17,8 +17,8 @@ namespace spehs
 		text->setCameraMatrixState(false);
 		text->setColor(spehs::GUIRectangle::defaultTooltipStringColor);
 		polygon = batchManager.createPolygon(spehs::Shape::BUTTON, GUIRectangle::defaultDepth + 1,
-			2 * textBorder + std::max(text->getTextWidth(), (float)text->getFontMaxAdvanceWidth()),
-			(1 + text->getLineCount()) * textBorder - text->getFontDescender() + text->getFontHeight() * text->getLineCount());
+			float(2 * textBorder) + std::max(text->getTextWidth(), (float)text->getFontMaxAdvanceWidth()),
+			float((1 + text->getLineCount()) * textBorder - text->getFontDescender() + text->getFontHeight() * text->getLineCount()));
 		polygon->setCameraMatrixState(false);
 		polygon->setColor(spehs::GUIRectangle::defaultTooltipColor);
 		setRenderState(true);
@@ -36,8 +36,8 @@ namespace spehs
 	}
 	void Textbox::setPosition(const int x, const int y)
 	{
-		polygon->setPosition(x, y);
-		text->setPosition(x + textBorder, y + textBorder - text->getFontDescender());
+		polygon->setPosition(float(x), float(y));
+		text->setPosition(float(x + textBorder), float(y + textBorder - text->getFontDescender()));
 	}
 	void Textbox::setRenderState(const bool state)
 	{
@@ -48,9 +48,9 @@ namespace spehs
 	{
 		text->setString(string);
 		polygon->resize(
-			2 * textBorder + std::max(text->getTextWidth(), (float)text->getFontMaxAdvanceWidth()),
-			(1 + text->getLineCount()) * textBorder - text->getFontDescender() + text->getFontHeight() * text->getLineCount());
-		setPosition(polygon->getX(), polygon->getY());
+			float(2 * textBorder) + std::max(text->getTextWidth(), (float)text->getFontMaxAdvanceWidth()),
+			float((1 + text->getLineCount()) * textBorder - text->getFontDescender() + text->getFontHeight() * text->getLineCount()));
+		setPosition(int(polygon->getX()), int(polygon->getY()));
 	}
 	void Textbox::setTextColor(const spehs::Color& color)
 	{
@@ -81,11 +81,11 @@ namespace spehs
 	}
 	int Textbox::getWidth() const
 	{
-		return polygon->getWidth();
+		return (int)polygon->getWidth();
 	}
 	int Textbox::getHeight() const
 	{
-		return polygon->getHeight();
+		return (int)polygon->getHeight();
 	}
 	bool Textbox::getRenderState() const
 	{
@@ -97,11 +97,11 @@ namespace spehs
 	}
 	int Textbox::getX() const
 	{
-		return polygon->getX();
+		return (int)polygon->getX();
 	}
 	int Textbox::getY() const
 	{
-		return polygon->getY();
+		return (int)polygon->getY();
 	}
 	bool Textbox::checkPointCollision(const int x, const int y) const
 	{

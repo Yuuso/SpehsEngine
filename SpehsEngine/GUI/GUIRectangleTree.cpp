@@ -12,9 +12,7 @@ namespace spehs
 	time::Time GUIRectangleTree::defaultTreeOpenTime = time::fromSeconds(0.5f);
 	GUIRectangleTree::GUIRectangleTree(GUIContext& context)
 		: GUIRectangleUnisizeContainer(context)
-		, pressedLeafNodeID(0)
 		, openTreeButton(MOUSE_BUTTON_LEFT)
-		, treeOpenTimer(0)
 		, treeOpenTime(defaultTreeOpenTime)
 	{
 		close();
@@ -118,7 +116,7 @@ namespace spehs
 
 			////Element Y positioning
 			int branchY(getYGlobal());
-			if (branchY + elements.size() * minElementSize.y + 1 > getWindow().getHeight())
+			if (branchY + int(elements.size()) * minElementSize.y + 1 > getWindow().getHeight())
 				branchY = getWindow().getHeight() - elements.size() * minElementSize.y - 1;
 
 			//Position elements

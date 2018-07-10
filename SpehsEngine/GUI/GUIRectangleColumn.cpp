@@ -70,7 +70,7 @@ namespace spehs
 				int heightAllocated = 0;
 				for (unsigned i = 0; i < elements.size() - 1; i++)
 				{
-					const int h = (float)elements[i]->getMinHeight() / (float)minSize.y * size.y;
+					const int h = int(float(elements[i]->getMinHeight()) / float(minSize.y) * float(size.y));
 					elements[i]->setSize(size.x, h);
 					heightAllocated += h;
 				}

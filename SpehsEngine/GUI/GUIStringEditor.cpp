@@ -10,20 +10,12 @@
 
 namespace spehs
 {
-	int GUIStringEditor::defaultMaxStringEditorStringLength = 32;
+	size_t GUIStringEditor::defaultMaxStringEditorStringLength = 32;
 
 	GUIStringEditor::GUIStringEditor(GUIContext& context)
 		: GUIRectangle(context)
 		, ValueEditor("")
-		, stringUpdated(false)
-		, defaultString("")
-		, input("")
-		, disableInputReceiveOnNextUpdate(false)
 		, maxStringLength(defaultMaxStringEditorStringLength)
-		, typerPosition(0)
-		, typerBlinkTime(0)
-		, typerBlinkTimer(0)
-		, multilineEditing(false)
 		, keyboardRecorder(context.getInputManager())
 	{
 		setTyperBlinkTime(time::fromSeconds(0.5f));
@@ -88,7 +80,7 @@ namespace spehs
 	void GUIStringEditor::updateMinSize()
 	{
 		GUIRectangle::updateMinSize();
-		minSize.x += typeCharacter->getTextWidth();
+		minSize.x += int(typeCharacter->getTextWidth());
 	}
 
 	void GUIStringEditor::inputUpdate()
@@ -242,7 +234,7 @@ namespace spehs
 				}
 				break;
 			case KEYBOARD_DELETE:
-				if (typerPosition < input.size())
+				if (size_t(typerPosition) < input.size())
 				{
 					int length(1);
 					if (ctrl)
@@ -287,7 +279,7 @@ namespace spehs
 				if (ctrl)
 				{
 					length = 0;
-					for (int i = typerPosition; i < input.size(); i++)
+					for (size_t i = size_t(typerPosition); i < input.size(); i++)
 					{
 						if (input[i] == ' ')
 							break;

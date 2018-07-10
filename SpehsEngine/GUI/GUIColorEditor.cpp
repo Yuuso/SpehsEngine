@@ -232,10 +232,10 @@ namespace spehs
 
 	void GUIColorEditor::updateMinSize()
 	{
-		minSize.x = paletteWidth + sliderWidth + 3 * colorEditorBorder;
+		minSize.x = int(paletteWidth + sliderWidth + 3.0f * (float)colorEditorBorder);
 		if (alphaEnabled)
-			minSize.x += colorEditorBorder + sliderWidth;
-		minSize.y = paletteWidth + 2 * colorEditorBorder;
+			minSize.x += colorEditorBorder + (int)sliderWidth;
+		minSize.y = int(paletteWidth + 2.0f * (float)colorEditorBorder);
 		enableState(GUIRECT_MIN_SIZE_UPDATED_BIT);
 	}
 
@@ -243,10 +243,10 @@ namespace spehs
 	{
 		GUIRectangle::updateScale();
 
-		const float widthForElements = alphaEnabled ? size.x - 4 * colorEditorBorder : size.x - 3 * colorEditorBorder;
-		const float widthForPalette = alphaEnabled ? widthForElements * (paletteWidth / (paletteWidth + 2 * sliderWidth)) : widthForElements * (paletteWidth / (paletteWidth + sliderWidth));
+		const float widthForElements = alphaEnabled ? float(size.x - 4 * colorEditorBorder) : float(size.x - 3 * colorEditorBorder);
+		const float widthForPalette = alphaEnabled ? widthForElements * (paletteWidth / (paletteWidth + 2.0f * sliderWidth)) : widthForElements * (paletteWidth / (paletteWidth + sliderWidth));
 		const float widthPerSlider = std::floor((widthForElements - widthForPalette) / (alphaEnabled ? 2.0f : 1.0f));
-		const float elementHeight = std::floor(size.y - 2 * colorEditorBorder);
+		const float elementHeight = float(size.y - 2 * colorEditorBorder);
 		const float sliderThirdHeight = elementHeight / 3.0f;
 		palette->resize(widthForPalette, elementHeight);
 		sliderRG->resize(widthPerSlider, sliderThirdHeight);
@@ -260,13 +260,13 @@ namespace spehs
 	{
 		GUIRectangle::updatePosition();
 		float scaleX(size.x / float(minSize.x));
-		palette->setPosition(getXGlobal() + colorEditorBorder, getYGlobal() + colorEditorBorder);
+		palette->setPosition(float(getXGlobal() + colorEditorBorder), float(getYGlobal() + colorEditorBorder));
 
-		int sliderThirdHeight(std::floor((size.y - 2 * colorEditorBorder) / 3.0f));
-		int sliderX(palette->getX() + palette->getWidth() + colorEditorBorder);
-		sliderRG->setPosition(sliderX, palette->getY());
-		sliderGB->setPosition(sliderX, sliderRG->getY() + sliderRG->getHeight());
-		sliderBR->setPosition(sliderX, sliderGB->getY() + sliderGB->getHeight());
+		const int sliderThirdHeight = int(std::floor(float(size.y - 2 * colorEditorBorder) / 3.0f));
+		const int sliderX = int(palette->getX() + palette->getWidth()) + colorEditorBorder;
+		sliderRG->setPosition(float(sliderX), palette->getY());
+		sliderGB->setPosition(float(sliderX), sliderRG->getY() + sliderRG->getHeight());
+		sliderBR->setPosition(float(sliderX), sliderGB->getY() + sliderGB->getHeight());
 		if (alphaEnabled)
 		{
 			alphaSliderBack->setPosition(sliderRG->getX() + sliderRG->getWidth() + colorEditorBorder, sliderRG->getY());

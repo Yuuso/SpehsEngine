@@ -26,14 +26,14 @@ namespace spehs
 		int getRowCount();
 		int getMaxScrollState();
 
-		int scrollBarWidth;
-		int scrollState;
-		unsigned borderWidth;
-		bool scrollingEnabled;
-		bool draggingScrollBar;
-		float scrollBarAccumulatedDragY;
-		spehs::GUIRectangle* scrollUp;
-		spehs::GUIRectangle* scrollBar;
-		spehs::GUIRectangle* scrollDown;
+		int scrollBarWidth = 0;
+		int scrollState = 0;
+		unsigned borderWidth = 0;
+		bool scrollingEnabled = false;
+		bool draggingScrollBar = false;
+		float scrollBarAccumulatedDragY = 0.0f;
+		spehs::GUIRectangle* scrollUp = nullptr;
+		spehs::GUIRectangle* scrollBar = nullptr;
+		spehs::GUIRectangle* scrollDown = nullptr;
 	};
 }

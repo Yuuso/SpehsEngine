@@ -115,9 +115,10 @@ namespace spehs
 			//Tooltip update
 			if (tooltip)
 			{
-				int _x = getInputManager().getMouseX() - tooltip->getWidth(), _y = getInputManager().getMouseY();
+				int _x = int(getInputManager().getMouseX()) - tooltip->getWidth();
+				int _y = int(getInputManager().getMouseY());
 				if (_x < 0)
-					_x = getInputManager().getMouseX();
+					_x = int(getInputManager().getMouseX());
 				if (_x + tooltip->getWidth() > getBatchManager().window.getWidth())
 					_x = getBatchManager().window.getWidth() - tooltip->getWidth();
 				if (_y + tooltip->getHeight() > getBatchManager().window.getHeight())
@@ -222,8 +223,8 @@ namespace spehs
 		
 		if (text)
 		{//Text
-			minSize.x += text->getTextWidth() + 2 * borderWidth;
-			minSize.y += text->getTextHeight() + 2 * borderWidth;
+			minSize.x += int(text->getTextWidth()) + 2 * borderWidth;
+			minSize.y += int(text->getTextHeight()) + 2 * borderWidth;
 		}
 
 		if (displayTexture)
@@ -265,7 +266,7 @@ namespace spehs
 		if (size.y < minSize.y)
 			size.y = minSize.y;
 
-		polygon->resize(size.x, size.y);
+		polygon->resize(float(size.x), float(size.y));
 		enableState(GUIRECT_SCALE_UPDATED_BIT);
 		disableState(GUIRECT_POSITION_UPDATED_BIT);
 	}
@@ -277,15 +278,15 @@ namespace spehs
 		else if (!checkState(GUIRECT_MIN_SIZE_UPDATED_BIT))
 			updateMinSize();
 
-		polygon->setPosition(getXGlobal(), getYGlobal());
+		polygon->setPosition(float(getXGlobal()), float(getYGlobal()));
 
 		//Text position
 		float textWidth = 0.0f;
 		if (text)
 		{
 			textWidth = text->getTextWidth();
-			float left = getXGlobal();
-			float width = size.x;
+			float left = float(getXGlobal());
+			float width = float(size.x);
 			if (displayTexture)
 			{
 				if (displayTexturePositionMode != DisplayTexturePositionMode::center)
@@ -318,18 +319,18 @@ namespace spehs
 			{
 			case DisplayTexturePositionMode::left:
 			{
-				const int border = std::floor((text->getX() - borderWidth - getXGlobal() - displayTexture->width) * 0.5f);
-				displayTexture->polygon->setPosition(getXGlobal() + displayTexture->width / 2 + border, getYGlobal() + size.y / 2);
+				const int border = int(std::floor((text->getX() - float(borderWidth + getXGlobal() + displayTexture->width)) * 0.5f));
+				displayTexture->polygon->setPosition(float(getXGlobal() + displayTexture->width / 2 + border), float(getYGlobal() + size.y / 2));
 			}
 				break;
 			case DisplayTexturePositionMode::right:
 			{
-				const int border = std::floor((getXGlobal() + size.x - text->getX() - textWidth - borderWidth - displayTexture->width) * 0.5f);
-				displayTexture->polygon->setPosition(getXGlobal() + size.x - displayTexture->width / 2 - border, getYGlobal() + size.y / 2);
+				const int border = int(std::floor((float(getXGlobal() + size.x - displayTexture->width - borderWidth) - text->getX() - textWidth) * 0.5f));
+				displayTexture->polygon->setPosition(float(getXGlobal() + size.x - displayTexture->width / 2 - border), float(getYGlobal() + size.y / 2));
 			}
 				break;
 			case DisplayTexturePositionMode::center:
-				displayTexture->polygon->setPosition(getXGlobal() + size.x / 2, getYGlobal() + size.y / 2);
+				displayTexture->polygon->setPosition(float(getXGlobal() + size.x / 2), float(getYGlobal() + size.y / 2));
 				break;
 			}
 		}
@@ -491,7 +492,7 @@ namespace spehs
 			delete displayTexture;
 		displayTexture = new DisplayTexture();
 		TextureData* texData = getBatchManager().textureManager.getTextureData(path, _parameters);
-		displayTexture->polygon = getBatchManager().createPolygon(4, 0, texData->width, texData->height);
+		displayTexture->polygon = getBatchManager().createPolygon(4, 0, float(texData->width), float(texData->height));
 		displayTexture->polygon->setTexture(texData);
 		displayTexture->polygon->setCameraMatrixState(false);
 		displayTexture->polygon->setRenderState(polygon->getRenderState());

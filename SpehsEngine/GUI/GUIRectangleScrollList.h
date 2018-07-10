@@ -57,11 +57,11 @@ namespace spehs
 
 	protected:
 
-		GUIRectangle* scrollUp;
-		GUIRectangle* scrollBar;
-		GUIRectangle* scrollDown;
-		int beginElementIndex;///< Index of the first updated/rendered element
-		int updateElementCount;///< Amount of elements updated/rendered beginning from begin element index
-		int minVisibleElementCount;
+		GUIRectangle* scrollUp = nullptr;
+		GUIRectangle* scrollBar = nullptr;
+		GUIRectangle* scrollDown = nullptr;
+		size_t beginElementIndex = 0;///< Index of the first updated/rendered element
+		size_t updateElementCount = 0;///< Amount of elements updated/rendered beginning from begin element index
+		size_t minVisibleElementCount = 4;
 	};
 }

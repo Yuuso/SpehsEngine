@@ -19,9 +19,6 @@ namespace spehs
 	std::string GUIRectangleScrollList::scrollDownTexturePath;
 	GUIRectangleScrollList::GUIRectangleScrollList(GUIContext& context)
 		: GUIRectangleUnisizeContainer(context)
-		, beginElementIndex(0)
-		, updateElementCount(0)
-		, minVisibleElementCount(4)
 	{
 		disableState(GUIRECT_HOVER_COLOR_BIT);
 		scrollUp = new GUIRectangle(context);
@@ -65,8 +62,8 @@ namespace spehs
 	void GUIRectangleScrollList::clear()
 	{
 		GUIRectangleContainer::clear();
-		beginElementIndex = 0;
-		updateElementCount = 0;
+		beginElementIndex = 0u;
+		updateElementCount = 0u;
 	}
 
 	bool GUIRectangleScrollList::open()
@@ -91,7 +88,7 @@ namespace spehs
 
 	bool GUIRectangleScrollList::removeElement(GUIRectangle* element)
 	{
-		for (unsigned i = 0; i < elements.size(); i++)
+		for (size_t i = 0; i < elements.size(); i++)
 		{
 			if (elements[i] == element)
 			{
@@ -144,9 +141,9 @@ namespace spehs
 			{//Mouse dragging scroll bar
 
 				//Calculate scroll based on mouse position relative to scroll area
-				float scrollAreaBegin = scrollDown->getYGlobal() + scrollDown->getHeight() + scrollBar->getHeight() / 2.0f;//Y value of the scrolling area beginning
-				float scrollAreaHeight = scrollUp->getYGlobal() - scrollDown->getYGlobal() - scrollDown->getHeight() - scrollBar->getHeight();//Height of the scrolling area in between min and max positions of scroll bar center
-				scroll(round((elements.size() - updateElementCount) * (1.0f - (getInputManager().getMouseY() - scrollAreaBegin) / scrollAreaHeight)) - beginElementIndex);
+				const float scrollAreaBegin = float(scrollDown->getYGlobal() + scrollDown->getHeight() + scrollBar->getHeight()) * 0.5f;//Y value of the scrolling area beginning
+				const float scrollAreaHeight = float(scrollUp->getYGlobal() - scrollDown->getYGlobal() - scrollDown->getHeight() - scrollBar->getHeight());//Height of the scrolling area in between min and max positions of scroll bar center
+				scroll(int(round((elements.size() - updateElementCount) * (1.0f - (getInputManager().getMouseY() - scrollAreaBegin) / scrollAreaHeight)) - beginElementIndex));
 			}
 
 			if (getInputManager().isKeyPressed(MOUSE_BUTTON_LEFT) && invisibleElements())
@@ -164,7 +161,7 @@ namespace spehs
 		GUIRectangle::inputUpdate();
 		if (checkState(GUIRECT_OPEN_BIT))
 		{
-			for (unsigned i = 0; i < updateElementCount; i++)
+			for (size_t i = 0; i < updateElementCount; i++)
 			{
 				elements[beginElementIndex + i]->inputUpdate();
 				if (elements[beginElementIndex + i]->getMouseHoverAny())
@@ -189,7 +186,7 @@ namespace spehs
 		GUIRectangle::setRenderState(_state);
 		if (checkState(GUIRECT_OPEN_BIT))
 		{
-			for (unsigned i = 0; i < elements.size(); i++)
+			for (size_t i = 0; i < elements.size(); i++)
 			{
 				if (i < beginElementIndex || i >= beginElementIndex + updateElementCount)
 					elements[i]->setRenderState(false);
@@ -202,7 +199,7 @@ namespace spehs
 		}
 		else
 		{//Not open
-			for (unsigned i = 0; i < elements.size(); i++)
+			for (size_t i = 0; i < elements.size(); i++)
 				elements[i]->setRenderState(false);
 			scrollUp->setRenderState(false);
 			scrollBar->setRenderState(false);
@@ -234,12 +231,12 @@ namespace spehs
 	void GUIRectangleScrollList::updateScale()
 	{
 		/*Update update element count based on current dimensions. Element size is also updated.*/
-		while (size.y < updateElementCount * minElementSize.y && updateElementCount > minVisibleElementCount)
+		while (size.y < int(updateElementCount) * minElementSize.y && updateElementCount > minVisibleElementCount)
 		{//Currently visible elements cannot fit current size
 			incrementUpdateElementCount(-1);
 			scroll(-1);
 		}
-		while (size.y >= minElementSize.y * (updateElementCount + 1) && updateElementCount < elements.size())
+		while (size.y >= minElementSize.y * (int(updateElementCount) + 1) && updateElementCount < elements.size())
 		{//Else if list size has enough height for another element (min size), increase visible count
 			incrementUpdateElementCount(1);
 			if (beginElementIndex + updateElementCount == elements.size())
@@ -248,7 +245,7 @@ namespace spehs
 
 		//Update element size
 		elementSize.x = size.x;
-		elementSize.y = size.y / float(updateElementCount);
+		elementSize.y = int(float(size.y) / float(updateElementCount));
 		//Resize width if scroll bar is displayed
 		if (elements.size() > updateElementCount && checkState(GUIRECT_OPEN_BIT))
 		{//Hidden elements
@@ -282,7 +279,7 @@ namespace spehs
 		{
 			int excessY = size.y - updateElementCount * elementSize.y;
 			//Resize according to element size
-			for (int i = beginElementIndex; i < beginElementIndex + updateElementCount; i++)
+			for (size_t i = beginElementIndex; i < beginElementIndex + updateElementCount; i++)
 			{
 				if (excessY-- > 0)
 					elements[i]->setSize(elementSize.x, elementSize.y + 1);
@@ -305,7 +302,7 @@ namespace spehs
 		int _x = 0;
 		if (invisibleElements() && listOnLeftSideOfMainWindow)
 			_x = scrollBar->getWidth();
-		for (int i = beginElementIndex + updateElementCount - 1/*last*/; i >= beginElementIndex; i--)
+		for (size_t i = beginElementIndex + updateElementCount - 1/*last*/; i >= beginElementIndex; i--)
 		{
 			if (i == beginElementIndex + updateElementCount - 1/*last*/)
 				elements[i]->setPositionLocal(_x, 0);
@@ -316,14 +313,14 @@ namespace spehs
 		//Reposition scrolling elements
 		if (invisibleElements())
 		{//Relative to list position
-			float scrollButtonX = 0;
+			int scrollButtonX = 0;
 			if (!listOnLeftSideOfMainWindow)
 				scrollButtonX = size.x - scrollBar->getWidth();
 			scrollDown->setPositionLocal(scrollButtonX, 0);
 			scrollUp->setPositionLocal(scrollButtonX, elements[beginElementIndex]->getPositionLocal().y);
-			float barSpace = scrollUp->getYLocal() - scrollDown->getHeight() - elementSize.y;
-			float scrollPercentage = beginElementIndex / float(int(elements.size()) - updateElementCount);
-			scrollBar->setPositionLocal(scrollButtonX, elements[beginElementIndex]->getYLocal() - elementSize.y - scrollPercentage * barSpace);
+			const int barSpace = scrollUp->getYLocal() - scrollDown->getHeight() - elementSize.y;
+			const float scrollPercentage = float(beginElementIndex) / float(elements.size() - updateElementCount);
+			scrollBar->setPositionLocal(scrollButtonX, elements[beginElementIndex]->getYLocal() - elementSize.y - int(scrollPercentage * barSpace));
 		}
 	}
 
@@ -368,7 +365,7 @@ namespace spehs
 			}
 		}
 
-		elementSize.y = size.y / float(updateElementCount);
+		elementSize.y = int(float(size.y) / float(updateElementCount));
 		disableStateRecursiveUpwards(GUIRECT_MIN_SIZE_UPDATED_BIT | GUIRECT_SCALE_UPDATED_BIT | GUIRECT_POSITION_UPDATED_BIT);
 	}
 
@@ -403,7 +400,7 @@ namespace spehs
 	{
 		if (amount > 0)
 		{//Scroll down
-			for (unsigned i = 0; i < amount; i++)
+			for (int i = 0; i < amount; i++)
 			{
 				if (beginElementIndex + updateElementCount >= elements.size())
 					break;//Do not scroll any more downwards
@@ -415,7 +412,7 @@ namespace spehs
 		else if (amount < 0)
 		{//Scroll up
 			amount *= -1;//flip amount for for loop
-			for (unsigned i = 0; i < amount; i++)
+			for (int i = 0; i < amount; i++)
 			{
 				if (beginElementIndex <= 0)
 					break;//Do not scroll any more upwards

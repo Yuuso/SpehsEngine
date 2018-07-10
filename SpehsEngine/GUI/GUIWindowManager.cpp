@@ -13,17 +13,10 @@ namespace spehs
 {
 	GUIWindowManager::GUIWindowManager(GUIContext& context)
 		: GUIContext(context)
-		, focusedWindow(nullptr)
-		, depthPerWindow(256)
-		, receivingInput(false)
-		, mouseHoverAny(false)
-		, streching(false)
-		, dragging(false)
-		, popupShadeCurrentAlpha(0.0f)
 	{
-		popupShade = getBatchManager().createPolygon(Shape::BUTTON, 0, getBatchManager().window.getWidth(), getWindow().getHeight());
+		popupShade = getBatchManager().createPolygon(Shape::BUTTON, 0, float(getBatchManager().window.getWidth()), float(getWindow().getHeight()));
 		popupShade->setCameraMatrixState(false);
-		popupShade->setPosition(0, 0);
+		popupShade->setPosition(0.0f, 0.0f);
 		setPopupShadeColor(spehs::Color(40, 55, 45, 80));
 
 		setSystemDepth(GUIRectangle::defaultDepth);
@@ -47,7 +40,7 @@ namespace spehs
 	void GUIWindowManager::addPopup(GUIRectangle* popup)
 	{
 		popup->setRenderState(true);
-		popup->setPositionGlobal(getWindow().getWidth() / 2 - popup->getWidth() * 0.5f, getWindow().getHeight() / 2 - popup->getHeight() * 0.5f);
+		popup->setPositionGlobal(getWindow().getWidth() / 2 - popup->getWidth() / 2, getWindow().getHeight() / 2 - popup->getHeight() / 2);
 		popups.push_back(popup);
 		updateDepths();
 		popup->visualUpdate();
@@ -299,9 +292,9 @@ namespace spehs
 	{
 		for (unsigned i = 0; i < windows.size(); i++)
 			windows[i]->setDepth(systemDepth + i * depthPerWindow);
-		popupShade->setPlaneDepth(systemDepth + windows.size() * depthPerWindow);
+		popupShade->setPlaneDepth(int16_t(systemDepth + windows.size() * depthPerWindow));
 		for (unsigned i = 0; i < popups.size(); i++)
-			popups[i]->setDepth(systemDepth + windows.size() * depthPerWindow + 1 + (popups.size() - 1) * 20 - i * 20);
+			popups[i]->setDepth(int16_t(systemDepth + windows.size() * depthPerWindow + 1 + (popups.size() - 1) * 20 - i * 20));
 	}
 
 	void GUIWindowManager::setPopupShadeColor(const spehs::Color& col)

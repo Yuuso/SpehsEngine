@@ -75,18 +75,18 @@ namespace spehs
 	{
 		minSize.x = 2 * CHECKBOX_BORDER + checkboxSize;
 		if (text)
-			minSize.x += text->getTextWidth();
+			minSize.x += (int)text->getTextWidth();
 		minSize.y = 2 * CHECKBOX_BORDER + checkboxSize;
-		if (text && text->getTextHeight() > minSize.y)
-			minSize.y = text->getTextHeight();
+		if (text && text->getTextHeight() > (float)minSize.y)
+			minSize.y = (int)text->getTextHeight();
 	}
 
 	void GUICheckbox::updateScale()
 	{
 		GUIRectangle::updateScale();
 
-		checkboxBackground->resize(checkboxSize, checkboxSize);
-		checkboxFilling->resize(checkboxSize - 2 * CHECKBOX_BORDER, checkboxSize - 2 * CHECKBOX_BORDER);
+		checkboxBackground->resize((float)checkboxSize, (float)checkboxSize);
+		checkboxFilling->resize(float(checkboxSize - 2 * CHECKBOX_BORDER), float(checkboxSize - 2 * CHECKBOX_BORDER));
 	}
 
 	void GUICheckbox::updatePosition()
@@ -96,8 +96,8 @@ namespace spehs
 
 		GUIRectangle::updatePosition();
 
-		checkboxBackground->setPosition(getXGlobal() + size.x - CHECKBOX_BORDER - checkboxSize, getYGlobal() + (size.y - checkboxSize) * 0.5f);
-		checkboxFilling->setPosition(getXGlobal() + size.x - checkboxSize, getYGlobal() + (size.y - checkboxSize) * 0.5f + CHECKBOX_BORDER);
+		checkboxBackground->setPosition(float(getXGlobal() + size.x - CHECKBOX_BORDER - checkboxSize), float(getYGlobal() + (size.y - checkboxSize) * 0.5f));
+		checkboxFilling->setPosition(float(getXGlobal() + size.x - checkboxSize), (float)getYGlobal() + (size.y - checkboxSize) * 0.5f + float(CHECKBOX_BORDER));
 
 		//Update minimum size
 		updateMinSize();
@@ -105,13 +105,13 @@ namespace spehs
 		//Text position
 		if (text)
 		{
-			float textX = getXGlobal();
+			float textX = float(getXGlobal());
 			if (checkBit(state, GUIRECT_TEXT_JUSTIFICATION_LEFT_BIT))
-				textX += CHECKBOX_BORDER;
+				textX += float(CHECKBOX_BORDER);
 			else if (checkBit(state, GUIRECT_TEXT_JUSTIFICATION_RIGHT_BIT))
-				textX += size.x - size.y - CHECKBOX_BORDER - text->getTextWidth() - borderWidth;
+				textX += float(size.x - size.y - CHECKBOX_BORDER - text->getTextWidth() - borderWidth);
 			else
-				textX += 0.5f *(size.x - size.y - CHECKBOX_BORDER - text->getTextWidth());
+				textX += 0.5f * (size.x - size.y - CHECKBOX_BORDER - text->getTextWidth());
 			text->setPosition(std::round(textX), std::round(getYGlobal() + 0.5f * size.y - 0.5f * text->getTextHeight() - text->getFontDescender()));
 		}
 	}

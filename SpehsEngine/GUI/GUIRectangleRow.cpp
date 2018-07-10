@@ -136,7 +136,7 @@ namespace spehs
 				}
 				else if (elements.size() == 2)
 				{//Only edges
-					int w1 = (float)elements.front()->getMinWidth() / ((float)elements.front()->getMinWidth() + (float)elements.back()->getMinWidth()) * size.x;
+					const int w1 = int((float)elements.front()->getMinWidth() / float(elements.front()->getMinWidth() + elements.back()->getMinWidth()) * float(size.x));
 					elements.front()->setSize(w1, size.y);
 					elements.back()->setSize(size.x - w1, size.y);
 				}
@@ -156,7 +156,7 @@ namespace spehs
 						}
 						else
 						{
-							const int w = (float)elements[i]->getMinWidth() / (float)dynamicMinWidth * dynamicWidth;
+							const int w = int(float(elements[i]->getMinWidth()) / float(dynamicMinWidth) * float(dynamicWidth));
 							elements[i]->setSize(w, size.y);
 							allocatedWidth += w;
 						}
@@ -168,7 +168,7 @@ namespace spehs
 				int allocatedWidth = 0;
 				for (unsigned i = 0; i < elements.size() - 1; i++)
 				{
-					const int w = (float)elements[i]->getMinWidth() / (float)minSize.x * size.x;
+					const int w = int(float(elements[i]->getMinWidth()) / float(minSize.x) * float(size.x));
 					elements[i]->setSize(w, size.y);
 					allocatedWidth += w;
 				}

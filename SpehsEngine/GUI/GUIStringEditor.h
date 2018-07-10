@@ -9,7 +9,7 @@ namespace spehs
 {
 	class GUIStringEditor : public GUIRectangle, public ValueEditor<std::string>
 	{
-		static int defaultMaxStringEditorStringLength;
+		static size_t defaultMaxStringEditorStringLength;
 	public:
 		GUIStringEditor(GUIContext& context);
 		~GUIStringEditor() override;
@@ -46,16 +46,16 @@ namespace spehs
 		void updateString();
 		void endTyping();///< Ends input receiving, storing any input that had been received until now
 
-		bool stringUpdated;
-		bool disableInputReceiveOnNextUpdate;
-		bool multilineEditing;
-		int maxStringLength;
-		int typerPosition;
+		bool stringUpdated = false;
+		bool disableInputReceiveOnNextUpdate = false;
+		bool multilineEditing = false;
+		size_t maxStringLength;
+		int typerPosition = 0;
 		time::Time typerBlinkTime;
 		time::Time typerBlinkTimer;
 		std::string defaultString;
 		std::string input;//Temporal storage for edited value so that value won't appear changed after each individual typed character
-		spehs::Text* typeCharacter;
+		spehs::Text* typeCharacter = nullptr;
 		KeyboardRecorder keyboardRecorder;
 	};
 }

@@ -162,14 +162,14 @@ namespace spehs
 		////State
 		//Getters
 		GUIRECT_STATE_TYPE getState() const { return state; }
-		bool checkState(GUIRECT_STATE_TYPE bit) const { return checkBit(state, bit); }
+		bool checkState(GUIRECT_STATE_TYPE bit) const { return checkBit(state, bit) != 0u; }
 		//"Shortcut" getters
-		bool getMouseHover() const { return checkBit(state, GUIRECT_MOUSE_HOVER_BIT); }
-		bool getMouseHoverContainer() const { return checkBit(state, GUIRECT_MOUSE_HOVER_CONTAINER_BIT); }
-		bool getMouseHoverAny() const { return checkBit(state, GUIRECT_MOUSE_HOVER_BIT) | checkBit(state, GUIRECT_MOUSE_HOVER_CONTAINER_BIT); }
-		virtual bool isReceivingInput() const { return inputEnabled && checkBit(state, GUIRECT_RECEIVING_INPUT_BIT); }
-		virtual bool isSelected() const { return checkBit(state, GUIRECT_SELECTED_BIT); }
-		virtual bool isOpen() const { return checkBit(state, GUIRECT_OPEN_BIT); }
+		bool getMouseHover() const { return checkBit(state, GUIRECT_MOUSE_HOVER_BIT) != 0u; }
+		bool getMouseHoverContainer() const { return checkBit(state, GUIRECT_MOUSE_HOVER_CONTAINER_BIT) != 0u; }
+		bool getMouseHoverAny() const { return (checkBit(state, GUIRECT_MOUSE_HOVER_BIT) | checkBit(state, GUIRECT_MOUSE_HOVER_CONTAINER_BIT)) != 0u; }
+		virtual bool isReceivingInput() const { return inputEnabled && checkBit(state, GUIRECT_RECEIVING_INPUT_BIT) != 0u; }
+		virtual bool isSelected() const { return checkBit(state, GUIRECT_SELECTED_BIT) != 0u; }
+		virtual bool isOpen() const { return checkBit(state, GUIRECT_OPEN_BIT) != 0u; }
 		//Setters
 		virtual void enableStateRecursive(const GUIRECT_STATE_TYPE stateBit){ enableBit(state, stateBit); }
 		virtual void disableStateRecursive(const GUIRECT_STATE_TYPE stateBit){ disableBit(state, stateBit); }
