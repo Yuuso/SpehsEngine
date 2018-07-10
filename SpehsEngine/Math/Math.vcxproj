@@ -131,10 +131,12 @@
   <ItemGroup>
     <ClCompile Include="Math.cpp" />
     <ClCompile Include="Mathematics.cpp" />
+    <ClCompile Include="Triangulation.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Math.h" />
     <ClInclude Include="Mathematics.h" />
+    <ClInclude Include="Triangulation.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

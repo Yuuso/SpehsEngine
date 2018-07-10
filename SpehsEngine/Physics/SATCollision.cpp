@@ -1,5 +1,5 @@
 
-#include "SpehsEngine/Core/SATCollision.h"
+#include "SpehsEngine/Physics/SATCollision.h"
 #include "SpehsEngine/Core/Vertex.h"
 #include "SpehsEngine/Core/Geometry.h"
 

@@ -26,7 +26,6 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)Log.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)OS.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)RNG.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)SATCollision.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Serializable.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)SerializableDirectory.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)SerializableString.cpp" />
@@ -34,8 +33,6 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)StringOperations.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Thread.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Time.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)TimeState.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)Triangulation.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Vertex.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -55,7 +52,6 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)OS.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)RAIIVariableSetter.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)RNG.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)SATCollision.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Serializable.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)SerializableDirectory.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)SerializableString.h" />
@@ -64,8 +60,6 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)StringOperations.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Thread.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Time.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)TimeState.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)Triangulation.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Vector.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Vertex.h" />
   </ItemGroup>
