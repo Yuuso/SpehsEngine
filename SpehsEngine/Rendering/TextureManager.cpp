@@ -92,7 +92,7 @@ namespace spehs
 		return getTextureData(_texturePath, TextureParameter::defaultParameters);
 	}
 
-	TextureData* TextureManager::getTextureData(const size_t& _hash)
+	TextureData* TextureManager::getTextureData(const size_t _hash)
 	{
 		auto it = textureDataMap.find(_hash);
 		if (it != textureDataMap.end())
@@ -124,7 +124,8 @@ namespace spehs
 		return preloadTexture(_texturePath, TextureParameter::defaultParameters);
 	}
 
-	TextureData* TextureManager::getCubeMapData(const std::string& _negx, const std::string& _posx, const std::string& _negy, const std::string& _posy, const std::string& _negz, const std::string& _posz, const TextureParameter& _parameters)
+	TextureData* TextureManager::getCubeMapData(const std::string& _negx, const std::string& _posx, const std::string& _negy,
+												const std::string& _posy, const std::string& _negz, const std::string& _posz, const TextureParameter& _parameters)
 	{
 		size_t hash = std::hash<std::string>()(_negx + _posx + _posy + _negy + _negz + _posz);
 		auto it = textureDataMap.find(hash);
@@ -134,7 +135,7 @@ namespace spehs
 		}
 		return toCubeMap(_negx, _posx, _negy, _posy, _negz, _posz, _parameters);
 	}
-	TextureData* TextureManager::getCubeMapData(const size_t& _hash)
+	TextureData* TextureManager::getCubeMapData(const size_t _hash)
 	{
 		auto it = textureDataMap.find(_hash);
 		if (it != textureDataMap.end())
@@ -145,7 +146,8 @@ namespace spehs
 		//TODO: Default Cube Map
 		return nullptr;
 	}
-	size_t TextureManager::preloadCubeMap(const std::string& _negx, const std::string& _posx, const std::string& _negy, const std::string& _posy, const std::string& _negz, const std::string& _posz, const TextureParameter& _parameters)
+	size_t TextureManager::preloadCubeMap(const std::string& _negx, const std::string& _posx, const std::string& _negy,
+											const std::string& _posy, const std::string& _negz, const std::string& _posz, const TextureParameter& _parameters)
 	{
 		size_t hash = std::hash<std::string>()(_negx + _posx + _posy + _negy + _negz + _posz);
 		if (textureDataMap.find(hash) == textureDataMap.end())
@@ -159,9 +161,10 @@ namespace spehs
 		return hash;
 	}
 
-	TextureData* TextureManager::getNoiseTexture(const int& _width, const int& _height, const unsigned int& _seed, const int& _factor, const TextureParameter& _parameters)
+	TextureData* TextureManager::getNoiseTexture(const unsigned int _width, const unsigned int _height, const unsigned int _seed, const int _factor,
+													const TextureParameter& _parameters)
 	{
-		size_t hash = std::hash<unsigned>()(_seed);
+		size_t hash = std::hash<unsigned int>()(_seed);
 		auto it = textureDataMap.find(hash);
 		if (it != textureDataMap.end())
 			return it->second;
@@ -169,12 +172,13 @@ namespace spehs
 		return textureDataMap.find(preloadNoiseTexture(_width, _height, _seed, _factor, _parameters))->second;
 	}
 
-	TextureData* TextureManager::getNoiseTexture(const int& _width, const int& _height, const unsigned int& _seed, const int& _factor)
+	TextureData* TextureManager::getNoiseTexture(const unsigned int _width, const unsigned int _height, const unsigned int _seed, const int _factor)
 	{
 		return getNoiseTexture(_width, _height, _seed, _factor, TextureParameter::defaultParameters);
 	}
 
-	size_t TextureManager::preloadNoiseTexture(const int& _width, const int& _height, const unsigned int& _seed, const int& _factor, const TextureParameter& _parameters)
+	size_t TextureManager::preloadNoiseTexture(const unsigned int _width, const unsigned int _height, const unsigned int _seed, const int _factor,
+												const TextureParameter& _parameters)
 	{
 		if (_factor == 0)
 		{
@@ -182,7 +186,7 @@ namespace spehs
 			return std::hash<unsigned int>()(DEFAULT_TEXTURE_SEED);
 		}
 
-		size_t hash = std::hash<unsigned>()(_seed);
+		size_t hash = std::hash<unsigned int>()(_seed);
 		if (textureDataMap.find(hash) != textureDataMap.end())
 		{
 			exceptions::warning("Tryng to preload already existing noisetexture!");
@@ -212,6 +216,7 @@ namespace spehs
 			}
 		}
 
+		// TODO remove lambdas
 		//Generate texture data from noise
 		auto smoothNoise = [&](const double& _x, const double& _y)
 		{
@@ -289,12 +294,13 @@ namespace spehs
 		return hash;
 	}
 
-	size_t TextureManager::preloadNoiseTexture(const int& _width, const int& _height, const unsigned int& _seed, const int& _factor)
+	size_t TextureManager::preloadNoiseTexture(const unsigned int _width, const unsigned int _height, const unsigned int _seed, const int _factor)
 	{
 		return preloadNoiseTexture(_width, _height, _seed, _factor, TextureParameter::defaultParameters);
 	}
 
-	TextureData* TextureManager::createTexture(const std::string &_ID, const void* _uint8data, const int _width, const int _height, const TextureParameter& _parameters)
+	TextureData* TextureManager::createTexture(const std::string& _ID, const void* _uint8data, const unsigned int _width, const unsigned int _height,
+												const TextureParameter& _parameters)
 	{
 		size_t hash = std::hash<std::string>()(_ID);
 		auto it = textureDataMap.find(hash);
@@ -304,12 +310,13 @@ namespace spehs
 		return textureDataMap.find(preloadDataTexture(_ID, _uint8data, _width, _height, _parameters))->second;
 	}
 
-	TextureData* TextureManager::createTexture(const std::string &_ID, const void* _uint8data, const int _width, const int _height)
+	TextureData* TextureManager::createTexture(const std::string& _ID, const void* _uint8data, const unsigned int _width, const unsigned int _height)
 	{
 		return createTexture(_ID, _uint8data, _width, _height, TextureParameter::defaultParameters);
 	}
 
-	size_t TextureManager::preloadDataTexture(const std::string &_ID, const void* _uint8data, const int _width, const int _height, const TextureParameter& _parameters)
+	size_t TextureManager::preloadDataTexture(const std::string& _ID, const void* _uint8data, const unsigned int _width, const unsigned int _height,
+												const TextureParameter& _parameters)
 	{
 		size_t hash = std::hash<std::string>()(_ID);
 		if (textureDataMap.find(hash) != textureDataMap.end())
@@ -344,7 +351,7 @@ namespace spehs
 		return hash;
 	}
 
-	size_t TextureManager::preloadDataTexture(const std::string &_ID, const void* _uint8data, const int _width, const int _height)
+	size_t TextureManager::preloadDataTexture(const std::string& _ID, const void* _uint8data, const unsigned int _width, const unsigned int _height)
 	{
 		return preloadDataTexture(_ID, _uint8data, _width, _height, TextureParameter::defaultParameters);
 	}
@@ -354,7 +361,7 @@ namespace spehs
 		removeTextureData(std::hash<std::string>()(_texturePath));
 	}
 
-	void TextureManager::removeTextureData(const size_t& _hash)
+	void TextureManager::removeTextureData(const size_t _hash)
 	{
 		auto it = textureDataMap.find(_hash);
 		if (it != textureDataMap.end())
@@ -417,7 +424,8 @@ namespace spehs
 
 		return newTexData;
 	}
-	TextureData* TextureManager::toCubeMap(const std::string& _negx, const std::string& _posx, const std::string& _negy, const std::string& _posy, const std::string& _negz, const std::string& _posz, const TextureParameter& _parameters)
+	TextureData* TextureManager::toCubeMap(const std::string& _negx, const std::string& _posx, const std::string& _negy,
+											const std::string& _posy, const std::string& _negz, const std::string& _posz, const TextureParameter& _parameters)
 	{
 		GLuint cubemapData;
 
@@ -444,7 +452,8 @@ namespace spehs
 		glEnable(GL_TEXTURE_GEN_R);
 
 		// right, left, top, bottom, back, front
-		cubemapData = SOIL_load_OGL_cubemap(_negx.c_str(), _posx.c_str(), _posy.c_str(), _negy.c_str(), _negz.c_str(), _posz.c_str(), SOIL_LOAD_RGB, SOIL_CREATE_NEW_ID, SOIL_FLAG_MIPMAPS);
+		cubemapData = SOIL_load_OGL_cubemap(_negx.c_str(), _posx.c_str(), _posy.c_str(), _negy.c_str(), _negz.c_str(), _posz.c_str(),
+											SOIL_LOAD_RGB, SOIL_CREATE_NEW_ID, SOIL_FLAG_MIPMAPS);
 
 		glBindTexture(GL_TEXTURE_2D, 0);
 

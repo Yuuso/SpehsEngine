@@ -27,7 +27,7 @@ namespace spehs
 		void setCubeMap(const std::string& _filepath, const std::string& _fileEnding); // This automatically finds the 6 files if they are correctly named (e.g. _filepath + "negx" + _fileEnding)
 		void setCubeMap(const size_t& _hash); // Uses texture managers hashes to find cube map
 
-		void setShader(const int _index);
+		void setShader(const unsigned int _index);
 
 		size_t getCubeMapHash(){ return cubeMapHash; }
 

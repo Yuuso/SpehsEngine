@@ -26,16 +26,16 @@ namespace spehs
 
 		void getScreenVertices(spehs::Camera2D* _camera, std::vector<spehs::vec2>& deposit);
 
-		void resize(const float &_width, const float &_height);
+		void resize(const float _width, const float _height);
 		//Setters
-		void setUVScale(const float &_newScale);
-		void setUVScale(const float &_newScaleX, const float &_newScaleY);
-		void setUVScale(const spehs::vec2 &_newScale);
-		void setDrawMode(const DrawMode &_newDrawMode);
-		TextureData* setTexture(const std::string &_texturePath);
-		TextureData* setTexture(const size_t &_hash);
+		void setUVScale(const float _newScale);
+		void setUVScale(const float _newScaleX, const float _newScaleY);
+		void setUVScale(const spehs::vec2& _newScale);
+		void setDrawMode(const DrawMode _newDrawMode);
+		TextureData* setTexture(const std::string& _texturePath);
+		TextureData* setTexture(const size_t _hash);
 		void setTexture(const TextureData* _textureDataPtr);
-		void setTextureID(const unsigned int &_textureID);
+		void setTextureID(const unsigned int _textureID);
 
 		//Getters
 		float getArea();
@@ -55,6 +55,6 @@ namespace spehs
 
 		float width;
 		float height;
-		float radius;
+		float radius = 0.0f;
 	};
 }

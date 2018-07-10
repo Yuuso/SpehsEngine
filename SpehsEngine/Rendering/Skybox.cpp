@@ -11,7 +11,7 @@ namespace spehs
 	SkyBox::SkyBox(BatchManager3D& _batchManager)
 	{
 		mesh = _batchManager.createMesh();
-		mesh->setShader(DefaultSkybox);
+		mesh->setShaderIndex((unsigned int)ShaderName::DefaultSkybox);
 		mesh->setMesh("InvertedSphere");
 		mesh->setBlending(true);
 		mesh->setDepthTest(false);
@@ -54,8 +54,8 @@ namespace spehs
 		mesh->setTexture(_hash);
 	}
 
-	void SkyBox::setShader(const int _index)
+	void SkyBox::setShader(const unsigned int _index)
 	{
-		mesh->setShader(_index);
+		mesh->setShaderIndex(_index);
 	}
 }

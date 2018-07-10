@@ -69,7 +69,7 @@ namespace spehs
 			//Custom UV Coords for Button
 			if (_shapeID == spehs::Shape::BUTTON)
 			{
-				for (unsigned int i = 0; i < worldVertexArray.size(); i++)
+				for (size_t i = 0; i < worldVertexArray.size(); i++)
 				{
 					worldVertexArray[i].uv.u = (worldVertexArray[i].position.x);
 					worldVertexArray[i].uv.v = (-worldVertexArray[i].position.y);
@@ -109,7 +109,7 @@ namespace spehs
 			exceptions::fatalError("Can't create a polygon with less than 3 vertices!");
 
 		vertexArray.resize(_positionData.size());
-		for (unsigned i = 0; i < _positionData.size(); i++)
+		for (size_t i = 0; i < _positionData.size(); i++)
 		{
 			vertexArray[i].position = _positionData[i];
 		}
@@ -122,9 +122,8 @@ namespace spehs
 		: Primitive(_batchManager)
 		, width(_width)
 		, height(_height)
-		, radius(0.0f)
 	{
-		drawMode = TRIANGLE;
+		drawMode = DrawMode::TRIANGLE;
 		blending = true;
 	}
 
@@ -140,7 +139,7 @@ namespace spehs
 			glm::vec4 vertex;
 			scaledMatrix = glm::scale(glm::mat4(1.0f), glm::vec3(scaleX, scaleY, 0.0f));
 			scaledRotatedMatrix = glm::rotate(scaledMatrix, rotation, /*TODO1*/glm::vec3(rotationVector.x, rotationVector.y, rotationVector.z));
-			for (unsigned int i = 0; i < worldVertexArray.size(); i++)
+			for (size_t i = 0; i < worldVertexArray.size(); i++)
 			{
 				vertex = scaledRotatedMatrix * glm::vec4(vertexArray[i].position.x * width, vertexArray[i].position.y * height, 0.0f, 1.0f);
 				worldVertexArray[i].position = spehs::vec2(vertex.x + position.x, vertex.y + position.y);
@@ -148,12 +147,12 @@ namespace spehs
 			needUpdate = false;
 		}
 	}
-	
+
 	void Polygon::getScreenVertices(spehs::Camera2D* _camera, std::vector<spehs::vec2>& deposit)
 	{
 		if (cameraMatrixState)
 		{
-			for (unsigned i = 0; i < worldVertexArray.size(); i++)
+			for (size_t i = 0; i < worldVertexArray.size(); i++)
 			{
 				glm::vec2 vec(*_camera->projectionMatrix * glm::vec4(worldVertexArray[i].position.x, worldVertexArray[i].position.y, 0.0f, 1.0f));
 				deposit.push_back(spehs::vec2(vec.x, vec.y));
@@ -164,76 +163,76 @@ namespace spehs
 			spehs::exceptions::unexpectedError("Camera state not enabled, screen vertices function is useless.");
 		}
 	}
-	
-	void Polygon::resize(const float &_width, const float &_height)
+
+	void Polygon::resize(const float _width, const float _height)
 	{
 		width = _width;
 		height = _height;
 		needUpdate = true;
 	}
 
-	void Polygon::setUVScale(const float &_newScale)
+	void Polygon::setUVScale(const float _newScale)
 	{
-		for (unsigned int i = 0; i < worldVertexArray.size(); i++)
+		for (size_t i = 0; i < worldVertexArray.size(); i++)
 		{
 			worldVertexArray[i].uv.u *= _newScale;
 			worldVertexArray[i].uv.v *= _newScale;
 		}
 	}
 
-	void Polygon::setUVScale(const float &_newScaleX, const float &_newScaleY)
+	void Polygon::setUVScale(const float _newScaleX, const float _newScaleY)
 	{
-		for (unsigned int i = 0; i < worldVertexArray.size(); i++)
+		for (size_t i = 0; i < worldVertexArray.size(); i++)
 		{
 			worldVertexArray[i].uv.u *= _newScaleX;
 			worldVertexArray[i].uv.v *= _newScaleY;
 		}
 	}
 
-	void Polygon::setUVScale(const spehs::vec2 &_newScale)
+	void Polygon::setUVScale(const spehs::vec2& _newScale)
 	{
-		for (unsigned int i = 0; i < worldVertexArray.size(); i++)
+		for (size_t i = 0; i < worldVertexArray.size(); i++)
 		{
 			worldVertexArray[i].uv.u *= _newScale.x;
 			worldVertexArray[i].uv.v *= _newScale.y;
 		}
 	}
 
-	void Polygon::setDrawMode(const DrawMode &_newDrawMode)
+	void Polygon::setDrawMode(const DrawMode _newDrawMode)
 	{
 		drawMode = _newDrawMode;
 	}
 
-	TextureData* Polygon::setTexture(const std::string &_texturePath)
+	TextureData* Polygon::setTexture(const std::string& _texturePath)
 	{
 		TextureData* value = batchManager.textureManager.getTextureData(_texturePath);
 		textureDataID = value->textureDataID;
-		if (shaderIndex == DefaultPolygon)
-			shaderIndex = DefaultTexture;
+		if (shaderIndex == (unsigned int)ShaderName::DefaultPolygon)
+			shaderIndex = (unsigned int)ShaderName::DefaultTexture;
 		return value;
 	}
 
-	TextureData* Polygon::setTexture(const size_t &_hash)
+	TextureData* Polygon::setTexture(const size_t _hash)
 	{
 		TextureData* value = batchManager.textureManager.getTextureData(_hash);
 		textureDataID = value->textureDataID;
-		if (shaderIndex == DefaultPolygon)
-			shaderIndex = DefaultTexture;
+		if (shaderIndex == (unsigned int)ShaderName::DefaultPolygon)
+			shaderIndex = (unsigned int)ShaderName::DefaultTexture;
 		return value;
 	}
 
 	void Polygon::setTexture(const TextureData* _textureDataPtr)
 	{
 		textureDataID = _textureDataPtr->textureDataID;
-		if (shaderIndex == DefaultPolygon)
-			shaderIndex = DefaultTexture;
+		if (shaderIndex == (unsigned int)ShaderName::DefaultPolygon)
+			shaderIndex = (unsigned int)ShaderName::DefaultTexture;
 	}
 
-	void Polygon::setTextureID(const unsigned int &_textureID)
+	void Polygon::setTextureID(const unsigned int _textureID)
 	{
 		textureDataID = _textureID;
-		if (shaderIndex == DefaultPolygon)
-			shaderIndex = DefaultTexture;
+		if (shaderIndex == (unsigned int)ShaderName::DefaultPolygon)
+			shaderIndex = (unsigned int)ShaderName::DefaultTexture;
 	}
 
 	float Polygon::getArea()
@@ -252,7 +251,7 @@ namespace spehs
 	{
 		//Seems like this needs to be updated every time
 		float max = (spehs::vec2(position.x, position.y) - spehs::vec2(worldVertexArray[0].position.x, worldVertexArray[0].position.y)).getLength();
-		for (unsigned int i = 1; i < worldVertexArray.size(); i++)
+		for (size_t i = 1; i < worldVertexArray.size(); i++)
 		{
 			if ((spehs::vec2(position.x, position.y) - spehs::vec2(worldVertexArray[i].position.x, worldVertexArray[i].position.y)).getLength() > max)
 			{
@@ -265,7 +264,7 @@ namespace spehs
 
 	void Polygon::setUVCoords()
 	{
-		for (unsigned int i = 0; i < worldVertexArray.size(); i++)
+		for (size_t i = 0; i < worldVertexArray.size(); i++)
 		{
 			worldVertexArray[i].uv.u = (worldVertexArray[i].position.x + 0.5f) ;
 			worldVertexArray[i].uv.v = (-worldVertexArray[i].position.y + 0.5f) ;

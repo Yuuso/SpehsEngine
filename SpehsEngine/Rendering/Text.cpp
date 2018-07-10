@@ -35,11 +35,11 @@ namespace spehs
 	Text::Text(BatchManager& _batchManager, const PlaneDepth depth)
 		: batchManager(_batchManager)
 		, planeDepth(depth)
-		, shaderIndex(ShaderName::DefaultText)
 	{
 #ifdef _DEBUG
 		textAllocations++;
 #endif
+		shaderIndex = (unsigned int)ShaderName::DefaultText;
 	}
 
 	Text::Text(BatchManager& _batchManager, const std::string &_string, const PlaneDepth _depth)
@@ -142,7 +142,7 @@ namespace spehs
 		renderState = _state;
 	}
 
-	void Text::setFont(const std::string &_fontPath, const int &_size)
+	void Text::setFont(const std::string& _fontPath, const int _size)
 	{
 		setFont(batchManager.fontManager.getFont(_fontPath, _size));
 	}
@@ -353,7 +353,7 @@ namespace spehs
 		}
 	}
 
-	float Text::getX(const int characterIndex) const
+	float Text::getX(const size_t characterIndex) const
 	{
 		if (!font)
 		{
@@ -361,7 +361,7 @@ namespace spehs
 			return 0.0f;
 		}
 		int currentLineWidth = 0;
-		for (int i = 0; i <= string.size(); i++)
+		for (size_t i = 0; i <= string.size(); i++)
 		{
 			if (i >= characterIndex)
 				break;
@@ -381,7 +381,7 @@ namespace spehs
 		return position.x + (float)(currentLineWidth >> 6);
 	}
 
-	float Text::getY(const int characterIndex) const
+	float Text::getY(const size_t characterIndex) const
 	{
 		if (!font)
 		{

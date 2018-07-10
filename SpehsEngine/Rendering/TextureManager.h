@@ -71,9 +71,9 @@ namespace spehs
 
 	struct TextureData
 	{
-		TextureData(const GLuint& _dataID, const int& _width, const int& _height) : textureDataID(_dataID), width(_width), height(_height){}
-		TextureData(const GLuint& _dataID, const int& _width, const int& _height, const unsigned int& _seed) : textureDataID(_dataID), width(_width), height(_height), noiseSeed(_seed){}
-		int width, height;
+		TextureData(const GLuint _dataID, const unsigned int _width, const unsigned int _height) : textureDataID(_dataID), width(_width), height(_height) {}
+		TextureData(const GLuint _dataID, const unsigned int _width, const unsigned int _height, const unsigned int _seed) : textureDataID(_dataID), width(_width), height(_height), noiseSeed(_seed) {}
+		unsigned int width, height;
 		unsigned int noiseSeed;
 		GLuint textureDataID;
 	};
@@ -90,30 +90,30 @@ namespace spehs
 
 		TextureData* getTextureData(const std::string& _texturePath, const TextureParameter& _parameters); // Get texture data from path
 		TextureData* getTextureData(const std::string& _texturePath);
-		TextureData* getTextureData(const size_t& _hash); // Get texture data from hash
+		TextureData* getTextureData(const size_t _hash); // Get texture data from hash
 		size_t preloadTexture(const std::string& _texturePath, const TextureParameter& _parameters); // Loads texture and returns hash
 		size_t preloadTexture(const std::string& _texturePath); // Loads texture and returns hash
 
 		TextureData* getCubeMapData(const std::string& _negx, const std::string& _posx, // Get CubeMap data from path
 									const std::string& _negy, const std::string& _posy,
 									const std::string& _negz, const std::string& _posz, const TextureParameter& _parameters = TextureParameter::defaultParameters);
-		TextureData* getCubeMapData(const size_t& _hash); // Get CubeMap data from hash
+		TextureData* getCubeMapData(const size_t _hash); // Get CubeMap data from hash
 		size_t preloadCubeMap(const std::string& _negx, const std::string& _posx, // Loads CubeMap and returns hash
 								const std::string& _negy, const std::string& _posy,
 								const std::string& _negz, const std::string& _posz, const TextureParameter& _parameters = TextureParameter::defaultParameters);
 
-		TextureData* getNoiseTexture(const int& _width, const int& _height, const unsigned int& _seed, const int& _factor, const TextureParameter& _parameters);
-		TextureData* getNoiseTexture(const int& _width, const int& _height, const unsigned int& _seed, const int& _factor);
-		size_t preloadNoiseTexture(const int& _width, const int& _height, const unsigned int& _seed, const int& _factor, const TextureParameter& _parameters);
-		size_t preloadNoiseTexture(const int& _width, const int& _height, const unsigned int& _seed, const int& _factor);
+		TextureData* getNoiseTexture(const unsigned int _width, const unsigned int _height, const unsigned int _seed, const int _factor, const TextureParameter& _parameters);
+		TextureData* getNoiseTexture(const unsigned int _width, const unsigned int _height, const unsigned int _seed, const int _factor);
+		size_t preloadNoiseTexture(const unsigned int _width, const unsigned int _height, const unsigned int _seed, const int _factor, const TextureParameter& _parameters);
+		size_t preloadNoiseTexture(const unsigned int _width, const unsigned int _height, const unsigned int _seed, const int _factor);
 
-		TextureData* createTexture(const std::string &_ID, const void* _uint8data, const int _width, const int _height, const TextureParameter& _parameters);
-		TextureData* createTexture(const std::string &_ID, const void* _uint8data, const int _width, const int _height);
-		size_t preloadDataTexture(const std::string &_ID, const void* _uint8data, const int _width, const int _height, const TextureParameter& _parameters);
-		size_t preloadDataTexture(const std::string &_ID, const void* _uint8data, const int _width, const int _height);
+		TextureData* createTexture(const std::string& _ID, const void* _uint8data, const unsigned int _width, const unsigned int _height, const TextureParameter& _parameters);
+		TextureData* createTexture(const std::string& _ID, const void* _uint8data, const unsigned int _width, const unsigned int _height);
+		size_t preloadDataTexture(const std::string& _ID, const void* _uint8data, const unsigned int _width, const unsigned int _height, const TextureParameter& _parameters);
+		size_t preloadDataTexture(const std::string& _ID, const void* _uint8data, const unsigned int _width, const unsigned int _height);
 
 		void removeTextureData(const std::string& _texturePath);
-		void removeTextureData(const size_t& _hash);
+		void removeTextureData(const size_t _hash);
 		void clearAllTextureData();
 
 		void takeScreenshot(std::string directory);// Takes a screenshot and writes it to the specified directory

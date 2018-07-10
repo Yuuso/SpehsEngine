@@ -21,7 +21,7 @@ GLuint frameBufferVertexBufferObject = 0;
 
 bool postProcessingStarted = false;
 bool usePostProcessing = false;
-int shaderIndex = spehs::DefaultPostProc;
+int shaderIndex = (int)spehs::ShaderName::DefaultPostProc;
 
 
 namespace spehs

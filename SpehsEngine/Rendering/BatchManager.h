@@ -37,18 +37,18 @@ namespace spehs
 		BatchManager(Window& _window, ShaderManager& _shaderManager, Camera2D& _camera, const std::string& _name = "unnamed batch manager");
 		~BatchManager();
 
-		Polygon* createPolygon(const int &_shapeID, const PlaneDepth &_planeDepth, const float &_width, const float &_height);
-		Polygon* createPolygon(std::vector<spehs::Vertex> _vertexData, const PlaneDepth &_planeDepth, const float &_width, const float &_height);
-		Polygon* createPolygon(std::vector<spehs::Vertex> _vertexData, const float &_width, const float &_height);
-		Polygon* createPolygon(std::vector<spehs::vec2> _cuspData, const PlaneDepth &_planeDepth, const float &_width, const float &_height);
+		Polygon* createPolygon(const int _shapeID, const PlaneDepth _planeDepth, const float _width, const float _height);
+		Polygon* createPolygon(std::vector<spehs::Vertex> _vertexData, const PlaneDepth _planeDepth, const float _width, const float _height);
+		Polygon* createPolygon(std::vector<spehs::Vertex> _vertexData, const float _width, const float _height);
+		Polygon* createPolygon(std::vector<spehs::vec2> _cuspData, const PlaneDepth _planeDepth, const float _width, const float _height);
 
-		Line* createLine(const spehs::vec2 &_startPoint, const spehs::vec2 &_endPoint, const PlaneDepth &_planeDepth);
-		Line* createLine(const PlaneDepth &_planeDepth);
+		Line* createLine(const spehs::vec2& _startPoint, const spehs::vec2& _endPoint, const PlaneDepth _planeDepth);
+		Line* createLine(const PlaneDepth _planeDepth);
 
-		Point* createPoint(const PlaneDepth &_planeDepth);
+		Point* createPoint(const PlaneDepth _planeDepth);
 
-		Text* createText(const PlaneDepth &_planeDepth = DEPTH_MAX);
-		Text* createText(const std::string &_string, const PlaneDepth &_planeDepth = DEPTH_MAX);
+		Text* createText(const PlaneDepth _planeDepth = DEPTH_MAX);
+		Text* createText(const std::string& _string, const PlaneDepth _planeDepth = DEPTH_MAX);
 
 		void render(BatchRenderResults* results = nullptr);
 		void clearBatches();

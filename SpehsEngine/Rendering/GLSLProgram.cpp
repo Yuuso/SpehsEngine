@@ -4,8 +4,10 @@
 #include <GL/glew.h>
 
 #include "SpehsEngine/Rendering/GLSLProgram.h"
+#include "SpehsEngine/Rendering/Vertex3D.h"
 #include "SpehsEngine/Rendering/OpenGLError.h"
 #include "SpehsEngine/Core/Exceptions.h"
+#include "SpehsEngine/Core/Vertex.h"
 
 
 
@@ -66,14 +68,14 @@ namespace spehs
 		return true;
 	}
 
-	
+
 	void GLSLProgram::linkShaders()
 	{
 		glAttachShader(programID, vertexShaderID);
 		glAttachShader(programID, fragmentShaderID);
 
 		glLinkProgram(programID);
-		
+
 		GLint linkStatus = 0;
 		glGetProgramiv(programID, GL_LINK_STATUS, (int*) &linkStatus);
 		if (linkStatus == GL_FALSE)
@@ -94,7 +96,7 @@ namespace spehs
 				std::printf("\n%s", &(errorLog[0]));
 			exceptions::fatalError("Shaders failed to link!");
 		}
-		
+
 		glDetachShader(programID, vertexShaderID);
 		glDetachShader(programID, fragmentShaderID);
 		glDeleteShader(vertexShaderID);
@@ -106,7 +108,7 @@ namespace spehs
 
 	void GLSLProgram::addAttribute(const VertexAttributePosition _attrib, const std::string& _attributeName)
 	{
-		glBindAttribLocation(programID, _attrib, _attributeName.c_str());
+		glBindAttribLocation(programID, (GLuint)_attrib, _attributeName.c_str());
 		attributes.push_back(_attrib);
 
 		checkOpenGLErrors(__FILE__, __LINE__);
@@ -132,23 +134,68 @@ namespace spehs
 	void GLSLProgram::use()
 	{
 		glUseProgram(programID);
-		for (int i = 0; i < attributes.size(); i++)
-			glEnableVertexAttribArray(attributes[i]);
+		for (size_t i = 0; i < attributes.size(); i++)
+			glEnableVertexAttribArray((GLuint)attributes[i]);
 
 		checkOpenGLErrors(__FILE__, __LINE__);
+	}
+
+	void GLSLProgram::set2D()
+	{
+		for (size_t i = 0; i < attributes.size(); i++)
+		{
+			switch (attributes[i])
+			{
+			case VertexAttributePosition::VERTEX_POSITION:
+				glVertexAttribPointer((GLuint)VertexAttributePosition::VERTEX_POSITION, 3, GL_FLOAT,			GL_FALSE, sizeof(spehs::Vertex), reinterpret_cast<void*>(offsetof(spehs::Vertex, position)));
+				break;
+			case VertexAttributePosition::VERTEX_COLOR:
+				glVertexAttribPointer((GLuint)VertexAttributePosition::VERTEX_COLOR,	4, GL_UNSIGNED_BYTE,	GL_TRUE, sizeof(spehs::Vertex), reinterpret_cast<void*>(offsetof(spehs::Vertex, color)));
+				break;
+			case VertexAttributePosition::VERTEX_UV:
+				glVertexAttribPointer((GLuint)VertexAttributePosition::VERTEX_UV,		2, GL_FLOAT,			GL_FALSE, sizeof(spehs::Vertex), reinterpret_cast<void*>(offsetof(spehs::Vertex, uv)));
+				break;
+			default:
+				break;
+			}
+		}
+	}
+
+	void GLSLProgram::set3D()
+	{
+		for (size_t i = 0; i < attributes.size(); i++)
+		{
+			switch (attributes[i])
+			{
+			case VertexAttributePosition::VERTEX_POSITION:
+				glVertexAttribPointer((GLuint)VertexAttributePosition::VERTEX_POSITION, 3, GL_FLOAT,			GL_FALSE, sizeof(spehs::Vertex3D), reinterpret_cast<void*>(offsetof(spehs::Vertex3D, position)));
+				break;
+			case VertexAttributePosition::VERTEX_COLOR:
+				glVertexAttribPointer((GLuint)VertexAttributePosition::VERTEX_COLOR,	4, GL_UNSIGNED_BYTE,	GL_TRUE, sizeof(spehs::Vertex3D), reinterpret_cast<void*>(offsetof(spehs::Vertex3D, color)));
+				break;
+			case VertexAttributePosition::VERTEX_UV:
+				glVertexAttribPointer((GLuint)VertexAttributePosition::VERTEX_UV,		2, GL_FLOAT,			GL_FALSE, sizeof(spehs::Vertex3D), reinterpret_cast<void*>(offsetof(spehs::Vertex3D, uv)));
+				break;
+			case VertexAttributePosition::VERTEX_NORMAL:
+				glVertexAttribPointer((GLuint)VertexAttributePosition::VERTEX_NORMAL,	3, GL_FLOAT,			GL_FALSE, sizeof(spehs::Vertex3D), reinterpret_cast<void*>(offsetof(spehs::Vertex3D, normal)));
+				break;
+			default:
+				break;
+			}
+		}
 	}
 
 
 	void GLSLProgram::unuse()
 	{
 		glUseProgram(0);
-		for (int i = 0; i < attributes.size(); i++)
-			glDisableVertexAttribArray(attributes[i]);
+		for (size_t i = 0; i < attributes.size(); i++)
+			glDisableVertexAttribArray((GLuint)attributes[i]);
 
 		checkOpenGLErrors(__FILE__, __LINE__);
 	}
-	
-	
+
+
 	void GLSLProgram::compileShader(const std::string& filePath, GLuint id)
 	{
 		std::ifstream vertexFile(filePath);
@@ -164,7 +211,7 @@ namespace spehs
 
 		const char* contentsPtr = fileContents.c_str();
 		glShaderSource(id, 1, &contentsPtr, nullptr);
-		
+
 		glCompileShader(id);
 
 		checkOpenGLErrors(__FILE__, __LINE__);

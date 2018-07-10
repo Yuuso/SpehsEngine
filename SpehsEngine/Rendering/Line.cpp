@@ -21,7 +21,7 @@ namespace spehs
 		lineWidth = 1.0f;
 		planeDepth = _planeDepth;
 		blending = true;
-		drawMode = LINE;
+		drawMode = DrawMode::LINE;
 	}
 
 	Line::Line(BatchManager& _batchManager, const spehs::vec2& _startPoint, const spehs::vec2& _endPoint, const PlaneDepth& _planeDepth)
@@ -36,7 +36,7 @@ namespace spehs
 		lineWidth = 1.0f;
 		planeDepth = _planeDepth;
 		blending = true;
-		drawMode = LINE;
+		drawMode = DrawMode::LINE;
 	}
 
 	Line::~Line()

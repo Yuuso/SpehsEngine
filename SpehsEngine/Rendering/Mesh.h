@@ -19,7 +19,7 @@ namespace spehs
 {
 	class MeshBatch;
 	class ModelManager;
-	class TextureData;
+	struct TextureData;
 
 	class Mesh
 	{
@@ -52,7 +52,7 @@ namespace spehs
 		void setDepthTest (const bool _value);
 		void setRenderState(const Mesh& _other);
 		void setRenderState(const bool _newState);
-		void setShader(const int _newShaderIndex);
+		void setShaderIndex(const unsigned int _newShaderIndex);
 		void setBackFaceCulling(const bool _value);
 		TextureData* setTexture(const std::string& _texturePath);
 		TextureData* setTexture(const size_t _textureID);
@@ -63,7 +63,7 @@ namespace spehs
 		spehs::vec3 getRotation() const { return rotation; }
 		spehs::vec3 getScale() const { return scale; }
 		bool getRenderState() const { return renderState; }
-		int getShaderIndex() const { return shaderIndex; }
+		unsigned int getShaderIndex() const { return shaderIndex; }
 		spehs::Color getColor() const { return color; }
 		spehs::Color::Component getAlpha() const { return color.a; }
 
@@ -76,23 +76,23 @@ namespace spehs
 		Mesh(BatchManager3D& batchManager, const std::string& _filepath);
 		~Mesh();
 
-		bool backFaceCulling;
-		bool readyForDelete;
-		bool renderState; // Whether Mesh is rendered or not
-		bool needUpdate;
-		bool blending;
-		bool depthTest;
-		int shaderIndex;
-		GLuint textureDataID;
-		spehs::vec3 position;
-		spehs::vec3 rotation;
-		spehs::vec3 scale;
-		Color color;
+		bool backFaceCulling = true;
+		bool readyForDelete = false;
+		bool renderState = true; // Whether Mesh is rendered or not
+		bool needUpdate = true;
+		bool blending = false;
+		bool depthTest = true;
+		unsigned int shaderIndex;
+		GLuint textureDataID = 0;
+		spehs::vec3 position = spehs::vec3::zero;
+		spehs::vec3 rotation = spehs::vec3::zero;
+		spehs::vec3 scale = spehs::vec3(1.0f, 1.0f, 1.0f);
+		Color color = Color(255, 255, 255, 255);
 
-		glm::mat4 scaledMatrix;
-		glm::mat4 scaledRotatedMatrix;
-		glm::mat4 transformMatrix;
-		glm::mat4 normalMatrix;
+		glm::mat4 scaledMatrix = glm::mat4(1.0f);
+		glm::mat4 scaledRotatedMatrix = glm::mat4(1.0f);
+		glm::mat4 transformMatrix = glm::mat4(1.0f);
+		glm::mat4 normalMatrix = glm::mat4(1.0f);
 
 		std::vector<spehs::Vertex3D> vertexArray; // Original vertices
 		std::vector<GLushort> elementArray; // Indices

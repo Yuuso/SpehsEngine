@@ -42,50 +42,50 @@ namespace spehs
 			exceptions::warning("BatchManager cleaned up " + std::to_string(cleanUpPrimitives) + " primitives!");
 	}
 
-	Polygon* BatchManager::createPolygon(const int &_shapeID, const PlaneDepth &_planeDepth, const float &_width, const float &_height)
+	Polygon* BatchManager::createPolygon(const int _shapeID, const PlaneDepth _planeDepth, const float _width, const float _height)
 	{
 		primitives.push_back(new Polygon(*this, _shapeID, _planeDepth, _width, _height));
 		return primitives.back()->getPolygonPtr();
 	}
-	Polygon* BatchManager::createPolygon(std::vector<Vertex> _vertexData, const PlaneDepth &_planeDepth, const float &_width, const float &_height)
+	Polygon* BatchManager::createPolygon(std::vector<Vertex> _vertexData, const PlaneDepth _planeDepth, const float _width, const float _height)
 	{
 		primitives.push_back(new Polygon(*this, _vertexData, _planeDepth, _width, _height));
 		return primitives.back()->getPolygonPtr();
 	}
-	Polygon* BatchManager::createPolygon(std::vector<Vertex> _vertexData, const float &_width, const float &_height)
+	Polygon* BatchManager::createPolygon(std::vector<Vertex> _vertexData, const float _width, const float _height)
 	{
 		primitives.push_back(new Polygon(*this, _vertexData, _width, _height));
 		return primitives.back()->getPolygonPtr();
 	}
-	Polygon* BatchManager::createPolygon(std::vector<spehs::vec2> _cuspData, const PlaneDepth &_planeDepth, const float &_width, const float &_height)
+	Polygon* BatchManager::createPolygon(std::vector<spehs::vec2> _cuspData, const PlaneDepth _planeDepth, const float _width, const float _height)
 	{
 		primitives.push_back(new Polygon(*this, _cuspData, _planeDepth, _width, _height));
 		return primitives.back()->getPolygonPtr();
 	}
 
-	Line* BatchManager::createLine(const spehs::vec2 &_startPoint, const spehs::vec2 &_endPoint, const PlaneDepth &_planeDepth)
+	Line* BatchManager::createLine(const spehs::vec2& _startPoint, const spehs::vec2& _endPoint, const PlaneDepth _planeDepth)
 	{
 		primitives.push_back(new Line(*this, _startPoint, _endPoint, _planeDepth));
 		return primitives.back()->getLinePtr();
 	}
-	Line* BatchManager::createLine(const PlaneDepth &_planeDepth)
+	Line* BatchManager::createLine(const PlaneDepth _planeDepth)
 	{
 		primitives.push_back(new Line(*this, _planeDepth));
 		return primitives.back()->getLinePtr();
 	}
 
-	Point* BatchManager::createPoint(const PlaneDepth &_planeDepth)
+	Point* BatchManager::createPoint(const PlaneDepth _planeDepth)
 	{
 		primitives.push_back(new Point(*this, _planeDepth));
 		return primitives.back()->getPointPtr();
 	}
 
-	Text* BatchManager::createText(const PlaneDepth &_planeDepth)
+	Text* BatchManager::createText(const PlaneDepth _planeDepth)
 	{
 		texts.push_back(new Text(*this, _planeDepth));
 		return texts.back();
 	}
-	Text* BatchManager::createText(const std::string &_string, const PlaneDepth &_planeDepth)
+	Text* BatchManager::createText(const std::string& _string, const PlaneDepth _planeDepth)
 	{
 		texts.push_back(new Text(*this, _string, _planeDepth));
 		return texts.back();
@@ -118,7 +118,7 @@ namespace spehs
 				{
 					if (batches[j]->check(*(primitives[i])))
 					{
-						batches[j]->push(primitives[i]);
+						batches[j]->push(*primitives[i]);
 						batchFound = true;
 						break;
 					}
@@ -128,7 +128,7 @@ namespace spehs
 				{
 					batches.push_back(new PrimitiveBatch(*this, primitives[i]->cameraMatrixState, primitives[i]->planeDepth, primitives[i]->blending, primitives[i]->shaderIndex,
 						primitives[i]->textureDataID, primitives[i]->drawMode, primitives[i]->lineWidth));
-					batches.back()->push(primitives[i]);
+					batches.back()->push(*primitives[i]);
 				}
 				i++;
 			}
@@ -156,7 +156,7 @@ namespace spehs
 				{
 					if (batches[j]->check(*(texts[i])))
 					{
-						batches[j]->push(texts[i]);
+						batches[j]->push(*texts[i]);
 						batchFound = true;
 						break;
 					}
@@ -165,7 +165,7 @@ namespace spehs
 				if (!batchFound)
 				{
 					batches.push_back(new TextBatch(*this, texts[i]->cameraMatrixState, texts[i]->planeDepth, texts[i]->shaderIndex));
-					batches.back()->push(texts[i]);
+					batches.back()->push(*texts[i]);
 				}
 				i++;
 			}

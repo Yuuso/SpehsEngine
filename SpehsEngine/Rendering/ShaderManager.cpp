@@ -12,25 +12,22 @@
 
 namespace spehs
 {
-	Uniforms::Uniforms(GLSLProgram* _shader)
+	Uniforms::Uniforms(GLSLProgram& _shader)
+		: shader(_shader)
 	{
-		textureDataID = 0;
-		shader = _shader;
-
-		cameraLocation = shader->getUniformLocation("cameraMatrix");
+		cameraLocation = shader.getUniformLocation("cameraMatrix");
 	}
 	Uniforms::~Uniforms()
 	{}
 	void Uniforms::setUniforms()
 	{
 		spehs::setUniform_mat4(cameraLocation, cameraMatrix);
-
 		checkOpenGLErrors(__FILE__, __LINE__);
 	}
 
-	DefaultTextureUniforms::DefaultTextureUniforms(spehs::GLSLProgram* _shader) : Uniforms(_shader)
+	DefaultTextureUniforms::DefaultTextureUniforms(GLSLProgram& _shader) : Uniforms(_shader)
 	{
-		textureLocation = shader->getUniformLocation("tex");
+		textureLocation = shader.getUniformLocation("tex");
 	}
 	DefaultTextureUniforms::~DefaultTextureUniforms(){}
 	void DefaultTextureUniforms::setUniforms()
@@ -40,9 +37,9 @@ namespace spehs
 		Uniforms::setUniforms();
 	}
 
-	DefaultSkyBoxUniforms::DefaultSkyBoxUniforms(spehs::GLSLProgram* _shader) : Uniforms(_shader)
+	DefaultSkyBoxUniforms::DefaultSkyBoxUniforms(GLSLProgram& _shader) : Uniforms(_shader)
 	{
-		textureLocation = shader->getUniformLocation("tex");
+		textureLocation = shader.getUniformLocation("tex");
 	}
 	DefaultSkyBoxUniforms::~DefaultSkyBoxUniforms(){}
 	void DefaultSkyBoxUniforms::setUniforms()
@@ -53,7 +50,7 @@ namespace spehs
 	}
 
 
-	Shader* buildDefaultShader(const int _index)
+	void buildDefaultShader(Shader& shader)
 	{
 #pragma region Default Shaders
 		//
@@ -269,7 +266,7 @@ namespace spehs
 			"	}\n"
 			"	diffuse = diffuse * lambertian;\n"
 			"	specular = specular * spec;\n"
-			"	color = vec4(ambient + attenuation * (diffuse + specular), 1.0);\n"
+			"	color = vec4(ambient + attenuation * (diffuse + specular), fragmentColor.a);\n"
 			"}\n"
 		};
 		//
@@ -299,140 +296,139 @@ namespace spehs
 		};
 		//
 #pragma endregion
-		Shader* result = nullptr;
-		spehs::GLSLProgram* defaultShader = new spehs::GLSLProgram();
-		switch (_index)
+		switch ((ShaderName)shader.index)
 		{
-		case DefaultPolygon:
-			defaultShader->compileShadersFromSource(defaultPolygonVert, defaultPolygonFrag);
-			defaultShader->addAttribute(VertexAttributePosition::VERTEX_POSITION, "vertexPosition");
-			defaultShader->addAttribute(VertexAttributePosition::VERTEX_COLOR, "vertexColor");
-			defaultShader->linkShaders();
-			result = new spehs::Shader(spehs::DefaultPolygon, defaultShader, new Uniforms(defaultShader));
+		case ShaderName::DefaultPolygon:
+			shader.shader.compileShadersFromSource(defaultPolygonVert, defaultPolygonFrag);
+			shader.shader.addAttribute(VertexAttributePosition::VERTEX_POSITION, "vertexPosition");
+			shader.shader.addAttribute(VertexAttributePosition::VERTEX_COLOR, "vertexColor");
+			shader.shader.linkShaders();
+			shader.uniforms = new Uniforms(shader.shader);
 			break;
-		case DefaultTexture:
-			defaultShader->compileShadersFromSource(defaultTextureVert, defaultTextureFrag);
-			defaultShader->addAttribute(VertexAttributePosition::VERTEX_POSITION, "vertexPosition");
-			defaultShader->addAttribute(VertexAttributePosition::VERTEX_COLOR, "vertexColor");
-			defaultShader->addAttribute(VertexAttributePosition::VERTEX_UV, "vertexUV");
-			defaultShader->linkShaders();
-			result = new spehs::Shader(spehs::DefaultTexture, defaultShader, new DefaultTextureUniforms(defaultShader));
+		case ShaderName::DefaultTexture:
+			shader.shader.compileShadersFromSource(defaultTextureVert, defaultTextureFrag);
+			shader.shader.addAttribute(VertexAttributePosition::VERTEX_POSITION, "vertexPosition");
+			shader.shader.addAttribute(VertexAttributePosition::VERTEX_COLOR, "vertexColor");
+			shader.shader.addAttribute(VertexAttributePosition::VERTEX_UV, "vertexUV");
+			shader.shader.linkShaders();
+			shader.uniforms = new DefaultTextureUniforms(shader.shader);
 			break;
-		case DefaultPostProc:
-			defaultShader->compileShadersFromSource(defaultPostProcVert, defaultPostProcFrag);
-			defaultShader->addAttribute(VertexAttributePosition::VERTEX_POSITION, "vertexPosition");
-			defaultShader->linkShaders();
-			result = new spehs::Shader(spehs::DefaultPostProc, defaultShader, new DefaultTextureUniforms(defaultShader));
+		case ShaderName::DefaultPostProc:
+			shader.shader.compileShadersFromSource(defaultPostProcVert, defaultPostProcFrag);
+			shader.shader.addAttribute(VertexAttributePosition::VERTEX_POSITION, "vertexPosition");
+			shader.shader.linkShaders();
+			shader.uniforms = new DefaultTextureUniforms(shader.shader);
 			break;
-		case DefaultText:
-			defaultShader->compileShadersFromSource(defaultTextVert, defaultTextFrag);
-			defaultShader->addAttribute(VertexAttributePosition::VERTEX_POSITION, "vertexPosition");
-			defaultShader->addAttribute(VertexAttributePosition::VERTEX_COLOR, "vertexColor");
-			defaultShader->addAttribute(VertexAttributePosition::VERTEX_UV, "vertexUV");
-			defaultShader->linkShaders();
-			result = new spehs::Shader(spehs::DefaultText, defaultShader, new DefaultTextureUniforms(defaultShader));
+		case ShaderName::DefaultText:
+			shader.shader.compileShadersFromSource(defaultTextVert, defaultTextFrag);
+			shader.shader.addAttribute(VertexAttributePosition::VERTEX_POSITION, "vertexPosition");
+			shader.shader.addAttribute(VertexAttributePosition::VERTEX_COLOR, "vertexColor");
+			shader.shader.addAttribute(VertexAttributePosition::VERTEX_UV, "vertexUV");
+			shader.shader.linkShaders();
+			shader.uniforms = new DefaultTextureUniforms(shader.shader);
 			break;
-		case DefaultMesh:
-			defaultShader->compileShadersFromSource(defaultMeshVert, defaultMeshFrag);
-			defaultShader->addAttribute(VertexAttributePosition::VERTEX_POSITION, "vertexPosition");
-			defaultShader->addAttribute(VertexAttributePosition::VERTEX_COLOR, "vertexColor");
-			defaultShader->addAttribute(VertexAttributePosition::VERTEX_UV, "vertexUV");
-			defaultShader->addAttribute(VertexAttributePosition::VERTEX_NORMAL, "vertexNormal");
-			defaultShader->linkShaders();
-			result = new spehs::Shader(spehs::DefaultMesh, defaultShader, new Uniforms(defaultShader));
+		case ShaderName::DefaultMesh:
+			shader.shader.compileShadersFromSource(defaultMeshVert, defaultMeshFrag);
+			shader.shader.addAttribute(VertexAttributePosition::VERTEX_POSITION, "vertexPosition");
+			shader.shader.addAttribute(VertexAttributePosition::VERTEX_COLOR, "vertexColor");
+			shader.shader.addAttribute(VertexAttributePosition::VERTEX_UV, "vertexUV"); // TODO remove after everything else works
+			shader.shader.addAttribute(VertexAttributePosition::VERTEX_NORMAL, "vertexNormal");
+			shader.shader.linkShaders();
+			shader.uniforms = new Uniforms(shader.shader);
 			break;
-		case DefaultTextureMesh:
-			defaultShader->compileShadersFromSource(defaultTextureMeshVert, defaultTextureMeshFrag);
-			defaultShader->addAttribute(VertexAttributePosition::VERTEX_POSITION, "vertexPosition");
-			defaultShader->addAttribute(VertexAttributePosition::VERTEX_COLOR, "vertexColor");
-			defaultShader->addAttribute(VertexAttributePosition::VERTEX_UV, "vertexUV");
-			defaultShader->addAttribute(VertexAttributePosition::VERTEX_NORMAL, "vertexNormal");
-			defaultShader->linkShaders();
-			result = new spehs::Shader(spehs::DefaultTextureMesh, defaultShader, new DefaultTextureUniforms(defaultShader));
+		case ShaderName::DefaultTextureMesh:
+			shader.shader.compileShadersFromSource(defaultTextureMeshVert, defaultTextureMeshFrag);
+			shader.shader.addAttribute(VertexAttributePosition::VERTEX_POSITION, "vertexPosition");
+			shader.shader.addAttribute(VertexAttributePosition::VERTEX_COLOR, "vertexColor");
+			shader.shader.addAttribute(VertexAttributePosition::VERTEX_UV, "vertexUV");
+			shader.shader.addAttribute(VertexAttributePosition::VERTEX_NORMAL, "vertexNormal");
+			shader.shader.linkShaders();
+			shader.uniforms = new DefaultTextureUniforms(shader.shader);
 			break;
-		case DefaultSkybox:
-			defaultShader->compileShadersFromSource(defaultSkyBoxVert, defaultSkyBoxFrag);
-			defaultShader->addAttribute(VertexAttributePosition::VERTEX_POSITION, "vertexPosition");
-			defaultShader->linkShaders();
-			result = new spehs::Shader(spehs::DefaultSkybox, defaultShader, new DefaultSkyBoxUniforms(defaultShader));
+		case ShaderName::DefaultSkybox:
+			shader.shader.compileShadersFromSource(defaultSkyBoxVert, defaultSkyBoxFrag);
+			shader.shader.addAttribute(VertexAttributePosition::VERTEX_POSITION, "vertexPosition");
+			shader.shader.linkShaders();
+			shader.uniforms = new DefaultSkyBoxUniforms(shader.shader);
 			break;
 		default:
 			exceptions::fatalError("Default shader index out of reach!");
 			break;
 		}
-		return result;
 	}
 	ShaderManager::ShaderManager()
 	{
-		for (int i = 0; i < DefaultShaderCount; i++)
+		for (size_t i = 0; i < (size_t)ShaderName::DefaultShaderCount; i++)
 		{
-			shaderPrograms.push_back(buildDefaultShader(i));
+			buildDefaultShader(addShader());
 		}
 	}
 	ShaderManager::~ShaderManager()
 	{
-		for (unsigned int i = 0; i < shaderPrograms.size(); i++)
-		{
+		for (size_t i = 0; i < shaderPrograms.size(); i++)
 			delete shaderPrograms[i];
-		}
 	}
-	void ShaderManager::pushShader(Shader* _newShader)
+	Shader& ShaderManager::addShader()
 	{
-		shaderPrograms.push_back(_newShader);
+		const int index = (int)shaderPrograms.size();
+		shaderPrograms.push_back(new Shader(index));
+		return *shaderPrograms.back();
 	}
-	void ShaderManager::reload(int _index, Shader* _newShader)
-	{
-		if (shaderPrograms.size() < _index + 1)
-		{
-			spehs::exceptions::unexpectedError("Trying to access a non-existing shader!");
-			return;
-		}
-		delete shaderPrograms[_index];
-		shaderPrograms[_index] = _newShader;
-	}
-	Shader* ShaderManager::getShader(int _index)
+	Shader& ShaderManager::getShader(const size_t _index)
 	{
 		if (shaderPrograms.size() < _index + 1)
 		{
-			spehs::exceptions::unexpectedError("Trying to access a non-existing shader!");
-			return nullptr;
+			exceptions::fatalError("ShaderManager::getShader is trying to access a non-existing shader!");
 		}
-		return shaderPrograms[_index];
+		return *shaderPrograms[_index];
 	}
-	void ShaderManager::setUniforms(int _index)
+	void ShaderManager::setUniforms(const size_t _index)
 	{
 		if (shaderPrograms.size() < _index + 1)
 		{
-			spehs::exceptions::unexpectedError("Trying to access a non-existing shader!");
-			return;
+			exceptions::fatalError("ShaderManager::setUniforms is trying to access a non-existing shader!");
 		}
 		shaderPrograms[_index]->uniforms->setUniforms();
 	}
-	void ShaderManager::use(int _index)
+	void ShaderManager::use(const size_t _index)
 	{
 		if (shaderPrograms.size() < _index + 1)
 		{
-			spehs::exceptions::unexpectedError("Trying to access a non-existing shader!");
-			return;
+			exceptions::fatalError("ShaderManager::use is trying to access a non-existing shader!");
 		}
-		shaderPrograms[_index]->shader->use();
+		shaderPrograms[_index]->shader.use();
 	}
-	void ShaderManager::unuse(int _index)
+	void ShaderManager::set2D(const size_t _index)
 	{
 		if (shaderPrograms.size() < _index + 1)
 		{
-			spehs::exceptions::unexpectedError("Trying to access a non-existing shader!");
-			return;
+			exceptions::fatalError("ShaderManager::set2D is trying to access a non-existing shader!");
 		}
-		shaderPrograms[_index]->shader->unuse();
+		shaderPrograms[_index]->shader.set2D();
 	}
-	size_t ShaderManager::size()
+	void ShaderManager::set3D(const size_t _index)
+	{
+		if (shaderPrograms.size() < _index + 1)
+		{
+			exceptions::fatalError("ShaderManager::set3D is trying to access a non-existing shader!");
+		}
+		shaderPrograms[_index]->shader.set3D();
+	}
+	void ShaderManager::unuse(const size_t _index)
+	{
+		if (shaderPrograms.size() < _index + 1)
+		{
+			exceptions::fatalError("ShaderManager::unuse is trying to access a non-existing shader!");
+		}
+		shaderPrograms[_index]->shader.unuse();
+	}
+	size_t ShaderManager::size() const
 	{
 		return shaderPrograms.size();
 	}
 
 
-	void bind2DTexture(const GLuint &_textureID, const int _index)
+	void bind2DTexture(const GLuint &_textureID, const unsigned int _index)
 	{
 		switch (_index)
 		{
@@ -462,7 +458,7 @@ namespace spehs
 
 		checkOpenGLErrors(__FILE__, __LINE__);
 	}
-	void bindCubeMapTexture(const GLuint &_textureID, const int _index)
+	void bindCubeMapTexture(const GLuint& _textureID, const unsigned int _index)
 	{
 		switch (_index)
 		{
@@ -494,67 +490,67 @@ namespace spehs
 
 		checkOpenGLErrors(__FILE__, __LINE__);
 	}
-	void setUniform_int(const GLint &_location, const int &_value)
+	void setUniform_int(const GLint& _location, const int _value)
 	{
 		glUniform1i(_location, _value);
 
 		checkOpenGLErrors(__FILE__, __LINE__);
 	}
-	void setUniform_uint(const GLuint &_location, const int &_value)
+	void setUniform_uint(const GLuint& _location, const int _value)
 	{
 		glUniform1ui(_location, _value);
 
 		checkOpenGLErrors(__FILE__, __LINE__);
 	}
-	void setUniform_float(const GLint &_location, const float &_value)
+	void setUniform_float(const GLint& _location, const float _value)
 	{
 		glUniform1f(_location, _value);
 
 		checkOpenGLErrors(__FILE__, __LINE__);
 	}
-	void setUniform_vec2(const GLint &_location, const spehs::vec2 &_value)
+	void setUniform_vec2(const GLint& _location, const spehs::vec2 &_value)
 	{
 		glUniform2fv(_location, 1, &_value[0]);
 
 		checkOpenGLErrors(__FILE__, __LINE__);
 	}
-	void setUniform_vec3(const GLint &_location, const spehs::vec3 &_value)
+	void setUniform_vec3(const GLint& _location, const spehs::vec3 &_value)
 	{
 		glUniform3fv(_location, 1, &_value[0]);
 
 		checkOpenGLErrors(__FILE__, __LINE__);
 	}
-	void setUniform_vec4(const GLint &_location, const spehs::vec4 &_value)
+	void setUniform_vec4(const GLint& _location, const spehs::vec4 &_value)
 	{
 		glUniform4fv(_location, 1, &_value[0]);
 
 		checkOpenGLErrors(__FILE__, __LINE__);
 	}
-	void setUniform_ivec2(const GLint &_location, const spehs::ivec2 &_value)
+	void setUniform_ivec2(const GLint& _location, const spehs::ivec2 &_value)
 	{
 		glUniform2iv(_location, 1, &_value[0]);
 
 		checkOpenGLErrors(__FILE__, __LINE__);
 	}
-	void setUniform_ivec3(const GLint &_location, const spehs::ivec3 &_value)
+	void setUniform_ivec3(const GLint& _location, const spehs::ivec3 &_value)
 	{
 		glUniform3iv(_location, 1, &_value[0]);
 
 		checkOpenGLErrors(__FILE__, __LINE__);
 	}
-	void setUniform_ivec4(const GLint &_location, const spehs::ivec4 &_value)
+	void setUniform_ivec4(const GLint& _location, const spehs::ivec4 &_value)
 	{
 		glUniform4iv(_location, 1, &_value[0]);
 
 		checkOpenGLErrors(__FILE__, __LINE__);
 	}
-	void setUniform_mat3(const GLint &_location, const glm::mat3 &_value, bool _transpose)
+	void setUniform_mat3(const GLint& _location, const glm::mat3 &_value, const bool _transpose)
 	{
 		glUniformMatrix3fv(_location, 1, (GLboolean) _transpose, &_value[0][0]);
 
 		checkOpenGLErrors(__FILE__, __LINE__);
 	}
-	void setUniform_mat4(const GLint &_location, const glm::mat4 &_value, bool _transpose)
+	void setUniform_mat4(const GLint& _location, const glm::mat4 &_value, const bool _transpose)
 	{
 		glUniformMatrix4fv(_location, 1, (GLboolean) _transpose, &_value[0][0]);
 

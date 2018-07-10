@@ -16,7 +16,9 @@
 #include <atomic>
 
 
+#ifndef GLM_FORCE_RADIANS
 #define GLM_FORCE_RADIANS
+#endif
 
 
 std::atomic<int> meshAllocations;
@@ -27,26 +29,11 @@ namespace spehs
 {
 	Mesh::Mesh(BatchManager3D& _batchManager)
 		: batchManager(_batchManager)
-		, backFaceCulling(true)
-		, readyForDelete(false)
-		, renderState(true)
-		, needUpdate(true)
-		, blending(false)
-		, depthTest(true)
-		, shaderIndex(DefaultMesh)
-		, textureDataID(0)
-		, position(spehs::vec3::zero)
-		, rotation(spehs::vec3::zero)
-		, scale(1.0f, 1.0f, 1.0f)
-		, color(255, 255, 255, 255)
-		, scaledMatrix(1.0f)
-		, scaledRotatedMatrix(1.0f)
-		, transformMatrix(1.0f)
-		, normalMatrix(1.0f)
 	{
 #ifdef _DEBUG
 		meshAllocations++;
 #endif
+		shaderIndex = (unsigned int)ShaderName::DefaultMesh;
 	}
 	Mesh::Mesh(BatchManager3D& _batchManager, const std::string& _filepath) : Mesh(_batchManager)
 	{
@@ -264,13 +251,8 @@ namespace spehs
 	{
 		renderState = _newState;
 	}
-	void Mesh::setShader(const int _newShaderIndex)
+	void Mesh::setShaderIndex(const unsigned int _newShaderIndex)
 	{
-		if (batchManager.shaderManager.getShader(_newShaderIndex) == nullptr)
-		{
-			exceptions::unexpectedError("Trying to set a non-existing shader to Primitive!");
-			return;
-		}
 		shaderIndex = _newShaderIndex;
 	}
 	void Mesh::setBackFaceCulling(const bool _value)
@@ -281,22 +263,22 @@ namespace spehs
 	{
 		TextureData* value = batchManager.textureManager.getTextureData(_texturePath);
 		textureDataID = value->textureDataID;
-		if (shaderIndex == DefaultPolygon)
-			shaderIndex = DefaultTexture;
+		if (shaderIndex == (unsigned int)ShaderName::DefaultMesh)
+			shaderIndex = (unsigned int)ShaderName::DefaultTextureMesh;
 		return value;
 	}
 	TextureData* Mesh::setTexture(const size_t _textureID)
 	{
 		TextureData* value = batchManager.textureManager.getTextureData(_textureID);
 		textureDataID = value->textureDataID;
-		if (shaderIndex == DefaultPolygon)
-			shaderIndex = DefaultTexture;
+		if (shaderIndex == (unsigned int)ShaderName::DefaultMesh)
+			shaderIndex = (unsigned int)ShaderName::DefaultTextureMesh;
 		return value;
 	}
 	void Mesh::setTexture(TextureData* _textureDataPtr)
 	{
 		textureDataID = _textureDataPtr->textureDataID;
-		if (shaderIndex == DefaultPolygon)
-			shaderIndex = DefaultTexture;
+		if (shaderIndex == (unsigned int)ShaderName::DefaultMesh)
+			shaderIndex = (unsigned int)ShaderName::DefaultTextureMesh;
 	}
 }

@@ -23,7 +23,7 @@ namespace spehs
 	class BatchManager;
 	class PrimitiveBatch;
 
-	enum DrawMode : int
+	enum class DrawMode : int
 	{
 		UNDEFINED = -1,
 
@@ -65,29 +65,29 @@ namespace spehs
 
 		//Setters
 		void setPosition(const float _x, const float _y);
-		void setPosition(const spehs::vec2 &_newPosition);
+		void setPosition(const spehs::vec2& _newPosition);
 		void setPosition(const Primitive& _other);
-		void translate(const float &_x, const float &_y);
+		void translate(const float _x, const float _y);
 		void translate(const spehs::vec2& _translation);
-		void setScale(const float &_newScale);
-		void setScale(const float &_newScaleX, const float &_newScaleY);
-		void setScale(const spehs::vec2 &_newScale);
+		void setScale(const float _newScale);
+		void setScale(const float _newScaleX, const float _newScaleY);
+		void setScale(const spehs::vec2& _newScale);
 		void setScaleX(const float _newScaleX);
 		void setScaleY(const float _newScaleX);
-		void setRotation(const float &_newRotation);
-		void setRotation(const float &_newRotation, const spehs::vec3 &_newRotationVector);
+		void setRotation(const float _newRotation);
+		void setRotation(const float _newRotation, const spehs::vec3& _newRotationVector);
 		void setRotation(const Primitive& _other);
 		void rotate(const float _rotation);
-		void setRotationVector(const spehs::vec3 &_newRotationVector);
+		void setRotationVector(const spehs::vec3& _newRotationVector);
 		void setColor(const Primitive& other);
 		void setColor(const spehs::Color& _newColor) override;
 		void setAlpha(const spehs::Color::Component& _newAlpha) override;
 		void setCameraMatrixState(const bool _newState);
-		void setPlaneDepth(const PlaneDepth &_newPlaneDepth);
-		void setLineWidth(const float &_newWidth);
+		void setPlaneDepth(const PlaneDepth _newPlaneDepth);
+		void setLineWidth(const float _newWidth);
 		void setRenderState(const bool _newState);
 		void setRenderState(const Primitive& _other);
-		void setShader(const int &_newShaderIndex);
+		void setShaderIndex(const unsigned int _newShaderIndex);
 		void setBlending(const bool _newState);
 
 		//Getters
@@ -98,7 +98,7 @@ namespace spehs
 		bool getCameraMatrixState() const { return cameraMatrixState; }
 		bool getRenderState() const { return renderState; }
 		PlaneDepth getPlaneDepth() const { return planeDepth; }
-		int getShaderIndex() const { return shaderIndex; }
+		unsigned int getShaderIndex() const { return shaderIndex; }
 		spehs::Color getColor() const { return primitiveColor; }
 		spehs::Color::Component getAlpha() const { return primitiveColor.a; }
 		float getScaleX() const { return scaleX; }
@@ -111,24 +111,23 @@ namespace spehs
 		Primitive(BatchManager& batchManager);
 		virtual ~Primitive();
 
-		bool readyForDelete;
-		bool blending;
-		bool renderState; //Whether Primitive is rendered or not
-		bool cameraMatrixState; //Whether camera affects the primitive or not
-		bool needUpdate;
-		GLuint textureDataID;
-		PlaneDepth planeDepth;
-		DrawMode drawMode;
-		int shaderIndex;
-		float lineWidth;
-		float rotation;
-		float scaleX, scaleY;
-		spehs::vec3 rotationVector;
-		Color primitiveColor;
-		glm::mat4 scaledMatrix;
-		glm::mat4 scaledRotatedMatrix;
-
-		spehs::vec2 position;
+		bool readyForDelete = false;
+		bool blending = false;
+		bool renderState = true; //Whether Primitive is rendered or not
+		bool cameraMatrixState = true; //Whether camera affects the primitive or not
+		bool needUpdate = true;
+		GLuint textureDataID = 0;
+		PlaneDepth planeDepth = 0;
+		DrawMode drawMode = DrawMode::UNDEFINED;
+		unsigned int shaderIndex;
+		float lineWidth = 0.0f;
+		float rotation = 0.0f;
+		float scaleX = 1.0f, scaleY = 1.0f;
+		spehs::vec3 rotationVector = spehs::vec3(0.0f, 0.0f, 1.0f);
+		Color primitiveColor = Color(255, 255, 255, 255);
+		glm::mat4 scaledMatrix = glm::mat4(1.0f);
+		glm::mat4 scaledRotatedMatrix = glm::mat4(1.0f);
+		spehs::vec2 position = spehs::vec2(0.0f, 0.0f);
 		std::vector<spehs::Vertex> vertexArray; //Original vertices
 
 	};

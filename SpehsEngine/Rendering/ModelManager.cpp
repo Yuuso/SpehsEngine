@@ -44,7 +44,7 @@ namespace spehs
 						vertexArray.push_back(spehs::Vertex3D(vertices[vertexElements[i]].position,
 							spehs::vec2::zero,
 							spehs::vec3::zero));
-						elementArray.push_back(vertexArray.size() - 1);
+						elementArray.push_back((GLushort)vertexArray.size() - 1);
 					}
 					else
 					{
@@ -59,7 +59,7 @@ namespace spehs
 						vertexArray.push_back(spehs::Vertex3D(vertices[vertexElements[i]].position,
 							spehs::vec2::zero,
 							spehs::vec3(normals[normalElements[i]].x, normals[normalElements[i]].y, normals[normalElements[i]].z)));
-						elementArray.push_back(vertexArray.size() - 1);
+						elementArray.push_back((GLushort)vertexArray.size() - 1);
 					}
 					else
 					{
@@ -75,7 +75,7 @@ namespace spehs
 					vertexArray.push_back(Vertex3D(vertices[vertexElements[i]].position,
 						spehs::vec2(textureCoordinates[textureElements[i]].x, textureCoordinates[textureElements[i]].y),
 						spehs::vec3::zero));
-					elementArray.push_back(vertexArray.size() - 1);
+					elementArray.push_back((GLushort)vertexArray.size() - 1);
 				}
 				else
 				{
@@ -90,7 +90,7 @@ namespace spehs
 					vertexArray.push_back(Vertex3D(vertices[vertexElements[i]].position,
 						spehs::vec2(textureCoordinates[textureElements[i]].x, textureCoordinates[textureElements[i]].y),
 						spehs::vec3(normals[normalElements[i]].x, normals[normalElements[i]].y, normals[normalElements[i]].z)));
-					elementArray.push_back(vertexArray.size() - 1);
+					elementArray.push_back((GLushort)vertexArray.size() - 1);
 				}
 				else
 				{

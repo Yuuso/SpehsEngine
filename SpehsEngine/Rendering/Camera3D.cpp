@@ -7,7 +7,9 @@
 #include <glm/gtx/quaternion.hpp>
 
 
+#ifndef GLM_FORCE_RADIANS
 #define GLM_FORCE_RADIANS
+#endif
 
 
 namespace spehs

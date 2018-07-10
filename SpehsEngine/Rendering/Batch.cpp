@@ -19,10 +19,11 @@ std::atomic<int> BatchDeallocations;
 
 namespace spehs
 {
-	Batch::Batch(BatchManager& _batchManager, const PlaneDepth &_priority, const int &_shaderIndex)
+	Batch::Batch(BatchManager& _batchManager, const PlaneDepth _priority, const unsigned int _shaderIndex, const bool _cameraMatrixState)
 		: batchManager(_batchManager)
 		, priority(_priority)
 		, shaderIndex(_shaderIndex)
+		, cameraMatrixState(_cameraMatrixState)
 	{
 #ifdef _DEBUG
 		BatchAllocations++;
@@ -36,11 +37,11 @@ namespace spehs
 	}
 
 
-	int getIndexMultiplier(const GLenum &_drawMode, const unsigned int& _batchSize)
+	int getIndexMultiplier(const DrawMode _drawMode, const unsigned int _batchSize)
 	{
 		switch (_drawMode)
 		{
-		case TRIANGLE:
+		case DrawMode::TRIANGLE:
 			return (_batchSize - 2) * 3;
 			break;
 		default:
@@ -51,19 +52,14 @@ namespace spehs
 
 	//PRIMITIVE BATCH
 #pragma region PRIMITIVE BATCH
-	PrimitiveBatch::PrimitiveBatch(BatchManager& _batchManager, const bool _cameraMatrixState, const int16_t &_priority, const bool _blending, const int &_shaderIndex, const GLuint &_textureDataID, const GLenum &_drawMode, float _lineWidth)
-		: Batch(_batchManager, _priority, _shaderIndex)
+	PrimitiveBatch::PrimitiveBatch(BatchManager& _batchManager, const bool _cameraMatrixState, const PlaneDepth _priority, const bool _blending,
+									const int _shaderIndex, const GLuint _textureDataID, const DrawMode _drawMode, const float _lineWidth)
+		: Batch(_batchManager, _priority, _shaderIndex, _cameraMatrixState)
+		, blending(_blending)
+		, textureDataID(_textureDataID)
+		, drawMode(_drawMode)
+		, lineWidth(_lineWidth)
 	{
-		vertexArrayObjectID = 0;
-		vertexBufferID = 0;
-		indexBufferID = 0;
-
-		cameraMatrixState = _cameraMatrixState;
-		blending = _blending;
-		textureDataID = _textureDataID;
-		lineWidth = _lineWidth;
-		drawMode = _drawMode;
-
 		vertices.reserve(DEFAULT_MAX_BATCH_SIZE);
 		indices.reserve(getIndexMultiplier(drawMode));
 
@@ -102,11 +98,11 @@ namespace spehs
 		{
 			return false;
 		}
-		if (drawMode == LINE ||
-			drawMode == LINE_LOOP ||
-			drawMode == LINE_STRIP ||
-			drawMode == LINE_STRIP_ADJACENCY ||
-			drawMode == LINE_ADJACENCY)
+		if (drawMode == DrawMode::LINE ||
+			drawMode == DrawMode::LINE_LOOP ||
+			drawMode == DrawMode::LINE_STRIP ||
+			drawMode == DrawMode::LINE_STRIP_ADJACENCY ||
+			drawMode == DrawMode::LINE_ADJACENCY)
 		{
 			if (lineWidth != _primitive.lineWidth)
 			{
@@ -147,8 +143,8 @@ namespace spehs
 		//Texture
 		if (textureDataID)
 		{
-			batchManager.shaderManager.getShader(shaderIndex)->uniforms->textureDataID = textureDataID;
-			if (drawMode == POINT)
+			batchManager.shaderManager.getShader(shaderIndex).uniforms->textureDataID = textureDataID;
+			if (drawMode == DrawMode::POINT)
 			{
 				glEnable(GL_POINT_SPRITE);
 				glEnable(GL_PROGRAM_POINT_SIZE);
@@ -157,9 +153,9 @@ namespace spehs
 
 		//Camera Matrix
 		if (cameraMatrixState)
-			batchManager.shaderManager.getShader(shaderIndex)->uniforms->cameraMatrix = *batchManager.camera2D.projectionMatrix;
+			batchManager.shaderManager.getShader(shaderIndex).uniforms->cameraMatrix = *batchManager.camera2D.projectionMatrix;
 		else
-			batchManager.shaderManager.getShader(shaderIndex)->uniforms->cameraMatrix = batchManager.camera2D.staticMatrix;
+			batchManager.shaderManager.getShader(shaderIndex).uniforms->cameraMatrix = batchManager.camera2D.staticMatrix;
 
 		//Uniforms
 		batchManager.shaderManager.setUniforms(shaderIndex);
@@ -170,10 +166,10 @@ namespace spehs
 		{
 			glLineWidth(lineWidth);
 		}
-		if (drawMode == LINE_TRIANGLE)
+		if (drawMode == DrawMode::LINE_TRIANGLE)
 			glDrawElements(GL_LINES, indices.size(), GL_UNSIGNED_SHORT, (GLvoid*) NULL);
 		else
-			glDrawElements(drawMode, indices.size(), GL_UNSIGNED_SHORT, (GLvoid*) NULL);
+			glDrawElements((GLenum)drawMode, indices.size(), GL_UNSIGNED_SHORT, (GLvoid*) NULL);
 		glBindVertexArray(0);
 
 		checkOpenGLErrors(__FILE__, __LINE__);
@@ -192,16 +188,16 @@ namespace spehs
 		return true;
 	}
 
-	void PrimitiveBatch::push(Primitive* _primitive)
+	void PrimitiveBatch::push(const Primitive& _primitive)
 	{
 		//INDICES
-		setIndices(_primitive->worldVertexArray.size());
+		setIndices(_primitive.worldVertexArray.size());
 		//VERTICES
-		vertices.insert(vertices.end(), _primitive->worldVertexArray.begin(), _primitive->worldVertexArray.end());
+		vertices.insert(vertices.end(), _primitive.worldVertexArray.begin(), _primitive.worldVertexArray.end());
 	}
 
 	//Private:
-	bool PrimitiveBatch::isEnoughRoom(const unsigned int &_numVertices)
+	bool PrimitiveBatch::isEnoughRoom(const unsigned int _numVertices)
 	{
 		if (_numVertices > DEFAULT_MAX_BATCH_SIZE)
 			exceptions::fatalError("The number of vertices in a primitive exceeds the max amount allowed in the batch!");
@@ -229,21 +225,14 @@ namespace spehs
 		checkOpenGLErrors(__FILE__, __LINE__);
 
 		//Attributes
-		glEnableVertexAttribArray(VertexAttributePosition::VERTEX_POSITION);
-		glEnableVertexAttribArray(VertexAttributePosition::VERTEX_COLOR);
-		glEnableVertexAttribArray(VertexAttributePosition::VERTEX_UV);
+		batchManager.shaderManager.use(shaderIndex);
 
-					glVertexAttribPointer(VertexAttributePosition::VERTEX_POSITION, 2, GL_FLOAT,			GL_FALSE,	sizeof(spehs::Vertex), reinterpret_cast<void*>(offsetof(spehs::Vertex, position)));
-		/*FLOAT*///	glVertexAttribPointer(VertexAttributePosition::VERTEX_COLOR,	4, GL_FLOAT,			GL_FALSE,	sizeof(spehs::Vertex), reinterpret_cast<void*>(offsetof(spehs::Vertex, color)));
-		/*UBYTE*/	glVertexAttribPointer(VertexAttributePosition::VERTEX_COLOR,	4, GL_UNSIGNED_BYTE,	GL_TRUE,	sizeof(spehs::Vertex), reinterpret_cast<void*>(offsetof(spehs::Vertex, color)));
-					glVertexAttribPointer(VertexAttributePosition::VERTEX_UV,		2, GL_FLOAT,			GL_FALSE,	sizeof(spehs::Vertex), reinterpret_cast<void*>(offsetof(spehs::Vertex, uv)));
+		batchManager.shaderManager.set2D(shaderIndex);
 
 		//Unbind
 		glBindVertexArray(0);
 
-		glDisableVertexAttribArray(VertexAttributePosition::VERTEX_POSITION);
-		glDisableVertexAttribArray(VertexAttributePosition::VERTEX_COLOR);
-		glDisableVertexAttribArray(VertexAttributePosition::VERTEX_UV);
+		batchManager.shaderManager.unuse(shaderIndex);
 
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
@@ -268,18 +257,18 @@ namespace spehs
 		checkOpenGLErrors(__FILE__, __LINE__);
 	}
 
-	void PrimitiveBatch::setIndices(const unsigned int &_numVertices)
+	void PrimitiveBatch::setIndices(const unsigned int _numVertices)
 	{
-		unsigned int currentIndex = (vertices.size());
-		unsigned int numIndices = (indices.size());
-		unsigned int index = (numIndices);
+		size_t currentIndex = (vertices.size());
+		size_t numIndices = (indices.size());
+		size_t index = (numIndices);
 		switch (drawMode)
 		{
-		case UNDEFINED:
-			exceptions::fatalError(std::to_string(drawMode) + " - Batch's DrawMode is UNDEFINED!");
+		case DrawMode::UNDEFINED:
+			exceptions::fatalError(std::to_string((unsigned int)drawMode) + " - Batch's DrawMode is UNDEFINED!");
 			break;
 
-		case POINT:
+		case DrawMode::POINT:
 			//if (cameraMatrixState && getActiveBatchManager())
 			//{
 			//	//TODO: remove active batch manager dependecy from here?
@@ -287,23 +276,23 @@ namespace spehs
 			//}
 			//else
 				glPointSize(1.0f);
-		case LINE:
-		case LINE_STRIP:
-		case LINE_LOOP:
+		case DrawMode::LINE:
+		case DrawMode::LINE_STRIP:
+		case DrawMode::LINE_LOOP:
 			indices.resize(indices.size() + _numVertices);
-			for (unsigned i = numIndices; i < numIndices + _numVertices; i++)
+			for (size_t i = numIndices; i < numIndices + _numVertices; i++)
 			{
-				indices[i] = (GLushort) currentIndex + (i - numIndices);
+				indices[i] = (GLushort) (currentIndex + (i - numIndices));
 			}
 			break;
 
-		case TRIANGLE:
+		case DrawMode::TRIANGLE:
 			/*
 			Number of indices in a polygon:
 			(NumberOfVertices - 2) * 3
 			*/
 			indices.resize(indices.size() + ((_numVertices - 2) * 3));
-			for (unsigned i = 1; index < (numIndices + ((_numVertices - 2) * 3));)
+			for (size_t i = 1; index < (numIndices + ((_numVertices - 2) * 3));)
 			{
 				indices[index++] = ((GLushort) currentIndex);
 				indices[index++] = ((GLushort) (currentIndex + i++));
@@ -311,32 +300,32 @@ namespace spehs
 			}
 			break;
 
-		case LINE_TRIANGLE:
+		case DrawMode::LINE_TRIANGLE:
 			if (_numVertices > 2)
 			{
 				indices.resize(indices.size() + _numVertices * 2);
-				for (unsigned i = 0; index < (numIndices + _numVertices * 2);)
+				for (size_t i = 0; index < (numIndices + _numVertices * 2);)
 				{
 					indices[index++] = (GLushort) currentIndex;
-					indices[index++] = (GLushort) currentIndex + ++i;
-					indices[index++] = (GLushort) currentIndex + i;
-					indices[index++] = (GLushort) currentIndex + ++i;
-					indices[index++] = (GLushort) currentIndex + i++;
+					indices[index++] = (GLushort) (currentIndex + ++i);
+					indices[index++] = (GLushort) (currentIndex + i);
+					indices[index++] = (GLushort) (currentIndex + ++i);
+					indices[index++] = (GLushort) (currentIndex + i++);
 					indices[index++] = (GLushort) currentIndex;
 				}
 			}
 			else
 			{
 				indices.resize(indices.size() + _numVertices);
-				for (unsigned i = numIndices; i < numIndices + _numVertices; i++)
+				for (size_t i = numIndices; i < numIndices + _numVertices; i++)
 				{
-					indices[i] = (GLushort) currentIndex + (i - numIndices);
+					indices[i] = (GLushort) (currentIndex + (i - numIndices));
 				}
 			}
 			break;
 
 		default:
-			exceptions::fatalError(std::to_string(drawMode) + " - Draw mode is either undefined or is not supported by the engine at the moment!");
+			exceptions::fatalError(std::to_string((unsigned int)drawMode) + " - Draw mode is either undefined or is not supported by the engine at the moment!");
 			break;
 		}
 	}
@@ -345,15 +334,9 @@ namespace spehs
 
 	//TEXT BATCH
 #pragma region TEXT BATCH
-	TextBatch::TextBatch(BatchManager& _batchManager, const bool _cameraMatrixState, const int16_t &_priority, const int &_shaderIndex)
-		: Batch(_batchManager, _priority, _shaderIndex)
+	TextBatch::TextBatch(BatchManager& _batchManager, const bool _cameraMatrixState, const PlaneDepth _priority, const unsigned int _shaderIndex)
+		: Batch(_batchManager, _priority, _shaderIndex, _cameraMatrixState)
 	{
-		vertexArrayObjectID = 0;
-		vertexBufferID = 0;
-		indexBufferID = 0;
-
-		cameraMatrixState = _cameraMatrixState;
-
 		vertices.reserve(DEFAULT_MAX_BATCH_SIZE);
 		indices.reserve((DEFAULT_MAX_BATCH_SIZE / 4) * 6);
 
@@ -381,7 +364,7 @@ namespace spehs
 		checkOpenGLErrors(__FILE__, __LINE__);
 	}
 
-	bool TextBatch::check(const Text &_text)
+	bool TextBatch::check(const Text& _text)
 	{
 		if (shaderIndex != _text.getShaderIndex() ||
 			priority != _text.getPlaneDepth() ||
@@ -413,9 +396,9 @@ namespace spehs
 
 		//Camera Matrix
 		if (cameraMatrixState)
-			batchManager.shaderManager.getShader(shaderIndex)->uniforms->cameraMatrix = *batchManager.camera2D.projectionMatrix;
+			batchManager.shaderManager.getShader(shaderIndex).uniforms->cameraMatrix = *batchManager.camera2D.projectionMatrix;
 		else
-			batchManager.shaderManager.getShader(shaderIndex)->uniforms->cameraMatrix = batchManager.camera2D.staticMatrix;
+			batchManager.shaderManager.getShader(shaderIndex).uniforms->cameraMatrix = batchManager.camera2D.staticMatrix;
 
 		//Uniforms
 		batchManager.shaderManager.setUniforms(shaderIndex);
@@ -425,7 +408,7 @@ namespace spehs
 		for (unsigned i = 0; i < textureIDs.size(); i++)
 		{
 			bind2DTexture(textureIDs[i], 0);
-			glDrawElements(TRIANGLE, 6, GL_UNSIGNED_SHORT, reinterpret_cast<void*>((i * 6) * sizeof(GLushort)));
+			glDrawElements((GLenum)DrawMode::TRIANGLE, 6, GL_UNSIGNED_SHORT, reinterpret_cast<void*>((i * 6) * sizeof(GLushort)));
 		}
 		glBindVertexArray(0);
 
@@ -443,19 +426,19 @@ namespace spehs
 		vertices.clear();
 		indices.clear();
 		textureIDs.clear();
-		return results;
+		return true;
 	}
 
-	void TextBatch::push(Text* _text)
+	void TextBatch::push(const Text& _text)
 	{
 		//VERTICES
-		vertices.insert(vertices.end(), _text->worldVertexArray.begin(), _text->worldVertexArray.end());
+		vertices.insert(vertices.end(), _text.worldVertexArray.begin(), _text.worldVertexArray.end());
 		//TEXTURES
-		textureIDs.insert(textureIDs.end(), _text->textureIDs.begin(), _text->textureIDs.end());
+		textureIDs.insert(textureIDs.end(), _text.textureIDs.begin(), _text.textureIDs.end());
 	}
 
 	//Private:
-	bool TextBatch::isEnoughRoom(const unsigned int &_numVertices)
+	bool TextBatch::isEnoughRoom(const unsigned int _numVertices)
 	{
 		if (_numVertices > DEFAULT_MAX_BATCH_SIZE)
 			exceptions::fatalError("The number of vertices in the text exceeds the max amount allowed in the batch! Vertices: " + std::to_string(_numVertices));
@@ -483,21 +466,14 @@ namespace spehs
 		checkOpenGLErrors(__FILE__, __LINE__);
 
 		//Attributes
-		glEnableVertexAttribArray(VertexAttributePosition::VERTEX_POSITION);
-		glEnableVertexAttribArray(VertexAttributePosition::VERTEX_COLOR);
-		glEnableVertexAttribArray(VertexAttributePosition::VERTEX_UV);
+		batchManager.shaderManager.use(shaderIndex);
 
-		glVertexAttribPointer(VertexAttributePosition::VERTEX_POSITION, 3, GL_FLOAT, GL_FALSE, sizeof(spehs::Vertex), reinterpret_cast<void*>(offsetof(spehs::Vertex, position)));
-		/*FLOAT*///glVertexAttribPointer(VertexAttributePosition::VERTEX_COLOR, 4, GL_FLOAT, GL_FALSE, sizeof(spehs::Vertex), reinterpret_cast<void*>(offsetof(spehs::Vertex, color)));
-		/*UBYTE*/glVertexAttribPointer(VertexAttributePosition::VERTEX_COLOR, 4, GL_UNSIGNED_BYTE, GL_TRUE, sizeof(spehs::Vertex), reinterpret_cast<void*>(offsetof(spehs::Vertex, color)));
-		glVertexAttribPointer(VertexAttributePosition::VERTEX_UV, 2, GL_FLOAT, GL_FALSE, sizeof(spehs::Vertex), reinterpret_cast<void*>(offsetof(spehs::Vertex, uv)));
+		batchManager.shaderManager.set2D(shaderIndex);
 
 		//Unbind
 		glBindVertexArray(0);
 
-		glDisableVertexAttribArray(VertexAttributePosition::VERTEX_POSITION);
-		glDisableVertexAttribArray(VertexAttributePosition::VERTEX_COLOR);
-		glDisableVertexAttribArray(VertexAttributePosition::VERTEX_UV);
+		batchManager.shaderManager.unuse(shaderIndex);
 
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
@@ -527,7 +503,7 @@ namespace spehs
 	void TextBatch::setIndices()
 	{
 		unsigned int currentIndex = 0;
-		unsigned int index = 0;
+		size_t index = 0;
 
 		indices.resize((vertices.size() / 4) * 6);
 

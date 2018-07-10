@@ -132,10 +132,10 @@ namespace spehs
 		//Texture
 		if (textureDataID)
 		{
-			batchManager.shaderManager.getShader(shaderIndex)->uniforms->textureDataID = textureDataID;
+			batchManager.shaderManager.getShader(shaderIndex).uniforms->textureDataID = textureDataID;
 		}
 
-		batchManager.shaderManager.getShader(shaderIndex)->uniforms->cameraMatrix = *batchManager.camera3D.cameraMatrix;
+		batchManager.shaderManager.getShader(shaderIndex).uniforms->cameraMatrix = *batchManager.camera3D.cameraMatrix;
 
 		//Uniforms
 		batchManager.shaderManager.setUniforms(shaderIndex);
@@ -162,7 +162,7 @@ namespace spehs
 	}
 	void MeshBatch::push(Mesh* _mesh)
 	{
-		GLushort firstElement = vertices.size();
+		GLushort firstElement = (GLushort)vertices.size();
 		unsigned int indSize = indices.size();
 		//INDICES
 		indices.insert(indices.end(), _mesh->elementArray.begin(), _mesh->elementArray.end());
@@ -215,23 +215,14 @@ namespace spehs
 		checkOpenGLErrors(__FILE__, __LINE__);
 
 		//Attributes
-		glEnableVertexAttribArray(VertexAttributePosition::VERTEX_POSITION);
-		glEnableVertexAttribArray(VertexAttributePosition::VERTEX_COLOR);
-		glEnableVertexAttribArray(VertexAttributePosition::VERTEX_UV);
-		glEnableVertexAttribArray(VertexAttributePosition::VERTEX_NORMAL);
+		batchManager.shaderManager.use(shaderIndex);
 
-		glVertexAttribPointer(VertexAttributePosition::VERTEX_POSITION, 3, GL_FLOAT,			GL_FALSE, sizeof(spehs::Vertex3D), reinterpret_cast<void*>(offsetof(spehs::Vertex3D, position)));
-		glVertexAttribPointer(VertexAttributePosition::VERTEX_COLOR,	4, GL_UNSIGNED_BYTE,	GL_TRUE, sizeof(spehs::Vertex3D), reinterpret_cast<void*>(offsetof(spehs::Vertex3D, color)));
-		glVertexAttribPointer(VertexAttributePosition::VERTEX_UV,		2, GL_FLOAT,			GL_FALSE, sizeof(spehs::Vertex3D), reinterpret_cast<void*>(offsetof(spehs::Vertex3D, uv)));
-		glVertexAttribPointer(VertexAttributePosition::VERTEX_NORMAL,	3, GL_FLOAT,			GL_FALSE, sizeof(spehs::Vertex3D), reinterpret_cast<void*>(offsetof(spehs::Vertex3D, normal)));
+		batchManager.shaderManager.set3D(shaderIndex);
 
 		//Unbind
 		glBindVertexArray(0);
 
-		glDisableVertexAttribArray(VertexAttributePosition::VERTEX_POSITION);
-		glDisableVertexAttribArray(VertexAttributePosition::VERTEX_COLOR);
-		glDisableVertexAttribArray(VertexAttributePosition::VERTEX_UV);
-		glDisableVertexAttribArray(VertexAttributePosition::VERTEX_NORMAL);
+		batchManager.shaderManager.unuse(shaderIndex);
 
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);

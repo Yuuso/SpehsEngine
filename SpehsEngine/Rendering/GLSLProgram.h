@@ -9,7 +9,7 @@ typedef int GLint;
 typedef unsigned int GLuint;
 namespace spehs
 {
-	enum VertexAttributePosition
+	enum class VertexAttributePosition : GLuint
 	{
 		VERTEX_POSITION = 0,
 		VERTEX_COLOR = 1,
@@ -32,6 +32,8 @@ namespace spehs
 		GLint getUniformLocation(const std::string& uniformName);
 
 		void use();
+		void set2D();
+		void set3D();
 		void unuse();
 		GLint getProgram(){ return programID; }
 

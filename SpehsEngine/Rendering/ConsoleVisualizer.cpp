@@ -49,7 +49,7 @@ namespace spehs
 		backgroundShade.setColor(spehs::Color(13, 26, 39, 128));
 		backgroundShade.setRenderState(true);
 		backgroundShade.setAlpha(204);
-		
+
 		//Stats text
 		statsText.setColor(Console::defaultLogColor);
 
@@ -143,11 +143,11 @@ namespace spehs
 		std::lock_guard<std::recursive_mutex> lock(mutex);
 		return openState;
 	}
-	
+
 	void ConsoleVisualizer::update(const time::Time& deltaTime)
 	{
 		std::lock_guard<std::recursive_mutex> lock(mutex);
-		
+
 		if (openState)
 		{
 			//Carot visibility timer
@@ -196,7 +196,7 @@ namespace spehs
 					}
 					break;
 				case KEYBOARD_PAGEDOWN:
-					if (scrollState < getMaxScrollState())
+					if (scrollState < (int)getMaxScrollState())
 					{
 						scrollState++;
 						updateLines = true;
@@ -207,7 +207,7 @@ namespace spehs
 					updateLines = true;
 					break;
 				case KEYBOARD_END:
-					const size_t maxScrollState = getMaxScrollState();
+					const int maxScrollState = (int)getMaxScrollState();
 					if (scrollState != maxScrollState)
 					{
 						scrollState = maxScrollState;
@@ -252,7 +252,7 @@ namespace spehs
 
 				//Update positions
 				const size_t visibleLineCount = std::min(lines.size(), console.getLineCount() + (openState ? 1u : 0u));
-				float y = lines.back()->getFontHeight() * (int)lines.size();
+				float y = (float)(lines.back()->getFontHeight() * (int)lines.size());
 				for (size_t i = 0; i < lines.size(); i++)
 				{
 					y -= (float)lines[i]->getFontHeight();
@@ -289,20 +289,20 @@ namespace spehs
 			}
 			else
 			{
-				int w = 0.0f;
-				int h = 0.0f;
-				for (unsigned i = 0; i < lines.size(); i++)
+				int w = 0;
+				int h = 0;
+				for (size_t i = 0; i < lines.size(); i++)
 				{
 					if (lines[i]->getString().size() > 0)
 					{
 						w = std::max(w, (int)lines[i]->getTextWidth());
-						h += lines[i]->getTextHeight();
+						h += (int)lines[i]->getTextHeight();
 					}
 				}
 				w += CONSOLE_BORDER * 2;
 				h += CONSOLE_BORDER * 2;
 				if (abs(backgroundShade.getWidth() - w) > 0.9f || abs(backgroundShade.getHeight() - h) > 0.9f)
-					backgroundShade.resize(w, h);
+					backgroundShade.resize((float)w, (float)h);
 			}
 
 			//Determine render lap time

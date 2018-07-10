@@ -20,28 +20,11 @@ namespace spehs
 {
 	Primitive::Primitive(BatchManager& _batchManager)
 		: batchManager(_batchManager)
-		, readyForDelete(false)
-		, blending(false)
-		, renderState(true)
-		, cameraMatrixState(true)
-		, needUpdate(true)
-		, textureDataID(0)
-		, planeDepth(0)
-		, drawMode(UNDEFINED)
-		, shaderIndex(DefaultPolygon)
-		, lineWidth(0.0f)
-		, rotation(0.0f)
-		, scaleX(1.0f)
-		, scaleY(1.0f)
-		, rotationVector(0.0f, 0.0f, 1.0f)//?
-		, primitiveColor(255, 255, 255, 255)
-		, scaledMatrix(1.0f)
-		, scaledRotatedMatrix(1.0f)
-		, position(0.0f, 0.0f)
 	{
 #ifdef _DEBUG
 		primitiveAllocations++;
 #endif
+		shaderIndex = (int)ShaderName::DefaultPolygon;
 	}
 	Primitive::~Primitive()
 	{
@@ -68,7 +51,7 @@ namespace spehs
 		needUpdate = true;
 	}
 
-	void Primitive::setPosition(const spehs::vec2 &_newPosition)
+	void Primitive::setPosition(const spehs::vec2& _newPosition)
 	{
 #ifdef _DEBUG
 		if (_newPosition.x != _newPosition.x || _newPosition.y != _newPosition.y)
@@ -94,7 +77,7 @@ namespace spehs
 		needUpdate = true;
 	}
 
-	void Primitive::translate(const float &_x, const float &_y)
+	void Primitive::translate(const float _x, const float _y)
 	{
 #ifdef _DEBUG
 		if (_x != _x || _y != _y)
@@ -120,7 +103,7 @@ namespace spehs
 		needUpdate = true;
 	}
 
-	void Primitive::setScale(const float &_newScale)
+	void Primitive::setScale(const float _newScale)
 	{
 #ifdef _DEBUG
 		if (_newScale != _newScale)
@@ -133,7 +116,7 @@ namespace spehs
 		needUpdate = true;
 	}
 
-	void Primitive::setScale(const float &_newScaleX, const float &_newScaleY)
+	void Primitive::setScale(const float _newScaleX, const float _newScaleY)
 	{
 #ifdef _DEBUG
 		if (_newScaleX != _newScaleX || _newScaleY != _newScaleY)
@@ -146,7 +129,7 @@ namespace spehs
 		needUpdate = true;
 	}
 
-	void Primitive::setScale(const spehs::vec2 &_newScale)
+	void Primitive::setScale(const spehs::vec2& _newScale)
 	{
 #ifdef _DEBUG
 		if (_newScale.x != _newScale.x || _newScale.y != _newScale.y)
@@ -183,7 +166,7 @@ namespace spehs
 		needUpdate = true;
 	}
 
-	void Primitive::setRotation(const float &_newRotation)
+	void Primitive::setRotation(const float _newRotation)
 	{
 #ifdef _DEBUG
 		if (_newRotation != _newRotation)
@@ -195,7 +178,7 @@ namespace spehs
 		needUpdate = true;
 	}
 
-	void Primitive::setRotation(const float &_newRotation, const spehs::vec3 &_newRotationVector)
+	void Primitive::setRotation(const float _newRotation, const spehs::vec3& _newRotationVector)
 	{
 #ifdef _DEBUG
 		if (_newRotation != _newRotation || _newRotationVector.x != _newRotationVector.x || _newRotationVector.y != _newRotationVector.y || _newRotationVector.z != _newRotationVector.z)
@@ -232,7 +215,7 @@ namespace spehs
 		needUpdate = true;
 	}
 
-	void Primitive::setRotationVector(const spehs::vec3 &_newRotationVector)
+	void Primitive::setRotationVector(const spehs::vec3& _newRotationVector)
 	{
 #ifdef _DEBUG
 		if (_newRotationVector.x != _newRotationVector.x || _newRotationVector.y != _newRotationVector.y || _newRotationVector.z != _newRotationVector.z)
@@ -275,7 +258,7 @@ namespace spehs
 		cameraMatrixState = _newState;
 	}
 
-	void Primitive::setPlaneDepth(const PlaneDepth &_newPlaneDepth)
+	void Primitive::setPlaneDepth(const PlaneDepth _newPlaneDepth)
 	{
 #ifdef _DEBUG
 		if (_newPlaneDepth != _newPlaneDepth)
@@ -286,7 +269,7 @@ namespace spehs
 		planeDepth = _newPlaneDepth;
 	}
 
-	void Primitive::setLineWidth(const float &_newWidth)
+	void Primitive::setLineWidth(const float _newWidth)
 	{
 		lineWidth = _newWidth;
 	}
@@ -301,13 +284,8 @@ namespace spehs
 		renderState = _other.renderState;
 	}
 
-	void Primitive::setShader(const int &_newShaderIndex)
+	void Primitive::setShaderIndex(const unsigned int _newShaderIndex)
 	{
-		if (batchManager.shaderManager.getShader(_newShaderIndex) == nullptr)
-		{
-			exceptions::unexpectedError("Trying to set a non-existing shader to Primitive!");
-			return;
-		}
 		shaderIndex = _newShaderIndex;
 	}
 

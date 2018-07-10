@@ -81,7 +81,7 @@ namespace spehs
 			delete font;
 			return nullptr;
 		}
-		
+
 		fonts.push_back(font);
 		font->fontPath = _fontPath;
 		font->fontSize = _size;
@@ -127,7 +127,7 @@ namespace spehs
 					texture,
 					spehs::ivec2((*(FT_Face*)ftFace)->glyph->bitmap.width, (*(FT_Face*)ftFace)->glyph->bitmap.rows),
 					spehs::ivec2((*(FT_Face*)ftFace)->glyph->bitmap_left, (*(FT_Face*)ftFace)->glyph->bitmap_top),
-					(*(FT_Face*)ftFace)->glyph->advance.x
+					(GLuint)(*(FT_Face*)ftFace)->glyph->advance.x
 				};
 				font->characters.insert(std::pair<GLchar, Character>(c, character));
 			}

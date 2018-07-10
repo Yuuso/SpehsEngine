@@ -23,7 +23,7 @@ namespace spehs
 
 		void destroy();
 
-		void update(); //Called from batch manager when drawing
+		void update(); // Called from batch manager when drawing
 		void setRenderState(const bool _state);
 		bool getRenderState() const { return renderState; }
 
@@ -38,14 +38,14 @@ namespace spehs
 		void incrementString(const std::string& _str);
 		void incrementFrontString(const std::string& _str);
 
-		void setFont(const std::string &_fontPath, const int &_size);
+		void setFont(const std::string& _fontPath, const int _size);
 		void setFont(Font* _font);
 		void setFontSize(const int _size);
 
 		void setColor(const spehs::Color& _newColor);
 		void setAlpha(const spehs::Color::Component& _newAlpha);
 
-		void setShader(const int &_shaderIndex);
+		void setShader(const unsigned int _shaderIndex) { shaderIndex = _shaderIndex; };
 		void setCameraMatrixState(const bool _state) { cameraMatrixState = _state; }
 		void setLineSpacing(const int _lineSpacing);
 		void setScale(const float _scale) { scale = _scale; needTextUpdate = true; }
@@ -54,9 +54,9 @@ namespace spehs
 
 		spehs::vec2 getPosition() const { return position; }
 		float getX() const { return position.x; }
-		float getX(const int characterIndex) const;//Returns x position at given character index. Character width is not included. If index is out of bounds, returns x position of the last character instead.
+		float getX(const size_t characterIndex) const;//Returns x position at given character index. Character width is not included. If index is out of bounds, returns x position of the last character instead.
 		float getY() const { return position.y; }
-		float getY(const int characterIndex) const;//Returns y position at given character index. Character height is not included. If index is out of bounds, returns y position of the last character instead.
+		float getY(const size_t characterIndex) const;//Returns y position at given character index. Character height is not included. If index is out of bounds, returns y position of the last character instead.
 
 		float getTextWidth() const;
 		float getTextHeight() const;
@@ -71,13 +71,13 @@ namespace spehs
 		int getFontDescender() const;
 		int getFontMaxAdvanceWidth() const;
 
-		int getShaderIndex() const { return shaderIndex; }
+		unsigned int getShaderIndex() const { return shaderIndex; }
 		PlaneDepth getPlaneDepth() const { return planeDepth; }
 		bool getCameraMatrixState() const { return cameraMatrixState; }
 
 		spehs::Color getColor() const { return color; }
 		spehs::Color::Component getAlpha() const { return color.a; }
-		
+
 		std::vector<GLuint> textureIDs;
 		std::vector<spehs::Vertex> worldVertexArray;
 		BatchManager& batchManager;
@@ -89,7 +89,7 @@ namespace spehs
 		~Text();
 
 	private:
-		
+
 		void updatePosition();
 		void updateText();
 
@@ -100,7 +100,7 @@ namespace spehs
 		int lineCount = 0;
 		int lineSpacing = 0;
 		PlaneDepth planeDepth = 0;
-		int shaderIndex;
+		unsigned int shaderIndex;
 		bool cameraMatrixState = false;
 		bool renderState = true;
 		bool readyForDelete = false;

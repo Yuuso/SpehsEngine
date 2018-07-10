@@ -12,7 +12,6 @@
 
 #define DEFAULT_MAX_BATCH_SIZE 4096
 
-typedef unsigned int GLenum;
 typedef unsigned int GLuint;
 typedef unsigned short GLushort;
 
@@ -23,21 +22,21 @@ namespace spehs
 	class Camera2D;
 	class BatchManager;
 
-	int getIndexMultiplier(const GLenum &_drawMode, const unsigned int& _batchSize = DEFAULT_MAX_BATCH_SIZE); //Calculate max number of indices
+	int getIndexMultiplier(const DrawMode _drawMode, const unsigned int _batchSize = DEFAULT_MAX_BATCH_SIZE); // Calculate max number of indices
 
 
 	class Batch
 	{
 	public:
-		Batch(BatchManager& batchManager, const PlaneDepth &_priority, const int &_shaderIndex);
+		Batch(BatchManager& _batchManager, const PlaneDepth _priority, const unsigned int _shaderIndex, const bool _cameraMatrixState);
 		virtual ~Batch();
 
-		virtual bool check(const Primitive &_primitive){ return false; }
-		virtual bool check(const Text &_text){ return false; }
+		virtual bool check(const Primitive& _primitive) { return false; }
+		virtual bool check(const Text& _text) { return false; }
 
-		virtual bool render(BatchRenderResults* results = nullptr) = 0;//NOTE: results are incremented rather than set.
-		virtual void push(Primitive* _primitive){}
-		virtual void push(Text* _text){}
+		virtual bool render(BatchRenderResults* results = nullptr) = 0; // NOTE: results are incremented rather than set.
+		virtual void push(const Primitive& _primitive) {}
+		virtual void push(const Text& _text) {}
 
 		PlaneDepth getPriority() const{ return priority; }
 
@@ -45,41 +44,40 @@ namespace spehs
 
 	protected:
 		PlaneDepth priority;
-		int shaderIndex;
+		unsigned int shaderIndex;
+		bool cameraMatrixState;
 
 		std::vector<spehs::Vertex> vertices;
 		std::vector<GLushort> indices;
 
-		GLuint vertexArrayObjectID;
-		GLuint vertexBufferID;
-		GLuint indexBufferID;
-
-		bool cameraMatrixState;
+		GLuint vertexArrayObjectID = 0;
+		GLuint vertexBufferID = 0;
+		GLuint indexBufferID = 0;
 	};
 
 
 	class PrimitiveBatch : public Batch
 	{
 	public:
-		PrimitiveBatch(BatchManager& batchManager, const bool _cameraMatrixState, const PlaneDepth &_priority, const bool _blending,
-						const int &_shaderIndex, const GLuint &_textureDataID, const GLenum &_drawMode, float _lineWidth);
+		PrimitiveBatch(BatchManager& _batchManager, const bool _cameraMatrixState, const PlaneDepth _priority, const bool _blending,
+						const int _shaderIndex, const GLuint _textureDataID, const DrawMode _drawMode, const float _lineWidth);
 		~PrimitiveBatch();
 
-		bool check(const Primitive &_primitive);
+		bool check(const Primitive& _primitive);
 
 		bool render(BatchRenderResults* results = nullptr) override;
-		void push(Primitive* _primitive);
+		void push(const Primitive& _primitive);
 
 	protected:
-		bool isEnoughRoom(const unsigned int &_numVertices);
+		bool isEnoughRoom(const unsigned int _numVertices);
 		void initBuffers();
 		void updateBuffers();
-		void setIndices(const unsigned int &_numVertices);
+		void setIndices(const unsigned int _numVertices);
 
 	private:
 		GLuint textureDataID;
 		float lineWidth;
-		GLenum drawMode;
+		DrawMode drawMode;
 		bool blending;
 	};
 
@@ -87,16 +85,16 @@ namespace spehs
 	class TextBatch : public Batch
 	{
 	public:
-		TextBatch(BatchManager& batchManager, const bool _cameraMatrixState, const PlaneDepth &_priority, const int &_shaderIndex);
+		TextBatch(BatchManager& _batchManager, const bool _cameraMatrixState, const PlaneDepth _priority, const unsigned int _shaderIndex);
 		~TextBatch();
 
-		bool check(const Text &_text);
+		bool check(const Text& _text);
 
 		bool render(BatchRenderResults* results = nullptr) override;
-		void push(Text* _text);
+		void push(const Text& _text);
 
 	protected:
-		bool isEnoughRoom(const unsigned int &_numVertices);
+		bool isEnoughRoom(const unsigned int _numVertices);
 		void initBuffers();
 		void updateBuffers();
 		void setIndices();
