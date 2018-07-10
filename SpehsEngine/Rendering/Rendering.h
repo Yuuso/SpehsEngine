@@ -3,12 +3,12 @@
 
 namespace spehs
 {
-	class CoreLib;
+	class MathLib;
 	class RenderingLib
 	{
 	public:
 		/* Initializes rendering library */
-		RenderingLib(const CoreLib& coreLib);
+		RenderingLib(const MathLib& mathLib);
 
 		/* Uninitializes rendering library */
 		~RenderingLib();

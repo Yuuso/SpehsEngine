@@ -3,6 +3,7 @@
 #include "SpehsEngine/Core/Time.h"
 #include "SpehsEngine/Core/Log.h"
 #include "SpehsEngine/Rendering/Rendering.h"
+#include "SpehsEngine/Math/Math.h"
 
 #include <string>
 #include <thread>
@@ -21,14 +22,14 @@ namespace spehs
 		std::string version("0");
 	}
 
-	RenderingLib::RenderingLib(const CoreLib& coreLib)
+	RenderingLib::RenderingLib(const MathLib& mathLib)
 	{
 		instanceCount++;
 		if (!valid)
 		{
-			if (!coreLib.isValid())
+			if (!mathLib.isValid())
 			{
-				log::error("Cannot initialize rendering library, core library is invalid.");
+				log::error("Cannot initialize rendering library, math library is invalid.");
 				return;
 			}
 
