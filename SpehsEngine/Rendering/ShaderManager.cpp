@@ -331,7 +331,6 @@ namespace spehs
 			shader.shader.compileShadersFromSource(defaultMeshVert, defaultMeshFrag);
 			shader.shader.addAttribute(VertexAttributePosition::VERTEX_POSITION, "vertexPosition");
 			shader.shader.addAttribute(VertexAttributePosition::VERTEX_COLOR, "vertexColor");
-			shader.shader.addAttribute(VertexAttributePosition::VERTEX_UV, "vertexUV"); // TODO remove after everything else works
 			shader.shader.addAttribute(VertexAttributePosition::VERTEX_NORMAL, "vertexNormal");
 			shader.shader.linkShaders();
 			shader.uniforms = new Uniforms(shader.shader);
