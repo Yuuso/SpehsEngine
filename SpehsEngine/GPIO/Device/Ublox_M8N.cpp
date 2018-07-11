@@ -98,10 +98,10 @@ namespace spehs
 							1 parity bit (x)
 							1-2 stop bits (low)
 						*/
-						std::vector<int/*history index*/> potentialStartBits;
+						std::vector<size_t/*history index*/> potentialStartBits;
 						const size_t endOffset = sequenceLength - 1;
 						const size_t requiredPatternLength = int(history.size()) / sequenceLength - 1;
-						for (int i = 0; i + endOffset < int(history.size()); i++)
+						for (size_t i = 0; i + endOffset < history.size(); i++)
 						{
 							if (history[i] == gpio::PinState::high && history[i + endOffset] == gpio::PinState::low)
 								potentialStartBits.push_back(i);
@@ -112,12 +112,12 @@ namespace spehs
 						These candidates are in ascending order.
 						Eliminate the ones that do not appear in a consistent pattern.
 						*/
-						std::vector<int/*start bit history index*/> validPatterns;
+						std::vector<size_t/*start bit history index*/> validPatterns;
 						size_t longestSequencePattern = 0;
 						while (potentialStartBits.size() >= requiredPatternLength)
 						{
 							//Check if the potential front start bit is a valid sequence pattern
-							std::vector<int> patternSequenceIndices;
+							std::vector<size_t> patternSequenceIndices;
 							patternSequenceIndices.push_back(potentialStartBits.front());
 							size_t expectedNextIndex = potentialStartBits.front() + sequenceLength;
 
@@ -140,7 +140,7 @@ namespace spehs
 							}
 
 							if (patternSequenceIndices.size() > longestSequencePattern)
-								longestSequencePattern = int(patternSequenceIndices.size());
+								longestSequencePattern = patternSequenceIndices.size();
 
 							//Remove sequence start indices
 							for (size_t p = 0; p < patternSequenceIndices.size(); p++)

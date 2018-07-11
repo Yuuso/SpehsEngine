@@ -320,7 +320,7 @@ namespace spehs
 						0-1 parity bits (x)
 						1-2 stop bits (high)
 					*/
-					std::vector<int/*history index*/> potentialStartBits;
+					std::vector<size_t/*history index*/> potentialStartBits;
 					const size_t endOffset = sequenceLength - 1u;
 					const size_t requiredPatternLength = history.size() / sequenceLength - 1u;
 					const size_t lastTestedStartBitIndex = history.size() - endOffset;
@@ -329,7 +329,7 @@ namespace spehs
 						for (size_t i = 0; i < lastTestedStartBitIndex; i++)
 						{
 							if (history[i] == startBitState && history[i + endOffset] == stopBitState)
-								potentialStartBits.push_back(int(i));
+								potentialStartBits.push_back(i);
 						}
 					}
 					else if (stopBitCount == 2)
@@ -337,7 +337,7 @@ namespace spehs
 						for (size_t i = 0; i < lastTestedStartBitIndex; i++)
 						{
 							if (history[i] == startBitState && history[i + endOffset - 1] == stopBitState && history[i + endOffset] == stopBitState)
-								potentialStartBits.push_back(int(i));
+								potentialStartBits.push_back(i);
 						}
 					}
 					else
@@ -350,12 +350,12 @@ namespace spehs
 					These candidates are in ascending order.
 					Eliminate the ones that do not appear in a consistent pattern.
 					*/
-					std::vector<int/*start bit history index*/> validPatterns;
+					std::vector<size_t/*start bit history index*/> validPatterns;
 					size_t longestSequencePattern = 0;
 					while (potentialStartBits.size() >= requiredPatternLength)
 					{
 						//Check if the potential front start bit is a valid sequence pattern
-						std::vector<int> patternSequenceIndices;
+						std::vector<size_t> patternSequenceIndices;
 						patternSequenceIndices.push_back(potentialStartBits.front());
 						size_t expectedNextIndex = potentialStartBits.front() + sequenceLength;
 
@@ -378,7 +378,7 @@ namespace spehs
 						}
 
 						if (patternSequenceIndices.size() > longestSequencePattern)
-							longestSequencePattern = int(patternSequenceIndices.size());
+							longestSequencePattern = patternSequenceIndices.size();
 
 						//Remove sequence start indices
 						for (size_t p = 0; p < patternSequenceIndices.size(); p++)
