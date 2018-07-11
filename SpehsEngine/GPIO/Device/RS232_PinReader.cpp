@@ -357,7 +357,7 @@ namespace spehs
 						//Check if the potential front start bit is a valid sequence pattern
 						std::vector<int> patternSequenceIndices;
 						patternSequenceIndices.push_back(potentialStartBits.front());
-						int expectedNextIndex = potentialStartBits.front() + sequenceLength;
+						size_t expectedNextIndex = potentialStartBits.front() + sequenceLength;
 
 						for (size_t r = 1; r < potentialStartBits.size(); r++)
 						{
@@ -426,7 +426,7 @@ namespace spehs
 					{//Found exactly one valid pattern!
 
 						//Wait until the end of the currently transmitting sequence (at the time of stop bit)
-						int readSkipCount = sequenceLength - ((history.size() - validPatterns[0]) % sequenceLength);
+						size_t readSkipCount = sequenceLength - ((history.size() - validPatterns[0]) % sequenceLength);
 						const spehs::time::Time t1 = spehs::time::now();
 						//log::info("RS232_PinReader skipping the next " + std::to_string(readSkipCount) + " reads. Estimated skip time: " + std::to_string((nextReadTime - time::now() + spehs::time::Time(readSkipCount - 1) * readInterval) / time::conversionRate::nanosecond) + " ns.");
 						//log::info("History size: " + std::to_string(history.size()));

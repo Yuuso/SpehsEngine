@@ -119,7 +119,7 @@ namespace spehs
 							//Check if the potential front start bit is a valid sequence pattern
 							std::vector<int> patternSequenceIndices;
 							patternSequenceIndices.push_back(potentialStartBits.front());
-							int expectedNextIndex = potentialStartBits.front() + sequenceLength;
+							size_t expectedNextIndex = potentialStartBits.front() + sequenceLength;
 
 							for (size_t r = 1; r < potentialStartBits.size(); r++)
 							{
