@@ -19,7 +19,7 @@ std::atomic<int> BatchDeallocations;
 
 namespace spehs
 {
-	Batch::Batch(BatchManager& _batchManager, const PlaneDepth _priority, const unsigned int _shaderIndex, const bool _cameraMatrixState)
+	Batch::Batch(BatchManager& _batchManager, const PlaneDepth _priority, const size_t _shaderIndex, const bool _cameraMatrixState)
 		: batchManager(_batchManager)
 		, priority(_priority)
 		, shaderIndex(_shaderIndex)
@@ -37,15 +37,15 @@ namespace spehs
 	}
 
 
-	int getIndexMultiplier(const DrawMode _drawMode, const unsigned int _batchSize)
+	int getIndexMultiplier(const DrawMode _drawMode, const size_t _batchSize)
 	{
 		switch (_drawMode)
 		{
 		case DrawMode::TRIANGLE:
-			return (_batchSize - 2) * 3;
+			return int((_batchSize - 2) * 3);
 			break;
 		default:
-			return _batchSize;
+			return int(_batchSize);
 			break;
 		}
 	}
@@ -167,9 +167,9 @@ namespace spehs
 			glLineWidth(lineWidth);
 		}
 		if (drawMode == DrawMode::LINE_TRIANGLE)
-			glDrawElements(GL_LINES, indices.size(), GL_UNSIGNED_SHORT, (GLvoid*) NULL);
+			glDrawElements(GL_LINES, GLsizei(indices.size()), GL_UNSIGNED_SHORT, (GLvoid*) NULL);
 		else
-			glDrawElements((GLenum)drawMode, indices.size(), GL_UNSIGNED_SHORT, (GLvoid*) NULL);
+			glDrawElements((GLenum)drawMode, GLsizei(indices.size()), GL_UNSIGNED_SHORT, (GLvoid*) NULL);
 		glBindVertexArray(0);
 
 		checkOpenGLErrors(__FILE__, __LINE__);
@@ -197,7 +197,7 @@ namespace spehs
 	}
 
 	//Private:
-	bool PrimitiveBatch::isEnoughRoom(const unsigned int _numVertices)
+	bool PrimitiveBatch::isEnoughRoom(const size_t _numVertices)
 	{
 		if (_numVertices > DEFAULT_MAX_BATCH_SIZE)
 			exceptions::fatalError("The number of vertices in a primitive exceeds the max amount allowed in the batch!");
@@ -257,7 +257,7 @@ namespace spehs
 		checkOpenGLErrors(__FILE__, __LINE__);
 	}
 
-	void PrimitiveBatch::setIndices(const unsigned int _numVertices)
+	void PrimitiveBatch::setIndices(const size_t _numVertices)
 	{
 		size_t currentIndex = (vertices.size());
 		size_t numIndices = (indices.size());
@@ -334,7 +334,7 @@ namespace spehs
 
 	//TEXT BATCH
 #pragma region TEXT BATCH
-	TextBatch::TextBatch(BatchManager& _batchManager, const bool _cameraMatrixState, const PlaneDepth _priority, const unsigned int _shaderIndex)
+	TextBatch::TextBatch(BatchManager& _batchManager, const bool _cameraMatrixState, const PlaneDepth _priority, const size_t _shaderIndex)
 		: Batch(_batchManager, _priority, _shaderIndex, _cameraMatrixState)
 	{
 		vertices.reserve(DEFAULT_MAX_BATCH_SIZE);
@@ -405,10 +405,10 @@ namespace spehs
 
 		//Draw
 		glBindVertexArray(vertexArrayObjectID);
-		for (unsigned i = 0; i < textureIDs.size(); i++)
+		for (size_t i = 0; i < textureIDs.size(); i++)
 		{
 			bind2DTexture(textureIDs[i], 0);
-			glDrawElements((GLenum)DrawMode::TRIANGLE, 6, GL_UNSIGNED_SHORT, reinterpret_cast<void*>((i * 6) * sizeof(GLushort)));
+			glDrawElements((GLenum)DrawMode::TRIANGLE, 6u, GL_UNSIGNED_SHORT, reinterpret_cast<void*>((i * 6) * sizeof(GLushort)));
 		}
 		glBindVertexArray(0);
 
@@ -438,7 +438,7 @@ namespace spehs
 	}
 
 	//Private:
-	bool TextBatch::isEnoughRoom(const unsigned int _numVertices)
+	bool TextBatch::isEnoughRoom(const size_t _numVertices)
 	{
 		if (_numVertices > DEFAULT_MAX_BATCH_SIZE)
 			exceptions::fatalError("The number of vertices in the text exceeds the max amount allowed in the batch! Vertices: " + std::to_string(_numVertices));
@@ -502,14 +502,14 @@ namespace spehs
 
 	void TextBatch::setIndices()
 	{
-		unsigned int currentIndex = 0;
+		size_t currentIndex = 0;
 		size_t index = 0;
 
 		indices.resize((vertices.size() / 4) * 6);
 
 		while (index < indices.size())
 		{
-			for (unsigned i = 1; i < 3;)
+			for (size_t i = 1; i < 3;)
 			{
 				indices[index++] = ((GLushort) currentIndex);
 				indices[index++] = ((GLushort) (currentIndex + i++));

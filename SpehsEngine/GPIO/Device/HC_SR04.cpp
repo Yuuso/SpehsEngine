@@ -57,7 +57,7 @@ namespace spehs
 
 			//Update distance value
 			mutex.lock();
-			distance = (duration.asMicroseconds() * 0.5f) / 29.1;
+			distance = (duration.asMicroseconds() * 0.5f) / 29.1f;
 			//Delay by poll interval
 			const spehs::time::Time interval = pollInterval + beginTime - spehs::time::now();
 			mutex.unlock();

@@ -39,14 +39,14 @@ namespace spehs
 		int getPreferredHeight() override;
 
 		/*Returns index to the first visible element on the element list*/
-		int getBeginElementIndex() const { return beginElementIndex; }
+		size_t getBeginElementIndex() const { return beginElementIndex; }
 		/*Returns index to the last visible element on the list*/
-		int getUpdateElementCount() const { return updateElementCount; }
+		size_t getUpdateElementCount() const { return updateElementCount; }
 		/*Relative addition to the number of elements updated*/
 		virtual void incrementUpdateElementCount(int incrementation);
 		/*The list cannot be minimized below the size required to fit this many elements*/
 		void setMinVisibleElementCount(const int count);///< Min visible element count must be at least 4 because of how the scroll bar is aligned
-		inline int getMinVisibleElementCount() const { return minVisibleElementCount; }
+		inline size_t getMinVisibleElementCount() const { return minVisibleElementCount; }
 		/*Returns true if any amount of elements are not being displayed at the moment*/
 		bool invisibleElements() const { return elements.size() > updateElementCount; }
 		/*Scrolls the list in either direction*/

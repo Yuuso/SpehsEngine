@@ -287,8 +287,8 @@ namespace spehs
 		
 		//Spehs header
 		net::WriteBuffer headerBuffer;
-		const ExpectedBytesType dataBufferSize = buffer.getOffset();
-		const ExpectedBytesType headerBytesValue = buffer.getOffset() + sizeof(packetType);
+		const ExpectedBytesType dataBufferSize = ExpectedBytesType(buffer.getOffset());
+		const ExpectedBytesType headerBytesValue = ExpectedBytesType(buffer.getOffset() + sizeof(packetType));
 
 		headerBuffer.write(headerBytesValue);
 		headerBuffer.write(packetType);

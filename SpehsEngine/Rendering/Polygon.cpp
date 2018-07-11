@@ -237,9 +237,11 @@ namespace spehs
 
 	float Polygon::getArea()
 	{
+		if (worldVertexArray.size() <= 2u)
+			return 0.0f;
 		float area = 0.0f;
-		int j = worldVertexArray.size() - 1;
-		for (unsigned int i = 0; i < worldVertexArray.size(); i++)
+		size_t j = size_t(int(worldVertexArray.size()) - 1);
+		for (size_t i = 0; i < worldVertexArray.size(); i++)
 		{
 			area += (worldVertexArray[j].position.x * worldVertexArray[i].position.y) - (worldVertexArray[i].position.x * worldVertexArray[j].position.y);
 			j = i;

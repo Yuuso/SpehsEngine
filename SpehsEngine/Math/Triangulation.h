@@ -61,7 +61,7 @@ namespace spehs
 		~Triangulation();
 
 		Triangle& operator[](unsigned index){ return *triangles[index]; }
-		unsigned size() const{ return triangles.size(); }
+		size_t size() const{ return triangles.size(); }
 
 	private:
 		/* Points to the first element in the hull */

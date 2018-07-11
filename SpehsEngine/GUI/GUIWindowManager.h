@@ -32,8 +32,8 @@ namespace spehs
 		bool getMouseHoverAny() const { return mouseHoverAny; }
 		bool isDragging() const { return dragging; }
 		bool isStreching() const{ return streching; }
-		unsigned getWindowCount() const { return windows.size(); }
-		unsigned getPopupCount() const { return popups.size(); }
+		size_t getWindowCount() const { return windows.size(); }
+		size_t getPopupCount() const { return popups.size(); }
 		GUIWindow* back() const { return windows.back(); }
 		GUIWindow* at(const size_t index) const { if (index >= windows.size()) return nullptr; return windows[index]; }
 		void setSystemDepth(const int16_t depth);

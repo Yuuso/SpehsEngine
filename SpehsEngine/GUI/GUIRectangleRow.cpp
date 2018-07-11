@@ -39,7 +39,7 @@ namespace spehs
 
 		if (evenElementWidth)
 		{//Uniform size
-			for (unsigned i = 0; i < elements.size(); i++)
+			for (size_t i = 0; i < elements.size(); i++)
 			{
 				elements[i]->updateMinSize();
 				if (elements[i]->getMinWidth() > minSize.x)
@@ -47,11 +47,11 @@ namespace spehs
 				if (elements[i]->getMinHeight() > minSize.y)
 					minSize.y = elements[i]->getMinHeight();
 			}
-			minSize.x *= elements.size();
+			minSize.x *= int(elements.size());
 		}
 		else
 		{//Dynamic size
-			for (unsigned i = 0; i < elements.size(); i++)
+			for (size_t i = 0; i < elements.size(); i++)
 			{
 				elements[i]->updateMinSize();
 				minSize.x += elements[i]->getMinWidth();
@@ -73,17 +73,17 @@ namespace spehs
 			if (evenElementWidth)
 			{
 				int w = 0;
-				for (unsigned i = 0; i < elements.size(); i++)
+				for (size_t i = 0; i < elements.size(); i++)
 				{
 					if (elements[i]->getMinWidth() > w)
 						w = elements[i]->getMinWidth();
 				}
-				for (unsigned i = 0; i < elements.size(); i++)
+				for (size_t i = 0; i < elements.size(); i++)
 					elements[i]->setSize(w, minSize.y);
 			}
 			else
 			{//Each to its own size
-				for (unsigned i = 0; i < elements.size(); i++)
+				for (size_t i = 0; i < elements.size(); i++)
 					elements[i]->setSize(elements[i]->getMinWidth(), minSize.y);
 			}
 		}
@@ -91,15 +91,15 @@ namespace spehs
 		{
 			if (evenElementWidth)
 			{
-				const int w = size.x / elements.size();
-				for (unsigned i = 0; i < elements.size() - 1; i++)
+				const int w = size.x / int(elements.size());
+				for (size_t i = 0; i < elements.size() - 1; i++)
 					elements[i]->setSize(w, size.y);
-				elements.back()->setSize(size.x - w * (elements.size() - 1), size.y);
+				elements.back()->setSize(size.x - w * (int(elements.size()) - 1), size.y);
 			}
 			else if (elementPositionMode == PositionMode::StackLeft)
 			{
 				int allocatedWidth = 0;
-				for (unsigned i = 0; i < elements.size(); i++)
+				for (size_t i = 0; i < elements.size(); i++)
 				{
 					if (i == elements.size() - 1)
 					{//The last element
@@ -115,7 +115,7 @@ namespace spehs
 			else if (elementPositionMode == PositionMode::StackRight)
 			{
 				int allocatedWidth = 0;
-				for (int i = elements.size() - 1; i >= 0; i--)
+				for (size_t i = elements.size(); i-- > 0;)
 				{
 					if (i == 0)
 					{//First element
@@ -148,7 +148,7 @@ namespace spehs
 					const int dynamicWidth = size.x - elements.front()->getMinWidth() - elements.back()->getMinWidth();
 					const int dynamicMinWidth = minSize.x - elements.front()->getMinWidth() - elements.back()->getMinWidth();
 					int allocatedWidth = 0;
-					for (unsigned i = 1; i < elements.size() - 1; i++)
+					for (size_t i = 1; i < elements.size() - 1; i++)
 					{
 						if (i == elements.size() - 2)
 						{//The last dynamicly scaled element gets rest of the available width
@@ -166,7 +166,7 @@ namespace spehs
 			else //PositionMode::Standard
 			{//Scale each element relative to element min size : this->min size
 				int allocatedWidth = 0;
-				for (unsigned i = 0; i < elements.size() - 1; i++)
+				for (size_t i = 0; i < elements.size() - 1; i++)
 				{
 					const int w = int(float(elements[i]->getMinWidth()) / float(minSize.x) * float(size.x));
 					elements[i]->setSize(w, size.y);
@@ -180,7 +180,7 @@ namespace spehs
 	void GUIRectangleRow::updatePosition()
 	{
 		GUIRectangle::updatePosition();
-		for (unsigned i = 0; i < elements.size(); i++)
+		for (size_t i = 0; i < elements.size(); i++)
 		{
 			if (i == 0)
 				elements[i]->setPositionLocal(0, 0);

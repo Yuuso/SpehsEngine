@@ -96,6 +96,9 @@
       <SDLCheck>true</SDLCheck>
     </ClCompile>
     <Lib />
+    <Lib>
+      <AdditionalDependencies>SpehsCore.lib;SpehsGPIO.lib;SpehsNet.lib;</AdditionalDependencies>
+    </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -120,6 +123,9 @@
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
     <Lib />
+    <Lib>
+      <AdditionalDependencies>SpehsCore.lib;SpehsGPIO.lib;SpehsNet.lib;</AdditionalDependencies>
+    </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>

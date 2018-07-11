@@ -224,7 +224,7 @@ namespace spehs
 					 	std::string charStr;
 					 	hexStr.reserve(3 * receiveBuffer.size());
 					 	charStr.reserve(receiveBuffer.size());
-						const int printSize = receiveBuffer.size() > 1024 ? 1024 : receiveBuffer.size();
+						const size_t printSize = receiveBuffer.size() > 1024u ? 1024u : receiveBuffer.size();
 					 	for (size_t i = 0; i < printSize; i++)
 					 	{
 					 		hexStr += " " + spehs::toHexString(receiveBuffer[i]);
@@ -267,12 +267,12 @@ namespace spehs
 				spehs::log::info("RS232_PinReader: Starting to detect stream boundaries. Set options: baud rate '" + std::to_string(int(1.0f / ((float)readInterval / (float)spehs::time::conversionRate::second))) + "', parity check " + (parityCheckEnabled ? "enabled" : "disabled"));
 			
 			std::vector<gpio::PinState> history(16384);
-			int analyzeCount = 0;
-			int changingEdgeSamples = 0;
-			int timedSamples = 0;
-			const int trailerBitCount = (parityCheckEnabled ? 1 : 0) + stopBitCount;
-			const int sequenceLength = 1/*start bit*/ + transmissionUnitLength/*data bits*/ + trailerBitCount;
-			static const int minRequiredSequenceCount = streamBoundaryRequiredPatternRepetitionCount;//At least this many sequences are required to make credible analyzation
+			size_t analyzeCount = 0;
+			size_t changingEdgeSamples = 0;
+			size_t timedSamples = 0;
+			const size_t trailerBitCount = (parityCheckEnabled ? 1 : 0) + stopBitCount;
+			const size_t sequenceLength = 1/*start bit*/ + transmissionUnitLength/*data bits*/ + trailerBitCount;
+			static const size_t minRequiredSequenceCount = streamBoundaryRequiredPatternRepetitionCount;//At least this many sequences are required to make credible analyzation
 
 			//Synchronize reading
 			while (gpio::read(pin) == gpio::PinState::high)
@@ -321,23 +321,23 @@ namespace spehs
 						1-2 stop bits (high)
 					*/
 					std::vector<int/*history index*/> potentialStartBits;
-					const int endOffset = sequenceLength - 1;
-					const int requiredPatternLength = history.size() / sequenceLength - 1;
-					const int lastTestedStartBitIndex = history.size() - endOffset;
+					const size_t endOffset = sequenceLength - 1u;
+					const size_t requiredPatternLength = history.size() / sequenceLength - 1u;
+					const size_t lastTestedStartBitIndex = history.size() - endOffset;
 					if (stopBitCount == 1)
 					{
-						for (int i = 0; i < lastTestedStartBitIndex; i++)
+						for (size_t i = 0; i < lastTestedStartBitIndex; i++)
 						{
 							if (history[i] == startBitState && history[i + endOffset] == stopBitState)
-								potentialStartBits.push_back(i);
+								potentialStartBits.push_back(int(i));
 						}
 					}
 					else if (stopBitCount == 2)
 					{
-						for (int i = 0; i < lastTestedStartBitIndex; i++)
+						for (size_t i = 0; i < lastTestedStartBitIndex; i++)
 						{
 							if (history[i] == startBitState && history[i + endOffset - 1] == stopBitState && history[i + endOffset] == stopBitState)
-								potentialStartBits.push_back(i);
+								potentialStartBits.push_back(int(i));
 						}
 					}
 					else
@@ -351,7 +351,7 @@ namespace spehs
 					Eliminate the ones that do not appear in a consistent pattern.
 					*/
 					std::vector<int/*start bit history index*/> validPatterns;
-					int longestSequencePattern = 0;
+					size_t longestSequencePattern = 0;
 					while (potentialStartBits.size() >= requiredPatternLength)
 					{
 						//Check if the potential front start bit is a valid sequence pattern
@@ -378,7 +378,7 @@ namespace spehs
 						}
 
 						if (patternSequenceIndices.size() > longestSequencePattern)
-							longestSequencePattern = patternSequenceIndices.size();
+							longestSequencePattern = int(patternSequenceIndices.size());
 
 						//Remove sequence start indices
 						for (size_t p = 0; p < patternSequenceIndices.size(); p++)

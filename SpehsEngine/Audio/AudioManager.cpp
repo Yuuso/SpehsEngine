@@ -291,7 +291,7 @@ namespace spehs
 		//Apparently no need to call fclose
 
 		audioVar::mutex.lock();
-		it->second.size = data.size();
+		it->second.size = ALsizei(data.size());
 
 		//Generate OpenAL buffer
 		alGenBuffers(1, &it->second.buffer);

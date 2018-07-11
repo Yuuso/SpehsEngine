@@ -31,6 +31,8 @@ namespace spehs
 			log::info("Current SpehsEngine core library version: " + getVersion());
 			
 			log::info("Hardware threads: " + std::to_string(std::thread::hardware_concurrency()));
+			log::info("Size of size_t: " + std::to_string(sizeof(size_t)) + " bytes");
+			log::info("Size of void*: " + std::to_string(sizeof(void*)) + " bytes");
 
 			//INITIALIZATIONS
 			rng::initialize();

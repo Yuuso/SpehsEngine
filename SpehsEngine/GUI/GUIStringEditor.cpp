@@ -169,7 +169,7 @@ namespace spehs
 		if (isReceivingInput())
 			return;
 		enableBit(state, GUIRECT_RECEIVING_INPUT_BIT);
-		typerPosition = editorValue.size();
+		typerPosition = int(editorValue.size());
 		typerBlinkTimer = 0;
 		stringUpdated = false;
 		input = editorValue;
@@ -294,7 +294,7 @@ namespace spehs
 			}
 			break;
 			case KEYBOARD_END:
-				typerPosition = input.size();
+				typerPosition = int(input.size());
 				typerBlinkTimer = 0;
 				stringUpdated = false;
 				break;

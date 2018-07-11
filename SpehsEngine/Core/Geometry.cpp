@@ -104,7 +104,7 @@ namespace spehs
 		if (numCusps < 3)
 			return 0.000000001f;
 		float area(0.0f);
-		int j = numCusps - 1;
+		size_t j = numCusps - 1;
 		for (size_t i = 0; i < numCusps; i++)
 		{
 			area += (cusps[j].x * cusps[i].y) - (cusps[i].x * cusps[j].y);
@@ -113,12 +113,12 @@ namespace spehs
 		return std::max(std::abs(area * 0.5f), 0.0001f);
 	}
 
-	inline float getRadius(spehs::vec2* cusps, unsigned numCusps)
+	inline float getRadius(spehs::vec2* cusps, const size_t numCusps)
 	{
 		if (numCusps == 0)
 			return 0.0f;
 		float max = magnitude(cusps[0]);
-		for (unsigned i = 1; i < numCusps; i++)
+		for (size_t i = 1; i < numCusps; i++)
 		{
 			if (magnitude(cusps[i]) > max)
 				max = magnitude(cusps[i]);
@@ -126,20 +126,20 @@ namespace spehs
 		return max;
 	}
 
-	inline spehs::vec2 getCenter(spehs::Vertex* cusps, unsigned numCusps)
+	inline spehs::vec2 getCenter(spehs::Vertex* cusps, const size_t numCusps)
 	{
 		spehs::vec2 result(0.0f, 0.0f);
-		for (unsigned i = 0; i < numCusps; i++)
+		for (size_t i = 0; i < numCusps; i++)
 		{
 			result += spehs::vec2(cusps[i].position.x, cusps[i].position.y);
 		}
 		return result / (float)numCusps;
 	}
 
-	inline spehs::vec2 getCenter(spehs::vec2* cusps, unsigned numCusps)
+	inline spehs::vec2 getCenter(spehs::vec2* cusps, const size_t numCusps)
 	{
 		spehs::vec2 result(0.0f, 0.0f);
-		for (unsigned i = 0; i < numCusps; i++)
+		for (size_t i = 0; i < numCusps; i++)
 		{
 			result += spehs::vec2(cusps[i].x, cusps[i].y);
 		}
@@ -167,7 +167,7 @@ namespace spehs
 		return abs((_point.x - _begin.x) * (_end.y - _begin.y) - (_point.y - _begin.y) * (_end.x - _begin.x)) / normalLength;
 	}
 
-	spehs::vec2* generateCusps(unsigned& numCusps, int shape, float width, float height)
+	spehs::vec2* generateCusps(size_t& numCusps, int shape, float width, float height)
 	{
 		if (!shape)
 		{
@@ -224,7 +224,7 @@ namespace spehs
 				cusps[i].y *= hFactor;
 			}
 
-			//Assign cusps quantity to given unsigned reference
+			//Assign cusps quantity to given size_t reference
 			numCusps = shape;
 			return cusps;
 		}

@@ -13,7 +13,7 @@
       <TreatWarningAsError>true</TreatWarningAsError>
     </ClCompile>
     <Lib>
-      <AdditionalLibraryDirectories>$(SPEHSENGINE_ROOT)/Dependencies/lib/</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(SPEHSENGINE_ROOT)/Dependencies/lib/;$(SPEHSENGINE_ROOT)/bin/$(Platform)/$(Configuration)/$(PlatformToolset);</AdditionalLibraryDirectories>
     </Lib>
     <Link>
       <AdditionalLibraryDirectories>$(OutDir);$(SPEHSENGINE_ROOT)/Dependencies/lib/;$(SPEHSENGINE_ROOT)/Dependencies/dll/;</AdditionalLibraryDirectories>

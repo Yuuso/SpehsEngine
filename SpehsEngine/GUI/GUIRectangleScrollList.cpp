@@ -122,7 +122,7 @@ namespace spehs
 	{
 		if (!checkState(GUIRECT_MIN_SIZE_UPDATED_BIT))
 			updateMinSize();
-		return minElementSize.y * elements.size();
+		return minElementSize.y * int(elements.size());
 	}
 
 	void GUIRectangleScrollList::inputUpdate()
@@ -214,7 +214,7 @@ namespace spehs
 			GUIRectangleUnisizeContainer::updateMinSize();
 
 			minSize.x = minElementSize.x;
-			minSize.y = minElementSize.y * std::min(minVisibleElementCount, updateElementCount);
+			minSize.y = minElementSize.y * int(std::min(minVisibleElementCount, updateElementCount));
 
 			//Account scroll button width into min width
 			if (invisibleElements())
@@ -277,7 +277,7 @@ namespace spehs
 		//Resizing the elements
 		if (updateElementCount > 0)
 		{
-			int excessY = size.y - updateElementCount * elementSize.y;
+			int excessY = size.y - int(updateElementCount) * elementSize.y;
 			//Resize according to element size
 			for (size_t i = beginElementIndex; i < beginElementIndex + updateElementCount; i++)
 			{
@@ -375,7 +375,7 @@ namespace spehs
 		if (minVisibleElementCount < 4)
 			minVisibleElementCount = 4;
 		if (updateElementCount < minVisibleElementCount && updateElementCount < elements.size())
-			incrementUpdateElementCount(std::min((int)elements.size() - updateElementCount, minVisibleElementCount - updateElementCount));
+			incrementUpdateElementCount(int(std::min(elements.size() - updateElementCount, minVisibleElementCount - updateElementCount)));
 		
 		disableState(GUIRECT_MIN_SIZE_UPDATED_BIT | GUIRECT_SCALE_UPDATED_BIT | GUIRECT_POSITION_UPDATED_BIT);
 	}

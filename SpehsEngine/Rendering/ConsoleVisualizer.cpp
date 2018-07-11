@@ -61,7 +61,7 @@ namespace spehs
 		setFont("Fonts/Anonymous.ttf", 12);
 		setPlaneDepth(0);
 		setLineCapacity(10);
-		scrollState = getMaxScrollState();
+		scrollState = int(getMaxScrollState());
 		updateLines = true;
 
 		//Connect log connection

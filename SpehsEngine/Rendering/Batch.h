@@ -10,7 +10,7 @@
 #include <vector>
 #include <stdint.h>
 
-#define DEFAULT_MAX_BATCH_SIZE 4096
+#define DEFAULT_MAX_BATCH_SIZE 4096u
 
 typedef unsigned int GLuint;
 typedef unsigned short GLushort;
@@ -22,13 +22,13 @@ namespace spehs
 	class Camera2D;
 	class BatchManager;
 
-	int getIndexMultiplier(const DrawMode _drawMode, const unsigned int _batchSize = DEFAULT_MAX_BATCH_SIZE); // Calculate max number of indices
+	int getIndexMultiplier(const DrawMode _drawMode, const size_t _batchSize = DEFAULT_MAX_BATCH_SIZE); // Calculate max number of indices
 
 
 	class Batch
 	{
 	public:
-		Batch(BatchManager& _batchManager, const PlaneDepth _priority, const unsigned int _shaderIndex, const bool _cameraMatrixState);
+		Batch(BatchManager& _batchManager, const PlaneDepth _priority, const size_t _shaderIndex, const bool _cameraMatrixState);
 		virtual ~Batch();
 
 		virtual bool check(const Primitive& _primitive) { return false; }
@@ -44,7 +44,7 @@ namespace spehs
 
 	protected:
 		PlaneDepth priority;
-		unsigned int shaderIndex;
+		size_t shaderIndex;
 		bool cameraMatrixState;
 
 		std::vector<spehs::Vertex> vertices;
@@ -69,10 +69,10 @@ namespace spehs
 		void push(const Primitive& _primitive);
 
 	protected:
-		bool isEnoughRoom(const unsigned int _numVertices);
+		bool isEnoughRoom(const size_t _numVertices);
 		void initBuffers();
 		void updateBuffers();
-		void setIndices(const unsigned int _numVertices);
+		void setIndices(const size_t _numVertices);
 
 	private:
 		GLuint textureDataID;
@@ -85,7 +85,7 @@ namespace spehs
 	class TextBatch : public Batch
 	{
 	public:
-		TextBatch(BatchManager& _batchManager, const bool _cameraMatrixState, const PlaneDepth _priority, const unsigned int _shaderIndex);
+		TextBatch(BatchManager& _batchManager, const bool _cameraMatrixState, const PlaneDepth _priority, const size_t _shaderIndex);
 		~TextBatch();
 
 		bool check(const Text& _text);
@@ -94,7 +94,7 @@ namespace spehs
 		void push(const Text& _text);
 
 	protected:
-		bool isEnoughRoom(const unsigned int _numVertices);
+		bool isEnoughRoom(const size_t _numVertices);
 		void initBuffers();
 		void updateBuffers();
 		void setIndices();

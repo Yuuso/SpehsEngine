@@ -10,14 +10,14 @@ namespace spehs
 
 	void writeString(std::string& string, std::ofstream* stream)
 	{
-		unsigned count = string.size();
+		const unsigned count = unsigned(string.size());
 		stream->write((char*)&count, sizeof(count));
 		for (unsigned i = 0; i < count; i++)
 			stream->write((char*)&string[i], sizeof(char));
 	}
 	size_t writeString(std::string& string, unsigned char* buffer)
 	{
-		unsigned count = string.size();
+		const unsigned count = unsigned(string.size());
 		memcpy(buffer, &count, sizeof(count));
 		size_t offset = sizeof(count);
 		for (unsigned i = 0; i < count; i++)

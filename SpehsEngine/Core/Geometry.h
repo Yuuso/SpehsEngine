@@ -39,11 +39,11 @@ namespace spehs
 	extern inline float getArea(spehs::vec2* cusps, const size_t numCusps);
 
 	/**Returns radius from 0,0 to the farthest away cusp in the array*/
-	extern inline float getRadius(spehs::vec2* cusps, unsigned numCusps);
+	extern inline float getRadius(spehs::vec2* cusps, const size_t numCusps);
 
 	/*Returns center of a convex polygon*/
-	extern inline spehs::vec2 getCenter(spehs::Vertex* cusps, unsigned numCusps);
-	extern inline spehs::vec2 getCenter(spehs::vec2* cusps, unsigned numCusps);
+	extern inline spehs::vec2 getCenter(spehs::Vertex* cusps, const size_t numCusps);
+	extern inline spehs::vec2 getCenter(spehs::vec2* cusps, const size_t numCusps);
 
 	extern inline float cross2(const spehs::vec2& _vec1, const spehs::vec2& _vec2);
 	extern inline spehs::vec2 cross2(const float& _scalar, const spehs::vec2& _vec);
@@ -52,7 +52,7 @@ namespace spehs
 	extern float pointToLineDistance(const spehs::vec2& _begin, const spehs::vec2& _end, const spehs::vec2& _point);
 
 	/**Returns a generated position array. Assigns length of array into numCusps*/
-	spehs::vec2* generateCusps(unsigned& numCusps, int shape, float width, float height);
+	spehs::vec2* generateCusps(size_t& numCusps, int shape, float width, float height);
 
 	/*Get triangle area*/
 	float getTriangleArea(const spehs::vec2& v0, const spehs::vec2& v1, const spehs::vec2& v2);

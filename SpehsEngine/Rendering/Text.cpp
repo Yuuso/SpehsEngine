@@ -390,7 +390,7 @@ namespace spehs
 		}
 		const int end = std::min((int)characterIndex, (int)string.size() - 1);
 		int currentHeight = 0;
-		for (int i = string.size() - 1; i >= end; i--)
+		for (int i = int(string.size()) - 1; i >= end; i--)
 		{
 			if (string[i] == '\n')
 				currentHeight += font->height + lineSpacing;

@@ -37,7 +37,7 @@ namespace spehs
 				if (elements[i]->getMinHeight() > minSize.y)
 					minSize.y = elements[i]->getMinHeight();
 			}
-			minSize.y *= elements.size();
+			minSize.y *= int(elements.size());
 		}
 		else
 		{
@@ -60,15 +60,15 @@ namespace spehs
 		{
 			if (uniformHeight)
 			{//Uniform height spacing
-				const int heightPerElement = size.y / elements.size();
-				for (unsigned i = 0; i < elements.size() - 1; i++)
+				const int heightPerElement = size.y / int(elements.size());
+				for (size_t i = 0; i < elements.size() - 1; i++)
 					elements[i]->setSize(size.x, heightPerElement);
-				elements.back()->setSize(size.x, size.y - heightPerElement * elements.size());
+				elements.back()->setSize(size.x, size.y - heightPerElement * int(elements.size()));
 			}
 			else
 			{
 				int heightAllocated = 0;
-				for (unsigned i = 0; i < elements.size() - 1; i++)
+				for (size_t i = 0; i < elements.size() - 1; i++)
 				{
 					const int h = int(float(elements[i]->getMinHeight()) / float(minSize.y) * float(size.y));
 					elements[i]->setSize(size.x, h);

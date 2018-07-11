@@ -14,8 +14,8 @@ namespace spehs
 		void updateScale() override;
 		void updatePosition() override;
 
-		void setColumnCount(const int _columns){ columns = _columns; disableBit(state, GUIRECT_POSITION_UPDATED_BIT); disableBit(state, GUIRECT_SCALE_UPDATED_BIT); }
-		int getColumnCount() const { return columns; }
+		void setColumnCount(const size_t _columns){ columns = _columns; disableBit(state, GUIRECT_POSITION_UPDATED_BIT); disableBit(state, GUIRECT_SCALE_UPDATED_BIT); }
+		size_t getColumnCount() const { return columns; }
 
 		spehs::GUIRectangleTable* getAsGUIRectangleTablePtr() override { return this; }
 

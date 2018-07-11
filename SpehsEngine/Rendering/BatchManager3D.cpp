@@ -12,22 +12,28 @@
 namespace spehs
 {
 	BatchManager3D::BatchManager3D(Window& _window, ModelManager& _modelManager, ShaderManager& _shaderManager, Camera3D& _camera, const std::string& _name)
-		: window(_window), modelManager(_modelManager), textureManager(*_window.getTextureManager()), shaderManager(_shaderManager), camera3D(_camera), name(_name)
+		: window(_window)
+		, modelManager(_modelManager)
+		, textureManager(*_window.getTextureManager())
+		, shaderManager(_shaderManager)
+		, camera3D(_camera)
+		, name(_name)
 	{
 
 	}
+
 	BatchManager3D::~BatchManager3D()
 	{
 		clearBatches();
-		int cleanUpMeshes = meshes.size();
-		for (unsigned i = 0; i < meshes.size(); i++)
+		size_t cleanUpMeshes = meshes.size();
+		for (size_t i = 0; i < meshes.size(); i++)
 		{
 			if (meshes[i]->readyForDelete)
 				cleanUpMeshes--;
 			delete meshes[i];
 		}
 
-		if (cleanUpMeshes != 0)
+		if (cleanUpMeshes != 0u)
 			exceptions::warning("BatchManager cleaned up " + std::to_string(cleanUpMeshes) + " meshes!");
 	}
 
@@ -36,6 +42,7 @@ namespace spehs
 		meshes.push_back(new Mesh(*this));
 		return meshes.back();
 	}
+
 	Mesh* BatchManager3D::createMesh(const std::string& _filepath)
 	{
 		meshes.push_back(new Mesh(*this, _filepath));
@@ -47,7 +54,7 @@ namespace spehs
 		static bool batchFound;
 
 		// Batch Meshes
-		for (unsigned i = 0; i < meshes.size();)
+		for (size_t i = 0; i < meshes.size();)
 		{
 			// Check if user has requested for deletion
 			if (meshes[i]->readyForDelete)
@@ -64,7 +71,7 @@ namespace spehs
 				// Update worldVertexArray
 				meshes[i]->updateVertices();
 				// Find a suitable batch for it
-				for (unsigned j = 0; j < meshBatches.size(); j++)
+				for (size_t j = 0; j < meshBatches.size(); j++)
 				{
 					if (meshBatches[j]->check(*(meshes[i])))
 					{
@@ -139,6 +146,7 @@ namespace spehs
 			}
 		}
 	}
+
 	void BatchManager3D::clearBatches()
 	{
 		for (unsigned i = 0; i < meshBatches.size(); i++)

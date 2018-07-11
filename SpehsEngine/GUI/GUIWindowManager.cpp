@@ -190,7 +190,7 @@ namespace spehs
 				}
 				else
 				{//Check if there are windows on top of focused window -> yield focus
-					for (int i = windows.size() - 1; i >= 0; i--)
+					for (size_t i = windows.size(); i-- > 0;)
 					{
 						if (windows[i] == focusedWindow)
 							break;

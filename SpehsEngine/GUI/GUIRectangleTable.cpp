@@ -18,9 +18,9 @@ namespace spehs
 		if (columns > 0u)
 		{
 			if (elements.size() >= columns)
-				minSize.x = minElementSize.x * columns;
+				minSize.x = minElementSize.x * int(columns);
 			else
-				minSize.x = minElementSize.x * elements.size();
+				minSize.x = minElementSize.x * int(elements.size());
 			minSize.y = minElementSize.y * (int)ceil(elements.size() / columns);
 		}
 		else
@@ -67,10 +67,10 @@ namespace spehs
 
 		int row = 0;
 		size_t col = 0;
-		const int totalRowCount = (int)ceil(float(elements.size()) / float(columns));
+		const size_t totalRowCount = (size_t)ceil(float(elements.size()) / float(columns));
 		for (size_t i = 0; i < elements.size(); i++)
 		{
-			elements[i]->setPositionLocal(col * elementSize.x, elementSize.y * (totalRowCount - row - 1));
+			elements[i]->setPositionLocal(int(col * elementSize.x), int(elementSize.y * (totalRowCount - row - 1)));
 			col++;
 			if (col >= columns)
 			{

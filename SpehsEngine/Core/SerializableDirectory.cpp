@@ -33,13 +33,13 @@ namespace spehs
 	size_t SerializableDirectory::write(unsigned char* buffer) const
 	{
 		size_t offset(0);
-		unsigned count(name.size());
+		unsigned count = unsigned(name.size());
 		memcpy(&buffer[offset], &count, sizeof(count));							offset += sizeof(count);
 		if (count > 0)
 		{
 			memcpy(&buffer[offset], name.data(), sizeof(char) * count);			offset += sizeof(char) * count;
 		}
-		count = subDirectories.size();
+		count = unsigned(subDirectories.size());
 		memcpy(&buffer[offset], &count, sizeof(count));							offset += sizeof(count);
 		for (unsigned i = 0; i < subDirectories.size(); i++)
 			offset += subDirectories[i].write(&buffer[offset]);

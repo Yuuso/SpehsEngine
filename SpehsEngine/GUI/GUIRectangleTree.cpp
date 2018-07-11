@@ -117,7 +117,7 @@ namespace spehs
 			////Element Y positioning
 			int branchY(getYGlobal());
 			if (branchY + int(elements.size()) * minElementSize.y + 1 > getWindow().getHeight())
-				branchY = getWindow().getHeight() - elements.size() * minElementSize.y - 1;
+				branchY = getWindow().getHeight() - int(elements.size()) * minElementSize.y - 1;
 
 			//Position elements
 			for (unsigned i = 0; i < elements.size(); i++)

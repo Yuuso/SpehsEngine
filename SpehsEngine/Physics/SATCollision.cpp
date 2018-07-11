@@ -52,7 +52,7 @@ namespace spehs
 		return returnProj;
 	};
 
-	spehs::vec2 getAxis(Vertex* _vertexArray, const size_t _size, const unsigned int _i)
+	spehs::vec2 getAxis(Vertex* _vertexArray, const size_t _size, const size_t _i)
 	{
 		spehs::vec2 currentVertex(_vertexArray[_i].position.x, _vertexArray[_i].position.y);
 		spehs::vec2 nextVertex;
@@ -66,7 +66,7 @@ namespace spehs
 		return normalVector;
 	};
 
-	spehs::vec2 getAxis(spehs::vec2* _vertexArray, const size_t _size, const unsigned int _i)
+	spehs::vec2 getAxis(spehs::vec2* _vertexArray, const size_t _size, const size_t _i)
 	{
 		spehs::vec2 currentVertex = spehs::vec2(_vertexArray[_i].x, _vertexArray[_i].y);
 		spehs::vec2 nextVertex;
@@ -117,17 +117,17 @@ namespace spehs
 		spehs::vec2* axis2 = new spehs::vec2[_size2];
 
 		//Get all axes
-		for (unsigned int i = 0; i < _size1; i++)
+		for (size_t i = 0; i < _size1; i++)
 		{
 			axis1[i] = getAxis(_vertexArray1, _size1, i).normalize();
 		}
-		for (unsigned int i = 0; i < _size2; i++)
+		for (size_t i = 0; i < _size2; i++)
 		{
 			axis2[i] = getAxis(_vertexArray2, _size2, i).normalize();
 		}
 
 		//Loop through axes2
-		for (unsigned int i = 0; i < _size2; i++)
+		for (size_t i = 0; i < _size2; i++)
 		{
 			Projection p1 = projectPolygon(axis2[i], _vertexArray1, _size1);
 			Projection p2 = projectPolygon(axis2[i], _vertexArray2, _size2);
@@ -140,7 +140,7 @@ namespace spehs
 		}
 
 		//Loop through axes1
-		for (unsigned int i = 0; i < _size1; i++)
+		for (size_t i = 0; i < _size1; i++)
 		{
 			Projection p1 = projectPolygon(axis1[i], _vertexArray1, _size1);
 			Projection p2 = projectPolygon(axis1[i], _vertexArray2, _size2);
@@ -164,17 +164,17 @@ namespace spehs
 		spehs::vec2* axis2 = new spehs::vec2[_size2];
 
 		//Get all axes
-		for (unsigned int i = 0; i < _size1; i++)
+		for (size_t i = 0; i < _size1; i++)
 		{
 			axis1[i] = getAxis(_vertexArray1, _size1, i).normalize();
 		}
-		for (unsigned int i = 0; i < _size2; i++)
+		for (size_t i = 0; i < _size2; i++)
 		{
 			axis2[i] = getAxis(_vertexArray2, _size2, i).normalize();
 		}
 
 		//Loop through axes2
-		for (unsigned int i = 0; i < _size2; i++)
+		for (size_t i = 0; i < _size2; i++)
 		{
 			Projection p1 = projectPolygon(axis2[i], _vertexArray1, _size1);
 			Projection p2 = projectPolygon(axis2[i], _vertexArray2, _size2);
@@ -187,7 +187,7 @@ namespace spehs
 		}
 
 		//Loop through axes1
-		for (unsigned int i = 0; i < _size1; i++)
+		for (size_t i = 0; i < _size1; i++)
 		{
 			Projection p1 = projectPolygon(axis1[i], _vertexArray1, _size1);
 			Projection p2 = projectPolygon(axis1[i], _vertexArray2, _size2);
@@ -211,7 +211,7 @@ namespace spehs
 		spehs::vec2 axis2 = (getCircleAxis(_vertexArray, _size, _circleCenterPoint)).normalize();
 
 		//Get all axes
-		for (unsigned int i = 0; i < _size; i++)
+		for (size_t i = 0; i < _size; i++)
 		{
 			axis1[i] = (getAxis(_vertexArray, _size, i)).normalize();
 		}
@@ -226,7 +226,7 @@ namespace spehs
 		}
 
 		//Loop through axes1
-		for (unsigned int i = 0; i < _size; i++)
+		for (size_t i = 0; i < _size; i++)
 		{
 			Projection p1 = projectPolygon(axis1[i], _vertexArray, _size);
 			Projection p2 = projectCircle(axis1[i], _circleCenterPoint, _circleRadius);
@@ -248,7 +248,7 @@ namespace spehs
 		spehs::vec2 axis2 = (getCircleAxis(_vertexArray, _size, _circleCenterPoint)).normalize();
 
 		//Get all axes
-		for (unsigned int i = 0; i < _size; i++)
+		for (size_t i = 0; i < _size; i++)
 		{
 			axis1[i] = (getAxis(_vertexArray, _size, i)).normalize();
 		}
@@ -263,7 +263,7 @@ namespace spehs
 		}
 
 		//Loop through axes1
-		for (unsigned int i = 0; i < _size; i++)
+		for (size_t i = 0; i < _size; i++)
 		{
 			Projection p1 = projectPolygon(axis1[i], _vertexArray, _size);
 			Projection p2 = projectCircle(axis1[i], _circleCenterPoint, _circleRadius);
@@ -345,11 +345,11 @@ namespace spehs
 		spehs::vec2* axis2 = new spehs::vec2[_size2];
 
 		//Get all axes
-		for (unsigned int i = 0; i < _size1; i++)
+		for (size_t i = 0; i < _size1; i++)
 		{
 			axis1[i] = (getAxis(_vertexArray1, _size1, i)).normalize();
 		}
-		for (unsigned int i = 0; i < _size2; i++)
+		for (size_t i = 0; i < _size2; i++)
 		{
 			axis2[i] = (getAxis(_vertexArray2, _size2, i)).normalize();
 		}
@@ -377,7 +377,7 @@ namespace spehs
 		}
 
 		//Loop through axes1
-		for (unsigned int i = 0; i < _size1; i++)
+		for (size_t i = 0; i < _size1; i++)
 		{
 			Projection p1 = projectPolygon(axis1[i], _vertexArray1, _size1);
 			Projection p2 = projectPolygon(axis1[i], _vertexArray2, _size2);
@@ -403,17 +403,17 @@ namespace spehs
 		deposit.MTV = smallestAxis * abs(overlap);
 		
 		//Recalculate all axes without normalization
-		for (unsigned int i = 0; i < _size1; i++)
+		for (size_t i = 0; i < _size1; i++)
 		{
 			axis1[i] = getAxis(_vertexArray1, _size1, i);
 		}
-		for (unsigned int i = 0; i < _size2; i++)
+		for (size_t i = 0; i < _size2; i++)
 		{
 			axis2[i] = getAxis(_vertexArray2, _size2, i);
 		}
 
 		spehs::vec2 testPoint;
-		for (unsigned int i = 0; i < _size1; i++)
+		for (size_t i = 0; i < _size1; i++)
 		{
 			testPoint = spehs::vec2(_vertexArray1[i].position.x, _vertexArray1[i].position.y);
 			//Find which points are colliding
@@ -433,7 +433,7 @@ namespace spehs
 			}
 		}
 
-		for (unsigned int i = 0; i < _size2; i++)
+		for (size_t i = 0; i < _size2; i++)
 		{
 			testPoint = spehs::vec2(_vertexArray2[i].position.x, _vertexArray2[i].position.y);
 			//Find which points are colliding
@@ -454,7 +454,7 @@ namespace spehs
 			}
 		}
 
-		for (unsigned int i = 0; i < deposit.points.size(); i++)
+		for (size_t i = 0; i < deposit.points.size(); i++)
 		{
 			deposit.points[i].normal.normalize();
 		}
@@ -472,11 +472,11 @@ namespace spehs
 		spehs::vec2* axis2 = new spehs::vec2[_size2];
 
 		//Get all axes
-		for (unsigned int i = 0; i < _size1; i++)
+		for (size_t i = 0; i < _size1; i++)
 		{
 			axis1[i] = getAxis(_vertexArray1, _size1, i).normalize();
 		}
-		for (unsigned int i = 0; i < _size2; i++)
+		for (size_t i = 0; i < _size2; i++)
 		{
 			axis2[i] = getAxis(_vertexArray2, _size2, i).normalize();
 		}
@@ -504,7 +504,7 @@ namespace spehs
 		}
 
 		//Loop through axes1
-		for (unsigned int i = 0; i < _size1; i++)
+		for (size_t i = 0; i < _size1; i++)
 		{
 			Projection p1 = projectPolygon(axis1[i], _vertexArray1, _size1);
 			Projection p2 = projectPolygon(axis1[i], _vertexArray2, _size2);
@@ -530,17 +530,17 @@ namespace spehs
 		deposit.MTV = smallestAxis * abs(overlap);
 
 		//Recalculate all axes without normalization
-		for (unsigned int i = 0; i < _size1; i++)
+		for (size_t i = 0; i < _size1; i++)
 		{
 			axis1[i] = getAxis(_vertexArray1, _size1, i);
 		}
-		for (unsigned int i = 0; i < _size2; i++)
+		for (size_t i = 0; i < _size2; i++)
 		{
 			axis2[i] = getAxis(_vertexArray2, _size2, i);
 		}
 
 		spehs::vec2 testPoint;
-		for (unsigned int i = 0; i < _size1; i++)
+		for (size_t i = 0; i < _size1; i++)
 		{
 			testPoint = spehs::vec2(_vertexArray1[i].x, _vertexArray1[i].y);
 			//Find which points are colliding
@@ -560,7 +560,7 @@ namespace spehs
 			}
 		}
 
-		for (unsigned int i = 0; i < _size2; i++)
+		for (size_t i = 0; i < _size2; i++)
 		{
 			testPoint = spehs::vec2(_vertexArray2[i].x, _vertexArray2[i].y);
 			//Find which points are colliding
@@ -581,7 +581,7 @@ namespace spehs
 			}
 		}
 
-		for (unsigned int i = 0; i < deposit.points.size(); i++)
+		for (size_t i = 0; i < deposit.points.size(); i++)
 		{
 			deposit.points[i].normal.normalize();
 		}
@@ -657,7 +657,7 @@ namespace spehs
 
 
 		spehs::vec2 testPoint;
-		for (unsigned int i = 0; i < _size; i++)
+		for (size_t i = 0; i < _size; i++)
 		{
 			testPoint = spehs::vec2(_vertexArray[i].position.x, _vertexArray[i].position.y);
 			//Find which points are colliding
@@ -689,7 +689,7 @@ namespace spehs
 		}
 
 		//Normalize normals
-		for (unsigned int i = 0; i < deposit.points.size(); i++)
+		for (size_t i = 0; i < deposit.points.size(); i++)
 		{
 			deposit.points[i].normal.normalize();
 		}
@@ -764,7 +764,7 @@ namespace spehs
 
 
 		spehs::vec2 testPoint;
-		for (unsigned int i = 0; i < _size; i++)
+		for (size_t i = 0; i < _size; i++)
 		{
 			testPoint = spehs::vec2(_vertexArray[i].x, _vertexArray[i].y);
 			//Find which points are colliding
@@ -796,7 +796,7 @@ namespace spehs
 		}
 
 		//Normalize normals
-		for (unsigned int i = 0; i < deposit.points.size(); i++)
+		for (size_t i = 0; i < deposit.points.size(); i++)
 		{
 			deposit.points[i].normal.normalize();
 		}

@@ -17,13 +17,18 @@ std::atomic<int> Batch3DDeallocations;
 
 namespace spehs
 {
-	static inline int getIndexMultiplier(const unsigned int _batchSize)
+	static inline int getIndexMultiplier(const size_t _batchSize)
 	{
-		return (_batchSize - 2) * 3;
+		return int((_batchSize - 2) * 3);
 	}
 
 	MeshBatch::MeshBatch(BatchManager3D& _batchManager, const int _shaderIndex, const GLuint _textureDataID, const bool _depthTest, const bool _blending, const bool _backFaceCulling)
-		: batchManager(_batchManager), shaderIndex(_shaderIndex), textureDataID(_textureDataID), depthTest(_depthTest), blending(_blending), backFaceCulling(_backFaceCulling)
+		: batchManager(_batchManager)
+		, shaderIndex(_shaderIndex)
+		, textureDataID(_textureDataID)
+		, depthTest(_depthTest)
+		, blending(_blending)
+		, backFaceCulling(_backFaceCulling)
 	{
 #ifdef _DEBUG
 		Batch3DAllocations++;
@@ -40,6 +45,7 @@ namespace spehs
 
 		initBuffers();
 	}
+
 	MeshBatch::~MeshBatch()
 	{
 #ifdef _DEBUG
@@ -142,7 +148,7 @@ namespace spehs
 
 		//Draw
 		glBindVertexArray(vertexArrayObjectID);
-		glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_SHORT, reinterpret_cast<void*>(0));
+		glDrawElements(GL_TRIANGLES, GLsizei(indices.size()), GL_UNSIGNED_SHORT, reinterpret_cast<void*>(0));
 		glBindVertexArray(0);
 
 		checkOpenGLErrors(__FILE__, __LINE__);
@@ -160,22 +166,25 @@ namespace spehs
 		indices.clear();
 		return true;
 	}
+
 	void MeshBatch::push(Mesh* _mesh)
 	{
 		GLushort firstElement = (GLushort)vertices.size();
-		unsigned int indSize = indices.size();
+		size_t indSize = indices.size();
 		//INDICES
 		indices.insert(indices.end(), _mesh->elementArray.begin(), _mesh->elementArray.end());
 		if (firstElement != 0)
+		{
 			for (size_t i = indSize; i < indices.size(); i++)
 			{
 				indices[i] += firstElement;
 			}
+		}
 		//VERTICES
 		vertices.insert(vertices.end(), _mesh->worldVertexArray.begin(), _mesh->worldVertexArray.end());
 	}
 
-	bool MeshBatch::isEnoughRoom(const unsigned int _numVertices)
+	bool MeshBatch::isEnoughRoom(const size_t _numVertices)
 	{
 		if (_numVertices > DEFAULT_MAX_BATCH_SIZE)
 		{

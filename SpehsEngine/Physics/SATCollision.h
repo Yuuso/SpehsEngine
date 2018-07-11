@@ -76,8 +76,8 @@ namespace spehs
 	Projection projectCircle(const spehs::vec2& _axis, const spehs::vec2& _vertex, const float _radius);
 
 	//Function for getting axis
-	spehs::vec2 getAxis(Vertex* _vertexArray, const size_t _size, const unsigned int _i);
-	spehs::vec2 getAxis(spehs::vec2* _vertexArray, const size_t _size, const unsigned int _i);
+	spehs::vec2 getAxis(Vertex* _vertexArray, const size_t _size, const size_t _i);
+	spehs::vec2 getAxis(spehs::vec2* _vertexArray, const size_t _size, const size_t _i);
 
 	//Get the axis for circle
 	spehs::vec2 getCircleAxis(Vertex* _vertexArray, const size_t _size, const spehs::vec2& _circleCenter);
@@ -85,7 +85,7 @@ namespace spehs
 
 	//BOOL COLLISIONS
 	//Polygon x Polygon collision
-	bool SATCollision(Vertex* _vertexArray1, const size_t _size1, Vertex* _vertexArray2, const unsigned int _size2);
+	bool SATCollision(Vertex* _vertexArray1, const size_t _size1, Vertex* _vertexArray2, const size_t _size2);
 	bool SATCollision(const spehs::vec2* _vertexArray1, const size_t _size1, const spehs::vec2* _vertexArray2, const size_t _size2);
 
 	//Polygon x Circle Collision

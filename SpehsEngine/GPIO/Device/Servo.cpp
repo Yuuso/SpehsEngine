@@ -283,7 +283,7 @@ namespace spehs
 			//Delay
 			const float target = std::min(maxAngle, std::max(targetAngle, minAngle));
 			const float posPercentage = (target - minAngle) / (maxAngle - minAngle);
-			const spehs::time::Time pulseDuration = minPulseWidth + spehs::time::Time(float(maxPulseWidth - minPulseWidth) * posPercentage);
+			const spehs::time::Time pulseDuration = minPulseWidth + spehs::time::Time(time::TimeValueType(float(maxPulseWidth - minPulseWidth) * posPercentage));
 			mutex.unlock();
 			spehs::time::delay(pulseDuration);
 			mutex.lock();
@@ -377,7 +377,7 @@ namespace spehs
 			updateTimer -= deltaTime;
 			if (updateTimer <= spehs::time::zero)
 			{
-				updateTimer = spehs::time::fromSeconds(1.0 / 30.0f);
+				updateTimer = spehs::time::fromSeconds(1.0f / 30.0f);
 				return true;
 			}
 			else

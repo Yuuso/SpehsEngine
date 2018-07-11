@@ -29,9 +29,9 @@ namespace spehs
 		//Delete batches
 		clearBatches();
 
-		int cleanUpPrimitives = primitives.size();
+		size_t cleanUpPrimitives = primitives.size();
 		//Delete Primitives
-		for (unsigned i = 0; i < primitives.size(); i++)
+		for (size_t i = 0; i < primitives.size(); i++)
 		{
 			if (primitives[i]->readyForDelete)
 				cleanUpPrimitives--;

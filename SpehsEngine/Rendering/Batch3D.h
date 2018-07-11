@@ -34,10 +34,10 @@ namespace spehs
 		bool getDepthTest() const { return depthTest; }
 
 	protected:
-		bool isEnoughRoom(const unsigned int _numVertices);
+		bool isEnoughRoom(const size_t _numVertices);
 		void initBuffers();
 		void updateBuffers();
-		void setIndices(const unsigned int _numVertices);
+		void setIndices(const size_t _numVertices);
 
 	private:
 		BatchManager3D& batchManager;
@@ -52,9 +52,9 @@ namespace spehs
 		bool backFaceCulling;
 		bool blending;
 		bool depthTest;
-		int shaderIndex;
-		unsigned int batchSize;
-		unsigned int indexSize;
+		size_t shaderIndex;
+		size_t batchSize;
+		size_t indexSize;
 		GLuint textureDataID;
 	};
 }

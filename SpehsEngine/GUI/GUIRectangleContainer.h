@@ -45,9 +45,9 @@ namespace spehs
 		virtual GUIRectangle* back() const { return elements.back(); }
 		virtual GUIRectangle* front() const { return elements.front(); }
 		GUIRectangle* at(const size_t index) const { if (index >= elements.size()) return nullptr; return elements[index]; }
-		GUIRectangle* operator[](int index) const { return elements[index]; }
+		GUIRectangle* operator[](size_t index) const { return elements[index]; }
 		/*Returns the size of the elements vector*/
-		unsigned elementsSize() const { return elements.size(); }
+		size_t elementsSize() const { return elements.size(); }
 		virtual void clear();
 
 		//Hierarchy

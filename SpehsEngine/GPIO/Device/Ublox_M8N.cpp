@@ -87,8 +87,8 @@ namespace spehs
 
 					stopBitCount = analyzeCount % 2 ? 1 : 2;
 					parityBitCount = analyzeCount / 2 % 2 ? 0 : 1;
-					const int sequenceLength = 1/*start bit*/ + 8/*data bits*/ + parityBitCount + stopBitCount;
-					static const int minRequiredSequenceCount = 10;//At least this many sequences are required to make credible analyzation
+					const size_t sequenceLength = 1/*start bit*/ + 8/*data bits*/ + parityBitCount + stopBitCount;
+					static const size_t minRequiredSequenceCount = 10;//At least this many sequences are required to make credible analyzation
 					if (history.size() > sequenceLength * minRequiredSequenceCount)
 					{////Analyze...
 						/*
@@ -99,9 +99,9 @@ namespace spehs
 							1-2 stop bits (low)
 						*/
 						std::vector<int/*history index*/> potentialStartBits;
-						const int endOffset = sequenceLength - 1;
-						const int requiredPatternLength = history.size() / sequenceLength - 1;
-						for (int i = 0; i + endOffset < history.size(); i++)
+						const size_t endOffset = sequenceLength - 1;
+						const size_t requiredPatternLength = int(history.size()) / sequenceLength - 1;
+						for (int i = 0; i + endOffset < int(history.size()); i++)
 						{
 							if (history[i] == gpio::PinState::high && history[i + endOffset] == gpio::PinState::low)
 								potentialStartBits.push_back(i);
@@ -113,7 +113,7 @@ namespace spehs
 						Eliminate the ones that do not appear in a consistent pattern.
 						*/
 						std::vector<int/*start bit history index*/> validPatterns;
-						int longestSequencePattern = 0;
+						size_t longestSequencePattern = 0;
 						while (potentialStartBits.size() >= requiredPatternLength)
 						{
 							//Check if the potential front start bit is a valid sequence pattern
@@ -140,7 +140,7 @@ namespace spehs
 							}
 
 							if (patternSequenceIndices.size() > longestSequencePattern)
-								longestSequencePattern = patternSequenceIndices.size();
+								longestSequencePattern = int(patternSequenceIndices.size());
 
 							//Remove sequence start indices
 							for (size_t p = 0; p < patternSequenceIndices.size(); p++)
