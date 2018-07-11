@@ -96,6 +96,9 @@
       <SDLCheck>true</SDLCheck>
     </ClCompile>
     <Lib />
+    <Lib>
+      <AdditionalDependencies>SpehsCore.lib;</AdditionalDependencies>
+    </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -104,7 +107,7 @@
       <SDLCheck>true</SDLCheck>
     </ClCompile>
     <Lib>
-      <AdditionalDependencies>SpehsCore.lib;SpehsGPIO.lib;</AdditionalDependencies>
+      <AdditionalDependencies>SpehsCore.lib;</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(SPEHSENGINE_ROOT)/Dependencies/lib/;$(SolutionDir)/Dependencies/lib/;$(SPEHSENGINE_ROOT)/bin/$(Platform)/$(Configuration)/$(PlatformToolset)/</AdditionalLibraryDirectories>
     </Lib>
   </ItemDefinitionGroup>
@@ -121,6 +124,9 @@
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
     <Lib />
+    <Lib>
+      <AdditionalDependencies>SpehsCore.lib;</AdditionalDependencies>
+    </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -135,7 +141,7 @@
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
     <Lib>
-      <AdditionalDependencies>SpehsCore.lib;SpehsGPIO.lib;</AdditionalDependencies>
+      <AdditionalDependencies>SpehsCore.lib;</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(SPEHSENGINE_ROOT)/Dependencies/lib/;$(SolutionDir)/Dependencies/lib/;$(SPEHSENGINE_ROOT)/bin/$(Platform)/$(Configuration)/$(PlatformToolset)/</AdditionalLibraryDirectories>
     </Lib>
   </ItemDefinitionGroup>
