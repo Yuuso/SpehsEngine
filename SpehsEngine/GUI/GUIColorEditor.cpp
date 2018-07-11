@@ -13,7 +13,7 @@ namespace spehs
 
 	GUIColorEditor::GUIColorEditor(GUIContext& context)
 		: GUIRectangle(context)
-		, ValueEditor(Color(255,255,255,255))
+		, ValueEditor(Color(1.0f, 1.0f, 1.0f, 1.0f))
 		, sliderState(0.0f)
 		, sliderOnHold(false)
 		, paletteOnHold(false)
@@ -33,33 +33,33 @@ namespace spehs
 		preview->setCameraMatrixState(false);
 		alphaSliderBack->setCameraMatrixState(false);
 		alphaSliderFront->setCameraMatrixState(false);
-		
+
 		//Palette colors
-		palette->worldVertexArray[0].color = spehs::Color(0, 0, 0, 255);
-		palette->worldVertexArray[1].color = spehs::Color(0, 0, 0, 255);
-		palette->worldVertexArray[2].color = spehs::Color(0, 255, 255, 255);
-		palette->worldVertexArray[3].color = spehs::Color(255, 255, 255, 255);
+		palette->worldVertexArray[0].color = spehs::Color(0.0f, 0.0f, 0.0f, 1.0f);
+		palette->worldVertexArray[1].color = spehs::Color(0.0f, 0.0f, 0.0f, 1.0f);
+		palette->worldVertexArray[2].color = spehs::Color(0.0f, 1.0f, 1.0f, 1.0f);
+		palette->worldVertexArray[3].color = spehs::Color(1.0f, 1.0f, 1.0f, 1.0f);
 
 		//Slider colors
 		//Red-Green
-		sliderRG->worldVertexArray[0].color = spehs::Color(255, 0, 0, 255);
-		sliderRG->worldVertexArray[1].color = spehs::Color(255, 0, 0, 255);
-		sliderRG->worldVertexArray[2].color = spehs::Color(0, 255, 0, 255);
-		sliderRG->worldVertexArray[3].color = spehs::Color(0, 255, 0, 255);
+		sliderRG->worldVertexArray[0].color = spehs::Color(1.0f, 0.0f, 0.0f, 1.0f);
+		sliderRG->worldVertexArray[1].color = spehs::Color(1.0f, 0.0f, 0.0f, 1.0f);
+		sliderRG->worldVertexArray[2].color = spehs::Color(0.0f, 1.0f, 0.0f, 1.0f);
+		sliderRG->worldVertexArray[3].color = spehs::Color(0.0f, 1.0f, 0.0f, 1.0f);
 		//Green-blue
-		sliderGB->worldVertexArray[0].color = spehs::Color(0, 255, 0, 255);
-		sliderGB->worldVertexArray[1].color = spehs::Color(0, 255, 0, 255);
-		sliderGB->worldVertexArray[2].color = spehs::Color(0, 0, 255, 255);
-		sliderGB->worldVertexArray[3].color = spehs::Color(0, 0, 255, 255);
+		sliderGB->worldVertexArray[0].color = spehs::Color(0.0f, 1.0f, 0.0f, 1.0f);
+		sliderGB->worldVertexArray[1].color = spehs::Color(0.0f, 1.0f, 0.0f, 1.0f);
+		sliderGB->worldVertexArray[2].color = spehs::Color(0.0f, 0.0f, 1.0f, 1.0f);
+		sliderGB->worldVertexArray[3].color = spehs::Color(0.0f, 0.0f, 1.0f, 1.0f);
 		//Blue-red
-		sliderBR->worldVertexArray[0].color = spehs::Color(0, 0, 255, 255);
-		sliderBR->worldVertexArray[1].color = spehs::Color(0, 0, 255, 255);
-		sliderBR->worldVertexArray[2].color = spehs::Color(255, 0, 0, 255);
-		sliderBR->worldVertexArray[3].color = spehs::Color(255, 0, 0, 255);
+		sliderBR->worldVertexArray[0].color = spehs::Color(0.0f, 0.0f, 1.0f, 1.0f);
+		sliderBR->worldVertexArray[1].color = spehs::Color(0.0f, 0.0f, 1.0f, 1.0f);
+		sliderBR->worldVertexArray[2].color = spehs::Color(1.0f, 0.0f, 0.0f, 1.0f);
+		sliderBR->worldVertexArray[3].color = spehs::Color(1.0f, 0.0f, 0.0f, 1.0f);
 
 		//Alpha slider colors
-		alphaSliderBack->setColor(spehs::Color(0, 0, 0, 255));
-		alphaSliderFront->setColor(spehs::Color(255, 255, 255, 255));
+		alphaSliderBack->setColor(spehs::Color(0.0f, 0.0f, 0.0f, 1.0f));
+		alphaSliderFront->setColor(spehs::Color(1.0f, 1.0f, 1.0f, 1.0f));
 
 		setDepth(getDepth());
 		setRenderState(getRenderState());
@@ -106,7 +106,7 @@ namespace spehs
 	void GUIColorEditor::inputUpdate()
 	{
 		GUIRectangle::inputUpdate();
-		
+
 		if (getInputEnabled())
 		{
 			//Palette
@@ -119,11 +119,11 @@ namespace spehs
 			{
 				float horizontal(1.0f - ((getInputManager().getMouseX() - palette->getX()) / palette->getWidth()));
 				float vertical((getInputManager().getMouseY() - palette->getY()) / palette->getHeight());
-				
+
 				Color hoverColor;
-				hoverColor.r = int((float(palette->worldVertexArray[2].color.r) / 255.0f + horizontal * float(255 - palette->worldVertexArray[2].color.r) / 255.0f) * vertical * 255.0f);
-				hoverColor.g = int((float(palette->worldVertexArray[2].color.g) / 255.0f + horizontal * float(255 - palette->worldVertexArray[2].color.g) / 255.0f) * vertical * 255.0f);
-				hoverColor.b = int((float(palette->worldVertexArray[2].color.b) / 255.0f + horizontal * float(255 - palette->worldVertexArray[2].color.b) / 255.0f) * vertical * 255.0f);
+				hoverColor.r = palette->worldVertexArray[2].color.r + horizontal * (1.0f - palette->worldVertexArray[2].color.r) * vertical;
+				hoverColor.g = palette->worldVertexArray[2].color.g + horizontal * (1.0f - palette->worldVertexArray[2].color.g) * vertical;
+				hoverColor.b = palette->worldVertexArray[2].color.b + horizontal * (1.0f - palette->worldVertexArray[2].color.b) * vertical;
 				hoverColor.a = editorValue.a;
 				preview->setColor(hoverColor);
 
@@ -169,11 +169,11 @@ namespace spehs
 				else
 					b = (oneSixth - (b - oneSixth)) / oneSixth;
 
-				palette->worldVertexArray[2].color = spehs::Color(int(r * 255.0f), int(g * 255.0f), int(b * 255.0f), 255);
+				palette->worldVertexArray[2].color = spehs::Color(r, g, b, 1.0f);
 			}
 			else
 				sliderOnHold = false;
-			
+
 			//Alpha
 			if (alphaEnabled)
 			{
@@ -191,7 +191,7 @@ namespace spehs
 
 					if (alphaOnHold)
 					{
-						editorValue.a = int((getInputManager().getMouseY() - alphaSliderBack->getY()) / alphaSliderBack->getHeight() * 255);
+						editorValue.a = (getInputManager().getMouseY() - alphaSliderBack->getY()) / alphaSliderBack->getHeight();
 					}
 				}
 			}
@@ -306,7 +306,7 @@ namespace spehs
 	{
 		if (!alphaEnabled)
 			return;
-		editorValue.a = 255;
+		editorValue.a = 1.0f;
 		alphaEnabled = false;
 		alphaOnHold = false;
 		alphaSliderBack->setRenderState(false);

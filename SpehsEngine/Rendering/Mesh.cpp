@@ -203,12 +203,12 @@ namespace spehs
 			worldVertexArray[i].color = color;
 		}
 	}
-	void Mesh::setAlpha(const Color::Component _color)
+	void Mesh::setAlpha(const float _alpha)
 	{
-		color.a = _color;
+		color.a = _alpha;
 		for (unsigned i = 0; i < worldVertexArray.size(); i++)
 		{
-			worldVertexArray[i].color = color;
+			worldVertexArray[i].color.a = _alpha;
 		}
 	}
 	void Mesh::translate(const float _x, const float _y, const float _z)

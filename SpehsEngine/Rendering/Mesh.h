@@ -45,7 +45,7 @@ namespace spehs
 		void setScale(const spehs::vec3& _newScale);
 		void setColor(const Mesh& _other);
 		void setColor(const Color _color);
-		void setAlpha(const Color::Component _color);
+		void setAlpha(const float _alpha);
 		void translate(const float _x, const float _y, const float _z);
 		void translate(const spehs::vec3& _translation);
 		void setBlending (const bool _value);
@@ -65,7 +65,7 @@ namespace spehs
 		bool getRenderState() const { return renderState; }
 		unsigned int getShaderIndex() const { return shaderIndex; }
 		spehs::Color getColor() const { return color; }
-		spehs::Color::Component getAlpha() const { return color.a; }
+		float getAlpha() const { return color.a; }
 
 		// Public Variables
 		std::vector<spehs::Vertex3D> worldVertexArray; // Transformed vertices

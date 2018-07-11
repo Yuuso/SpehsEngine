@@ -244,9 +244,9 @@ namespace spehs
 		}
 	}
 
-	void Primitive::setAlpha(const spehs::Color::Component& _newAlpha)
+	void Primitive::setAlpha(const float _alpha)
 	{
-		primitiveColor.a = _newAlpha;
+		primitiveColor.a = _alpha;
 		for (unsigned i = 0; i < worldVertexArray.size(); i++)
 		{
 			worldVertexArray[i].color.a = primitiveColor.a;

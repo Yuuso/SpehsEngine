@@ -58,7 +58,7 @@ namespace spehs
 		if (focusedWindow)
 		{
 			if (!focusedWindow->getInputEnabled() ||	//Check if focused window yielded focus internally
-				(!focusedWindow->getMouseHoverAny() &&	//Focused window is no longer under mouse 
+				(!focusedWindow->getMouseHoverAny() &&	//Focused window is no longer under mouse
 				!focusedWindowReceivingInput))			//Focused window does not receive input
 				focusedWindow = nullptr;
 			else
@@ -82,7 +82,7 @@ namespace spehs
 				popupShadeCurrentAlpha += getDeltaTimeSystem().deltaTime.asSeconds();
 				if (popupShadeCurrentAlpha > popupShadeTargetAlpha)
 					popupShadeCurrentAlpha = popupShadeTargetAlpha;
-				popupShade->setAlpha(int(255.0f * popupShadeCurrentAlpha));
+				popupShade->setAlpha(popupShadeCurrentAlpha);
 			}
 
 			//Update
@@ -93,7 +93,7 @@ namespace spehs
 				updateWindows = false;
 				mouseHoverAny = true;
 			}
-			
+
 			if (popups.front()->checkState(GUIRECT_REMOVE_BIT))
 			{//Remove requested
 				delete popups.front();
@@ -117,7 +117,7 @@ namespace spehs
 			if (windows[i]->refreshRequests > 0 && windows[i]->isOpen())
 				windows[i]->refresh();
 		}
-		
+
 		//Update windows in order
 		bool focusWindowUpdated(false);
 		if (updateWindows)

@@ -1,116 +1,33 @@
-#include <cstring>
+
 #include "SpehsEngine/Core/Color.h"
 #include "SpehsEngine/Core/Exceptions.h"
 #include "SpehsEngine/Core/StringOperations.h"
 
+#include <boost/algorithm/clamp.hpp>
+
+#include <cstring>
+
+
 
 namespace spehs
 {
-	Color::Component::Component()
-		: value(255)
-	{
-	}
-
-	Color::Component::Component(const int i)
-		: value(std::min(255, std::max(0, i)))
-	{
-	}
-
-	Color::Component::Component(const unsigned char uc)
-		: value(uc)
-	{
-	}
-
-	Color::Component::operator unsigned char() const
-	{
-		return value;
-	}
-
-	void Color::Component::operator+=(const int i)
-	{
-		value = std::min(255, std::max(0, (int)value + i));
-	}
-
-	void Color::Component::operator-=(const int i)
-	{
-		value = std::min(255, std::max(0, (int)value - i));
-	}
-
-	Color::Component Color::Component::operator+(const int i) const
-	{
-		return (Component)std::min(255, std::max(0, (int)value + i));
-	}
-
-	Color::Component Color::Component::operator-(const int i) const
-	{
-		return (Component)std::min(255, std::max(0, (int)value - i));
-	}
-
-	bool Color::Component::operator>(const int i) const
-	{
-		return value > i;
-	}
-
-	bool Color::Component::operator<(const int i) const
-	{
-		return value < i;
-	}
-
-	bool Color::Component::operator>=(const int i) const
-	{
-		return value >= i;
-	}
-
-	bool Color::Component::operator<=(const int i) const
-	{
-		return value <= i;
-	}
-
-	void Color::Component::operator*=(const float f)
-	{
-		value = std::min(255, std::max(0, int((float)value * f)));
-	}
-
-	void Color::Component::operator/=(const float f)
-	{
-		value = std::min(255, std::max(0, int((float)value * f)));
-	}
-
-	Color::Component Color::Component::operator*(const float f) const
-	{
-		return (Component)std::min(255, std::max(0, int((float)value * f)));
-	}
-
-	Color::Component Color::Component::operator/(const float f) const
-	{
-		return (Component)std::min(255, std::max(0, int((float)value / f)));
-	}
-
-
-
-
-
-
-
-
-
-
-	///////////
-	// COLOR //
-
 	Color::Color()
+		: r(1.0f)
+		, g(1.0f)
+		, b(1.0f)
+		, a(1.0f)
 	{
 	}
 
-	Color::Color(const Component& _r, const Component& _g, const Component& _b)
+	Color::Color(const float _r, const float _g, const float _b)
 		: r(_r)
 		, g(_g)
 		, b(_b)
-		, a(255)
+		, a(1.0f)
 	{
 	}
 
-	Color::Color(const Component& _r, const Component& _g, const Component& _b, const Component& _a)
+	Color::Color(const float _r, const float _g, const float _b, const float _a)
 		: r(_r)
 		, g(_g)
 		, b(_b)
@@ -118,25 +35,25 @@ namespace spehs
 	{
 	}
 
-	Color::Color(const unsigned char* rgbaByteBuffer)
+	Color::Color(const float* rgbaBuffer)
 	{
-		memcpy(&r, rgbaByteBuffer, sizeof(Component) * 4);
+		memcpy(&r, rgbaBuffer, sizeof(float) * 4);
 	}
 
-	Color& Color::operator=(const unsigned char* rgbaByteBuffer)
+	Color& Color::operator=(const float* rgbaBuffer)
 	{
-		memcpy(&r, rgbaByteBuffer, sizeof(Component) * 4);
+		memcpy(&r, rgbaBuffer, sizeof(float) * 4);
 		return *this;
 	}
 
-	Color::Component& Color::operator[](const int index)
+	float Color::operator[](const int index)
 	{
-		return *((Component*)this + index);
+		return *((float*)this + index);
 	}
 
-	const Color::Component& Color::operator[](const int index) const
+	const float Color::operator[](const int index) const
 	{
-		return *((Component*)this + index);
+		return *((float*)this + index);
 	}
 
 	void Color::operator*=(const float componentMultiplier)
@@ -157,18 +74,18 @@ namespace spehs
 
 	void Color::operator+=(const Color& other)
 	{
-		r += (unsigned char)other.r;
-		g += (unsigned char)other.g;
-		b += (unsigned char)other.b;
-		a += (unsigned char)other.a;
+		r += other.r;
+		g += other.g;
+		b += other.b;
+		a += other.a;
 	}
 
 	void Color::operator-=(const Color& other)
 	{
-		r -= (unsigned char)other.r;
-		g -= (unsigned char)other.g;
-		b -= (unsigned char)other.b;
-		a -= (unsigned char)other.a;
+		r -= other.r;
+		g -= other.g;
+		b -= other.b;
+		a -= other.a;
 	}
 
 	Color Color::operator*(const float componentMultiplier) const
@@ -192,37 +109,37 @@ namespace spehs
 	Color Color::operator+(const Color& other) const
 	{
 		return Color(
-			(unsigned char)r + (unsigned char)other.r,
-			(unsigned char)g + (unsigned char)other.g,
-			(unsigned char)b + (unsigned char)other.b,
-			(unsigned char)a + (unsigned char)other.a);
+			r + other.r,
+			g + other.g,
+			b + other.b,
+			a + other.a);
 	}
 
 	Color Color::operator-(const Color& other) const
 	{
 		return Color(
-			(unsigned char)r - (unsigned char)other.r,
-			(unsigned char)g - (unsigned char)other.g,
-			(unsigned char)b - (unsigned char)other.b,
-			(unsigned char)a - (unsigned char)other.a);
+			r - other.r,
+			g - other.g,
+			b - other.b,
+			a - other.a);
 	}
 
 	bool Color::operator!=(const Color& other) const
 	{
 		return
-			(unsigned char)r != (unsigned char)other.r ||
-			(unsigned char)g != (unsigned char)other.g ||
-			(unsigned char)b != (unsigned char)other.b ||
-			(unsigned char)a != (unsigned char)other.a;
+			r != other.r ||
+			g != other.g ||
+			b != other.b ||
+			a != other.a;
 	}
 
 	bool Color::operator==(const Color& other) const
 	{
 		return
-			(unsigned char)r == (unsigned char)other.r &&
-			(unsigned char)g == (unsigned char)other.g &&
-			(unsigned char)b == (unsigned char)other.b &&
-			(unsigned char)a == (unsigned char)other.a;
+			r == other.r &&
+			g == other.g &&
+			b == other.b &&
+			a == other.a;
 	}
 
 	void Color::brightness(const float _brightnessFactor)
@@ -235,9 +152,9 @@ namespace spehs
 	std::string Color::toString() const
 	{
 		return "[r:"
-			+ std::to_string((unsigned char)r) + ", g:"
-			+ std::to_string((unsigned char)g) + ", b:"
-			+ std::to_string((unsigned char)b) + ", a:"
-			+ std::to_string((unsigned char)a) + "]";
+			+ std::to_string((unsigned char)(boost::algorithm::clamp(r, 0.0f, 1.0f) * 255.0f)) + ", g:"
+			+ std::to_string((unsigned char)(boost::algorithm::clamp(g, 0.0f, 1.0f) * 255.0f)) + ", b:"
+			+ std::to_string((unsigned char)(boost::algorithm::clamp(b, 0.0f, 1.0f) * 255.0f)) + ", a:"
+			+ std::to_string((unsigned char)(boost::algorithm::clamp(a, 0.0f, 1.0f) * 255.0f)) + "]";
 	}
 }

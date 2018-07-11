@@ -58,7 +58,7 @@ namespace spehs
 		//Create polygon
 		polygon = getBatchManager().createPolygon(spehs::BUTTON, defaultDepth, 1.0f, 1.0f);
 		polygon->setCameraMatrixState(false);
-		
+
 		setColor(defaultColor);
 	}
 
@@ -146,7 +146,7 @@ namespace spehs
 		//Tooltip
 		if (tooltip)
 			tooltip->visualUpdate();
-		
+
 		//Hover color
 		if (checkState(GUIRECT_HOVER_COLOR_BIT) && inputEnabled)
 		{
@@ -220,7 +220,7 @@ namespace spehs
 	{
 		minSize.x = 0;
 		minSize.y = 0;
-		
+
 		if (text)
 		{//Text
 			minSize.x += int(text->getTextWidth()) + 2 * borderWidth;
@@ -344,7 +344,7 @@ namespace spehs
 		polygon->setColor(c);
 	}
 
-	void GUIRectangle::setAlpha(const Color::Component& a)
+	void GUIRectangle::setAlpha(const float a)
 	{
 		color.a = a;
 		polygon->setAlpha(a);
@@ -462,7 +462,7 @@ namespace spehs
 		text->setColor(col);
 	}
 
-	void GUIRectangle::setStringAlpha(const Color::Component& alpha)
+	void GUIRectangle::setStringAlpha(const float alpha)
 	{
 		if (!text)
 			createText();

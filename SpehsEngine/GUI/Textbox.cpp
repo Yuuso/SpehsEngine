@@ -56,7 +56,7 @@ namespace spehs
 	{
 		text->setColor(color);
 	}
-	void Textbox::setTextAlpha(const spehs::Color::Component& alpha)
+	void Textbox::setTextAlpha(const float alpha)
 	{
 		text->setAlpha(alpha);
 	}
@@ -64,7 +64,7 @@ namespace spehs
 	{
 		polygon->setColor(color);
 	}
-	void Textbox::setBackgroundAlpha(const spehs::Color::Component& alpha)
+	void Textbox::setBackgroundAlpha(const float alpha)
 	{
 		polygon->setAlpha(alpha);
 	}

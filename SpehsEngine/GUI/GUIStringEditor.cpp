@@ -42,7 +42,7 @@ namespace spehs
 	{
 		GUIRectangle::setDepth(depth);
 		typeCharacter->setPlaneDepth(depth + 1);
-	}	
+	}
 
 	void GUIStringEditor::setStringSize(const int size)
 	{
@@ -62,7 +62,7 @@ namespace spehs
 		typeCharacter->setColor(col);
 	}
 
-	void GUIStringEditor::setStringAlpha(const Color::Component& a)
+	void GUIStringEditor::setStringAlpha(const float a)
 	{
 		GUIRectangle::setStringAlpha(a);
 		typeCharacter->setAlpha(a);

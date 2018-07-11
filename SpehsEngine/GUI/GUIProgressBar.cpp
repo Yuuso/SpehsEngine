@@ -36,7 +36,7 @@ namespace spehs
 		progressBarFront->setColor(color);
 	}
 
-	void GUIProgressBar::setProgressBarFrontAlpha(const spehs::Color::Component& a)
+	void GUIProgressBar::setProgressBarFrontAlpha(const float a)
 	{
 		progressBarFront->setAlpha(a);
 	}
@@ -46,7 +46,7 @@ namespace spehs
 		progressBarBack->setColor(color);
 	}
 
-	void GUIProgressBar::setProgressBarBackAlpha(const spehs::Color::Component& a)
+	void GUIProgressBar::setProgressBarBackAlpha(const float a)
 	{
 		progressBarBack->setAlpha(a);
 	}

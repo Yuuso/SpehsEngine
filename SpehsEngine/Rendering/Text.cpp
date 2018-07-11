@@ -281,11 +281,11 @@ namespace spehs
 		needTextUpdate = true;
 	}
 
-	void Text::setAlpha(const spehs::Color::Component& alphaParam)
+	void Text::setAlpha(const float _alpha)
 	{
-		if (color.a == alphaParam)
+		if (color.a == _alpha)
 			return;
-		color.a = alphaParam;
+		color.a = _alpha;
 		needTextUpdate = true;
 	}
 

@@ -25,7 +25,7 @@ namespace spehs
 		void setArrowPointerSize(const float _pointerWidth, const float _pointerHeight);
 		void setArrowPointerSize(const spehs::vec2& _ref);
 		void setColor(const spehs::Color& _color) override;
-		void setAlpha(const spehs::Color::Component& _alpha) override;
+		void setAlpha(const float _alpha) override;
 		void setRenderState(const bool _value);
 		void setDepth(const PlaneDepth _value);
 		void setCameraMatrixState(const bool _value);

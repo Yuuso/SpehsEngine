@@ -81,7 +81,7 @@ namespace spehs
 		void setRotationVector(const spehs::vec3& _newRotationVector);
 		void setColor(const Primitive& other);
 		void setColor(const spehs::Color& _newColor) override;
-		void setAlpha(const spehs::Color::Component& _newAlpha) override;
+		void setAlpha(const float _alpha) override;
 		void setCameraMatrixState(const bool _newState);
 		void setPlaneDepth(const PlaneDepth _newPlaneDepth);
 		void setLineWidth(const float _newWidth);
@@ -100,7 +100,7 @@ namespace spehs
 		PlaneDepth getPlaneDepth() const { return planeDepth; }
 		unsigned int getShaderIndex() const { return shaderIndex; }
 		spehs::Color getColor() const { return primitiveColor; }
-		spehs::Color::Component getAlpha() const { return primitiveColor.a; }
+		float getAlpha() const { return primitiveColor.a; }
 		float getScaleX() const { return scaleX; }
 		float getScaleY() const { return scaleY; }
 		//Public Variables

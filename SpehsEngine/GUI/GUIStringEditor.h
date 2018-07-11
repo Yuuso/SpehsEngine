@@ -20,7 +20,7 @@ namespace spehs
 		void setStringSize(const int size) override;
 		void setStringSizeRelative(const int relativeSize) override;
 		void setStringColor(const spehs::Color& col) override;
-		void setStringAlpha(const spehs::Color::Component& a) override;
+		void setStringAlpha(const float a) override;
 		void updatePosition() override;
 		void updateMinSize() override;
 		void inputUpdate() override;

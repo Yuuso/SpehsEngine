@@ -86,7 +86,7 @@ namespace spehs
 		polygonPart->setColor(_col);
 	}
 
-	void Arrow::setAlpha(const spehs::Color::Component& _alpha)
+	void Arrow::setAlpha(const float _alpha)
 	{
 		linePart->setAlpha(_alpha);
 		polygonPart->setAlpha(_alpha);

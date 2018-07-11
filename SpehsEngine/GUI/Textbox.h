@@ -22,9 +22,9 @@ namespace spehs
 		void setDepth(int16_t depth);
 		void setString(const std::string& string);
 		void setTextColor(const spehs::Color& color);
-		void setTextAlpha(const spehs::Color::Component& alpha);
+		void setTextAlpha(const float alpha);
 		void setBackgroundColor(const spehs::Color& color);
-		void setBackgroundAlpha(const spehs::Color::Component& alpha);
+		void setBackgroundAlpha(const float alpha);
 
 		//Getters
 		int getWidth() const;

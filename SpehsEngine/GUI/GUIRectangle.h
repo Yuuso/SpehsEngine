@@ -86,7 +86,7 @@ namespace spehs
 		virtual ~GUIRectangle();
 		GUIRectangle& operator=(const GUIRectangle& other) = delete;
 		GUIRectangle& operator=(const GUIRectangle&& other) = delete;
-		
+
 		/// During GUI's input update the element's size and/or min size may change even so that it might affect parents above.
 		virtual void inputUpdate();
 		/// During GUI's visual update the element's size and/or min size must not change!
@@ -108,7 +108,7 @@ namespace spehs
 		//Color
 		void setColor(const Color& color);
 		Color getColor() const { return color; }
-		void setAlpha(const Color::Component& a);
+		void setAlpha(const float a);
 		//Depth
 		virtual void setDepth(const int16_t depth);
 		int16_t getDepth() const;
@@ -127,7 +127,7 @@ namespace spehs
 		virtual void setStringSize(const int size);
 		virtual void setStringSizeRelative(const int relativeSize);///< Set string size relative to global default GUI text size.
 		virtual void setStringColor(const Color& col);
-		virtual void setStringAlpha(const Color::Component& alpha);
+		virtual void setStringAlpha(const float alpha);
 		std::string getString() const;
 		virtual void setJustification(const GUIRECT_STATE_TYPE justificationBit);///<NOTE: if non-justification bit is given, all justification bits will be cleared and given bit will be enabled
 		//Tooltip
@@ -143,16 +143,16 @@ namespace spehs
 		void setTexture(const std::string& path, const TextureParameter& _parameters);
 		void setTexture(const std::string& path);
 		void setTextureID(const unsigned int _textureID);
-		
+
 		//Audio
 		void setHoverSound(const std::string& path);
 		void setPressSound(const std::string& path);
-		
+
 		//Callback
 		/** Callback to function/method that returns void and accepts the button reference as an argument.
 		Called when the rectangle is left pressed.
 		IMPORTANT NOTE: callback function must not remove the element, as the callback is called from the update.
-		
+
 		Example use:
 		#include <functional>
 		guirect->setPressCallback(std::bind(&ShipEditor::methodTaking1Argument, ShipEditor::instancePtr, std::placeholders::_1));
@@ -185,7 +185,7 @@ namespace spehs
 		void disableInput(){ if (!inputEnabled) return; onDisableInput(); }
 		bool getInputEnabled() const { return inputEnabled; }
 		void setInputEnabled(const bool _state){ if (_state) enableInput(); else disableInput(); }
-		
+
 		////Managing element position
 		//Setting both coordinates
 		virtual void setPositionLocal(const spehs::ivec2& pos){ setXLocal(pos.x); setYLocal(pos.y); }
@@ -224,7 +224,7 @@ namespace spehs
 		spehs::ivec2 getPreferredSize(){ return spehs::ivec2(getPreferredWidth(), getPreferredHeight()); }
 		virtual int getPreferredWidth()/*Can implement custom preferred width*/{ return getMinWidth(); }
 		virtual int getPreferredHeight()/*Can implement custom preferred height*/{ return getMinHeight(); }
-		
+
 		//Identity
 		virtual GUIWindow* getAsGUIWindowPtr() { return nullptr; }
 		virtual GUICheckbox* getAsGUICheckboxPtr() { return nullptr; }
@@ -235,7 +235,7 @@ namespace spehs
 		virtual GUIRectangleGrid* getAsGUIRectangleGridPtr() { return nullptr; }
 		virtual GUIRectangleTable* getAsGUIRectangleTablePtr() { return nullptr; }
 		virtual GUIRectangleContainer* getAsGUIRectangleContainerPtr() { return nullptr; }
-		
+
 	protected:
 		void createText();
 		virtual void onEnableInput(){ inputEnabled = true; }

@@ -43,7 +43,7 @@ namespace spehs
 		void setFontSize(const int _size);
 
 		void setColor(const spehs::Color& _newColor);
-		void setAlpha(const spehs::Color::Component& _newAlpha);
+		void setAlpha(const float _alpha);
 
 		void setShader(const unsigned int _shaderIndex) { shaderIndex = _shaderIndex; };
 		void setCameraMatrixState(const bool _state) { cameraMatrixState = _state; }
@@ -76,7 +76,7 @@ namespace spehs
 		bool getCameraMatrixState() const { return cameraMatrixState; }
 
 		spehs::Color getColor() const { return color; }
-		spehs::Color::Component getAlpha() const { return color.a; }
+		float getAlpha() const { return color.a; }
 
 		std::vector<GLuint> textureIDs;
 		std::vector<spehs::Vertex> worldVertexArray;

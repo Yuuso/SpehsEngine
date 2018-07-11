@@ -15,9 +15,9 @@ namespace spehs
 		void updatePosition() override;
 
 		void setProgressBarFrontColor(const spehs::Color& color);
-		void setProgressBarFrontAlpha(const spehs::Color::Component& a);
+		void setProgressBarFrontAlpha(const float a);
 		void setProgressBarBackColor(const spehs::Color& color);
-		void setProgressBarBackAlpha(const spehs::Color::Component& a);
+		void setProgressBarBackAlpha(const float a);
 
 	private:
 		spehs::Polygon* progressBarFront;
