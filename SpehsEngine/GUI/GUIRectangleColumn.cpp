@@ -1,7 +1,7 @@
 #include "SpehsEngine/GUI/GUIRectangleColumn.h"
 
 
-namespace spehs
+namespace se
 {
 	GUIRectangleColumn::GUIRectangleColumn(GUIContext& context)
 		: GUIRectangleContainer(context)

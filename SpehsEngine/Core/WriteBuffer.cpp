@@ -1,7 +1,7 @@
 #include "WriteBuffer.h"
 #include "Log.h"
 
-namespace spehs
+namespace se
 {
 	WriteBuffer::WriteBuffer()
 	{
@@ -37,7 +37,7 @@ namespace spehs
 			buffer.write(string[i]);
 	}
 
-	void writeToBuffer(WriteBuffer& buffer, const spehs::time::Time& time)
+	void writeToBuffer(WriteBuffer& buffer, const se::time::Time& time)
 	{
 		buffer.write(time.value);
 	}

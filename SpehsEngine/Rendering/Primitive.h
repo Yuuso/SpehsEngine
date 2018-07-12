@@ -15,7 +15,7 @@
 //Int based depth that is used to determine the drawing order of 2D primitives.
 typedef unsigned int GLuint;
 
-namespace spehs
+namespace se
 {
 	class Polygon;
 	class Line;
@@ -65,22 +65,22 @@ namespace spehs
 
 		//Setters
 		void setPosition(const float _x, const float _y);
-		void setPosition(const spehs::vec2& _newPosition);
+		void setPosition(const se::vec2& _newPosition);
 		void setPosition(const Primitive& _other);
 		void translate(const float _x, const float _y);
-		void translate(const spehs::vec2& _translation);
+		void translate(const se::vec2& _translation);
 		void setScale(const float _newScale);
 		void setScale(const float _newScaleX, const float _newScaleY);
-		void setScale(const spehs::vec2& _newScale);
+		void setScale(const se::vec2& _newScale);
 		void setScaleX(const float _newScaleX);
 		void setScaleY(const float _newScaleX);
 		void setRotation(const float _newRotation);
-		void setRotation(const float _newRotation, const spehs::vec3& _newRotationVector);
+		void setRotation(const float _newRotation, const se::vec3& _newRotationVector);
 		void setRotation(const Primitive& _other);
 		void rotate(const float _rotation);
-		void setRotationVector(const spehs::vec3& _newRotationVector);
+		void setRotationVector(const se::vec3& _newRotationVector);
 		void setColor(const Primitive& other);
-		void setColor(const spehs::Color& _newColor) override;
+		void setColor(const se::Color& _newColor) override;
 		void setAlpha(const float _alpha) override;
 		void setCameraMatrixState(const bool _newState);
 		void setPlaneDepth(const PlaneDepth _newPlaneDepth);
@@ -91,7 +91,7 @@ namespace spehs
 		void setBlending(const bool _newState);
 
 		//Getters
-		spehs::vec2 getPosition() const { return position; }
+		se::vec2 getPosition() const { return position; }
 		float getX() const { return position.x; }
 		float getY() const { return position.y; }
 		float getRotation() const { return rotation; }
@@ -99,12 +99,12 @@ namespace spehs
 		bool getRenderState() const { return renderState; }
 		PlaneDepth getPlaneDepth() const { return planeDepth; }
 		unsigned int getShaderIndex() const { return shaderIndex; }
-		spehs::Color getColor() const { return primitiveColor; }
+		se::Color getColor() const { return primitiveColor; }
 		float getAlpha() const { return primitiveColor.a; }
 		float getScaleX() const { return scaleX; }
 		float getScaleY() const { return scaleY; }
 		//Public Variables
-		std::vector<spehs::Vertex> worldVertexArray; //Transformed vertices
+		std::vector<se::Vertex> worldVertexArray; //Transformed vertices
 		BatchManager& batchManager;
 
 	protected:
@@ -123,12 +123,12 @@ namespace spehs
 		float lineWidth = 0.0f;
 		float rotation = 0.0f;
 		float scaleX = 1.0f, scaleY = 1.0f;
-		spehs::vec3 rotationVector = spehs::vec3(0.0f, 0.0f, 1.0f);
+		se::vec3 rotationVector = se::vec3(0.0f, 0.0f, 1.0f);
 		Color primitiveColor = Color(255, 255, 255, 255);
 		glm::mat4 scaledMatrix = glm::mat4(1.0f);
 		glm::mat4 scaledRotatedMatrix = glm::mat4(1.0f);
-		spehs::vec2 position = spehs::vec2(0.0f, 0.0f);
-		std::vector<spehs::Vertex> vertexArray; //Original vertices
+		se::vec2 position = se::vec2(0.0f, 0.0f);
+		std::vector<se::Vertex> vertexArray; //Original vertices
 
 	};
 }

@@ -3,7 +3,7 @@
 #include <boost/bind.hpp>
 
 
-namespace spehs
+namespace se
 {
 	IOService::IOService()
 		: io_service()
@@ -21,7 +21,7 @@ namespace spehs
 		}
 		catch (std::exception& e)
 		{
-			spehs::log::info(e.what());
+			se::log::info(e.what());
 		}
 		thread.join();
 	}
@@ -34,7 +34,7 @@ namespace spehs
 		}
 		catch (std::exception& e)
 		{
-			spehs::log::info(e.what());
+			se::log::info(e.what());
 		}
 	}
 

@@ -7,7 +7,7 @@
 
 
 
-namespace spehs
+namespace se
 {
 	namespace sync
 	{
@@ -35,19 +35,19 @@ namespace spehs
 		{
 			if (initialized)
 			{
-				spehs::log::error("spehs::sync::Manager is already initialized.");
+				se::log::error("se::sync::Manager is already initialized.");
 				return false;
 			}
 
 			if (!socket.isConnected())
 			{
-				spehs::log::error("spehs::sync::Manager cannot initialize, the provided socket is not in the connected state.");
+				se::log::error("se::sync::Manager cannot initialize, the provided socket is not in the connected state.");
 				return false;
 			}
 
 			if (socket.isReceiving())
 			{
-				spehs::log::error("spehs::sync::Manager cannot initialize, the provided socket is already in the receiving state.");
+				se::log::error("se::sync::Manager cannot initialize, the provided socket is already in the receiving state.");
 				return false;
 			}
 
@@ -63,18 +63,18 @@ namespace spehs
 			//Print my registered type info(?)
 			if (debugLevel >= 1)
 			{
-				spehs::log::info("spehs::sync::Manager registered types:");
+				se::log::info("se::sync::Manager registered types:");
 				for (size_t i = 0; i < registeredTypes.size(); i++)
 				{
-					spehs::log::info("[" + std::to_string(i) + "]\tLocal: name: " + registeredTypes[i].local.name + " typeid: " + registeredTypes[i].local.typeId);
-					spehs::log::info("\tRemote: name: " + registeredTypes[i].remote.name + " typeid: " + registeredTypes[i].remote.typeId);
+					se::log::info("[" + std::to_string(i) + "]\tLocal: name: " + registeredTypes[i].local.name + " typeid: " + registeredTypes[i].local.typeId);
+					se::log::info("\tRemote: name: " + registeredTypes[i].remote.name + " typeid: " + registeredTypes[i].remote.typeId);
 				}
 			}
 
 			//Prepare a packet for the remote sync manager
 			WriteBuffer buffer;
 			if (debugLevel >= 1)
-				spehs::log::info("spehs::sync::Manager: writing an init packet for the remote counterpart...");
+				se::log::info("se::sync::Manager: writing an init packet for the remote counterpart...");
 			//Write a header value for some packet verification
 			buffer.write(PacketType::types);
 			buffer.write(syncManagerInitializeTypesMagicNumber);
@@ -86,20 +86,20 @@ namespace spehs
 			//Send
 			socket.sendPacket(buffer);
 			if (debugLevel >= 1)
-				spehs::log::info("spehs::sync::Manager: sending an init packet for the remote counterpart...");
+				se::log::info("se::sync::Manager: sending an init packet for the remote counterpart...");
 			//Start receiving
 			socket.startReceiving(std::bind(&Manager::receiveHandler, this, std::placeholders::_1));
 
 			//Wait...
-			const spehs::time::Time begin = spehs::time::now();
-			const spehs::time::Time timeout = spehs::time::fromSeconds(999999.0f);// 10.0f);
+			const se::time::Time begin = se::time::now();
+			const se::time::Time timeout = se::time::fromSeconds(999999.0f);// 10.0f);
 			while (remoteManager.typeCompatibility == TypeCompatibility::unknown || remoteManager.typeCompatibilityResponse == TypeCompatibility::unknown)
 			{
 				socket.update();
-				if (spehs::time::now() - begin >= timeout)
+				if (se::time::now() - begin >= timeout)
 				{//Timeouted
 					if (debugLevel >= 1)
-						spehs::log::info("spehs::sync::Manager: initialize timeouted. The remote sync manager did not respond within the given time limit");
+						se::log::info("se::sync::Manager: initialize timeouted. The remote sync manager did not respond within the given time limit");
 					socket.stopReceiving();
 					return false;
 				}
@@ -107,16 +107,16 @@ namespace spehs
 
 			//Inspect results
 			if (remoteManager.typeCompatibility == TypeCompatibility::compatible)
-				spehs::log::info("spehs::sync::Manager: compatible with the remote sync manager's types.");
+				se::log::info("se::sync::Manager: compatible with the remote sync manager's types.");
 			else
-				spehs::log::info("spehs::sync::Manager: incompatible with the remote sync manager's types.");
+				se::log::info("se::sync::Manager: incompatible with the remote sync manager's types.");
 			if (remoteManager.typeCompatibilityResponse == TypeCompatibility::compatible)
-				spehs::log::info("spehs::sync::Manager: remote sync manager is compatible with my types.");
+				se::log::info("se::sync::Manager: remote sync manager is compatible with my types.");
 			else
-				spehs::log::info("spehs::sync::Manager: remote sync manager is incompatible with my types.");
+				se::log::info("se::sync::Manager: remote sync manager is incompatible with my types.");
 			if (remoteManager.typeCompatibility == TypeCompatibility::compatible && remoteManager.typeCompatibilityResponse == TypeCompatibility::compatible)
 			{
-				spehs::log::info("spehs::sync::Manager: initialization complete.");
+				se::log::info("se::sync::Manager: initialization complete.");
 				initialized = true;
 				return true;
 			}
@@ -134,14 +134,14 @@ namespace spehs
 				buffer.read(packetType);
 				if (!isInitialized() && packetType != PacketType::types)
 				{
-					spehs::log::warning("spehs::sync::Manager: first received packet type is expected to contain type data! Packet type was set to: " + std::to_string((int)packetType));
+					se::log::warning("se::sync::Manager: first received packet type is expected to contain type data! Packet type was set to: " + std::to_string((int)packetType));
 					return true;
 				}
 
 				switch (packetType)
 				{
 				default:
-					spehs::log::warning("spehs::sync::Manager: received unknown packet type: " + std::to_string((int)packetType));
+					se::log::warning("se::sync::Manager: received unknown packet type: " + std::to_string((int)packetType));
 					return true;
 				case PacketType::types:
 				{//Not initialized
@@ -190,7 +190,7 @@ namespace spehs
 						if (failureString.size() > 1)
 						{
 							remoteManager.typeCompatibility = TypeCompatibility::incompatible;
-							spehs::log::info(failureString);
+							se::log::info(failureString);
 						}
 
 						//Write a response packet
@@ -208,13 +208,13 @@ namespace spehs
 						remoteManager.typeCompatibilityResponse = val;
 						if (remoteManager.typeCompatibilityResponse == TypeCompatibility::incompatible)
 						{
-							spehs::log::info("spehs::sync::Manager: initialization failed. (my)Local types are not compatible with the remote types.");
+							se::log::info("se::sync::Manager: initialization failed. (my)Local types are not compatible with the remote types.");
 						}
 					}
 					else
 					{
 						if (debugLevel >= 1)
-							spehs::log::info("spehs::sync::Manager: received an invalid packet while waiting for the init packet.");
+							se::log::info("se::sync::Manager: received an invalid packet while waiting for the init packet.");
 					}
 				}
 				break;
@@ -229,13 +229,13 @@ namespace spehs
 					TypeInfo* typeInfo = findByLocalType(typeId);
 					if (!typeInfo)
 					{
-						spehs::log::warning("spehs::sync::Manager: PacketType::create had invalid typeId value. The typeId value did not correspond to any known typeId. typeId: " + typeId);
+						se::log::warning("se::sync::Manager: PacketType::create had invalid typeId value. The typeId value did not correspond to any known typeId. typeId: " + typeId);
 						return false;
 					}
 					IType* instance = typeInfo->local.constructor();
 					if (!instance)
 					{
-						spehs::log::warning("spehs::sync::Manager: PacketType::create local type constructor could not construct an instance. typeId: " + typeId);
+						se::log::warning("se::sync::Manager: PacketType::create local type constructor could not construct an instance. typeId: " + typeId);
 						return false;
 					}
 					Entry* entry = new Entry(*this, instance, id, *typeInfo, false);
@@ -256,7 +256,7 @@ namespace spehs
 					}
 					else
 					{
-						spehs::log::error("spehs::sync::Manager: receive handler: PacketType::createResponse: Unknown entry id!");
+						se::log::error("se::sync::Manager: receive handler: PacketType::createResponse: Unknown entry id!");
 						return true;
 					}
 				}
@@ -273,7 +273,7 @@ namespace spehs
 					else
 					{
 						if (debugLevel >= 3)
-							spehs::log::info("spehs::sync::Manager: receive handler: PacketType::localUpdate: Unknown entry id! Maybe entry was just removed...");
+							se::log::info("se::sync::Manager: receive handler: PacketType::localUpdate: Unknown entry id! Maybe entry was just removed...");
 						return true;
 					}
 				}
@@ -290,7 +290,7 @@ namespace spehs
 					}
 					else
 					{
-						spehs::log::error("spehs::sync::Manager: receive handler: PacketType::remove: Unknown remote entry id!");
+						se::log::error("se::sync::Manager: receive handler: PacketType::remove: Unknown remote entry id!");
 						return true;
 					}
 				}
@@ -299,7 +299,7 @@ namespace spehs
 				{
 					Entry::Id id;
 					buffer.read(id);
-					spehs::time::Time interval;
+					se::time::Time interval;
 					buffer.read(interval);
 					Entry* entry = findEntry(id);
 					if (entry)
@@ -308,7 +308,7 @@ namespace spehs
 					}
 					else
 					{
-						spehs::log::error("spehs::sync::Manager: receive handler: PacketType::updateInterval: Unknown remote entry id!");
+						se::log::error("se::sync::Manager: receive handler: PacketType::updateInterval: Unknown remote entry id!");
 						return true;
 					}
 				}
@@ -323,7 +323,7 @@ namespace spehs
 			return initialized;
 		}
 
-		void Manager::update(const spehs::time::Time& deltaTime)
+		void Manager::update(const se::time::Time& deltaTime)
 		{
 			SPEHS_ASSERT(isInitialized());
 
@@ -354,9 +354,9 @@ namespace spehs
 						const std::string typeName = typeInfo ? typeInfo->local.name : "unknown";
 						const std::string packetName = entries[i]->locallyInstantiated ? "PacketType::create" : "PacketType::createResponse";
 						if (entries[i]->createSent)
-							spehs::log::info("spehs::sync::Manager: " + packetName + " sent for instance of type: " + typeName);
+							se::log::info("se::sync::Manager: " + packetName + " sent for instance of type: " + typeName);
 						else
-							spehs::log::info("spehs::sync::Manager: failed to send " + packetName + " for instance of type: " + typeName);
+							se::log::info("se::sync::Manager: failed to send " + packetName + " for instance of type: " + typeName);
 					}
 				}
 
@@ -386,9 +386,9 @@ namespace spehs
 						const TypeInfo* typeInfo = findByLocalType(entries[i]->typeInfo.local.typeId);
 						const std::string typeName = typeInfo ? typeInfo->local.name : "unknown";
 						if (updateSent)
-							spehs::log::info("spehs::sync::Manager: PacketType::update sent for instance of type: " + typeName);
+							se::log::info("se::sync::Manager: PacketType::update sent for instance of type: " + typeName);
 						else
-							spehs::log::info("spehs::sync::Manager: failed to send PacketType::update for instance of type: " + typeName);
+							se::log::info("se::sync::Manager: failed to send PacketType::update for instance of type: " + typeName);
 					}
 				}
 
@@ -407,9 +407,9 @@ namespace spehs
 							const TypeInfo* typeInfo = findByLocalType(entries[i]->typeInfo.local.typeId);
 							const std::string typeName = typeInfo ? typeInfo->local.name : "unknown";
 							if (entries[i]->removeSent)
-								spehs::log::info("spehs::sync::Manager: PacketType::remove sent for instance of type: " + typeName);
+								se::log::info("se::sync::Manager: PacketType::remove sent for instance of type: " + typeName);
 							else
-								spehs::log::info("spehs::sync::Manager: failed to send PacketType::remove for instance of type: " + typeName);
+								se::log::info("se::sync::Manager: failed to send PacketType::remove for instance of type: " + typeName);
 						}
 					}
 					//Deallocate after remove packet has been received

@@ -19,7 +19,7 @@
 std::atomic<int> guiRectangleAllocations = 0;
 std::atomic<int> guiRectangleDeallocations = 0;
 
-namespace spehs
+namespace se
 {
 	int16_t GUIRectangle::defaultDepth = 10000;
 	int16_t GUIRectangle::tooltipDepthRelative = 1000;
@@ -27,7 +27,7 @@ namespace spehs
 	Color GUIRectangle::defaultStringColor(0, 0, 0, 255);
 	Color GUIRectangle::defaultTooltipColor(255, 255, 255, 255);
 	Color GUIRectangle::defaultTooltipStringColor(0, 0, 0, 255);
-	spehs::TextureParameter GUIRectangle::defaultTextureParameters(spehs::TextureFiltering::Nearest, spehs::TextureFiltering::Nearest);
+	se::TextureParameter GUIRectangle::defaultTextureParameters(se::TextureFiltering::Nearest, se::TextureFiltering::Nearest);
 
 	GUIRectangle::DisplayTexture::~DisplayTexture()
 	{
@@ -56,7 +56,7 @@ namespace spehs
 #endif
 
 		//Create polygon
-		polygon = getBatchManager().createPolygon(spehs::BUTTON, defaultDepth, 1.0f, 1.0f);
+		polygon = getBatchManager().createPolygon(se::BUTTON, defaultDepth, 1.0f, 1.0f);
 		polygon->setCameraMatrixState(false);
 
 		setColor(defaultColor);
@@ -520,7 +520,7 @@ namespace spehs
 
 	void GUIRectangle::setTexture(const std::string& path)
 	{
-		setTexture(path, spehs::TextureParameter::defaultParameters);
+		setTexture(path, se::TextureParameter::defaultParameters);
 	}
 
 	void GUIRectangle::setTextureID(const unsigned int _textureID)
@@ -550,7 +550,7 @@ namespace spehs
 			parent->disableStateRecursiveUpwards(stateBit);
 	}
 
-	spehs::ivec2 GUIRectangle::getPositionGlobal() const
+	se::ivec2 GUIRectangle::getPositionGlobal() const
 	{
 		if (parent)
 			return parent->getPositionGlobal() + position; return position;
@@ -571,7 +571,7 @@ namespace spehs
 	void GUIRectangle::setHoverSound(const std::string& path)
 	{
 		if (!hoverSound)
-			hoverSound = new spehs::audio::SoundSource();
+			hoverSound = new se::audio::SoundSource();
 		hoverSound->setSound(AudioManager::load(path));
 		hoverSound->setPriority(1);
 		hoverSound->setGain(1.0f);
@@ -580,7 +580,7 @@ namespace spehs
 	void GUIRectangle::setPressSound(const std::string& path)
 	{
 		if (!pressSound)
-			pressSound = new spehs::audio::SoundSource();
+			pressSound = new se::audio::SoundSource();
 		pressSound->setSound(AudioManager::load(path));
 		pressSound->setPriority(1);
 		pressSound->setGain(1.0f);

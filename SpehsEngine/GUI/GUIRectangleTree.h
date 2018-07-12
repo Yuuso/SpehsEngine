@@ -6,7 +6,7 @@
 Elements are always in min element size, freely going ot of the main window if enough elements are present.
 */
 
-namespace spehs
+namespace se
 {
 	class GUIRectangleTree : public GUIRectangleUnisizeContainer
 	{

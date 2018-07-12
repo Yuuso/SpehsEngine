@@ -1,7 +1,7 @@
 #pragma once
 #include "SpehsEngine/GUI/GUIRectangleUnisizeContainer.h"
 
-namespace spehs
+namespace se
 {
 	/**Stores elements in a nice even cell size table. Column count defines the number of columns*/
 	class GUIRectangleTable : public GUIRectangleUnisizeContainer
@@ -17,7 +17,7 @@ namespace spehs
 		void setColumnCount(const size_t _columns){ columns = _columns; disableBit(state, GUIRECT_POSITION_UPDATED_BIT); disableBit(state, GUIRECT_SCALE_UPDATED_BIT); }
 		size_t getColumnCount() const { return columns; }
 
-		spehs::GUIRectangleTable* getAsGUIRectangleTablePtr() override { return this; }
+		se::GUIRectangleTable* getAsGUIRectangleTablePtr() override { return this; }
 
 	private:
 		size_t columns;

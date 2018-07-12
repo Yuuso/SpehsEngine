@@ -1,6 +1,6 @@
 #pragma once
 
-namespace spehs
+namespace se
 {
 	struct RenderingContext
 	{

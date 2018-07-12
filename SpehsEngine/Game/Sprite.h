@@ -5,7 +5,7 @@
 #include "SpehsEngine/Rendering/Primitive.h"
 
 
-namespace spehs
+namespace se
 {
 	class GameObject;
 	class Polygon;
@@ -25,7 +25,7 @@ namespace spehs
 		virtual void setTexture(TextureData* _textureDataPtr);
 		virtual void setTextureID(const unsigned int _textureID);
 		void setSize(const float _x, const float _y);
-		void setColor(const spehs::Color &_newColor) override;
+		void setColor(const se::Color &_newColor) override;
 		void setAlpha(const float _a) override;
 		void setDepth(const int _depth);
 		void setRenderState(const bool _state);

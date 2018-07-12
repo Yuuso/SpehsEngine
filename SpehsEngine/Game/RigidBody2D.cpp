@@ -16,9 +16,9 @@
 #define NULL_EPSILON 0.00001f
 
 
-namespace spehs
+namespace se
 {
-	float projectForce(const spehs::vec2& _force, const spehs::vec2& _support)
+	float projectForce(const se::vec2& _force, const se::vec2& _support)
 	{
 		if (_force.dot(_support.getNormalized()) < 0.0f)
 		{
@@ -52,13 +52,13 @@ namespace spehs
 		angularVelocity = 0.0f;
 		angularAcceleration = 0.0f;
 
-		position = spehs::vec2::zero;
-		centerOfMass = spehs::vec2::zero;
-		velocity = spehs::vec2::zero;
-		acceleration = spehs::vec2::zero;
+		position = se::vec2::zero;
+		centerOfMass = se::vec2::zero;
+		velocity = se::vec2::zero;
+		acceleration = se::vec2::zero;
 
 		resultantTorque = 0.0f;
-		resultantForce = spehs::vec2::zero;
+		resultantForce = se::vec2::zero;
 
 		update(0);
 	}
@@ -92,7 +92,7 @@ namespace spehs
 		//Apply impulses
 		if (resultantImpulseForce.size() && !freezePosition)
 		{
-			spehs::vec2 resultForce = spehs::vec2::zero;
+			se::vec2 resultForce = se::vec2::zero;
 			for (size_t i = 0; i < resultantImpulseForce.size(); i++)
 				resultForce += resultantImpulseForce[i];
 			resultForce /= float(resultantImpulseForce.size());
@@ -130,7 +130,7 @@ namespace spehs
 		rotation = transform->getRotation();
 
 		//Reset forces
-		resultantForce = spehs::vec2::zero;
+		resultantForce = se::vec2::zero;
 		resultantTorque = 0.0f;
 		resultantImpulseForce.clear();
 		resultantImpulseTorque.clear();
@@ -142,19 +142,19 @@ namespace spehs
 			applyTorque(-(angularVelocity / abs(angularVelocity)) * angularDrag);
 	}
 
-	void RigidBody2D::applyForce(const spehs::vec2& _force)
+	void RigidBody2D::applyForce(const se::vec2& _force)
 	{
 		applyForceAtPosition(_force, centerOfMass);
 	}
 
-	void RigidBody2D::applyForceAtPosition(const spehs::vec2& _force, const spehs::vec2& _position)
+	void RigidBody2D::applyForceAtPosition(const se::vec2& _force, const se::vec2& _position)
 	{
 		resultantForce += _force;
-		spehs::vec2 AtoB = spehs::vec2(_position - centerOfMass);
+		se::vec2 AtoB = se::vec2(_position - centerOfMass);
 		applyTorque(cross2(AtoB, _force));
 	}
 
-	void RigidBody2D::applyVelocityImpulse(const spehs::vec2& _impulse)
+	void RigidBody2D::applyVelocityImpulse(const se::vec2& _impulse)
 	{
 		resultantImpulseForce.push_back(_impulse);
 	}
@@ -211,10 +211,10 @@ namespace spehs
 			elasticity = 0.0f;
 	}
 	
-	spehs::vec2 RigidBody2D::getVelocityAtPosition(const spehs::vec2& _position)
+	se::vec2 RigidBody2D::getVelocityAtPosition(const se::vec2& _position)
 	{
 		//Angular Velocity
-		spehs::vec2 result = _position - centerOfMass;
+		se::vec2 result = _position - centerOfMass;
 		float x = result.x;
 		result.x = -result.y;
 		result.y = x;

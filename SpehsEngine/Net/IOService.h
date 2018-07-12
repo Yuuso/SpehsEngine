@@ -2,7 +2,7 @@
 #include <boost/asio/io_service.hpp>
 #include <thread>
 
-namespace spehs
+namespace se
 {
 	/*Upon creation, starts to run an IO service in a separate thread*/
 	class IOService

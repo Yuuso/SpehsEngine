@@ -2,7 +2,7 @@
 #include <SpehsEngine/Core/Vector.h>
 #include <map>
 
-namespace spehs
+namespace se
 {
 	typedef unsigned int GLuint;
 	typedef char GLchar;
@@ -12,9 +12,9 @@ namespace spehs
 		/* ID handle of the glyph texture */
 		GLuint textureID;
 		/* Size of glyph */
-		spehs::ivec2 size;
+		se::ivec2 size;
 		/* Offset from baseline to left/top of glyph */
-		spehs::ivec2 bearing;
+		se::ivec2 bearing;
 		/* Offset to advance to next glyph */
 		GLuint advance;
 	};

@@ -3,7 +3,7 @@
 #include "SpehsEngine/Core/Vector.h"
 #include "SpehsEngine/Core/Color.h"
 
-namespace spehs
+namespace se
 {
 	class BatchManager;
 	class Polygon;
@@ -67,10 +67,10 @@ namespace spehs
 		~LineDiagram2();
 
 		//Point data
-		void set(const int index, const spehs::vec2& point);
-		spehs::vec2 get(const int index) const;
-		void pushBack(const spehs::vec2& point);
-		void insert(const int index, const spehs::vec2& point);
+		void set(const int index, const se::vec2& point);
+		se::vec2 get(const int index) const;
+		void pushBack(const se::vec2& point);
+		void insert(const int index, const se::vec2& point);
 		void erase(const int index);
 		size_t getPointCount() const;
 		void setCapacity(const size_t newCapacity);
@@ -99,7 +99,7 @@ namespace spehs
 		Polygon* polygon;//NOTE: polygon holds size and position data!
 		struct PointData
 		{
-			spehs::vec2 point;
+			se::vec2 point;
 			Line* line = nullptr;
 		};
 		std::vector<PointData> points;

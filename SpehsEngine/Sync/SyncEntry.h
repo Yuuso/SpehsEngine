@@ -6,7 +6,7 @@
 
 
 
-namespace spehs
+namespace se
 {
 	namespace sync
 	{
@@ -35,11 +35,11 @@ namespace spehs
 			bool createReceived = false;
 
 			bool sendRemoteUpdateInterval = false;
-			spehs::time::Time requestedRemoteUpdateInterval = 0;
+			se::time::Time requestedRemoteUpdateInterval = 0;
 
 			std::vector<AbstractHandle*> handles;
-			spehs::time::Time interval = 0;
-			spehs::time::Time timer = 0;
+			se::time::Time interval = 0;
+			se::time::Time timer = 0;
 
 		private:
 			friend class Manager;

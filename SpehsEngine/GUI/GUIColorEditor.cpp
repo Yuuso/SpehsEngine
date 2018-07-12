@@ -4,7 +4,7 @@
 #include "SpehsEngine/Rendering/BatchManager.h"
 #include "SpehsEngine/Rendering/Polygon.h"
 
-namespace spehs
+namespace se
 {
 	float GUIColorEditor::paletteWidth = 100;
 	float GUIColorEditor::sliderWidth = 10;
@@ -35,31 +35,31 @@ namespace spehs
 		alphaSliderFront->setCameraMatrixState(false);
 
 		//Palette colors
-		palette->worldVertexArray[0].color = spehs::Color(0.0f, 0.0f, 0.0f, 1.0f);
-		palette->worldVertexArray[1].color = spehs::Color(0.0f, 0.0f, 0.0f, 1.0f);
-		palette->worldVertexArray[2].color = spehs::Color(0.0f, 1.0f, 1.0f, 1.0f);
-		palette->worldVertexArray[3].color = spehs::Color(1.0f, 1.0f, 1.0f, 1.0f);
+		palette->worldVertexArray[0].color = se::Color(0.0f, 0.0f, 0.0f, 1.0f);
+		palette->worldVertexArray[1].color = se::Color(0.0f, 0.0f, 0.0f, 1.0f);
+		palette->worldVertexArray[2].color = se::Color(0.0f, 1.0f, 1.0f, 1.0f);
+		palette->worldVertexArray[3].color = se::Color(1.0f, 1.0f, 1.0f, 1.0f);
 
 		//Slider colors
 		//Red-Green
-		sliderRG->worldVertexArray[0].color = spehs::Color(1.0f, 0.0f, 0.0f, 1.0f);
-		sliderRG->worldVertexArray[1].color = spehs::Color(1.0f, 0.0f, 0.0f, 1.0f);
-		sliderRG->worldVertexArray[2].color = spehs::Color(0.0f, 1.0f, 0.0f, 1.0f);
-		sliderRG->worldVertexArray[3].color = spehs::Color(0.0f, 1.0f, 0.0f, 1.0f);
+		sliderRG->worldVertexArray[0].color = se::Color(1.0f, 0.0f, 0.0f, 1.0f);
+		sliderRG->worldVertexArray[1].color = se::Color(1.0f, 0.0f, 0.0f, 1.0f);
+		sliderRG->worldVertexArray[2].color = se::Color(0.0f, 1.0f, 0.0f, 1.0f);
+		sliderRG->worldVertexArray[3].color = se::Color(0.0f, 1.0f, 0.0f, 1.0f);
 		//Green-blue
-		sliderGB->worldVertexArray[0].color = spehs::Color(0.0f, 1.0f, 0.0f, 1.0f);
-		sliderGB->worldVertexArray[1].color = spehs::Color(0.0f, 1.0f, 0.0f, 1.0f);
-		sliderGB->worldVertexArray[2].color = spehs::Color(0.0f, 0.0f, 1.0f, 1.0f);
-		sliderGB->worldVertexArray[3].color = spehs::Color(0.0f, 0.0f, 1.0f, 1.0f);
+		sliderGB->worldVertexArray[0].color = se::Color(0.0f, 1.0f, 0.0f, 1.0f);
+		sliderGB->worldVertexArray[1].color = se::Color(0.0f, 1.0f, 0.0f, 1.0f);
+		sliderGB->worldVertexArray[2].color = se::Color(0.0f, 0.0f, 1.0f, 1.0f);
+		sliderGB->worldVertexArray[3].color = se::Color(0.0f, 0.0f, 1.0f, 1.0f);
 		//Blue-red
-		sliderBR->worldVertexArray[0].color = spehs::Color(0.0f, 0.0f, 1.0f, 1.0f);
-		sliderBR->worldVertexArray[1].color = spehs::Color(0.0f, 0.0f, 1.0f, 1.0f);
-		sliderBR->worldVertexArray[2].color = spehs::Color(1.0f, 0.0f, 0.0f, 1.0f);
-		sliderBR->worldVertexArray[3].color = spehs::Color(1.0f, 0.0f, 0.0f, 1.0f);
+		sliderBR->worldVertexArray[0].color = se::Color(0.0f, 0.0f, 1.0f, 1.0f);
+		sliderBR->worldVertexArray[1].color = se::Color(0.0f, 0.0f, 1.0f, 1.0f);
+		sliderBR->worldVertexArray[2].color = se::Color(1.0f, 0.0f, 0.0f, 1.0f);
+		sliderBR->worldVertexArray[3].color = se::Color(1.0f, 0.0f, 0.0f, 1.0f);
 
 		//Alpha slider colors
-		alphaSliderBack->setColor(spehs::Color(0.0f, 0.0f, 0.0f, 1.0f));
-		alphaSliderFront->setColor(spehs::Color(1.0f, 1.0f, 1.0f, 1.0f));
+		alphaSliderBack->setColor(se::Color(0.0f, 0.0f, 0.0f, 1.0f));
+		alphaSliderFront->setColor(se::Color(1.0f, 1.0f, 1.0f, 1.0f));
 
 		setDepth(getDepth());
 		setRenderState(getRenderState());
@@ -169,7 +169,7 @@ namespace spehs
 				else
 					b = (oneSixth - (b - oneSixth)) / oneSixth;
 
-				palette->worldVertexArray[2].color = spehs::Color(r, g, b, 1.0f);
+				palette->worldVertexArray[2].color = se::Color(r, g, b, 1.0f);
 			}
 			else
 				sliderOnHold = false;

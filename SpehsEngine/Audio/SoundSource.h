@@ -11,7 +11,7 @@
 typedef unsigned int ALuint;
 
 
-namespace spehs
+namespace se
 {
 	namespace audio
 	{
@@ -160,17 +160,17 @@ namespace spehs
 
 			void setParameters();
 			
-			void setPosition(const spehs::vec2& _pos);
-			void setPosition(const spehs::vec2& _pos, const float _z);
-			void setVelocity(const spehs::vec2& _vel);
-			void setVelocity(const spehs::vec2& _vel, const float _z);
-			void setDirection(const spehs::vec2& _direction);
+			void setPosition(const se::vec2& _pos);
+			void setPosition(const se::vec2& _pos, const float _z);
+			void setVelocity(const se::vec2& _vel);
+			void setVelocity(const se::vec2& _vel, const float _z);
+			void setDirection(const se::vec2& _direction);
 			void setZ(const float _z);
 			void setRollOffFactor(const float _rollOff);
 
-			spehs::vec2 getPosition(){ return spehs::vec2(position.x, position.y); }
-			spehs::vec2 getVelocity(){ return spehs::vec2(velocity.x, velocity.y); }
-			spehs::vec2 getDirection(){ return direction; }
+			se::vec2 getPosition(){ return se::vec2(position.x, position.y); }
+			se::vec2 getVelocity(){ return se::vec2(velocity.x, velocity.y); }
+			se::vec2 getDirection(){ return direction; }
 			float getZ(){ return position.z; }
 			float getRollOffFactor(){ return rollOffFactor; }
 
@@ -178,17 +178,17 @@ namespace spehs
 			/*
 			default: {0, 0, 0}
 			*/
-			spehs::vec3 position;
+			se::vec3 position;
 
 			/*
 			default: {0, 0, 0}
 			*/
-			spehs::vec3 velocity;
+			se::vec3 velocity;
 
 			/*
 			default: {0, 0}
 			*/
-			spehs::vec2 direction; //Cone stuff to be effective?
+			se::vec2 direction; //Cone stuff to be effective?
 
 			/*
 			default: 1.75 (AudioEngine.cpp)

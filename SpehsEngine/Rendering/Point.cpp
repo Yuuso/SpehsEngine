@@ -6,13 +6,13 @@
 #include "SpehsEngine/Core/Vertex.h"
 
 
-namespace spehs
+namespace se
 {
 	Point::Point(BatchManager& _batchManager, const PlaneDepth &_planeDepth)
 		: Primitive(_batchManager)
 	{
 		vertexArray.push_back(Vertex());
-		vertexArray.back().position = spehs::vec2(0.0f, 0.0f);
+		vertexArray.back().position = se::vec2(0.0f, 0.0f);
 
 		worldVertexArray = vertexArray;
 
@@ -32,7 +32,7 @@ namespace spehs
 		{
 			for (unsigned int i = 0; i < worldVertexArray.size(); i++)
 			{
-				worldVertexArray[i].position = spehs::vec2(vertexArray[i].position.x + position.x, vertexArray[i].position.y + position.y);
+				worldVertexArray[i].position = se::vec2(vertexArray[i].position.x + position.x, vertexArray[i].position.y + position.y);
 			}
 			needUpdate = false;
 		}

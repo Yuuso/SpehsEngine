@@ -7,7 +7,7 @@
 #define VISUALISE_COLLIDERS false
 
 
-namespace spehs
+namespace se
 {
 	Collider::Collider()
 	{

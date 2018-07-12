@@ -15,7 +15,7 @@ typedef unsigned short GLushort;
 typedef unsigned int GLuint;
 
 
-namespace spehs
+namespace se
 {
 	class MeshBatch;
 	class ModelManager;
@@ -36,18 +36,18 @@ namespace spehs
 
 		// Setters
 		void setPosition(const float _x, const float _y, const float _z);
-		void setPosition(const spehs::vec3& _newPosition);
+		void setPosition(const se::vec3& _newPosition);
 		void setPosition(const Mesh& _newPosition);
 		void setRotation(const float _yaw, const float _pitch, const float _roll);
-		void setRotation(const spehs::vec3& _newRotation);
+		void setRotation(const se::vec3& _newRotation);
 		void setScale(const float _newScale);
 		void setScale(const float _newScaleX, const float _newScaleY, const float _newScaleZ);
-		void setScale(const spehs::vec3& _newScale);
+		void setScale(const se::vec3& _newScale);
 		void setColor(const Mesh& _other);
 		void setColor(const Color _color);
 		void setAlpha(const float _alpha);
 		void translate(const float _x, const float _y, const float _z);
-		void translate(const spehs::vec3& _translation);
+		void translate(const se::vec3& _translation);
 		void setBlending (const bool _value);
 		void setDepthTest (const bool _value);
 		void setRenderState(const Mesh& _other);
@@ -59,16 +59,16 @@ namespace spehs
 		void setTexture(TextureData* _textureDataPtr);
 
 		// Getters
-		spehs::vec3 getPosition() const { return position; }
-		spehs::vec3 getRotation() const { return rotation; }
-		spehs::vec3 getScale() const { return scale; }
+		se::vec3 getPosition() const { return position; }
+		se::vec3 getRotation() const { return rotation; }
+		se::vec3 getScale() const { return scale; }
 		bool getRenderState() const { return renderState; }
 		unsigned int getShaderIndex() const { return shaderIndex; }
-		spehs::Color getColor() const { return color; }
+		se::Color getColor() const { return color; }
 		float getAlpha() const { return color.a; }
 
 		// Public Variables
-		std::vector<spehs::Vertex3D> worldVertexArray; // Transformed vertices
+		std::vector<se::Vertex3D> worldVertexArray; // Transformed vertices
 		BatchManager3D& batchManager;
 
 	protected:
@@ -84,9 +84,9 @@ namespace spehs
 		bool depthTest = true;
 		unsigned int shaderIndex;
 		GLuint textureDataID = 0;
-		spehs::vec3 position = spehs::vec3::zero;
-		spehs::vec3 rotation = spehs::vec3::zero;
-		spehs::vec3 scale = spehs::vec3(1.0f, 1.0f, 1.0f);
+		se::vec3 position = se::vec3::zero;
+		se::vec3 rotation = se::vec3::zero;
+		se::vec3 scale = se::vec3(1.0f, 1.0f, 1.0f);
 		Color color = Color(255, 255, 255, 255);
 
 		glm::mat4 scaledMatrix = glm::mat4(1.0f);
@@ -94,7 +94,7 @@ namespace spehs
 		glm::mat4 transformMatrix = glm::mat4(1.0f);
 		glm::mat4 normalMatrix = glm::mat4(1.0f);
 
-		std::vector<spehs::Vertex3D> vertexArray; // Original vertices
+		std::vector<se::Vertex3D> vertexArray; // Original vertices
 		std::vector<GLushort> elementArray; // Indices
 	};
 }

@@ -1,7 +1,7 @@
 #pragma once
 #include <string>
 
-namespace spehs
+namespace se
 {
 	namespace log
 	{
@@ -22,5 +22,5 @@ namespace spehs
 #ifndef _DEBUG
 #error Neither _DEBUG nor NDEBUG is defined!
 #endif
-#define SPEHS_ASSERT(expression) { if (!(expression)) spehs::log::error("SPEHS_ASSERT failed.\nExpression: " #expression "\nFILE: " __FILE__ "\nLINE: " + std::to_string(__LINE__)); }
+#define SPEHS_ASSERT(expression) { if (!(expression)) se::log::error("SPEHS_ASSERT failed.\nExpression: " #expression "\nFILE: " __FILE__ "\nLINE: " + std::to_string(__LINE__)); }
 #endif

@@ -1,7 +1,7 @@
 #pragma once
 #include "SpehsEngine/GUI/GUIRectangleUnisizeContainer.h"
 
-namespace spehs
+namespace se
 {
 	class GUIRectangleGrid : public GUIRectangleUnisizeContainer
 	{
@@ -32,8 +32,8 @@ namespace spehs
 		bool scrollingEnabled = false;
 		bool draggingScrollBar = false;
 		float scrollBarAccumulatedDragY = 0.0f;
-		spehs::GUIRectangle* scrollUp = nullptr;
-		spehs::GUIRectangle* scrollBar = nullptr;
-		spehs::GUIRectangle* scrollDown = nullptr;
+		se::GUIRectangle* scrollUp = nullptr;
+		se::GUIRectangle* scrollBar = nullptr;
+		se::GUIRectangle* scrollDown = nullptr;
 	};
 }

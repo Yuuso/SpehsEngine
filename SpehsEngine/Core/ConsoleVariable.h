@@ -2,7 +2,7 @@
 #include <string>
 #include <vector>
 
-namespace spehs
+namespace se
 {
 	template <typename T>
 	struct ConsoleVariable

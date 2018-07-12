@@ -15,7 +15,7 @@
 
 
 
-namespace spehs
+namespace se
 {
 	Polygon::Polygon(BatchManager& _batchManager, const int _shapeID, const PlaneDepth _planeDepth, const float _width, const float _height)
 		: Polygon(_batchManager, _width, _height)
@@ -31,12 +31,12 @@ namespace spehs
 				firstPosition = 0;
 			else
 				firstPosition = (TWO_PI / _shapeID) / 2.0f;
-			vertexArray[0].position = spehs::vec2(cos(firstPosition), sin(firstPosition));
+			vertexArray[0].position = se::vec2(cos(firstPosition), sin(firstPosition));
 			float minX = vertexArray[0].position.x, minY = vertexArray[0].position.y, maxX = vertexArray[0].position.x, maxY = vertexArray[0].position.y;
 			for (int i = 1; i < _shapeID; i++)
 			{
 				//Set position
-				vertexArray[i].position = spehs::vec2(cos(firstPosition + i * (TWO_PI / _shapeID)), sin(firstPosition + i * (TWO_PI / _shapeID)));
+				vertexArray[i].position = se::vec2(cos(firstPosition + i * (TWO_PI / _shapeID)), sin(firstPosition + i * (TWO_PI / _shapeID)));
 
 				//Check min/max
 				if (vertexArray[i].position.x > maxX)
@@ -63,11 +63,11 @@ namespace spehs
 		}
 		else //Polygons from Shapes
 		{
-			vertexArray = getShapeVertexArray(spehs::Shape(_shapeID));
+			vertexArray = getShapeVertexArray(se::Shape(_shapeID));
 			worldVertexArray = vertexArray;
 
 			//Custom UV Coords for Button
-			if (_shapeID == spehs::Shape::BUTTON)
+			if (_shapeID == se::Shape::BUTTON)
 			{
 				for (size_t i = 0; i < worldVertexArray.size(); i++)
 				{
@@ -82,7 +82,7 @@ namespace spehs
 		}
 	}
 
-	Polygon::Polygon(BatchManager& _batchManager, const std::vector<spehs::Vertex>& _vertexData, const PlaneDepth _planeDepth, const float _width, const float _height)
+	Polygon::Polygon(BatchManager& _batchManager, const std::vector<se::Vertex>& _vertexData, const PlaneDepth _planeDepth, const float _width, const float _height)
 		: Polygon(_batchManager, _width, _height)
 	{
 		planeDepth = _planeDepth;
@@ -95,13 +95,13 @@ namespace spehs
 		setUVCoords();
 	}
 
-	Polygon::Polygon(BatchManager& _batchManager, const std::vector<spehs::Vertex>& _vertexData, const float _width, const float _height)
+	Polygon::Polygon(BatchManager& _batchManager, const std::vector<se::Vertex>& _vertexData, const float _width, const float _height)
 		: Polygon(_batchManager, _vertexData, 0, _width, _height)
 	{
 		blending = false;
 	}
 
-	Polygon::Polygon(BatchManager& _batchManager, const std::vector<spehs::vec2>& _positionData, const PlaneDepth _planeDepth, const float _width, const float _height)
+	Polygon::Polygon(BatchManager& _batchManager, const std::vector<se::vec2>& _positionData, const PlaneDepth _planeDepth, const float _width, const float _height)
 		: Polygon(_batchManager, _width, _height)
 	{
 		planeDepth = _planeDepth;
@@ -142,25 +142,25 @@ namespace spehs
 			for (size_t i = 0; i < worldVertexArray.size(); i++)
 			{
 				vertex = scaledRotatedMatrix * glm::vec4(vertexArray[i].position.x * width, vertexArray[i].position.y * height, 0.0f, 1.0f);
-				worldVertexArray[i].position = spehs::vec2(vertex.x + position.x, vertex.y + position.y);
+				worldVertexArray[i].position = se::vec2(vertex.x + position.x, vertex.y + position.y);
 			}
 			needUpdate = false;
 		}
 	}
 
-	void Polygon::getScreenVertices(spehs::Camera2D* _camera, std::vector<spehs::vec2>& deposit)
+	void Polygon::getScreenVertices(se::Camera2D* _camera, std::vector<se::vec2>& deposit)
 	{
 		if (cameraMatrixState)
 		{
 			for (size_t i = 0; i < worldVertexArray.size(); i++)
 			{
 				glm::vec2 vec(*_camera->projectionMatrix * glm::vec4(worldVertexArray[i].position.x, worldVertexArray[i].position.y, 0.0f, 1.0f));
-				deposit.push_back(spehs::vec2(vec.x, vec.y));
+				deposit.push_back(se::vec2(vec.x, vec.y));
 			}
 		}
 		else
 		{
-			spehs::exceptions::unexpectedError("Camera state not enabled, screen vertices function is useless.");
+			se::exceptions::unexpectedError("Camera state not enabled, screen vertices function is useless.");
 		}
 	}
 
@@ -189,7 +189,7 @@ namespace spehs
 		}
 	}
 
-	void Polygon::setUVScale(const spehs::vec2& _newScale)
+	void Polygon::setUVScale(const se::vec2& _newScale)
 	{
 		for (size_t i = 0; i < worldVertexArray.size(); i++)
 		{
@@ -252,12 +252,12 @@ namespace spehs
 	float Polygon::getRadius()
 	{
 		//Seems like this needs to be updated every time
-		float max = (spehs::vec2(position.x, position.y) - spehs::vec2(worldVertexArray[0].position.x, worldVertexArray[0].position.y)).getLength();
+		float max = (se::vec2(position.x, position.y) - se::vec2(worldVertexArray[0].position.x, worldVertexArray[0].position.y)).getLength();
 		for (size_t i = 1; i < worldVertexArray.size(); i++)
 		{
-			if ((spehs::vec2(position.x, position.y) - spehs::vec2(worldVertexArray[i].position.x, worldVertexArray[i].position.y)).getLength() > max)
+			if ((se::vec2(position.x, position.y) - se::vec2(worldVertexArray[i].position.x, worldVertexArray[i].position.y)).getLength() > max)
 			{
-				max = (spehs::vec2(position.x, position.y) - spehs::vec2(worldVertexArray[i].position.x, worldVertexArray[i].position.y)).getLength();
+				max = (se::vec2(position.x, position.y) - se::vec2(worldVertexArray[i].position.x, worldVertexArray[i].position.y)).getLength();
 			}
 		}
 		radius = max;

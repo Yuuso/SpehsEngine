@@ -3,7 +3,7 @@
 #include <mutex>
 #include "SpehsEngine/Core/Time.h"
 
-namespace spehs
+namespace se
 {
 	namespace device
 	{

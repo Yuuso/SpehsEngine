@@ -2,7 +2,7 @@
 #include <cstring>
 #include "SpehsEngine/Core/SerializableString.h"
 
-namespace spehs
+namespace se
 {
 	SerializableString::SerializableString()
 	{

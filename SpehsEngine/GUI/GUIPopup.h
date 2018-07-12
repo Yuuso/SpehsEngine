@@ -3,7 +3,7 @@
 #include "SpehsEngine/GUI/GUIRectangleContainer.h"
 
 
-namespace spehs
+namespace se
 {
 	///GUI Popup
 	/*
@@ -59,7 +59,7 @@ namespace spehs
 		void updateScale();
 		void updatePosition();
 
-		void setBackgroundColor(const spehs::Color& rgb);
+		void setBackgroundColor(const se::Color& rgb);
 		void enableEscape(){ escapeEnabled = true; }
 		void disableEscape(){ escapeEnabled = false; }
 

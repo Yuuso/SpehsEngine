@@ -6,7 +6,7 @@
 #include "SpehsEngine/Core/Log.h"
 #include "SpehsEngine/Core/Time.h"
 
-namespace spehs
+namespace se
 {
 	namespace
 	{

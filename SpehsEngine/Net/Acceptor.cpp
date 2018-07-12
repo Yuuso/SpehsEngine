@@ -3,7 +3,7 @@
 #include "SpehsEngine/Net/SocketTCP.h"
 #include "SpehsEngine/Core/Log.h"
 
-namespace spehs
+namespace se
 {
 	Acceptor::Acceptor()
 		: port(0)
@@ -34,7 +34,7 @@ namespace spehs
 		acceptor.open(endpoint.protocol(), error);
 		if (error)
 		{
-			spehs::log::error("Failed to open acceptor! Boost asio error: " + error.message());
+			se::log::error("Failed to open acceptor! Boost asio error: " + error.message());
 			return false;
 		}
 		acceptor.set_option(boost::asio::ip::tcp::acceptor::reuse_address(true));
@@ -43,12 +43,12 @@ namespace spehs
 		acceptor.bind(endpoint, error);
 		if (error)
 		{
-			spehs::log::error("Failed to bind acceptor! Boost asio error: " + error.message());
+			se::log::error("Failed to bind acceptor! Boost asio error: " + error.message());
 			return false;
 		}
 		if (!acceptor.is_open())
 		{
-			spehs::log::error("Boost acceptor failed to open!");
+			se::log::error("Boost acceptor failed to open!");
 			return false;
 		}
 
@@ -56,7 +56,7 @@ namespace spehs
 		acceptor.listen(boost::asio::socket_base::max_connections, error);
 		if (error)
 		{
-			spehs::log::error("Failed to make acceptor listen! Boost asio error: " + error.message());
+			se::log::error("Failed to make acceptor listen! Boost asio error: " + error.message());
 			return false;
 		}
 

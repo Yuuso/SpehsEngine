@@ -16,7 +16,7 @@ std::atomic<int> primitiveAllocations;
 std::atomic<int> primitiveDeallocations;
 
 
-namespace spehs
+namespace se
 {
 	Primitive::Primitive(BatchManager& _batchManager)
 		: batchManager(_batchManager)
@@ -51,7 +51,7 @@ namespace spehs
 		needUpdate = true;
 	}
 
-	void Primitive::setPosition(const spehs::vec2& _newPosition)
+	void Primitive::setPosition(const se::vec2& _newPosition)
 	{
 #ifdef _DEBUG
 		if (_newPosition.x != _newPosition.x || _newPosition.y != _newPosition.y)
@@ -90,7 +90,7 @@ namespace spehs
 		needUpdate = true;
 	}
 
-	void Primitive::translate(const spehs::vec2& _translation)
+	void Primitive::translate(const se::vec2& _translation)
 	{
 #ifdef _DEBUG
 		if (_translation.x != _translation.x || _translation.y != _translation.y)
@@ -129,7 +129,7 @@ namespace spehs
 		needUpdate = true;
 	}
 
-	void Primitive::setScale(const spehs::vec2& _newScale)
+	void Primitive::setScale(const se::vec2& _newScale)
 	{
 #ifdef _DEBUG
 		if (_newScale.x != _newScale.x || _newScale.y != _newScale.y)
@@ -178,7 +178,7 @@ namespace spehs
 		needUpdate = true;
 	}
 
-	void Primitive::setRotation(const float _newRotation, const spehs::vec3& _newRotationVector)
+	void Primitive::setRotation(const float _newRotation, const se::vec3& _newRotationVector)
 	{
 #ifdef _DEBUG
 		if (_newRotation != _newRotation || _newRotationVector.x != _newRotationVector.x || _newRotationVector.y != _newRotationVector.y || _newRotationVector.z != _newRotationVector.z)
@@ -215,7 +215,7 @@ namespace spehs
 		needUpdate = true;
 	}
 
-	void Primitive::setRotationVector(const spehs::vec3& _newRotationVector)
+	void Primitive::setRotationVector(const se::vec3& _newRotationVector)
 	{
 #ifdef _DEBUG
 		if (_newRotationVector.x != _newRotationVector.x || _newRotationVector.y != _newRotationVector.y || _newRotationVector.z != _newRotationVector.z)
@@ -235,7 +235,7 @@ namespace spehs
 		}
 	}
 
-	void Primitive::setColor(const spehs::Color& _newColor)
+	void Primitive::setColor(const se::Color& _newColor)
 	{
 		primitiveColor = _newColor;
 		for (unsigned i = 0; i < worldVertexArray.size(); i++)

@@ -4,7 +4,7 @@
 #include <SpehsEngine/Core/WriteBuffer.h>
 #include <SpehsEngine/Core/ReadBuffer.h>
 
-namespace spehs
+namespace se
 {
 	namespace device
 	{
@@ -29,7 +29,7 @@ namespace spehs
 			, requestUpdate(true)
 			, pin(gpio::Pin::pin_none)
 			, sampleSize(100)
-			, sampleRate(spehs::time::fromMilliseconds(1.0f))
+			, sampleRate(se::time::fromMilliseconds(1.0f))
 		{
 
 		}
@@ -59,7 +59,7 @@ namespace spehs
 
 		}
 
-		bool PinReaderPWMGhost::syncUpdate(const spehs::time::Time deltaTime)
+		bool PinReaderPWMGhost::syncUpdate(const se::time::Time deltaTime)
 		{
 			return requestUpdate;
 		}
@@ -116,7 +116,7 @@ namespace spehs
 			}
 		}
 
-		void PinReaderPWMGhost::setSampleRate(const spehs::time::Time interval)
+		void PinReaderPWMGhost::setSampleRate(const se::time::Time interval)
 		{
 			if (interval != sampleRate)
 			{
@@ -140,7 +140,7 @@ namespace spehs
 			, highStateSampleCount(0)
 			, lowStateSampleCount(0)
 			, sampleSize(100)
-			, sampleRate(spehs::time::fromMilliseconds(1.0f))
+			, sampleRate(se::time::fromMilliseconds(1.0f))
 			, lastReadTime(0)
 		{
 
@@ -175,7 +175,7 @@ namespace spehs
 			std::lock_guard<std::recursive_mutex> lock(mutex);
 			if (pin != newPin)
 			{
-				spehs::log::info("Setting pin reader PWM pin to: " + std::to_string(gpio::getPinEnumAsNumber(newPin)));
+				se::log::info("Setting pin reader PWM pin to: " + std::to_string(gpio::getPinEnumAsNumber(newPin)));
 				pin = newPin;
 				clearHistory = true;
 				history.clear();
@@ -187,19 +187,19 @@ namespace spehs
 			std::lock_guard<std::recursive_mutex> lock(mutex);
 			if (sampleSize != size)
 			{
-				spehs::log::info("Setting pin reader PWM sample size to: " + std::to_string(size));
+				se::log::info("Setting pin reader PWM sample size to: " + std::to_string(size));
 				sampleSize = size;
 				clearHistory = true;
 				history.clear();
 			}
 		}
 
-		void PinReaderPWMShell::setSampleRate(const spehs::time::Time interval)
+		void PinReaderPWMShell::setSampleRate(const se::time::Time interval)
 		{
 			std::lock_guard<std::recursive_mutex> lock(mutex);
 			if (sampleRate != interval)
 			{
-				spehs::log::info("Setting pin reader PWM sample rate to: " + std::to_string(interval.asMilliseconds()) + " ms");
+				se::log::info("Setting pin reader PWM sample rate to: " + std::to_string(interval.asMilliseconds()) + " ms");
 				sampleRate = interval;
 				clearHistory = true;
 				history.clear();
@@ -227,7 +227,7 @@ namespace spehs
 			while (isRunning()) {}
 		}
 
-		bool PinReaderPWMShell::syncUpdate(const spehs::time::Time deltaTime)
+		bool PinReaderPWMShell::syncUpdate(const se::time::Time deltaTime)
 		{
 			if (sizeof(size_t) + history.size() * sizeof(float/*history element*/) > 1400)
 				return true;//Default MTU is around 1500, preferably keep it below that
@@ -251,7 +251,7 @@ namespace spehs
 			bool _active;					buffer.read(_active);		setActive(_active);
 			gpio::Pin _pin;					buffer.read(_pin);			setPin(_pin);
 			size_t _sampleSize;				buffer.read(_sampleSize);	setSampleSize(_sampleSize);
-			spehs::time::Time _sampleRate;	buffer.read(_sampleRate);	setSampleRate(_sampleRate);
+			se::time::Time _sampleRate;	buffer.read(_sampleRate);	setSampleRate(_sampleRate);
 		}
 
 		void PinReaderPWMShell::getHistory(PWMHistory& deposit) const
@@ -263,13 +263,13 @@ namespace spehs
 		{
 			std::lock_guard<std::recursive_mutex> lock(mutex);
 			history.clear();
-			lastReadTime = spehs::time::now();
+			lastReadTime = se::time::now();
 		}
 
 		void PinReaderPWMShell::update()
 		{
 			std::lock_guard<std::recursive_mutex> lock(mutex);
-			const spehs::time::Time now = spehs::time::now();
+			const se::time::Time now = se::time::now();
 			if (now - lastReadTime >= sampleRate)
 			{
 				lastReadTime = now;

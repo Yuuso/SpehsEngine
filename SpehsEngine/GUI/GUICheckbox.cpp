@@ -9,10 +9,10 @@
 #define SELECTED_ALPHA 255
 #define UNSELECTED_ALPHA 25
 
-namespace spehs
+namespace se
 {
-	const spehs::Color GUICheckbox::defaultCheckboxFillingColor(30, 30, 30);
-	const spehs::Color GUICheckbox::defaultCheckboxOuterColor(160, 170, 180);
+	const se::Color GUICheckbox::defaultCheckboxFillingColor(30, 30, 30);
+	const se::Color GUICheckbox::defaultCheckboxOuterColor(160, 170, 180);
 
 	GUICheckbox::GUICheckbox(GUIContext& context)
 		: GUIRectangle(context)

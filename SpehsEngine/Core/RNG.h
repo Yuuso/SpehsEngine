@@ -11,7 +11,7 @@
 #include <mutex>
 
 
-namespace spehs
+namespace se
 {
 	namespace rng
 	{
@@ -185,15 +185,15 @@ namespace spehs
 			}
 
 			//Special functions
-			spehs::vec2 circle(const float _radius = 1.0f)
+			se::vec2 circle(const float _radius = 1.0f)
 			{
 				float angle = random<float>(0.0f, 2.0f * PI);
-				return spehs::vec2(cos(angle) * _radius, sin(angle) * _radius);
+				return se::vec2(cos(angle) * _radius, sin(angle) * _radius);
 			}
 
-			spehs::vec2 square(const float _side = 1.0f)
+			se::vec2 square(const float _side = 1.0f)
 			{
-				return spehs::vec2(random<float>(0.0f, _side), random<float>(0.0f, _side));
+				return se::vec2(random<float>(0.0f, _side), random<float>(0.0f, _side));
 			}
 
 			template<typename FloatingPointType = float>
@@ -300,7 +300,7 @@ namespace spehs
 		bool weightedCoin(const double _trueProbability = 0.5);
 		unsigned dice(const unsigned _sides);
 		unsigned weightedDice(const std::initializer_list<double> _propabilities);
-		spehs::vec2 circle(const float _radius = 1.0f);
-		spehs::vec2 square(const float _side = 1.0f);
+		se::vec2 circle(const float _radius = 1.0f);
+		se::vec2 square(const float _side = 1.0f);
 	}
 }

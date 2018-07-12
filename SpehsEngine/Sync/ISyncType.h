@@ -3,7 +3,7 @@
 #include <string>
 #include "SpehsEngine/Core/Time.h"
 
-namespace spehs
+namespace se
 {
 	class WriteBuffer;
 	class ReadBuffer;
@@ -24,7 +24,7 @@ namespace spehs
 			//static const SyncTypeVersionType getSyncTypeVersion();
 
 			/* By returning true, the sync type indicates that it is ready to write an update packet. */
-			virtual bool syncUpdate(const spehs::time::Time deltaTime) { return false; }
+			virtual bool syncUpdate(const se::time::Time deltaTime) { return false; }
 
 			/* Sync packets */
 			virtual void syncCreate(WriteBuffer& buffer) {}

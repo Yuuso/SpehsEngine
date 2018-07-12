@@ -1,6 +1,6 @@
 #include "BufferBase.h"
 
-namespace spehs
+namespace se
 {
 	BufferBase::BufferBase()
 	{

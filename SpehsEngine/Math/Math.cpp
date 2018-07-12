@@ -2,7 +2,7 @@
 #include "SpehsEngine/Core/Core.h"
 #include "SpehsEngine/Core/Log.h"
 
-namespace spehs
+namespace se
 {
 	namespace
 	{

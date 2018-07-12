@@ -9,7 +9,7 @@
 #include "SpehsEngine/Core/Time.h"
 #include "SpehsEngine/Core/Log.h"
 
-namespace spehs
+namespace se
 {
 	class SocketTCP;
 	class WriteBuffer;
@@ -54,7 +54,7 @@ namespace spehs
 				static_assert(std::is_base_of<IType, LocalSyncType>::value, "Cannot register a SyncType that is not derived from IType!");
 				if (initialized)
 				{
-					spehs::log::error("spehs::sync::Manager cannot register new types once initialized!");
+					se::log::error("se::sync::Manager cannot register new types once initialized!");
 					return;
 				}
 
@@ -77,7 +77,7 @@ namespace spehs
 			bool initialize();
 			bool isInitialized() const;
 
-			void update(const spehs::time::Time& deltaTime);
+			void update(const se::time::Time& deltaTime);
 
 			/* Allocates a new instance of the provided type. Returns a handle. If no handle copies are made, the instance will be deallocated during the next update. */
 			template<typename LocalSyncType, typename ... Args>
@@ -88,7 +88,7 @@ namespace spehs
 				TypeInfo* typeInfo = findByLocalType(LocalSyncType::getSyncTypeId());
 				if (!typeInfo)
 				{
-					spehs::log::info("spehs::sync::Manager::create: Cannot create a type that is not registered.");
+					se::log::info("se::sync::Manager::create: Cannot create a type that is not registered.");
 					return Handle<LocalSyncType>();
 				}
 				Entry* entry = new Entry(*this, new LocalSyncType(constructorParams...), nextEntryId++, *typeInfo, true);

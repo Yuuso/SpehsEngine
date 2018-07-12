@@ -8,7 +8,7 @@
 #include FT_FREETYPE_H
 
 
-namespace spehs
+namespace se
 {
 	FontManager::FontManager(Window& _window)
 		: window(_window)
@@ -125,8 +125,8 @@ namespace spehs
 				Character character =
 				{
 					texture,
-					spehs::ivec2((*(FT_Face*)ftFace)->glyph->bitmap.width, (*(FT_Face*)ftFace)->glyph->bitmap.rows),
-					spehs::ivec2((*(FT_Face*)ftFace)->glyph->bitmap_left, (*(FT_Face*)ftFace)->glyph->bitmap_top),
+					se::ivec2((*(FT_Face*)ftFace)->glyph->bitmap.width, (*(FT_Face*)ftFace)->glyph->bitmap.rows),
+					se::ivec2((*(FT_Face*)ftFace)->glyph->bitmap_left, (*(FT_Face*)ftFace)->glyph->bitmap_top),
 					(GLuint)(*(FT_Face*)ftFace)->glyph->advance.x
 				};
 				font->characters.insert(std::pair<GLchar, Character>(c, character));

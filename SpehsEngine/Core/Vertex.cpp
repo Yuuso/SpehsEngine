@@ -4,7 +4,7 @@
 
 
 
-namespace spehs
+namespace se
 {
 
 	UV::UV() : u(0.0f), v(0.0f)
@@ -29,21 +29,21 @@ namespace spehs
 	{
 
 	}
-	Vertex::Vertex(const spehs::vec2 &_position) : position(_position)
+	Vertex::Vertex(const se::vec2 &_position) : position(_position)
 	{
 
 	}
-	Vertex::Vertex(const spehs::vec2 &_position, const UV &_uv) : position(_position), uv(_uv)
+	Vertex::Vertex(const se::vec2 &_position, const UV &_uv) : position(_position), uv(_uv)
 	{
 
 	}
-	Vertex::Vertex(const spehs::vec2 &_position, const spehs::Color &_color, const UV &_uv) : position(_position), color(_color), uv(_uv)
+	Vertex::Vertex(const se::vec2 &_position, const se::Color &_color, const UV &_uv) : position(_position), color(_color), uv(_uv)
 	{
 
 	}
 
-	inline spehs::vec3 toVec3(const Vertex& _vertex)
+	inline se::vec3 toVec3(const Vertex& _vertex)
 	{
-		return spehs::vec3(_vertex.position.x, _vertex.position.y, 0.0f);
+		return se::vec3(_vertex.position.x, _vertex.position.y, 0.0f);
 	}
 }

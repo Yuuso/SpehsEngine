@@ -8,7 +8,7 @@
 #include <algorithm>
 
 
-namespace spehs
+namespace se
 {
 	class GameObject;
 	class PhysicsWorld2D;
@@ -24,10 +24,10 @@ namespace spehs
 
 		void update(const time::Time deltaTime) override;
 
-		void applyForce(const spehs::vec2& _force);
-		void applyForceAtPosition(const spehs::vec2& _force, const spehs::vec2& _position);
+		void applyForce(const se::vec2& _force);
+		void applyForceAtPosition(const se::vec2& _force, const se::vec2& _position);
 		void applyTorque(const float& _torque);
-		void applyVelocityImpulse(const spehs::vec2& _impulse);
+		void applyVelocityImpulse(const se::vec2& _impulse);
 		void applyAngularImpulse(const float& _impulse);
 
 		//Setters
@@ -40,7 +40,7 @@ namespace spehs
 		void setElasticity(const float& _e);
 
 		//Getters
-		spehs::vec2 getVelocityAtPosition(const spehs::vec2& _position);
+		se::vec2 getVelocityAtPosition(const se::vec2& _position);
 		float getMass() const { return mass; }
 		float getInvMass() const { if (isStatic || freezePosition) return 0.0f; else return 1 / mass; }
 		float getInvMoI() const { if (isStatic || freezeRotation) return 0.0f; else return 1 / momentOfInertia; }
@@ -75,15 +75,15 @@ namespace spehs
 		float angularVelocity;
 		float angularAcceleration;
 
-		spehs::vec2 position;
-		spehs::vec2 centerOfMass;
-		spehs::vec2 velocity;
-		spehs::vec2 acceleration;
+		se::vec2 position;
+		se::vec2 centerOfMass;
+		se::vec2 velocity;
+		se::vec2 acceleration;
 
 		float resultantTorque;
-		spehs::vec2 resultantForce;
+		se::vec2 resultantForce;
 		std::vector<float> resultantImpulseTorque;
-		std::vector<spehs::vec2> resultantImpulseForce;
+		std::vector<se::vec2> resultantImpulseForce;
 	};
 }
 

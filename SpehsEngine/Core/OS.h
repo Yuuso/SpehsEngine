@@ -2,7 +2,7 @@
 #include <string>
 #include <utility>
 
-namespace spehs
+namespace se
 {
 	/**Copies data into operating system clipboard. Returns true upon success*/
 	bool copyToClipBoard(const void* data, size_t bytes);

@@ -9,7 +9,7 @@
 
 
 
-namespace spehs
+namespace se
 {
 	Color::Color()
 		: r(1.0f)

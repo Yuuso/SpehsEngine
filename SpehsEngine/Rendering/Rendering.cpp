@@ -13,7 +13,7 @@
 #include <SDL/SDL.h>
 #include <GL/glew.h>
 
-namespace spehs
+namespace se
 {
 	namespace
 	{
@@ -37,8 +37,8 @@ namespace spehs
 
 			if (SDL_Init(SDL_INIT_VIDEO) < 0)
 			{
-				spehs::log::info(SDL_GetError());
-				spehs::log::error("Video initialization failed!");
+				se::log::info(SDL_GetError());
+				se::log::error("Video initialization failed!");
 				return;
 			}
 

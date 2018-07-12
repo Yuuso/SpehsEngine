@@ -3,7 +3,7 @@ namespace std
 {
 	class thread;
 }
-namespace spehs
+namespace se
 {
 	void setThreadName(const char* threadName);
 	void setThreadName(std::thread* thread, const char* threadName);

@@ -11,7 +11,7 @@
 #include <algorithm>
 
 
-namespace spehs
+namespace se
 {
 	BatchManager::BatchManager(Window& _window, ShaderManager& _shaderManager, Camera2D& _camera, const std::string& _name)
 		: shaderManager(_shaderManager)
@@ -57,13 +57,13 @@ namespace spehs
 		primitives.push_back(new Polygon(*this, _vertexData, _width, _height));
 		return primitives.back()->getPolygonPtr();
 	}
-	Polygon* BatchManager::createPolygon(std::vector<spehs::vec2> _cuspData, const PlaneDepth _planeDepth, const float _width, const float _height)
+	Polygon* BatchManager::createPolygon(std::vector<se::vec2> _cuspData, const PlaneDepth _planeDepth, const float _width, const float _height)
 	{
 		primitives.push_back(new Polygon(*this, _cuspData, _planeDepth, _width, _height));
 		return primitives.back()->getPolygonPtr();
 	}
 
-	Line* BatchManager::createLine(const spehs::vec2& _startPoint, const spehs::vec2& _endPoint, const PlaneDepth _planeDepth)
+	Line* BatchManager::createLine(const se::vec2& _startPoint, const se::vec2& _endPoint, const PlaneDepth _planeDepth)
 	{
 		primitives.push_back(new Line(*this, _startPoint, _endPoint, _planeDepth));
 		return primitives.back()->getLinePtr();

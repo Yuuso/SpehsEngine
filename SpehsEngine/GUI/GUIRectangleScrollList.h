@@ -4,7 +4,7 @@
 #define SCROLLBAR_CLICK_THRESHOLD 5
 
 
-namespace spehs
+namespace se
 {
 	/**
 	A similar container class to the GUIRectangleColumn container,
@@ -18,7 +18,7 @@ namespace spehs
 		static std::string scrollUpTexturePath;
 		static std::string scrollBarTexturePath;
 		static std::string scrollDownTexturePath;
-		static spehs::Color defaultScrollElementColor;
+		static se::Color defaultScrollElementColor;
 	public:
 		GUIRectangleScrollList(GUIContext& context);
 		~GUIRectangleScrollList() override;

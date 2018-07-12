@@ -9,7 +9,7 @@
 
 
 
-namespace spehs
+namespace se
 {
 	GUIPopup::GUIPopup(GUIContext& context, const std::string& _message)
 		: GUIRectangleContainer(context)
@@ -18,7 +18,7 @@ namespace spehs
 		//Background rect
 		addElement(new GUIRectangle(context));
 		elements[BACKGROUND_INDEX]->disableState(GUIRECT_HOVER_COLOR_BIT);
-		elements[BACKGROUND_INDEX]->setColor(spehs::Color(30, 35, 37, 200));
+		elements[BACKGROUND_INDEX]->setColor(se::Color(30, 35, 37, 200));
 
 		//Message rect
 		addElement(new GUIRectangle(context));
@@ -132,7 +132,7 @@ namespace spehs
 		elements[MESSAGE_INDEX]->setPositionLocal(0, elements[OPTION1_INDEX]->getHeight() + BORDER_WIDTH);
 	}
 
-	void GUIPopup::setBackgroundColor(const spehs::Color& rgb)
+	void GUIPopup::setBackgroundColor(const se::Color& rgb)
 	{
 		elements[BACKGROUND_INDEX]->setColor(rgb);
 	}

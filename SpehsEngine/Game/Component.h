@@ -2,7 +2,7 @@
 #pragma once
 #include "SpehsEngine/Core/Time.h"
 
-namespace spehs
+namespace se
 {
 	class GameObject;
 

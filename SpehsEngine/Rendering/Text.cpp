@@ -23,7 +23,7 @@ std::atomic<int> textAllocations;
 std::atomic<int> textDeallocations;
 
 
-namespace spehs
+namespace se
 {
 	Text::~Text()
 	{
@@ -120,10 +120,10 @@ namespace spehs
 				GLfloat w = std::round(ch.size.x * scale);
 				GLfloat h = std::round(ch.size.y * scale);
 
-				vertexArray.push_back(Vertex(spehs::vec2(xpos, ypos + h), color, spehs::UV(0.0f, 0.0f)));
-				vertexArray.push_back(Vertex(spehs::vec2(xpos, ypos), color, spehs::UV(0.0f, 1.0f)));
-				vertexArray.push_back(Vertex(spehs::vec2(xpos + w, ypos), color, spehs::UV(1.0f, 1.0f)));
-				vertexArray.push_back(Vertex(spehs::vec2(xpos + w, ypos + h), color, spehs::UV(1.0f, 0.0f)));
+				vertexArray.push_back(Vertex(se::vec2(xpos, ypos + h), color, se::UV(0.0f, 0.0f)));
+				vertexArray.push_back(Vertex(se::vec2(xpos, ypos), color, se::UV(0.0f, 1.0f)));
+				vertexArray.push_back(Vertex(se::vec2(xpos + w, ypos), color, se::UV(1.0f, 1.0f)));
+				vertexArray.push_back(Vertex(se::vec2(xpos + w, ypos + h), color, se::UV(1.0f, 0.0f)));
 
 				textureIDs.push_back(ch.textureID);
 
@@ -177,7 +177,7 @@ namespace spehs
 		if (_str == string)
 			return;
 		if (_str.size() > 2048)
-			spehs::exceptions::unexpectedError("set string is suspiciously big?");
+			se::exceptions::unexpectedError("set string is suspiciously big?");
 
 		//Update line count
 		if (_str.size() == 0)
@@ -199,7 +199,7 @@ namespace spehs
 		if (length == string.size() && (length == 0 || memcmp(string.c_str(), _str, length) == 0))
 			return;
 		if (length > 2048)
-			spehs::exceptions::unexpectedError("set string is suspiciously big?");
+			se::exceptions::unexpectedError("set string is suspiciously big?");
 
 		//Update line count
 		if (length == 0)
@@ -244,7 +244,7 @@ namespace spehs
 		needTextUpdate = true;
 	}
 
-	void Text::setPosition(const spehs::vec2& _vec)
+	void Text::setPosition(const se::vec2& _vec)
 	{
 		if (position.x == _vec.x && position.y == _vec.y)
 			return;
@@ -266,14 +266,14 @@ namespace spehs
 		planeDepth = _depth;
 	}
 
-	void Text::translate(const spehs::vec2& _vec)
+	void Text::translate(const se::vec2& _vec)
 	{
 		position.x += _vec.x;
 		position.y += _vec.y;
 		needPositionUpdate = true;
 	}
 
-	void Text::setColor(const spehs::Color& colorParam)
+	void Text::setColor(const se::Color& colorParam)
 	{
 		if (color == colorParam)
 			return;
@@ -372,7 +372,7 @@ namespace spehs
 			{//Increase current line width
 #ifdef _DEBUG
 				if (font->characters[string[i]].advance > 10000)
-					spehs::exceptions::warning("Character width might be invalid!");
+					se::exceptions::warning("Character width might be invalid!");
 				else
 #endif
 					currentLineWidth += font->characters[string[i]].advance;
@@ -421,7 +421,7 @@ namespace spehs
 #ifdef _DEBUG
 				if (font->characters[string[i]].advance > 10000)
 				{
-					spehs::exceptions::warning("Character width might be invalid!");
+					se::exceptions::warning("Character width might be invalid!");
 					currentLineWidth -= font->characters[string[i]].advance;//Reverse width
 				}
 #endif

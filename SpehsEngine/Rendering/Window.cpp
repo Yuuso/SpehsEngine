@@ -10,7 +10,7 @@
 #include <SDL/SDL_video.h>
 #include <GL/glew.h>
 
-namespace spehs
+namespace se
 {
 	namespace graphics
 	{
@@ -34,7 +34,7 @@ namespace spehs
 		threadWindowCount++;
 		if (threadWindowCount > 1)
 		{
-			spehs::log::info("A single thread cannot have two windows active at the same time.");
+			se::log::info("A single thread cannot have two windows active at the same time.");
 			return;
 		}
 
@@ -84,7 +84,7 @@ namespace spehs
 			SDL_GL_DeleteContext((SDL_GLContext)glContext);
 			glContext = nullptr;
 		}
-		//TODO!!! spehs::graphics::postproc::disablePostProcessing();
+		//TODO!!! se::graphics::postproc::disablePostProcessing();
 		SDL_DestroyWindow(sdlWindow);
 	}
 

@@ -2,7 +2,7 @@
 #include <thread>
 #include <string>
 
-namespace spehs
+namespace se
 {
 	namespace device
 	{

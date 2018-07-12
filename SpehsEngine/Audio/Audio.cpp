@@ -12,7 +12,7 @@
 #include <iostream>
 #include <stdint.h>
 
-namespace spehs
+namespace se
 {
 	namespace
 	{

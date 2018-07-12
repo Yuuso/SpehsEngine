@@ -6,7 +6,7 @@
 
 
 
-namespace spehs
+namespace se
 {
 	class InputManager;
 	class InputState

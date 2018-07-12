@@ -7,14 +7,14 @@
 #include <glm/gtx/transform.hpp>
 
 
-namespace spehs
+namespace se
 {
 	Line::Line(BatchManager& _batchManager, const PlaneDepth& _planeDepth)
 		: Primitive(_batchManager)
 	{
 		vertexArray.resize(2);
-		vertexArray[0].position = spehs::vec2::zero;
-		vertexArray[1].position = spehs::vec2::zero;
+		vertexArray[0].position = se::vec2::zero;
+		vertexArray[1].position = se::vec2::zero;
 
 		worldVertexArray = vertexArray;
 
@@ -24,12 +24,12 @@ namespace spehs
 		drawMode = DrawMode::LINE;
 	}
 
-	Line::Line(BatchManager& _batchManager, const spehs::vec2& _startPoint, const spehs::vec2& _endPoint, const PlaneDepth& _planeDepth)
+	Line::Line(BatchManager& _batchManager, const se::vec2& _startPoint, const se::vec2& _endPoint, const PlaneDepth& _planeDepth)
 		: Primitive(_batchManager)
 	{
 		vertexArray.resize(2);
-		vertexArray[0].position = spehs::vec2(_startPoint.x, _startPoint.y);
-		vertexArray[1].position = spehs::vec2(_endPoint.x, _endPoint.y);
+		vertexArray[0].position = se::vec2(_startPoint.x, _startPoint.y);
+		vertexArray[1].position = se::vec2(_endPoint.x, _endPoint.y);
 
 		worldVertexArray = vertexArray;
 
@@ -56,16 +56,16 @@ namespace spehs
 			{
 				vertex = glm::vec4(vertexArray[i].position.x, vertexArray[i].position.y, 0.0f, 1.0f);
 				vertex = scaledRotatedMatrix * vertex;
-				worldVertexArray[i].position = spehs::vec2(vertex.x + position.x, vertex.y + position.y);
+				worldVertexArray[i].position = se::vec2(vertex.x + position.x, vertex.y + position.y);
 			}
 			needUpdate = false;
 		}
 	}
 
-	void Line::setPoints(const spehs::vec2& _newStartPoint, const spehs::vec2& _newEndPoint)
+	void Line::setPoints(const se::vec2& _newStartPoint, const se::vec2& _newEndPoint)
 	{
-		vertexArray[0].position = spehs::vec2(_newStartPoint.x, _newStartPoint.y);
-		vertexArray[1].position = spehs::vec2(_newEndPoint.x, _newEndPoint.y);
+		vertexArray[0].position = se::vec2(_newStartPoint.x, _newStartPoint.y);
+		vertexArray[1].position = se::vec2(_newEndPoint.x, _newEndPoint.y);
 		needUpdate = true;
 	}
 }

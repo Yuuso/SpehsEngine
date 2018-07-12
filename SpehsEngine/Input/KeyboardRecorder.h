@@ -2,7 +2,7 @@
 #include <vector>
 #include "SpehsEngine/Core/Time.h"
 
-namespace spehs
+namespace se
 {
 	class InputManager;
 

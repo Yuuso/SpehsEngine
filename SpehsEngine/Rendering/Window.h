@@ -3,7 +3,7 @@
 #include "SpehsEngine/Core/Color.h"
 
 struct SDL_Window;
-namespace spehs
+namespace se
 {
 	class TextureManager;
 	class FontManager;

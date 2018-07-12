@@ -4,7 +4,7 @@
 #include <iostream>
 
 
-namespace spehs
+namespace se
 {
 	namespace exceptions
 	{

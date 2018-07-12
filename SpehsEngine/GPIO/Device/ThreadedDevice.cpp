@@ -4,7 +4,7 @@
 #include "SpehsEngine/Core/Log.h"
 
 
-namespace spehs
+namespace se
 {
 	namespace device
 	{
@@ -35,7 +35,7 @@ namespace spehs
 
 				if (isRunning())
 				{
-					spehs::log::info("Threaded device is already running!");
+					se::log::info("Threaded device is already running!");
 					return false;
 				}
 
@@ -47,7 +47,7 @@ namespace spehs
 				}
 
 				if (debugLevel >= 2)
-					spehs::log::info("Starting threaded device...");
+					se::log::info("Starting threaded device...");
 
 				//Launch run thread
 				keepRunning = true;
@@ -73,7 +73,7 @@ namespace spehs
 				return;
 
 			if (debugLevel >= 2)
-				spehs::log::info("Stopping threaded device...");
+				se::log::info("Stopping threaded device...");
 
 			//Request the run thread to exit
 			keepRunning = false;
@@ -93,13 +93,13 @@ namespace spehs
 			//Make onStart() call, device can prepare for running.
 			onStart();
 			if (debugLevel >= 1)
-				spehs::log::info("Threaded device started.");
+				se::log::info("Threaded device started.");
 
 			//Update until stop is requested
 			while (true)
 			{
 				if (debugLevel >= 3)
-					spehs::log::info("Updating threaded device...");
+					se::log::info("Updating threaded device...");
 				update();
 				std::lock_guard<std::recursive_mutex> lock(mutex);
 				if (!keepRunning)
@@ -109,7 +109,7 @@ namespace spehs
 			//Make onStop() call, device can do post-run operations.
 			onStop();
 			if (debugLevel >= 1)
-				spehs::log::info("Threaded device stopped.");
+				se::log::info("Threaded device stopped.");
 		}
 
 		bool ThreadedDevice::isRunning() const

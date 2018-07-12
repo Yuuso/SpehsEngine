@@ -14,7 +14,7 @@ typedef unsigned int GLuint;
 typedef unsigned short GLushort;
 
 
-namespace spehs
+namespace se
 {
 	class Mesh;
 	class BatchManager3D;
@@ -42,7 +42,7 @@ namespace spehs
 	private:
 		BatchManager3D& batchManager;
 
-		std::vector<spehs::Vertex3D> vertices;
+		std::vector<se::Vertex3D> vertices;
 		std::vector<GLushort> indices;
 
 		GLuint vertexArrayObjectID;

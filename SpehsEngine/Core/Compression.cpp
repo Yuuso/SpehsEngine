@@ -5,7 +5,7 @@
 //#include "zlib/zlib.h"
 //#pragma comment(lib, "zlibwapi.lib") // for access to the DLL
 
-namespace spehs
+namespace se
 {
 	namespace compression
 	{

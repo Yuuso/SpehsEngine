@@ -5,7 +5,7 @@
 This class handles all errors and exceptions
 */
 
-namespace spehs
+namespace se
 {
 	namespace exceptions
 	{

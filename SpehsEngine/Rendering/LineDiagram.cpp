@@ -3,7 +3,7 @@
 #include "SpehsEngine/Rendering/Polygon.h"
 #include "SpehsEngine/Rendering/Line.h"
 
-namespace spehs
+namespace se
 {
 	LineDiagram::LineDiagram(BatchManager& _batchManager)
 		: batchManager(_batchManager)
@@ -255,18 +255,18 @@ namespace spehs
 		}
 	}
 
-	void LineDiagram2::set(const int index, const spehs::vec2& point)
+	void LineDiagram2::set(const int index, const se::vec2& point)
 	{
 		points[index].point = point;
 		updateLineVisuals();
 	}
 
-	spehs::vec2 LineDiagram2::get(const int index) const
+	se::vec2 LineDiagram2::get(const int index) const
 	{
 		return points[index].point;
 	}
 
-	void LineDiagram2::pushBack(const spehs::vec2& point)
+	void LineDiagram2::pushBack(const se::vec2& point)
 	{
 		points.push_back(PointData());
 		points.back().point = point;
@@ -274,7 +274,7 @@ namespace spehs
 		updateLineVisuals();
 	}
 
-	void LineDiagram2::insert(const int index, const spehs::vec2& point)
+	void LineDiagram2::insert(const int index, const se::vec2& point)
 	{
 		points.insert(points.begin() + index, PointData());
 		points[index].point = point;
@@ -415,8 +415,8 @@ namespace spehs
 	void LineDiagram2::updateLineVisuals()
 	{
 		//Get min/max visible values
-		spehs::vec2 minValue(std::numeric_limits<float>::max(), std::numeric_limits<float>::max());
-		spehs::vec2 maxValue(0.0f, 0.0f);
+		se::vec2 minValue(std::numeric_limits<float>::max(), std::numeric_limits<float>::max());
+		se::vec2 maxValue(0.0f, 0.0f);
 		for (size_t p = 0; p < points.size(); p++)
 		{
 			if (points[p].point.x < minValue.x)
@@ -430,7 +430,7 @@ namespace spehs
 		}
 
 		PointData* previous = nullptr;
-		spehs::vec2 variance = maxValue - minValue;
+		se::vec2 variance = maxValue - minValue;
 		if (variance.x <= 0.0f)
 			variance.x = 0.5f;
 		if (variance.y <= 0.0f)
@@ -451,8 +451,8 @@ namespace spehs
 					points[p].line->setColor(lineColor);
 				}
 
-				const spehs::vec2 prevFactor((previous->point.x - minValue.x) / variance.x, (previous->point.y - minValue.y) / variance.y);
-				const spehs::vec2 thisFactor((points[p].point.x - minValue.x) / variance.x, (points[p].point.y - minValue.y) / variance.y);
+				const se::vec2 prevFactor((previous->point.x - minValue.x) / variance.x, (previous->point.y - minValue.y) / variance.y);
+				const se::vec2 thisFactor((points[p].point.x - minValue.x) / variance.x, (points[p].point.y - minValue.y) / variance.y);
 				const vec2 prevLinePoint = polygon->getPosition() + vec2(prevFactor.x * polygon->getWidth(), prevFactor.y * polygon->getHeight());
 				const vec2 thisLinePoint = polygon->getPosition() + vec2(thisFactor.x * polygon->getWidth(), thisFactor.y * polygon->getHeight());
 				points[p].line->setPoints(prevLinePoint, thisLinePoint);

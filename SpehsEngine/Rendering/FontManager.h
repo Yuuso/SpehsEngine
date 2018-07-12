@@ -2,7 +2,7 @@
 #include <vector>
 #include <SpehsEngine/Core/Vector.h>
 
-namespace spehs
+namespace se
 {
 	class Font;
 	class Window;

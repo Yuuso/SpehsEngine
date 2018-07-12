@@ -4,7 +4,7 @@
 #include FT_FREETYPE_H
 #include <GL/glew.h>
 
-namespace spehs
+namespace se
 {
 	Font::Font()
 	{

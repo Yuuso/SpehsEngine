@@ -11,13 +11,13 @@
 #include <algorithm>
 
 
-extern spehs::vec2 positionCorrectionFactor;
+extern se::vec2 positionCorrectionFactor;
 extern float scaleCorrectionFactor;
 
 extern const float defaultRollOffFactor;
 
 
-namespace spehs
+namespace se
 {
 	namespace audio
 	{
@@ -148,7 +148,7 @@ namespace spehs
 			resetAutomation();
 			if (sound.second == 0 && !soundQueued())
 			{
-				spehs::exceptions::warning("Cannot play sound, no sound buffer!");
+				se::exceptions::warning("Cannot play sound, no sound buffer!");
 				return;
 			}
 			if (!source)
@@ -175,7 +175,7 @@ namespace spehs
 			resetAutomation();
 			if (sound.second == 0 && !soundQueued())
 			{
-				spehs::exceptions::warning("Cannot play sound, no sound buffer!");
+				se::exceptions::warning("Cannot play sound, no sound buffer!");
 				return;
 			}
 			if (!source)
@@ -211,7 +211,7 @@ namespace spehs
 			resetAutomation();
 			if (!source)
 			{
-				spehs::exceptions::warning("Cannot pause sound, no source!");
+				se::exceptions::warning("Cannot pause sound, no source!");
 				return;
 			}
 
@@ -223,7 +223,7 @@ namespace spehs
 			resetAutomation();
 			if (!source)
 			{
-				spehs::exceptions::warning("Cannot pause sound, no source!");
+				se::exceptions::warning("Cannot pause sound, no source!");
 				return;
 			}
 
@@ -241,7 +241,7 @@ namespace spehs
 			resetAutomation();
 			if (!source)
 			{
-				spehs::exceptions::warning("Cannot stop sound, no source!");
+				se::exceptions::warning("Cannot stop sound, no source!");
 				return;
 			}
 
@@ -256,7 +256,7 @@ namespace spehs
 			resetAutomation();
 			if (!source)
 			{
-				spehs::exceptions::warning("Cannot stop sound, no source!");
+				se::exceptions::warning("Cannot stop sound, no source!");
 				return;
 			}
 
@@ -384,7 +384,7 @@ namespace spehs
 		}
 
 
-		ActiveSoundSource::ActiveSoundSource(const int _audioChannel) : SoundSource(_audioChannel), position(spehs::vec3::zero), velocity(spehs::vec3::zero), direction(spehs::vec2::zero), rollOffFactor(defaultRollOffFactor)
+		ActiveSoundSource::ActiveSoundSource(const int _audioChannel) : SoundSource(_audioChannel), position(se::vec3::zero), velocity(se::vec3::zero), direction(se::vec2::zero), rollOffFactor(defaultRollOffFactor)
 		{
 			relativeToSource = false;
 		}
@@ -402,7 +402,7 @@ namespace spehs
 			SoundSource::setParameters();
 		}
 
-		void ActiveSoundSource::setPosition(const spehs::vec2& _pos)
+		void ActiveSoundSource::setPosition(const se::vec2& _pos)
 		{
 			position.x = _pos.x;
 			position.y = _pos.y;
@@ -411,7 +411,7 @@ namespace spehs
 				alSource3f(source->sourceID, AL_POSITION, position.x * positionCorrectionFactor.x, position.y * positionCorrectionFactor.y, position.z * scaleCorrectionFactor);
 			}
 		}
-		void ActiveSoundSource::setPosition(const spehs::vec2& _pos, const float _z)
+		void ActiveSoundSource::setPosition(const se::vec2& _pos, const float _z)
 		{
 			position.x = _pos.x;
 			position.y = _pos.y;
@@ -421,7 +421,7 @@ namespace spehs
 				alSource3f(source->sourceID, AL_POSITION, position.x * positionCorrectionFactor.x, position.y * positionCorrectionFactor.y, position.z * scaleCorrectionFactor);
 			}
 		}
-		void ActiveSoundSource::setVelocity(const spehs::vec2& _vel)
+		void ActiveSoundSource::setVelocity(const se::vec2& _vel)
 		{
 			velocity.x = _vel.x;
 			velocity.y = _vel.y;
@@ -430,7 +430,7 @@ namespace spehs
 				alSource3f(source->sourceID, AL_VELOCITY, velocity.x * positionCorrectionFactor.x, velocity.y * positionCorrectionFactor.y, velocity.z * scaleCorrectionFactor);
 			}
 		}
-		void ActiveSoundSource::setVelocity(const spehs::vec2& _vel, const float _z)
+		void ActiveSoundSource::setVelocity(const se::vec2& _vel, const float _z)
 		{
 			velocity.x = _vel.x;
 			velocity.y = _vel.y;
@@ -440,7 +440,7 @@ namespace spehs
 				alSource3f(source->sourceID, AL_VELOCITY, velocity.x * positionCorrectionFactor.x, velocity.y * positionCorrectionFactor.y, velocity.z * scaleCorrectionFactor);
 			}
 		}
-		void ActiveSoundSource::setDirection(const spehs::vec2& _direction)
+		void ActiveSoundSource::setDirection(const se::vec2& _direction)
 		{
 			direction = _direction;
 			if (source)

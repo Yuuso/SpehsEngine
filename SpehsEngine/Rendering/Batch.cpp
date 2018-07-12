@@ -17,7 +17,7 @@ std::atomic<int> BatchAllocations;
 std::atomic<int> BatchDeallocations;
 
 
-namespace spehs
+namespace se
 {
 	Batch::Batch(BatchManager& _batchManager, const PlaneDepth _priority, const size_t _shaderIndex, const bool _cameraMatrixState)
 		: batchManager(_batchManager)
@@ -217,7 +217,7 @@ namespace spehs
 
 		//Bind buffers
 		glBindBuffer(GL_ARRAY_BUFFER, vertexBufferID);
-		glBufferData(GL_ARRAY_BUFFER, sizeof(spehs::Vertex) * DEFAULT_MAX_BATCH_SIZE, nullptr, GL_STREAM_DRAW);
+		glBufferData(GL_ARRAY_BUFFER, sizeof(se::Vertex) * DEFAULT_MAX_BATCH_SIZE, nullptr, GL_STREAM_DRAW);
 
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBufferID);
 		glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLushort) * getIndexMultiplier(drawMode), nullptr, GL_STREAM_DRAW);
@@ -247,7 +247,7 @@ namespace spehs
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBufferID);
 
 		//Sent data to GPU
-		glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(spehs::Vertex) * vertices.size(), &vertices[0]);
+		glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(se::Vertex) * vertices.size(), &vertices[0]);
 		glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, sizeof(GLushort) * indices.size(), &indices[0]);
 
 		glBindVertexArray(0);
@@ -458,7 +458,7 @@ namespace spehs
 
 		//Bind buffers
 		glBindBuffer(GL_ARRAY_BUFFER, vertexBufferID);
-		glBufferData(GL_ARRAY_BUFFER, sizeof(spehs::Vertex) * DEFAULT_MAX_BATCH_SIZE, nullptr, GL_STREAM_DRAW);
+		glBufferData(GL_ARRAY_BUFFER, sizeof(se::Vertex) * DEFAULT_MAX_BATCH_SIZE, nullptr, GL_STREAM_DRAW);
 
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBufferID);
 		glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLushort) * (DEFAULT_MAX_BATCH_SIZE / 4) * 6, nullptr, GL_STREAM_DRAW);
@@ -490,7 +490,7 @@ namespace spehs
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBufferID);
 
 		//Sent data to GPU
-		glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(spehs::Vertex) * vertices.size(), &vertices[0]);
+		glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(se::Vertex) * vertices.size(), &vertices[0]);
 		glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, sizeof(GLushort) * indices.size(), &indices[0]);
 
 		glBindVertexArray(0);

@@ -3,11 +3,11 @@
 #include "SpehsEngine/GPIO/Device/ThreadedDevice.h"
 #include "SpehsEngine/GPIO/Pin.h"
 
-namespace spehs
+namespace se
 {
 	namespace device
 	{
-		class Ublox_M8N : public spehs::device::ThreadedDevice
+		class Ublox_M8N : public se::device::ThreadedDevice
 		{
 		public:
 			Ublox_M8N();
@@ -39,7 +39,7 @@ namespace spehs
 				receivingData,			//Receiving data bits between set intervals
 				receivingParityBit,		//Receiving the parity bit
 			};
-			spehs::time::Time readInterval;
+			se::time::Time readInterval;
 			int stopBitCount;
 			int parityBitCount;
 			ReceiveState receiveState;

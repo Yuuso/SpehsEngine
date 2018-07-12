@@ -2,7 +2,7 @@
 #include "SpehsEngine/Rendering/Polygon.h"
 #include "SpehsEngine/Rendering/Text.h"
 
-namespace spehs
+namespace se
 {
 	GUIProgressBar::GUIProgressBar(GUIContext& context)
 		: GUIRectangle(context)
@@ -31,7 +31,7 @@ namespace spehs
 		enableState(GUIRECT_POSITION_UPDATED_BIT);
 	}
 
-	void GUIProgressBar::setProgressBarFrontColor(const spehs::Color& color)
+	void GUIProgressBar::setProgressBarFrontColor(const se::Color& color)
 	{
 		progressBarFront->setColor(color);
 	}
@@ -41,7 +41,7 @@ namespace spehs
 		progressBarFront->setAlpha(a);
 	}
 
-	void GUIProgressBar::setProgressBarBackColor(const spehs::Color& color)
+	void GUIProgressBar::setProgressBarBackColor(const se::Color& color)
 	{
 		progressBarBack->setColor(color);
 	}

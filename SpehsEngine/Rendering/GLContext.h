@@ -1,5 +1,5 @@
 #pragma once
-namespace spehs
+namespace se
 {
 	class Window;
 	class GLContext

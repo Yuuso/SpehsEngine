@@ -8,7 +8,7 @@
 #include <glm/vec3.hpp>
 
 
-namespace spehs
+namespace se
 {
 	enum Movement
 	{

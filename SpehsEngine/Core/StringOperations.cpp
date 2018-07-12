@@ -4,7 +4,7 @@
 #include "SpehsEngine/Core/BitwiseOperations.h"
 #include "SpehsEngine/Core/StringOperations.h"
 
-namespace spehs
+namespace se
 {
 	float getStringAsFloat(const std::string& string)
 	{
@@ -103,7 +103,7 @@ namespace spehs
 	std::string toString(const float value, const int precision)
 	{
 #ifdef _DEBUG
-		if (precision > 6)	spehs::exceptions::unexpectedError("spehs::toString() precision too high! Maximum precision 6!");
+		if (precision > 6)	se::exceptions::unexpectedError("se::toString() precision too high! Maximum precision 6!");
 #endif
 		std::string str(std::to_string(value));
 		for (unsigned i = 0; i < str.size(); i++)
@@ -191,7 +191,7 @@ namespace spehs
 				const int byteToInt = std::atoi(currentByteString.c_str());
 				if (byteToInt < 0 || byteToInt > 255)
 				{//Invalid "byte"
-					spehs::exceptions::warning("getStringAsIPv4Address() failed! A byte value is too big (larger than 255)!");
+					se::exceptions::warning("getStringAsIPv4Address() failed! A byte value is too big (larger than 255)!");
 					return 0;
 				}
 				address |= (unsigned char)byteToInt << (24 - 8 * byteIndex++);
@@ -203,7 +203,7 @@ namespace spehs
 			}
 			else
 			{
-				spehs::exceptions::warning("getStringAsIPv4Address() failed! Address contains invalid characters!");
+				se::exceptions::warning("getStringAsIPv4Address() failed! Address contains invalid characters!");
 				return 0;
 			}
 		}
@@ -212,7 +212,7 @@ namespace spehs
 		const int byteToInt = std::atoi(currentByteString.c_str());
 		if (byteToInt < 0 || byteToInt > 255)
 		{//Invalid "byte"
-			spehs::exceptions::warning("getStringAsIPv4Address() failed! A byte value is too big (larger than 255)!");
+			se::exceptions::warning("getStringAsIPv4Address() failed! A byte value is too big (larger than 255)!");
 			return 0;
 		}
 		address |= (unsigned char)byteToInt << (24 - 8 * byteIndex++);

@@ -5,7 +5,7 @@
 #include <assert.h>
 #include <algorithm>
 
-namespace spehs
+namespace se
 {
 	namespace device
 	{
@@ -47,7 +47,7 @@ namespace spehs
 			pin = _pin;
 		}
 
-		void ServoGhost::setAngleLimits(const spehs::time::Time _minPulseWidth, const spehs::time::Time _maxPulseWidth, const float _minAngle, const float _maxAngle)
+		void ServoGhost::setAngleLimits(const se::time::Time _minPulseWidth, const se::time::Time _maxPulseWidth, const float _minAngle, const float _maxAngle)
 		{
 			minPulseWidth = _minPulseWidth;
 			maxPulseWidth = _maxPulseWidth;
@@ -55,13 +55,13 @@ namespace spehs
 			maxAngle = _maxAngle;
 		}
 
-		void ServoGhost::setMinAngle(const spehs::time::Time _minPulseWidth, const float _minAngle)
+		void ServoGhost::setMinAngle(const se::time::Time _minPulseWidth, const float _minAngle)
 		{
 			minPulseWidth = _minPulseWidth;
 			minAngle = _minAngle;
 		}
 
-		void ServoGhost::setMaxAngle(const spehs::time::Time _maxPulseWidth, const float _maxAngle)
+		void ServoGhost::setMaxAngle(const se::time::Time _maxPulseWidth, const float _maxAngle)
 		{
 			maxPulseWidth = _maxPulseWidth;
 			maxAngle = _maxAngle;
@@ -122,7 +122,7 @@ namespace spehs
 
 		}
 
-		bool ServoGhost::syncUpdate(const spehs::time::Time deltaTime)
+		bool ServoGhost::syncUpdate(const se::time::Time deltaTime)
 		{
 			return syncRequested;
 		}
@@ -153,7 +153,7 @@ namespace spehs
 			, maxAngle(0.0f)
 			, active(false)
 		{
-			spehs::log::info("ServoShell constructor.");
+			se::log::info("ServoShell constructor.");
 		}
 
 		ServoShell::~ServoShell()
@@ -162,7 +162,7 @@ namespace spehs
 			while (isRunning()) {/*Blocks*/ }
 			std::lock_guard<std::recursive_mutex> lock(mutex);
 			if (debugLevel >= 1)
-				spehs::log::info("ServoShell destructor.");
+				se::log::info("ServoShell destructor.");
 		}
 
 		void ServoShell::setActive(const bool isActive)
@@ -195,7 +195,7 @@ namespace spehs
 			pin = _pin;
 		}
 
-		void ServoShell::setAngleLimits(const spehs::time::Time _minPulseWidth, const spehs::time::Time _maxPulseWidth, const float _minAngle, const float _maxAngle)
+		void ServoShell::setAngleLimits(const se::time::Time _minPulseWidth, const se::time::Time _maxPulseWidth, const float _minAngle, const float _maxAngle)
 		{
 			std::lock_guard<std::recursive_mutex> lock(mutex);
 			minPulseWidth = _minPulseWidth;
@@ -204,14 +204,14 @@ namespace spehs
 			maxAngle = _maxAngle;
 		}
 
-		void ServoShell::setMinAngle(const spehs::time::Time _minPulseWidth, const float _minAngle)
+		void ServoShell::setMinAngle(const se::time::Time _minPulseWidth, const float _minAngle)
 		{
 			std::lock_guard<std::recursive_mutex> lock(mutex);
 			minPulseWidth = _minPulseWidth;
 			minAngle = _minAngle;
 		}
 
-		void ServoShell::setMaxAngle(const spehs::time::Time _maxPulseWidth, const float _maxAngle)
+		void ServoShell::setMaxAngle(const se::time::Time _maxPulseWidth, const float _maxAngle)
 		{
 			std::lock_guard<std::recursive_mutex> lock(mutex);
 			maxPulseWidth = _maxPulseWidth;
@@ -257,18 +257,18 @@ namespace spehs
 		void ServoShell::onStart()
 		{
 			std::lock_guard<std::recursive_mutex> lock(mutex);
-			lastUpdateTime = spehs::time::now();
+			lastUpdateTime = se::time::now();
 			if (debugLevel >= 1)
-				spehs::log::info("ServoGhost::onStart: starting...");
+				se::log::info("ServoGhost::onStart: starting...");
 		}
 
 		void ServoShell::update()
 		{
-			const spehs::time::Time updateInterval = spehs::time::fromMilliseconds(5);
+			const se::time::Time updateInterval = se::time::fromMilliseconds(5);
 
 			mutex.lock();
 			if (debugLevel >= 4)
-				spehs::log::info("ServoGhost::update: pin: " + std::to_string(gpio::getPinEnumAsNumber(pin))
+				se::log::info("ServoGhost::update: pin: " + std::to_string(gpio::getPinEnumAsNumber(pin))
 					+ ", speed: " + std::to_string(rotationSpeed)
 					+ ", target: " + std::to_string(targetAngle)
 					+ ", min Q: " + std::to_string(minPulseWidth.asMicroseconds())
@@ -284,9 +284,9 @@ namespace spehs
 			//Delay
 			const float target = std::min(maxAngle, std::max(targetAngle, minAngle));
 			const float posPercentage = (target - minAngle) / (maxAngle - minAngle);
-			const spehs::time::Time pulseDuration = minPulseWidth + spehs::time::Time(time::TimeValueType(float(maxPulseWidth - minPulseWidth) * posPercentage));
+			const se::time::Time pulseDuration = minPulseWidth + se::time::Time(time::TimeValueType(float(maxPulseWidth - minPulseWidth) * posPercentage));
 			mutex.unlock();
-			spehs::time::delay(pulseDuration);
+			se::time::delay(pulseDuration);
 			mutex.lock();
 			//Disable
 			gpio::disable(pin);
@@ -298,7 +298,7 @@ namespace spehs
 			}
 			else
 			{//Approximate delta movement
-				const spehs::time::Time spentTime = updateInterval + pulseDuration;
+				const se::time::Time spentTime = updateInterval + pulseDuration;
 				if (approximatedAngle > targetAngle)
 				{
 					approximatedAngle -= rotationSpeed * spentTime.asSeconds();
@@ -315,15 +315,15 @@ namespace spehs
 
 			//Delay the next update
 			mutex.unlock();
-			spehs::time::delay(updateInterval);
+			se::time::delay(updateInterval);
 		}
 
 		void ServoShell::onStop()
 		{
 			std::lock_guard<std::recursive_mutex> lock(mutex);
-			lastUpdateTime = spehs::time::now();
+			lastUpdateTime = se::time::now();
 			if (debugLevel >= 1)
-				spehs::log::info("ServoGhost::onStop: stopping...");
+				se::log::info("ServoGhost::onStop: stopping...");
 		}
 
 		void ServoShell::syncCreate(WriteBuffer& buffer)
@@ -333,9 +333,9 @@ namespace spehs
 
 		void ServoShell::syncCreate(ReadBuffer& buffer)
 		{
-			spehs::gpio::Pin _pin;
-			spehs::time::Time _minPulseWidth;
-			spehs::time::Time _maxPulseWidth;
+			se::gpio::Pin _pin;
+			se::time::Time _minPulseWidth;
+			se::time::Time _maxPulseWidth;
 			float _rotationSpeed;
 			float _minAngle;
 			float _maxAngle;
@@ -353,7 +353,7 @@ namespace spehs
 			setAngleLimits(_minPulseWidth, _maxPulseWidth, _minAngle, _maxAngle);
 			setRotationSpeed(_rotationSpeed);
 
-			spehs::log::info("ServoShell initialized. Pin: " + std::to_string(gpio::getPinEnumAsNumber(_pin))
+			se::log::info("ServoShell initialized. Pin: " + std::to_string(gpio::getPinEnumAsNumber(_pin))
 				+ ", min pulse width: " + std::to_string(_minPulseWidth.asMicroseconds())
 				+ ", max pulse width: " + std::to_string(_minPulseWidth.asMicroseconds())
 				+ ", min angle: " + std::to_string(_minAngle)
@@ -372,13 +372,13 @@ namespace spehs
 			while(isRunning()) {}
 		}
 
-		bool ServoShell::syncUpdate(const spehs::time::Time deltaTime)
+		bool ServoShell::syncUpdate(const se::time::Time deltaTime)
 		{
 			std::lock_guard<std::recursive_mutex> lock(mutex);
 			updateTimer -= deltaTime;
-			if (updateTimer <= spehs::time::zero)
+			if (updateTimer <= se::time::zero)
 			{
-				updateTimer = spehs::time::fromSeconds(1.0f / 30.0f);
+				updateTimer = se::time::fromSeconds(1.0f / 30.0f);
 				return true;
 			}
 			else

@@ -4,7 +4,7 @@
 #include <SpehsEngine/Core/WriteBuffer.h>
 #include <SpehsEngine/Core/ReadBuffer.h>
 
-namespace spehs
+namespace se
 {
 	namespace device
 	{
@@ -37,7 +37,7 @@ namespace spehs
 				buffer.read(at(i));
 		}
 
-		gpio::PinState PinReaderHistory::stateAtTime(const spehs::time::Time& time) const
+		gpio::PinState PinReaderHistory::stateAtTime(const se::time::Time& time) const
 		{
 			if (empty() || time < front().time || time > back().time)
 				return gpio::PinState::invalid;
@@ -89,7 +89,7 @@ namespace spehs
 
 		}
 
-		bool PinReaderGhost::syncUpdate(const spehs::time::Time deltaTime)
+		bool PinReaderGhost::syncUpdate(const se::time::Time deltaTime)
 		{
 			return requestUpdate;
 		}
@@ -174,7 +174,7 @@ namespace spehs
 			std::lock_guard<std::recursive_mutex> lock(mutex);
 			if (pin != newPin)
 			{
-				spehs::log::info("Setting pin reader pin to: " + std::to_string(gpio::getPinEnumAsNumber(newPin)));
+				se::log::info("Setting pin reader pin to: " + std::to_string(gpio::getPinEnumAsNumber(newPin)));
 				pin = newPin;
 				clearHistory = true;
 				history.clear();
@@ -202,7 +202,7 @@ namespace spehs
 			while (isRunning()) {}
 		}
 
-		bool PinReaderShell::syncUpdate(const spehs::time::Time deltaTime)
+		bool PinReaderShell::syncUpdate(const se::time::Time deltaTime)
 		{
 			if (sizeof(size_t) + history.size() * (sizeof(PinReaderHistoryEntry::state) + sizeof(PinReaderHistoryEntry::time)) > 1400)
 				return true;//Default MTU is around 1500, preferably keep it below that
@@ -245,7 +245,7 @@ namespace spehs
 			const gpio::PinState state = gpio::read(pin);
 			if (history.empty() || state != history.back().state)
 			{
-				history.push_back(PinReaderHistoryEntry(state, spehs::time::now()));
+				history.push_back(PinReaderHistoryEntry(state, se::time::now()));
 			}
 		}
 

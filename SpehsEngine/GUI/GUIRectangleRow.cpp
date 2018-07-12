@@ -1,6 +1,6 @@
 #include "SpehsEngine/GUI/GUIRectangleRow.h"
 
-namespace spehs
+namespace se
 {
 	GUIRectangleRow::GUIRectangleRow(GUIContext& context)
 		: GUIRectangleContainer(context)

@@ -6,7 +6,7 @@
 
 
 
-namespace spehs
+namespace se
 {
 	namespace aria
 	{
@@ -37,11 +37,11 @@ namespace spehs
 		{
 			if (socket.isConnected())
 			{
-				spehs::log::info("Aria::enter: Socket was already connected. Disconnecting before trying to enter...");
+				se::log::info("Aria::enter: Socket was already connected. Disconnecting before trying to enter...");
 				socket.disconnect();
 			}
 
-			spehs::log::info("Aria::Connector::enter: connecting to aria...");
+			se::log::info("Aria::Connector::enter: connecting to aria...");
 			if (socket.connect(endpoint))
 			{
 				//Send enter packet
@@ -60,13 +60,13 @@ namespace spehs
 				//Prepare to ping				
 				{
 					std::lock_guard<std::mutex> lock(pingMutex);
-					lastPingSendTime = spehs::time::now();
+					lastPingSendTime = se::time::now();
 					lastPingReceiveTime = lastPingSendTime;
 				}
 				WriteBuffer pingBuffer;
 				pingBuffer.write(ariaMagicHeader);
 				pingBuffer.write(PacketType::ping);
-				const spehs::time::Time pingTimeout = spehs::time::fromSeconds(10000.0f);
+				const se::time::Time pingTimeout = se::time::fromSeconds(10000.0f);
 
 				//Wait for server to find a counterpart
 				while (enterResult == EnterResult::none)
@@ -74,17 +74,17 @@ namespace spehs
 
 					socket.update();
 					
-					if (spehs::time::now() - lastPingSendTime > pingTimeout / 2)
+					if (se::time::now() - lastPingSendTime > pingTimeout / 2)
 					{//Send ping
 						socket.sendPacket(pingBuffer);
 						std::lock_guard<std::mutex> lock(pingMutex);
-						lastPingSendTime = spehs::time::now();
+						lastPingSendTime = se::time::now();
 					}
 
 					std::lock_guard<std::mutex> lock(pingMutex);
 					if (lastPingSendTime - lastPingReceiveTime >= pingTimeout)
 					{//Ping timeout
-						spehs::log::info("Aria::Connector::enter: failed. Connection to the remote server was lost (timeout).");
+						se::log::info("Aria::Connector::enter: failed. Connection to the remote server was lost (timeout).");
 						enterResult = EnterResult::fail;
 					}
 				}
@@ -96,17 +96,17 @@ namespace spehs
 				if (enterResult == EnterResult::accept)
 				{
 					socket.startAccepting(localPortForWaiting, std::bind(&Connector::onAccept, this, std::placeholders::_1));
-					const spehs::time::Time beginTime = spehs::time::now();
-					spehs::log::info("Aria::Connector::enter: counterpart found. Awaiting for the counterpart to connect to this...");
+					const se::time::Time beginTime = se::time::now();
+					se::log::info("Aria::Connector::enter: counterpart found. Awaiting for the counterpart to connect to this...");
 					while (socket.isAccepting())
 					{
 						socket.update();
 
 						//Blocks while accepting
-						if (spehs::time::now() - beginTime >= pingTimeout)
+						if (se::time::now() - beginTime >= pingTimeout)
 						{
 							socket.stopAccepting();
-							spehs::log::info("Aria::Connector::enter: failed. A counterpart was found, but counterpart didn't connect to this within the given time.");
+							se::log::info("Aria::Connector::enter: failed. A counterpart was found, but counterpart didn't connect to this within the given time.");
 							while (socket.isAccepting()) {}
 							return false;
 						}
@@ -114,29 +114,29 @@ namespace spehs
 
 					if (socket.isConnected())
 					{
-						spehs::log::info("Aria::Connector::enter: success.");
+						se::log::info("Aria::Connector::enter: success.");
 						return true;
 					}
 					else
 					{
-						spehs::log::info("Aria::Connector::enter: failed.");
+						se::log::info("Aria::Connector::enter: failed.");
 						return false;
 					}
 				}
 				else if (enterResult == EnterResult::connect)
 				{
-					spehs::log::info("Aria::Connector::enter: counterpart found. Connecting to the counterpart...");
-					const spehs::time::Time beginTime = spehs::time::now();
+					se::log::info("Aria::Connector::enter: counterpart found. Connecting to the counterpart...");
+					const se::time::Time beginTime = se::time::now();
 					while (!socket.connect(connectEndpoint))
 					{
-						if (spehs::time::now() - beginTime >= pingTimeout)
+						if (se::time::now() - beginTime >= pingTimeout)
 						{
-							spehs::log::info("Aria::Connector::enter: failed.");
+							se::log::info("Aria::Connector::enter: failed.");
 							return false;
 						}
 					}
 					SPEHS_ASSERT(socket.isConnected());
-					spehs::log::info("Aria::Connector::enter: success.");
+					se::log::info("Aria::Connector::enter: success.");
 					return true;
 				}
 				else
@@ -144,7 +144,7 @@ namespace spehs
 			}
 			else
 			{
-				spehs::log::info("Aria::Connector::enter: Failed to connect to the provided aria endpoint.");
+				se::log::info("Aria::Connector::enter: Failed to connect to the provided aria endpoint.");
 				return false;
 			}
 		}
@@ -168,14 +168,14 @@ namespace spehs
 					enterResult = EnterResult::connect;
 					break;
 				case PacketType::shutdown:
-					spehs::log::info("Aria::Connector::enter: failed. The Aria server is shutting down...");
+					se::log::info("Aria::Connector::enter: failed. The Aria server is shutting down...");
 					enterResult = EnterResult::fail;
 					break;
 				case PacketType::ping:
 				{
 					std::lock_guard<std::mutex> lock(pingMutex);
-					lastPingReceiveTime = spehs::time::now();
-					spehs::log::info("Aria::Connector::enter: server ping: " + std::to_string((int)(lastPingReceiveTime - lastPingSendTime).asMilliseconds()) + " ms");
+					lastPingReceiveTime = se::time::now();
+					se::log::info("Aria::Connector::enter: server ping: " + std::to_string((int)(lastPingReceiveTime - lastPingSendTime).asMilliseconds()) + " ms");
 				}
 					break;
 				}
@@ -185,7 +185,7 @@ namespace spehs
 			else
 			{
 				socket.disconnect(net::DisconnectType::unknownProtocol);
-				spehs::log::info("Aria::Connector::enter: failed. Remote endpoint responded with an unexpected response. Perhaps it is not an aria server, or an incompatible version.");
+				se::log::info("Aria::Connector::enter: failed. Remote endpoint responded with an unexpected response. Perhaps it is not an aria server, or an incompatible version.");
 				return false;
 			}
 		}
@@ -243,7 +243,7 @@ namespace spehs
 					buffer.read(name);
 					buffer.read(counterpart);
 					buffer.read(localPortForWaiting);
-					spehs::log::info("Aria: client entered: '" + name + "', looking for counterpart: '" + counterpart + "'");
+					se::log::info("Aria: client entered: '" + name + "', looking for counterpart: '" + counterpart + "'");
 				}
 				break;
 				case PacketType::ping:
@@ -306,7 +306,7 @@ namespace spehs
 
 				if (isRunning())
 				{
-					spehs::log::info("Aria is already running!");
+					se::log::info("Aria is already running!");
 					return;
 				}
 
@@ -318,7 +318,7 @@ namespace spehs
 				}
 				
 				//Launch run thread
-				spehs::log::info("Aria::start: starting at port '" + _localPort.toString() + "'...");
+				se::log::info("Aria::start: starting at port '" + _localPort.toString() + "'...");
 				keepRunning = true;
 				canExitStart = false;
 				localPort = _localPort;
@@ -356,7 +356,7 @@ namespace spehs
 			}
 
 			//Run loop
-			spehs::log::info("Aria::run: started.");
+			se::log::info("Aria::run: started.");
 			while (true)
 			{
 				std::lock_guard<std::recursive_mutex> lock(mutex);
@@ -403,7 +403,7 @@ namespace spehs
 				{
 					if (!clients[i]->socket.isAccepting() && !clients[i]->socket.isConnected())
 					{
-						spehs::log::info("Aria::run removing an idle client...");
+						se::log::info("Aria::run removing an idle client...");
 						delete clients[i];
 						clients[i] = clients.back();
 						clients.pop_back();
@@ -436,7 +436,7 @@ namespace spehs
 
 								if (name1.size() > 0 && name2.size() > 0 && counterpart1 == name2 && counterpart2 == name1)
 								{//Match
-									spehs::log::info("Aria::run found a client pair: '" + name1 + "' & '" + name2 + "'");
+									se::log::info("Aria::run found a client pair: '" + name1 + "' & '" + name2 + "'");
 
 									//c1 will accept
 									WriteBuffer buffer1;

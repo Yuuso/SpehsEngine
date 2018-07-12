@@ -5,7 +5,7 @@
 #include "SpehsEngine/Core/Color.h"
 
 
-namespace spehs
+namespace se
 {
 	class UV
 	{
@@ -25,14 +25,14 @@ namespace spehs
 	{
 	public:
 		Vertex();
-		Vertex(const spehs::vec2 &_position);
-		Vertex(const spehs::vec2 &_position, const UV &_uv);
-		Vertex(const spehs::vec2 &_position, const Color &_color, const UV &_uv);
+		Vertex(const se::vec2 &_position);
+		Vertex(const se::vec2 &_position, const UV &_uv);
+		Vertex(const se::vec2 &_position, const Color &_color, const UV &_uv);
 
-		spehs::vec2 position;
+		se::vec2 position;
 		Color color;
 		UV uv;
 	};
 
-	extern inline spehs::vec3 toVec3(const Vertex& _vertex);
+	extern inline se::vec3 toVec3(const Vertex& _vertex);
 }

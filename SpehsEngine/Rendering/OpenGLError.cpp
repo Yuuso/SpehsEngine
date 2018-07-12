@@ -8,7 +8,7 @@
 #define STOP_AFTER_GL_ERROR true
 
 
-namespace spehs
+namespace se
 {
 	void debugOpenGLError(const std::string &_file, int _line)
 	{

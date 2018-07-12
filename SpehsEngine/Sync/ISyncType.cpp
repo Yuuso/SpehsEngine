@@ -1,6 +1,6 @@
 #include "SpehsEngine/Sync/ISyncType.h"
 
-namespace spehs
+namespace se
 {
 	namespace sync
 	{

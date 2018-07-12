@@ -4,7 +4,7 @@
 #include <string>
 
 
-namespace spehs
+namespace se
 {
 	class Mesh;
 	class BatchManager3D;

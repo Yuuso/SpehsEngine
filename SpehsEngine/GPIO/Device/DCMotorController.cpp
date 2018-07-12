@@ -5,7 +5,7 @@
 #include <bcm2835.h>
 
 
-namespace spehs
+namespace se
 {
 	namespace device
 	{
@@ -15,7 +15,7 @@ namespace spehs
 			, inputPin2(gpio::Pin::pin_none)
 			, pulseWidth(0)
 			, strength(0.0f)
-			, pulseInterval(spehs::time::fromMilliseconds(2.0f))
+			, pulseInterval(se::time::fromMilliseconds(2.0f))
 		{
 
 		}
@@ -54,18 +54,18 @@ namespace spehs
 			//Polarity
 			if (strength > 0.0f)
 			{
-				spehs::gpio::disable(inputPin1);
-				spehs::gpio::enable(inputPin2);
+				se::gpio::disable(inputPin1);
+				se::gpio::enable(inputPin2);
 			}
 			else if (strength < 0.0f)
 			{
-				spehs::gpio::enable(inputPin1);
-				spehs::gpio::disable(inputPin2);
+				se::gpio::enable(inputPin1);
+				se::gpio::disable(inputPin2);
 			}
 			else
 			{
-				spehs::gpio::disable(inputPin1);
-				spehs::gpio::disable(inputPin2);
+				se::gpio::disable(inputPin1);
+				se::gpio::disable(inputPin2);
 			}
 		}
 
@@ -84,22 +84,22 @@ namespace spehs
 		void DCMotorController::update()
 		{
 			mutex.lock();
-			const spehs::gpio::Pin _pulseWidthPin = pulseWidthPin;
-			const spehs::time::Time _pulseWidth = pulseWidth;
-			const spehs::time::Time _pulseInterval = pulseInterval;
+			const se::gpio::Pin _pulseWidthPin = pulseWidthPin;
+			const se::time::Time _pulseWidth = pulseWidth;
+			const se::time::Time _pulseInterval = pulseInterval;
 			mutex.unlock();
 
-			spehs::gpio::enable(_pulseWidthPin);
-			spehs::time::delay(_pulseWidth);
-			spehs::gpio::disable(_pulseWidthPin);
-			spehs::time::delay(_pulseInterval - _pulseWidth);
+			se::gpio::enable(_pulseWidthPin);
+			se::time::delay(_pulseWidth);
+			se::gpio::disable(_pulseWidthPin);
+			se::time::delay(_pulseInterval - _pulseWidth);
 		}
 
 		void DCMotorController::onStop()
 		{
 			std::lock_guard<std::recursive_mutex> lock(mutex);
-			spehs::gpio::disable(inputPin1);
-			spehs::gpio::disable(inputPin2);
+			se::gpio::disable(inputPin1);
+			se::gpio::disable(inputPin2);
 		}
 	}
 }
@@ -107,9 +107,9 @@ namespace spehs
 
 /*
 
-const spehs::time::Time pulseInterval = spehs::time::fromNanoseconds(2000000);
+const se::time::Time pulseInterval = se::time::fromNanoseconds(2000000);
 int direction = 1;
-spehs::time::Time data = 0;
+se::time::Time data = 0;
 
 while (keepRunning)
 {
@@ -120,10 +120,10 @@ direction = 1000;
 else if (data >= pulseInterval)
 direction = -1000;
 data += direction;
-spehs::gpio::enable(pulseWidthPin);
-spehs::time::delay(data);
-spehs::gpio::disable(pulseWidthPin);
-spehs::time::delay(pulseInterval - data);
+se::gpio::enable(pulseWidthPin);
+se::time::delay(data);
+se::gpio::disable(pulseWidthPin);
+se::time::delay(pulseInterval - data);
 
 keepRunning = !stopRequested;
 }

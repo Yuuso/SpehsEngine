@@ -16,7 +16,7 @@ typedef int GLint;
 typedef unsigned int GLuint;
 
 
-namespace spehs
+namespace se
 {
 	enum class ShaderName : int
 	{
@@ -46,7 +46,7 @@ namespace spehs
 		GLint cameraLocation = 0;
 	};
 
-	class DefaultTextureUniforms : public spehs::Uniforms
+	class DefaultTextureUniforms : public se::Uniforms
 	{
 	public:
 		DefaultTextureUniforms(GLSLProgram& _shader);
@@ -58,7 +58,7 @@ namespace spehs
 		GLint textureLocation = 0;
 	};
 
-	class DefaultSkyBoxUniforms : public spehs::Uniforms
+	class DefaultSkyBoxUniforms : public se::Uniforms
 	{
 	public:
 		DefaultSkyBoxUniforms(GLSLProgram& _shader);
@@ -116,12 +116,12 @@ namespace spehs
 	void setUniform_int(const GLint& _location, const int _value);
 	void setUniform_uint(const GLuint& _location, const int _value);
 	void setUniform_float(const GLint& _location, const float _value);
-	void setUniform_vec2(const GLint& _location, const spehs::vec2 &_value);
-	void setUniform_vec3(const GLint& _location, const spehs::vec3 &_value);
-	void setUniform_vec4(const GLint& _location, const spehs::vec4 &_value);
-	void setUniform_ivec2(const GLint& _location, const spehs::ivec2 &_value);
-	void setUniform_ivec3(const GLint& _location, const spehs::ivec3 &_value);
-	void setUniform_ivec4(const GLint& _location, const spehs::ivec4 &_value);
+	void setUniform_vec2(const GLint& _location, const se::vec2 &_value);
+	void setUniform_vec3(const GLint& _location, const se::vec3 &_value);
+	void setUniform_vec4(const GLint& _location, const se::vec4 &_value);
+	void setUniform_ivec2(const GLint& _location, const se::ivec2 &_value);
+	void setUniform_ivec3(const GLint& _location, const se::ivec3 &_value);
+	void setUniform_ivec4(const GLint& _location, const se::ivec4 &_value);
 	void setUniform_mat3(const GLint& _location, const glm::mat3 &_value, bool _transpose = false);
 	void setUniform_mat4(const GLint& _location, const glm::mat4 &_value, bool _transpose = false);
 
@@ -135,7 +135,7 @@ namespace spehs
 		{
 			return temp;
 		}
-		spehs::exceptions::fatalError("Uniforms type not found!");
+		se::exceptions::fatalError("Uniforms type not found!");
 		return nullptr;
 	}
 }

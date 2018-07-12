@@ -12,7 +12,7 @@
 #include "SpehsEngine/Core/Time.h"
 #include "SpehsEngine/Core/StringOperations.h"
 
-namespace spehs
+namespace se
 {
 	extern std::string workingDirectory;
 	/*
@@ -21,8 +21,8 @@ namespace spehs
 		level 3: prints receive buffer in hex string.
 	*/
 	int debugLogLevel = 0;
-	static const spehs::time::Time handshakeReceiveTimeout = spehs::time::fromSeconds(10000);
-	static const spehs::time::Time connectionTimeout = spehs::time::fromSeconds(10000);
+	static const se::time::Time handshakeReceiveTimeout = se::time::fromSeconds(10000);
+	static const se::time::Time connectionTimeout = se::time::fromSeconds(10000);
 
 	SocketTCP::Id SocketTCP::nextId = 0;
 	SocketTCP::SocketTCP(IOService& _ioService)
@@ -90,13 +90,13 @@ namespace spehs
 		}
 	}
 
-	void SocketTCP::waitUntilReceivedHandshake(const spehs::time::Time timeout)
+	void SocketTCP::waitUntilReceivedHandshake(const se::time::Time timeout)
 	{
 		bool wait;
-		const spehs::time::Time beginTime = spehs::time::now();
+		const se::time::Time beginTime = se::time::now();
 		do
 		{
-			if (spehs::time::now() - beginTime > timeout)
+			if (se::time::now() - beginTime > timeout)
 				return;
 
 			std::lock_guard<std::recursive_mutex> lock(mutex);
@@ -124,7 +124,7 @@ namespace spehs
 
 			if (connected)
 			{
-				spehs::log::info("SocketTCP::connect: failed to connect. Socket is already at the connected state!");
+				se::log::info("SocketTCP::connect: failed to connect. Socket is already at the connected state!");
 				return false;
 			}
 
@@ -139,13 +139,13 @@ namespace spehs
 			boost::asio::ip::tcp::endpoint asioEndpoint = *resolverTCP.resolve(query, error);
 			if (error)
 			{
-				spehs::log::info("SocketTCP::connect: failed to resolve the endpoint. Boost asio error: " + error.message());
+				se::log::info("SocketTCP::connect: failed to resolve the endpoint. Boost asio error: " + error.message());
 				return false;
 			}
 			else
 			{
 				if (debugLogLevel >= 1)
-					spehs::log::info("SocketTCP::connect: successfully resolved the remote endpoint.");
+					se::log::info("SocketTCP::connect: successfully resolved the remote endpoint.");
 			}
 
 			//Connect to the remote boost socket
@@ -155,18 +155,18 @@ namespace spehs
 			}
 			catch (std::exception& exception)
 			{
-				spehs::log::info(std::string("SocketTCP::connect: failed to connect. Exception thrown: ") + exception.what());
+				se::log::info(std::string("SocketTCP::connect: failed to connect. Exception thrown: ") + exception.what());
 				return false;
 			}
 			if (error)
 			{
-				spehs::log::info("SocketTCP::connect: failed to connect. Boost asio error: " + error.message());
+				se::log::info("SocketTCP::connect: failed to connect. Boost asio error: " + error.message());
 				return false;
 			}
 			else
 			{
 				if (debugLogLevel >= 1)
-					spehs::log::info("SocketTCP::connect: successfully connected the remote boost::asio::ip::tcp::socket.");
+					se::log::info("SocketTCP::connect: successfully connected the remote boost::asio::ip::tcp::socket.");
 			}
 
 			//Expect an incoming handshake after sending one
@@ -180,11 +180,11 @@ namespace spehs
 			if (handshakeSent)
 			{
 				if (debugLogLevel >= 1)
-					spehs::log::info("SocketTCP::connect: successfully sent handshake to the remote endpoint.");
+					se::log::info("SocketTCP::connect: successfully sent handshake to the remote endpoint.");
 			}
 			else
 			{
-				spehs::log::info("SocketTCP::connect: failed to connect. Failed to send handshake.");
+				se::log::info("SocketTCP::connect: failed to connect. Failed to send handshake.");
 				return false;//If sending the handshake fails, connection was not successful
 			}
 		}
@@ -195,17 +195,17 @@ namespace spehs
 			std::lock_guard<std::recursive_mutex> lock(mutex);
 			if (!handshakeReceived)
 			{
-				spehs::log::info("SocketTCP::connect: failed to connect! No response handshake received!");
+				se::log::info("SocketTCP::connect: failed to connect! No response handshake received!");
 				return false;
 			}
 		}
 		if (debugLogLevel >= 1)
-			spehs::log::info("SocketTCP::connect: successfully received handshake from the remote endpoint. Socket is now in connected state.");
+			se::log::info("SocketTCP::connect: successfully received handshake from the remote endpoint. Socket is now in connected state.");
 		
 		//All done, socket is now at connected state!
 		std::lock_guard<std::recursive_mutex> lock(mutex);
 		connected = true;
-		lastReceiveTime = spehs::time::now();
+		lastReceiveTime = se::time::now();
 
 		return true;
 	}
@@ -250,7 +250,7 @@ namespace spehs
 				}
 				catch (std::exception& e)
 				{
-					spehs::log::info(e.what());
+					se::log::info(e.what());
 				}
 			}
 		}
@@ -271,7 +271,7 @@ namespace spehs
 			}
 			catch (std::exception& e)
 			{
-				spehs::log::info(e.what());
+				se::log::info(e.what());
 			}
 		}
 	}
@@ -283,7 +283,7 @@ namespace spehs
 
 		if (!connected && !connecting && !accepting)
 		{//Can only send user defined packets in the connected state
-			spehs::log::info("SocketTCP: cannot send a packet. Socket is neither connected, connecting nor accepting.");
+			se::log::info("SocketTCP: cannot send a packet. Socket is neither connected, connecting nor accepting.");
 			return false;
 		}
 		
@@ -302,7 +302,7 @@ namespace spehs
 			offset += socket.write_some(boost::asio::buffer(headerBuffer[offset], headerBufferSize - offset), error);
 			if (error)
 			{//Error occured while sending data...
-				spehs::log::warning("SocketTCP: failed to send packet's spehs header! Boost asio error: " + error.message());
+				se::log::warning("SocketTCP: failed to send packet's spehs header! Boost asio error: " + error.message());
 				return false;
 			}
 		}
@@ -314,13 +314,13 @@ namespace spehs
 			offset += socket.write_some(boost::asio::buffer(buffer[offset], dataBufferSize - offset), error);
 			if (error)
 			{//Error occured while sending data...
-				spehs::log::warning("SocketTCP: failed to send packet! Boost asio error: " + error.message());
+				se::log::warning("SocketTCP: failed to send packet! Boost asio error: " + error.message());
 				return false;
 			}
 		}
 
 		if (debugLogLevel >= 2)
-			spehs::log::info("SocketTCP: packet sent. Contents: 4(packet byte size) + 1(packet type) + " + std::to_string(buffer.getOffset()) + "(data)");
+			se::log::info("SocketTCP: packet sent. Contents: 4(packet byte size) + 1(packet type) + " + std::to_string(buffer.getOffset()) + "(data)");
 		return true;
 	}
 
@@ -339,24 +339,24 @@ namespace spehs
 	{
 		if (isReceiving())
 		{
-			spehs::log::info("SocketTCP failed to start receiving. Socket is already receiving.");
+			se::log::info("SocketTCP failed to start receiving. Socket is already receiving.");
 			return false;
 		}
 
 		std::lock_guard<std::recursive_mutex> lock(mutex);
 		if (!connected && !connecting && !accepting)
 		{
-			spehs::log::warning("SocketTCP: failed to start receiving. Socket is neither connected, connecting nor accepting.");
+			se::log::warning("SocketTCP: failed to start receiving. Socket is neither connected, connecting nor accepting.");
 			return false;
 		}
 		if (!socket.is_open())
 		{//This should never happen as the connected status should guarantee socket being open...
-			spehs::log::info("SocketTCP failed to start receiving. Socket has not been opened.");
+			se::log::info("SocketTCP failed to start receiving. Socket has not been opened.");
 			return false;
 		}
 
 		receiving = true;
-		lastReceiveTime = spehs::time::now();
+		lastReceiveTime = se::time::now();
 		onReceiveCallback = callbackFunction;
 		clearReceivedPackets();
 		resumeReceiving();
@@ -364,9 +364,9 @@ namespace spehs
 		if (debugLogLevel >= 2)
 		{
 			if (expectedBytes > 0)
-				spehs::log::info("SocketTCP successfully started receiving. Expecting bytes: " + std::to_string(expectedBytes) + ".");
+				se::log::info("SocketTCP successfully started receiving. Expecting bytes: " + std::to_string(expectedBytes) + ".");
 			else
-				spehs::log::info("SocketTCP successfully started receiving. Expecting bytes header.");
+				se::log::info("SocketTCP successfully started receiving. Expecting bytes header.");
 		}
 
 		return true;
@@ -387,7 +387,7 @@ namespace spehs
 			if (receiveBuffer.size() < expectedBytes)
 			{
 				if (debugLogLevel >= 1)
-					spehs::log::info("SocketTCP: the current receive buffer is insufficient! Expanding to " + std::to_string(expectedBytes));
+					se::log::info("SocketTCP: the current receive buffer is insufficient! Expanding to " + std::to_string(expectedBytes));
 				receiveBuffer.resize(expectedBytes);
 			}
 			boost::asio::async_read(socket, boost::asio::buffer(&receiveBuffer[0], expectedBytes),
@@ -424,30 +424,30 @@ namespace spehs
 	void SocketTCP::receiveHandler(const boost::system::error_code& error, std::size_t bytes)
 	{
 		if (debugLogLevel >= 2)
-			spehs::log::info("SocketTCP receive handler received " + std::to_string(bytes) + " bytes.");
+			se::log::info("SocketTCP receive handler received " + std::to_string(bytes) + " bytes.");
 
 		std::lock_guard<std::recursive_mutex> lock(mutex);
 		receiving = false;
-		lastReceiveTime = spehs::time::now();
+		lastReceiveTime = se::time::now();
 
 		if (debugLogLevel >= 3)
 		{
-			spehs::log::info("Received bytes: ");
+			se::log::info("Received bytes: ");
 			for (size_t i = 0; i < bytes; i++)
-				spehs::log::info("    [" + std::to_string(i) + "] " + spehs::toHexString(receiveBuffer[i]));
+				se::log::info("    [" + std::to_string(i) + "] " + se::toHexString(receiveBuffer[i]));
 		}
 
 		if (error)
 		{
 			if (error == boost::asio::error::eof)
 			{//Connection gracefully closed
-				spehs::log::info("SocketTCP disconnected. Remote socket closed connection.");
+				se::log::info("SocketTCP disconnected. Remote socket closed connection.");
 				disconnect(net::DisconnectType::doNotSendDisconnectPacket);
 				return;
 			}
 			else if (error == boost::asio::error::connection_reset)
 			{//Disconnect
-				spehs::log::info("SocketTCP disconnected. Remote socket closed connection.");
+				se::log::info("SocketTCP disconnected. Remote socket closed connection.");
 				disconnect(net::DisconnectType::doNotSendDisconnectPacket);
 				return;
 			}
@@ -456,21 +456,21 @@ namespace spehs
 				error == boost::asio::error::bad_descriptor ||
 				error == boost::asio::error::operation_aborted)
 			{
-				spehs::log::info("Boost asio error: " + std::to_string(error.value()));
+				se::log::info("Boost asio error: " + std::to_string(error.value()));
 				if (error == boost::asio::error::connection_aborted)
-					spehs::log::info("Closing client: boost asio error: connection_aborted");
+					se::log::info("Closing client: boost asio error: connection_aborted");
 				if (error == boost::asio::error::connection_refused)
-					spehs::log::info("Closing client: boost asio error: connection_refused");
+					se::log::info("Closing client: boost asio error: connection_refused");
 				if (error == boost::asio::error::bad_descriptor)
-					spehs::log::info("Closing client: boost asio error: bad_descriptor");
+					se::log::info("Closing client: boost asio error: bad_descriptor");
 				if (error == boost::asio::error::operation_aborted)
-					spehs::log::info("Closing client: boost asio error: operation_aborted");
+					se::log::info("Closing client: boost asio error: operation_aborted");
 				disconnect(net::DisconnectType::doNotSendDisconnectPacket);
 				return;
 			}
 			else
 			{//Ignored error
-				spehs::log::info("Ignored ASIO error: " + std::to_string(error.value()) + ": " + error.message());
+				se::log::info("Ignored ASIO error: " + std::to_string(error.value()) + ": " + error.message());
 			}
 		}
 
@@ -493,7 +493,7 @@ namespace spehs
 			}
 			else
 			{
-				spehs::log::warning("SocketTCP received unexpected amount of bytes! Canceling receiving!");
+				se::log::warning("SocketTCP received unexpected amount of bytes! Canceling receiving!");
 			}
 		}
 	}
@@ -506,7 +506,7 @@ namespace spehs
 		net::PacketType packetType;
 		buffer.read(packetType);
 		if (debugLogLevel >= 2)
-			spehs::log::info("SocketTCP protocol receive handler received packet of type: " + std::to_string((int)packetType) + ", " + std::to_string(buffer.getBytesRemaining()) + " bytes.");
+			se::log::info("SocketTCP protocol receive handler received packet of type: " + std::to_string((int)packetType) + ", " + std::to_string(buffer.getBytesRemaining()) + " bytes.");
 
 		//Process packet
 		switch (packetType)
@@ -515,7 +515,7 @@ namespace spehs
 		{
 			const size_t userBytes = buffer.getBytesRemaining();
 			if (debugLogLevel >= 2)
-				spehs::log::info("SocketTCP received user defined packet. Bytes: " + std::to_string(userBytes));
+				se::log::info("SocketTCP received user defined packet. Bytes: " + std::to_string(userBytes));
 
 			if (onReceiveCallback)
 			{
@@ -527,7 +527,7 @@ namespace spehs
 			}
 			else
 			{
-				spehs::log::warning("SocketTCP::protocolReceiveHandler: no receive handler provided for the user defined packet.");
+				se::log::warning("SocketTCP::protocolReceiveHandler: no receive handler provided for the user defined packet.");
 				return false;
 			}
 		}
@@ -536,14 +536,14 @@ namespace spehs
 			net::DisconnectType disconnectType;
 			buffer.read(disconnectType);
 			disconnect(net::DisconnectType::doNotSendDisconnectPacket);
-			spehs::log::info("SocketTCP: remote socket gracefully disconnected. Disconnect type was: " + std::to_string((uint8_t)disconnectType));
+			se::log::info("SocketTCP: remote socket gracefully disconnected. Disconnect type was: " + std::to_string((uint8_t)disconnectType));
 			return false;
 		}
 		case net::PacketType::handshake:
 		{
 			if (handshakeReceived)
 			{
-				spehs::log::warning("A handshake for the current connection has already been received!");
+				se::log::warning("A handshake for the current connection has already been received!");
 				return false;
 			}
 			net::Handshake handshake;
@@ -553,12 +553,12 @@ namespace spehs
 			{//VALID HANDSHAKE
 				handshakeReceived = true;
 				if (debugLogLevel >= 1)
-					spehs::log::info("SocketTCP valid handshake received.");
+					se::log::info("SocketTCP valid handshake received.");
 			}
 			else
 			{//INVALID HANDSHAKE -> DISCARD
 				handshakeReceived = true;
-				spehs::log::warning("Received an invalid spehs handshake!");
+				se::log::warning("Received an invalid spehs handshake!");
 			}
 			return false;
 		}
@@ -571,12 +571,12 @@ namespace spehs
 		std::lock_guard<std::recursive_mutex> lock(mutex);
 		if (accepting)
 		{
-			spehs::log::info("SocketTCP failed to start accepting! Socket is already accepting!");
+			se::log::info("SocketTCP failed to start accepting! Socket is already accepting!");
 			return false;
 		}
 		if (connected)
 		{
-			spehs::log::warning("SocketTCP failed start accepting! Socket is currently connected!");
+			se::log::warning("SocketTCP failed start accepting! Socket is currently connected!");
 			return false;
 		}
 		SPEHS_ASSERT(!handshakeSent);
@@ -592,7 +592,7 @@ namespace spehs
 		acceptor->open(endpoint.protocol(), error);
 		if (error)
 		{
-			spehs::log::warning("Failed to open acceptor! Boost asio error: " + error.message());
+			se::log::warning("Failed to open acceptor! Boost asio error: " + error.message());
 			return false;
 		}
 
@@ -600,12 +600,12 @@ namespace spehs
 		acceptor->bind(endpoint, error);
 		if (error)
 		{
-			spehs::log::warning("Failed to bind acceptor! Boost asio error: " + error.message());
+			se::log::warning("Failed to bind acceptor! Boost asio error: " + error.message());
 			return false;
 		}
 		if (!acceptor->is_open())
 		{
-			spehs::log::warning("Boost acceptor failed to open!");
+			se::log::warning("Boost acceptor failed to open!");
 			return false;
 		}
 
@@ -613,7 +613,7 @@ namespace spehs
 		acceptor->listen(boost::asio::socket_base::max_connections, error);
 		if (error)
 		{
-			spehs::log::warning("Failed to make acceptor listen! Boost asio error: " + error.message());
+			se::log::warning("Failed to make acceptor listen! Boost asio error: " + error.message());
 			return false;
 		}
 
@@ -638,7 +638,7 @@ namespace spehs
 		acceptor->close();
 		if (error)
 		{
-			spehs::log::warning("SocketTCP failed to accept an incoming connection! Boost asio error: " + error.message() + "Accepting has stopped.");
+			se::log::warning("SocketTCP failed to accept an incoming connection! Boost asio error: " + error.message() + "Accepting has stopped.");
 			disconnect(net::DisconnectType::doNotSendDisconnectPacket);
 			accepting = false;
 			return;
@@ -653,7 +653,7 @@ namespace spehs
 	{
 		//Wait until received remote handshake
 		if (debugLogLevel >= 1)
-			spehs::log::info("Accepting SocketTCP expecting a handshake...");
+			se::log::info("Accepting SocketTCP expecting a handshake...");
 
 		//Start expecting an incoming handshake (connector sends first)
 		startReceiving(onReceiveCallback);
@@ -663,14 +663,14 @@ namespace spehs
 			std::lock_guard<std::recursive_mutex> lock(mutex);
 			if (!handshakeReceived)
 			{
-				spehs::log::info("SocketTCP failed to accept an incoming connection! No response handshake received!");
+				se::log::info("SocketTCP failed to accept an incoming connection! No response handshake received!");
 				disconnect(net::DisconnectType::doNotSendDisconnectPacket);
 				onAcceptCallbackQueued = true;
 				return;
 			}
 		}
 		if (debugLogLevel >= 1)
-			spehs::log::info("Accepting SocketTCP received a handshake.");
+			se::log::info("Accepting SocketTCP received a handshake.");
 		
 		//Send a response handshake
 		WriteBuffer buffer;
@@ -680,11 +680,11 @@ namespace spehs
 		{
 			handshakeSent = true;
 			if (debugLogLevel >= 1)
-				spehs::log::info("Accepting SocketTCP sent a handshake.");
+				se::log::info("Accepting SocketTCP sent a handshake.");
 		}
 		else
 		{
-			spehs::log::info("SocketTCP failed to accept an incoming connection! Could not send handshake!");
+			se::log::info("SocketTCP failed to accept an incoming connection! Could not send handshake!");
 			disconnect(net::DisconnectType::doNotSendDisconnectPacket);
 
 			std::lock_guard<std::recursive_mutex> lock(mutex);
@@ -697,7 +697,7 @@ namespace spehs
 		std::lock_guard<std::recursive_mutex> lock(mutex);
 		accepting = false;
 		connected = true;
-		lastReceiveTime = spehs::time::now();
+		lastReceiveTime = se::time::now();
 		onAcceptCallbackQueued = true;
 	}
 
@@ -706,7 +706,7 @@ namespace spehs
 		std::lock_guard<std::recursive_mutex> lock(mutex);
 		if (!isConnected())
 		{
-			spehs::log::info("SocketTCP: cannot retrieve remote endpoint address! Socket is not connected!");
+			se::log::info("SocketTCP: cannot retrieve remote endpoint address! Socket is not connected!");
 			return "0.0.0.0";
 		}
 		boost::asio::ip::tcp::endpoint endpoint = socket.remote_endpoint();
@@ -720,7 +720,7 @@ namespace spehs
 		std::lock_guard<std::recursive_mutex> lock(mutex);
 		if (!isConnected())
 		{
-			spehs::log::info("SocketTCP: cannot retrieve remote endpoint port! Socket is not connected!");
+			se::log::info("SocketTCP: cannot retrieve remote endpoint port! Socket is not connected!");
 			return 0;
 		}
 		boost::asio::ip::tcp::endpoint endpoint = socket.remote_endpoint();
@@ -732,7 +732,7 @@ namespace spehs
 		std::lock_guard<std::recursive_mutex> lock(mutex);
 		if (!isConnected())
 		{
-			spehs::log::info("SocketTCP: cannot retrieve remote endpoint port! Socket is not connected!");
+			se::log::info("SocketTCP: cannot retrieve remote endpoint port! Socket is not connected!");
 			return net::Endpoint::invalid;
 		}
 		return net::Endpoint(socket.remote_endpoint().address().to_v4().to_string(), socket.remote_endpoint().port());
@@ -753,7 +753,7 @@ namespace spehs
 	bool SocketTCP::isConnected() const
 	{
 		std::lock_guard<std::recursive_mutex> locks(mutex);
-		if (spehs::time::now() - lastReceiveTime >= connectionTimeout)
+		if (se::time::now() - lastReceiveTime >= connectionTimeout)
 			return false;
 		return connected;
 	}

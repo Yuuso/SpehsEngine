@@ -4,7 +4,7 @@
 #include "SpehsEngine/Core/Color.h"
 #include "SpehsEngine/GUI/GUIContext.h"
 
-namespace spehs
+namespace se
 {
 	class GUIRectangle;
 	class GUIWindow;
@@ -41,7 +41,7 @@ namespace spehs
 		int16_t getSystemDepth() const { return systemDepth; }
 		int16_t getTopDepth() const { return int16_t(systemDepth + depthPerWindow * windows.size()); }
 		int16_t getDepthPerWindow() const { return depthPerWindow; }
-		void setPopupShadeColor(const spehs::Color& color);
+		void setPopupShadeColor(const se::Color& color);
 		
 	private:
 		void updateDepths();

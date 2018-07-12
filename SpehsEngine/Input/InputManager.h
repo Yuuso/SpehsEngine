@@ -14,7 +14,7 @@ struct _SDL_Joystick;
 typedef struct _SDL_Joystick SDL_Joystick;
 typedef int32_t SDL_JoystickID;
 
-namespace spehs
+namespace se
 {
 	class Window;
 	class InputManager;
@@ -84,15 +84,15 @@ namespace spehs
 		int getGUIDIndex(int joystickIndex);///<Searches for joysticks with the same GUID as given joystick. Returns index of given joystick among devices with the same GUID. Returns -1 on failure
 
 		//Getters
-		spehs::vec2 getMouseCoords() const { return mouseCoords; }
-		spehs::vec2 getMouseMovement() const { return mouseMovement; }
+		se::vec2 getMouseCoords() const { return mouseCoords; }
+		se::vec2 getMouseMovement() const { return mouseMovement; }
 		float getMouseX() const { return mouseCoords.x; }
 		float getMouseY() const { return mouseCoords.y; }
 		float getMouseMovementX() const { return mouseMovement.x; }
 		float getMouseMovementY() const { return mouseMovement.y; }
 		int getMouseWheelDelta() const { return mouseWheelDelta; }
-		bool mouseCollision(const spehs::vec4& AABB_leftX_bottomY_width_height) const;
-		bool mouseCollision(const spehs::vec2& minAABB, const spehs::vec2& maxAABB) const;
+		bool mouseCollision(const se::vec4& AABB_leftX_bottomY_width_height) const;
+		bool mouseCollision(const se::vec2& minAABB, const se::vec2& maxAABB) const;
 		bool mouseCollision(const float leftAABB, const float rightAABB, const float topAABB, const float bottomAABB) const;
 		bool isQuitRequested() const { return quitRequested; }
 		bool fileDropped() const;
@@ -117,8 +117,8 @@ namespace spehs
 		bool mouseLocked = false;
 		bool mouseAvailable = false;//This boolean indicates global mouse availability during an update cycle. Update cycles should run according to depth from top to bottom. The first source to claim the mouse availability can do so.
 		int mouseWheelDelta = 0;
-		spehs::vec2 mouseCoords;
-		spehs::vec2 mouseMovement;
+		se::vec2 mouseCoords;
+		se::vec2 mouseMovement;
 		
 		//Joystick(s)
 		void joystickConnected();
@@ -128,4 +128,4 @@ namespace spehs
 		int joystickCount = 0;
 	};
 }
-//extern spehs::InputManager* inputManager;
+//extern se::InputManager* inputManager;

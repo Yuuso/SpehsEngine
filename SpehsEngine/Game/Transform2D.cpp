@@ -4,7 +4,7 @@
 #include "SpehsEngine/Core/Exceptions.h"
 
 
-namespace spehs
+namespace se
 {
 	Transform2D::Transform2D() : Component()
 	{
@@ -20,7 +20,7 @@ namespace spehs
 	}
 
 
-	spehs::vec2 Transform2D::getPosition()
+	se::vec2 Transform2D::getPosition()
 	{
 		return position;
 	}
@@ -45,7 +45,7 @@ namespace spehs
 		return scale;
 	}
 	
-	spehs::vec2 Transform2D::getLastSetPosition()
+	se::vec2 Transform2D::getLastSetPosition()
 	{
 		return lastSetPosition;
 	}
@@ -66,7 +66,7 @@ namespace spehs
 	}
 
 
-	void Transform2D::setPosition(spehs::vec2 _position)
+	void Transform2D::setPosition(se::vec2 _position)
 	{
 #ifdef _DEBUG
 		if (_position != _position)

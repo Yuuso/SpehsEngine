@@ -3,7 +3,7 @@
 #include "SpehsEngine/Core/Exceptions.h"
 #include "SpehsEngine/Core/FileStream.h"
 
-namespace spehs
+namespace se
 {
 	std::recursive_mutex filestreamMutex;
 
@@ -90,11 +90,11 @@ namespace spehs
 	bool verifyDirectory(const std::string& path)
 	{
 		std::lock_guard<std::recursive_mutex> lock(filestreamMutex);
-		if (!spehs::directoryExists(path))
+		if (!se::directoryExists(path))
 		{
-			if (!spehs::createDirectory(path))
+			if (!se::createDirectory(path))
 			{
-				spehs::exceptions::warning("Failed to create directory: \"" + path + "\"!");
+				se::exceptions::warning("Failed to create directory: \"" + path + "\"!");
 				return false;
 			}
 		}
@@ -108,12 +108,12 @@ namespace spehs
 		boost::filesystem::path path(directoryPath);
 		if (!boost::filesystem::exists(path))
 		{
-			spehs::exceptions::warning("listFilesInDirectory failed: directory does not exist! : " + directoryPath);
+			se::exceptions::warning("listFilesInDirectory failed: directory does not exist! : " + directoryPath);
 			return files;
 		}
 		if (!boost::filesystem::is_directory(path))
 		{
-			spehs::exceptions::warning("listFilesInDirectory failed: directory path leads to a non-directory file! : " + directoryPath);
+			se::exceptions::warning("listFilesInDirectory failed: directory path leads to a non-directory file! : " + directoryPath);
 			return files;
 		}
 
@@ -162,12 +162,12 @@ namespace spehs
 		boost::filesystem::path path(directoryPath);
 		if (!boost::filesystem::exists(path))
 		{
-			spehs::exceptions::warning("listSubDirectoriesInDirectory failed: directory does not exist! : " + directoryPath);
+			se::exceptions::warning("listSubDirectoriesInDirectory failed: directory does not exist! : " + directoryPath);
 			return subDirectories;
 		}
 		if (!boost::filesystem::is_directory(path))
 		{
-			spehs::exceptions::warning("listSubDirectoriesInDirectory failed: directory path leads to a non-directory file! : " + directoryPath);
+			se::exceptions::warning("listSubDirectoriesInDirectory failed: directory path leads to a non-directory file! : " + directoryPath);
 			return subDirectories;
 		}
 		

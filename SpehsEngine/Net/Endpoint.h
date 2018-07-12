@@ -2,7 +2,7 @@
 #include "SpehsEngine/Net/Address.h"
 #include "SpehsEngine/Net/Port.h"
 
-namespace spehs
+namespace se
 {
 	namespace net
 	{

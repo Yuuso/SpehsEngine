@@ -5,7 +5,7 @@
 #include "SpehsEngine/Core/Log.h"
 #include "SpehsEngine/Core/Time.h"
 
-namespace spehs
+namespace se
 {
 	namespace time
 	{
@@ -30,7 +30,7 @@ namespace spehs
 		{
 			if (initialized)
 			{
-				spehs::log::warning("spehs::time has already been initialized!");
+				se::log::warning("se::time has already been initialized!");
 				return;
 			}
 

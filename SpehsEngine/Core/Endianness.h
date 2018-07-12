@@ -1,7 +1,7 @@
 #pragma once
 #include <string>
 
-namespace spehs
+namespace se
 {
 	/* Byte endianness ordering */
 	enum class Endianness : uint8_t

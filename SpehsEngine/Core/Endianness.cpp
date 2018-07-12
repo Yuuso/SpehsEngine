@@ -1,6 +1,6 @@
 #include "Endianness.h"
 
-namespace spehs
+namespace se
 {
 	std::string getEndiannessAsString(const Endianness endianness)
 	{

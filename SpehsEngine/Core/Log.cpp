@@ -2,7 +2,7 @@
 #include <mutex>
 #include "SpehsEngine/Core/Log.h"
 
-namespace spehs
+namespace se
 {
 	namespace log
 	{

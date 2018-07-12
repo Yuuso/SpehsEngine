@@ -8,7 +8,7 @@
 
 typedef unsigned int GLuint;
 
-namespace spehs
+namespace se
 {
 	class Window;
 
@@ -48,7 +48,7 @@ namespace spehs
 		//Class containing parameters for textures
 		//Can be expanded to include more in the future if needed
 	public:
-		static const spehs::TextureParameter defaultParameters;
+		static const se::TextureParameter defaultParameters;
 
 		TextureParameter(){}
 		TextureParameter(const TextureFiltering _minFilter, const TextureFiltering _magFilter)

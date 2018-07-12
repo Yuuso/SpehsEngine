@@ -5,7 +5,7 @@
 #include <SpehsEngine/Core/Log.h>
 #include <SpehsEngine/Core/StringOperations.h>
 
-namespace spehs
+namespace se
 {
 	namespace net
 	{
@@ -30,7 +30,7 @@ namespace spehs
 			//Magic
 			if (buffer.getBytesRemaining() < sizeof(magic))
 			{
-				spehs::log::info("Handshake::read() invalid handshake. No bytes left to read magic.");
+				se::log::info("Handshake::read() invalid handshake. No bytes left to read magic.");
 				valid = false;
 				return;
 			}
@@ -38,7 +38,7 @@ namespace spehs
 				buffer.read(magic);
 			if (magic != currentMagic)
 			{
-				spehs::log::info("Handshake::read() invalid handshake. Incompatible magic - my version: " + spehs::toHexString(currentMagic) + ", read magic: " + spehs::toHexString(magic));
+				se::log::info("Handshake::read() invalid handshake. Incompatible magic - my version: " + se::toHexString(currentMagic) + ", read magic: " + se::toHexString(magic));
 				valid = false;
 				return;
 			}
@@ -46,7 +46,7 @@ namespace spehs
 			//Handshake version
 			if (buffer.getBytesRemaining() < sizeof(handshakeVersion))
 			{
-				spehs::log::info("Handshake::read() invalid handshake. No bytes left to read handshake version.");
+				se::log::info("Handshake::read() invalid handshake. No bytes left to read handshake version.");
 				valid = false;
 				return;
 			}
@@ -54,7 +54,7 @@ namespace spehs
 				buffer.read(handshakeVersion);
 			if (handshakeVersion != currentVersion)
 			{
-				spehs::log::info("Handshake::read() invalid handshake. Incompatible versions - my version: " + std::to_string(currentVersion) + ", other version: " + std::to_string(handshakeVersion));
+				se::log::info("Handshake::read() invalid handshake. Incompatible versions - my version: " + std::to_string(currentVersion) + ", other version: " + std::to_string(handshakeVersion));
 				valid = false;
 				return;
 			}
@@ -62,7 +62,7 @@ namespace spehs
 			uint16_t readEndiannessCheckBytes;
 			if (buffer.getBytesRemaining() < sizeof(endiannessCheckBytes))
 			{
-				spehs::log::info("Handshake::read() invalid handshake. No bytes left to read endianness check bytes.");
+				se::log::info("Handshake::read() invalid handshake. No bytes left to read endianness check bytes.");
 				valid = false;
 				return;
 			}
@@ -70,7 +70,7 @@ namespace spehs
 				buffer.read(readEndiannessCheckBytes);
 			if (readEndiannessCheckBytes != endiannessCheckBytes)
 			{
-				spehs::log::info("Handshake::read() invalid handshake. Invalid endianness check bytes.");
+				se::log::info("Handshake::read() invalid handshake. Invalid endianness check bytes.");
 				valid = false;
 				return;
 			}

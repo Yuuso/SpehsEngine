@@ -12,7 +12,7 @@
 #endif
 
 
-namespace spehs
+namespace se
 {
 	Camera3D::Camera3D(const Window& _window)
 		: fov(45.0f), near(0.05f), far(500.0f), rotation(glm::vec3(0.0f)), smoothCamera(false), maxSpeed(1.5f), followTarget(false), window(_window)

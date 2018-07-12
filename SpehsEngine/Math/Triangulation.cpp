@@ -6,7 +6,7 @@
 #include "SpehsEngine/Core/Geometry.h"
 #define PERFORM_TRIANGULATION_VALIDITY_CHECKS
 
-namespace spehs
+namespace se
 {
 	std::atomic<int> triangleAllocations(0);
 	std::atomic<int> triangleDeallocations(0);
@@ -15,7 +15,7 @@ namespace spehs
 	int triangulationTestSeed = 0;
 	int triangulationTestIteration = 0;
 
-	DirectionalEdge::DirectionalEdge(spehs::vec2* _begin, spehs::vec2* _end, DirectionalEdge* _prev) : begin(_begin), end(_end), prev(nullptr), next(nullptr), innerTriangle(nullptr)
+	DirectionalEdge::DirectionalEdge(se::vec2* _begin, se::vec2* _end, DirectionalEdge* _prev) : begin(_begin), end(_end), prev(nullptr), next(nullptr), innerTriangle(nullptr)
 	{
 #ifdef _DEBUG
 		edgeAllocations++;
@@ -51,14 +51,14 @@ namespace spehs
 		children[1] = nullptr;
 		children[2] = nullptr;
 	}
-	void Triangle::build(spehs::vec2* p0, spehs::vec2* p1, spehs::vec2* p2, Triangle* _parent)
+	void Triangle::build(se::vec2* p0, se::vec2* p1, se::vec2* p2, Triangle* _parent)
 	{
 		parent = _parent;
 		if (parent)
 		{
 #ifdef PERFORM_TRIANGULATION_VALIDITY_CHECKS
 			if (parent->children[0] != nullptr && parent->children[1] != nullptr && parent->children[2] != nullptr)
-				spehs::exceptions::unexpectedError("Parent already has 3 children!");
+				se::exceptions::unexpectedError("Parent already has 3 children!");
 #endif
 			for (unsigned i = 0; i < 3; i++)
 			{
@@ -99,7 +99,7 @@ namespace spehs
 					}
 				}
 				if (!legit)
-					spehs::exceptions::unexpectedError("Neighbours not double linked!");
+					se::exceptions::unexpectedError("Neighbours not double linked!");
 
 				//Check common corners
 				int numCommonCorners = 0;
@@ -115,7 +115,7 @@ namespace spehs
 					}
 				}
 				if (numCommonCorners != 2)
-					spehs::exceptions::unexpectedError("Neighbours do not have 2 common vertices!");
+					se::exceptions::unexpectedError("Neighbours do not have 2 common vertices!");
 
 				//Check my corners
 				legit = true;
@@ -131,7 +131,7 @@ namespace spehs
 					}
 				}
 				if (!legit)
-					spehs::exceptions::unexpectedError("Triangle contains 2 or more of the same vertex!");
+					se::exceptions::unexpectedError("Triangle contains 2 or more of the same vertex!");
 			}
 		}
 #endif
@@ -152,20 +152,20 @@ namespace spehs
 				}
 #ifdef PERFORM_TRIANGULATION_VALIDITY_CHECKS
 				if (neighbourPointIndex < 0)
-					spehs::exceptions::unexpectedError("Triangle legalization failed!");
+					se::exceptions::unexpectedError("Triangle legalization failed!");
 #endif
 
 				//Determine begin and end arcs
-				spehs::vec2 begin;
-				spehs::vec2 end;
+				se::vec2 begin;
+				se::vec2 end;
 				//For common vertex 1
 				begin = *neighbours[n]->point(neighbourPointIndex + 1) - *neighbours[n]->point(neighbourPointIndex);
 				end = *point(n - 1) - *point(n);
-				const float angle1 = spehs::getAngle(spehs::getAngle(begin), spehs::getAngle(end));
+				const float angle1 = se::getAngle(se::getAngle(begin), se::getAngle(end));
 				//For common vertex 2
 				begin = *point(n - 1) - *point(n + 1);
 				end = *neighbours[n]->point(neighbourPointIndex + 1) - *neighbours[n]->point(neighbourPointIndex - 1);
-				const float angle2 = spehs::getAngle(spehs::getAngle(begin), spehs::getAngle(end));
+				const float angle2 = se::getAngle(se::getAngle(begin), se::getAngle(end));
 				////Conclusion
 				if (angle1 + angle2 < PI)
 				{//Exchange
@@ -192,7 +192,7 @@ namespace spehs
 						}
 #ifdef PERFORM_TRIANGULATION_VALIDITY_CHECKS
 						if (!found)
-							spehs::exceptions::unexpectedError("Neighbour reference switching failed!");
+							se::exceptions::unexpectedError("Neighbour reference switching failed!");
 #endif
 					}
 					other.neighbour(neighbourPointIndex - 1) = neighbour(n + 1);
@@ -212,7 +212,7 @@ namespace spehs
 						}
 #ifdef PERFORM_TRIANGULATION_VALIDITY_CHECKS
 						if (!found)
-							spehs::exceptions::unexpectedError("Neighbour reference switching failed!");
+							se::exceptions::unexpectedError("Neighbour reference switching failed!");
 #endif
 					}
 					neighbour(n) = myNewNeighbour;
@@ -233,12 +233,12 @@ namespace spehs
 		}
 		return true;
 	}
-	Triangulation::Triangulation(std::vector<spehs::vec2>& points)
+	Triangulation::Triangulation(std::vector<se::vec2>& points)
 	{
 		if (points.size() < 3)
-			spehs::exceptions::fatalError("Triangulation must have at least 3 input points!");
+			se::exceptions::fatalError("Triangulation must have at least 3 input points!");
 
-		std::sort(points.begin(), points.end(), [](const spehs::vec2 a, const spehs::vec2 b) -> bool
+		std::sort(points.begin(), points.end(), [](const se::vec2 a, const se::vec2 b) -> bool
 		{
 			return a.x < b.x;
 		});
@@ -289,7 +289,7 @@ namespace spehs
 						}
 #ifdef PERFORM_TRIANGULATION_VALIDITY_CHECKS
 						if (!found)
-							spehs::exceptions::unexpectedError("Could not assign inner triangle!");
+							se::exceptions::unexpectedError("Could not assign inner triangle!");
 #endif
 
 						high->innerTriangle = triangles.back();
@@ -327,7 +327,7 @@ namespace spehs
 							}
 						}
 						if (!found)
-							spehs::exceptions::unexpectedError("Could not assign inner triangle!");
+							se::exceptions::unexpectedError("Could not assign inner triangle!");
 						//Link hull outline to triangle
 						low->innerTriangle = triangles.back();
 						high->innerTriangle = triangles.back();

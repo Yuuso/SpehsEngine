@@ -2,7 +2,7 @@
 #include "SpehsEngine/Core/Time.h"
 #include "SpehsEngine/Rendering/BatchManager.h"
 
-namespace spehs
+namespace se
 {
 	GUIContext::GUIContext(BatchManager& _batchManager, InputManager& _inputManager, time::DeltaTimeSystem& _deltaTimeSystem)
 		: batchManager(_batchManager)

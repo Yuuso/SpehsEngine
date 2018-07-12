@@ -5,7 +5,7 @@
 #include <stdint.h>
 #include <boost/signal.hpp>
 
-namespace spehs
+namespace se
 {
 	class Inisection;
 	class Inifile;

@@ -13,7 +13,7 @@
 
 #include <bcm2835.h>
 
-namespace spehs
+namespace se
 {
 	namespace
 	{
@@ -38,11 +38,11 @@ namespace spehs
 #ifdef SPEHS_GPIO
 			if (bcm2835_init())
 			{
-				spehs::log::info("bcm2835 library successfully initialized.");
+				se::log::info("bcm2835 library successfully initialized.");
 			}
 			else
 			{
-				spehs::log::error("Failed to initialize the bcm 2835 library!");
+				se::log::error("Failed to initialize the bcm 2835 library!");
 				return;
 			}
 #else

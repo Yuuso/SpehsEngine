@@ -3,7 +3,7 @@
 #include "SpehsEngine/Core/Time.h"
 
 
-namespace spehs
+namespace se
 {
 	namespace device
 	{
@@ -19,23 +19,23 @@ namespace spehs
 
 		void Display4x8::setString(const std::string& str)
 		{
-			const spehs::gpio::Pin digitPins[4] =
+			const se::gpio::Pin digitPins[4] =
 			{
-				spehs::gpio::pin_19,
-				spehs::gpio::pin_23,
-				spehs::gpio::pin_21,
-				spehs::gpio::pin_24,
+				se::gpio::pin_19,
+				se::gpio::pin_23,
+				se::gpio::pin_21,
+				se::gpio::pin_24,
 			};
-			const spehs::gpio::Pin ledPins[8] =
+			const se::gpio::Pin ledPins[8] =
 			{
-				spehs::gpio::pin_38,//top
-				spehs::gpio::pin_40,//top left
-				spehs::gpio::pin_36,//top right
-				spehs::gpio::pin_37,//middle
-				spehs::gpio::pin_29,//bottom left
-				spehs::gpio::pin_35,//bottom right
-				spehs::gpio::pin_31,//bottom
-				spehs::gpio::pin_33,//.
+				se::gpio::pin_38,//top
+				se::gpio::pin_40,//top left
+				se::gpio::pin_36,//top right
+				se::gpio::pin_37,//middle
+				se::gpio::pin_29,//bottom left
+				se::gpio::pin_35,//bottom right
+				se::gpio::pin_31,//bottom
+				se::gpio::pin_33,//.
 			};
 			const int symbols[12][8] =
 			{
@@ -54,13 +54,13 @@ namespace spehs
 			};
 
 			for (size_t i = 0; i < 4; i++)
-				spehs::gpio::setPinAsOutput(digitPins[i]);
+				se::gpio::setPinAsOutput(digitPins[i]);
 			for (size_t i = 0; i < 8; i++)
-				spehs::gpio::setPinAsOutput(ledPins[i]);
+				se::gpio::setPinAsOutput(ledPins[i]);
 			for (size_t i = 0; i < 4; i++)
-				spehs::gpio::enable(digitPins[i]);
+				se::gpio::enable(digitPins[i]);
 			for (size_t i = 0; i < 8; i++)
-				spehs::gpio::disable(ledPins[i]);
+				se::gpio::disable(ledPins[i]);
 
 			int number = 0;
 			int digitIndex = 0;
@@ -70,15 +70,15 @@ namespace spehs
 				for (size_t d2 = 0; d2 < 4; d2++)
 				{
 					if (d == d2)
-						spehs::gpio::disable(digitPins[d2]);
+						se::gpio::disable(digitPins[d2]);
 					else
-						spehs::gpio::enable(digitPins[d2]);
+						se::gpio::enable(digitPins[d2]);
 				}
 
 				for (size_t s = 0; s < 8; s++)
-					spehs::gpio::write(ledPins[s], (spehs::gpio::PinState)symbols[number][s]);
+					se::gpio::write(ledPins[s], (se::gpio::PinState)symbols[number][s]);
 
-				spehs::time::delay(spehs::time::fromMilliseconds(100));
+				se::time::delay(se::time::fromMilliseconds(100));
 				if (++number == 11)
 				{
 					number = 0;

@@ -6,7 +6,7 @@
 /**Console is accessed through these functions.
 The console is internally mutex locked and can thus be safely accessed from any thread.
 */
-namespace spehs
+namespace se
 {
 	class BatchManager;
 	class InputManager;
@@ -33,7 +33,7 @@ namespace spehs
 
 		//Font
 		void setFont(const std::string& fontPath, const int fontSize);
-		void setFont(spehs::Font* font);
+		void setFont(se::Font* font);
 
 		//Render state
 		void setRenderState(const bool state);

@@ -15,7 +15,7 @@ std::atomic<int> Batch3DAllocations;
 std::atomic<int> Batch3DDeallocations;
 
 
-namespace spehs
+namespace se
 {
 	static inline int getIndexMultiplier(const size_t _batchSize)
 	{
@@ -193,7 +193,7 @@ namespace spehs
 				batchSize = _numVertices;
 				glBindVertexArray(vertexArrayObjectID);
 				glBindBuffer(GL_ARRAY_BUFFER, vertexBufferID);
-				glBufferData(GL_ARRAY_BUFFER, sizeof(spehs::Vertex3D) * batchSize, nullptr, GL_STREAM_DRAW);
+				glBufferData(GL_ARRAY_BUFFER, sizeof(se::Vertex3D) * batchSize, nullptr, GL_STREAM_DRAW);
 				glBindVertexArray(0);
 				glBindBuffer(GL_ARRAY_BUFFER, 0);
 				return true;
@@ -216,7 +216,7 @@ namespace spehs
 		glBindVertexArray(vertexArrayObjectID);
 
 		glBindBuffer(GL_ARRAY_BUFFER, vertexBufferID);
-		glBufferData(GL_ARRAY_BUFFER, sizeof(spehs::Vertex3D) * batchSize, nullptr, GL_STREAM_DRAW);
+		glBufferData(GL_ARRAY_BUFFER, sizeof(se::Vertex3D) * batchSize, nullptr, GL_STREAM_DRAW);
 
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBufferID);
 		glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLushort) * indexSize, nullptr, GL_STREAM_DRAW);
@@ -245,7 +245,7 @@ namespace spehs
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBufferID);
 
 		//Sent data to GPU
-		glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(spehs::Vertex3D) * vertices.size(), &vertices[0]);
+		glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(se::Vertex3D) * vertices.size(), &vertices[0]);
 
 		//Check indices
 		if (indices.size() > indexSize)

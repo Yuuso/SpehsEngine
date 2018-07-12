@@ -21,7 +21,7 @@
 #define STRECH_STATE_W 32
 #define STRECH_CORNER_PERCENTAGE 0.1f
 
-namespace spehs
+namespace se
 {
 	//Static variables (public for modification at user's will)
 	int GUIWindow::upBorder = 0;
@@ -29,12 +29,12 @@ namespace spehs
 	int GUIWindow::leftBorder = 0;
 	int GUIWindow::rightBorder = 0;
 	int GUIWindow::strechWidth = 5;
-	spehs::Color GUIWindow::strechColorFocused(255, 57, 0, 255);
-	spehs::Color GUIWindow::strechColorUnfocused(13, 13, 179, 255);
-	spehs::Color GUIWindow::headerBackgroundColor(204, 204, 204, 255);
-	spehs::Color GUIWindow::headerStringColor(51, 51, 51, 255);
-	spehs::Color GUIWindow::exitBackgroundColor(153, 13, 13, 255);
-	spehs::Color GUIWindow::exitStringColor(51, 51, 51, 255);
+	se::Color GUIWindow::strechColorFocused(255, 57, 0, 255);
+	se::Color GUIWindow::strechColorUnfocused(13, 13, 179, 255);
+	se::Color GUIWindow::headerBackgroundColor(204, 204, 204, 255);
+	se::Color GUIWindow::headerStringColor(51, 51, 51, 255);
+	se::Color GUIWindow::exitBackgroundColor(153, 13, 13, 255);
+	se::Color GUIWindow::exitStringColor(51, 51, 51, 255);
 
 	GUIWindow::GUIWindow(GUIContext& context)
 		: GUIRectangleContainer(context)
@@ -286,7 +286,7 @@ namespace spehs
 				{//Set to min size
 
 					//Take record of the window's old center position so that resized window can be nicely centered at the same position
-					spehs::vec2 oldCenterPos(getXGlobal() + size.x / 2.0f, getYGlobal() + size.y / 2.0f);
+					se::vec2 oldCenterPos(getXGlobal() + size.x / 2.0f, getYGlobal() + size.y / 2.0f);
 
 					//Rezise to min size
 					setSize(minSize);

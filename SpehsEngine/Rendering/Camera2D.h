@@ -5,7 +5,7 @@
 #include "SpehsEngine/Core/Vector.h"
 
 
-namespace spehs
+namespace se
 {
 	class Window;
 	class Camera2D
@@ -16,18 +16,18 @@ namespace spehs
 
 		void update();
 
-		void translate(const spehs::vec2& _vec);
+		void translate(const se::vec2& _vec);
 		void setRotation(const float &_rotation);
 
 		//Public Variables
 		const Window& window;//TODO: camera really doesn't depend on the window class...?
-		spehs::vec2 deltaMovement;
+		se::vec2 deltaMovement;
 		glm::mat4* projectionMatrix;
 		glm::mat4 staticMatrix;
 
 		float scale;
-		spehs::vec2 position;
-		spehs::vec2 previousPosition;
+		se::vec2 position;
+		se::vec2 previousPosition;
 
 		void windowSizeChangedCallback(const int width, const int height);
 	private:
@@ -35,7 +35,7 @@ namespace spehs
 		float rotation;
 		float zoomSpeed;
 
-		spehs::vec4 up; //compensate for rotation
+		se::vec4 up; //compensate for rotation
 
 		glm::mat4 orthoMatrix;
 		glm::mat4 defaultMatrix;

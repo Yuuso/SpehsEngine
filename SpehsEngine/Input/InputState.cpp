@@ -1,6 +1,6 @@
 #include "InputState.h"
 
-namespace spehs
+namespace se
 {
 	InputState::UseState::UseState(const bool _used)
 		: used(_used)

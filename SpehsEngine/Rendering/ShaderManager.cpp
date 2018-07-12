@@ -10,7 +10,7 @@
 
 
 
-namespace spehs
+namespace se
 {
 	Uniforms::Uniforms(GLSLProgram& _shader)
 		: shader(_shader)
@@ -21,7 +21,7 @@ namespace spehs
 	{}
 	void Uniforms::setUniforms()
 	{
-		spehs::setUniform_mat4(cameraLocation, cameraMatrix);
+		se::setUniform_mat4(cameraLocation, cameraMatrix);
 		checkOpenGLErrors(__FILE__, __LINE__);
 	}
 
@@ -32,8 +32,8 @@ namespace spehs
 	DefaultTextureUniforms::~DefaultTextureUniforms(){}
 	void DefaultTextureUniforms::setUniforms()
 	{
-		spehs::bind2DTexture(textureDataID, 0);
-		spehs::setUniform_int(textureLocation, 0);
+		se::bind2DTexture(textureDataID, 0);
+		se::setUniform_int(textureLocation, 0);
 		Uniforms::setUniforms();
 	}
 
@@ -44,8 +44,8 @@ namespace spehs
 	DefaultSkyBoxUniforms::~DefaultSkyBoxUniforms(){}
 	void DefaultSkyBoxUniforms::setUniforms()
 	{
-		spehs::bindCubeMapTexture(textureDataID, 0);
-		spehs::setUniform_int(textureLocation, 0);
+		se::bindCubeMapTexture(textureDataID, 0);
+		se::setUniform_int(textureLocation, 0);
 		Uniforms::setUniforms();
 	}
 
@@ -507,37 +507,37 @@ namespace spehs
 
 		checkOpenGLErrors(__FILE__, __LINE__);
 	}
-	void setUniform_vec2(const GLint& _location, const spehs::vec2 &_value)
+	void setUniform_vec2(const GLint& _location, const se::vec2 &_value)
 	{
 		glUniform2fv(_location, 1, &_value[0]);
 
 		checkOpenGLErrors(__FILE__, __LINE__);
 	}
-	void setUniform_vec3(const GLint& _location, const spehs::vec3 &_value)
+	void setUniform_vec3(const GLint& _location, const se::vec3 &_value)
 	{
 		glUniform3fv(_location, 1, &_value[0]);
 
 		checkOpenGLErrors(__FILE__, __LINE__);
 	}
-	void setUniform_vec4(const GLint& _location, const spehs::vec4 &_value)
+	void setUniform_vec4(const GLint& _location, const se::vec4 &_value)
 	{
 		glUniform4fv(_location, 1, &_value[0]);
 
 		checkOpenGLErrors(__FILE__, __LINE__);
 	}
-	void setUniform_ivec2(const GLint& _location, const spehs::ivec2 &_value)
+	void setUniform_ivec2(const GLint& _location, const se::ivec2 &_value)
 	{
 		glUniform2iv(_location, 1, &_value[0]);
 
 		checkOpenGLErrors(__FILE__, __LINE__);
 	}
-	void setUniform_ivec3(const GLint& _location, const spehs::ivec3 &_value)
+	void setUniform_ivec3(const GLint& _location, const se::ivec3 &_value)
 	{
 		glUniform3iv(_location, 1, &_value[0]);
 
 		checkOpenGLErrors(__FILE__, __LINE__);
 	}
-	void setUniform_ivec4(const GLint& _location, const spehs::ivec4 &_value)
+	void setUniform_ivec4(const GLint& _location, const se::ivec4 &_value)
 	{
 		glUniform4iv(_location, 1, &_value[0]);
 

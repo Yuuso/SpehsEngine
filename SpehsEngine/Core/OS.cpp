@@ -6,7 +6,7 @@
 
 
 
-namespace spehs
+namespace se
 {
 	bool copyToClipBoard(const void* data, size_t bytes)
 	{

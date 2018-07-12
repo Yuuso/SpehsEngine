@@ -4,7 +4,7 @@
 #include <SpehsEngine/Core/ReadBuffer.h>
 #include <SpehsEngine/Core/WriteBuffer.h>
 
-namespace spehs
+namespace se
 {
 	namespace net
 	{
@@ -14,7 +14,7 @@ namespace spehs
 		{
 			if (argc < 3)
 			{
-				spehs::log::info("Provided command line arguments cannot be used to form an endpoint: too few arguments.");
+				se::log::info("Provided command line arguments cannot be used to form an endpoint: too few arguments.");
 				return Endpoint::invalid;
 			}
 
@@ -32,12 +32,12 @@ namespace spehs
 			}
 			if (periodCount != 3 || invalidCharacters || endpoint.address.value.size() > 15)
 			{
-				spehs::log::warning("Provided server address is invalid: " + endpoint.address.toString());
+				se::log::warning("Provided server address is invalid: " + endpoint.address.toString());
 				return Endpoint::invalid;
 			}
 			if (endpoint.port.value < 0 || endpoint.port.value > std::numeric_limits<uint16_t>::max())
 			{
-				spehs::log::warning("Provided server port is invalid: " + std::string(argv[2]));
+				se::log::warning("Provided server port is invalid: " + std::string(argv[2]));
 				return Endpoint::invalid;
 			}
 

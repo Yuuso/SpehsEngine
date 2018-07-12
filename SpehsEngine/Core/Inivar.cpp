@@ -3,7 +3,7 @@
 #include "SpehsEngine/Core/StringOperations.h"
 #include "SpehsEngine/Core/Log.h"
 
-namespace spehs
+namespace se
 {
 	AbstractInivar::AbstractInivar(Inisection& _section, const std::string& _name, const std::string& _type)
 		: name(_name)
@@ -33,7 +33,7 @@ namespace spehs
 			}
 			else
 			{
-				spehs::log::warning("Appvar::fromString() failed. Name: '" + readVar->name + "', value: '" + readVar->value + "'.");
+				se::log::warning("Appvar::fromString() failed. Name: '" + readVar->name + "', value: '" + readVar->value + "'.");
 				return false;
 			}
 		}

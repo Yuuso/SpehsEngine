@@ -19,7 +19,7 @@
 
 #include <boost/bind.hpp>
 
-namespace spehs
+namespace se
 {
 	namespace
 	{

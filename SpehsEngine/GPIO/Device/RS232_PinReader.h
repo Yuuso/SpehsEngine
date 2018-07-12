@@ -3,18 +3,18 @@
 #include "SpehsEngine/GPIO/Device/ThreadedDevice.h"
 #include "SpehsEngine/GPIO/Pin.h"
 
-namespace spehs
+namespace se
 {
 	namespace device
 	{
-		class RS232_PinReader// : public spehs::device::ThreadedDevice
+		class RS232_PinReader// : public se::device::ThreadedDevice
 		{
 		public:
 			RS232_PinReader();
 			~RS232_PinReader();
 
 			void setPin(const gpio::Pin pin);
-			void setReadInterval(const spehs::time::Time interval);
+			void setReadInterval(const se::time::Time interval);
 			void setTransmissionUnitLength(const uint8_t length);
 			/* Can have either 1 or 2 stop bits */
 			void setStopBitCount(const int count);
@@ -53,8 +53,8 @@ namespace spehs
 				receivingParityBit,		//Receiving the parity bit
 				receivingStopBits,		//Receiving the stop bit(s)
 			};
-			spehs::time::Time readInterval;
-			spehs::time::Time nextReadTime;
+			se::time::Time readInterval;
+			se::time::Time nextReadTime;
 			gpio::PinState previousReadState;
 			int stopBitCount;
 			int streamBoundaryRequiredPatternRepetitionCount;

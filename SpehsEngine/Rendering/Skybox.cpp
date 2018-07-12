@@ -6,7 +6,7 @@
 #include "ShaderManager.h"
 
 
-namespace spehs
+namespace se
 {
 	SkyBox::SkyBox(BatchManager3D& _batchManager)
 	{

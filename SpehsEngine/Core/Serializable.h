@@ -8,7 +8,7 @@
 #define SPEHS_WRITE_ARRAY(bufferBeginPtr, offsetVar, dataPtr, arrayLength) { memcpy(&bufferBeginPtr[offset], dataPtr, sizeof(*dataPtr) * arrayLength); offset += sizeof(*dataPtr) * arrayLength; }
 #define SPEHS_READ_ARRAY(bufferBeginPtr, offsetVar, dataPtr, arrayLength) { memcpy(dataPtr, &bufferBeginPtr[offset], sizeof(*dataPtr) * arrayLength); offset += sizeof(*dataPtr) * arrayLength; }
 
-namespace spehs
+namespace se
 {
 	/**Serializable class is a class that implements the four pure virtual functions required for data transmission:
 		1. newMyType: Allows allocation of new object of this type

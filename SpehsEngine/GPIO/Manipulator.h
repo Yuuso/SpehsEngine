@@ -5,7 +5,7 @@
 #include "SpehsEngine/GPIO/Device/Servo.h"
 #include "SpehsEngine/Sync/SyncHandle.h"
 
-namespace spehs
+namespace se
 {
 	namespace sync
 	{
@@ -22,7 +22,7 @@ namespace spehs
 		ServoJoint(sync::Manager &syncManager, ServoJoint *parent);
 		~ServoJoint();
 
-		void update(const spehs::time::Time& deltaTime);
+		void update(const se::time::Time& deltaTime);
 
 		//Root parent
 		ServoJoint &getRootParent();
@@ -82,7 +82,7 @@ namespace spehs
 		Manipulator(sync::Manager &syncManager);
 		~Manipulator();
 
-		void update(const spehs::time::Time& deltaTime);
+		void update(const se::time::Time& deltaTime);
 
 		ServoJoint &pushBack();
 

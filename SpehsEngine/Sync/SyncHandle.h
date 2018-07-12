@@ -4,7 +4,7 @@
 #include "SpehsEngine/Sync/SyncEntry.h"
 #include "SpehsEngine/Core/Log.h"//SPEH_ASSERT...
 
-namespace spehs
+namespace se
 {
 	namespace sync
 	{
@@ -14,8 +14,8 @@ namespace spehs
 		class AbstractHandle
 		{
 		public:
-			void setLocalUpdateInterval(const spehs::time::Time& interval);
-			void setRemoteUpdateInterval(const spehs::time::Time& interval);
+			void setLocalUpdateInterval(const se::time::Time& interval);
+			void setRemoteUpdateInterval(const se::time::Time& interval);
 		protected:
 			AbstractHandle(Entry* _entry);
 			Entry* entry;

@@ -11,7 +11,7 @@
 
 
 
-namespace spehs
+namespace se
 {
 	GLSLProgram::~GLSLProgram()
 	{
@@ -123,7 +123,7 @@ namespace spehs
 
 		if (location == GL_INVALID_INDEX)
 		{
-			spehs::exceptions::warning("Uniform " + uniformName + " not found in shader!");
+			se::exceptions::warning("Uniform " + uniformName + " not found in shader!");
 			return NULL;
 		}
 
@@ -147,13 +147,13 @@ namespace spehs
 			switch (attributes[i])
 			{
 			case VertexAttributePosition::VERTEX_POSITION:
-				glVertexAttribPointer((GLuint)VertexAttributePosition::VERTEX_POSITION, 3, GL_FLOAT,			GL_FALSE, sizeof(spehs::Vertex), reinterpret_cast<void*>(offsetof(spehs::Vertex, position)));
+				glVertexAttribPointer((GLuint)VertexAttributePosition::VERTEX_POSITION, 3, GL_FLOAT,			GL_FALSE, sizeof(se::Vertex), reinterpret_cast<void*>(offsetof(se::Vertex, position)));
 				break;
 			case VertexAttributePosition::VERTEX_COLOR:
-				glVertexAttribPointer((GLuint)VertexAttributePosition::VERTEX_COLOR,	4, GL_UNSIGNED_BYTE,	GL_TRUE, sizeof(spehs::Vertex), reinterpret_cast<void*>(offsetof(spehs::Vertex, color)));
+				glVertexAttribPointer((GLuint)VertexAttributePosition::VERTEX_COLOR,	4, GL_UNSIGNED_BYTE,	GL_TRUE, sizeof(se::Vertex), reinterpret_cast<void*>(offsetof(se::Vertex, color)));
 				break;
 			case VertexAttributePosition::VERTEX_UV:
-				glVertexAttribPointer((GLuint)VertexAttributePosition::VERTEX_UV,		2, GL_FLOAT,			GL_FALSE, sizeof(spehs::Vertex), reinterpret_cast<void*>(offsetof(spehs::Vertex, uv)));
+				glVertexAttribPointer((GLuint)VertexAttributePosition::VERTEX_UV,		2, GL_FLOAT,			GL_FALSE, sizeof(se::Vertex), reinterpret_cast<void*>(offsetof(se::Vertex, uv)));
 				break;
 			default:
 				break;
@@ -168,16 +168,16 @@ namespace spehs
 			switch (attributes[i])
 			{
 			case VertexAttributePosition::VERTEX_POSITION:
-				glVertexAttribPointer((GLuint)VertexAttributePosition::VERTEX_POSITION, 3, GL_FLOAT,			GL_FALSE, sizeof(spehs::Vertex3D), reinterpret_cast<void*>(offsetof(spehs::Vertex3D, position)));
+				glVertexAttribPointer((GLuint)VertexAttributePosition::VERTEX_POSITION, 3, GL_FLOAT,			GL_FALSE, sizeof(se::Vertex3D), reinterpret_cast<void*>(offsetof(se::Vertex3D, position)));
 				break;
 			case VertexAttributePosition::VERTEX_COLOR:
-				glVertexAttribPointer((GLuint)VertexAttributePosition::VERTEX_COLOR,	4, GL_UNSIGNED_BYTE,	GL_TRUE, sizeof(spehs::Vertex3D), reinterpret_cast<void*>(offsetof(spehs::Vertex3D, color)));
+				glVertexAttribPointer((GLuint)VertexAttributePosition::VERTEX_COLOR,	4, GL_UNSIGNED_BYTE,	GL_TRUE, sizeof(se::Vertex3D), reinterpret_cast<void*>(offsetof(se::Vertex3D, color)));
 				break;
 			case VertexAttributePosition::VERTEX_UV:
-				glVertexAttribPointer((GLuint)VertexAttributePosition::VERTEX_UV,		2, GL_FLOAT,			GL_FALSE, sizeof(spehs::Vertex3D), reinterpret_cast<void*>(offsetof(spehs::Vertex3D, uv)));
+				glVertexAttribPointer((GLuint)VertexAttributePosition::VERTEX_UV,		2, GL_FLOAT,			GL_FALSE, sizeof(se::Vertex3D), reinterpret_cast<void*>(offsetof(se::Vertex3D, uv)));
 				break;
 			case VertexAttributePosition::VERTEX_NORMAL:
-				glVertexAttribPointer((GLuint)VertexAttributePosition::VERTEX_NORMAL,	3, GL_FLOAT,			GL_FALSE, sizeof(spehs::Vertex3D), reinterpret_cast<void*>(offsetof(spehs::Vertex3D, normal)));
+				glVertexAttribPointer((GLuint)VertexAttributePosition::VERTEX_NORMAL,	3, GL_FLOAT,			GL_FALSE, sizeof(se::Vertex3D), reinterpret_cast<void*>(offsetof(se::Vertex3D, normal)));
 				break;
 			default:
 				break;

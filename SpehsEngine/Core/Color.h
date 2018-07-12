@@ -7,7 +7,7 @@
 #include <string>
 
 
-namespace spehs
+namespace se
 {
 	class Color
 	{
@@ -18,7 +18,7 @@ namespace spehs
 		Color(const float _r, const float _g, const float _b);
 		Color(const float _r, const float _g, const float _b, const float _a);
 		Color(const float* rgbaBuffer);
-		spehs::Color& operator=(const float* rgbaBuffer);
+		se::Color& operator=(const float* rgbaBuffer);
 		float operator[](const int index);
 		const float operator[](const int index) const;
 		void operator*=(const float componentMultiplier);
@@ -50,7 +50,7 @@ namespace spehs
 	{
 	public:
 		//Pure virtual methods
-		virtual void setColor(const spehs::Color& _newColor) = 0;
+		virtual void setColor(const se::Color& _newColor) = 0;
 		virtual void setAlpha(const float _newAlpha) = 0;
 	};
 }

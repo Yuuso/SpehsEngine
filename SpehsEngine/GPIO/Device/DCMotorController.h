@@ -5,7 +5,7 @@
 #include "SpehsEngine/GPIO/Device/ThreadedDevice.h"
 
 
-namespace spehs
+namespace se
 {
 	namespace device
 	{
@@ -33,9 +33,9 @@ namespace spehs
 			gpio::Pin pulseWidthPin;
 			gpio::Pin inputPin1;
 			gpio::Pin inputPin2;
-			spehs::time::Time pulseWidth;
+			se::time::Time pulseWidth;
 			float strength;
-			const spehs::time::Time pulseInterval;
+			const se::time::Time pulseInterval;
 		};
 	}
 }

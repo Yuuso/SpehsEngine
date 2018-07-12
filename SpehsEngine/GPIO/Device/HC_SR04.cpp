@@ -3,7 +3,7 @@
 #include "SpehsEngine/Core/Log.h"
 
 
-namespace spehs
+namespace se
 {
 	namespace device
 	{
@@ -11,7 +11,7 @@ namespace spehs
 			: triggerPin(gpio::pin_none)
 			, echoPin(gpio::pin_none)
 			, distance(0.0f)
-			, pollInterval(spehs::time::fromMilliseconds(100))
+			, pollInterval(se::time::fromMilliseconds(100))
 		{
 		}
 
@@ -43,25 +43,25 @@ namespace spehs
 			mutex.unlock();
 			
 			//Fire trigger
-			const spehs::time::Time delay1 = spehs::time::fromMilliseconds(2);
-			const spehs::time::Time delay2 = spehs::time::fromMilliseconds(10);
-			const spehs::time::Time beginTime = spehs::time::now();
+			const se::time::Time delay1 = se::time::fromMilliseconds(2);
+			const se::time::Time delay2 = se::time::fromMilliseconds(10);
+			const se::time::Time beginTime = se::time::now();
 			gpio::disable(trigger);
-			spehs::time::delay(delay1);
+			se::time::delay(delay1);
 			gpio::enable(trigger);
-			spehs::time::delay(delay2);
+			se::time::delay(delay2);
 			gpio::disable(trigger);
 
 			//Measure pulse
-			const spehs::time::Time duration = gpio::pulseIn(echo, gpio::high, spehs::time::fromMilliseconds(1000));
+			const se::time::Time duration = gpio::pulseIn(echo, gpio::high, se::time::fromMilliseconds(1000));
 
 			//Update distance value
 			mutex.lock();
 			distance = (duration.asMicroseconds() * 0.5f) / 29.1f;
 			//Delay by poll interval
-			const spehs::time::Time interval = pollInterval + beginTime - spehs::time::now();
+			const se::time::Time interval = pollInterval + beginTime - se::time::now();
 			mutex.unlock();
-			spehs::time::delay(interval);
+			se::time::delay(interval);
 		}
 
 		void HC_SR04::onStop()

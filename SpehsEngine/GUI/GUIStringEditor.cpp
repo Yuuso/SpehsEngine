@@ -8,7 +8,7 @@
 #include "SpehsEngine/Rendering/Text.h"
 
 
-namespace spehs
+namespace se
 {
 	size_t GUIStringEditor::defaultMaxStringEditorStringLength = 32;
 

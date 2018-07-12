@@ -1,7 +1,7 @@
 #include "SpehsEngine/GPIO/Device/PIR_MotionSensor.h"
 #include "SpehsEngine/Core/Log.h"
 
-namespace spehs
+namespace se
 {
 	namespace device
 	{

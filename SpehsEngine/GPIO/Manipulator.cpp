@@ -3,7 +3,7 @@
 
 
 
-namespace spehs
+namespace se
 {
 	ServoJoint::ServoJoint(sync::Manager &syncManagerParam, ServoJoint *parentParam)
 		: parent(parentParam)
@@ -22,7 +22,7 @@ namespace spehs
 		}
 	}
 
-	void ServoJoint::update(const spehs::time::Time &deltaTime)
+	void ServoJoint::update(const se::time::Time &deltaTime)
 	{
 		setLocalRotation(glm::quat(servoGhostHandle->getApproximatedAngle(), getLocalAxis()));
 	}
@@ -238,7 +238,7 @@ namespace spehs
 
 	}
 
-	void Manipulator::update(const spehs::time::Time &deltaTime)
+	void Manipulator::update(const se::time::Time &deltaTime)
 	{
 		ServoJoint* servoJoint = &root;
 		while (servoJoint)
@@ -268,7 +268,7 @@ namespace spehs
 		{
 			SPEHS_ASSERT(servoJoint->child);
 			if (!servoJoint->child)
-				spehs::log::error("Manipulator::operator[] index out of range");
+				se::log::error("Manipulator::operator[] index out of range");
 			servoJoint = servoJoint->child;
 		}
 		return *servoJoint;
@@ -282,7 +282,7 @@ namespace spehs
 		{
 			SPEHS_ASSERT(servoJoint->child);
 			if (!servoJoint->child)
-				spehs::log::error("const Manipulator::operator[] index out of range");
+				se::log::error("const Manipulator::operator[] index out of range");
 			servoJoint = servoJoint->child;
 		}
 		return *servoJoint;

@@ -5,12 +5,12 @@ Implementation by Teo Hiltunen, based on theory provided by: http://www.academic
 #include <vector>
 #include "SpehsEngine/Core/Vector.h"
 
-namespace spehs
+namespace se
 {
 	struct Triangle;
 	struct DirectionalEdge
 	{
-		DirectionalEdge(spehs::vec2* _begin, spehs::vec2* _end, DirectionalEdge* _prev);
+		DirectionalEdge(se::vec2* _begin, se::vec2* _end, DirectionalEdge* _prev);
 		~DirectionalEdge();
 
 		void setPrev(DirectionalEdge* _prev)
@@ -29,8 +29,8 @@ namespace spehs
 			if (next)
 				next->prev = this;
 		}
-		spehs::vec2* begin;
-		spehs::vec2* end;
+		se::vec2* begin;
+		se::vec2* end;
 		DirectionalEdge* next;
 		DirectionalEdge* prev;
 		Triangle* innerTriangle;
@@ -39,13 +39,13 @@ namespace spehs
 	{
 		Triangle();
 		~Triangle();
-		void build(spehs::vec2* p0, spehs::vec2* p1, spehs::vec2* p2, Triangle* parent);
+		void build(se::vec2* p0, se::vec2* p1, se::vec2* p2, Triangle* parent);
 		bool legalize();
 		Triangle*& neighbour(int index) { if (index < 0) return neighbours[3 + /*NOTE: works only for indices -1 and -2...*/(index % 3)]; return neighbours[index % 3]; }
-		spehs::vec2*& point(int index) { if (index < 0) return points[3 + /*NOTE: works only for indices -1 and -2...*/(index % 3)]; return points[index % 3]; }
+		se::vec2*& point(int index) { if (index < 0) return points[3 + /*NOTE: works only for indices -1 and -2...*/(index % 3)]; return points[index % 3]; }
 		int index3(int index) { if (index < 0) return 3 + /*NOTE: works only for indices -1 and -2...*/(index % 3); return index % 3; }
 		
-		spehs::vec2* points[3];
+		se::vec2* points[3];
 		Triangle* neighbours[3];
 		/* Triangle hierarchy is used for legalization spreading purposes. The hierarchy does not imply any physical relation, but only as a data structure. */
 		Triangle* parent;
@@ -57,7 +57,7 @@ namespace spehs
 	{
 	public:
 		/* Performs triangulation on given points. */
-		Triangulation(std::vector<spehs::vec2>& points);
+		Triangulation(std::vector<se::vec2>& points);
 		~Triangulation();
 
 		Triangle& operator[](unsigned index){ return *triangles[index]; }

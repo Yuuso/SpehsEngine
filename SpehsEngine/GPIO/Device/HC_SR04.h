@@ -2,7 +2,7 @@
 #include "SpehsEngine/GPIO/Device/ThreadedDevice.h"
 #include "SpehsEngine/GPIO/Pin.h"
 
-namespace spehs
+namespace se
 {
 	namespace device
 	{
@@ -20,7 +20,7 @@ namespace spehs
 			void onStop() override;
 
 			void setPins(const gpio::Pin trigger, const gpio::Pin echo);
-			void setPollInterval(const spehs::time::Time time);
+			void setPollInterval(const se::time::Time time);
 
 			float getDistance() const;
 
@@ -29,7 +29,7 @@ namespace spehs
 			gpio::Pin triggerPin;
 			gpio::Pin echoPin;
 			float distance;
-			spehs::time::Time pollInterval;
+			se::time::Time pollInterval;
 		};
 	}
 }

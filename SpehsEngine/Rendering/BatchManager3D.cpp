@@ -9,7 +9,7 @@
 #include <algorithm>
 
 
-namespace spehs
+namespace se
 {
 	BatchManager3D::BatchManager3D(Window& _window, ModelManager& _modelManager, ShaderManager& _shaderManager, Camera3D& _camera, const std::string& _name)
 		: window(_window)

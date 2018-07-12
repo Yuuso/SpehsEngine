@@ -1,7 +1,7 @@
 #pragma once
 #include <stdint.h>
 
-namespace spehs
+namespace se
 {
 	class WriteBuffer;
 	class ReadBuffer;

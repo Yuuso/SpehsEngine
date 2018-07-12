@@ -2,7 +2,7 @@
 #include <SpehsEngine/Core/ReadBuffer.h>
 #include <SpehsEngine/Core/WriteBuffer.h>
 
-namespace spehs
+namespace se
 {
 	namespace net
 	{

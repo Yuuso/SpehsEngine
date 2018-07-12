@@ -2,7 +2,7 @@
 #include <string>
 #include <fstream>
 #include <vector>
-namespace spehs
+namespace se
 {
 	/**Writes string to stream*/
 	void writeString(std::string& string, std::ofstream* stream);

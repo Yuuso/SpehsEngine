@@ -4,7 +4,7 @@
 #include "SpehsEngine/Game/Component.h"
 
 
-namespace spehs
+namespace se
 {
 	class GameObject;
 	class Polygon;

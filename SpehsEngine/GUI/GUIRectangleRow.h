@@ -1,7 +1,7 @@
 #pragma once
 #include "SpehsEngine/GUI/GUIRectangleContainer.h"
 
-namespace spehs
+namespace se
 {
 	/*A class for storing multiple gui rectangle elements in a row, all remaining visible*/
 	class GUIRectangleRow : public GUIRectangleContainer

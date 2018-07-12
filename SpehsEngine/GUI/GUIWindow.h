@@ -3,7 +3,7 @@
 #include <vector>
 #define GUIWINDOW_BASE_ELEMENT_COUNT 3
 
-namespace spehs
+namespace se
 {
 	class GUIStringEditor;
 	class GUIRectangleScrollList;
@@ -19,14 +19,14 @@ namespace spehs
 		//Strech rectangle width
 		static int strechWidth;
 		//Strech colouring
-		static spehs::Color strechColorFocused;
-		static spehs::Color strechColorUnfocused;
+		static se::Color strechColorFocused;
+		static se::Color strechColorUnfocused;
 		//Header colouring
-		static spehs::Color headerBackgroundColor;
-		static spehs::Color headerStringColor;
+		static se::Color headerBackgroundColor;
+		static se::Color headerStringColor;
 		//Exit colouring
-		static spehs::Color exitBackgroundColor;
-		static spehs::Color exitStringColor;
+		static se::Color exitBackgroundColor;
+		static se::Color exitStringColor;
 
 		enum class PositionMode { StackUp, StackDown, Spread };
 	public:

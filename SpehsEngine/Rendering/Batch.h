@@ -17,7 +17,7 @@ typedef unsigned short GLushort;
 
 
 
-namespace spehs
+namespace se
 {
 	class Camera2D;
 	class BatchManager;
@@ -47,7 +47,7 @@ namespace spehs
 		size_t shaderIndex;
 		bool cameraMatrixState;
 
-		std::vector<spehs::Vertex> vertices;
+		std::vector<se::Vertex> vertices;
 		std::vector<GLushort> indices;
 
 		GLuint vertexArrayObjectID = 0;

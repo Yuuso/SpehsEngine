@@ -6,7 +6,7 @@
 #include "HasMemberFunction.h"
 #include "Log.h"
 
-namespace spehs
+namespace se
 {
 	SPEHS_HAS_MEMBER_FUNCTION(read, has_read);
 	/*
@@ -29,7 +29,7 @@ namespace spehs
 		typename std::enable_if<!has_read<T, void(T::*)(ReadBuffer&)>::value, void>::type read(T& t)
 		{
 			readFromBuffer(*this, t);
-//				spehs::log::info(typeid(T).name());
+//				se::log::info(typeid(T).name());
 //				SPEHS_ASSERT(false && "To use 'ReadBuffer::read<T>(T&)' for a class type, the type T must have a 'void read(ReadBuffer&)' method!");
 //#ifdef _WIN32 // NOTE: cannot use static assert because of g++ and SFINAE
 //				static_assert(false, "Class type T doesn't have a mutable read method.");

@@ -2,7 +2,7 @@
 #include "SpehsEngine/Core/Log.h"
 
 
-namespace spehs
+namespace se
 {
 	namespace gpio
 	{
@@ -36,12 +36,12 @@ namespace spehs
 #endif
 		}
 
-		spehs::time::Time pulseIn(const Pin pin, const PinState pinState, const spehs::time::Time timeout)
+		se::time::Time pulseIn(const Pin pin, const PinState pinState, const se::time::Time timeout)
 		{
 #ifdef SPEHS_GPIO
 			bool readyToReceivePulse = false;
 			bool pulseReceived = false;
-			const spehs::time::Time beginTime = spehs::time::now();
+			const se::time::Time beginTime = se::time::now();
 			while (true)
 			{
 				if (gpio::read(pin) == pinState)
@@ -56,10 +56,10 @@ namespace spehs
 					else
 						readyToReceivePulse = true;
 				}
-				if (timeout && spehs::time::now() - beginTime >= timeout)
+				if (timeout && se::time::now() - beginTime >= timeout)
 					return 0;
 			}
-			return spehs::time::now() - beginTime;
+			return se::time::now() - beginTime;
 #else
 			return 0;
 #endif
@@ -73,7 +73,7 @@ namespace spehs
 			else if (mode == PinMode::input)
 				bcm2835_gpio_fsel(pin, BCM2835_GPIO_FSEL_INPT);
 			else
-				spehs::log::error("setPinMode() error. Invalid pin mode.");
+				se::log::error("setPinMode() error. Invalid pin mode.");
 #endif
 		}
 

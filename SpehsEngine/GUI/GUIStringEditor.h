@@ -5,7 +5,7 @@
 #include <string>
 #include <vector>
 
-namespace spehs
+namespace se
 {
 	class GUIStringEditor : public GUIRectangle, public ValueEditor<std::string>
 	{
@@ -19,7 +19,7 @@ namespace spehs
 		void setString(const std::string& str) override;
 		void setStringSize(const int size) override;
 		void setStringSizeRelative(const int relativeSize) override;
-		void setStringColor(const spehs::Color& col) override;
+		void setStringColor(const se::Color& col) override;
 		void setStringAlpha(const float a) override;
 		void updatePosition() override;
 		void updateMinSize() override;
@@ -55,7 +55,7 @@ namespace spehs
 		time::Time typerBlinkTimer;
 		std::string defaultString;
 		std::string input;//Temporal storage for edited value so that value won't appear changed after each individual typed character
-		spehs::Text* typeCharacter = nullptr;
+		se::Text* typeCharacter = nullptr;
 		KeyboardRecorder keyboardRecorder;
 	};
 }

@@ -9,7 +9,7 @@
 #include "SpehsEngine/GUI/GUIPopup.h"
 #include "SpehsEngine/Rendering/Polygon.h"
 
-namespace spehs
+namespace se
 {
 	GUIWindowManager::GUIWindowManager(GUIContext& context)
 		: GUIContext(context)
@@ -17,7 +17,7 @@ namespace spehs
 		popupShade = getBatchManager().createPolygon(Shape::BUTTON, 0, float(getBatchManager().window.getWidth()), float(getWindow().getHeight()));
 		popupShade->setCameraMatrixState(false);
 		popupShade->setPosition(0.0f, 0.0f);
-		setPopupShadeColor(spehs::Color(40, 55, 45, 80));
+		setPopupShadeColor(se::Color(40, 55, 45, 80));
 
 		setSystemDepth(GUIRectangle::defaultDepth);
 	}
@@ -215,7 +215,7 @@ namespace spehs
 			windows[i]->refresh();
 	}
 
-	void GUIWindowManager::toggleWindow(spehs::GUIWindow* window)
+	void GUIWindowManager::toggleWindow(se::GUIWindow* window)
 	{
 		for (unsigned i = 0; i < windows.size(); i++)
 			if (windows[i] == window)
@@ -226,10 +226,10 @@ namespace spehs
 				openWindow(window);
 			return;
 		}
-		spehs::exceptions::warning("Trying to toggle window that is not under window manager!");
+		se::exceptions::warning("Trying to toggle window that is not under window manager!");
 	}
 
-	void GUIWindowManager::openWindow(spehs::GUIWindow* window)
+	void GUIWindowManager::openWindow(se::GUIWindow* window)
 	{
 		for (unsigned i = 0; i < windows.size(); i++)
 		{
@@ -252,7 +252,7 @@ namespace spehs
 				return;
 			}
 		}
-		spehs::exceptions::warning("Trying to open window that is not under window manager!");
+		se::exceptions::warning("Trying to open window that is not under window manager!");
 	}
 
 	void GUIWindowManager::closeWindow(GUIWindow* window)
@@ -267,7 +267,7 @@ namespace spehs
 				return;
 			}
 		}
-		spehs::exceptions::warning("Trying to close window that is not under window manager!");
+		se::exceptions::warning("Trying to close window that is not under window manager!");
 	}
 
 	void GUIWindowManager::setSystemDepth(const int16_t depth)
@@ -297,7 +297,7 @@ namespace spehs
 			popups[i]->setDepth(int16_t(systemDepth + windows.size() * depthPerWindow + 1 + (popups.size() - 1) * 20 - i * 20));
 	}
 
-	void GUIWindowManager::setPopupShadeColor(const spehs::Color& col)
+	void GUIWindowManager::setPopupShadeColor(const se::Color& col)
 	{
 		popupShade->setColor(col);
 		popupShadeTargetAlpha = col.a;

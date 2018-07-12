@@ -7,7 +7,7 @@
 #include <string>
 #include <vector>
 
-namespace spehs
+namespace se
 {
 	class Component;
 

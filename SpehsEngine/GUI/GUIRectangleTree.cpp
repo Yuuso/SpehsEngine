@@ -7,7 +7,7 @@
 #include "SpehsEngine/GUI/GUIRectangleTree.h"
 #include "SpehsEngine/GUI/GUIRectangle.h"
 
-namespace spehs
+namespace se
 {
 	time::Time GUIRectangleTree::defaultTreeOpenTime = time::fromSeconds(0.5f);
 	GUIRectangleTree::GUIRectangleTree(GUIContext& context)
@@ -57,7 +57,7 @@ namespace spehs
 		{//Mouse hovering over the container
 			treeOpenTimer = treeOpenTime;
 		}
-		else if (treeOpenTimer > spehs::time::zero)
+		else if (treeOpenTimer > se::time::zero)
 		{//If mouse is outside the container, close over time
 			treeOpenTimer -= getDeltaTimeSystem().deltaTime;
 			if (treeOpenTimer <= time::Time::zero)

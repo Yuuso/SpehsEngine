@@ -3,7 +3,7 @@
 #include <iostream>
 #include "SpehsEngine/GUI/GUIRectangle.h"
 
-namespace spehs
+namespace se
 {
 	class GUIWindow;
 	class GUIRectangleScrollList;

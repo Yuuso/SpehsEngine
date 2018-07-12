@@ -30,7 +30,7 @@
 //FPS
 #define FPS_REFRESH_RATE 5
 
-namespace spehs
+namespace se
 {
 	ConsoleVisualizer::ConsoleVisualizer(Console& _console, InputManager& _inputManager, BatchManager& _batchManager)
 		: console(_console)
@@ -46,7 +46,7 @@ namespace spehs
 		//Background shade
 		backgroundShade.setCameraMatrixState(false);
 		backgroundShade.setPosition(0.0f, 0.0f);
-		backgroundShade.setColor(spehs::Color(13, 26, 39, 128));
+		backgroundShade.setColor(se::Color(13, 26, 39, 128));
 		backgroundShade.setRenderState(true);
 		backgroundShade.setAlpha(204);
 
@@ -239,7 +239,7 @@ namespace spehs
 		const bool renderState = getRenderState();
 		statsText.setRenderState(renderState && showStats);
 		static const time::Time carotInterval = time::fromSeconds(1.0f);
-		carotText.setRenderState(renderState && openState && ((((carotTimer.value / carotInterval.value) % 2) == 0) || (time::now() - inputTime) < spehs::time::fromSeconds(1.0f)));
+		carotText.setRenderState(renderState && openState && ((((carotTimer.value / carotInterval.value) % 2) == 0) || (time::now() - inputTime) < se::time::fromSeconds(1.0f)));
 		for (size_t i = 0; i < lines.size(); i++)
 			lines[i]->setRenderState(renderState);
 
@@ -256,7 +256,7 @@ namespace spehs
 				for (size_t i = 0; i < lines.size(); i++)
 				{
 					y -= (float)lines[i]->getFontHeight();
-					lines[i]->setPosition(spehs::vec2(CONSOLE_BORDER, CONSOLE_BORDER + (float)y));
+					lines[i]->setPosition(se::vec2(CONSOLE_BORDER, CONSOLE_BORDER + (float)y));
 				}
 
 				//Update strings
@@ -317,7 +317,7 @@ namespace spehs
 
 			//Status text
 			statsText.setString("FPS: " + std::to_string(int(std::round(1.0f / averageLapTime.asSeconds()))) + "\n" + customDebugText);
-			statsText.setPosition(spehs::vec2(CONSOLE_BORDER, (float)batchManager.window.getHeight() - statsText.getTextHeight() - CONSOLE_BORDER));
+			statsText.setPosition(se::vec2(CONSOLE_BORDER, (float)batchManager.window.getHeight() - statsText.getTextHeight() - CONSOLE_BORDER));
 		}
 	}
 
@@ -326,7 +326,7 @@ namespace spehs
 		setFont(batchManager.fontManager.getFont(fontPath, fontSize));
 	}
 
-	void ConsoleVisualizer::setFont(spehs::Font* fontParam)
+	void ConsoleVisualizer::setFont(se::Font* fontParam)
 	{
 		std::lock_guard<std::recursive_mutex> lock(mutex);
 		if (font == fontParam)

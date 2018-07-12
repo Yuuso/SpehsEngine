@@ -7,7 +7,7 @@
 #include "SpehsEngine/Core/Color.h"
 #include "SpehsEngine/Core/Vector.h"
 
-namespace spehs
+namespace se
 {
 	class Font;
 	class BatchManager;
@@ -27,8 +27,8 @@ namespace spehs
 		void setRenderState(const bool _state);
 		bool getRenderState() const { return renderState; }
 
-		void translate(const spehs::vec2& _vec);
-		void setPosition(const spehs::vec2& _vec);
+		void translate(const se::vec2& _vec);
+		void setPosition(const se::vec2& _vec);
 		void setPosition(const float x, const float y);
 
 		void setPlaneDepth(const PlaneDepth _depth);
@@ -42,7 +42,7 @@ namespace spehs
 		void setFont(Font* _font);
 		void setFontSize(const int _size);
 
-		void setColor(const spehs::Color& _newColor);
+		void setColor(const se::Color& _newColor);
 		void setAlpha(const float _alpha);
 
 		void setShader(const unsigned int _shaderIndex) { shaderIndex = _shaderIndex; };
@@ -52,7 +52,7 @@ namespace spehs
 		//Getters
 		std::string getString() const { return string; }
 
-		spehs::vec2 getPosition() const { return position; }
+		se::vec2 getPosition() const { return position; }
 		float getX() const { return position.x; }
 		float getX(const size_t characterIndex) const;//Returns x position at given character index. Character width is not included. If index is out of bounds, returns x position of the last character instead.
 		float getY() const { return position.y; }
@@ -75,11 +75,11 @@ namespace spehs
 		PlaneDepth getPlaneDepth() const { return planeDepth; }
 		bool getCameraMatrixState() const { return cameraMatrixState; }
 
-		spehs::Color getColor() const { return color; }
+		se::Color getColor() const { return color; }
 		float getAlpha() const { return color.a; }
 
 		std::vector<GLuint> textureIDs;
-		std::vector<spehs::Vertex> worldVertexArray;
+		std::vector<se::Vertex> worldVertexArray;
 		BatchManager& batchManager;
 
 	protected:
@@ -94,8 +94,8 @@ namespace spehs
 		void updateText();
 
 		std::string string;
-		spehs::vec2 position;
-		spehs::Color color;
+		se::vec2 position;
+		se::Color color;
 		float scale = 1.0f;
 		int lineCount = 0;
 		int lineSpacing = 0;
@@ -106,7 +106,7 @@ namespace spehs
 		bool readyForDelete = false;
 		bool needPositionUpdate = false;
 		bool needTextUpdate = false;
-		std::vector<spehs::Vertex> vertexArray;
+		std::vector<se::Vertex> vertexArray;
 		Font* font = nullptr;
 	};
 }

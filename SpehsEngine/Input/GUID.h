@@ -8,7 +8,7 @@ IMPORTANT NOTE: This requires a modified version of the SDL_joystick.h where SDL
 struct SDL_JoystickGUID;
 typedef struct SDL_JoystickGUID SDL_JoystickGUID;
 
-namespace spehs
+namespace se
 {
 	struct GUID
 	{

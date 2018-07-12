@@ -2,7 +2,7 @@
 #pragma once
 
 
-namespace spehs
+namespace se
 {
 	namespace graphics
 	{

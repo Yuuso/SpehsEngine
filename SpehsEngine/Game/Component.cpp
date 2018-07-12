@@ -3,7 +3,7 @@
 #include "SpehsEngine/Game/GameObject.h"
 
 
-namespace spehs
+namespace se
 {
 	Component::Component()
 	{

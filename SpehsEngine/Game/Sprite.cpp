@@ -10,7 +10,7 @@
 
 #define DEFAULT_SIZE 50.0f
 
-namespace spehs
+namespace se
 {
 	Sprite::Sprite(BatchManager& batchManager)
 		: textureManager(batchManager.textureManager)
@@ -53,7 +53,7 @@ namespace spehs
 	{
 		sprite->setTexture(_textureID);
 	}
-	void Sprite::setColor(const spehs::Color& _newColor)
+	void Sprite::setColor(const se::Color& _newColor)
 	{
 		sprite->setColor(_newColor);
 	}

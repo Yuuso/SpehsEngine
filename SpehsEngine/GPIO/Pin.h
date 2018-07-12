@@ -6,7 +6,7 @@
 
 
 
-namespace spehs
+namespace se
 {
 	namespace gpio
 	{
@@ -63,7 +63,7 @@ namespace spehs
 			Blocks indefinitely if no timeout parameter is specified (set to 0).
 			In case of a timeout, returns 0.
 		*/
-		extern spehs::time::Time pulseIn(const Pin pin, const PinState pinState, const spehs::time::Time timeout = 0);
+		extern se::time::Time pulseIn(const Pin pin, const PinState pinState, const se::time::Time timeout = 0);
 
 		extern void setPinMode(const Pin pin, const PinMode mode);
 		extern void setPinAsInput(const Pin pin);

@@ -13,20 +13,20 @@
 typedef unsigned short GLushort;
 
 
-namespace spehs
+namespace se
 {
 	class Mesh;
 
-	int checkArrayForElements(const std::vector<spehs::Vertex3D>& _array, const spehs::vec3& _position, const spehs::vec2& _textureCoord, const spehs::vec3& _normal);
+	int checkArrayForElements(const std::vector<se::Vertex3D>& _array, const se::vec3& _position, const se::vec2& _textureCoord, const se::vec3& _normal);
 
 	struct ModelData
 	{
 		ModelData();
-		void loadFromData(std::vector<spehs::Vertex3D> &_vertexArray, std::vector<GLushort> &_elementArray);
+		void loadFromData(std::vector<se::Vertex3D> &_vertexArray, std::vector<GLushort> &_elementArray);
 
-		std::vector<spehs::Vertex3D> vertices;
-		std::vector<spehs::vec2> textureCoordinates;
-		std::vector<spehs::vec3> normals;
+		std::vector<se::Vertex3D> vertices;
+		std::vector<se::vec2> textureCoordinates;
+		std::vector<se::vec3> normals;
 		std::vector<GLushort> vertexElements;
 		std::vector<GLushort> textureElements;
 		std::vector<GLushort> normalElements;
@@ -38,10 +38,10 @@ namespace spehs
 		ModelManager();
 		~ModelManager();
 
-		void loadModel(const std::string& _filepath, spehs::Mesh* _mesh);
+		void loadModel(const std::string& _filepath, se::Mesh* _mesh);
 
-		void loadOBJ(const std::string& _filepath, spehs::Mesh* _mesh);
-		void loadOBJ(const size_t& _hash, spehs::Mesh* _mesh);
+		void loadOBJ(const std::string& _filepath, se::Mesh* _mesh);
+		void loadOBJ(const size_t& _hash, se::Mesh* _mesh);
 		void preloadOBJ(const std::string& _filepath);
 
 		void removeModelData(const std::string& _filepath);

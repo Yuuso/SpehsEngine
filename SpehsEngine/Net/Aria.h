@@ -8,7 +8,7 @@
 
 
 
-namespace spehs
+namespace se
 {
 	class SocketTCP;
 	class ReadBuffer;
@@ -22,7 +22,7 @@ namespace spehs
 		public:
 			Connector(SocketTCP& socket, const std::string& name, const std::string& counterpart, const net::Port& _localPortForWaiting);
 
-			bool enter(const net::Endpoint& endpoint);//TODO: , const spehs::time::Time timeout = 0
+			bool enter(const net::Endpoint& endpoint);//TODO: , const se::time::Time timeout = 0
 			bool onReceive(ReadBuffer& buffer);
 			void onAccept(SocketTCP& socket);
 
@@ -37,8 +37,8 @@ namespace spehs
 			net::Endpoint connectEndpoint;
 
 			std::mutex pingMutex;
-			spehs::time::Time lastPingSendTime;
-			spehs::time::Time lastPingReceiveTime;
+			se::time::Time lastPingSendTime;
+			se::time::Time lastPingReceiveTime;
 		};
 
 		class Client

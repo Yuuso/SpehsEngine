@@ -15,10 +15,10 @@
 #define SINT16_STATES 65536
 
 
-//spehs::InputManager* inputManager;
-namespace spehs
+//se::InputManager* inputManager;
+namespace se
 {
-	spehs::GUID getJoystickDeviceGUID(int _deviceIndex)
+	se::GUID getJoystickDeviceGUID(int _deviceIndex)
 	{
 		return SDL_JoystickGetDeviceGUID(_deviceIndex);
 	}
@@ -59,7 +59,7 @@ namespace spehs
 			joystickConnected();
 
 		mouseWheelDelta = 0;
-		static spehs::ivec2 prevMouseCoords;
+		static se::ivec2 prevMouseCoords;
 		prevMouseCoords = mouseCoords;
 		latestKeyboardPress = 0;
 		latestMouseButtonPress = 0;
@@ -195,7 +195,7 @@ namespace spehs
 		return true;
 	}
 
-	bool InputManager::mouseCollision(const spehs::vec4& AABB) const
+	bool InputManager::mouseCollision(const se::vec4& AABB) const
 	{
 		return mouseCoords.x >= AABB.x &&
 			mouseCoords.x <= AABB.x + AABB.z &&
@@ -203,7 +203,7 @@ namespace spehs
 			mouseCoords.y <= AABB.y + AABB.w;
 	}
 
-	bool InputManager::mouseCollision(const spehs::vec2& AABBMin, const spehs::vec2& AABBMax) const
+	bool InputManager::mouseCollision(const se::vec2& AABBMin, const se::vec2& AABBMax) const
 	{
 		return mouseCoords.x >= AABBMin.x &&
 			mouseCoords.x <= AABBMax.x &&
@@ -274,7 +274,7 @@ namespace spehs
 					{
 						std::string error = "Couldn't open SDL joystick! ";
 						error += SDL_GetError();
-						spehs::log::error(error);
+						se::log::error(error);
 					}
 					joysticks[i]->goOnline(js);
 					foundOffline = true;
@@ -357,7 +357,7 @@ namespace spehs
 		{
 			std::string error = "Failed to open SDL_joystick! ";
 			error += SDL_GetError();
-			spehs::log::error(error);
+			se::log::error(error);
 			return;
 		}
 
@@ -370,7 +370,7 @@ namespace spehs
 		offline = false;
 		std::string str("Joystick created: ");
 		str += SDL_JoystickName(joystick);
-		spehs::log::info(str);
+		se::log::info(str);
 	}
 
 	Joystick::~Joystick()

@@ -7,7 +7,7 @@
 #include <vector>
 
 
-namespace spehs
+namespace se
 {
 	class Camera3D;
 	class Mesh;

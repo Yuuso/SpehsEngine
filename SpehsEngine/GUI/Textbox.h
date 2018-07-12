@@ -3,7 +3,7 @@
 #include "SpehsEngine/Core/Vector.h"
 #include "SpehsEngine/Core/Color.h"
 
-namespace spehs
+namespace se
 {
 	class BatchManager;
 	class Polygon;
@@ -21,9 +21,9 @@ namespace spehs
 		void setRenderState(const bool state);
 		void setDepth(int16_t depth);
 		void setString(const std::string& string);
-		void setTextColor(const spehs::Color& color);
+		void setTextColor(const se::Color& color);
 		void setTextAlpha(const float alpha);
-		void setBackgroundColor(const spehs::Color& color);
+		void setBackgroundColor(const se::Color& color);
 		void setBackgroundAlpha(const float alpha);
 
 		//Getters
@@ -32,15 +32,15 @@ namespace spehs
 		bool getRenderState() const;
 		uint16_t getDepthBack() const;
 		uint16_t getDepthFront() const;
-		spehs::vec2 getPosition() const;
+		se::vec2 getPosition() const;
 		int getX() const;
 		int getY() const;
 		bool checkPointCollision(const int x, const int y) const;
-		bool checkPointCollision(const spehs::vec2& point) const;
+		bool checkPointCollision(const se::vec2& point) const;
 
 	protected:
-		spehs::Polygon* polygon;
-		spehs::Text* text;
+		se::Polygon* polygon;
+		se::Text* text;
 		const unsigned textBorder;
 	};
 }

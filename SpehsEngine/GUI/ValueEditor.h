@@ -1,6 +1,6 @@
 #pragma once
 
-namespace spehs
+namespace se
 {
 	/**Base class/interface for a "value editor".
 	Important: ValueType must have the == and = operators implemented: After the = operator, the result of == operator should return true!

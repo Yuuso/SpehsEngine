@@ -5,7 +5,7 @@
 #include <algorithm>
 #include "SpehsEngine/Core/Serializable.h"
 
-namespace spehs
+namespace se
 {
 	/**
 	Class for reading/writing/storing vectors of data.

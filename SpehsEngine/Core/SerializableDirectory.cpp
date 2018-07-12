@@ -3,7 +3,7 @@
 #include <cstring>
 
 
-namespace spehs
+namespace se
 {
 	SerializableDirectory::SerializableDirectory() : parent(nullptr)
 	{
@@ -11,7 +11,7 @@ namespace spehs
 	}
 	SerializableDirectory::SerializableDirectory(const SerializableDirectory& other)
 	{
-		spehs::exceptions::unexpectedError("TODO");
+		se::exceptions::unexpectedError("TODO");
 	}
 	SerializableDirectory::~SerializableDirectory()
 	{
@@ -20,7 +20,7 @@ namespace spehs
 	}
 	SerializableDirectory& SerializableDirectory::operator=(const SerializableDirectory& other)
 	{
-		spehs::exceptions::unexpectedError("TODO");
+		se::exceptions::unexpectedError("TODO");
 		return *this;
 	}
 	size_t SerializableDirectory::packetSize() const
@@ -80,7 +80,7 @@ namespace spehs
 	{
 		if (newName.size() == 0)
 		{
-			spehs::exceptions::warning("Serializable directory name cannot be set to null!");
+			se::exceptions::warning("Serializable directory name cannot be set to null!");
 			return false;
 		}
 		if (parent)
@@ -89,7 +89,7 @@ namespace spehs
 			{
 				if (parent->subDirectories[i].name == newName)
 				{
-					spehs::exceptions::warning("Serializable directory name cannot be set to same as sibling directory name!");
+					se::exceptions::warning("Serializable directory name cannot be set to same as sibling directory name!");
 					return false;
 				}
 			}
@@ -101,7 +101,7 @@ namespace spehs
 	{
 		if (_name.size() == 0)
 		{
-			spehs::exceptions::warning("Serializable directory name cannot be null!");
+			se::exceptions::warning("Serializable directory name cannot be null!");
 			return nullptr;
 		}
 		for (unsigned i = 0; i < subDirectories.size(); i++)
@@ -125,7 +125,7 @@ namespace spehs
 				std::string firstParentDirectory;
 				if (p == 0)
 				{
-					spehs::exceptions::warning("Provided directory path contains a null directory name! Invalid path: \"" + directoryPath + "\"");
+					se::exceptions::warning("Provided directory path contains a null directory name! Invalid path: \"" + directoryPath + "\"");
 					return nullptr;
 				}
 				firstParentDirectory.resize(p);
@@ -139,7 +139,7 @@ namespace spehs
 				subPath.resize(directoryPath.size() - p - 1);
 				if (subPath.size() == 0)
 				{
-					spehs::exceptions::warning("Specified sub directory name is null! Invalid path: Invalid path: \"" + directoryPath + "\"");
+					se::exceptions::warning("Specified sub directory name is null! Invalid path: Invalid path: \"" + directoryPath + "\"");
 					return nullptr;
 				}
 				memcpy(&subPath[0], &directoryPath[p + 1], sizeof(char) * subPath.size());

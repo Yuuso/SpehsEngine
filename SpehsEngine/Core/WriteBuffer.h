@@ -5,7 +5,7 @@
 #include "Time.h" // TO BE REMOVED
 #include "HasMemberFunction.h"
 
-namespace spehs
+namespace se
 {
 	SPEHS_HAS_MEMBER_FUNCTION(write, has_write);
 	/*
@@ -31,7 +31,7 @@ namespace spehs
 		typename std::enable_if<!has_write<T, void(T::*)(WriteBuffer&) const>::value, void>::type write(const T& t)
 		{
 			writeToBuffer(*this, t);
-//				spehs::log::info(typeid(T).name());
+//				se::log::info(typeid(T).name());
 //				SPEHS_ASSERT(false && "To use 'WriteBuffer::write<T>(const T&)' for a class type, the type T must have a 'void write(WriteBuffer&) const' method!");
 //#ifdef _WIN32 // NOTE: cannot use static assert because of g++ and SFINAE
 //				static_assert(false, "Class type T doesn't have a const write method.");
@@ -54,7 +54,7 @@ namespace spehs
 		typename std::enable_if<!has_write<T, void(T::*)(WriteBuffer&)>::value && !has_write<T, void(T::*)(WriteBuffer&) const>::value, void>::type write(T& t)
 		{
 			writeToBuffer(*this, t);
-//				spehs::log::info(typeid(T).name());
+//				se::log::info(typeid(T).name());
 //				SPEHS_ASSERT(false && "To use 'WriteBuffer::write<T>(T&)' for a class type, the type T must have a 'void write(WriteBuffer&)' or 'void write(WriteBuffer&) const' method!");
 //#ifdef _WIN32 // NOTE: cannot use static assert because of g++ and SFINAE
 //				static_assert(false, "Class type T doesn't have mutable or const write method.");
@@ -102,5 +102,5 @@ namespace spehs
 			buffer.write(vector.size());
 	}
 	void writeToBuffer(WriteBuffer& buffer, const std::string& string);
-	void writeToBuffer(WriteBuffer& buffer, const spehs::time::Time& time);
+	void writeToBuffer(WriteBuffer& buffer, const se::time::Time& time);
 }

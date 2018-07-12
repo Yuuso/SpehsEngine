@@ -1,7 +1,7 @@
 #pragma once
 #include <mutex>
 
-namespace spehs
+namespace se
 {
 	template<typename T>
 	class RAIIVariableSetter

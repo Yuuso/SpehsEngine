@@ -7,7 +7,7 @@
 
 typedef int GLint;
 typedef unsigned int GLuint;
-namespace spehs
+namespace se
 {
 	enum class VertexAttributePosition : GLuint
 	{

@@ -4,14 +4,14 @@
 #include "SpehsEngine/GUI/ValueEditor.h"
 
 
-namespace spehs
+namespace se
 {
 	class Polygon;
 	class GUICheckbox : public GUIRectangle, public ValueEditor<bool>
 	{
 	public:
-		static const spehs::Color defaultCheckboxOuterColor;
-		static const spehs::Color defaultCheckboxFillingColor;
+		static const se::Color defaultCheckboxOuterColor;
+		static const se::Color defaultCheckboxFillingColor;
 	public:
 		GUICheckbox(GUIContext& context);
 		~GUICheckbox() override;

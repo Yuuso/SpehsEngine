@@ -5,7 +5,7 @@
 #include <SDL/SDL_video.h>
 #include <GL/glew.h>
 
-namespace spehs
+namespace se
 {
 	GLContext::GLContext(Window& _window)
 		: window(_window)

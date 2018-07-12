@@ -8,13 +8,13 @@
 #include <fstream>
 
 
-namespace spehs
+namespace se
 {
-	int checkArrayForElements(const std::vector<spehs::Vertex3D>& _array, const spehs::vec3& _position, const spehs::vec2& _textureCoord, const spehs::vec3& _normal)
+	int checkArrayForElements(const std::vector<se::Vertex3D>& _array, const se::vec3& _position, const se::vec2& _textureCoord, const se::vec3& _normal)
 	{
 		for (unsigned i = 0; i < _array.size(); i++)
 		{
-			if (_array[i].position == _position && _array[i].uv == spehs::vec2(_textureCoord.x, _textureCoord.y) && _array[i].normal == spehs::vec3(_normal.x, _normal.y, _normal.z))
+			if (_array[i].position == _position && _array[i].uv == se::vec2(_textureCoord.x, _textureCoord.y) && _array[i].normal == se::vec3(_normal.x, _normal.y, _normal.z))
 			{ // Element found -> return position
 				return i;
 			}
@@ -24,10 +24,10 @@ namespace spehs
 	}
 
 	ModelData::ModelData() {}
-	void ModelData::loadFromData(std::vector<spehs::Vertex3D> &_vertexArray, std::vector<GLushort> &_elementArray)
+	void ModelData::loadFromData(std::vector<se::Vertex3D> &_vertexArray, std::vector<GLushort> &_elementArray)
 	{
 		int index;
-		std::vector<spehs::Vertex3D> vertexArray;
+		std::vector<se::Vertex3D> vertexArray;
 		std::vector<GLushort> elementArray;
 		for (unsigned i = 0; i < vertexElements.size(); i++)
 		{
@@ -38,12 +38,12 @@ namespace spehs
 			{
 				if (normals.size() == 0)
 				{
-					index = checkArrayForElements(vertexArray, vertices[vertexElements[i]].position, spehs::vec2::zero, spehs::vec3::zero);
+					index = checkArrayForElements(vertexArray, vertices[vertexElements[i]].position, se::vec2::zero, se::vec3::zero);
 					if (index < 0)
 					{
-						vertexArray.push_back(spehs::Vertex3D(vertices[vertexElements[i]].position,
-							spehs::vec2::zero,
-							spehs::vec3::zero));
+						vertexArray.push_back(se::Vertex3D(vertices[vertexElements[i]].position,
+							se::vec2::zero,
+							se::vec3::zero));
 						elementArray.push_back((GLushort)vertexArray.size() - 1);
 					}
 					else
@@ -53,12 +53,12 @@ namespace spehs
 				}
 				else
 				{
-					index = checkArrayForElements(vertexArray, vertices[vertexElements[i]].position, spehs::vec2::zero, normals[normalElements[i]]);
+					index = checkArrayForElements(vertexArray, vertices[vertexElements[i]].position, se::vec2::zero, normals[normalElements[i]]);
 					if (index < 0)
 					{
-						vertexArray.push_back(spehs::Vertex3D(vertices[vertexElements[i]].position,
-							spehs::vec2::zero,
-							spehs::vec3(normals[normalElements[i]].x, normals[normalElements[i]].y, normals[normalElements[i]].z)));
+						vertexArray.push_back(se::Vertex3D(vertices[vertexElements[i]].position,
+							se::vec2::zero,
+							se::vec3(normals[normalElements[i]].x, normals[normalElements[i]].y, normals[normalElements[i]].z)));
 						elementArray.push_back((GLushort)vertexArray.size() - 1);
 					}
 					else
@@ -69,12 +69,12 @@ namespace spehs
 			}
 			else if (normals.size() == 0)
 			{
-				index = checkArrayForElements(vertexArray, vertices[vertexElements[i]].position, textureCoordinates[textureElements[i]], spehs::vec3::zero);
+				index = checkArrayForElements(vertexArray, vertices[vertexElements[i]].position, textureCoordinates[textureElements[i]], se::vec3::zero);
 				if (index < 0)
 				{
 					vertexArray.push_back(Vertex3D(vertices[vertexElements[i]].position,
-						spehs::vec2(textureCoordinates[textureElements[i]].x, textureCoordinates[textureElements[i]].y),
-						spehs::vec3::zero));
+						se::vec2(textureCoordinates[textureElements[i]].x, textureCoordinates[textureElements[i]].y),
+						se::vec3::zero));
 					elementArray.push_back((GLushort)vertexArray.size() - 1);
 				}
 				else
@@ -88,8 +88,8 @@ namespace spehs
 				if (index < 0)
 				{
 					vertexArray.push_back(Vertex3D(vertices[vertexElements[i]].position,
-						spehs::vec2(textureCoordinates[textureElements[i]].x, textureCoordinates[textureElements[i]].y),
-						spehs::vec3(normals[normalElements[i]].x, normals[normalElements[i]].y, normals[normalElements[i]].z)));
+						se::vec2(textureCoordinates[textureElements[i]].x, textureCoordinates[textureElements[i]].y),
+						se::vec3(normals[normalElements[i]].x, normals[normalElements[i]].y, normals[normalElements[i]].z)));
 					elementArray.push_back((GLushort)vertexArray.size() - 1);
 				}
 				else
@@ -115,7 +115,7 @@ namespace spehs
 	}
 
 
-	void ModelManager::loadModel(const std::string& _filepath, spehs::Mesh* _mesh)
+	void ModelManager::loadModel(const std::string& _filepath, se::Mesh* _mesh)
 	{
 		//Check for special cases
 		if (_filepath == "Cube")
@@ -181,7 +181,7 @@ namespace spehs
 			exceptions::fatalError("The models file type is not supported!");
 		}
 	}
-	void ModelManager::loadOBJ(const std::string& _filepath, spehs::Mesh* _mesh)
+	void ModelManager::loadOBJ(const std::string& _filepath, se::Mesh* _mesh)
 	{
 		//Try to find from data map
 		size_t hash = std::hash<std::string>()(_filepath);
@@ -196,7 +196,7 @@ namespace spehs
 		it->second->loadFromData(_mesh->vertexArray, _mesh->elementArray);
 	}
 
-	void ModelManager::loadOBJ(const size_t& _hash, spehs::Mesh* _mesh)
+	void ModelManager::loadOBJ(const size_t& _hash, se::Mesh* _mesh)
 	{
 		auto it = modelDataMap.find(_hash);
 		if (it != modelDataMap.end())
@@ -206,7 +206,7 @@ namespace spehs
 		}
 		else
 		{
-			spehs::exceptions::unexpectedError("Couldn't find model data: " + std::to_string(_hash));
+			se::exceptions::unexpectedError("Couldn't find model data: " + std::to_string(_hash));
 			return;
 		}
 	}
@@ -217,7 +217,7 @@ namespace spehs
 		std::ifstream file(_filepath, std::ios::in);
 		if (!file.is_open())
 		{
-			spehs::exceptions::unexpectedError("Failed to open OBJ file: " + _filepath);
+			se::exceptions::unexpectedError("Failed to open OBJ file: " + _filepath);
 			return;
 		}
 
@@ -232,7 +232,7 @@ namespace spehs
 		auto it = modelDataMap.find(hash);
 		if (it == modelDataMap.end())
 		{
-			spehs::exceptions::unexpectedError("Couldn't find model data: " + _filepath);
+			se::exceptions::unexpectedError("Couldn't find model data: " + _filepath);
 			return;
 		}
 		delete it->second;
@@ -244,7 +244,7 @@ namespace spehs
 		auto it = modelDataMap.find(_hash);
 		if (it == modelDataMap.end())
 		{
-			spehs::exceptions::unexpectedError("Couldn't find model data: " + std::to_string(_hash));
+			se::exceptions::unexpectedError("Couldn't find model data: " + std::to_string(_hash));
 			return;
 		}
 		delete it->second;
@@ -2330,17 +2330,17 @@ namespace spehs
 			if (line.substr(0, 2) == "v ")
 			{
 				stringStream = std::istringstream(line.substr(2));
-				spehs::vec3 vertex;
+				se::vec3 vertex;
 				stringStream >> vertex.x;
 				stringStream >> vertex.y;
 				stringStream >> vertex.z;
-				data->vertices.push_back(spehs::Vertex3D(vertex));
+				data->vertices.push_back(se::Vertex3D(vertex));
 			}
 			//Normals
 			else if (line.substr(0, 3) == "vn ")
 			{
 				stringStream = std::istringstream(line.substr(3));
-				spehs::vec3 normal;
+				se::vec3 normal;
 				stringStream >> normal.x;
 				stringStream >> normal.y;
 				stringStream >> normal.z;
@@ -2350,7 +2350,7 @@ namespace spehs
 			else if (line.substr(0, 3) == "vt ")
 			{
 				stringStream = std::istringstream(line.substr(3));
-				spehs::vec2 uv;
+				se::vec2 uv;
 				stringStream >> uv.x;
 				stringStream >> uv.y;
 				data->textureCoordinates.push_back(uv);
@@ -2411,17 +2411,17 @@ namespace spehs
 			if (line.substr(0, 2) == "v ")
 			{
 				stringStream = std::istringstream(line.substr(2));
-				spehs::vec3 vertex;
+				se::vec3 vertex;
 				stringStream >> vertex.x;
 				stringStream >> vertex.y;
 				stringStream >> vertex.z;
-				data->vertices.push_back(spehs::Vertex3D(vertex));
+				data->vertices.push_back(se::Vertex3D(vertex));
 			}
 			//Normals
 			else if (line.substr(0, 3) == "vn ")
 			{
 				stringStream = std::istringstream(line.substr(3));
-				spehs::vec3 normal;
+				se::vec3 normal;
 				stringStream >> normal.x;
 				stringStream >> normal.y;
 				stringStream >> normal.z;
@@ -2431,7 +2431,7 @@ namespace spehs
 			else if (line.substr(0, 3) == "vt ")
 			{
 				stringStream = std::istringstream(line.substr(3));
-				spehs::vec2 uv;
+				se::vec2 uv;
 				stringStream >> uv.x;
 				stringStream >> uv.y;
 				data->textureCoordinates.push_back(uv);

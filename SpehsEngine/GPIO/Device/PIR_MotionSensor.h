@@ -2,7 +2,7 @@
 #include "SpehsEngine/GPIO/Device/ThreadedDevice.h"
 #include "SpehsEngine/GPIO/Pin.h"
 
-namespace spehs
+namespace se
 {
 	namespace device
 	{

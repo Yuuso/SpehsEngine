@@ -3,7 +3,7 @@
 #include "SpehsEngine/Input/InputManager.h"
 
 
-namespace spehs
+namespace se
 {
 	KeyboardRecorder::KeyboardRecorder(InputManager& _inputManager)
 		: inputManager(_inputManager)

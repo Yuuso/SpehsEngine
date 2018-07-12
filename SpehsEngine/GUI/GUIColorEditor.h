@@ -4,7 +4,7 @@
 #include "SpehsEngine/Core/Color.h"
 
 
-namespace spehs
+namespace se
 {
 	/** retriveColor() method returns the color being edited at its latest state. */
 	class GUIColorEditor : public GUIRectangle, public ValueEditor<Color>

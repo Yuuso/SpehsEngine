@@ -1,7 +1,7 @@
 #include "SpehsEngine/Math/Mathematics.h"
 
 
-namespace spehs
+namespace se
 {
 	int factorial(int number)
 	{

@@ -12,7 +12,7 @@ typedef int ALsizei;
 typedef int ALenum;
 
 
-namespace spehs
+namespace se
 {
 	class AudioManager
 	{

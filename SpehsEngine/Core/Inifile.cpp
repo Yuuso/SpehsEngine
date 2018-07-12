@@ -3,7 +3,7 @@
 #include "SpehsEngine/Core/Inifile.h"
 #include "SpehsEngine/Core/Log.h"
 
-namespace spehs
+namespace se
 {
 	const std::string Inifile::fileExtension(".ini");
 	Inifile::Inifile(const std::string& _name)
@@ -63,7 +63,7 @@ namespace spehs
 		std::lock_guard<std::recursive_mutex> lock(mutex);
 		if (name.size() == 0)
 		{
-			spehs::log::warning("Cannot write appvars, no fileName was specified.");
+			se::log::warning("Cannot write appvars, no fileName was specified.");
 			return false;
 		}
 		
@@ -106,7 +106,7 @@ namespace spehs
 				}
 				else
 				{
-					spehs::log::warning(name + fileExtension + " contains an empty section name. No section created.");
+					se::log::warning(name + fileExtension + " contains an empty section name. No section created.");
 				}
 			}
 			else
@@ -164,7 +164,7 @@ namespace spehs
 									{
 										if (section->readVars[i].type == type && section->readVars[i].name == name)
 										{
-											spehs::log::warning("An appvar was read but the section already has an appvar with this type and name, discarding. Type: '" + type + "', Name: '" + name + "', Value: '" + value + "'.");
+											se::log::warning("An appvar was read but the section already has an appvar with this type and name, discarding. Type: '" + type + "', Name: '" + name + "', Value: '" + value + "'.");
 											exists = true;
 											break;
 										}
@@ -173,7 +173,7 @@ namespace spehs
 										section->readVars.push_back(Inisection::ReadVar(type, name, value));
 								}
 								else
-									spehs::log::warning("An appvar was read but no section was assigned. Type: '" + type + "', Name: '" + name + "', Value: '" + value + "'.");
+									se::log::warning("An appvar was read but no section was assigned. Type: '" + type + "', Name: '" + name + "', Value: '" + value + "'.");
 							}
 						}
 					}

@@ -21,10 +21,10 @@
 
 #define DEFAULT_TEXTURE_SEED 1965819
 
-const spehs::TextureParameter spehs::TextureParameter::defaultParameters = spehs::TextureParameter();
+const se::TextureParameter se::TextureParameter::defaultParameters = se::TextureParameter();
 
 
-namespace spehs
+namespace se
 {
 	TextureManager::TextureManager(Window& _window)
 		: window(_window)
@@ -488,6 +488,6 @@ namespace spehs
 
 		int screenshot;
 		screenshot = SOIL_save_screenshot(path.c_str(), SOIL_SAVE_TYPE_BMP, 0, 0, window.getWidth(), window.getHeight());
-		//console::log("Screenshot saved to \"" + path + "\"", spehs::Color(90, 255, 230));
+		//console::log("Screenshot saved to \"" + path + "\"", se::Color(90, 255, 230));
 	}
 }

@@ -15,7 +15,7 @@ typedef struct ALCcontext_struct ALCcontext;
 typedef unsigned int ALuint;
 
 
-namespace spehs
+namespace se
 {
 	namespace audio
 	{
@@ -39,18 +39,18 @@ namespace spehs
 
 			static void setMaxSources(const unsigned int _maxSources);
 
-			static void setListenerPosition(const spehs::vec2& _pos);
-			static void setListenerPosition(const spehs::vec2& _pos, const float _z);
-			static void setListenerVelocity(const spehs::vec2& _vel);
-			static void setListenerVelocity(const spehs::vec2& _vel, const float _z);
+			static void setListenerPosition(const se::vec2& _pos);
+			static void setListenerPosition(const se::vec2& _pos, const float _z);
+			static void setListenerVelocity(const se::vec2& _vel);
+			static void setListenerVelocity(const se::vec2& _vel, const float _z);
 			static void setListenerGain(const float _gain);
 
 			//These correction factors are applied to all sound and the listener positions and velocities. They are used to set the scale of the units used in positions.
-			static void setPositionCorrectionFactor(const spehs::vec2& _poscor);
+			static void setPositionCorrectionFactor(const se::vec2& _poscor);
 			static void setScaleCorrectionFactor(const float _sclcor); //z
 
-			static spehs::vec2 getListenerPosition();
-			static spehs::vec2 getListenerVelocity();
+			static se::vec2 getListenerPosition();
+			static se::vec2 getListenerVelocity();
 			static float getListenerGain();
 
 			//Audio channels

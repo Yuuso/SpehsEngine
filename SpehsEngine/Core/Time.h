@@ -4,8 +4,8 @@
 #include <string>
 
 #ifdef _DEBUG
-#define SPEHS_DEBUG_DURATION_BEGIN(timeDurationVariable) timeDurationVariable = spehs::time::now();
-#define SPEHS_DEBUG_DURATION_END(timeDurationVariable) timeDurationVariable = spehs::time::now() - timeDurationVariable;
+#define SPEHS_DEBUG_DURATION_BEGIN(timeDurationVariable) timeDurationVariable = se::time::now();
+#define SPEHS_DEBUG_DURATION_END(timeDurationVariable) timeDurationVariable = se::time::now() - timeDurationVariable;
 #else
 #define SPEHS_DEBUG_DURATION_BEGIN(timeDurationVariable) (void)0
 #define SPEHS_DEBUG_DURATION_END(timeDurationVariable) (void)0
@@ -15,7 +15,7 @@
 #undef delay
 #endif
 
-namespace spehs
+namespace se
 {
 	namespace time
 	{
@@ -105,7 +105,7 @@ namespace spehs
 		/* Returns current time since time was initialized. Less efficient than using now(). */
 		Time getRunTime();
 
-		/* Returns time when spehs::time was initialized. */
+		/* Returns time when se::time was initialized. */
 		Time getInitializationTime();
 
 		//Get time and date of when the engine was built
@@ -140,7 +140,7 @@ namespace spehs
 			}
 			void deltaTimeSystemUpdate()
 			{
-				const spehs::time::Time now = spehs::time::now();
+				const se::time::Time now = se::time::now();
 				deltaTime = now - deltaTimestamp;
 				deltaTimestamp = now;
 				deltaSeconds = deltaTime.asSeconds();
@@ -148,11 +148,11 @@ namespace spehs
 
 			//Public attributes for maximum speed
 			float deltaSeconds;
-			spehs::time::Time deltaTime;
+			se::time::Time deltaTime;
 
 		private:
 			std::string name;
-			spehs::time::Time deltaTimestamp;
+			se::time::Time deltaTimestamp;
 		};
 
 		/* Records time at the time of allocation. Elapsed time can be retrieved using get() at any time. */

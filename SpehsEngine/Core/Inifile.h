@@ -1,7 +1,7 @@
 #pragma once
 #include "SpehsEngine/Core/Inivar.h"
 
-namespace spehs
+namespace se
 {
 	class Inisection
 	{

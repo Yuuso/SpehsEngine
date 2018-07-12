@@ -6,7 +6,7 @@
 
 //Make all shapes 1.0f x 1.0f by size
 
-namespace spehs
+namespace se
 {
 	enum Shape
 	{

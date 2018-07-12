@@ -7,7 +7,7 @@
 #include "SpehsEngine/Rendering/Text.h"
 #include "SpehsEngine/Core/Shapes.h"
 
-namespace spehs
+namespace se
 {
 	Textbox::Textbox(BatchManager& batchManager, const std::string& string, const unsigned _textBorder, const int16_t depth)
 		: textBorder(_textBorder)
@@ -15,12 +15,12 @@ namespace spehs
 		text = batchManager.createText(string, GUIRectangle::defaultDepth);
 		text->setFont("Fonts/Anonymous.ttf", 12);
 		text->setCameraMatrixState(false);
-		text->setColor(spehs::GUIRectangle::defaultTooltipStringColor);
-		polygon = batchManager.createPolygon(spehs::Shape::BUTTON, GUIRectangle::defaultDepth + 1,
+		text->setColor(se::GUIRectangle::defaultTooltipStringColor);
+		polygon = batchManager.createPolygon(se::Shape::BUTTON, GUIRectangle::defaultDepth + 1,
 			float(2 * textBorder) + std::max(text->getTextWidth(), (float)text->getFontMaxAdvanceWidth()),
 			float((1 + text->getLineCount()) * textBorder - text->getFontDescender() + text->getFontHeight() * text->getLineCount()));
 		polygon->setCameraMatrixState(false);
-		polygon->setColor(spehs::GUIRectangle::defaultTooltipColor);
+		polygon->setColor(se::GUIRectangle::defaultTooltipColor);
 		setRenderState(true);
 		setDepth(depth);
 	}
@@ -52,7 +52,7 @@ namespace spehs
 			float((1 + text->getLineCount()) * textBorder - text->getFontDescender() + text->getFontHeight() * text->getLineCount()));
 		setPosition(int(polygon->getX()), int(polygon->getY()));
 	}
-	void Textbox::setTextColor(const spehs::Color& color)
+	void Textbox::setTextColor(const se::Color& color)
 	{
 		text->setColor(color);
 	}
@@ -60,7 +60,7 @@ namespace spehs
 	{
 		text->setAlpha(alpha);
 	}
-	void Textbox::setBackgroundColor(const spehs::Color& color)
+	void Textbox::setBackgroundColor(const se::Color& color)
 	{
 		polygon->setColor(color);
 	}
@@ -91,7 +91,7 @@ namespace spehs
 	{
 		return text->getRenderState() && polygon->getRenderState();
 	}
-	spehs::vec2 Textbox::getPosition() const
+	se::vec2 Textbox::getPosition() const
 	{
 		return polygon->getPosition();
 	}
@@ -107,7 +107,7 @@ namespace spehs
 	{
 		return !(x < polygon->getX() || y < polygon->getY() || x > polygon->getX() + polygon->getWidth() || y > polygon->getY() + polygon->getHeight());
 	}
-	bool Textbox::checkPointCollision(const spehs::vec2& point) const
+	bool Textbox::checkPointCollision(const se::vec2& point) const
 	{
 		return !(point.x < polygon->getX() || point.y < polygon->getY() || point.x > polygon->getX() + polygon->getWidth() || point.y > polygon->getY() + polygon->getHeight());
 	}

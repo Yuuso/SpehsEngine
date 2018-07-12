@@ -13,7 +13,7 @@
 	Console is accessed through these functions.
 	The console is internally mutex locked and can thus be safely accessed from any thread.
 */
-namespace spehs
+namespace se
 {
 	class Console
 	{

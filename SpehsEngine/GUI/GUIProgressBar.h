@@ -2,7 +2,7 @@
 #include "SpehsEngine/GUI/GUIRectangle.h"
 
 
-namespace spehs
+namespace se
 {
 	class GUIProgressBar : public GUIRectangle
 	{
@@ -14,13 +14,13 @@ namespace spehs
 		void updateScale() override;
 		void updatePosition() override;
 
-		void setProgressBarFrontColor(const spehs::Color& color);
+		void setProgressBarFrontColor(const se::Color& color);
 		void setProgressBarFrontAlpha(const float a);
-		void setProgressBarBackColor(const spehs::Color& color);
+		void setProgressBarBackColor(const se::Color& color);
 		void setProgressBarBackAlpha(const float a);
 
 	private:
-		spehs::Polygon* progressBarFront;
-		spehs::Polygon* progressBarBack;
+		se::Polygon* progressBarFront;
+		se::Polygon* progressBarBack;
 	};
 }

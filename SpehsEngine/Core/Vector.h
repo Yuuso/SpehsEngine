@@ -8,12 +8,12 @@
 		dot(vec& other)
 		cross(vec& other) not currently used anywhere...
 */
-namespace spehs
+namespace se
 {
 	template<typename T>
 	class Vector4
 	{
-		static_assert(std::is_arithmetic<T>::value, "spehs::Vector4 type T must be arithmetic!");
+		static_assert(std::is_arithmetic<T>::value, "se::Vector4 type T must be arithmetic!");
 	public:
 		static const Vector4<T> zero;
 
@@ -31,14 +31,14 @@ namespace spehs
 
 		Vector4<T> operator-() const
 		{
-			//static_assert(std::is_signed<T>::value, "spehs::Vector4 unary - operator should only be used on Vectors with a signed component type");
+			//static_assert(std::is_signed<T>::value, "se::Vector4 unary - operator should only be used on Vectors with a signed component type");
 			return Vector4(-x, -y, -z, -w);
 		}
 
 		template<typename ComponentType>
 		operator Vector4<ComponentType>() const
 		{
-			//static_assert(!(std::is_floating_point<T>::value && std::is_integral<ComponentType>::value), "spehs::Vector4 casting error! Should not cast from floating point component type into integral! User must manually handle the rounding in per case!");
+			//static_assert(!(std::is_floating_point<T>::value && std::is_integral<ComponentType>::value), "se::Vector4 casting error! Should not cast from floating point component type into integral! User must manually handle the rounding in per case!");
 			return Vector4<ComponentType>((ComponentType)x, (ComponentType)y, (ComponentType)z, (ComponentType)w);
 		}
 		
@@ -140,13 +140,13 @@ namespace spehs
 
 		T getLength() const
 		{
-			static_assert(std::is_floating_point<T>::value, "spehs::Vector4 type T must be floating point to be able to evaluate length! Otherwise user must implement his/her own solution.");
+			static_assert(std::is_floating_point<T>::value, "se::Vector4 type T must be floating point to be able to evaluate length! Otherwise user must implement his/her own solution.");
 			return std::pow(x * x + y * y + z * z + w * w, 0.5f);
 		}
 
 		T dot(const Vector4<T>& other) const
 		{
-			static_assert(std::is_floating_point<T>::value, "spehs::Vector4 type T must be floating point to be able to evaluate dot product! Otherwise user must implement his/her own solution.");
+			static_assert(std::is_floating_point<T>::value, "se::Vector4 type T must be floating point to be able to evaluate dot product! Otherwise user must implement his/her own solution.");
 			return x * other.x + y * other.y + z * other.z + w * other.w;
 		}
 
@@ -161,7 +161,7 @@ namespace spehs
 
 		Vector4<T>& normalize()
 		{
-			static_assert(std::is_floating_point<T>::value, "spehs::Vector4 type T must be floating point to be able to normalize! Otherwise user must implement his/her own solution.");
+			static_assert(std::is_floating_point<T>::value, "se::Vector4 type T must be floating point to be able to normalize! Otherwise user must implement his/her own solution.");
 			const T totalLength = abs(x) + abs(y) + abs(z) + abs(w);
 			if (totalLength == (T)0)
 				return *this;
@@ -174,7 +174,7 @@ namespace spehs
 
 		Vector4<T> getNormalized() const
 		{
-			static_assert(std::is_floating_point<T>::value, "spehs::Vector4 type T must be floating point to be able to get normalized! Otherwise user must implement his/her own solution.");
+			static_assert(std::is_floating_point<T>::value, "se::Vector4 type T must be floating point to be able to get normalized! Otherwise user must implement his/her own solution.");
 			const T totalLength = abs(x) + abs(y) + abs(z) + abs(w);
 			if (totalLength == (T)0)
 				return *this;
@@ -183,7 +183,7 @@ namespace spehs
 
 		T distance(const Vector4<T>& other) const
 		{
-			static_assert(std::is_floating_point<T>::value, "spehs::Vector4 type T must be floating point to be able to evaluate distance! Otherwise user must implement his/her own solution.");
+			static_assert(std::is_floating_point<T>::value, "se::Vector4 type T must be floating point to be able to evaluate distance! Otherwise user must implement his/her own solution.");
 			const T dx = x - other.x;
 			const T dy = y - other.y;
 			const T dz = z - other.z;
@@ -210,7 +210,7 @@ namespace spehs
 	template<typename T>
 	class Vector3
 	{
-		static_assert(std::is_arithmetic<T>::value, "spehs::Vector3 type T must be arithmetic!");
+		static_assert(std::is_arithmetic<T>::value, "se::Vector3 type T must be arithmetic!");
 	public:
 		static const Vector3<T> zero;
 
@@ -228,14 +228,14 @@ namespace spehs
 
 		Vector3<T> operator-() const
 		{
-			//static_assert(std::is_signed<T>::value, "spehs::Vector3 unary - operator should only be used on Vectors with a signed component type");
+			//static_assert(std::is_signed<T>::value, "se::Vector3 unary - operator should only be used on Vectors with a signed component type");
 			return Vector3(-x, -y, -z);
 		}
 
 		template<typename ComponentType>
 		operator Vector3<ComponentType>() const
 		{
-			//static_assert(!(std::is_floating_point<T>::value && std::is_integral<ComponentType>::value), "spehs::Vector3 casting error! Should not cast from floating point component type into integral! User must manually handle the rounding in per case!");
+			//static_assert(!(std::is_floating_point<T>::value && std::is_integral<ComponentType>::value), "se::Vector3 casting error! Should not cast from floating point component type into integral! User must manually handle the rounding in per case!");
 			return Vector3<ComponentType>((ComponentType)x, (ComponentType)y, (ComponentType)z);
 		}
 
@@ -330,13 +330,13 @@ namespace spehs
 
 		T getLength() const
 		{
-			static_assert(std::is_floating_point<T>::value, "spehs::Vector3 type T must be floating point to be able to evaluate length! Otherwise user must implement his/her own solution.");
+			static_assert(std::is_floating_point<T>::value, "se::Vector3 type T must be floating point to be able to evaluate length! Otherwise user must implement his/her own solution.");
 			return std::pow(x * x + y * y + z * z, 0.5f);
 		}
 
 		T dot(const Vector3<T>& other) const
 		{
-			static_assert(std::is_floating_point<T>::value, "spehs::Vector3 type T must be floating point to be able to evaluate dot product! Otherwise user must implement his/her own solution.");
+			static_assert(std::is_floating_point<T>::value, "se::Vector3 type T must be floating point to be able to evaluate dot product! Otherwise user must implement his/her own solution.");
 			return x * other.x + y * other.y + z * other.z;
 		}
 
@@ -350,7 +350,7 @@ namespace spehs
 
 		Vector3<T>& normalize()
 		{
-			static_assert(std::is_floating_point<T>::value, "spehs::Vector3 type T must be floating point to be able to normalize! Otherwise user must implement his/her own solution.");
+			static_assert(std::is_floating_point<T>::value, "se::Vector3 type T must be floating point to be able to normalize! Otherwise user must implement his/her own solution.");
 			const T totalLength = abs(x) + abs(y) + abs(z);
 			if (totalLength == (T)0)
 				return *this;
@@ -362,7 +362,7 @@ namespace spehs
 
 		Vector3<T> getNormalized() const
 		{
-			static_assert(std::is_floating_point<T>::value, "spehs::Vector3 type T must be floating point to be able to get normalized! Otherwise user must implement his/her own solution.");
+			static_assert(std::is_floating_point<T>::value, "se::Vector3 type T must be floating point to be able to get normalized! Otherwise user must implement his/her own solution.");
 			const T totalLength = abs(x) + abs(y) + abs(z);
 			if (totalLength == (T)0)
 				return *this;
@@ -371,7 +371,7 @@ namespace spehs
 
 		T distance(const Vector3<T>& other) const
 		{
-			static_assert(std::is_floating_point<T>::value, "spehs::Vector3 type T must be floating point to be able to evaluate distance! Otherwise user must implement his/her own solution.");
+			static_assert(std::is_floating_point<T>::value, "se::Vector3 type T must be floating point to be able to evaluate distance! Otherwise user must implement his/her own solution.");
 			const T dx = x - other.x;
 			const T dy = y - other.y;
 			const T dz = z - other.z;
@@ -380,7 +380,7 @@ namespace spehs
 		
 		Vector3<T> cross(const Vector3<T>& other) const
 		{
-		//	static_assert(std::is_floating_point<T>::value, "spehs::Vector3 type T must be floating point to be able to evaluate cross product! Otherwise user must implement his/her own solution.");
+		//	static_assert(std::is_floating_point<T>::value, "se::Vector3 type T must be floating point to be able to evaluate cross product! Otherwise user must implement his/her own solution.");
 		//	const T myLength = getLength();
 		//	const T otherLength = other.getLength();
 		//	// return myLength * otherLength * sin(getAngle(other)) * n(unit vector perpendicular to plane formed by this and other)
@@ -392,7 +392,7 @@ namespace spehs
 
 		T getAngle(const Vector3<T>& other) const
 		{
-			static_assert(std::is_floating_point<T>::value, "spehs::Vector3 type T must be floating point to be able to evaluate angle between! Otherwise user must implement his/her own solution.");
+			static_assert(std::is_floating_point<T>::value, "se::Vector3 type T must be floating point to be able to evaluate angle between! Otherwise user must implement his/her own solution.");
 			std::acos(dot(other) / (getLength() * other.getLength()));
 		}
 
@@ -415,7 +415,7 @@ namespace spehs
 	template<typename T>
 	class Vector2
 	{
-		static_assert(std::is_arithmetic<T>::value, "spehs::Vector2 type T must be arithmetic!");
+		static_assert(std::is_arithmetic<T>::value, "se::Vector2 type T must be arithmetic!");
 	public:
 		static const Vector2<T> zero;
 
@@ -433,14 +433,14 @@ namespace spehs
 
 		Vector2<T> operator-() const
 		{
-			//static_assert(std::is_signed<T>::value, "spehs::Vector2 unary - operator should only be used on Vectors with a signed component type");
+			//static_assert(std::is_signed<T>::value, "se::Vector2 unary - operator should only be used on Vectors with a signed component type");
 			return Vector2(-x, -y);
 		}
 
 		template<typename ComponentType>
 		operator Vector2<ComponentType>() const
 		{
-			//static_assert(std::is_floating_point<T>::value && std::is_integral<ComponentType>::value, "spehs::Vector2 casting error! Should not cast from floating point component type into integral! User must manually handle the rounding in per case!");
+			//static_assert(std::is_floating_point<T>::value && std::is_integral<ComponentType>::value, "se::Vector2 casting error! Should not cast from floating point component type into integral! User must manually handle the rounding in per case!");
 			return Vector2<ComponentType>((ComponentType)x, (ComponentType)y);
 		}
 
@@ -528,13 +528,13 @@ namespace spehs
 
 		T getLength() const
 		{
-			static_assert(std::is_floating_point<T>::value, "spehs::Vector2 type T must be floating point to be able to evaluate length! Otherwise user must implement his/her own solution.");
+			static_assert(std::is_floating_point<T>::value, "se::Vector2 type T must be floating point to be able to evaluate length! Otherwise user must implement his/her own solution.");
 			return std::pow(x * x + y * y, 0.5f);
 		}
 
 		T dot(const Vector2<T>& other) const
 		{
-			static_assert(std::is_floating_point<T>::value, "spehs::Vector2 type T must be floating point to be able to evaluate dot product! Otherwise user must implement his/her own solution.");
+			static_assert(std::is_floating_point<T>::value, "se::Vector2 type T must be floating point to be able to evaluate dot product! Otherwise user must implement his/her own solution.");
 			return x * other.x + y * other.y;
 		}
 
@@ -547,7 +547,7 @@ namespace spehs
 
 		Vector2<T>& normalize()
 		{
-			static_assert(std::is_floating_point<T>::value, "spehs::Vector2 type T must be floating point to be able to normalize! Otherwise user must implement his/her own solution.");
+			static_assert(std::is_floating_point<T>::value, "se::Vector2 type T must be floating point to be able to normalize! Otherwise user must implement his/her own solution.");
 			const T totalLength = abs(x) + abs(y);
 			if (totalLength == (T)0)
 				return *this;
@@ -558,7 +558,7 @@ namespace spehs
 
 		Vector2<T> getNormalized() const
 		{
-			static_assert(std::is_floating_point<T>::value, "spehs::Vector2 type T must be floating point to be able to get normalized! Otherwise user must implement his/her own solution.");
+			static_assert(std::is_floating_point<T>::value, "se::Vector2 type T must be floating point to be able to get normalized! Otherwise user must implement his/her own solution.");
 			const T totalLength = abs(x) + abs(y);
 			if (totalLength == (T)0)
 				return *this;
@@ -567,7 +567,7 @@ namespace spehs
 
 		T distance(const Vector2<T>& other) const
 		{
-			static_assert(std::is_floating_point<T>::value, "spehs::Vector2 type T must be floating point to be able to evaluate distance! Otherwise user must implement his/her own solution.");
+			static_assert(std::is_floating_point<T>::value, "se::Vector2 type T must be floating point to be able to evaluate distance! Otherwise user must implement his/her own solution.");
 			const T dx = x - other.x;
 			const T dy = y - other.y;
 			return std::pow(x * x + y * y, (T)0.5);
@@ -575,7 +575,7 @@ namespace spehs
 
 		T getAngle(const Vector2<T>& other) const
 		{
-			static_assert(std::is_floating_point<T>::value, "spehs::Vector2 type T must be floating point to be able to evaluate angle between! Otherwise user must implement his/her own solution.");
+			static_assert(std::is_floating_point<T>::value, "se::Vector2 type T must be floating point to be able to evaluate angle between! Otherwise user must implement his/her own solution.");
 			std::acos(dot(other) / (getLength() * other.getLength()));
 		}
 

@@ -8,7 +8,7 @@
 
 typedef unsigned int GLuint;
 
-namespace spehs
+namespace se
 {
 	struct TextureData;
 	class Camera2D;
@@ -24,13 +24,13 @@ namespace spehs
 
 		void updateVertices();
 
-		void getScreenVertices(spehs::Camera2D* _camera, std::vector<spehs::vec2>& deposit);
+		void getScreenVertices(se::Camera2D* _camera, std::vector<se::vec2>& deposit);
 
 		void resize(const float _width, const float _height);
 		//Setters
 		void setUVScale(const float _newScale);
 		void setUVScale(const float _newScaleX, const float _newScaleY);
-		void setUVScale(const spehs::vec2& _newScale);
+		void setUVScale(const se::vec2& _newScale);
 		void setDrawMode(const DrawMode _newDrawMode);
 		TextureData* setTexture(const std::string& _texturePath);
 		TextureData* setTexture(const size_t _hash);
@@ -45,9 +45,9 @@ namespace spehs
 
 	protected:
 		Polygon(BatchManager& _batchManager, const int _shapeID, const PlaneDepth _planeDepth, const float _width, const float _height);
-		Polygon(BatchManager& _batchManager, const std::vector<spehs::Vertex>& _vertexData, const PlaneDepth _planeDepth, const float _width, const float _height); //For 2DPolygons
-		Polygon(BatchManager& _batchManager, const std::vector<spehs::Vertex>& _vertexData, const float _width, const float _height);
-		Polygon(BatchManager& _batchManager, const std::vector<spehs::vec2>& _cuspData, const PlaneDepth _planeDepth, const float _width, const float _height);
+		Polygon(BatchManager& _batchManager, const std::vector<se::Vertex>& _vertexData, const PlaneDepth _planeDepth, const float _width, const float _height); //For 2DPolygons
+		Polygon(BatchManager& _batchManager, const std::vector<se::Vertex>& _vertexData, const float _width, const float _height);
+		Polygon(BatchManager& _batchManager, const std::vector<se::vec2>& _cuspData, const PlaneDepth _planeDepth, const float _width, const float _height);
 		Polygon(BatchManager& _batchManager, const float _width, const float _height);
 		~Polygon();
 

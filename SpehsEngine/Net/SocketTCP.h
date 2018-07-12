@@ -13,7 +13,7 @@
 #include "SpehsEngine/Net/PacketMessage.h"
 #include "SpehsEngine/Core/Time.h"
 
-namespace spehs
+namespace se
 {
 	class WriteBuffer;
 	class ReadBuffer;
@@ -100,7 +100,7 @@ namespace spehs
 		void waitUntilFinishedAccepting();
 		
 		/* Blocks until handshakeReceived==true, or time is out. */
-		void waitUntilReceivedHandshake(const spehs::time::Time timeout);
+		void waitUntilReceivedHandshake(const se::time::Time timeout);
 
 		/* Deallocates and clears received packet buffers. */
 		void clearReceivedPackets();
@@ -123,7 +123,7 @@ namespace spehs
 		std::function<void(SocketTCP&)> onAcceptCallback;
 		ExpectedBytesType expectedBytes;
 		std::vector<unsigned char> receiveBuffer;
-		spehs::time::Time lastReceiveTime;
+		se::time::Time lastReceiveTime;
 		bool receiving;
 		bool accepting;
 		bool connected;

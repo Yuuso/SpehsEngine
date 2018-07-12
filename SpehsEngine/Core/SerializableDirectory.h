@@ -4,10 +4,10 @@
 #include "SpehsEngine/Core/Serializable.h"
 
 
-namespace spehs
+namespace se
 {
 	/** Serializable directory is a serializable tree structure which contains data of serializable type.
-	This meaning that all of the stored data must derive from the base class of spehs::Serializable.
+	This meaning that all of the stored data must derive from the base class of se::Serializable.
 	The directory can therefore easily be deconstructed and reconstructed into a stream.
 	*/
 	class SerializableDirectory : public Serializable

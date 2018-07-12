@@ -8,7 +8,7 @@
 #include "SpehsEngine/GPIO/Pin.h"
 #include "SpehsEngine/Sync/ISyncType.h"
 
-namespace spehs
+namespace se
 {
 	class WriteBuffer;
 	class ReadBuffer;
@@ -34,14 +34,14 @@ namespace spehs
 			void syncCreate(ReadBuffer& buffer) override;
 			void syncRemove(WriteBuffer& buffer) override;
 			void syncRemove(ReadBuffer& buffer) override;
-			bool syncUpdate(const spehs::time::Time deltaTime) override;
+			bool syncUpdate(const se::time::Time deltaTime) override;
 			void syncUpdate(WriteBuffer& buffer) override;
 			void syncUpdate(ReadBuffer& buffer) override;
 
 			void setPin(const gpio::Pin pin);
 			void setActive(const bool isActive);
 			void setSampleSize(const size_t size);
-			void setSampleRate(const spehs::time::Time interval);
+			void setSampleRate(const se::time::Time interval);
 			void clearHistory();
 
 			const PWMHistory& getHistory() const { return history; }
@@ -55,7 +55,7 @@ namespace spehs
 			bool requestUpdate;
 			gpio::Pin pin;
 			size_t sampleSize;
-			spehs::time::Time sampleRate;
+			se::time::Time sampleRate;
 		};
 
 		class PinReaderPWMShell final : public ThreadedDevice, public sync::IType
@@ -68,7 +68,7 @@ namespace spehs
 			void setActive(const bool isActive);
 			void setPin(const gpio::Pin pin);
 			void setSampleSize(const size_t size);
-			void setSampleRate(const spehs::time::Time interval);
+			void setSampleRate(const se::time::Time interval);
 			void getHistory(PWMHistory& deposit) const;
 
 			//Sync type
@@ -76,7 +76,7 @@ namespace spehs
 			void syncCreate(ReadBuffer& buffer) override;
 			void syncRemove(WriteBuffer& buffer) override;
 			void syncRemove(ReadBuffer& buffer) override;
-			bool syncUpdate(const spehs::time::Time deltaTime) override;
+			bool syncUpdate(const se::time::Time deltaTime) override;
 			void syncUpdate(WriteBuffer& buffer) override;
 			void syncUpdate(ReadBuffer& buffer) override;
 			
@@ -95,8 +95,8 @@ namespace spehs
 			size_t highStateSampleCount;
 			size_t lowStateSampleCount;
 			size_t sampleSize;
-			spehs::time::Time sampleRate;
-			spehs::time::Time lastReadTime;
+			se::time::Time sampleRate;
+			se::time::Time lastReadTime;
 		};
 	}
 }

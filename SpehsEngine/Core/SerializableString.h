@@ -2,7 +2,7 @@
 #include <string>
 #include "SpehsEngine/Core/Serializable.h"
 
-namespace spehs
+namespace se
 {
 	class SerializableString : public Serializable, public std::string
 	{

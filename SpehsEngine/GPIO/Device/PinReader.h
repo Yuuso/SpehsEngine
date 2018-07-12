@@ -7,7 +7,7 @@
 #include "SpehsEngine/GPIO/Pin.h"
 #include "SpehsEngine/Sync/ISyncType.h"
 
-namespace spehs
+namespace se
 {
 	class WriteBuffer;
 	class ReadBuffer;
@@ -20,18 +20,18 @@ namespace spehs
 		struct PinReaderHistoryEntry
 		{
 			PinReaderHistoryEntry() = default;
-			PinReaderHistoryEntry(gpio::PinState s, const spehs::time::Time t) : state(s), time(t) {}
+			PinReaderHistoryEntry(gpio::PinState s, const se::time::Time t) : state(s), time(t) {}
 			void write(WriteBuffer& buffer) const;
 			void read(ReadBuffer& buffer);
 			gpio::PinState state;
-			spehs::time::Time time;
+			se::time::Time time;
 		};
 		class PinReaderHistory : public std::vector<PinReaderHistoryEntry>
 		{
 		public:
 			void write(WriteBuffer& buffer) const;
 			void read(ReadBuffer& buffer);
-			gpio::PinState stateAtTime(const spehs::time::Time& time) const;
+			gpio::PinState stateAtTime(const se::time::Time& time) const;
 		};
 
 		class PinReaderGhost : public sync::IType
@@ -46,7 +46,7 @@ namespace spehs
 			void syncCreate(ReadBuffer& buffer) override;
 			void syncRemove(WriteBuffer& buffer) override;
 			void syncRemove(ReadBuffer& buffer) override;
-			bool syncUpdate(const spehs::time::Time deltaTime) override;
+			bool syncUpdate(const se::time::Time deltaTime) override;
 			void syncUpdate(WriteBuffer& buffer) override;
 			void syncUpdate(ReadBuffer& buffer) override;
 
@@ -82,7 +82,7 @@ namespace spehs
 			void syncCreate(ReadBuffer& buffer) override;
 			void syncRemove(WriteBuffer& buffer) override;
 			void syncRemove(ReadBuffer& buffer) override;
-			bool syncUpdate(const spehs::time::Time deltaTime) override;
+			bool syncUpdate(const se::time::Time deltaTime) override;
 			void syncUpdate(WriteBuffer& buffer) override;
 			void syncUpdate(ReadBuffer& buffer) override;
 

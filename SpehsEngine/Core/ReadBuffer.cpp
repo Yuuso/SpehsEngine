@@ -1,7 +1,7 @@
 #include "ReadBuffer.h"
 #include "Log.h"
 
-namespace spehs
+namespace se
 {
 	ReadBuffer::ReadBuffer(const void* pointedMemory, const size_t length)
 		: data((const unsigned char*)pointedMemory)
@@ -35,7 +35,7 @@ namespace spehs
 			buffer.read(string[i]);
 	}
 		
-	void readFromBuffer(ReadBuffer& buffer, spehs::time::Time& time)
+	void readFromBuffer(ReadBuffer& buffer, se::time::Time& time)
 	{
 		buffer.read(time.value);
 	}

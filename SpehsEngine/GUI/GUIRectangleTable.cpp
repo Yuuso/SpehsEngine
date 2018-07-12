@@ -1,6 +1,6 @@
 #include "SpehsEngine/GUI/GUIRectangleTable.h"
 
-namespace spehs
+namespace se
 {
 	GUIRectangleTable::GUIRectangleTable(GUIContext& context, const int _columns)
 		: GUIRectangleUnisizeContainer(context)

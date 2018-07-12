@@ -4,7 +4,7 @@
 #include "SpehsEngine/Rendering/Polygon.h"
 
 
-namespace spehs
+namespace se
 {
 	GUIRectangleContainer::GUIRectangleContainer(GUIContext& context)
 		: GUIRectangle(context)

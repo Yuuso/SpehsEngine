@@ -14,10 +14,10 @@
 namespace audioVar
 {
 	std::mutex mutex;
-	std::unordered_map<size_t, spehs::AudioManager::AudioClip> audioClips;
+	std::unordered_map<size_t, se::AudioManager::AudioClip> audioClips;
 }
 
-namespace spehs
+namespace se
 {
 	void AudioManager::init()
 	{
@@ -80,7 +80,7 @@ namespace spehs
 		audioVar::audioClips.insert(std::pair<size_t, AudioClip>(hash, clip));
 		audioVar::mutex.unlock();
 		std::thread bgLoaderThread(bgloadWAVE, _filepath);
-		spehs::setThreadName(&bgLoaderThread, "Wave Loader Thread");
+		se::setThreadName(&bgLoaderThread, "Wave Loader Thread");
 		bgLoaderThread.detach();
 		return hash;
 	}
@@ -226,7 +226,7 @@ namespace spehs
 		audioVar::audioClips.insert(std::pair<size_t, AudioClip>(hash, clip));
 		audioVar::mutex.unlock();
 		std::thread bgLoaderThread(bgloadOGG, _filepath);
-		spehs::setThreadName(&bgLoaderThread, "Ogg Loader Thread");
+		se::setThreadName(&bgLoaderThread, "Ogg Loader Thread");
 		bgLoaderThread.detach();
 		return hash;
 	}

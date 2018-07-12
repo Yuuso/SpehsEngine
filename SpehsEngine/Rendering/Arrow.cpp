@@ -6,19 +6,19 @@
 #include "SpehsEngine/Core/Exceptions.h"
 
 
-namespace spehs
+namespace se
 {
-	static std::vector<spehs::vec2> pointerVertices = { spehs::vec2(-0.5f, 0.5f), spehs::vec2(-0.5f, -0.5f), spehs::vec2(0.5f, 0.0f) };
+	static std::vector<se::vec2> pointerVertices = { se::vec2(-0.5f, 0.5f), se::vec2(-0.5f, -0.5f), se::vec2(0.5f, 0.0f) };
 	Arrow::Arrow(BatchManager& batchManager, const int16_t planeDepth) : linePart(nullptr), polygonPart(nullptr), pointerWidth(1.0f), pointerHeight(1.0f), length(0.0f)
 	{
 		//Create needed primitive components
 		polygonPart = batchManager.createPolygon(pointerVertices, planeDepth, pointerWidth, pointerHeight);
 		polygonPart->setCameraMatrixState(false);
-		linePart = batchManager.createLine(spehs::vec2::zero, spehs::vec2::zero, planeDepth);
+		linePart = batchManager.createLine(se::vec2::zero, se::vec2::zero, planeDepth);
 		linePart->setCameraMatrixState(false);
 		linePart->setRenderState(false);//Length == 0
 	}
-	Arrow::Arrow(BatchManager& batchManager, const spehs::vec2& _startPoint, const spehs::vec2& _endPoint, const int16_t planeDepth) : Arrow(batchManager)
+	Arrow::Arrow(BatchManager& batchManager, const se::vec2& _startPoint, const se::vec2& _endPoint, const int16_t planeDepth) : Arrow(batchManager)
 	{
 		setPosition(_startPoint, _endPoint);
 	}
@@ -29,10 +29,10 @@ namespace spehs
 	}
 
 
-	void Arrow::setPosition(const spehs::vec2& _startPoint, const spehs::vec2& _endPoint)
+	void Arrow::setPosition(const se::vec2& _startPoint, const se::vec2& _endPoint)
 	{
 		float angle = atan2(_endPoint.y - _startPoint.y, _endPoint.x - _startPoint.x);
-		spehs::vec2 arrowVector(_endPoint - _startPoint);
+		se::vec2 arrowVector(_endPoint - _startPoint);
 
 		//Arrow length changed
 		length = magnitude(arrowVector);
@@ -42,7 +42,7 @@ namespace spehs
 			linePart->setRenderState(polygonPart->getRenderState());
 
 		//End of line position
-		arrowVector -= spehs::vec2(cos(angle) * pointerHeight, sin(angle) * pointerHeight);
+		arrowVector -= se::vec2(cos(angle) * pointerHeight, sin(angle) * pointerHeight);
 
 		//Primitive positioning
 		linePart->setPoints(_startPoint, _startPoint + arrowVector);
@@ -69,7 +69,7 @@ namespace spehs
 		else
 			linePart->setRenderState(polygonPart->getRenderState());
 	}
-	void Arrow::setArrowPointerSize(const spehs::vec2 &_ref)
+	void Arrow::setArrowPointerSize(const se::vec2 &_ref)
 	{
 		pointerWidth = _ref.x;
 		pointerHeight = _ref.y;
@@ -80,7 +80,7 @@ namespace spehs
 			linePart->setRenderState(polygonPart->getRenderState());
 	}
 
-	void Arrow::setColor(const spehs::Color& _col)
+	void Arrow::setColor(const se::Color& _col)
 	{
 		linePart->setColor(_col);
 		polygonPart->setColor(_col);

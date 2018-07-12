@@ -3,18 +3,18 @@
 #include "SpehsEngine/GUI/GUIRectangleGrid.h"
 #include "SpehsEngine/GUI/GUIRectangleScrollList.h"
 
-namespace spehs
+namespace se
 {
 	unsigned GUIRectangleGrid::defaultBorderWidth = 0;
 	GUIRectangleGrid::GUIRectangleGrid(GUIContext& context)
 		: GUIRectangleUnisizeContainer(context)
-		, scrollBarWidth(spehs::GUIRectangleScrollList::defaultScrollBarWidth)
+		, scrollBarWidth(se::GUIRectangleScrollList::defaultScrollBarWidth)
 		, borderWidth(defaultBorderWidth)
 	{
 		disableState(GUIRECT_HOVER_COLOR_BIT);
-		scrollUp = new spehs::GUIRectangle(context);
-		scrollBar = new spehs::GUIRectangle(context);
-		scrollDown = new spehs::GUIRectangle(context);
+		scrollUp = new se::GUIRectangle(context);
+		scrollBar = new se::GUIRectangle(context);
+		scrollDown = new se::GUIRectangle(context);
 		scrollUp->setWidth(scrollBarWidth);
 		scrollBar->setWidth(scrollBarWidth);
 		scrollDown->setWidth(scrollBarWidth);
@@ -44,7 +44,7 @@ namespace spehs
 
 	void GUIRectangleGrid::setRenderState(const bool _state)
 	{
-		spehs::GUIRectangleUnisizeContainer::setRenderState(_state);
+		se::GUIRectangleUnisizeContainer::setRenderState(_state);
 		scrollUp->setRenderState(scrollingEnabled && _state);
 		scrollBar->setRenderState(scrollingEnabled && _state);
 		scrollDown->setRenderState(scrollingEnabled && _state);
@@ -52,7 +52,7 @@ namespace spehs
 
 	void GUIRectangleGrid::setDepth(const int16_t depth)
 	{
-		spehs::GUIRectangleUnisizeContainer::setDepth(depth);
+		se::GUIRectangleUnisizeContainer::setDepth(depth);
 		scrollUp->setDepth(depth + 1);
 		scrollBar->setDepth(depth + 1);
 		scrollDown->setDepth(depth + 1);
@@ -60,7 +60,7 @@ namespace spehs
 
 	void GUIRectangleGrid::inputUpdate()
 	{
-		spehs::GUIRectangle::inputUpdate();
+		se::GUIRectangle::inputUpdate();
 		
 		if (draggingScrollBar)
 		{//Dragging in progress?
@@ -120,7 +120,7 @@ namespace spehs
 
 	void GUIRectangleGrid::visualUpdate()
 	{
-		spehs::GUIRectangle::visualUpdate();
+		se::GUIRectangle::visualUpdate();
 		if (isOpen())
 		{
 			if (scrollingEnabled)
@@ -173,7 +173,7 @@ namespace spehs
 
 	void GUIRectangleGrid::updateMinSize()
 	{
-		spehs::GUIRectangleUnisizeContainer::updateMinSize();
+		se::GUIRectangleUnisizeContainer::updateMinSize();
 		minSize = minElementSize;
 		minSize.x += 2 * borderWidth;
 		minSize.y += 2 * borderWidth;
@@ -183,7 +183,7 @@ namespace spehs
 
 	void GUIRectangleGrid::updateScale()
 	{
-		spehs::GUIRectangle::updateScale();
+		se::GUIRectangle::updateScale();
 		for (unsigned i = 0; i < elements.size(); i++)
 			elements[i]->setSize(minElementSize);
 		const int scrollHeight = std::min(minElementSize.y, getHeight() / 3);
@@ -197,7 +197,7 @@ namespace spehs
 
 	void GUIRectangleGrid::updatePosition()
 	{
-		spehs::GUIRectangle::updatePosition();
+		se::GUIRectangle::updatePosition();
 		if (minElementSize.x == 0 || minElementSize.y == 0)
 		{
 			for (unsigned i = 0; i < elements.size(); i++)

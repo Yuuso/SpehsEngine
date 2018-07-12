@@ -1,7 +1,7 @@
 #pragma once
 #include "SpehsEngine/GUI/GUIRectangleContainer.h"
 
-namespace spehs
+namespace se
 {
 	/** A simple container where all the elements are aligned in a straight column.
 	Option for element unisize functionality. */

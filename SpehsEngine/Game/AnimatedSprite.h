@@ -7,7 +7,7 @@
 #include <stdint.h>
 
 
-namespace spehs
+namespace se
 {
 	class GameObject;
 	struct TextureData;
@@ -23,7 +23,7 @@ namespace spehs
 		void setTexture(TextureData* _textureDataPtr) override;
 		void setTextureID(const unsigned int _textureID) override;
 
-		void setAnimation(const spehs::ivec2& _frameSize, const uint8_t _rows, const uint8_t _columns, const uint16_t _amountOfFrames, const uint16_t _startingFrame = 0);
+		void setAnimation(const se::ivec2& _frameSize, const uint8_t _rows, const uint8_t _columns, const uint16_t _amountOfFrames, const uint16_t _startingFrame = 0);
 		void setAnimationSpeed(const time::Time& _speed);
 
 	private:

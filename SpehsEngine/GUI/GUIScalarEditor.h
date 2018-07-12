@@ -7,7 +7,7 @@
 #include "SpehsEngine/GUI/ValueEditor.h"
 
 
-namespace spehs
+namespace se
 {
 	/*
 	For integer and floating point variables.
@@ -36,7 +36,7 @@ namespace spehs
 			nameRect->setString(scalarName);
 			decreaseRect->setString("-");
 			increaseRect->setString("+");
-			setElementPositionMode(spehs::GUIRectangleRow::PositionMode::StackRight);
+			setElementPositionMode(se::GUIRectangleRow::PositionMode::StackRight);
 			min = std::numeric_limits<Scalar>::min();
 			max = std::numeric_limits<Scalar>::max();
 
@@ -100,7 +100,7 @@ namespace spehs
 				if (increaseRect->getMouseHover())
 				{//+
 					holdTimer -= getDeltaTime();
-					if (holdTimer <= spehs::time::zero)
+					if (holdTimer <= se::time::zero)
 					{
 						holdTimer = holdTime;
 						setEditorValue(editorValue + tickAmount);
@@ -109,7 +109,7 @@ namespace spehs
 				else if (decreaseRect->getMouseHover())
 				{//-
 					holdTimer -= getDeltaTime();
-					if (holdTimer <= spehs::time::zero)
+					if (holdTimer <= se::time::zero)
 					{
 						holdTimer = holdTime;
 						setEditorValue(editorValue - tickAmount);
@@ -128,19 +128,19 @@ namespace spehs
 			else
 				ValueEditor::setEditorValue(newValue);
 		}
-		void setColor(const spehs::Color& color)
+		void setColor(const se::Color& color)
 		{
 			GUIRectangle::setColor(color);
 			for (unsigned i = 0; i < elements.size(); i++)
 				elements[i]->setColor(color);
 		}
-		void setAlpha(const spehs::Color::Component& alpha)
+		void setAlpha(const se::Color::Component& alpha)
 		{
 			GUIRectangle::setAlpha(alpha);
 			for (unsigned i = 0; i < elements.size(); i++)
 				elements[i]->setAlpha(alpha);
 		}
-		void addElement(spehs::GUIRectangle* element) override
+		void addElement(se::GUIRectangle* element) override
 		{
 			GUIRectangleRow::addElement(element);
 			element->setColor(getColor());
@@ -152,7 +152,7 @@ namespace spehs
 			if (std::is_integral<Scalar>::value)
 				valueRect->setString(std::to_string(getEditorValue()));
 			else if (std::is_floating_point<Scalar>::value)
-				valueRect->setString(spehs::toString(getEditorValue(), floatPrecision));
+				valueRect->setString(se::toString(getEditorValue(), floatPrecision));
 			else
 				valueRect->setString("# Invalid value type #");
 		}

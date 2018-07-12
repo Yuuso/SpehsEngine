@@ -8,7 +8,7 @@
 #define STOP_AFTER_AL_ERROR true
 
 
-namespace spehs
+namespace se
 {
 	void debugOpenALErrors(const std::string &_file, int _line)
 	{
