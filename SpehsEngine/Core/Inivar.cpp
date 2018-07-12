@@ -59,39 +59,27 @@ namespace spehs
 		return true;
 	}
 
-
-
-	//T = int
-	template<>
-	std::string Inivar<int>::toString() const
-	{
-		std::lock_guard<std::recursive_mutex> lock(mutex);
-		return std::to_string(value);
+#define INIVAR_DEFAULT_STRING_TEMPLATE_FUNCTIONS(Type) \
+	template<> \
+	std::string Inivar<Type>::toString() const \
+	{ \
+		std::lock_guard<std::recursive_mutex> lock(mutex); \
+		return std::to_string(value); \
+	} \
+	template<> \
+	bool Inivar<Type>::fromString(const std::string& string) \
+	{ \
+		std::lock_guard<std::recursive_mutex> lock(mutex); \
+		value = std::atoi(string.c_str()); \
+		return true; \
 	}
-	template<>
-	bool Inivar<int>::fromString(const std::string& string)
-	{
-		std::lock_guard<std::recursive_mutex> lock(mutex);
-		value = std::atoi(string.c_str());
-		return true;
-	}
-	
 
-
-	//T = unsigned int
-	template<>
-	std::string Inivar<unsigned>::toString() const
-	{
-		std::lock_guard<std::recursive_mutex> lock(mutex);
-		return std::to_string(value);
-	}
-	template<>
-	bool Inivar<unsigned>::fromString(const std::string& string)
-	{
-		std::lock_guard<std::recursive_mutex> lock(mutex);
-		value = (unsigned)std::atoi(string.c_str());
-		return true;
-	}
+	INIVAR_DEFAULT_STRING_TEMPLATE_FUNCTIONS(uint32_t)
+	INIVAR_DEFAULT_STRING_TEMPLATE_FUNCTIONS(int32_t)
+	INIVAR_DEFAULT_STRING_TEMPLATE_FUNCTIONS(uint16_t)
+	INIVAR_DEFAULT_STRING_TEMPLATE_FUNCTIONS(int16_t)
+	INIVAR_DEFAULT_STRING_TEMPLATE_FUNCTIONS(uint8_t)
+	INIVAR_DEFAULT_STRING_TEMPLATE_FUNCTIONS(int8_t)
 
 
 
