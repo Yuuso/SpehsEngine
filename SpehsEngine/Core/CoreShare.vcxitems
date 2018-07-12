@@ -14,10 +14,12 @@
     <ProjectCapability Include="SourceItemsFromImports" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="$(MSBuildThisFileDirectory)BufferBase.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Color.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Compression.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Console.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Core.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Endianness.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Exceptions.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)FileStream.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Geometry.cpp" />
@@ -25,6 +27,7 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)Inivar.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Log.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)OS.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)ReadBuffer.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)RNG.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Serializable.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)SerializableDirectory.cpp" />
@@ -34,14 +37,17 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)Thread.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Time.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Vertex.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)WriteBuffer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="$(MSBuildThisFileDirectory)BitwiseOperations.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)BufferBase.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Color.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Compression.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Console.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)ConsoleVariable.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Core.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Endianness.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Exceptions.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)FileStream.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Geometry.h" />
@@ -51,6 +57,7 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)Log.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)OS.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)RAIIVariableSetter.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)ReadBuffer.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)RNG.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Serializable.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)SerializableDirectory.h" />
@@ -62,5 +69,6 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)Time.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Vector.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Vertex.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)WriteBuffer.h" />
   </ItemGroup>
 </Project>

@@ -64,13 +64,13 @@ namespace spehs
 			float getMaxAngle() const override;
 
 			//Sync type
-			void syncCreate(net::WriteBuffer& buffer) override;
-			void syncCreate(net::ReadBuffer& buffer) override;
-			void syncRemove(net::WriteBuffer& buffer) override;
-			void syncRemove(net::ReadBuffer& buffer) override;
+			void syncCreate(WriteBuffer& buffer) override;
+			void syncCreate(ReadBuffer& buffer) override;
+			void syncRemove(WriteBuffer& buffer) override;
+			void syncRemove(ReadBuffer& buffer) override;
 			bool syncUpdate(const spehs::time::Time deltaTime) override;
-			void syncUpdate(net::WriteBuffer& buffer) override;
-			void syncUpdate(net::ReadBuffer& buffer) override;
+			void syncUpdate(WriteBuffer& buffer) override;
+			void syncUpdate(ReadBuffer& buffer) override;
 
 			std::string name;
 
@@ -112,13 +112,13 @@ namespace spehs
 			float getMaxAngle() const override;
 			
 			//Sync type
-			void syncCreate(net::WriteBuffer& buffer) override;
-			void syncCreate(net::ReadBuffer& buffer) override;
-			void syncRemove(net::WriteBuffer& buffer) override;
-			void syncRemove(net::ReadBuffer& buffer) override;
+			void syncCreate(WriteBuffer& buffer) override;
+			void syncCreate(ReadBuffer& buffer) override;
+			void syncRemove(WriteBuffer& buffer) override;
+			void syncRemove(ReadBuffer& buffer) override;
 			bool syncUpdate(const spehs::time::Time deltaTime) override;
-			void syncUpdate(net::WriteBuffer& buffer) override;
-			void syncUpdate(net::ReadBuffer& buffer) override;
+			void syncUpdate(WriteBuffer& buffer) override;
+			void syncUpdate(ReadBuffer& buffer) override;
 
 		private:
 			//Threaded device

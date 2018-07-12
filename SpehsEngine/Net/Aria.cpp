@@ -1,5 +1,8 @@
 #include "Aria.h"
 #include "SpehsEngine/Core/RAIIVariableSetter.h"
+#include "SpehsEngine/Core/Log.h"
+#include "SpehsEngine/Core/ReadBuffer.h"
+#include "SpehsEngine/Core/WriteBuffer.h"
 
 
 
@@ -21,7 +24,7 @@ namespace spehs
 
 		///////////////
 		// Connector //
-		Connector::Connector(SocketTCP& _socket, const std::string& _name, const std::string& _counterpart, const net::PortType& _localPortForWaiting)
+		Connector::Connector(SocketTCP& _socket, const std::string& _name, const std::string& _counterpart, const net::Port& _localPortForWaiting)
 			: socket(_socket)
 			, name(_name)
 			, counterpart(_counterpart)
@@ -42,7 +45,7 @@ namespace spehs
 			if (socket.connect(endpoint))
 			{
 				//Send enter packet
-				net::WriteBuffer buffer;
+				WriteBuffer buffer;
 				buffer.write(ariaMagicHeader);
 				buffer.write(PacketType::enter);
 				buffer.write(name);
@@ -60,7 +63,7 @@ namespace spehs
 					lastPingSendTime = spehs::time::now();
 					lastPingReceiveTime = lastPingSendTime;
 				}
-				net::WriteBuffer pingBuffer;
+				WriteBuffer pingBuffer;
 				pingBuffer.write(ariaMagicHeader);
 				pingBuffer.write(PacketType::ping);
 				const spehs::time::Time pingTimeout = spehs::time::fromSeconds(10000.0f);
@@ -146,7 +149,7 @@ namespace spehs
 			}
 		}
 
-		bool Connector::onReceive(net::ReadBuffer& buffer)
+		bool Connector::onReceive(ReadBuffer& buffer)
 		{
 			uint64_t headerVerification;
 			buffer.read(headerVerification);
@@ -213,7 +216,7 @@ namespace spehs
 			if (socket.isConnected())
 			{
 				//Send name and counterpart query
-				net::WriteBuffer buffer;
+				WriteBuffer buffer;
 				buffer.write(ariaMagicHeader);
 				buffer.write(PacketType::enter);
 				socket.sendPacket(buffer);
@@ -223,7 +226,7 @@ namespace spehs
 			}
 		}
 
-		bool Client::onReceive(net::ReadBuffer& buffer)
+		bool Client::onReceive(ReadBuffer& buffer)
 		{
 			uint64_t headerVerification;
 			buffer.read(headerVerification);
@@ -245,7 +248,7 @@ namespace spehs
 				break;
 				case PacketType::ping:
 				{//Send a response
-					static net::WriteBuffer pingBuffer;
+					static WriteBuffer pingBuffer;
 					if (pingBuffer.getOffset() == 0)
 					{
 						pingBuffer.write(ariaMagicHeader);
@@ -296,7 +299,7 @@ namespace spehs
 			SPEHS_ASSERT(clients.empty());
 		}
 
-		void Server::start(const net::PortType& _localPort)
+		void Server::start(const net::Port& _localPort)
 		{
 			{
 				std::lock_guard<std::recursive_mutex> lock(mutex);
@@ -315,7 +318,7 @@ namespace spehs
 				}
 				
 				//Launch run thread
-				spehs::log::info("Aria::start: starting at port '" + std::to_string(_localPort) + "'...");
+				spehs::log::info("Aria::start: starting at port '" + _localPort.toString() + "'...");
 				keepRunning = true;
 				canExitStart = false;
 				localPort = _localPort;
@@ -416,7 +419,7 @@ namespace spehs
 					const bool inspect = clients[c1]->enterDetailsChanged && clients[c1]->socket.isConnected();
 					const std::string name1 = clients[c1]->name;
 					const std::string counterpart1 = clients[c1]->counterpart;
-					const net::PortType port1 = clients[c1]->localPortForWaiting;
+					const net::Port port1 = clients[c1]->localPortForWaiting;
 					clients[c1]->enterDetailsChanged = false;
 					clients[c1]->enterDetailsMutex.unlock();
 
@@ -436,14 +439,14 @@ namespace spehs
 									spehs::log::info("Aria::run found a client pair: '" + name1 + "' & '" + name2 + "'");
 
 									//c1 will accept
-									net::WriteBuffer buffer1;
+									WriteBuffer buffer1;
 									buffer1.write(ariaMagicHeader);
 									buffer1.write(PacketType::counterpartEndpointAccept);
 									clients[c1]->socket.sendPacket(buffer1);
 
 									//c2 will connect
-									const net::AddressType address1 = clients[c1]->socket.getRemoteAddress();
-									net::WriteBuffer buffer2;
+									const net::Address address1 = clients[c1]->socket.getRemoteAddress();
+									WriteBuffer buffer2;
 									buffer2.write(ariaMagicHeader);
 									buffer2.write(PacketType::counterpartEndpointConnect);
 									buffer2.write(address1);

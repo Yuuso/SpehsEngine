@@ -10,19 +10,16 @@
 
 namespace spehs
 {
-	namespace net
-	{
-		class WriteBuffer;
-		class ReadBuffer;
-	}
+	class WriteBuffer;
+	class ReadBuffer;
 
 	namespace device
 	{
 		class PWMHistory : public std::vector<float>
 		{
 		public:
-			void write(net::WriteBuffer& buffer) const;
-			void read(net::ReadBuffer& buffer);
+			void write(WriteBuffer& buffer) const;
+			void read(ReadBuffer& buffer);
 		};
 
 		class PinReaderPWMGhost : public sync::IType
@@ -33,13 +30,13 @@ namespace spehs
 			~PinReaderPWMGhost();
 
 			//Sync type
-			void syncCreate(net::WriteBuffer& buffer) override;
-			void syncCreate(net::ReadBuffer& buffer) override;
-			void syncRemove(net::WriteBuffer& buffer) override;
-			void syncRemove(net::ReadBuffer& buffer) override;
+			void syncCreate(WriteBuffer& buffer) override;
+			void syncCreate(ReadBuffer& buffer) override;
+			void syncRemove(WriteBuffer& buffer) override;
+			void syncRemove(ReadBuffer& buffer) override;
 			bool syncUpdate(const spehs::time::Time deltaTime) override;
-			void syncUpdate(net::WriteBuffer& buffer) override;
-			void syncUpdate(net::ReadBuffer& buffer) override;
+			void syncUpdate(WriteBuffer& buffer) override;
+			void syncUpdate(ReadBuffer& buffer) override;
 
 			void setPin(const gpio::Pin pin);
 			void setActive(const bool isActive);
@@ -75,13 +72,13 @@ namespace spehs
 			void getHistory(PWMHistory& deposit) const;
 
 			//Sync type
-			void syncCreate(net::WriteBuffer& buffer) override;
-			void syncCreate(net::ReadBuffer& buffer) override;
-			void syncRemove(net::WriteBuffer& buffer) override;
-			void syncRemove(net::ReadBuffer& buffer) override;
+			void syncCreate(WriteBuffer& buffer) override;
+			void syncCreate(ReadBuffer& buffer) override;
+			void syncRemove(WriteBuffer& buffer) override;
+			void syncRemove(ReadBuffer& buffer) override;
 			bool syncUpdate(const spehs::time::Time deltaTime) override;
-			void syncUpdate(net::WriteBuffer& buffer) override;
-			void syncUpdate(net::ReadBuffer& buffer) override;
+			void syncUpdate(WriteBuffer& buffer) override;
+			void syncUpdate(ReadBuffer& buffer) override;
 			
 		private:
 			//Threaded device

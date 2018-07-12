@@ -5,11 +5,8 @@
 
 namespace spehs
 {
-	namespace net
-	{
-		class WriteBuffer;
-		class ReadBuffer;
-	}
+	class WriteBuffer;
+	class ReadBuffer;
 
 	namespace sync
 	{
@@ -30,12 +27,12 @@ namespace spehs
 			virtual bool syncUpdate(const spehs::time::Time deltaTime) { return false; }
 
 			/* Sync packets */
-			virtual void syncCreate(net::WriteBuffer& buffer) {}
-			virtual void syncCreate(net::ReadBuffer& buffer) {}
-			virtual void syncUpdate(net::WriteBuffer& buffer) {}
-			virtual void syncUpdate(net::ReadBuffer& buffer) {}
-			virtual void syncRemove(net::WriteBuffer& buffer) {}
-			virtual void syncRemove(net::ReadBuffer& buffer) {}
+			virtual void syncCreate(WriteBuffer& buffer) {}
+			virtual void syncCreate(ReadBuffer& buffer) {}
+			virtual void syncUpdate(WriteBuffer& buffer) {}
+			virtual void syncUpdate(ReadBuffer& buffer) {}
+			virtual void syncRemove(WriteBuffer& buffer) {}
+			virtual void syncRemove(ReadBuffer& buffer) {}
 
 		};
 	}

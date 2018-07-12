@@ -4,11 +4,13 @@
 #include "SpehsEngine/Net/SocketTCP.h"
 #include "SpehsEngine/Net/Acceptor.h"
 #include "SpehsEngine/Net/IOService.h"
+#include "SpehsEngine/Net/Handshake.h"
+#include <SpehsEngine/Core/WriteBuffer.h>
+#include <SpehsEngine/Core/ReadBuffer.h>
 #include "SpehsEngine/Core/RAIIVariableSetter.h"
 #include "SpehsEngine/Core/Log.h"
 #include "SpehsEngine/Core/Time.h"
 #include "SpehsEngine/Core/StringOperations.h"
-
 
 namespace spehs
 {
@@ -133,7 +135,7 @@ namespace spehs
 			//Resolve the remote endpoint
 			boost::system::error_code error;
 			boost::asio::ip::tcp::resolver resolverTCP(ioService.getImplementationRef());
-			boost::asio::ip::tcp::resolver::query query(endpoint.address, std::to_string(endpoint.port));
+			boost::asio::ip::tcp::resolver::query query(endpoint.address.toString(), endpoint.port.toString());
 			boost::asio::ip::tcp::endpoint asioEndpoint = *resolverTCP.resolve(query, error);
 			if (error)
 			{
@@ -171,7 +173,7 @@ namespace spehs
 			startReceiving(onReceiveCallback);
 
 			//Send the spehs handshake
-			net::WriteBuffer buffer;
+			WriteBuffer buffer;
 			const net::Handshake handshake;
 			buffer.write(handshake);
 			handshakeSent = sendPacket(buffer, net::PacketType::handshake);
@@ -224,7 +226,7 @@ namespace spehs
 
 		if (disconnectType != net::DisconnectType::doNotSendDisconnectPacket)
 		{//Try sending the disconnect packet before disconnecting
-			net::WriteBuffer buffer;
+			WriteBuffer buffer;
 			buffer.write(disconnectType);
 			sendPacket(buffer, net::PacketType::disconnect);
 		}
@@ -274,7 +276,7 @@ namespace spehs
 		}
 	}
 
-	bool SocketTCP::sendPacket(const net::WriteBuffer& buffer, const net::PacketType packetType)
+	bool SocketTCP::sendPacket(const WriteBuffer& buffer, const net::PacketType packetType)
 	{
 		std::lock_guard<std::recursive_mutex> lock(mutex);
 		boost::system::error_code error;
@@ -286,7 +288,7 @@ namespace spehs
 		}
 		
 		//Spehs header
-		net::WriteBuffer headerBuffer;
+		WriteBuffer headerBuffer;
 		const ExpectedBytesType dataBufferSize = ExpectedBytesType(buffer.getOffset());
 		const ExpectedBytesType headerBytesValue = ExpectedBytesType(buffer.getOffset() + sizeof(packetType));
 
@@ -333,7 +335,7 @@ namespace spehs
 		return true;
 	}
 
-	bool SocketTCP::startReceiving(const std::function<bool(net::ReadBuffer&)> callbackFunction)
+	bool SocketTCP::startReceiving(const std::function<bool(ReadBuffer&)> callbackFunction)
 	{
 		if (isReceiving())
 		{
@@ -412,7 +414,7 @@ namespace spehs
 		{
 			for (size_t i = 0; i < receivedPackets.size(); i++)
 			{
-				spehs::net::ReadBuffer buffer(receivedPackets[i]->data(), receivedPackets[i]->size());
+				ReadBuffer buffer(receivedPackets[i]->data(), receivedPackets[i]->size());
 				onReceiveCallback(buffer);
 			}
 		}
@@ -474,7 +476,7 @@ namespace spehs
 
 		if (bytes)
 		{
-			net::ReadBuffer readBuffer(&receiveBuffer[0], bytes);
+			ReadBuffer readBuffer(&receiveBuffer[0], bytes);
 			if (expectedBytes == 0)
 			{//Header received
 				readBuffer.read(expectedBytes);
@@ -496,7 +498,7 @@ namespace spehs
 		}
 	}
 
-	bool SocketTCP::spehsReceiveHandler(spehs::net::ReadBuffer& buffer)
+	bool SocketTCP::spehsReceiveHandler(ReadBuffer& buffer)
 	{
 		std::lock_guard<std::recursive_mutex> lock(mutex);
 
@@ -564,7 +566,7 @@ namespace spehs
 		return false;
 	}
 
-	bool SocketTCP::startAccepting(const net::PortType port, const std::function<void(SocketTCP&)> callbackFunction)
+	bool SocketTCP::startAccepting(const net::Port& port, const std::function<void(SocketTCP&)> callbackFunction)
 	{
 		std::lock_guard<std::recursive_mutex> lock(mutex);
 		if (accepting)
@@ -671,7 +673,7 @@ namespace spehs
 			spehs::log::info("Accepting SocketTCP received a handshake.");
 		
 		//Send a response handshake
-		net::WriteBuffer buffer;
+		WriteBuffer buffer;
 		const net::Handshake handshake;
 		buffer.write(handshake);
 		if (sendPacket(buffer, net::PacketType::handshake))
@@ -699,7 +701,7 @@ namespace spehs
 		onAcceptCallbackQueued = true;
 	}
 
-	std::string SocketTCP::getRemoteAddress() const
+	net::Address SocketTCP::getRemoteAddress() const
 	{
 		std::lock_guard<std::recursive_mutex> lock(mutex);
 		if (!isConnected())
@@ -713,7 +715,7 @@ namespace spehs
 		return address_v4.to_string();
 	}
 
-	net::PortType SocketTCP::getRemotePort() const
+	net::Port SocketTCP::getRemotePort() const
 	{
 		std::lock_guard<std::recursive_mutex> lock(mutex);
 		if (!isConnected())
@@ -731,7 +733,7 @@ namespace spehs
 		if (!isConnected())
 		{
 			spehs::log::info("SocketTCP: cannot retrieve remote endpoint port! Socket is not connected!");
-			return net::Endpoint("0.0.0.0", 0);
+			return net::Endpoint::invalid;
 		}
 		return net::Endpoint(socket.remote_endpoint().address().to_v4().to_string(), socket.remote_endpoint().port());
 	}

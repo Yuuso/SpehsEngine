@@ -5,12 +5,6 @@
 
 namespace spehs
 {
-	namespace net
-	{
-		class WriteBuffer;
-		class ReadBuffer;
-	}
-
 	namespace device
 	{
 		class SocketTCP;

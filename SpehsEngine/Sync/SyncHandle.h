@@ -160,17 +160,17 @@ namespace spehs
 				return entry ? (SyncType*)entry->ptr : nullptr;
 			}
 
-			sync::Manager* getManager()
+			Manager* getManager()
 			{
 				return entry ? &entry->manager : nullptr;
 			}
-			const sync::Manager* getManager() const
+			const Manager* getManager() const
 			{
 				return entry ? &entry->manager : nullptr;
 			}
 			
 		private:
-			Handle(sync::Entry& _entry)
+			Handle(Entry& _entry)
 				: AbstractHandle(&_entry)
 			{
 				entry->handles.push_back(this);

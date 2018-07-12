@@ -1,5 +1,6 @@
 #include "SpehsEngine/Sync/SyncTypeInfo.h"
-#include "SpehsEngine/Net/Protocol.h"
+#include <SpehsEngine/Core/WriteBuffer.h>
+#include <SpehsEngine/Core/ReadBuffer.h>
 
 
 
@@ -7,41 +8,41 @@ namespace spehs
 {
 	namespace sync
 	{
-		void LocalSyncTypeInfo::write(net::WriteBuffer& buffer) const
+		void LocalSyncTypeInfo::write(WriteBuffer& buffer) const
 		{
 			buffer.write(name);
 			buffer.write(typeId);
 			buffer.write(version);
 		}
 
-		void LocalSyncTypeInfo::read(net::ReadBuffer& buffer)
+		void LocalSyncTypeInfo::read(ReadBuffer& buffer)
 		{
 			buffer.read(name);
 			buffer.read(typeId);
 			buffer.read(version);
 		}
 
-		void RemoteSyncTypeInfo::write(net::WriteBuffer& buffer) const
+		void RemoteSyncTypeInfo::write(WriteBuffer& buffer) const
 		{
 			buffer.write(name);
 			buffer.write(typeId);
 			buffer.write(version);
 		}
 
-		void RemoteSyncTypeInfo::read(net::ReadBuffer& buffer)
+		void RemoteSyncTypeInfo::read(ReadBuffer& buffer)
 		{
 			buffer.read(name);
 			buffer.read(typeId);
 			buffer.read(version);
 		}
 
-		void TypeInfo::write(net::WriteBuffer& buffer) const
+		void TypeInfo::write(WriteBuffer& buffer) const
 		{
 			buffer.write(local);
 			buffer.write(remote);
 		}
 
-		void TypeInfo::read(net::ReadBuffer& buffer)
+		void TypeInfo::read(ReadBuffer& buffer)
 		{
 			buffer.read(local);
 			buffer.read(remote);

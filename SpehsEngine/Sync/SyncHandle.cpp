@@ -2,7 +2,6 @@
 #include "SpehsEngine/Sync/SyncEntry.h"
 #include "SpehsEngine/Sync/SyncManager.h"
 #include "SpehsEngine/Net/SocketTCP.h"
-#include "SpehsEngine/Net/Protocol.h"
 
 
 
@@ -16,7 +15,7 @@ namespace spehs
 
 		}
 
-		void AbstractHandle::setLocalUpdateInterval(const spehs::time::Time& interval)
+		void AbstractHandle::setLocalUpdateInterval(const time::Time& interval)
 		{
 			if (entry->interval != interval)
 			{
@@ -24,7 +23,7 @@ namespace spehs
 			}
 		}
 
-		void AbstractHandle::setRemoteUpdateInterval(const spehs::time::Time& interval)
+		void AbstractHandle::setRemoteUpdateInterval(const time::Time& interval)
 		{
 			entry->sendRemoteUpdateInterval = true;
 			entry->requestedRemoteUpdateInterval = interval;

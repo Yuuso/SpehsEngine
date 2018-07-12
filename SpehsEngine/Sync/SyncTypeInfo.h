@@ -10,8 +10,8 @@ namespace spehs
 	{
 		//struct AbstractSyncTypeInfo
 		//{
-		//	void write(net::WriteBuffer& buffer) const;
-		//	void read(net::ReadBuffer& buffer);
+		//	void write(WriteBuffer& buffer) const;
+		//	void read(ReadBuffer& buffer);
 
 		//	IType::SyncTypeIdType typeId;
 		//	std::string name;
@@ -20,8 +20,8 @@ namespace spehs
 
 		struct LocalSyncTypeInfo
 		{
-			void write(net::WriteBuffer& buffer) const;
-			void read(net::ReadBuffer& buffer);
+			void write(WriteBuffer& buffer) const;
+			void read(ReadBuffer& buffer);
 			std::string name;
 			IType::SyncTypeIdType typeId;
 			IType::SyncTypeVersionType version;
@@ -30,8 +30,8 @@ namespace spehs
 
 		struct RemoteSyncTypeInfo
 		{
-			void write(net::WriteBuffer& buffer) const;
-			void read(net::ReadBuffer& buffer);
+			void write(WriteBuffer& buffer) const;
+			void read(ReadBuffer& buffer);
 			std::string name;
 			IType::SyncTypeIdType typeId;
 			IType::SyncTypeVersionType version;
@@ -39,8 +39,8 @@ namespace spehs
 
 		struct TypeInfo
 		{
-			void write(net::WriteBuffer& buffer) const;
-			void read(net::ReadBuffer& buffer);
+			void write(WriteBuffer& buffer) const;
+			void read(ReadBuffer& buffer);
 			LocalSyncTypeInfo local;
 			RemoteSyncTypeInfo remote;
 		};

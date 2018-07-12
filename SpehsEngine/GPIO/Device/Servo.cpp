@@ -1,5 +1,6 @@
 #include "Servo.h"
-#include "SpehsEngine/Net/Protocol.h"
+#include <SpehsEngine/Core/WriteBuffer.h>
+#include <SpehsEngine/Core/ReadBuffer.h>
 #include "SpehsEngine/Core/Log.h"
 #include <assert.h>
 #include <algorithm>
@@ -96,7 +97,7 @@ namespace spehs
 			return maxAngle;
 		}
 
-		void ServoGhost::syncCreate(net::WriteBuffer& buffer)
+		void ServoGhost::syncCreate(WriteBuffer& buffer)
 		{
 			buffer.write(pin);
 			buffer.write(minPulseWidth);
@@ -106,17 +107,17 @@ namespace spehs
 			buffer.write(maxAngle);
 		}
 
-		void ServoGhost::syncCreate(net::ReadBuffer& buffer)
+		void ServoGhost::syncCreate(ReadBuffer& buffer)
 		{
 
 		}
 
-		void ServoGhost::syncRemove(net::WriteBuffer& buffer)
+		void ServoGhost::syncRemove(WriteBuffer& buffer)
 		{
 
 		}
 
-		void ServoGhost::syncRemove(net::ReadBuffer& buffer)
+		void ServoGhost::syncRemove(ReadBuffer& buffer)
 		{
 
 		}
@@ -126,13 +127,13 @@ namespace spehs
 			return syncRequested;
 		}
 
-		void ServoGhost::syncUpdate(net::WriteBuffer& buffer)
+		void ServoGhost::syncUpdate(WriteBuffer& buffer)
 		{
 			buffer.write(active);
 			buffer.write(targetAngle);
 		}
 
-		void ServoGhost::syncUpdate(net::ReadBuffer& buffer)
+		void ServoGhost::syncUpdate(ReadBuffer& buffer)
 		{
 			buffer.read(approximatedAngle);
 		}
@@ -325,12 +326,12 @@ namespace spehs
 				spehs::log::info("ServoGhost::onStop: stopping...");
 		}
 
-		void ServoShell::syncCreate(net::WriteBuffer& buffer)
+		void ServoShell::syncCreate(WriteBuffer& buffer)
 		{
 
 		}
 
-		void ServoShell::syncCreate(net::ReadBuffer& buffer)
+		void ServoShell::syncCreate(ReadBuffer& buffer)
 		{
 			spehs::gpio::Pin _pin;
 			spehs::time::Time _minPulseWidth;
@@ -360,12 +361,12 @@ namespace spehs
 				+ ", rotation speed: " + std::to_string(_rotationSpeed));
 		}
 
-		void ServoShell::syncRemove(net::WriteBuffer& buffer)
+		void ServoShell::syncRemove(WriteBuffer& buffer)
 		{
 
 		}
 
-		void ServoShell::syncRemove(net::ReadBuffer& buffer)
+		void ServoShell::syncRemove(ReadBuffer& buffer)
 		{
 			stop();
 			while(isRunning()) {}
@@ -386,13 +387,13 @@ namespace spehs
 			}
 		}
 
-		void ServoShell::syncUpdate(net::WriteBuffer& buffer)
+		void ServoShell::syncUpdate(WriteBuffer& buffer)
 		{
 			std::lock_guard<std::recursive_mutex> lock(mutex);
 			buffer.write(approximatedAngle);
 		}
 
-		void ServoShell::syncUpdate(net::ReadBuffer& buffer)
+		void ServoShell::syncUpdate(ReadBuffer& buffer)
 		{
 			bool _active;
 			float _targetAngle;

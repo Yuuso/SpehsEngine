@@ -8,17 +8,15 @@
 #include <atomic>
 #include <mutex>
 
-#include "SpehsEngine/Net/Protocol.h"
+#include "SpehsEngine/Net/Endpoint.h"
 #include "SpehsEngine/Net/IOService.h"
+#include "SpehsEngine/Net/PacketMessage.h"
 #include "SpehsEngine/Core/Time.h"
 
 namespace spehs
 {
-	namespace net
-	{
-		class WriteBuffer;
-		class ReadBuffer;
-	}
+	class WriteBuffer;
+	class ReadBuffer;
 	namespace aria
 	{
 		class Connector;
@@ -51,16 +49,16 @@ namespace spehs
 		void disconnect();
 
 		/* Sends buffer to the connected endpoint. Spehs-level packet type specification is also possible (only for advanced use). */
-		bool sendPacket(const net::WriteBuffer& buffer, const net::PacketType packetType = net::PacketType::undefined);
+		bool sendPacket(const WriteBuffer& buffer, const net::PacketType packetType = net::PacketType::undefined);
 
 		/* Returns false if the memory allocation fails, or the socket is currently receiving data. */
 		bool resizeReceiveBuffer(const size_t newSize);
 
 		/* Starts receiving data from the connected endpoint. Non-blocking call. Callback return value specifies whether to keep receiving. */
-		bool startReceiving(const std::function<bool(spehs::net::ReadBuffer&)> onReceiveCallback);
+		bool startReceiving(const std::function<bool(ReadBuffer&)> onReceiveCallback);
 		
 		/* Starts listening for a new incoming connection. Upon success, a connection is made. Non-blocking call. Callback is called even if no connection is made! */
-		bool startAccepting(const net::PortType port, const std::function<void(SocketTCP&)> onAcceptCallback);
+		bool startAccepting(const net::Port& port, const std::function<void(SocketTCP&)> onAcceptCallback);
 
 		/* Stops receiving data. */
 		void stopReceiving();
@@ -69,8 +67,8 @@ namespace spehs
 		void stopAccepting();
 
 		/* Remote endpoint. */
-		net::AddressType getRemoteAddress() const;
-		net::PortType getRemotePort() const;
+		net::Address getRemoteAddress() const;
+		net::Port getRemotePort() const;
 		net::Endpoint getRemoteEndpoint() const;
 		
 		/* Returns true if the socket is currently listening for an incoming connection on a port, or the connection is currently being established. */
@@ -114,15 +112,14 @@ namespace spehs
 
 		//Receive handlers
 		void receiveHandler(const boost::system::error_code& error, std::size_t bytes);//Boost initially passes received data to this receive handler.
-		bool spehsReceiveHandler(spehs::net::ReadBuffer& buffer);//Internal receive handler, unpacks spehs header. Calls the user defined receive handler.
-
-
+		bool spehsReceiveHandler(ReadBuffer& buffer);//Internal receive handler, unpacks spehs header. Calls the user defined receive handler.
+		
 		mutable std::recursive_mutex mutex;
 		IOService& ioService;
 		boost::asio::ip::tcp::socket socket;
 		boost::asio::ip::tcp::acceptor* acceptor;
 		std::thread* spehsAcceptThread;
-		std::function<bool(spehs::net::ReadBuffer&)> onReceiveCallback;//User defined receive handler
+		std::function<bool(ReadBuffer&)> onReceiveCallback;//User defined receive handler
 		std::function<void(SocketTCP&)> onAcceptCallback;
 		ExpectedBytesType expectedBytes;
 		std::vector<unsigned char> receiveBuffer;

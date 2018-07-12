@@ -1,24 +1,26 @@
 #include <cstring>
 #include "SpehsEngine/GPIO/Device/PinReader.h"
-#include "SpehsEngine/Net/Protocol.h"
+#include "SpehsEngine/Core/Log.h"
+#include <SpehsEngine/Core/WriteBuffer.h>
+#include <SpehsEngine/Core/ReadBuffer.h>
 
 namespace spehs
 {
 	namespace device
 	{
-		void PinReaderHistoryEntry::write(net::WriteBuffer& buffer) const
+		void PinReaderHistoryEntry::write(WriteBuffer& buffer) const
 		{
 			buffer.write(state);
 			buffer.write(time);
 		}
 
-		void PinReaderHistoryEntry::read(net::ReadBuffer& buffer)
+		void PinReaderHistoryEntry::read(ReadBuffer& buffer)
 		{
 			buffer.read(state);
 			buffer.read(time);
 		}
 
-		void PinReaderHistory::write(net::WriteBuffer& buffer) const
+		void PinReaderHistory::write(WriteBuffer& buffer) const
 		{
 			const size_t count = size();//TODO: buffer.write(std::vector<...>)
 			buffer.write(count);
@@ -26,7 +28,7 @@ namespace spehs
 				buffer.write(at(i));
 		}
 
-		void PinReaderHistory::read(net::ReadBuffer& buffer)
+		void PinReaderHistory::read(ReadBuffer& buffer)
 		{
 			size_t count;
 			buffer.read(count);//TODO: buffer.read(std::vector<...>)
@@ -67,22 +69,22 @@ namespace spehs
 
 		}
 
-		void PinReaderGhost::syncCreate(net::WriteBuffer& buffer)
+		void PinReaderGhost::syncCreate(WriteBuffer& buffer)
 		{
 
 		}
 
-		void PinReaderGhost::syncCreate(net::ReadBuffer& buffer)
+		void PinReaderGhost::syncCreate(ReadBuffer& buffer)
 		{
 
 		}
 
-		void PinReaderGhost::syncRemove(net::WriteBuffer& buffer)
+		void PinReaderGhost::syncRemove(WriteBuffer& buffer)
 		{
 
 		}
 
-		void PinReaderGhost::syncRemove(net::ReadBuffer& buffer)
+		void PinReaderGhost::syncRemove(ReadBuffer& buffer)
 		{
 
 		}
@@ -92,14 +94,14 @@ namespace spehs
 			return requestUpdate;
 		}
 
-		void PinReaderGhost::syncUpdate(net::WriteBuffer& buffer)
+		void PinReaderGhost::syncUpdate(WriteBuffer& buffer)
 		{
 			buffer.write(active);
 			buffer.write(pin);
 			requestUpdate = false;
 		}
 
-		void PinReaderGhost::syncUpdate(net::ReadBuffer& buffer)
+		void PinReaderGhost::syncUpdate(ReadBuffer& buffer)
 		{
 			bool clearHistory;
 			PinReaderHistory newHistory;
@@ -179,22 +181,22 @@ namespace spehs
 			}
 		}
 
-		void PinReaderShell::syncCreate(net::WriteBuffer& buffer)
+		void PinReaderShell::syncCreate(WriteBuffer& buffer)
 		{
 
 		}
 
-		void PinReaderShell::syncCreate(net::ReadBuffer& buffer)
+		void PinReaderShell::syncCreate(ReadBuffer& buffer)
 		{
 
 		}
 
-		void PinReaderShell::syncRemove(net::WriteBuffer& buffer)
+		void PinReaderShell::syncRemove(WriteBuffer& buffer)
 		{
 
 		}
 
-		void PinReaderShell::syncRemove(net::ReadBuffer& buffer)
+		void PinReaderShell::syncRemove(ReadBuffer& buffer)
 		{
 			stop();
 			while (isRunning()) {}
@@ -207,7 +209,7 @@ namespace spehs
 			return false;
 		}
 
-		void PinReaderShell::syncUpdate(net::WriteBuffer& buffer)
+		void PinReaderShell::syncUpdate(WriteBuffer& buffer)
 		{
 			std::lock_guard<std::recursive_mutex> lock(mutex);
 			buffer.write(clearHistory);
@@ -216,7 +218,7 @@ namespace spehs
 			history.clear();
 		}
 
-		void PinReaderShell::syncUpdate(net::ReadBuffer& buffer)
+		void PinReaderShell::syncUpdate(ReadBuffer& buffer)
 		{
 			bool _active;
 			buffer.read(_active);

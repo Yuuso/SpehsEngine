@@ -12,11 +12,8 @@
 namespace spehs
 {
 	class SocketTCP;
-	namespace net
-	{
-		class WriteBuffer;
-		class ReadBuffer;
-	}
+	class WriteBuffer;
+	class ReadBuffer;
 	
 	namespace sync
 	{
@@ -103,7 +100,7 @@ namespace spehs
 			//boost::signal<void(Handle<TODO>&)> localTypeInstantiatedSignal;
 
 		private:
-			bool receiveHandler(net::ReadBuffer& buffer);
+			bool receiveHandler(ReadBuffer& buffer);
 			
 			Entry* findEntry(const Entry::Id id);
 			TypeInfo* findByLocalType(const IType::SyncTypeIdType& typeId);

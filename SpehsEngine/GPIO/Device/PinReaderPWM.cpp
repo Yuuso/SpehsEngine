@@ -1,19 +1,21 @@
 #include <cstring>
 #include "SpehsEngine/GPIO/Device/PinReaderPWM.h"
-#include "SpehsEngine/Net/Protocol.h"
+#include "SpehsEngine/Core/Log.h"
+#include <SpehsEngine/Core/WriteBuffer.h>
+#include <SpehsEngine/Core/ReadBuffer.h>
 
 namespace spehs
 {
 	namespace device
 	{
-		void PWMHistory::write(net::WriteBuffer& buffer) const
+		void PWMHistory::write(WriteBuffer& buffer) const
 		{
 			buffer.write(size());
 			for (size_t i = 0; i < size(); i++)
 				buffer.write(at(i));
 		}
 
-		void PWMHistory::read(net::ReadBuffer& buffer)
+		void PWMHistory::read(ReadBuffer& buffer)
 		{
 			size_t s;
 			buffer.read(s);
@@ -37,22 +39,22 @@ namespace spehs
 
 		}
 
-		void PinReaderPWMGhost::syncCreate(net::WriteBuffer& buffer)
+		void PinReaderPWMGhost::syncCreate(WriteBuffer& buffer)
 		{
 
 		}
 
-		void PinReaderPWMGhost::syncCreate(net::ReadBuffer& buffer)
+		void PinReaderPWMGhost::syncCreate(ReadBuffer& buffer)
 		{
 
 		}
 
-		void PinReaderPWMGhost::syncRemove(net::WriteBuffer& buffer)
+		void PinReaderPWMGhost::syncRemove(WriteBuffer& buffer)
 		{
 
 		}
 
-		void PinReaderPWMGhost::syncRemove(net::ReadBuffer& buffer)
+		void PinReaderPWMGhost::syncRemove(ReadBuffer& buffer)
 		{
 
 		}
@@ -62,7 +64,7 @@ namespace spehs
 			return requestUpdate;
 		}
 
-		void PinReaderPWMGhost::syncUpdate(net::WriteBuffer& buffer)
+		void PinReaderPWMGhost::syncUpdate(WriteBuffer& buffer)
 		{
 			buffer.write(active);
 			buffer.write(pin);
@@ -71,7 +73,7 @@ namespace spehs
 			requestUpdate = false;
 		}
 
-		void PinReaderPWMGhost::syncUpdate(net::ReadBuffer& buffer)
+		void PinReaderPWMGhost::syncUpdate(ReadBuffer& buffer)
 		{
 			bool clearHistory;
 			PWMHistory newHistory;
@@ -204,22 +206,22 @@ namespace spehs
 			}
 		}
 
-		void PinReaderPWMShell::syncCreate(net::WriteBuffer& buffer)
+		void PinReaderPWMShell::syncCreate(WriteBuffer& buffer)
 		{
 
 		}
 
-		void PinReaderPWMShell::syncCreate(net::ReadBuffer& buffer)
+		void PinReaderPWMShell::syncCreate(ReadBuffer& buffer)
 		{
 
 		}
 
-		void PinReaderPWMShell::syncRemove(net::WriteBuffer& buffer)
+		void PinReaderPWMShell::syncRemove(WriteBuffer& buffer)
 		{
 
 		}
 
-		void PinReaderPWMShell::syncRemove(net::ReadBuffer& buffer)
+		void PinReaderPWMShell::syncRemove(ReadBuffer& buffer)
 		{
 			stop();
 			while (isRunning()) {}
@@ -232,7 +234,7 @@ namespace spehs
 			return false;
 		}
 
-		void PinReaderPWMShell::syncUpdate(net::WriteBuffer& buffer)
+		void PinReaderPWMShell::syncUpdate(WriteBuffer& buffer)
 		{
 			std::lock_guard<std::recursive_mutex> lock(mutex);
 			buffer.write(clearHistory);
@@ -244,7 +246,7 @@ namespace spehs
 			history.clear();
 		}
 
-		void PinReaderPWMShell::syncUpdate(net::ReadBuffer& buffer)
+		void PinReaderPWMShell::syncUpdate(ReadBuffer& buffer)
 		{
 			bool _active;					buffer.read(_active);		setActive(_active);
 			gpio::Pin _pin;					buffer.read(_pin);			setPin(_pin);

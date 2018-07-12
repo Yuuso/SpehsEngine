@@ -1,4 +1,6 @@
 #include "SpehsEngine/Core/StringOperations.h"
+#include "SpehsEngine/Core/ReadBuffer.h"
+#include "SpehsEngine/Core/WriteBuffer.h"
 #include "SpehsEngine/Sync/SyncManager.h"
 #include "SpehsEngine/Net/IOService.h"
 #include "SpehsEngine/Net/SocketTCP.h"
@@ -70,7 +72,7 @@ namespace spehs
 			}
 
 			//Prepare a packet for the remote sync manager
-			net::WriteBuffer buffer;
+			WriteBuffer buffer;
 			if (debugLevel >= 1)
 				spehs::log::info("spehs::sync::Manager: writing an init packet for the remote counterpart...");
 			//Write a header value for some packet verification
@@ -124,7 +126,7 @@ namespace spehs
 			}
 		}
 
-		bool Manager::receiveHandler(net::ReadBuffer& buffer)
+		bool Manager::receiveHandler(ReadBuffer& buffer)
 		{
 			while (buffer.getBytesRemaining())
 			{
@@ -192,7 +194,7 @@ namespace spehs
 						}
 
 						//Write a response packet
-						net::WriteBuffer response;
+						WriteBuffer response;
 						response.write(PacketType::types);
 						response.write(syncManagerInitializeTypesResponseMagicNumber);
 						const TypeCompatibility val = remoteManager.typeCompatibility.load();
@@ -333,7 +335,7 @@ namespace spehs
 				//Create
 				if (!entries[i]->createSent)
 				{
-					net::WriteBuffer buffer;
+					WriteBuffer buffer;
 					if (entries[i]->locallyInstantiated)
 					{
 						buffer.write(PacketType::create);
@@ -361,7 +363,7 @@ namespace spehs
 				//Set update interval
 				if (entries[i]->sendRemoteUpdateInterval)
 				{
-					net::WriteBuffer buffer;
+					WriteBuffer buffer;
 					buffer.write(Manager::PacketType::updateInterval);
 					buffer.write(entries[i]->id);
 					buffer.write(entries[i]->requestedRemoteUpdateInterval);
@@ -374,7 +376,7 @@ namespace spehs
 				if (entries[i]->ptr->syncUpdate(deltaTime) || (entries[i]->interval != 0 && entries[i]->timer >= entries[i]->interval))
 				{
 					entries[i]->timer = 0;
-					net::WriteBuffer buffer;
+					WriteBuffer buffer;
 					buffer.write(PacketType::update);
 					buffer.write(entries[i]->id);
 					entries[i]->ptr->syncUpdate(buffer);
@@ -395,7 +397,7 @@ namespace spehs
 					//Remove
 					if (entries[i]->handles.empty() && !entries[i]->removeSent)
 					{
-						net::WriteBuffer buffer;
+						WriteBuffer buffer;
 						buffer.write(PacketType::remove);
 						buffer.write(entries[i]->id);
 						entries[i]->ptr->syncRemove(buffer);
