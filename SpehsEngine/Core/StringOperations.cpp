@@ -1,3 +1,4 @@
+#include "stdafx.h"
 #include <string>
 #include <stdint.h>
 #include "SpehsEngine/Core/Exceptions.h"

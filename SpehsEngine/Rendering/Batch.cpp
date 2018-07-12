@@ -1,3 +1,4 @@
+#include "stdafx.h"
 
 #include "SpehsEngine/Rendering/Batch.h"
 #include "SpehsEngine/Rendering/Primitive.h"

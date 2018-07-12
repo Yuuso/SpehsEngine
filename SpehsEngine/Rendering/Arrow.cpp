@@ -1,3 +1,4 @@
+#include "stdafx.h"
 #include "SpehsEngine/Rendering/Arrow.h"
 #include "SpehsEngine/Rendering/Line.h"
 #include "SpehsEngine/Rendering/Polygon.h"

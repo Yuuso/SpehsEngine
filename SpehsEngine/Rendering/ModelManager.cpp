@@ -1,3 +1,4 @@
+#include "stdafx.h"
 
 #include "SpehsEngine/Rendering/ModelManager.h"
 #include "SpehsEngine/Rendering/Mesh.h"

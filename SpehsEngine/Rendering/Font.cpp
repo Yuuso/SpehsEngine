@@ -1,3 +1,4 @@
+#include "stdafx.h"
 #include "SpehsEngine/Rendering/Font.h"
 #include "SpehsEngine/Core/Log.h"
 #include <freetype/ft2build.h>

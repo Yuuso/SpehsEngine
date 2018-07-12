@@ -1,3 +1,4 @@
+#include "stdafx.h"
 #include "SpehsEngine/Input/InputEnumerations.h"
 
 

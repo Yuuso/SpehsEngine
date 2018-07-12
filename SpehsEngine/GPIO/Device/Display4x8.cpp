@@ -1,3 +1,4 @@
+#include "stdafx.h"
 #include "SpehsEngine/GPIO/Device/Display4x8.h"
 #include "SpehsEngine/GPIO/Pin.h"
 #include "SpehsEngine/Core/Time.h"

@@ -1,3 +1,4 @@
+#include "stdafx.h"
 
 #include "SpehsEngine/Rendering/Batch3D.h"
 #include "SpehsEngine/Rendering/BatchManager3D.h"

@@ -1,3 +1,4 @@
+#include "stdafx.h"
 #include "SpehsEngine/GUI/GUIRectangleContainer.h"
 #include "SpehsEngine/GUI/GUIRectangleTree.h"
 #include "SpehsEngine/GUI/GUIStringEditor.h"

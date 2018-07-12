@@ -1,3 +1,4 @@
+#include "stdafx.h"
 #include "ReadBuffer.h"
 #include "Log.h"
 

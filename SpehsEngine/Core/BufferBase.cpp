@@ -1,3 +1,4 @@
+#include "stdafx.h"
 #include "BufferBase.h"
 
 namespace se

@@ -1,3 +1,4 @@
+#include "stdafx.h"
 
 #include "SpehsEngine/GPIO/GPIO.h"
 #include "SpehsEngine/Core/Exceptions.h"

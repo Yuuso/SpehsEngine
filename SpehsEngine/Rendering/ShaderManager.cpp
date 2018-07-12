@@ -1,3 +1,4 @@
+#include "stdafx.h"
 
 #include "SpehsEngine/Rendering/ShaderManager.h"
 #include "SpehsEngine/Rendering/OpenGLError.h"

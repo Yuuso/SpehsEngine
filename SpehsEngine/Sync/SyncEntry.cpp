@@ -1,3 +1,4 @@
+#include "stdafx.h"
 #include "SpehsEngine/Sync/SyncEntry.h"
 #include "SpehsEngine/Core/Log.h"
 

@@ -1,3 +1,4 @@
+#include "stdafx.h"
 #include <mutex>
 #include <boost/filesystem.hpp>
 #include "SpehsEngine/Core/Exceptions.h"

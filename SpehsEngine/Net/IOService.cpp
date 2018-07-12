@@ -1,3 +1,4 @@
+#include "stdafx.h"
 #include "SpehsEngine/Net/IOService.h"
 #include "SpehsEngine/Core/Log.h"
 #include <boost/bind.hpp>

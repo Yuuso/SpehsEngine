@@ -1,3 +1,4 @@
+#include "stdafx.h"
 
 #include "SpehsEngine/Physics/SATCollision.h"
 #include "SpehsEngine/Core/Vertex.h"

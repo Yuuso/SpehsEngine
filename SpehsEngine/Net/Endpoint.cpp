@@ -1,3 +1,4 @@
+#include "stdafx.h"
 #include "Endpoint.h"
 
 #include <SpehsEngine/Core/Log.h>

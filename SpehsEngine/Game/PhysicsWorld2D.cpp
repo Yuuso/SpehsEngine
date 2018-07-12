@@ -1,3 +1,4 @@
+#include "stdafx.h"
 
 #include "RigidBody2D.h"
 #include "PhysicsWorld2D.h"

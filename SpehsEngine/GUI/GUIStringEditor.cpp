@@ -1,3 +1,4 @@
+#include "stdafx.h"
 #include <algorithm>
 #include "SpehsEngine/Core/StringOperations.h"
 #include "SpehsEngine/Core/OS.h"

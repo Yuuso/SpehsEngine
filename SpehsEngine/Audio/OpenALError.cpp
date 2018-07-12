@@ -1,3 +1,4 @@
+#include "stdafx.h"
 #ifdef _DEBUG
 #include "SpehsEngine/Audio/OpenALError.h"
 

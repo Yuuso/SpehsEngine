@@ -1,3 +1,4 @@
+#include "stdafx.h"
 #include <iostream>
 #include <atomic>
 #include "SpehsEngine/Audio/AudioManager.h"

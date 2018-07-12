@@ -1,3 +1,4 @@
+#include "stdafx.h"
 #include "SpehsEngine/GPIO/Device/PIR_MotionSensor.h"
 #include "SpehsEngine/Core/Log.h"
 

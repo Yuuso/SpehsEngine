@@ -1,3 +1,4 @@
+#include "stdafx.h"
 #include <iostream>
 #include <mutex>
 #include "SpehsEngine/Core/Log.h"

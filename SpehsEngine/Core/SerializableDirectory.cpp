@@ -1,3 +1,4 @@
+#include "stdafx.h"
 #include "SpehsEngine/Core/Exceptions.h"
 #include "SpehsEngine/Core/SerializableDirectory.h"
 #include <cstring>

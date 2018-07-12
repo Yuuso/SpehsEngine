@@ -1,3 +1,4 @@
+#include "stdafx.h"
 #include <cstring>
 #include "SpehsEngine/GPIO/Device/PinReaderPWM.h"
 #include "SpehsEngine/Core/Log.h"

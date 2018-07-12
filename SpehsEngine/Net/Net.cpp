@@ -1,3 +1,4 @@
+#include "stdafx.h"
 #include "SpehsEngine/Net/Net.h"
 #include "SpehsEngine/Core/Exceptions.h"
 #include "SpehsEngine/Core/Core.h"

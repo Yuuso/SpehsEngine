@@ -1,3 +1,4 @@
+#include "stdafx.h"
 #include "SpehsEngine/GPIO/Device/Ublox_M8N.h"
 #include "SpehsEngine/Core/Log.h"
 #include <iostream>

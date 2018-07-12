@@ -23,6 +23,9 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)Net.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Port.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)SocketTCP.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)stdafx.cpp">
+      <PrecompiledHeader>Create</PrecompiledHeader>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="$(MSBuildThisFileDirectory)Acceptor.h" />
@@ -35,5 +38,6 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)PacketMessage.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Port.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)SocketTCP.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)stdafx.h" />
   </ItemGroup>
 </Project>

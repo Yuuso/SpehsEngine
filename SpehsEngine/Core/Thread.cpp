@@ -1,3 +1,4 @@
+#include "stdafx.h"
 #include "SpehsEngine/Core/Thread.h"
 #include <thread>
 #ifdef _WIN32

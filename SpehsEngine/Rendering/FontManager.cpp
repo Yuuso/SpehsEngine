@@ -1,3 +1,4 @@
+#include "stdafx.h"
 #include "SpehsEngine/Rendering/FontManager.h"
 #include "SpehsEngine/Rendering/Font.h"
 #include "SpehsEngine/Rendering/OpenGLError.h"

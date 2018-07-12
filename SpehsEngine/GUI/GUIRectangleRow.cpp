@@ -1,3 +1,4 @@
+#include "stdafx.h"
 #include "SpehsEngine/GUI/GUIRectangleRow.h"
 
 namespace se

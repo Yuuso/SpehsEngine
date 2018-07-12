@@ -1,3 +1,4 @@
+#include "stdafx.h"
 #include "SpehsEngine/Input/InputManager.h"
 #include "SpehsEngine/Rendering/Polygon.h"
 #include "SpehsEngine/Rendering/BatchManager.h"

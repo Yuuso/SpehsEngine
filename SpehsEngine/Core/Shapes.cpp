@@ -1,3 +1,4 @@
+#include "stdafx.h"
 
 #include "SpehsEngine/Core/Shapes.h"
 #include "SpehsEngine/Core/Vertex.h"

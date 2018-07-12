@@ -1,3 +1,4 @@
+#include "stdafx.h"
 #include "SpehsEngine/Rendering/GLContext.h"
 #include "SpehsEngine/Rendering/Window.h"
 #include "SpehsEngine/Rendering/OpenGLError.h"

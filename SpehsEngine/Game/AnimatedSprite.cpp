@@ -1,3 +1,4 @@
+#include "stdafx.h"
 #include "SpehsEngine/Game/AnimatedSprite.h"
 #include "SpehsEngine/Rendering/TextureManager.h"
 #include "SpehsEngine/Rendering/Polygon.h"

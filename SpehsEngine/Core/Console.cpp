@@ -1,3 +1,5 @@
+#include "stdafx.h"
+
 #include <algorithm>
 #include <iostream>
 #include <atomic>

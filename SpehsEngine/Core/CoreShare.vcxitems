@@ -33,6 +33,9 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)SerializableDirectory.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)SerializableString.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Shapes.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)stdafx.cpp">
+      <PrecompiledHeader>Create</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="$(MSBuildThisFileDirectory)StringOperations.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Thread.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Time.cpp" />
@@ -64,6 +67,7 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)SerializableString.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)SerializableVector.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Shapes.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)stdafx.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)StringOperations.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Thread.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Time.h" />

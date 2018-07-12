@@ -1,3 +1,4 @@
+#include "stdafx.h"
 #include "Handshake.h"
 
 #include <SpehsEngine/Core/WriteBuffer.h>

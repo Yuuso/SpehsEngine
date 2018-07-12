@@ -1,3 +1,4 @@
+#include "stdafx.h"
 #include "SpehsEngine/GPIO/Device/ThreadedDevice.h"
 #include "SpehsEngine/Core/RAIIVariableSetter.h"
 #include <assert.h>

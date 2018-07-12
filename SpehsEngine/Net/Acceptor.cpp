@@ -1,3 +1,4 @@
+#include "stdafx.h"
 #include <boost/bind.hpp>
 #include "SpehsEngine/Net/Acceptor.h"
 #include "SpehsEngine/Net/SocketTCP.h"

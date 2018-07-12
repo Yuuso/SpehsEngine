@@ -1,3 +1,4 @@
+#include "stdafx.h"
 
 #include "SpehsEngine/Core/Color.h"
 #include "SpehsEngine/Core/Exceptions.h"

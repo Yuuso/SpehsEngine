@@ -1,3 +1,4 @@
+#include "stdafx.h"
 
 #include "SkyBox.h"
 #include "BatchManager3D.h"

@@ -1,3 +1,4 @@
+#include "stdafx.h"
 #include "SpehsEngine/GUI/GUIProgressBar.h"
 #include "SpehsEngine/Rendering/Polygon.h"
 #include "SpehsEngine/Rendering/Text.h"

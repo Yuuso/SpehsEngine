@@ -1,3 +1,4 @@
+#include "stdafx.h"
 #include "SpehsEngine/GPIO/Device/DCMotorController.h"
 #include "SpehsEngine/Core/Time.h"
 #include "SpehsEngine/Core/Log.h"

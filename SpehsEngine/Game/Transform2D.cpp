@@ -1,3 +1,4 @@
+#include "stdafx.h"
 
 #include "SpehsEngine/Game/Transform2D.h"
 #include "SpehsEngine/Game/GameObject.h"

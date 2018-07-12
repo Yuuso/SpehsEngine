@@ -1,3 +1,4 @@
+#include "stdafx.h"
 #include "SpehsEngine/Input/InputManager.h"
 //#include "SpehsEngine/Rendering/TextureManager.h" TODO!!!
 #include "SpehsEngine/Input/input.h"

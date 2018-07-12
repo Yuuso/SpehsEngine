@@ -1,3 +1,4 @@
+#include "stdafx.h"
 #include "Aria.h"
 #include "SpehsEngine/Core/RAIIVariableSetter.h"
 #include "SpehsEngine/Core/Log.h"

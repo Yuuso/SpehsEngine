@@ -1,3 +1,4 @@
+#include "stdafx.h"
 #include "Servo.h"
 #include <SpehsEngine/Core/WriteBuffer.h>
 #include <SpehsEngine/Core/ReadBuffer.h>

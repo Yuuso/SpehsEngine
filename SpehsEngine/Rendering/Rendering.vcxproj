@@ -178,6 +178,7 @@
     <ClInclude Include="RenderingContext.h" />
     <ClInclude Include="ShaderManager.h" />
     <ClInclude Include="Skybox.h" />
+    <ClInclude Include="stdafx.h" />
     <ClInclude Include="Text.h" />
     <ClInclude Include="TextureManager.h" />
     <ClInclude Include="Vertex3D.h" />
@@ -208,8 +209,15 @@
     <ClCompile Include="ShaderManager.cpp" />
     <ClCompile Include="Mesh.cpp" />
     <ClCompile Include="Skybox.cpp" />
+    <ClCompile Include="stdafx.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="Text.cpp" />
     <ClCompile Include="TextureManager.cpp" />
+    <ClCompile Include="Vertex3D.cpp" />
     <ClCompile Include="Window.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

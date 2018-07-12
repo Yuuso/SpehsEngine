@@ -1,3 +1,4 @@
+#include "stdafx.h"
 #include "SpehsEngine/Core/Inivar.h"
 #include "SpehsEngine/Core/Inifile.h"
 #include "SpehsEngine/Core/StringOperations.h"

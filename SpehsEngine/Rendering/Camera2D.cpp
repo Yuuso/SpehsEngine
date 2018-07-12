@@ -1,3 +1,4 @@
+#include "stdafx.h"
 
 #include "SpehsEngine/Rendering/Camera2D.h"
 #include "SpehsEngine/Rendering/Window.h"

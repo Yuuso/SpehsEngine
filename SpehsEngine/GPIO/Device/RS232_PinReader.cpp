@@ -1,3 +1,4 @@
+#include "stdafx.h"
 #include "SpehsEngine/GPIO/Device/RS232_PinReader.h"
 #include "SpehsEngine/Core/StringOperations.h"
 #include "SpehsEngine/Core/Log.h"

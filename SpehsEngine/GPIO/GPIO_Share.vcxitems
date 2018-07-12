@@ -27,6 +27,9 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)GPIO.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Pin.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Manipulator.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)stdafx.cpp">
+      <PrecompiledHeader>Create</PrecompiledHeader>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="$(MSBuildThisFileDirectory)Device\DCMotorController.h" />
@@ -42,5 +45,6 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)GPIO.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Pin.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Manipulator.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)stdafx.h" />
   </ItemGroup>
 </Project>

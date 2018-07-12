@@ -1,3 +1,4 @@
+#include "stdafx.h"
 #include <algorithm>
 #include "SpehsEngine/Input/InputManager.h"
 #include "SpehsEngine/GUI/GUIColorEditor.h"

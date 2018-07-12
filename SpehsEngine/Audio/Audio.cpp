@@ -1,4 +1,4 @@
-
+#include "stdafx.h"
 #include "SpehsEngine/Core/Core.h"
 #include "SpehsEngine/Core/Exceptions.h"
 #include "SpehsEngine/Core/Log.h"

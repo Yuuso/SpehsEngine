@@ -1,3 +1,4 @@
+#include "stdafx.h"
 
 #include "SpehsEngine/Game/Sprite.h"
 #include "SpehsEngine/Game/GameObject.h"

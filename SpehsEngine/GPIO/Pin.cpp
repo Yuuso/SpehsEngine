@@ -1,3 +1,4 @@
+#include "stdafx.h"
 #include "SpehsEngine/GPIO/Pin.h"
 #include "SpehsEngine/Core/Log.h"
 

@@ -1,3 +1,4 @@
+#include "stdafx.h"
 #include "SpehsEngine/Math/Math.h"
 #include "SpehsEngine/Core/Core.h"
 #include "SpehsEngine/Core/Log.h"

@@ -1,3 +1,4 @@
+#include "stdafx.h"
 
 #include "SpehsEngine/Game/RigidBody2D.h"
 #include "SpehsEngine/Game/PhysicsWorld2D.h"

@@ -1,3 +1,4 @@
+#include "stdafx.h"
 #include "SpehsEngine/GUI/GUI.h"
 #include "SpehsEngine/Core/Core.h"
 #include "SpehsEngine/Input/Input.h"

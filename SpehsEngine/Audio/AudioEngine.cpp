@@ -1,3 +1,4 @@
+#include "stdafx.h"
 #include "SpehsEngine/Core/Exceptions.h"
 #include "SpehsEngine/Core/Time.h"
 #include "SpehsEngine/Audio/AudioEngine.h"

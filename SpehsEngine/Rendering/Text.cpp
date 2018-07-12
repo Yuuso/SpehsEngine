@@ -1,3 +1,4 @@
+#include "stdafx.h"
 #include <algorithm>
 #include "SpehsEngine/Core/Log.h"
 #include "SpehsEngine/Rendering/FontManager.h"

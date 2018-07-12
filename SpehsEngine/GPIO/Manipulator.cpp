@@ -1,3 +1,4 @@
+#include "stdafx.h"
 #include "SpehsEngine/GPIO/Manipulator.h"
 #include "SpehsEngine/Sync/SyncManager.h"
 
