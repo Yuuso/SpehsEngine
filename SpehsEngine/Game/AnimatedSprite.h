@@ -10,7 +10,7 @@
 namespace spehs
 {
 	class GameObject;
-	class TextureData;
+	struct TextureData;
 	class AnimatedSprite : public Sprite
 	{
 	public:
@@ -24,7 +24,7 @@ namespace spehs
 		void setTextureID(const unsigned int _textureID) override;
 
 		void setAnimation(const spehs::ivec2& _frameSize, const uint8_t _rows, const uint8_t _columns, const uint16_t _amountOfFrames, const uint16_t _startingFrame = 0);
-		void setAnimationSpeed(const float _speed);
+		void setAnimationSpeed(const time::Time& _speed);
 
 	private:
 		TextureData* textureData;
@@ -33,7 +33,7 @@ namespace spehs
 		uint8_t frameStructure[2];
 		uint16_t maxFrames;
 		uint16_t currentFrame;
-		time::Time animationSpeed = 1.0f;
+		time::Time animationSpeed = time::fromSeconds(1.0f);
 		time::Time speedCounter = animationSpeed;
 	};
 }

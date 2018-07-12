@@ -57,7 +57,7 @@ namespace spehs
 	{
 		sprite->setColor(_newColor);
 	}
-	void Sprite::setAlpha(const spehs::Color::Component& _a)
+	void Sprite::setAlpha(const float _a)
 	{
 		sprite->setAlpha(_a);
 	}

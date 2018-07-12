@@ -82,9 +82,9 @@ namespace spehs
 		currentFrame = _startingFrame;
 	}
 
-	void AnimatedSprite::setAnimationSpeed(const float _speed)
+	void AnimatedSprite::setAnimationSpeed(const time::Time& _speed)
 	{
-		animationSpeed = time::fromSeconds(_speed);
-		speedCounter = time::fromSeconds(_speed);
+		animationSpeed = _speed;
+		speedCounter = _speed;
 	}
 }

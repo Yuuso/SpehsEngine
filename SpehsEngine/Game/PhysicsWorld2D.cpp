@@ -1,15 +1,15 @@
 
-#include "SpehsEngine/Game/RigidBody2D.h"
-#include "SpehsEngine/Game/PhysicsWorld2D.h"
-#include "SpehsEngine/Game/GameObject.h"
-#include "SpehsEngine/Game/Transform2D.h"
-#include "SpehsEngine/Game/Sprite.h"
-#include "SpehsEngine/Core/Geometry.h"
-#include "SpehsEngine/Core/Vector.h"
-#include "SpehsEngine/Core/SATCollision.h"
-#include "SpehsEngine/Rendering/Polygon.h"
-#include "SpehsEngine/Rendering/Line.h"
-#include "SpehsEngine/Rendering/BatchManager.h"
+#include "RigidBody2D.h"
+#include "PhysicsWorld2D.h"
+#include "GameObject.h"
+#include "Transform2D.h"
+#include <SpehsEngine/Game/Sprite.h>
+#include <SpehsEngine/Core/Geometry.h>
+#include <SpehsEngine/Core/Vector.h>
+#include <SpehsEngine/Physics/SATCollision.h>
+#include <SpehsEngine/Rendering/Polygon.h>
+#include <SpehsEngine/Rendering/Line.h>
+#include <SpehsEngine/Rendering/BatchManager.h>
 
 #include <glm/gtx/vector_query.hpp>
 

@@ -9,9 +9,9 @@ namespace spehs
 {
 	class GameObject;
 	class Polygon;
-	class TextureData;
 	class BatchManager;
 	class TextureManager;
+	struct TextureData;
 
 	class Sprite : public Component, public Colorable
 	{
@@ -26,7 +26,7 @@ namespace spehs
 		virtual void setTextureID(const unsigned int _textureID);
 		void setSize(const float _x, const float _y);
 		void setColor(const spehs::Color &_newColor) override;
-		void setAlpha(const spehs::Color::Component& _a) override;
+		void setAlpha(const float _a) override;
 		void setDepth(const int _depth);
 		void setRenderState(const bool _state);
 		void updateVertices();

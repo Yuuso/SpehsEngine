@@ -2,7 +2,7 @@
 #pragma once
 
 #include "SpehsEngine/Core/Vector.h"
-#include "SpehsEngine/Core/SATCollision.h"
+#include "SpehsEngine/Physics/SATCollision.h"
 
 #include <vector>
 #include <memory>

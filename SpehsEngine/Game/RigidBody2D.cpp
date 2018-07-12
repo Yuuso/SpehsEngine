@@ -93,9 +93,9 @@ namespace spehs
 		if (resultantImpulseForce.size() && !freezePosition)
 		{
 			spehs::vec2 resultForce = spehs::vec2::zero;
-			for (unsigned i = 0; i < resultantImpulseForce.size(); i++)
+			for (size_t i = 0; i < resultantImpulseForce.size(); i++)
 				resultForce += resultantImpulseForce[i];
-			resultForce /= resultantImpulseForce.size();
+			resultForce /= float(resultantImpulseForce.size());
 			velocity = resultForce;
 		}
 		if (resultantImpulseTorque.size() && !freezeRotation)

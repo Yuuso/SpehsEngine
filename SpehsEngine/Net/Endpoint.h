@@ -15,7 +15,7 @@ namespace spehs
 			Endpoint() : address(invalid.address), port(invalid.port) {}
 			Endpoint(const Address& _address, const Port& _port) : address(_address), port(_port) {}
 			bool operator==(const Endpoint& other) const { return port == other.port && address == other.address; }
-			std::string toString() const { return address.toString() + port.toString(); }
+			std::string toString() const { return address.toString() + ":" + port.toString(); }
 			Address address;
 			Port port;
 		};

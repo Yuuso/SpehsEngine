@@ -24,7 +24,7 @@ namespace spehs
 
 		void Handshake::read(ReadBuffer& buffer)
 		{//NOTE: buffer can contain invalid data! If so, set the valid boolean to false
-			size_t offset = 0;
+
 			valid = true;
 
 			//Magic
@@ -51,7 +51,7 @@ namespace spehs
 				return;
 			}
 			else
-				buffer.read((uint32_t&)handshakeVersion);
+				buffer.read(handshakeVersion);
 			if (handshakeVersion != currentVersion)
 			{
 				spehs::log::info("Handshake::read() invalid handshake. Incompatible versions - my version: " + std::to_string(currentVersion) + ", other version: " + std::to_string(handshakeVersion));
