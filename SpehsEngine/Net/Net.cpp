@@ -25,11 +25,11 @@ namespace spehs
 		{
 			if (!coreLib.isValid())
 			{
-				log::error("Cannot initialize input library, rendering library is invalid.");
+				log::error("Cannot initialize input library, core library is invalid.");
 				return;
 			}
 
-			log::info("Current SpehsEngine input library version: " + getVersion());
+			log::info("Current SpehsEngine net library version: " + getVersion());
 
 			valid = true;
 		}

@@ -8,7 +8,7 @@ namespace spehs
 	{
 	public:
 		/* Initializes net library */
-		NetLib(const CoreLib& renderingLib);
+		NetLib(const CoreLib& coreLib);
 
 		/* Uninitializes net library */
 		~NetLib();
