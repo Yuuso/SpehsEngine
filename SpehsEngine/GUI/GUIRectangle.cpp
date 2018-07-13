@@ -28,7 +28,7 @@ namespace se
 	Color GUIRectangle::defaultStringColor(0, 0, 0, 255);
 	Color GUIRectangle::defaultTooltipColor(255, 255, 255, 255);
 	Color GUIRectangle::defaultTooltipStringColor(0, 0, 0, 255);
-	se::TextureParameter GUIRectangle::defaultTextureParameters(se::TextureFiltering::Nearest, se::TextureFiltering::Nearest);
+	se::rendering::TextureParameter GUIRectangle::defaultTextureParameters(se::rendering::TextureFiltering::Nearest, se::rendering::TextureFiltering::Nearest);
 
 	GUIRectangle::DisplayTexture::~DisplayTexture()
 	{
@@ -487,12 +487,12 @@ namespace se
 		text->setColor(defaultStringColor);
 	}
 
-	void GUIRectangle::setDisplayTexture(const std::string& path, const TextureParameter& _parameters)
+	void GUIRectangle::setDisplayTexture(const std::string& path, const se::rendering::TextureParameter& _parameters)
 	{
 		if (displayTexture)
 			delete displayTexture;
 		displayTexture = new DisplayTexture();
-		TextureData* texData = getBatchManager().textureManager.getTextureData(path, _parameters);
+		se::rendering::TextureData* texData = getBatchManager().textureManager.getTextureData(path, _parameters);
 		displayTexture->polygon = getBatchManager().createPolygon(4, 0, float(texData->width), float(texData->height));
 		displayTexture->polygon->setTexture(texData);
 		displayTexture->polygon->setCameraMatrixState(false);
@@ -514,14 +514,14 @@ namespace se
 			displayTexture->polygon->setColor(color);
 	}
 
-	void GUIRectangle::setTexture(const std::string& path, const TextureParameter& _parameters)
+	void GUIRectangle::setTexture(const std::string& path, const se::rendering::TextureParameter& _parameters)
 	{
 		polygon->setTexture(getBatchManager().textureManager.getTextureData(path, _parameters));
 	}
 
 	void GUIRectangle::setTexture(const std::string& path)
 	{
-		setTexture(path, se::TextureParameter::defaultParameters);
+		setTexture(path, se::rendering::TextureParameter::defaultParameters);
 	}
 
 	void GUIRectangle::setTextureID(const unsigned int _textureID)

@@ -9,104 +9,107 @@
 
 namespace se
 {
-	class Font;
-	class BatchManager;
-	typedef unsigned int GLuint;
-	typedef char GLchar;
-
-	class Text : public Colorable
+	namespace rendering
 	{
-		friend class BatchManager;
-	public:
+		class Font;
+		class BatchManager;
+		typedef unsigned int GLuint;
+		typedef char GLchar;
 
-		void operator=(const Text& _original);
+		class Text : public Colorable
+		{
+			friend class BatchManager;
+		public:
 
-		void destroy();
+			void operator=(const Text& _original);
 
-		void update(); // Called from batch manager when drawing
-		void setRenderState(const bool _state);
-		bool getRenderState() const { return renderState; }
+			void destroy();
 
-		void translate(const se::vec2& _vec);
-		void setPosition(const se::vec2& _vec);
-		void setPosition(const float x, const float y);
+			void update(); // Called from batch manager when drawing
+			void setRenderState(const bool _state);
+			bool getRenderState() const { return renderState; }
 
-		void setPlaneDepth(const PlaneDepth _depth);
+			void translate(const se::vec2& _vec);
+			void setPosition(const se::vec2& _vec);
+			void setPosition(const float x, const float y);
 
-		void setString(const std::string& _str);
-		void setString(const char* str, const unsigned _length);
-		void incrementString(const std::string& _str);
-		void incrementFrontString(const std::string& _str);
+			void setPlaneDepth(const PlaneDepth _depth);
 
-		void setFont(const std::string& _fontPath, const int _size);
-		void setFont(Font* _font);
-		void setFontSize(const int _size);
+			void setString(const std::string& _str);
+			void setString(const char* str, const unsigned _length);
+			void incrementString(const std::string& _str);
+			void incrementFrontString(const std::string& _str);
 
-		void setColor(const se::Color& _newColor);
-		void setAlpha(const float _alpha);
+			void setFont(const std::string& _fontPath, const int _size);
+			void setFont(Font* _font);
+			void setFontSize(const int _size);
 
-		void setShader(const unsigned int _shaderIndex) { shaderIndex = _shaderIndex; };
-		void setCameraMatrixState(const bool _state) { cameraMatrixState = _state; }
-		void setLineSpacing(const int _lineSpacing);
-		void setScale(const float _scale) { scale = _scale; needTextUpdate = true; }
-		//Getters
-		std::string getString() const { return string; }
+			void setColor(const se::Color& _newColor);
+			void setAlpha(const float _alpha);
 
-		se::vec2 getPosition() const { return position; }
-		float getX() const { return position.x; }
-		float getX(const size_t characterIndex) const;//Returns x position at given character index. Character width is not included. If index is out of bounds, returns x position of the last character instead.
-		float getY() const { return position.y; }
-		float getY(const size_t characterIndex) const;//Returns y position at given character index. Character height is not included. If index is out of bounds, returns y position of the last character instead.
+			void setShader(const unsigned int _shaderIndex) { shaderIndex = _shaderIndex; };
+			void setCameraMatrixState(const bool _state) { cameraMatrixState = _state; }
+			void setLineSpacing(const int _lineSpacing);
+			void setScale(const float _scale) { scale = _scale; needTextUpdate = true; }
+			//Getters
+			std::string getString() const { return string; }
 
-		float getTextWidth() const;
-		float getTextHeight() const;
-		int getLineCount() const { return lineCount; }
-		int getLineSpacing() const { return lineSpacing; }
-		float getScale() const { return scale; }
+			se::vec2 getPosition() const { return position; }
+			float getX() const { return position.x; }
+			float getX(const size_t characterIndex) const;//Returns x position at given character index. Character width is not included. If index is out of bounds, returns x position of the last character instead.
+			float getY() const { return position.y; }
+			float getY(const size_t characterIndex) const;//Returns y position at given character index. Character height is not included. If index is out of bounds, returns y position of the last character instead.
 
-		Font* getFontPtr() const { return font; }
-		int getFontSize() const;
-		int getFontHeight() const;
-		int getFontAscender() const;
-		int getFontDescender() const;
-		int getFontMaxAdvanceWidth() const;
+			float getTextWidth() const;
+			float getTextHeight() const;
+			int getLineCount() const { return lineCount; }
+			int getLineSpacing() const { return lineSpacing; }
+			float getScale() const { return scale; }
 
-		unsigned int getShaderIndex() const { return shaderIndex; }
-		PlaneDepth getPlaneDepth() const { return planeDepth; }
-		bool getCameraMatrixState() const { return cameraMatrixState; }
+			Font* getFontPtr() const { return font; }
+			int getFontSize() const;
+			int getFontHeight() const;
+			int getFontAscender() const;
+			int getFontDescender() const;
+			int getFontMaxAdvanceWidth() const;
 
-		se::Color getColor() const { return color; }
-		float getAlpha() const { return color.a; }
+			unsigned int getShaderIndex() const { return shaderIndex; }
+			PlaneDepth getPlaneDepth() const { return planeDepth; }
+			bool getCameraMatrixState() const { return cameraMatrixState; }
 
-		std::vector<GLuint> textureIDs;
-		std::vector<se::Vertex> worldVertexArray;
-		BatchManager& batchManager;
+			se::Color getColor() const { return color; }
+			float getAlpha() const { return color.a; }
 
-	protected:
-		Text(BatchManager& batchManager, const PlaneDepth _depth);
-		Text(BatchManager& batchManager, const std::string &_string, const PlaneDepth _depth);
-		//Text(const Text& _original);
-		~Text();
+			std::vector<GLuint> textureIDs;
+			std::vector<se::Vertex> worldVertexArray;
+			BatchManager& batchManager;
 
-	private:
+		protected:
+			Text(BatchManager& batchManager, const PlaneDepth _depth);
+			Text(BatchManager& batchManager, const std::string &_string, const PlaneDepth _depth);
+			//Text(const Text& _original);
+			~Text();
 
-		void updatePosition();
-		void updateText();
+		private:
 
-		std::string string;
-		se::vec2 position;
-		se::Color color;
-		float scale = 1.0f;
-		int lineCount = 0;
-		int lineSpacing = 0;
-		PlaneDepth planeDepth = 0;
-		unsigned int shaderIndex;
-		bool cameraMatrixState = false;
-		bool renderState = true;
-		bool readyForDelete = false;
-		bool needPositionUpdate = false;
-		bool needTextUpdate = false;
-		std::vector<se::Vertex> vertexArray;
-		Font* font = nullptr;
-	};
+			void updatePosition();
+			void updateText();
+
+			std::string string;
+			se::vec2 position;
+			se::Color color;
+			float scale = 1.0f;
+			int lineCount = 0;
+			int lineSpacing = 0;
+			PlaneDepth planeDepth = 0;
+			unsigned int shaderIndex;
+			bool cameraMatrixState = false;
+			bool renderState = true;
+			bool readyForDelete = false;
+			bool needPositionUpdate = false;
+			bool needTextUpdate = false;
+			std::vector<se::Vertex> vertexArray;
+			Font* font = nullptr;
+		};
+	}
 }

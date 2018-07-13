@@ -24,7 +24,7 @@ namespace se
 		return SDL_JoystickGetDeviceGUID(_deviceIndex);
 	}
 
-	InputManager::InputManager(Window& _window)
+	InputManager::InputManager(se::rendering::Window& _window)
 		: window(_window)
 		, mouseCoords(0, 0)
 		, mouseMovement(0, 0)

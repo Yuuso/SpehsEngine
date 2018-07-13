@@ -4,15 +4,12 @@
 
 namespace se
 {
-	namespace graphics
+	namespace rendering
 	{
-		namespace postproc
-		{
-			void setPostProcessingShader(const int _shaderIndex);
-			void enablePostProcessing();
-			void disablePostProcessing();
-			bool postProcessingEnabled();
-			void postProcessingReshape();
-		}
+		void setPostProcessingShader(const int _shaderIndex);
+		void enablePostProcessing();
+		void disablePostProcessing();
+		bool postProcessingEnabled();
+		void postProcessingReshape();
 	}
 }

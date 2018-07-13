@@ -16,7 +16,10 @@ typedef int32_t SDL_JoystickID;
 
 namespace se
 {
-	class Window;
+	namespace rendering
+	{
+		class Window;
+	}
 	class InputManager;
 
 	GUID getJoystickDeviceGUID(int _deviceIndex);
@@ -55,7 +58,7 @@ namespace se
 	class InputManager
 	{
 	public:
-		InputManager(Window& _window);
+		InputManager(se::rendering::Window& _window);
 		~InputManager();
 
 		void update();
@@ -99,7 +102,7 @@ namespace se
 		std::string getDroppedFilePath(){ std::string path = droppedFilePath; droppedFilePath.clear();/*Reset dropped file path*/ return path; }
 
 		//Public access members
-		Window& window;
+		se::rendering::Window& window;
 		std::vector<Joystick*> joysticks;
 		int32_t latestKeyboardPress;///< Latest key pressed. Reset for each update (0) if nothing was pressed during that update
 		int32_t latestMouseButtonPress;///< Latest mouse buton pressed. Reset for each update (0) if nothing was pressed during that update
@@ -109,7 +112,7 @@ namespace se
 	private:
 		bool quitRequested = false;
 		std::string droppedFilePath;///<Dropped file path is retrievable until any source retrieves(getDroppedFilePath()) it once.
-		
+
 		//Keyboard
 		bool wasKeyDown(unsigned int keyID) const;
 
@@ -119,7 +122,7 @@ namespace se
 		int mouseWheelDelta = 0;
 		se::vec2 mouseCoords;
 		se::vec2 mouseMovement;
-		
+
 		//Joystick(s)
 		void joystickConnected();
 		void joystickDisconnected();

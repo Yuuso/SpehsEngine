@@ -20,7 +20,7 @@ namespace se
 		void setProgressBarBackAlpha(const float a);
 
 	private:
-		se::Polygon* progressBarFront;
-		se::Polygon* progressBarBack;
+		se::rendering::Polygon* progressBarFront;
+		se::rendering::Polygon* progressBarBack;
 	};
 }

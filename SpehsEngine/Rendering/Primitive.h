@@ -17,118 +17,120 @@ typedef unsigned int GLuint;
 
 namespace se
 {
-	class Polygon;
-	class Line;
-	class Point;
-	class BatchManager;
-	class PrimitiveBatch;
-
-	enum class DrawMode : int
+	namespace rendering
 	{
-		UNDEFINED = -1,
+		class Polygon;
+		class Line;
+		class Point;
+		class BatchManager;
+		class PrimitiveBatch;
 
-		POINT = 0x0000,
-		LINE = 0x0001,
-		LINE_LOOP = 0x0002,
-		LINE_STRIP = 0x0003,
-		LINE_ADJACENCY = 0x000A,
-		LINE_STRIP_ADJACENCY = 0x000B,
-		TRIANGLE = 0x0004,
-		TRIANGLE_FAN = 0x0006,
-		TRIANGLE_STRIP = 0x0005,
-		TRIANGLE_ADJACENCY = 0x000C,
-		TRIANGLE_STRIP_ADJACENCY = 0x000D,
-		PATCH = 0xE,
-		QUAD = 0x0007,
-		QUAD_STRIP = 0x0008,
-		POLYGON = 0x0009,
+		enum class DrawMode : int
+		{
+			UNDEFINED = -1,
 
-		//Special case for drawing batched polygons with lines
-		LINE_TRIANGLE = 0x1003,
-	};
+			POINT = 0x0000,
+			LINE = 0x0001,
+			LINE_LOOP = 0x0002,
+			LINE_STRIP = 0x0003,
+			LINE_ADJACENCY = 0x000A,
+			LINE_STRIP_ADJACENCY = 0x000B,
+			TRIANGLE = 0x0004,
+			TRIANGLE_FAN = 0x0006,
+			TRIANGLE_STRIP = 0x0005,
+			TRIANGLE_ADJACENCY = 0x000C,
+			TRIANGLE_STRIP_ADJACENCY = 0x000D,
+			PATCH = 0xE,
+			QUAD = 0x0007,
+			QUAD_STRIP = 0x0008,
+			POLYGON = 0x0009,
 
-	//Base class for polygon, line and point
-	class Primitive : public Colorable
-	{
-		friend class BatchManager;
-		friend class PrimitiveBatch;
+			//Special case for drawing batched polygons with lines
+			LINE_TRIANGLE = 0x1003,
+		};
 
-	public:
-		virtual Polygon* getPolygonPtr(){ return nullptr; }
-		virtual Line* getLinePtr(){ return nullptr; }
-		virtual Point* getPointPtr(){ return nullptr; }
+		//Base class for polygon, line and point
+		class Primitive : public Colorable
+		{
+			friend class BatchManager;
+			friend class PrimitiveBatch;
 
-		virtual void updateVertices() = 0; //This is called automatically when rendering
+		public:
+			virtual Polygon* getPolygonPtr() { return nullptr; }
+			virtual Line* getLinePtr() { return nullptr; }
+			virtual Point* getPointPtr() { return nullptr; }
 
-		void destroy(); //Primitives can only be deleted by BatchManager, user can request deletion by calling destroy()
-		//NOTE: BatchManager does clean up the primitives after it is deleted, but it is advised that the user destroys primitives that are not needed
+			virtual void updateVertices() = 0; //This is called automatically when rendering
 
-		//Setters
-		void setPosition(const float _x, const float _y);
-		void setPosition(const se::vec2& _newPosition);
-		void setPosition(const Primitive& _other);
-		void translate(const float _x, const float _y);
-		void translate(const se::vec2& _translation);
-		void setScale(const float _newScale);
-		void setScale(const float _newScaleX, const float _newScaleY);
-		void setScale(const se::vec2& _newScale);
-		void setScaleX(const float _newScaleX);
-		void setScaleY(const float _newScaleX);
-		void setRotation(const float _newRotation);
-		void setRotation(const float _newRotation, const se::vec3& _newRotationVector);
-		void setRotation(const Primitive& _other);
-		void rotate(const float _rotation);
-		void setRotationVector(const se::vec3& _newRotationVector);
-		void setColor(const Primitive& other);
-		void setColor(const se::Color& _newColor) override;
-		void setAlpha(const float _alpha) override;
-		void setCameraMatrixState(const bool _newState);
-		void setPlaneDepth(const PlaneDepth _newPlaneDepth);
-		void setLineWidth(const float _newWidth);
-		void setRenderState(const bool _newState);
-		void setRenderState(const Primitive& _other);
-		void setShaderIndex(const unsigned int _newShaderIndex);
-		void setBlending(const bool _newState);
+			void destroy(); //Primitives can only be deleted by BatchManager, user can request deletion by calling destroy()
+			//NOTE: BatchManager does clean up the primitives after it is deleted, but it is advised that the user destroys primitives that are not needed
 
-		//Getters
-		se::vec2 getPosition() const { return position; }
-		float getX() const { return position.x; }
-		float getY() const { return position.y; }
-		float getRotation() const { return rotation; }
-		bool getCameraMatrixState() const { return cameraMatrixState; }
-		bool getRenderState() const { return renderState; }
-		PlaneDepth getPlaneDepth() const { return planeDepth; }
-		unsigned int getShaderIndex() const { return shaderIndex; }
-		se::Color getColor() const { return primitiveColor; }
-		float getAlpha() const { return primitiveColor.a; }
-		float getScaleX() const { return scaleX; }
-		float getScaleY() const { return scaleY; }
-		//Public Variables
-		std::vector<se::Vertex> worldVertexArray; //Transformed vertices
-		BatchManager& batchManager;
+			//Setters
+			void setPosition(const float _x, const float _y);
+			void setPosition(const se::vec2& _newPosition);
+			void setPosition(const Primitive& _other);
+			void translate(const float _x, const float _y);
+			void translate(const se::vec2& _translation);
+			void setScale(const float _newScale);
+			void setScale(const float _newScaleX, const float _newScaleY);
+			void setScale(const se::vec2& _newScale);
+			void setScaleX(const float _newScaleX);
+			void setScaleY(const float _newScaleX);
+			void setRotation(const float _newRotation);
+			void setRotation(const float _newRotation, const se::vec3& _newRotationVector);
+			void setRotation(const Primitive& _other);
+			void rotate(const float _rotation);
+			void setRotationVector(const se::vec3& _newRotationVector);
+			void setColor(const Primitive& other);
+			void setColor(const se::Color& _newColor) override;
+			void setAlpha(const float _alpha) override;
+			void setCameraMatrixState(const bool _newState);
+			void setPlaneDepth(const PlaneDepth _newPlaneDepth);
+			void setLineWidth(const float _newWidth);
+			void setRenderState(const bool _newState);
+			void setRenderState(const Primitive& _other);
+			void setShaderIndex(const unsigned int _newShaderIndex);
+			void setBlending(const bool _newState);
 
-	protected:
-		Primitive(BatchManager& batchManager);
-		virtual ~Primitive();
+			//Getters
+			se::vec2 getPosition() const { return position; }
+			float getX() const { return position.x; }
+			float getY() const { return position.y; }
+			float getRotation() const { return rotation; }
+			bool getCameraMatrixState() const { return cameraMatrixState; }
+			bool getRenderState() const { return renderState; }
+			PlaneDepth getPlaneDepth() const { return planeDepth; }
+			unsigned int getShaderIndex() const { return shaderIndex; }
+			se::Color getColor() const { return primitiveColor; }
+			float getAlpha() const { return primitiveColor.a; }
+			float getScaleX() const { return scaleX; }
+			float getScaleY() const { return scaleY; }
+			//Public Variables
+			std::vector<se::Vertex> worldVertexArray; //Transformed vertices
+			BatchManager& batchManager;
 
-		bool readyForDelete = false;
-		bool blending = false;
-		bool renderState = true; //Whether Primitive is rendered or not
-		bool cameraMatrixState = true; //Whether camera affects the primitive or not
-		bool needUpdate = true;
-		GLuint textureDataID = 0;
-		PlaneDepth planeDepth = 0;
-		DrawMode drawMode = DrawMode::UNDEFINED;
-		unsigned int shaderIndex;
-		float lineWidth = 0.0f;
-		float rotation = 0.0f;
-		float scaleX = 1.0f, scaleY = 1.0f;
-		se::vec3 rotationVector = se::vec3(0.0f, 0.0f, 1.0f);
-		Color primitiveColor = Color(255, 255, 255, 255);
-		glm::mat4 scaledMatrix = glm::mat4(1.0f);
-		glm::mat4 scaledRotatedMatrix = glm::mat4(1.0f);
-		se::vec2 position = se::vec2(0.0f, 0.0f);
-		std::vector<se::Vertex> vertexArray; //Original vertices
+		protected:
+			Primitive(BatchManager& batchManager);
+			virtual ~Primitive();
 
-	};
+			bool readyForDelete = false;
+			bool blending = false;
+			bool renderState = true; //Whether Primitive is rendered or not
+			bool cameraMatrixState = true; //Whether camera affects the primitive or not
+			bool needUpdate = true;
+			GLuint textureDataID = 0;
+			PlaneDepth planeDepth = 0;
+			DrawMode drawMode = DrawMode::UNDEFINED;
+			unsigned int shaderIndex;
+			float lineWidth = 0.0f;
+			float rotation = 0.0f;
+			float scaleX = 1.0f, scaleY = 1.0f;
+			se::vec3 rotationVector = se::vec3(0.0f, 0.0f, 1.0f);
+			Color primitiveColor = Color(255, 255, 255, 255);
+			glm::mat4 scaledMatrix = glm::mat4(1.0f);
+			glm::mat4 scaledRotatedMatrix = glm::mat4(1.0f);
+			se::vec2 position = se::vec2(0.0f, 0.0f);
+			std::vector<se::Vertex> vertexArray; //Original vertices
+		};
+	}
 }

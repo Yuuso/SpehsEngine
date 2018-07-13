@@ -5,41 +5,55 @@
 
 #include <string>
 #include <vector>
+#include <utility>
 
 
 namespace se
 {
-	class Camera3D;
-	class Mesh;
-	class MeshBatch;
-	class Window;
-	class ShaderManager;
-	class TextureManager;
-	class ModelManager;
-
-	class BatchManager3D
+	namespace rendering
 	{
-		friend class Mesh;
+		class Camera3D;
+		class Mesh;
+		class MeshBatch;
+		class Window;
+		class ShaderManager;
+		class TextureManager;
+		class ModelManager;
 
-	public:
-		BatchManager3D(Window& _window, ModelManager& _modelManager, ShaderManager& _shaderManager, Camera3D& _camera, const std::string& _name = "unnamed 3d batch manager");
-		~BatchManager3D();
+		class BatchManager3D
+		{
+			friend class Mesh;
 
-		Mesh* createMesh();
-		Mesh* createMesh(const std::string& _filepath);
+		public:
+			BatchManager3D(Window& _window, ModelManager& _modelManager, ShaderManager& _shaderManager, Camera3D& _camera, const std::string& _name = "unnamed 3d batch manager");
+			~BatchManager3D();
 
-		void render();
-		void clearBatches();
+			void addMesh(Mesh& mesh);
+			void removeMesh(Mesh& mesh);
 
-		ShaderManager& shaderManager;
-		TextureManager& textureManager;
-		ModelManager& modelManager;
-		Window& window;
-		Camera3D& camera3D;
-		const std::string name;
+			void render();
 
-	protected:
-		std::vector<MeshBatch*> meshBatches;
-		std::vector<Mesh*> meshes;
-	};
+			ShaderManager& shaderManager;
+			TextureManager& textureManager;
+			ModelManager& modelManager;
+			Window& window;
+			Camera3D& camera3D;
+			const std::string name;
+
+		private:
+			struct MeshObject
+			{
+				MeshObject(Mesh& _mesh) : mesh(&_mesh) {}
+				Mesh* mesh;
+				MeshBatch* batch = nullptr;
+				std::pair<size_t, size_t> indexInBatch;
+				std::pair<size_t, size_t> sizeInBatch;
+			};
+			void batch(MeshObject& _object, MeshBatch* _batch);
+			void unbatch(MeshObject& _object);
+			std::vector<MeshObject> meshes;
+
+			std::vector<MeshBatch*> batches;
+		};
+	}
 }

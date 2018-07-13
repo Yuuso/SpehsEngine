@@ -15,47 +15,50 @@ typedef unsigned short GLushort;
 
 namespace se
 {
-	class Mesh;
-
-	int checkArrayForElements(const std::vector<se::Vertex3D>& _array, const se::vec3& _position, const se::vec2& _textureCoord, const se::vec3& _normal);
-
-	struct ModelData
+	namespace rendering
 	{
-		ModelData();
-		void loadFromData(std::vector<se::Vertex3D> &_vertexArray, std::vector<GLushort> &_elementArray);
+		class Mesh;
 
-		std::vector<se::Vertex3D> vertices;
-		std::vector<se::vec2> textureCoordinates;
-		std::vector<se::vec3> normals;
-		std::vector<GLushort> vertexElements;
-		std::vector<GLushort> textureElements;
-		std::vector<GLushort> normalElements;
-	};
+		int checkArrayForElements(const std::vector<Vertex3D>& _array, const se::vec3& _position, const se::vec2& _textureCoord, const se::vec3& _normal);
 
-	class ModelManager
-	{
-	public:
-		ModelManager();
-		~ModelManager();
+		struct ModelData
+		{
+			ModelData();
+			void loadFromData(std::vector<Vertex3D> &_vertexArray, std::vector<GLushort> &_elementArray);
 
-		void loadModel(const std::string& _filepath, se::Mesh* _mesh);
+			std::vector<Vertex3D> vertices;
+			std::vector<se::vec2> textureCoordinates;
+			std::vector<se::vec3> normals;
+			std::vector<GLushort> vertexElements;
+			std::vector<GLushort> textureElements;
+			std::vector<GLushort> normalElements;
+		};
 
-		void loadOBJ(const std::string& _filepath, se::Mesh* _mesh);
-		void loadOBJ(const size_t& _hash, se::Mesh* _mesh);
-		void preloadOBJ(const std::string& _filepath);
+		class ModelManager
+		{
+		public:
+			ModelManager();
+			~ModelManager();
 
-		void removeModelData(const std::string& _filepath);
-		void removeModelData(const size_t& _hash);
-		void clearAllModelData();
+			void loadModel(const std::string& _filepath, Mesh* _mesh);
 
-	private:
-		std::istringstream loadCube();
-		std::istringstream loadInvertedCube();
-		std::istringstream loadInvertedSphere();
+			void loadOBJ(const std::string& _filepath, Mesh* _mesh);
+			void loadOBJ(const size_t& _hash, Mesh* _mesh);
+			void preloadOBJ(const std::string& _filepath);
 
-		std::unordered_map<size_t, ModelData*> modelDataMap;
+			void removeModelData(const std::string& _filepath);
+			void removeModelData(const size_t& _hash);
+			void clearAllModelData();
 
-		void loadOBJFromFile(std::ifstream& _data, const size_t& _hash);
-		void loadOBJFromStringStream(std::istringstream& _data, const size_t& _hash);
-	};
+		private:
+			std::istringstream loadCube();
+			std::istringstream loadInvertedCube();
+			std::istringstream loadInvertedSphere();
+
+			std::unordered_map<size_t, ModelData*> modelDataMap;
+
+			void loadOBJFromFile(std::ifstream& _data, const size_t& _hash);
+			void loadOBJFromStringStream(std::istringstream& _data, const size_t& _hash);
+		};
+	}
 }

@@ -1,9 +1,12 @@
 #pragma once
 namespace se
 {
-	struct BatchRenderResults
+	namespace rendering
 	{
-		size_t drawCalls = 0;
-		size_t vertexCount = 0;
-	};
+		struct BatchRenderResults
+		{
+			size_t drawCalls = 0;
+			size_t vertexCount = 0;
+		};
+	}
 }

@@ -1,20 +1,23 @@
 #pragma once
 namespace se
 {
-	class Window;
-	class GLContext
+	namespace rendering
 	{
-	public:
+		class Window;
+		class GLContext
+		{
+		public:
 
-		bool isValid() const { return valid; }
+			bool isValid() const { return valid; }
 
-		Window& window;
+			Window& window;
 
-	private:
-		friend class Window;
-		GLContext(Window& window);
-		~GLContext();
-		void* glContext;
-		bool valid;
-	};
+		private:
+			friend class Window;
+			GLContext(Window& window);
+			~GLContext();
+			void* glContext;
+			bool valid;
+		};
+	}
 }

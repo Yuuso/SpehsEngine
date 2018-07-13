@@ -10,7 +10,7 @@
 
 namespace se
 {
-	Textbox::Textbox(BatchManager& batchManager, const std::string& string, const unsigned _textBorder, const int16_t depth)
+	Textbox::Textbox(se::rendering::BatchManager& batchManager, const std::string& string, const unsigned _textBorder, const int16_t depth)
 		: textBorder(_textBorder)
 	{
 		text = batchManager.createText(string, GUIRectangle::defaultDepth);

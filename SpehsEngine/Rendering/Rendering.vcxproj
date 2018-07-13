@@ -97,7 +97,7 @@
       <AdditionalDependencies>SpehsCore$(TargetExt);SpehsInput$(TargetExt);glew32.lib;glew32s.lib;opengl32.lib;freetype.lib;SOIL.lib</AdditionalDependencies>
     </Link>
     <Lib>
-      <AdditionalDependencies>glew32.lib;glew32s.lib;SOIL.lib;freetype.lib;</AdditionalDependencies>
+      <AdditionalDependencies>glew32.lib;glew32s.lib;SOIL.lib;freetype.lib</AdditionalDependencies>
     </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -111,7 +111,7 @@
       <AdditionalDependencies>SpehsCore$(TargetExt);SpehsInput$(TargetExt);glew32.lib;glew32s.lib;opengl32.lib;freetype.lib;SOIL.lib</AdditionalDependencies>
     </Link>
     <Lib>
-      <AdditionalDependencies>glew32.lib;glew32s.lib;SOIL.lib;freetype.lib;</AdditionalDependencies>
+      <AdditionalDependencies>glew32.lib;glew32s.lib;SOIL.lib;freetype.lib</AdditionalDependencies>
     </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -129,7 +129,7 @@
       <AdditionalDependencies>SpehsCore$(TargetExt);SpehsInput$(TargetExt);glew32.lib;glew32s.lib;opengl32.lib;freetype.lib;SOIL.lib</AdditionalDependencies>
     </Link>
     <Lib>
-      <AdditionalDependencies>glew32.lib;glew32s.lib;SOIL.lib;freetype.lib;</AdditionalDependencies>
+      <AdditionalDependencies>glew32.lib;glew32s.lib;SOIL.lib;freetype.lib</AdditionalDependencies>
     </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -147,7 +147,7 @@
       <AdditionalDependencies>SpehsCore$(TargetExt);SpehsInput$(TargetExt);glew32.lib;glew32s.lib;opengl32.lib;freetype.lib;SOIL.lib</AdditionalDependencies>
     </Link>
     <Lib>
-      <AdditionalDependencies>glew32.lib;glew32s.lib;SOIL.lib;freetype.lib;</AdditionalDependencies>
+      <AdditionalDependencies>glew32.lib;glew32s.lib;SOIL.lib;freetype.lib</AdditionalDependencies>
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -168,6 +168,7 @@
     <ClInclude Include="Line.h" />
     <ClInclude Include="LineDiagram.h" />
     <ClInclude Include="Mesh.h" />
+    <ClInclude Include="Model.h" />
     <ClInclude Include="ModelManager.h" />
     <ClInclude Include="OpenGLError.h" />
     <ClInclude Include="Point.h" />
@@ -199,6 +200,7 @@
     <ClCompile Include="GLSLProgram.cpp" />
     <ClCompile Include="Line.cpp" />
     <ClCompile Include="LineDiagram.cpp" />
+    <ClCompile Include="Model.cpp" />
     <ClCompile Include="ModelManager.cpp" />
     <ClCompile Include="OpenGLError.cpp" />
     <ClCompile Include="Point.cpp" />

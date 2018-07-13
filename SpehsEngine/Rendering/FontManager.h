@@ -4,23 +4,26 @@
 
 namespace se
 {
-	class Font;
-	class Window;
-
-	class FontManager
+	namespace rendering
 	{
-	public:
+		class Font;
+		class Window;
 
-		Font* getFont(const std::string &_fontPath, const int &_size);
+		class FontManager
+		{
+		public:
 
-		Window& window;
+			Font* getFont(const std::string &_fontPath, const int &_size);
 
-	private:
-		friend class Window;
-		FontManager(Window& window);
-		~FontManager();
+			Window& window;
 
-		void* ftLibrary;
-		std::vector<Font*> fonts;
-	};
+		private:
+			friend class Window;
+			FontManager(Window& window);
+			~FontManager();
+
+			void* ftLibrary;
+			std::vector<Font*> fonts;
+		};
+	}
 }

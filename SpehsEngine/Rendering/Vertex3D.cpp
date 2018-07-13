@@ -5,5 +5,8 @@
 
 namespace spehs
 {
+	namespace rendering
+	{
 
+	}
 }

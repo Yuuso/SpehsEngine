@@ -38,7 +38,7 @@ extern std::atomic<int> textDeallocations;
 
 namespace se
 {
-	const Color Console::defaultLogColor = Color(255, 77, 0, 217);
+	const Color Console::defaultLogColor = Color(0.0f, 0.9f, 0.0f, 1.0f);
 
 	Console::Console()
 	{
@@ -147,7 +147,7 @@ namespace se
 		getWords(str, words);
 		if (words.empty())
 			return;
-		
+
 		bool foundCommand = false;
 		if (words[0] == "set")
 		{//Set variables

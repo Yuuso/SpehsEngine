@@ -5,7 +5,7 @@
 
 namespace se
 {
-	GUIContext::GUIContext(BatchManager& _batchManager, InputManager& _inputManager, time::DeltaTimeSystem& _deltaTimeSystem)
+	GUIContext::GUIContext(se::rendering::BatchManager& _batchManager, InputManager& _inputManager, time::DeltaTimeSystem& _deltaTimeSystem)
 		: batchManager(_batchManager)
 		, inputManager(_inputManager)
 		, deltaTimeSystem(_deltaTimeSystem)
@@ -13,22 +13,22 @@ namespace se
 
 	}
 
-	Window& GUIContext::getWindow()
+	se::rendering::Window& GUIContext::getWindow()
 	{
 		return batchManager.window;
 	}
 
-	const Window& GUIContext::getWindow() const
+	const se::rendering::Window& GUIContext::getWindow() const
 	{
 		return batchManager.window;
 	}
 
-	BatchManager& GUIContext::getBatchManager()
+	se::rendering::BatchManager& GUIContext::getBatchManager()
 	{
 		return batchManager;
 	}
 
-	const BatchManager& GUIContext::getBatchManager() const
+	const se::rendering::BatchManager& GUIContext::getBatchManager() const
 	{
 		return batchManager;
 	}
@@ -68,12 +68,12 @@ namespace se
 		return deltaTimeSystem.deltaSeconds;
 	}
 
-	TextureManager& GUIContext::getTextureManager()
+	se::rendering::TextureManager& GUIContext::getTextureManager()
 	{
 		return batchManager.textureManager;
 	}
 
-	const TextureManager& GUIContext::getTextureManager() const
+	const se::rendering::TextureManager& GUIContext::getTextureManager() const
 	{
 		return batchManager.textureManager;
 	}

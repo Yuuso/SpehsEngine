@@ -1,13 +1,10 @@
 
 #pragma once
 
-#include "SpehsEngine/Rendering/BatchRenderResults.h"
 #include "SpehsEngine/Rendering/Vertex3D.h"
 
 #include <vector>
-#include <stdint.h>
-
-#define DEFAULT_MAX_BATCH_SIZE 4096
+#include <utility>
 
 typedef unsigned int GLenum;
 typedef unsigned int GLuint;
@@ -16,45 +13,53 @@ typedef unsigned short GLushort;
 
 namespace se
 {
-	class Mesh;
-	class BatchManager3D;
-
-	class MeshBatch
+	namespace rendering
 	{
-	public:
-		MeshBatch(BatchManager3D& _batchManager, const int _shaderIndex, const GLuint _textureDataID, const bool _depthTest, const bool _blending, const bool _backFaceCulling);
-		~MeshBatch();
+		class Mesh;
+		class BatchManager3D;
+		struct BatchRenderResults;
 
-		bool check(const Mesh& _mesh);
+		class MeshBatch
+		{
+		public:
+			MeshBatch(BatchManager3D& _batchManager, const int _shaderIndex, const GLuint _textureDataID,
+						const bool _depthTest, const bool _blending, const bool _backFaceCulling);
+			~MeshBatch();
 
-		bool render(BatchRenderResults* results = nullptr);
-		void push(Mesh* _mesh);
+			bool checkCompatibility(const Mesh& _mesh) const;
+			bool checkSize(const size_t _numVertices, const size_t _numIndices) const;
 
-		bool getBlending() const { return blending; }
-		bool getDepthTest() const { return depthTest; }
+			std::pair<size_t, size_t> push(const Mesh& _mesh);
+			void remove(const std::pair<size_t, size_t> _index, std::pair<size_t, size_t> _size);
 
-	protected:
-		bool isEnoughRoom(const size_t _numVertices);
-		void initBuffers();
-		void updateBuffers();
-		void setIndices(const size_t _numVertices);
+			bool render(BatchRenderResults* results = nullptr);
 
-	private:
-		BatchManager3D& batchManager;
+			bool getBlending() const { return blending; }
+			bool getDepthTest() const { return depthTest; }
 
-		std::vector<se::Vertex3D> vertices;
-		std::vector<GLushort> indices;
+		protected:
+			void initBuffers();
+			void updateBuffers();
 
-		GLuint vertexArrayObjectID;
-		GLuint vertexBufferID;
-		GLuint indexBufferID;
+		private:
+			BatchManager3D& batchManager;
 
-		bool backFaceCulling;
-		bool blending;
-		bool depthTest;
-		size_t shaderIndex;
-		size_t batchSize;
-		size_t indexSize;
-		GLuint textureDataID;
-	};
+			std::vector<Vertex3D> vertices;
+			std::vector<GLushort> indices;
+			size_t vertexBufferSize = 0;
+			size_t indexBufferSize = 0;
+			bool needBufferUpdate = true; // TODO
+
+			GLuint vertexArrayObjectID = 0;
+			GLuint vertexBufferID = 0;
+			GLuint indexBufferID = 0;
+
+			const bool backFaceCulling;
+			const bool blending;
+			const bool depthTest;
+			const size_t shaderIndex;
+			const GLuint textureDataID;
+			const GLenum usage;
+		};
+	}
 }

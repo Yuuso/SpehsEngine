@@ -5,54 +5,57 @@
 struct SDL_Window;
 namespace se
 {
-	class TextureManager;
-	class FontManager;
 	class InputManager;
-	class GLContext;
-
-	class Window
+	namespace rendering
 	{
-	public:
-		friend class InputManager;
-		friend class GLContext;
-	public:
+		class TextureManager;
+		class FontManager;
+		class GLContext;
 
-		Window(const int pixelWidth, const int pixelHeight);
-		~Window();
-		
-		void renderBegin();
-		void renderEnd();
+		class Window
+		{
+		public:
+			friend class InputManager;
+			friend class GLContext;
+		public:
 
-		void setClearColor(const Color& color);
-		void setTitle(const char* title);
-		void setSize(const int pixelWidth, const int pixelHeight);
-		void setMinSize(const int minPixelWidth, const int minPixelHeight);
-		void setMaxSize(const int maxPixelWidth, const int maxPixelHeight);
-		void setFullscreen(const bool enabled);
-		void setBorderless(const bool enabled);
+			Window(const int pixelWidth, const int pixelHeight);
+			~Window();
 
-		bool isValid() const;
-		TextureManager* getTextureManager();
-		const TextureManager* getTextureManager() const;
-		FontManager* getFontManager();
-		const FontManager* getFontManager() const;
+			void renderBegin();
+			void renderEnd();
 
-		/* Returns window pixel width. */
-		int getWidth() const;
-		/* Returns window pixel height. */
-		int getHeight() const;
+			void setClearColor(const Color& color);
+			void setTitle(const char* title);
+			void setSize(const int pixelWidth, const int pixelHeight);
+			void setMinSize(const int minPixelWidth, const int minPixelHeight);
+			void setMaxSize(const int maxPixelWidth, const int maxPixelHeight);
+			void setFullscreen(const bool enabled);
+			void setBorderless(const bool enabled);
 
-		/* Fires when the size of the window is changed. */
-		boost::signal<void(const int, const int)> sizeChangedSignal;
+			bool isValid() const;
+			TextureManager* getTextureManager();
+			const TextureManager* getTextureManager() const;
+			FontManager* getFontManager();
+			const FontManager* getFontManager() const;
 
-	private:
-		SDL_Window* sdlWindow;
-		GLContext* glContext;
-		/* Each window must have its own texture manager. (OpenGL limitation) */
-		TextureManager* textureManager;
-		/* Each window must have its own font manager. (OpenGL limitation) */
-		FontManager* fontManager;
-		int width;
-		int height;
-	};
+			/* Returns window pixel width. */
+			int getWidth() const;
+			/* Returns window pixel height. */
+			int getHeight() const;
+
+			/* Fires when the size of the window is changed. */
+			boost::signal<void(const int, const int)> sizeChangedSignal;
+
+		private:
+			SDL_Window* sdlWindow;
+			GLContext* glContext;
+			/* Each window must have its own texture manager. (OpenGL limitation) */
+			TextureManager* textureManager;
+			/* Each window must have its own font manager. (OpenGL limitation) */
+			FontManager* fontManager;
+			int width;
+			int height;
+		};
+	}
 }

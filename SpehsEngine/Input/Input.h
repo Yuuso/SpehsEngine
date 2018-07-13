@@ -3,12 +3,16 @@
 
 namespace se
 {
-	class RenderingLib;
+	namespace rendering
+	{
+		class RenderingLib;
+	}
+
 	class InputLib
 	{
 	public:
 		/* Initializes input library */
-		InputLib(const RenderingLib& renderingLib);
+		InputLib(const se::rendering::RenderingLib& renderingLib);
 
 		/* Uninitializes input library */
 		~InputLib();

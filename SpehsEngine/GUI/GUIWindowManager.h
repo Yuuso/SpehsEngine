@@ -6,11 +6,13 @@
 
 namespace se
 {
+	namespace rendering
+	{
+		class Polygon;
+	}
 	class GUIRectangle;
 	class GUIWindow;
-	class Polygon;
 	class GUIContext;
-	class BatchManager;
 	class InputManager;
 
 	///Windows are stored in a vector. This vector may change ordering based on performed actions, therefore external for loops and such should be used very carefully!
@@ -42,7 +44,7 @@ namespace se
 		int16_t getTopDepth() const { return int16_t(systemDepth + depthPerWindow * windows.size()); }
 		int16_t getDepthPerWindow() const { return depthPerWindow; }
 		void setPopupShadeColor(const se::Color& color);
-		
+
 	private:
 		void updateDepths();
 
@@ -51,7 +53,7 @@ namespace se
 		std::vector<GUIRectangle*> popups;
 		int16_t systemDepth = 0;
 		int16_t depthPerWindow = 256;
-		Polygon* popupShade = nullptr;
+		se::rendering::Polygon* popupShade = nullptr;
 		float popupShadeCurrentAlpha = 0.0f;
 		float popupShadeTargetAlpha = 0.0f;
 		bool receivingInput = false;

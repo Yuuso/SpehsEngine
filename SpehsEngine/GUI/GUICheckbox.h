@@ -6,7 +6,10 @@
 
 namespace se
 {
-	class Polygon;
+	namespace rendering
+	{
+		class Polygon;
+	}
 	class GUICheckbox : public GUIRectangle, public ValueEditor<bool>
 	{
 	public:
@@ -15,7 +18,7 @@ namespace se
 	public:
 		GUICheckbox(GUIContext& context);
 		~GUICheckbox() override;
-		
+
 		void inputUpdate() override;
 		void updateMinSize() override;
 		void updateScale() override;
@@ -31,8 +34,8 @@ namespace se
 	protected:
 		void onEditorValueChange() override;
 
-		Polygon* checkboxBackground;
-		Polygon* checkboxFilling;
+		se::rendering::Polygon* checkboxBackground;
+		se::rendering::Polygon* checkboxFilling;
 		int checkboxSize;
 	};
 }

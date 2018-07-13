@@ -9,58 +9,61 @@
 
 namespace se
 {
-	Point::Point(BatchManager& _batchManager, const PlaneDepth &_planeDepth)
-		: Primitive(_batchManager)
+	namespace rendering
 	{
-		vertexArray.push_back(Vertex());
-		vertexArray.back().position = se::vec2(0.0f, 0.0f);
-
-		worldVertexArray = vertexArray;
-
-		planeDepth = _planeDepth;
-		blending = true;
-		drawMode = DrawMode::POINT;
-	}
-	Point::~Point()
-	{
-
-	}
-
-
-	void Point::updateVertices()
-	{
-		if (needUpdate)
+		Point::Point(BatchManager& _batchManager, const PlaneDepth &_planeDepth)
+			: Primitive(_batchManager)
 		{
-			for (unsigned int i = 0; i < worldVertexArray.size(); i++)
-			{
-				worldVertexArray[i].position = se::vec2(vertexArray[i].position.x + position.x, vertexArray[i].position.y + position.y);
-			}
-			needUpdate = false;
+			vertexArray.push_back(Vertex());
+			vertexArray.back().position = se::vec2(0.0f, 0.0f);
+
+			worldVertexArray = vertexArray;
+
+			planeDepth = _planeDepth;
+			blending = true;
+			drawMode = DrawMode::POINT;
 		}
-	}
+		Point::~Point()
+		{
 
-	TextureData* Point::setTexture(const std::string &_texturePath)
-	{
-		TextureData* value = batchManager.textureManager.getTextureData(_texturePath);
-		textureDataID = value->textureDataID;
-		if (shaderIndex == (unsigned int)ShaderName::DefaultPolygon)
-			shaderIndex = (unsigned int)ShaderName::DefaultTexture;
-		return value;
-	}
+		}
 
-	TextureData* Point::setTexture(const size_t &_textureID)
-	{
-		TextureData* value = batchManager.textureManager.getTextureData(_textureID);
-		textureDataID = value->textureDataID;
-		if (shaderIndex == (unsigned int)ShaderName::DefaultPolygon)
-			shaderIndex = (unsigned int)ShaderName::DefaultTexture;
-		return value;
-	}
 
-	void Point::setTexture(TextureData* _textureDataPtr)
-	{
-		textureDataID = _textureDataPtr->textureDataID;
-		if (shaderIndex == (unsigned int)ShaderName::DefaultPolygon)
-			shaderIndex = (unsigned int)ShaderName::DefaultTexture;
+		void Point::updateVertices()
+		{
+			if (needUpdate)
+			{
+				for (unsigned int i = 0; i < worldVertexArray.size(); i++)
+				{
+					worldVertexArray[i].position = se::vec2(vertexArray[i].position.x + position.x, vertexArray[i].position.y + position.y);
+				}
+				needUpdate = false;
+			}
+		}
+
+		TextureData* Point::setTexture(const std::string &_texturePath)
+		{
+			TextureData* value = batchManager.textureManager.getTextureData(_texturePath);
+			textureDataID = value->textureDataID;
+			if (shaderIndex == (unsigned int)ShaderName::DefaultPolygon)
+				shaderIndex = (unsigned int)ShaderName::DefaultTexture;
+			return value;
+		}
+
+		TextureData* Point::setTexture(const size_t &_textureID)
+		{
+			TextureData* value = batchManager.textureManager.getTextureData(_textureID);
+			textureDataID = value->textureDataID;
+			if (shaderIndex == (unsigned int)ShaderName::DefaultPolygon)
+				shaderIndex = (unsigned int)ShaderName::DefaultTexture;
+			return value;
+		}
+
+		void Point::setTexture(TextureData* _textureDataPtr)
+		{
+			textureDataID = _textureDataPtr->textureDataID;
+			if (shaderIndex == (unsigned int)ShaderName::DefaultPolygon)
+				shaderIndex = (unsigned int)ShaderName::DefaultTexture;
+		}
 	}
 }

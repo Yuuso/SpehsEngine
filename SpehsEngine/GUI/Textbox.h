@@ -5,15 +5,18 @@
 
 namespace se
 {
-	class BatchManager;
-	class Polygon;
-	class Text;
+	namespace rendering
+	{
+		class BatchManager;
+		class Polygon;
+		class Text;
+	}
 
 	///A simple class for creating a text surrounded with a background polygon
 	class Textbox
 	{
 	public:
-		Textbox(BatchManager& batchManager, const std::string& string, const unsigned textBorder, const int16_t depth);
+		Textbox(se::rendering::BatchManager& batchManager, const std::string& string, const unsigned textBorder, const int16_t depth);
 		~Textbox();
 
 		//Setters
@@ -39,8 +42,8 @@ namespace se
 		bool checkPointCollision(const se::vec2& point) const;
 
 	protected:
-		se::Polygon* polygon;
-		se::Text* text;
+		se::rendering::Polygon* polygon;
+		se::rendering::Text* text;
 		const unsigned textBorder;
 	};
 }

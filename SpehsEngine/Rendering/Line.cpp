@@ -10,63 +10,66 @@
 
 namespace se
 {
-	Line::Line(BatchManager& _batchManager, const PlaneDepth& _planeDepth)
-		: Primitive(_batchManager)
+	namespace rendering
 	{
-		vertexArray.resize(2);
-		vertexArray[0].position = se::vec2::zero;
-		vertexArray[1].position = se::vec2::zero;
-
-		worldVertexArray = vertexArray;
-
-		lineWidth = 1.0f;
-		planeDepth = _planeDepth;
-		blending = true;
-		drawMode = DrawMode::LINE;
-	}
-
-	Line::Line(BatchManager& _batchManager, const se::vec2& _startPoint, const se::vec2& _endPoint, const PlaneDepth& _planeDepth)
-		: Primitive(_batchManager)
-	{
-		vertexArray.resize(2);
-		vertexArray[0].position = se::vec2(_startPoint.x, _startPoint.y);
-		vertexArray[1].position = se::vec2(_endPoint.x, _endPoint.y);
-
-		worldVertexArray = vertexArray;
-
-		lineWidth = 1.0f;
-		planeDepth = _planeDepth;
-		blending = true;
-		drawMode = DrawMode::LINE;
-	}
-
-	Line::~Line()
-	{
-
-	}
-
-
-	void Line::updateVertices()
-	{
-		if (needUpdate)
+		Line::Line(BatchManager& _batchManager, const PlaneDepth& _planeDepth)
+			: Primitive(_batchManager)
 		{
-			glm::vec4 vertex;
-			scaledMatrix = glm::scale(glm::mat4(), glm::vec3(scaleX, scaleY, 0.0f));
-			scaledRotatedMatrix = glm::rotate(scaledMatrix, rotation, glm::vec3(rotationVector.x, rotationVector.y, rotationVector.z));
-			for (unsigned int i = 0; i < worldVertexArray.size(); i++)
-			{
-				vertex = glm::vec4(vertexArray[i].position.x, vertexArray[i].position.y, 0.0f, 1.0f);
-				vertex = scaledRotatedMatrix * vertex;
-				worldVertexArray[i].position = se::vec2(vertex.x + position.x, vertex.y + position.y);
-			}
-			needUpdate = false;
-		}
-	}
+			vertexArray.resize(2);
+			vertexArray[0].position = se::vec2::zero;
+			vertexArray[1].position = se::vec2::zero;
 
-	void Line::setPoints(const se::vec2& _newStartPoint, const se::vec2& _newEndPoint)
-	{
-		vertexArray[0].position = se::vec2(_newStartPoint.x, _newStartPoint.y);
-		vertexArray[1].position = se::vec2(_newEndPoint.x, _newEndPoint.y);
-		needUpdate = true;
+			worldVertexArray = vertexArray;
+
+			lineWidth = 1.0f;
+			planeDepth = _planeDepth;
+			blending = true;
+			drawMode = DrawMode::LINE;
+		}
+
+		Line::Line(BatchManager& _batchManager, const se::vec2& _startPoint, const se::vec2& _endPoint, const PlaneDepth& _planeDepth)
+			: Primitive(_batchManager)
+		{
+			vertexArray.resize(2);
+			vertexArray[0].position = se::vec2(_startPoint.x, _startPoint.y);
+			vertexArray[1].position = se::vec2(_endPoint.x, _endPoint.y);
+
+			worldVertexArray = vertexArray;
+
+			lineWidth = 1.0f;
+			planeDepth = _planeDepth;
+			blending = true;
+			drawMode = DrawMode::LINE;
+		}
+
+		Line::~Line()
+		{
+
+		}
+
+
+		void Line::updateVertices()
+		{
+			if (needUpdate)
+			{
+				glm::vec4 vertex;
+				scaledMatrix = glm::scale(glm::mat4(), glm::vec3(scaleX, scaleY, 0.0f));
+				scaledRotatedMatrix = glm::rotate(scaledMatrix, rotation, glm::vec3(rotationVector.x, rotationVector.y, rotationVector.z));
+				for (unsigned int i = 0; i < worldVertexArray.size(); i++)
+				{
+					vertex = glm::vec4(vertexArray[i].position.x, vertexArray[i].position.y, 0.0f, 1.0f);
+					vertex = scaledRotatedMatrix * vertex;
+					worldVertexArray[i].position = se::vec2(vertex.x + position.x, vertex.y + position.y);
+				}
+				needUpdate = false;
+			}
+		}
+
+		void Line::setPoints(const se::vec2& _newStartPoint, const se::vec2& _newEndPoint)
+		{
+			vertexArray[0].position = se::vec2(_newStartPoint.x, _newStartPoint.y);
+			vertexArray[1].position = se::vec2(_newEndPoint.x, _newEndPoint.y);
+			needUpdate = true;
+		}
 	}
 }

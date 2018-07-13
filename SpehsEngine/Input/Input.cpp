@@ -29,7 +29,7 @@ namespace se
 		std::string version("0");
 	}
 
-	InputLib::InputLib(const RenderingLib& renderingLib)
+	InputLib::InputLib(const se::rendering::RenderingLib& renderingLib)
 	{
 		instanceCount++;
 		if (!valid)
@@ -59,7 +59,7 @@ namespace se
 	{
 		return valid;
 	}
-		
+
 	std::string InputLib::getVersion()
 	{
 		return version;

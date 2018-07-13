@@ -4,19 +4,22 @@
 namespace se
 {
 	class MathLib;
-	class RenderingLib
+	namespace rendering
 	{
-	public:
-		/* Initializes rendering library */
-		RenderingLib(const MathLib& mathLib);
+		class RenderingLib
+		{
+		public:
+			/* Initializes rendering library */
+			RenderingLib(const MathLib& mathLib);
 
-		/* Uninitializes rendering library */
-		~RenderingLib();
+			/* Uninitializes rendering library */
+			~RenderingLib();
 
-		/* Returns whether the rendering library has successfully been initialized */
-		static bool isValid();
+			/* Returns whether the rendering library has successfully been initialized */
+			static bool isValid();
 
-		/* Returns rendering library version in a readable string format */
-		static std::string getVersion();
-	};
+			/* Returns rendering library version in a readable string format */
+			static std::string getVersion();
+		};
+	}
 }

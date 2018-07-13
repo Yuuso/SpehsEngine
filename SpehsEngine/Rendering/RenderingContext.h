@@ -2,8 +2,11 @@
 
 namespace se
 {
-	struct RenderingContext
+	namespace rendering
 	{
+		struct RenderingContext
+		{
 
-	};
+		};
+	}
 }

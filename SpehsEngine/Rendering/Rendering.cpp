@@ -16,52 +16,55 @@
 
 namespace se
 {
-	namespace
+	namespace rendering
 	{
-		int instanceCount = 0;
-		bool valid = false;
-		std::string version("0");
-	}
-
-	RenderingLib::RenderingLib(const MathLib& mathLib)
-	{
-		instanceCount++;
-		if (!valid)
+		namespace
 		{
-			if (!mathLib.isValid())
-			{
-				log::error("Cannot initialize rendering library, math library is invalid.");
-				return;
-			}
-
-			log::info("Current SpehsEngine rendering library build: " + getVersion());
-
-			if (SDL_Init(SDL_INIT_VIDEO) < 0)
-			{
-				se::log::info(SDL_GetError());
-				se::log::error("Video initialization failed!");
-				return;
-			}
-
-			valid = true;
+			int instanceCount = 0;
+			bool valid = false;
+			std::string version("0");
 		}
-	}
-		
-	RenderingLib::~RenderingLib()
-	{
-		if (--instanceCount == 0)
+
+		RenderingLib::RenderingLib(const MathLib& mathLib)
 		{
-			valid = false;
-		}
-	}
+			instanceCount++;
+			if (!valid)
+			{
+				if (!mathLib.isValid())
+				{
+					log::error("Cannot initialize rendering library, math library is invalid.");
+					return;
+				}
 
-	bool RenderingLib::isValid()
-	{
-		return valid;
-	}
-		
-	std::string RenderingLib::getVersion()
-	{
-		return version;
+				log::info("Current SpehsEngine rendering library build: " + getVersion());
+
+				if (SDL_Init(SDL_INIT_VIDEO) < 0)
+				{
+					se::log::info(SDL_GetError());
+					se::log::error("Video initialization failed!");
+					return;
+				}
+
+				valid = true;
+			}
+		}
+
+		RenderingLib::~RenderingLib()
+		{
+			if (--instanceCount == 0)
+			{
+				valid = false;
+			}
+		}
+
+		bool RenderingLib::isValid()
+		{
+			return valid;
+		}
+
+		std::string RenderingLib::getVersion()
+		{
+			return version;
+		}
 	}
 }

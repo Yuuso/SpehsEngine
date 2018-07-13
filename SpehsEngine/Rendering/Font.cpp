@@ -7,25 +7,28 @@
 
 namespace se
 {
-	Font::Font()
+	namespace rendering
 	{
-
-	}
-
-	Font::~Font()
-	{
-		if (ftFace)
+		Font::Font()
 		{
-			const FT_Error error = FT_Done_Face(*(FT_Face*)ftFace);
-			if (error)
-			{
-				log::error("Freetype error: Failed to unload font " + fontPath + " FT_Error: " + std::to_string(error));
-			}
-			delete (FT_Face*)ftFace;
 
-			for (unsigned i = 0; i < characters.size(); i++)
+		}
+
+		Font::~Font()
+		{
+			if (ftFace)
 			{
-				glDeleteTextures(1, &characters[i].textureID);
+				const FT_Error error = FT_Done_Face(*(FT_Face*)ftFace);
+				if (error)
+				{
+					log::error("Freetype error: Failed to unload font " + fontPath + " FT_Error: " + std::to_string(error));
+				}
+				delete (FT_Face*)ftFace;
+
+				for (unsigned i = 0; i < characters.size(); i++)
+				{
+					glDeleteTextures(1, &characters[i].textureID);
+				}
 			}
 		}
 	}

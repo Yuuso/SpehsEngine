@@ -8,87 +8,90 @@ The console is internally mutex locked and can thus be safely accessed from any 
 */
 namespace se
 {
-	class BatchManager;
 	class InputManager;
-	class Polygon;
-	class Text;
-	class Font;
-	/*
-		Used to visualize a console
-	*/
-	class ConsoleVisualizer
+	namespace rendering
 	{
-	public:
+		class BatchManager;
+		class Polygon;
+		class Text;
+		class Font;
+		/*
+			Used to visualize a console
+		*/
+		class ConsoleVisualizer
+		{
+		public:
 
-		ConsoleVisualizer(Console& console, InputManager& inputManager, BatchManager& batchManager);
-		~ConsoleVisualizer();
+			ConsoleVisualizer(Console& console, se::InputManager& inputManager, BatchManager& batchManager);
+			~ConsoleVisualizer();
 
-		void open();
-		void close();
-		bool isOpen();
+			void open();
+			void close();
+			bool isOpen();
 
-		//Update cycle
-		void update(const time::Time& deltaTime);
-		void render(const std::string& customDebugText = "");
+			//Update cycle
+			void update(const time::Time& deltaTime);
+			void render(const std::string& customDebugText = "");
 
-		//Font
-		void setFont(const std::string& fontPath, const int fontSize);
-		void setFont(se::Font* font);
+			//Font
+			void setFont(const std::string& fontPath, const int fontSize);
+			void setFont(Font* font);
 
-		//Render state
-		void setRenderState(const bool state);
-		bool getRenderState() const;
+			//Render state
+			void setRenderState(const bool state);
+			bool getRenderState() const;
 
-		//Depth
-		void setPlaneDepth(const int16_t depth);
-		int16_t getPlaneDepth() const;
+			//Depth
+			void setPlaneDepth(const int16_t depth);
+			int16_t getPlaneDepth() const;
 
-		//Show stats
-		void setShowStats(const bool show);
-		bool getShowStats() const;
+			//Show stats
+			void setShowStats(const bool show);
+			bool getShowStats() const;
 
-		//Line capacity
-		void setLineCapacity(const size_t capacity);
-		size_t getLineCapacity() const;
-		
-		Console& console;
-		InputManager& inputManager;
-		BatchManager& batchManager;
+			//Line capacity
+			void setLineCapacity(const size_t capacity);
+			size_t getLineCapacity() const;
 
-	private:
-		
-		void updateCarotPosition();
+			Console& console;
+			se::InputManager& inputManager;
+			BatchManager& batchManager;
 
-		void logCallback(const Console::Line& line);
+		private:
 
-		size_t getInputLineIndex() const;
-		size_t getMaxScrollState() const;		
+			void updateCarotPosition();
 
-		mutable std::recursive_mutex mutex;
+			void logCallback(const Console::Line& line);
 
-		//Visual state
-		bool openState = false;
-		bool textExecutedState = false;
-		bool showStats = true;
-		bool updateLines = true;
-		int previousCommandIndex = 0;
-		int previousFontSize = 10;
-		int scrollState = 0;
-		Font* font = nullptr;
-		boost::signals::scoped_connection logConnection;
-		time::Time carotTimer = 0;
-		time::Time inputTime = 0;//Point of time when the last input was received
-		time::LapTimer renderLapTimer;
-		std::vector<time::Time> renderLapTimes;
+			size_t getInputLineIndex() const;
+			size_t getMaxScrollState() const;
 
-		//Renderables
-		Polygon& backgroundShade;//Holds render state and depth
-		Text& statsText;
-		Text& carotText;
-		std::vector<Text*> lines;
+			mutable std::recursive_mutex mutex;
 
-		//Input
-		KeyboardRecorder keyboardRecorder;
-		std::vector<std::string> executionHistory;
-	};
+			//Visual state
+			bool openState = false;
+			bool textExecutedState = false;
+			bool showStats = true;
+			bool updateLines = true;
+			int previousCommandIndex = 0;
+			int previousFontSize = 10;
+			int scrollState = 0;
+			Font* font = nullptr;
+			boost::signals::scoped_connection logConnection;
+			time::Time carotTimer = 0;
+			time::Time inputTime = 0;//Point of time when the last input was received
+			time::LapTimer renderLapTimer;
+			std::vector<time::Time> renderLapTimes;
+
+			//Renderables
+			Polygon& backgroundShade;//Holds render state and depth
+			Text& statsText;
+			Text& carotText;
+			std::vector<Text*> lines;
+
+			//Input
+			se::KeyboardRecorder keyboardRecorder;
+			std::vector<std::string> executionHistory;
+		};
+	}
 }

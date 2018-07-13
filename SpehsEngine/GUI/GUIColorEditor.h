@@ -36,13 +36,13 @@ namespace se
 		bool checkSliderHover() const;
 		bool checkAlphaHover()const;
 
-		Polygon* palette;
-		Polygon* sliderRG;
-		Polygon* sliderGB;
-		Polygon* sliderBR;
-		Polygon* preview;
-		Polygon* alphaSliderBack;
-		Polygon* alphaSliderFront;
+		se::rendering::Polygon* palette;
+		se::rendering::Polygon* sliderRG;
+		se::rendering::Polygon* sliderGB;
+		se::rendering::Polygon* sliderBR;
+		se::rendering::Polygon* preview;
+		se::rendering::Polygon* alphaSliderBack;
+		se::rendering::Polygon* alphaSliderFront;
 		float sliderState;
 		bool alphaEnabled;
 		bool sliderOnHold;

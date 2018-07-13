@@ -43,8 +43,12 @@ namespace se
 	{
 		class SoundSource;
 	}
-	class Text;
-	class Polygon;
+	namespace rendering
+	{
+		class BatchManager;
+		class Text;
+		class Polygon;
+	}
 	class GUIWindow;
 	class GUIButton;
 	class GUICheckbox;
@@ -56,7 +60,6 @@ namespace se
 	class GUIRectangleTable;
 	class GUIRectangleContainer;
 
-	class BatchManager;
 	class InputManager;
 	namespace time
 	{
@@ -71,7 +74,7 @@ namespace se
 	public://Static
 		static int16_t defaultDepth;//Default depth where GUI rectangles will be arranged
 		static int16_t tooltipDepthRelative;//Default depth modifier for tooltips relative to their parent GUI rectangle
-		static se::TextureParameter defaultTextureParameters;
+		static rendering::TextureParameter defaultTextureParameters;
 		static Color defaultColor;//Newly created GUI rectangles will have this color by default
 		static Color defaultStringColor;//Newly created GUI rectangle strings will have this color by default
 		static Color defaultTooltipColor;//Newly created tooltips will have this color by default
@@ -113,7 +116,7 @@ namespace se
 		virtual void setDepth(const int16_t depth);
 		int16_t getDepth() const;
 		//Access base polygon
-		se::Polygon* getPolygonPtr() const { return polygon; }
+		se::rendering::Polygon* getPolygonPtr() const { return polygon; }
 		//Hierarchy
 		void setParent(GUIRectangleContainer* Parent);
 		GUIRectangleContainer* getParentPtr() const { return parent; }
@@ -134,13 +137,13 @@ namespace se
 		void setTooltip(const std::string& tooltipString);
 		GUIRectangle* getTooltipPtr() const { return tooltip; }
 		//Display texture
-		void setDisplayTexture(const std::string& path, const TextureParameter& _parameters);
+		void setDisplayTexture(const std::string& path, const se::rendering::TextureParameter& _parameters);
 		void setDisplayTexture(const std::string& path);
 		void setDisplayTextureColor(const Color& color);
 		enum class DisplayTexturePositionMode { left, right, center };
 		void setDisplayTexturePositionMode(const DisplayTexturePositionMode mode){ displayTexturePositionMode = mode; disableStateRecursiveUpwards(GUIRECT_MIN_SIZE_UPDATED_BIT | GUIRECT_SCALE_UPDATED_BIT | GUIRECT_POSITION_UPDATED_BIT); }
 		//Rectangle texture
-		void setTexture(const std::string& path, const TextureParameter& _parameters);
+		void setTexture(const std::string& path, const se::rendering::TextureParameter& _parameters);
 		void setTexture(const std::string& path);
 		void setTextureID(const unsigned int _textureID);
 
@@ -248,8 +251,8 @@ namespace se
 		int borderWidth;//Border added after text/display texture per each side of the rectangle
 		GUIRectangleContainer* parent;///<Rectangle inherits position from parent chain. NOTE: parent must be a rectangle container
 		GUIRectangle* tooltip;
-		Polygon* polygon;
-		Text* text;
+		se::rendering::Polygon* polygon;
+		se::rendering::Text* text;
 		se::audio::SoundSource* hoverSound;
 		se::audio::SoundSource* pressSound;
 		GUIRECT_STATE_TYPE state;
@@ -260,7 +263,7 @@ namespace se
 		{
 			DisplayTexture() : polygon(nullptr), width(0), height(0){}
 			~DisplayTexture();
-			Polygon* polygon;
+			se::rendering::Polygon* polygon;
 			uint16_t width;
 			uint16_t height;
 		};

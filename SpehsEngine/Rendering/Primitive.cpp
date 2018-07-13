@@ -19,279 +19,282 @@ std::atomic<int> primitiveDeallocations;
 
 namespace se
 {
-	Primitive::Primitive(BatchManager& _batchManager)
-		: batchManager(_batchManager)
+	namespace rendering
 	{
+		Primitive::Primitive(BatchManager& _batchManager)
+			: batchManager(_batchManager)
+		{
 #ifdef _DEBUG
-		primitiveAllocations++;
+			primitiveAllocations++;
 #endif
-		shaderIndex = (int)ShaderName::DefaultPolygon;
-	}
-	Primitive::~Primitive()
-	{
+			shaderIndex = (int)ShaderName::DefaultPolygon;
+		}
+		Primitive::~Primitive()
+		{
 #ifdef _DEBUG
-		primitiveDeallocations++;
+			primitiveDeallocations++;
 #endif
-	}
+		}
 
-	void Primitive::destroy()
-	{
-		readyForDelete = true;
-	}
+		void Primitive::destroy()
+		{
+			readyForDelete = true;
+		}
 
-	void Primitive::setPosition(const float _x, const float _y)
-	{
+		void Primitive::setPosition(const float _x, const float _y)
+		{
 #ifdef _DEBUG
-		if (_x != _x || _y != _y)
-		{
-			exceptions::unexpectedError("Position values corrupted!");
-		}
+			if (_x != _x || _y != _y)
+			{
+				exceptions::unexpectedError("Position values corrupted!");
+			}
 #endif
-		position.x = _x;
-		position.y = _y;
-		needUpdate = true;
-	}
+			position.x = _x;
+			position.y = _y;
+			needUpdate = true;
+		}
 
-	void Primitive::setPosition(const se::vec2& _newPosition)
-	{
+		void Primitive::setPosition(const se::vec2& _newPosition)
+		{
 #ifdef _DEBUG
-		if (_newPosition.x != _newPosition.x || _newPosition.y != _newPosition.y)
-		{
-			exceptions::unexpectedError("Position values corrupted!");
-		}
+			if (_newPosition.x != _newPosition.x || _newPosition.y != _newPosition.y)
+			{
+				exceptions::unexpectedError("Position values corrupted!");
+			}
 #endif
-		position.x = _newPosition.x;
-		position.y = _newPosition.y;
-		needUpdate = true;
-	}
+			position.x = _newPosition.x;
+			position.y = _newPosition.y;
+			needUpdate = true;
+		}
 
-	void Primitive::setPosition(const Primitive& _other)
-	{
+		void Primitive::setPosition(const Primitive& _other)
+		{
 #ifdef _DEBUG
-		if (_other.position.x != _other.position.x || _other.position.y != _other.position.y)
-		{
-			exceptions::unexpectedError("Position values corrupted!");
-		}
+			if (_other.position.x != _other.position.x || _other.position.y != _other.position.y)
+			{
+				exceptions::unexpectedError("Position values corrupted!");
+			}
 #endif
-		position.x = _other.position.x;
-		position.y = _other.position.y;
-		needUpdate = true;
-	}
+			position.x = _other.position.x;
+			position.y = _other.position.y;
+			needUpdate = true;
+		}
 
-	void Primitive::translate(const float _x, const float _y)
-	{
+		void Primitive::translate(const float _x, const float _y)
+		{
 #ifdef _DEBUG
-		if (_x != _x || _y != _y)
-		{
-			exceptions::unexpectedError("Position values corrupted!");
-		}
+			if (_x != _x || _y != _y)
+			{
+				exceptions::unexpectedError("Position values corrupted!");
+			}
 #endif
-		position.x += _x;
-		position.y += _y;
-		needUpdate = true;
-	}
+			position.x += _x;
+			position.y += _y;
+			needUpdate = true;
+		}
 
-	void Primitive::translate(const se::vec2& _translation)
-	{
+		void Primitive::translate(const se::vec2& _translation)
+		{
 #ifdef _DEBUG
-		if (_translation.x != _translation.x || _translation.y != _translation.y)
-		{
-			exceptions::unexpectedError("Position values corrupted!");
-		}
+			if (_translation.x != _translation.x || _translation.y != _translation.y)
+			{
+				exceptions::unexpectedError("Position values corrupted!");
+			}
 #endif
-		position.x += _translation.x;
-		position.y += _translation.y;
-		needUpdate = true;
-	}
+			position.x += _translation.x;
+			position.y += _translation.y;
+			needUpdate = true;
+		}
 
-	void Primitive::setScale(const float _newScale)
-	{
+		void Primitive::setScale(const float _newScale)
+		{
 #ifdef _DEBUG
-		if (_newScale != _newScale)
-		{
-			exceptions::unexpectedError("Scale values corrupted!");
-		}
+			if (_newScale != _newScale)
+			{
+				exceptions::unexpectedError("Scale values corrupted!");
+			}
 #endif
-		scaleX = _newScale;
-		scaleY = _newScale;
-		needUpdate = true;
-	}
+			scaleX = _newScale;
+			scaleY = _newScale;
+			needUpdate = true;
+		}
 
-	void Primitive::setScale(const float _newScaleX, const float _newScaleY)
-	{
+		void Primitive::setScale(const float _newScaleX, const float _newScaleY)
+		{
 #ifdef _DEBUG
-		if (_newScaleX != _newScaleX || _newScaleY != _newScaleY)
-		{
-			exceptions::unexpectedError("Scale values corrupted!");
-		}
+			if (_newScaleX != _newScaleX || _newScaleY != _newScaleY)
+			{
+				exceptions::unexpectedError("Scale values corrupted!");
+			}
 #endif
-		scaleX = _newScaleX;
-		scaleY = _newScaleY;
-		needUpdate = true;
-	}
+			scaleX = _newScaleX;
+			scaleY = _newScaleY;
+			needUpdate = true;
+		}
 
-	void Primitive::setScale(const se::vec2& _newScale)
-	{
+		void Primitive::setScale(const se::vec2& _newScale)
+		{
 #ifdef _DEBUG
-		if (_newScale.x != _newScale.x || _newScale.y != _newScale.y)
-		{
-			exceptions::unexpectedError("Scale values corrupted!");
-		}
+			if (_newScale.x != _newScale.x || _newScale.y != _newScale.y)
+			{
+				exceptions::unexpectedError("Scale values corrupted!");
+			}
 #endif
-		scaleX = _newScale.x;
-		scaleY = _newScale.y;
-		needUpdate = true;
-	}
+			scaleX = _newScale.x;
+			scaleY = _newScale.y;
+			needUpdate = true;
+		}
 
-	void Primitive::setScaleX(const float _newScaleX)
-	{
+		void Primitive::setScaleX(const float _newScaleX)
+		{
 #ifdef _DEBUG
-		if (_newScaleX != _newScaleX)
-		{
-			exceptions::unexpectedError("Scale value corrupted!");
-		}
+			if (_newScaleX != _newScaleX)
+			{
+				exceptions::unexpectedError("Scale value corrupted!");
+			}
 #endif
-		scaleX = _newScaleX;
-		needUpdate = true;
-	}
+			scaleX = _newScaleX;
+			needUpdate = true;
+		}
 
-	void Primitive::setScaleY(const float _newScaleY)
-	{
+		void Primitive::setScaleY(const float _newScaleY)
+		{
 #ifdef _DEBUG
-		if (_newScaleY != _newScaleY)
-		{
-			exceptions::unexpectedError("Scale value corrupted!");
-		}
+			if (_newScaleY != _newScaleY)
+			{
+				exceptions::unexpectedError("Scale value corrupted!");
+			}
 #endif
-		scaleY = _newScaleY;
-		needUpdate = true;
-	}
+			scaleY = _newScaleY;
+			needUpdate = true;
+		}
 
-	void Primitive::setRotation(const float _newRotation)
-	{
+		void Primitive::setRotation(const float _newRotation)
+		{
 #ifdef _DEBUG
-		if (_newRotation != _newRotation)
-		{
-			exceptions::unexpectedError("Rotation values corrupted!");
-		}
+			if (_newRotation != _newRotation)
+			{
+				exceptions::unexpectedError("Rotation values corrupted!");
+			}
 #endif
-		rotation = _newRotation;
-		needUpdate = true;
-	}
+			rotation = _newRotation;
+			needUpdate = true;
+		}
 
-	void Primitive::setRotation(const float _newRotation, const se::vec3& _newRotationVector)
-	{
+		void Primitive::setRotation(const float _newRotation, const se::vec3& _newRotationVector)
+		{
 #ifdef _DEBUG
-		if (_newRotation != _newRotation || _newRotationVector.x != _newRotationVector.x || _newRotationVector.y != _newRotationVector.y || _newRotationVector.z != _newRotationVector.z)
-		{
-			exceptions::unexpectedError("Rotation values corrupted!");
-		}
+			if (_newRotation != _newRotation || _newRotationVector.x != _newRotationVector.x || _newRotationVector.y != _newRotationVector.y || _newRotationVector.z != _newRotationVector.z)
+			{
+				exceptions::unexpectedError("Rotation values corrupted!");
+			}
 #endif
-		rotation = _newRotation;
-		rotationVector = _newRotationVector;
-		needUpdate = true;
-	}
+			rotation = _newRotation;
+			rotationVector = _newRotationVector;
+			needUpdate = true;
+		}
 
-	void Primitive::setRotation(const Primitive& _other)
-	{
+		void Primitive::setRotation(const Primitive& _other)
+		{
 #ifdef _DEBUG
-		if (_other.rotation != _other.rotation)
-		{
-			exceptions::unexpectedError("Rotation values corrupted!");
-		}
+			if (_other.rotation != _other.rotation)
+			{
+				exceptions::unexpectedError("Rotation values corrupted!");
+			}
 #endif
-		rotation = _other.rotation;
-		needUpdate = true;
-	}
+			rotation = _other.rotation;
+			needUpdate = true;
+		}
 
-	void Primitive::rotate(const float _rotation)
-	{
+		void Primitive::rotate(const float _rotation)
+		{
 #ifdef _DEBUG
-		if (_rotation != _rotation)
-		{
-			exceptions::unexpectedError("Rotation values corrupted!");
-		}
+			if (_rotation != _rotation)
+			{
+				exceptions::unexpectedError("Rotation values corrupted!");
+			}
 #endif
-		rotation += _rotation;
-		needUpdate = true;
-	}
+			rotation += _rotation;
+			needUpdate = true;
+		}
 
-	void Primitive::setRotationVector(const se::vec3& _newRotationVector)
-	{
+		void Primitive::setRotationVector(const se::vec3& _newRotationVector)
+		{
 #ifdef _DEBUG
-		if (_newRotationVector.x != _newRotationVector.x || _newRotationVector.y != _newRotationVector.y || _newRotationVector.z != _newRotationVector.z)
-		{
-			exceptions::unexpectedError("Rotation values corrupted!");
-		}
+			if (_newRotationVector.x != _newRotationVector.x || _newRotationVector.y != _newRotationVector.y || _newRotationVector.z != _newRotationVector.z)
+			{
+				exceptions::unexpectedError("Rotation values corrupted!");
+			}
 #endif
-		rotationVector = _newRotationVector;
-	}
-
-	void Primitive::setColor(const Primitive& other)
-	{
-		primitiveColor = other.primitiveColor;
-		for (unsigned i = 0; i < worldVertexArray.size(); i++)
-		{
-			worldVertexArray[i].color = primitiveColor;
+			rotationVector = _newRotationVector;
 		}
-	}
 
-	void Primitive::setColor(const se::Color& _newColor)
-	{
-		primitiveColor = _newColor;
-		for (unsigned i = 0; i < worldVertexArray.size(); i++)
+		void Primitive::setColor(const Primitive& other)
 		{
-			worldVertexArray[i].color = primitiveColor;
+			primitiveColor = other.primitiveColor;
+			for (unsigned i = 0; i < worldVertexArray.size(); i++)
+			{
+				worldVertexArray[i].color = primitiveColor;
+			}
 		}
-	}
 
-	void Primitive::setAlpha(const float _alpha)
-	{
-		primitiveColor.a = _alpha;
-		for (unsigned i = 0; i < worldVertexArray.size(); i++)
+		void Primitive::setColor(const se::Color& _newColor)
 		{
-			worldVertexArray[i].color.a = primitiveColor.a;
+			primitiveColor = _newColor;
+			for (unsigned i = 0; i < worldVertexArray.size(); i++)
+			{
+				worldVertexArray[i].color = primitiveColor;
+			}
 		}
-	}
 
-	void Primitive::setCameraMatrixState(const bool _newState)
-	{
-		cameraMatrixState = _newState;
-	}
+		void Primitive::setAlpha(const float _alpha)
+		{
+			primitiveColor.a = _alpha;
+			for (unsigned i = 0; i < worldVertexArray.size(); i++)
+			{
+				worldVertexArray[i].color.a = primitiveColor.a;
+			}
+		}
 
-	void Primitive::setPlaneDepth(const PlaneDepth _newPlaneDepth)
-	{
+		void Primitive::setCameraMatrixState(const bool _newState)
+		{
+			cameraMatrixState = _newState;
+		}
+
+		void Primitive::setPlaneDepth(const PlaneDepth _newPlaneDepth)
+		{
 #ifdef _DEBUG
-		if (_newPlaneDepth != _newPlaneDepth)
-		{
-			exceptions::unexpectedError("Depth values corrupted!");
-		}
+			if (_newPlaneDepth != _newPlaneDepth)
+			{
+				exceptions::unexpectedError("Depth values corrupted!");
+			}
 #endif
-		planeDepth = _newPlaneDepth;
-	}
+			planeDepth = _newPlaneDepth;
+		}
 
-	void Primitive::setLineWidth(const float _newWidth)
-	{
-		lineWidth = _newWidth;
-	}
+		void Primitive::setLineWidth(const float _newWidth)
+		{
+			lineWidth = _newWidth;
+		}
 
-	void Primitive::setRenderState(const bool _newState)
-	{
-		renderState = _newState;
-	}
+		void Primitive::setRenderState(const bool _newState)
+		{
+			renderState = _newState;
+		}
 
-	void Primitive::setRenderState(const Primitive& _other)
-	{
-		renderState = _other.renderState;
-	}
+		void Primitive::setRenderState(const Primitive& _other)
+		{
+			renderState = _other.renderState;
+		}
 
-	void Primitive::setShaderIndex(const unsigned int _newShaderIndex)
-	{
-		shaderIndex = _newShaderIndex;
-	}
+		void Primitive::setShaderIndex(const unsigned int _newShaderIndex)
+		{
+			shaderIndex = _newShaderIndex;
+		}
 
-	void Primitive::setBlending(const bool _newState)
-	{
-		blending = _newState;
+		void Primitive::setBlending(const bool _newState)
+		{
+			blending = _newState;
+		}
 	}
 }

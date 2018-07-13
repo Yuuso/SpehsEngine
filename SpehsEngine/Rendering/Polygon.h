@@ -10,51 +10,54 @@ typedef unsigned int GLuint;
 
 namespace se
 {
-	struct TextureData;
-	class Camera2D;
-
-	class Polygon : public Primitive
+	namespace rendering
 	{
-		friend class BatchManager;
-		friend class RigidBody2D;
+		struct TextureData;
+		class Camera2D;
 
-	public:
+		class Polygon : public Primitive
+		{
+			friend class BatchManager;
+			friend class RigidBody2D;
 
-		Polygon* getPolygonPtr(){ return this; }
+		public:
 
-		void updateVertices();
+			Polygon* getPolygonPtr() { return this; }
 
-		void getScreenVertices(se::Camera2D* _camera, std::vector<se::vec2>& deposit);
+			void updateVertices();
 
-		void resize(const float _width, const float _height);
-		//Setters
-		void setUVScale(const float _newScale);
-		void setUVScale(const float _newScaleX, const float _newScaleY);
-		void setUVScale(const se::vec2& _newScale);
-		void setDrawMode(const DrawMode _newDrawMode);
-		TextureData* setTexture(const std::string& _texturePath);
-		TextureData* setTexture(const size_t _hash);
-		void setTexture(const TextureData* _textureDataPtr);
-		void setTextureID(const unsigned int _textureID);
+			void getScreenVertices(Camera2D* _camera, std::vector<se::vec2>& deposit);
 
-		//Getters
-		float getArea();
-		float getRadius();
-		float getWidth() const { return width; }
-		float getHeight() const { return height; }
+			void resize(const float _width, const float _height);
+			//Setters
+			void setUVScale(const float _newScale);
+			void setUVScale(const float _newScaleX, const float _newScaleY);
+			void setUVScale(const se::vec2& _newScale);
+			void setDrawMode(const DrawMode _newDrawMode);
+			TextureData* setTexture(const std::string& _texturePath);
+			TextureData* setTexture(const size_t _hash);
+			void setTexture(const TextureData* _textureDataPtr);
+			void setTextureID(const unsigned int _textureID);
 
-	protected:
-		Polygon(BatchManager& _batchManager, const int _shapeID, const PlaneDepth _planeDepth, const float _width, const float _height);
-		Polygon(BatchManager& _batchManager, const std::vector<se::Vertex>& _vertexData, const PlaneDepth _planeDepth, const float _width, const float _height); //For 2DPolygons
-		Polygon(BatchManager& _batchManager, const std::vector<se::Vertex>& _vertexData, const float _width, const float _height);
-		Polygon(BatchManager& _batchManager, const std::vector<se::vec2>& _cuspData, const PlaneDepth _planeDepth, const float _width, const float _height);
-		Polygon(BatchManager& _batchManager, const float _width, const float _height);
-		~Polygon();
+			//Getters
+			float getArea();
+			float getRadius();
+			float getWidth() const { return width; }
+			float getHeight() const { return height; }
 
-		void setUVCoords();
+		protected:
+			Polygon(BatchManager& _batchManager, const int _shapeID, const PlaneDepth _planeDepth, const float _width, const float _height);
+			Polygon(BatchManager& _batchManager, const std::vector<se::Vertex>& _vertexData, const PlaneDepth _planeDepth, const float _width, const float _height); //For 2DPolygons
+			Polygon(BatchManager& _batchManager, const std::vector<se::Vertex>& _vertexData, const float _width, const float _height);
+			Polygon(BatchManager& _batchManager, const std::vector<se::vec2>& _cuspData, const PlaneDepth _planeDepth, const float _width, const float _height);
+			Polygon(BatchManager& _batchManager, const float _width, const float _height);
+			~Polygon();
 
-		float width;
-		float height;
-		float radius = 0.0f;
-	};
+			void setUVCoords();
+
+			float width;
+			float height;
+			float radius = 0.0f;
+		};
+	}
 }

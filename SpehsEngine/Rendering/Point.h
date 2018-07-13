@@ -6,26 +6,29 @@
 
 namespace se
 {
-	struct TextureData;
-
-	class Point : public Primitive
+	namespace rendering
 	{
-		friend class BatchManager;
-	public:
+		struct TextureData;
 
-		Point* getPointPtr(){ return this; }
+		class Point : public Primitive
+		{
+			friend class BatchManager;
+		public:
 
-		void updateVertices();
+			Point* getPointPtr() { return this; }
 
-		//Scaling or rotating will not affect points
+			void updateVertices();
 
-		TextureData* setTexture(const std::string &_texturePath);
-		TextureData* setTexture(const size_t &_textureID);
-		void setTexture(TextureData* _textureDataPtr);
+			//Scaling or rotating will not affect points
 
-	protected:
-		//NOTE: Point always in 2D (No Z-Depth), if there is need for 3D points for some reason -> call setBlending(false)
-		Point(BatchManager& _batchManager, const PlaneDepth &_planeDepth);
-		~Point();
-	};
+			TextureData* setTexture(const std::string &_texturePath);
+			TextureData* setTexture(const size_t &_textureID);
+			void setTexture(TextureData* _textureDataPtr);
+
+		protected:
+			//NOTE: Point always in 2D (No Z-Depth), if there is need for 3D points for some reason -> call setBlending(false)
+			Point(BatchManager& _batchManager, const PlaneDepth &_planeDepth);
+			~Point();
+		};
+	}
 }
