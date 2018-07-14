@@ -6,8 +6,11 @@
 
 namespace se
 {
+	namespace rendering
+	{
+		class Polygon;
+	}
 	class GameObject;
-	class Polygon;
 	class Collider : public Component
 	{
 		friend class RigidBody2D;
@@ -17,6 +20,6 @@ namespace se
 		~Collider();
 
 	protected:
-		Polygon* collisionPolygon;
+		rendering::Polygon* collisionPolygon;
 	};
 }

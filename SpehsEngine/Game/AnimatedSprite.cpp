@@ -9,13 +9,13 @@
 
 namespace se
 {
-	AnimatedSprite::AnimatedSprite(BatchManager& _batchManager)
+	AnimatedSprite::AnimatedSprite(rendering::BatchManager& _batchManager)
 		: Sprite(_batchManager)
 	{
 
 	}
 
-	AnimatedSprite::AnimatedSprite(BatchManager& _batchManager, GameObject& _owner)
+	AnimatedSprite::AnimatedSprite(rendering::BatchManager& _batchManager, GameObject& _owner)
 		: Sprite(_batchManager, _owner)
 	{
 
@@ -61,7 +61,7 @@ namespace se
 		Sprite::update(deltaTime);
 	}
 
-	void AnimatedSprite::setTexture(TextureData* _textureDataPtr)
+	void AnimatedSprite::setTexture(rendering::TextureData* _textureDataPtr)
 	{
 		textureData = _textureDataPtr;
 		Sprite::setTexture(_textureDataPtr);

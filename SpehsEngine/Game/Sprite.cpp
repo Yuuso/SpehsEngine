@@ -13,13 +13,13 @@
 
 namespace se
 {
-	Sprite::Sprite(BatchManager& batchManager)
+	Sprite::Sprite(rendering::BatchManager& batchManager)
 		: textureManager(batchManager.textureManager)
 	{
 		sprite = batchManager.createPolygon(4, 0, DEFAULT_SIZE, DEFAULT_SIZE);
 	}
 
-	Sprite::Sprite(BatchManager& batchManager, GameObject& _owner)
+	Sprite::Sprite(rendering::BatchManager& batchManager, GameObject& _owner)
 		: Component(_owner)
 		, textureManager(batchManager.textureManager)
 	{
@@ -46,7 +46,7 @@ namespace se
 	{
 		sprite->resize(_x, _y);
 	}
-	void Sprite::setTexture(TextureData* _textureDataPtr)
+	void Sprite::setTexture(rendering::TextureData* _textureDataPtr)
 	{
 		sprite->setTexture(_textureDataPtr);
 	}
@@ -54,7 +54,7 @@ namespace se
 	{
 		sprite->setTexture(_textureID);
 	}
-	void Sprite::setColor(const se::Color& _newColor)
+	void Sprite::setColor(const Color& _newColor)
 	{
 		sprite->setColor(_newColor);
 	}
