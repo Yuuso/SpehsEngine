@@ -8,8 +8,8 @@ namespace se
 		: data((const unsigned char*)pointedMemory)
 		, capacity(length)
 	{
-		SPEHS_ASSERT(pointedMemory);
-		SPEHS_ASSERT(length > 0);
+		se_assert(pointedMemory);
+		se_assert(length > 0);
 	}
 
 	ReadBuffer::~ReadBuffer()

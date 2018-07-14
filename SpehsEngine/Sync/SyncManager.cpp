@@ -324,12 +324,12 @@ namespace se
 
 		void Manager::update(const se::time::Time& deltaTime)
 		{
-			SPEHS_ASSERT(isInitialized());
+			se_assert(isInitialized());
 
 			//Local types
 			for (size_t i = 0; i < entries.size();)
 			{
-				SPEHS_ASSERT(entries[i] && entries[i]->ptr);
+				se_assert(entries[i] && entries[i]->ptr);
 
 				//Create
 				if (!entries[i]->createSent)

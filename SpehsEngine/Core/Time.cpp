@@ -47,13 +47,13 @@ namespace se
 
 		Time getRunTime()
 		{
-			SPEHS_ASSERT(initialized);
+			se_assert(initialized);
 			return std::chrono::high_resolution_clock::now().time_since_epoch().count() - initializationTime;
 		}
 
 		Time getInitializationTime()
 		{
-			SPEHS_ASSERT(initialized);
+			se_assert(initialized);
 			return initializationTime;
 		}
 

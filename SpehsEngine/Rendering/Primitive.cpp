@@ -1,6 +1,5 @@
 #include "stdafx.h"
 
-#include "SpehsEngine/Core/Exceptions.h"
 #include "SpehsEngine/Rendering/Primitive.h"
 #include "SpehsEngine/Core/Vertex.h"
 #include "SpehsEngine/Rendering/ShaderManager.h"
@@ -46,7 +45,7 @@ namespace se
 #ifdef _DEBUG
 			if (_x != _x || _y != _y)
 			{
-				exceptions::unexpectedError("Position values corrupted!");
+				log::error("Position values corrupted!");
 			}
 #endif
 			position.x = _x;
@@ -59,7 +58,7 @@ namespace se
 #ifdef _DEBUG
 			if (_newPosition.x != _newPosition.x || _newPosition.y != _newPosition.y)
 			{
-				exceptions::unexpectedError("Position values corrupted!");
+				log::error("Position values corrupted!");
 			}
 #endif
 			position.x = _newPosition.x;
@@ -72,7 +71,7 @@ namespace se
 #ifdef _DEBUG
 			if (_other.position.x != _other.position.x || _other.position.y != _other.position.y)
 			{
-				exceptions::unexpectedError("Position values corrupted!");
+				log::error("Position values corrupted!");
 			}
 #endif
 			position.x = _other.position.x;
@@ -85,7 +84,7 @@ namespace se
 #ifdef _DEBUG
 			if (_x != _x || _y != _y)
 			{
-				exceptions::unexpectedError("Position values corrupted!");
+				log::error("Position values corrupted!");
 			}
 #endif
 			position.x += _x;
@@ -98,7 +97,7 @@ namespace se
 #ifdef _DEBUG
 			if (_translation.x != _translation.x || _translation.y != _translation.y)
 			{
-				exceptions::unexpectedError("Position values corrupted!");
+				log::error("Position values corrupted!");
 			}
 #endif
 			position.x += _translation.x;
@@ -111,7 +110,7 @@ namespace se
 #ifdef _DEBUG
 			if (_newScale != _newScale)
 			{
-				exceptions::unexpectedError("Scale values corrupted!");
+				log::error("Scale values corrupted!");
 			}
 #endif
 			scaleX = _newScale;
@@ -124,7 +123,7 @@ namespace se
 #ifdef _DEBUG
 			if (_newScaleX != _newScaleX || _newScaleY != _newScaleY)
 			{
-				exceptions::unexpectedError("Scale values corrupted!");
+				log::error("Scale values corrupted!");
 			}
 #endif
 			scaleX = _newScaleX;
@@ -137,7 +136,7 @@ namespace se
 #ifdef _DEBUG
 			if (_newScale.x != _newScale.x || _newScale.y != _newScale.y)
 			{
-				exceptions::unexpectedError("Scale values corrupted!");
+				log::error("Scale values corrupted!");
 			}
 #endif
 			scaleX = _newScale.x;
@@ -150,7 +149,7 @@ namespace se
 #ifdef _DEBUG
 			if (_newScaleX != _newScaleX)
 			{
-				exceptions::unexpectedError("Scale value corrupted!");
+				log::error("Scale value corrupted!");
 			}
 #endif
 			scaleX = _newScaleX;
@@ -162,7 +161,7 @@ namespace se
 #ifdef _DEBUG
 			if (_newScaleY != _newScaleY)
 			{
-				exceptions::unexpectedError("Scale value corrupted!");
+				log::error("Scale value corrupted!");
 			}
 #endif
 			scaleY = _newScaleY;
@@ -174,7 +173,7 @@ namespace se
 #ifdef _DEBUG
 			if (_newRotation != _newRotation)
 			{
-				exceptions::unexpectedError("Rotation values corrupted!");
+				log::error("Rotation values corrupted!");
 			}
 #endif
 			rotation = _newRotation;
@@ -186,7 +185,7 @@ namespace se
 #ifdef _DEBUG
 			if (_newRotation != _newRotation || _newRotationVector.x != _newRotationVector.x || _newRotationVector.y != _newRotationVector.y || _newRotationVector.z != _newRotationVector.z)
 			{
-				exceptions::unexpectedError("Rotation values corrupted!");
+				log::error("Rotation values corrupted!");
 			}
 #endif
 			rotation = _newRotation;
@@ -199,7 +198,7 @@ namespace se
 #ifdef _DEBUG
 			if (_other.rotation != _other.rotation)
 			{
-				exceptions::unexpectedError("Rotation values corrupted!");
+				log::error("Rotation values corrupted!");
 			}
 #endif
 			rotation = _other.rotation;
@@ -211,7 +210,7 @@ namespace se
 #ifdef _DEBUG
 			if (_rotation != _rotation)
 			{
-				exceptions::unexpectedError("Rotation values corrupted!");
+				log::error("Rotation values corrupted!");
 			}
 #endif
 			rotation += _rotation;
@@ -223,7 +222,7 @@ namespace se
 #ifdef _DEBUG
 			if (_newRotationVector.x != _newRotationVector.x || _newRotationVector.y != _newRotationVector.y || _newRotationVector.z != _newRotationVector.z)
 			{
-				exceptions::unexpectedError("Rotation values corrupted!");
+				log::error("Rotation values corrupted!");
 			}
 #endif
 			rotationVector = _newRotationVector;
@@ -266,7 +265,7 @@ namespace se
 #ifdef _DEBUG
 			if (_newPlaneDepth != _newPlaneDepth)
 			{
-				exceptions::unexpectedError("Depth values corrupted!");
+				log::error("Depth values corrupted!");
 			}
 #endif
 			planeDepth = _newPlaneDepth;

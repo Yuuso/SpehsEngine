@@ -1,4 +1,4 @@
 #pragma once
-#include <SpehsEngine/Core/Log.h>
-#include <SpehsEngine/Core/Time.h>
-#include "Pin.h"
+#include <SpehsEngine/Core/PrecompiledInclude.h>
+#include <SpehsEngine/GPIO/PrecompiledInclude.h>
+#include <SpehsEngine/Sync/PrecompiledInclude.h>

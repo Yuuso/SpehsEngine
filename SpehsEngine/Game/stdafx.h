@@ -1,6 +1,6 @@
 #pragma once
-#include <SpehsEngine/Core/Log.h>
-#include <SpehsEngine/Core/Time.h>
-#include <SpehsEngine/Core/Vector.h>
-#include "Component.h"
-#include "GameObject.h"
+#include <SpehsEngine/Core/PrecompiledInclude.h>
+#include <SpehsEngine/Audio/PrecompiledInclude.h>
+#include <SpehsEngine/Rendering/PrecompiledInclude.h>
+#include <SpehsEngine/Input/PrecompiledInclude.h>
+#include <SpehsEngine/Game/PrecompiledInclude.h>

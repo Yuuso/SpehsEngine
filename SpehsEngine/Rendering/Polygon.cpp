@@ -1,6 +1,5 @@
 #include "stdafx.h"
 
-#include "SpehsEngine/Core/Exceptions.h"
 #include "SpehsEngine/Core/Shapes.h"
 #include "SpehsEngine/Core/Vertex.h"
 #include "SpehsEngine/Rendering/Polygon.h"
@@ -90,7 +89,7 @@ namespace se
 		{
 			planeDepth = _planeDepth;
 			if (_vertexData.size() < 3)
-				exceptions::fatalError("Can't create a polygon with less than 3 vertices!");
+				log::error("Can't create a polygon with less than 3 vertices!");
 
 			vertexArray = _vertexData;
 			worldVertexArray = vertexArray;
@@ -109,7 +108,7 @@ namespace se
 		{
 			planeDepth = _planeDepth;
 			if (_positionData.size() < 3)
-				exceptions::fatalError("Can't create a polygon with less than 3 vertices!");
+				log::error("Can't create a polygon with less than 3 vertices!");
 
 			vertexArray.resize(_positionData.size());
 			for (size_t i = 0; i < _positionData.size(); i++)
@@ -163,7 +162,7 @@ namespace se
 			}
 			else
 			{
-				se::exceptions::unexpectedError("Camera state not enabled, screen vertices function is useless.");
+				log::error("Camera state not enabled, screen vertices function is useless.");
 			}
 		}
 

@@ -2,7 +2,6 @@
 
 #include "SpehsEngine/Game/Transform2D.h"
 #include "SpehsEngine/Game/GameObject.h"
-#include "SpehsEngine/Core/Exceptions.h"
 
 
 namespace se
@@ -71,7 +70,7 @@ namespace se
 	{
 #ifdef _DEBUG
 		if (_position != _position)
-			exceptions::unexpectedError("Position value corrupted!");
+			log::error("Position value corrupted!");
 #endif
 		lastSetPosition = position;
 		position = _position;
@@ -81,7 +80,7 @@ namespace se
 	{
 #ifdef _DEBUG
 		if (_xpos != _xpos)
-			exceptions::unexpectedError("Position value corrupted!");
+			log::error("Position value corrupted!");
 #endif
 		lastSetPosition.x = position.x;
 		position.x = _xpos;
@@ -91,7 +90,7 @@ namespace se
 	{
 #ifdef _DEBUG
 		if (_ypos != _ypos)
-			exceptions::unexpectedError("Position value corrupted!");
+			log::error("Position value corrupted!");
 #endif
 		lastSetPosition.y = position.y;
 		position.y = _ypos;
@@ -101,7 +100,7 @@ namespace se
 	{
 #ifdef _DEBUG
 		if (_rotation != _rotation)
-			exceptions::unexpectedError("Rotation value corrupted!");
+			log::error("Rotation value corrupted!");
 #endif
 		lastSetRotation = rotation;
 		rotation = _rotation;
@@ -111,7 +110,7 @@ namespace se
 	{
 #ifdef _DEBUG
 		if (_scale != _scale)
-			exceptions::unexpectedError("Scale value corrupted!");
+			log::error("Scale value corrupted!");
 #endif
 		scale = _scale;
 	}

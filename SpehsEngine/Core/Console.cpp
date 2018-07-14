@@ -307,7 +307,7 @@ namespace se
 
 	const Console::Line& Console::getLine(const size_t index) const
 	{
-		SPEHS_ASSERT(index < lines.size());
+		se_assert(index < lines.size());
 		return lines[index];
 	}
 

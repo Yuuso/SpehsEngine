@@ -22,7 +22,7 @@ namespace se
 			, timer(0)
 			, typeInfo(_typeInfo)
 		{
-			SPEHS_ASSERT(_passData);
+			se_assert(_passData);
 		}
 
 		Entry::~Entry()

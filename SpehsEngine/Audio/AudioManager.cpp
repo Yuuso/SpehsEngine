@@ -1,6 +1,5 @@
 #include "stdafx.h"
 
-#include "SpehsEngine/Core/Exceptions.h"
 #include "SpehsEngine/Core/Thread.h"
 #include "SpehsEngine/Audio/AudioManager.h"
 #include "SpehsEngine/Audio/OpenALError.h"
@@ -36,7 +35,7 @@ namespace se
 		auto it = audioVar::audioClips.find(_hashID);
 		if (it == audioVar::audioClips.end())
 		{
-			exceptions::warning("Sound doesn't exist!");
+			log::warning("Sound doesn't exist!");
 			audioVar::mutex.unlock();
 			return 0;
 		}
@@ -63,7 +62,7 @@ namespace se
 		}
 		else
 		{
-			exceptions::fatalError("Unsupported audio file!");
+			log::error("Unsupported audio file!");
 		}
 		return 0;
 	}
@@ -98,7 +97,7 @@ namespace se
 		errno_t error = fopen_s(&fileData, _filepath.c_str(), "rb");
 		if (error != 0)
 		{
-			exceptions::fatalError("Failed to open WAVE file, error: " + std::to_string(error));
+			log::error("Failed to open WAVE file, error: " + std::to_string(error));
 		}
 
 		//Read RIFF header
@@ -115,7 +114,7 @@ namespace se
 			waveFile.riffHeader.format[3] != 'E'))
 		{
 			fclose(fileData);
-			exceptions::fatalError("Invalid RIFF or WAVE header!");
+			log::error("Invalid RIFF or WAVE header!");
 		}
 
 		//Read format
@@ -128,7 +127,7 @@ namespace se
 			waveFile.waveFormat.subChunkID[3] != ' ')
 		{
 			fclose(fileData);
-			exceptions::fatalError("Invalid Wave format!");
+			log::error("Invalid Wave format!");
 		}
 
 		//Check for extra parameters
@@ -148,7 +147,7 @@ namespace se
 			else
 			{
 				fclose(fileData);
-				exceptions::fatalError("Bit depth of loaded mono audio file not supported! (File name: " + _filepath + " )");
+				log::error("Bit depth of loaded mono audio file not supported! (File name: " + _filepath + " )");
 			}
 		}
 		else if (waveFile.waveFormat.numChannels == 2)
@@ -160,13 +159,13 @@ namespace se
 			else
 			{
 				fclose(fileData);
-				exceptions::fatalError("Bit depth of loaded stereo audio file not supported! (File name : " + _filepath + ")");
+				log::error("Bit depth of loaded stereo audio file not supported! (File name : " + _filepath + ")");
 			}
 		}
 		else
 		{
 			fclose(fileData);
-			exceptions::fatalError("Invalid number of channels! (File name : " + _filepath + ")");
+			log::error("Invalid number of channels! (File name : " + _filepath + ")");
 		}
 		audioVar::mutex.unlock();
 
@@ -180,7 +179,7 @@ namespace se
 			waveFile.waveData.subChunkID[3] != 'a')
 		{
 			fclose(fileData);
-			exceptions::fatalError("Invalid data tag!");
+			log::error("Invalid data tag!");
 		}
 
 		//Set variables
@@ -194,7 +193,7 @@ namespace se
 		if (!fread(waveFile.data, waveFile.waveData.subChunkSize, 1, fileData))
 		{
 			fclose(fileData);
-			exceptions::fatalError("Error loading WAVE sound file!");
+			log::error("Error loading WAVE sound file!");
 		}
 
 		audioVar::mutex.lock();
@@ -252,7 +251,7 @@ namespace se
 		{
 			char errorString[100];
 			strerror_s(errorString, 100, error);
-			exceptions::fatalError("Failed to open OGG file: " + _filepath + "\n\terrno: " + std::to_string(error) + ", " + errorString);
+			log::error("Failed to open OGG file: " + _filepath + "\n\terrno: " + std::to_string(error) + ", " + errorString);
 		}
 
 		vorbis_info* info;
@@ -345,7 +344,7 @@ namespace se
 		auto it = audioVar::audioClips.find(_hashID);
 		if (it == audioVar::audioClips.end())
 		{
-			exceptions::fatalError("Trying to delete a WAVE file that doesn't exist!");
+			log::error("Trying to delete a WAVE file that doesn't exist!");
 		}
 
 		alDeleteBuffers(1, &it->second.buffer);
@@ -374,7 +373,7 @@ namespace se
 		auto it = audioVar::audioClips.find(_hashID);
 		if (it == audioVar::audioClips.end())
 		{
-			exceptions::fatalError("Trying to access non existent audio clip!");
+			log::error("Trying to access non existent audio clip!");
 		}
 
 		return it->second;

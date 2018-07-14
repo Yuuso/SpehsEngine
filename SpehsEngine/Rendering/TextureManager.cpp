@@ -1,5 +1,4 @@
 #include "stdafx.h"
-#include "SpehsEngine/Core/Exceptions.h"
 #include "SpehsEngine/Core/Color.h"
 #include "SpehsEngine/Core/RNG.h"
 #include "SpehsEngine/Input/Input.h"
@@ -32,7 +31,7 @@ namespace se
 		TextureManager::TextureManager(Window& _window)
 			: window(_window)
 		{
-			SPEHS_ASSERT(window.isValid());
+			se_assert(window.isValid());
 			defaultTexture = getNoiseTexture(4, 4, DEFAULT_TEXTURE_SEED, 4);
 		}
 
@@ -47,7 +46,7 @@ namespace se
 			if (temp)
 				defaultTexture = temp;
 			else
-				exceptions::fatalError("Creating default texture failed!");
+				log::error("Creating default texture failed!");
 		}
 
 		void TextureManager::setDefaultTexture(const std::string& _filepath)
@@ -102,7 +101,7 @@ namespace se
 			{
 				return it->second;
 			}
-			exceptions::warning("Texture not found, using default.");
+			log::warning("Texture not found, using default.");
 			return defaultTexture;
 		}
 
@@ -117,7 +116,7 @@ namespace se
 			}
 			else
 			{
-				exceptions::warning("Trying to preload already existing texture!");
+				log::warning("Trying to preload already existing texture!");
 			}
 			return hash;
 		}
@@ -145,7 +144,7 @@ namespace se
 			{
 				return it->second;
 			}
-			exceptions::warning("CubeMap data not found! hash: " + std::to_string(_hash));
+			log::warning("CubeMap data not found! hash: " + std::to_string(_hash));
 			//TODO: Default Cube Map
 			return nullptr;
 		}
@@ -159,7 +158,7 @@ namespace se
 			}
 			else
 			{
-				exceptions::warning("Trying to preload already existing cubemap!");
+				log::warning("Trying to preload already existing cubemap!");
 			}
 			return hash;
 		}
@@ -185,14 +184,14 @@ namespace se
 		{
 			if (_factor == 0)
 			{
-				exceptions::unexpectedError("Factor can't be 0! Using default texture. (TextureManager->preloadNoiseTexture)");
+				log::error("Factor can't be 0! Using default texture. (TextureManager->preloadNoiseTexture)");
 				return std::hash<unsigned int>()(DEFAULT_TEXTURE_SEED);
 			}
 
 			size_t hash = std::hash<unsigned int>()(_seed);
 			if (textureDataMap.find(hash) != textureDataMap.end())
 			{
-				exceptions::warning("Tryng to preload already existing noisetexture!");
+				log::warning("Tryng to preload already existing noisetexture!");
 				return hash;
 			}
 
@@ -324,7 +323,7 @@ namespace se
 			size_t hash = std::hash<std::string>()(_ID);
 			if (textureDataMap.find(hash) != textureDataMap.end())
 			{
-				exceptions::warning("Tryng to preload already existing datatexture!");
+				log::warning("Tryng to preload already existing datatexture!");
 				return hash;
 			}
 
@@ -374,7 +373,7 @@ namespace se
 			}
 			else
 			{
-				exceptions::warning("Texture not found, cannot remove!");
+				log::warning("Texture not found, cannot remove!");
 			}
 		}
 
@@ -404,7 +403,7 @@ namespace se
 
 			if (!image)
 			{
-				exceptions::warning("Failed to load image file: " + _filepath);
+				log::warning("Failed to load image file: " + _filepath);
 				return nullptr;
 			}
 

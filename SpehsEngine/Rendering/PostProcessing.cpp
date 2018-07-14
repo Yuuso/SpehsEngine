@@ -1,5 +1,4 @@
 #include "stdafx.h"
-#include "SpehsEngine/Core/Exceptions.h"
 #include "SpehsEngine/Rendering/PostProcessing.h"
 #include "SpehsEngine/Rendering/ShaderManager.h"
 #include "SpehsEngine/Rendering/OpenGLError.h"
@@ -117,7 +116,7 @@ namespace se
 			//	GLenum status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
 			//	if (status != GL_FRAMEBUFFER_COMPLETE)
 			//	{
-			//		exceptions::fatalError("glCheckFramebufferStatus: error " + std::to_string(status));
+			//		log::error("glCheckFramebufferStatus: error " + std::to_string(status));
 			//	}
 			//	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 			//}
@@ -153,7 +152,7 @@ namespace se
 			//GLenum status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
 			//if (status != GL_FRAMEBUFFER_COMPLETE)
 			//{
-			//	exceptions::fatalError("glCheckFramebufferStatus: error " + std::to_string(status));
+			//	log::error("glCheckFramebufferStatus: error " + std::to_string(status));
 			//}
 			//glBindFramebuffer(GL_FRAMEBUFFER, 0);
 			//

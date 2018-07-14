@@ -16,7 +16,7 @@ namespace se
 		
 	void WriteBuffer::reserve(const size_t capacity)
 	{
-		SPEHS_ASSERT(capacity >= data.capacity());
+		se_assert(capacity >= data.capacity());
 		data.reserve(capacity);
 	}
 

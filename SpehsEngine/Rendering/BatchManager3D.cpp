@@ -6,7 +6,6 @@
 #include "SpehsEngine/Rendering/Batch3D.h"
 #include "SpehsEngine/Rendering/Mesh.h"
 #include "SpehsEngine/Rendering/Window.h"
-#include "SpehsEngine/Core/Exceptions.h"
 
 #include <algorithm>
 
@@ -53,7 +52,7 @@ namespace se
 					return;
 				}
 			}
-			exceptions::unexpectedError("BatchManager3D::removeMesh: Mesh not found!");
+			log::error("BatchManager3D::removeMesh: Mesh not found!");
 		}
 
 		void BatchManager3D::unbatch(MeshObject& _object)

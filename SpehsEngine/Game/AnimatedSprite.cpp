@@ -2,7 +2,6 @@
 #include "SpehsEngine/Game/AnimatedSprite.h"
 #include "SpehsEngine/Rendering/TextureManager.h"
 #include "SpehsEngine/Rendering/Polygon.h"
-#include "SpehsEngine/Core/Exceptions.h"
 #include "SpehsEngine/Core/Time.h"
 
 

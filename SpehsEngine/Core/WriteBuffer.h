@@ -32,7 +32,7 @@ namespace se
 		{
 			writeToBuffer(*this, t);
 //				se::log::info(typeid(T).name());
-//				SPEHS_ASSERT(false && "To use 'WriteBuffer::write<T>(const T&)' for a class type, the type T must have a 'void write(WriteBuffer&) const' method!");
+//				se_assert(false && "To use 'WriteBuffer::write<T>(const T&)' for a class type, the type T must have a 'void write(WriteBuffer&) const' method!");
 //#ifdef _WIN32 // NOTE: cannot use static assert because of g++ and SFINAE
 //				static_assert(false, "Class type T doesn't have a const write method.");
 //#endif
@@ -55,7 +55,7 @@ namespace se
 		{
 			writeToBuffer(*this, t);
 //				se::log::info(typeid(T).name());
-//				SPEHS_ASSERT(false && "To use 'WriteBuffer::write<T>(T&)' for a class type, the type T must have a 'void write(WriteBuffer&)' or 'void write(WriteBuffer&) const' method!");
+//				se_assert(false && "To use 'WriteBuffer::write<T>(T&)' for a class type, the type T must have a 'void write(WriteBuffer&)' or 'void write(WriteBuffer&) const' method!");
 //#ifdef _WIN32 // NOTE: cannot use static assert because of g++ and SFINAE
 //				static_assert(false, "Class type T doesn't have mutable or const write method.");
 //#endif

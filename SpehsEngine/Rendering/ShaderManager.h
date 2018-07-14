@@ -1,7 +1,5 @@
-
 #pragma once
 
-#include "SpehsEngine/Core/Exceptions.h"
 #include "SpehsEngine/Core/Vector.h"
 #include "SpehsEngine/Rendering/GLSLProgram.h"
 
@@ -137,7 +135,7 @@ namespace se
 			{
 				return temp;
 			}
-			se::exceptions::fatalError("Uniforms type not found!");
+			se::log::error("Uniforms type not found!");
 			return nullptr;
 		}
 	}

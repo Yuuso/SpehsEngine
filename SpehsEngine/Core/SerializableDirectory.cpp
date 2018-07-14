@@ -1,5 +1,4 @@
 #include "stdafx.h"
-#include "SpehsEngine/Core/Exceptions.h"
 #include "SpehsEngine/Core/SerializableDirectory.h"
 #include <cstring>
 
@@ -10,20 +9,24 @@ namespace se
 	{
 
 	}
+
 	SerializableDirectory::SerializableDirectory(const SerializableDirectory& other)
 	{
-		se::exceptions::unexpectedError("TODO");
+		log::error("TODO");
 	}
+
 	SerializableDirectory::~SerializableDirectory()
 	{
 		for (unsigned i = 0; i < data.size(); i++)
 			delete data[i];
 	}
+
 	SerializableDirectory& SerializableDirectory::operator=(const SerializableDirectory& other)
 	{
-		se::exceptions::unexpectedError("TODO");
+		log::error("TODO");
 		return *this;
 	}
+
 	size_t SerializableDirectory::packetSize() const
 	{
 		size_t bytes = sizeof(unsigned/*name char count*/) + sizeof(char) * name.size() + sizeof(unsigned/*child count*/);
@@ -31,6 +34,7 @@ namespace se
 			bytes += subDirectories[i].packetSize();
 		return bytes;
 	}
+
 	size_t SerializableDirectory::write(unsigned char* buffer) const
 	{
 		size_t offset(0);
@@ -46,6 +50,7 @@ namespace se
 			offset += subDirectories[i].write(&buffer[offset]);
 		return offset;
 	}
+
 	size_t SerializableDirectory::read(const unsigned char* buffer)
 	{
 		size_t offset(0);
@@ -65,6 +70,7 @@ namespace se
 		}
 		return offset;
 	}
+
 	bool SerializableDirectory::deleteSubDirectory(const std::string _name)
 	{
 		for (unsigned i = 0; i < subDirectories.size(); i++)
@@ -77,11 +83,12 @@ namespace se
 		}
 		return false;
 	}
+
 	bool SerializableDirectory::setName(const std::string newName)
 	{
 		if (newName.size() == 0)
 		{
-			se::exceptions::warning("Serializable directory name cannot be set to null!");
+			log::warning("Serializable directory name cannot be set to null!");
 			return false;
 		}
 		if (parent)
@@ -90,7 +97,7 @@ namespace se
 			{
 				if (parent->subDirectories[i].name == newName)
 				{
-					se::exceptions::warning("Serializable directory name cannot be set to same as sibling directory name!");
+					log::warning("Serializable directory name cannot be set to same as sibling directory name!");
 					return false;
 				}
 			}
@@ -98,11 +105,12 @@ namespace se
 		name = newName;
 		return true;
 	}
+
 	SerializableDirectory* SerializableDirectory::createSubDirectory(const std::string _name)
 	{
 		if (_name.size() == 0)
 		{
-			se::exceptions::warning("Serializable directory name cannot be null!");
+			log::warning("Serializable directory name cannot be null!");
 			return nullptr;
 		}
 		for (unsigned i = 0; i < subDirectories.size(); i++)
@@ -115,6 +123,7 @@ namespace se
 		subDirectories.back().name = _name;
 		return &subDirectories.back();
 	}
+
 	SerializableDirectory* SerializableDirectory::getDirectory(std::string directoryPath)
 	{
 		for (unsigned p = 0; p < directoryPath.size(); p++)
@@ -126,7 +135,7 @@ namespace se
 				std::string firstParentDirectory;
 				if (p == 0)
 				{
-					se::exceptions::warning("Provided directory path contains a null directory name! Invalid path: \"" + directoryPath + "\"");
+					log::warning("Provided directory path contains a null directory name! Invalid path: \"" + directoryPath + "\"");
 					return nullptr;
 				}
 				firstParentDirectory.resize(p);
@@ -140,7 +149,7 @@ namespace se
 				subPath.resize(directoryPath.size() - p - 1);
 				if (subPath.size() == 0)
 				{
-					se::exceptions::warning("Specified sub directory name is null! Invalid path: Invalid path: \"" + directoryPath + "\"");
+					log::warning("Specified sub directory name is null! Invalid path: Invalid path: \"" + directoryPath + "\"");
 					return nullptr;
 				}
 				memcpy(&subPath[0], &directoryPath[p + 1], sizeof(char) * subPath.size());
@@ -155,6 +164,7 @@ namespace se
 		}
 		return directoryPath == name ? this : nullptr;
 	}
+
 	std::string SerializableDirectory::getPath() const
 	{
 		if (parent)

@@ -1,7 +1,6 @@
 #include "stdafx.h"
 #define ZLIB_WINAPI//Needed for linkage
 #include "SpehsEngine/Core/Compression.h"
-#include "SpehsEngine/Core/Exceptions.h"
 
 //#include "zlib/zlib.h"
 //#pragma comment(lib, "zlibwapi.lib") // for access to the DLL
@@ -30,10 +29,10 @@ namespace se
 		//		if (error == Z_STREAM_END)
 		//			compressedBytes = zInfo.total_out;
 		//		else
-		//			exceptions::unexpectedError("Failed to compress source data! Error code: " + error);
+		//			log::error("Failed to compress source data! Error code: " + error);
 		//	}
 		//	else
-		//		exceptions::unexpectedError("Failed to compress source data! Error code: " + error);
+		//		log::error("Failed to compress source data! Error code: " + error);
 		//	deflateEnd(&zInfo);
 		//	return(compressedBytes);
 		//}
@@ -53,10 +52,10 @@ namespace se
 		//		if (error == Z_STREAM_END)
 		//			uncompressedBytes = zInfo.total_out;
 		//		else
-		//			exceptions::unexpectedError("Failed to uncompress source data! Error code: " + error);
+		//			log::error("Failed to uncompress source data! Error code: " + error);
 		//	}
 		//	else
-		//		exceptions::unexpectedError("Failed to uncompress source data! Error code: " + error);
+		//		log::error("Failed to uncompress source data! Error code: " + error);
 		//	inflateEnd(&zInfo);
 		//	return(uncompressedBytes);
 		//}

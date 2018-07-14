@@ -1,7 +1,6 @@
 #include "stdafx.h"
 
 #include "SpehsEngine/Input/Input.h"
-#include "SpehsEngine/Core/Exceptions.h"
 #include "SpehsEngine/Core/Core.h"
 #include "SpehsEngine/Core/Log.h"
 #include "SpehsEngine/Core/Time.h"

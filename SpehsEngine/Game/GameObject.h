@@ -1,7 +1,5 @@
-
 #pragma once
 
-#include "SpehsEngine/Core/Exceptions.h"
 #include "SpehsEngine/Core/Time.h"
 
 #include <string>
@@ -41,7 +39,7 @@ namespace se
 
 		if (!dynamic_cast<Component*>(cast))
 		{
-			exceptions::fatalError("Given type is not a Component.");
+			log::error("Given type is not a Component.");
 		}
 		
 		components.push_back(cast);

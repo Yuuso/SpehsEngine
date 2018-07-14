@@ -1,5 +1,5 @@
 #include "stdafx.h"
-#include "SpehsEngine/Core/Exceptions.h"
+
 #include "SpehsEngine/Core/Time.h"
 #include "SpehsEngine/Input/InputManager.h"
 #include "SpehsEngine/Input/Input.h"
@@ -227,7 +227,7 @@ namespace se
 				openWindow(window);
 			return;
 		}
-		se::exceptions::warning("Trying to toggle window that is not under window manager!");
+		log::warning("Trying to toggle window that is not under window manager!");
 	}
 
 	void GUIWindowManager::openWindow(se::GUIWindow* window)
@@ -253,7 +253,7 @@ namespace se
 				return;
 			}
 		}
-		se::exceptions::warning("Trying to open window that is not under window manager!");
+		log::warning("Trying to open window that is not under window manager!");
 	}
 
 	void GUIWindowManager::closeWindow(GUIWindow* window)
@@ -268,7 +268,7 @@ namespace se
 				return;
 			}
 		}
-		se::exceptions::warning("Trying to close window that is not under window manager!");
+		log::warning("Trying to close window that is not under window manager!");
 	}
 
 	void GUIWindowManager::setSystemDepth(const int16_t depth)

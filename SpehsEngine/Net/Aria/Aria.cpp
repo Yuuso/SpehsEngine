@@ -138,7 +138,7 @@ namespace se
 								return false;
 							}
 						}
-						SPEHS_ASSERT(socket.isConnected());
+						se_assert(socket.isConnected());
 						log::info("Aria::Connector::enter: success.");
 						return true;
 					}
@@ -292,14 +292,14 @@ namespace se
 
 				//Join thread
 				std::lock_guard<std::recursive_mutex> lock(mutex);
-				SPEHS_ASSERT(!keepRunning);
+				se_assert(!keepRunning);
 				if (thread)
 				{
 					thread->join();
 					delete thread;
 				}
 
-				SPEHS_ASSERT(clients.empty());
+				se_assert(clients.empty());
 			}
 
 			void Server::start(const Port& _localPort)
@@ -398,7 +398,7 @@ namespace se
 					}
 					else
 					{
-						SPEHS_ASSERT(accepting == 1);
+						se_assert(accepting == 1);
 					}
 
 					//Remove idle clients

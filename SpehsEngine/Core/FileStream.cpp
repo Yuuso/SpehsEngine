@@ -1,13 +1,11 @@
 #include "stdafx.h"
 #include <mutex>
 #include <boost/filesystem.hpp>
-#include "SpehsEngine/Core/Exceptions.h"
 #include "SpehsEngine/Core/FileStream.h"
 
 namespace se
 {
 	std::recursive_mutex filestreamMutex;
-
 
 	void writeString(std::string& string, std::ofstream* stream)
 	{
@@ -95,7 +93,7 @@ namespace se
 		{
 			if (!se::createDirectory(path))
 			{
-				se::exceptions::warning("Failed to create directory: \"" + path + "\"!");
+				log::warning("Failed to create directory: \"" + path + "\"!");
 				return false;
 			}
 		}
@@ -109,12 +107,12 @@ namespace se
 		boost::filesystem::path path(directoryPath);
 		if (!boost::filesystem::exists(path))
 		{
-			se::exceptions::warning("listFilesInDirectory failed: directory does not exist! : " + directoryPath);
+			log::warning("listFilesInDirectory failed: directory does not exist! : " + directoryPath);
 			return files;
 		}
 		if (!boost::filesystem::is_directory(path))
 		{
-			se::exceptions::warning("listFilesInDirectory failed: directory path leads to a non-directory file! : " + directoryPath);
+			log::warning("listFilesInDirectory failed: directory path leads to a non-directory file! : " + directoryPath);
 			return files;
 		}
 
@@ -163,12 +161,12 @@ namespace se
 		boost::filesystem::path path(directoryPath);
 		if (!boost::filesystem::exists(path))
 		{
-			se::exceptions::warning("listSubDirectoriesInDirectory failed: directory does not exist! : " + directoryPath);
+			log::warning("listSubDirectoriesInDirectory failed: directory does not exist! : " + directoryPath);
 			return subDirectories;
 		}
 		if (!boost::filesystem::is_directory(path))
 		{
-			se::exceptions::warning("listSubDirectoriesInDirectory failed: directory path leads to a non-directory file! : " + directoryPath);
+			log::warning("listSubDirectoriesInDirectory failed: directory path leads to a non-directory file! : " + directoryPath);
 			return subDirectories;
 		}
 		

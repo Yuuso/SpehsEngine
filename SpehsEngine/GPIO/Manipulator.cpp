@@ -12,7 +12,7 @@ namespace se
 		, syncManager(syncManagerParam)
 		, servoGhostHandle(syncManager.create<device::ServoGhost>())
 	{
-		SPEHS_ASSERT(servoGhostHandle);
+		se_assert(servoGhostHandle);
 	}
 
 	ServoJoint::~ServoJoint()
@@ -213,7 +213,7 @@ namespace se
 	{
 		if (child)
 		{
-			SPEHS_ASSERT(false && "Child already exists");
+			se_assert(false && "Child already exists");
 			return nullptr;
 		}
 		child = new ServoJoint(syncManager, this);
@@ -222,7 +222,7 @@ namespace se
 
 	void ServoJoint::removeChild()
 	{
-		SPEHS_ASSERT(child);
+		se_assert(child);
 		delete child;
 		child = nullptr;
 	}
@@ -257,7 +257,7 @@ namespace se
 			joint = joint->getChild();
 		}
 		ServoJoint *child = joint->createChild();
-		SPEHS_ASSERT(child);
+		se_assert(child);
 		return *child;
 	}
 
@@ -267,7 +267,7 @@ namespace se
 		size_t currentIndex = 0;
 		while (currentIndex++ < targetIndex)
 		{
-			SPEHS_ASSERT(servoJoint->child);
+			se_assert(servoJoint->child);
 			if (!servoJoint->child)
 				se::log::error("Manipulator::operator[] index out of range");
 			servoJoint = servoJoint->child;
@@ -281,7 +281,7 @@ namespace se
 		size_t currentIndex = 0;
 		while (currentIndex++ < targetIndex)
 		{
-			SPEHS_ASSERT(servoJoint->child);
+			se_assert(servoJoint->child);
 			if (!servoJoint->child)
 				se::log::error("const Manipulator::operator[] index out of range");
 			servoJoint = servoJoint->child;

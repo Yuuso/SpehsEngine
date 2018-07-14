@@ -82,7 +82,7 @@ namespace se
 		void Mesh::setMesh(const std::string& _filepath)
 		{
 			if (!batchManager)
-				exceptions::fatalError("Cannot load mesh without batchmanager!");
+				log::error("Cannot load mesh without batchmanager!");
 
 			vertexArray.clear();
 			worldVertexArray.clear();
@@ -99,7 +99,7 @@ namespace se
 #ifdef _DEBUG
 			if (_x != _x || _y != _y || _z != _z)
 			{
-				exceptions::unexpectedError("Position values corrupted!");
+				log::error("Position values corrupted!");
 			}
 #endif
 			position.x = _x;
@@ -112,7 +112,7 @@ namespace se
 #ifdef _DEBUG
 			if (_newPosition.x != _newPosition.x || _newPosition.y != _newPosition.y || _newPosition.z != _newPosition.z)
 			{
-				exceptions::unexpectedError("Position values corrupted!");
+				log::error("Position values corrupted!");
 			}
 #endif
 			position = _newPosition;
@@ -123,7 +123,7 @@ namespace se
 #ifdef _DEBUG
 			if (_other.position.x != _other.position.x || _other.position.y != _other.position.y || _other.position.z != _other.position.z)
 			{
-				exceptions::unexpectedError("Position values corrupted!");
+				log::error("Position values corrupted!");
 			}
 #endif
 			position = _other.position;
@@ -134,7 +134,7 @@ namespace se
 #ifdef _DEBUG
 			if (_yaw != _yaw || _pitch != _pitch || _roll != _roll)
 			{
-				exceptions::unexpectedError("Rotation values corrupted!");
+				log::error("Rotation values corrupted!");
 			}
 #endif
 			rotation.x = _yaw;
@@ -147,7 +147,7 @@ namespace se
 #ifdef _DEBUG
 			if (_newRotation.x != _newRotation.x || _newRotation.y != _newRotation.y || _newRotation.z != _newRotation.z)
 			{
-				exceptions::unexpectedError("Rotation values corrupted!");
+				log::error("Rotation values corrupted!");
 			}
 #endif
 			rotation = _newRotation;
@@ -158,7 +158,7 @@ namespace se
 #ifdef _DEBUG
 			if (_newScale != _newScale)
 			{
-				exceptions::unexpectedError("Scale values corrupted!");
+				log::error("Scale values corrupted!");
 			}
 #endif
 			scale.x = _newScale;
@@ -171,7 +171,7 @@ namespace se
 #ifdef _DEBUG
 			if (_newScaleX != _newScaleX || _newScaleY != _newScaleY || _newScaleZ != _newScaleZ)
 			{
-				exceptions::unexpectedError("Scale values corrupted!");
+				log::error("Scale values corrupted!");
 			}
 #endif
 			scale.x = _newScaleX;
@@ -184,7 +184,7 @@ namespace se
 #ifdef _DEBUG
 			if (_newScale.x != _newScale.x || _newScale.y != _newScale.y || _newScale.z != _newScale.z)
 			{
-				exceptions::unexpectedError("Position values corrupted!");
+				log::error("Position values corrupted!");
 			}
 #endif
 			scale = _newScale;
@@ -219,7 +219,7 @@ namespace se
 #ifdef _DEBUG
 			if (_x != _x || _y != _y || _z != _z)
 			{
-				exceptions::unexpectedError("Position values corrupted!");
+				log::error("Position values corrupted!");
 			}
 #endif
 			position.x += _x;
@@ -232,7 +232,7 @@ namespace se
 #ifdef _DEBUG
 			if (_translation.x != _translation.x || _translation.y != _translation.y || _translation.z != _translation.z)
 			{
-				exceptions::unexpectedError("Position values corrupted!");
+				log::error("Position values corrupted!");
 			}
 #endif
 			position += _translation;
@@ -269,7 +269,7 @@ namespace se
 		TextureData* Mesh::setTexture(const std::string& _texturePath)
 		{
 			if (!batchManager)
-				exceptions::fatalError("Cannot load texture without batchmanager!");
+				log::error("Cannot load texture without batchmanager!");
 			TextureData* value = batchManager->textureManager.getTextureData(_texturePath);
 			textureDataID = value->textureDataID;
 			if (shaderIndex == (unsigned int)ShaderName::DefaultMesh)
@@ -279,7 +279,7 @@ namespace se
 		TextureData* Mesh::setTexture(const size_t _textureID)
 		{
 			if (!batchManager)
-				exceptions::fatalError("Cannot load texture without batchmanager!");
+				log::error("Cannot load texture without batchmanager!");
 			TextureData* value = batchManager->textureManager.getTextureData(_textureID);
 			textureDataID = value->textureDataID;
 			if (shaderIndex == (unsigned int)ShaderName::DefaultMesh)

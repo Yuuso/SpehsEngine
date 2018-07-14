@@ -7,7 +7,6 @@
 #include "SpehsEngine/Rendering/Line.h"
 #include "SpehsEngine/Rendering/Point.h"
 #include "SpehsEngine/Rendering/Window.h"
-#include "SpehsEngine/Core/Exceptions.h"
 
 #include <algorithm>
 
@@ -42,7 +41,7 @@ namespace se
 			}
 
 			if (cleanUpPrimitives != 0)
-				exceptions::warning("BatchManager cleaned up " + std::to_string(cleanUpPrimitives) + " primitives!");
+				log::warning("BatchManager cleaned up " + std::to_string(cleanUpPrimitives) + " primitives!");
 		}
 
 		Polygon* BatchManager::createPolygon(const int _shapeID, const PlaneDepth _planeDepth, const float _width, const float _height)

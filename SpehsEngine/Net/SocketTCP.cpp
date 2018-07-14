@@ -49,7 +49,7 @@ namespace se
 				delete acceptor;
 				acceptor = nullptr;
 			}
-			SPEHS_ASSERT(spehsAcceptThread == nullptr);
+			se_assert(spehsAcceptThread == nullptr);
 
 			clearReceivedPackets();
 		}
@@ -366,7 +366,7 @@ namespace se
 		{
 			if (expectedBytes == 0)
 			{//Receive header
-				SPEHS_ASSERT(receiveBuffer.size() >= sizeof(expectedBytes));
+				se_assert(receiveBuffer.size() >= sizeof(expectedBytes));
 				boost::asio::async_read(socket, boost::asio::buffer(&receiveBuffer[0], sizeof(expectedBytes)),
 					boost::bind(&SocketTCP::receiveHandler,
 						this, boost::asio::placeholders::error,
@@ -569,8 +569,8 @@ namespace se
 				log::warning("SocketTCP failed start accepting! Socket is currently connected!");
 				return false;
 			}
-			SPEHS_ASSERT(!handshakeSent);
-			SPEHS_ASSERT(!handshakeReceived);
+			se_assert(!handshakeSent);
+			se_assert(!handshakeReceived);
 			onAcceptCallbackQueued = false;
 
 			if (acceptor == nullptr)
@@ -620,11 +620,11 @@ namespace se
 		void SocketTCP::onAccept(const boost::system::error_code error)
 		{
 			std::lock_guard<std::recursive_mutex> lock(mutex);
-			SPEHS_ASSERT(!isConnected());
-			SPEHS_ASSERT(!isReceiving());
-			SPEHS_ASSERT(isAccepting());
-			SPEHS_ASSERT(acceptor);
-			SPEHS_ASSERT(!spehsAcceptThread);
+			se_assert(!isConnected());
+			se_assert(!isReceiving());
+			se_assert(isAccepting());
+			se_assert(acceptor);
+			se_assert(!spehsAcceptThread);
 			acceptor->close();
 			if (error)
 			{

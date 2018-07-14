@@ -1,7 +1,6 @@
 #include "stdafx.h"
 #include <string>
 #include <stdint.h>
-#include "SpehsEngine/Core/Exceptions.h"
 #include "SpehsEngine/Core/BitwiseOperations.h"
 #include "SpehsEngine/Core/StringOperations.h"
 
@@ -104,7 +103,7 @@ namespace se
 	std::string toString(const float value, const int precision)
 	{
 #ifdef _DEBUG
-		if (precision > 6)	se::exceptions::unexpectedError("se::toString() precision too high! Maximum precision 6!");
+		if (precision > 6)	log::error("se::toString() precision too high! Maximum precision 6!");
 #endif
 		std::string str(std::to_string(value));
 		for (unsigned i = 0; i < str.size(); i++)
@@ -192,7 +191,7 @@ namespace se
 				const int byteToInt = std::atoi(currentByteString.c_str());
 				if (byteToInt < 0 || byteToInt > 255)
 				{//Invalid "byte"
-					se::exceptions::warning("getStringAsIPv4Address() failed! A byte value is too big (larger than 255)!");
+					log::warning("getStringAsIPv4Address() failed! A byte value is too big (larger than 255)!");
 					return 0;
 				}
 				address |= (unsigned char)byteToInt << (24 - 8 * byteIndex++);
@@ -204,7 +203,7 @@ namespace se
 			}
 			else
 			{
-				se::exceptions::warning("getStringAsIPv4Address() failed! Address contains invalid characters!");
+				log::warning("getStringAsIPv4Address() failed! Address contains invalid characters!");
 				return 0;
 			}
 		}
@@ -213,7 +212,7 @@ namespace se
 		const int byteToInt = std::atoi(currentByteString.c_str());
 		if (byteToInt < 0 || byteToInt > 255)
 		{//Invalid "byte"
-			se::exceptions::warning("getStringAsIPv4Address() failed! A byte value is too big (larger than 255)!");
+			log::warning("getStringAsIPv4Address() failed! A byte value is too big (larger than 255)!");
 			return 0;
 		}
 		address |= (unsigned char)byteToInt << (24 - 8 * byteIndex++);

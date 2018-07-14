@@ -1,6 +1,5 @@
 #include "stdafx.h"
 
-#include "SpehsEngine/Core/Exceptions.h"
 #include "SpehsEngine/Core/Vertex.h"
 
 

@@ -45,6 +45,7 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)GPIO.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Pin.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Manipulator.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)PrecompiledInclude.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)stdafx.h" />
   </ItemGroup>
 </Project>

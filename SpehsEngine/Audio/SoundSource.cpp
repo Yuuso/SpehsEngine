@@ -1,6 +1,5 @@
 #include "stdafx.h"
 
-#include "SpehsEngine/Core/Exceptions.h"
 #include "SpehsEngine/Core/Time.h"
 #include "SpehsEngine/Audio/SoundSource.h"
 #include "SpehsEngine/Audio/AudioManager.h"
@@ -130,7 +129,7 @@ namespace se
 							checkOpenALErrors(__FILE__, __LINE__);
 							break;
 						default:
-							exceptions::unexpectedError(__FUNCTION__": Invalid automation type!");
+							log::error(__FUNCTION__": Invalid automation type!");
 							break;
 						}
 						automationType = AutomationType::none;
@@ -149,7 +148,7 @@ namespace se
 			resetAutomation();
 			if (sound.second == 0 && !soundQueued())
 			{
-				se::exceptions::warning("Cannot play sound, no sound buffer!");
+				log::warning("Cannot play sound, no sound buffer!");
 				return;
 			}
 			if (!source)
@@ -176,7 +175,7 @@ namespace se
 			resetAutomation();
 			if (sound.second == 0 && !soundQueued())
 			{
-				se::exceptions::warning("Cannot play sound, no sound buffer!");
+				log::warning("Cannot play sound, no sound buffer!");
 				return;
 			}
 			if (!source)
@@ -212,7 +211,7 @@ namespace se
 			resetAutomation();
 			if (!source)
 			{
-				se::exceptions::warning("Cannot pause sound, no source!");
+				log::warning("Cannot pause sound, no source!");
 				return;
 			}
 
@@ -224,7 +223,7 @@ namespace se
 			resetAutomation();
 			if (!source)
 			{
-				se::exceptions::warning("Cannot pause sound, no source!");
+				log::warning("Cannot pause sound, no source!");
 				return;
 			}
 
@@ -242,7 +241,7 @@ namespace se
 			resetAutomation();
 			if (!source)
 			{
-				se::exceptions::warning("Cannot stop sound, no source!");
+				log::warning("Cannot stop sound, no source!");
 				return;
 			}
 
@@ -257,7 +256,7 @@ namespace se
 			resetAutomation();
 			if (!source)
 			{
-				se::exceptions::warning("Cannot stop sound, no source!");
+				log::warning("Cannot stop sound, no source!");
 				return;
 			}
 

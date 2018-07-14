@@ -180,7 +180,7 @@ namespace se
 			if (_str == string)
 				return;
 			if (_str.size() > 2048)
-				se::exceptions::unexpectedError("set string is suspiciously big?");
+				log::error("set string is suspiciously big?");
 
 			//Update line count
 			if (_str.size() == 0)
@@ -202,7 +202,7 @@ namespace se
 			if (length == string.size() && (length == 0 || memcmp(string.c_str(), _str, length) == 0))
 				return;
 			if (length > 2048)
-				se::exceptions::unexpectedError("set string is suspiciously big?");
+				log::error("set string is suspiciously big?");
 
 			//Update line count
 			if (length == 0)
@@ -375,7 +375,7 @@ namespace se
 				{//Increase current line width
 #ifdef _DEBUG
 					if (font->characters[string[i]].advance > 10000)
-						se::exceptions::warning("Character width might be invalid!");
+						log::warning("Character width might be invalid!");
 					else
 #endif
 						currentLineWidth += font->characters[string[i]].advance;
@@ -424,7 +424,7 @@ namespace se
 #ifdef _DEBUG
 					if (font->characters[string[i]].advance > 10000)
 					{
-						se::exceptions::warning("Character width might be invalid!");
+						log::warning("Character width might be invalid!");
 						currentLineWidth -= font->characters[string[i]].advance;//Reverse width
 					}
 #endif

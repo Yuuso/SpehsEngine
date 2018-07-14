@@ -1,4 +1,3 @@
 #pragma once
-#include "SpehsEngine/Audio/OpenALError.h"
-#include "SpehsEngine/Core/Log.h"
-#include "SpehsEngine/Core/Time.h"
+#include "SpehsEngine/Audio/PrecompiledInclude.h"
+#include "SpehsEngine/Core/PrecompiledInclude.h"

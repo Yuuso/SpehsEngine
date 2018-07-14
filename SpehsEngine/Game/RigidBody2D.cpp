@@ -5,7 +5,6 @@
 #include "SpehsEngine/Game/GameObject.h"
 #include "SpehsEngine/Game/Transform2D.h"
 #include "SpehsEngine/Game/Collider.h"
-#include "SpehsEngine/Core/Exceptions.h"
 #include "SpehsEngine/Core/Time.h"
 #include "SpehsEngine/Core/Geometry.h"
 #include "SpehsEngine/Rendering/Polygon.h"
@@ -73,10 +72,10 @@ namespace se
 	{
 		Transform2D* transform = ownerObject->getComponent<Transform2D>();
 		if (!transform)
-			exceptions::fatalError("Object doesn't have transform component!");
+			log::error("Object doesn't have transform component!");
 		Collider* collider = ownerObject->getComponent<Collider>();
 		if (!collider)
-			exceptions::fatalError("Object doesn't have sprite component!");
+			log::error("Object doesn't have sprite component!");
 
 		//Update from sprite (this really needs to be done only when the collider has changed)
 		mass = collider->collisionPolygon->getArea() * DEFAULT_MASS_MULTIPLIER;
@@ -247,11 +246,11 @@ namespace se
 	{
 		float sum1 = 0.0f, sum2 = 0.0f;
 		Collider* collider = ownerObject->getComponent<Collider>();
-		std::vector<Vertex> vArray = collider->collisionPolygon->vertexArray;
+		std::vector<Vertex> vArray = collider->collisionPolygon->getVertexArray();
 		for (unsigned i = 0; i < vArray.size(); i++)
 		{
-			vArray[i].position.x *= collider->collisionPolygon->width;
-			vArray[i].position.y *= collider->collisionPolygon->height;
+			vArray[i].position.x *= collider->collisionPolygon->getWidth();
+			vArray[i].position.y *= collider->collisionPolygon->getHeight();
 		}
 
 		//For regular convex polygons:

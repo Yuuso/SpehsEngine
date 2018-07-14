@@ -1,9 +1,4 @@
 #pragma once
-#include <SpehsEngine/Core/Log.h>
-#include <SpehsEngine/Core/Color.h>
-#include <SpehsEngine/Core/Vector.h>
-#include <SpehsEngine/Core/Time.h>
-#include "Primitive.h"
-#include "BatchManager.h"
-#include "BatchManager3D.h"
-#include "Window.h"
+#include <SpehsEngine/Core/PrecompiledInclude.h>
+#include <SpehsEngine/Math/PrecompiledInclude.h>
+#include <SpehsEngine/Rendering/PrecompiledInclude.h>

@@ -2,7 +2,6 @@
 
 #include "SpehsEngine/Core/Shapes.h"
 #include "SpehsEngine/Core/Vertex.h"
-#include "SpehsEngine/Core/Exceptions.h"
 
 #include <math.h>
 
@@ -34,7 +33,7 @@ namespace se
 			vertexArray[3].position = se::vec2(0.0f, 1.0f);
 			break;
 		default:
-			exceptions::fatalError("Invalid shape!");
+			log::error("Invalid shape!");
 			break;
 		}
 		return vertexArray;

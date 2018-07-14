@@ -204,7 +204,7 @@ namespace se
 		bool PrimitiveBatch::isEnoughRoom(const size_t _numVertices)
 		{
 			if (_numVertices > DEFAULT_MAX_BATCH_SIZE)
-				exceptions::fatalError("The number of vertices in a primitive exceeds the max amount allowed in the batch!");
+				log::error("The number of vertices in a primitive exceeds the max amount allowed in the batch!");
 			return (vertices.size() + _numVertices) <= DEFAULT_MAX_BATCH_SIZE;
 		}
 
@@ -269,7 +269,7 @@ namespace se
 			switch (drawMode)
 			{
 			case DrawMode::UNDEFINED:
-				exceptions::fatalError(std::to_string((unsigned int)drawMode) + " - Batch's DrawMode is UNDEFINED!");
+				log::error(std::to_string((unsigned int)drawMode) + " - Batch's DrawMode is UNDEFINED!");
 				break;
 
 			case DrawMode::POINT:
@@ -329,7 +329,7 @@ namespace se
 				break;
 
 			default:
-				exceptions::fatalError(std::to_string((unsigned int)drawMode) + " - Draw mode is either undefined or is not supported by the engine at the moment!");
+				log::error(std::to_string((unsigned int)drawMode) + " - Draw mode is either undefined or is not supported by the engine at the moment!");
 				break;
 			}
 		}
@@ -445,7 +445,7 @@ namespace se
 		bool TextBatch::isEnoughRoom(const size_t _numVertices)
 		{
 			if (_numVertices > DEFAULT_MAX_BATCH_SIZE)
-				exceptions::fatalError("The number of vertices in the text exceeds the max amount allowed in the batch! Vertices: " + std::to_string(_numVertices));
+				log::error("The number of vertices in the text exceeds the max amount allowed in the batch! Vertices: " + std::to_string(_numVertices));
 			return (vertices.size() + _numVertices) <= DEFAULT_MAX_BATCH_SIZE;
 		}
 

@@ -2,7 +2,6 @@
 
 #include "SpehsEngine/Rendering/ModelManager.h"
 #include "SpehsEngine/Rendering/Mesh.h"
-#include "SpehsEngine/Core/Exceptions.h"
 
 //#include <assimp/Importer.hpp>
 //#include <assimp/scene.h>
@@ -185,7 +184,7 @@ namespace se
 			}
 			else
 			{
-				exceptions::fatalError("The models file type is not supported!");
+				log::error("The models file type is not supported!");
 			}
 		}
 		void ModelManager::loadOBJ(const std::string& _filepath, Mesh* _mesh)
@@ -213,7 +212,7 @@ namespace se
 			}
 			else
 			{
-				exceptions::unexpectedError("Couldn't find model data: " + std::to_string(_hash));
+				log::error("Couldn't find model data: " + std::to_string(_hash));
 				return;
 			}
 		}
@@ -224,7 +223,7 @@ namespace se
 			std::ifstream file(_filepath, std::ios::in);
 			if (!file.is_open())
 			{
-				exceptions::unexpectedError("Failed to open OBJ file: " + _filepath);
+				log::error("Failed to open OBJ file: " + _filepath);
 				return;
 			}
 
@@ -239,7 +238,7 @@ namespace se
 			auto it = modelDataMap.find(hash);
 			if (it == modelDataMap.end())
 			{
-				se::exceptions::unexpectedError("Couldn't find model data: " + _filepath);
+				log::error("Couldn't find model data: " + _filepath);
 				return;
 			}
 			delete it->second;
@@ -251,7 +250,7 @@ namespace se
 			auto it = modelDataMap.find(_hash);
 			if (it == modelDataMap.end())
 			{
-				se::exceptions::unexpectedError("Couldn't find model data: " + std::to_string(_hash));
+				log::error("Couldn't find model data: " + std::to_string(_hash));
 				return;
 			}
 			delete it->second;

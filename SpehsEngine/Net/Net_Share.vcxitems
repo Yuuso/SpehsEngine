@@ -39,6 +39,7 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)Net.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)PacketMessage.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Port.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)PrecompiledInclude.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)SocketTCP.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)stdafx.h" />
   </ItemGroup>

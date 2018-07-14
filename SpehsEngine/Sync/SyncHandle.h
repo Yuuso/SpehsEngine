@@ -56,7 +56,7 @@ namespace se
 							break;
 						}
 					}
-					SPEHS_ASSERT(other.entry == nullptr && entry != nullptr);
+					se_assert(other.entry == nullptr && entry != nullptr);
 				}
 			}
 
@@ -91,7 +91,7 @@ namespace se
 							break;
 						}
 					}
-					SPEHS_ASSERT(entry);
+					se_assert(entry);
 				}
 			}
 
@@ -110,7 +110,7 @@ namespace se
 							break;
 						}
 					}
-					SPEHS_ASSERT(entry == nullptr);
+					se_assert(entry == nullptr);
 				}
 			}
 

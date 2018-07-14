@@ -3,7 +3,6 @@
 #include <iostream>
 #include <atomic>
 #include "SpehsEngine/Math/Triangulation.h"
-#include "SpehsEngine/Core/Exceptions.h"
 #include "SpehsEngine/Core/Geometry.h"
 #define PERFORM_TRIANGULATION_VALIDITY_CHECKS
 
@@ -59,7 +58,7 @@ namespace se
 		{
 #ifdef PERFORM_TRIANGULATION_VALIDITY_CHECKS
 			if (parent->children[0] != nullptr && parent->children[1] != nullptr && parent->children[2] != nullptr)
-				se::exceptions::unexpectedError("Parent already has 3 children!");
+				log::error("Parent already has 3 children!");
 #endif
 			for (unsigned i = 0; i < 3; i++)
 			{
@@ -100,7 +99,7 @@ namespace se
 					}
 				}
 				if (!legit)
-					se::exceptions::unexpectedError("Neighbours not double linked!");
+					log::error("Neighbours not double linked!");
 
 				//Check common corners
 				int numCommonCorners = 0;
@@ -116,7 +115,7 @@ namespace se
 					}
 				}
 				if (numCommonCorners != 2)
-					se::exceptions::unexpectedError("Neighbours do not have 2 common vertices!");
+					log::error("Neighbours do not have 2 common vertices!");
 
 				//Check my corners
 				legit = true;
@@ -132,7 +131,7 @@ namespace se
 					}
 				}
 				if (!legit)
-					se::exceptions::unexpectedError("Triangle contains 2 or more of the same vertex!");
+					log::error("Triangle contains 2 or more of the same vertex!");
 			}
 		}
 #endif
@@ -153,7 +152,7 @@ namespace se
 				}
 #ifdef PERFORM_TRIANGULATION_VALIDITY_CHECKS
 				if (neighbourPointIndex < 0)
-					se::exceptions::unexpectedError("Triangle legalization failed!");
+					log::error("Triangle legalization failed!");
 #endif
 
 				//Determine begin and end arcs
@@ -193,7 +192,7 @@ namespace se
 						}
 #ifdef PERFORM_TRIANGULATION_VALIDITY_CHECKS
 						if (!found)
-							se::exceptions::unexpectedError("Neighbour reference switching failed!");
+							log::error("Neighbour reference switching failed!");
 #endif
 					}
 					other.neighbour(neighbourPointIndex - 1) = neighbour(n + 1);
@@ -213,7 +212,7 @@ namespace se
 						}
 #ifdef PERFORM_TRIANGULATION_VALIDITY_CHECKS
 						if (!found)
-							se::exceptions::unexpectedError("Neighbour reference switching failed!");
+							log::error("Neighbour reference switching failed!");
 #endif
 					}
 					neighbour(n) = myNewNeighbour;
@@ -237,7 +236,7 @@ namespace se
 	Triangulation::Triangulation(std::vector<se::vec2>& points)
 	{
 		if (points.size() < 3)
-			se::exceptions::fatalError("Triangulation must have at least 3 input points!");
+			log::error("Triangulation must have at least 3 input points!");
 
 		std::sort(points.begin(), points.end(), [](const se::vec2 a, const se::vec2 b) -> bool
 		{
@@ -290,7 +289,7 @@ namespace se
 						}
 #ifdef PERFORM_TRIANGULATION_VALIDITY_CHECKS
 						if (!found)
-							se::exceptions::unexpectedError("Could not assign inner triangle!");
+							log::error("Could not assign inner triangle!");
 #endif
 
 						high->innerTriangle = triangles.back();
@@ -328,7 +327,7 @@ namespace se
 							}
 						}
 						if (!found)
-							se::exceptions::unexpectedError("Could not assign inner triangle!");
+							log::error("Could not assign inner triangle!");
 						//Link hull outline to triangle
 						low->innerTriangle = triangles.back();
 						high->innerTriangle = triangles.back();

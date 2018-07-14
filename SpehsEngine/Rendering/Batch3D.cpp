@@ -7,7 +7,6 @@
 #include "SpehsEngine/Rendering/OpenGLError.h"
 #include "SpehsEngine/Rendering/Camera3D.h"
 #include "SpehsEngine/Rendering/BatchRenderResults.h"
-#include "SpehsEngine/Core/Exceptions.h"
 
 #include <GL/glew.h>
 #include <algorithm>
@@ -84,7 +83,7 @@ namespace se
 		bool MeshBatch::checkSize(const size_t _numVertices, const size_t _numIndices) const
 		{
 			if (_numVertices >= MAX_VERTICES || _numIndices >= MAX_INDICES)
-				exceptions::fatalError("Max batch size exceeded!");
+				log::error("Max batch size exceeded!");
 
 			const bool verticesOk = (vertices.size() + _numVertices) <= MAX_VERTICES;
 			const bool indicesOk = (indices.size() + _numIndices) <= MAX_INDICES;
@@ -170,7 +169,7 @@ namespace se
 		std::pair<size_t, size_t> MeshBatch::push(const Mesh& _mesh)
 		{
 			if (_mesh.worldVertexArray.size() >= MAX_VERTICES || _mesh.elementArray.size() >= MAX_INDICES)
-				exceptions::fatalError("Max batch size exceeded!");
+				log::error("Max batch size exceeded!");
 
 			const std::pair<size_t, size_t> objectIndices = std::make_pair(vertices.size(), indices.size());
 			GLushort firstElement = (GLushort)vertices.size();

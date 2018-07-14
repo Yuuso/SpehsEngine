@@ -13,14 +13,3 @@ namespace se
 		void error(const char* message);
 	}
 }
-
-//Spehs assert
-#ifdef NDEBUG
-//Generate no code!
-#define SPEHS_ASSERT(_file) ((void)0)
-#else
-#ifndef _DEBUG
-#error Neither _DEBUG nor NDEBUG is defined!
-#endif
-#define SPEHS_ASSERT(expression) { if (!(expression)) se::log::error("SPEHS_ASSERT failed.\nExpression: " #expression "\nFILE: " __FILE__ "\nLINE: " + std::to_string(__LINE__)); }
-#endif

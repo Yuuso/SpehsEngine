@@ -1,3 +1,3 @@
 #pragma once
-#include <SpehsEngine/Core/Log.h>
-#include <SpehsEngine/Core/Time.h>
+#include <SpehsEngine/Core/PrecompiledInclude.h>
+#include <SpehsEngine/Math/PrecompiledInclude.h>

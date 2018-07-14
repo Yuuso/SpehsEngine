@@ -251,7 +251,7 @@ namespace se
 				//Lines
 				if (updateLines)
 				{
-					SPEHS_ASSERT(lines.size() > 0);
+					se_assert(lines.size() > 0);
 
 					//Update positions
 					const size_t visibleLineCount = std::min(lines.size(), console.getLineCount() + (openState ? 1u : 0u));
@@ -396,7 +396,7 @@ namespace se
 		size_t ConsoleVisualizer::getInputLineIndex() const
 		{
 			std::lock_guard<std::recursive_mutex> lock(mutex);
-			SPEHS_ASSERT(lines.size() > 0);
+			se_assert(lines.size() > 0);
 			return lines.size() - 1;
 		}
 

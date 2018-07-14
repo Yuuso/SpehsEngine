@@ -1,5 +1,5 @@
 #include "stdafx.h"
-#include "SpehsEngine/Core/Exceptions.h"
+
 #include "SpehsEngine/Core/Time.h"
 #include "SpehsEngine/Audio/AudioEngine.h"
 #include "SpehsEngine/Audio/OpenALError.h"
@@ -112,13 +112,13 @@ namespace se
 			audioVar::device = alcOpenDevice(NULL);
 			if (!audioVar::device)
 			{
-				exceptions::fatalError("Opening OpenAL device failed!");
+				log::error("Opening OpenAL device failed!");
 			}
 
 			audioVar::context = alcCreateContext(audioVar::device, NULL);
 			if (!alcMakeContextCurrent(audioVar::context))
 			{
-				exceptions::fatalError("Failed to make OpenAL context current!");
+				log::error("Failed to make OpenAL context current!");
 			}
 
 			checkOpenALCError(audioVar::device, __FILE__, __LINE__);
@@ -213,7 +213,7 @@ namespace se
 			/*Notify user if creating absurdly large channels quantities*/
 #ifdef _DEBUG
 			if (_channelIndex > 10000)
-				se::exceptions::warning("Using over 10000 audio channels!");
+				log::warning("Using over 10000 audio channels!");
 #endif
 
 			/*Prevent channel gain from going below 0*/
@@ -238,7 +238,7 @@ namespace se
 			/*Notify user if creating absurdly large channels quantities*/
 #ifdef _DEBUG
 			if (_channelIndex > 10000)
-				se::exceptions::warning("Using over 10000 audio channels!");
+				log::warning("Using over 10000 audio channels!");
 #endif
 
 			if (_channelIndex < 0)
@@ -354,7 +354,7 @@ namespace se
 			}
 
 			//This should be quite rare
-			se::exceptions::warning("Could not find a free sound source object!");
+			log::warning("Could not find a free sound source object!");
 			return false;
 		}
 	}

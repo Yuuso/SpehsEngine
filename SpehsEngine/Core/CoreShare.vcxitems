@@ -20,7 +20,6 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)Console.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Core.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Endianness.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)Exceptions.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)FileStream.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Geometry.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Inifile.cpp" />
@@ -43,6 +42,7 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)WriteBuffer.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="$(MSBuildThisFileDirectory)Assert.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)BitwiseOperations.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)BufferBase.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Color.h" />
@@ -51,7 +51,6 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)ConsoleVariable.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Core.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Endianness.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)Exceptions.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)FileStream.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Geometry.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)HasMemberFunction.h" />
@@ -59,6 +58,7 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)Inivar.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Log.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)OS.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)PrecompiledInclude.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)RAIIVariableSetter.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)ReadBuffer.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)RNG.h" />

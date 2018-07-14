@@ -6,7 +6,6 @@
 #include "SpehsEngine/Rendering/Polygon.h"
 #include "SpehsEngine/Rendering/TextureManager.h"
 #include "SpehsEngine/Rendering/BatchManager.h"
-#include "SpehsEngine/Core/Exceptions.h"
 
 
 #define DEFAULT_SIZE 50.0f
@@ -35,7 +34,7 @@ namespace se
 	{
 		Transform2D* transform = ownerObject->getComponent<Transform2D>();
 		if (!transform)
-			exceptions::fatalError("Object doesn't have transform component!");
+			log::error("Object doesn't have transform component!");
 
 		sprite->setPosition(transform->getPosition());
 		sprite->setRotation(transform->getRotation());

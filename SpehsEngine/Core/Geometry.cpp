@@ -1,6 +1,5 @@
 #include "stdafx.h"
 
-#include "SpehsEngine/Core/Exceptions.h"
 #include "SpehsEngine/Core/Geometry.h"
 #include "SpehsEngine/Core/Vertex.h"
 #include "SpehsEngine/Core/Log.h"
@@ -68,7 +67,7 @@ namespace se
 
 	inline se::vec3 getRotation(const se::vec3& _a, const se::vec3& _b)
 	{
-		SPEHS_ASSERT(false && "Unimplemented engine function");
+		se_assert(false && "Unimplemented engine function");
 		//se::vec3 v = glm::cross(_a, _b);
 		//float c = glm::dot(_a, _b)/(glm::length(_a)*glm::length(_b));
 

@@ -140,6 +140,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Physics.h" />
+    <ClInclude Include="PrecompiledInclude.h" />
     <ClInclude Include="SATCollision.h" />
     <ClInclude Include="stdafx.h" />
   </ItemGroup>

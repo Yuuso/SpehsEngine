@@ -168,6 +168,7 @@
     <ClInclude Include="AudioEngine.h" />
     <ClInclude Include="AudioManager.h" />
     <ClInclude Include="OpenALError.h" />
+    <ClInclude Include="PrecompiledInclude.h" />
     <ClInclude Include="SoundSource.h" />
     <ClInclude Include="stdafx.h" />
   </ItemGroup>

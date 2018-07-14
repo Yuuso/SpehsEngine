@@ -158,6 +158,7 @@
   <ItemGroup>
     <ClInclude Include="Math.h" />
     <ClInclude Include="Mathematics.h" />
+    <ClInclude Include="PrecompiledInclude.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="Triangulation.h" />
   </ItemGroup>

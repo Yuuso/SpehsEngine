@@ -354,7 +354,7 @@ namespace se
 				shader.uniforms = new DefaultSkyBoxUniforms(shader.shader);
 				break;
 			default:
-				exceptions::fatalError("Default shader index out of reach!");
+				log::error("Default shader index out of reach!");
 				break;
 			}
 		}
@@ -380,7 +380,7 @@ namespace se
 		{
 			if (shaderPrograms.size() < _index + 1)
 			{
-				exceptions::fatalError("ShaderManager::getShader is trying to access a non-existing shader!");
+				log::error("ShaderManager::getShader is trying to access a non-existing shader!");
 			}
 			return *shaderPrograms[_index];
 		}
@@ -388,7 +388,7 @@ namespace se
 		{
 			if (shaderPrograms.size() < _index + 1)
 			{
-				exceptions::fatalError("ShaderManager::setUniforms is trying to access a non-existing shader!");
+				log::error("ShaderManager::setUniforms is trying to access a non-existing shader!");
 			}
 			shaderPrograms[_index]->uniforms->setUniforms();
 		}
@@ -396,7 +396,7 @@ namespace se
 		{
 			if (shaderPrograms.size() < _index + 1)
 			{
-				exceptions::fatalError("ShaderManager::use is trying to access a non-existing shader!");
+				log::error("ShaderManager::use is trying to access a non-existing shader!");
 			}
 			shaderPrograms[_index]->shader.use();
 		}
@@ -404,7 +404,7 @@ namespace se
 		{
 			if (shaderPrograms.size() < _index + 1)
 			{
-				exceptions::fatalError("ShaderManager::set2D is trying to access a non-existing shader!");
+				log::error("ShaderManager::set2D is trying to access a non-existing shader!");
 			}
 			shaderPrograms[_index]->shader.set2D();
 		}
@@ -412,7 +412,7 @@ namespace se
 		{
 			if (shaderPrograms.size() < _index + 1)
 			{
-				exceptions::fatalError("ShaderManager::set3D is trying to access a non-existing shader!");
+				log::error("ShaderManager::set3D is trying to access a non-existing shader!");
 			}
 			shaderPrograms[_index]->shader.set3D();
 		}
@@ -420,7 +420,7 @@ namespace se
 		{
 			if (shaderPrograms.size() < _index + 1)
 			{
-				exceptions::fatalError("ShaderManager::unuse is trying to access a non-existing shader!");
+				log::error("ShaderManager::unuse is trying to access a non-existing shader!");
 			}
 			shaderPrograms[_index]->shader.unuse();
 		}
@@ -453,7 +453,7 @@ namespace se
 				glActiveTexture(GL_TEXTURE5);
 				break;
 			default:
-				exceptions::fatalError("Incorrect texture index! (bind2DTexture)");
+				log::error("Incorrect texture index! (bind2DTexture)");
 				break;
 			}
 			glBindTexture(GL_TEXTURE_2D, _textureID);
@@ -483,7 +483,7 @@ namespace se
 				glActiveTexture(GL_TEXTURE5);
 				break;
 			default:
-				exceptions::fatalError("Incorrect texture index! (bindCubeMapTexture)");
+				log::error("Incorrect texture index! (bindCubeMapTexture)");
 				break;
 			}
 			glEnable(GL_TEXTURE_CUBE_MAP);

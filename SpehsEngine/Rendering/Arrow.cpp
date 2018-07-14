@@ -4,8 +4,6 @@
 #include "SpehsEngine/Rendering/Polygon.h"
 #include "SpehsEngine/Rendering/BatchManager.h"
 #include "SpehsEngine/Core/Geometry.h"
-#include "SpehsEngine/Core/Exceptions.h"
-
 
 namespace se
 {

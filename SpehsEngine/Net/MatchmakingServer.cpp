@@ -39,7 +39,7 @@ namespace se
 			}
 			else
 			{
-				SPEHS_ASSERT(acceptingClientCount == 1);
+				se_assert(acceptingClientCount == 1);
 			}
 		}
 

@@ -30,7 +30,7 @@ namespace se
 		{
 			readFromBuffer(*this, t);
 //				se::log::info(typeid(T).name());
-//				SPEHS_ASSERT(false && "To use 'ReadBuffer::read<T>(T&)' for a class type, the type T must have a 'void read(ReadBuffer&)' method!");
+//				se_assert(false && "To use 'ReadBuffer::read<T>(T&)' for a class type, the type T must have a 'void read(ReadBuffer&)' method!");
 //#ifdef _WIN32 // NOTE: cannot use static assert because of g++ and SFINAE
 //				static_assert(false, "Class type T doesn't have a mutable read method.");
 //#endif

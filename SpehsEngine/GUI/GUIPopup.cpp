@@ -1,6 +1,5 @@
 #include "stdafx.h"
 #include <algorithm>
-#include "SpehsEngine/Core/Exceptions.h"
 #include "SpehsEngine/Input/InputManager.h"
 #include "SpehsEngine/GUI/GUIPopup.h"
 #define BORDER_WIDTH 2
@@ -44,7 +43,7 @@ namespace se
 	{
 		GUIRectangleContainer::inputUpdate();
 		if (checkState(GUIRECT_REMOVE_BIT))
-			exceptions::warning("GUIRECT_REMOVE_BIT is enabled!\nPopup should be removed by a higher authority!");
+			log::warning("GUIRECT_REMOVE_BIT is enabled!\nPopup should be removed by a higher authority!");
 		else if (getInputManager().isKeyPressed(MOUSE_BUTTON_LEFT))
 		{
 			for (unsigned i = OPTION1_INDEX; i < elementsSize(); i++)

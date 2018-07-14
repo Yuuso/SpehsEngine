@@ -177,6 +177,7 @@
     <ClInclude Include="GUIStringEditor.h" />
     <ClInclude Include="GUIWindow.h" />
     <ClInclude Include="GUIWindowManager.h" />
+    <ClInclude Include="PrecompiledInclude.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="Textbox.h" />
     <ClInclude Include="ValueEditor.h" />
