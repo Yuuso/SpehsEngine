@@ -1,9 +1,9 @@
 #pragma once
 #include <string>
 #include <functional>
+#include <glm/vec2.hpp>
 #include "SpehsEngine/GUI/GUIContext.h"
 #include "SpehsEngine/Core/BitwiseOperations.h"
-#include "SpehsEngine/Core/Vector.h"
 #include "SpehsEngine/Core/Time.h"
 #include "SpehsEngine/Rendering/TextureManager.h"//Used to get TextureParameter...
 #include "SpehsEngine/Core/Color.h"
@@ -191,11 +191,11 @@ namespace se
 
 		////Managing element position
 		//Setting both coordinates
-		virtual void setPositionLocal(const se::ivec2& pos){ setXLocal(pos.x); setYLocal(pos.y); }
+		virtual void setPositionLocal(const glm::ivec2& pos){ setXLocal(pos.x); setYLocal(pos.y); }
 		virtual void setPositionLocal(const int x, const int y){ setXLocal(x); setYLocal(y); }
-		virtual void setPositionGlobal(const se::ivec2& pos){ setXLocal(getXLocal() + pos.x - getXGlobal()); setYLocal(getYLocal() + pos.y - getYGlobal()); }
+		virtual void setPositionGlobal(const glm::ivec2& pos){ setXLocal(getXLocal() + pos.x - getXGlobal()); setYLocal(getYLocal() + pos.y - getYGlobal()); }
 		virtual void setPositionGlobal(const int x, const int y){ setXLocal(getXLocal() + x - getXGlobal()); setYLocal(getYLocal() + y - getYGlobal()); }
-		virtual void translate(const se::ivec2& translation){ setXLocal(position.x + translation.x); setYLocal(position.y + translation.y); }
+		virtual void translate(const glm::ivec2& translation){ setXLocal(position.x + translation.x); setYLocal(position.y + translation.y); }
 		virtual void translate(const int x, const int y){ setXLocal(position.x + x); setYLocal(position.y + y); }
 		//Setting only one coordinate
 		virtual void incrementX(const int incrementation){ setXLocal(position.x + incrementation); }
@@ -203,28 +203,28 @@ namespace se
 		virtual void setXLocal(const int x){ position.x = x; disableBit(state, GUIRECT_POSITION_UPDATED_BIT); }
 		virtual void setYLocal(const int y){ position.y = y; disableBit(state, GUIRECT_POSITION_UPDATED_BIT); }
 		//Getting the GUIRectangle screen position (global)
-		se::ivec2 getPositionGlobal() const;
+		glm::ivec2 getPositionGlobal() const;
 		int getXGlobal() const;
 		int getYGlobal() const;
 		//Local position getters
-		se::ivec2 getPositionLocal() const { return position; }
+		glm::ivec2 getPositionLocal() const { return position; }
 		int getXLocal() const { return position.x; }
 		int getYLocal() const { return position.y; }
 
 		//Managing element scale
 		//Scale managament
 		virtual void setSize(const int width, const int height){ setWidth(width); setHeight(height); }
-		virtual void setSize(const se::ivec2& newSize){ setWidth(newSize.x); setHeight(newSize.y); }
+		virtual void setSize(const glm::ivec2& newSize){ setWidth(newSize.x); setHeight(newSize.y); }
 		virtual void setWidth(const int width);
 		virtual void setHeight(const int height);
 		//Getters
-		virtual se::ivec2 getSize(){ if (!(state & GUIRECT_SCALE_UPDATED_BIT)) updateScale(); return size; }
+		virtual glm::ivec2 getSize(){ if (!(state & GUIRECT_SCALE_UPDATED_BIT)) updateScale(); return size; }
 		virtual int getWidth(){ if (!(state & GUIRECT_SCALE_UPDATED_BIT)) updateScale(); return size.x; }
 		virtual int getHeight(){ if (!(state & GUIRECT_SCALE_UPDATED_BIT)) updateScale(); return size.y; }
-		virtual se::ivec2 getMinSize(){ if (!(state & GUIRECT_MIN_SIZE_UPDATED_BIT)) updateMinSize(); return minSize; }
+		virtual glm::ivec2 getMinSize(){ if (!(state & GUIRECT_MIN_SIZE_UPDATED_BIT)) updateMinSize(); return minSize; }
 		virtual int getMinWidth(){ if (!(state & GUIRECT_MIN_SIZE_UPDATED_BIT)) updateMinSize(); return minSize.x; }
 		virtual int getMinHeight(){ if (!(state & GUIRECT_MIN_SIZE_UPDATED_BIT)) updateMinSize(); return minSize.y; }
-		se::ivec2 getPreferredSize(){ return se::ivec2(getPreferredWidth(), getPreferredHeight()); }
+		glm::ivec2 getPreferredSize(){ return glm::ivec2(getPreferredWidth(), getPreferredHeight()); }
 		virtual int getPreferredWidth()/*Can implement custom preferred width*/{ return getMinWidth(); }
 		virtual int getPreferredHeight()/*Can implement custom preferred height*/{ return getMinHeight(); }
 
@@ -245,9 +245,9 @@ namespace se
 		virtual void onDisableInput(){ inputEnabled = false; }
 
 		Color color;///<Color values given to polygon. Ranges from 0.0f - 1.0f
-		se::ivec2 position;///<The position of the rectangle, originating from the lower left corner, given in screen coordinates. Relative to parent's position
-		se::ivec2 size;///<Current size of the rectangle
-		se::ivec2 minSize;///<The minimum size of the rectangle. Checked whenever rezising the polygon.
+		glm::ivec2 position;///<The position of the rectangle, originating from the lower left corner, given in screen coordinates. Relative to parent's position
+		glm::ivec2 size;///<Current size of the rectangle
+		glm::ivec2 minSize;///<The minimum size of the rectangle. Checked whenever rezising the polygon.
 		int borderWidth;//Border added after text/display texture per each side of the rectangle
 		GUIRectangleContainer* parent;///<Rectangle inherits position from parent chain. NOTE: parent must be a rectangle container
 		GUIRectangle* tooltip;

@@ -60,7 +60,7 @@ namespace se
 			joystickConnected();
 
 		mouseWheelDelta = 0;
-		static se::ivec2 prevMouseCoords;
+		static glm::ivec2 prevMouseCoords;
 		prevMouseCoords = mouseCoords;
 		latestKeyboardPress = 0;
 		latestMouseButtonPress = 0;
@@ -105,7 +105,7 @@ namespace se
 		}
 
 		//Update mouse movement
-		mouseMovement = mouseCoords - prevMouseCoords;
+		mouseMovement = mouseCoords - glm::vec2(prevMouseCoords.x, prevMouseCoords.y);
 
 		if (mouseLocked)
 		{
@@ -196,7 +196,7 @@ namespace se
 		return true;
 	}
 
-	bool InputManager::mouseCollision(const se::vec4& AABB) const
+	bool InputManager::mouseCollision(const glm::vec4& AABB) const
 	{
 		return mouseCoords.x >= AABB.x &&
 			mouseCoords.x <= AABB.x + AABB.z &&
@@ -204,7 +204,7 @@ namespace se
 			mouseCoords.y <= AABB.y + AABB.w;
 	}
 
-	bool InputManager::mouseCollision(const se::vec2& AABBMin, const se::vec2& AABBMax) const
+	bool InputManager::mouseCollision(const glm::vec2& AABBMin, const glm::vec2& AABBMax) const
 	{
 		return mouseCoords.x >= AABBMin.x &&
 			mouseCoords.x <= AABBMax.x &&

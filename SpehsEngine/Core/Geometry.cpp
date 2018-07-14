@@ -14,32 +14,32 @@
 
 namespace se
 {
-	inline float magnitude(const se::vec2& vec)
+	inline float magnitude(const glm::vec2& vec)
 	{
 		return sqrt(vec.x*vec.x + vec.y*vec.y);
 	}
 
-	inline float distance(const se::vec2& origin, const se::vec2& destination)
+	inline float distance(const glm::vec2& origin, const glm::vec2& destination)
 	{
 		return magnitude(origin - destination);
 	}
 
-	inline float getAngle(const se::vec2& origin, const se::vec2& destination)
+	inline float getAngle(const glm::vec2& origin, const glm::vec2& destination)
 	{
-		se::vec2 angle = destination - origin;
+		glm::vec2 angle = destination - origin;
 		float pointDirection = atan2(angle.y, angle.x);
 		if (angle.y < 0)
 			pointDirection += TWO_PI;
 		return pointDirection;
 	}
 
-	inline float getAcuteAngle(const se::vec2& origin, const se::vec2& destination)
+	inline float getAcuteAngle(const glm::vec2& origin, const glm::vec2& destination)
 	{
 		//TODO?
 		return NULL;
 	}
 
-	inline float getAngle(const se::vec2& destination)
+	inline float getAngle(const glm::vec2& destination)
 	{
 		float pointDirection = atan2(destination.y, destination.x);
 		if (destination.y < 0)
@@ -65,17 +65,17 @@ namespace se
 		return false;
 	}
 
-	inline se::vec3 getRotation(const se::vec3& _a, const se::vec3& _b)
+	inline glm::vec3 getRotation(const glm::vec3& _a, const glm::vec3& _b)
 	{
 		se_assert(false && "Unimplemented engine function");
-		//se::vec3 v = glm::cross(_a, _b);
+		//glm::vec3 v = glm::cross(_a, _b);
 		//float c = glm::dot(_a, _b)/(glm::length(_a)*glm::length(_b));
 
 		//return glm::eulerAngles(glm::angleAxis(c, v));
-		return se::vec3::zero;
+		return glm::vec3();
 	}
 
-	inline void rotateAroundAxis(se::vec2& point, const se::vec2& axis, float rotation)
+	inline void rotateAroundAxis(glm::vec2& point, const glm::vec2& axis, float rotation)
 	{//Translates around the point
 		float dx = point.x - axis.x;
 		float dy = point.y - axis.y;
@@ -83,7 +83,7 @@ namespace se
 		point.y = axis.y + dx*sin(rotation) + dy*cos(rotation);
 	}
 
-	inline void rotateAroundAxis(se::vec2& point, const float axisX, const float axisY, float rotation)
+	inline void rotateAroundAxis(glm::vec2& point, const float axisX, const float axisY, float rotation)
 	{//Translates around the point
 		float dx = point.x - axisX;
 		float dy = point.y - axisY;
@@ -91,7 +91,7 @@ namespace se
 		point.y = axisY + dx*sin(rotation) + dy*cos(rotation);
 	}
 
-	inline void rotateAroundOrigin(se::vec2& point, float rotation)
+	inline void rotateAroundOrigin(glm::vec2& point, float rotation)
 	{//Translates around origin
 		float dx = point.x;
 		float dy = point.y;
@@ -99,7 +99,7 @@ namespace se
 		point.y = dx*sin(rotation) + dy*cos(rotation);
 	}
 
-	inline float getArea(se::vec2* cusps, const size_t numCusps)
+	inline float getArea(glm::vec2* cusps, const size_t numCusps)
 	{
 		if (numCusps < 3)
 			return 0.000000001f;
@@ -113,7 +113,7 @@ namespace se
 		return std::max(std::abs(area * 0.5f), 0.0001f);
 	}
 
-	inline float getRadius(se::vec2* cusps, const size_t numCusps)
+	inline float getRadius(glm::vec2* cusps, const size_t numCusps)
 	{
 		if (numCusps == 0)
 			return 0.0f;
@@ -126,48 +126,48 @@ namespace se
 		return max;
 	}
 
-	inline se::vec2 getCenter(se::Vertex* cusps, const size_t numCusps)
+	inline glm::vec2 getCenter(se::Vertex* cusps, const size_t numCusps)
 	{
-		se::vec2 result(0.0f, 0.0f);
+		glm::vec2 result(0.0f, 0.0f);
 		for (size_t i = 0; i < numCusps; i++)
 		{
-			result += se::vec2(cusps[i].position.x, cusps[i].position.y);
+			result += glm::vec2(cusps[i].position.x, cusps[i].position.y);
 		}
 		return result / (float)numCusps;
 	}
 
-	inline se::vec2 getCenter(se::vec2* cusps, const size_t numCusps)
+	inline glm::vec2 getCenter(glm::vec2* cusps, const size_t numCusps)
 	{
-		se::vec2 result(0.0f, 0.0f);
+		glm::vec2 result(0.0f, 0.0f);
 		for (size_t i = 0; i < numCusps; i++)
 		{
-			result += se::vec2(cusps[i].x, cusps[i].y);
+			result += glm::vec2(cusps[i].x, cusps[i].y);
 		}
 		return result / (float)numCusps;
 	}
 
-	inline float cross2(const se::vec2& _vec1, const se::vec2& _vec2)
+	inline float cross2(const glm::vec2& _vec1, const glm::vec2& _vec2)
 	{
 		return _vec1.x * _vec2.y - _vec1.y * _vec2.x;
 	}
 
-	inline se::vec2 cross2(const float& _scalar, const se::vec2& _vec)
+	inline glm::vec2 cross2(const float& _scalar, const glm::vec2& _vec)
 	{
-		return se::vec2(_scalar * _vec.y, -_scalar * _vec.x);
+		return glm::vec2(_scalar * _vec.y, -_scalar * _vec.x);
 	}
 
-	inline se::vec2 cross2(const se::vec2& _vec, const float& _scalar)
+	inline glm::vec2 cross2(const glm::vec2& _vec, const float& _scalar)
 	{
-		return se::vec2(-_scalar * _vec.y, _scalar * _vec.x);
+		return glm::vec2(-_scalar * _vec.y, _scalar * _vec.x);
 	}
 
-	float pointToLineDistance(const se::vec2 &_begin, const se::vec2 &_end, const se::vec2 &_point)
+	float pointToLineDistance(const glm::vec2 &_begin, const glm::vec2 &_end, const glm::vec2 &_point)
 	{
 		float normalLength = sqrtf((_end.x - _begin.x) * (_end.x - _begin.x) + (_end.y - _begin.y) * (_end.y - _begin.y));
 		return abs((_point.x - _begin.x) * (_end.y - _begin.y) - (_point.y - _begin.y) * (_end.x - _begin.x)) / normalLength;
 	}
 
-	se::vec2* generateCusps(size_t& numCusps, int shape, float width, float height)
+	glm::vec2* generateCusps(size_t& numCusps, int shape, float width, float height)
 	{
 		if (!shape)
 		{
@@ -178,7 +178,7 @@ namespace se
 		{//Isosceles shape
 
 			//Generate number of cusps desired
-			se::vec2* cusps = new se::vec2[shape];
+			glm::vec2* cusps = new glm::vec2[shape];
 
 			//firstPosition adjusts initial the rotation for even numbered polygons
 			float firstPosition;
@@ -188,7 +188,7 @@ namespace se
 				firstPosition = 0;
 			else
 				firstPosition = (TWO_PI / shape) / 2.0f;
-			cusps[0] = se::vec2(cos(firstPosition), sin(firstPosition));
+			cusps[0] = glm::vec2(cos(firstPosition), sin(firstPosition));
 
 			//Take record of min/max cusp values so that it can be streched to match the desired width/height
 			float	minX = cusps[0].x,
@@ -198,7 +198,7 @@ namespace se
 			for (int i = 1; i < shape; i++)
 			{
 				//Set position
-				cusps[i] = se::vec2(
+				cusps[i] = glm::vec2(
 					cos(firstPosition - i * (TWO_PI / shape)),
 					sin(firstPosition - i * (TWO_PI / shape)));
 
@@ -239,16 +239,16 @@ namespace se
 		}
 	}
 
-	float getTriangleArea(const se::vec2& v0, const se::vec2& v1, const se::vec2& v2)
+	float getTriangleArea(const glm::vec2& v0, const glm::vec2& v1, const glm::vec2& v2)
 	{
 		return abs(((v1.x - v0.x) * (v2.y - v0.y) - (v2.x - v0.x) * (v1.y - v0.y)) / 2.0f);
 	}
 
-	se::vec2 getTriangleCircumcircleCenter(const se::vec2& A, const se::vec2& B, const se::vec2& C)
+	glm::vec2 getTriangleCircumcircleCenter(const glm::vec2& A, const glm::vec2& B, const glm::vec2& C)
 	{/* https://www.easycalculation.com/analytical/circumcenter-triangle.php */
-		const se::vec2 midAB = (A + B) * 0.5f;
-		const se::vec2 midBC = (B + C) * 0.5f;
-		//? const se::vec2 midCA = (C + A) * 0.5f;
+		const glm::vec2 midAB = (A + B) * 0.5f;
+		const glm::vec2 midBC = (B + C) * 0.5f;
+		//? const glm::vec2 midCA = (C + A) * 0.5f;
 		const float slopeAB = (B.y - A.y) / (B.x - A.x);
 		const float slopeBC = (C.y - B.y) / (C.x - B.x);
 		const float slopeCA = (A.y - C.y) / (A.x - C.x);
@@ -256,7 +256,7 @@ namespace se
 		const float perpendicularBisectorSlopeBC = -1.0f / slopeBC;
 		//? const float perpendicularBisectorSlopeCA = -1.0f / slopeCA;
 
-		se::vec2 center;
+		glm::vec2 center;
 		center.x = (-perpendicularBisectorSlopeAB * midAB.x + midAB.y + perpendicularBisectorSlopeBC * midBC.x - midBC.y) / (perpendicularBisectorSlopeBC - perpendicularBisectorSlopeAB);
 		center.y = perpendicularBisectorSlopeBC * center.x - perpendicularBisectorSlopeBC * midBC.x + midBC.y;
 		return center;

@@ -123,10 +123,10 @@ namespace se
 					GLfloat w = std::round(ch.size.x * scale);
 					GLfloat h = std::round(ch.size.y * scale);
 
-					vertexArray.push_back(se::Vertex(se::vec2(xpos, ypos + h), color, se::UV(0.0f, 0.0f)));
-					vertexArray.push_back(se::Vertex(se::vec2(xpos, ypos), color, se::UV(0.0f, 1.0f)));
-					vertexArray.push_back(se::Vertex(se::vec2(xpos + w, ypos), color, se::UV(1.0f, 1.0f)));
-					vertexArray.push_back(se::Vertex(se::vec2(xpos + w, ypos + h), color, se::UV(1.0f, 0.0f)));
+					vertexArray.push_back(Vertex(glm::vec2(xpos, ypos + h), color, UV(0.0f, 0.0f)));
+					vertexArray.push_back(Vertex(glm::vec2(xpos, ypos), color, UV(0.0f, 1.0f)));
+					vertexArray.push_back(Vertex(glm::vec2(xpos + w, ypos), color, UV(1.0f, 1.0f)));
+					vertexArray.push_back(Vertex(glm::vec2(xpos + w, ypos + h), color, UV(1.0f, 0.0f)));
 
 					textureIDs.push_back(ch.textureID);
 
@@ -247,7 +247,7 @@ namespace se
 			needTextUpdate = true;
 		}
 
-		void Text::setPosition(const se::vec2& _vec)
+		void Text::setPosition(const glm::vec2& _vec)
 		{
 			if (position.x == _vec.x && position.y == _vec.y)
 				return;
@@ -269,14 +269,14 @@ namespace se
 			planeDepth = _depth;
 		}
 
-		void Text::translate(const se::vec2& _vec)
+		void Text::translate(const glm::vec2& _vec)
 		{
 			position.x += _vec.x;
 			position.y += _vec.y;
 			needPositionUpdate = true;
 		}
 
-		void Text::setColor(const se::Color& colorParam)
+		void Text::setColor(const Color& colorParam)
 		{
 			if (color == colorParam)
 				return;

@@ -2,8 +2,7 @@
 
 #include "SpehsEngine/Core/Color.h"
 #include "SpehsEngine/Rendering/Depth.h"
-#include "SpehsEngine/Core/Vector.h"
-
+#include <glm/vec2.hpp>
 
 namespace se
 {
@@ -17,13 +16,13 @@ namespace se
 		{
 		public:
 			Arrow(BatchManager& batchManager, const int16_t planeDepth = 0);
-			Arrow(BatchManager& batchManager, const se::vec2& _startPoint, const se::vec2& _endPoint, const int16_t planeDepth = 0);
+			Arrow(BatchManager& batchManager, const glm::vec2& _startPoint, const glm::vec2& _endPoint, const int16_t planeDepth = 0);
 			~Arrow();
 
-			void setPosition(const se::vec2& _startPoint, const se::vec2& _endPoint);
+			void setPosition(const glm::vec2& _startPoint, const glm::vec2& _endPoint);
 			void setLineThickness(const float _thickness);
 			void setArrowPointerSize(const float _pointerWidth, const float _pointerHeight);
-			void setArrowPointerSize(const se::vec2& _ref);
+			void setArrowPointerSize(const glm::vec2& _ref);
 			void setColor(const se::Color& _color) override;
 			void setAlpha(const float _alpha) override;
 			void setRenderState(const bool _value);

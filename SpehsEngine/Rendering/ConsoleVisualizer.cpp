@@ -259,7 +259,7 @@ namespace se
 					for (size_t i = 0; i < lines.size(); i++)
 					{
 						y -= (float)lines[i]->getFontHeight();
-						lines[i]->setPosition(se::vec2(CONSOLE_BORDER, CONSOLE_BORDER + (float)y));
+						lines[i]->setPosition(glm::vec2(CONSOLE_BORDER, CONSOLE_BORDER + (float)y));
 					}
 
 					//Update strings
@@ -320,7 +320,7 @@ namespace se
 
 				//Status text
 				statsText.setString("FPS: " + std::to_string(int(std::round(1.0f / averageLapTime.asSeconds()))) + "\n" + customDebugText);
-				statsText.setPosition(se::vec2(CONSOLE_BORDER, (float)batchManager.window.getHeight() - statsText.getTextHeight() - CONSOLE_BORDER));
+				statsText.setPosition(glm::vec2(CONSOLE_BORDER, (float)batchManager.window.getHeight() - statsText.getTextHeight() - CONSOLE_BORDER));
 			}
 		}
 
@@ -409,7 +409,7 @@ namespace se
 		void ConsoleVisualizer::updateCarotPosition()
 		{
 			std::lock_guard<std::recursive_mutex> lock(mutex);
-			carotText.setPosition(lines.back()->getPosition() + vec2(std::max(0.0f, lines.back()->getTextWidth() - carotText.getTextWidth() / 2), 0.0f));
+			carotText.setPosition(lines.back()->getPosition() + glm::vec2(std::max(0.0f, lines.back()->getTextWidth() - carotText.getTextWidth() / 2), 0.0f));
 		}
 	}
 }

@@ -43,7 +43,14 @@ namespace se
 
 	}
 	
-	InputState::Pointer::Pointer(const ivec2 _position, const ivec2 _movement)
+	InputState::Pointer::Pointer()
+		: position(glm::ivec2())
+		, movement(glm::ivec2())
+	{
+
+	}
+
+	InputState::Pointer::Pointer(const glm::ivec2 _position, const glm::ivec2 _movement)
 		: position(_position)
 		, movement(_movement)
 	{
@@ -64,8 +71,6 @@ namespace se
 	InputState::InputState()
 		: textEntered("")
 		, fileDropped("")
-		, pointer(ivec2::zero, ivec2::zero)
-		, keys()
 	{
 	}
 

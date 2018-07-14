@@ -9,17 +9,17 @@ namespace se
 {
 	namespace rendering
 	{
-		static std::vector<se::vec2> pointerVertices = { se::vec2(-0.5f, 0.5f), se::vec2(-0.5f, -0.5f), se::vec2(0.5f, 0.0f) };
+		static std::vector<glm::vec2> pointerVertices = { glm::vec2(-0.5f, 0.5f), glm::vec2(-0.5f, -0.5f), glm::vec2(0.5f, 0.0f) };
 		Arrow::Arrow(BatchManager& batchManager, const int16_t planeDepth) : linePart(nullptr), polygonPart(nullptr), pointerWidth(1.0f), pointerHeight(1.0f), length(0.0f)
 		{
 			//Create needed primitive components
 			polygonPart = batchManager.createPolygon(pointerVertices, planeDepth, pointerWidth, pointerHeight);
 			polygonPart->setCameraMatrixState(false);
-			linePart = batchManager.createLine(se::vec2::zero, se::vec2::zero, planeDepth);
+			linePart = batchManager.createLine(planeDepth);
 			linePart->setCameraMatrixState(false);
 			linePart->setRenderState(false);//Length == 0
 		}
-		Arrow::Arrow(BatchManager& batchManager, const se::vec2& _startPoint, const se::vec2& _endPoint, const int16_t planeDepth) : Arrow(batchManager)
+		Arrow::Arrow(BatchManager& batchManager, const glm::vec2& _startPoint, const glm::vec2& _endPoint, const int16_t planeDepth) : Arrow(batchManager)
 		{
 			setPosition(_startPoint, _endPoint);
 		}
@@ -30,10 +30,10 @@ namespace se
 		}
 
 
-		void Arrow::setPosition(const se::vec2& _startPoint, const se::vec2& _endPoint)
+		void Arrow::setPosition(const glm::vec2& _startPoint, const glm::vec2& _endPoint)
 		{
 			float angle = atan2(_endPoint.y - _startPoint.y, _endPoint.x - _startPoint.x);
-			se::vec2 arrowVector(_endPoint - _startPoint);
+			glm::vec2 arrowVector(_endPoint - _startPoint);
 
 			//Arrow length changed
 			length = magnitude(arrowVector);
@@ -43,7 +43,7 @@ namespace se
 				linePart->setRenderState(polygonPart->getRenderState());
 
 			//End of line position
-			arrowVector -= se::vec2(cos(angle) * pointerHeight, sin(angle) * pointerHeight);
+			arrowVector -= glm::vec2(cos(angle) * pointerHeight, sin(angle) * pointerHeight);
 
 			//Primitive positioning
 			linePart->setPoints(_startPoint, _startPoint + arrowVector);
@@ -70,7 +70,7 @@ namespace se
 			else
 				linePart->setRenderState(polygonPart->getRenderState());
 		}
-		void Arrow::setArrowPointerSize(const se::vec2 &_ref)
+		void Arrow::setArrowPointerSize(const glm::vec2 &_ref)
 		{
 			pointerWidth = _ref.x;
 			pointerHeight = _ref.y;

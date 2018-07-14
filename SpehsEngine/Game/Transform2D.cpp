@@ -20,7 +20,7 @@ namespace se
 	}
 
 
-	se::vec2 Transform2D::getPosition()
+	glm::vec2 Transform2D::getPosition()
 	{
 		return position;
 	}
@@ -45,7 +45,7 @@ namespace se
 		return scale;
 	}
 	
-	se::vec2 Transform2D::getLastSetPosition()
+	glm::vec2 Transform2D::getLastSetPosition()
 	{
 		return lastSetPosition;
 	}
@@ -66,7 +66,7 @@ namespace se
 	}
 
 
-	void Transform2D::setPosition(se::vec2 _position)
+	void Transform2D::setPosition(glm::vec2 _position)
 	{
 #ifdef _DEBUG
 		if (_position != _position)

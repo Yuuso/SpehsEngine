@@ -18,11 +18,11 @@
 
 namespace se
 {
-	float projectForce(const se::vec2& _force, const se::vec2& _support)
+	float projectForce(const glm::vec2& _force, const glm::vec2& _support)
 	{
-		if (_force.dot(_support.getNormalized()) < 0.0f)
+		if (glm::dot(_force, glm::normalize(_support)) < 0.0f)
 		{
-			return abs(_force.dot(_support.getNormalized()));
+			return abs(glm::dot(_force, glm::normalize(_support)));
 		}
 		return 0.0f;
 	}
@@ -51,14 +51,14 @@ namespace se
 		momentOfInertia = 0.0f;
 		angularVelocity = 0.0f;
 		angularAcceleration = 0.0f;
-
-		position = se::vec2::zero;
-		centerOfMass = se::vec2::zero;
-		velocity = se::vec2::zero;
-		acceleration = se::vec2::zero;
+		
+		position = glm::vec2();
+		centerOfMass = glm::vec2();
+		velocity = glm::vec2();
+		acceleration = glm::vec2();
 
 		resultantTorque = 0.0f;
-		resultantForce = se::vec2::zero;
+		resultantForce = glm::vec2();
 
 		update(0);
 	}
@@ -92,7 +92,7 @@ namespace se
 		//Apply impulses
 		if (resultantImpulseForce.size() && !freezePosition)
 		{
-			se::vec2 resultForce = se::vec2::zero;
+			glm::vec2 resultForce;
 			for (size_t i = 0; i < resultantImpulseForce.size(); i++)
 				resultForce += resultantImpulseForce[i];
 			resultForce /= float(resultantImpulseForce.size());
@@ -130,31 +130,31 @@ namespace se
 		rotation = transform->getRotation();
 
 		//Reset forces
-		resultantForce = se::vec2::zero;
+		resultantForce = glm::vec2();
 		resultantTorque = 0.0f;
 		resultantImpulseForce.clear();
 		resultantImpulseTorque.clear();
 
 		//Apply drag
-		if (!velocity.isNull(NULL_EPSILON))
-			applyForce(-(velocity.getNormalized()) * drag);
+		if (!glm::isNull(velocity, NULL_EPSILON))
+			applyForce(-glm::normalize(velocity) * drag);
 		if (abs(angularVelocity) > NULL_EPSILON)
 			applyTorque(-(angularVelocity / abs(angularVelocity)) * angularDrag);
 	}
 
-	void RigidBody2D::applyForce(const se::vec2& _force)
+	void RigidBody2D::applyForce(const glm::vec2& _force)
 	{
 		applyForceAtPosition(_force, centerOfMass);
 	}
 
-	void RigidBody2D::applyForceAtPosition(const se::vec2& _force, const se::vec2& _position)
+	void RigidBody2D::applyForceAtPosition(const glm::vec2& _force, const glm::vec2& _position)
 	{
 		resultantForce += _force;
-		se::vec2 AtoB = se::vec2(_position - centerOfMass);
+		glm::vec2 AtoB = glm::vec2(_position - centerOfMass);
 		applyTorque(cross2(AtoB, _force));
 	}
 
-	void RigidBody2D::applyVelocityImpulse(const se::vec2& _impulse)
+	void RigidBody2D::applyVelocityImpulse(const glm::vec2& _impulse)
 	{
 		resultantImpulseForce.push_back(_impulse);
 	}
@@ -211,10 +211,10 @@ namespace se
 			elasticity = 0.0f;
 	}
 	
-	se::vec2 RigidBody2D::getVelocityAtPosition(const se::vec2& _position)
+	glm::vec2 RigidBody2D::getVelocityAtPosition(const glm::vec2& _position)
 	{
 		//Angular Velocity
-		se::vec2 result = _position - centerOfMass;
+		glm::vec2 result = _position - centerOfMass;
 		float x = result.x;
 		result.x = -result.y;
 		result.y = x;
@@ -258,23 +258,23 @@ namespace se
 		{
 			if (i < vArray.size() - 1)
 			{
-				sum1 += abs(toVec3(vArray[i + 1]).cross(toVec3(vArray[i])).getLength()) *
+				sum1 += abs(glm::length(glm::cross(toVec3(vArray[i + 1]), toVec3(vArray[i])))) *
 					(
-					toVec3(vArray[i]).dot(toVec3(vArray[i])) +
-					toVec3(vArray[i]).dot(toVec3(vArray[i + 1])) +
-					toVec3(vArray[i + 1]).dot(toVec3(vArray[i + 1]))
+					glm::dot(toVec3(vArray[i]), toVec3(vArray[i])) +
+					glm::dot(toVec3(vArray[i]), toVec3(vArray[i + 1])) +
+					glm::dot(toVec3(vArray[i + 1]), toVec3(vArray[i + 1]))
 					);
-				sum2 += abs(toVec3(vArray[i + 1]).cross(toVec3(vArray[i])).getLength());
+				sum2 += abs(glm::length(glm::cross(toVec3(vArray[i + 1]), toVec3(vArray[i]))));
 			}
 			else if (i == vArray.size() - 1)
 			{
-				sum1 += abs((toVec3(vArray[0]).cross(toVec3(vArray[i])).getLength())) *
+				sum1 += abs(glm::length(glm::cross(toVec3(vArray[0]), toVec3(vArray[i])))) *
 					(
-					toVec3(vArray[i]).dot(toVec3(vArray[i])) +
-					toVec3(vArray[i]).dot(toVec3(vArray[0])) +
-					toVec3(vArray[0]).dot(toVec3(vArray[0]))
+					glm::dot(toVec3(vArray[i]), toVec3(vArray[i])) +
+					glm::dot(toVec3(vArray[i]), toVec3(vArray[0])) +
+					glm::dot(toVec3(vArray[0]), toVec3(vArray[0]))
 					);
-				sum2 += abs(toVec3(vArray[0]).cross(toVec3(vArray[i])).getLength());
+				sum2 += abs(glm::length(glm::cross(toVec3(vArray[0]), toVec3(vArray[i]))));
 			}
 		}
 

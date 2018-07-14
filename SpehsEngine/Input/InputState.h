@@ -2,7 +2,7 @@
 #include <unordered_map>
 #include <crtdbg.h>//assert
 #include "SpehsEngine/Input/InputEnumerations.h"
-#include "SpehsEngine/Core/Vector.h"
+#include <glm/vec2.hpp>
 
 
 
@@ -87,9 +87,10 @@ namespace se
 		class Pointer
 		{
 		public:
-			Pointer(const ivec2 _position, const ivec2 _movement);
-			DerivedState<ivec2> position;
-			DerivedState<ivec2> movement;
+			Pointer();
+			Pointer(const glm::ivec2 _position, const glm::ivec2 _movement);
+			DerivedState<glm::ivec2> position;
+			DerivedState<glm::ivec2> movement;
 		};
 
 		class TextEntered : public DerivedState<std::string>

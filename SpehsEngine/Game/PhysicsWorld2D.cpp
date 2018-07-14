@@ -6,7 +6,6 @@
 #include "Transform2D.h"
 #include <SpehsEngine/Game/Sprite.h>
 #include <SpehsEngine/Core/Geometry.h>
-#include <SpehsEngine/Core/Vector.h>
 #include <SpehsEngine/Physics/SATCollision.h>
 #include <SpehsEngine/Rendering/Polygon.h>
 #include <SpehsEngine/Rendering/Line.h>
@@ -21,7 +20,7 @@
 
 namespace se
 {
-	PhysicsWorld2D::PhysicsWorld2D() : gravity(0.0f, -3.0f), useGravity(true)
+	PhysicsWorld2D::PhysicsWorld2D()
 	{
 	}
 	PhysicsWorld2D::~PhysicsWorld2D()
@@ -62,7 +61,7 @@ namespace se
 			//Apply gravity
 			if (useGravity)
 			{
-				if (!gravity.isNull(ZERO_EPSILON))
+				if (!glm::isNull(gravity, ZERO_EPSILON))
 				{
 					if (!bodies[cycle1]->isStatic && bodies[cycle1]->useGravity)
 						bodies[cycle1]->applyForce(gravity * bodies[cycle1]->getMass());
@@ -108,10 +107,10 @@ namespace se
 					{
 						for (unsigned i = 0; i < collisionResults.points.size(); i++)
 						{
-							se::vec2 body1VelocityBefore = bodies[cycle1]->getVelocityAtPosition(collisionResults.points[i].position);
-							se::vec2 body2VelocityBefore = bodies[cycle2]->getVelocityAtPosition(collisionResults.points[i].position);
-							se::vec2 relativeVelocity = (body1VelocityBefore - body2VelocityBefore);
-							float relativeNormalVelocity = relativeVelocity.dot(collisionResults.points[i].normal);
+							glm::vec2 body1VelocityBefore = bodies[cycle1]->getVelocityAtPosition(collisionResults.points[i].position);
+							glm::vec2 body2VelocityBefore = bodies[cycle2]->getVelocityAtPosition(collisionResults.points[i].position);
+							glm::vec2 relativeVelocity = (body1VelocityBefore - body2VelocityBefore);
+							float relativeNormalVelocity = glm::dot(relativeVelocity, collisionResults.points[i].normal);
 
 							//Resolve collisions
 							if (relativeNormalVelocity < -ZERO_EPSILON) //Point are colliding
@@ -126,28 +125,28 @@ namespace se
 								//Positional Correction
 								const float percentage = 0.25f;
 								const float slop = 0.04f;
-								se::vec2 correction = std::max(collisionResults.MTV.getLength() - slop, 0.0f) / (bodies[cycle1]->getInvMass() + bodies[cycle2]->getInvMass()) * percentage * collisionResults.points[i].normal;
+								glm::vec2 correction = std::max(glm::length(collisionResults.MTV) - slop, 0.0f) / (bodies[cycle1]->getInvMass() + bodies[cycle2]->getInvMass()) * percentage * collisionResults.points[i].normal;
 								if (!bodies[cycle1]->freezePosition && !bodies[cycle1]->isStatic)
 									bodies[cycle1]->ownerObject->getComponent<Transform2D>()->setPosition(bodies[cycle1]->ownerObject->getComponent<Transform2D>()->getPosition() + correction * bodies[cycle1]->getInvMass());
 								if (!bodies[cycle2]->freezePosition && !bodies[cycle2]->isStatic)
 									bodies[cycle2]->ownerObject->getComponent<Transform2D>()->setPosition(bodies[cycle2]->ownerObject->getComponent<Transform2D>()->getPosition() - correction * bodies[cycle2]->getInvMass());
 
 								//Impulses
-								se::vec2 body1VelocityAfter;
-								se::vec2 body2VelocityAfter;
+								glm::vec2 body1VelocityAfter;
+								glm::vec2 body2VelocityAfter;
 								float body1AngularVelocityAfter;
 								float body2AngularVelocityAfter;
-								se::vec2 body1LinearFrictionAfter;
-								se::vec2 body2LinearFrictionAfter;
+								glm::vec2 body1LinearFrictionAfter;
+								glm::vec2 body2LinearFrictionAfter;
 								float body1AngularFrictionAfter;
 								float body2AngularFrictionAfter;
 								
 								const float e = std::min(bodies[cycle1]->elasticity, bodies[cycle2]->elasticity);
 
-								se::vec2 rVecAP = se::vec2(-(collisionResults.points[i].position - bodies[cycle1]->centerOfMass).y, (collisionResults.points[i].position - bodies[cycle1]->centerOfMass).x);
-								se::vec2 rVecBP = se::vec2(-(collisionResults.points[i].position - bodies[cycle2]->centerOfMass).y, (collisionResults.points[i].position - bodies[cycle2]->centerOfMass).x);
-								se::vec2 tangent = se::vec2(-collisionResults.points[i].normal.y, collisionResults.points[i].normal.x);
-								if (tangent.dot(relativeVelocity) < 0.0f)
+								glm::vec2 rVecAP = glm::vec2(-(collisionResults.points[i].position - bodies[cycle1]->centerOfMass).y, (collisionResults.points[i].position - bodies[cycle1]->centerOfMass).x);
+								glm::vec2 rVecBP = glm::vec2(-(collisionResults.points[i].position - bodies[cycle2]->centerOfMass).y, (collisionResults.points[i].position - bodies[cycle2]->centerOfMass).x);
+								glm::vec2 tangent = glm::vec2(-collisionResults.points[i].normal.y, collisionResults.points[i].normal.x);
+								if (glm::dot(tangent, relativeVelocity) < 0.0f)
 									tangent = -tangent;
 
 								float jL = j_lin(e, relativeVelocity, collisionResults.points[i].normal, bodies[cycle1]->getInvMass(), bodies[cycle2]->getInvMass());
@@ -159,13 +158,13 @@ namespace se
 								body1VelocityAfter = body1VelocityBefore + (jL * bodies[cycle1]->getInvMass()) * collisionResults.points[i].normal;
 								body2VelocityAfter = body2VelocityBefore + (-jL * bodies[cycle2]->getInvMass()) * collisionResults.points[i].normal;
 
-								body1AngularVelocityAfter = bodies[cycle1]->angularVelocity + rVecAP.dot(jR * collisionResults.points[i].normal) * bodies[cycle1]->getInvMoI();
-								body2AngularVelocityAfter = bodies[cycle2]->angularVelocity + rVecBP.dot(-jR * collisionResults.points[i].normal) * bodies[cycle2]->getInvMoI();
+								body1AngularVelocityAfter = bodies[cycle1]->angularVelocity + glm::dot(rVecAP, jR * collisionResults.points[i].normal) * bodies[cycle1]->getInvMoI();
+								body2AngularVelocityAfter = bodies[cycle2]->angularVelocity + glm::dot(rVecBP, -jR * collisionResults.points[i].normal) * bodies[cycle2]->getInvMoI();
 
 								//Friction impulses
 								float mu = (bodies[cycle1]->staticFriction + bodies[cycle2]->staticFriction) / 2.0f;
 
-								se::vec2 linearFrictionImpulse;
+								glm::vec2 linearFrictionImpulse;
 								if (abs(jLt) < jL * mu)
 									linearFrictionImpulse = jLt * tangent;
 								else
@@ -208,7 +207,7 @@ namespace se
 								//Positional Correction
 								const float percentage = 0.25f;
 								const float slop = 0.04f;
-								se::vec2 correction = std::max(collisionResults.MTV.getLength() - slop, 0.0f) / (bodies[cycle1]->getInvMass() + bodies[cycle2]->getInvMass()) * percentage * collisionResults.points[i].normal;
+								glm::vec2 correction = std::max(glm::length(collisionResults.MTV) - slop, 0.0f) / (bodies[cycle1]->getInvMass() + bodies[cycle2]->getInvMass()) * percentage * collisionResults.points[i].normal;
 								if (!bodies[cycle1]->freezePosition && !bodies[cycle1]->isStatic)
 									bodies[cycle1]->ownerObject->getComponent<Transform2D>()->setPosition(bodies[cycle1]->ownerObject->getComponent<Transform2D>()->getPosition() + correction * bodies[cycle1]->getInvMass());
 								if (!bodies[cycle2]->freezePosition && !bodies[cycle2]->isStatic)
@@ -237,18 +236,18 @@ namespace se
 		useGravity = _value;
 	}
 
-	void PhysicsWorld2D::setGravity(const se::vec2& _gravity)
+	void PhysicsWorld2D::setGravity(const glm::vec2& _gravity)
 	{
 		gravity = _gravity;
 	}
 
-	float PhysicsWorld2D::j_lin(const float& _e, const se::vec2& _velocity, const se::vec2& _normal, const float& _invmass1, const float& _invmass2)
+	float PhysicsWorld2D::j_lin(const float& _e, const glm::vec2& _velocity, const glm::vec2& _normal, const float& _invmass1, const float& _invmass2)
 	{
-		return -(1 + _e) * _velocity.dot(_normal) / _normal.dot(_normal * (_invmass1 + _invmass2));
+		return -(1 + _e) * glm::dot(_velocity, _normal) / glm::dot(_normal, _normal * (_invmass1 + _invmass2));
 	}
 
-	float PhysicsWorld2D::j_rot(const float& _e, const se::vec2& _velocity, const se::vec2& _normal, const float& _invmass1, const float& _invmass2, const se::vec2& _rVecAP, const se::vec2& _rVecBP, const float& _InvMoIA, const float& _InvMoIB)
+	float PhysicsWorld2D::j_rot(const float& _e, const glm::vec2& _velocity, const glm::vec2& _normal, const float& _invmass1, const float& _invmass2, const glm::vec2& _rVecAP, const glm::vec2& _rVecBP, const float& _InvMoIA, const float& _InvMoIB)
 	{
-		return (-(1 + _e) * _velocity.dot(_normal)) / (_normal.dot(_normal * (_invmass1 + _invmass2)) + (std::pow(_rVecAP.dot(_normal), 2) * _InvMoIA) + (std::pow(_rVecBP.dot(_normal), 2) * _InvMoIB));
+		return (-(1 + _e) * glm::dot(_velocity, _normal)) / (glm::dot(_normal, _normal * (_invmass1 + _invmass2)) + (std::pow(glm::dot(_rVecAP, _normal), 2) * _InvMoIA) + (std::pow(glm::dot(_rVecBP, _normal), 2) * _InvMoIB));
 	}
 }

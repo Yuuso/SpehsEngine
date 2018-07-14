@@ -2,10 +2,11 @@
 #pragma once
 
 #include "SpehsEngine/Audio/AudioEngine.h"
-#include "SpehsEngine/Core/Vector.h"
 
 #include <string>
 #include <utility>
+#include <glm/vec2.hpp>
+#include <glm/vec3.hpp>
 
 
 typedef unsigned int ALuint;
@@ -78,7 +79,7 @@ namespace se
 			range: 0.5 - 2.0
 			default: 1.0
 			*/
-			float pitch;
+			float pitch = 1.0f;
 
 			/*
 			range: 0.0 -
@@ -91,7 +92,7 @@ namespace se
 
 			0.0 is silent.
 			*/
-			float gain;
+			float gain = 1.0f;
 
 			/*
 			range: 0.0 - 1.0
@@ -99,7 +100,7 @@ namespace se
 
 			Absolute maximum gain the source will play at.
 			*/
-			float maxGain;
+			float maxGain = 1.0f;
 
 			/*
 			range: 0.0 - 1.0
@@ -107,12 +108,12 @@ namespace se
 
 			Absolute minimum gain the source will play at.
 			*/
-			float minGain;
+			float minGain = 0.0f;
 
 			/*
 			default: false
 			*/
-			bool loop;
+			bool loop = false;
 
 			/*
 			range: 0 -
@@ -120,7 +121,7 @@ namespace se
 			Smaller value means higher priority.
 			Value 0 means the source will not be interrupted no matter what.
 			*/
-			unsigned int priority;
+			unsigned int priority = 5;
 
 			/*
 			range: bool, false
@@ -128,28 +129,28 @@ namespace se
 			Is sound position relative to listener
 			Basically, set to false if you want directional sounds
 			*/
-			bool relativeToSource;
+			bool relativeToSource = true;
 
 			/*
 			The sound source gain is affected (multiplied) by the channel's gain level
 			*/
-			int audioChannel;
+			int audioChannel = 0;
 
 			//Automation
 			/**Time needed until gain automation is completed*/
-			float gainAutomationTimer;
+			float gainAutomationTimer = 0.0f;
 			/**Total seconds to complete the last set gain automation*/
-			float gainAutomationTime;
+			float gainAutomationTime = 0.0f;
 			/**Gain automation begin gain*/
-			float gainAutomationBegin;
+			float gainAutomationBegin = 0.0f;
 			/**Gain automation end gain*/
-			float gainAutomationEnd;
+			float gainAutomationEnd = 0.0f;
 			/**Automation state*/
-			enum class AutomationType : char { none = 0, pause, stop, play } automationType;
+			enum class AutomationType : char { none = 0, pause, stop, play } automationType = AutomationType::none;
 
-			AudioEngine::SourceObject* source;
-			std::pair<size_t /*hash*/, ALuint /*buffer*/> sound;
-			bool playQueued;
+			AudioEngine::SourceObject* source = nullptr;
+			std::pair<size_t /*hash*/, ALuint /*buffer*/> sound = {(size_t)0, (ALuint)0};
+			bool playQueued = false;
 		};
 
 		class ActiveSoundSource : public SoundSource
@@ -160,17 +161,17 @@ namespace se
 
 			void setParameters();
 			
-			void setPosition(const se::vec2& _pos);
-			void setPosition(const se::vec2& _pos, const float _z);
-			void setVelocity(const se::vec2& _vel);
-			void setVelocity(const se::vec2& _vel, const float _z);
-			void setDirection(const se::vec2& _direction);
+			void setPosition(const glm::vec2& _pos);
+			void setPosition(const glm::vec2& _pos, const float _z);
+			void setVelocity(const glm::vec2& _vel);
+			void setVelocity(const glm::vec2& _vel, const float _z);
+			void setDirection(const glm::vec2& _direction);
 			void setZ(const float _z);
 			void setRollOffFactor(const float _rollOff);
 
-			se::vec2 getPosition(){ return se::vec2(position.x, position.y); }
-			se::vec2 getVelocity(){ return se::vec2(velocity.x, velocity.y); }
-			se::vec2 getDirection(){ return direction; }
+			glm::vec2 getPosition(){ return glm::vec2(position.x, position.y); }
+			glm::vec2 getVelocity(){ return glm::vec2(velocity.x, velocity.y); }
+			glm::vec2 getDirection(){ return direction; }
 			float getZ(){ return position.z; }
 			float getRollOffFactor(){ return rollOffFactor; }
 
@@ -178,22 +179,22 @@ namespace se
 			/*
 			default: {0, 0, 0}
 			*/
-			se::vec3 position;
+			glm::vec3 position;
 
 			/*
 			default: {0, 0, 0}
 			*/
-			se::vec3 velocity;
+			glm::vec3 velocity;
 
 			/*
 			default: {0, 0}
 			*/
-			se::vec2 direction; //Cone stuff to be effective?
+			glm::vec2 direction; //Cone stuff to be effective?
 
 			/*
 			default: 1.75 (AudioEngine.cpp)
 			*/
-			float rollOffFactor;
+			float rollOffFactor = 1.75f;
 		};
 	}
 }

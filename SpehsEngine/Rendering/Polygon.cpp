@@ -33,12 +33,12 @@ namespace se
 					firstPosition = 0;
 				else
 					firstPosition = (TWO_PI / _shapeID) / 2.0f;
-				vertexArray[0].position = se::vec2(cos(firstPosition), sin(firstPosition));
+				vertexArray[0].position = glm::vec2(cos(firstPosition), sin(firstPosition));
 				float minX = vertexArray[0].position.x, minY = vertexArray[0].position.y, maxX = vertexArray[0].position.x, maxY = vertexArray[0].position.y;
 				for (int i = 1; i < _shapeID; i++)
 				{
 					//Set position
-					vertexArray[i].position = se::vec2(cos(firstPosition + i * (TWO_PI / _shapeID)), sin(firstPosition + i * (TWO_PI / _shapeID)));
+					vertexArray[i].position = glm::vec2(cos(firstPosition + i * (TWO_PI / _shapeID)), sin(firstPosition + i * (TWO_PI / _shapeID)));
 
 					//Check min/max
 					if (vertexArray[i].position.x > maxX)
@@ -103,7 +103,7 @@ namespace se
 			blending = false;
 		}
 
-		Polygon::Polygon(BatchManager& _batchManager, const std::vector<se::vec2>& _positionData, const PlaneDepth _planeDepth, const float _width, const float _height)
+		Polygon::Polygon(BatchManager& _batchManager, const std::vector<glm::vec2>& _positionData, const PlaneDepth _planeDepth, const float _width, const float _height)
 			: Polygon(_batchManager, _width, _height)
 		{
 			planeDepth = _planeDepth;
@@ -144,20 +144,20 @@ namespace se
 				for (size_t i = 0; i < worldVertexArray.size(); i++)
 				{
 					vertex = scaledRotatedMatrix * glm::vec4(vertexArray[i].position.x * width, vertexArray[i].position.y * height, 0.0f, 1.0f);
-					worldVertexArray[i].position = se::vec2(vertex.x + position.x, vertex.y + position.y);
+					worldVertexArray[i].position = glm::vec2(vertex.x + position.x, vertex.y + position.y);
 				}
 				needUpdate = false;
 			}
 		}
 
-		void Polygon::getScreenVertices(Camera2D* _camera, std::vector<se::vec2>& deposit)
+		void Polygon::getScreenVertices(Camera2D* _camera, std::vector<glm::vec2>& deposit)
 		{
 			if (cameraMatrixState)
 			{
 				for (size_t i = 0; i < worldVertexArray.size(); i++)
 				{
 					glm::vec2 vec(*_camera->projectionMatrix * glm::vec4(worldVertexArray[i].position.x, worldVertexArray[i].position.y, 0.0f, 1.0f));
-					deposit.push_back(se::vec2(vec.x, vec.y));
+					deposit.push_back(glm::vec2(vec.x, vec.y));
 				}
 			}
 			else
@@ -191,7 +191,7 @@ namespace se
 			}
 		}
 
-		void Polygon::setUVScale(const se::vec2& _newScale)
+		void Polygon::setUVScale(const glm::vec2& _newScale)
 		{
 			for (size_t i = 0; i < worldVertexArray.size(); i++)
 			{
@@ -254,12 +254,12 @@ namespace se
 		float Polygon::getRadius()
 		{
 			//Seems like this needs to be updated every time
-			float max = (se::vec2(position.x, position.y) - se::vec2(worldVertexArray[0].position.x, worldVertexArray[0].position.y)).getLength();
+			float max = glm::length(glm::vec2(position.x, position.y) - glm::vec2(worldVertexArray[0].position.x, worldVertexArray[0].position.y));
 			for (size_t i = 1; i < worldVertexArray.size(); i++)
 			{
-				if ((se::vec2(position.x, position.y) - se::vec2(worldVertexArray[i].position.x, worldVertexArray[i].position.y)).getLength() > max)
+				if (glm::length(glm::vec2(position.x, position.y) - glm::vec2(worldVertexArray[i].position.x, worldVertexArray[i].position.y)) > max)
 				{
-					max = (se::vec2(position.x, position.y) - se::vec2(worldVertexArray[i].position.x, worldVertexArray[i].position.y)).getLength();
+					max = glm::length(glm::vec2(position.x, position.y) - glm::vec2(worldVertexArray[i].position.x, worldVertexArray[i].position.y));
 				}
 			}
 			radius = max;

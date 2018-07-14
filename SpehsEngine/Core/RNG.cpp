@@ -49,12 +49,12 @@ namespace se
 			std::lock_guard<std::mutex> rnglock(rngmutex);
 			return defaultRandom.weightedDice(_propabilities);
 		}
-		se::vec2 circle(const float _radius)
+		glm::vec2 circle(const float _radius)
 		{
 			std::lock_guard<std::mutex> rnglock(rngmutex);
 			return defaultRandom.circle(_radius);
 		}
-		se::vec2 square(const float _side)
+		glm::vec2 square(const float _side)
 		{
 			std::lock_guard<std::mutex> rnglock(rngmutex);
 			return defaultRandom.square(_side);

@@ -1,6 +1,5 @@
 #pragma once
 #include <vector>
-#include <SpehsEngine/Core/Vector.h>
 
 namespace se
 {

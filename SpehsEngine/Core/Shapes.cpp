@@ -15,22 +15,22 @@ namespace se
 		{
 		case RIGHTANGLED_TRIANGLE:
 			vertexArray.resize(3);
-			vertexArray[0].position = se::vec2(-0.5f, -0.5f);
-			vertexArray[1].position = se::vec2(0.5f, -0.5f);
-			vertexArray[2].position = se::vec2(-0.5f, 0.5f);
+			vertexArray[0].position = glm::vec2(-0.5f, -0.5f);
+			vertexArray[1].position = glm::vec2(0.5f, -0.5f);
+			vertexArray[2].position = glm::vec2(-0.5f, 0.5f);
 			break;
 		case ISOSCELES_TRIANGLE:
 			vertexArray.resize(3);
-			vertexArray[0].position = se::vec2(0.0f, 0.5f);
-			vertexArray[1].position = se::vec2(cos((7.0f / 6.0f) * PI) * 0.5f, sin((7.0f / 6.0f) * PI) * 0.5f);
-			vertexArray[2].position = se::vec2(cos((11.0f / 6.0f) * PI) * 0.5f, sin((11.0f / 6.0f) * PI) * 0.5f);
+			vertexArray[0].position = glm::vec2(0.0f, 0.5f);
+			vertexArray[1].position = glm::vec2(cos((7.0f / 6.0f) * PI) * 0.5f, sin((7.0f / 6.0f) * PI) * 0.5f);
+			vertexArray[2].position = glm::vec2(cos((11.0f / 6.0f) * PI) * 0.5f, sin((11.0f / 6.0f) * PI) * 0.5f);
 			break;
 		case BUTTON:
 			vertexArray.resize(4);
-			vertexArray[0].position = se::vec2(0.0f, 0.0f);
-			vertexArray[1].position = se::vec2(1.0f, 0.0f);
-			vertexArray[2].position = se::vec2(1.0f, 1.0f);
-			vertexArray[3].position = se::vec2(0.0f, 1.0f);
+			vertexArray[0].position = glm::vec2(0.0f, 0.0f);
+			vertexArray[1].position = glm::vec2(1.0f, 0.0f);
+			vertexArray[2].position = glm::vec2(1.0f, 1.0f);
+			vertexArray[3].position = glm::vec2(0.0f, 1.0f);
 			break;
 		default:
 			log::error("Invalid shape!");

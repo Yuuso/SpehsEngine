@@ -1,5 +1,5 @@
 #pragma once
-#include <SpehsEngine/Core/Vector.h>
+#include <glm/vec2.hpp>
 #include <map>
 
 typedef unsigned int GLuint;
@@ -14,9 +14,9 @@ namespace se
 			/* ID handle of the glyph texture */
 			GLuint textureID;
 			/* Size of glyph */
-			se::ivec2 size;
+			glm::ivec2 size;
 			/* Offset from baseline to left/top of glyph */
-			se::ivec2 bearing;
+			glm::ivec2 bearing;
 			/* Offset to advance to next glyph */
 			GLuint advance;
 		};

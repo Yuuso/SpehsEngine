@@ -29,21 +29,21 @@ namespace se
 	{
 
 	}
-	Vertex::Vertex(const se::vec2 &_position) : position(_position)
+	Vertex::Vertex(const glm::vec2 &_position) : position(_position)
 	{
 
 	}
-	Vertex::Vertex(const se::vec2 &_position, const UV &_uv) : position(_position), uv(_uv)
+	Vertex::Vertex(const glm::vec2 &_position, const UV &_uv) : position(_position), uv(_uv)
 	{
 
 	}
-	Vertex::Vertex(const se::vec2 &_position, const se::Color &_color, const UV &_uv) : position(_position), color(_color), uv(_uv)
+	Vertex::Vertex(const glm::vec2 &_position, const se::Color &_color, const UV &_uv) : position(_position), color(_color), uv(_uv)
 	{
 
 	}
 
-	inline se::vec3 toVec3(const Vertex& _vertex)
+	inline glm::vec3 toVec3(const Vertex& _vertex)
 	{
-		return se::vec3(_vertex.position.x, _vertex.position.y, 0.0f);
+		return glm::vec3(_vertex.position.x, _vertex.position.y, 0.0f);
 	}
 }

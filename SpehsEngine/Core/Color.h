@@ -1,11 +1,7 @@
-
 #pragma once
-
-#include "SpehsEngine/Core/Vector.h"
 
 #include <algorithm>
 #include <string>
-
 
 namespace se
 {

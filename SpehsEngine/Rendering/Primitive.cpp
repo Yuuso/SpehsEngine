@@ -53,7 +53,7 @@ namespace se
 			needUpdate = true;
 		}
 
-		void Primitive::setPosition(const se::vec2& _newPosition)
+		void Primitive::setPosition(const glm::vec2& _newPosition)
 		{
 #ifdef _DEBUG
 			if (_newPosition.x != _newPosition.x || _newPosition.y != _newPosition.y)
@@ -92,7 +92,7 @@ namespace se
 			needUpdate = true;
 		}
 
-		void Primitive::translate(const se::vec2& _translation)
+		void Primitive::translate(const glm::vec2& _translation)
 		{
 #ifdef _DEBUG
 			if (_translation.x != _translation.x || _translation.y != _translation.y)
@@ -131,7 +131,7 @@ namespace se
 			needUpdate = true;
 		}
 
-		void Primitive::setScale(const se::vec2& _newScale)
+		void Primitive::setScale(const glm::vec2& _newScale)
 		{
 #ifdef _DEBUG
 			if (_newScale.x != _newScale.x || _newScale.y != _newScale.y)
@@ -180,7 +180,7 @@ namespace se
 			needUpdate = true;
 		}
 
-		void Primitive::setRotation(const float _newRotation, const se::vec3& _newRotationVector)
+		void Primitive::setRotation(const float _newRotation, const glm::vec3& _newRotationVector)
 		{
 #ifdef _DEBUG
 			if (_newRotation != _newRotation || _newRotationVector.x != _newRotationVector.x || _newRotationVector.y != _newRotationVector.y || _newRotationVector.z != _newRotationVector.z)
@@ -217,7 +217,7 @@ namespace se
 			needUpdate = true;
 		}
 
-		void Primitive::setRotationVector(const se::vec3& _newRotationVector)
+		void Primitive::setRotationVector(const glm::vec3& _newRotationVector)
 		{
 #ifdef _DEBUG
 			if (_newRotationVector.x != _newRotationVector.x || _newRotationVector.y != _newRotationVector.y || _newRotationVector.z != _newRotationVector.z)

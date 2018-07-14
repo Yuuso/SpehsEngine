@@ -1,6 +1,6 @@
 #pragma once
 #include <vector>
-#include "SpehsEngine/Core/Vector.h"
+#include <glm/vec2.hpp>
 #include "SpehsEngine/Core/Color.h"
 
 namespace se
@@ -38,10 +38,10 @@ namespace se
 			void setLineColor(const Color& color);
 			bool getRenderState() const;
 			int16_t getDepth() const;
-			vec2 getSize() const;
+			glm::vec2 getSize() const;
 			float getWidth() const;
 			float getHeight() const;
-			vec2 getPosition() const;
+			glm::vec2 getPosition() const;
 			float getX() const;
 			float getY() const;
 
@@ -69,10 +69,10 @@ namespace se
 			~LineDiagram2();
 
 			//Point data
-			void set(const int index, const se::vec2& point);
-			se::vec2 get(const int index) const;
-			void pushBack(const se::vec2& point);
-			void insert(const int index, const se::vec2& point);
+			void set(const int index, const glm::vec2& point);
+			glm::vec2 get(const int index) const;
+			void pushBack(const glm::vec2& point);
+			void insert(const int index, const glm::vec2& point);
 			void erase(const int index);
 			size_t getPointCount() const;
 			void setCapacity(const size_t newCapacity);
@@ -86,10 +86,10 @@ namespace se
 			void setLineColor(const Color& color);
 			bool getRenderState() const;
 			int16_t getDepth() const;
-			vec2 getSize() const;
+			glm::vec2 getSize() const;
 			float getWidth() const;
 			float getHeight() const;
-			vec2 getPosition() const;
+			glm::vec2 getPosition() const;
 			float getX() const;
 			float getY() const;
 
@@ -101,7 +101,7 @@ namespace se
 			Polygon* polygon;//NOTE: polygon holds size and position data!
 			struct PointData
 			{
-				se::vec2 point;
+				glm::vec2 point;
 				Line* line = nullptr;
 			};
 			std::vector<PointData> points;

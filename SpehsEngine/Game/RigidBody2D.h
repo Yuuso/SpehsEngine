@@ -2,10 +2,10 @@
 #pragma once
 
 #include "SpehsEngine/Game/Component.h"
-#include "SpehsEngine/Core/Vector.h"
 
 #include <vector>
 #include <algorithm>
+#include <glm/vec2.hpp>
 
 
 namespace se
@@ -24,10 +24,10 @@ namespace se
 
 		void update(const time::Time deltaTime) override;
 
-		void applyForce(const se::vec2& _force);
-		void applyForceAtPosition(const se::vec2& _force, const se::vec2& _position);
+		void applyForce(const glm::vec2& _force);
+		void applyForceAtPosition(const glm::vec2& _force, const glm::vec2& _position);
 		void applyTorque(const float& _torque);
-		void applyVelocityImpulse(const se::vec2& _impulse);
+		void applyVelocityImpulse(const glm::vec2& _impulse);
 		void applyAngularImpulse(const float& _impulse);
 
 		//Setters
@@ -40,7 +40,7 @@ namespace se
 		void setElasticity(const float& _e);
 
 		//Getters
-		se::vec2 getVelocityAtPosition(const se::vec2& _position);
+		glm::vec2 getVelocityAtPosition(const glm::vec2& _position);
 		float getMass() const { return mass; }
 		float getInvMass() const { if (isStatic || freezePosition) return 0.0f; else return 1 / mass; }
 		float getInvMoI() const { if (isStatic || freezeRotation) return 0.0f; else return 1 / momentOfInertia; }
@@ -75,15 +75,15 @@ namespace se
 		float angularVelocity;
 		float angularAcceleration;
 
-		se::vec2 position;
-		se::vec2 centerOfMass;
-		se::vec2 velocity;
-		se::vec2 acceleration;
+		glm::vec2 position;
+		glm::vec2 centerOfMass;
+		glm::vec2 velocity;
+		glm::vec2 acceleration;
 
 		float resultantTorque;
-		se::vec2 resultantForce;
+		glm::vec2 resultantForce;
 		std::vector<float> resultantImpulseTorque;
-		std::vector<se::vec2> resultantImpulseForce;
+		std::vector<glm::vec2> resultantImpulseForce;
 	};
 }
 

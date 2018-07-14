@@ -1,8 +1,8 @@
 
 #pragma once
 
-#include "SpehsEngine/Core/Vector.h"
 #include "SpehsEngine/Physics/SATCollision.h"
+#include <glm/vec2.hpp>
 
 #include <vector>
 #include <memory>
@@ -28,22 +28,22 @@ namespace se
 		void enableGravity(const bool _value);
 
 		//Setters
-		void setGravity(const se::vec2& _gravity);
+		void setGravity(const glm::vec2& _gravity);
 
 		//Getters
-		se::vec2 getGravity() const{ return gravity; }
+		glm::vec2 getGravity() const{ return gravity; }
 
 	private:
 		//Enter mass as 0.0f for static bodies
-		float j_lin(const float& _e, const se::vec2& _velocity, const se::vec2& _normal, const float& _mass1, const float& _mass2);
-		float j_rot(const float& _e, const se::vec2& _velocity, const se::vec2& _normal, const float& _mass1, const float& _mass2, 
-			const se::vec2& _rVecAP, const se::vec2& _rVecBP, const float& _MoIA, const float& _MoIB);
+		float j_lin(const float& _e, const glm::vec2& _velocity, const glm::vec2& _normal, const float& _mass1, const float& _mass2);
+		float j_rot(const float& _e, const glm::vec2& _velocity, const glm::vec2& _normal, const float& _mass1, const float& _mass2, 
+			const glm::vec2& _rVecAP, const glm::vec2& _rVecBP, const float& _MoIA, const float& _MoIB);
 
-		bool useGravity;
+		bool useGravity = true;
 
 		se::CollisionResults collisionResults;
 		std::vector<RigidBody2D*> bodies;
-		se::vec2 gravity;
+		glm::vec2 gravity = glm::vec2(0.0f, -3.0f);
 	};
 }
 

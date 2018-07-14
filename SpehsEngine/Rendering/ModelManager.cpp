@@ -16,11 +16,11 @@ namespace se
 {
 	namespace rendering
 	{
-		int checkArrayForElements(const std::vector<Vertex3D>& _array, const se::vec3& _position, const se::vec2& _textureCoord, const se::vec3& _normal)
+		int checkArrayForElements(const std::vector<Vertex3D>& _array, const glm::vec3& _position, const glm::vec2& _textureCoord, const glm::vec3& _normal)
 		{
 			for (unsigned i = 0; i < _array.size(); i++)
 			{
-				if (_array[i].position == _position && _array[i].uv == se::vec2(_textureCoord.x, _textureCoord.y) && _array[i].normal == se::vec3(_normal.x, _normal.y, _normal.z))
+				if (_array[i].position == _position && _array[i].uv == glm::vec2(_textureCoord.x, _textureCoord.y) && _array[i].normal == glm::vec3(_normal.x, _normal.y, _normal.z))
 				{ // Element found -> return position
 					return i;
 				}
@@ -44,12 +44,10 @@ namespace se
 				{
 					if (normals.size() == 0)
 					{
-						index = checkArrayForElements(vertexArray, vertices[vertexElements[i]].position, se::vec2::zero, se::vec3::zero);
+						index = checkArrayForElements(vertexArray, vertices[vertexElements[i]].position, glm::vec2(), glm::vec3());
 						if (index < 0)
 						{
-							vertexArray.push_back(Vertex3D(vertices[vertexElements[i]].position,
-								se::vec2::zero,
-								se::vec3::zero));
+							vertexArray.push_back(Vertex3D(vertices[vertexElements[i]].position));
 							elementArray.push_back((GLushort)vertexArray.size() - 1);
 						}
 						else
@@ -59,12 +57,12 @@ namespace se
 					}
 					else
 					{
-						index = checkArrayForElements(vertexArray, vertices[vertexElements[i]].position, se::vec2::zero, normals[normalElements[i]]);
+						index = checkArrayForElements(vertexArray, vertices[vertexElements[i]].position, glm::vec2(), normals[normalElements[i]]);
 						if (index < 0)
 						{
 							vertexArray.push_back(Vertex3D(vertices[vertexElements[i]].position,
-								se::vec2::zero,
-								se::vec3(normals[normalElements[i]].x, normals[normalElements[i]].y, normals[normalElements[i]].z)));
+								glm::vec2(),
+								glm::vec3(normals[normalElements[i]].x, normals[normalElements[i]].y, normals[normalElements[i]].z)));
 							elementArray.push_back((GLushort)vertexArray.size() - 1);
 						}
 						else
@@ -75,12 +73,12 @@ namespace se
 				}
 				else if (normals.size() == 0)
 				{
-					index = checkArrayForElements(vertexArray, vertices[vertexElements[i]].position, textureCoordinates[textureElements[i]], se::vec3::zero);
+					index = checkArrayForElements(vertexArray, vertices[vertexElements[i]].position, textureCoordinates[textureElements[i]], glm::vec3());
 					if (index < 0)
 					{
 						vertexArray.push_back(Vertex3D(vertices[vertexElements[i]].position,
-							se::vec2(textureCoordinates[textureElements[i]].x, textureCoordinates[textureElements[i]].y),
-							se::vec3::zero));
+							glm::vec2(textureCoordinates[textureElements[i]].x, textureCoordinates[textureElements[i]].y),
+							glm::vec3()));
 						elementArray.push_back((GLushort)vertexArray.size() - 1);
 					}
 					else
@@ -94,8 +92,8 @@ namespace se
 					if (index < 0)
 					{
 						vertexArray.push_back(Vertex3D(vertices[vertexElements[i]].position,
-							se::vec2(textureCoordinates[textureElements[i]].x, textureCoordinates[textureElements[i]].y),
-							se::vec3(normals[normalElements[i]].x, normals[normalElements[i]].y, normals[normalElements[i]].z)));
+							glm::vec2(textureCoordinates[textureElements[i]].x, textureCoordinates[textureElements[i]].y),
+							glm::vec3(normals[normalElements[i]].x, normals[normalElements[i]].y, normals[normalElements[i]].z)));
 						elementArray.push_back((GLushort)vertexArray.size() - 1);
 					}
 					else
@@ -2336,7 +2334,7 @@ namespace se
 				if (line.substr(0, 2) == "v ")
 				{
 					stringStream = std::istringstream(line.substr(2));
-					se::vec3 vertex;
+					glm::vec3 vertex;
 					stringStream >> vertex.x;
 					stringStream >> vertex.y;
 					stringStream >> vertex.z;
@@ -2346,7 +2344,7 @@ namespace se
 				else if (line.substr(0, 3) == "vn ")
 				{
 					stringStream = std::istringstream(line.substr(3));
-					se::vec3 normal;
+					glm::vec3 normal;
 					stringStream >> normal.x;
 					stringStream >> normal.y;
 					stringStream >> normal.z;
@@ -2356,7 +2354,7 @@ namespace se
 				else if (line.substr(0, 3) == "vt ")
 				{
 					stringStream = std::istringstream(line.substr(3));
-					se::vec2 uv;
+					glm::vec2 uv;
 					stringStream >> uv.x;
 					stringStream >> uv.y;
 					data->textureCoordinates.push_back(uv);
@@ -2417,7 +2415,7 @@ namespace se
 				if (line.substr(0, 2) == "v ")
 				{
 					stringStream = std::istringstream(line.substr(2));
-					se::vec3 vertex;
+					glm::vec3 vertex;
 					stringStream >> vertex.x;
 					stringStream >> vertex.y;
 					stringStream >> vertex.z;
@@ -2427,7 +2425,7 @@ namespace se
 				else if (line.substr(0, 3) == "vn ")
 				{
 					stringStream = std::istringstream(line.substr(3));
-					se::vec3 normal;
+					glm::vec3 normal;
 					stringStream >> normal.x;
 					stringStream >> normal.y;
 					stringStream >> normal.z;
@@ -2437,7 +2435,7 @@ namespace se
 				else if (line.substr(0, 3) == "vt ")
 				{
 					stringStream = std::istringstream(line.substr(3));
-					se::vec2 uv;
+					glm::vec2 uv;
 					stringStream >> uv.x;
 					stringStream >> uv.y;
 					data->textureCoordinates.push_back(uv);

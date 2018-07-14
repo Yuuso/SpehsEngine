@@ -15,7 +15,7 @@
 #define DEFAULT_MAX_SOURCES 255
 
 
-se::vec2 positionCorrectionFactor = se::vec2(1.0f, 1.0f);
+glm::vec2 positionCorrectionFactor = glm::vec2(1.0f, 1.0f);
 float scaleCorrectionFactor = 1.0f;
 
 extern const float defaultRollOffFactor = 1.75f;
@@ -27,12 +27,12 @@ namespace audioVar
 	/*
 	default: {0, 0, 1}
 	*/
-	se::vec3 listenerPosition;
+	glm::vec3 listenerPosition;
 
 	/*
 	default: {0, 0, 0}
 	*/
-	se::vec3 listenerVelocity;
+	glm::vec3 listenerVelocity;
 
 	/*
 	range: 0.0 -
@@ -105,8 +105,8 @@ namespace se
 		{
 			audioVar::maxSources = DEFAULT_MAX_SOURCES;
 			audioVar::listenerGain = 1.0f;
-			audioVar::listenerPosition = se::vec3(0.0f, 0.0f, 1.0f);
-			audioVar::listenerVelocity = se::vec3(0.0f, 0.0f, 0.0f);
+			audioVar::listenerPosition = glm::vec3(0.0f, 0.0f, 1.0f);
+			audioVar::listenerVelocity = glm::vec3(0.0f, 0.0f, 0.0f);
 			audioVar::deltaTimeSystem.deltaTimeSystemInitialize();
 
 			audioVar::device = alcOpenDevice(NULL);
@@ -177,26 +177,26 @@ namespace se
 			audioVar::maxSources = _maxSources;
 		}
 
-		void AudioEngine::setListenerPosition(const se::vec2& _pos)
+		void AudioEngine::setListenerPosition(const glm::vec2& _pos)
 		{
 			audioVar::listenerPosition.x = _pos.x;
 			audioVar::listenerPosition.y = _pos.y;
 			alListener3f(AL_POSITION, _pos.x * positionCorrectionFactor.x, _pos.y * positionCorrectionFactor.y, audioVar::listenerPosition.z * scaleCorrectionFactor);
 		}
-		void AudioEngine::setListenerPosition(const se::vec2& _pos, const float _z)
+		void AudioEngine::setListenerPosition(const glm::vec2& _pos, const float _z)
 		{
 			audioVar::listenerPosition.x = _pos.x;
 			audioVar::listenerPosition.y = _pos.y;
 			audioVar::listenerPosition.z = _z;
 			alListener3f(AL_POSITION, _pos.x * positionCorrectionFactor.x, _pos.y * positionCorrectionFactor.y, _z * scaleCorrectionFactor);
 		}
-		void AudioEngine::setListenerVelocity(const se::vec2& _vel)
+		void AudioEngine::setListenerVelocity(const glm::vec2& _vel)
 		{
 			audioVar::listenerVelocity.x = _vel.x;
 			audioVar::listenerVelocity.y = _vel.y;
 			alListener3f(AL_VELOCITY, _vel.x * positionCorrectionFactor.x, _vel.y * positionCorrectionFactor.y, audioVar::listenerVelocity.z * scaleCorrectionFactor);
 		}
-		void AudioEngine::setListenerVelocity(const se::vec2& _vel, const float _z)
+		void AudioEngine::setListenerVelocity(const glm::vec2& _vel, const float _z)
 		{
 			audioVar::listenerVelocity.x = _vel.x;
 			audioVar::listenerVelocity.y = _vel.y;
@@ -253,7 +253,7 @@ namespace se
 			/*Get channel gain*/
 			return audioVar::audioChannels[_channelIndex].getGain();
 		}
-		void AudioEngine::setPositionCorrectionFactor(const se::vec2& _poscor)
+		void AudioEngine::setPositionCorrectionFactor(const glm::vec2& _poscor)
 		{
 			positionCorrectionFactor = _poscor;
 			alListener3f(AL_POSITION, audioVar::listenerPosition.x * positionCorrectionFactor.x, audioVar::listenerPosition.y * positionCorrectionFactor.y, audioVar::listenerPosition.z * scaleCorrectionFactor);
@@ -265,13 +265,13 @@ namespace se
 			alListener3f(AL_POSITION, audioVar::listenerPosition.x * positionCorrectionFactor.x, audioVar::listenerPosition.y * positionCorrectionFactor.y, audioVar::listenerPosition.z * scaleCorrectionFactor);
 			alListener3f(AL_VELOCITY, audioVar::listenerVelocity.x * positionCorrectionFactor.x, audioVar::listenerVelocity.y * positionCorrectionFactor.y, audioVar::listenerVelocity.z * scaleCorrectionFactor);
 		}
-		se::vec2 AudioEngine::getListenerPosition()
+		glm::vec2 AudioEngine::getListenerPosition()
 		{
-			return se::vec2(audioVar::listenerPosition.x, audioVar::listenerPosition.y);
+			return glm::vec2(audioVar::listenerPosition.x, audioVar::listenerPosition.y);
 		}
-		se::vec2 AudioEngine::getListenerVelocity()
+		glm::vec2 AudioEngine::getListenerVelocity()
 		{
-			return se::vec2(audioVar::listenerVelocity.x, audioVar::listenerVelocity.y);
+			return glm::vec2(audioVar::listenerVelocity.x, audioVar::listenerVelocity.y);
 		}
 		float AudioEngine::getListenerGain()
 		{

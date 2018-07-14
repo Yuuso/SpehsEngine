@@ -2,10 +2,10 @@
 #include <map>
 #include <string>
 #include <vector>
+#include <glm/vec2.hpp>
 #include "SpehsEngine/Rendering/Depth.h"
 #include "SpehsEngine/Core/Vertex.h"
 #include "SpehsEngine/Core/Color.h"
-#include "SpehsEngine/Core/Vector.h"
 
 namespace se
 {
@@ -29,8 +29,8 @@ namespace se
 			void setRenderState(const bool _state);
 			bool getRenderState() const { return renderState; }
 
-			void translate(const se::vec2& _vec);
-			void setPosition(const se::vec2& _vec);
+			void translate(const glm::vec2& _vec);
+			void setPosition(const glm::vec2& _vec);
 			void setPosition(const float x, const float y);
 
 			void setPlaneDepth(const PlaneDepth _depth);
@@ -44,7 +44,7 @@ namespace se
 			void setFont(Font* _font);
 			void setFontSize(const int _size);
 
-			void setColor(const se::Color& _newColor);
+			void setColor(const Color& _newColor);
 			void setAlpha(const float _alpha);
 
 			void setShader(const unsigned int _shaderIndex) { shaderIndex = _shaderIndex; };
@@ -54,7 +54,7 @@ namespace se
 			//Getters
 			std::string getString() const { return string; }
 
-			se::vec2 getPosition() const { return position; }
+			glm::vec2 getPosition() const { return position; }
 			float getX() const { return position.x; }
 			float getX(const size_t characterIndex) const;//Returns x position at given character index. Character width is not included. If index is out of bounds, returns x position of the last character instead.
 			float getY() const { return position.y; }
@@ -77,11 +77,11 @@ namespace se
 			PlaneDepth getPlaneDepth() const { return planeDepth; }
 			bool getCameraMatrixState() const { return cameraMatrixState; }
 
-			se::Color getColor() const { return color; }
+			Color getColor() const { return color; }
 			float getAlpha() const { return color.a; }
 
 			std::vector<GLuint> textureIDs;
-			std::vector<se::Vertex> worldVertexArray;
+			std::vector<Vertex> worldVertexArray;
 			BatchManager& batchManager;
 
 		protected:
@@ -96,8 +96,8 @@ namespace se
 			void updateText();
 
 			std::string string;
-			se::vec2 position;
-			se::Color color;
+			glm::vec2 position;
+			Color color;
 			float scale = 1.0f;
 			int lineCount = 0;
 			int lineSpacing = 0;
@@ -108,7 +108,7 @@ namespace se
 			bool readyForDelete = false;
 			bool needPositionUpdate = false;
 			bool needTextUpdate = false;
-			std::vector<se::Vertex> vertexArray;
+			std::vector<Vertex> vertexArray;
 			Font* font = nullptr;
 		};
 	}

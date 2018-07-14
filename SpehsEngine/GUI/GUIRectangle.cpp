@@ -551,7 +551,7 @@ namespace se
 			parent->disableStateRecursiveUpwards(stateBit);
 	}
 
-	se::ivec2 GUIRectangle::getPositionGlobal() const
+	glm::ivec2 GUIRectangle::getPositionGlobal() const
 	{
 		if (parent)
 			return parent->getPositionGlobal() + position; return position;

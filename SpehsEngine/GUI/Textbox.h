@@ -1,6 +1,6 @@
 #pragma once
 #include <string>
-#include "SpehsEngine/Core/Vector.h"
+#include <glm/vec2.hpp>
 #include "SpehsEngine/Core/Color.h"
 
 namespace se
@@ -35,11 +35,11 @@ namespace se
 		bool getRenderState() const;
 		uint16_t getDepthBack() const;
 		uint16_t getDepthFront() const;
-		se::vec2 getPosition() const;
+		glm::vec2 getPosition() const;
 		int getX() const;
 		int getY() const;
 		bool checkPointCollision(const int x, const int y) const;
-		bool checkPointCollision(const se::vec2& point) const;
+		bool checkPointCollision(const glm::vec2& point) const;
 
 	protected:
 		se::rendering::Polygon* polygon;

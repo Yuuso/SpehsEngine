@@ -287,7 +287,7 @@ namespace se
 				{//Set to min size
 
 					//Take record of the window's old center position so that resized window can be nicely centered at the same position
-					se::vec2 oldCenterPos(getXGlobal() + size.x / 2.0f, getYGlobal() + size.y / 2.0f);
+					glm::vec2 oldCenterPos(getXGlobal() + size.x / 2.0f, getYGlobal() + size.y / 2.0f);
 
 					//Rezise to min size
 					setSize(minSize);

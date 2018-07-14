@@ -1,9 +1,7 @@
 
 #pragma once
 
-#include "SpehsEngine/Core/Vector.h"
-#include "SpehsEngine/Core/Log.h"
-
+#include <glm/vec2.hpp>
 #include <random>
 #include <stdint.h>
 #include <type_traits>
@@ -185,15 +183,15 @@ namespace se
 			}
 
 			//Special functions
-			se::vec2 circle(const float _radius = 1.0f)
+			glm::vec2 circle(const float _radius = 1.0f)
 			{
 				float angle = random<float>(0.0f, 2.0f * PI);
-				return se::vec2(cos(angle) * _radius, sin(angle) * _radius);
+				return glm::vec2(cos(angle) * _radius, sin(angle) * _radius);
 			}
 
-			se::vec2 square(const float _side = 1.0f)
+			glm::vec2 square(const float _side = 1.0f)
 			{
-				return se::vec2(random<float>(0.0f, _side), random<float>(0.0f, _side));
+				return glm::vec2(random<float>(0.0f, _side), random<float>(0.0f, _side));
 			}
 
 			template<typename FloatingPointType = float>
@@ -300,7 +298,7 @@ namespace se
 		bool weightedCoin(const double _trueProbability = 0.5);
 		unsigned dice(const unsigned _sides);
 		unsigned weightedDice(const std::initializer_list<double> _propabilities);
-		se::vec2 circle(const float _radius = 1.0f);
-		se::vec2 square(const float _side = 1.0f);
+		glm::vec2 circle(const float _radius = 1.0f);
+		glm::vec2 square(const float _side = 1.0f);
 	}
 }

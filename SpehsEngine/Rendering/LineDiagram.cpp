@@ -132,7 +132,7 @@ namespace se
 		void LineDiagram::setSize(const float width, const float height)
 		{
 			const Color col = polygon->getColor();
-			const vec2 pos = polygon->getPosition();
+			const glm::vec2 pos = polygon->getPosition();
 			polygon->destroy();
 			polygon = batchManager.createPolygon(Shape::BUTTON, (PlaneDepth)0, width, height);
 			polygon->setCameraMatrixState(false);
@@ -157,9 +157,9 @@ namespace se
 			return polygon->getPlaneDepth();
 		}
 
-		vec2 LineDiagram::getSize() const
+		glm::vec2 LineDiagram::getSize() const
 		{
-			return vec2(polygon->getWidth(), polygon->getHeight());
+			return glm::vec2(polygon->getWidth(), polygon->getHeight());
 		}
 
 		float LineDiagram::getWidth() const
@@ -172,7 +172,7 @@ namespace se
 			return polygon->getHeight();
 		}
 
-		vec2 LineDiagram::getPosition() const
+		glm::vec2 LineDiagram::getPosition() const
 		{
 			return polygon->getPosition();
 		}
@@ -222,8 +222,8 @@ namespace se
 
 					const float prevHeight = (previous->value - minValue) / variance;
 					const float thisHeight = (points[p].value - minValue) / variance;
-					const vec2 begin = polygon->getPosition() + vec2(p * interval, polygon->getHeight() * prevHeight);
-					const vec2 end = polygon->getPosition() + vec2((p + 1) * interval, polygon->getHeight() * thisHeight);
+					const glm::vec2 begin = polygon->getPosition() + glm::vec2(p * interval, polygon->getHeight() * prevHeight);
+					const glm::vec2 end = polygon->getPosition() + glm::vec2((p + 1) * interval, polygon->getHeight() * thisHeight);
 					points[p].line->setPoints(begin, end);
 				}
 				else
@@ -258,18 +258,18 @@ namespace se
 			}
 		}
 
-		void LineDiagram2::set(const int index, const se::vec2& point)
+		void LineDiagram2::set(const int index, const glm::vec2& point)
 		{
 			points[index].point = point;
 			updateLineVisuals();
 		}
 
-		se::vec2 LineDiagram2::get(const int index) const
+		glm::vec2 LineDiagram2::get(const int index) const
 		{
 			return points[index].point;
 		}
 
-		void LineDiagram2::pushBack(const se::vec2& point)
+		void LineDiagram2::pushBack(const glm::vec2& point)
 		{
 			points.push_back(PointData());
 			points.back().point = point;
@@ -277,7 +277,7 @@ namespace se
 			updateLineVisuals();
 		}
 
-		void LineDiagram2::insert(const int index, const se::vec2& point)
+		void LineDiagram2::insert(const int index, const glm::vec2& point)
 		{
 			points.insert(points.begin() + index, PointData());
 			points[index].point = point;
@@ -360,7 +360,7 @@ namespace se
 		void LineDiagram2::setSize(const float width, const float height)
 		{
 			const Color col = polygon->getColor();
-			const vec2 pos = polygon->getPosition();
+			const glm::vec2 pos = polygon->getPosition();
 			polygon->destroy();
 			polygon = batchManager.createPolygon(Shape::BUTTON, (PlaneDepth)0, width, height);
 			polygon->setCameraMatrixState(false);
@@ -385,9 +385,9 @@ namespace se
 			return polygon->getPlaneDepth();
 		}
 
-		vec2 LineDiagram2::getSize() const
+		glm::vec2 LineDiagram2::getSize() const
 		{
-			return vec2(polygon->getWidth(), polygon->getHeight());
+			return glm::vec2(polygon->getWidth(), polygon->getHeight());
 		}
 
 		float LineDiagram2::getWidth() const
@@ -400,7 +400,7 @@ namespace se
 			return polygon->getHeight();
 		}
 
-		vec2 LineDiagram2::getPosition() const
+		glm::vec2 LineDiagram2::getPosition() const
 		{
 			return polygon->getPosition();
 		}
@@ -418,8 +418,8 @@ namespace se
 		void LineDiagram2::updateLineVisuals()
 		{
 			//Get min/max visible values
-			se::vec2 minValue(std::numeric_limits<float>::max(), std::numeric_limits<float>::max());
-			se::vec2 maxValue(0.0f, 0.0f);
+			glm::vec2 minValue(std::numeric_limits<float>::max(), std::numeric_limits<float>::max());
+			glm::vec2 maxValue(0.0f, 0.0f);
 			for (size_t p = 0; p < points.size(); p++)
 			{
 				if (points[p].point.x < minValue.x)
@@ -433,7 +433,7 @@ namespace se
 			}
 
 			PointData* previous = nullptr;
-			se::vec2 variance = maxValue - minValue;
+			glm::vec2 variance = maxValue - minValue;
 			if (variance.x <= 0.0f)
 				variance.x = 0.5f;
 			if (variance.y <= 0.0f)
@@ -454,10 +454,10 @@ namespace se
 						points[p].line->setColor(lineColor);
 					}
 
-					const se::vec2 prevFactor((previous->point.x - minValue.x) / variance.x, (previous->point.y - minValue.y) / variance.y);
-					const se::vec2 thisFactor((points[p].point.x - minValue.x) / variance.x, (points[p].point.y - minValue.y) / variance.y);
-					const vec2 prevLinePoint = polygon->getPosition() + vec2(prevFactor.x * polygon->getWidth(), prevFactor.y * polygon->getHeight());
-					const vec2 thisLinePoint = polygon->getPosition() + vec2(thisFactor.x * polygon->getWidth(), thisFactor.y * polygon->getHeight());
+					const glm::vec2 prevFactor((previous->point.x - minValue.x) / variance.x, (previous->point.y - minValue.y) / variance.y);
+					const glm::vec2 thisFactor((points[p].point.x - minValue.x) / variance.x, (points[p].point.y - minValue.y) / variance.y);
+					const glm::vec2 prevLinePoint = polygon->getPosition() + glm::vec2(prevFactor.x * polygon->getWidth(), prevFactor.y * polygon->getHeight());
+					const glm::vec2 thisLinePoint = polygon->getPosition() + glm::vec2(thisFactor.x * polygon->getWidth(), thisFactor.y * polygon->getHeight());
 					points[p].line->setPoints(prevLinePoint, thisLinePoint);
 				}
 				else

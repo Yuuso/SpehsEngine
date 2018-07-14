@@ -4,7 +4,6 @@
 #include "SpehsEngine/Rendering/Depth.h"
 #include "SpehsEngine/Core/Color.h"
 #include "SpehsEngine/Core/Shapes.h"
-#include "SpehsEngine/Core/Vector.h"
 
 #include <glm/mat4x4.hpp>
 
@@ -67,20 +66,20 @@ namespace se
 
 			//Setters
 			void setPosition(const float _x, const float _y);
-			void setPosition(const se::vec2& _newPosition);
+			void setPosition(const glm::vec2& _newPosition);
 			void setPosition(const Primitive& _other);
 			void translate(const float _x, const float _y);
-			void translate(const se::vec2& _translation);
+			void translate(const glm::vec2& _translation);
 			void setScale(const float _newScale);
 			void setScale(const float _newScaleX, const float _newScaleY);
-			void setScale(const se::vec2& _newScale);
+			void setScale(const glm::vec2& _newScale);
 			void setScaleX(const float _newScaleX);
 			void setScaleY(const float _newScaleX);
 			void setRotation(const float _newRotation);
-			void setRotation(const float _newRotation, const se::vec3& _newRotationVector);
+			void setRotation(const float _newRotation, const glm::vec3& _newRotationVector);
 			void setRotation(const Primitive& _other);
 			void rotate(const float _rotation);
-			void setRotationVector(const se::vec3& _newRotationVector);
+			void setRotationVector(const glm::vec3& _newRotationVector);
 			void setColor(const Primitive& other);
 			void setColor(const se::Color& _newColor) override;
 			void setAlpha(const float _alpha) override;
@@ -93,7 +92,7 @@ namespace se
 			void setBlending(const bool _newState);
 
 			//Getters
-			se::vec2 getPosition() const { return position; }
+			glm::vec2 getPosition() const { return position; }
 			float getX() const { return position.x; }
 			float getY() const { return position.y; }
 			float getRotation() const { return rotation; }
@@ -126,11 +125,11 @@ namespace se
 			float lineWidth = 0.0f;
 			float rotation = 0.0f;
 			float scaleX = 1.0f, scaleY = 1.0f;
-			se::vec3 rotationVector = se::vec3(0.0f, 0.0f, 1.0f);
+			glm::vec3 rotationVector = glm::vec3(0.0f, 0.0f, 1.0f);
 			Color primitiveColor = Color(255, 255, 255, 255);
 			glm::mat4 scaledMatrix = glm::mat4(1.0f);
 			glm::mat4 scaledRotatedMatrix = glm::mat4(1.0f);
-			se::vec2 position = se::vec2(0.0f, 0.0f);
+			glm::vec2 position = glm::vec2(0.0f, 0.0f);
 			std::vector<se::Vertex> vertexArray; //Original vertices
 		};
 	}

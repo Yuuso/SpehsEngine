@@ -2,9 +2,9 @@
 #pragma once
 
 #include "SpehsEngine/Rendering/Vertex3D.h"
-#include "SpehsEngine/Core/Vector.h"
 #include "SpehsEngine/Core/Color.h"
 
+#include <glm/vec3.hpp>
 #include <glm/mat4x4.hpp>
 
 #include <string>
@@ -41,18 +41,18 @@ namespace se
 
 			// Setters
 			void setPosition(const float _x, const float _y, const float _z);
-			void setPosition(const se::vec3& _newPosition);
+			void setPosition(const glm::vec3& _newPosition);
 			void setPosition(const Mesh& _newPosition);
 			void setRotation(const float _yaw, const float _pitch, const float _roll);
-			void setRotation(const se::vec3& _newRotation);
+			void setRotation(const glm::vec3& _newRotation);
 			void setScale(const float _newScale);
 			void setScale(const float _newScaleX, const float _newScaleY, const float _newScaleZ);
-			void setScale(const se::vec3& _newScale);
+			void setScale(const glm::vec3& _newScale);
 			void setColor(const Mesh& _other);
 			void setColor(const Color _color);
 			void setAlpha(const float _alpha);
 			void translate(const float _x, const float _y, const float _z);
-			void translate(const se::vec3& _translation);
+			void translate(const glm::vec3& _translation);
 			void setBlending(const bool _value);
 			void setDepthTest(const bool _value);
 			void setRenderState(const Mesh& _other);
@@ -65,9 +65,9 @@ namespace se
 			void setTexture(TextureData* _textureDataPtr);
 
 			// Getters
-			se::vec3 getPosition() const { return position; }
-			se::vec3 getRotation() const { return rotation; }
-			se::vec3 getScale() const { return scale; }
+			glm::vec3 getPosition() const { return position; }
+			glm::vec3 getRotation() const { return rotation; }
+			glm::vec3 getScale() const { return scale; }
 			bool getRenderState() const { return renderState; }
 			unsigned int getShaderIndex() const { return shaderIndex; }
 			se::Color getColor() const { return color; }
@@ -86,9 +86,9 @@ namespace se
 			bool depthTest = true;
 			unsigned int shaderIndex;
 			GLuint textureDataID = 0;
-			se::vec3 position = se::vec3::zero;
-			se::vec3 rotation = se::vec3::zero;
-			se::vec3 scale = se::vec3(1.0f, 1.0f, 1.0f);
+			glm::vec3 position;
+			glm::vec3 rotation;
+			glm::vec3 scale = glm::vec3(1.0f, 1.0f, 1.0f);
 			Color color = Color(255, 255, 255, 255);
 
 			glm::mat4 scaledMatrix = glm::mat4(1.0f);

@@ -128,8 +128,8 @@ namespace se
 					Character character =
 					{
 						texture,
-						se::ivec2((*(FT_Face*)ftFace)->glyph->bitmap.width, (*(FT_Face*)ftFace)->glyph->bitmap.rows),
-						se::ivec2((*(FT_Face*)ftFace)->glyph->bitmap_left, (*(FT_Face*)ftFace)->glyph->bitmap_top),
+						glm::ivec2((*(FT_Face*)ftFace)->glyph->bitmap.width, (*(FT_Face*)ftFace)->glyph->bitmap.rows),
+						glm::ivec2((*(FT_Face*)ftFace)->glyph->bitmap_left, (*(FT_Face*)ftFace)->glyph->bitmap_top),
 						(GLuint)(*(FT_Face*)ftFace)->glyph->advance.x
 					};
 					font->characters.insert(std::pair<GLchar, Character>(c, character));

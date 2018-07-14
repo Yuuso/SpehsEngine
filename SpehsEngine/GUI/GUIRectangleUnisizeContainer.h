@@ -48,7 +48,7 @@ namespace se
 		virtual void updatePosition() override = 0;
 
 	protected:
-		se::ivec2 elementSize;///< Current size of a single element, TO BE REMOVED (element size is dynamic as rectangle sizes are INTEGRAL, therefore uneven sizes result in malformed container dimensions. Extra size should be allocated somewhere (e.g. at the last element...))
-		se::ivec2 minElementSize;///< Minimum size of an elment (determined by the largest min width/height dimensions in the elements vector)
+		glm::ivec2 elementSize;///< Current size of a single element, TO BE REMOVED (element size is dynamic as rectangle sizes are INTEGRAL, therefore uneven sizes result in malformed container dimensions. Extra size should be allocated somewhere (e.g. at the last element...))
+		glm::ivec2 minElementSize;///< Minimum size of an elment (determined by the largest min width/height dimensions in the elements vector)
 	};
 }

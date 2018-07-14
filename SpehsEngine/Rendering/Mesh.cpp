@@ -107,7 +107,7 @@ namespace se
 			position.z = _z;
 			needUpdate = true;
 		}
-		void Mesh::setPosition(const se::vec3& _newPosition)
+		void Mesh::setPosition(const glm::vec3& _newPosition)
 		{
 #ifdef _DEBUG
 			if (_newPosition.x != _newPosition.x || _newPosition.y != _newPosition.y || _newPosition.z != _newPosition.z)
@@ -142,7 +142,7 @@ namespace se
 			rotation.z = _roll;
 			needUpdate = true;
 		}
-		void Mesh::setRotation(const se::vec3& _newRotation)
+		void Mesh::setRotation(const glm::vec3& _newRotation)
 		{
 #ifdef _DEBUG
 			if (_newRotation.x != _newRotation.x || _newRotation.y != _newRotation.y || _newRotation.z != _newRotation.z)
@@ -179,7 +179,7 @@ namespace se
 			scale.z = _newScaleZ;
 			needUpdate = true;
 		}
-		void Mesh::setScale(const se::vec3& _newScale)
+		void Mesh::setScale(const glm::vec3& _newScale)
 		{
 #ifdef _DEBUG
 			if (_newScale.x != _newScale.x || _newScale.y != _newScale.y || _newScale.z != _newScale.z)
@@ -227,7 +227,7 @@ namespace se
 			position.z += _z;
 			needUpdate = true;
 		}
-		void Mesh::translate(const se::vec3& _translation)
+		void Mesh::translate(const glm::vec3& _translation)
 		{
 #ifdef _DEBUG
 			if (_translation.x != _translation.x || _translation.y != _translation.y || _translation.z != _translation.z)

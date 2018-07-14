@@ -1,7 +1,5 @@
 #pragma once
-#include "SpehsEngine/Core/Vector.h"
-
-
+#include <glm/vec2.hpp>
 
 namespace se
 {
@@ -14,17 +12,17 @@ namespace se
 
 	//Biliear Interpolation
 	template <typename type>
-	type bilerp(const se::vec2& _x, const se::vec2& _p1, const se::vec2& _p2, const se::vec2& _p3, const se::vec2& _p4, const type _v1, const type _v2, const type _v3, const type _v4)
+	type bilerp(const glm::vec2& _x, const glm::vec2& _p1, const glm::vec2& _p2, const glm::vec2& _p3, const glm::vec2& _p4, const type _v1, const type _v2, const type _v3, const type _v4)
 	{
 		//se::console::error("Don't use this stupid algorithm...");
 		return;
 
-		//se::vec2 UV;
+		//glm::vec2 UV;
 
-		//se::vec2 e = _p2 - _p1;
-		//se::vec2 f = _p4 - _p1;
-		//se::vec2 g = _p1 - _p2 + _p3 - _p4;
-		//se::vec2 h = _x - _p1;
+		//glm::vec2 e = _p2 - _p1;
+		//glm::vec2 f = _p4 - _p1;
+		//glm::vec2 g = _p1 - _p2 + _p3 - _p4;
+		//glm::vec2 h = _x - _p1;
 
 		//float k2 = se::cross2(g, f);
 		//float k1 = se::cross2(e, f) + se::cross2(h, g);
@@ -32,7 +30,7 @@ namespace se
 
 		//float w = k1 * k1 - 4.0f * k0 * k2;
 		//if (w < 0.0f) 
-		//	UV = se::vec2(-1.0f);
+		//	UV = glm::vec2(-1.0f);
 		//else
 		//{
 		//	w = sqrt(w);
@@ -57,7 +55,7 @@ namespace se
 		//		v = -1.0;
 		//	}
 
-		//	UV = se::vec2(u, v);
+		//	UV = glm::vec2(u, v);
 		//}
 
 		//return _v1 + (_v2 - _v1) * UV.x + (_v4 - _v1) * UV.y + (_v1 - _v2 + _v3 - _v4) * UV.x *UV.y;

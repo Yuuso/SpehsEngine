@@ -11,7 +11,7 @@
 #include <algorithm>
 
 
-extern se::vec2 positionCorrectionFactor;
+extern glm::vec2 positionCorrectionFactor;
 extern float scaleCorrectionFactor;
 
 extern const float defaultRollOffFactor;
@@ -21,10 +21,11 @@ namespace se
 {
 	namespace audio
 	{
-		SoundSource::SoundSource(const int _audioChannel) : pitch(1.0f), gain(1.0f), maxGain(1.0f), minGain(0.0f), loop(false), source(nullptr), relativeToSource(true),
-			gainAutomationTimer(0.0f), gainAutomationTime(0.0f), automationType(AutomationType::none), playQueued(false), sound(0, 0), audioChannel(_audioChannel)
+		SoundSource::SoundSource(const int _audioChannel)
+			: audioChannel(_audioChannel)
 		{
 		}
+
 		SoundSource::~SoundSource()
 		{
 			removeSource();
@@ -35,6 +36,7 @@ namespace se
 			sound.first = _hashID;
 			sound.second = AudioManager::isReady(_hashID);
 		}
+
 		void SoundSource::setSound(const std::string _filepath)
 		{
 			sound.first = AudioManager::load(_filepath);
@@ -170,6 +172,7 @@ namespace se
 				checkOpenALErrors(__FILE__, __LINE__);
 			}
 		}
+
 		void SoundSource::play(const float _fadeTimer)
 		{
 			resetAutomation();
@@ -206,6 +209,7 @@ namespace se
 				checkOpenALErrors(__FILE__, __LINE__);
 			}
 		}
+
 		void SoundSource::pause()
 		{
 			resetAutomation();
@@ -218,6 +222,7 @@ namespace se
 			alSourcePause(source->sourceID);
 			checkOpenALErrors(__FILE__, __LINE__);
 		}
+
 		void SoundSource::pause(const float _fadeTimer)
 		{
 			resetAutomation();
@@ -236,6 +241,7 @@ namespace se
 			gainAutomationTime = _fadeTimer;
 			gainAutomationTimer = _fadeTimer;
 		}
+
 		void SoundSource::stop()
 		{
 			resetAutomation();
@@ -251,6 +257,7 @@ namespace se
 				checkOpenALErrors(__FILE__, __LINE__);
 			}
 		}
+
 		void SoundSource::stop(const float _fadeTimer)
 		{
 			resetAutomation();
@@ -279,6 +286,7 @@ namespace se
 				alSourcef(source->sourceID, AL_PITCH, pitch);
 			}
 		}
+
 		void SoundSource::setGain(const float _gain)
 		{
 			gain = _gain;
@@ -288,6 +296,7 @@ namespace se
 				alSourcef(source->sourceID, AL_GAIN, gain * AudioEngine::getChannelGain(audioChannel));
 			}
 		}
+
 		void SoundSource::setGain(const float _gain, const float _fadeTimer)
 		{
 			/*Set type to play*/
@@ -299,6 +308,7 @@ namespace se
 			gainAutomationTime = _fadeTimer;
 			gainAutomationTimer = _fadeTimer;
 		}
+
 		void SoundSource::setMaxGain(const float _maxGain)
 		{
 			maxGain = _maxGain;
@@ -307,6 +317,7 @@ namespace se
 				alSourcef(source->sourceID, AL_MAX_GAIN, maxGain * AudioEngine::getChannelGain(audioChannel));
 			}
 		}
+
 		void SoundSource::setMinGain(const float _minGain)
 		{
 			minGain = _minGain;
@@ -315,6 +326,7 @@ namespace se
 				alSourcef(source->sourceID, AL_MIN_GAIN, minGain * AudioEngine::getChannelGain(audioChannel));
 			}
 		}
+
 		void SoundSource::setLooping(const bool _loop)
 		{
 			loop = _loop;
@@ -323,14 +335,17 @@ namespace se
 				alSourcei(source->sourceID, AL_LOOPING, loop);
 			}
 		}
+
 		void SoundSource::setPriority(const unsigned int _prio)
 		{
 			priority = _prio;
 		}
+
 		void SoundSource::setRelative(const bool _value)
 		{
 			relativeToSource = _value;
 		}
+
 		void SoundSource::setAudioChannel(const int _audioChannel)
 		{
 			if (audioChannel != _audioChannel)
@@ -351,6 +366,7 @@ namespace se
 			alGetSourcei(source->sourceID, AL_SOURCE_STATE, &state);
 			return state == AL_PLAYING;
 		}
+
 		bool SoundSource::isPaused()
 		{
 			if (!source)
@@ -372,11 +388,13 @@ namespace se
 			source->soundPtr = nullptr;
 			source = nullptr;
 		}
+
 		void SoundSource::resetAutomation()
 		{
 			gainAutomationTimer = 0.0f;
 			automationType = AutomationType::none;
 		}
+
 		bool SoundSource::soundQueued()
 		{
 			//If hashID for sounds exists but there is no buffer, the sound is still loading
@@ -384,10 +402,14 @@ namespace se
 		}
 
 
-		ActiveSoundSource::ActiveSoundSource(const int _audioChannel) : SoundSource(_audioChannel), position(se::vec3::zero), velocity(se::vec3::zero), direction(se::vec2::zero), rollOffFactor(defaultRollOffFactor)
+
+		ActiveSoundSource::ActiveSoundSource(const int _audioChannel)
+			: SoundSource(_audioChannel)
+			, rollOffFactor(defaultRollOffFactor)
 		{
 			relativeToSource = false;
 		}
+
 		ActiveSoundSource::~ActiveSoundSource()
 		{
 
@@ -402,7 +424,7 @@ namespace se
 			SoundSource::setParameters();
 		}
 
-		void ActiveSoundSource::setPosition(const se::vec2& _pos)
+		void ActiveSoundSource::setPosition(const glm::vec2& _pos)
 		{
 			position.x = _pos.x;
 			position.y = _pos.y;
@@ -411,7 +433,8 @@ namespace se
 				alSource3f(source->sourceID, AL_POSITION, position.x * positionCorrectionFactor.x, position.y * positionCorrectionFactor.y, position.z * scaleCorrectionFactor);
 			}
 		}
-		void ActiveSoundSource::setPosition(const se::vec2& _pos, const float _z)
+
+		void ActiveSoundSource::setPosition(const glm::vec2& _pos, const float _z)
 		{
 			position.x = _pos.x;
 			position.y = _pos.y;
@@ -421,7 +444,8 @@ namespace se
 				alSource3f(source->sourceID, AL_POSITION, position.x * positionCorrectionFactor.x, position.y * positionCorrectionFactor.y, position.z * scaleCorrectionFactor);
 			}
 		}
-		void ActiveSoundSource::setVelocity(const se::vec2& _vel)
+
+		void ActiveSoundSource::setVelocity(const glm::vec2& _vel)
 		{
 			velocity.x = _vel.x;
 			velocity.y = _vel.y;
@@ -430,7 +454,8 @@ namespace se
 				alSource3f(source->sourceID, AL_VELOCITY, velocity.x * positionCorrectionFactor.x, velocity.y * positionCorrectionFactor.y, velocity.z * scaleCorrectionFactor);
 			}
 		}
-		void ActiveSoundSource::setVelocity(const se::vec2& _vel, const float _z)
+
+		void ActiveSoundSource::setVelocity(const glm::vec2& _vel, const float _z)
 		{
 			velocity.x = _vel.x;
 			velocity.y = _vel.y;
@@ -440,7 +465,8 @@ namespace se
 				alSource3f(source->sourceID, AL_VELOCITY, velocity.x * positionCorrectionFactor.x, velocity.y * positionCorrectionFactor.y, velocity.z * scaleCorrectionFactor);
 			}
 		}
-		void ActiveSoundSource::setDirection(const se::vec2& _direction)
+
+		void ActiveSoundSource::setDirection(const glm::vec2& _direction)
 		{
 			direction = _direction;
 			if (source)
@@ -448,6 +474,7 @@ namespace se
 				alSource3f(source->sourceID, AL_DIRECTION, direction.x, direction.y, 0.0f);
 			}
 		}
+
 		void ActiveSoundSource::setZ(const float _z)
 		{
 			position.z = _z;
@@ -456,6 +483,7 @@ namespace se
 				alSource3f(source->sourceID, AL_POSITION, position.x * positionCorrectionFactor.x, position.y * positionCorrectionFactor.y, position.z * scaleCorrectionFactor);
 			}
 		}
+
 		void ActiveSoundSource::setRollOffFactor(const float _rollOff)
 		{
 			rollOffFactor = _rollOff;

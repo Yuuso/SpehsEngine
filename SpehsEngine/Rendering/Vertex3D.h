@@ -1,8 +1,8 @@
-
 #pragma once
 
-#include "SpehsEngine/Core/Vector.h"
 #include "SpehsEngine/Core/Color.h"
+
+#include <glm/vec3.hpp>
 
 
 namespace se
@@ -13,17 +13,23 @@ namespace se
 		{
 		public:
 			Vertex3D() {}
-			Vertex3D(const se::vec3 _pos)
-				: position(_pos), color(255, 255, 255, 255), uv(se::vec2::zero), normal(se::vec3::zero) {}
-			Vertex3D(const se::vec3 _pos, se::vec2 _uv, se::vec3 _normal)
-				: position(_pos), color(255, 255, 255, 255), uv(_uv), normal(_normal) {}
-			Vertex3D(const se::vec3 _pos, se::Color _color, se::vec2 _uv, se::vec3 _normal)
-				: position(_pos), color(_color), uv(_uv), normal(_normal) {}
+			Vertex3D(const glm::vec3 _pos)
+				: position(_pos)
+				, color(255, 255, 255, 255) {}
+			Vertex3D(const glm::vec3 _pos, glm::vec2 _uv, glm::vec3 _normal)
+				: position(_pos), color(255, 255, 255, 255)
+				, uv(_uv)
+				, normal(_normal) {}
+			Vertex3D(const glm::vec3 _pos, se::Color _color, glm::vec2 _uv, glm::vec3 _normal)
+				: position(_pos)
+				, color(_color)
+				, uv(_uv)
+				, normal(_normal) {}
 
-			se::vec3 position;
+			glm::vec3 position;
 			se::Color color;
-			se::vec2 uv;
-			se::vec3 normal;
+			glm::vec2 uv;
+			glm::vec3 normal;
 		};
 	}
 }

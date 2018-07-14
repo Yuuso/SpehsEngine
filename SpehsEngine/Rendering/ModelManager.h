@@ -2,12 +2,12 @@
 #pragma once
 
 #include "SpehsEngine\Rendering\Vertex3D.h"
-#include "SpehsEngine\Core\Vector.h"
 
 #include <vector>
 #include <string>
 #include <sstream>
 #include <unordered_map>
+#include <glm/vec3.hpp>
 
 
 typedef unsigned short GLushort;
@@ -19,7 +19,7 @@ namespace se
 	{
 		class Mesh;
 
-		int checkArrayForElements(const std::vector<Vertex3D>& _array, const se::vec3& _position, const se::vec2& _textureCoord, const se::vec3& _normal);
+		int checkArrayForElements(const std::vector<Vertex3D>& _array, const glm::vec3& _position, const glm::vec2& _textureCoord, const glm::vec3& _normal);
 
 		struct ModelData
 		{
@@ -27,8 +27,8 @@ namespace se
 			void loadFromData(std::vector<Vertex3D> &_vertexArray, std::vector<GLushort> &_elementArray);
 
 			std::vector<Vertex3D> vertices;
-			std::vector<se::vec2> textureCoordinates;
-			std::vector<se::vec3> normals;
+			std::vector<glm::vec2> textureCoordinates;
+			std::vector<glm::vec3> normals;
 			std::vector<GLushort> vertexElements;
 			std::vector<GLushort> textureElements;
 			std::vector<GLushort> normalElements;

@@ -15,7 +15,7 @@ namespace se
 	int triangulationTestSeed = 0;
 	int triangulationTestIteration = 0;
 
-	DirectionalEdge::DirectionalEdge(se::vec2* _begin, se::vec2* _end, DirectionalEdge* _prev) : begin(_begin), end(_end), prev(nullptr), next(nullptr), innerTriangle(nullptr)
+	DirectionalEdge::DirectionalEdge(glm::vec2* _begin, glm::vec2* _end, DirectionalEdge* _prev) : begin(_begin), end(_end), prev(nullptr), next(nullptr), innerTriangle(nullptr)
 	{
 #ifdef _DEBUG
 		edgeAllocations++;
@@ -51,7 +51,7 @@ namespace se
 		children[1] = nullptr;
 		children[2] = nullptr;
 	}
-	void Triangle::build(se::vec2* p0, se::vec2* p1, se::vec2* p2, Triangle* _parent)
+	void Triangle::build(glm::vec2* p0, glm::vec2* p1, glm::vec2* p2, Triangle* _parent)
 	{
 		parent = _parent;
 		if (parent)
@@ -156,8 +156,8 @@ namespace se
 #endif
 
 				//Determine begin and end arcs
-				se::vec2 begin;
-				se::vec2 end;
+				glm::vec2 begin;
+				glm::vec2 end;
 				//For common vertex 1
 				begin = *neighbours[n]->point(neighbourPointIndex + 1) - *neighbours[n]->point(neighbourPointIndex);
 				end = *point(n - 1) - *point(n);
@@ -233,12 +233,12 @@ namespace se
 		}
 		return true;
 	}
-	Triangulation::Triangulation(std::vector<se::vec2>& points)
+	Triangulation::Triangulation(std::vector<glm::vec2>& points)
 	{
 		if (points.size() < 3)
 			log::error("Triangulation must have at least 3 input points!");
 
-		std::sort(points.begin(), points.end(), [](const se::vec2 a, const se::vec2 b) -> bool
+		std::sort(points.begin(), points.end(), [](const glm::vec2 a, const glm::vec2 b) -> bool
 		{
 			return a.x < b.x;
 		});
