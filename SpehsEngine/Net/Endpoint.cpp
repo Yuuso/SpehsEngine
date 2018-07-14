@@ -15,7 +15,7 @@ namespace se
 		{
 			if (argc < 3)
 			{
-				se::log::info("Provided command line arguments cannot be used to form an endpoint: too few arguments.");
+				log::info("Provided command line arguments cannot be used to form an endpoint: too few arguments.");
 				return Endpoint::invalid;
 			}
 
@@ -33,12 +33,12 @@ namespace se
 			}
 			if (periodCount != 3 || invalidCharacters || endpoint.address.value.size() > 15)
 			{
-				se::log::warning("Provided server address is invalid: " + endpoint.address.toString());
+				log::warning("Provided server address is invalid: " + endpoint.address.toString());
 				return Endpoint::invalid;
 			}
 			if (endpoint.port.value < 0 || endpoint.port.value > std::numeric_limits<uint16_t>::max())
 			{
-				se::log::warning("Provided server port is invalid: " + std::string(argv[2]));
+				log::warning("Provided server port is invalid: " + std::string(argv[2]));
 				return Endpoint::invalid;
 			}
 

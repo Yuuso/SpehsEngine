@@ -31,7 +31,7 @@ namespace se
 			//Magic
 			if (buffer.getBytesRemaining() < sizeof(magic))
 			{
-				se::log::info("Handshake::read() invalid handshake. No bytes left to read magic.");
+				log::info("Handshake::read() invalid handshake. No bytes left to read magic.");
 				valid = false;
 				return;
 			}
@@ -39,7 +39,7 @@ namespace se
 				buffer.read(magic);
 			if (magic != currentMagic)
 			{
-				se::log::info("Handshake::read() invalid handshake. Incompatible magic - my version: " + se::toHexString(currentMagic) + ", read magic: " + se::toHexString(magic));
+				log::info("Handshake::read() invalid handshake. Incompatible magic - my version: " + se::toHexString(currentMagic) + ", read magic: " + se::toHexString(magic));
 				valid = false;
 				return;
 			}
@@ -47,7 +47,7 @@ namespace se
 			//Handshake version
 			if (buffer.getBytesRemaining() < sizeof(handshakeVersion))
 			{
-				se::log::info("Handshake::read() invalid handshake. No bytes left to read handshake version.");
+				log::info("Handshake::read() invalid handshake. No bytes left to read handshake version.");
 				valid = false;
 				return;
 			}
@@ -55,7 +55,7 @@ namespace se
 				buffer.read(handshakeVersion);
 			if (handshakeVersion != currentVersion)
 			{
-				se::log::info("Handshake::read() invalid handshake. Incompatible versions - my version: " + std::to_string(currentVersion) + ", other version: " + std::to_string(handshakeVersion));
+				log::info("Handshake::read() invalid handshake. Incompatible versions - my version: " + std::to_string(currentVersion) + ", other version: " + std::to_string(handshakeVersion));
 				valid = false;
 				return;
 			}
@@ -63,7 +63,7 @@ namespace se
 			uint16_t readEndiannessCheckBytes;
 			if (buffer.getBytesRemaining() < sizeof(endiannessCheckBytes))
 			{
-				se::log::info("Handshake::read() invalid handshake. No bytes left to read endianness check bytes.");
+				log::info("Handshake::read() invalid handshake. No bytes left to read endianness check bytes.");
 				valid = false;
 				return;
 			}
@@ -71,7 +71,7 @@ namespace se
 				buffer.read(readEndiannessCheckBytes);
 			if (readEndiannessCheckBytes != endiannessCheckBytes)
 			{
-				se::log::info("Handshake::read() invalid handshake. Invalid endianness check bytes.");
+				log::info("Handshake::read() invalid handshake. Invalid endianness check bytes.");
 				valid = false;
 				return;
 			}

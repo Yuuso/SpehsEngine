@@ -14,10 +14,8 @@ namespace se
 	{
 		static int debugLevel = 0;
 		
-		Manager::Manager(SocketTCP& _socket)
-			: initialized(false)
-			, socket(_socket)
-			, nextEntryId(1)
+		Manager::Manager(net::SocketTCP& _socket)
+			: socket(_socket)
 		{
 
 		}

@@ -2,25 +2,29 @@
 #include <thread>
 #include <stdint.h>
 #include <boost/asio.hpp>
+#include "SpehsEngine/Net/Port.h"
 
 namespace se
 {
-	class SocketTCP;
-	class Acceptor
+	namespace net
 	{
-	public:
-		friend class SocketTCP;
-	public:
-		Acceptor();
-		~Acceptor();
+		class SocketTCP;
+		class Acceptor
+		{
+		public:
+			friend class SocketTCP;
+		public:
+			Acceptor();
+			~Acceptor();
 
-		bool open(const uint16_t _port);
+			bool open(const Port& _port);
 
-	private:
-		uint16_t port;
-		boost::asio::io_service ioService;
-		boost::asio::io_service::work ioServiceWork;
-		std::thread ioServiceThread;
-		boost::asio::ip::tcp::acceptor acceptor;
-	};
+		private:
+			Port port;
+			boost::asio::io_service ioService;
+			boost::asio::io_service::work ioServiceWork;
+			std::thread ioServiceThread;
+			boost::asio::ip::tcp::acceptor acceptor;
+		};
+	}
 }

@@ -11,9 +11,12 @@
 
 namespace se
 {
-	class SocketTCP;
 	class WriteBuffer;
 	class ReadBuffer;
+	namespace net
+	{
+		class SocketTCP;
+	}
 	
 	namespace sync
 	{
@@ -39,7 +42,7 @@ namespace se
 
 		public:
 
-			Manager(SocketTCP& socket);
+			Manager(net::SocketTCP& socket);
 			~Manager();
 
 			/*
@@ -106,9 +109,9 @@ namespace se
 			TypeInfo* findByLocalType(const IType::SyncTypeIdType& typeId);
 			TypeInfo* findByRemoteType(const IType::SyncTypeIdType& typeId);
 			
-			bool initialized;
-			SocketTCP& socket;
-			Entry::Id nextEntryId;
+			bool initialized = false;
+			net::SocketTCP& socket;
+			Entry::Id nextEntryId = 1;
 			std::vector<TypeInfo> registeredTypes;
 			std::vector<Entry*> entries;
 
