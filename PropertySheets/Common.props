@@ -12,6 +12,7 @@
       <PreprocessorDefinitions>GLM_FORCE_RADIANS;NOMINMAX;PI=3.14159265359f;TWO_PI=6.28318530718f;HALF_PI=1.57079632679f;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <TreatWarningAsError>true</TreatWarningAsError>
       <PrecompiledHeader>Use</PrecompiledHeader>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Lib>
       <AdditionalLibraryDirectories>$(SPEHSENGINE_ROOT)/Dependencies/lib/;$(SPEHSENGINE_ROOT)/bin/$(Platform)/$(Configuration)/$(PlatformToolset);</AdditionalLibraryDirectories>
