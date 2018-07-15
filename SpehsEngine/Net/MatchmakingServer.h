@@ -15,6 +15,7 @@ namespace se
 			MatchmakingServer(const Port port = 41623);
 
 			void update();
+			void stopAccepting();
 
 			void setPort(const Port& port);
 			Port getPort() const;

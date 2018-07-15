@@ -43,6 +43,16 @@ namespace se
 			}
 		}
 
+		void MatchmakingServer::stopAccepting()
+		{
+			for (size_t i = 0; i < sockets.size(); i++)
+			{
+				if (sockets[i]->isAccepting())
+					sockets[i]->stopAccepting();
+			}
+			log::info("MatchMakingServer: stopped accepting clients");
+		}
+
 		void MatchmakingServer::onAcceptCallback(SocketTCP& socketTCP)
 		{
 			for (size_t i = 0; i < sockets.size(); i++)
