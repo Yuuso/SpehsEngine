@@ -9,11 +9,6 @@
 
 #include <GL/glew.h>
 
-#include <glm/gtx/transform.hpp>
-#include <glm/gtc/quaternion.hpp>
-#include <glm/gtx/quaternion.hpp>
-#include <glm/gtc/matrix_transform.hpp>
-
 #include <atomic>
 
 
@@ -51,47 +46,17 @@ namespace se
 #endif
 		}
 
-		void Mesh::updateVertices()
-		{
-			if (needUpdate)
-			{
-				// T = t * R * S
-				scaledMatrix = glm::scale(glm::mat4(1.0f), glm::vec3(scale.x, scale.y, scale.z));
-				scaledRotatedMatrix = glm::mat4_cast(glm::quat(glm::vec3(rotation.x, rotation.y, rotation.z))) * scaledMatrix;
-				transformMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(position.x, position.y, position.z)) * scaledRotatedMatrix;
-				normalMatrix = glm::mat4(glm::inverse(glm::transpose(glm::mat3(transformMatrix))));
-
-				for (unsigned i = 0; i < worldVertexArray.size(); i++)
-				{
-					// Vertices
-					glm::vec4 vertex = transformMatrix * glm::vec4(vertexArray[i].position.x, vertexArray[i].position.y, vertexArray[i].position.z, 1.0f);
-					worldVertexArray[i].position.x = vertex.x;
-					worldVertexArray[i].position.y = vertex.y;
-					worldVertexArray[i].position.z = vertex.z;
-					// Normals
-					vertex = normalMatrix * glm::vec4(vertexArray[i].normal.x, vertexArray[i].normal.y, vertexArray[i].normal.z, 1.0f);
-					vertex = glm::normalize(vertex);
-					worldVertexArray[i].normal.x = vertex.x;
-					worldVertexArray[i].normal.y = vertex.y;
-					worldVertexArray[i].normal.z = vertex.z;
-				}
-				needUpdate = false;
-			}
-		}
-
 		void Mesh::setMesh(const std::string& _filepath)
 		{
 			if (!batchManager)
 				log::error("Cannot load mesh without batchmanager!");
 
 			vertexArray.clear();
-			worldVertexArray.clear();
 			elementArray.clear();
 
 			batchManager->modelManager.loadModel(_filepath, this);
-			worldVertexArray = vertexArray;
-
 			needUpdate = true;
+			batchManager->updateMesh(*this);
 		}
 
 		void Mesh::setPosition(const float _x, const float _y, const float _z)
@@ -193,26 +158,14 @@ namespace se
 		void Mesh::setColor(const Mesh& _other)
 		{
 			color = _other.color;
-			for (unsigned i = 0; i < worldVertexArray.size(); i++)
-			{
-				worldVertexArray[i].color = color;
-			}
 		}
 		void Mesh::setColor(const Color _color)
 		{
 			color = _color;
-			for (unsigned i = 0; i < worldVertexArray.size(); i++)
-			{
-				worldVertexArray[i].color = color;
-			}
 		}
 		void Mesh::setAlpha(const float _alpha)
 		{
 			color.a = _alpha;
-			for (unsigned i = 0; i < worldVertexArray.size(); i++)
-			{
-				worldVertexArray[i].color.a = _alpha;
-			}
 		}
 		void Mesh::translate(const float _x, const float _y, const float _z)
 		{

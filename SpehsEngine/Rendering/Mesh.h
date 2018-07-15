@@ -34,8 +34,6 @@ namespace se
 			Mesh(BatchManager3D& batchManager);
 			~Mesh();
 
-			void updateVertices(); // This is called automatically when rendering
-
 			// todo other set mesh methods
 			void setMesh(const std::string& _filepath);
 
@@ -77,7 +75,6 @@ namespace se
 			BatchManager3D* batchManager = nullptr;
 
 		protected:
-			std::vector<Vertex3D> worldVertexArray; // Transformed vertices
 			bool needUpdate = true;
 
 			bool backFaceCulling = true;
@@ -86,15 +83,10 @@ namespace se
 			bool depthTest = true;
 			unsigned int shaderIndex;
 			GLuint textureDataID = 0;
-			glm::vec3 position;
-			glm::vec3 rotation;
+			glm::vec3 position = glm::vec3(0.0f);
+			glm::vec3 rotation = glm::vec3(0.0f);
 			glm::vec3 scale = glm::vec3(1.0f, 1.0f, 1.0f);
 			Color color = Color(255, 255, 255, 255);
-
-			glm::mat4 scaledMatrix = glm::mat4(1.0f);
-			glm::mat4 scaledRotatedMatrix = glm::mat4(1.0f);
-			glm::mat4 transformMatrix = glm::mat4(1.0f);
-			glm::mat4 normalMatrix = glm::mat4(1.0f);
 
 			std::vector<Vertex3D> vertexArray; // Original vertices
 			std::vector<GLushort> elementArray; // Indices

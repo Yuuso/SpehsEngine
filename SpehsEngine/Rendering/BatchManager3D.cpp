@@ -54,6 +54,18 @@ namespace se
 			}
 			log::error("BatchManager3D::removeMesh: Mesh not found!");
 		}
+		void BatchManager3D::updateMesh(Mesh& mesh)
+		{
+			for (size_t i = 0; i < meshes.size(); i++)
+			{
+				if (meshes[i].mesh == &mesh)
+				{
+					if (meshes[i].batch != nullptr)
+						unbatch(meshes[i]);
+					break;
+				}
+			}
+		}
 
 		void BatchManager3D::unbatch(MeshObject& _object)
 		{
@@ -72,31 +84,36 @@ namespace se
 		void BatchManager3D::batch(MeshObject& _object, MeshBatch* _batch)
 		{
 			_object.indexInBatch = _batch->push(*_object.mesh);
-			_object.sizeInBatch.first = _object.mesh->worldVertexArray.size();
+			_object.sizeInBatch.first = _object.mesh->vertexArray.size();
 			_object.sizeInBatch.second = _object.mesh->elementArray.size();
 			_object.batch = _batch;
+		}
+		void BatchManager3D::updateMeshVertices(MeshObject& _object)
+		{
+			if (_object.mesh->needUpdate)
+			{
+				_object.batch->updateVertices(_object.indexInBatch.first, *_object.mesh);
+				_object.mesh->needUpdate = false;
+			}
 		}
 
 		void BatchManager3D::render()
 		{
 			bool batchFound;
 
-			// Batch Meshes
-			for (size_t i = 0; i < meshes.size();)
+			// Update
+			for (size_t i = 0; i < meshes.size(); i++)
 			{
 				if (meshes[i].batch != nullptr)
 				{
-					if (!meshes[i].mesh->renderState || meshes[i].mesh->worldVertexArray.size() == 0)
+					if (!meshes[i].mesh->renderState || meshes[i].mesh->vertexArray.size() == 0)
 						unbatch(meshes[i]);
-					i++;
+					else
+						updateMeshVertices(meshes[i]);
 				}
-				// Check meshes rendering state
-				else if (meshes[i].mesh->renderState && meshes[i].mesh->worldVertexArray.size() != 0)
+				else if (meshes[i].mesh->renderState && meshes[i].mesh->vertexArray.size() != 0)
 				{
 					batchFound = false;
-					// Update worldVertexArray
-					meshes[i].mesh->updateVertices();
-					// Find a suitable batch for it
 					for (size_t j = 0; j < batches.size(); j++)
 					{
 						if (batches[j]->checkCompatibility(*(meshes[i].mesh)))
@@ -106,20 +123,16 @@ namespace se
 							j = batches.size();
 						}
 					}
-					// If none found create a new one
 					if (!batchFound)
 					{
 						batches.push_back(new MeshBatch(*this, meshes[i].mesh->shaderIndex, meshes[i].mesh->textureDataID, meshes[i].mesh->depthTest,
 																	meshes[i].mesh->blending, meshes[i].mesh->backFaceCulling));
 						batch(meshes[i], batches.back());
 					}
-					i++;
 				}
-				else
-					i++;
 			}
 
-			// Sort batches
+			// Sort
 			std::sort(batches.begin(), batches.end(), [](MeshBatch* first, MeshBatch* second) // written out for clarity
 			{
 				if (first->getDepthTest())
@@ -160,7 +173,7 @@ namespace se
 				}
 			});
 
-			// Render MeshBatches
+			// Render
 			for (unsigned int i = 0; i < batches.size(); i++)
 			{
 				if (!batches[i]->render()) // If the batch is empty, delete it

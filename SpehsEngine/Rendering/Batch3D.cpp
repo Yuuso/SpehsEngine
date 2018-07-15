@@ -1,3 +1,4 @@
+
 #include "stdafx.h"
 
 #include "SpehsEngine/Rendering/Batch3D.h"
@@ -9,6 +10,12 @@
 #include "SpehsEngine/Rendering/BatchRenderResults.h"
 
 #include <GL/glew.h>
+
+#include <glm/gtx/transform.hpp>
+#include <glm/gtc/quaternion.hpp>
+#include <glm/gtx/quaternion.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+
 #include <algorithm>
 #include <atomic>
 
@@ -77,7 +84,7 @@ namespace se
 			{
 				return false;
 			}
-			return checkSize(_mesh.worldVertexArray.size(), _mesh.elementArray.size());
+			return checkSize(_mesh.vertexArray.size(), _mesh.elementArray.size());
 		}
 
 		bool MeshBatch::checkSize(const size_t _numVertices, const size_t _numIndices) const
@@ -168,7 +175,7 @@ namespace se
 
 		std::pair<size_t, size_t> MeshBatch::push(const Mesh& _mesh)
 		{
-			if (_mesh.worldVertexArray.size() >= MAX_VERTICES || _mesh.elementArray.size() >= MAX_INDICES)
+			if (_mesh.vertexArray.size() >= MAX_VERTICES || _mesh.elementArray.size() >= MAX_INDICES)
 				log::error("Max batch size exceeded!");
 
 			const std::pair<size_t, size_t> objectIndices = std::make_pair(vertices.size(), indices.size());
@@ -184,7 +191,8 @@ namespace se
 				}
 			}
 
-			vertices.insert(vertices.end(), _mesh.worldVertexArray.begin(), _mesh.worldVertexArray.end());
+			vertices.insert(vertices.end(), _mesh.vertexArray.begin(), _mesh.vertexArray.end());
+			needBufferUpdate = true;
 			return objectIndices;
 		}
 
@@ -195,6 +203,38 @@ namespace se
 
 			for (size_t i = _index.second; i < indices.size(); i++)
 				indices[i] -= (GLushort)_size.first;
+			needBufferUpdate = true;
+		}
+
+		void MeshBatch::updateVertices(const size_t _index, const Mesh& _mesh)
+		{
+			// T = t * R * S
+			glm::mat4 scaledMatrix = glm::scale(glm::mat4(1.0f), _mesh.scale);
+			glm::mat4 scaledRotatedMatrix = glm::mat4_cast(glm::quat(_mesh.rotation)) * scaledMatrix;
+			glm::mat4 transformMatrix = glm::translate(glm::mat4(1.0f), _mesh.position) * scaledRotatedMatrix;
+			glm::mat4 normalMatrix = glm::mat4(glm::inverse(glm::transpose(glm::mat3(transformMatrix))));
+
+			glm::vec4 newVertex;
+			Vertex3D* oldVertex;
+			const size_t size = _mesh.vertexArray.size();
+			for (size_t i = 0; i < size; i++)
+			{
+				oldVertex = &vertices[_index + i];
+				// Vertices
+				newVertex = transformMatrix * glm::vec4(_mesh.vertexArray[i].position, 1.0f);
+				oldVertex->position.x = newVertex.x;
+				oldVertex->position.y = newVertex.y;
+				oldVertex->position.z = newVertex.z;
+				// Normals
+				newVertex = normalMatrix * glm::vec4(_mesh.vertexArray[i].normal, 1.0f);
+				newVertex = glm::normalize(newVertex);
+				oldVertex->normal.x = newVertex.x;
+				oldVertex->normal.y = newVertex.y;
+				oldVertex->normal.z = newVertex.z;
+				// Color
+				oldVertex->color = _mesh.color;
+			}
+			needBufferUpdate = true;
 		}
 
 		void MeshBatch::initBuffers()
@@ -237,8 +277,8 @@ namespace se
 		}
 		void MeshBatch::updateBuffers()
 		{
-			//if (!needBufferUpdate)
-			//	return;
+			if (!needBufferUpdate)
+				return;
 			glBindVertexArray(vertexArrayObjectID);
 			glBindBuffer(GL_ARRAY_BUFFER, vertexBufferID);
 			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBufferID);

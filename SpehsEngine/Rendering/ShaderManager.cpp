@@ -195,7 +195,7 @@ namespace se
 				"	vec3 lightDirection = normalize(lightPosition - fragmentPosition);\n"
 				"	vec3 viewDirection = normalize(-fragmentPosition);\n"
 				"	float distance = length(lightPosition - fragmentPosition);\n"
-				"	float radius = 50.0;\n"
+				"	float radius = 100.0;\n"
 				"	float attenuation = 1 - pow((distance / radius), 2);\n"
 				"	float shininess = 64.0;\n"
 				"	vec3 ambient = 0.25 * fragmentColor.rgb;\n"

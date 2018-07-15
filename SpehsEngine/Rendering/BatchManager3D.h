@@ -30,6 +30,7 @@ namespace se
 
 			void addMesh(Mesh& mesh);
 			void removeMesh(Mesh& mesh);
+			void updateMesh(Mesh& mesh);
 
 			void render();
 
@@ -51,6 +52,7 @@ namespace se
 			};
 			void batch(MeshObject& _object, MeshBatch* _batch);
 			void unbatch(MeshObject& _object);
+			void updateMeshVertices(MeshObject& _object);
 			std::vector<MeshObject> meshes;
 
 			std::vector<MeshBatch*> batches;
