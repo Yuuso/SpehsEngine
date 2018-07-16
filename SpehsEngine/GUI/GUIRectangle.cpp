@@ -156,9 +156,9 @@ namespace se
 				//Create temp vec4 col, lighten it a bit from color
 				Color col = color;
 				col.brightness(1.1f);
-				col.r += 13;
-				col.g += 13;
-				col.b += 13;
+				col.r += 0.05f;
+				col.g += 0.05f;
+				col.b += 0.05f;
 				polygon->setColor(col);
 			}
 			else

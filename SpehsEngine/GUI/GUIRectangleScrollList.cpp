@@ -303,9 +303,10 @@ namespace se
 		int _x = 0;
 		if (invisibleElements() && listOnLeftSideOfMainWindow)
 			_x = scrollBar->getWidth();
-		for (size_t i = beginElementIndex + updateElementCount - 1/*last*/; i >= beginElementIndex; i--)
+		const size_t lastIndex = beginElementIndex + updateElementCount - 1;
+		for (size_t i = lastIndex + 1; i-- > beginElementIndex;)
 		{
-			if (i == beginElementIndex + updateElementCount - 1/*last*/)
+			if (i == lastIndex)
 				elements[i]->setPositionLocal(_x, 0);
 			else
 				elements[i]->setPositionLocal(_x, elements[i + 1]->getYLocal() + elements[i + 1]->getHeight());
