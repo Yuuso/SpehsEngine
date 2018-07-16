@@ -99,7 +99,7 @@ namespace se
 		const size_t size = vector.size();
 		buffer.write(size);
 		for (size_t i = 0; i < size; i++)
-			buffer.write(vector.size());
+			buffer.write(vector[i]);
 	}
 	void writeToBuffer(WriteBuffer& buffer, const std::string& string);
 	void writeToBuffer(WriteBuffer& buffer, const se::time::Time& time);

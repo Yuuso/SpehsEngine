@@ -84,7 +84,7 @@ namespace se
 		size_t size;
 		buffer.read(size);
 		for (size_t i = 0; i < size; i++)
-			buffer.read(vector.size());
+			buffer.read(vector[i]);
 	}
 	void readFromBuffer(ReadBuffer& buffer, std::string& string);
 	void readFromBuffer(ReadBuffer& buffer, time::Time& time);
