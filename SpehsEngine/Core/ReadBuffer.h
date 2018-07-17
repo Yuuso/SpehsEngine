@@ -83,6 +83,7 @@ namespace se
 	{
 		size_t size;
 		buffer.read(size);
+		vector.resize(size);
 		for (size_t i = 0; i < size; i++)
 			buffer.read(vector[i]);
 	}
