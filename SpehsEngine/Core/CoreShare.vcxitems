@@ -72,6 +72,7 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)Thread.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Time.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Vertex.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)WatchedValue.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)WriteBuffer.h" />
   </ItemGroup>
 </Project>
