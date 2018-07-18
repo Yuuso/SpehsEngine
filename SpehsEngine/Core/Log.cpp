@@ -34,6 +34,7 @@ namespace se
 		{
 			std::lock_guard<std::mutex> lock(mutex);
 			std::cout << "Error: " << message << "\nPress enter to continue..." << std::endl;
+			_ASSERT(false && message);
 			std::getchar();
 		}
 	}
