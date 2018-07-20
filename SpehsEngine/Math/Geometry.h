@@ -27,6 +27,9 @@ namespace se
 	/**Returns true if two angles (range ]0, TWO_PI[) are parallel with eachother. If angle between angles is more than the tolerance, returns false.*/
 	extern inline bool anglesParallel(float angle1, float angle2, const float parallelToleranceRad);
 
+	/** Returns a unit vector pointing towards the (2D) angle. */
+	extern inline glm::vec2 getDirection(const float angle);
+
 	extern inline glm::vec3 getRotation(const glm::vec3& _a, const glm::vec3& _b);
 
 	/**Rotates point around specified axis point*/

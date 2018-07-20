@@ -1,6 +1,6 @@
 #include "stdafx.h"
 
-#include "SpehsEngine/Core/Geometry.h"
+#include "SpehsEngine/Math/Geometry.h"
 #include "SpehsEngine/Core/Vertex.h"
 #include "SpehsEngine/Core/Log.h"
 
@@ -63,6 +63,11 @@ namespace se
 		if (angle2 < radTolerance || angle2 > TWO_PI - radTolerance)
 			return true;
 		return false;
+	}
+
+	inline glm::vec2 getDirection(const float angle)
+	{
+		return glm::vec2(std::cosf(angle), std::sinf(angle));
 	}
 
 	inline glm::vec3 getRotation(const glm::vec3& _a, const glm::vec3& _b)

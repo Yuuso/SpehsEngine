@@ -3,7 +3,7 @@
 #include "SpehsEngine/Rendering/Line.h"
 #include "SpehsEngine/Rendering/Polygon.h"
 #include "SpehsEngine/Rendering/BatchManager.h"
-#include "SpehsEngine/Core/Geometry.h"
+#include "SpehsEngine/Math/Geometry.h"
 
 namespace se
 {

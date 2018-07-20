@@ -6,7 +6,7 @@
 #include "SpehsEngine/Game/Transform2D.h"
 #include "SpehsEngine/Game/Collider.h"
 #include "SpehsEngine/Core/Time.h"
-#include "SpehsEngine/Core/Geometry.h"
+#include "SpehsEngine/Math/Geometry.h"
 #include "SpehsEngine/Rendering/Polygon.h"
 #include "SpehsEngine/Core/Vertex.h"
 

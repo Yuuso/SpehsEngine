@@ -3,7 +3,7 @@
 #include <iostream>
 #include <atomic>
 #include "SpehsEngine/Math/Triangulation.h"
-#include "SpehsEngine/Core/Geometry.h"
+#include "SpehsEngine/Math/Geometry.h"
 #define PERFORM_TRIANGULATION_VALIDITY_CHECKS
 
 namespace se

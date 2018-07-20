@@ -2,7 +2,7 @@
 #include <iostream>
 #include <algorithm>
 #include "SpehsEngine/Core/Time.h"
-#include "SpehsEngine/Core/Geometry.h"
+#include "SpehsEngine/Math/Geometry.h"
 #include "SpehsEngine/Rendering/BatchManager.h"
 #include "SpehsEngine/Rendering/Window.h"
 #include "SpehsEngine/Input/InputManager.h"

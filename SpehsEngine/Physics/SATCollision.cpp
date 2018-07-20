@@ -2,7 +2,7 @@
 
 #include "SpehsEngine/Physics/SATCollision.h"
 #include "SpehsEngine/Core/Vertex.h"
-#include "SpehsEngine/Core/Geometry.h"
+#include "SpehsEngine/Math/Geometry.h"
 
 #include "glm/vec2.hpp"
 #include "glm/gtx/vector_query.hpp"

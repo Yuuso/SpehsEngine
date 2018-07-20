@@ -5,7 +5,7 @@
 #include "GameObject.h"
 #include "Transform2D.h"
 #include <SpehsEngine/Game/Sprite.h>
-#include <SpehsEngine/Core/Geometry.h>
+#include <SpehsEngine/Math/Geometry.h>
 #include <SpehsEngine/Physics/SATCollision.h>
 #include <SpehsEngine/Rendering/Polygon.h>
 #include <SpehsEngine/Rendering/Line.h>

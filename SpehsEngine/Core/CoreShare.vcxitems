@@ -21,7 +21,6 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)Core.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Endianness.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)FileStream.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)Geometry.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)GLMVectorUtilityFunctions.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Inifile.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Inivar.cpp" />
@@ -53,7 +52,6 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)Core.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Endianness.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)FileStream.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)Geometry.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)GLMVectorUtilityFunctions.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)HasMemberFunction.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Inifile.h" />

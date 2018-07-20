@@ -139,6 +139,7 @@
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Geometry.cpp" />
     <ClCompile Include="Math.cpp" />
     <ClCompile Include="Mathematics.cpp" />
     <ClCompile Include="stdafx.cpp">
@@ -150,6 +151,7 @@
     <ClCompile Include="Triangulation.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Geometry.h" />
     <ClInclude Include="Math.h" />
     <ClInclude Include="Mathematics.h" />
     <ClInclude Include="PrecompiledInclude.h" />
