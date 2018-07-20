@@ -257,7 +257,8 @@ namespace se
 	void getWords(const std::string& string, std::vector<std::string>& words)
 	{
 		size_t wordBeginIndex = 0;
-		for (size_t i = 0; i < string.size(); i++)
+		const size_t lastIndex = string.size() - 1;
+		for (size_t i = 0; ; i++)
 		{
 			if (string[i] == ' ')
 			{
@@ -266,12 +267,13 @@ namespace se
 					words.push_back(std::string(string.begin() + wordBeginIndex, string.begin() + i));
 				wordBeginIndex = i + 1;
 			}
-		}
-		if (!string.empty() && string.back() != ' ')
-		{
-			const size_t wordLength = string.size() - 1 - wordBeginIndex;
-			if (wordLength > 0)
-				words.push_back(std::string(string.begin() + wordBeginIndex, string.end()));
+			else if (i == lastIndex)
+			{
+				const size_t wordLength = i + 1 - wordBeginIndex;
+				if (wordLength > 0)
+					words.push_back(std::string(string.begin() + wordBeginIndex, string.begin() + i + 1));
+				return;
+			}
 		}
 	}
 }
