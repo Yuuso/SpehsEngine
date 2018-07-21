@@ -273,6 +273,12 @@ namespace se
 
 		bool SocketTCP::sendPacket(const WriteBuffer& buffer, const PacketType packetType)
 		{
+			if (buffer.getOffset() == 0)
+			{
+				se_assert(false && "Trying to send an empty packet.");
+				return true;
+			}
+
 			std::lock_guard<std::recursive_mutex> lock(mutex);
 			boost::system::error_code error;
 
@@ -511,6 +517,7 @@ namespace se
 				const size_t userBytes = buffer.getBytesRemaining();
 				if (debugLogLevel >= 2)
 					log::info("SocketTCP received user defined packet. Bytes: " + std::to_string(userBytes));
+				se_assert(userBytes > 0);
 
 				if (onReceiveCallback)
 				{
