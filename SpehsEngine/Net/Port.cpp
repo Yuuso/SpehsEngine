@@ -9,6 +9,11 @@ namespace se
 	{
 		const Port Port::invalid = Port(0);
 		const Port Port::default = Port(41623);
+		Port::Port()
+			: value(invalid.value)
+		{
+
+		}
 	}
 
 	void writeToBuffer(WriteBuffer& buffer, const net::Port& port)

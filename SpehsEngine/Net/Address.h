@@ -9,14 +9,14 @@ namespace se
 		{
 			static const Address invalid;
 			typedef std::string ValueType;
-			Address() = default;
+			Address();
 			Address(const ValueType& _value) : value(_value) {}
 			operator ValueType() const { return value; }
 			bool operator==(const Address& other) const { return value == other.value; }
 			bool operator!=(const Address& other) const { return value != other.value; }
 			operator bool() const { return *this != invalid; }
 			std::string toString() const { return value; }
-			ValueType value = "0.0.0.0";
+			ValueType value;
 		};
 	}
 

@@ -10,14 +10,14 @@ namespace se
 			static const Port invalid;
 			static const Port default;
 			typedef uint16_t ValueType;
-			Port() = default;
+			Port();
 			Port(const ValueType& _value) : value(_value) {}
 			operator ValueType() const { return value; }
 			bool operator==(const Port& other) const { return value == other.value; }
 			bool operator!=(const Port& other) const { return value != other.value; }
 			operator bool() const { return *this != invalid; }
 			std::string toString() const { return std::to_string(value); }
-			ValueType value = 0;
+			ValueType value;
 		};
 	}
 

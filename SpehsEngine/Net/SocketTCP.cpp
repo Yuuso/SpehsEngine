@@ -1,8 +1,9 @@
 #include "stdafx.h"
+#include "SpehsEngine/Net/SocketTCP.h"
+
 #include <assert.h>
 #include <iostream>
 #include <string>
-#include "SpehsEngine/Net/SocketTCP.h"
 #include "SpehsEngine/Net/Acceptor.h"
 #include "SpehsEngine/Net/IOService.h"
 #include "SpehsEngine/Net/Handshake.h"
@@ -13,17 +14,21 @@
 #include "SpehsEngine/Core/Time.h"
 #include "SpehsEngine/Core/StringOperations.h"
 
+namespace
+{
+	/*
+	level 1: prints most essential state changes.
+	level 2: prints some network traffic numbers.
+	level 3: prints receive buffer in hex string.
+	*/
+	int debugLogLevel = 0;
+}
+
 namespace se
 {
 	extern std::string workingDirectory;
 	namespace net
 	{
-		/*
-			level 1: prints most essential state changes.
-			level 2: prints some network traffic numbers.
-			level 3: prints receive buffer in hex string.
-		*/
-		int debugLogLevel = 0;
 		static const time::Time handshakeReceiveTimeout = time::fromSeconds(10000);
 		static const time::Time connectionTimeout = time::fromSeconds(10000);
 
@@ -125,8 +130,8 @@ namespace se
 				//Resolve the remote endpoint
 				boost::system::error_code error;
 				boost::asio::ip::tcp::resolver resolverTCP(ioService.getImplementationRef());
-				boost::asio::ip::tcp::resolver::query query(endpoint.address.toString(), endpoint.port.toString());
-				boost::asio::ip::tcp::endpoint asioEndpoint = *resolverTCP.resolve(query, error);
+				const boost::asio::ip::tcp::resolver::query query(endpoint.address.toString(), endpoint.port.toString());
+				const boost::asio::ip::tcp::endpoint asioEndpoint = *resolverTCP.resolve(query, error);
 				if (error)
 				{
 					log::info("SocketTCP::connect: failed to resolve the endpoint. Boost asio error: " + error.message());
@@ -325,7 +330,7 @@ namespace se
 			return true;
 		}
 
-		bool SocketTCP::startReceiving(const std::function<bool(ReadBuffer&)> callbackFunction)
+		bool SocketTCP::startReceiving(const std::function<void(ReadBuffer&)> callbackFunction)
 		{
 			if (isReceiving())
 			{
@@ -404,7 +409,7 @@ namespace se
 			{
 				for (size_t i = 0; i < receivedPackets.size(); i++)
 				{
-					ReadBuffer buffer(receivedPackets[i]->data(), receivedPackets[i]->size());
+					ReadBuffer buffer(receivedPackets[i]->data(), receivedPackets[i]->size());//TODO: empty buffer assert?
 					onReceiveCallback(buffer);
 				}
 			}

@@ -56,7 +56,7 @@ namespace se
 			bool resizeReceiveBuffer(const size_t newSize);
 
 			/* Starts receiving data from the connected endpoint. Non-blocking call. Callback return value specifies whether to keep receiving. */
-			bool startReceiving(const std::function<bool(ReadBuffer&)> onReceiveCallback);
+			bool startReceiving(const std::function<void(ReadBuffer&)> onReceiveCallback);
 
 			/* Starts listening for a new incoming connection. Upon success, a connection is made. Non-blocking call. Callback is called even if no connection is made! */
 			bool startAccepting(const Port& port, const std::function<void(SocketTCP&)> onAcceptCallback);
@@ -120,7 +120,7 @@ namespace se
 			boost::asio::ip::tcp::socket socket;
 			boost::asio::ip::tcp::acceptor* acceptor = nullptr;
 			std::thread* spehsAcceptThread = nullptr;
-			std::function<bool(ReadBuffer&)> onReceiveCallback;//User defined receive handler
+			std::function<void(ReadBuffer&)> onReceiveCallback;//User defined receive handler
 			std::function<void(SocketTCP&)> onAcceptCallback;
 			ExpectedBytesType expectedBytes = 0;
 			std::vector<unsigned char> receiveBuffer;
