@@ -4,6 +4,7 @@
 #include "SpehsEngine/Rendering/ModelManager.h"
 #include "SpehsEngine/Rendering/BatchManager3D.h"
 #include "SpehsEngine/Rendering/Batch3D.h"
+#include "SpehsEngine/Rendering/Model.h"
 #include "SpehsEngine/Rendering/Mesh.h"
 #include "SpehsEngine/Rendering/Window.h"
 
@@ -31,40 +32,41 @@ namespace se
 				delete batches[i];
 		}
 
-		void BatchManager3D::addMesh(Mesh& mesh)
+		void BatchManager3D::addModel(Model& _model)
 		{
-			mesh.batchManager = this;
-			meshes.push_back(MeshObject(mesh));
+			for (size_t i = 0; i < _model.meshes.size(); i++)
+				addMesh(*_model.meshes[i]);
+			_model.batchManager = this;
 		}
-		void BatchManager3D::removeMesh(Mesh& mesh)
+		void BatchManager3D::removeModel(Model& _model)
+		{
+			for (size_t i = 0; i < _model.meshes.size(); i++)
+				removeMesh(*_model.meshes[i]);
+			_model.batchManager = nullptr;
+		}
+
+		void BatchManager3D::addMesh(Mesh& _mesh)
+		{
+			_mesh.batchManager = this;
+			meshes.push_back(MeshObject(_mesh));
+		}
+		void BatchManager3D::removeMesh(Mesh& _mesh)
 		{
 			for (size_t i = 0; i < meshes.size(); i++)
 			{
-				if (&mesh == meshes[i].mesh)
+				if (&_mesh == meshes[i].mesh)
 				{
 					if (meshes[i].batch != nullptr)
 					{
 						unbatch(meshes[i]);
 					}
-					mesh.batchManager = nullptr;
+					_mesh.batchManager = nullptr;
 					meshes[i] = meshes.back();
 					meshes.pop_back();
 					return;
 				}
 			}
 			log::error("BatchManager3D::removeMesh: Mesh not found!");
-		}
-		void BatchManager3D::updateMesh(Mesh& mesh)
-		{
-			for (size_t i = 0; i < meshes.size(); i++)
-			{
-				if (meshes[i].mesh == &mesh)
-				{
-					if (meshes[i].batch != nullptr)
-						unbatch(meshes[i]);
-					break;
-				}
-			}
 		}
 
 		void BatchManager3D::unbatch(MeshObject& _object)

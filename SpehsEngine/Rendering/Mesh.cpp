@@ -32,31 +32,11 @@ namespace se
 			meshAllocations++;
 #endif
 		}
-		Mesh::Mesh(BatchManager3D& batchManager)
-			: Mesh()
-		{
-			batchManager.addMesh(*this);
-		}
 		Mesh::~Mesh()
 		{
-			if (batchManager)
-				batchManager->removeMesh(*this);
 #ifdef _DEBUG
 			meshDeallocations++;
 #endif
-		}
-
-		void Mesh::setMesh(const std::string& _filepath)
-		{
-			if (!batchManager)
-				log::error("Cannot load mesh without batchmanager!");
-
-			vertexArray.clear();
-			elementArray.clear();
-
-			batchManager->modelManager.loadModel(_filepath, this);
-			needUpdate = true;
-			batchManager->updateMesh(*this);
 		}
 
 		void Mesh::setPosition(const float _x, const float _y, const float _z)

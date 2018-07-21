@@ -13,7 +13,7 @@ namespace se
 	class GameObject;
 	class PhysicsWorld2D;
 	class Vertex;
-	
+
 	class RigidBody2D : public Component
 	{
 		friend PhysicsWorld2D;
@@ -61,7 +61,7 @@ namespace se
 
 		float circleRadius;
 		float boxX, boxY;
-		int numVertices;
+		size_t numVertices;
 		Vertex* vertexData;
 
 		float rotation;

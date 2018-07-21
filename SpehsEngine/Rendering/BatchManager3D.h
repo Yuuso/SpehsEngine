@@ -13,6 +13,7 @@ namespace se
 	namespace rendering
 	{
 		class Camera3D;
+		class Model;
 		class Mesh;
 		class MeshBatch;
 		class Window;
@@ -23,14 +24,14 @@ namespace se
 		class BatchManager3D
 		{
 			friend class Mesh;
+			friend class Model;
 
 		public:
 			BatchManager3D(Window& _window, ModelManager& _modelManager, ShaderManager& _shaderManager, Camera3D& _camera, const std::string& _name = "unnamed 3d batch manager");
 			~BatchManager3D();
 
-			void addMesh(Mesh& mesh);
-			void removeMesh(Mesh& mesh);
-			void updateMesh(Mesh& mesh);
+			void addModel(Model& _model);
+			void removeModel(Model& _model);
 
 			void render();
 
@@ -42,6 +43,8 @@ namespace se
 			const std::string name;
 
 		private:
+			void addMesh(Mesh& _mesh);
+			void removeMesh(Mesh& _mesh);
 			struct MeshObject
 			{
 				MeshObject(Mesh& _mesh) : mesh(&_mesh) {}

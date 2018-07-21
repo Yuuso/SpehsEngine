@@ -28,15 +28,9 @@ namespace se
 			friend class BatchManager3D;
 			friend class MeshBatch;
 			friend class ModelManager;
+			friend class Model;
 
 		public:
-			Mesh();
-			Mesh(BatchManager3D& batchManager);
-			~Mesh();
-
-			// todo other set mesh methods
-			void setMesh(const std::string& _filepath);
-
 			// Setters
 			void setPosition(const float _x, const float _y, const float _z);
 			void setPosition(const glm::vec3& _newPosition);
@@ -71,10 +65,12 @@ namespace se
 			se::Color getColor() const { return color; }
 			float getAlpha() const { return color.a; }
 
-			// TODO MAKE PROTECTED (skybox)
+		protected:
+			Mesh();
+			~Mesh();
+
 			BatchManager3D* batchManager = nullptr;
 
-		protected:
 			bool needUpdate = true;
 
 			bool backFaceCulling = true;
@@ -90,6 +86,12 @@ namespace se
 
 			std::vector<Vertex3D> vertexArray; // Original vertices
 			std::vector<GLushort> elementArray; // Indices
+
+		private:
+			Mesh(const Mesh& _other) = delete;
+			Mesh(const Mesh&& _other) = delete;
+			Mesh& operator=(const Mesh& _other) = delete;
+			Mesh& operator=(const Mesh&& _other) = delete;
 		};
 	}
 }

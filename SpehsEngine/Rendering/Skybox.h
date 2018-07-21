@@ -8,19 +8,19 @@ namespace se
 {
 	namespace rendering
 	{
-		class Mesh;
+		class Model;
 		class BatchManager3D;
 
 		class SkyBox
 		{
 		public:
-			SkyBox(BatchManager3D& _batchManager);
-			SkyBox(BatchManager3D& _batchManager,
+			SkyBox(BatchManager3D& _batchManager, const std::string& _model);
+			SkyBox(BatchManager3D& _batchManager, const std::string& _model,
 				const std::string& _negx, const std::string& _posx,
 				const std::string& _negy, const std::string& _posy,
 				const std::string& _negz, const std::string& _posz);
-			SkyBox(BatchManager3D& _batchManager, const std::string& _filepath, const std::string& _fileEnding);
-			SkyBox(BatchManager3D& _batchManager, const size_t& _hash);
+			SkyBox(BatchManager3D& _batchManager, const std::string& _model, const std::string& _filepath, const std::string& _fileEnding);
+			SkyBox(BatchManager3D& _batchManager, const std::string& _model, const size_t& _hash);
 			~SkyBox();
 
 			void setCubeMap(const std::string& _negx, const std::string& _posx,
@@ -31,11 +31,14 @@ namespace se
 
 			void setShader(const unsigned int _index);
 
-			size_t getCubeMapHash() { return cubeMapHash; }
-
 		private:
-			Mesh* mesh;
-			size_t cubeMapHash;
+			SkyBox(const SkyBox& _other) = delete;
+			SkyBox(const SkyBox&& _other) = delete;
+			SkyBox& operator=(const SkyBox& _other) = delete;
+			SkyBox& operator=(const SkyBox&& _other) = delete;
+
+			Model* model;
+			BatchManager3D* batchManager;
 		};
 	}
 }
