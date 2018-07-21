@@ -68,6 +68,7 @@ namespace se
 				se::log::error("Failed to bind SocketUDP. Boost asio error: " + error.message());
 				return false;
 			}
+			se::log::info("SocketUDP opened at port: " + port.toString());
 			return true;
 		}
 
@@ -78,6 +79,7 @@ namespace se
 			{
 				socket.shutdown(boost::asio::socket_base::shutdown_both);
 				socket.close();
+				se::log::info("SocketUDP closed.");
 			}
 		}
 
@@ -290,6 +292,7 @@ namespace se
 		void SocketUDP::setDefaultSendToEndpoint(const Endpoint& _defaultSendToEndpoint)
 		{
 			defaultSendToEndpoint = _defaultSendToEndpoint;
+			se::log::info("SocketUDP default send to endpoint set: " + _defaultSendToEndpoint.toString());
 		}
 
 		bool SocketUDP::isDefaultSendToEndpointSet() const
