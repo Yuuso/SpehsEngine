@@ -1,8 +1,9 @@
 
 #pragma once
 
+#include <glm/vec3.hpp>
+
 #include <vector>
-#include <string>
 
 
 namespace se
@@ -10,19 +11,20 @@ namespace se
 	namespace rendering
 	{
 		class Mesh;
-		class Model
+		class BatchManager3D;
+		class Line3D
 		{
 			friend class BatchManager3D;
-			friend class ModelManager;
-			friend class Skybox;
 
 		public:
-			Model();
-			Model(BatchManager3D& _batchManager);
-			~Model();
+			Line3D();
+			~Line3D();
 
-			void loadModel(const std::string& _filepath);
-			void loadModel(const size_t _hash);
+			void addPoint(const glm::vec3& _point);
+			void addPoints(const std::vector<glm::vec3>& _points);
+			void updatePoint(const size_t _index, const glm::vec3& _point);
+			void updatePoints(const std::vector<glm::vec3>& _points);
+			void clearPoints();
 
 			void setPosition(const glm::vec3& _newPosition);
 			void setRotation(const glm::vec3& _newRotation);
@@ -31,7 +33,6 @@ namespace se
 			void setAlpha(const float _alpha);
 			void translate(const glm::vec3& _translation);
 
-			void setBackFaceCulling(const bool _value);
 			void setRenderState(const bool _newState);
 			void toggleRenderState();
 			void setBlending(const bool _value);
@@ -48,7 +49,6 @@ namespace se
 			se::Color getColor() const;
 			float getAlpha() const;
 
-			bool getBackFaceCulling() const;
 			bool getRenderState() const;
 			bool getBlending() const;
 			bool getDepthTest() const;
@@ -56,16 +56,13 @@ namespace se
 
 		protected:
 			BatchManager3D* batchManager = nullptr;
-			std::vector<Mesh*> meshes;
+			Mesh* mesh;
 
 		private:
-			Model(const Model& _other) = delete;
-			Model(const Model&& _other) = delete;
-			Model& operator=(const Model& _other) = delete;
-			Model& operator=(const Model&& _other) = delete;
-
-			void clearMeshes();
-			void addMeshes();
+			Line3D(const Line3D& _other) = delete;
+			Line3D(const Line3D&& _other) = delete;
+			Line3D& operator=(const Line3D& _other) = delete;
+			Line3D& operator=(const Line3D&& _other) = delete;
 		};
 	}
 }

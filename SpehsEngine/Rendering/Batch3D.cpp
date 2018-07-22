@@ -34,7 +34,8 @@ namespace se
 {
 	namespace rendering
 	{
-		MeshBatch::MeshBatch(BatchManager3D& _batchManager, const int _shaderIndex, const GLuint _textureDataID, const bool _depthTest, const bool _blending, const bool _backFaceCulling)
+		MeshBatch::MeshBatch(BatchManager3D& _batchManager, const int _shaderIndex, const GLuint _textureDataID,
+								const bool _depthTest, const bool _blending, const bool _backFaceCulling, const GLenum _drawMode)
 			: batchManager(_batchManager)
 			, backFaceCulling(_backFaceCulling)
 			, blending(_blending)
@@ -42,6 +43,7 @@ namespace se
 			, shaderIndex(_shaderIndex)
 			, textureDataID(_textureDataID)
 			, usage(GL_DYNAMIC_DRAW) // TODO
+			, drawMode(_drawMode)
 		{
 #ifdef _DEBUG
 			Batch3DAllocations++;
@@ -79,8 +81,9 @@ namespace se
 				blending != _mesh.blending ||
 				depthTest != _mesh.depthTest ||
 				shaderIndex != _mesh.shaderIndex ||
-				textureDataID != _mesh.textureDataID
-				/*usage TODO*/)
+				textureDataID != _mesh.textureDataID ||
+				/*usage TODO*/
+				drawMode != _mesh.drawMode)
 			{
 				return false;
 			}
@@ -158,7 +161,7 @@ namespace se
 
 			//Draw
 			glBindVertexArray(vertexArrayObjectID);
-			glDrawElements(GL_TRIANGLES, GLsizei(indices.size()), GL_UNSIGNED_SHORT, reinterpret_cast<void*>(0));
+			glDrawElements(drawMode, GLsizei(indices.size()), GL_UNSIGNED_SHORT, reinterpret_cast<void*>(0));
 			glBindVertexArray(0);
 
 			checkOpenGLErrors(__FILE__, __LINE__);

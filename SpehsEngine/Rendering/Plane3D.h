@@ -1,28 +1,20 @@
 
 #pragma once
 
-#include <vector>
-#include <string>
-
 
 namespace se
 {
 	namespace rendering
 	{
 		class Mesh;
-		class Model
+		class BatchManager3D;
+		class Plane3D
 		{
 			friend class BatchManager3D;
-			friend class ModelManager;
-			friend class Skybox;
 
 		public:
-			Model();
-			Model(BatchManager3D& _batchManager);
-			~Model();
-
-			void loadModel(const std::string& _filepath);
-			void loadModel(const size_t _hash);
+			Plane3D();
+			~Plane3D();
 
 			void setPosition(const glm::vec3& _newPosition);
 			void setRotation(const glm::vec3& _newRotation);
@@ -31,7 +23,6 @@ namespace se
 			void setAlpha(const float _alpha);
 			void translate(const glm::vec3& _translation);
 
-			void setBackFaceCulling(const bool _value);
 			void setRenderState(const bool _newState);
 			void toggleRenderState();
 			void setBlending(const bool _value);
@@ -48,7 +39,6 @@ namespace se
 			se::Color getColor() const;
 			float getAlpha() const;
 
-			bool getBackFaceCulling() const;
 			bool getRenderState() const;
 			bool getBlending() const;
 			bool getDepthTest() const;
@@ -56,16 +46,13 @@ namespace se
 
 		protected:
 			BatchManager3D* batchManager = nullptr;
-			std::vector<Mesh*> meshes;
+			Mesh* mesh;
 
 		private:
-			Model(const Model& _other) = delete;
-			Model(const Model&& _other) = delete;
-			Model& operator=(const Model& _other) = delete;
-			Model& operator=(const Model&& _other) = delete;
-
-			void clearMeshes();
-			void addMeshes();
+			Plane3D(const Plane3D& _other) = delete;
+			Plane3D(const Plane3D&& _other) = delete;
+			Plane3D& operator=(const Plane3D& _other) = delete;
+			Plane3D& operator=(const Plane3D&& _other) = delete;
 		};
 	}
 }

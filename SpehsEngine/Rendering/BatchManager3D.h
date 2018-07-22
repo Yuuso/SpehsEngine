@@ -14,6 +14,8 @@ namespace se
 	{
 		class Camera3D;
 		class Model;
+		class Plane3D;
+		class Line3D;
 		class Mesh;
 		class MeshBatch;
 		class Window;
@@ -25,13 +27,20 @@ namespace se
 		{
 			friend class Mesh;
 			friend class Model;
+			friend class Line3D;
 
 		public:
 			BatchManager3D(Window& _window, ModelManager& _modelManager, ShaderManager& _shaderManager, Camera3D& _camera, const std::string& _name = "unnamed 3d batch manager");
 			~BatchManager3D();
 
-			void addModel(Model& _model);
-			void removeModel(Model& _model);
+			void add(Model& _model);
+			void remove(Model& _model);
+
+			void add(Plane3D& _plane);
+			void remove(Plane3D& _plane);
+
+			void add(Line3D& _line);
+			void remove(Line3D& _line);
 
 			void render();
 
@@ -42,9 +51,10 @@ namespace se
 			Camera3D& camera3D;
 			const std::string name;
 
-		private:
+		protected:
 			void addMesh(Mesh& _mesh);
 			void removeMesh(Mesh& _mesh);
+		private:
 			struct MeshObject
 			{
 				MeshObject(Mesh& _mesh) : mesh(&_mesh) {}

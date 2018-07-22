@@ -5,6 +5,8 @@
 #include "SpehsEngine/Rendering/BatchManager3D.h"
 #include "SpehsEngine/Rendering/Batch3D.h"
 #include "SpehsEngine/Rendering/Model.h"
+#include "SpehsEngine/Rendering/Plane3D.h"
+#include "SpehsEngine/Rendering/Line3D.h"
 #include "SpehsEngine/Rendering/Mesh.h"
 #include "SpehsEngine/Rendering/Window.h"
 
@@ -32,17 +34,45 @@ namespace se
 				delete batches[i];
 		}
 
-		void BatchManager3D::addModel(Model& _model)
+		void BatchManager3D::add(Model& _model)
 		{
+			se_assert(!_model.batchManager);
 			for (size_t i = 0; i < _model.meshes.size(); i++)
 				addMesh(*_model.meshes[i]);
 			_model.batchManager = this;
 		}
-		void BatchManager3D::removeModel(Model& _model)
+		void BatchManager3D::remove(Model& _model)
 		{
+			se_assert(_model.batchManager);
 			for (size_t i = 0; i < _model.meshes.size(); i++)
 				removeMesh(*_model.meshes[i]);
 			_model.batchManager = nullptr;
+		}
+
+		void BatchManager3D::add(Plane3D& _plane)
+		{
+			se_assert(!_plane.batchManager);
+			addMesh(*_plane.mesh);
+			_plane.batchManager = this;
+		}
+		void BatchManager3D::remove(Plane3D& _plane)
+		{
+			se_assert(_plane.batchManager);
+			removeMesh(*_plane.mesh);
+			_plane.batchManager = nullptr;
+		}
+
+		void BatchManager3D::add(Line3D& _line)
+		{
+			se_assert(!_line.batchManager);
+			addMesh(*_line.mesh);
+			_line.batchManager = this;
+		}
+		void BatchManager3D::remove(Line3D& _line)
+		{
+			se_assert(_line.batchManager);
+			removeMesh(*_line.mesh);
+			_line.batchManager = nullptr;
 		}
 
 		void BatchManager3D::addMesh(Mesh& _mesh)
@@ -128,7 +158,7 @@ namespace se
 					if (!batchFound)
 					{
 						batches.push_back(new MeshBatch(*this, meshes[i].mesh->shaderIndex, meshes[i].mesh->textureDataID, meshes[i].mesh->depthTest,
-																	meshes[i].mesh->blending, meshes[i].mesh->backFaceCulling));
+																	meshes[i].mesh->blending, meshes[i].mesh->backFaceCulling, meshes[i].mesh->drawMode));
 						batch(meshes[i], batches.back());
 					}
 				}

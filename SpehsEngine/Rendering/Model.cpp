@@ -15,12 +15,12 @@ namespace se
 		}
 		Model::Model(BatchManager3D& _batchManager)
 		{
-			_batchManager.addModel(*this);
+			_batchManager.add(*this);
 		}
 		Model::~Model()
 		{
 			if (batchManager)
-				batchManager->removeModel(*this);
+				batchManager->remove(*this);
 			for (size_t i = 0; i < meshes.size(); i++)
 				delete meshes[i];
 		}
@@ -77,50 +77,20 @@ namespace se
 			}
 		}
 
-		void Model::setPosition(const float _x, const float _y, const float _z)
-		{
-			for (size_t i = 0; i < meshes.size(); i++)
-				meshes[i]->setPosition(_x, _y, _z);
-		}
 		void Model::setPosition(const glm::vec3& _newPosition)
 		{
 			for (size_t i = 0; i < meshes.size(); i++)
 				meshes[i]->setPosition(_newPosition);
-		}
-		void Model::setPosition(const Mesh& _newPosition)
-		{
-			for (size_t i = 0; i < meshes.size(); i++)
-				meshes[i]->setPosition(_newPosition);
-		}
-		void Model::setRotation(const float _yaw, const float _pitch, const float _roll)
-		{
-			for (size_t i = 0; i < meshes.size(); i++)
-				meshes[i]->setRotation(_yaw, _pitch, _roll);
 		}
 		void Model::setRotation(const glm::vec3& _newRotation)
 		{
 			for (size_t i = 0; i < meshes.size(); i++)
 				meshes[i]->setRotation(_newRotation);
 		}
-		void Model::setScale(const float _newScale)
-		{
-			for (size_t i = 0; i < meshes.size(); i++)
-				meshes[i]->setScale(_newScale);
-		}
-		void Model::setScale(const float _newScaleX, const float _newScaleY, const float _newScaleZ)
-		{
-			for (size_t i = 0; i < meshes.size(); i++)
-				meshes[i]->setScale(_newScaleX, _newScaleY, _newScaleZ);
-		}
 		void Model::setScale(const glm::vec3& _newScale)
 		{
 			for (size_t i = 0; i < meshes.size(); i++)
 				meshes[i]->setScale(_newScale);
-		}
-		void Model::setColor(const Mesh& _other)
-		{
-			for (size_t i = 0; i < meshes.size(); i++)
-				meshes[i]->setColor(_other);
 		}
 		void Model::setColor(const Color _color)
 		{
@@ -131,11 +101,6 @@ namespace se
 		{
 			for (size_t i = 0; i < meshes.size(); i++)
 				meshes[i]->setAlpha(_alpha);
-		}
-		void Model::translate(const float _x, const float _y, const float _z)
-		{
-			for (size_t i = 0; i < meshes.size(); i++)
-				meshes[i]->translate(_x, _y, _z);
 		}
 		void Model::translate(const glm::vec3& _translation)
 		{
@@ -151,11 +116,6 @@ namespace se
 		{
 			for (size_t i = 0; i < meshes.size(); i++)
 				meshes[i]->setDepthTest(_value);
-		}
-		void Model::setRenderState(const Mesh& _other)
-		{
-			for (size_t i = 0; i < meshes.size(); i++)
-				meshes[i]->setRenderState(_other);
 		}
 		void Model::setRenderState(const bool _newState)
 		{
@@ -214,10 +174,31 @@ namespace se
 			else
 				return glm::vec3(0.0f);
 		}
+		bool Model::getBackFaceCulling() const
+		{
+			if (meshes.size() > 0)
+				return meshes[0]->getBackFaceCulling();
+			else
+				return false;
+		}
 		bool Model::getRenderState() const
 		{
 			if (meshes.size() > 0)
 				return meshes[0]->getRenderState();
+			else
+				return false;
+		}
+		bool Model::getBlending() const
+		{
+			if (meshes.size() > 0)
+				return meshes[0]->getBlending();
+			else
+				return false;
+		}
+		bool Model::getDepthTest() const
+		{
+			if (meshes.size() > 0)
+				return meshes[0]->getDepthTest();
 			else
 				return false;
 		}
