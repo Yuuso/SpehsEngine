@@ -37,7 +37,7 @@ namespace se
 		{
 			mesh->setPosition(_newPosition);
 		}
-		void Plane3D::setRotation(const glm::vec3& _newRotation)
+		void Plane3D::setRotation(const glm::quat& _newRotation)
 		{
 			mesh->setRotation(_newRotation);
 		}
@@ -94,7 +94,7 @@ namespace se
 		{
 			return mesh->getPosition();
 		}
-		glm::vec3 Plane3D::getRotation() const
+		glm::quat Plane3D::getRotation() const
 		{
 			return mesh->getRotation();
 		}

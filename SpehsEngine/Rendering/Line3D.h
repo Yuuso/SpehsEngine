@@ -1,6 +1,9 @@
 
 #pragma once
 
+#include "SpehsEngine/Core/Color.h"
+
+#include <glm/gtc/quaternion.hpp>
 #include <glm/vec3.hpp>
 
 #include <vector>
@@ -27,7 +30,7 @@ namespace se
 			void clearPoints();
 
 			void setPosition(const glm::vec3& _newPosition);
-			void setRotation(const glm::vec3& _newRotation);
+			void setRotation(const glm::quat& _newRotation);
 			void setScale(const glm::vec3& _newScale);
 			void setColor(const Color _color);
 			void setAlpha(const float _alpha);
@@ -44,7 +47,7 @@ namespace se
 			void setTexture(TextureData* _textureDataPtr);
 
 			glm::vec3 getPosition() const;
-			glm::vec3 getRotation() const;
+			glm::quat getRotation() const;
 			glm::vec3 getScale() const;
 			se::Color getColor() const;
 			float getAlpha() const;

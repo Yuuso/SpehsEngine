@@ -18,7 +18,7 @@ namespace se
 	namespace rendering
 	{
 		Camera3D::Camera3D(const Window& _window)
-			: fov(45.0f), near(0.05f), far(500.0f), rotation(glm::vec3(0.0f)), smoothCamera(false), maxSpeed(1.5f), followTarget(false), window(_window)
+			: fov(45.0f), near(0.05f), far(1000.0f), rotation(glm::vec3(0.0f)), smoothCamera(false), maxSpeed(1.5f), followTarget(false), window(_window)
 		{
 			position = glm::vec3(1.0f, 1.0f, 1.0f);
 			movement = glm::vec3(0.0f);

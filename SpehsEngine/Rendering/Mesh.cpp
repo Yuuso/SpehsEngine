@@ -51,10 +51,10 @@ namespace se
 			position = _newPosition;
 			needUpdate = true;
 		}
-		void Mesh::setRotation(const glm::vec3& _newRotation)
+		void Mesh::setRotation(const glm::quat& _newRotation)
 		{
 #ifdef _DEBUG
-			if (_newRotation.x != _newRotation.x || _newRotation.y != _newRotation.y || _newRotation.z != _newRotation.z)
+			if (_newRotation.x != _newRotation.x || _newRotation.y != _newRotation.y || _newRotation.z != _newRotation.z || _newRotation.w != _newRotation.w)
 			{
 				log::error("Rotation values corrupted!");
 			}

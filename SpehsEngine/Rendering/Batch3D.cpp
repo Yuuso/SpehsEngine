@@ -212,9 +212,9 @@ namespace se
 		void MeshBatch::updateVertices(const size_t _index, const Mesh& _mesh)
 		{
 			// T = t * R * S
-			glm::mat4 scaledMatrix = glm::scale(glm::mat4(1.0f), _mesh.scale);
-			glm::mat4 scaledRotatedMatrix = glm::mat4_cast(glm::quat(_mesh.rotation)) * scaledMatrix;
-			glm::mat4 transformMatrix = glm::translate(glm::mat4(1.0f), _mesh.position) * scaledRotatedMatrix;
+			glm::mat4 scaledMatrix = glm::scale(_mesh.scale);
+			glm::mat4 scaledRotatedMatrix = glm::mat4_cast(_mesh.rotation) * scaledMatrix;
+			glm::mat4 transformMatrix = glm::translate(_mesh.position) * scaledRotatedMatrix;
 			glm::mat4 normalMatrix = glm::mat4(glm::inverse(glm::transpose(glm::mat3(transformMatrix))));
 
 			glm::vec4 newVertex;
@@ -228,14 +228,14 @@ namespace se
 				oldVertex->position.x = newVertex.x;
 				oldVertex->position.y = newVertex.y;
 				oldVertex->position.z = newVertex.z;
+				// Color
+				oldVertex->color = _mesh.color;
 				// Normals
 				newVertex = normalMatrix * glm::vec4(_mesh.vertexArray[i].normal, 1.0f);
 				newVertex = glm::normalize(newVertex);
 				oldVertex->normal.x = newVertex.x;
 				oldVertex->normal.y = newVertex.y;
 				oldVertex->normal.z = newVertex.z;
-				// Color
-				oldVertex->color = _mesh.color;
 			}
 			needBufferUpdate = true;
 		}

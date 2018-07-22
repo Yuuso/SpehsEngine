@@ -5,6 +5,7 @@
 #include "SpehsEngine/Core/Color.h"
 
 #include <glm/vec3.hpp>
+#include <glm/gtc/quaternion.hpp>
 #include <glm/mat4x4.hpp>
 
 #include <string>
@@ -35,7 +36,7 @@ namespace se
 
 		public:
 			void setPosition(const glm::vec3& _newPosition);
-			void setRotation(const glm::vec3& _newRotation);
+			void setRotation(const glm::quat& _newRotation);
 			void setScale(const glm::vec3& _newScale);
 			void setColor(const Color _color);
 			void setAlpha(const float _alpha);
@@ -53,7 +54,7 @@ namespace se
 			void setTexture(TextureData* _textureDataPtr);
 
 			glm::vec3 getPosition() const { return position; }
-			glm::vec3 getRotation() const { return rotation; }
+			glm::quat getRotation() const { return rotation; }
 			glm::vec3 getScale() const { return scale; }
 			se::Color getColor() const { return color; }
 			float getAlpha() const { return color.a; }
@@ -80,7 +81,7 @@ namespace se
 			GLuint textureDataID = 0;
 			GLenum drawMode;
 			glm::vec3 position = glm::vec3(0.0f);
-			glm::vec3 rotation = glm::vec3(0.0f);
+			glm::quat rotation;
 			glm::vec3 scale = glm::vec3(1.0f, 1.0f, 1.0f);
 			Color color = Color(255, 255, 255, 255);
 

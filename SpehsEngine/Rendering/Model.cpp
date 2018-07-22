@@ -82,7 +82,7 @@ namespace se
 			for (size_t i = 0; i < meshes.size(); i++)
 				meshes[i]->setPosition(_newPosition);
 		}
-		void Model::setRotation(const glm::vec3& _newRotation)
+		void Model::setRotation(const glm::quat& _newRotation)
 		{
 			for (size_t i = 0; i < meshes.size(); i++)
 				meshes[i]->setRotation(_newRotation);
@@ -160,12 +160,12 @@ namespace se
 			else
 				return glm::vec3(0.0f);
 		}
-		glm::vec3 Model::getRotation() const
+		glm::quat Model::getRotation() const
 		{
 			if (meshes.size() > 0)
 				return meshes[0]->getRotation();
 			else
-				return glm::vec3(0.0f);
+				return glm::quat();
 		}
 		glm::vec3 Model::getScale() const
 		{

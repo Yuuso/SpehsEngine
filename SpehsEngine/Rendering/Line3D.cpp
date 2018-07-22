@@ -75,7 +75,7 @@ namespace se
 		{
 			mesh->setPosition(_newPosition);
 		}
-		void Line3D::setRotation(const glm::vec3& _newRotation)
+		void Line3D::setRotation(const glm::quat& _newRotation)
 		{
 			mesh->setRotation(_newRotation);
 		}
@@ -132,7 +132,7 @@ namespace se
 		{
 			return mesh->getPosition();
 		}
-		glm::vec3 Line3D::getRotation() const
+		glm::quat Line3D::getRotation() const
 		{
 			return mesh->getRotation();
 		}
