@@ -104,6 +104,7 @@ namespace se
 			_object.batch->remove(_object.indexInBatch, _object.sizeInBatch);
 			MeshBatch* comp = _object.batch;
 			_object.batch = nullptr;
+			_object.mesh->needUpdate = true;
 			for (size_t i = 0; i < meshes.size(); i++)
 			{
 				if (meshes[i].batch != nullptr && meshes[i].batch == comp && meshes[i].indexInBatch.first >= _object.indexInBatch.first)
@@ -157,10 +158,11 @@ namespace se
 					}
 					if (!batchFound)
 					{
-						batches.push_back(new MeshBatch(*this, meshes[i].mesh->shaderIndex, meshes[i].mesh->textureDataID, meshes[i].mesh->depthTest,
+						batches.push_back(new MeshBatch(*this, meshes[i].mesh->shaderIndex, meshes[i].mesh->textureDataIDs, meshes[i].mesh->depthTest,
 																	meshes[i].mesh->blending, meshes[i].mesh->backFaceCulling, meshes[i].mesh->drawMode));
 						batch(meshes[i], batches.back());
 					}
+					updateMeshVertices(meshes[i]);
 				}
 			}
 

@@ -43,8 +43,8 @@ namespace se
 			void removeModelData(const size_t& _hash);
 
 		private:
-			void processNode(ModelManager::Model* _model, aiNode* _node, const aiScene* _scene);
-			void addMesh(ModelManager::Model* _model, aiMesh* _mesh, const aiScene* _scene);
+			void processNode(ModelManager::Model* _model, aiNode* _node, const aiScene* _scene, glm::mat4& _transformation);
+			void addMesh(ModelManager::Model* _model, aiMesh* _mesh, const aiScene* _scene, glm::mat4& _transformation);
 
 			std::unordered_map<size_t, ModelManager::Model*> modelDataMap;
 		};

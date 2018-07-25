@@ -77,17 +77,17 @@ namespace se
 		{
 			mesh->setShaderIndex(_newShaderIndex);
 		}
-		void Plane3D::setTexture(const std::string& _texturePath)
+		void Plane3D::setTexture(const std::string& _texturePath, const size_t _index)
 		{
-			mesh->setTexture(_texturePath);
+			mesh->setTexture(_texturePath, _index);
 		}
-		void Plane3D::setTexture(const size_t _textureID)
+		void Plane3D::setTexture(const size_t _textureID, const size_t _index)
 		{
-			mesh->setTexture(_textureID);
+			mesh->setTexture(_textureID, _index);
 		}
-		void Plane3D::setTexture(TextureData* _textureDataPtr)
+		void Plane3D::setTexture(TextureData* _textureDataPtr, const size_t _index)
 		{
-			mesh->setTexture(_textureDataPtr);
+			mesh->setTexture(_textureDataPtr, _index);
 		}
 
 		glm::vec3 Plane3D::getPosition() const

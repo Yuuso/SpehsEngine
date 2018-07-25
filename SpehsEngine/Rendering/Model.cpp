@@ -137,20 +137,20 @@ namespace se
 			for (size_t i = 0; i < meshes.size(); i++)
 				meshes[i]->setBackFaceCulling(_value);
 		}
-		void Model::setTexture(const std::string& _texturePath)
+		void Model::setTexture(const std::string& _texturePath, const size_t _index)
 		{
 			for (size_t i = 0; i < meshes.size(); i++)
-				meshes[i]->setTexture(_texturePath);
+				meshes[i]->setTexture(_texturePath, _index);
 		}
-		void Model::setTexture(const size_t _textureID)
+		void Model::setTexture(const size_t _textureID, const size_t _index)
 		{
 			for (size_t i = 0; i < meshes.size(); i++)
-				meshes[i]->setTexture(_textureID);
+				meshes[i]->setTexture(_textureID, _index);
 		}
-		void Model::setTexture(TextureData* _textureDataPtr)
+		void Model::setTexture(TextureData* _textureDataPtr, const size_t _index)
 		{
 			for (size_t i = 0; i < meshes.size(); i++)
-				meshes[i]->setTexture(_textureDataPtr);
+				meshes[i]->setTexture(_textureDataPtr, _index);
 		}
 
 		glm::vec3 Model::getPosition() const

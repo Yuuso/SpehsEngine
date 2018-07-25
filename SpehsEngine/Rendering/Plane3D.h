@@ -34,9 +34,9 @@ namespace se
 			void setDepthTest(const bool _value);
 			void setShaderIndex(const unsigned int _newShaderIndex);
 
-			void setTexture(const std::string& _texturePath);
-			void setTexture(const size_t _textureID);
-			void setTexture(TextureData* _textureDataPtr);
+			void setTexture(const std::string& _texturePath, const size_t _index = 0);
+			void setTexture(const size_t _textureID, const size_t _index = 0);
+			void setTexture(TextureData* _textureDataPtr, const size_t _index = 0);
 
 			glm::vec3 getPosition() const;
 			glm::quat getRotation() const;

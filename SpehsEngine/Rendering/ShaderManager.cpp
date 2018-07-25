@@ -5,8 +5,7 @@
 
 #include <GL/glew.h>
 
-/*FLOAT*///#define GLSL_COLOR_VEC_TYPE "vec4"
-/*UBYTE*/#define GLSL_COLOR_VEC_TYPE "lowp vec4"
+#define GLSL_COLOR_VEC_TYPE "vec4"
 
 
 
@@ -19,36 +18,30 @@ namespace se
 		{
 			cameraLocation = shader.getUniformLocation("cameraMatrix");
 		}
-		Uniforms::~Uniforms()
-		{}
 		void Uniforms::setUniforms()
 		{
+			for (size_t i = 0; i < textureData.size(); i++)
+			{
+				textureData[i].bind(textureData[i].textureDataID, i);
+				setUniform_int(textureData[i].textureLocation, i);
+			}
 			setUniform_mat4(cameraLocation, cameraMatrix);
 			checkOpenGLErrors(__FILE__, __LINE__);
+		}
+		Uniforms::UniformTexture::UniformTexture(const GLint _location, const bool cubemap)
+			: textureLocation(_location)
+		{
+			bind = cubemap ? bindCubeMapTexture : bind2DTexture;
 		}
 
 		DefaultTextureUniforms::DefaultTextureUniforms(GLSLProgram& _shader) : Uniforms(_shader)
 		{
-			textureLocation = shader.getUniformLocation("tex");
-		}
-		DefaultTextureUniforms::~DefaultTextureUniforms() {}
-		void DefaultTextureUniforms::setUniforms()
-		{
-			bind2DTexture(textureDataID, 0);
-			setUniform_int(textureLocation, 0);
-			Uniforms::setUniforms();
+			textureData.push_back(UniformTexture(shader.getUniformLocation("tex")));
 		}
 
-		DefaultSkyBoxUniforms::DefaultSkyBoxUniforms(GLSLProgram& _shader) : Uniforms(_shader)
+		DefaultCubemapUniforms::DefaultCubemapUniforms(GLSLProgram& _shader) : Uniforms(_shader)
 		{
-			textureLocation = shader.getUniformLocation("tex");
-		}
-		DefaultSkyBoxUniforms::~DefaultSkyBoxUniforms() {}
-		void DefaultSkyBoxUniforms::setUniforms()
-		{
-			bindCubeMapTexture(textureDataID, 0);
-			setUniform_int(textureLocation, 0);
-			Uniforms::setUniforms();
+			textureData.push_back(UniformTexture(shader.getUniformLocation("tex"), true));
 		}
 
 
@@ -350,7 +343,7 @@ namespace se
 				shader.shader.compileShadersFromSource(defaultSkyBoxVert, defaultSkyBoxFrag);
 				shader.shader.addAttribute(VertexAttributePosition::VERTEX_POSITION, "vertexPosition");
 				shader.shader.linkShaders();
-				shader.uniforms = new DefaultSkyBoxUniforms(shader.shader);
+				shader.uniforms = new DefaultCubemapUniforms(shader.shader);
 				break;
 			default:
 				log::error("Default shader index out of reach!");
@@ -359,7 +352,7 @@ namespace se
 		}
 		ShaderManager::ShaderManager()
 		{
-			for (size_t i = 0; i < (size_t)ShaderName::DefaultShaderCount; i++)
+			for (size_t i = 0; i < (size_t)ShaderName::size; i++)
 			{
 				buildDefaultShader(addShader());
 			}
@@ -431,117 +424,73 @@ namespace se
 
 		void bind2DTexture(const GLuint &_textureID, const unsigned int _index)
 		{
-			switch (_index)
-			{
-			case 0:
-				glActiveTexture(GL_TEXTURE0);
-				break;
-			case 1:
-				glActiveTexture(GL_TEXTURE1);
-				break;
-			case 2:
-				glActiveTexture(GL_TEXTURE2);
-				break;
-			case 3:
-				glActiveTexture(GL_TEXTURE3);
-				break;
-			case 4:
-				glActiveTexture(GL_TEXTURE4);
-				break;
-			case 5:
-				glActiveTexture(GL_TEXTURE5);
-				break;
-			default:
-				log::error("Incorrect texture index! (bind2DTexture)");
-				break;
-			}
+			se_assert(_index < 32);
+			glActiveTexture(GL_TEXTURE0 + _index);
 			glBindTexture(GL_TEXTURE_2D, _textureID);
 
 			checkOpenGLErrors(__FILE__, __LINE__);
 		}
 		void bindCubeMapTexture(const GLuint& _textureID, const unsigned int _index)
 		{
-			switch (_index)
-			{
-			case 0:
-				glActiveTexture(GL_TEXTURE0);
-				break;
-			case 1:
-				glActiveTexture(GL_TEXTURE1);
-				break;
-			case 2:
-				glActiveTexture(GL_TEXTURE2);
-				break;
-			case 3:
-				glActiveTexture(GL_TEXTURE3);
-				break;
-			case 4:
-				glActiveTexture(GL_TEXTURE4);
-				break;
-			case 5:
-				glActiveTexture(GL_TEXTURE5);
-				break;
-			default:
-				log::error("Incorrect texture index! (bindCubeMapTexture)");
-				break;
-			}
+			se_assert(_index < 32);
+			glActiveTexture(GL_TEXTURE0 + _index);
 			glEnable(GL_TEXTURE_CUBE_MAP);
 			glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
 			glBindTexture(GL_TEXTURE_CUBE_MAP, _textureID);
 
 			checkOpenGLErrors(__FILE__, __LINE__);
 		}
-		void setUniform_int(const GLint& _location, const int _value)
+		void setUniform_int(const GLint& _location, const int _value, const GLsizei count)
 		{
-			glUniform1i(_location, _value);
+			glUniform1iv(_location, count, &_value);
 
 			checkOpenGLErrors(__FILE__, __LINE__);
 		}
-		void setUniform_uint(const GLuint& _location, const int _value)
+		void setUniform_uint(const GLuint& _location, const unsigned int _value, const GLsizei count)
 		{
-			glUniform1ui(_location, _value);
+			glUniform1uiv(_location, count, &_value);
 
 			checkOpenGLErrors(__FILE__, __LINE__);
 		}
-		void setUniform_float(const GLint& _location, const float _value)
+		void setUniform_float(const GLint& _location, const float _value, const GLsizei count)
 		{
-			glUniform1f(_location, _value);
+			glUniform1fv(_location, count, &_value);
 
 			checkOpenGLErrors(__FILE__, __LINE__);
 		}
-		void setUniform_vec2(const GLint& _location, const glm::vec2 &_value)
+		void setUniform_vec2(const GLint& _location, const glm::vec2 &_value, const GLsizei count)
 		{
-			glUniform2fv(_location, 1, &_value[0]);
+			glUniform2fv(_location, count, &_value[0]);
 
 			checkOpenGLErrors(__FILE__, __LINE__);
 		}
-		void setUniform_vec3(const GLint& _location, const glm::vec3 &_value)
+		void setUniform_vec3(const GLint& _location, const glm::vec3 &_value, const GLsizei count)
 		{
-			glUniform3fv(_location, 1, &_value[0]);
+			glUniform3fv(_location, count, &_value[0]);
 
 			checkOpenGLErrors(__FILE__, __LINE__);
 		}
-		void setUniform_vec4(const GLint& _location, const glm::vec4 &_value)
+		void setUniform_vec4(const GLint& _location, const glm::vec4 &_value, const GLsizei count)
 		{
-			glUniform4fv(_location, 1, &_value[0]);
+			glUniform4fv(_location, count, &_value[0]);
 
 			checkOpenGLErrors(__FILE__, __LINE__);
 		}
-		void setUniform_ivec2(const GLint& _location, const glm::ivec2 &_value)
+		void setUniform_ivec2(const GLint& _location, const glm::ivec2 &_value, const GLsizei count)
 		{
-			glUniform2iv(_location, 1, &_value[0]);
+			glUniform2iv(_location, count, &_value[0]);
 
 			checkOpenGLErrors(__FILE__, __LINE__);
 		}
-		void setUniform_ivec3(const GLint& _location, const glm::ivec3 &_value)
+		void setUniform_ivec3(const GLint& _location, const glm::ivec3 &_value, const GLsizei count)
 		{
-			glUniform3iv(_location, 1, &_value[0]);
+			glUniform3iv(_location, count, &_value[0]);
 
 			checkOpenGLErrors(__FILE__, __LINE__);
 		}
-		void setUniform_ivec4(const GLint& _location, const glm::ivec4 &_value)
+		void setUniform_ivec4(const GLint& _location, const glm::ivec4 &_value, const GLsizei count)
 		{
-			glUniform4iv(_location, 1, &_value[0]);
+			glUniform4iv(_location, count, &_value[0]);
 
 			checkOpenGLErrors(__FILE__, __LINE__);
 		}

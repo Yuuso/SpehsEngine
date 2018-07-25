@@ -116,31 +116,25 @@ namespace se
 		{
 			backFaceCulling = _value;
 		}
-		TextureData* Mesh::setTexture(const std::string& _texturePath)
+		void Mesh::setTexture(const std::string& _texturePath, const size_t _index)
 		{
 			if (!batchManager)
 				log::error("Cannot load texture without batchmanager!");
 			TextureData* value = batchManager->textureManager.getTextureData(_texturePath);
-			textureDataID = value->textureDataID;
-			if (shaderIndex == (unsigned int)ShaderName::DefaultMesh)
-				shaderIndex = (unsigned int)ShaderName::DefaultTextureMesh;
-			return value;
+			setTexture(value, _index);
 		}
-		TextureData* Mesh::setTexture(const size_t _textureID)
+		void Mesh::setTexture(const size_t _textureID, const size_t _index)
 		{
 			if (!batchManager)
 				log::error("Cannot load texture without batchmanager!");
 			TextureData* value = batchManager->textureManager.getTextureData(_textureID);
-			textureDataID = value->textureDataID;
-			if (shaderIndex == (unsigned int)ShaderName::DefaultMesh)
-				shaderIndex = (unsigned int)ShaderName::DefaultTextureMesh;
-			return value;
+			setTexture(value, _index);
 		}
-		void Mesh::setTexture(TextureData* _textureDataPtr)
+		void Mesh::setTexture(TextureData* _textureDataPtr, const size_t _index)
 		{
-			textureDataID = _textureDataPtr->textureDataID;
-			if (shaderIndex == (unsigned int)ShaderName::DefaultMesh)
-				shaderIndex = (unsigned int)ShaderName::DefaultTextureMesh;
+			if (textureDataIDs.size() >= _index)
+				textureDataIDs.resize(_index + 1);
+			textureDataIDs[_index] = _textureDataPtr->textureDataID;
 		}
 	}
 }

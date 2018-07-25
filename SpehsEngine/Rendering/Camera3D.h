@@ -12,41 +12,18 @@ namespace se
 {
 	namespace rendering
 	{
-		enum Movement
-		{
-			UP,
-			DOWN,
-			RIGHT,
-			LEFT,
-			FORWARD,
-			BACKWARD,
-		};
-
 		class Window;
-
 		class Camera3D
 		{
 		public:
 			Camera3D(const Window& _window);
-			~Camera3D();
 
-			void initialize();
-			void update(const time::Time& deltaTime);
+			void update(const time::Time& _deltaTime);
 
-			void move(const Movement& _movement, const float& _amount);
-			void setSmoothCamera(const bool _value);
-			void setMaxSpeed(const float& _value);
-
-			void setPosition(const glm::vec3 &_position);
-
-			void yaw(const float& _yaw);
-			void pitch(const float& _pitch);
-			//void roll(const float& _roll);
-			void setRotation(const glm::vec2 &_rotation);
-
-			void reset();
-
+			void setPosition(const glm::vec3& _position);
 			void setTarget(const glm::vec3& _target);
+			void setDirection(const glm::vec3& _direction);
+
 			void setUp(const glm::vec3& _up);
 			void setFOV(const float &_fov);
 			void setNear(const float& _near);
@@ -54,24 +31,20 @@ namespace se
 
 			glm::vec3 getPosition() const { return position; }
 			glm::vec3 getDirection() const { return direction; }
+			glm::vec3 getTarget() const { return target; }
 			float getNear() const { return near; }
 			float getFar() const { return far; }
+			float getFOV() const { return fov; }
 
 			glm::mat4* cameraMatrix;
 
-			const Window& window; // TODO: camera really doesn't depend on the window class...?
-
 		private:
-			bool smoothCamera;
-			bool followTarget;
+			const Window& window;
 
 			glm::vec3 position;
-			glm::vec3 rotation;
-			glm::vec3 movement;
-
 			glm::vec3 direction;
 			glm::vec3 target;
-			glm::vec3 targetToFollow;
+
 			glm::vec3 up;
 			glm::vec3 right;
 
@@ -81,7 +54,6 @@ namespace se
 			float fov;
 			float near;
 			float far;
-			float maxSpeed;
 		};
 	}
 }

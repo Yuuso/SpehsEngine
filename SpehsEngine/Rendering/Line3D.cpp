@@ -115,18 +115,6 @@ namespace se
 		{
 			mesh->setShaderIndex(_newShaderIndex);
 		}
-		void Line3D::setTexture(const std::string& _texturePath)
-		{
-			mesh->setTexture(_texturePath);
-		}
-		void Line3D::setTexture(const size_t _textureID)
-		{
-			mesh->setTexture(_textureID);
-		}
-		void Line3D::setTexture(TextureData* _textureDataPtr)
-		{
-			mesh->setTexture(_textureDataPtr);
-		}
 
 		glm::vec3 Line3D::getPosition() const
 		{

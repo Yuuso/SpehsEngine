@@ -147,7 +147,8 @@ namespace se
 			//Texture
 			if (textureDataID)
 			{
-				batchManager.shaderManager.getShader(shaderIndex).uniforms->textureDataID = textureDataID;
+				if (batchManager.shaderManager.getShader(shaderIndex).uniforms->textureData.size())
+					batchManager.shaderManager.getShader(shaderIndex).uniforms->textureData[0].textureDataID = textureDataID;
 				if (drawMode == DrawMode::POINT)
 				{
 					glEnable(GL_POINT_SPRITE);

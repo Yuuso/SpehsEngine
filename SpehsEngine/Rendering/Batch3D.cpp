@@ -34,14 +34,14 @@ namespace se
 {
 	namespace rendering
 	{
-		MeshBatch::MeshBatch(BatchManager3D& _batchManager, const int _shaderIndex, const GLuint _textureDataID,
+		MeshBatch::MeshBatch(BatchManager3D& _batchManager, const int _shaderIndex, const std::vector<GLuint> _textureDataIDs,
 								const bool _depthTest, const bool _blending, const bool _backFaceCulling, const GLenum _drawMode)
 			: batchManager(_batchManager)
 			, backFaceCulling(_backFaceCulling)
 			, blending(_blending)
 			, depthTest(_depthTest)
 			, shaderIndex(_shaderIndex)
-			, textureDataID(_textureDataID)
+			, textureDataIDs(_textureDataIDs)
 			, usage(GL_DYNAMIC_DRAW) // TODO
 			, drawMode(_drawMode)
 		{
@@ -81,11 +81,16 @@ namespace se
 				blending != _mesh.blending ||
 				depthTest != _mesh.depthTest ||
 				shaderIndex != _mesh.shaderIndex ||
-				textureDataID != _mesh.textureDataID ||
+				textureDataIDs.size() != _mesh.textureDataIDs.size() ||
 				/*usage TODO*/
 				drawMode != _mesh.drawMode)
 			{
 				return false;
+			}
+			for (size_t i = 0; i < textureDataIDs.size(); i++)
+			{
+				if (textureDataIDs[i] != _mesh.textureDataIDs[i])
+					return false;
 			}
 			return checkSize(_mesh.vertexArray.size(), _mesh.elementArray.size());
 		}
@@ -149,10 +154,8 @@ namespace se
 			batchManager.shaderManager.use(shaderIndex);
 
 			//Texture
-			if (textureDataID)
-			{
-				batchManager.shaderManager.getShader(shaderIndex).uniforms->textureDataID = textureDataID;
-			}
+			for (size_t i = 0; i < textureDataIDs.size(); i++)
+				batchManager.shaderManager.getShader(shaderIndex).uniforms->textureData[i].textureDataID = textureDataIDs[i];
 
 			batchManager.shaderManager.getShader(shaderIndex).uniforms->cameraMatrix = *batchManager.camera3D.cameraMatrix;
 

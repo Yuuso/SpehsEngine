@@ -22,7 +22,7 @@ namespace se
 		class MeshBatch
 		{
 		public:
-			MeshBatch(BatchManager3D& _batchManager, const int _shaderIndex, const GLuint _textureDataID,
+			MeshBatch(BatchManager3D& _batchManager, const int _shaderIndex, const std::vector<GLuint> _textureDataID,
 						const bool _depthTest, const bool _blending, const bool _backFaceCulling, const GLenum _drawMode);
 			~MeshBatch();
 
@@ -59,7 +59,7 @@ namespace se
 			const bool blending;
 			const bool depthTest;
 			const size_t shaderIndex;
-			const GLuint textureDataID;
+			const std::vector<GLuint> textureDataIDs;
 			const GLenum usage;
 			const GLenum drawMode;
 		};

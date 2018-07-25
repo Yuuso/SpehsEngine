@@ -49,9 +49,9 @@ namespace se
 			void setDepthTest(const bool _value);
 			void setShaderIndex(const unsigned int _newShaderIndex);
 
-			TextureData* setTexture(const std::string& _texturePath);
-			TextureData* setTexture(const size_t _textureID);
-			void setTexture(TextureData* _textureDataPtr);
+			void setTexture(const std::string& _texturePath, const size_t _index);
+			void setTexture(const size_t _textureID, const size_t _index);
+			void setTexture(TextureData* _textureDataPtr, const size_t _index);
 
 			glm::vec3 getPosition() const { return position; }
 			glm::quat getRotation() const { return rotation; }
@@ -78,12 +78,12 @@ namespace se
 			bool blending = false;
 			bool depthTest = true;
 			unsigned int shaderIndex;
-			GLuint textureDataID = 0;
+			std::vector<GLuint> textureDataIDs;
 			GLenum drawMode;
 			glm::vec3 position = glm::vec3(0.0f);
 			glm::quat rotation;
 			glm::vec3 scale = glm::vec3(1.0f, 1.0f, 1.0f);
-			Color color = Color(255, 255, 255, 255);
+			Color color;
 
 			std::vector<Vertex3D> vertexArray;
 			std::vector<GLushort> elementArray;
