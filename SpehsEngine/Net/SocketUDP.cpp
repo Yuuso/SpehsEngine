@@ -70,6 +70,7 @@ namespace se
 			}
 			else
 			{
+				connectedEndpoint = remoteEndpoint;
 				log::info("SocketUDP successfully connected to the remote endpoint at: " + remoteEndpoint.toString());
 				return true;
 			}
