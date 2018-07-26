@@ -51,6 +51,49 @@ namespace se
 			close();
 		}
 
+		bool SocketUDP::open()
+		{
+			std::lock_guard<std::recursive_mutex> lock(mutex);
+			boost::system::error_code error;
+			socket.open(boost::asio::ip::udp::v4(), error);
+			if (error)
+			{
+				se::log::error("Failed to open SocketUDP. Boost asio error: " + error.message());
+				return false;
+			}
+			return true;
+		}
+
+		void SocketUDP::close()
+		{
+			std::lock_guard<std::recursive_mutex> lock(mutex);
+			if (socket.is_open())
+			{
+				socket.shutdown(boost::asio::socket_base::shutdown_both);
+				socket.close();
+				se::log::info("SocketUDP closed.");
+			}
+		}
+
+		bool SocketUDP::bind(const Port& port)
+		{
+			if (!isOpen())
+			{
+				se_assert(false && "Socket must be opened first.");
+				return false;
+			}
+			boost::system::error_code error;
+			const boost::asio::ip::udp::endpoint endpoint(boost::asio::ip::udp::v4(), port.value);
+			socket.bind(endpoint, error);
+			if (error)
+			{
+				se::log::error("Failed to bind SocketUDP. Boost asio error: " + error.message());
+				return false;
+			}
+			se::log::info("SocketUDP opened at port: " + port.toString());
+			return true;
+		}
+
 		bool SocketUDP::connect(const Endpoint& remoteEndpoint)
 		{
 			if (!isOpen())
@@ -70,6 +113,7 @@ namespace se
 			}
 			else
 			{
+				connectedEndpoint = remoteEndpoint;
 				log::info("SocketUDP successfully connected to the remote endpoint at: " + remoteEndpoint.toString());
 				return true;
 			}
@@ -79,43 +123,6 @@ namespace se
 		{
 			se_assert(getConnectedEndpoint());
 			connectedEndpoint = Endpoint();
-		}
-
-		Endpoint SocketUDP::getConnectedEndpoint() const
-		{
-			return connectedEndpoint;
-		}
-
-		bool SocketUDP::open(const Port& port)
-		{
-			std::lock_guard<std::recursive_mutex> lock(mutex);
-			const boost::asio::ip::udp::endpoint endpoint(boost::asio::ip::udp::v4(), port.value);
-			boost::system::error_code error;
-			socket.open(endpoint.protocol(), error);
-			if (error)
-			{
-				se::log::error("Failed to open SocketUDP. Boost asio error: " + error.message());
-				return false;
-			}
-			socket.bind(endpoint, error);
-			if (error)
-			{
-				se::log::error("Failed to bind SocketUDP. Boost asio error: " + error.message());
-				return false;
-			}
-			se::log::info("SocketUDP opened at port: " + port.toString());
-			return true;
-		}
-
-		void SocketUDP::close()
-		{
-			std::lock_guard<std::recursive_mutex> lock(mutex);
-			if (socket.is_open())
-			{
-				socket.shutdown(boost::asio::socket_base::shutdown_both);
-				socket.close();
-				se::log::info("SocketUDP closed.");
-			}
 		}
 
 		void SocketUDP::waitUntilFinishedReceiving()
@@ -237,7 +244,7 @@ namespace se
 
 		void SocketUDP::resumeReceiving()
 		{
-			socket.async_receive_from(boost::asio::buffer(receiveBuffer.data(), receiveBuffer.size()), senderEndpoint,
+			socket.async_receive_from(boost::asio::buffer(receiveBuffer), senderEndpoint,
 				boost::bind(&SocketUDP::receiveHandler,
 					this, boost::asio::placeholders::error,
 					boost::asio::placeholders::bytes_transferred));
@@ -344,6 +351,16 @@ namespace se
 				return Port(socket.local_endpoint().port());
 			else
 				return Port::invalid;
+		}
+
+		bool SocketUDP::isConnected() const
+		{
+			return (bool)connectedEndpoint;
+		}
+
+		Endpoint SocketUDP::getConnectedEndpoint() const
+		{
+			return connectedEndpoint;
 		}
 	}
 }

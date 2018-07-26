@@ -29,6 +29,13 @@ namespace se
 			SocketUDP(IOService& ioService);
 			virtual ~SocketUDP();
 
+			/* Opens the socket. Must be called before packets can be received or sent. */
+			bool open();
+			void close();
+
+			/* Binds the socket to a local endpoint. */
+			bool bind(const Port& port);
+
 			/*
 				Connects the socket to a remote endpoint. Blocking call.
 				Socket must be opened before calling.
@@ -37,15 +44,6 @@ namespace se
 			bool connect(const Endpoint& remoteEndpoint);
 			/* Clears the connected endpoint value. */
 			void disconnect();
-			/* Returns the remote endpoint if connected. */
-			Endpoint getConnectedEndpoint() const;
-
-			/* Opens and binds the socket. Must be called before packets can be received or sent. */
-			bool open(const Port& port);
-			bool isOpen() const;
-			Port getLocalPort() const;
-
-			void close();
 
 			/* Process arrived packets(onReceive callbacks). */
 			void update();
@@ -67,7 +65,12 @@ namespace se
 
 			/* Returns true if socket is currently able to receive incoming packets. */
 			bool isReceiving() const;
-						
+
+			bool isOpen() const;
+			Port getLocalPort() const;
+			bool isConnected() const;
+			Endpoint getConnectedEndpoint() const;
+
 			/* Prevents other threads from using this socket. Incoming receive callbacks will have to wait until the thread lock is released. */
 			void enableThreadLock() { mutex.lock(); }
 			/* Releases previously enabled thread lock. */
