@@ -29,17 +29,26 @@ namespace se
 			SocketUDP(IOService& ioService);
 			virtual ~SocketUDP();
 
-			/* Opens and binds the socket. Must be called before packets can be received or sent. */
-			bool open(const Port& port);
-			bool isOpen() const;
-			Port getLocalPort() const;
-
+			/* Opens the socket. Must be called before packets can be received or sent. */
+			bool open();
 			void close();
+
+			/* Binds the socket to a local endpoint. */
+			bool bind(const Port& port);
+
+			/*
+				Connects the socket to a remote endpoint. Blocking call.
+				Socket must be opened before calling.
+				UDP is a connectionless protocol, connection status cannot be maintained.
+			*/
+			bool connect(const Endpoint& remoteEndpoint);
+			/* Clears the connected endpoint value. */
+			void disconnect();
 
 			/* Process arrived packets(onReceive callbacks). */
 			void update();
 
-			/* Sends buffer to the default send to endpoint. */
+			/* Sends buffer to the connected endpoint. */
 			bool sendPacket(const WriteBuffer& buffer);
 
 			/* Sends buffer to the specified endpoint. */
@@ -57,10 +66,11 @@ namespace se
 			/* Returns true if socket is currently able to receive incoming packets. */
 			bool isReceiving() const;
 
-			/* UDP is a connection protocol. However, a default send to endpoint can be set. */
-			void setDefaultSendToEndpoint(const Endpoint& defaultSendToEndpoint);
-			bool isDefaultSendToEndpointSet() const;
-			
+			bool isOpen() const;
+			Port getLocalPort() const;
+			bool isConnected() const;
+			Endpoint getConnectedEndpoint() const;
+
 			/* Prevents other threads from using this socket. Incoming receive callbacks will have to wait until the thread lock is released. */
 			void enableThreadLock() { mutex.lock(); }
 			/* Releases previously enabled thread lock. */
@@ -86,7 +96,7 @@ namespace se
 			IOService& ioService;
 			boost::asio::ip::udp::socket socket;
 			boost::asio::ip::udp::endpoint senderEndpoint;//Used the receiver thread. Think carefully about thread sync!
-			Endpoint defaultSendToEndpoint;
+			Endpoint connectedEndpoint;
 			std::function<void(ReadBuffer&, const Endpoint& endpoint)> onReceiveCallback;//User defined receive handler
 			std::vector<unsigned char> receiveBuffer;
 			time::Time lastReceiveTime;
