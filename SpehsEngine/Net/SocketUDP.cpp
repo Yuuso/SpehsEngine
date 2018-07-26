@@ -51,6 +51,41 @@ namespace se
 			close();
 		}
 
+		bool SocketUDP::connect(const Endpoint& remoteEndpoint)
+		{
+			if (!isOpen())
+			{
+				log::error("Cannot connect UDP socket. Socket has not been opened.");
+				return false;
+			}
+			boost::asio::ip::udp::resolver resolverUDP(ioService.getImplementationRef());
+			const boost::asio::ip::udp::resolver::query queryUDP(boost::asio::ip::udp::v4(), remoteEndpoint.address.toString(), remoteEndpoint.port.toString());
+			const boost::asio::ip::udp::endpoint serverEndpointUDP = *resolverUDP.resolve(queryUDP);
+			boost::system::error_code error;
+			socket.connect(serverEndpointUDP, error);
+			if (error)
+			{
+				log::info("SocketUDP connect() failed(). Boost asio error: " + std::to_string(error.value()) + ": " + error.message());
+				return false;
+			}
+			else
+			{
+				log::info("SocketUDP successfully connected to the remote endpoint at: " + remoteEndpoint.toString());
+				return true;
+			}
+		}
+
+		void SocketUDP::disconnect()
+		{
+			se_assert(getConnectedEndpoint());
+			connectedEndpoint = Endpoint();
+		}
+
+		Endpoint SocketUDP::getConnectedEndpoint() const
+		{
+			return connectedEndpoint;
+		}
+
 		bool SocketUDP::open(const Port& port)
 		{
 			std::lock_guard<std::recursive_mutex> lock(mutex);
@@ -125,8 +160,15 @@ namespace se
 
 		bool SocketUDP::sendPacket(const WriteBuffer& buffer)
 		{
-			se_assert(defaultSendToEndpoint != Endpoint::invalid && "No default send to endpoint set.");
-			return sendPacket(buffer, defaultSendToEndpoint);
+			if (connectedEndpoint)
+			{
+				return sendPacket(buffer, connectedEndpoint);
+			}
+			else
+			{
+				se_assert(false && "connect() hasn't been called.");
+				return false;
+			}
 		}
 
 		bool SocketUDP::sendPacket(const WriteBuffer& buffer, const Endpoint& endpoint)
@@ -134,11 +176,13 @@ namespace se
 			std::lock_guard<std::recursive_mutex> lock(mutex);
 			boost::system::error_code error;			
 			
-			boost::asio::ip::udp::resolver resolverTCP(ioService.getImplementationRef());
+			boost::asio::ip::udp::resolver resolver(ioService.getImplementationRef());
 			const boost::asio::ip::udp::resolver::query query(endpoint.address.toString(), endpoint.port.toString());
-			const boost::asio::ip::udp::endpoint asioEndpoint = *resolverTCP.resolve(query, error);
+			const boost::asio::ip::udp::endpoint asioEndpoint = *resolver.resolve(query, error);
 
 			const ExpectedBytesType bytesSent = socket.send_to(boost::asio::buffer(buffer[0], buffer.getOffset()), asioEndpoint, 0, error);
+			if (error)
+				se::log::error("SocketUDP send failed.");
 			if (bytesSent != buffer.getOffset())
 				se::log::error("SocketUDP send failed.");
 			
@@ -287,17 +331,6 @@ namespace se
 		{
 			std::lock_guard<std::recursive_mutex> locks(mutex);
 			return receiving;
-		}
-
-		void SocketUDP::setDefaultSendToEndpoint(const Endpoint& _defaultSendToEndpoint)
-		{
-			defaultSendToEndpoint = _defaultSendToEndpoint;
-			se::log::info("SocketUDP default send to endpoint set: " + _defaultSendToEndpoint.toString());
-		}
-
-		bool SocketUDP::isDefaultSendToEndpointSet() const
-		{
-			return defaultSendToEndpoint != Endpoint::invalid;
 		}
 
 		bool SocketUDP::isOpen() const
