@@ -55,10 +55,18 @@ namespace se
 		{
 			std::lock_guard<std::recursive_mutex> lock(mutex);
 			boost::system::error_code error;
-			socket.open(boost::asio::ip::udp::v4(), error);
-			if (error)
+			try
 			{
-				se::log::error("Failed to open SocketUDP. Boost asio error: " + error.message());
+				socket.open(boost::asio::ip::udp::v4(), error);
+				if (error)
+				{
+					se::log::error("Failed to open SocketUDP. Boost asio error: " + error.message());
+					return false;
+				}
+			}
+			catch (const std::exception& e)
+			{
+				log::error(std::string("Exception thrown: ") + e.what());
 				return false;
 			}
 			return true;
@@ -84,10 +92,18 @@ namespace se
 			}
 			boost::system::error_code error;
 			const boost::asio::ip::udp::endpoint endpoint(boost::asio::ip::udp::v4(), port.value);
-			socket.bind(endpoint, error);
-			if (error)
+			try
 			{
-				se::log::error("Failed to bind SocketUDP. Boost asio error: " + error.message());
+				socket.bind(endpoint, error);
+				if (error)
+				{
+					se::log::error("Failed to bind SocketUDP. Boost asio error: " + error.message());
+					return false;
+				}
+			}
+			catch (const std::exception& e)
+			{
+				log::error(std::string("Exception thrown: ") + e.what());
 				return false;
 			}
 			se::log::info("SocketUDP opened at port: " + port.toString());
@@ -105,17 +121,25 @@ namespace se
 			const boost::asio::ip::udp::resolver::query queryUDP(boost::asio::ip::udp::v4(), remoteEndpoint.address.toString(), remoteEndpoint.port.toString());
 			const boost::asio::ip::udp::endpoint serverEndpointUDP = *resolverUDP.resolve(queryUDP);
 			boost::system::error_code error;
-			socket.connect(serverEndpointUDP, error);
-			if (error)
+			try
 			{
-				log::info("SocketUDP connect() failed(). Boost asio error: " + std::to_string(error.value()) + ": " + error.message());
-				return false;
+				socket.connect(serverEndpointUDP, error);
+				if (error)
+				{
+					log::info("SocketUDP connect() failed(). Boost asio error: " + std::to_string(error.value()) + ": " + error.message());
+					return false;
+				}
+				else
+				{
+					connectedEndpoint = remoteEndpoint;
+					log::info("SocketUDP successfully connected to the remote endpoint at: " + remoteEndpoint.toString());
+					return true;
+				}
 			}
-			else
+			catch (const std::exception& e)
 			{
-				connectedEndpoint = remoteEndpoint;
-				log::info("SocketUDP successfully connected to the remote endpoint at: " + remoteEndpoint.toString());
-				return true;
+				log::error(std::string("Exception thrown: ") + e.what());
+				return false;
 			}
 		}
 
@@ -153,7 +177,7 @@ namespace se
 						socket.shutdown(boost::asio::ip::tcp::socket::shutdown_both);
 						socket.close();//TODO: this actually cancels all asynchronous operations, not just receiving...
 					}
-					catch (std::exception& e)
+					catch (const std::exception& e)
 					{
 						log::info(e.what());
 					}
@@ -187,11 +211,19 @@ namespace se
 			const boost::asio::ip::udp::resolver::query query(endpoint.address.toString(), endpoint.port.toString());
 			const boost::asio::ip::udp::endpoint asioEndpoint = *resolver.resolve(query, error);
 
-			const ExpectedBytesType bytesSent = socket.send_to(boost::asio::buffer(buffer[0], buffer.getOffset()), asioEndpoint, 0, error);
-			if (error)
-				se::log::error("SocketUDP send failed.");
-			if (bytesSent != buffer.getOffset())
-				se::log::error("SocketUDP send failed.");
+			try
+			{
+				const ExpectedBytesType bytesSent = socket.send_to(boost::asio::buffer(buffer[0], buffer.getOffset()), asioEndpoint, 0, error);
+				if (error)
+					se::log::error("SocketUDP send failed.");
+				if (bytesSent != buffer.getOffset())
+					se::log::error("SocketUDP send failed.");
+			}
+			catch (const std::exception& e)
+			{
+				log::error(std::string("Exception thrown: ") + e.what());
+				return false;
+			}
 			
 			if (debugLogLevel >= 2)
 				log::info("SocketUDP: packet sent. Contents: 4(packet byte size) + 1(packet type) + " + std::to_string(buffer.getOffset()) + "(data)");
@@ -246,17 +278,31 @@ namespace se
 		{
 			if (isConnected())
 			{
-				socket.async_receive(boost::asio::buffer(receiveBuffer),
-					boost::bind(&SocketUDP::receiveHandler,
-						this, boost::asio::placeholders::error,
-						boost::asio::placeholders::bytes_transferred));
+				try
+				{
+					socket.async_receive(boost::asio::buffer(receiveBuffer),
+						boost::bind(&SocketUDP::receiveHandler,
+							this, boost::asio::placeholders::error,
+							boost::asio::placeholders::bytes_transferred));
+				}
+				catch (const std::exception& e)
+				{
+					log::error(std::string("Exception thrown: ") + e.what());
+				}
 			}
 			else
 			{
-				socket.async_receive_from(boost::asio::buffer(receiveBuffer), senderEndpoint,
-					boost::bind(&SocketUDP::receiveHandler,
+				try
+				{
+					socket.async_receive_from(boost::asio::buffer(receiveBuffer), senderEndpoint,
+						boost::bind(&SocketUDP::receiveHandler,
 						this, boost::asio::placeholders::error,
 						boost::asio::placeholders::bytes_transferred));
+				}
+				catch (const std::exception& e)
+				{
+					log::error(std::string("Exception thrown: ") + e.what());
+				}
 			}
 		}
 
