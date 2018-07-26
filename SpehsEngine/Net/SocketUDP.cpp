@@ -119,11 +119,11 @@ namespace se
 			}
 			boost::asio::ip::udp::resolver resolverUDP(ioService.getImplementationRef());
 			const boost::asio::ip::udp::resolver::query queryUDP(boost::asio::ip::udp::v4(), remoteEndpoint.address.toString(), remoteEndpoint.port.toString());
-			const boost::asio::ip::udp::endpoint serverEndpointUDP = *resolverUDP.resolve(queryUDP);
+			const boost::asio::ip::udp::endpoint remoteAsioEndpoint = *resolverUDP.resolve(queryUDP);
 			boost::system::error_code error;
 			try
 			{
-				socket.connect(serverEndpointUDP, error);
+				socket.connect(remoteAsioEndpoint, error);
 				if (error)
 				{
 					log::info("SocketUDP connect() failed(). Boost asio error: " + std::to_string(error.value()) + ": " + error.message());
@@ -131,7 +131,7 @@ namespace se
 				}
 				else
 				{
-					connectedEndpoint = remoteEndpoint;
+					connectedEndpoint = remoteAsioEndpoint;
 					log::info("SocketUDP successfully connected to the remote endpoint at: " + remoteEndpoint.toString() + " at local port: " + std::to_string(socket.local_endpoint().port()));
 					return true;
 				}
@@ -146,7 +146,7 @@ namespace se
 		void SocketUDP::disconnect()
 		{
 			se_assert(getConnectedEndpoint());
-			connectedEndpoint = Endpoint();
+			connectedEndpoint = boost::asio::ip::udp::endpoint();
 		}
 
 		void SocketUDP::waitUntilFinishedReceiving()
@@ -191,9 +191,9 @@ namespace se
 
 		bool SocketUDP::sendPacket(const WriteBuffer& buffer)
 		{
-			if (connectedEndpoint)
+			if (isConnected())
 			{
-				return sendPacket(buffer, connectedEndpoint);
+				return sendPacketInternal(buffer, connectedEndpoint);
 			}
 			else
 			{
@@ -205,15 +205,27 @@ namespace se
 		bool SocketUDP::sendPacket(const WriteBuffer& buffer, const Endpoint& endpoint)
 		{
 			std::lock_guard<std::recursive_mutex> lock(mutex);
-			boost::system::error_code error;			
-			
+			boost::system::error_code error;
+
 			boost::asio::ip::udp::resolver resolver(ioService.getImplementationRef());
 			const boost::asio::ip::udp::resolver::query query(endpoint.address.toString(), endpoint.port.toString());
 			const boost::asio::ip::udp::endpoint asioEndpoint = *resolver.resolve(query, error);
+			if (error)
+			{
+				se::log::error("SocketUDP send failed.");
+				return false;
+			}
 
+			return sendPacketInternal(buffer, asioEndpoint);
+		}
+
+		bool SocketUDP::sendPacketInternal(const WriteBuffer& buffer, const boost::asio::ip::udp::endpoint& endpoint)
+		{
+			std::lock_guard<std::recursive_mutex> lock(mutex);			
 			try
 			{
-				const ExpectedBytesType bytesSent = socket.send_to(boost::asio::buffer(buffer[0], buffer.getOffset()), asioEndpoint, 0, error);
+				boost::system::error_code error;
+				const ExpectedBytesType bytesSent = socket.send_to(boost::asio::buffer(buffer[0], buffer.getOffset()), endpoint, 0, error);
 				if (error)
 					se::log::error("SocketUDP send failed.");
 				if (bytesSent != buffer.getOffset())
@@ -317,7 +329,8 @@ namespace se
 				for (size_t i = 0; i < receivedPackets.size(); i++)
 				{
 					ReadBuffer readBuffer(receivedPackets[i]->buffer.data(), receivedPackets[i]->buffer.size());
-					onReceiveCallback(readBuffer, receivedPackets[i]->senderEndpoint);
+					const Endpoint endpoint(Address(Address::ValueType(receivedPackets[i]->senderEndpoint.address().to_string())), Port(Port::ValueType(receivedPackets[i]->senderEndpoint.port())));
+					onReceiveCallback(readBuffer, endpoint);
 				}
 			}
 			clearReceivedPackets();
@@ -389,8 +402,7 @@ namespace se
 				}
 				else
 				{
-					receivedPackets.back()->senderEndpoint.address.value = senderEndpoint.address().to_string();
-					receivedPackets.back()->senderEndpoint.port.value = senderEndpoint.port();
+					receivedPackets.back()->senderEndpoint = senderEndpoint;
 				}
 			}
 
@@ -418,12 +430,15 @@ namespace se
 
 		bool SocketUDP::isConnected() const
 		{
-			return (bool)connectedEndpoint;
+			return connectedEndpoint != boost::asio::ip::udp::endpoint();
 		}
 
 		Endpoint SocketUDP::getConnectedEndpoint() const
 		{
-			return connectedEndpoint;
+			if (connectedEndpoint == boost::asio::ip::udp::endpoint())
+				return Endpoint::invalid;
+			else
+				return Endpoint(Address(Address::ValueType(connectedEndpoint.address().to_string())), Port(Port::ValueType(connectedEndpoint.port())));
 		}
 	}
 }

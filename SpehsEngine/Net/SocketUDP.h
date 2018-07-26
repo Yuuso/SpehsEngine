@@ -80,6 +80,9 @@ namespace se
 
 		private:
 
+			/* Underlying send method for using asio endpoint. */
+			bool sendPacketInternal(const WriteBuffer& buffer, const boost::asio::ip::udp::endpoint& endpoint);
+
 			/* Resumes receiving with the previously set callback handler, not clearing out any arrived packets. */
 			void resumeReceiving();
 
@@ -95,8 +98,8 @@ namespace se
 			mutable std::recursive_mutex mutex;
 			IOService& ioService;
 			boost::asio::ip::udp::socket socket;
-			boost::asio::ip::udp::endpoint senderEndpoint;//Used the receiver thread. Think carefully about thread sync!
-			Endpoint connectedEndpoint;
+			boost::asio::ip::udp::endpoint senderEndpoint;//Used by the receiver thread. Think carefully about thread sync!
+			boost::asio::ip::udp::endpoint connectedEndpoint;
 			std::function<void(ReadBuffer&, const Endpoint& endpoint)> onReceiveCallback;//User defined receive handler
 			std::vector<unsigned char> receiveBuffer;
 			time::Time lastReceiveTime;
@@ -106,7 +109,7 @@ namespace se
 			struct ReceivedPacket
 			{
 				std::vector<uint8_t> buffer;
-				Endpoint senderEndpoint;
+				boost::asio::ip::udp::endpoint senderEndpoint;
 			};
 			std::recursive_mutex receivedPacketsMutex;
 			std::vector<ReceivedPacket*> receivedPackets;
