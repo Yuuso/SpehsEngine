@@ -353,6 +353,11 @@ namespace se
 				return Port::invalid;
 		}
 
+		bool SocketUDP::isConnected() const
+		{
+			return (bool)connectedEndpoint;
+		}
+
 		Endpoint SocketUDP::getConnectedEndpoint() const
 		{
 			return connectedEndpoint;
