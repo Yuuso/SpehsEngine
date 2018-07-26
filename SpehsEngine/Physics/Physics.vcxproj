@@ -125,7 +125,6 @@
   <ItemGroup>
     <ClCompile Include="3D\AABBCollider3D.cpp" />
     <ClCompile Include="3D\Collision3D.cpp" />
-    <ClCompile Include="3D\OBBCollider3D.cpp" />
     <ClCompile Include="3D\Ray3D.cpp" />
     <ClCompile Include="Physics.cpp" />
     <ClCompile Include="SATCollision.cpp" />
@@ -139,7 +138,6 @@
   <ItemGroup>
     <ClInclude Include="3D\AABBCollider3D.h" />
     <ClInclude Include="3D\Collision3D.h" />
-    <ClInclude Include="3D\OBBCollider3D.h" />
     <ClInclude Include="3D\Ray3D.h" />
     <ClInclude Include="3D\stdafx.h" />
     <ClInclude Include="Physics.h" />
