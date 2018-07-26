@@ -24,6 +24,18 @@
     <ClCompile Include="stdafx.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="3D\AABBCollider3D.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="3D\Ray3D.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="3D\OBBCollider3D.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="3D\Collision3D.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Physics.h">
@@ -36,6 +48,21 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="PrecompiledInclude.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="3D\AABBCollider3D.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="3D\Ray3D.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="3D\OBBCollider3D.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="3D\stdafx.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="3D\Collision3D.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

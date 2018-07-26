@@ -68,5 +68,10 @@ namespace se
 			far = _far;
 			projection = glm::perspective(glm::radians(fov), (float)window.getWidth() / (float)window.getHeight(), near, far);
 		}
+
+		glm::vec3 Camera3D::getFrustrumPoint(const glm::vec3& _screenCoordinates)
+		{
+			return glm::unProject(_screenCoordinates, glm::lookAt(position, target, up), projection, glm::ivec4(0, 0, window.getWidth(), window.getHeight()));
+		}
 	}
 }

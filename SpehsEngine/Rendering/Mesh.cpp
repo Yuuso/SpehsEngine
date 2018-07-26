@@ -76,10 +76,12 @@ namespace se
 		void Mesh::setColor(const Color _color)
 		{
 			color = _color;
+			needUpdate = true;
 		}
 		void Mesh::setAlpha(const float _alpha)
 		{
 			color.a = _alpha;
+			needUpdate = true;
 		}
 		void Mesh::translate(const glm::vec3& _translation)
 		{

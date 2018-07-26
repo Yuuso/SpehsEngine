@@ -36,6 +36,8 @@ namespace se
 			float getFar() const { return far; }
 			float getFOV() const { return fov; }
 
+			glm::vec3 getFrustrumPoint(const glm::vec3& _screenCoordinates);
+
 			glm::mat4* cameraMatrix;
 
 		private:
