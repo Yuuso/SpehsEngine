@@ -244,10 +244,20 @@ namespace se
 
 		void SocketUDP::resumeReceiving()
 		{
-			socket.async_receive_from(boost::asio::buffer(receiveBuffer), senderEndpoint,
-				boost::bind(&SocketUDP::receiveHandler,
-					this, boost::asio::placeholders::error,
-					boost::asio::placeholders::bytes_transferred));
+			if (isConnected())
+			{
+				socket.async_receive(boost::asio::buffer(receiveBuffer),
+					boost::bind(&SocketUDP::receiveHandler,
+						this, boost::asio::placeholders::error,
+						boost::asio::placeholders::bytes_transferred));
+			}
+			else
+			{
+				socket.async_receive_from(boost::asio::buffer(receiveBuffer), senderEndpoint,
+					boost::bind(&SocketUDP::receiveHandler,
+						this, boost::asio::placeholders::error,
+						boost::asio::placeholders::bytes_transferred));
+			}
 		}
 
 		void SocketUDP::update()
@@ -327,8 +337,15 @@ namespace se
 				receivedPackets.push_back(new ReceivedPacket());
 				receivedPackets.back()->buffer.resize(bytes);
 				memcpy(receivedPackets.back()->buffer.data(), receiveBuffer.data(), bytes);
-				receivedPackets.back()->senderEndpoint.address.value = senderEndpoint.address().to_string();
-				receivedPackets.back()->senderEndpoint.port.value = senderEndpoint.port();
+				if (isConnected())
+				{
+					receivedPackets.back()->senderEndpoint = connectedEndpoint;
+				}
+				else
+				{
+					receivedPackets.back()->senderEndpoint.address.value = senderEndpoint.address().to_string();
+					receivedPackets.back()->senderEndpoint.port.value = senderEndpoint.port();
+				}
 			}
 
 			resumeReceiving();
