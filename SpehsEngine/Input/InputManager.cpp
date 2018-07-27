@@ -180,6 +180,15 @@ namespace se
 		return false;
 	}
 
+	bool InputManager::isKeyReleased(unsigned int keyID) const
+	{
+		if (isKeyDown(keyID) == false && wasKeyDown(keyID) == true)
+		{
+			return true;
+		}
+		return false;
+	}
+
 	bool InputManager::wasKeyDown(unsigned int keyID) const
 	{
 		auto it = previousKeyMap.find(keyID);
