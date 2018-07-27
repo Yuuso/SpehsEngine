@@ -33,6 +33,10 @@ namespace se
 					break;
 				}
 			}
+			if (collisionHit)
+			{
+				collisionPoint = _ray.origin + _ray.direction * tmin;
+			}
 		}
 
 		Collision3D::Collision3D(const FrustumCollider3D& _frustum, const AABBCollider3D& _aabb)

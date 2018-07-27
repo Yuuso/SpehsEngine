@@ -18,6 +18,7 @@ namespace se
 
 			bool hit() const { return collisionHit; };
 			int info() const { return collisionInfo; }
+			glm::vec3 point() const { return collisionPoint; }
 
 		private:
 			inline glm::vec3 getPositiveVertex(const AABBCollider3D& _aabb, const glm::vec3& _normal);
@@ -25,6 +26,7 @@ namespace se
 
 			bool collisionHit;
 			int collisionInfo;
+			glm::vec3 collisionPoint;
 		};
 	}
 }
