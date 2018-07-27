@@ -2,6 +2,7 @@
 #include <boost/asio.hpp>
 #include <boost/bind.hpp>
 #include <boost/system/error_code.hpp>
+#include <boost/enable_shared_from_this.hpp>
 #include <type_traits>
 #include <functional>
 #include <thread>
@@ -79,8 +80,6 @@ namespace se
 			/* Returns true if the socket is currently connected to a remote spehs socket. */
 			bool isConnected() const;
 			
-			const Id id;
-
 		private:
 
 			/* Resumes receiving with the previously set callback handler, not clearing out any arrived packets. */
@@ -101,39 +100,50 @@ namespace se
 			/* Deallocates and clears received packet buffers. */
 			void clearReceivedPackets();
 
-			/* Boost acceptor calls this method when an incoming connection is being accepted. If no error is detected, launches the synchronous spehsAccept method in a different thread (spehsAcceptThread). */
-			void onAccept(const boost::system::error_code error);
 			/* Asynchronous method for running the handshake procedure with the remote endpoint. */
 			void spehsAccept();
 
 			//Receive handlers
-			void receiveHandler(const boost::system::error_code& error, std::size_t bytes);//Boost initially passes received data to this receive handler.
 			bool spehsReceiveHandler(ReadBuffer& buffer);//Internal receive handler, unpacks spehs header. Calls the user defined receive handler.
 
-			mutable std::recursive_mutex mutex;
-			IOService& ioService;
-			boost::asio::ip::tcp::socket socket;
-			boost::asio::ip::tcp::acceptor* acceptor = nullptr;
-			std::thread* spehsAcceptThread = nullptr;
-			std::function<void(ReadBuffer&)> onReceiveCallback;//User defined receive handler
-			std::function<void(SocketTCP&)> onAcceptCallback;
-			ExpectedBytesType expectedBytes = 0;
-			std::vector<unsigned char> receiveBuffer;
-			time::Time lastReceiveTime;
-			bool receiving = false;
-			bool accepting = false;
-			bool connected = false;
-			bool connecting = false;//Set to true for the duration of connect attempt
-			bool handshakeSent = false;//Refers to the current connection
-			bool handshakeReceived = false;//Refers to the current connection
-			bool onAcceptCallbackQueued = false;//If enabled, update will invoke the callback.
+			struct SharedImpl : public boost::enable_shared_from_this<SharedImpl>
+			{
+				SharedImpl(IOService& ioService);
+				~SharedImpl();
 
-			//Received packets
-			std::recursive_mutex receivedPacketsMutex;
-			std::vector<std::vector<uint8_t>*> receivedPackets;
+				/* Boost initially passes received data to this receive handler. */
+				void receiveHandler(const boost::system::error_code& error, std::size_t bytes);
+
+				/* Boost acceptor calls this method when an incoming connection is being accepted. If no error is detected, launches the synchronous spehsAccept method in a different thread (spehsAcceptThread). */
+				void onAccept(const boost::system::error_code error);
+
+				mutable std::recursive_mutex mutex;
+				IOService& ioService;
+				boost::asio::ip::tcp::socket socket;
+				boost::asio::ip::tcp::acceptor* acceptor = nullptr;
+				std::thread* spehsAcceptThread = nullptr;
+				std::function<void(ReadBuffer&)> onReceiveCallback;//User defined receive handler
+				std::function<void(SocketTCP&)> onAcceptCallback;
+				ExpectedBytesType expectedBytes = 0;
+				std::vector<unsigned char> receiveBuffer;
+				time::Time lastReceiveTime;
+				bool receiving = false;
+				bool accepting = false;
+				bool connected = false;
+				bool connecting = false;//Set to true for the duration of connect attempt
+				bool handshakeSent = false;//Refers to the current connection
+				bool handshakeReceived = false;//Refers to the current connection
+				bool onAcceptCallbackQueued = false;//If enabled, update will invoke the callback.
+				SocketTCP* socketTCP = nullptr;
+
+				//Received packets
+				std::recursive_mutex receivedPacketsMutex;
+				std::vector<std::vector<uint8_t>*> receivedPackets;
+			};
+			boost::shared_ptr<SharedImpl> sharedImpl;
 
 		private:
-			static Id nextId;
+			friend struct SharedImpl;
 		};
 	}
 }

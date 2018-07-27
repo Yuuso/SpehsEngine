@@ -41,11 +41,9 @@ namespace se
 		SocketUDP::~SocketUDP()
 		{
 			close();
-			while (isReceiving()) {}
 			std::lock_guard<std::recursive_mutex> lock1(sharedImpl->mutex);
 			se_assert(sharedImpl->socketUDP);
 			sharedImpl->socketUDP = nullptr;
-			std::lock_guard<std::recursive_mutex> lock2(sharedImpl->receivedPacketsMutex);
 		}
 
 		bool SocketUDP::open()
