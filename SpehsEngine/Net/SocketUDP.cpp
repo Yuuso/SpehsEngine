@@ -32,40 +32,27 @@ namespace se
 		static const time::Time handshakeReceiveTimeout = time::fromSeconds(10000);
 		static const time::Time connectionTimeout = time::fromSeconds(10000);
 
-		SocketUDP::Id SocketUDP::nextId = 0;
 		SocketUDP::SocketUDP(IOService& _ioService)
-			: id(nextId++)
-			, ioService(_ioService)
-			, socket(new boost::asio::ip::udp::socket(_ioService.getImplementationRef()))
-			, receiveBuffer(65536)
+			: sharedImpl(new SharedImpl(_ioService))
 		{
-
+			sharedImpl->socketUDP = this;
 		}
 
 		SocketUDP::~SocketUDP()
 		{
-			{
-				std::lock_guard<std::recursive_mutex> lock1(mutex);
-				se_assert(socket);
-				boost::asio::ip::udp::socket* const _socket = socket;
-				socket = nullptr;
-				delete _socket;
-			}
+			close();
 			while (isReceiving()) {}
-			std::lock_guard<std::recursive_mutex> lock1(mutex);
-			std::lock_guard<std::recursive_mutex> lock2(receivedPacketsMutex);
+			std::lock_guard<std::recursive_mutex> lock1(sharedImpl->mutex);
+			se_assert(sharedImpl->socketUDP);
+			sharedImpl->socketUDP = nullptr;
+			std::lock_guard<std::recursive_mutex> lock2(sharedImpl->receivedPacketsMutex);
 		}
 
 		bool SocketUDP::open()
 		{
-			std::lock_guard<std::recursive_mutex> lock(mutex);
-			if (!socket)
-			{
-				se_assert(false && "Socket has been deallocated. Cannot open.");
-				return false;
-			}
+			std::lock_guard<std::recursive_mutex> lock(sharedImpl->mutex);
 			boost::system::error_code error;
-			socket->open(boost::asio::ip::udp::v4(), error);
+			sharedImpl->socket.open(boost::asio::ip::udp::v4(), error);
 			if (error)
 			{
 				se::log::error("Failed to open SocketUDP. Boost asio error: " + error.message());
@@ -76,11 +63,11 @@ namespace se
 
 		void SocketUDP::close()
 		{
-			std::lock_guard<std::recursive_mutex> lock(mutex);
-			if (socket && socket->is_open())
+			std::lock_guard<std::recursive_mutex> lock(sharedImpl->mutex);
+			if (sharedImpl->socket.is_open())
 			{
-				socket->shutdown(boost::asio::socket_base::shutdown_both);
-				socket->close();
+				sharedImpl->socket.shutdown(boost::asio::socket_base::shutdown_both);
+				sharedImpl->socket.close();
 				se::log::info("SocketUDP closed.");
 			}
 		}
@@ -92,16 +79,11 @@ namespace se
 				se_assert(false && "Socket must be opened first.");
 				return false;
 			}
-			if (!socket)
-			{
-				se_assert(false && "Socket has been deallocated. Cannot bind.");
-				return false;
-			}
 			boost::system::error_code error;
 			const boost::asio::ip::udp::endpoint endpoint(boost::asio::ip::udp::v4(), port.value);
 
-			std::lock_guard<std::recursive_mutex> lock(mutex);
-			socket->bind(endpoint, error);
+			std::lock_guard<std::recursive_mutex> lock(sharedImpl->mutex);
+			sharedImpl->socket.bind(endpoint, error);
 			if (error)
 			{
 				se::log::error("Failed to bind SocketUDP. Boost asio error: " + error.message());
@@ -115,20 +97,15 @@ namespace se
 		{
 			if (!isOpen())
 			{
-				log::error("Cannot connect UDP socket-> Socket has not been opened.");
+				log::error("Cannot connect UDP socket. Socket has not been opened.");
 				return false;
 			}
-			if (!socket)
-			{
-				se_assert(false && "Socket has been deallocated. Cannot connect.");
-				return false;
-			}
-			std::lock_guard<std::recursive_mutex> lock(mutex);
-			boost::asio::ip::udp::resolver resolverUDP(ioService.getImplementationRef());
+			std::lock_guard<std::recursive_mutex> lock(sharedImpl->mutex);
+			boost::asio::ip::udp::resolver resolverUDP(sharedImpl->ioService.getImplementationRef());
 			const boost::asio::ip::udp::resolver::query queryUDP(boost::asio::ip::udp::v4(), remoteEndpoint.address.toString(), remoteEndpoint.port.toString());
 			const boost::asio::ip::udp::endpoint remoteAsioEndpoint = *resolverUDP.resolve(queryUDP);
 			boost::system::error_code error;
-			socket->connect(remoteAsioEndpoint, error);
+			sharedImpl->socket.connect(remoteAsioEndpoint, error);
 			if (error)
 			{
 				log::info("SocketUDP connect() failed(). Boost asio error: " + std::to_string(error.value()) + ": " + error.message());
@@ -136,39 +113,39 @@ namespace se
 			}
 			else
 			{
-				connectedEndpoint = remoteAsioEndpoint;
-				log::info("SocketUDP successfully connected to the remote endpoint at: " + remoteEndpoint.toString() + " at local port: " + std::to_string(socket->local_endpoint().port()));
+				sharedImpl->connectedEndpoint = remoteAsioEndpoint;
+				log::info("SocketUDP successfully connected to the remote endpoint at: " + remoteEndpoint.toString() + " at local port: " + std::to_string(sharedImpl->socket.local_endpoint().port()));
 				return true;
 			}
 		}
 
 		void SocketUDP::disconnect()
 		{
-			std::lock_guard<std::recursive_mutex> lock(mutex);
+			std::lock_guard<std::recursive_mutex> lock(sharedImpl->mutex);
 			se_assert(getConnectedEndpoint());
-			connectedEndpoint = boost::asio::ip::udp::endpoint();
+			sharedImpl->connectedEndpoint = boost::asio::ip::udp::endpoint();
 		}
 		
 		void SocketUDP::clearReceivedPackets()
 		{
-			std::lock_guard<std::recursive_mutex> lock1(mutex);
-			std::lock_guard<std::recursive_mutex> lock2(receivedPacketsMutex);
-			receivedPackets.clear();
+			std::lock_guard<std::recursive_mutex> lock1(sharedImpl->mutex);
+			std::lock_guard<std::recursive_mutex> lock2(sharedImpl->receivedPacketsMutex);
+			sharedImpl->receivedPackets.clear();
 		}
 
 		void SocketUDP::stopReceiving()
 		{
 			{
-				std::lock_guard<std::recursive_mutex> lock(mutex);
-				if (socket && socket->is_open())
+				std::lock_guard<std::recursive_mutex> lock(sharedImpl->mutex);
+				if (sharedImpl->socket.is_open())
 				{
 					boost::system::error_code error;
-					socket->shutdown(boost::asio::ip::tcp::socket::shutdown_both, error);
+					sharedImpl->socket.shutdown(boost::asio::ip::tcp::socket::shutdown_both, error);
 					if (error)
 					{
 						log::info("SocketUDP: boost asio error on shutdown(): " + error.message());
 					}
-					socket->close(error);//TODO: this actually cancels all asynchronous operations, not just receiving...
+					sharedImpl->socket.close(error);//TODO: this actually cancels all asynchronous operations, not just receiving...
 					if (error)
 					{
 						log::info("SocketUDP: boost asio error on close(): " + error.message());
@@ -185,7 +162,8 @@ namespace se
 		{
 			if (isConnected())
 			{
-				return sendPacketInternal(buffer, connectedEndpoint);
+				std::lock_guard<std::recursive_mutex> lock(sharedImpl->mutex);
+				return sendPacketInternal(buffer, sharedImpl->connectedEndpoint);
 			}
 			else
 			{
@@ -196,10 +174,10 @@ namespace se
 
 		bool SocketUDP::sendPacket(const WriteBuffer& buffer, const Endpoint& endpoint)
 		{
-			std::lock_guard<std::recursive_mutex> lock(mutex);
+			std::lock_guard<std::recursive_mutex> lock(sharedImpl->mutex);
 			boost::system::error_code error;
 
-			boost::asio::ip::udp::resolver resolver(ioService.getImplementationRef());
+			boost::asio::ip::udp::resolver resolver(sharedImpl->ioService.getImplementationRef());
 			const boost::asio::ip::udp::resolver::query query(endpoint.address.toString(), endpoint.port.toString());
 			const boost::asio::ip::udp::endpoint asioEndpoint = *resolver.resolve(query, error);
 			if (error)
@@ -213,15 +191,9 @@ namespace se
 
 		bool SocketUDP::sendPacketInternal(const WriteBuffer& buffer, const boost::asio::ip::udp::endpoint& endpoint)
 		{
-			std::lock_guard<std::recursive_mutex> lock(mutex);
-			if (!socket)
-			{
-				se_assert(false && "Socket has been deallocated. Cannot send.");
-				return false;
-			}
-
+			std::lock_guard<std::recursive_mutex> lock(sharedImpl->mutex);
 			boost::system::error_code error;
-			const ExpectedBytesType bytesSent = socket->send_to(boost::asio::buffer(buffer[0], buffer.getOffset()), endpoint, 0, error);
+			const ExpectedBytesType bytesSent = sharedImpl->socket.send_to(boost::asio::buffer(buffer[0], buffer.getOffset()), endpoint, 0, error);
 			if (error)
 				se::log::error("SocketUDP send failed.");
 			if (bytesSent != buffer.getOffset())
@@ -233,10 +205,10 @@ namespace se
 
 		bool SocketUDP::resizeReceiveBuffer(const size_t newSize)
 		{
-			std::lock_guard<std::recursive_mutex> lock(mutex);
-			if (receiving)
+			std::lock_guard<std::recursive_mutex> lock(sharedImpl->mutex);
+			if (sharedImpl->receiving)
 				return false;
-			receiveBuffer.resize(newSize);
+			sharedImpl->receiveBuffer.resize(newSize);
 			return true;
 		}
 
@@ -260,10 +232,10 @@ namespace se
 				return false;
 			}
 
-			std::lock_guard<std::recursive_mutex> lock(mutex);
-			receiving = true;
-			lastReceiveTime = time::now();
-			onReceiveCallback = callbackFunction;
+			std::lock_guard<std::recursive_mutex> lock(sharedImpl->mutex);
+			sharedImpl->receiving = true;
+			sharedImpl->lastReceiveTime = time::now();
+			sharedImpl->onReceiveCallback = callbackFunction;
 			clearReceivedPackets();
 			resumeReceiving();
 
@@ -277,18 +249,13 @@ namespace se
 
 		void SocketUDP::resumeReceiving()
 		{
-			std::lock_guard<std::recursive_mutex> lock(mutex);
-			if (!socket)
-			{
-				se_assert(false && "Socket has been deallocated. Cannot resume receiving.");
-				return;
-			}
+			std::lock_guard<std::recursive_mutex> lock(sharedImpl->mutex);
 			if (isConnected())
 			{
 				try
 				{
-					socket->async_receive(boost::asio::buffer(receiveBuffer),
-						boost::bind(&SocketUDP::receiveHandler, this,
+					sharedImpl->socket.async_receive(boost::asio::buffer(sharedImpl->receiveBuffer),
+						boost::bind(&SocketUDP::SharedImpl::receiveHandler, sharedImpl->shared_from_this(),
 							boost::asio::placeholders::error,
 							boost::asio::placeholders::bytes_transferred));
 				}
@@ -301,9 +268,9 @@ namespace se
 			{
 				try
 				{
-					socket->async_receive_from(boost::asio::buffer(receiveBuffer), senderEndpoint,
-						boost::bind(&SocketUDP::receiveHandler,
-						this, boost::asio::placeholders::error,
+					sharedImpl->socket.async_receive_from(boost::asio::buffer(sharedImpl->receiveBuffer), sharedImpl->senderEndpoint,
+						boost::bind(&SocketUDP::SharedImpl::receiveHandler, sharedImpl->shared_from_this(),
+						boost::asio::placeholders::error,
 						boost::asio::placeholders::bytes_transferred));
 				}
 				catch (const std::exception& e)
@@ -316,21 +283,67 @@ namespace se
 		void SocketUDP::update()
 		{
 			//Received packets
-			std::lock_guard<std::recursive_mutex> lock1(mutex);
-			std::lock_guard<std::recursive_mutex> lock2(receivedPacketsMutex);
-			if (onReceiveCallback)
+			std::lock_guard<std::recursive_mutex> lock1(sharedImpl->mutex);
+			std::lock_guard<std::recursive_mutex> lock2(sharedImpl->receivedPacketsMutex);
+			if (sharedImpl->onReceiveCallback)
 			{
-				for (size_t i = 0; i < receivedPackets.size(); i++)
+				for (size_t i = 0; i < sharedImpl->receivedPackets.size(); i++)
 				{
-					ReadBuffer readBuffer(receivedPackets[i]->buffer.data(), receivedPackets[i]->buffer.size());
-					const Endpoint endpoint(Address(Address::ValueType(receivedPackets[i]->senderEndpoint.address().to_string())), Port(Port::ValueType(receivedPackets[i]->senderEndpoint.port())));
-					onReceiveCallback(readBuffer, endpoint);
+					ReadBuffer readBuffer(sharedImpl->receivedPackets[i]->buffer.data(), sharedImpl->receivedPackets[i]->buffer.size());
+					const Endpoint endpoint(
+						Address(Address::ValueType(sharedImpl->receivedPackets[i]->senderEndpoint.address().to_string())),
+						Port(Port::ValueType(sharedImpl->receivedPackets[i]->senderEndpoint.port())));
+					sharedImpl->onReceiveCallback(readBuffer, endpoint);
 				}
 			}
 			clearReceivedPackets();
 		}
 
-		void SocketUDP::receiveHandler(const boost::system::error_code& error, std::size_t bytes)
+		bool SocketUDP::isReceiving() const
+		{
+			std::lock_guard<std::recursive_mutex> lock(sharedImpl->mutex);
+			return sharedImpl->receiving;
+		}
+
+		bool SocketUDP::isOpen() const
+		{
+			std::lock_guard<std::recursive_mutex> lock(sharedImpl->mutex);
+			return sharedImpl->socket.is_open();
+		}
+
+		Port SocketUDP::getLocalPort() const
+		{
+			std::lock_guard<std::recursive_mutex> lock(sharedImpl->mutex);
+			if (sharedImpl->socket.is_open())
+				return Port(sharedImpl->socket.local_endpoint().port());
+			else
+				return Port::invalid;
+		}
+
+		bool SocketUDP::isConnected() const
+		{
+			std::lock_guard<std::recursive_mutex> lock(sharedImpl->mutex);
+			return sharedImpl->connectedEndpoint != boost::asio::ip::udp::endpoint();
+		}
+
+		Endpoint SocketUDP::getConnectedEndpoint() const
+		{
+			std::lock_guard<std::recursive_mutex> lock(sharedImpl->mutex);
+			if (sharedImpl->connectedEndpoint == boost::asio::ip::udp::endpoint())
+				return Endpoint::invalid;
+			else
+				return Endpoint(Address(Address::ValueType(sharedImpl->connectedEndpoint.address().to_string())), Port(Port::ValueType(sharedImpl->connectedEndpoint.port())));
+		}
+		
+		SocketUDP::SharedImpl::SharedImpl(IOService& _ioService)
+			: ioService(_ioService)
+			, socket(_ioService.getImplementationRef())
+			, receiveBuffer(65536)
+		{
+
+		}
+
+		void SocketUDP::SharedImpl::receiveHandler(const boost::system::error_code& error, std::size_t bytes)
 		{
 			if (debugLogLevel >= 2)
 				log::info("SocketUDP receive handler received " + std::to_string(bytes) + " bytes.");
@@ -385,6 +398,7 @@ namespace se
 				}
 			}
 
+			se_assert(socketUDP);
 			if (bytes > 0)
 			{
 				ReadBuffer readBuffer(&receiveBuffer[0], bytes);
@@ -393,7 +407,7 @@ namespace se
 				receivedPackets.back().reset(new ReceivedPacket());
 				receivedPackets.back()->buffer.resize(bytes);
 				memcpy(receivedPackets.back()->buffer.data(), receiveBuffer.data(), bytes);
-				if (isConnected())
+				if (socketUDP->isConnected())
 				{
 					receivedPackets.back()->senderEndpoint = connectedEndpoint;
 				}
@@ -403,43 +417,7 @@ namespace se
 				}
 			}
 
-			resumeReceiving();
-		}
-
-		bool SocketUDP::isReceiving() const
-		{
-			std::lock_guard<std::recursive_mutex> lock(mutex);
-			return receiving;
-		}
-
-		bool SocketUDP::isOpen() const
-		{
-			std::lock_guard<std::recursive_mutex> lock(mutex);
-			return socket ? socket->is_open() : false;
-		}
-
-		Port SocketUDP::getLocalPort() const
-		{
-			std::lock_guard<std::recursive_mutex> lock(mutex);
-			if (socket && socket->is_open())
-				return Port(socket->local_endpoint().port());
-			else
-				return Port::invalid;
-		}
-
-		bool SocketUDP::isConnected() const
-		{
-			std::lock_guard<std::recursive_mutex> lock(mutex);
-			return connectedEndpoint != boost::asio::ip::udp::endpoint();
-		}
-
-		Endpoint SocketUDP::getConnectedEndpoint() const
-		{
-			std::lock_guard<std::recursive_mutex> lock(mutex);
-			if (connectedEndpoint == boost::asio::ip::udp::endpoint())
-				return Endpoint::invalid;
-			else
-				return Endpoint(Address(Address::ValueType(connectedEndpoint.address().to_string())), Port(Port::ValueType(connectedEndpoint.port())));
+			socketUDP->resumeReceiving();
 		}
 	}
 }

@@ -2,6 +2,7 @@
 #include <boost/asio.hpp>
 #include <boost/bind.hpp>
 #include <boost/system/error_code.hpp>
+#include <boost/enable_shared_from_this.hpp>
 #include <type_traits>
 #include <functional>
 #include <thread>
@@ -51,7 +52,7 @@ namespace se
 			/* Sends buffer to the connected endpoint. */
 			bool sendPacket(const WriteBuffer& buffer);
 
-			/* Sends buffer to the specified endpoint. */
+			/* Sends buffer to a specified endpoint. */
 			bool sendPacket(const WriteBuffer& buffer, const Endpoint& endpoint);
 
 			/* Returns false if the memory allocation fails, or the socket is currently receiving data. */
@@ -59,55 +60,48 @@ namespace se
 
 			/* Starts receiving data from the connected endpoint. Non-blocking call. Callback return value specifies whether to keep receiving. */
 			bool startReceiving(const std::function<void(ReadBuffer&, const Endpoint& endpoint)> onReceiveCallback);
-
-			/* Stops receiving data. */
 			void stopReceiving();
-
-			/* Returns true if socket is currently able to receive incoming packets. */
+			void resumeReceiving();
+			void clearReceivedPackets();
 			bool isReceiving() const;
 
 			bool isOpen() const;
 			Port getLocalPort() const;
 			bool isConnected() const;
-			Endpoint getConnectedEndpoint() const;
-			
-			const Id id;
+			Endpoint getConnectedEndpoint() const;			
 
 		private:
 
 			/* Underlying send method for using asio endpoint. */
 			bool sendPacketInternal(const WriteBuffer& buffer, const boost::asio::ip::udp::endpoint& endpoint);
-
-			/* Resumes receiving with the previously set callback handler, not clearing out any arrived packets. */
-			void resumeReceiving();
-
-			/* Deallocates and clears received packet buffers. */
-			void clearReceivedPackets();
-
-			//Receive handlers
-			void receiveHandler(const boost::system::error_code& error, std::size_t bytes);
-
-			mutable std::recursive_mutex mutex;
-			IOService& ioService;
-			boost::asio::ip::udp::socket* socket = nullptr;
-			boost::asio::ip::udp::endpoint senderEndpoint;//Used by the receiver thread. Think carefully about thread sync!
-			boost::asio::ip::udp::endpoint connectedEndpoint;
-			std::function<void(ReadBuffer&, const Endpoint& endpoint)> onReceiveCallback;//User defined receive handler
-			std::vector<unsigned char> receiveBuffer;
-			time::Time lastReceiveTime;
-			bool receiving = false;
-
+			
 			//Received packets
-			struct ReceivedPacket
+			struct SharedImpl : public boost::enable_shared_from_this<SharedImpl>
 			{
-				std::vector<uint8_t> buffer;
-				boost::asio::ip::udp::endpoint senderEndpoint;
+				SharedImpl(IOService& ioService);
+				void receiveHandler(const boost::system::error_code& error, std::size_t bytes);
+				struct ReceivedPacket
+				{
+					std::vector<uint8_t> buffer;
+					boost::asio::ip::udp::endpoint senderEndpoint;
+				};
+				mutable std::recursive_mutex mutex;
+				boost::asio::ip::udp::endpoint senderEndpoint;//Used by the receiver thread. Think carefully about thread sync!
+				boost::asio::ip::udp::endpoint connectedEndpoint;
+				IOService& ioService;
+				boost::asio::ip::udp::socket socket;
+				std::vector<unsigned char> receiveBuffer;
+				time::Time lastReceiveTime;
+				bool receiving = false;
+				std::function<void(ReadBuffer&, const Endpoint& endpoint)> onReceiveCallback;//User defined receive handler
+				std::recursive_mutex receivedPacketsMutex;
+				std::vector<std::unique_ptr<ReceivedPacket>> receivedPackets;
+				SocketUDP* socketUDP = nullptr;
 			};
-			std::recursive_mutex receivedPacketsMutex;
-			std::vector<std::unique_ptr<ReceivedPacket>> receivedPackets;
+			boost::shared_ptr<SharedImpl> sharedImpl;
 
 		private:
-			static Id nextId;
+			friend struct SharedImpl;
 		};
 	}
 }
