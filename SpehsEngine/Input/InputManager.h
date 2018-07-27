@@ -70,6 +70,7 @@ namespace se
 		void releaseKey(unsigned int keyID);
 		bool isKeyDown(unsigned int keyID) const;
 		bool isKeyPressed(unsigned int keyID) const;
+		bool isKeyReleased(unsigned int keyID) const;
 
 		//Special input query
 		bool isCtrlDown() const;///< Returns true if left or right ctrl button is down
