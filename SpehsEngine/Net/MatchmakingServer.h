@@ -12,7 +12,7 @@ namespace se
 		class MatchmakingServer
 		{
 		public:
-			MatchmakingServer(const Port port = 41623);
+			MatchmakingServer(IOService& ioService, const Port port = 41623);
 
 			void update();
 			void stopAccepting();
@@ -26,7 +26,7 @@ namespace se
 		private:
 			void onAcceptCallback(SocketTCP& socketTCP);
 
-			IOService ioService;
+			IOService& ioService;
 			Acceptor acceptor;
 			std::vector<std::unique_ptr<SocketTCP>> sockets;
 			Port port;

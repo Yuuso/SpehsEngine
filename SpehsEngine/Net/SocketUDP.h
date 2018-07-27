@@ -70,12 +70,7 @@ namespace se
 			Port getLocalPort() const;
 			bool isConnected() const;
 			Endpoint getConnectedEndpoint() const;
-
-			/* Prevents other threads from using this socket. Incoming receive callbacks will have to wait until the thread lock is released. */
-			void enableThreadLock() { mutex.lock(); }
-			/* Releases previously enabled thread lock. */
-			void releaseThreadLock() { mutex.unlock(); }
-
+			
 			const Id id;
 
 		private:
@@ -86,9 +81,6 @@ namespace se
 			/* Resumes receiving with the previously set callback handler, not clearing out any arrived packets. */
 			void resumeReceiving();
 
-			/* Blocks until receiving has stopped. */
-			void waitUntilFinishedReceiving();
-
 			/* Deallocates and clears received packet buffers. */
 			void clearReceivedPackets();
 
@@ -97,7 +89,7 @@ namespace se
 
 			mutable std::recursive_mutex mutex;
 			IOService& ioService;
-			boost::asio::ip::udp::socket socket;
+			boost::asio::ip::udp::socket* socket = nullptr;
 			boost::asio::ip::udp::endpoint senderEndpoint;//Used by the receiver thread. Think carefully about thread sync!
 			boost::asio::ip::udp::endpoint connectedEndpoint;
 			std::function<void(ReadBuffer&, const Endpoint& endpoint)> onReceiveCallback;//User defined receive handler
@@ -112,7 +104,7 @@ namespace se
 				boost::asio::ip::udp::endpoint senderEndpoint;
 			};
 			std::recursive_mutex receivedPacketsMutex;
-			std::vector<ReceivedPacket*> receivedPackets;
+			std::vector<std::unique_ptr<ReceivedPacket>> receivedPackets;
 
 		private:
 			static Id nextId;

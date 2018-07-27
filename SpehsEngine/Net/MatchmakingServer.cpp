@@ -9,8 +9,9 @@ namespace se
 {
 	namespace net
 	{
-		MatchmakingServer::MatchmakingServer(const Port _port)
-			: port(_port)
+		MatchmakingServer::MatchmakingServer(IOService& _ioService, const Port _port)
+			: ioService(_ioService)
+			, port(_port)
 		{
 
 		}

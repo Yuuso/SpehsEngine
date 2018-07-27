@@ -78,12 +78,7 @@ namespace se
 			bool isReceiving() const;
 			/* Returns true if the socket is currently connected to a remote spehs socket. */
 			bool isConnected() const;
-
-			/* Prevents other threads from using this socket. Incoming receive/accept callbacks will have to wait until the thread lock is released. */
-			void enableThreadLock() { mutex.lock(); }
-			/* Releases previously enabled thread lock. */
-			void releaseThreadLock() { mutex.unlock(); }
-
+			
 			const Id id;
 
 		private:

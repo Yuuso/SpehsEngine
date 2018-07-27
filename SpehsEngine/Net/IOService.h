@@ -1,6 +1,7 @@
 #pragma once
 #include <boost/asio/io_service.hpp>
 #include <thread>
+#include <mutex>
 
 namespace se
 {
@@ -18,8 +19,9 @@ namespace se
 		private:
 			void run();
 
+			std::recursive_mutex mutex;
 			boost::asio::io_service io_service;
-			boost::asio::io_service::work work;
+			bool stop = false;
 			std::thread thread;
 		};
 	}

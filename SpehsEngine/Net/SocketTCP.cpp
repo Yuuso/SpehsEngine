@@ -48,7 +48,6 @@ namespace se
 			stopAccepting();
 			waitUntilFinishedReceiving();
 			waitUntilFinishedAccepting();
-			std::lock_guard<std::recursive_mutex> lock(mutex);
 			if (acceptor)
 			{
 				delete acceptor;
@@ -57,25 +56,20 @@ namespace se
 			se_assert(spehsAcceptThread == nullptr);
 
 			clearReceivedPackets();
+			{
+				std::lock_guard<std::recursive_mutex> lock1(mutex);
+				std::lock_guard<std::recursive_mutex> lock2(receivedPacketsMutex);
+			}
 		}
 
 		void SocketTCP::waitUntilFinishedReceiving()
 		{
-			bool wait = true;
-			while (wait)
-			{
-				wait = isReceiving();
-			}
+			while (isReceiving()) { }
 		}
 
 		void SocketTCP::waitUntilFinishedAccepting()
 		{
-			bool wait = true;
-			while (wait)
-			{
-				wait = isAccepting();
-			}
-
+			while (isAccepting()) { }
 			std::lock_guard<std::recursive_mutex> lock(mutex);
 			if (spehsAcceptThread)
 			{
@@ -742,19 +736,19 @@ namespace se
 
 		bool SocketTCP::isAccepting() const
 		{
-			std::lock_guard<std::recursive_mutex> locks(mutex);
+			std::lock_guard<std::recursive_mutex> lock(mutex);
 			return accepting;
 		}
 
 		bool SocketTCP::isReceiving() const
 		{
-			std::lock_guard<std::recursive_mutex> locks(mutex);
+			std::lock_guard<std::recursive_mutex> lock(mutex);
 			return receiving;
 		}
 
 		bool SocketTCP::isConnected() const
 		{
-			std::lock_guard<std::recursive_mutex> locks(mutex);
+			std::lock_guard<std::recursive_mutex> lock(mutex);
 			if (time::now() - lastReceiveTime >= connectionTimeout)
 				return false;
 			return connected;
