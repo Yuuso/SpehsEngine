@@ -19,7 +19,6 @@ namespace se
 			if (!_initialized)
 			{
 				_initialized = true;
-				previousEditorValue = editorValue;
 				onEditorValueChange();
 			}
 

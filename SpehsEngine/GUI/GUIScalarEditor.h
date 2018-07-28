@@ -134,7 +134,7 @@ namespace se
 			for (unsigned i = 0; i < elements.size(); i++)
 				elements[i]->setColor(color);
 		}
-		void setAlpha(const se::Color::Component& alpha)
+		void setAlpha(const float alpha)
 		{
 			GUIRectangle::setAlpha(alpha);
 			for (unsigned i = 0; i < elements.size(); i++)
