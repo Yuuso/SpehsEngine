@@ -69,9 +69,14 @@ namespace se
 			projection = glm::perspective(glm::radians(fov), (float)window.getWidth() / (float)window.getHeight(), near, far);
 		}
 
-		glm::vec3 Camera3D::getFrustrumPoint(const glm::vec3& _screenCoordinates)
+		glm::vec3 Camera3D::getFrustumPoint(const glm::vec3& _screenCoordinates) const
 		{
 			return glm::unProject(_screenCoordinates, glm::lookAt(position, target, up), projection, glm::ivec4(0, 0, window.getWidth(), window.getHeight()));
+		}
+		glm::vec2 Camera3D::worldToScreen(const glm::vec3& _worldCoordinates) const
+		{
+			glm::vec3 frustumCoordinates = glm::project(_worldCoordinates, glm::lookAt(position, target, up), projection, glm::ivec4(0, 0, window.getWidth(), window.getHeight()));
+			return glm::vec2(frustumCoordinates.x, frustumCoordinates.y);
 		}
 	}
 }

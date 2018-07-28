@@ -440,19 +440,19 @@ namespace se
 
 			checkOpenGLErrors(__FILE__, __LINE__);
 		}
-		void setUniform_int(const GLint& _location, const int _value, const GLsizei count)
+		void setUniform_int(const GLint& _location, const int& _value, const GLsizei count)
 		{
 			glUniform1iv(_location, count, &_value);
 
 			checkOpenGLErrors(__FILE__, __LINE__);
 		}
-		void setUniform_uint(const GLuint& _location, const unsigned int _value, const GLsizei count)
+		void setUniform_uint(const GLuint& _location, const unsigned int& _value, const GLsizei count)
 		{
 			glUniform1uiv(_location, count, &_value);
 
 			checkOpenGLErrors(__FILE__, __LINE__);
 		}
-		void setUniform_float(const GLint& _location, const float _value, const GLsizei count)
+		void setUniform_float(const GLint& _location, const float& _value, const GLsizei count)
 		{
 			glUniform1fv(_location, count, &_value);
 

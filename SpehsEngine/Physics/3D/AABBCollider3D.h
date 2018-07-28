@@ -12,6 +12,8 @@ namespace se
 		public:
 			AABBCollider3D(const glm::vec3& _min, const glm::vec3& _max);
 
+			void set(const glm::vec3& _min, const glm::vec3& _max);
+
 			glm::vec3 min() const;
 			glm::vec3 max() const;
 

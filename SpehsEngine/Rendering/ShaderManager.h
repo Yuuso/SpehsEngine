@@ -108,9 +108,9 @@ namespace se
 		//Wrapping functions for OpenGL
 		void bind2DTexture(const GLuint& _textureID, const unsigned int _index);
 		void bindCubeMapTexture(const GLuint& _textureID, const unsigned int _index);
-		void setUniform_int(const GLint& _location, const int _value, const GLsizei count = 1);
-		void setUniform_uint(const GLuint& _location, const unsigned int _value, const GLsizei count = 1);
-		void setUniform_float(const GLint& _location, const float _value, const GLsizei count = 1);
+		void setUniform_int(const GLint& _location, const int& _value, const GLsizei count = 1);
+		void setUniform_uint(const GLuint& _location, const unsigned int& _value, const GLsizei count = 1);
+		void setUniform_float(const GLint& _location, const float& _value, const GLsizei count = 1);
 		void setUniform_vec2(const GLint& _location, const glm::vec2 &_value, const GLsizei count = 1);
 		void setUniform_vec3(const GLint& _location, const glm::vec3 &_value, const GLsizei count = 1);
 		void setUniform_vec4(const GLint& _location, const glm::vec4 &_value, const GLsizei count = 1);
