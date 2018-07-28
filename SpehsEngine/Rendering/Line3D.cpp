@@ -18,7 +18,7 @@ namespace se
 		Line3D::Line3D()
 		{
 			mesh = new Mesh();
-			mesh->drawMode = GL_LINE_STRIP;
+			mesh->drawMode = GL_LINES;
 		}
 		Line3D::~Line3D()
 		{
@@ -31,6 +31,7 @@ namespace se
 		{
 			if (batchManager && mesh->vertexArray.size() > 0)
 				batchManager->removeMesh(*mesh);
+			if (mesh->vertexArray.size() > 1) mesh->elementArray.push_back((GLushort)mesh->vertexArray.size() - 1);
 			mesh->vertexArray.push_back(Vertex3D(_point, glm::vec2(0.0f), glm::vec3(0.0f)));
 			mesh->elementArray.push_back((GLushort)mesh->vertexArray.size() - 1);
 			if (batchManager)
@@ -42,6 +43,7 @@ namespace se
 				batchManager->removeMesh(*mesh);
 			for (size_t i = 0; i < _points.size(); i++)
 			{
+				if (mesh->vertexArray.size() > 1) mesh->elementArray.push_back((GLushort)mesh->vertexArray.size() - 1);
 				mesh->vertexArray.push_back(Vertex3D(_points[i], glm::vec2(0.0f), glm::vec3(0.0f)));
 				mesh->elementArray.push_back((GLushort)mesh->vertexArray.size() - 1);
 			}
