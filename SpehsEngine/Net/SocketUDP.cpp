@@ -101,20 +101,25 @@ namespace se
 			std::lock_guard<std::recursive_mutex> lock(sharedImpl->mutex);
 			boost::asio::ip::udp::resolver resolverUDP(sharedImpl->ioService.getImplementationRef());
 			const boost::asio::ip::udp::resolver::query queryUDP(boost::asio::ip::udp::v4(), remoteEndpoint.address.toString(), remoteEndpoint.port.toString());
-			const boost::asio::ip::udp::endpoint remoteAsioEndpoint = *resolverUDP.resolve(queryUDP);
-			boost::system::error_code error;
-			sharedImpl->socket.connect(remoteAsioEndpoint, error);
-			if (error)
+			boost::asio::ip::udp::resolver::iterator it = resolverUDP.resolve(queryUDP);
+			const boost::asio::ip::udp::resolver::iterator end;
+			while (it != end)
 			{
-				log::info("SocketUDP connect() failed(). Boost asio error: " + std::to_string(error.value()) + ": " + error.message());
-				return false;
+				const boost::asio::ip::udp::endpoint remoteAsioEndpoint = *it++;
+				boost::system::error_code error;
+				sharedImpl->socket.connect(remoteAsioEndpoint, error);
+				if (error)
+				{
+					log::info("SocketUDP connect() failed(). Boost asio error: " + std::to_string(error.value()) + ": " + error.message() + std::string(it != end ? ". Retrying with the next available endpoint..." : ". All available endpoints were iterated, connection cannot be established."));
+				}
+				else
+				{
+					sharedImpl->connectedEndpoint = remoteAsioEndpoint;
+					log::info("SocketUDP successfully connected to the remote endpoint at: " + remoteEndpoint.toString() + " at local port: " + std::to_string(sharedImpl->socket.local_endpoint().port()));
+					return true;
+				}
 			}
-			else
-			{
-				sharedImpl->connectedEndpoint = remoteAsioEndpoint;
-				log::info("SocketUDP successfully connected to the remote endpoint at: " + remoteEndpoint.toString() + " at local port: " + std::to_string(sharedImpl->socket.local_endpoint().port()));
-				return true;
-			}
+			return false;
 		}
 
 		void SocketUDP::disconnect()
