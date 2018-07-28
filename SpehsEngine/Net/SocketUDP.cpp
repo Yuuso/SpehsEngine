@@ -91,7 +91,7 @@ namespace se
 			return true;
 		}
 
-		bool SocketUDP::connect(const Endpoint& remoteEndpoint)
+		bool SocketUDP::connect(const Address& remoteAddress, const Port& remotePort)
 		{
 			if (!isOpen())
 			{
@@ -100,7 +100,7 @@ namespace se
 			}
 			std::lock_guard<std::recursive_mutex> lock(sharedImpl->mutex);
 			boost::asio::ip::udp::resolver resolverUDP(sharedImpl->ioService.getImplementationRef());
-			const boost::asio::ip::udp::resolver::query queryUDP(boost::asio::ip::udp::v4(), remoteEndpoint.address.toString(), remoteEndpoint.port.toString());
+			const boost::asio::ip::udp::resolver::query queryUDP(boost::asio::ip::udp::v4(), remoteAddress.toString(), remotePort.toString());
 			boost::asio::ip::udp::resolver::iterator it = resolverUDP.resolve(queryUDP);
 			const boost::asio::ip::udp::resolver::iterator end;
 			while (it != end)
@@ -115,7 +115,7 @@ namespace se
 				else
 				{
 					sharedImpl->connectedEndpoint = remoteAsioEndpoint;
-					log::info("SocketUDP successfully connected to the remote endpoint at: " + remoteEndpoint.toString() + " at local port: " + std::to_string(sharedImpl->socket.local_endpoint().port()));
+					log::info("SocketUDP successfully connected to the remote endpoint at: " + remoteAddress.toString() + ":" + remotePort.toString() + " at local port: " + std::to_string(sharedImpl->socket.local_endpoint().port()));
 					return true;
 				}
 			}
@@ -125,7 +125,7 @@ namespace se
 		void SocketUDP::disconnect()
 		{
 			std::lock_guard<std::recursive_mutex> lock(sharedImpl->mutex);
-			se_assert(getConnectedEndpoint());
+			se_assert(getConnectedEndpoint() != boost::asio::ip::udp::endpoint());
 			sharedImpl->connectedEndpoint = boost::asio::ip::udp::endpoint();
 		}
 		
@@ -166,7 +166,7 @@ namespace se
 			if (isConnected())
 			{
 				std::lock_guard<std::recursive_mutex> lock(sharedImpl->mutex);
-				return sendPacketInternal(buffer, sharedImpl->connectedEndpoint);
+				return sendPacket(buffer, sharedImpl->connectedEndpoint);
 			}
 			else
 			{
@@ -175,24 +175,7 @@ namespace se
 			}
 		}
 
-		bool SocketUDP::sendPacket(const WriteBuffer& buffer, const Endpoint& endpoint)
-		{
-			std::lock_guard<std::recursive_mutex> lock(sharedImpl->mutex);
-			boost::system::error_code error;
-
-			boost::asio::ip::udp::resolver resolver(sharedImpl->ioService.getImplementationRef());
-			const boost::asio::ip::udp::resolver::query query(endpoint.address.toString(), endpoint.port.toString());
-			const boost::asio::ip::udp::endpoint asioEndpoint = *resolver.resolve(query, error);
-			if (error)
-			{
-				se::log::error("SocketUDP send failed.");
-				return false;
-			}
-
-			return sendPacketInternal(buffer, asioEndpoint);
-		}
-
-		bool SocketUDP::sendPacketInternal(const WriteBuffer& buffer, const boost::asio::ip::udp::endpoint& endpoint)
+		bool SocketUDP::sendPacket(const WriteBuffer& buffer, const boost::asio::ip::udp::endpoint& endpoint)
 		{
 			std::lock_guard<std::recursive_mutex> lock(sharedImpl->mutex);
 			boost::system::error_code error;
@@ -215,7 +198,7 @@ namespace se
 			return true;
 		}
 
-		bool SocketUDP::startReceiving(const std::function<void(ReadBuffer&, const Endpoint& endpoint)> callbackFunction)
+		bool SocketUDP::startReceiving(const std::function<void(ReadBuffer&, const boost::asio::ip::udp::endpoint&)> callbackFunction)
 		{
 			if (!callbackFunction)
 			{
@@ -293,10 +276,7 @@ namespace se
 				for (size_t i = 0; i < sharedImpl->receivedPackets.size(); i++)
 				{
 					ReadBuffer readBuffer(sharedImpl->receivedPackets[i]->buffer.data(), sharedImpl->receivedPackets[i]->buffer.size());
-					const Endpoint endpoint(
-						Address(Address::ValueType(sharedImpl->receivedPackets[i]->senderEndpoint.address().to_string())),
-						Port(Port::ValueType(sharedImpl->receivedPackets[i]->senderEndpoint.port())));
-					sharedImpl->onReceiveCallback(readBuffer, endpoint);
+					sharedImpl->onReceiveCallback(readBuffer, sharedImpl->receivedPackets[i]->senderEndpoint);
 				}
 			}
 			clearReceivedPackets();
@@ -329,13 +309,10 @@ namespace se
 			return sharedImpl->connectedEndpoint != boost::asio::ip::udp::endpoint();
 		}
 
-		Endpoint SocketUDP::getConnectedEndpoint() const
+		boost::asio::ip::udp::endpoint SocketUDP::getConnectedEndpoint() const
 		{
 			std::lock_guard<std::recursive_mutex> lock(sharedImpl->mutex);
-			if (sharedImpl->connectedEndpoint == boost::asio::ip::udp::endpoint())
-				return Endpoint::invalid;
-			else
-				return Endpoint(Address(Address::ValueType(sharedImpl->connectedEndpoint.address().to_string())), Port(Port::ValueType(sharedImpl->connectedEndpoint.port())));
+			return sharedImpl->connectedEndpoint;
 		}
 		
 		SocketUDP::SharedImpl::SharedImpl(IOService& _ioService)

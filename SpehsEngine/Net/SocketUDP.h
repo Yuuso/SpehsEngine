@@ -9,7 +9,8 @@
 #include <atomic>
 #include <mutex>
 
-#include "SpehsEngine/Net/Endpoint.h"
+#include "SpehsEngine/Net/Port.h"
+#include "SpehsEngine/Net/Address.h"
 #include "SpehsEngine/Net/IOService.h"
 #include "SpehsEngine/Core/Time.h"
 
@@ -42,7 +43,7 @@ namespace se
 				Socket must be opened before calling.
 				UDP is a connectionless protocol, connection status cannot be maintained.
 			*/
-			bool connect(const Endpoint& remoteEndpoint);
+			bool connect(const Address& remoteAddress, const Port& remotePort);
 			/* Clears the connected endpoint value. */
 			void disconnect();
 
@@ -53,13 +54,13 @@ namespace se
 			bool sendPacket(const WriteBuffer& buffer);
 
 			/* Sends buffer to a specified endpoint. */
-			bool sendPacket(const WriteBuffer& buffer, const Endpoint& endpoint);
+			bool sendPacket(const WriteBuffer& buffer, const boost::asio::ip::udp::endpoint& endpoint);
 
 			/* Returns false if the memory allocation fails, or the socket is currently receiving data. */
 			bool resizeReceiveBuffer(const size_t newSize);
 
 			/* Starts receiving data from the connected endpoint. Non-blocking call. Callback return value specifies whether to keep receiving. */
-			bool startReceiving(const std::function<void(ReadBuffer&, const Endpoint& endpoint)> onReceiveCallback);
+			bool startReceiving(const std::function<void(ReadBuffer&, const boost::asio::ip::udp::endpoint& endpoint)> onReceiveCallback);
 			void stopReceiving();
 			void resumeReceiving();
 			void clearReceivedPackets();
@@ -68,13 +69,10 @@ namespace se
 			bool isOpen() const;
 			Port getLocalPort() const;
 			bool isConnected() const;
-			Endpoint getConnectedEndpoint() const;			
+			boost::asio::ip::udp::endpoint getConnectedEndpoint() const;
 
 		private:
-
-			/* Underlying send method for using asio endpoint. */
-			bool sendPacketInternal(const WriteBuffer& buffer, const boost::asio::ip::udp::endpoint& endpoint);
-			
+						
 			//Received packets
 			struct SharedImpl : public boost::enable_shared_from_this<SharedImpl>
 			{
@@ -93,7 +91,7 @@ namespace se
 				std::vector<unsigned char> receiveBuffer;
 				time::Time lastReceiveTime;
 				bool receiving = false;
-				std::function<void(ReadBuffer&, const Endpoint& endpoint)> onReceiveCallback;//User defined receive handler
+				std::function<void(ReadBuffer&, const boost::asio::ip::udp::endpoint& endpoint)> onReceiveCallback;//User defined receive handler
 				std::recursive_mutex receivedPacketsMutex;
 				std::vector<std::unique_ptr<ReceivedPacket>> receivedPackets;
 				SocketUDP* socketUDP = nullptr;
