@@ -87,7 +87,7 @@ namespace se
 			if (debugLevel >= 1)
 				se::log::info("se::sync::Manager: sending an init packet for the remote counterpart...");
 			//Start receiving
-			socket.startReceiving(std::bind(&Manager::receiveHandler, this, std::placeholders::_1));
+			socket.setOnReceiveCallback(std::bind(&Manager::receiveHandler, this, std::placeholders::_1));
 
 			//Wait...
 			const se::time::Time begin = se::time::now();
@@ -99,7 +99,7 @@ namespace se
 				{//Timeouted
 					if (debugLevel >= 1)
 						se::log::info("se::sync::Manager: initialize timeouted. The remote sync manager did not respond within the given time limit");
-					socket.stopReceiving();
+					socket.setOnReceiveCallback(std::function<void(ReadBuffer&)>());
 					return false;
 				}
 			}

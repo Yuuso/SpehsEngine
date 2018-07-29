@@ -10,6 +10,8 @@ namespace se
 	class WatchedValue
 	{
 	public:
+		WatchedValue() = default;
+		WatchedValue(const T& v) : value(v) {}
 		
 		void set(const T& _value)
 		{

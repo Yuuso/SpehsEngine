@@ -103,6 +103,11 @@ namespace se
 			const boost::asio::ip::udp::resolver::query queryUDP(boost::asio::ip::udp::v4(), remoteAddress.toString(), remotePort.toString());
 			boost::asio::ip::udp::resolver::iterator it = resolverUDP.resolve(queryUDP);
 			const boost::asio::ip::udp::resolver::iterator end;
+			if (it == end)
+			{
+				log::info("SocketUDP connect() failed(). Endpoint resolution has failed.");
+				return false;
+			}
 			while (it != end)
 			{
 				const boost::asio::ip::udp::endpoint remoteAsioEndpoint = *it++;
@@ -202,19 +207,19 @@ namespace se
 		{
 			if (!callbackFunction)
 			{
-				log::info("SocketUDP failed to start receiving. No callback function specified.");
+				log::error("SocketUDP failed to start receiving. No callback function specified.");
 				return false;
 			}
 
 			if (isReceiving())
 			{
-				log::info("SocketUDP failed to start receiving. Socket is already receiving.");
+				log::error("SocketUDP failed to start receiving. Socket is already receiving.");
 				return false;
 			}
 
 			if (!isOpen())
 			{
-				log::info("SocketUDP failed to start receiving. Socket has not been opened.");
+				log::error("SocketUDP failed to start receiving. Socket has not been opened.");
 				return false;
 			}
 

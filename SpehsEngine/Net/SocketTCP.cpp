@@ -89,10 +89,10 @@ namespace se
 
 		bool SocketTCP::connect(const Endpoint& endpoint)
 		{
-			RAIIMutexVariableSetter<bool, std::recursive_mutex> connectingSetter(sharedImpl->connecting, true, sharedImpl->mutex);
+			if (isConnected())
+				disconnect();
 
-			//Stop receiving (outside the main mutex!)
-			stopReceiving();
+			RAIIMutexVariableSetter<bool, std::recursive_mutex> connectingSetter(sharedImpl->connecting, true, sharedImpl->mutex);
 
 			{
 				std::lock_guard<std::recursive_mutex> lock(sharedImpl->mutex);
@@ -104,6 +104,7 @@ namespace se
 				}
 
 				//Start a new connection
+				sharedImpl->expectedBytes = 0;
 				sharedImpl->handshakeSent = false;
 				sharedImpl->handshakeReceived = false;
 
@@ -145,7 +146,7 @@ namespace se
 				}
 
 				//Expect an incoming handshake after sending one
-				startReceiving(sharedImpl->onReceiveCallback);
+				startReceiving();
 
 				//Send the spehs handshake
 				WriteBuffer buffer;
@@ -180,7 +181,6 @@ namespace se
 			//All done, socket is now at connected state!
 			std::lock_guard<std::recursive_mutex> lock(sharedImpl->mutex);
 			sharedImpl->connected = true;
-			sharedImpl->lastReceiveTime = time::now();
 
 			return true;
 		}
@@ -192,11 +192,7 @@ namespace se
 
 		void SocketTCP::disconnect(const DisconnectType disconnectType)
 		{
-			//Stop receiving (outside the main mutex!)
-			stopReceiving();
-
-			std::lock_guard<std::recursive_mutex> lock(sharedImpl->mutex);
-			if (!sharedImpl->connected)
+			if (!isConnected())
 				return;
 
 			if (disconnectType != DisconnectType::doNotSendDisconnectPacket)
@@ -207,32 +203,22 @@ namespace se
 			}
 
 			//Reset the connection state
+			std::lock_guard<std::recursive_mutex> lock(sharedImpl->mutex);
+			if (sharedImpl->socket.is_open())
+			{
+				try
+				{
+					sharedImpl->socket.shutdown(boost::asio::ip::tcp::socket::shutdown_both);
+					sharedImpl->socket.close();//TODO: this actually cancels all asynchronous operations, not just receiving...
+				}
+				catch (std::exception& e)
+				{
+					log::info(e.what());
+				}
+			}
 			sharedImpl->connected = false;
 			sharedImpl->handshakeSent = false;
 			sharedImpl->handshakeReceived = false;
-		}
-
-		void SocketTCP::stopReceiving()
-		{
-			{
-				std::lock_guard<std::recursive_mutex> lock(sharedImpl->mutex);
-				if (sharedImpl->socket.is_open())
-				{
-					try
-					{
-						sharedImpl->socket.shutdown(boost::asio::ip::tcp::socket::shutdown_both);
-						sharedImpl->socket.close();//TODO: this actually cancels all asynchronous operations, not just receiving...
-					}
-					catch (std::exception& e)
-					{
-						log::info(e.what());
-					}
-				}
-			}
-			while (isReceiving())
-			{
-				//Blocks
-			}
 		}
 
 		void SocketTCP::stopAccepting()
@@ -316,45 +302,20 @@ namespace se
 			return true;
 		}
 
-		bool SocketTCP::startReceiving(const std::function<void(ReadBuffer&)> callbackFunction)
+		void SocketTCP::setOnReceiveCallback(const std::function<void(ReadBuffer&)> callbackFunction)
 		{
-			if (isReceiving())
-			{
-				log::info("SocketTCP failed to start receiving. Socket is already receiving.");
-				return false;
-			}
-
 			std::lock_guard<std::recursive_mutex> lock(sharedImpl->mutex);
-			if (!sharedImpl->connected && !sharedImpl->connecting && !sharedImpl->accepting)
-			{
-				log::warning("SocketTCP: failed to start receiving. Socket is neither connected, connecting nor accepting.");
-				return false;
-			}
-			if (!sharedImpl->socket.is_open())
-			{//This should never happen as the connected status should guarantee socket being open...
-				log::info("SocketTCP failed to start receiving. Socket has not been opened.");
-				return false;
-			}
-
-			sharedImpl->receiving = true;
-			sharedImpl->lastReceiveTime = time::now();
 			sharedImpl->onReceiveCallback = callbackFunction;
-			clearReceivedPackets();
-			resumeReceiving();
-
-			if (debugLogLevel >= 2)
-			{
-				if (sharedImpl->expectedBytes > 0)
-					log::info("SocketTCP successfully started receiving. Expecting bytes: " + std::to_string(sharedImpl->expectedBytes) + ".");
-				else
-					log::info("SocketTCP successfully started receiving. Expecting bytes header.");
-			}
-
-			return true;
 		}
 
-		void SocketTCP::resumeReceiving()
+		void SocketTCP::startReceiving()
 		{
+			std::lock_guard<std::recursive_mutex> lock(sharedImpl->mutex);
+			if (sharedImpl->receiving)
+			{
+				se_assert(false && "Already receiving");
+				return;
+			}
 			if (sharedImpl->expectedBytes == 0)
 			{//Receive header
 				se_assert(sharedImpl->receiveBuffer.size() >= sizeof(sharedImpl->expectedBytes));
@@ -376,6 +337,7 @@ namespace se
 						boost::asio::placeholders::error,
 						boost::asio::placeholders::bytes_transferred));
 			}
+			sharedImpl->receiving = true;
 		}
 
 		void SocketTCP::update()
@@ -398,8 +360,8 @@ namespace se
 					ReadBuffer buffer(sharedImpl->receivedPackets[i]->data(), sharedImpl->receivedPackets[i]->size());//TODO: empty buffer assert?
 					sharedImpl->onReceiveCallback(buffer);
 				}
+				clearReceivedPackets();
 			}
-			clearReceivedPackets();
 		}
 
 		bool SocketTCP::spehsReceiveHandler(ReadBuffer& buffer)
@@ -422,19 +384,11 @@ namespace se
 					log::info("SocketTCP received user defined packet. Bytes: " + std::to_string(userBytes));
 				se_assert(userBytes > 0);
 
-				if (sharedImpl->onReceiveCallback)
-				{
-					//Push to received packets queue
-					std::lock_guard<std::recursive_mutex> lock2(sharedImpl->receivedPacketsMutex);
-					sharedImpl->receivedPackets.push_back(new std::vector<uint8_t>(userBytes));
-					memcpy(sharedImpl->receivedPackets.back()->data(), buffer[buffer.getOffset()], userBytes);
-					return true;
-				}
-				else
-				{
-					log::warning("SocketTCP::protocolReceiveHandler: no receive handler provided for the user defined packet.");
-					return false;
-				}
+				//Push to received packets queue
+				std::lock_guard<std::recursive_mutex> lock2(sharedImpl->receivedPacketsMutex);
+				sharedImpl->receivedPackets.push_back(new std::vector<uint8_t>(userBytes));
+				memcpy(sharedImpl->receivedPackets.back()->data(), buffer[buffer.getOffset()], userBytes);
+				return true;
 			}
 			case PacketType::disconnect:
 			{
@@ -465,7 +419,7 @@ namespace se
 					sharedImpl->handshakeReceived = true;
 					log::warning("Received an invalid spehs handshake!");
 				}
-				return false;
+				return true;
 			}
 			}
 			return false;
@@ -539,7 +493,7 @@ namespace se
 				log::info("Accepting SocketTCP expecting a handshake...");
 
 			//Start expecting an incoming handshake (connector sends first)
-			startReceiving(sharedImpl->onReceiveCallback);
+			startReceiving();
 			waitUntilReceivedHandshake(handshakeReceiveTimeout);
 
 			{//Check if received the handshake in time
@@ -561,9 +515,10 @@ namespace se
 			buffer.write(handshake);
 			if (sendPacket(buffer, PacketType::handshake))
 			{
-				sharedImpl->handshakeSent = true;
 				if (debugLogLevel >= 1)
 					log::info("Accepting SocketTCP sent a handshake.");
+				std::lock_guard<std::recursive_mutex> lock(sharedImpl->mutex);
+				sharedImpl->handshakeSent = true;
 			}
 			else
 			{
@@ -724,7 +679,7 @@ namespace se
 				{//Header received
 					readBuffer.read(expectedBytes);
 					if (socketTCP)
-						socketTCP->resumeReceiving();
+						socketTCP->startReceiving();
 				}
 				else if (expectedBytes == bytes)
 				{//Data received
@@ -733,11 +688,11 @@ namespace se
 					const bool keepReceiving = socketTCP ? socketTCP->spehsReceiveHandler(readBuffer) : false;
 					expectedBytes = 0;//Begin to expect header next
 					if (keepReceiving)
-						socketTCP->resumeReceiving();
+						socketTCP->startReceiving();
 				}
 				else
 				{
-					log::warning("SocketTCP received unexpected amount of bytes! Canceling receiving!");
+					log::error("SocketTCP received unexpected amount of bytes! Canceling receiving!");
 				}
 			}
 		}

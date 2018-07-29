@@ -56,15 +56,12 @@ namespace se
 			/* Returns false if the memory allocation fails, or the socket is currently receiving data. */
 			bool resizeReceiveBuffer(const size_t newSize);
 
-			/* Starts receiving data from the connected endpoint. Non-blocking call. Callback return value specifies whether to keep receiving. */
-			bool startReceiving(const std::function<void(ReadBuffer&)> onReceiveCallback);
+			/* Socket keeps receiving packets as long as connection is alive. Received packets must be processed with a specified receive handler. */
+			void setOnReceiveCallback(const std::function<void(ReadBuffer&)> onReceiveCallback);
 
 			/* Starts listening for a new incoming connection. Upon success, a connection is made. Non-blocking call. Callback is called even if no connection is made! */
 			bool startAccepting(const Port& port, const std::function<void(SocketTCP&)> onAcceptCallback);
-
-			/* Stops receiving data. */
-			void stopReceiving();
-
+			
 			/* Stops accepting an incoming connection. */
 			void stopAccepting();
 
@@ -82,8 +79,7 @@ namespace se
 			
 		private:
 
-			/* Resumes receiving with the previously set callback handler, not clearing out any arrived packets. */
-			void resumeReceiving();
+			void startReceiving();
 
 			/* Disconnect the socket with the specified type */
 			void disconnect(const DisconnectType disconnectType);

@@ -58,7 +58,7 @@ namespace se
 					socket.sendPacket(buffer);
 
 					//Start receiving
-					socket.startReceiving(std::bind(&Connector::onReceive, this, std::placeholders::_1));
+					socket.setOnReceiveCallback(std::bind(&Connector::onReceive, this, std::placeholders::_1));
 
 					//Prepare to ping				
 					{
@@ -225,7 +225,7 @@ namespace se
 					socket.sendPacket(buffer);
 
 					//Start receiving
-					socket.startReceiving(std::bind(&Client::onReceive, this, std::placeholders::_1));
+					socket.setOnReceiveCallback(std::bind(&Client::onReceive, this, std::placeholders::_1));
 				}
 			}
 
