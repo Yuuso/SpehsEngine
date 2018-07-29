@@ -240,6 +240,7 @@ namespace se
 				"uniform sampler2D tex;\n"
 				"void main()\n"
 				"{\n"
+				"	vec4 textureColor = texture(tex, fragmentUV);\n"
 				"	vec3 normal = (fragmentNormal);\n"
 				"	vec3 lightPosition = vec3(0.0, 5.0, 0.0);\n"
 				"	vec3 lightDirection = normalize(lightPosition - fragmentPosition);\n"
@@ -248,7 +249,7 @@ namespace se
 				"	float radius = 20.0;\n"
 				"	float attenuation = 1 - pow((distance / radius), 2);\n"
 				"	float shininess = 64.0;\n"
-				"	vec3 ambient = texture(tex, fragmentUV).rgb;\n"
+				"	vec3 ambient = textureColor.rgb;\n"
 				"	vec3 diffuse = fragmentColor.rgb;\n"
 				"	vec3 specular = fragmentColor.rgb;\n"
 				"	float spec = 0.0;\n"
@@ -261,7 +262,7 @@ namespace se
 				"	}\n"
 				"	diffuse = diffuse * lambertian;\n"
 				"	specular = specular * spec;\n"
-				"	color = vec4(ambient + attenuation * (diffuse + specular), fragmentColor.a);\n"
+				"	color = vec4(ambient + attenuation * (diffuse + specular), fragmentColor.a * textureColor.a);\n"
 				"}\n"
 			};
 			//

@@ -7,6 +7,7 @@
 #include <math.h>
 #include <algorithm>
 
+#define GLM_ENABLE_EXPERIMENTAL
 #include <glm/gtx/vector_query.hpp>
 #include <glm/gtc/type_ptr.hpp>
 

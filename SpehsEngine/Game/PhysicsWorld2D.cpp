@@ -11,6 +11,7 @@
 #include <SpehsEngine/Rendering/Line.h>
 #include <SpehsEngine/Rendering/BatchManager.h>
 
+#define GLM_ENABLE_EXPERIMENTAL
 #include <glm/gtx/vector_query.hpp>
 
 #define ZERO_EPSILON 0.000001f
@@ -140,7 +141,7 @@ namespace se
 								glm::vec2 body2LinearFrictionAfter;
 								float body1AngularFrictionAfter;
 								float body2AngularFrictionAfter;
-								
+
 								const float e = std::min(bodies[cycle1]->elasticity, bodies[cycle2]->elasticity);
 
 								glm::vec2 rVecAP = glm::vec2(-(collisionResults.points[i].position - bodies[cycle1]->centerOfMass).y, (collisionResults.points[i].position - bodies[cycle1]->centerOfMass).x);

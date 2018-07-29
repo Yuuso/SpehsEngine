@@ -73,6 +73,11 @@ namespace se
 			mesh->elementArray.clear();
 		}
 
+		glm::vec3 Line3D::getPoint(const size_t _index)
+		{
+			return mesh->vertexArray[_index].position;
+		}
+
 		void Line3D::setPosition(const glm::vec3& _newPosition)
 		{
 			mesh->setPosition(_newPosition);

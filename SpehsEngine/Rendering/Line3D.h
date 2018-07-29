@@ -29,6 +29,8 @@ namespace se
 			void updatePoints(const std::vector<glm::vec3>& _points);
 			void clearPoints();
 
+			glm::vec3 getPoint(const size_t _index);
+
 			void setPosition(const glm::vec3& _newPosition);
 			void setRotation(const glm::quat& _newRotation);
 			void setScale(const glm::vec3& _newScale);

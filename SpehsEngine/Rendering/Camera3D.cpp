@@ -1,9 +1,9 @@
-
 #include "stdafx.h"
 
 #include "SpehsEngine/Rendering/Camera3D.h"
 #include "SpehsEngine/Rendering/Window.h"
 
+#define GLM_ENABLE_EXPERIMENTAL
 #include <glm/gtx/transform.hpp>
 
 

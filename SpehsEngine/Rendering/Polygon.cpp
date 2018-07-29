@@ -8,6 +8,7 @@
 #include "SpehsEngine/Rendering/ShaderManager.h"
 #include "SpehsEngine/Rendering/Camera2D.h"
 
+#define GLM_ENABLE_EXPERIMENTAL
 #include <glm/vec3.hpp>
 #include <glm/vec4.hpp>
 #include <glm/mat4x4.hpp>

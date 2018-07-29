@@ -10,6 +10,7 @@
 #include "SpehsEngine/Rendering/Polygon.h"
 #include "SpehsEngine/Core/Vertex.h"
 
+#define GLM_ENABLE_EXPERIMENTAL
 #include <glm/gtx/vector_query.hpp>
 
 #define DEFAULT_MASS_MULTIPLIER 1.0f
@@ -51,7 +52,7 @@ namespace se
 		momentOfInertia = 0.0f;
 		angularVelocity = 0.0f;
 		angularAcceleration = 0.0f;
-		
+
 		position = glm::vec2();
 		centerOfMass = glm::vec2();
 		velocity = glm::vec2();
@@ -210,7 +211,7 @@ namespace se
 		else if (elasticity < 0.0f)
 			elasticity = 0.0f;
 	}
-	
+
 	glm::vec2 RigidBody2D::getVelocityAtPosition(const glm::vec2& _position)
 	{
 		//Angular Velocity

@@ -4,6 +4,7 @@
 #include "SpehsEngine/Core/Vertex.h"
 #include "SpehsEngine/Math/Geometry.h"
 
+#define GLM_ENABLE_EXPERIMENTAL
 #include "glm/vec2.hpp"
 #include "glm/gtx/vector_query.hpp"
 
@@ -110,7 +111,7 @@ namespace se
 		glm::vec2 normalVector = glm::vec2(-edgeVector.y, edgeVector.x);
 		return normalVector;
 	};
-	
+
 #pragma region BOOL COLLISIONS
 	bool SATCollision(Vertex* _vertexArray1, const size_t _size1, Vertex* _vertexArray2, const size_t _size2)
 	{
@@ -336,7 +337,7 @@ namespace se
 	}
 #pragma endregion
 
-	
+
 #pragma region COLLISIONPOINT COLLISIONS
 	bool SATMTVCollision(CollisionResults& deposit, Vertex* _vertexArray1, const size_t _size1, Vertex* _vertexArray2, const size_t _size2)
 	{
@@ -402,7 +403,7 @@ namespace se
 		//Here we know that no separating axis was found and there is a collision
 		//Calculate collision point
 		deposit.MTV = smallestAxis * abs(overlap);
-		
+
 		//Recalculate all axes without normalization
 		for (size_t i = 0; i < _size1; i++)
 		{
@@ -648,7 +649,7 @@ namespace se
 		//Here we know that no separating axis was found and there is a collision
 		//Calculate collision point
 		deposit.MTV = glm::normalize(smallestAxis) * abs(overlap);
-		
+
 		//Recalculate all axes without normalizing
 		for (size_t i = 0; i < _size; i++)
 		{

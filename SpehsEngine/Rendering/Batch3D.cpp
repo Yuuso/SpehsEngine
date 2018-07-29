@@ -11,10 +11,11 @@
 
 #include <GL/glew.h>
 
-#include <glm/gtx/transform.hpp>
+#define GLM_ENABLE_EXPERIMENTAL
 #include <glm/gtc/quaternion.hpp>
-#include <glm/gtx/quaternion.hpp>
 #include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtx/transform.hpp>
+#include <glm/gtx/quaternion.hpp>
 
 #include <algorithm>
 #include <atomic>
