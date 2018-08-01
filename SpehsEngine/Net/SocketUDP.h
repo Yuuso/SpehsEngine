@@ -59,12 +59,12 @@ namespace se
 			/* Returns false if the memory allocation fails, or the socket is currently receiving data. */
 			bool resizeReceiveBuffer(const size_t newSize);
 
-			/* Starts receiving data from the connected endpoint. Non-blocking call. Callback return value specifies whether to keep receiving. */
-			bool startReceiving(const std::function<void(ReadBuffer&, const boost::asio::ip::udp::endpoint& endpoint)> onReceiveCallback);
-			void stopReceiving();
-			void resumeReceiving();
-			void clearReceivedPackets();
+			/* Starts receiving data from the connected endpoint. Non-blocking call. */
+			bool startReceiving();
 			bool isReceiving() const;
+
+			/* Received packets must be processed with a specified receive handler. While there exists no callback, all incoming packets are discarded. */
+			void setOnReceiveCallback(const std::function<void(ReadBuffer&, const boost::asio::ip::udp::endpoint&)> onReceiveCallback = std::function<void(ReadBuffer&, const boost::asio::ip::udp::endpoint&)>());
 
 			bool isOpen() const;
 			Port getLocalPort() const;
@@ -72,7 +72,10 @@ namespace se
 			boost::asio::ip::udp::endpoint getConnectedEndpoint() const;
 
 		private:
-						
+
+			void resumeReceiving();
+			void clearReceivedPackets();
+			
 			//Received packets
 			struct SharedImpl : public boost::enable_shared_from_this<SharedImpl>
 			{
@@ -91,7 +94,7 @@ namespace se
 				std::vector<unsigned char> receiveBuffer;
 				time::Time lastReceiveTime;
 				bool receiving = false;
-				std::function<void(ReadBuffer&, const boost::asio::ip::udp::endpoint& endpoint)> onReceiveCallback;//User defined receive handler
+				std::function<void(ReadBuffer&, const boost::asio::ip::udp::endpoint&)> onReceiveCallback;//User defined receive handler
 				std::recursive_mutex receivedPacketsMutex;
 				std::vector<std::unique_ptr<ReceivedPacket>> receivedPackets;
 				SocketUDP* socketUDP = nullptr;

@@ -307,7 +307,7 @@ namespace se
 			std::lock_guard<std::recursive_mutex> lock(sharedImpl->mutex);
 			sharedImpl->onReceiveCallback = callbackFunction;
 		}
-
+		
 		void SocketTCP::startReceiving()
 		{
 			std::lock_guard<std::recursive_mutex> lock(sharedImpl->mutex);
@@ -359,8 +359,14 @@ namespace se
 				{
 					ReadBuffer buffer(sharedImpl->receivedPackets[i]->data(), sharedImpl->receivedPackets[i]->size());//TODO: empty buffer assert?
 					sharedImpl->onReceiveCallback(buffer);
+					if (!sharedImpl->onReceiveCallback)
+					{
+						sharedImpl->receivedPackets.erase(sharedImpl->receivedPackets.begin() + i);
+						break;
+					}
 				}
-				clearReceivedPackets();
+				if (sharedImpl->onReceiveCallback)
+					clearReceivedPackets();
 			}
 		}
 

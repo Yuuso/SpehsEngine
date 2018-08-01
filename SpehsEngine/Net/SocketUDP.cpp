@@ -61,12 +61,29 @@ namespace se
 
 		void SocketUDP::close()
 		{
-			std::lock_guard<std::recursive_mutex> lock(sharedImpl->mutex);
-			if (sharedImpl->socket.is_open())
 			{
-				sharedImpl->socket.shutdown(boost::asio::socket_base::shutdown_both);
-				sharedImpl->socket.close();
-				se::log::info("SocketUDP closed.");
+				std::lock_guard<std::recursive_mutex> lock(sharedImpl->mutex);
+				if (sharedImpl->socket.is_open())
+				{
+					sharedImpl->onReceiveCallback = std::function<void(ReadBuffer&, const boost::asio::ip::udp::endpoint&)>();
+					boost::system::error_code error;
+					sharedImpl->socket.shutdown(boost::asio::socket_base::shutdown_both, error);
+					if (error)
+					{
+						log::info("SocketUDP: boost asio error on shutdown(): " + error.message());
+					}
+					sharedImpl->socket.close(error);
+					if (error)
+					{
+						log::info("SocketUDP: boost asio error on close(): " + error.message());
+					}
+					se::log::info("SocketUDP closed.");
+				}
+				clearReceivedPackets();
+			}
+			while (isReceiving())
+			{
+				//Blocks
 			}
 		}
 
@@ -141,31 +158,6 @@ namespace se
 			sharedImpl->receivedPackets.clear();
 		}
 
-		void SocketUDP::stopReceiving()
-		{
-			{
-				std::lock_guard<std::recursive_mutex> lock(sharedImpl->mutex);
-				if (sharedImpl->socket.is_open())
-				{
-					boost::system::error_code error;
-					sharedImpl->socket.shutdown(boost::asio::ip::tcp::socket::shutdown_both, error);
-					if (error)
-					{
-						log::info("SocketUDP: boost asio error on shutdown(): " + error.message());
-					}
-					sharedImpl->socket.close(error);//TODO: this actually cancels all asynchronous operations, not just receiving...
-					if (error)
-					{
-						log::info("SocketUDP: boost asio error on close(): " + error.message());
-					}
-				}
-			}
-			while (isReceiving())
-			{
-				//Blocks
-			}
-		}
-
 		bool SocketUDP::sendPacket(const WriteBuffer& buffer)
 		{
 			if (isConnected())
@@ -190,7 +182,7 @@ namespace se
 			if (bytesSent != buffer.getOffset())
 				se::log::error("SocketUDP send failed.");			
 			if (debugLogLevel >= 2)
-				log::info("SocketUDP: packet sent. Contents: 4(packet byte size) + 1(packet type) + " + std::to_string(buffer.getOffset()) + "(data)");
+				log::info("SocketUDP: packet sent. Size: " + std::to_string(buffer.getOffset()));
 			return true;
 		}
 
@@ -203,30 +195,23 @@ namespace se
 			return true;
 		}
 
-		bool SocketUDP::startReceiving(const std::function<void(ReadBuffer&, const boost::asio::ip::udp::endpoint&)> callbackFunction)
+		bool SocketUDP::startReceiving()
 		{
-			if (!callbackFunction)
-			{
-				log::error("SocketUDP failed to start receiving. No callback function specified.");
-				return false;
-			}
-
-			if (isReceiving())
-			{
-				log::error("SocketUDP failed to start receiving. Socket is already receiving.");
-				return false;
-			}
-
 			if (!isOpen())
 			{
 				log::error("SocketUDP failed to start receiving. Socket has not been opened.");
 				return false;
 			}
 
+			if (isReceiving())
+			{
+				log::error("SocketUDP is already receiving.");
+				return true;
+			}
+
 			std::lock_guard<std::recursive_mutex> lock(sharedImpl->mutex);
-			sharedImpl->receiving = true;
 			sharedImpl->lastReceiveTime = time::now();
-			sharedImpl->onReceiveCallback = callbackFunction;
+			sharedImpl->receiving = true;
 			clearReceivedPackets();
 			resumeReceiving();
 
@@ -238,9 +223,16 @@ namespace se
 			return true;
 		}
 
+		void SocketUDP::setOnReceiveCallback(const std::function<void(ReadBuffer&, const boost::asio::ip::udp::endpoint&)> onReceiveCallback)
+		{
+			std::lock_guard<std::recursive_mutex> lock(sharedImpl->mutex);
+			sharedImpl->onReceiveCallback = onReceiveCallback;
+		}
+
 		void SocketUDP::resumeReceiving()
 		{
 			std::lock_guard<std::recursive_mutex> lock(sharedImpl->mutex);
+			se_assert(sharedImpl->receiving);
 			if (isConnected())
 			{
 				try
@@ -334,7 +326,7 @@ namespace se
 				log::info("SocketUDP receive handler received " + std::to_string(bytes) + " bytes.");
 
 			std::lock_guard<std::recursive_mutex> lock1(mutex);
-			receiving = false;
+			se_assert(receiving);
 			lastReceiveTime = time::now();
 
 			if (debugLogLevel >= 3)
@@ -349,18 +341,21 @@ namespace se
 				if (error == boost::asio::error::operation_aborted)
 				{
 					log::info("SocketUDP: boost asio error: operation_aborted");
+					receiving = false;
 					return;
 				}
 				else if (error == boost::asio::error::eof)
 				{//Connection gracefully closed
 					log::info("SocketUDP disconnected. Remote socket closed connection.");
 					se_assert(false && "Should this ever happen with the UDP socket?");
+					receiving = false;
 					return;
 				}
 				else if (error == boost::asio::error::connection_reset)
 				{//Disconnect
 					log::info("SocketUDP disconnected. Remote socket closed connection.");
 					se_assert(false && "Should this ever happen with the UDP socket?");
+					receiving = false;
 					return;
 				}
 				else if (error == boost::asio::error::connection_aborted ||
@@ -375,6 +370,7 @@ namespace se
 					if (error == boost::asio::error::bad_descriptor)
 						log::info("SocketUDP: boost asio error: bad_descriptor");
 					se_assert(false && "Should this ever happen with the UDP socket?");
+					receiving = false;
 					return;
 				}
 				else
@@ -384,7 +380,7 @@ namespace se
 			}
 
 			se_assert(socketUDP);
-			if (bytes > 0)
+			if (bytes > 0 && onReceiveCallback)
 			{
 				ReadBuffer readBuffer(&receiveBuffer[0], bytes);
 				std::lock_guard<std::recursive_mutex> lock2(receivedPacketsMutex);
