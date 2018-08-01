@@ -21,7 +21,8 @@ namespace se
 			Port getPort() const;
 
 			size_t getConnectedSocketCount() const;
-			std::vector<SocketTCP*> getConnectedSockets();
+			std::vector<SocketTCP*> getConnectedSockets() const;
+			void releaseConnectedSockets(std::vector<std::unique_ptr<SocketTCP>>& deposit);
 
 		private:
 			void onAcceptCallback(SocketTCP& socketTCP);

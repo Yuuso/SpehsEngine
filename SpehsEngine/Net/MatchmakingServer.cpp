@@ -84,7 +84,7 @@ namespace se
 			return count;
 		}
 
-		std::vector<SocketTCP*> MatchmakingServer::getConnectedSockets()
+		std::vector<SocketTCP*> MatchmakingServer::getConnectedSockets() const
 		{
 			std::vector<SocketTCP*> connectedSockets;
 			for (size_t i = 0; i < sockets.size(); i++)
@@ -93,6 +93,19 @@ namespace se
 					connectedSockets.push_back(sockets[i].get());
 			}
 			return connectedSockets;
+		}
+
+		void MatchmakingServer::releaseConnectedSockets(std::vector<std::unique_ptr<SocketTCP>>& deposit)
+		{
+			for (size_t i = 0; i < sockets.size(); i++)
+			{
+				if (sockets[i]->isConnected())
+				{
+					deposit.push_back(std::unique_ptr<SocketTCP>(sockets[i].release()));
+					sockets.erase(sockets.begin() + i);
+					i--;
+				}
+			}
 		}
 
 		void MatchmakingServer::setPort(const Port& _port)
