@@ -11,7 +11,7 @@ namespace se
 	{
 		static_assert(std::is_integral<UnsignedType>::value, "UnsignedType must be integral type.");
 		static_assert(std::is_unsigned<UnsignedType>::value, "UnsignedType must be unsigned type.");
-		se_assert(value >= min && value <= max)
+		se_assert(value >= min && value <= max);
 		const UnsignedType compressed = std::round(value * std::numeric_limits<UnsignedType>::max());
 		writeBuffer.write(compressed);
 	}
