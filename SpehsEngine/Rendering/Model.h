@@ -5,6 +5,7 @@
 
 #include <vector>
 #include <string>
+#include <memory>
 
 
 namespace se
@@ -25,6 +26,10 @@ namespace se
 
 			void loadModel(const std::string& _filepath);
 			void loadModel(const size_t _hash);
+
+			void clearMeshes();
+			void addMesh(const Mesh& _mesh);
+
 
 			void setPosition(const glm::vec3& _newPosition);
 			void setRotation(const glm::quat& _newRotation);
@@ -58,15 +63,13 @@ namespace se
 
 		protected:
 			BatchManager3D* batchManager = nullptr;
-			std::vector<Mesh*> meshes;
+			std::vector<std::unique_ptr<Mesh>> meshes;
 
 		private:
 			Model(const Model& _other) = delete;
 			Model(const Model&& _other) = delete;
 			Model& operator=(const Model& _other) = delete;
 			Model& operator=(const Model&& _other) = delete;
-
-			void clearMeshes();
 			void addMeshes();
 		};
 	}

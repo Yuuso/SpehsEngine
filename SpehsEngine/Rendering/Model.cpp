@@ -21,8 +21,6 @@ namespace se
 		{
 			if (batchManager)
 				batchManager->remove(*this);
-			for (size_t i = 0; i < meshes.size(); i++)
-				delete meshes[i];
 		}
 
 		void Model::clearMeshes()
@@ -33,8 +31,6 @@ namespace se
 				for (size_t i = 0; i < meshes.size(); i++)
 					batchManager->removeMesh(*meshes[i]);
 			}
-			for (size_t i = 0; i < meshes.size(); i++)
-				delete meshes[i];
 			meshes.clear();
 		}
 		void Model::addMeshes()
@@ -46,7 +42,18 @@ namespace se
 			}
 			else
 			{
+				// Not absolutely necessary, but should never happen with current system
 				se_assert(false);
+			}
+		}
+
+		void Model::addMesh(const Mesh& _mesh)
+		{
+			meshes.push_back(std::unique_ptr<se::rendering::Mesh>(new Mesh(_mesh)));
+			if (batchManager)
+			{
+				for (size_t i = 0; i < meshes.size(); i++)
+					batchManager->addMesh(*meshes[i]);
 			}
 		}
 

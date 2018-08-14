@@ -35,6 +35,12 @@ namespace se
 			friend class Line3D;
 
 		public:
+			Mesh();
+			~Mesh();
+
+			void setVertices(const std::vector<Vertex3D>& _vertices);
+			void setIndices(const std::vector<GLushort>& _indices);
+
 			void setPosition(const glm::vec3& _newPosition);
 			void setRotation(const glm::quat& _newRotation);
 			void setScale(const glm::vec3& _newScale);
@@ -53,6 +59,9 @@ namespace se
 			void setTexture(const size_t _textureID, const size_t _index);
 			void setTexture(TextureData* _textureDataPtr, const size_t _index);
 
+			const std::vector<Vertex3D>& getVertices() const { return vertexArray; }
+			const std::vector<GLushort>& getIndices() const { return elementArray; }
+
 			glm::vec3 getPosition() const { return position; }
 			glm::quat getRotation() const { return rotation; }
 			glm::vec3 getScale() const { return scale; }
@@ -66,8 +75,7 @@ namespace se
 			unsigned int getShaderIndex() const { return shaderIndex; }
 
 		protected:
-			Mesh();
-			~Mesh();
+			Mesh(const Mesh& _other);
 
 			BatchManager3D* batchManager = nullptr;
 
@@ -89,7 +97,6 @@ namespace se
 			std::vector<GLushort> elementArray;
 
 		private:
-			Mesh(const Mesh& _other) = delete;
 			Mesh(const Mesh&& _other) = delete;
 			Mesh& operator=(const Mesh& _other) = delete;
 			Mesh& operator=(const Mesh&& _other) = delete;

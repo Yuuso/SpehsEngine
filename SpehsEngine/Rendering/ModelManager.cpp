@@ -115,7 +115,7 @@ namespace se
 				ModelManager::Model* model = it->second;
 				for (size_t i = 0; i < model->meshes.size(); i++)
 				{
-					_model.meshes.push_back(new se::rendering::Mesh());
+					_model.meshes.push_back(std::unique_ptr<se::rendering::Mesh>(new se::rendering::Mesh()));
 					_model.meshes[i]->vertexArray = model->meshes[i].vertices;
 					_model.meshes[i]->elementArray = model->meshes[i].indices;
 				}

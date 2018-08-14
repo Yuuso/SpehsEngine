@@ -40,6 +40,34 @@ namespace se
 #endif
 		}
 
+		Mesh::Mesh(const Mesh& _other)
+			: backFaceCulling(_other.backFaceCulling)
+			, renderState(_other.renderState)
+			, blending(_other.blending)
+			, depthTest(_other.depthTest)
+			, shaderIndex(_other.shaderIndex)
+			, textureDataIDs(_other.textureDataIDs)
+			, drawMode(_other.drawMode)
+			, position(_other.position)
+			, rotation(_other.rotation)
+			, scale(_other.scale)
+			, color(_other.color)
+			, vertexArray(_other.vertexArray)
+			, elementArray(_other.elementArray)
+		{
+#ifdef _DEBUG
+			meshAllocations++;
+#endif
+		}
+		void Mesh::setVertices(const std::vector<Vertex3D>& _vertices)
+		{
+			vertexArray = _vertices;
+		}
+		void Mesh::setIndices(const std::vector<GLushort>& _indices)
+		{
+			elementArray = _indices;
+		}
+
 		void Mesh::setPosition(const glm::vec3& _newPosition)
 		{
 #ifdef _DEBUG
