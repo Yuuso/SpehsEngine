@@ -77,12 +77,14 @@ namespace se
 				size_t endOffset = bytes;
 				for (size_t i = 0; i < bytes; i++)
 				{
-					data[offset++] = ((const unsigned char*)&t)[--endOffset];
+					data[offset++] = ((const uint8_t*)&t)[--endOffset];
 				}
 			}
 		}
 
-		const unsigned char* operator[](const size_t index) const { return &data[index]; }
+		void swap(std::vector<uint8_t>& other) { data.swap(other); }
+
+		const uint8_t* operator[](const size_t index) const { return &data[index]; }
 		size_t getCapacity() const override { return data.capacity(); }
 
 	private:
@@ -90,7 +92,7 @@ namespace se
 		/* Extends the buffer by increasing its size, without affecting the current offset. */
 		bool extend(const size_t addedBytes);
 
-		std::vector<unsigned char> data;
+		std::vector<uint8_t> data;
 	};
 		
 	template<typename T>
