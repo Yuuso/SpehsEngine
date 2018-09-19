@@ -91,14 +91,11 @@ namespace se
 			void waitUntilFinishedAccepting();
 
 			/* Blocks until handshakeReceived==true, or time is out. */
-			void waitUntilReceivedHandshake(const time::Time timeout);
+			bool waitForHandshake(const time::Time timeout);
 
 			/* Deallocates and clears received packet buffers. */
 			void clearReceivedPackets();
-
-			/* Asynchronous method for running the handshake procedure with the remote endpoint. */
-			void spehsAccept();
-
+			
 			//Receive handlers
 			bool spehsReceiveHandler(ReadBuffer& buffer);//Internal receive handler, unpacks spehs header. Calls the user defined receive handler.
 
@@ -109,15 +106,35 @@ namespace se
 
 				/* Boost initially passes received data to this receive handler. */
 				void receiveHandler(const boost::system::error_code& error, std::size_t bytes);
-
+				bool startAccepting(const Port& port, const std::function<void(SocketTCP&)> callbackFunction);
 				/* Boost acceptor calls this method when an incoming connection is being accepted. If no error is detected, launches the synchronous spehsAccept method in a different thread (spehsAcceptThread). */
-				void onAccept(const boost::system::error_code error);
+				void onAccept(const boost::system::error_code error);		
+				void spehsAccept();
+				bool waitForHandshake(const time::Time timeout);
+				void startReceiving();
+				void clearReceivedPackets();
+				void stopAccepting();
+				bool connect(const Endpoint& endpoint);
+				void disconnect();
+				void disconnect(const DisconnectType disconnectType);
+				bool sendPacket(const WriteBuffer& buffer, const PacketType packetType);
+				bool resizeReceiveBuffer(const size_t newSize);
+				void setOnReceiveCallback(const std::function<void(ReadBuffer&)> callbackFunction);
+				void update();
+				bool spehsReceiveHandler(ReadBuffer& buffer);
+
+				Address getRemoteAddress() const;
+				Port getRemotePort() const;
+				Endpoint getRemoteEndpoint() const;
+				bool isAccepting() const;
+				bool isReceiving() const;
+				bool isConnected() const;
 
 				mutable std::recursive_mutex mutex;
 				IOService& ioService;
 				boost::asio::ip::tcp::socket socket;
-				boost::asio::ip::tcp::acceptor* acceptor = nullptr;
-				std::thread* spehsAcceptThread = nullptr;
+				std::unique_ptr<boost::asio::ip::tcp::acceptor> acceptor;
+				std::unique_ptr<std::thread> spehsAcceptThread;
 				std::function<void(ReadBuffer&)> onReceiveCallback;//User defined receive handler
 				std::function<void(SocketTCP&)> onAcceptCallback;
 				ExpectedBytesType expectedBytes = 0;
@@ -130,11 +147,12 @@ namespace se
 				bool handshakeSent = false;//Refers to the current connection
 				bool handshakeReceived = false;//Refers to the current connection
 				bool onAcceptCallbackQueued = false;//If enabled, update will invoke the callback.
+				bool destructorCalled = false;
 				SocketTCP* socketTCP = nullptr;
 
 				//Received packets
 				std::recursive_mutex receivedPacketsMutex;
-				std::vector<std::vector<uint8_t>*> receivedPackets;
+				std::vector<std::unique_ptr<std::vector<uint8_t>>> receivedPackets;
 			};
 			boost::shared_ptr<SharedImpl> sharedImpl;
 
