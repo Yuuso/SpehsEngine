@@ -152,7 +152,12 @@ namespace se
 
 				//Received packets
 				std::recursive_mutex receivedPacketsMutex;
-				std::vector<std::unique_ptr<std::vector<uint8_t>>> receivedPackets;
+				struct ReceivedPacket
+				{
+					ReceivedPacket(const size_t size) : data(size) {}
+					std::vector<uint8_t> data;
+				};
+				std::vector<std::unique_ptr<ReceivedPacket>> receivedPackets;
 			};
 			boost::shared_ptr<SharedImpl> sharedImpl;
 

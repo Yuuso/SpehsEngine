@@ -688,7 +688,7 @@ namespace se
 			{
 				for (size_t i = 0; i < receivedPackets.size(); i++)
 				{
-					ReadBuffer buffer(receivedPackets[i]->data(), receivedPackets[i]->size());//TODO: empty buffer assert?
+					ReadBuffer buffer(receivedPackets[i]->data.data(), receivedPackets[i]->data.size());//TODO: empty buffer assert?
 					onReceiveCallback(buffer);
 					if (!onReceiveCallback)
 					{
@@ -723,8 +723,8 @@ namespace se
 
 				//Push to received packets queue
 				std::lock_guard<std::recursive_mutex> lock2(receivedPacketsMutex);
-				receivedPackets.push_back(std::unique_ptr<std::vector<uint8_t>>(new std::vector<uint8_t>(userBytes)));
-				memcpy(receivedPackets.back()->data(), buffer[buffer.getOffset()], userBytes);
+				receivedPackets.push_back(std::unique_ptr<ReceivedPacket>(new ReceivedPacket(userBytes)));
+				memcpy(receivedPackets.back()->data.data(), buffer[buffer.getOffset()], userBytes);
 				return true;
 			}
 			case PacketType::disconnect:
