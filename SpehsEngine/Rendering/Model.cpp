@@ -52,8 +52,7 @@ namespace se
 			meshes.push_back(std::unique_ptr<se::rendering::Mesh>(new Mesh(_mesh)));
 			if (batchManager)
 			{
-				for (size_t i = 0; i < meshes.size(); i++)
-					batchManager->addMesh(*meshes[i]);
+				batchManager->addMesh(*meshes.back());
 			}
 		}
 
