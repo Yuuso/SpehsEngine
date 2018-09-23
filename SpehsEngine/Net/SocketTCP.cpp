@@ -102,7 +102,7 @@ namespace se
 		{
 			sharedImpl->setOnReceiveCallback(callbackFunction);
 		}
-		
+
 		void SocketTCP::startReceiving()
 		{
 			sharedImpl->startReceiving();
@@ -689,15 +689,14 @@ namespace se
 				for (size_t i = 0; i < receivedPackets.size(); i++)
 				{
 					ReadBuffer buffer(receivedPackets[i]->data.data(), receivedPackets[i]->data.size());//TODO: empty buffer assert?
+					const bool remove = (bool)onReceiveCallback;
 					onReceiveCallback(buffer);
-					if (!onReceiveCallback)
+					if (remove)
 					{
 						receivedPackets.erase(receivedPackets.begin() + i);
-						break;
+						i--;
 					}
 				}
-				if (onReceiveCallback)
-					clearReceivedPackets();
 			}
 		}
 
