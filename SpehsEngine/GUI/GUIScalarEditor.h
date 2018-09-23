@@ -152,7 +152,7 @@ namespace se
 			if (std::is_integral<Scalar>::value)
 				valueRect->setString(std::to_string(getEditorValue()));
 			else if (std::is_floating_point<Scalar>::value)
-				valueRect->setString(se::toString(getEditorValue(), floatPrecision));
+				valueRect->setString(se::toString(float(getEditorValue()), floatPrecision));
 			else
 				valueRect->setString("# Invalid value type #");
 		}
@@ -162,9 +162,9 @@ namespace se
 		{
 			const std::string str(valueRect->getEditorValue());
 			if (std::is_integral<Scalar>::value)
-				return getStringAsInt(str);
+				return Scalar(getStringAsInt(str));
 			else if (std::is_floating_point<Scalar>::value)
-				return getStringAsFloat(str);
+				return Scalar(getStringAsFloat(str));
 			else
 				return 0;
 		}
