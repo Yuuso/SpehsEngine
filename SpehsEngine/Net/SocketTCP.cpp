@@ -684,19 +684,11 @@ namespace se
 
 			//Received packets
 			std::lock_guard<std::recursive_mutex> lock2(receivedPacketsMutex);
-			if (onReceiveCallback)
+			while (receivedPackets.size() > 0 && onReceiveCallback)
 			{
-				for (size_t i = 0; i < receivedPackets.size(); i++)
-				{
-					ReadBuffer buffer(receivedPackets[i]->data.data(), receivedPackets[i]->data.size());//TODO: empty buffer assert?
-					const bool remove = (bool)onReceiveCallback;
-					onReceiveCallback(buffer);
-					if (remove)
-					{
-						receivedPackets.erase(receivedPackets.begin() + i);
-						i--;
-					}
-				}
+				ReadBuffer buffer(receivedPackets.front()->data.data(), receivedPackets.front()->data.size());//TODO: empty buffer assert?
+				onReceiveCallback(buffer);
+				receivedPackets.erase(receivedPackets.begin());
 			}
 		}
 
