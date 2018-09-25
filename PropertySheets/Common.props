@@ -9,7 +9,7 @@
   <ItemDefinitionGroup>
     <ClCompile>
       <AdditionalIncludeDirectories>$(SPEHSENGINE_ROOT)/;$(SPEHSENGINE_ROOT)/Dependencies/include/;</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>GLM_FORCE_RADIANS;NOMINMAX;PI=3.14159265359f;TWO_PI=6.28318530718f;HALF_PI=1.57079632679f;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>GLM_FORCE_RADIANS;GLM_FORCE_CTOR_INIT;NOMINMAX;PI=3.14159265359f;TWO_PI=6.28318530718f;HALF_PI=1.57079632679f;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <TreatWarningAsError>true</TreatWarningAsError>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
