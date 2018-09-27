@@ -44,7 +44,7 @@ namespace se
 				UniformTexture(const GLint _location, const bool cubemap = false);
 				GLuint textureDataID;
 				GLint textureLocation;
-				void(*bind)(const GLuint &_textureID, const unsigned int _index);
+				void(*bind)(const GLuint &_textureID, const size_t _index);
 			};
 			std::vector<UniformTexture> textureData;
 
@@ -106,8 +106,8 @@ namespace se
 
 
 		//Wrapping functions for OpenGL
-		void bind2DTexture(const GLuint& _textureID, const unsigned int _index);
-		void bindCubeMapTexture(const GLuint& _textureID, const unsigned int _index);
+		void bind2DTexture(const GLuint& _textureID, const size_t _index);
+		void bindCubeMapTexture(const GLuint& _textureID, const size_t _index);
 		void setUniform_int(const GLint& _location, const int& _value, const GLsizei count = 1);
 		void setUniform_uint(const GLuint& _location, const unsigned int& _value, const GLsizei count = 1);
 		void setUniform_float(const GLint& _location, const float& _value, const GLsizei count = 1);

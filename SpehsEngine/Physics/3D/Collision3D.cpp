@@ -20,9 +20,9 @@ namespace se
 			float tmin = 0.0f, tmax = _ray.length;
 			for (size_t i = 0; i < 3; i++)
 			{
-				const float invDirection = 1.0f / _ray.direction[i];
-				float t0 = (_aabb.min()[i] - _ray.origin[i]) * invDirection;
-				float t1 = (_aabb.max()[i] - _ray.origin[i]) * invDirection;
+				const float invDirection = 1.0f / _ray.direction[glm::vec2::length_type(i)];
+				float t0 = (_aabb.min()[glm::vec2::length_type(i)] - _ray.origin[glm::vec2::length_type(i)]) * invDirection;
+				float t1 = (_aabb.max()[glm::vec2::length_type(i)] - _ray.origin[glm::vec2::length_type(i)]) * invDirection;
 				if (invDirection < 0.0f)
 					std::swap(t0, t1);
 				tmin = t0 > tmin ? t0 : tmin;

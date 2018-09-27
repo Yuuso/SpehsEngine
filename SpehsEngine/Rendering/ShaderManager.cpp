@@ -23,7 +23,7 @@ namespace se
 			for (size_t i = 0; i < textureData.size(); i++)
 			{
 				textureData[i].bind(textureData[i].textureDataID, i);
-				setUniform_int(textureData[i].textureLocation, i);
+				setUniform_int(textureData[i].textureLocation, int(i));
 			}
 			setUniform_mat4(cameraLocation, cameraMatrix);
 			checkOpenGLErrors(__FILE__, __LINE__);
@@ -423,18 +423,18 @@ namespace se
 		}
 
 
-		void bind2DTexture(const GLuint &_textureID, const unsigned int _index)
+		void bind2DTexture(const GLuint &_textureID, const size_t _index)
 		{
 			se_assert(_index < 32);
-			glActiveTexture(GL_TEXTURE0 + _index);
+			glActiveTexture(GLenum(GL_TEXTURE0 + _index));
 			glBindTexture(GL_TEXTURE_2D, _textureID);
 
 			checkOpenGLErrors(__FILE__, __LINE__);
 		}
-		void bindCubeMapTexture(const GLuint& _textureID, const unsigned int _index)
+		void bindCubeMapTexture(const GLuint& _textureID, const size_t _index)
 		{
 			se_assert(_index < 32);
-			glActiveTexture(GL_TEXTURE0 + _index);
+			glActiveTexture(GLenum(GL_TEXTURE0 + _index));
 			glEnable(GL_TEXTURE_CUBE_MAP);
 			glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
 			glBindTexture(GL_TEXTURE_CUBE_MAP, _textureID);

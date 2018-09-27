@@ -176,7 +176,7 @@ namespace se
 		{
 			std::lock_guard<std::recursive_mutex> lock(sharedImpl->mutex);
 			boost::system::error_code error;
-			const ExpectedBytesType bytesSent = sharedImpl->socket.send_to(boost::asio::buffer(buffer[0], buffer.getOffset()), endpoint, 0, error);
+			const size_t bytesSent = sharedImpl->socket.send_to(boost::asio::buffer(buffer[0], buffer.getOffset()), endpoint, 0, error);
 			if (error)
 				se::log::error("SocketUDP send failed.");
 			if (bytesSent != buffer.getOffset())
