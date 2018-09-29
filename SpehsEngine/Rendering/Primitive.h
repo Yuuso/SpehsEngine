@@ -49,7 +49,7 @@ namespace se
 		};
 
 		//Base class for polygon, line and point
-		class Primitive : public Colorable
+		class Primitive
 		{
 			friend class BatchManager;
 			friend class PrimitiveBatch;
@@ -81,8 +81,8 @@ namespace se
 			void rotate(const float _rotation);
 			void setRotationVector(const glm::vec3& _newRotationVector);
 			void setColor(const Primitive& other);
-			void setColor(const se::Color& _newColor) override;
-			void setAlpha(const float _alpha) override;
+			void setColor(const se::Color& _newColor);
+			void setAlpha(const float _alpha);
 			void setCameraMatrixState(const bool _newState);
 			void setPlaneDepth(const PlaneDepth _newPlaneDepth);
 			void setLineWidth(const float _newWidth);

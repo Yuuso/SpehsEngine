@@ -16,7 +16,7 @@ namespace se
 		typedef unsigned int GLuint;
 		typedef char GLchar;
 
-		class Text : public Colorable
+		class Text
 		{
 			friend class BatchManager;
 		public:

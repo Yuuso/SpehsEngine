@@ -3,6 +3,7 @@
 #include <atomic>
 #include "SpehsEngine/Audio/AudioManager.h"
 #include "SpehsEngine/Audio/SoundSource.h"
+#include "SpehsEngine/Core/ColorUtilityFunctions.h"
 #include "SpehsEngine/Input/InputManager.h"
 #include "SpehsEngine/Input/Input.h"
 #include "SpehsEngine/Rendering/Polygon.h"
@@ -155,7 +156,7 @@ namespace se
 			{
 				//Create temp vec4 col, lighten it a bit from color
 				Color col = color;
-				col.brightness(1.1f);
+				brightness(col, 1.1f);
 				col.r += 0.05f;
 				col.g += 0.05f;
 				col.b += 0.05f;

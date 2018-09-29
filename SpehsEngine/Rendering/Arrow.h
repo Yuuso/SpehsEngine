@@ -12,7 +12,7 @@ namespace se
 		class Line;
 		class Polygon;
 
-		class Arrow : public Colorable
+		class Arrow
 		{
 		public:
 			Arrow(BatchManager& batchManager, const int16_t planeDepth = 0);
@@ -23,8 +23,8 @@ namespace se
 			void setLineThickness(const float _thickness);
 			void setArrowPointerSize(const float _pointerWidth, const float _pointerHeight);
 			void setArrowPointerSize(const glm::vec2& _ref);
-			void setColor(const se::Color& _color) override;
-			void setAlpha(const float _alpha) override;
+			void setColor(const se::Color& _color);
+			void setAlpha(const float _alpha);
 			void setRenderState(const bool _value);
 			void setDepth(const PlaneDepth _value);
 			void setCameraMatrixState(const bool _value);
