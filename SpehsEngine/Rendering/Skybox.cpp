@@ -11,33 +11,32 @@ namespace se
 {
 	namespace rendering
 	{
-		Skybox::Skybox(BatchManager3D& _batchManager, const std::string& _model)
-			: batchManager(&_batchManager)
+		Skybox::Skybox(BatchManager3D& _batchManager, ModelManager& _modelManager, const std::string& _model)
 		{
 			model = new Model();
-			batchManager->add(*model);
-			model->loadModel(_model);
+			_batchManager.add(*model);
+			model->loadModel(_modelManager, _model);
 			model->setShaderIndex((unsigned int)ShaderName::DefaultSkybox);
 			model->setBlending(true);
 			model->setDepthTest(false);
 			model->setPosition(glm::vec3(0.0f, 0.0f, 0.0f));
 			model->setScale(glm::vec3(1.2f, 1.2f, 1.2f)); // random magic scale that seems to sort of (not really) work
 		}
-		Skybox::Skybox(BatchManager3D& _batchManager, const std::string& _model,
+		Skybox::Skybox(BatchManager3D& _batchManager, ModelManager& _modelManager, TextureManager& _textureManager, const std::string& _model,
 			const std::string& _negx, const std::string& _posx, const std::string& _negy, const std::string& _posy, const std::string& _negz, const std::string& _posz)
-			: Skybox(_batchManager, _model)
+			: Skybox(_batchManager, _modelManager, _model)
 		{
-			setCubeMap(_negx, _posx, _negy, _posy, _negz, _posz);
+			setCubeMap(_textureManager, _negx, _posx, _negy, _posy, _negz, _posz);
 		}
-		Skybox::Skybox(BatchManager3D& _batchManager, const std::string& _model, const std::string& _filepath, const std::string& _fileEnding)
-			: Skybox(_batchManager, _model)
+		Skybox::Skybox(BatchManager3D& _batchManager, ModelManager& _modelManager, TextureManager& _textureManager, const std::string& _model, const std::string& _filepath, const std::string& _fileEnding)
+			: Skybox(_batchManager, _modelManager, _model)
 		{
-			setCubeMap(_filepath, _fileEnding);
+			setCubeMap(_textureManager, _filepath, _fileEnding);
 		}
-		Skybox::Skybox(BatchManager3D& _batchManager, const std::string& _model, const size_t& _hash)
-			: Skybox(_batchManager, _model)
+		Skybox::Skybox(BatchManager3D& _batchManager, ModelManager& _modelManager, TextureManager& _textureManager, const std::string& _model, const size_t& _hash)
+			: Skybox(_batchManager, _modelManager, _model)
 		{
-			setCubeMap(_hash);
+			setCubeMap(_textureManager, _hash);
 		}
 		Skybox::~Skybox()
 		{
@@ -45,23 +44,22 @@ namespace se
 		}
 
 
-		void Skybox::setCubeMap(const std::string& _negx, const std::string& _posx, const std::string& _negy,
+		void Skybox::setCubeMap(TextureManager& _textureManager, const std::string& _negx, const std::string& _posx, const std::string& _negy,
 								const std::string& _posy, const std::string& _negz, const std::string& _posz)
 		{
-			size_t hash = batchManager->textureManager.preloadCubeMap(_negx, _posx, _negy, _posy, _negz, _posz);
-			setCubeMap(hash);
+			size_t hash = _textureManager.preloadCubeMap(_negx, _posx, _negy, _posy, _negz, _posz);
+			setCubeMap(_textureManager, hash);
 		}
-		void Skybox::setCubeMap(const std::string& _filepath, const std::string& _fileEnding)
+		void Skybox::setCubeMap(TextureManager& _textureManager, const std::string& _filepath, const std::string& _fileEnding)
 		{
-			// WHY CAN'T I USE MODELS BATCHMANAGER!?
-			size_t hash = batchManager->textureManager.preloadCubeMap(_filepath + "negx" + _fileEnding, _filepath + "posx" + _fileEnding,
+			size_t hash = _textureManager.preloadCubeMap(_filepath + "negx" + _fileEnding, _filepath + "posx" + _fileEnding,
 				_filepath + "negy" + _fileEnding, _filepath + "posy" + _fileEnding,
 				_filepath + "negz" + _fileEnding, _filepath + "posz" + _fileEnding);
-			setCubeMap(hash);
+			setCubeMap(_textureManager, hash);
 		}
-		void Skybox::setCubeMap(const size_t& _hash)
+		void Skybox::setCubeMap(TextureManager& _textureManager, const size_t& _hash)
 		{
-			model->setTexture(_hash);
+			model->setTexture(_textureManager, _hash);
 		}
 
 		void Skybox::setShader(const unsigned int _index)

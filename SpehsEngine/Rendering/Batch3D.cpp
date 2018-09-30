@@ -216,9 +216,9 @@ namespace se
 		void MeshBatch::updateVertices(const size_t _index, const Mesh& _mesh)
 		{
 			// T = t * R * S
-			glm::mat4 scaledMatrix = glm::scale(_mesh.scale);
-			glm::mat4 scaledRotatedMatrix = glm::mat4_cast(_mesh.rotation) * scaledMatrix;
-			glm::mat4 transformMatrix = glm::translate(_mesh.position) * scaledRotatedMatrix;
+			glm::mat4 scaledMatrix = glm::scale(_mesh.getScale());
+			glm::mat4 scaledRotatedMatrix = glm::mat4_cast(_mesh.getRotation()) * scaledMatrix;
+			glm::mat4 transformMatrix = glm::translate(_mesh.getPosition()) * scaledRotatedMatrix;
 			glm::mat4 normalMatrix = glm::mat4(glm::inverse(glm::transpose(glm::mat3(transformMatrix))));
 
 			glm::vec4 newVertex;

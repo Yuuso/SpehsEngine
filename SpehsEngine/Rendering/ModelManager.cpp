@@ -34,44 +34,35 @@ namespace se
 			modelDataMap.clear();
 		}
 
-		inline glm::mat4 aiMatrix4x4ToGlm(const aiMatrix4x4* from)
+		void ModelManager::processNode(ModelManager::Model* _model, aiNode* _node, const aiScene* _scene)
 		{
-			glm::mat4 to;
-			to[0][0] = from->a1; to[0][1] = from->b1;  to[0][2] = from->c1; to[0][3] = from->d1;
-			to[1][0] = from->a2; to[1][1] = from->b2;  to[1][2] = from->c2; to[1][3] = from->d2;
-			to[2][0] = from->a3; to[2][1] = from->b3;  to[2][2] = from->c3; to[2][3] = from->d3;
-			to[3][0] = from->a4; to[3][1] = from->b4;  to[3][2] = from->c4; to[3][3] = from->d4;
-			return to;
-		}
-
-		void ModelManager::processNode(ModelManager::Model* _model, aiNode* _node, const aiScene* _scene, glm::mat4& _transformation)
-		{
-			_transformation *= aiMatrix4x4ToGlm(&_node->mTransformation);
 			for (unsigned int i = 0; i < _node->mNumMeshes; i++)
-				addMesh(_model, _scene->mMeshes[_node->mMeshes[i]], _scene, _transformation);
+			{
+				addMesh(_model, _scene->mMeshes[_node->mMeshes[i]]);
+				aiVector3D position;
+				aiQuaternion rotation;
+				aiVector3D scale;
+				_node->mTransformation.Decompose(position, rotation, scale);
+				_model->meshes.back().position = glm::vec3(position.x, position.y, position.z);
+				_model->meshes.back().rotation = glm::quat(rotation.w, rotation.x, rotation.y, rotation.z);
+				_model->meshes.back().scale = glm::vec3(scale.x, scale.y, scale.z);
+			}
 
 			for (unsigned int i = 0; i < _node->mNumChildren; i++)
-				processNode(_model, _node->mChildren[i], _scene, _transformation);
+				processNode(_model, _node->mChildren[i], _scene);
 		}
-		void ModelManager::addMesh(ModelManager::Model* _model, aiMesh* _mesh, const aiScene* _scene, glm::mat4& _transformation)
+		void ModelManager::addMesh(ModelManager::Model* _model, aiMesh* _mesh)
 		{
 			_model->meshes.push_back(ModelManager::Mesh());
 			ModelManager::Mesh& mesh = _model->meshes.back();
+			mesh.name = std::string(_mesh->mName.C_Str());
 
 			Vertex3D vertex;
-			glm::vec4 transformVertex;
-			glm::mat4 normalMatrix = glm::mat4(glm::inverse(glm::transpose(glm::mat3(_transformation))));
 			// Vertices
 			for (unsigned int i = 0; i < _mesh->mNumVertices; i++)
 			{
-				transformVertex = _transformation * glm::vec4(_mesh->mVertices[i].x, _mesh->mVertices[i].y, _mesh->mVertices[i].z, 1.0f);
-				vertex.position.x = transformVertex.x;
-				vertex.position.y = transformVertex.y;
-				vertex.position.z = transformVertex.z;
-				transformVertex = normalMatrix * glm::vec4(_mesh->mNormals[i].x, _mesh->mNormals[i].y, _mesh->mNormals[i].z, 1.0f);
-				vertex.normal.x = transformVertex.x;
-				vertex.normal.y = transformVertex.y;
-				vertex.normal.z = transformVertex.z;
+				vertex.position = glm::vec3(_mesh->mVertices[i].x, _mesh->mVertices[i].y, _mesh->mVertices[i].z);
+				vertex.normal = glm::vec3(_mesh->mNormals[i].x, _mesh->mNormals[i].y, _mesh->mNormals[i].z);
 				if (_mesh->mTextureCoords[0])
 				{
 					vertex.uv.x = _mesh->mTextureCoords[0][i].x;
@@ -91,7 +82,7 @@ namespace se
 			// Materials
 			if(_mesh->mMaterialIndex >= 0)
 			{
-				// TODO
+				// TODO?
 			}
 		}
 
@@ -116,6 +107,10 @@ namespace se
 				for (size_t i = 0; i < model->meshes.size(); i++)
 				{
 					_model.meshes.push_back(std::unique_ptr<se::rendering::Mesh>(new se::rendering::Mesh()));
+					_model.meshes[i]->name = model->meshes[i].name;
+					_model.meshes[i]->localPosition = model->meshes[i].position;
+					_model.meshes[i]->localRotation = model->meshes[i].rotation;
+					_model.meshes[i]->localScale = model->meshes[i].scale;
 					_model.meshes[i]->vertexArray = model->meshes[i].vertices;
 					_model.meshes[i]->elementArray = model->meshes[i].indices;
 				}
@@ -142,7 +137,7 @@ namespace se
 				return 0;
 			}
 
-			processNode(it->second, scene->mRootNode, scene, glm::mat4(1.0f));
+			processNode(it->second, scene->mRootNode, scene);
 			return hash;
 		}
 

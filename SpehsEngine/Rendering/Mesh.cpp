@@ -28,6 +28,12 @@ namespace se
 		Mesh::Mesh()
 			: shaderIndex((unsigned int)ShaderName::DefaultMesh)
 			, drawMode(GL_TRIANGLES)
+			, localPosition(0.0f, 0.0f, 0.0f)
+			, localRotation(glm::vec3(0.0f, 0.0f, 0.0f))
+			, localScale(1.0f, 1.0f, 1.0f)
+			, position(0.0f, 0.0f, 0.0f)
+			, rotation(glm::vec3(0.0f, 0.0f, 0.0f))
+			, scale(1.0f, 1.0f, 1.0f)
 		{
 #ifdef _DEBUG
 			meshAllocations++;
@@ -39,7 +45,6 @@ namespace se
 			meshDeallocations++;
 #endif
 		}
-
 		Mesh::Mesh(const Mesh& _other)
 			: backFaceCulling(_other.backFaceCulling)
 			, renderState(_other.renderState)
@@ -52,6 +57,7 @@ namespace se
 			, rotation(_other.rotation)
 			, scale(_other.scale)
 			, color(_other.color)
+			, name(_other.name)
 			, vertexArray(_other.vertexArray)
 			, elementArray(_other.elementArray)
 		{
@@ -59,16 +65,67 @@ namespace se
 			meshAllocations++;
 #endif
 		}
+		void Mesh::setName(const std::string& _name)
+		{
+			name = _name;
+		}
+
 		void Mesh::setVertices(const std::vector<Vertex3D>& _vertices)
 		{
 			vertexArray = _vertices;
+			unbatch();
 		}
 		void Mesh::setIndices(const std::vector<GLushort>& _indices)
 		{
 			elementArray = _indices;
+			unbatch();
 		}
 
-		void Mesh::setPosition(const glm::vec3& _newPosition)
+		void Mesh::setLocalPosition(const glm::vec3& _newPosition)
+		{
+#ifdef _DEBUG
+			if (_newPosition.x != _newPosition.x || _newPosition.y != _newPosition.y || _newPosition.z != _newPosition.z)
+			{
+				log::error("Position values corrupted!");
+			}
+#endif
+			localPosition = _newPosition;
+			needUpdate = true;
+		}
+		void Mesh::setLocalRotation(const glm::quat& _newRotation)
+		{
+#ifdef _DEBUG
+			if (_newRotation.x != _newRotation.x || _newRotation.y != _newRotation.y || _newRotation.z != _newRotation.z || _newRotation.w != _newRotation.w)
+			{
+				log::error("Rotation values corrupted!");
+			}
+#endif
+			localRotation = _newRotation;
+			needUpdate = true;
+		}
+		void Mesh::setLocalScale(const glm::vec3& _newScale)
+		{
+#ifdef _DEBUG
+			if (_newScale.x != _newScale.x || _newScale.y != _newScale.y || _newScale.z != _newScale.z)
+			{
+				log::error("Position values corrupted!");
+			}
+#endif
+			localScale = _newScale;
+			needUpdate = true;
+		}
+		void Mesh::translateLocal(const glm::vec3& _translation)
+		{
+#ifdef _DEBUG
+			if (_translation.x != _translation.x || _translation.y != _translation.y || _translation.z != _translation.z)
+			{
+				log::error("Translation values corrupted!");
+			}
+#endif
+			localPosition += _translation;
+			needUpdate = true;
+		}
+		void Mesh::updatePosition(const glm::vec3& _newPosition)
 		{
 #ifdef _DEBUG
 			if (_newPosition.x != _newPosition.x || _newPosition.y != _newPosition.y || _newPosition.z != _newPosition.z)
@@ -79,7 +136,7 @@ namespace se
 			position = _newPosition;
 			needUpdate = true;
 		}
-		void Mesh::setRotation(const glm::quat& _newRotation)
+		void Mesh::updateRotation(const glm::quat& _newRotation)
 		{
 #ifdef _DEBUG
 			if (_newRotation.x != _newRotation.x || _newRotation.y != _newRotation.y || _newRotation.z != _newRotation.z || _newRotation.w != _newRotation.w)
@@ -90,7 +147,7 @@ namespace se
 			rotation = _newRotation;
 			needUpdate = true;
 		}
-		void Mesh::setScale(const glm::vec3& _newScale)
+		void Mesh::updateScale(const glm::vec3& _newScale)
 		{
 #ifdef _DEBUG
 			if (_newScale.x != _newScale.x || _newScale.y != _newScale.y || _newScale.z != _newScale.z)
@@ -125,39 +182,41 @@ namespace se
 		void Mesh::setBlending(const bool _value)
 		{
 			blending = _value;
+			unbatch();
 		}
 		void Mesh::setDepthTest(const bool _value)
 		{
 			depthTest = _value;
+			unbatch();
 		}
 		void Mesh::setRenderState(const bool _newState)
 		{
 			renderState = _newState;
+			unbatch();
 		}
 		void Mesh::toggleRenderState()
 		{
 			renderState = !renderState;
+			unbatch();
 		}
 		void Mesh::setShaderIndex(const unsigned int _newShaderIndex)
 		{
 			shaderIndex = _newShaderIndex;
+			unbatch();
 		}
 		void Mesh::setBackFaceCulling(const bool _value)
 		{
 			backFaceCulling = _value;
+			unbatch();
 		}
-		void Mesh::setTexture(const std::string& _texturePath, const size_t _index)
+		void Mesh::setTexture(TextureManager& _textureManager, const std::string& _texturePath, const size_t _index)
 		{
-			if (!batchManager)
-				log::error("Cannot load texture without batchmanager!");
-			TextureData* value = batchManager->textureManager.getTextureData(_texturePath);
+			TextureData* value = _textureManager.getTextureData(_texturePath);
 			setTexture(value, _index);
 		}
-		void Mesh::setTexture(const size_t _textureID, const size_t _index)
+		void Mesh::setTexture(TextureManager& _textureManager, const size_t _textureID, const size_t _index)
 		{
-			if (!batchManager)
-				log::error("Cannot load texture without batchmanager!");
-			TextureData* value = batchManager->textureManager.getTextureData(_textureID);
+			TextureData* value = _textureManager.getTextureData(_textureID);
 			setTexture(value, _index);
 		}
 		void Mesh::setTexture(TextureData* _textureDataPtr, const size_t _index)
@@ -165,6 +224,13 @@ namespace se
 			if (textureDataIDs.size() >= _index)
 				textureDataIDs.resize(_index + 1);
 			textureDataIDs[_index] = _textureDataPtr->textureDataID;
+			unbatch();
+		}
+
+		void Mesh::unbatch()
+		{
+			for (size_t i = 0; i < batchManagers.size(); i++)
+				batchManagers[i]->unbatchMesh(*this);
 		}
 	}
 }

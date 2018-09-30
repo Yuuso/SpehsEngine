@@ -21,8 +21,7 @@ namespace se
 {
 	namespace rendering
 	{
-		class MeshBatch;
-		class ModelManager;
+		class TextureManager;
 		struct TextureData;
 
 		class Mesh
@@ -37,13 +36,15 @@ namespace se
 		public:
 			Mesh();
 			~Mesh();
+			void setName(const std::string& _name);
 
 			void setVertices(const std::vector<Vertex3D>& _vertices);
 			void setIndices(const std::vector<GLushort>& _indices);
 
-			void setPosition(const glm::vec3& _newPosition);
-			void setRotation(const glm::quat& _newRotation);
-			void setScale(const glm::vec3& _newScale);
+			void setLocalPosition(const glm::vec3& _newPosition);
+			void setLocalRotation(const glm::quat& _newRotation);
+			void setLocalScale(const glm::vec3& _newScale);
+			void translateLocal(const glm::vec3& _translation);
 			void setColor(const Color _color);
 			void setAlpha(const float _alpha);
 			void translate(const glm::vec3& _translation);
@@ -55,16 +56,21 @@ namespace se
 			void setDepthTest(const bool _value);
 			void setShaderIndex(const unsigned int _newShaderIndex);
 
-			void setTexture(const std::string& _texturePath, const size_t _index);
-			void setTexture(const size_t _textureID, const size_t _index);
+			void setTexture(TextureManager& _textureManager, const std::string& _texturePath, const size_t _index = 0);
+			void setTexture(TextureManager& _textureManager, const size_t _textureID, const size_t _index = 0);
 			void setTexture(TextureData* _textureDataPtr, const size_t _index);
 
+			const std::string& getName() const { return name; }
 			const std::vector<Vertex3D>& getVertices() const { return vertexArray; }
 			const std::vector<GLushort>& getIndices() const { return elementArray; }
 
-			glm::vec3 getPosition() const { return position; }
-			glm::quat getRotation() const { return rotation; }
-			glm::vec3 getScale() const { return scale; }
+			glm::vec3 getLocalPosition() const { return localPosition; }
+			glm::quat getLocalRotation() const { return localRotation; }
+			glm::vec3 getLocalScale() const { return localScale; }
+			glm::vec3 getPosition() const { return position + localPosition; }
+			glm::quat getRotation() const { return rotation + localRotation; }
+			glm::vec3 getScale() const { return scale + localScale; }
+
 			se::Color getColor() const { return color; }
 			float getAlpha() const { return color.a; }
 
@@ -77,9 +83,10 @@ namespace se
 		protected:
 			Mesh(const Mesh& _other);
 
-			BatchManager3D* batchManager = nullptr;
+			std::vector<BatchManager3D*> batchManagers;
 
 			bool needUpdate = true;
+			void unbatch();
 
 			bool backFaceCulling = true;
 			bool renderState = true; // Whether Mesh is rendered or not
@@ -88,11 +95,13 @@ namespace se
 			unsigned int shaderIndex;
 			std::vector<GLuint> textureDataIDs;
 			GLenum drawMode;
-			glm::vec3 position = glm::vec3(0.0f);
-			glm::quat rotation = glm::quat(glm::vec3(0.0f, 0.0f, 0.0f));
-			glm::vec3 scale = glm::vec3(1.0f, 1.0f, 1.0f);
 			Color color;
 
+			void updatePosition(const glm::vec3& _newPosition);
+			void updateRotation(const glm::quat& _newRotation);
+			void updateScale(const glm::vec3& _newScale);
+
+			std::string name;
 			std::vector<Vertex3D> vertexArray;
 			std::vector<GLushort> elementArray;
 
@@ -100,6 +109,13 @@ namespace se
 			Mesh(const Mesh&& _other) = delete;
 			Mesh& operator=(const Mesh& _other) = delete;
 			Mesh& operator=(const Mesh&& _other) = delete;
+
+			glm::vec3 localPosition;
+			glm::quat localRotation;
+			glm::vec3 localScale;
+			glm::vec3 position;
+			glm::quat rotation;
+			glm::vec3 scale;
 		};
 	}
 }

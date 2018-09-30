@@ -13,6 +13,7 @@ namespace se
 	namespace rendering
 	{
 		class Mesh;
+		class TextureManager;
 		class Model
 		{
 			friend class BatchManager3D;
@@ -21,48 +22,57 @@ namespace se
 
 		public:
 			Model();
-			Model(BatchManager3D& _batchManager);
 			~Model();
 
-			void loadModel(const std::string& _filepath);
-			void loadModel(const size_t _hash);
+			void loadModel(ModelManager& _modelManager, const std::string& _filepath);
+			void loadModel(ModelManager& _modelManager, const size_t _hash);
 
-			void clearMeshes();
+
+			// --------------------
+			// Mesh Functions
+			// --------------------
+
 			void addMesh(const Mesh& _mesh);
+			void insertMesh(const size_t _position, const Mesh& _mesh);
+			void replaceMesh(const size_t _position, const Mesh& _mesh);
+			std::vector<Mesh*> findMeshes(const std::string& _name);
+			Mesh* getMesh(size_t _index);
+			void removeMeshes(const std::string& _name);
+			void removeMesh(const size_t _index);
 
-
-			void setPosition(const glm::vec3& _newPosition);
-			void setRotation(const glm::quat& _newRotation);
-			void setScale(const glm::vec3& _newScale);
 			void setColor(const Color _color);
 			void setAlpha(const float _alpha);
-			void translate(const glm::vec3& _translation);
-
 			void setBackFaceCulling(const bool _value);
 			void setRenderState(const bool _newState);
 			void toggleRenderState();
 			void setBlending(const bool _value);
 			void setDepthTest(const bool _value);
 			void setShaderIndex(const unsigned int _newShaderIndex);
-
-			void setTexture(const std::string& _texturePath, const size_t _index = 0);
-			void setTexture(const size_t _textureID, const size_t _index = 0);
+			void setTexture(TextureManager& _textureManager, const std::string& _texturePath, const size_t _index = 0);
+			void setTexture(TextureManager& _textureManager, const size_t _textureID, const size_t _index = 0);
 			void setTexture(TextureData* _textureDataPtr, const size_t _index = 0);
 
-			glm::vec3 getPosition() const;
-			glm::quat getRotation() const;
-			glm::vec3 getScale() const;
-			se::Color getColor() const;
-			float getAlpha() const;
 
-			bool getBackFaceCulling() const;
-			bool getRenderState() const;
-			bool getBlending() const;
-			bool getDepthTest() const;
-			unsigned int getShaderIndex() const;
+			// --------------------
+			// Model Functions
+			// --------------------
+
+			void setPosition(const glm::vec3& _newPosition);
+			void setRotation(const glm::quat& _newRotation);
+			void setScale(const glm::vec3& _newScale);
+			void translate(const glm::vec3& _translation);
+
+			glm::vec3 getPosition() const { return position; };
+			glm::quat getRotation() const { return rotation; };
+			glm::vec3 getScale() const { return scale; };
+
 
 		protected:
-			BatchManager3D* batchManager = nullptr;
+			glm::vec3 position;
+			glm::quat rotation;
+			glm::vec3 scale;
+
+			std::vector<BatchManager3D*> batchManagers;
 			std::vector<std::unique_ptr<Mesh>> meshes;
 
 		private:
@@ -70,7 +80,8 @@ namespace se
 			Model(const Model&& _other) = delete;
 			Model& operator=(const Model& _other) = delete;
 			Model& operator=(const Model&& _other) = delete;
-			void addMeshes();
+
+			void updateMeshTransform(Mesh& _mesh);
 		};
 	}
 }

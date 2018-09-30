@@ -13,91 +13,126 @@ namespace se
 		Model::Model()
 		{
 		}
-		Model::Model(BatchManager3D& _batchManager)
-		{
-			_batchManager.add(*this);
-		}
 		Model::~Model()
 		{
-			if (batchManager)
-				batchManager->remove(*this);
+			for (size_t b = 0; b < batchManagers.size(); /*b++*/)
+				batchManagers[b]->remove(*this);
 		}
 
-		void Model::clearMeshes()
+		void Model::loadModel(ModelManager& _modelManager, const std::string& _filepath)
 		{
-			if (batchManager)
+			for (size_t b = 0; b < batchManagers.size(); b++)
+				for (size_t m = 0; m < meshes.size(); m++)
+					batchManagers[b]->removeMesh(*meshes[m]);
+
+			_modelManager.loadModel(_filepath, *this);
+
+			for (size_t b = 0; b < batchManagers.size(); b++)
 			{
-				// Remove just meshes
-				for (size_t i = 0; i < meshes.size(); i++)
-					batchManager->removeMesh(*meshes[i]);
+				for (size_t m = 0; m < meshes.size(); m++)
+				{
+					updateMeshTransform(*meshes[m]);
+					batchManagers[b]->addMesh(*meshes[m]);
+				}
 			}
-			meshes.clear();
 		}
-		void Model::addMeshes()
+		void Model::loadModel(ModelManager& _modelManager, const size_t _hash)
 		{
-			if (batchManager)
+			for (size_t b = 0; b < batchManagers.size(); b++)
+				for (size_t m = 0; m < meshes.size(); m++)
+					batchManagers[b]->removeMesh(*meshes[m]);
+
+			_modelManager.loadModel(_hash, *this);
+
+			for (size_t b = 0; b < batchManagers.size(); b++)
 			{
-				for (size_t i = 0; i < meshes.size(); i++)
-					batchManager->addMesh(*meshes[i]);
-			}
-			else
-			{
-				// Not absolutely necessary, but should never happen with current system
-				se_assert(false);
+				for (size_t m = 0; m < meshes.size(); m++)
+				{
+					updateMeshTransform(*meshes[m]);
+					batchManagers[b]->addMesh(*meshes[m]);
+				}
 			}
 		}
 
 		void Model::addMesh(const Mesh& _mesh)
 		{
 			meshes.push_back(std::unique_ptr<se::rendering::Mesh>(new Mesh(_mesh)));
-			if (batchManager)
+			for (size_t b = 0; b < batchManagers.size(); b++)
 			{
-				batchManager->addMesh(*meshes.back());
+				updateMeshTransform(*meshes.back());
+				batchManagers[b]->addMesh(*meshes.back());
 			}
+		}
+		void Model::insertMesh(const size_t _position, const Mesh& _mesh)
+		{
+			meshes.insert(meshes.begin() + _position, std::unique_ptr<se::rendering::Mesh>(new Mesh(_mesh)));
+			for (size_t b = 0; b < batchManagers.size(); b++)
+			{
+				updateMeshTransform(*meshes.back());
+				batchManagers[b]->addMesh(*meshes[_position]);
+			}
+		}
+		void Model::replaceMesh(const size_t _position, const Mesh& _mesh)
+		{
+			se_assert(meshes.size() > _position);
+			for (size_t b = 0; b < batchManagers.size(); b++)
+				batchManagers[b]->removeMesh(*meshes[_position]);
+			meshes[_position] = std::unique_ptr<se::rendering::Mesh>(new Mesh(_mesh));
+			for (size_t b = 0; b < batchManagers.size(); b++)
+			{
+				updateMeshTransform(*meshes.back());
+				batchManagers[b]->addMesh(*meshes[_position]);
+			}
+		}
+		std::vector<Mesh*> Model::findMeshes(const std::string& _name)
+		{
+			se_assert(meshes.size() > 0);
+			std::vector<Mesh*> result;
+			for (size_t m = 0; m < meshes.size(); m++)
+				if (meshes[m]->name == _name)
+					result.push_back(meshes[m].get());
+			if (result.size() == 0)
+				se::log::error("Model::findMesh: Meshes with name \"" + _name + "\" not found!");
+			return result;
+		}
+		Mesh* Model::getMesh(size_t _index)
+		{
+			se_assert(meshes.size() > _index);
+			return meshes[_index].get();
+		}
+		void Model::removeMeshes(const std::string& _name)
+		{
+			se_assert(meshes.size() > 0);
+#ifdef _DEBUG
+			int removed = 0;
+#endif
+			for (size_t m = 0; m < meshes.size(); /*m++*/)
+			{
+				if (meshes[m]->name == _name)
+				{
+					for (size_t b = 0; b < batchManagers.size(); b++)
+						batchManagers[b]->removeMesh(*meshes[m]);
+					meshes.erase(meshes.begin() + m);
+#ifdef _DEBUG
+					removed++;
+#endif
+				}
+				else
+					m++;
+			}
+#ifdef _DEBUG
+			if (removed == 0)
+				se::log::error("Model::removeMeshes: Meshes with name \"" + _name + "\" not found!");
+#endif
+		}
+		void Model::removeMesh(const size_t _index)
+		{
+			se_assert(meshes.size() > _index);
+			for (size_t b = 0; b < batchManagers.size(); b++)
+				batchManagers[b]->removeMesh(*meshes[_index]);
+			meshes.erase(meshes.begin() + _index);
 		}
 
-		void Model::loadModel(const std::string& _filepath)
-		{
-			if (batchManager)
-			{
-				clearMeshes();
-				batchManager->modelManager.loadModel(_filepath, *this);
-				addMeshes();
-			}
-			else
-			{
-				se::log::error("Model needs to be added to a BatchManager to load a model.");
-			}
-		}
-		void Model::loadModel(const size_t _hash)
-		{
-			if (batchManager)
-			{
-				clearMeshes();
-				batchManager->modelManager.loadModel(_hash, *this);
-				addMeshes();
-			}
-			else
-			{
-				se::log::error("Model needs to be added to a BatchManager to load a model.");
-			}
-		}
-
-		void Model::setPosition(const glm::vec3& _newPosition)
-		{
-			for (size_t i = 0; i < meshes.size(); i++)
-				meshes[i]->setPosition(_newPosition);
-		}
-		void Model::setRotation(const glm::quat& _newRotation)
-		{
-			for (size_t i = 0; i < meshes.size(); i++)
-				meshes[i]->setRotation(_newRotation);
-		}
-		void Model::setScale(const glm::vec3& _newScale)
-		{
-			for (size_t i = 0; i < meshes.size(); i++)
-				meshes[i]->setScale(_newScale);
-		}
 		void Model::setColor(const Color _color)
 		{
 			for (size_t i = 0; i < meshes.size(); i++)
@@ -107,11 +142,6 @@ namespace se
 		{
 			for (size_t i = 0; i < meshes.size(); i++)
 				meshes[i]->setAlpha(_alpha);
-		}
-		void Model::translate(const glm::vec3& _translation)
-		{
-			for (size_t i = 0; i < meshes.size(); i++)
-				meshes[i]->translate(_translation);
 		}
 		void Model::setBlending(const bool _value)
 		{
@@ -143,15 +173,15 @@ namespace se
 			for (size_t i = 0; i < meshes.size(); i++)
 				meshes[i]->setBackFaceCulling(_value);
 		}
-		void Model::setTexture(const std::string& _texturePath, const size_t _index)
+		void Model::setTexture(TextureManager& _textureManager, const std::string& _texturePath, const size_t _index)
 		{
 			for (size_t i = 0; i < meshes.size(); i++)
-				meshes[i]->setTexture(_texturePath, _index);
+				meshes[i]->setTexture(_textureManager, _texturePath, _index);
 		}
-		void Model::setTexture(const size_t _textureID, const size_t _index)
+		void Model::setTexture(TextureManager& _textureManager, const size_t _textureID, const size_t _index)
 		{
 			for (size_t i = 0; i < meshes.size(); i++)
-				meshes[i]->setTexture(_textureID, _index);
+				meshes[i]->setTexture(_textureManager, _textureID, _index);
 		}
 		void Model::setTexture(TextureData* _textureDataPtr, const size_t _index)
 		{
@@ -159,75 +189,37 @@ namespace se
 				meshes[i]->setTexture(_textureDataPtr, _index);
 		}
 
-		glm::vec3 Model::getPosition() const
+
+		void Model::setPosition(const glm::vec3& _newPosition)
 		{
-			if (meshes.size() > 0)
-				return meshes[0]->getPosition();
-			else
-				return glm::vec3(0.0f);
+			position = _newPosition;
+			for (size_t i = 0; i < meshes.size(); i++)
+				meshes[i]->updatePosition(position);
 		}
-		glm::quat Model::getRotation() const
+		void Model::setRotation(const glm::quat& _newRotation)
 		{
-			if (meshes.size() > 0)
-				return meshes[0]->getRotation();
-			else
-				return glm::quat();
+			rotation = _newRotation;
+			for (size_t i = 0; i < meshes.size(); i++)
+				meshes[i]->updateRotation(rotation);
 		}
-		glm::vec3 Model::getScale() const
+		void Model::setScale(const glm::vec3& _newScale)
 		{
-			if (meshes.size() > 0)
-				return meshes[0]->getScale();
-			else
-				return glm::vec3(0.0f);
+			scale = _newScale;
+			for (size_t i = 0; i < meshes.size(); i++)
+				meshes[i]->updateScale(scale);
 		}
-		bool Model::getBackFaceCulling() const
+		void Model::translate(const glm::vec3& _translation)
 		{
-			if (meshes.size() > 0)
-				return meshes[0]->getBackFaceCulling();
-			else
-				return false;
+			position += _translation;
+			for (size_t i = 0; i < meshes.size(); i++)
+				meshes[i]->updatePosition(position);
 		}
-		bool Model::getRenderState() const
+
+		void Model::updateMeshTransform(Mesh& _mesh)
 		{
-			if (meshes.size() > 0)
-				return meshes[0]->getRenderState();
-			else
-				return false;
-		}
-		bool Model::getBlending() const
-		{
-			if (meshes.size() > 0)
-				return meshes[0]->getBlending();
-			else
-				return false;
-		}
-		bool Model::getDepthTest() const
-		{
-			if (meshes.size() > 0)
-				return meshes[0]->getDepthTest();
-			else
-				return false;
-		}
-		unsigned int Model::getShaderIndex() const
-		{
-			if (meshes.size() > 0)
-				return meshes[0]->getShaderIndex();
-			else
-				return 0;
-		}
-		se::Color Model::getColor() const
-		{
-			if (meshes.size() > 0)
-				return meshes[0]->getColor();
-			else
-				return Color();
-		}
-		float Model::getAlpha() const
-		{
-			if (meshes.size() > 0)
-				return meshes[0]->getAlpha();
-			else
-				return 0.0f;
+			_mesh.updatePosition(position);
+			_mesh.updateRotation(rotation);
+			_mesh.updateScale(scale);
 		}
 	}
 }
