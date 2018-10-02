@@ -30,7 +30,7 @@ namespace se
 			friend class Line3D;
 
 		public:
-			BatchManager3D(Window& _window, ModelManager& _modelManager, ShaderManager& _shaderManager, Camera3D& _camera, const std::string& _name = "unnamed 3d batch manager");
+			BatchManager3D(ShaderManager& _shaderManager, Camera3D& _camera, const std::string& _name = "unnamed 3d batch manager");
 			~BatchManager3D();
 
 			void add(Model& _model);
@@ -45,15 +45,13 @@ namespace se
 			void render();
 
 			ShaderManager& shaderManager;
-			TextureManager& textureManager;
-			ModelManager& modelManager;
-			Window& window;
 			Camera3D& camera3D;
 			const std::string name;
 
 		protected:
 			void addMesh(Mesh& _mesh);
 			void removeMesh(Mesh& _mesh);
+			void unbatchMesh(Mesh& _mesh);
 		private:
 			struct MeshObject
 			{

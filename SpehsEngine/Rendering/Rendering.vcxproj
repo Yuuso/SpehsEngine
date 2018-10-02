@@ -173,7 +173,6 @@
     <ClInclude Include="Primitive.h" />
     <ClInclude Include="Plane3D.h" />
     <ClInclude Include="Rendering.h" />
-    <ClInclude Include="RenderingContext.h" />
     <ClInclude Include="ShaderManager.h" />
     <ClInclude Include="Skybox.h" />
     <ClInclude Include="stdafx.h" />

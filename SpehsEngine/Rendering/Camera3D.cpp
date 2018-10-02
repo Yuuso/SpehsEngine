@@ -12,7 +12,10 @@ namespace se
 	namespace rendering
 	{
 		Camera3D::Camera3D(const Window& _window)
-			: fov(45.0f), near(0.05f), far(1000.0f), window(_window)
+			: window(_window)
+			, fov(45.0f)
+			, zNear(0.05f)
+			, zFar(1000.0f)
 		{
 			position = glm::vec3(0.0f);
 
@@ -22,7 +25,7 @@ namespace se
 			direction = glm::normalize(target - position);
 
 			view = glm::mat4(1.0f);
-			projection = glm::perspective(glm::radians(fov), (float)window.getWidth() / (float)window.getHeight(), near, far);
+			projection = glm::perspective(glm::radians(fov), (float)window.getWidth() / (float)window.getHeight(), zNear, zFar);
 
 			cameraMatrix = &view;
 		}
@@ -56,17 +59,17 @@ namespace se
 		void Camera3D::setFOV(const float &_fov)
 		{
 			fov = _fov;
-			projection = glm::perspective(glm::radians(fov), (float)window.getWidth() / (float)window.getHeight(), near, far);
+			projection = glm::perspective(glm::radians(fov), (float)window.getWidth() / (float)window.getHeight(), zNear, zFar);
 		}
 		void Camera3D::setNear(const float& _near)
 		{
-			near = _near;
-			projection = glm::perspective(glm::radians(fov), (float)window.getWidth() / (float)window.getHeight(), near, far);
+			zNear = _near;
+			projection = glm::perspective(glm::radians(fov), (float)window.getWidth() / (float)window.getHeight(), zNear, zFar);
 		}
 		void Camera3D::setFar(const float& _far)
 		{
-			far = _far;
-			projection = glm::perspective(glm::radians(fov), (float)window.getWidth() / (float)window.getHeight(), near, far);
+			zFar = _far;
+			projection = glm::perspective(glm::radians(fov), (float)window.getWidth() / (float)window.getHeight(), zNear, zFar);
 		}
 
 		glm::vec3 Camera3D::getFrustumPoint(const glm::vec3& _screenCoordinates) const

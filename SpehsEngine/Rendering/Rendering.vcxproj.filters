@@ -66,9 +66,6 @@
     <ClInclude Include="BatchRenderResults.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="RenderingContext.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="GLContext.h">
       <Filter>Header Files</Filter>
     </ClInclude>

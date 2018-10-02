@@ -32,8 +32,8 @@ namespace se
 			glm::vec3 getPosition() const { return position; }
 			glm::vec3 getDirection() const { return direction; }
 			glm::vec3 getTarget() const { return target; }
-			float getNear() const { return near; }
-			float getFar() const { return far; }
+			float getNear() const { return zNear; }
+			float getFar() const { return zFar; }
 			float getFOV() const { return fov; }
 
 			glm::vec3 getFrustumPoint(const glm::vec3& _screenCoordinates) const;
@@ -55,8 +55,8 @@ namespace se
 			glm::mat4 projection;
 
 			float fov;
-			float near;
-			float far;
+			float zNear;
+			float zFar;
 		};
 	}
 }

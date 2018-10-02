@@ -80,15 +80,15 @@ namespace se
 
 		void Line3D::setPosition(const glm::vec3& _newPosition)
 		{
-			mesh->setPosition(_newPosition);
+			mesh->updatePosition(_newPosition);
 		}
 		void Line3D::setRotation(const glm::quat& _newRotation)
 		{
-			mesh->setRotation(_newRotation);
+			mesh->updateRotation(_newRotation);
 		}
 		void Line3D::setScale(const glm::vec3& _newScale)
 		{
-			mesh->setScale(_newScale);
+			mesh->updateScale(_newScale);
 		}
 		void Line3D::setColor(const Color _color)
 		{

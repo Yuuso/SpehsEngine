@@ -17,15 +17,11 @@ namespace se
 {
 	namespace rendering
 	{
-		BatchManager3D::BatchManager3D(Window& _window, ModelManager& _modelManager, ShaderManager& _shaderManager, Camera3D& _camera, const std::string& _name)
-			: window(_window)
-			, modelManager(_modelManager)
-			, textureManager(*_window.getTextureManager())
-			, shaderManager(_shaderManager)
+		BatchManager3D::BatchManager3D(ShaderManager& _shaderManager, Camera3D& _camera, const std::string& _name)
+			: shaderManager(_shaderManager)
 			, camera3D(_camera)
 			, name(_name)
 		{
-
 		}
 
 		BatchManager3D::~BatchManager3D()
@@ -36,17 +32,22 @@ namespace se
 
 		void BatchManager3D::add(Model& _model)
 		{
-			se_assert(!_model.batchManager);
 			for (size_t i = 0; i < _model.meshes.size(); i++)
 				addMesh(*_model.meshes[i]);
-			_model.batchManager = this;
+			_model.batchManagers.push_back(this);
 		}
 		void BatchManager3D::remove(Model& _model)
 		{
-			se_assert(_model.batchManager);
 			for (size_t i = 0; i < _model.meshes.size(); i++)
 				removeMesh(*_model.meshes[i]);
-			_model.batchManager = nullptr;
+			for (size_t i = 0; i < _model.batchManagers.size(); i++)
+			{
+				if (_model.batchManagers[i] == this)
+				{
+					_model.batchManagers.erase(_model.batchManagers.begin() + i);
+					break;
+				}
+			}
 		}
 
 		void BatchManager3D::add(Plane3D& _plane)
@@ -77,8 +78,8 @@ namespace se
 
 		void BatchManager3D::addMesh(Mesh& _mesh)
 		{
-			_mesh.batchManager = this;
 			meshes.push_back(MeshObject(_mesh));
+			_mesh.batchManagers.push_back(this);
 		}
 		void BatchManager3D::removeMesh(Mesh& _mesh)
 		{
@@ -90,13 +91,33 @@ namespace se
 					{
 						unbatch(meshes[i]);
 					}
-					_mesh.batchManager = nullptr;
+					for (size_t i = 0; i < _mesh.batchManagers.size(); i++)
+					{
+						if (_mesh.batchManagers[i] == this)
+						{
+							_mesh.batchManagers.erase(_mesh.batchManagers.begin() + i);
+							break;
+						}
+					}
 					meshes[i] = meshes.back();
 					meshes.pop_back();
 					return;
 				}
 			}
 			log::error("BatchManager3D::removeMesh: Mesh not found!");
+		}
+		void BatchManager3D::unbatchMesh(Mesh& _mesh)
+		{
+			for (size_t i = 0; i < meshes.size(); i++)
+			{
+				if (&_mesh == meshes[i].mesh)
+				{
+					if (meshes[i].batch != nullptr)
+						unbatch(meshes[i]);
+					return;
+				}
+			}
+			log::error("BatchManager3D::unbatchMesh: Mesh not found!");
 		}
 
 		void BatchManager3D::unbatch(MeshObject& _object)
@@ -208,13 +229,15 @@ namespace se
 			});
 
 			// Render
-			for (unsigned int i = 0; i < batches.size(); i++)
+			for (unsigned int i = 0; i < batches.size();)
 			{
 				if (!batches[i]->render()) // If the batch is empty, delete it
 				{
 					delete batches[i];
-					batches.erase(batches.begin() + i); // ???
+					batches.erase(batches.begin() + i);
 				}
+				else
+					i++;
 			}
 		}
 	}

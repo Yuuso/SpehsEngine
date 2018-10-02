@@ -35,15 +35,15 @@ namespace se
 
 		void Plane3D::setPosition(const glm::vec3& _newPosition)
 		{
-			mesh->setPosition(_newPosition);
+			mesh->updatePosition(_newPosition);
 		}
 		void Plane3D::setRotation(const glm::quat& _newRotation)
 		{
-			mesh->setRotation(_newRotation);
+			mesh->updateRotation(_newRotation);
 		}
 		void Plane3D::setScale(const glm::vec3& _newScale)
 		{
-			mesh->setScale(_newScale);
+			mesh->updateScale(_newScale);
 		}
 		void Plane3D::setColor(const Color _color)
 		{
@@ -77,13 +77,13 @@ namespace se
 		{
 			mesh->setShaderIndex(_newShaderIndex);
 		}
-		void Plane3D::setTexture(const std::string& _texturePath, const size_t _index)
+		void Plane3D::setTexture(TextureManager& _textureManager, const std::string& _texturePath, const size_t _index)
 		{
-			mesh->setTexture(_texturePath, _index);
+			mesh->setTexture(_textureManager, _texturePath, _index);
 		}
-		void Plane3D::setTexture(const size_t _textureID, const size_t _index)
+		void Plane3D::setTexture(TextureManager& _textureManager, const size_t _textureID, const size_t _index)
 		{
-			mesh->setTexture(_textureID, _index);
+			mesh->setTexture(_textureManager, _textureID, _index);
 		}
 		void Plane3D::setTexture(TextureData* _textureDataPtr, const size_t _index)
 		{
