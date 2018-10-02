@@ -11,6 +11,9 @@ namespace se
 	namespace rendering
 	{
 		Model::Model()
+			: position(0.0f, 0.0f, 0.0f)
+			, rotation(glm::vec3(0.0f, 0.0f, 0.0f))
+			, scale(1.0f, 1.0f, 1.0f)
 		{
 		}
 		Model::~Model()

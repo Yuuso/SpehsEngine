@@ -3,6 +3,8 @@
 
 #include "SpehsEngine\Rendering\Vertex3D.h"
 
+#include <assimp/matrix4x4.h> // TODO: Get rid of this!
+
 #include <glm/mat4x4.hpp>
 #include <glm/vec3.hpp>
 #include <glm/gtc/quaternion.hpp>
@@ -51,7 +53,7 @@ namespace se
 			void removeModelData(const size_t& _hash);
 
 		private:
-			void processNode(ModelManager::Model* _model, aiNode* _node, const aiScene* _scene);
+			void processNode(ModelManager::Model* _model, aiNode* _node, const aiScene* _scene, aiMatrix4x4 tempTransform);
 			void addMesh(ModelManager::Model* _model, aiMesh* _mesh);
 
 			std::unordered_map<size_t, ModelManager::Model*> modelDataMap;

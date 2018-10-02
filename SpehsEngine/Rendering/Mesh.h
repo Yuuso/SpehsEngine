@@ -68,8 +68,8 @@ namespace se
 			glm::quat getLocalRotation() const { return localRotation; }
 			glm::vec3 getLocalScale() const { return localScale; }
 			glm::vec3 getPosition() const { return position + localPosition; }
-			glm::quat getRotation() const { return rotation + localRotation; }
-			glm::vec3 getScale() const { return scale + localScale; }
+			glm::quat getRotation() const { return rotation * localRotation; }
+			glm::vec3 getScale() const { return scale * localScale; }
 
 			se::Color getColor() const { return color; }
 			float getAlpha() const { return color.a; }

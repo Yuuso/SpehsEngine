@@ -34,22 +34,23 @@ namespace se
 			modelDataMap.clear();
 		}
 
-		void ModelManager::processNode(ModelManager::Model* _model, aiNode* _node, const aiScene* _scene)
+		void ModelManager::processNode(ModelManager::Model* _model, aiNode* _node, const aiScene* _scene, aiMatrix4x4 _transform)
 		{
+			_transform *= _node->mTransformation;
+			aiVector3D position;
+			aiQuaternion rotation;
+			aiVector3D scale;
+			_transform.Decompose(scale, rotation, position);
 			for (unsigned int i = 0; i < _node->mNumMeshes; i++)
 			{
 				addMesh(_model, _scene->mMeshes[_node->mMeshes[i]]);
-				aiVector3D position;
-				aiQuaternion rotation;
-				aiVector3D scale;
-				_node->mTransformation.Decompose(position, rotation, scale);
 				_model->meshes.back().position = glm::vec3(position.x, position.y, position.z);
 				_model->meshes.back().rotation = glm::quat(rotation.w, rotation.x, rotation.y, rotation.z);
 				_model->meshes.back().scale = glm::vec3(scale.x, scale.y, scale.z);
 			}
 
 			for (unsigned int i = 0; i < _node->mNumChildren; i++)
-				processNode(_model, _node->mChildren[i], _scene);
+				processNode(_model, _node->mChildren[i], _scene, _transform);
 		}
 		void ModelManager::addMesh(ModelManager::Model* _model, aiMesh* _mesh)
 		{
@@ -137,7 +138,7 @@ namespace se
 				return 0;
 			}
 
-			processNode(it->second, scene->mRootNode, scene);
+			processNode(it->second, scene->mRootNode, scene, aiMatrix4x4());
 			return hash;
 		}
 
