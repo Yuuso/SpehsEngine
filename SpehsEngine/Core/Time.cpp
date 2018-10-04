@@ -57,6 +57,13 @@ namespace se
 			return initializationTime;
 		}
 
+		void sleep(const Time time)
+		{
+			se_assert(time.value >= 0);
+			std::chrono::duration<TimeValueType, std::chrono::high_resolution_clock::time_point::period> duration((TimeValueType)time.value);
+			std::this_thread::sleep_for(duration);
+		}
+
 		void delay(const Time time)
 		{
 			const Time begin(std::chrono::high_resolution_clock::now().time_since_epoch().count());

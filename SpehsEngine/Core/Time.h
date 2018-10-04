@@ -95,9 +95,11 @@ namespace se
 		/* Initializes the time system. */
 		void initialize();
 
-		/* Waits in a while loop until specified time has passed. */
-		void delay(const Time time);
+		/* Puts thread to sleep for (at least) this much time. */
+		void sleep(const Time time);
 
+		/* Waits in a while loop until specified time has passed. More precise than sleep, but hogs processor for the duration of delay. */
+		void delay(const Time time);
 
 		/* Returns the current time stamp, relative to 'some' context. See getRunTime() for an alternative. */
 		Time now();
