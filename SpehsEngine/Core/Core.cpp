@@ -30,16 +30,16 @@ namespace se
 		if (!valid)
 		{
 			log::info("Current SpehsEngine core library version: " + getVersion());
-			
+
 			log::info("Hardware threads: " + std::to_string(std::thread::hardware_concurrency()));
 			log::info("Size of size_t: " + std::to_string(sizeof(size_t)) + " bytes");
 			log::info("Size of void*: " + std::to_string(sizeof(void*)) + " bytes");
 
-			//INITIALIZATIONS
-			rng::initialize();
+			// INITIALIZATIONS
 			time::initialize();
+			rng::initialize();
 
-			//Check available integer widths
+			// Check available integer widths
 			if (sizeof(int8_t) != 1 || sizeof(uint8_t) != 1)
 				log::warning("8 bit integer width not available!");
 			if (sizeof(int16_t) != 2 || sizeof(uint16_t) != 2)
@@ -52,7 +52,7 @@ namespace se
 			valid = true;
 		}
 	}
-		
+
 	CoreLib::~CoreLib()
 	{
 		if (--instanceCount == 0)
@@ -66,7 +66,7 @@ namespace se
 	{
 		return valid;
 	}
-		
+
 	std::string CoreLib::getVersion()
 	{
 		return version;

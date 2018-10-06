@@ -1,10 +1,13 @@
 #include "stdafx.h"
 
 #include "SpehsEngine/Core/RNG.h"
+#include "SpehsEngine/Core/Log.h"
 
 #include <boost/random/random_device.hpp>
 
 #include <algorithm>
+#include <string>
+#include <chrono>
 
 
 namespace se
@@ -15,11 +18,21 @@ namespace se
 		std::mutex rngmutex;
 		void initialize()
 		{
-			rngmutex.lock();
-			std::mt19937::result_type random_data[std::mt19937::state_size];
+			// 'True' random source
 			boost::random_device source;
-			std::generate(std::begin(random_data), std::end(random_data), std::ref(source));
+			log::info("RNG: random source entropy: " + std::to_string(source.entropy()));
+
+			// 624 byte random seed data for mt19937
+			std::mt19937::result_type random_data[std::mt19937::state_size];
+			std::generate(std::begin(random_data), std::prev(std::end(random_data)), std::ref(source));
+
+			// Since random_device may not be always reliable, we'll use current time from chrono as well
+			std::mt19937::result_type timeSeed = (std::mt19937::result_type)std::chrono::system_clock::now().time_since_epoch().count();
+			random_data[std::mt19937::state_size - 1] = timeSeed;
+
 			std::seed_seq seeds(std::begin(random_data), std::end(random_data));
+
+			rngmutex.lock();
 			defaultRandom.seed(seeds);
 			rngmutex.unlock();
 		}

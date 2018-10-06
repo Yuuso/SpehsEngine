@@ -2,6 +2,7 @@
 #pragma once
 
 #include <glm/vec2.hpp>
+
 #include <random>
 #include <stdint.h>
 #include <type_traits>
@@ -105,9 +106,9 @@ namespace se
 			}
 			void seed(const std::seed_seq& _seed)
 			{
-				//Maybe needs some clarification later...
+				//Maybe needs some clarification...
+				engine.seed(_seed);
 				randomSeed = 0;
-				engine.seed(randomSeed);
 			}
 			SeedType seed()
 			{
@@ -234,7 +235,7 @@ namespace se
 			MTEngine engine;
 		};
 
-		//General 'true' random functions
+		// General 'true' random functions
 		extern std::mutex rngmutex;
 		extern PRNG<uint32_t> defaultRandom;
 
