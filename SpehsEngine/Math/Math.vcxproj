@@ -139,6 +139,8 @@
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Circle.cpp" />
+    <ClCompile Include="CircleUtilityFunctions.cpp" />
     <ClCompile Include="Geometry.cpp" />
     <ClCompile Include="Math.cpp" />
     <ClCompile Include="Mathematics.cpp" />
@@ -151,6 +153,8 @@
     <ClCompile Include="Triangulation.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Circle.h" />
+    <ClInclude Include="CircleUtilityFunctions.h" />
     <ClInclude Include="Geometry.h" />
     <ClInclude Include="Math.h" />
     <ClInclude Include="Mathematics.h" />
