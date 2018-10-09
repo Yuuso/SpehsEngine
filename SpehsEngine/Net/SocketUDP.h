@@ -9,6 +9,7 @@
 #include <atomic>
 #include <mutex>
 
+#include "SpehsEngine/Net/ISocket.h"
 #include "SpehsEngine/Net/Port.h"
 #include "SpehsEngine/Net/Address.h"
 #include "SpehsEngine/Net/IOService.h"
@@ -20,7 +21,7 @@ namespace se
 	class ReadBuffer;
 	namespace net
 	{
-		class SocketUDP
+		class SocketUDP : public ISocket
 		{
 		private:
 			typedef uint32_t ExpectedBytesType;
@@ -43,12 +44,12 @@ namespace se
 				Socket must be opened before calling.
 				UDP is a connectionless protocol, connection status cannot be maintained.
 			*/
-			bool connect(const Address& remoteAddress, const Port& remotePort);
+			bool connect(const Endpoint& remoteEndpoint) override;
 			/* Clears the connected endpoint value. */
 			void disconnect();
 
 			/* Process arrived packets(onReceive callbacks). */
-			void update();
+			void update() override;
 
 			/* Sends buffer to the connected endpoint. */
 			bool sendPacket(const WriteBuffer& buffer);
@@ -62,6 +63,12 @@ namespace se
 			/* Starts receiving data from the connected endpoint. Non-blocking call. */
 			bool startReceiving();
 			bool isReceiving() const;
+
+			/* Returns the total number of sent bytes. Does not account bytes from the IP implementation. */
+			size_t getSentBytes() const override;
+
+			/* Returns the total number of received bytes. Does not account bytes from the IP implementation. */
+			size_t getReceivedBytes() const override;
 
 			/* Received packets must be processed with a specified receive handler. While there exists no callback, all incoming packets are discarded. */
 			void setOnReceiveCallback(const std::function<void(ReadBuffer&, const boost::asio::ip::udp::endpoint&)> onReceiveCallback = std::function<void(ReadBuffer&, const boost::asio::ip::udp::endpoint&)>());
@@ -98,6 +105,8 @@ namespace se
 				std::recursive_mutex receivedPacketsMutex;
 				std::vector<std::unique_ptr<ReceivedPacket>> receivedPackets;
 				SocketUDP* socketUDP = nullptr;
+				size_t sentBytes = 0;
+				size_t receivedBytes = 0;
 			};
 			boost::shared_ptr<SharedImpl> sharedImpl;
 

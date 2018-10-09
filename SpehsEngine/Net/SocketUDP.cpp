@@ -108,7 +108,7 @@ namespace se
 			return true;
 		}
 
-		bool SocketUDP::connect(const Address& remoteAddress, const Port& remotePort)
+		bool SocketUDP::connect(const Endpoint& remoteEndpoint)
 		{
 			if (!isOpen())
 			{
@@ -117,7 +117,7 @@ namespace se
 			}
 			std::lock_guard<std::recursive_mutex> lock(sharedImpl->mutex);
 			boost::asio::ip::udp::resolver resolverUDP(sharedImpl->ioService.getImplementationRef());
-			const boost::asio::ip::udp::resolver::query queryUDP(boost::asio::ip::udp::v4(), remoteAddress.toString(), remotePort.toString());
+			const boost::asio::ip::udp::resolver::query queryUDP(boost::asio::ip::udp::v4(), remoteEndpoint.address.toString(), remoteEndpoint.port.toString());
 			boost::asio::ip::udp::resolver::iterator it = resolverUDP.resolve(queryUDP);
 			const boost::asio::ip::udp::resolver::iterator end;
 			if (it == end)
@@ -137,7 +137,7 @@ namespace se
 				else
 				{
 					sharedImpl->connectedEndpoint = remoteAsioEndpoint;
-					log::info("SocketUDP successfully connected to the remote endpoint at: " + remoteAddress.toString() + ":" + remotePort.toString() + " at local port: " + std::to_string(sharedImpl->socket.local_endpoint().port()));
+					log::info("SocketUDP successfully connected to the remote endpoint at: " + remoteEndpoint.address.toString() + ":" + remoteEndpoint.port.toString() + " at local port: " + std::to_string(sharedImpl->socket.local_endpoint().port()));
 					return true;
 				}
 			}
@@ -176,10 +176,11 @@ namespace se
 		{
 			std::lock_guard<std::recursive_mutex> lock(sharedImpl->mutex);
 			boost::system::error_code error;
-			const size_t bytesSent = sharedImpl->socket.send_to(boost::asio::buffer(buffer[0], buffer.getOffset()), endpoint, 0, error);
+			const size_t writtenBytes = sharedImpl->socket.send_to(boost::asio::buffer(buffer[0], buffer.getOffset()), endpoint, 0, error);
+			sharedImpl->sentBytes += writtenBytes;
 			if (error)
 				se::log::error("SocketUDP send failed.");
-			if (bytesSent != buffer.getOffset())
+			if (writtenBytes != buffer.getOffset())
 				se::log::error("SocketUDP send failed.");			
 			if (debugLogLevel >= 2)
 				log::info("SocketUDP: packet sent. Size: " + std::to_string(buffer.getOffset()));
@@ -312,6 +313,18 @@ namespace se
 			return sharedImpl->connectedEndpoint;
 		}
 		
+		size_t SocketUDP::getSentBytes() const
+		{
+			std::lock_guard<std::recursive_mutex> lock(sharedImpl->mutex);
+			return sharedImpl->sentBytes;
+		}
+
+		size_t SocketUDP::getReceivedBytes() const
+		{
+			std::lock_guard<std::recursive_mutex> lock(sharedImpl->mutex);
+			return sharedImpl->receivedBytes;
+		}
+		
 		SocketUDP::SharedImpl::SharedImpl(IOService& _ioService)
 			: ioService(_ioService)
 			, socket(_ioService.getImplementationRef())
@@ -328,6 +341,7 @@ namespace se
 			std::lock_guard<std::recursive_mutex> lock1(mutex);
 			se_assert(receiving);
 			lastReceiveTime = time::now();
+			receivedBytes += bytes;
 
 			if (debugLogLevel >= 3)
 			{

@@ -88,6 +88,16 @@ namespace se
 			sharedImpl->stopAccepting();
 		}
 
+		size_t SocketTCP::getSentBytes() const
+		{
+			return sharedImpl->getSentBytes();
+		}
+
+		size_t SocketTCP::getReceivedBytes() const
+		{
+			return sharedImpl->getReceivedBytes();
+		}
+
 		bool SocketTCP::sendPacket(const WriteBuffer& buffer, const PacketType packetType)
 		{
 			return sharedImpl->sendPacket(buffer, packetType);
@@ -181,6 +191,7 @@ namespace se
 				log::info("SocketTCP receive handler received " + std::to_string(bytes) + " bytes.");
 
 			std::lock_guard<std::recursive_mutex> lock(mutex);
+			receivedBytes += bytes;
 			receiving = false;
 			lastReceiveTime = time::now();
 
@@ -628,7 +639,9 @@ namespace se
 			size_t offset = 0;
 			while (offset < headerBufferSize)
 			{//Keep sending data until the whole header has been sent
-				offset += socket.write_some(boost::asio::buffer(headerBuffer[offset], headerBufferSize - offset), error);
+				const size_t writtenBytes = socket.write_some(boost::asio::buffer(headerBuffer[offset], headerBufferSize - offset), error);
+				offset += writtenBytes;
+				sentBytes += writtenBytes;
 				if (error)
 				{//Error occured while sending data...
 					log::warning("SocketTCP: failed to send packet's spehs header! Boost asio error: " + error.message());
@@ -640,7 +653,9 @@ namespace se
 			offset = 0;
 			while (offset < dataBufferSize)
 			{//Keep sending data until all data has been sent
-				offset += socket.write_some(boost::asio::buffer(buffer[offset], dataBufferSize - offset), error);
+				const size_t writtenBytes = socket.write_some(boost::asio::buffer(buffer[offset], dataBufferSize - offset), error);
+				offset += writtenBytes;
+				sentBytes += writtenBytes;
 				if (error)
 				{//Error occured while sending data...
 					log::warning("SocketTCP: failed to send packet! Boost asio error: " + error.message());
@@ -807,6 +822,18 @@ namespace se
 			if (time::now() - lastReceiveTime >= connectionTimeout)
 				return false;
 			return connected;
+		}
+
+		size_t SocketTCP::SharedImpl::getSentBytes() const
+		{
+			std::lock_guard<std::recursive_mutex> lock(mutex);
+			return sentBytes;
+		}
+
+		size_t SocketTCP::SharedImpl::getReceivedBytes() const
+		{
+			std::lock_guard<std::recursive_mutex> lock(mutex);
+			return receivedBytes;
 		}
 	}
 }

@@ -9,6 +9,7 @@
 #include <atomic>
 #include <mutex>
 
+#include "SpehsEngine/Net/ISocket.h"
 #include "SpehsEngine/Net/Endpoint.h"
 #include "SpehsEngine/Net/IOService.h"
 #include "SpehsEngine/Net/PacketMessage.h"
@@ -25,7 +26,7 @@ namespace se
 			class Connector;
 			class Client;
 		}
-		class SocketTCP
+		class SocketTCP : public ISocket
 		{
 		private:
 			typedef uint32_t ExpectedBytesType;
@@ -42,10 +43,10 @@ namespace se
 				Process incoming connections(onAccept callbacks).
 				Process arrived packets(onReceive callbacks).
 			*/
-			void update();
+			void update() override;
 
 			/* Perform a synchronous connection attempt. */
-			bool connect(const Endpoint& endpoint);
+			bool connect(const Endpoint& endpoint) override;
 
 			/* Disconnect from the currently connected endpoint. */
 			void disconnect();
@@ -64,6 +65,12 @@ namespace se
 			
 			/* Stops accepting an incoming connection. */
 			void stopAccepting();
+
+			/* Returns the total number of sent bytes. Does not account bytes from the IP and TCP implementation. */
+			size_t getSentBytes() const override;
+
+			/* Returns the total number of received bytes. Does not account bytes from the IP and TCP implementation. */
+			size_t getReceivedBytes() const override;
 
 			/* Remote endpoint. */
 			Address getRemoteAddress() const;
@@ -130,6 +137,9 @@ namespace se
 				bool isReceiving() const;
 				bool isConnected() const;
 
+				size_t getSentBytes() const;
+				size_t getReceivedBytes() const;
+
 				mutable std::recursive_mutex mutex;
 				IOService& ioService;
 				boost::asio::ip::tcp::socket socket;
@@ -149,6 +159,8 @@ namespace se
 				bool onAcceptCallbackQueued = false;//If enabled, update will invoke the callback.
 				bool destructorCalled = false;
 				SocketTCP* socketTCP = nullptr;
+				size_t sentBytes = 0;
+				size_t receivedBytes = 0;
 
 				//Received packets
 				std::recursive_mutex receivedPacketsMutex;

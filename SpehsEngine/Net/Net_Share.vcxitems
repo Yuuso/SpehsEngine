@@ -23,6 +23,8 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)MatchmakingServer.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Net.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Port.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)ISocket.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)SocketProfiler.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)SocketTCP.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)SocketUDP.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)stdafx.cpp">
@@ -41,6 +43,8 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)PacketMessage.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Port.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)PrecompiledInclude.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)ISocket.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)SocketProfiler.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)SocketTCP.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)SocketUDP.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)stdafx.h" />
