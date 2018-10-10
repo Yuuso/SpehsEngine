@@ -333,7 +333,7 @@ namespace se
 		}
 		vec /= (float)_vertexArrayLength;
 
-		return magnitude(vec - _rayCastPosition);
+		return glm::length(vec - _rayCastPosition);
 	}
 #pragma endregion
 

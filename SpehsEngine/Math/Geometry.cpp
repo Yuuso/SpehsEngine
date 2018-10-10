@@ -15,16 +15,6 @@
 
 namespace se
 {
-	inline float magnitude(const glm::vec2& vec)
-	{
-		return sqrt(vec.x*vec.x + vec.y*vec.y);
-	}
-
-	inline float distance(const glm::vec2& origin, const glm::vec2& destination)
-	{
-		return magnitude(origin - destination);
-	}
-
 	inline float getAngle(const glm::vec2& origin, const glm::vec2& destination)
 	{
 		glm::vec2 angle = destination - origin;
@@ -123,11 +113,11 @@ namespace se
 	{
 		if (numCusps == 0)
 			return 0.0f;
-		float max = magnitude(cusps[0]);
+		float max = glm::length(cusps[0]);
 		for (size_t i = 1; i < numCusps; i++)
 		{
-			if (magnitude(cusps[i]) > max)
-				max = magnitude(cusps[i]);
+			if (glm::length(cusps[i]) > max)
+				max = glm::length(cusps[i]);
 		}
 		return max;
 	}

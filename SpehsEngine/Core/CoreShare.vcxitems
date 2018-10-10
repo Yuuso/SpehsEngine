@@ -22,16 +22,12 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)Core.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Endianness.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)FileStream.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)GLMVectorUtilityFunctions.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Inifile.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Inivar.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Log.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)OS.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)ReadBuffer.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)RNG.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)Serializable.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)SerializableDirectory.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)SerializableString.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Shapes.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)stdafx.cpp">
       <PrecompiledHeader>Create</PrecompiledHeader>
@@ -55,7 +51,6 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)Endianness.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)FileStream.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)FloatCompression.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)GLMVectorUtilityFunctions.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)HasMemberFunction.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Inifile.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Inivar.h" />
@@ -65,10 +60,6 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)RAIIVariableSetter.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)ReadBuffer.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)RNG.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)Serializable.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)SerializableDirectory.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)SerializableString.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)SerializableVector.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Shapes.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)stdafx.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)StringOperations.h" />

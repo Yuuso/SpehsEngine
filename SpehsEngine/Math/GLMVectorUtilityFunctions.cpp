@@ -1,5 +1,5 @@
 #include "stdafx.h"
-#include "SpehsEngine/Core/GLMVectorUtilityFunctions.h"
+#include "SpehsEngine/Math/GLMVectorUtilityFunctions.h"
 
 #include "SpehsEngine/Core/WriteBuffer.h"
 #include "SpehsEngine/Core/ReadBuffer.h"

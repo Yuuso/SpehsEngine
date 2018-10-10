@@ -5,13 +5,7 @@
 namespace se
 {
 	class Vertex;
-
-	/**Returns the magnitude of vector*/
-	extern inline float magnitude(const glm::vec2& vector);
-
-	/**Returns distance from origin to destination*/
-	extern inline float distance(const glm::vec2& origin, const glm::vec2& destination);
-
+	
 	/**Returns angle from origin to destination*/
 	extern inline float getAcuteAngle(const glm::vec2& vector1, const glm::vec2& vector2);
 

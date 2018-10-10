@@ -36,7 +36,7 @@ namespace se
 			glm::vec2 arrowVector(_endPoint - _startPoint);
 
 			//Arrow length changed
-			length = magnitude(arrowVector);
+			length = glm::length(arrowVector);
 			if (length < pointerHeight)
 				linePart->setRenderState(false);
 			else

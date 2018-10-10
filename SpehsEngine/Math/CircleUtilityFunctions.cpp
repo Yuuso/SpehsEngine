@@ -16,4 +16,9 @@ namespace se
 		}
 		return false;
 	}
+
+	Bounds2D getBounds(const Circle& circle)
+	{
+		return Bounds2D(circle.position, glm::vec2(circle.radius, circle.radius));
+	}
 }
