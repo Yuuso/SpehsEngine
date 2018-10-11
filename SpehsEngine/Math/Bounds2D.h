@@ -16,7 +16,7 @@ namespace se
 		bool contains(const glm::vec2& position) const;
 		/* Returns true only if the other bounds are completely covered by this. */
 		bool contains(const Bounds2D& other) const;
-		bool overlaps(const Bounds2D& other) const;
+		bool checkOverlap(const Bounds2D& other) const;
 
 		glm::vec2 center;
 		glm::vec2 extents;

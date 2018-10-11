@@ -13,12 +13,12 @@ namespace se
 
 	glm::vec2 Bounds2D::getCenter() const
 	{
-
+		return center;
 	}
 
 	glm::vec2 Bounds2D::getExtents() const
 	{
-
+		return extents;
 	}
 
 	glm::vec2 Bounds2D::getMin() const
@@ -52,7 +52,7 @@ namespace se
 			&& other.center.y + other.extents.y <= center.y + extents.y;
 	}
 
-	bool Bounds2D::overlaps(const Bounds2D& other) const
+	bool Bounds2D::checkOverlap(const Bounds2D& other) const
 	{
 		return !(other.center.x - other.extents.x > center.x + extents.x
 			|| other.center.x + other.extents.x < center.x - extents.x

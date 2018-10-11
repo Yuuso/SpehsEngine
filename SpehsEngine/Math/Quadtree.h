@@ -30,7 +30,7 @@ namespace se
 				{
 					if (children[i]->bounds.contains(elementBounds.getCenter()))
 					{
-						children->add(element, elementBounds);
+						children[i]->add(element, elementBounds);
 						return;
 					}
 				}
@@ -39,7 +39,7 @@ namespace se
 			else
 			{
 				//Add
-				elements.push_back(std::make_pair<T, Bounds2D>(element, elementBounds));
+				elements.push_back(std::make_pair(element, elementBounds));
 
 				//Split
 				if (elements.size() > Capacity)
@@ -55,7 +55,7 @@ namespace se
 						{
 							if (children[c]->bounds.contains(elementBounds.getCenter()))
 							{
-								children->add(element, elementBounds);
+								children[c]->add(element, elementBounds);
 								inserted = true;
 								break;
 							}
@@ -69,6 +69,6 @@ namespace se
 
 		std::vector<std::pair<T, Bounds2D>> elements = std::vector<std::pair<T, Bounds2D>>(Capacity);
 		Bounds2D bounds;
-		Quadtree<T, Capacity>* children[4] = 0;
+		Quadtree<T, Capacity>* children[4];
 	};
 }
