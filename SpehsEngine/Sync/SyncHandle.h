@@ -2,7 +2,6 @@
 #include <vector>
 #include "SpehsEngine/Sync/ISyncType.h"
 #include "SpehsEngine/Sync/SyncEntry.h"
-#include "SpehsEngine/Core/Log.h"//SPEH_ASSERT...
 
 namespace se
 {

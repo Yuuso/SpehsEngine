@@ -61,7 +61,7 @@ namespace se
 
 			//Check OpenGL version
 			const GLubyte* glString = glGetString(GL_VERSION);
-			_ASSERT(glString);
+			se_assert(glString);
 			const std::string openGLVersionString = (const char*)glGetString(GL_VERSION);
 			log::info("GLContext created. OpenGL version: " + openGLVersionString);
 

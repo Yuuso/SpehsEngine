@@ -15,7 +15,7 @@ namespace se
 
 	void InputState::UseState::use() const
 	{
-		_ASSERT(used == false);
+		se_assert(used == false);
 		used = true;
 	}
 
