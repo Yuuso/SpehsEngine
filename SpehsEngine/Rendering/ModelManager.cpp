@@ -57,6 +57,7 @@ namespace se
 			_model->meshes.push_back(ModelManager::Mesh());
 			ModelManager::Mesh& mesh = _model->meshes.back();
 			mesh.name = std::string(_mesh->mName.C_Str());
+			// Note! Node names are not used! (should they be?)
 
 			Vertex3D vertex;
 			// Vertices

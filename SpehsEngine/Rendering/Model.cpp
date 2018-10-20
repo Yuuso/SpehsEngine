@@ -94,11 +94,26 @@ namespace se
 			for (size_t m = 0; m < meshes.size(); m++)
 				if (meshes[m]->name == _name)
 					result.push_back(meshes[m].get());
-			if (result.size() == 0)
-				se::log::error("Model::findMesh: Meshes with name \"" + _name + "\" not found!");
+			//if (result.size() == 0)
+			//	se::log::error("Model::findMesh: Meshes with name \"" + _name + "\" not found!");
 			return result;
 		}
-		Mesh* Model::getMesh(size_t _index)
+		std::vector<Mesh*> Model::findMeshesContains(const std::string& _partialName)
+		{
+			se_assert(meshes.size() > 0);
+			std::vector<Mesh*> result;
+			for (size_t m = 0; m < meshes.size(); m++)
+				if (meshes[m]->name.find(_partialName) != std::string::npos)
+					result.push_back(meshes[m].get());
+			//if (result.size() == 0)
+			//	se::log::error("Model::findMesh: Meshes with name containing \"" + _partialName + "\" not found!");
+			return result;
+		}
+		std::vector<std::unique_ptr<Mesh>>& Model::getMeshes()
+		{
+			return meshes;
+		}
+		Mesh* Model::getMesh(size_t _index) const
 		{
 			se_assert(meshes.size() > _index);
 			return meshes[_index].get();
