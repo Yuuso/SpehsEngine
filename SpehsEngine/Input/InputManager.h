@@ -73,10 +73,13 @@ namespace se
 		bool isKeyReleased(unsigned int keyID) const;
 
 		//Special input query
-		bool isCtrlDown() const;///< Returns true if left or right ctrl button is down
-		bool isShiftDown() const;///< Returns true if left or right ctrl button is down
-		bool isCtrlPressed() const;///< Returns true if left or right ctrl button is pressed
-		bool isShiftPressed() const;///< Returns true if left or right ctrl button is pressed
+		bool isCtrlDown() const;
+		bool isCtrlPressed() const;
+		bool isCtrlReleased() const;
+
+		bool isShiftDown() const;
+		bool isShiftPressed() const;
+		bool isShiftReleased() const;
 
 		//Managing mouse
 		void setMouseCoords(int _x, int _y);

@@ -244,9 +244,19 @@ namespace se
 		return isKeyPressed(KEYBOARD_LCTRL) || isKeyPressed(KEYBOARD_RCTRL);
 	}
 
+	bool InputManager::isCtrlReleased() const
+	{
+		return isKeyReleased(KEYBOARD_LCTRL) || isKeyReleased(KEYBOARD_RCTRL);
+	}
+
 	bool InputManager::isShiftPressed() const
 	{
 		return isKeyPressed(KEYBOARD_LSHIFT) || isKeyPressed(KEYBOARD_RSHIFT);
+	}
+
+	bool InputManager::isShiftReleased() const
+	{
+		return isKeyReleased(KEYBOARD_LSHIFT) || isKeyReleased(KEYBOARD_RSHIFT);
 	}
 
 
