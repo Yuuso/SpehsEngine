@@ -6,7 +6,7 @@ namespace se
 {
 	ReadBuffer::ReadBuffer(const void* pointedMemory, const size_t length)
 		: data((const unsigned char*)pointedMemory)
-		, capacity(length)
+		, size(length)
 	{
 
 	}
@@ -16,14 +16,14 @@ namespace se
 		//NOTE: do not deallocate data! data is owned by an external source!
 	}
 		
-	void ReadBuffer::translate(const int translationOffset)
+	void ReadBuffer::translate(const int bytes)
 	{
-		offset += translationOffset;
+		offset += bytes;
 	}
 
 	size_t ReadBuffer::getBytesRemaining() const
 	{
-		return capacity - offset;
+		return size - offset;
 	}
 
 	void readFromBuffer(ReadBuffer& buffer, std::string& string)

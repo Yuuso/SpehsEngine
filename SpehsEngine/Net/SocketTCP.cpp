@@ -612,7 +612,7 @@ namespace se
 
 		bool SocketTCP::SharedImpl::sendPacket(const WriteBuffer& buffer, const PacketType packetType)
 		{
-			if (buffer.getOffset() == 0)
+			if (buffer.getSize() == 0)
 			{
 				se_assert(false && "Trying to send an empty packet.");
 				return true;
@@ -629,13 +629,13 @@ namespace se
 
 			//Spehs header
 			WriteBuffer headerBuffer;
-			const ExpectedBytesType dataBufferSize = ExpectedBytesType(buffer.getOffset());
-			const ExpectedBytesType headerBytesValue = ExpectedBytesType(buffer.getOffset() + sizeof(packetType));
+			const ExpectedBytesType dataBufferSize = ExpectedBytesType(buffer.getSize());
+			const ExpectedBytesType headerBytesValue = ExpectedBytesType(buffer.getSize() + sizeof(packetType));
 
 			headerBuffer.write(headerBytesValue);
 			headerBuffer.write(packetType);
 
-			const size_t headerBufferSize = headerBuffer.getOffset();
+			const size_t headerBufferSize = headerBuffer.getSize();
 			size_t offset = 0;
 			while (offset < headerBufferSize)
 			{//Keep sending data until the whole header has been sent
@@ -664,7 +664,7 @@ namespace se
 			}
 
 			if (debugLogLevel >= 2)
-				log::info("SocketTCP: packet sent. Contents: 4(packet byte size) + 1(packet type) + " + std::to_string(buffer.getOffset()) + "(data)");
+				log::info("SocketTCP: packet sent. Contents: 4(packet byte size) + 1(packet type) + " + std::to_string(buffer.getSize()) + "(data)");
 			return true;
 		}
 

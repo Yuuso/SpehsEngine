@@ -13,7 +13,24 @@ namespace se
 	{
 
 	}
-		
+	
+	void WriteBuffer::translate(const int bytes)
+	{
+		se_assert(bytes > 0 || offset >= size_t(std::abs(bytes)));
+		if (offset + bytes > data.size())
+		{
+			data.resize(offset + bytes);
+		}
+		offset += bytes;
+	}
+	
+	void WriteBuffer::resize(const size_t size)
+	{
+		data.resize(size);
+		if (offset > size)
+			offset = size;
+	}
+
 	void WriteBuffer::reserve(const size_t capacity)
 	{
 		se_assert(capacity >= data.capacity());

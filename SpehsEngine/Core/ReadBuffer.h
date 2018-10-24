@@ -40,7 +40,7 @@ namespace se
 		typename std::enable_if<!std::is_class<T>::value, void>::type read(T& t)
 		{
 			const size_t bytes = sizeof(T);
-			if (offset + bytes > capacity)
+			if (offset + bytes > size)
 			{
 				log::warning("Cannot read past the buffer!");
 				return;
@@ -62,19 +62,19 @@ namespace se
 			offset += bytes;
 		}
 
-		/* Translates offset by a set amount of bytes. */
-		void translate(const int translationOffset);
+		void translate(const int bytes) override;
 
 		/* Returns readable bytes remaining. */
 		size_t getBytesRemaining() const;
 
-		size_t getCapacity() const override { return capacity; }
+		size_t getCapacity() const override { return size; }
+		size_t getSize() const override { return size; }
 
 		const unsigned char* operator[](const size_t index) const { return &data[index]; }
 			
 	private:
 
-		size_t capacity;
+		size_t size;
 		const unsigned char* data;
 	};
 		

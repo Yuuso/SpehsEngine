@@ -176,14 +176,14 @@ namespace se
 		{
 			std::lock_guard<std::recursive_mutex> lock(sharedImpl->mutex);
 			boost::system::error_code error;
-			const size_t writtenBytes = sharedImpl->socket.send_to(boost::asio::buffer(buffer[0], buffer.getOffset()), endpoint, 0, error);
+			const size_t writtenBytes = sharedImpl->socket.send_to(boost::asio::buffer(buffer[0], buffer.getSize()), endpoint, 0, error);
 			sharedImpl->sentBytes += writtenBytes;
 			if (error)
 				se::log::error("SocketUDP send failed.");
-			if (writtenBytes != buffer.getOffset())
+			if (writtenBytes != buffer.getSize())
 				se::log::error("SocketUDP send failed.");			
 			if (debugLogLevel >= 2)
-				log::info("SocketUDP: packet sent. Size: " + std::to_string(buffer.getOffset()));
+				log::info("SocketUDP: packet sent. Size: " + std::to_string(buffer.getSize()));
 			return true;
 		}
 

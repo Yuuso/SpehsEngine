@@ -17,7 +17,9 @@ namespace se
 	public:
 		WriteBuffer();
 		~WriteBuffer() override;
-			
+		
+		void translate(const int bytes);
+		void resize(const size_t size);
 		void reserve(const size_t capacity);
 
 		//Const class, has const write
@@ -65,7 +67,10 @@ namespace se
 		typename std::enable_if<!std::is_class<T>::value, void>::type write (const T& t)
 		{
 			const size_t bytes = sizeof(T);
-			data.resize(data.size() + bytes);
+			if (offset + bytes > data.size())
+			{
+				data.resize(offset + bytes);
+			}
 
 			if (hostByteOrder == networkByteOrder)
 			{//Write in native order
@@ -86,6 +91,7 @@ namespace se
 
 		const uint8_t* operator[](const size_t index) const { return &data[index]; }
 		size_t getCapacity() const override { return data.capacity(); }
+		size_t getSize() const override { return data.size(); }
 
 	private:
 
