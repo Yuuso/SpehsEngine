@@ -59,6 +59,7 @@ namespace se
 
 			mouseAvailable = true;
 			mouseWheelDelta = 0;
+			mouseMovement = glm::ivec2();
 			for (size_t i = 0; i < keyboardPressEvents.size(); i++)
 			{
 				pressKey(keyboardPressEvents[i].key);
