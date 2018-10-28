@@ -5,7 +5,7 @@
 
 namespace se
 {
-	GUIContext::GUIContext(se::rendering::BatchManager& _batchManager, InputManager& _inputManager, time::DeltaTimeSystem& _deltaTimeSystem)
+	GUIContext::GUIContext(se::rendering::BatchManager& _batchManager, input::InputManager& _inputManager, time::DeltaTimeSystem& _deltaTimeSystem)
 		: batchManager(_batchManager)
 		, inputManager(_inputManager)
 		, deltaTimeSystem(_deltaTimeSystem)
@@ -33,12 +33,12 @@ namespace se
 		return batchManager;
 	}
 
-	InputManager& GUIContext::getInputManager()
+	input::InputManager& GUIContext::getInputManager()
 	{
 		return inputManager;
 	}
 
-	const InputManager& GUIContext::getInputManager() const
+	const input::InputManager& GUIContext::getInputManager() const
 	{
 		return inputManager;
 	}

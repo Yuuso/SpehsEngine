@@ -34,7 +34,7 @@ namespace se
 {
 	namespace rendering
 	{
-		ConsoleVisualizer::ConsoleVisualizer(Console& _console, se::InputManager& _inputManager, BatchManager& _batchManager)
+		ConsoleVisualizer::ConsoleVisualizer(Console& _console, input::InputManager& _inputManager, BatchManager& _batchManager)
 			: console(_console)
 			, inputManager(_inputManager)
 			, batchManager(_batchManager)

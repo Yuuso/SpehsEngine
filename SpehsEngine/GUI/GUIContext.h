@@ -7,7 +7,10 @@ namespace se
 		class TextureManager;
 		class BatchManager;
 	}
-	class InputManager;
+	namespace input
+	{
+		class InputManager;
+	}
 	namespace time
 	{
 		class DeltaTimeSystem;
@@ -21,7 +24,7 @@ namespace se
 	class GUIContext
 	{
 	public:
-		GUIContext(se::rendering::BatchManager& _batchManager, InputManager& _inputManager, time::DeltaTimeSystem& _deltaTimeSystem);
+		GUIContext(se::rendering::BatchManager& _batchManager, input::InputManager& _inputManager, time::DeltaTimeSystem& _deltaTimeSystem);
 
 		GUIContext& getGUIContext() { return *this; }
 		const GUIContext& getGUIContext() const { return *this; }
@@ -30,8 +33,8 @@ namespace se
 		const se::rendering::Window& getWindow() const;
 		se::rendering::BatchManager& getBatchManager();
 		const se::rendering::BatchManager& getBatchManager() const;
-		InputManager& getInputManager();
-		const InputManager& getInputManager() const;
+		input::InputManager& getInputManager();
+		const input::InputManager& getInputManager() const;
 		time::DeltaTimeSystem& getDeltaTimeSystem();
 		const time::DeltaTimeSystem& getDeltaTimeSystem() const;
 		time::Time& getDeltaTime();
@@ -42,7 +45,7 @@ namespace se
 
 	private:
 		se::rendering::BatchManager& batchManager;
-		InputManager& inputManager;
+		input::InputManager& inputManager;
 		time::DeltaTimeSystem& deltaTimeSystem;
 	};
 }

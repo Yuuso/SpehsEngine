@@ -56,6 +56,6 @@ namespace se
 		std::string defaultString;
 		std::string input;//Temporal storage for edited value so that value won't appear changed after each individual typed character
 		se::rendering::Text* typeCharacter = nullptr;
-		KeyboardRecorder keyboardRecorder;
+		input::KeyboardRecorder keyboardRecorder;
 	};
 }

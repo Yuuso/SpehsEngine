@@ -8,7 +8,11 @@ The console is internally mutex locked and can thus be safely accessed from any 
 */
 namespace se
 {
-	class InputManager;
+	namespace InputManager
+	{
+		class InputManager;
+	}
+
 	namespace rendering
 	{
 		class BatchManager;
@@ -22,7 +26,7 @@ namespace se
 		{
 		public:
 
-			ConsoleVisualizer(Console& console, se::InputManager& inputManager, BatchManager& batchManager);
+			ConsoleVisualizer(Console& console, input::InputManager& inputManager, BatchManager& batchManager);
 			~ConsoleVisualizer();
 
 			void open();
@@ -54,7 +58,7 @@ namespace se
 			size_t getLineCapacity() const;
 
 			Console& console;
-			se::InputManager& inputManager;
+			input::InputManager& inputManager;
 			BatchManager& batchManager;
 
 		private:
@@ -90,7 +94,7 @@ namespace se
 			std::vector<Text*> lines;
 
 			//Input
-			se::KeyboardRecorder keyboardRecorder;
+			input::KeyboardRecorder keyboardRecorder;
 			std::vector<std::string> executionHistory;
 		};
 	}

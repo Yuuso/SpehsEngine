@@ -39,6 +39,18 @@
     <ClInclude Include="PrecompiledInclude.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="EventCatcher.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Event.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="EventSignaler.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Joystick.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="GUID.cpp">
@@ -60,6 +72,18 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="stdafx.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="EventCatcher.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Event.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="EventSignaler.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Joystick.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

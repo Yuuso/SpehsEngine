@@ -145,21 +145,29 @@
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="Event.h" />
+    <ClInclude Include="EventCatcher.h" />
+    <ClInclude Include="EventSignaler.h" />
     <ClInclude Include="GUID.h" />
     <ClInclude Include="Input.h" />
     <ClInclude Include="InputEnumerations.h" />
     <ClInclude Include="InputManager.h" />
     <ClInclude Include="InputState.h" />
+    <ClInclude Include="Joystick.h" />
     <ClInclude Include="KeyboardRecorder.h" />
     <ClInclude Include="PrecompiledInclude.h" />
     <ClInclude Include="stdafx.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Event.cpp" />
+    <ClCompile Include="EventCatcher.cpp" />
+    <ClCompile Include="EventSignaler.cpp" />
     <ClCompile Include="GUID.cpp" />
     <ClCompile Include="Input.cpp" />
     <ClCompile Include="InputEnumerations.cpp" />
     <ClCompile Include="InputManager.cpp" />
     <ClCompile Include="InputState.cpp" />
+    <ClCompile Include="Joystick.cpp" />
     <ClCompile Include="KeyboardRecorder.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>

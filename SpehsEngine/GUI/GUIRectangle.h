@@ -60,7 +60,6 @@ namespace se
 	class GUIRectangleTable;
 	class GUIRectangleContainer;
 
-	class InputManager;
 	namespace time
 	{
 		class DeltaTimeSystem;

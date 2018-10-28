@@ -5,7 +5,11 @@
 struct SDL_Window;
 namespace se
 {
-	class InputManager;
+	namespace input
+	{
+		class InputManager;
+	}
+
 	namespace rendering
 	{
 		class TextureManager;
@@ -15,7 +19,7 @@ namespace se
 		class Window
 		{
 		public:
-			friend class InputManager;
+			friend class input::InputManager;
 			friend class GLContext;
 		public:
 
