@@ -38,10 +38,16 @@ namespace se
 
 				log::info("Current SpehsEngine rendering library build: " + getVersion());
 
-				if (SDL_Init(SDL_INIT_VIDEO) < 0)
+				if (SDL_Init(0) != 0)
 				{
-					se::log::info(SDL_GetError());
-					se::log::error("Video initialization failed!");
+					const std::string error("Unable to initialize SDL: %s", SDL_GetError());
+					log::error(error);
+					return;
+				}
+				if (SDL_InitSubSystem(SDL_INIT_VIDEO) != 0)
+				{
+					const std::string error("Unable to initialize SDL video sub system: %s", SDL_GetError());
+					log::error(error);
 					return;
 				}
 
@@ -53,6 +59,8 @@ namespace se
 		{
 			if (--instanceCount == 0)
 			{
+				SDL_QuitSubSystem(SDL_INIT_VIDEO);
+				SDL_Quit();
 				valid = false;
 			}
 		}

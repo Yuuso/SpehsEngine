@@ -30,10 +30,10 @@ namespace se
 		class InputManager
 		{
 		public:
-			InputManager(se::rendering::Window& _window, EventCatcher& _eventCatcher);
+			InputManager(se::rendering::Window& _window);
 			~InputManager();
 
-			void update();
+			void update(EventCatcher& _eventCatcher);
 
 			//manging keyboard
 			void pressKey(unsigned int keyID);
@@ -53,7 +53,7 @@ namespace se
 
 			//Managing mouse
 			void setMouseCoords(int _x, int _y);
-			bool lockMouse(const bool _value);
+			void lockMouse(const bool _value);
 			bool tryClaimMouseAvailability();
 			bool checkMouseAvailability() const;
 
@@ -78,7 +78,6 @@ namespace se
 
 			//Public access members
 			se::rendering::Window& window;
-			EventCatcher& eventCatcher;
 			std::vector<Joystick*> joysticks;
 			KeyboardKey latestKeyboardPress = KeyboardKey::KEYBOARD_UNKNOWN;///< Latest key pressed. Reset for each update (0) if nothing was pressed during that update
 			KeyboardKey latestMouseButtonPress = KEYBOARD_UNKNOWN;///< Latest mouse buton pressed. Reset for each update (0) if nothing was pressed during that update

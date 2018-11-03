@@ -41,6 +41,31 @@ namespace se
 
 			log::info("Current SpehsEngine input library version: " + getVersion());
 
+			if (SDL_Init(0) != 0)
+			{
+				const std::string error("Unable to initialize SDL: %s", SDL_GetError());
+				log::error(error);
+				return;
+			}
+			if (SDL_InitSubSystem(SDL_INIT_EVENTS) != 0)
+			{
+				const std::string error("Unable to initialize SDL events sub system: %s", SDL_GetError());
+				log::error(error);
+				return;
+			}
+			if (SDL_InitSubSystem(SDL_INIT_JOYSTICK) != 0)
+			{
+				const std::string error("Unable to initialize SDL joystick sub system: %s", SDL_GetError());
+				log::error(error);
+				return;
+			}
+			if (SDL_InitSubSystem(SDL_INIT_GAMECONTROLLER) != 0)
+			{
+				const std::string error("Unable to initialize SDL gamecontroller sub system: %s", SDL_GetError());
+				log::error(error);
+				return;
+			}
+
 			valid = true;
 		}
 	}
@@ -49,9 +74,17 @@ namespace se
 	{
 		if (--instanceCount == 0)
 		{
+			SDL_QuitSubSystem(SDL_INIT_GAMECONTROLLER);
+			SDL_QuitSubSystem(SDL_INIT_JOYSTICK);
+			SDL_QuitSubSystem(SDL_INIT_EVENTS);
 			SDL_Quit();
 			valid = false;
 		}
+	}
+
+	void InputLib::update()
+	{
+		SDL_PumpEvents();
 	}
 
 	bool InputLib::isValid()

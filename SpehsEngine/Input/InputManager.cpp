@@ -3,6 +3,7 @@
 
 #include "SpehsEngine/Input/Input.h"
 #include "SpehsEngine/Input/EventCatcher.h"
+#include "SpehsEngine/Input/MouseUtilityFunctions.h"
 #include "SpehsEngine/Rendering/Window.h"
 
 #include <SDL/SDL.h>
@@ -19,9 +20,8 @@ namespace se
 {
 	namespace input
 	{
-		InputManager::InputManager(se::rendering::Window& _window, EventCatcher& _eventCatcher)
+		InputManager::InputManager(se::rendering::Window& _window)
 			: window(_window)
-			, eventCatcher(_eventCatcher)
 		{
 			SDL_InitSubSystem(SDL_INIT_JOYSTICK);
 		}
@@ -35,7 +35,7 @@ namespace se
 			}
 		}
 
-		void InputManager::update()
+		void InputManager::update(EventCatcher& eventCatcher)
 		{
 			for (auto& it : keyMap) //foreach loop, c++11
 			{
@@ -47,36 +47,35 @@ namespace se
 			else if (SDL_NumJoysticks() > joystickCount)
 				joystickConnected();
 			
-			std::vector<KeyboardPressEvent>& keyboardPressEvents = eventCatcher.getKeyboardPressEvents();
-			std::vector<KeyboardReleaseEvent>& keyboardReleaseEvents = eventCatcher.getKeyboardReleaseEvents();
-			std::vector<MouseButtonPressEvent>& mouseButtonPressEvents = eventCatcher.getMouseButtonPressEvents();
-			std::vector<MouseButtonReleaseEvent>& mouseButtonReleaseEvents = eventCatcher.getMouseButtonReleaseEvents();
-			std::vector<MouseMotionEvent>& mouseMotionEvents = eventCatcher.getMouseMotionEvents();
-			std::vector<MouseWheelEvent>& mouseWheelEvents = eventCatcher.getMouseWheelEvents();
-			std::vector<MouseHoverEvent>& mouseHoverEvents = eventCatcher.getMouseHoverEvents();
-			std::vector<QuitEvent>& quitEvents = eventCatcher.getQuitEvents();
-			std::vector<FileDropEvent>& fileDropEvents = eventCatcher.getFileDropEvents();
+			const std::vector<KeyboardPressEvent>& keyboardPressEvents = eventCatcher.getKeyboardPressEvents();
+			const std::vector<KeyboardReleaseEvent>& keyboardReleaseEvents = eventCatcher.getKeyboardReleaseEvents();
+			const std::vector<MouseButtonPressEvent>& mouseButtonPressEvents = eventCatcher.getMouseButtonPressEvents();
+			const std::vector<MouseButtonReleaseEvent>& mouseButtonReleaseEvents = eventCatcher.getMouseButtonReleaseEvents();
+			const std::vector<MouseMotionEvent>& mouseMotionEvents = eventCatcher.getMouseMotionEvents();
+			const std::vector<MouseWheelEvent>& mouseWheelEvents = eventCatcher.getMouseWheelEvents();
+			const std::vector<MouseHoverEvent>& mouseHoverEvents = eventCatcher.getMouseHoverEvents();
+			const std::vector<QuitEvent>& quitEvents = eventCatcher.getQuitEvents();
+			const std::vector<FileDropEvent>& fileDropEvents = eventCatcher.getFileDropEvents();
 
 			mouseAvailable = true;
 			mouseWheelDelta = 0;
 			mouseMovement = glm::ivec2();
 			for (size_t i = 0; i < keyboardPressEvents.size(); i++)
 			{
-				pressKey(keyboardPressEvents[i].key);
-				latestKeyboardPress = keyboardPressEvents[i].key;
+				pressKey(KeyboardKey(keyboardPressEvents[i].key));
+				latestKeyboardPress = KeyboardKey(keyboardPressEvents[i].key);
 			}
 			for (size_t i = 0; i < keyboardReleaseEvents.size(); i++)
 			{
-				releaseKey(keyboardReleaseEvents[i].key);
+				releaseKey(KeyboardKey(keyboardReleaseEvents[i].key));
 			}
 			for (size_t i = 0; i < mouseButtonPressEvents.size(); i++)
 			{
-				pressKey(mouseButtonPressEvents[i].button);
-				latestKeyboardPress = mouseButtonPressEvents[i].button;
+				pressKey(KeyboardKey(mouseButtonPressEvents[i].button));
 			}
 			for (size_t i = 0; i < mouseButtonReleaseEvents.size(); i++)
 			{
-				releaseKey(mouseButtonReleaseEvents[i].button);
+				releaseKey(KeyboardKey(mouseButtonReleaseEvents[i].button));
 			}
 			for (size_t i = 0; i < mouseMotionEvents.size(); i++)
 			{
@@ -95,11 +94,16 @@ namespace se
 			{
 				droppedFilePath = fileDropEvents[i].filepath;
 			}
-
+			
 			if (mouseLocked)
 			{
 				//If mouse is locked, keep mouse in the center of the screen without creating a mousemotion event
-				SDL_WarpMouseInWindow(window.sdlWindow, window.getWidth() / 2, window.getHeight() / 2);
+				window.setMousePosition(glm::ivec2(window.getWidth() / 2, window.getHeight() / 2));
+			}
+			if (!setRelativeMouseMode(mouseLocked))
+			{
+				window.setInputGrab(mouseLocked);
+				setShowCursor(!mouseLocked);
 			}
 		}
 
@@ -119,23 +123,9 @@ namespace se
 			mouseCoords.y = (float)_y;
 		}
 
-		bool InputManager::lockMouse(const bool _value)
+		void InputManager::lockMouse(const bool _value)
 		{
-			if (mouseLocked == _value)
-				return true;
-			else
-				mouseLocked = _value;
-
-			if (SDL_SetRelativeMouseMode((SDL_bool)_value) == 0)
-			{
-				return true;
-			}
-			else
-			{
-				SDL_SetWindowGrab(window.sdlWindow, (SDL_bool)_value);
-				SDL_ShowCursor(!_value);
-				return true;
-			}
+			mouseLocked = _value;
 		}
 
 		bool InputManager::tryClaimMouseAvailability()

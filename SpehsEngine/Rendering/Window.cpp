@@ -7,8 +7,9 @@
 #include "SpehsEngine/Rendering/FontManager.h"
 //#include "SpehsEngine/Rendering/PostProcessing.h" TODO!!!
 
-#include <SDL/SDL_video.h>
-#include <GL/glew.h>
+#include "SDL/SDL_video.h"
+#include "SDL/SDL_mouse.h"
+#include "GL/glew.h"
 
 namespace se
 {
@@ -165,6 +166,35 @@ namespace se
 		void Window::setBorderless(const bool enabled)
 		{
 			SDL_SetWindowBordered(sdlWindow, (SDL_bool)enabled);
+		}
+
+		void Window::setInputGrab(const bool enabled)
+		{
+			if (enabled == getInputGrab())
+			{
+				return;
+			}
+			else
+			{
+				if (enabled)
+				{
+					SDL_SetWindowGrab(sdlWindow, SDL_TRUE);
+				}
+				else
+				{
+					SDL_SetWindowGrab(sdlWindow, SDL_FALSE);
+				}
+			}
+		}
+
+		void Window::setMousePosition(const glm::ivec2& position)
+		{
+			SDL_WarpMouseInWindow(sdlWindow, position.x, position.y);
+		}
+
+		bool Window::getInputGrab() const
+		{
+			return SDL_GetWindowGrab(sdlWindow) == SDL_TRUE;
 		}
 
 		bool Window::isValid() const

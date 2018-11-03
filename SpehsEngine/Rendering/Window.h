@@ -5,11 +5,6 @@
 struct SDL_Window;
 namespace se
 {
-	namespace input
-	{
-		class InputManager;
-	}
-
 	namespace rendering
 	{
 		class TextureManager;
@@ -19,7 +14,6 @@ namespace se
 		class Window
 		{
 		public:
-			friend class input::InputManager;
 			friend class GLContext;
 		public:
 
@@ -36,12 +30,15 @@ namespace se
 			void setMaxSize(const int maxPixelWidth, const int maxPixelHeight);
 			void setFullscreen(const bool enabled);
 			void setBorderless(const bool enabled);
+			void setInputGrab(const bool enabled);
+			void setMousePosition(const glm::ivec2& position);
 
 			bool isValid() const;
 			TextureManager* getTextureManager();
 			const TextureManager* getTextureManager() const;
 			FontManager* getFontManager();
 			const FontManager* getFontManager() const;
+			bool getInputGrab() const;
 
 			/* Returns window pixel width. */
 			int getWidth() const;

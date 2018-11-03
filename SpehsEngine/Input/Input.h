@@ -17,6 +17,9 @@ namespace se
 		/* Uninitializes input library */
 		~InputLib();
 
+		/* Updates input library state. */
+		void update();
+
 		/* Returns whether the input library has successfully been initialized */
 		static bool isValid();
 

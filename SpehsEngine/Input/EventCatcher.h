@@ -1,6 +1,7 @@
 #pragma once
 #include "SpehsEngine/Input/Event.h"
 #include <vector>
+#include <unordered_set>
 
 namespace se
 {
@@ -13,40 +14,47 @@ namespace se
 		{
 		public:
 
-			EventCatcher(const rendering::Window& window);
+			EventCatcher();
 
-			void update();
-
-			std::vector<KeyboardPressEvent>& getKeyboardPressEvents() { return keyboardPressEvents; }
-			std::vector<KeyboardReleaseEvent>& getKeyboardReleaseEvents() { return keyboardReleaseEvents; }
-			std::vector<MouseButtonPressEvent>& getMouseButtonPressEvents()  { return mouseButtonPressEvents; }
-			std::vector<MouseButtonReleaseEvent>& getMouseButtonReleaseEvents() { return mouseButtonReleaseEvents; }
-			std::vector<MouseMotionEvent>& getMouseMotionEvents() { return mouseMotionEvents; }
-			std::vector<MouseWheelEvent>& getMouseWheelEvents() { return mouseWheelEvents; }
-			std::vector<MouseHoverEvent>& getMouseHoverEvents() { return mouseHoverEvents; }
-			//std::vector<JoystickButtonPressEvent>& getJoystickButtonPressEvents() { return joystickButtonPressEvents; }
-			//std::vector<JoystickButtonReleaseEvent>& getJoystickButtonReleaseEvents() { return joystickButtonReleaseEvents; }
-			//std::vector<JoystickAxisEvent>& getJoystickAxisEvents() { return joystickAxisEvents; }
-			std::vector<QuitEvent>& getQuitEvents() { return quitEvents; }
-			std::vector<FileDropEvent>& getFileDropEvents() { return fileDropEvents; }
+			/* Discards all previous events and polls for new ones. */
+			void pollEvents();
+			
+			const std::vector<KeyboardPressEvent>& getKeyboardPressEvents() const { return keyboardPressEvents; }
+			const std::vector<KeyboardDownEvent>& getKeyboardDownEvents() const { return keyboardDownEvents; }
+			const std::vector<KeyboardReleaseEvent>& getKeyboardReleaseEvents() const { return keyboardReleaseEvents; }
+			const std::vector<MouseHoverEvent>& getMouseHoverEvents() const { return mouseHoverEvents; }
+			const std::vector<MouseButtonPressEvent>& getMouseButtonPressEvents() const { return mouseButtonPressEvents; }
+			const std::vector<MouseButtonDownEvent>& getMouseButtonDownEvents() const { return mouseButtonDownEvents; }
+			const std::vector<MouseButtonReleaseEvent>& getMouseButtonReleaseEvents() const { return mouseButtonReleaseEvents; }
+			const std::vector<MouseMotionEvent>& getMouseMotionEvents() const { return mouseMotionEvents; }
+			const std::vector<MouseWheelEvent>& getMouseWheelEvents() const { return mouseWheelEvents; }
+			//const std::vector<JoystickButtonPressEvent>& getJoystickButtonPressEvents() const { return joystickButtonPressEvents; }
+			//const std::vector<JoystickButtonDownEvent>& getJoystickButtonDownEvents() const { return joystickButtonDownEvents; }
+			//const std::vector<JoystickButtonReleaseEvent>& getJoystickButtonReleaseEvents() const { return joystickButtonReleaseEvents; }
+			//const std::vector<JoystickAxisEvent>& getJoystickAxisEvents() const { return joystickAxisEvents; }
+			const std::vector<QuitEvent>& getQuitEvents() const { return quitEvents; }
+			const std::vector<FileDropEvent>& getFileDropEvents() const { return fileDropEvents; }
 
 		private:
 
-			const rendering::Window& window; // TO BE REMOVED: currently exists because of flipping mouse position from given sdl coordinates to spehs coordinates.
-
 			std::vector<KeyboardPressEvent> keyboardPressEvents;
+			std::vector<KeyboardDownEvent> keyboardDownEvents;
 			std::vector<KeyboardReleaseEvent> keyboardReleaseEvents;
+			std::vector<MouseHoverEvent> mouseHoverEvents;
 			std::vector<MouseButtonPressEvent> mouseButtonPressEvents;
+			std::vector<MouseButtonDownEvent> mouseButtonDownEvents;
 			std::vector<MouseButtonReleaseEvent> mouseButtonReleaseEvents;
 			std::vector<MouseMotionEvent> mouseMotionEvents;
 			std::vector<MouseWheelEvent> mouseWheelEvents;
-			std::vector<MouseHoverEvent> mouseHoverEvents;
 			//std::vector<JoystickButtonPressEvent> joystickButtonPressEvents;
+			//std::vector<JoystickButtonDownEvent> joystickButtonDownEvents;
 			//std::vector<JoystickButtonReleaseEvent> joystickButtonReleaseEvents;
 			//std::vector<JoystickAxisEvent> joystickAxisEvents;
 			std::vector<QuitEvent> quitEvents;
 			std::vector<FileDropEvent> fileDropEvents;
 
+			std::unordered_set<Key> heldKeyboardKeys;
+			std::unordered_set<MouseButton> heldMouseButtons;
 			bool previousMousePositionSet = false;
 			glm::vec2 previousMousePosition;
 		};

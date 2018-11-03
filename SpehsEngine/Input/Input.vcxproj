@@ -154,7 +154,11 @@
     <ClInclude Include="InputManager.h" />
     <ClInclude Include="InputState.h" />
     <ClInclude Include="Joystick.h" />
+    <ClInclude Include="Key.h" />
     <ClInclude Include="KeyboardRecorder.h" />
+    <ClInclude Include="KeyUtilityFunctions.h" />
+    <ClInclude Include="MouseButton.h" />
+    <ClInclude Include="MouseUtilityFunctions.h" />
     <ClInclude Include="PrecompiledInclude.h" />
     <ClInclude Include="stdafx.h" />
   </ItemGroup>
@@ -168,7 +172,11 @@
     <ClCompile Include="InputManager.cpp" />
     <ClCompile Include="InputState.cpp" />
     <ClCompile Include="Joystick.cpp" />
+    <ClCompile Include="Key.cpp" />
     <ClCompile Include="KeyboardRecorder.cpp" />
+    <ClCompile Include="KeyUtilityFunctions.cpp" />
+    <ClCompile Include="MouseButton.cpp" />
+    <ClCompile Include="MouseUtilityFunctions.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
