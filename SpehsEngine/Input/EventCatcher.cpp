@@ -140,14 +140,14 @@ namespace se
 			}
 
 			//Detect quietly released held mouse buttons
-			for (std::unordered_set<Key>::iterator it = heldKeyboardKeys.begin(); it != heldKeyboardKeys.end();)
+			for (std::unordered_set<MouseButton>::iterator it = heldMouseButtons.begin(); it != heldMouseButtons.end();)
 			{
-				if (!isKeyDown(*it))
+				if (!isMouseButtonDown(*it))
 				{
-					keyboardReleaseEvents.push_back(KeyboardReleaseEvent());
-					keyboardReleaseEvents.back().key = *it;
-					heldKeyboardKeys.erase(it);
-					it = heldKeyboardKeys.begin(); // Erase invalidates iterators, need to restart
+					mouseButtonReleaseEvents.push_back(MouseButtonReleaseEvent());
+					mouseButtonReleaseEvents.back().button = *it;
+					heldMouseButtons.erase(it);
+					it = heldMouseButtons.begin(); // Erase invalidates iterators, need to restart
 				}
 				else
 				{
