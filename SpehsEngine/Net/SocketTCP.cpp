@@ -132,6 +132,26 @@ namespace se
 		{
 			return sharedImpl->startAccepting(port, callbackFunction);
 		}
+		
+		void SocketTCP::setNoDelay(const bool enabled)
+		{
+			sharedImpl->setNoDelay(enabled);
+		}
+
+		bool SocketTCP::getNoDelay() const
+		{
+			return sharedImpl->getNoDelay();
+		}
+
+		void SocketTCP::setKeepAlive(const bool enabled)
+		{
+			sharedImpl->setKeepAlive(enabled);
+		}
+
+		bool SocketTCP::getKeepAlive() const
+		{
+			return sharedImpl->getKeepAlive();
+		}
 
 		Address SocketTCP::getRemoteAddress() const
 		{
@@ -765,6 +785,56 @@ namespace se
 			}
 			}
 			return false;
+		}
+
+		void SocketTCP::SharedImpl::setNoDelay(const bool enabled)
+		{
+			const boost::asio::ip::tcp::no_delay option(true);
+			boost::system::error_code error;
+			std::lock_guard<std::recursive_mutex> lock1(mutex);
+			socket.set_option(option, error);
+			if (error)
+			{
+				se::log::error(error.message());
+			}
+		}
+
+		bool SocketTCP::SharedImpl::getNoDelay() const
+		{
+			boost::asio::ip::tcp::no_delay option;
+			boost::system::error_code error;
+			std::lock_guard<std::recursive_mutex> lock1(mutex);
+			socket.get_option(option, error);
+			if (error)
+			{
+				se::log::error(error.message());
+			}
+			return option;
+		}
+
+		void SocketTCP::SharedImpl::setKeepAlive(const bool enabled)
+		{
+			const boost::asio::socket_base::keep_alive option(true);
+			boost::system::error_code error;
+			std::lock_guard<std::recursive_mutex> lock1(mutex);
+			socket.set_option(option, error);
+			if (error)
+			{
+				se::log::error(error.message());
+			}
+		}
+
+		bool SocketTCP::SharedImpl::getKeepAlive() const
+		{
+			boost::asio::socket_base::keep_alive option;
+			boost::system::error_code error;
+			std::lock_guard<std::recursive_mutex> lock1(mutex);
+			socket.get_option(option, error);
+			if (error)
+			{
+				se::log::error(error.message());
+			}
+			return option;
 		}
 
 		Address SocketTCP::SharedImpl::getRemoteAddress() const

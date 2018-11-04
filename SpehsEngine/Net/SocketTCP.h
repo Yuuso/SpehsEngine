@@ -66,6 +66,14 @@ namespace se
 			/* Stops accepting an incoming connection. */
 			void stopAccepting();
 
+			/* Enabling the 'no delay' option disables Nagle algorithm. */
+			void setNoDelay(const bool enabled);
+			bool getNoDelay() const;
+
+			/* Enabling the 'keep alive' option causes socket to send keep-alive messages. */
+			void setKeepAlive(const bool enabled);
+			bool getKeepAlive() const;
+
 			/* Returns the total number of sent bytes. Does not account bytes from the IP and TCP implementation. */
 			size_t getSentBytes() const override;
 
@@ -129,6 +137,10 @@ namespace se
 				void setOnReceiveCallback(const std::function<void(ReadBuffer&)> callbackFunction);
 				void update();
 				bool spehsReceiveHandler(ReadBuffer& buffer);
+				void setNoDelay(const bool enabled);
+				bool getNoDelay() const;
+				void setKeepAlive(const bool enabled);
+				bool getKeepAlive() const;
 
 				Address getRemoteAddress() const;
 				Port getRemotePort() const;

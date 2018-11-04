@@ -63,7 +63,7 @@ namespace se
 			/* Starts receiving data from the connected endpoint. Non-blocking call. */
 			bool startReceiving();
 			bool isReceiving() const;
-
+			
 			/* Returns the total number of sent bytes. Does not account bytes from the IP implementation. */
 			size_t getSentBytes() const override;
 
@@ -88,6 +88,7 @@ namespace se
 			{
 				SharedImpl(IOService& ioService);
 				void receiveHandler(const boost::system::error_code& error, std::size_t bytes);
+
 				struct ReceivedPacket
 				{
 					std::vector<uint8_t> buffer;
