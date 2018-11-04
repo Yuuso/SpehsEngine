@@ -389,6 +389,7 @@ namespace se
 		//Private:
 		TextureData* TextureManager::toTexture(const std::string& _filepath, const TextureParameter& _parameters)
 		{
+			log::info("Loading texture: " + _filepath);
 			glEnable(GL_TEXTURE_2D);
 
 			GLuint textureData;
@@ -429,6 +430,7 @@ namespace se
 		TextureData* TextureManager::toCubeMap(const std::string& _negx, const std::string& _posx, const std::string& _negy,
 			const std::string& _posy, const std::string& _negz, const std::string& _posz, const TextureParameter& _parameters)
 		{
+			log::info("Loading cube map: " + _negx + " ...");
 			GLuint cubemapData;
 
 			glActiveTexture(GL_TEXTURE0);
@@ -453,8 +455,15 @@ namespace se
 			glEnable(GL_TEXTURE_GEN_T);
 			glEnable(GL_TEXTURE_GEN_R);
 
-			// right, left, top, bottom, back, front
-			cubemapData = SOIL_load_OGL_cubemap(_negx.c_str(), _posx.c_str(), _posy.c_str(), _negy.c_str(), _negz.c_str(), _posz.c_str(),
+			/* Should be right...
+			posx = right
+			negx = left
+			posy = top
+			negy = bottom
+			posz = back
+			negz = front
+			*/
+			cubemapData = SOIL_load_OGL_cubemap(_posx.c_str(), _negx.c_str(), _posy.c_str(), _negy.c_str(), _posz.c_str(), _negz.c_str(),
 				SOIL_LOAD_RGB, SOIL_CREATE_NEW_ID, SOIL_FLAG_MIPMAPS);
 
 			glBindTexture(GL_TEXTURE_2D, 0);

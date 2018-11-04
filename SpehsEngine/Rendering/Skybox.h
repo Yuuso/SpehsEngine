@@ -35,13 +35,13 @@ namespace se
 
 			void setShader(const unsigned int _index);
 
+			Model* model;
+
 		private:
 			Skybox(const Skybox& _other) = delete;
 			Skybox(const Skybox&& _other) = delete;
 			Skybox& operator=(const Skybox& _other) = delete;
 			Skybox& operator=(const Skybox&& _other) = delete;
-
-			Model* model;
 		};
 	}
 }
