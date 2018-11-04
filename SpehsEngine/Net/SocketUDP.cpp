@@ -136,6 +136,8 @@ namespace se
 				}
 				else
 				{
+					se_assert(remoteAsioEndpoint.address().to_v4().to_ulong() != 0);
+					se_assert(remoteAsioEndpoint.port() != 0);
 					sharedImpl->connectedEndpoint = remoteAsioEndpoint;
 					log::info("SocketUDP successfully connected to the remote endpoint at: " + remoteEndpoint.address.toString() + ":" + remoteEndpoint.port.toString() + " at local port: " + std::to_string(sharedImpl->socket.local_endpoint().port()));
 					return true;
