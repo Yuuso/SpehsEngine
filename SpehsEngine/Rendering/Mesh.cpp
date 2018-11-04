@@ -89,6 +89,8 @@ namespace se
 				log::error("Position values corrupted!");
 			}
 #endif
+			if (_newPosition == localPosition)
+				return;
 			localPosition = _newPosition;
 			needUpdate = true;
 		}
@@ -100,6 +102,8 @@ namespace se
 				log::error("Rotation values corrupted!");
 			}
 #endif
+			if (_newRotation == localRotation)
+				return;
 			localRotation = _newRotation;
 			needUpdate = true;
 		}
@@ -111,6 +115,8 @@ namespace se
 				log::error("Position values corrupted!");
 			}
 #endif
+			if (_newScale == localScale)
+				return;
 			localScale = _newScale;
 			needUpdate = true;
 		}
@@ -122,6 +128,8 @@ namespace se
 				log::error("Translation values corrupted!");
 			}
 #endif
+			if (_translation == glm::vec3(0.0f))
+				return;
 			localPosition += _translation;
 			needUpdate = true;
 		}
@@ -133,6 +141,8 @@ namespace se
 				log::error("Position values corrupted!");
 			}
 #endif
+			if (_newPosition == position)
+				return;
 			position = _newPosition;
 			needUpdate = true;
 		}
@@ -144,6 +154,8 @@ namespace se
 				log::error("Rotation values corrupted!");
 			}
 #endif
+			if (_newRotation == rotation)
+				return;
 			rotation = _newRotation;
 			needUpdate = true;
 		}
@@ -155,16 +167,22 @@ namespace se
 				log::error("Position values corrupted!");
 			}
 #endif
+			if (_newScale == scale)
+				return;
 			scale = _newScale;
 			needUpdate = true;
 		}
 		void Mesh::setColor(const Color _color)
 		{
+			if (_color == color)
+				return;
 			color = _color;
 			needUpdate = true;
 		}
 		void Mesh::setAlpha(const float _alpha)
 		{
+			if (_alpha == color.a)
+				return;
 			color.a = _alpha;
 			needUpdate = true;
 		}
@@ -181,16 +199,22 @@ namespace se
 		}
 		void Mesh::setBlending(const bool _value)
 		{
+			if (_value == blending)
+				return;
 			blending = _value;
 			unbatch();
 		}
 		void Mesh::setDepthTest(const bool _value)
 		{
+			if (_value == depthTest)
+				return;
 			depthTest = _value;
 			unbatch();
 		}
 		void Mesh::setRenderState(const bool _newState)
 		{
+			if (_newState == renderState)
+				return;
 			renderState = _newState;
 			unbatch();
 		}
@@ -201,11 +225,15 @@ namespace se
 		}
 		void Mesh::setShaderIndex(const unsigned int _newShaderIndex)
 		{
+			if (_newShaderIndex == shaderIndex)
+				return;
 			shaderIndex = _newShaderIndex;
 			unbatch();
 		}
 		void Mesh::setBackFaceCulling(const bool _value)
 		{
+			if (_value == backFaceCulling)
+				return;
 			backFaceCulling = _value;
 			unbatch();
 		}
@@ -223,6 +251,8 @@ namespace se
 		{
 			if (textureDataIDs.size() >= _index)
 				textureDataIDs.resize(_index + 1);
+			if (_textureDataPtr->textureDataID == textureDataIDs[_index])
+				return;
 			textureDataIDs[_index] = _textureDataPtr->textureDataID;
 			unbatch();
 		}
