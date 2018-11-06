@@ -389,7 +389,7 @@ namespace se
 		//Private:
 		TextureData* TextureManager::toTexture(const std::string& _filepath, const TextureParameter& _parameters)
 		{
-			log::info("Loading texture: " + _filepath);
+			log::info("Loading texture: " + _filepath, log::TextColor::DARKCYAN);
 			glEnable(GL_TEXTURE_2D);
 
 			GLuint textureData;
@@ -430,7 +430,7 @@ namespace se
 		TextureData* TextureManager::toCubeMap(const std::string& _negx, const std::string& _posx, const std::string& _negy,
 			const std::string& _posy, const std::string& _negz, const std::string& _posz, const TextureParameter& _parameters)
 		{
-			log::info("Loading cube map: " + _negx + " ...");
+			log::info("Loading cube map: " + _negx + " ...", log::TextColor::DARKCYAN);
 			GLuint cubemapData;
 
 			glActiveTexture(GL_TEXTURE0);
