@@ -5,6 +5,10 @@ namespace se
 {
 	namespace input
 	{
+		/*
+			Note: some enumerations have the 'KEY_' prefix because their 'default' value is invalid.
+			(enumerations can't start with a number (KEY_1), some of the values are common macros (KEY_DELETE))
+		*/
 		enum class Key
 		{
 			UNKNOWN = 0x00,
@@ -29,16 +33,16 @@ namespace se
 			MINUS = '-',
 			PERIOD = '.',
 			SLASH = '/',
-			_0 = '0',
-			_1 = '1',
-			_2 = '2',
-			_3 = '3',
-			_4 = '4',
-			_5 = '5',
-			_6 = '6',
-			_7 = '7',
-			_8 = '8',
-			_9 = '9',
+			KEY_0 = '0',
+			KEY_1 = '1',
+			KEY_2 = '2',
+			KEY_3 = '3',
+			KEY_4 = '4',
+			KEY_5 = '5',
+			KEY_6 = '6',
+			KEY_7 = '7',
+			KEY_8 = '8',
+			KEY_9 = '9',
 			COLON = ':',
 			SEMICOLON = ';',
 			LESS = '<',
@@ -101,7 +105,7 @@ namespace se
 			INSERT = 0x40000049,
 			HOME = 0x4000004A,
 			PAGEUP = 0x4000004B,
-			DELETE = '\177',
+			KEY_DELETE = '\177',
 			END = 0x4000004D,
 			PAGEDOWN = 0x4000004E,
 			RIGHT = 0x4000004F,

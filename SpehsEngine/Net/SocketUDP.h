@@ -94,14 +94,16 @@ namespace se
 					std::vector<uint8_t> buffer;
 					boost::asio::ip::udp::endpoint senderEndpoint;
 				};
+				enum class ReceiveType { none, connection, any };
 				mutable std::recursive_mutex mutex;
-				boost::asio::ip::udp::endpoint senderEndpoint;//Used by the receiver thread. Think carefully about thread sync!
 				boost::asio::ip::udp::endpoint connectedEndpoint;
+				boost::asio::ip::udp::endpoint senderEndpoint;//Used by the receiver thread. Think carefully about thread sync!
 				IOService& ioService;
 				boost::asio::ip::udp::socket socket;
 				std::vector<unsigned char> receiveBuffer;
 				time::Time lastReceiveTime;
 				bool receiving = false;
+				ReceiveType receiveType = ReceiveType::none;
 				std::function<void(ReadBuffer&, const boost::asio::ip::udp::endpoint&)> onReceiveCallback;//User defined receive handler
 				std::recursive_mutex receivedPacketsMutex;
 				std::vector<std::unique_ptr<ReceivedPacket>> receivedPackets;

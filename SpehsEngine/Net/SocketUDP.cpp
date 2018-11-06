@@ -244,6 +244,7 @@ namespace se
 						boost::bind(&SocketUDP::SharedImpl::receiveHandler, sharedImpl->shared_from_this(),
 							boost::asio::placeholders::error,
 							boost::asio::placeholders::bytes_transferred));
+					sharedImpl->receiveType = SharedImpl::ReceiveType::connection;
 				}
 				catch (const std::exception& e)
 				{
@@ -258,6 +259,7 @@ namespace se
 						boost::bind(&SocketUDP::SharedImpl::receiveHandler, sharedImpl->shared_from_this(),
 						boost::asio::placeholders::error,
 						boost::asio::placeholders::bytes_transferred));
+					sharedImpl->receiveType = SharedImpl::ReceiveType::any;
 				}
 				catch (const std::exception& e)
 				{
@@ -342,6 +344,8 @@ namespace se
 
 			std::lock_guard<std::recursive_mutex> lock1(mutex);
 			se_assert(receiving);
+			se_assert(receiveType != ReceiveType::none);
+			receiveType = ReceiveType::none;
 			lastReceiveTime = time::now();
 			receivedBytes += bytes;
 
