@@ -282,12 +282,13 @@ namespace se
 			const std::string defaultSkyBoxFrag =
 			{
 				"#version 150\n"
+				"#extension GL_NV_shadow_samplers_cube : enable\n"
 				"in vec3 fragmentPosition;\n"
 				"out vec4 color;\n"
 				"uniform samplerCube tex;\n"
 				"void main()\n"
 				"{\n"
-				"	color = texture(tex, fragmentPosition);\n"
+				"	color = textureCube(tex, fragmentPosition);\n"
 				"}\n"
 			};
 			//
