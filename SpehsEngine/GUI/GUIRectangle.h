@@ -157,9 +157,11 @@ namespace se
 
 		Example use:
 		#include <functional>
-		guirect->setPressCallback(std::bind(&ShipEditor::methodTaking1Argument, ShipEditor::instancePtr, std::placeholders::_1));
+		guirect->setPressCallback1(std::bind(&ShipEditor::methodTaking1Argument, ShipEditor::instancePtr, std::placeholders::_1));
 		*/
-		void setPressCallback(const std::function<void(GUIRectangle&)> callbackFunction);
+		void setPressCallback1(const std::function<void(GUIRectangle&)>& callbackFunction);
+		/* RMB click callback. */
+		void setPressCallback2(const std::function<void(GUIRectangle&)>& callbackFunction);
 
 		////State
 		//Getters
@@ -256,7 +258,8 @@ namespace se
 		se::audio::SoundSource* pressSound;
 		GUIRECT_STATE_TYPE state;
 		GUIRECT_ID_TYPE id;///<GUI rectangles can be given IDs for identification
-		std::function<void(GUIRectangle&)>* pressCallbackFunction;//Called when pressed
+		std::function<void(GUIRectangle&)> pressCallbackFunction1;//Called when LMB pressed
+		std::function<void(GUIRectangle&)> pressCallbackFunction2;//Called when RMB pressed
 
 		struct DisplayTexture
 		{

@@ -47,7 +47,6 @@ namespace se
 		, text(nullptr)
 		, displayTexture(nullptr)
 		, tooltip(nullptr)
-		, pressCallbackFunction(nullptr)
 		, pressSound(nullptr)
 		, hoverSound(nullptr)
 		, displayTexturePositionMode(DisplayTexturePositionMode::center)
@@ -77,8 +76,6 @@ namespace se
 			delete tooltip;
 		if (displayTexture)
 			delete displayTexture;
-		if (pressCallbackFunction)
-			delete pressCallbackFunction;
 		if (pressSound)
 			delete pressSound;
 		if (hoverSound)
@@ -105,13 +102,19 @@ namespace se
 			}
 
 			if (getInputManager().isKeyPressed(MOUSEBUTTON_LEFT))
-			{//Pressed
-
+			{//LMB pressed
 				if (pressSound)
 					pressSound->play();
+				if (pressCallbackFunction1)
+					pressCallbackFunction1(*this);
+			}
 
-				if (pressCallbackFunction)
-					(*pressCallbackFunction)(*this);
+			if (getInputManager().isKeyPressed(MOUSEBUTTON_RIGHT))
+			{//RMB pressed
+				if (pressSound)
+					pressSound->play();
+				if (pressCallbackFunction2)
+					pressCallbackFunction2(*this);
 			}
 
 			//Tooltip update
@@ -530,12 +533,14 @@ namespace se
 		polygon->setTextureID(_textureID);
 	}
 
-	void GUIRectangle::setPressCallback(const std::function<void(GUIRectangle&)> callbackFunction)
+	void GUIRectangle::setPressCallback1(const std::function<void(GUIRectangle&)>& callbackFunction)
 	{
-		if (pressCallbackFunction)
-			*pressCallbackFunction = callbackFunction;
-		else
-			pressCallbackFunction = new std::function<void(GUIRectangle&)>(callbackFunction);
+		pressCallbackFunction1 = callbackFunction;
+	}
+
+	void GUIRectangle::setPressCallback2(const std::function<void(GUIRectangle&)>& callbackFunction)
+	{
+		pressCallbackFunction2 = callbackFunction;
 	}
 
 	void GUIRectangle::enableStateRecursiveUpwards(const GUIRECT_STATE_TYPE stateBit)
