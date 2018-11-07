@@ -22,6 +22,13 @@ namespace se
 		return false;
 	}
 
+	bool checkContains(const Circle& containingCircle, const Circle& containedCircle)
+	{
+		if (containingCircle.radius < containedCircle.radius)
+			return false;
+		return (glm::length(containedCircle.position - containingCircle.position) + containedCircle.radius) <= containingCircle.radius;
+	}
+
 	Bounds2D getBounds(const Circle& circle)
 	{
 		return Bounds2D(circle.position, glm::vec2(circle.radius, circle.radius));
