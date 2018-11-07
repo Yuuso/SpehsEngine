@@ -129,7 +129,7 @@ namespace se
 			}
 			it = modelDataMap.insert(std::pair<size_t, ModelManager::Model*>(hash, new ModelManager::Model())).first;
 
-			log::info("Loading model: " + _filepath);
+			log::info("Loading model: " + _filepath, log::TextColor::DARKCYAN);
 			Assimp::Importer importer;
 			importer.SetPropertyInteger(AI_CONFIG_PP_SLM_VERTEX_LIMIT, UINT16_MAX);
 			importer.SetPropertyInteger(AI_CONFIG_PP_SLM_TRIANGLE_LIMIT, UINT16_MAX / 3);
