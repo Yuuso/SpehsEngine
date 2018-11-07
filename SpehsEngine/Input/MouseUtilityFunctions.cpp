@@ -43,7 +43,7 @@ namespace se
 
 		bool isMouseButtonDown(const MouseButton mouseButton)
 		{
-			return (SDL_GetMouseState(nullptr, nullptr) & Uint32(mouseButton)) != 0;
+			return (SDL_GetMouseState(nullptr, nullptr) & (1 << (Uint32(mouseButton) - 1))) != 0;
 		}
 
 		bool setRelativeMouseMode(const bool enabled)
