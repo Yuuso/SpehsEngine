@@ -6,6 +6,8 @@
 #include "SpehsEngine/Core/ReadBuffer.h"
 #include "boost/algorithm/clamp.hpp"
 
+#include <glm/common.hpp>
+
 namespace se
 {
 	void writeToBuffer(WriteBuffer& writeBuffer, const Color& color)
@@ -38,6 +40,16 @@ namespace se
 		_color.r *= _brightnessFactor;
 		_color.g *= _brightnessFactor;
 		_color.b *= _brightnessFactor;
+	}
+
+	Color mixColor(const Color& color1, const Color& color2, const float factor)
+	{
+		return Color(
+			glm::mix(color1.r, color2.r, factor),
+			glm::mix(color1.g, color2.g, factor),
+			glm::mix(color1.b, color2.b, factor),
+			glm::mix(color1.a, color2.a, factor)
+		);
 	}
 
 	Color colorHSB(const float _hue, const float _saturation, const float _brightness)
