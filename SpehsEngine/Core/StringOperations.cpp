@@ -117,6 +117,14 @@ namespace se
 		return std::string("");
 	}
 
+	std::string toSignedString(const float value, const int precision)
+	{
+		if (value > 0)
+			return "+" + toString(value, precision);
+		else
+			return toString(value, precision);
+	}
+	
 	static const char hexTable[16] = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F' };
 	std::string toHexString(const uint8_t integer)
 	{
