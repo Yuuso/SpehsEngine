@@ -1,6 +1,7 @@
 #pragma once
 #include <string>
 #include <vector>
+#include <functional>
 
 namespace se
 {
@@ -22,20 +23,20 @@ namespace se
 
 	struct ConsoleCommand
 	{
-		ConsoleCommand(std::string identifier, void(*function)(void)) :
-			_functionWords(nullptr),
-			_functionVoid(function),
-			_identifier(identifier)
+		ConsoleCommand(std::string identifier, const std::function<void()>& callback)
+			: callback1(callback)
+			, identifier(identifier)
 		{
 		}
-		ConsoleCommand(std::string identifier, void(*function)(std::vector<std::string>& words)) :
-			_functionWords(function),
-			_functionVoid(nullptr),
-			_identifier(identifier)			
+
+		ConsoleCommand(std::string identifier, const std::function<void(std::vector<std::string>&)>& callback)
+			: callback2(callback)
+			 , identifier(identifier)
 		{
 		}
-		std::string _identifier;
-		void(*_functionWords)(std::vector<std::string>& words);
-		void(*_functionVoid)();
+
+		std::string identifier;
+		std::function<void()> callback1;
+		std::function<void(std::vector<std::string>&)> callback2;
 	};
 }

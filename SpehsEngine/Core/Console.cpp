@@ -73,16 +73,16 @@ namespace se
 		stringVariables.push_back(ConsoleVariable<std::string>(str, var));
 	}
 
-	void Console::addCommand(const std::string& str, void(*fnc)(void))
+	void Console::addCommand(const std::string& str, const std::function<void(void)>& callback)
 	{
 		std::lock_guard<std::recursive_mutex> lock(mutex);
-		commands.push_back(ConsoleCommand(str, fnc));
+		commands.push_back(ConsoleCommand(str, callback));
 	}
 
-	void Console::addCommand(const std::string& str, void(*fnc)(std::vector<std::string>&))
+	void Console::addCommand(const std::string& str, const std::function<void(const std::vector<std::string>&)>& callback)
 	{
 		std::lock_guard<std::recursive_mutex> lock(mutex);
-		commands.push_back(ConsoleCommand(str, fnc));
+		commands.push_back(ConsoleCommand(str, callback));
 	}
 
 	bool Console::removeCommand(const std::string& commandIdentifier)
@@ -90,7 +90,7 @@ namespace se
 		std::lock_guard<std::recursive_mutex> lock(mutex);
 		for (unsigned i = 0; i < commands.size(); i++)
 		{
-			if (commands[i]._identifier == commandIdentifier)
+			if (commands[i].identifier == commandIdentifier)
 			{
 				commands.erase(commands.begin() + i);
 				return true;
@@ -146,6 +146,9 @@ namespace se
 		getWords(str, words);
 		if (words.empty())
 			return;
+		if (words[0].front() != '/')
+			return;
+		words[0].erase(words[0].begin());
 
 		bool foundCommand = false;
 		if (words[0] == "set")
@@ -236,7 +239,8 @@ namespace se
 			}
 		}
 		else if (words[0] == "?" || words[0] == "help")
-		{//Help
+		{
+			//Help
 			log("Available variables <set variable value>");
 			for (unsigned i = 0; i < boolVariables.size(); i++)
 				log("\\\\" + boolVariables[i]._identifier);
@@ -248,7 +252,7 @@ namespace se
 				log("\\\\" + stringVariables[i]._identifier);
 			log("Available commands <command parameter1 parameter2 parameterN>");
 			for (unsigned i = 0; i < commands.size(); i++)
-				log("\\\\" + commands[i]._identifier);
+				log("\\\\" + commands[i].identifier);
 			return;
 		}
 		else if (words[0] == "engine")
@@ -267,15 +271,24 @@ namespace se
 			}
 		}
 		else
-		{//Search for command with matching identifier
+		{
+			//Search for command with matching identifier
 			for (unsigned i = 0; i < commands.size(); i++)
 			{
-				if (commands[i]._identifier == words[0])
+				if (commands[i].identifier == words[0])
 				{
-					if (commands[i]._functionVoid)
-						commands[i]._functionVoid();
+					if (commands[i].callback1)
+					{
+						commands[i].callback1();
+					}
+					else if (commands[i].callback2)
+					{
+						commands[i].callback2(words);
+					}
 					else
-						commands[i]._functionWords(words);
+					{
+						se_assert(false && "No callback set");
+					}
 					return;
 				}
 			}

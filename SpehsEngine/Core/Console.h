@@ -2,6 +2,7 @@
 #include <vector>
 #include <string>
 #include <mutex>
+#include <functional>
 #include <stdint.h>
 #include <boost/signal.hpp>
 #include "SpehsEngine/Core/ConsoleVariable.h"
@@ -43,8 +44,8 @@ namespace se
 		void addVariable(const std::string& identifier, float& var);
 		void addVariable(const std::string& identifier, int& var);
 		void addVariable(const std::string& identifier, std::string& var);
-		void addCommand(const std::string& identifier, void(*fnc)(void));
-		void addCommand(const std::string& identifier, void(*fnc)(std::vector<std::string>&));
+		void addCommand(const std::string& identifier, const std::function<void(void)>& callback);
+		void addCommand(const std::string& identifier, const std::function<void(const std::vector<std::string>&)>& callback);
 		bool removeCommand(const std::string& commandIdentifier);///< Returns true if command is found and removed succesfully
 		bool removeVariable(const std::string& identifier);///< Returns true if variable with matching identifier was removed
 
