@@ -33,5 +33,11 @@ namespace se
 			const Uint8 *keyboardState = SDL_GetKeyboardState(nullptr);
 			return keyboardState[SDL_Scancode::SDL_SCANCODE_LSHIFT] != 0 || keyboardState[SDL_Scancode::SDL_SCANCODE_RSHIFT] != 0;
 		}
+
+		bool isAltDown()
+		{
+			const Uint8 *keyboardState = SDL_GetKeyboardState(nullptr);
+			return keyboardState[SDL_Scancode::SDL_SCANCODE_LALT] != 0 || keyboardState[SDL_Scancode::SDL_SCANCODE_RALT] != 0;
+		}
 	}
 }

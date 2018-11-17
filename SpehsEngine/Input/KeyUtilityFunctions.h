@@ -8,5 +8,6 @@ namespace se
 		bool isKeyDown(const Key key);
 		bool isCtrlDown();
 		bool isShiftDown();
+		bool isAltDown(); // or AltGr
 	}
 }
