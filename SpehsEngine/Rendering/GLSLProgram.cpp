@@ -26,6 +26,8 @@ namespace se
 
 		bool GLSLProgram::compileShaders(const std::string& vertexShaderPath, const std::string& fragmentShaderPath)
 		{
+			log::info("Loading shader: " + vertexShaderPath + " | " + fragmentShaderPath, log::DARKCYAN);
+
 			programID = glCreateProgram();
 
 			vertexShaderID = glCreateShader(GL_VERTEX_SHADER);
@@ -49,6 +51,8 @@ namespace se
 		}
 		bool GLSLProgram::compileShadersFromSource(const std::string& vertexShader, const std::string& fragmentShader)
 		{
+			log::info("Loading embedded shader...", log::DARKCYAN);
+
 			programID = glCreateProgram();
 
 			vertexShaderID = glCreateShader(GL_VERTEX_SHADER);
