@@ -265,7 +265,7 @@ namespace se
 			const se::time::Time detectStreamBoundariesBeginTime = se::time::now();
 
 			if (debugLogLevel >= 1)
-				se::log::info("RS232_PinReader: Starting to detect stream boundaries. Set options: baud rate '" + std::to_string(int(1.0f / ((float)readInterval / (float)se::time::conversionRate::second))) + "', parity check " + (parityCheckEnabled ? "enabled" : "disabled"));
+				se::log::info("RS232_PinReader: Starting to detect stream boundaries. Set options: baud rate '" + std::to_string(int(1.0f / ((float)readInterval.value / (float)se::time::conversionRate::second))) + "', parity check " + (parityCheckEnabled ? "enabled" : "disabled"));
 			
 			std::vector<gpio::PinState> history(16384);
 			size_t analyzeCount = 0;

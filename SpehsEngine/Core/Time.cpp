@@ -163,6 +163,7 @@ namespace se
 		void Time::operator+=(const Time& other) { value += other.value; }
 		void Time::operator-=(const Time& other) { value -= other.value; }
 		bool Time::operator==(const Time& other) const { return value == other.value; }
+		bool Time::operator!=(const Time& other) const { return value != other.value; }
 		bool Time::operator>(const Time& other) const { return value > other.value; }
 		bool Time::operator<(const Time& other) const { return value < other.value; }
 		bool Time::operator>=(const Time& other) const { return value >= other.value; }

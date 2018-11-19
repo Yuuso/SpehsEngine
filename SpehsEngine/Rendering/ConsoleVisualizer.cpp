@@ -315,7 +315,7 @@ namespace se
 				time::Time renderLapTimesRelativeSum = 0;
 				for (size_t i = 0; i < renderLapTimes.size(); i++)
 					renderLapTimesRelativeSum += renderLapTimes[i] - oldestLapTime;
-				const time::Time averageLapTime = oldestLapTime + time::Time(time::TimeValueType(float(renderLapTimesRelativeSum) / float(renderLapTimes.size())));
+				const time::Time averageLapTime = oldestLapTime + time::Time(time::TimeValueType(float(renderLapTimesRelativeSum.value) / float(renderLapTimes.size())));
 
 				//Status text
 				statsText.setString("FPS: " + std::to_string(int(std::round(1.0f / averageLapTime.asSeconds()))) + "\n" + customDebugText);

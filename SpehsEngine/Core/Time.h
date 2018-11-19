@@ -59,12 +59,12 @@ namespace se
 			Time operator-(const Time& other) const;
 			void operator=(const Time& other);
 			bool operator==(const Time& other) const;
+			bool operator!=(const Time& other) const;
 			bool operator>(const Time& other) const;
 			bool operator<(const Time& other) const;
 			bool operator>=(const Time& other) const;
 			bool operator<=(const Time& other) const;
 
-			operator bool() const { return value != 0; }
 			inline float asSeconds() const { return (float)value / (float)conversionRate::second; }
 			inline float asMilliseconds() const { return (float)value / (float)conversionRate::millisecond; }
 			inline float asMicroseconds() const { return (float)value / (float)conversionRate::microsecond; }

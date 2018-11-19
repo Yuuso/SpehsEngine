@@ -284,8 +284,8 @@ namespace se
 			gpio::enable(pin);
 			//Delay
 			const float target = std::min(maxAngle, std::max(targetAngle, minAngle));
-			const float posPercentage = (target - minAngle) / (maxAngle - minAngle);
-			const se::time::Time pulseDuration = minPulseWidth + se::time::Time(time::TimeValueType(float(maxPulseWidth - minPulseWidth) * posPercentage));
+			const double posPercentage = (target - minAngle) / (maxAngle - minAngle);
+			const se::time::Time pulseDuration = minPulseWidth + se::time::Time(time::TimeValueType(double((maxPulseWidth - minPulseWidth).value) * posPercentage));
 			mutex.unlock();
 			se::time::delay(pulseDuration);
 			mutex.lock();
