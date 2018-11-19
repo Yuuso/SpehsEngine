@@ -71,6 +71,8 @@ namespace se
 			}
 
 			//Create a new font
+			se::log::info("Loading font: " + _fontPath, se::log::DARKCYAN);
+
 			Font* font = new Font();
 			font->ftFace = new FT_Face;
 
