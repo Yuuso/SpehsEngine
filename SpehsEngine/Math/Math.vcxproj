@@ -144,6 +144,8 @@
     <ClCompile Include="CircleUtilityFunctions.cpp" />
     <ClCompile Include="Geometry.cpp" />
     <ClCompile Include="GLMVectorUtilityFunctions.cpp" />
+    <ClCompile Include="LineSegment2D.cpp" />
+    <ClCompile Include="LineSegment2DUtilityFunctions.cpp" />
     <ClCompile Include="Math.cpp" />
     <ClCompile Include="Mathematics.cpp" />
     <ClCompile Include="Quadtree.cpp" />
@@ -161,6 +163,9 @@
     <ClInclude Include="CircleUtilityFunctions.h" />
     <ClInclude Include="Geometry.h" />
     <ClInclude Include="GLMVectorUtilityFunctions.h" />
+    <ClInclude Include="LineSegment2DOrientation.h" />
+    <ClInclude Include="LineSegment2D.h" />
+    <ClInclude Include="LineSegment2DUtilityFunctions.h" />
     <ClInclude Include="Math.h" />
     <ClInclude Include="Mathematics.h" />
     <ClInclude Include="PrecompiledInclude.h" />
