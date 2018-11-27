@@ -27,6 +27,27 @@ namespace se
 		writeBuffer.write(vec.w);
 	}
 
+	void writeToBuffer(WriteBuffer& writeBuffer, const glm::ivec2& vec)
+	{
+		writeBuffer.write(vec.x);
+		writeBuffer.write(vec.y);
+	}
+
+	void writeToBuffer(WriteBuffer& writeBuffer, const glm::ivec3& vec)
+	{
+		writeBuffer.write(vec.x);
+		writeBuffer.write(vec.y);
+		writeBuffer.write(vec.z);
+	}
+
+	void writeToBuffer(WriteBuffer& writeBuffer, const glm::ivec4& vec)
+	{
+		writeBuffer.write(vec.x);
+		writeBuffer.write(vec.y);
+		writeBuffer.write(vec.z);
+		writeBuffer.write(vec.w);
+	}
+
 	void readFromBuffer(ReadBuffer& readBuffer, glm::vec2& vec)
 	{
 		readBuffer.read(vec.x);
@@ -48,6 +69,27 @@ namespace se
 		readBuffer.read(vec.w);
 	}
 
+	void readFromBuffer(ReadBuffer& readBuffer, glm::ivec2& vec)
+	{
+		readBuffer.read(vec.x);
+		readBuffer.read(vec.y);
+	}
+
+	void readFromBuffer(ReadBuffer& readBuffer, glm::ivec3& vec)
+	{
+		readBuffer.read(vec.x);
+		readBuffer.read(vec.y);
+		readBuffer.read(vec.z);
+	}
+
+	void readFromBuffer(ReadBuffer& readBuffer, glm::ivec4& vec)
+	{
+		readBuffer.read(vec.x);
+		readBuffer.read(vec.y);
+		readBuffer.read(vec.z);
+		readBuffer.read(vec.w);
+	}
+
 	std::string toString(const glm::vec2& vec)
 	{
 		return std::string("[" + std::to_string(vec.x) + ", " + std::to_string(vec.y) + "]");
@@ -59,6 +101,21 @@ namespace se
 	}
 
 	std::string toString(const glm::vec4& vec)
+	{
+		return std::string("[" + std::to_string(vec.x) + ", " + std::to_string(vec.y) + ", " + std::to_string(vec.z) + ", " + std::to_string(vec.w) + "]");
+	}
+
+	std::string toString(const glm::ivec2& vec)
+	{
+		return std::string("[" + std::to_string(vec.x) + ", " + std::to_string(vec.y) + "]");
+	}
+
+	std::string toString(const glm::ivec3& vec)
+	{
+		return std::string("[" + std::to_string(vec.x) + ", " + std::to_string(vec.y) + ", " + std::to_string(vec.z) + "]");
+	}
+
+	std::string toString(const glm::ivec4& vec)
 	{
 		return std::string("[" + std::to_string(vec.x) + ", " + std::to_string(vec.y) + ", " + std::to_string(vec.z) + ", " + std::to_string(vec.w) + "]");
 	}
