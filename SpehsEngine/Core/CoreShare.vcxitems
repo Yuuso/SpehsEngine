@@ -48,6 +48,7 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)Compression.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Console.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)ConsoleVariable.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Constants.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Core.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Endianness.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)FileStream.h" />

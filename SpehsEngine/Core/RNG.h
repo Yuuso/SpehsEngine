@@ -186,7 +186,7 @@ namespace se
 			//Special functions
 			glm::vec2 circle(const float _radius = 1.0f)
 			{
-				float angle = random<float>(0.0f, 2.0f * PI);
+				float angle = random<float>(0.0f, 2.0f * float(PI));
 				return glm::vec2(cos(angle) * _radius, sin(angle) * _radius);
 			}
 
