@@ -237,6 +237,20 @@ namespace se
 			backFaceCulling = _value;
 			unbatch();
 		}
+		void Mesh::setLineWidth(const float _value)
+		{
+			if (_value == lineWidth)
+				return;
+			lineWidth = _value;
+			unbatch();
+		}
+		void Mesh::setLineSmoothing(const bool _value)
+		{
+			if (_value == smoothLine)
+				return;
+			smoothLine = _value;
+			unbatch();
+		}
 		void Mesh::setTexture(TextureManager& _textureManager, const std::string& _texturePath, const size_t _index)
 		{
 			TextureData* value = _textureManager.getTextureData(_texturePath);

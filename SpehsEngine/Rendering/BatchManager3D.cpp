@@ -180,7 +180,8 @@ namespace se
 					if (!batchFound)
 					{
 						batches.push_back(new MeshBatch(*this, meshes[i].mesh->shaderIndex, meshes[i].mesh->textureDataIDs, meshes[i].mesh->depthTest,
-																	meshes[i].mesh->blending, meshes[i].mesh->backFaceCulling, meshes[i].mesh->drawMode));
+																	meshes[i].mesh->blending, meshes[i].mesh->backFaceCulling, meshes[i].mesh->drawMode,
+																	meshes[i].mesh->lineWidth, meshes[i].mesh->smoothLine));
 						batch(meshes[i], batches.back());
 					}
 					updateMeshVertices(meshes[i]);

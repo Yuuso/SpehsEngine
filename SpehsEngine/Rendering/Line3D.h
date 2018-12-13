@@ -27,6 +27,7 @@ namespace se
 			void addPoints(const std::vector<glm::vec3>& _points);
 			void updatePoint(const size_t _index, const glm::vec3& _point);
 			void updatePoints(const std::vector<glm::vec3>& _points);
+			void setPointColor(const size_t _index, const Color _color);
 			void clearPoints();
 
 			glm::vec3 getPoint(const size_t _index);
@@ -43,6 +44,8 @@ namespace se
 			void setBlending(const bool _value);
 			void setDepthTest(const bool _value);
 			void setShaderIndex(const unsigned int _newShaderIndex);
+			void setLineWidth(const float _value);
+			void setLineSmoothing(const bool _value);
 
 			glm::vec3 getPosition() const;
 			glm::quat getRotation() const;
@@ -54,6 +57,8 @@ namespace se
 			bool getBlending() const;
 			bool getDepthTest() const;
 			unsigned int getShaderIndex() const;
+			float getLineWidth() const;
+			bool getLineSmoothing() const;
 
 		protected:
 			BatchManager3D* batchManager = nullptr;

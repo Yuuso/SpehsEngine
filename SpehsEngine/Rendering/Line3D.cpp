@@ -65,6 +65,12 @@ namespace se
 			}
 			mesh->needUpdate = true;
 		}
+		void Line3D::setPointColor(const size_t _index, const Color _color)
+		{
+			se_assert(_index < mesh->vertexArray.size());
+			mesh->vertexArray[_index].color = _color;
+			mesh->needUpdate = true;
+		}
 		void Line3D::clearPoints()
 		{
 			if (batchManager && mesh->vertexArray.size() > 0)
@@ -122,6 +128,14 @@ namespace se
 		{
 			mesh->setShaderIndex(_newShaderIndex);
 		}
+		void Line3D::setLineWidth(const float _value)
+		{
+			mesh->setLineWidth(_value);
+		}
+		void Line3D::setLineSmoothing(const bool _value)
+		{
+			mesh->setLineSmoothing(_value);
+		}
 
 		glm::vec3 Line3D::getPosition() const
 		{
@@ -158,6 +172,14 @@ namespace se
 		float Line3D::getAlpha() const
 		{
 			return mesh->getAlpha();
+		}
+		float Line3D::getLineWidth() const
+		{
+			return mesh->getLineWidth();
+		}
+		bool Line3D::getLineSmoothing() const
+		{
+			return mesh->getLineSmoothing();
 		}
 	}
 }

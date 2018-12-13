@@ -36,7 +36,8 @@ namespace se
 	namespace rendering
 	{
 		MeshBatch::MeshBatch(BatchManager3D& _batchManager, const int _shaderIndex, const std::vector<GLuint> _textureDataIDs,
-								const bool _depthTest, const bool _blending, const bool _backFaceCulling, const GLenum _drawMode)
+								const bool _depthTest, const bool _blending, const bool _backFaceCulling, const GLenum _drawMode,
+								const float _lineWidth, const bool _lineSmoothing)
 			: batchManager(_batchManager)
 			, backFaceCulling(_backFaceCulling)
 			, blending(_blending)
@@ -45,6 +46,8 @@ namespace se
 			, textureDataIDs(_textureDataIDs)
 			, usage(GL_DYNAMIC_DRAW) // TODO
 			, drawMode(_drawMode)
+			, lineWidth(_lineWidth)
+			, lineSmoothing(_lineSmoothing)
 		{
 #ifdef _DEBUG
 			Batch3DAllocations++;
@@ -84,7 +87,9 @@ namespace se
 				shaderIndex != _mesh.shaderIndex ||
 				textureDataIDs.size() != _mesh.textureDataIDs.size() ||
 				/*usage TODO*/
-				drawMode != _mesh.drawMode)
+				drawMode != _mesh.drawMode ||
+				lineWidth != _mesh.lineWidth ||
+				lineSmoothing != _mesh.smoothLine)
 			{
 				return false;
 			}
@@ -148,6 +153,19 @@ namespace se
 			else
 			{
 				glDisable(GL_CULL_FACE);
+			}
+
+			// Lines
+			{
+				glLineWidth(lineWidth);
+				if (lineSmoothing)
+				{
+					glEnable(GL_LINE_SMOOTH);
+				}
+				else
+				{
+					glDisable(GL_LINE_SMOOTH);
+				}
 			}
 
 			updateBuffers();
