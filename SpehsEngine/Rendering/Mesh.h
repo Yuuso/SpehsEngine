@@ -45,9 +45,12 @@ namespace se
 			void setLocalRotation(const glm::quat& _newRotation);
 			void setLocalScale(const glm::vec3& _newScale);
 			void translateLocal(const glm::vec3& _translation);
+			void translate(const glm::vec3& _translation);
+
 			void setColor(const Color _color);
 			void setAlpha(const float _alpha);
-			void translate(const glm::vec3& _translation);
+			void setColor(const size_t _index, const Color _color);
+			void setAlpha(const size_t _index, const float _alpha);
 
 			void setBackFaceCulling(const bool _value);
 			void setRenderState(const bool _newState);
@@ -73,7 +76,10 @@ namespace se
 			glm::quat getRotation() const { return rotation * localRotation; }
 			glm::vec3 getScale() const { return scale * localScale; }
 
-			// NOTE: Color of first vertex
+			se::Color getColor(const size_t _index) const { se_assert(_index < vertexArray.size()); return vertexArray[_index].color; }
+			float getAlpha(const size_t _index) const { se_assert(_index < vertexArray.size()); return vertexArray[_index].color.a; }
+
+			// NOTE: Color of first vertex			
 			se::Color getColor() const { return vertexArray.size() ? vertexArray[0].color : se::Color(); }
 			float getAlpha() const { return vertexArray.size() ? vertexArray[0].color.a : 1.0f; }
 
@@ -92,6 +98,10 @@ namespace se
 
 			bool needUpdate = true;
 			void unbatch();
+
+			// Single color for full mesh
+			bool useMeshColor = false;
+			bool useMeshAlpha = false;
 
 			bool backFaceCulling = true;
 			bool renderState = true; // Whether Mesh is rendered or not

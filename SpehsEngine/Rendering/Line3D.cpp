@@ -68,8 +68,7 @@ namespace se
 		void Line3D::setPointColor(const size_t _index, const Color _color)
 		{
 			se_assert(_index < mesh->vertexArray.size());
-			mesh->vertexArray[_index].color = _color;
-			mesh->needUpdate = true;
+			mesh->setColor(_index, _color);
 		}
 		void Line3D::clearPoints()
 		{

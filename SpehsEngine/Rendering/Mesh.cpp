@@ -72,6 +72,8 @@ namespace se
 		void Mesh::setVertices(const std::vector<Vertex3D>& _vertices)
 		{
 			vertexArray = _vertices;
+			useMeshColor = false;
+			useMeshAlpha = false;
 			unbatch();
 		}
 		void Mesh::setIndices(const std::vector<GLushort>& _indices)
@@ -171,22 +173,6 @@ namespace se
 			scale = _newScale;
 			needUpdate = true;
 		}
-		void Mesh::setColor(const Color _color)
-		{
-			for (size_t i = 0; i < vertexArray.size(); i++)
-			{
-				vertexArray[i].color = _color;
-			}
-			needUpdate = true;
-		}
-		void Mesh::setAlpha(const float _alpha)
-		{
-			for (size_t i = 0; i < vertexArray.size(); i++)
-			{
-				vertexArray[i].color.a = _alpha;
-			}
-			needUpdate = true;
-		}
 		void Mesh::translate(const glm::vec3& _translation)
 		{
 #ifdef _DEBUG
@@ -196,6 +182,41 @@ namespace se
 			}
 #endif
 			position += _translation;
+			needUpdate = true;
+		}
+		void Mesh::setColor(const Color _color)
+		{
+			if (useMeshColor && _color == vertexArray[0].color)
+				return;
+			for (size_t i = 0; i < vertexArray.size(); i++)
+			{
+				vertexArray[i].color = _color;
+			}
+			useMeshColor = true;
+			needUpdate = true;
+		}
+		void Mesh::setAlpha(const float _alpha)
+		{
+			if (useMeshAlpha && _alpha == vertexArray[0].color.a)
+				return;
+			for (size_t i = 0; i < vertexArray.size(); i++)
+			{
+				vertexArray[i].color.a = _alpha;
+			}
+			useMeshAlpha = true;
+			needUpdate = true;
+		}
+		void Mesh::setColor(const size_t _index, const Color _color)
+		{
+			vertexArray[_index].color = _color;
+			useMeshColor = false;
+			useMeshAlpha = false;
+			needUpdate = true;
+		}
+		void Mesh::setAlpha(const size_t _index, const float _alpha)
+		{
+			vertexArray[_index].color.a = _alpha;
+			useMeshAlpha = false;
 			needUpdate = true;
 		}
 		void Mesh::setBlending(const bool _value)
