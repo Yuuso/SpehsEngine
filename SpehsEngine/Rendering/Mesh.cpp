@@ -56,7 +56,6 @@ namespace se
 			, position(_other.position)
 			, rotation(_other.rotation)
 			, scale(_other.scale)
-			, color(_other.color)
 			, name(_other.name)
 			, vertexArray(_other.vertexArray)
 			, elementArray(_other.elementArray)
@@ -174,16 +173,18 @@ namespace se
 		}
 		void Mesh::setColor(const Color _color)
 		{
-			if (_color == color)
-				return;
-			color = _color;
+			for (size_t i = 0; i < vertexArray.size(); i++)
+			{
+				vertexArray[i].color = _color;
+			}
 			needUpdate = true;
 		}
 		void Mesh::setAlpha(const float _alpha)
 		{
-			if (_alpha == color.a)
-				return;
-			color.a = _alpha;
+			for (size_t i = 0; i < vertexArray.size(); i++)
+			{
+				vertexArray[i].color.a = _alpha;
+			}
 			needUpdate = true;
 		}
 		void Mesh::translate(const glm::vec3& _translation)

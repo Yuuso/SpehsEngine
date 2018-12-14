@@ -251,7 +251,7 @@ namespace se
 				oldVertex->position.y = newVertex.y;
 				oldVertex->position.z = newVertex.z;
 				// Color
-				oldVertex->color = _mesh.color;
+				oldVertex->color = _mesh.vertexArray[i].color;
 				// Normals
 				newVertex = normalMatrix * glm::vec4(_mesh.vertexArray[i].normal, 1.0f);
 				newVertex = glm::normalize(newVertex);

@@ -73,8 +73,9 @@ namespace se
 			glm::quat getRotation() const { return rotation * localRotation; }
 			glm::vec3 getScale() const { return scale * localScale; }
 
-			se::Color getColor() const { return color; }
-			float getAlpha() const { return color.a; }
+			// NOTE: Color of first vertex
+			se::Color getColor() const { return vertexArray.size() ? vertexArray[0].color : se::Color(); }
+			float getAlpha() const { return vertexArray.size() ? vertexArray[0].color.a : 1.0f; }
 
 			bool getBackFaceCulling() const { return backFaceCulling; }
 			bool getRenderState() const { return renderState; }
@@ -101,7 +102,6 @@ namespace se
 			unsigned int shaderIndex;
 			std::vector<GLuint> textureDataIDs;
 			GLenum drawMode;
-			Color color;
 
 			void updatePosition(const glm::vec3& _newPosition);
 			void updateRotation(const glm::quat& _newRotation);
