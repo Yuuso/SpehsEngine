@@ -193,6 +193,7 @@ namespace se
 				vertexArray[i].color = _color;
 			}
 			useMeshColor = true;
+			useMeshAlpha = true;
 			needUpdate = true;
 		}
 		void Mesh::setAlpha(const float _alpha)
