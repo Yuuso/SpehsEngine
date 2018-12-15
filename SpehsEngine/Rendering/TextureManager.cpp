@@ -126,6 +126,13 @@ namespace se
 			return preloadTexture(_texturePath, TextureParameter::defaultParameters);
 		}
 
+		
+		TextureData* TextureManager::getCubeMapData(const std::string& _filepath, const std::string& _fileEnding, const TextureParameter& _parameters)
+		{
+			return getCubeMapData(_filepath + "negx" + _fileEnding, _filepath + "posx" + _fileEnding,
+								_filepath + "negy" + _fileEnding, _filepath + "posy" + _fileEnding,
+								_filepath + "negz" + _fileEnding, _filepath + "posz" + _fileEnding, _parameters);
+		}
 		TextureData* TextureManager::getCubeMapData(const std::string& _negx, const std::string& _posx, const std::string& _negy,
 			const std::string& _posy, const std::string& _negz, const std::string& _posz, const TextureParameter& _parameters)
 		{
@@ -147,6 +154,12 @@ namespace se
 			log::warning("CubeMap data not found! hash: " + std::to_string(_hash));
 			//TODO: Default Cube Map
 			return nullptr;
+		}
+		size_t TextureManager::preloadCubeMap(const std::string& _filepath, const std::string& _fileEnding, const TextureParameter& _parameters)
+		{
+			return preloadCubeMap(_filepath + "negx" + _fileEnding, _filepath + "posx" + _fileEnding,
+								_filepath + "negy" + _fileEnding, _filepath + "posy" + _fileEnding,
+								_filepath + "negz" + _fileEnding, _filepath + "posz" + _fileEnding, _parameters);
 		}
 		size_t TextureManager::preloadCubeMap(const std::string& _negx, const std::string& _posx, const std::string& _negy,
 			const std::string& _posy, const std::string& _negz, const std::string& _posz, const TextureParameter& _parameters)
