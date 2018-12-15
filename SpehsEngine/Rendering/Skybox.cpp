@@ -14,13 +14,14 @@ namespace se
 		Skybox::Skybox(BatchManager3D& _batchManager, ModelManager& _modelManager, const std::string& _model)
 		{
 			model = new Model();
-			_batchManager.add(*model);
 			model->loadModel(_modelManager, _model);
+			model->setStaticDraw(true);
 			model->setShaderIndex((unsigned int)ShaderName::DefaultSkybox);
 			model->setBlending(true);
 			model->setDepthTest(false);
 			model->setPosition(glm::vec3(0.0f, 0.0f, 0.0f));
 			model->setScale(glm::vec3(1.2f, 1.2f, 1.2f)); // random magic scale that seems to sort of (not really) work
+			_batchManager.add(*model);
 		}
 		Skybox::Skybox(BatchManager3D& _batchManager, ModelManager& _modelManager, TextureManager& _textureManager, const std::string& _model,
 			const std::string& _negx, const std::string& _posx, const std::string& _negy, const std::string& _posy, const std::string& _negz, const std::string& _posz)

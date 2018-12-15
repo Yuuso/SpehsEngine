@@ -20,11 +20,13 @@
 #include <algorithm>
 #include <atomic>
 
-#define INITIAL_BATCH_SIZE 2048
-//#define MAX_VERTICES 3000
-//#define MAX_INDICES 3000
-#define MAX_VERTICES 65536
-#define MAX_INDICES 65536
+// TODO: Some sense to these values? At least experiment what works best...
+
+static const size_t INITIAL_BUFFER_SIZE = 2048;
+static const size_t RECOMMENDED_MAX_VERTICES = 4096;
+static const size_t RECOMMENDED_MAX_INDICES = 4096;
+static const size_t ABSOLUTE_MAX_VERTICES = 65536;
+static const size_t ABSOLUTE_MAX_INDICES = 65536;
 
 
 std::atomic<int> Batch3DAllocations;
@@ -37,17 +39,17 @@ namespace se
 	{
 		MeshBatch::MeshBatch(BatchManager3D& _batchManager, const int _shaderIndex, const std::vector<GLuint> _textureDataIDs,
 								const bool _depthTest, const bool _blending, const bool _backFaceCulling, const GLenum _drawMode,
-								const float _lineWidth, const bool _lineSmoothing)
+								const float _lineWidth, const bool _lineSmoothing, const bool _staticDraw)
 			: batchManager(_batchManager)
 			, backFaceCulling(_backFaceCulling)
 			, blending(_blending)
 			, depthTest(_depthTest)
 			, shaderIndex(_shaderIndex)
 			, textureDataIDs(_textureDataIDs)
-			, usage(GL_DYNAMIC_DRAW) // TODO
 			, drawMode(_drawMode)
 			, lineWidth(_lineWidth)
 			, lineSmoothing(_lineSmoothing)
+			, usage(_staticDraw ? GL_STATIC_DRAW : GL_DYNAMIC_DRAW)
 		{
 #ifdef _DEBUG
 			Batch3DAllocations++;
@@ -86,10 +88,10 @@ namespace se
 				depthTest != _mesh.depthTest ||
 				shaderIndex != _mesh.shaderIndex ||
 				textureDataIDs.size() != _mesh.textureDataIDs.size() ||
-				/*usage TODO*/
 				drawMode != _mesh.drawMode ||
 				lineWidth != _mesh.lineWidth ||
-				lineSmoothing != _mesh.smoothLine)
+				lineSmoothing != _mesh.smoothLine ||
+				(_mesh.staticDraw ? (usage != GL_STATIC_DRAW) : (usage != GL_DYNAMIC_DRAW)))
 			{
 				return false;
 			}
@@ -103,11 +105,11 @@ namespace se
 
 		bool MeshBatch::checkSize(const size_t _numVertices, const size_t _numIndices) const
 		{
-			if (_numVertices >= MAX_VERTICES || _numIndices >= MAX_INDICES)
+			if (_numVertices >= ABSOLUTE_MAX_VERTICES || _numIndices >= ABSOLUTE_MAX_INDICES)
 				log::error("Max batch size exceeded!");
-
-			const bool verticesOk = (vertices.size() + _numVertices) <= MAX_VERTICES;
-			const bool indicesOk = (indices.size() + _numIndices) <= MAX_INDICES;
+						
+			const bool verticesOk = (vertices.size() + _numVertices) <= ((_numVertices > RECOMMENDED_MAX_VERTICES) ? ABSOLUTE_MAX_VERTICES : RECOMMENDED_MAX_VERTICES);
+			const bool indicesOk = (indices.size() + _numIndices) <= ((_numVertices > RECOMMENDED_MAX_INDICES) ? ABSOLUTE_MAX_INDICES : RECOMMENDED_MAX_INDICES);
 			return (verticesOk && indicesOk);
 		}
 
@@ -200,7 +202,7 @@ namespace se
 
 		std::pair<size_t, size_t> MeshBatch::push(const Mesh& _mesh)
 		{
-			if (_mesh.vertexArray.size() >= MAX_VERTICES || _mesh.elementArray.size() >= MAX_INDICES)
+			if (_mesh.vertexArray.size() >= ABSOLUTE_MAX_VERTICES || _mesh.elementArray.size() >= ABSOLUTE_MAX_INDICES)
 				log::error("Max batch size exceeded!");
 
 			const std::pair<size_t, size_t> objectIndices = std::make_pair(vertices.size(), indices.size());
@@ -276,11 +278,11 @@ namespace se
 			glBindVertexArray(vertexArrayObjectID);
 
 			glBindBuffer(GL_ARRAY_BUFFER, vertexBufferID);
-			vertexBufferSize = INITIAL_BATCH_SIZE;
+			vertexBufferSize = INITIAL_BUFFER_SIZE;
 			glBufferData(GL_ARRAY_BUFFER, sizeof(Vertex3D) * vertexBufferSize, nullptr, usage);
 
 			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBufferID);
-			indexBufferSize = INITIAL_BATCH_SIZE;
+			indexBufferSize = INITIAL_BUFFER_SIZE;
 			glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLushort) * indexBufferSize, nullptr, usage);
 
 			checkOpenGLErrors(__FILE__, __LINE__);

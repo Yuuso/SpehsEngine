@@ -60,6 +60,7 @@ namespace se
 			void setShaderIndex(const unsigned int _newShaderIndex);
 			void setLineWidth(const float _value);
 			void setLineSmoothing(const bool _value);
+			void setStaticDraw(const bool _value);
 
 			void setTexture(TextureManager& _textureManager, const std::string& _texturePath, const size_t _index = 0);
 			void setTexture(TextureManager& _textureManager, const size_t _textureID, const size_t _index = 0);
@@ -90,6 +91,7 @@ namespace se
 			unsigned int getShaderIndex() const { return shaderIndex; }
 			float getLineWidth() const { return lineWidth; }
 			bool getLineSmoothing() const { return smoothLine; }
+			bool getStaticDraw() const { return staticDraw; }
 
 		protected:
 			Mesh(const Mesh& _other);
@@ -108,6 +110,7 @@ namespace se
 			bool blending = false;
 			bool depthTest = true;
 			bool smoothLine = false;
+			bool staticDraw = false;
 			float lineWidth = 1.0f;
 			unsigned int shaderIndex;
 			std::vector<GLuint> textureDataIDs;

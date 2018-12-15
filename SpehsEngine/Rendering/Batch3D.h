@@ -24,7 +24,7 @@ namespace se
 		public:
 			MeshBatch(BatchManager3D& _batchManager, const int _shaderIndex, const std::vector<GLuint> _textureDataID,
 						const bool _depthTest, const bool _blending, const bool _backFaceCulling, const GLenum _drawMode,
-						const float _lineWidth, const bool _lineSmoothing);
+						const float _lineWidth, const bool _lineSmoothing, const bool _staticDraw);
 			~MeshBatch();
 
 			bool checkCompatibility(const Mesh& _mesh) const;
@@ -61,10 +61,10 @@ namespace se
 			const bool depthTest;
 			const size_t shaderIndex;
 			const std::vector<GLuint> textureDataIDs;
-			const GLenum usage;
 			const GLenum drawMode;
 			const float lineWidth;
 			const bool lineSmoothing;
+			const GLenum usage;
 		};
 	}
 }

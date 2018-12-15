@@ -186,6 +186,11 @@ namespace se
 			for (size_t i = 0; i < meshes.size(); i++)
 				meshes[i]->setShaderIndex(_newShaderIndex);
 		}
+		void Model::setStaticDraw(const bool _value)
+		{
+			for (size_t i = 0; i < meshes.size(); i++)
+				meshes[i]->setStaticDraw(_value);
+		}
 		void Model::setBackFaceCulling(const bool _value)
 		{
 			for (size_t i = 0; i < meshes.size(); i++)

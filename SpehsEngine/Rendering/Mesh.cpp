@@ -274,6 +274,13 @@ namespace se
 			smoothLine = _value;
 			unbatch();
 		}
+		void Mesh::setStaticDraw(const bool _value)
+		{
+			if (_value == staticDraw)
+				return;
+			staticDraw = _value;
+			unbatch();
+		}
 		void Mesh::setTexture(TextureManager& _textureManager, const std::string& _texturePath, const size_t _index)
 		{
 			TextureData* value = _textureManager.getTextureData(_texturePath);
