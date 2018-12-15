@@ -32,7 +32,7 @@ namespace se
 
 			std::pair<size_t, size_t> push(const Mesh& _mesh);
 			void remove(const std::pair<size_t, size_t> _index, std::pair<size_t, size_t> _size);
-			void updateVertices(const size_t _index, const Mesh& _mesh);
+			void updateVertices(const size_t _index, const Mesh& _mesh, const int _updates);
 
 			bool render(BatchRenderResults* results = nullptr);
 
@@ -48,9 +48,12 @@ namespace se
 
 			std::vector<Vertex3D> vertices;
 			std::vector<GLushort> indices;
-			size_t vertexBufferSize = 0;
-			size_t indexBufferSize = 0;
-			bool needBufferUpdate = true;
+
+			bool needVertexSubBufferUpdate = true;
+			bool needVertexBufferUpdate = true;
+			bool needIndexBufferUpdate = true;
+			size_t bufferUpdateVertexOffset = 0;
+			size_t bufferUpdateVertexEnd = 0;
 
 			GLuint vertexArrayObjectID = 0;
 			GLuint vertexBufferID = 0;

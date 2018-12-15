@@ -1,5 +1,7 @@
 #include "stdafx.h"
 
+#include "SpehsEngine/Core/BitwiseOperations.h"
+
 #include "SpehsEngine/Rendering/Mesh.h"
 #include "SpehsEngine/Rendering/BatchManager3D.h"
 #include "SpehsEngine/Rendering/Batch3D.h"
@@ -93,7 +95,7 @@ namespace se
 			if (_newPosition == localPosition)
 				return;
 			localPosition = _newPosition;
-			needUpdate = true;
+			enableBit(needUpdate, VERTEX_UPDATE_VERTEX);
 		}
 		void Mesh::setLocalRotation(const glm::quat& _newRotation)
 		{
@@ -106,7 +108,7 @@ namespace se
 			if (_newRotation == localRotation)
 				return;
 			localRotation = _newRotation;
-			needUpdate = true;
+			enableBit(needUpdate, VERTEX_UPDATE_VERTEX | VERTEX_UPDATE_NORMAL);
 		}
 		void Mesh::setLocalScale(const glm::vec3& _newScale)
 		{
@@ -119,7 +121,7 @@ namespace se
 			if (_newScale == localScale)
 				return;
 			localScale = _newScale;
-			needUpdate = true;
+			enableBit(needUpdate, VERTEX_UPDATE_VERTEX);
 		}
 		void Mesh::translateLocal(const glm::vec3& _translation)
 		{
@@ -132,7 +134,7 @@ namespace se
 			if (_translation == glm::vec3(0.0f))
 				return;
 			localPosition += _translation;
-			needUpdate = true;
+			enableBit(needUpdate, VERTEX_UPDATE_VERTEX);
 		}
 		void Mesh::updatePosition(const glm::vec3& _newPosition)
 		{
@@ -145,7 +147,7 @@ namespace se
 			if (_newPosition == position)
 				return;
 			position = _newPosition;
-			needUpdate = true;
+			enableBit(needUpdate, VERTEX_UPDATE_VERTEX);
 		}
 		void Mesh::updateRotation(const glm::quat& _newRotation)
 		{
@@ -158,7 +160,7 @@ namespace se
 			if (_newRotation == rotation)
 				return;
 			rotation = _newRotation;
-			needUpdate = true;
+			enableBit(needUpdate, VERTEX_UPDATE_VERTEX | VERTEX_UPDATE_NORMAL);
 		}
 		void Mesh::updateScale(const glm::vec3& _newScale)
 		{
@@ -171,7 +173,7 @@ namespace se
 			if (_newScale == scale)
 				return;
 			scale = _newScale;
-			needUpdate = true;
+			enableBit(needUpdate, VERTEX_UPDATE_VERTEX);
 		}
 		void Mesh::translate(const glm::vec3& _translation)
 		{
@@ -182,7 +184,7 @@ namespace se
 			}
 #endif
 			position += _translation;
-			needUpdate = true;
+			enableBit(needUpdate, VERTEX_UPDATE_VERTEX);
 		}
 		void Mesh::setColor(const Color _color)
 		{
@@ -194,7 +196,7 @@ namespace se
 			}
 			useMeshColor = true;
 			useMeshAlpha = true;
-			needUpdate = true;
+			enableBit(needUpdate, VERTEX_UPDATE_COLOR);
 		}
 		void Mesh::setAlpha(const float _alpha)
 		{
@@ -205,20 +207,20 @@ namespace se
 				vertexArray[i].color.a = _alpha;
 			}
 			useMeshAlpha = true;
-			needUpdate = true;
+			enableBit(needUpdate, VERTEX_UPDATE_COLOR);
 		}
 		void Mesh::setColor(const size_t _index, const Color _color)
 		{
 			vertexArray[_index].color = _color;
 			useMeshColor = false;
 			useMeshAlpha = false;
-			needUpdate = true;
+			enableBit(needUpdate, VERTEX_UPDATE_COLOR);
 		}
 		void Mesh::setAlpha(const size_t _index, const float _alpha)
 		{
 			vertexArray[_index].color.a = _alpha;
 			useMeshAlpha = false;
-			needUpdate = true;
+			enableBit(needUpdate, VERTEX_UPDATE_COLOR);
 		}
 		void Mesh::setBlending(const bool _value)
 		{
@@ -293,9 +295,9 @@ namespace se
 		}
 		void Mesh::setTexture(TextureData* _textureDataPtr, const size_t _index)
 		{
-			if (textureDataIDs.size() >= _index)
+			if (textureDataIDs.size() < (_index + 1))
 				textureDataIDs.resize(_index + 1);
-			if (_textureDataPtr->textureDataID == textureDataIDs[_index])
+			else if (_textureDataPtr->textureDataID == textureDataIDs[_index])
 				return;
 			textureDataIDs[_index] = _textureDataPtr->textureDataID;
 			unbatch();

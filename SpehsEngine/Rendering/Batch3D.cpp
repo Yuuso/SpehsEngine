@@ -1,6 +1,8 @@
 
 #include "stdafx.h"
 
+#include "SpehsEngine/Core/BitwiseOperations.h"
+
 #include "SpehsEngine/Rendering/Batch3D.h"
 #include "SpehsEngine/Rendering/BatchManager3D.h"
 #include "SpehsEngine/Rendering/Mesh.h"
@@ -20,17 +22,20 @@
 #include <algorithm>
 #include <atomic>
 
-// TODO: Some sense to these values? At least experiment what works best...
 
-static const size_t INITIAL_BUFFER_SIZE = 2048;
-static const size_t RECOMMENDED_MAX_VERTICES = 4096;
-static const size_t RECOMMENDED_MAX_INDICES = 4096;
+static const size_t INITIAL_BUFFER_SIZE = 1024;
 static const size_t ABSOLUTE_MAX_VERTICES = 65536;
 static const size_t ABSOLUTE_MAX_INDICES = 65536;
+static const size_t RECOMMENDED_MAX_VERTICES = 2048;
+static const size_t RECOMMENDED_MAX_INDICES = 4096;
+static const size_t RECOMMENDED_STATIC_MAX_VERTICES = ABSOLUTE_MAX_VERTICES;
+static const size_t RECOMMENDED_STATIC_MAX_INDICES = ABSOLUTE_MAX_INDICES;
 
 
+#ifdef _DEBUG
 std::atomic<int> Batch3DAllocations;
 std::atomic<int> Batch3DDeallocations;
+#endif
 
 
 namespace se
@@ -107,9 +112,11 @@ namespace se
 		{
 			if (_numVertices >= ABSOLUTE_MAX_VERTICES || _numIndices >= ABSOLUTE_MAX_INDICES)
 				log::error("Max batch size exceeded!");
-						
-			const bool verticesOk = (vertices.size() + _numVertices) <= ((_numVertices > RECOMMENDED_MAX_VERTICES) ? ABSOLUTE_MAX_VERTICES : RECOMMENDED_MAX_VERTICES);
-			const bool indicesOk = (indices.size() + _numIndices) <= ((_numVertices > RECOMMENDED_MAX_INDICES) ? ABSOLUTE_MAX_INDICES : RECOMMENDED_MAX_INDICES);
+
+			const size_t recommendedMaxVertices((usage == GL_STATIC_DRAW) ? RECOMMENDED_STATIC_MAX_VERTICES : RECOMMENDED_MAX_VERTICES);
+			const size_t recommendedMaxIndices((usage == GL_STATIC_DRAW) ? RECOMMENDED_STATIC_MAX_INDICES : RECOMMENDED_MAX_INDICES);
+			const bool verticesOk = (vertices.size() + _numVertices) <= ((_numVertices > recommendedMaxVertices) ? ABSOLUTE_MAX_VERTICES : recommendedMaxVertices);
+			const bool indicesOk = (indices.size() + _numIndices) <= ((_numVertices > recommendedMaxIndices) ? ABSOLUTE_MAX_INDICES : recommendedMaxIndices);
 			return (verticesOk && indicesOk);
 		}
 
@@ -174,16 +181,16 @@ namespace se
 
 			batchManager.shaderManager.use(shaderIndex);
 
-			//Texture
+			// Texture
 			for (size_t i = 0; i < textureDataIDs.size(); i++)
 				batchManager.shaderManager.getShader(shaderIndex).uniforms->textureData[i].textureDataID = textureDataIDs[i];
 
 			batchManager.shaderManager.getShader(shaderIndex).uniforms->cameraMatrix = *batchManager.camera3D.cameraMatrix;
 
-			//Uniforms
+			// Uniforms
 			batchManager.shaderManager.setUniforms(shaderIndex);
 
-			//Draw
+			// Draw
 			glBindVertexArray(vertexArrayObjectID);
 			glDrawElements(drawMode, GLsizei(indices.size()), GL_UNSIGNED_SHORT, reinterpret_cast<void*>(0));
 			glBindVertexArray(0);
@@ -219,7 +226,8 @@ namespace se
 			}
 
 			vertices.insert(vertices.end(), _mesh.vertexArray.begin(), _mesh.vertexArray.end());
-			needBufferUpdate = true;
+			needVertexBufferUpdate = true;
+			needIndexBufferUpdate = true;
 			return objectIndices;
 		}
 
@@ -230,38 +238,57 @@ namespace se
 
 			for (size_t i = _index.second; i < indices.size(); i++)
 				indices[i] -= (GLushort)_size.first;
-			needBufferUpdate = true;
+			needVertexBufferUpdate = true;
+			needIndexBufferUpdate = true;
 		}
 
-		void MeshBatch::updateVertices(const size_t _index, const Mesh& _mesh)
+		void MeshBatch::updateVertices(const size_t _index, const Mesh& _mesh, const int _updates)
 		{
+#if false
+			if (usage == GL_STATIC_DRAW)
+				se::log::info("Updating static batch with " + std::to_string(vertices.size()) + " vertices, update: " + std::to_string(_updates));
+#endif
 			// T = t * R * S
-			glm::mat4 scaledMatrix = glm::scale(_mesh.getScale());
-			glm::mat4 scaledRotatedMatrix = glm::mat4_cast(_mesh.getRotation()) * scaledMatrix;
-			glm::mat4 transformMatrix = glm::translate(_mesh.getPosition()) * scaledRotatedMatrix;
-			glm::mat4 normalMatrix = glm::mat4(glm::inverse(glm::transpose(glm::mat3(transformMatrix))));
-
 			glm::vec4 newVertex;
-			Vertex3D* oldVertex;
+			glm::mat4 transformMatrix;
+
 			const size_t size = _mesh.vertexArray.size();
-			for (size_t i = 0; i < size; i++)
+			if (checkBit(_updates, VERTEX_UPDATE_VERTEX))
 			{
-				oldVertex = &vertices[_index + i];
-				// Vertices
-				newVertex = transformMatrix * glm::vec4(_mesh.vertexArray[i].position, 1.0f);
-				oldVertex->position.x = newVertex.x;
-				oldVertex->position.y = newVertex.y;
-				oldVertex->position.z = newVertex.z;
-				// Color
-				oldVertex->color = _mesh.vertexArray[i].color;
-				// Normals
-				newVertex = normalMatrix * glm::vec4(_mesh.vertexArray[i].normal, 1.0f);
-				newVertex = glm::normalize(newVertex);
-				oldVertex->normal.x = newVertex.x;
-				oldVertex->normal.y = newVertex.y;
-				oldVertex->normal.z = newVertex.z;
+				transformMatrix = glm::translate(_mesh.getPosition()) * glm::mat4_cast(_mesh.getRotation()) * glm::scale(_mesh.getScale());
+				for (size_t i = 0; i < size; i++)
+				{
+					// Vertices
+					newVertex = transformMatrix * glm::vec4(_mesh.vertexArray[i].position, 1.0f);
+					vertices[_index + i].position.x = newVertex.x;
+					vertices[_index + i].position.y = newVertex.y;
+					vertices[_index + i].position.z = newVertex.z;
+				}
 			}
-			needBufferUpdate = true;
+			if (checkBit(_updates, VERTEX_UPDATE_NORMAL))
+			{
+				const glm::mat4 normalMatrix = glm::mat4(glm::inverse(glm::transpose(glm::mat3(transformMatrix))));
+				for (size_t i = 0; i < size; i++)
+				{
+					// Normals
+					newVertex = normalMatrix * glm::vec4(_mesh.vertexArray[i].normal, 1.0f);
+					newVertex = glm::normalize(newVertex);
+					vertices[_index + i].normal.x = newVertex.x;
+					vertices[_index + i].normal.y = newVertex.y;
+					vertices[_index + i].normal.z = newVertex.z;
+				}
+			}
+			if (checkBit(_updates, VERTEX_UPDATE_COLOR))
+			{
+				for (size_t i = 0; i < size; i++)
+				{
+					// Color
+					vertices[_index + i].color = _mesh.vertexArray[i].color;
+				}
+			}
+			needVertexSubBufferUpdate = true;
+			bufferUpdateVertexOffset = glm::min(bufferUpdateVertexOffset, _index);
+			bufferUpdateVertexEnd = glm::max(bufferUpdateVertexEnd, _index + size);
 		}
 
 		void MeshBatch::initBuffers()
@@ -278,12 +305,12 @@ namespace se
 			glBindVertexArray(vertexArrayObjectID);
 
 			glBindBuffer(GL_ARRAY_BUFFER, vertexBufferID);
-			vertexBufferSize = INITIAL_BUFFER_SIZE;
-			glBufferData(GL_ARRAY_BUFFER, sizeof(Vertex3D) * vertexBufferSize, nullptr, usage);
+			glBufferData(GL_ARRAY_BUFFER, sizeof(Vertex3D) * INITIAL_BUFFER_SIZE, nullptr, usage);
+			bufferUpdateVertexOffset = INITIAL_BUFFER_SIZE;
+			bufferUpdateVertexEnd = 0;
 
 			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBufferID);
-			indexBufferSize = INITIAL_BUFFER_SIZE;
-			glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLushort) * indexBufferSize, nullptr, usage);
+			glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLushort) * INITIAL_BUFFER_SIZE, nullptr, usage);
 
 			checkOpenGLErrors(__FILE__, __LINE__);
 
@@ -304,40 +331,38 @@ namespace se
 		}
 		void MeshBatch::updateBuffers()
 		{
-			if (!needBufferUpdate)
+			if (!needVertexBufferUpdate && !needIndexBufferUpdate && !needVertexSubBufferUpdate)
 				return;
-			glBindVertexArray(vertexArrayObjectID);
 			glBindBuffer(GL_ARRAY_BUFFER, vertexBufferID);
 			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBufferID);
 
-			size_t size = vertices.size();
-			if (size > vertexBufferSize)
+			if (needVertexBufferUpdate)
 			{
-				vertexBufferSize = size;
-				glBufferData(GL_ARRAY_BUFFER, sizeof(Vertex3D) * size, &vertices[0], usage);
+				glBufferData(GL_ARRAY_BUFFER, sizeof(Vertex3D) * vertices.size(), &vertices[0], usage);
+				needVertexBufferUpdate = false;
+				needVertexSubBufferUpdate = false;
 			}
-			else
+			else if (needVertexSubBufferUpdate)
 			{
-				glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(Vertex3D) * size, &vertices[0]);
+				glBufferSubData(GL_ARRAY_BUFFER,
+								sizeof(Vertex3D) * bufferUpdateVertexOffset,
+								sizeof(Vertex3D) * (bufferUpdateVertexEnd - bufferUpdateVertexOffset),
+								&vertices[bufferUpdateVertexOffset]);
+				needVertexSubBufferUpdate = false;
+			}
+			bufferUpdateVertexOffset = vertices.size();
+			bufferUpdateVertexEnd = 0;
+
+			if (needIndexBufferUpdate)
+			{
+				glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLushort) * indices.size(), &indices[0], usage);
+				needIndexBufferUpdate = false;
 			}
 
-			size = indices.size();
-			if (size > indexBufferSize)
-			{
-				indexBufferSize = size;
-				glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLushort) * size, &indices[0], usage);
-			}
-			else
-			{
-				glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, sizeof(GLushort) * size, &indices[0]);
-			}
-
-			glBindVertexArray(0);
 			glBindBuffer(GL_ARRAY_BUFFER, 0);
 			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
 			checkOpenGLErrors(__FILE__, __LINE__);
-			needBufferUpdate = false;
 		}
 	}
 }

@@ -125,7 +125,7 @@ namespace se
 			_object.batch->remove(_object.indexInBatch, _object.sizeInBatch);
 			MeshBatch* comp = _object.batch;
 			_object.batch = nullptr;
-			_object.mesh->needUpdate = true;
+			_object.mesh->needUpdate = VERTEX_UPDATE_ALL;
 			for (size_t i = 0; i < meshes.size(); i++)
 			{
 				if (meshes[i].batch != nullptr && meshes[i].batch == comp && meshes[i].indexInBatch.first >= _object.indexInBatch.first)
@@ -144,10 +144,10 @@ namespace se
 		}
 		void BatchManager3D::updateMeshVertices(MeshObject& _object)
 		{
-			if (_object.mesh->needUpdate)
+			if (_object.mesh->needUpdate != VERTEX_UPDATE_NONE)
 			{
-				_object.batch->updateVertices(_object.indexInBatch.first, *_object.mesh);
-				_object.mesh->needUpdate = false;
+				_object.batch->updateVertices(_object.indexInBatch.first, *_object.mesh, _object.mesh->needUpdate);
+				_object.mesh->needUpdate = VERTEX_UPDATE_NONE;
 			}
 		}
 

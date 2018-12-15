@@ -9,6 +9,15 @@ namespace se
 {
 	namespace rendering
 	{
+		enum
+		{
+			VERTEX_UPDATE_NONE			= 0,
+			VERTEX_UPDATE_VERTEX		= (1 << 0),
+			VERTEX_UPDATE_NORMAL		= (1 << 1),
+			VERTEX_UPDATE_COLOR			= (1 << 2),
+			VERTEX_UPDATE_ALL			= (VERTEX_UPDATE_VERTEX | VERTEX_UPDATE_NORMAL | VERTEX_UPDATE_COLOR)
+		};
+
 		class Vertex3D
 		{
 		public:

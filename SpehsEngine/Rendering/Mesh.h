@@ -80,7 +80,7 @@ namespace se
 			se::Color getColor(const size_t _index) const { se_assert(_index < vertexArray.size()); return vertexArray[_index].color; }
 			float getAlpha(const size_t _index) const { se_assert(_index < vertexArray.size()); return vertexArray[_index].color.a; }
 
-			// NOTE: Color of first vertex			
+			// NOTE: Color of first vertex
 			se::Color getColor() const { return vertexArray.size() ? vertexArray[0].color : se::Color(); }
 			float getAlpha() const { return vertexArray.size() ? vertexArray[0].color.a : 1.0f; }
 
@@ -98,7 +98,7 @@ namespace se
 
 			std::vector<BatchManager3D*> batchManagers;
 
-			bool needUpdate = true;
+			int needUpdate = VERTEX_UPDATE_ALL;
 			void unbatch();
 
 			// Single color for full mesh
