@@ -377,7 +377,7 @@ namespace se
 		{
 			std::lock_guard<std::recursive_mutex> lock(mutex);
 			updateTimer -= deltaTime;
-			if (updateTimer <= se::time::zero)
+			if (updateTimer <= se::time::Time::zero)
 			{
 				updateTimer = se::time::fromSeconds(1.0f / 30.0f);
 				return true;

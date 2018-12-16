@@ -2,6 +2,7 @@
 #include <algorithm>
 #include <chrono>
 #include <mutex>
+#include <string>
 
 #include "SpehsEngine/Core/Log.h"
 #include "SpehsEngine/Core/Time.h"

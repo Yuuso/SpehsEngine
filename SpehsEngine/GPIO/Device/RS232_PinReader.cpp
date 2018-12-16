@@ -466,13 +466,13 @@ namespace se
 						{
 							const se::time::Time detectStreamBoundariesDuration = se::time::now() - detectStreamBoundariesBeginTime;
 							std::string str = "Took ";
-							if (detectStreamBoundariesDuration > se::time::second)
+							if (detectStreamBoundariesDuration > se::time::fromSeconds(1.0f))
 								str += std::to_string((detectStreamBoundariesDuration).asSeconds()) + " seconds";
-							else if (detectStreamBoundariesDuration > se::time::millisecond)
+							else if (detectStreamBoundariesDuration > se::time::fromMilliseconds(1.0f))
 								str += std::to_string((detectStreamBoundariesDuration).asMilliseconds()) + " milliseconds";
-							else if (detectStreamBoundariesDuration > se::time::microsecond)
+							else if (detectStreamBoundariesDuration > se::time::fromMicroseconds(1.0f))
 								str += std::to_string((detectStreamBoundariesDuration).asMicroseconds()) + " microseconds";
-							else if (detectStreamBoundariesDuration > se::time::nanosecond)
+							else if (detectStreamBoundariesDuration > se::time::fromNanoseconds(1.0f))
 								str += std::to_string((detectStreamBoundariesDuration).asNanoseconds()) + " nanoseconds";
 							se::log::info("RS232_PinReader: successfully detected stream boundaries! " + str);
 						}

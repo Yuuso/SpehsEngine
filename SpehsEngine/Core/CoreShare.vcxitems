@@ -21,14 +21,17 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)Compression.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Console.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Core.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)DeltaTimeSystem.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Endianness.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)FileStream.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Inifile.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Inivar.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)LapTimer.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Log.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)OS.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)ReadBuffer.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)RNG.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)ScopeTimer.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Shapes.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)stdafx.cpp">
       <PrecompiledHeader>Create</PrecompiledHeader>
@@ -50,6 +53,7 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)ConsoleVariable.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Constants.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Core.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)DeltaTimeSystem.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Endianness.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)FileStream.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)FinalRelease.h" />
@@ -57,6 +61,7 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)HasMemberFunction.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Inifile.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Inivar.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)LapTimer.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Log.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)OS.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)PragmaOptimize.h" />
@@ -64,6 +69,7 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)RAIIVariableSetter.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)ReadBuffer.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)RNG.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)ScopeTimer.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Shapes.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)stdafx.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)StringOperations.h" />

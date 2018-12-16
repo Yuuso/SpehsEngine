@@ -3,6 +3,7 @@
 #include "SpehsEngine/Core/StringOperations.h"
 #include "SpehsEngine/Core/OS.h"
 #include "SpehsEngine/Core/Time.h"
+#include "SpehsEngine/Core/DeltaTimeSystem.h"
 #include "SpehsEngine/Input/InputManager.h"
 #include "SpehsEngine/GUI/GUIStringEditor.h"
 #include "SpehsEngine/Rendering/BatchManager.h"

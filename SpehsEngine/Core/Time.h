@@ -1,15 +1,5 @@
 #pragma once
-
 #include <stdint.h>
-#include <string>
-
-#ifdef _DEBUG
-#define SPEHS_DEBUG_DURATION_BEGIN(timeDurationVariable) timeDurationVariable = se::time::now();
-#define SPEHS_DEBUG_DURATION_END(timeDurationVariable) timeDurationVariable = se::time::now() - timeDurationVariable;
-#else
-#define SPEHS_DEBUG_DURATION_BEGIN(timeDurationVariable) (void)0
-#define SPEHS_DEBUG_DURATION_END(timeDurationVariable) (void)0
-#endif
 
 #ifdef delay
 #undef delay
@@ -85,13 +75,7 @@ namespace se
 		inline Time fromMilliseconds(const float milliseconds) { return TimeValueType(milliseconds * (float)conversionRate::millisecond); }
 		inline Time fromMicroseconds(const float microseconds) { return TimeValueType(microseconds * (float)conversionRate::microsecond); }
 		inline Time fromNanoseconds(const float nanoseconds) { return TimeValueType(nanoseconds * (float)conversionRate::nanosecond); }
-
-		static const Time zero(0);
-		static const Time second(conversionRate::second);
-		static const Time millisecond(conversionRate::millisecond);
-		static const Time microsecond(conversionRate::microsecond);
-		static const Time nanosecond(conversionRate::nanosecond);
-
+		
 		/* Initializes the time system. */
 		void initialize();
 
@@ -109,78 +93,5 @@ namespace se
 
 		/* Returns time when se::time was initialized. */
 		Time getInitializationTime();
-
-		//Get time and date of when the engine was built
-		//TODO: this actually only ever updates when the time source files are being rebuilt. And with the addition of split projects, this is ever less usefull.
-		std::string engineBuildYear();
-		std::string engineBuildMonth();
-		std::string engineBuildDay();
-		std::string engineBuildHour();
-		std::string engineBuildMinute();
-		std::string engineBuildSecond();
-
-		class DeltaTimeSystem
-		{
-		public:
-			DeltaTimeSystem(const std::string& debugName = "unnamed")
-				: deltaSeconds(0.0f)
-				, deltaTime(0)
-				, name(debugName)
-				, deltaTimestamp(now())
-			{
-
-			}
-			virtual ~DeltaTimeSystem()
-			{
-
-			}
-			void deltaTimeSystemInitialize()
-			{
-				deltaSeconds = 0.0f;
-				deltaTime.value = 0;
-				deltaTimestamp = now();
-			}
-			void deltaTimeSystemUpdate()
-			{
-				const se::time::Time now = se::time::now();
-				deltaTime = now - deltaTimestamp;
-				deltaTimestamp = now;
-				deltaSeconds = deltaTime.asSeconds();
-			}
-
-			//Public attributes for maximum speed
-			float deltaSeconds;
-			se::time::Time deltaTime;
-
-		private:
-			std::string name;
-			se::time::Time deltaTimestamp;
-		};
-
-		/* Records time at the time of allocation. Elapsed time can be retrieved using get() at any time. */
-		class ScopeTimer
-		{
-		public:
-			ScopeTimer() : time(now()) {}
-			inline Time get() const { return now() - time; }
-		private:
-			Time time;
-		};
-
-		/* get() returns time since last get(), or time since allocation if get() hasn't been used. */
-		class LapTimer
-		{
-		public:
-			LapTimer() : time(now()) {}
-			Time get()
-			{
-				const Time n = now();
-				const Time lapTime = now() - time;
-				time = n;
-				return lapTime;
-			}
-		private:
-			Time time;
-		};
 	}
 }

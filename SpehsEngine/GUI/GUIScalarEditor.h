@@ -100,7 +100,7 @@ namespace se
 				if (increaseRect->getMouseHover())
 				{//+
 					holdTimer -= getDeltaTime();
-					if (holdTimer <= se::time::zero)
+					if (holdTimer <= se::time::Time::zero)
 					{
 						holdTimer = holdTime;
 						setEditorValue(editorValue + tickAmount);
@@ -109,7 +109,7 @@ namespace se
 				else if (decreaseRect->getMouseHover())
 				{//-
 					holdTimer -= getDeltaTime();
-					if (holdTimer <= se::time::zero)
+					if (holdTimer <= se::time::Time::zero)
 					{
 						holdTimer = holdTime;
 						setEditorValue(editorValue - tickAmount);

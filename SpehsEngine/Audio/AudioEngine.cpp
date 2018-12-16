@@ -1,6 +1,7 @@
 #include "stdafx.h"
 
 #include "SpehsEngine/Core/Time.h"
+#include "SpehsEngine/Core/DeltaTimeSystem.h"
 #include "SpehsEngine/Audio/AudioEngine.h"
 #include "SpehsEngine/Audio/OpenALError.h"
 #include "SpehsEngine/Audio/SoundSource.h"

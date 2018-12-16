@@ -1,5 +1,6 @@
 #pragma once
 #include "SpehsEngine/Core/Console.h"
+#include "SpehsEngine/Core/LapTimer.h"
 #include "SpehsEngine/Input/KeyboardRecorder.h"
 #define CONSOLE_FONT_COLOR 255, 153, 0
 
