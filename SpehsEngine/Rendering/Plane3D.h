@@ -33,6 +33,7 @@ namespace se
 			void setBlending(const bool _value);
 			void setDepthTest(const bool _value);
 			void setShaderIndex(const unsigned int _newShaderIndex);
+			void setBackFaceCulling(const bool _value);
 
 			void setTexture(TextureManager& _textureManager, const std::string& _texturePath, const size_t _index = 0);
 			void setTexture(TextureManager& _textureManager, const size_t _textureID, const size_t _index = 0);
@@ -47,6 +48,7 @@ namespace se
 			bool getRenderState() const;
 			bool getBlending() const;
 			bool getDepthTest() const;
+			bool getBackFaceCulling() const;
 			unsigned int getShaderIndex() const;
 
 		protected:

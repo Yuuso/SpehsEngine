@@ -77,6 +77,10 @@ namespace se
 		{
 			mesh->setShaderIndex(_newShaderIndex);
 		}
+		void Plane3D::setBackFaceCulling(const bool _value)
+		{
+			mesh->setBackFaceCulling(_value);
+		}
 		void Plane3D::setTexture(TextureManager& _textureManager, const std::string& _texturePath, const size_t _index)
 		{
 			mesh->setTexture(_textureManager, _texturePath, _index);
@@ -113,6 +117,10 @@ namespace se
 		bool Plane3D::getDepthTest() const
 		{
 			return mesh->getDepthTest();
+		}
+		bool Plane3D::getBackFaceCulling() const
+		{
+			return mesh->getBackFaceCulling();
 		}
 		unsigned int Plane3D::getShaderIndex() const
 		{
