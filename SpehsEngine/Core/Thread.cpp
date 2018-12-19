@@ -39,25 +39,25 @@ namespace se
 		{
 		}
 	}
-	void setThreadName(const char* threadName)
+	void setThreadName(const std::string& name)
 	{
-		setThreadName(GetCurrentThreadId(), threadName);
+		setThreadName(GetCurrentThreadId(), name.c_str());
 	}
-	void setThreadName(std::thread* thread, const char* threadName)
+	void setThreadName(std::thread& thread, const std::string& name)
 	{
-		//DWORD threadId = ::GetThreadId(static_cast<HANDLE>(thread->native_handle()));
-		//setThreadName(threadId, threadName);
+		DWORD threadId = ::GetThreadId(static_cast<HANDLE>(thread.native_handle()));
+		setThreadName(threadId, name.c_str());
 	}
 #else
-	void setThreadName(std::thread* thread, const char* threadName)
+	void setThreadName(std::thread& thread, const std::string& name)
 	{
-		auto handle = thread->native_handle();
-		pthread_setname_np(handle,threadName);
+		auto handle = thread.native_handle();
+		pthread_setname_np(handle, name.c_str());
 	}
 #include <sys/prctl.h>
-	void setThreadName(const char* threadName)
+	void setThreadName(const std::string& name)
 	{
-		prctl(PR_SET_NAME,threadName,0,0,0);
+		prctl(PR_SET_NAME, name.c_str(), 0, 0, 0);
 	}
 #endif
 }

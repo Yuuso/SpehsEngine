@@ -80,7 +80,7 @@ namespace se
 		audioVar::audioClips.insert(std::pair<size_t, AudioClip>(hash, clip));
 		audioVar::mutex.unlock();
 		std::thread bgLoaderThread(bgloadWAVE, _filepath);
-		se::setThreadName(&bgLoaderThread, "Wave Loader Thread");
+		se::setThreadName(bgLoaderThread, "Wave Loader Thread");
 		bgLoaderThread.detach();
 		return hash;
 	}
@@ -226,7 +226,7 @@ namespace se
 		audioVar::audioClips.insert(std::pair<size_t, AudioClip>(hash, clip));
 		audioVar::mutex.unlock();
 		std::thread bgLoaderThread(bgloadOGG, _filepath);
-		se::setThreadName(&bgLoaderThread, "Ogg Loader Thread");
+		se::setThreadName(bgLoaderThread, "Ogg Loader Thread");
 		bgLoaderThread.detach();
 		return hash;
 	}

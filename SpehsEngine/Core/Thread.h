@@ -1,10 +1,8 @@
 #pragma once
-namespace std
-{
-	class thread;
-}
+#include <string>
+#include <thread>
 namespace se
 {
-	void setThreadName(const char* threadName);
-	void setThreadName(std::thread* thread, const char* threadName);
+	void setThreadName(const std::string& name);
+	void setThreadName(std::thread& thread, const std::string& name);
 }
