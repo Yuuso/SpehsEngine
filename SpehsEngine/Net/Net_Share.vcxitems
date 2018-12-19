@@ -16,6 +16,7 @@
   <ItemGroup>
     <ClCompile Include="$(MSBuildThisFileDirectory)Acceptor.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Address.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)AddressUtilityFunctions.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Aria\Aria.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Endpoint.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Handshake.cpp" />
@@ -34,6 +35,7 @@
   <ItemGroup>
     <ClInclude Include="$(MSBuildThisFileDirectory)Acceptor.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Address.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)AddressUtilityFunctions.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Aria\Aria.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Endpoint.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Handshake.h" />
