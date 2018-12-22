@@ -12,6 +12,9 @@ namespace se
 	/**Returns string as integer. Returns 0 if string is invalid*/
 	int getStringAsInt(const std::string& string);
 
+	/** Returns "true"/"false". */
+	std::string toString(const bool value);
+
 	/**Extended std::to_string() function. Crops out extra precision given by std::to_string(). Maximum precision 6!*/
 	std::string toString(const float value, const int precision);
 

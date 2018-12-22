@@ -56,8 +56,7 @@ namespace se
 
 		return floatValue;
 	}
-
-
+	
 	int getStringAsInt(const std::string& string)
 	{
 		int8_t stringState = 0;
@@ -98,6 +97,18 @@ namespace se
 			intValue *= -1;
 
 		return intValue;
+	}
+
+	std::string toString(const bool value)
+	{
+		if (value)
+		{
+			return "true";
+		}
+		else
+		{
+			return "false";
+		}
 	}
 
 	std::string toString(const float value, const int precision)
