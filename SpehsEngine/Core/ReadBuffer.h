@@ -78,14 +78,18 @@ namespace se
 		const unsigned char* data;
 	};
 		
-	template<typename T>
+	template<typename T, typename SizeType = size_t>
 	void readFromBuffer(ReadBuffer& buffer, std::vector<T>& vector)
 	{
-		size_t size;
+		static_assert(std::is_integral<SizeType>::value, "SizeType must be integral.");
+		static_assert(std::is_unsigned<SizeType>::value, "SizeType must be unsigned.");
+		SizeType size;
 		buffer.read(size);
-		vector.resize(size);
-		for (size_t i = 0; i < size; i++)
-			buffer.read(vector[i]);
+		vector.resize(size_t(size));
+		for (SizeType i = 0; i < size; i++)
+		{
+			buffer.read(vector[size_t(i)]);
+		}
 	}
 	void readFromBuffer(ReadBuffer& buffer, std::string& string);
 	void readFromBuffer(ReadBuffer& buffer, time::Time& time);
