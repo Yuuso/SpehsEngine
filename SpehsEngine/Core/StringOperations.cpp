@@ -286,7 +286,7 @@ namespace se
 					words.push_back(std::string(string.begin() + wordBeginIndex, string.begin() + i));
 				wordBeginIndex = i + 1;
 			}
-			else if (i == lastIndex)
+			if (i == lastIndex)
 			{
 				const size_t wordLength = i + 1 - wordBeginIndex;
 				if (wordLength > 0)

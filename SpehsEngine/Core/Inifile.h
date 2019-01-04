@@ -77,7 +77,7 @@ namespace se
 	template<typename T>
 	Inivar<T>& Inifile::get(const std::string& section, const std::string& name, const T& defaultValue)
 	{
-		const std::string type = typeid(T).name();
+		const std::string type = getTypeName<T>();
 		Inivar<T>& var = getSection(section).get<T>(type, name, defaultValue);
 		var.tryRetrieveValue();
 		return var;
