@@ -33,25 +33,15 @@ namespace se
 
 	GUIRectangle::DisplayTexture::~DisplayTexture()
 	{
-		polygon->destroy();
+		if (polygon)
+		{
+			polygon->destroy();
+		}
 	}
 
 	GUIRectangle::GUIRectangle(GUIContext& context)
 		: GUIContext(context)
-		, position(0, 0)
-		, size(0, 0)
-		, minSize(0, 0)
-		, state(GUIRECT_HOVER_COLOR_BIT | GUIRECT_TEXT_JUSTIFICATION_LEFT_BIT)
-		, inputEnabled(true)
-		, parent(nullptr)
-		, text(nullptr)
-		, displayTexture(nullptr)
-		, tooltip(nullptr)
-		, pressSound(nullptr)
-		, hoverSound(nullptr)
-		, displayTexturePositionMode(DisplayTexturePositionMode::center)
-		, borderWidth(2)
-	{//Default constructor
+	{
 #ifdef _DEBUG
 		++guiRectangleAllocations;
 #endif
@@ -72,14 +62,6 @@ namespace se
 			polygon->destroy();
 		if (text)
 			text->destroy();
-		if (tooltip)
-			delete tooltip;
-		if (displayTexture)
-			delete displayTexture;
-		if (pressSound)
-			delete pressSound;
-		if (hoverSound)
-			delete hoverSound;
 	}
 
 	void GUIRectangle::inputUpdate()
@@ -407,21 +389,28 @@ namespace se
 
 	void GUIRectangle::setTooltip(const std::string& tooltipString)
 	{
-		//Create tooltip object if one does not exist already
-		if (!tooltip)
+		if (tooltipString.empty())
 		{
-			tooltip = new GUIRectangle(getGUIContext());
-			tooltip->setStringColor(defaultTooltipStringColor);
-			tooltip->setStringSize(12);
-			tooltip->setColor(defaultTooltipColor);
+			tooltip.reset();
 		}
+		else
+		{
+			//Create tooltip object if one does not exist already
+			if (!tooltip)
+			{
+				tooltip.reset(new GUIRectangle(getGUIContext()));
+				tooltip->setStringColor(defaultTooltipStringColor);
+				tooltip->setStringSize(12);
+				tooltip->setColor(defaultTooltipColor);
+			}
 
-		tooltip->setString(tooltipString);
-		tooltip->setJustification(GUIRECT_TEXT_JUSTIFICATION_LEFT_BIT);
-		tooltip->updateScale();
-		tooltip->setSize(tooltip->minSize);
-		tooltip->setRenderState(false);
-		tooltip->setDepth(getDepth() + tooltipDepthRelative);
+			tooltip->setString(tooltipString);
+			tooltip->setJustification(GUIRECT_TEXT_JUSTIFICATION_LEFT_BIT);
+			tooltip->updateScale();
+			tooltip->setSize(tooltip->minSize);
+			tooltip->setRenderState(false);
+			tooltip->setDepth(getDepth() + tooltipDepthRelative);
+		}
 	}
 
 	void GUIRectangle::setString(const std::string& str)
@@ -493,9 +482,10 @@ namespace se
 
 	void GUIRectangle::setDisplayTexture(const std::string& path, const se::rendering::TextureParameter& _parameters)
 	{
-		if (displayTexture)
-			delete displayTexture;
-		displayTexture = new DisplayTexture();
+		if (!displayTexture)
+		{
+			displayTexture.reset(new DisplayTexture());
+		}
 		se::rendering::TextureData* texData = getBatchManager().textureManager.getTextureData(path, _parameters);
 		displayTexture->polygon = getBatchManager().createPolygon(4, 0, float(texData->width), float(texData->height));
 		displayTexture->polygon->setTexture(texData);
@@ -578,7 +568,9 @@ namespace se
 	void GUIRectangle::setHoverSound(const std::string& path)
 	{
 		if (!hoverSound)
-			hoverSound = new se::audio::SoundSource();
+		{
+			hoverSound.reset(new se::audio::SoundSource());
+		}
 		hoverSound->setSound(AudioManager::load(path));
 		hoverSound->setPriority(1);
 		hoverSound->setGain(1.0f);
@@ -587,7 +579,9 @@ namespace se
 	void GUIRectangle::setPressSound(const std::string& path)
 	{
 		if (!pressSound)
-			pressSound = new se::audio::SoundSource();
+		{
+			pressSound.reset(new se::audio::SoundSource());
+		}
 		pressSound->setSound(AudioManager::load(path));
 		pressSound->setPriority(1);
 		pressSound->setGain(1.0f);

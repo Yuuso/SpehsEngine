@@ -1,5 +1,6 @@
 #pragma once
 #include <string>
+#include <memory>
 #include <functional>
 #include <glm/vec2.hpp>
 #include "SpehsEngine/GUI/GUIContext.h"
@@ -134,7 +135,7 @@ namespace se
 		virtual void setJustification(const GUIRECT_STATE_TYPE justificationBit);///<NOTE: if non-justification bit is given, all justification bits will be cleared and given bit will be enabled
 		//Tooltip
 		void setTooltip(const std::string& tooltipString);
-		GUIRectangle* getTooltipPtr() const { return tooltip; }
+		GUIRectangle* getTooltipPtr() const { return tooltip.get(); }
 		//Display texture
 		void setDisplayTexture(const std::string& path, const se::rendering::TextureParameter& _parameters);
 		void setDisplayTexture(const std::string& path);
@@ -249,30 +250,29 @@ namespace se
 		glm::ivec2 position;///<The position of the rectangle, originating from the lower left corner, given in screen coordinates. Relative to parent's position
 		glm::ivec2 size;///<Current size of the rectangle
 		glm::ivec2 minSize;///<The minimum size of the rectangle. Checked whenever rezising the polygon.
-		int borderWidth;//Border added after text/display texture per each side of the rectangle
-		GUIRectangleContainer* parent;///<Rectangle inherits position from parent chain. NOTE: parent must be a rectangle container
-		GUIRectangle* tooltip;
-		se::rendering::Polygon* polygon;
-		se::rendering::Text* text;
-		se::audio::SoundSource* hoverSound;
-		se::audio::SoundSource* pressSound;
-		GUIRECT_STATE_TYPE state;
-		GUIRECT_ID_TYPE id;///<GUI rectangles can be given IDs for identification
+		int borderWidth = 2;//Border added after text/display texture per each side of the rectangle
+		GUIRectangleContainer* parent = nullptr;///<Rectangle inherits position from parent chain. NOTE: parent must be a rectangle container
+		std::unique_ptr<GUIRectangle> tooltip;
+		se::rendering::Polygon* polygon = nullptr;
+		se::rendering::Text* text = nullptr;
+		std::unique_ptr<se::audio::SoundSource> hoverSound;
+		std::unique_ptr<se::audio::SoundSource> pressSound;
+		GUIRECT_STATE_TYPE state = GUIRECT_HOVER_COLOR_BIT | GUIRECT_TEXT_JUSTIFICATION_LEFT_BIT;
+		GUIRECT_ID_TYPE id = 0;///<GUI rectangles can be given IDs for identification
 		std::function<void(GUIRectangle&)> pressCallbackFunction1;//Called when LMB pressed
 		std::function<void(GUIRectangle&)> pressCallbackFunction2;//Called when RMB pressed
 
 		struct DisplayTexture
 		{
-			DisplayTexture() : polygon(nullptr), width(0), height(0){}
 			~DisplayTexture();
-			se::rendering::Polygon* polygon;
-			uint16_t width;
-			uint16_t height;
+			se::rendering::Polygon* polygon = nullptr;
+			uint16_t width = 0;
+			uint16_t height = 0;
 		};
-		DisplayTexture* displayTexture;
-		DisplayTexturePositionMode displayTexturePositionMode;
+		std::unique_ptr<DisplayTexture> displayTexture;
+		DisplayTexturePositionMode displayTexturePositionMode = DisplayTexturePositionMode::center;
 
 	private:
-		bool inputEnabled;
+		bool inputEnabled = true;
 	};
 }
