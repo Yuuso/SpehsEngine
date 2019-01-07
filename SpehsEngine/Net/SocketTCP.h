@@ -35,6 +35,9 @@ namespace se
 			friend class aria::Client;
 
 		public:
+			enum class AcceptingState { idle, listeningForConnection, establishingConnection };
+
+		public:
 
 			SocketTCP(IOService& ioService);
 			virtual ~SocketTCP();
@@ -85,7 +88,8 @@ namespace se
 			Port getRemotePort() const;
 			Endpoint getRemoteEndpoint() const;
 
-			/* Returns true if the socket is currently listening for an incoming connection on a port, or the connection is currently being established. */
+			AcceptingState getAcceptingState() const;
+			/* Returns true if the socket is currently listening for an incoming connection on a port, or the accepted connection is currently being established. */
 			bool isAccepting() const;
 			/* Returns true if socket is currently able to receive incoming packets. */
 			bool isReceiving() const;
@@ -145,6 +149,7 @@ namespace se
 				Address getRemoteAddress() const;
 				Port getRemotePort() const;
 				Endpoint getRemoteEndpoint() const;
+				AcceptingState getAcceptingState() const;
 				bool isAccepting() const;
 				bool isReceiving() const;
 				bool isConnected() const;
@@ -163,7 +168,7 @@ namespace se
 				std::vector<unsigned char> receiveBuffer;
 				time::Time lastReceiveTime;
 				bool receiving = false;
-				bool accepting = false;
+				AcceptingState acceptingState = AcceptingState::idle;
 				bool connected = false;
 				bool connecting = false;//Set to true for the duration of connect attempt
 				bool handshakeSent = false;//Refers to the current connection

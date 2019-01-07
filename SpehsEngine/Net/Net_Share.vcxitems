@@ -21,7 +21,7 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)Endpoint.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Handshake.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)IOService.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)MatchmakingServer.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)MultiConnectionAcceptorTCP.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Net.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Port.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)ISocket.cpp" />
@@ -40,7 +40,7 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)Endpoint.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Handshake.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)IOService.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)MatchmakingServer.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)MultiConnectionAcceptorTCP.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Net.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)PacketMessage.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Port.h" />

@@ -29,8 +29,15 @@ namespace se
 	extern std::string workingDirectory;
 	namespace net
 	{
-		static const time::Time handshakeReceiveTimeout = time::fromSeconds(10000);
-		static const time::Time connectionTimeout = time::fromSeconds(10000);
+#ifdef SE_FINAL_RELEASE
+		static const time::Time handshakeReceiveTimeout = time::fromSeconds(5.0f);
+		static const time::Time connectionTimeout = time::fromSeconds(5.0f);
+#else
+		//static const time::Time handshakeReceiveTimeout = time::fromSeconds(10000.0f);
+		//static const time::Time connectionTimeout = time::fromSeconds(10000.0f);
+		static const time::Time handshakeReceiveTimeout = time::fromSeconds(5.0f);
+		static const time::Time connectionTimeout = time::fromSeconds(5.0f);
+#endif
 
 		SocketTCP::SocketTCP(IOService& _ioService)
 			: sharedImpl(new SharedImpl(_ioService))
@@ -55,7 +62,7 @@ namespace se
 
 		void SocketTCP::waitUntilFinishedAccepting()
 		{
-			while (isAccepting()) { }
+			while (getAcceptingState() != AcceptingState::idle) { }
 		}
 
 		bool SocketTCP::waitForHandshake(const time::Time timeout)
@@ -166,6 +173,11 @@ namespace se
 		Endpoint SocketTCP::getRemoteEndpoint() const
 		{
 			return sharedImpl->getRemoteEndpoint();
+		}
+
+		SocketTCP::AcceptingState SocketTCP::getAcceptingState() const
+		{
+			return sharedImpl->getAcceptingState();
 		}
 
 		bool SocketTCP::isAccepting() const
@@ -289,7 +301,7 @@ namespace se
 		bool SocketTCP::SharedImpl::startAccepting(const Port& port, const std::function<void(SocketTCP&)> callbackFunction)
 		{
 			std::lock_guard<std::recursive_mutex> lock(mutex);
-			if (accepting)
+			if (acceptingState != AcceptingState::idle)
 			{
 				log::info("SocketTCP failed to start accepting! Socket is already accepting!");
 				return false;
@@ -341,7 +353,7 @@ namespace se
 			onAcceptCallback = callbackFunction;
 
 			//Start accepting asynchoronously
-			accepting = true;
+			acceptingState = AcceptingState::listeningForConnection;
 			acceptor->async_accept(socket, boost::bind(&SocketTCP::SharedImpl::onAccept, shared_from_this(), boost::asio::placeholders::error));
 
 			return true;
@@ -352,20 +364,22 @@ namespace se
 			std::lock_guard<std::recursive_mutex> lock(mutex);
 			if (socketTCP == nullptr)
 				return;
-			se_assert(!socketTCP->isConnected());
-			se_assert(!socketTCP->isReceiving());
-			se_assert(socketTCP->isAccepting());
+			se_assert(!isConnected());
+			se_assert(!isReceiving());
+			se_assert(getAcceptingState() != AcceptingState::idle);
 			se_assert(acceptor);
 			acceptor->close();
 			if (error)
 			{
 				log::warning("SocketTCP failed to accept an incoming connection! Boost asio error: " + error.message() + "Accepting has stopped.");
 				socketTCP->disconnect(DisconnectType::doNotSendDisconnectPacket);
-				accepting = false;
+				acceptingState = AcceptingState::idle;
 				return;
 			}
-
-			spehsAcceptThread.reset(new std::thread(&SocketTCP::SharedImpl::spehsAccept, this));
+			else
+			{
+				spehsAcceptThread.reset(new std::thread(&SocketTCP::SharedImpl::spehsAccept, this));
+			}
 		}
 
 		void SocketTCP::SharedImpl::spehsAccept()
@@ -377,6 +391,7 @@ namespace se
 					return;
 				if (debugLogLevel >= 1)
 					log::info("Accepting SocketTCP expecting a handshake...");
+				acceptingState = AcceptingState::establishingConnection;
 				startReceiving();
 			}
 
@@ -415,12 +430,12 @@ namespace se
 				log::info("SocketTCP failed to accept an incoming connection! Could not send handshake!");
 				socketTCP->disconnect(DisconnectType::doNotSendDisconnectPacket);
 				onAcceptCallbackQueued = true;
-				accepting = false;
+				acceptingState = AcceptingState::idle;
 				return;
 			}
 
 			//Socket is now in the connected state!
-			accepting = false;
+			acceptingState = AcceptingState::idle;
 			connected = true;
 			lastReceiveTime = time::now();
 			onAcceptCallbackQueued = true;
@@ -437,6 +452,8 @@ namespace se
 				if (handshakeReceived)
 					return true;
 				if (destructorCalled)
+					return false;
+				if (!socketTCP->isConnected())
 					return false;
 			}
 		}
@@ -640,8 +657,8 @@ namespace se
 
 			std::lock_guard<std::recursive_mutex> lock(mutex);
 			boost::system::error_code error;
-
-			if (!connected && !connecting && !accepting)
+						
+			if (!connected && !connecting && acceptingState == AcceptingState::idle)
 			{//Can only send user defined packets in the connected state
 				log::info("SocketTCP: cannot send a packet. Socket is neither connected, connecting nor accepting.");
 				return false;
@@ -874,10 +891,16 @@ namespace se
 			return Endpoint(socket.remote_endpoint().address().to_v4().to_string(), socket.remote_endpoint().port());
 		}
 
+		SocketTCP::AcceptingState SocketTCP::SharedImpl::getAcceptingState() const
+		{
+			std::lock_guard<std::recursive_mutex> lock(mutex);
+			return acceptingState;
+		}
+
 		bool SocketTCP::SharedImpl::isAccepting() const
 		{
 			std::lock_guard<std::recursive_mutex> lock(mutex);
-			return accepting;
+			return acceptingState != SocketTCP::AcceptingState::idle;
 		}
 
 		bool SocketTCP::SharedImpl::isReceiving() const
