@@ -22,7 +22,7 @@ namespace se
 			PinReaderHistoryEntry() = default;
 			PinReaderHistoryEntry(gpio::PinState s, const se::time::Time t) : state(s), time(t) {}
 			void write(WriteBuffer& buffer) const;
-			void read(ReadBuffer& buffer);
+			bool read(ReadBuffer& buffer);
 			gpio::PinState state;
 			se::time::Time time;
 		};
@@ -30,7 +30,7 @@ namespace se
 		{
 		public:
 			void write(WriteBuffer& buffer) const;
-			void read(ReadBuffer& buffer);
+			bool read(ReadBuffer& buffer);
 			gpio::PinState stateAtTime(const se::time::Time& time) const;
 		};
 

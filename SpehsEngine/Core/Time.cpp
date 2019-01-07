@@ -6,6 +6,8 @@
 
 #include "SpehsEngine/Core/Log.h"
 #include "SpehsEngine/Core/Time.h"
+#include "SpehsEngine/Core/ReadBuffer.h"
+#include "SpehsEngine/Core/WriteBuffer.h"
 
 namespace se
 {
@@ -174,5 +176,16 @@ namespace se
 		Time operator*(const int multiplier, const Time time) { return Time(time.value * (TimeValueType)multiplier); }
 		Time operator*(const TimeValueType multiplier, const Time time) { return Time(time.value * multiplier); }
 #pragma endregion
+	}
+
+	void writeToBuffer(WriteBuffer& writeBuffer, const time::Time& time)
+	{
+		writeBuffer.write(time.value);
+	}
+
+	bool readFromBuffer(ReadBuffer& readBuffer, time::Time& time)
+	{
+		se_read(readBuffer, time.value);
+		return true;
 	}
 }

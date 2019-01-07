@@ -19,7 +19,7 @@ namespace se
 		{
 		public:
 			void write(WriteBuffer& buffer) const;
-			void read(ReadBuffer& buffer);
+			bool read(ReadBuffer& buffer);
 		};
 
 		class PinReaderPWMGhost : public sync::IType

@@ -23,6 +23,6 @@ namespace se
 
 	class WriteBuffer;
 	class ReadBuffer;
-	void writeToBuffer(WriteBuffer& buffer, const net::Port& port);
-	void readFromBuffer(ReadBuffer& buffer, net::Port& port);
+	void writeToBuffer(WriteBuffer& writeBuffer, const net::Port& port);
+	bool readFromBuffer(ReadBuffer& readBuffer, net::Port& port);
 }

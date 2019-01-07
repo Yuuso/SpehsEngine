@@ -22,6 +22,6 @@ namespace se
 
 	class WriteBuffer;
 	class ReadBuffer;
-	void writeToBuffer(WriteBuffer& buffer, const net::Address& address);
-	void readFromBuffer(ReadBuffer& buffer, net::Address& address);
+	void writeToBuffer(WriteBuffer& writeBuffer, const net::Address& address);
+	bool readFromBuffer(ReadBuffer& readBuffer, net::Address& address);
 }

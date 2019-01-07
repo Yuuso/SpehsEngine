@@ -11,7 +11,7 @@ namespace se
 	class ReadBuffer;
 
 	void writeToBuffer(WriteBuffer& writeBuffer, const Color& color);
-	void readFromBuffer(ReadBuffer& readBuffer, Color& color);
+	bool readFromBuffer(ReadBuffer& readBuffer, Color& color);
 	std::string toString(const Color& color);
 	void brightness(Color& color, const float brightnessFactor);
 	Color mixColor(const Color& color1, const Color& color2, const float factor);

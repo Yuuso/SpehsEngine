@@ -26,6 +26,6 @@ namespace se
 
 	class WriteBuffer;
 	class ReadBuffer;
-	void writeToBuffer(WriteBuffer& buffer, const net::Endpoint& endpoint);
-	void readFromBuffer(ReadBuffer& buffer, net::Endpoint& endpoint);
+	void writeToBuffer(WriteBuffer& writeBuffer, const net::Endpoint& endpoint);
+	bool readFromBuffer(ReadBuffer& readBuffer, net::Endpoint& endpoint);
 }

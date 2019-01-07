@@ -36,7 +36,9 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)stdafx.cpp">
       <PrecompiledHeader>Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)STLVectorUtilityFunctions.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)StringOperations.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)StringUtilityFunctions.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)StrongInt.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Thread.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Time.cpp" />
@@ -65,7 +67,6 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)LapTimer.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Log.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)OS.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)PragmaOptimize.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)PrecompiledInclude.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)RAIIVariableSetter.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)ReadBuffer.h" />
@@ -73,7 +74,9 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)ScopeTimer.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Shapes.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)stdafx.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)STLVectorUtilityFunctions.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)StringOperations.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)StringUtilityFunctions.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)StrongInt.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Thread.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Time.h" />

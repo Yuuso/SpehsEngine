@@ -11,7 +11,7 @@ namespace se
 		//struct AbstractSyncTypeInfo
 		//{
 		//	void write(WriteBuffer& buffer) const;
-		//	void read(ReadBuffer& buffer);
+		//	bool read(ReadBuffer& buffer);
 
 		//	IType::SyncTypeIdType typeId;
 		//	std::string name;
@@ -21,7 +21,7 @@ namespace se
 		struct LocalSyncTypeInfo
 		{
 			void write(WriteBuffer& buffer) const;
-			void read(ReadBuffer& buffer);
+			bool read(ReadBuffer& buffer);
 			std::string name;
 			IType::SyncTypeIdType typeId;
 			IType::SyncTypeVersionType version;
@@ -31,7 +31,7 @@ namespace se
 		struct RemoteSyncTypeInfo
 		{
 			void write(WriteBuffer& buffer) const;
-			void read(ReadBuffer& buffer);
+			bool read(ReadBuffer& buffer);
 			std::string name;
 			IType::SyncTypeIdType typeId;
 			IType::SyncTypeVersionType version;
@@ -40,7 +40,7 @@ namespace se
 		struct TypeInfo
 		{
 			void write(WriteBuffer& buffer) const;
-			void read(ReadBuffer& buffer);
+			bool read(ReadBuffer& buffer);
 			LocalSyncTypeInfo local;
 			RemoteSyncTypeInfo remote;
 		};

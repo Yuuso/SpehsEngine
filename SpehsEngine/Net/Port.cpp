@@ -9,6 +9,7 @@ namespace se
 	{
 		const Port Port::invalid = Port(0);
 		const Port Port::default = Port(41623);
+
 		Port::Port()
 			: value(invalid.value)
 		{
@@ -16,13 +17,14 @@ namespace se
 		}
 	}
 
-	void writeToBuffer(WriteBuffer& buffer, const net::Port& port)
+	void writeToBuffer(WriteBuffer& writeBuffer, const net::Port& port)
 	{
-		buffer.write(port.value);
+		writeBuffer.write(port.value);
 	}
 
-	void readFromBuffer(ReadBuffer& buffer, net::Port& port)
+	bool readFromBuffer(ReadBuffer& readBuffer, net::Port& port)
 	{
-		buffer.read(port.value);
+		se_read(readBuffer, port.value);
+		return true;
 	}
 }

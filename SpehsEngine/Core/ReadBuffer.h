@@ -1,10 +1,7 @@
 #pragma once
 #include "BufferBase.h"
 #include "Endianness.h"
-#include <vector>
-#include "Time.h" // TO BE REMOVED
 #include "HasMemberFunction.h"
-#include "Log.h"
 
 namespace se
 {
@@ -20,30 +17,29 @@ namespace se
 
 		//Is class, has mutable read
 		template<class T>
-		typename std::enable_if<has_read<T, void(T::*)(ReadBuffer&)>::value, void>::type read(T& t)
+		typename std::enable_if<has_read<T, bool(T::*)(ReadBuffer&)>::value, bool>::type read(T& t)
 		{
-			t.read(*this);
+			return t.read(*this);
 		}
 		//Is class, doesn't have mutable read
 		template<class T>
-		typename std::enable_if<!has_read<T, void(T::*)(ReadBuffer&)>::value, void>::type read(T& t)
+		typename std::enable_if<!has_read<T, bool(T::*)(ReadBuffer&)>::value, bool>::type read(T& t)
 		{
-			readFromBuffer(*this, t);
+			return readFromBuffer(*this, t);
 //				se::log::info(typeid(T).name());
-//				se_assert(false && "To use 'ReadBuffer::read<T>(T&)' for a class type, the type T must have a 'void read(ReadBuffer&)' method!");
+//				se_assert(false && "To use 'ReadBuffer::read<T>(T&)' for a class type, the type T must have a 'bool read(ReadBuffer&)' method!");
 //#ifdef _WIN32 // NOTE: cannot use static assert because of g++ and SFINAE
 //				static_assert(false, "Class type T doesn't have a mutable read method.");
 //#endif
 		}
 		//Isn't class
 		template<typename T>
-		typename std::enable_if<!std::is_class<T>::value, void>::type read(T& t)
+		typename std::enable_if<!std::is_class<T>::value, bool>::type read(T& t)
 		{
 			const size_t bytes = sizeof(T);
 			if (offset + bytes > size)
 			{
-				log::warning("Cannot read past the buffer!");
-				return;
+				return false;
 			}
 
 			if (hostByteOrder == networkByteOrder)
@@ -60,6 +56,7 @@ namespace se
 			}
 
 			offset += bytes;
+			return true;
 		}
 
 		void translate(const int bytes) override;
@@ -77,20 +74,6 @@ namespace se
 		size_t size;
 		const unsigned char* data;
 	};
-		
-	template<typename T, typename SizeType = size_t>
-	void readFromBuffer(ReadBuffer& buffer, std::vector<T>& vector)
-	{
-		static_assert(std::is_integral<SizeType>::value, "SizeType must be integral.");
-		static_assert(std::is_unsigned<SizeType>::value, "SizeType must be unsigned.");
-		SizeType size;
-		buffer.read(size);
-		vector.resize(size_t(size));
-		for (SizeType i = 0; i < size; i++)
-		{
-			buffer.read(vector[size_t(i)]);
-		}
-	}
-	void readFromBuffer(ReadBuffer& buffer, std::string& string);
-	void readFromBuffer(ReadBuffer& buffer, time::Time& time);
 }
+
+#define se_read(p_ReadBuffer, p_Value) do { if (!(p_ReadBuffer).read(p_Value)) { return false; } } while (false)

@@ -16,13 +16,16 @@ namespace se
 				buffer.write(at(i));
 		}
 
-		void PWMHistory::read(ReadBuffer& buffer)
+		bool PWMHistory::read(ReadBuffer& buffer)
 		{
 			size_t s;
-			buffer.read(s);
+			se_read(buffer, s);
 			resize(s);
 			for (size_t i = 0; i < size(); i++)
-				buffer.read(at(i));
+			{
+				se_read(buffer, at(i));
+			}
+			return true;
 		}
 
 		PinReaderPWMGhost::PinReaderPWMGhost()

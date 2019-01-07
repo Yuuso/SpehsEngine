@@ -46,15 +46,16 @@ namespace se
 		}
 	}
 
-	void writeToBuffer(WriteBuffer& buffer, const net::Endpoint& endpoint)
+	void writeToBuffer(WriteBuffer& writeBuffer, const net::Endpoint& endpoint)
 	{
-		buffer.write(endpoint.address);
-		buffer.write(endpoint.port);
+		writeBuffer.write(endpoint.address);
+		writeBuffer.write(endpoint.port);
 	}
 
-	void readFromBuffer(ReadBuffer& buffer, net::Endpoint& endpoint)
+	bool readFromBuffer(ReadBuffer& readBuffer, net::Endpoint& endpoint)
 	{
-		buffer.read(endpoint.address);
-		buffer.read(endpoint.port);
+		se_read(readBuffer, endpoint.address);
+		se_read(readBuffer, endpoint.port);
+		return true;
 	}
 }

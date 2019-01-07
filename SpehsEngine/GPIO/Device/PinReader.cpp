@@ -15,10 +15,11 @@ namespace se
 			buffer.write(time);
 		}
 
-		void PinReaderHistoryEntry::read(ReadBuffer& buffer)
+		bool PinReaderHistoryEntry::read(ReadBuffer& buffer)
 		{
-			buffer.read(state);
-			buffer.read(time);
+			se_read(buffer, state);
+			se_read(buffer, time);
+			return true;
 		}
 
 		void PinReaderHistory::write(WriteBuffer& buffer) const
@@ -29,13 +30,16 @@ namespace se
 				buffer.write(at(i));
 		}
 
-		void PinReaderHistory::read(ReadBuffer& buffer)
+		bool PinReaderHistory::read(ReadBuffer& buffer)
 		{
 			size_t count;
-			buffer.read(count);//TODO: buffer.read(std::vector<...>)
+			se_read(buffer, count);//TODO: buffer.read(std::vector<...>)
 			resize(count);
 			for (size_t i = 0; i < count; i++)
-				buffer.read(at(i));
+			{
+				se_read(buffer, at(i));
+			}
+			return true;
 		}
 
 		gpio::PinState PinReaderHistory::stateAtTime(const se::time::Time& time) const

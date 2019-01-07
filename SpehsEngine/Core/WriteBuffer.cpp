@@ -1,6 +1,5 @@
 #include "stdafx.h"
 #include "WriteBuffer.h"
-#include "Log.h"
 
 namespace se
 {
@@ -45,18 +44,5 @@ namespace se
 		data.reserve(getCapacity() + addedBytes);
 
 		return true;
-	}
-
-	void writeToBuffer(WriteBuffer& buffer, const std::string& string)
-	{
-		const size_t size = string.size();
-		buffer.write(size);
-		for (size_t i = 0; i < size; i++)
-			buffer.write(string[i]);
-	}
-
-	void writeToBuffer(WriteBuffer& buffer, const se::time::Time& time)
-	{
-		buffer.write(time.value);
 	}
 }

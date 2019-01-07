@@ -94,4 +94,9 @@ namespace se
 		/* Returns time when se::time was initialized. */
 		Time getInitializationTime();
 	}
+	
+	class WriteBuffer;
+	class ReadBuffer;
+	void writeToBuffer(WriteBuffer& writeBuffer, const time::Time& time);
+	bool readFromBuffer(ReadBuffer& readBuffer, time::Time& time);
 }

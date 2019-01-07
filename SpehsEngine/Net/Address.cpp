@@ -8,6 +8,7 @@ namespace se
 	namespace net
 	{
 		const Address Address::invalid = Address(std::string("0.0.0.0"));
+
 		Address::Address()
 			: value(invalid.value)
 		{
@@ -15,13 +16,14 @@ namespace se
 		}
 	}
 
-	void writeToBuffer(WriteBuffer& buffer, const net::Address& address)
+	void writeToBuffer(WriteBuffer& writeBuffer, const net::Address& address)
 	{
-		buffer.write(address.value);
+		writeBuffer.write(address.value);
 	}
 
-	void readFromBuffer(ReadBuffer& buffer, net::Address& address)
+	bool readFromBuffer(ReadBuffer& readBuffer, net::Address& address)
 	{
-		buffer.read(address.value);
+		se_read(readBuffer, address.value);
+		return true;
 	}
 }

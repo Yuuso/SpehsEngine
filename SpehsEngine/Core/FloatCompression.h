@@ -17,13 +17,14 @@ namespace se
 	}
 
 	template<typename UnsignedType>
-	void uncompress(float& value, ReadBuffer& readBuffer, const float min, const float max)
+	bool uncompress(float& value, ReadBuffer& readBuffer, const float min, const float max)
 	{
 		static_assert(std::is_integral<UnsignedType>::value, "UnsignedType must be integral type.");
 		static_assert(std::is_unsigned<UnsignedType>::value, "UnsignedType must be unsigned type.");
 		UnsignedType compressed;
-		readBuffer.read(compressed);
+		se_read(readBuffer, compressed);
 		value = float(compressed) / float(std::numeric_limits<UnsignedType>::max());
 		se_assert(value >= min && value <= max);
+		return true;
 	}
 }

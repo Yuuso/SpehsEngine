@@ -1,8 +1,7 @@
 #pragma once
+#include <vector>
 #include "BufferBase.h"
 #include "Endianness.h"
-#include <vector>
-#include "Time.h" // TO BE REMOVED
 #include "HasMemberFunction.h"
 
 namespace se
@@ -100,20 +99,4 @@ namespace se
 
 		std::vector<uint8_t> data;
 	};
-	
-	template<typename T, typename SizeType = size_t>
-	void writeToBuffer(WriteBuffer& buffer, const std::vector<T>& vector)
-	{
-		static_assert(std::is_integral<SizeType>::value, "SizeType must be integral.");
-		static_assert(std::is_unsigned<SizeType>::value, "SizeType must be unsigned.");
-		se_assert(size_t(std::numeric_limits<SizeType>::max()) >= vector.size() && "Vector size is larger than the maximum of SizeType.");
-		const SizeType size = SizeType(vector.size());
-		buffer.write(size);
-		for (SizeType i = 0; i < size; i++)
-		{
-			buffer.write(vector[size_t(i)]);
-		}
-	}
-	void writeToBuffer(WriteBuffer& buffer, const std::string& string);
-	void writeToBuffer(WriteBuffer& buffer, const se::time::Time& time);
 }

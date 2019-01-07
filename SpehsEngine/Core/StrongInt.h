@@ -18,9 +18,10 @@ struct p_TypeName \
 	{ \
 		writeBuffer.write(value); \
 	} \
-	void read(se::ReadBuffer& readBuffer) \
+	bool read(se::ReadBuffer& readBuffer) \
 	{ \
-		readBuffer.read(value); \
+		se_read(readBuffer, value); \
+		return true; \
 	} \
 	p_TypeName() = default; \
 	p_TypeName(const p_IntType _value) : value(_value) {} \

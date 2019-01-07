@@ -18,12 +18,13 @@ namespace se
 		writeBuffer.write(color.a);
 	}
 
-	void readFromBuffer(ReadBuffer& readBuffer, Color& color)
+	bool readFromBuffer(ReadBuffer& readBuffer, Color& color)
 	{
-		readBuffer.read(color.r);
-		readBuffer.read(color.g);
-		readBuffer.read(color.b);
-		readBuffer.read(color.a);
+		se_read(readBuffer, color.r);
+		se_read(readBuffer, color.g);
+		se_read(readBuffer, color.b);
+		se_read(readBuffer, color.a);
+		return true;
 	}
 
 	std::string toString(const Color& color)

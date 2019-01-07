@@ -16,11 +16,12 @@ namespace se
 			buffer.write(version);
 		}
 
-		void LocalSyncTypeInfo::read(ReadBuffer& buffer)
+		bool LocalSyncTypeInfo::read(ReadBuffer& buffer)
 		{
-			buffer.read(name);
-			buffer.read(typeId);
-			buffer.read(version);
+			se_read(buffer, name);
+			se_read(buffer, typeId);
+			se_read(buffer, version);
+			return true;
 		}
 
 		void RemoteSyncTypeInfo::write(WriteBuffer& buffer) const
@@ -30,11 +31,12 @@ namespace se
 			buffer.write(version);
 		}
 
-		void RemoteSyncTypeInfo::read(ReadBuffer& buffer)
+		bool RemoteSyncTypeInfo::read(ReadBuffer& buffer)
 		{
-			buffer.read(name);
-			buffer.read(typeId);
-			buffer.read(version);
+			se_read(buffer, name);
+			se_read(buffer, typeId);
+			se_read(buffer, version);
+			return true;
 		}
 
 		void TypeInfo::write(WriteBuffer& buffer) const
@@ -43,10 +45,11 @@ namespace se
 			buffer.write(remote);
 		}
 
-		void TypeInfo::read(ReadBuffer& buffer)
+		bool TypeInfo::read(ReadBuffer& buffer)
 		{
-			buffer.read(local);
-			buffer.read(remote);
+			se_read(buffer, local);
+			se_read(buffer, remote);
+			return true;
 		}
 	}
 }
