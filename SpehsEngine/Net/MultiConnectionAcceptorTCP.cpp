@@ -3,8 +3,6 @@
 
 #include <SpehsEngine/Core/Log.h>
 
-#pragma optimize("", off)
-
 namespace se
 {
 	namespace net

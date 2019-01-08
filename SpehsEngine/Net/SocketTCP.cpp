@@ -14,8 +14,6 @@
 #include "SpehsEngine/Core/Time.h"
 #include "SpehsEngine/Core/StringOperations.h"
 
-#pragma optimize("", off)
-
 namespace
 {
 	/*
