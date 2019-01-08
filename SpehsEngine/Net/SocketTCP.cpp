@@ -14,6 +14,8 @@
 #include "SpehsEngine/Core/Time.h"
 #include "SpehsEngine/Core/StringOperations.h"
 
+#pragma optimize("", off)
+
 namespace
 {
 	/*
@@ -33,10 +35,10 @@ namespace se
 		static const time::Time handshakeReceiveTimeout = time::fromSeconds(5.0f);
 		static const time::Time connectionTimeout = time::fromSeconds(5.0f);
 #else
-		//static const time::Time handshakeReceiveTimeout = time::fromSeconds(10000.0f);
-		//static const time::Time connectionTimeout = time::fromSeconds(10000.0f);
-		static const time::Time handshakeReceiveTimeout = time::fromSeconds(5.0f);
-		static const time::Time connectionTimeout = time::fromSeconds(5.0f);
+		static const time::Time handshakeReceiveTimeout = time::fromSeconds(10000.0f);
+		static const time::Time connectionTimeout = time::fromSeconds(10000.0f);
+		//static const time::Time handshakeReceiveTimeout = time::fromSeconds(5.0f);
+		//static const time::Time connectionTimeout = time::fromSeconds(5.0f);
 #endif
 
 		SocketTCP::SocketTCP(IOService& _ioService)
@@ -453,8 +455,6 @@ namespace se
 					return true;
 				if (destructorCalled)
 					return false;
-				if (!socketTCP->isConnected())
-					return false;
 			}
 		}
 
@@ -577,8 +577,15 @@ namespace se
 				WriteBuffer buffer;
 				const Handshake handshake;
 				buffer.write(handshake);
-				time::delay(time::fromSeconds(3.0f));
-				handshakeSent = sendPacket(buffer, PacketType::handshake);
+				const time::Time handshakeSendBeginTime = time::now();
+				while (time::now() - handshakeSendBeginTime < se::time::fromSeconds(5.0f))
+				{
+					if (sendPacket(buffer, PacketType::handshake))
+					{
+						handshakeSent = true;
+						break;
+					}
+				}
 				if (handshakeSent)
 				{
 					if (debugLogLevel >= 1)

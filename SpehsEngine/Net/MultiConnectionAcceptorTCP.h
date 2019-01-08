@@ -26,6 +26,7 @@ namespace se
 			void releaseConnectedSockets(std::vector<std::unique_ptr<SocketTCP>>& deposit);
 
 		private:
+			
 			void onAcceptCallback(SocketTCP& socketTCP);
 
 			IOService& ioService;
