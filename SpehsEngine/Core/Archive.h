@@ -48,29 +48,11 @@ namespace se
 		{
 			writeToArchive(*this, valueName, value);
 		}
-		///* Mutable class, has mutable write */
-		//template<class T>
-		//typename std::enable_if<has_write<T, void(T::*)(Archive&, const std::string&)>::value, void>::type write(const std::string& valueName, T& value)
-		//{
-		//	value.write(*this, valueName);
-		//}
-		///* Mutable class, has const write */
-		//template<class T>
-		//typename std::enable_if<has_write<T, void(T::*)(Archive&, const std::string&) const>::value, void>::type write(const std::string& valueName, T& value)
-		//{
-		//	value.write(*this, valueName);
-		//}
-		///* Mutable class, doesn't have mutable or const write */
-		//template<class T>
-		//typename std::enable_if<!has_write<T, void(T::*)(Archive&, const std::string&)>::value && !has_write<T, void(T::*)(Archive&, const std::string&) const>::value, void>::type write(const std::string& valueName, T& value)
-		//{
-		//	writeToArchive(*this, valueName, value);
-		//}
 		/* Writes a non-class value into the archive. */
 		template<typename T>
 		typename std::enable_if<!std::is_class<T>::value, void>::type write(const std::string& valueName, const T& value)
 		{
-			const uint64_t hash = getDataHash(typeid(T).name(), valueName);
+			const uint32_t hash = getDataHash(typeid(T).name(), valueName);
 			se_assert(data.find(hash) == data.end());
 			WriteBuffer& writeBuffer = data[hash];
 			writeBuffer.write(value);
@@ -92,7 +74,7 @@ namespace se
 		template<typename T>
 		typename std::enable_if<!std::is_class<T>::value, bool>::type read(const std::string& valueName, T& value) const
 		{
-			const std::unordered_map<uint64_t, WriteBuffer>::const_iterator it = data.find(getDataHash(typeid(T).name(), valueName));
+			const std::unordered_map<uint32_t, WriteBuffer>::const_iterator it = data.find(getDataHash(typeid(T).name(), valueName));
 			if (it != data.end())
 			{
 				ReadBuffer readBuffer(it->second[0], it->second.getSize());
@@ -107,9 +89,9 @@ namespace se
 	private:
 
 		/* Returns a platform independent 64 bit hash from two given strings. */
-		uint64_t getDataHash(const std::string& typeName, const std::string& valueName) const;
+		uint32_t getDataHash(const std::string& typeName, const std::string& valueName) const;
 
-		std::unordered_map<uint64_t, WriteBuffer> data;
+		std::unordered_map<uint32_t, WriteBuffer> data;
 	};
 }
 

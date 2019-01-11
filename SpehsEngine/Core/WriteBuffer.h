@@ -38,24 +38,6 @@ namespace se
 		{
 			writeToBuffer(*this, t);
 		}
-		////Mutable class, has mutable write
-		//template<class T>
-		//typename std::enable_if<has_write<T, void(T::*)(WriteBuffer&)>::value, void>::type write(T& t)
-		//{
-		//	t.write(*this);
-		//}
-		////Mutable class, has const write
-		//template<class T>
-		//typename std::enable_if<has_write<T, void(T::*)(WriteBuffer&) const>::value, void>::type write(T& t)
-		//{
-		//	t.write(*this);
-		//}
-		////Mutable class, doesn't have mutable or const write
-		//template<class T>
-		//typename std::enable_if<!has_write<T, void(T::*)(WriteBuffer&)>::value && !has_write<T, void(T::*)(WriteBuffer&) const>::value, void>::type write(T& t)
-		//{
-		//	writeToBuffer(*this, t);
-		//}
 		//Isn't class
 		template<typename T>
 		typename std::enable_if<!std::is_class<T>::value, void>::type write (const T& t)

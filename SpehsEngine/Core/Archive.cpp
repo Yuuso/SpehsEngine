@@ -19,7 +19,7 @@ namespace se
 	void Archive::write(WriteBuffer& writeBuffer) const
 	{
 		writeBuffer.write(data.size());
-		for (std::unordered_map<uint64_t, WriteBuffer>::const_iterator it = data.begin(); it != data.end(); it++)
+		for (std::unordered_map<uint32_t, WriteBuffer>::const_iterator it = data.begin(); it != data.end(); it++)
 		{
 			writeBuffer.write(it->first);
 			writeBuffer.write(it->second.getSize());
@@ -37,7 +37,7 @@ namespace se
 		se_read(readBuffer, containerSize);
 		for (size_t c = 0; c < containerSize; c++)
 		{
-			uint64_t dataHash;
+			uint32_t dataHash;
 			se_read(readBuffer, dataHash);
 			se_assert(data.find(dataHash) == data.end());
 			WriteBuffer& writeBuffer = data[dataHash];
@@ -74,14 +74,14 @@ namespace se
 
 	void Archive::write(const std::string& valueName, const se::WriteBuffer& writeBuffer)
 	{
-		const uint64_t hash = getDataHash(typeid(se::WriteBuffer).name(), valueName);
+		const uint32_t hash = getDataHash(typeid(se::WriteBuffer).name(), valueName);
 		se_assert(data.find(hash) == data.end());
 		data[hash] = writeBuffer;
 	}
 
 	bool Archive::read(const std::string& valueName, se::WriteBuffer& writeBuffer) const
 	{
-		const std::unordered_map<uint64_t, WriteBuffer>::const_iterator it = data.find(getDataHash(typeid(se::WriteBuffer).name(), valueName));
+		const std::unordered_map<uint32_t, WriteBuffer>::const_iterator it = data.find(getDataHash(typeid(se::WriteBuffer).name(), valueName));
 		if (it != data.end())
 		{
 			writeBuffer = it->second;
@@ -93,11 +93,11 @@ namespace se
 		}
 	}
 
-	uint64_t Archive::getDataHash(const std::string& typeName, const std::string& valueName) const
+	uint32_t Archive::getDataHash(const std::string& typeName, const std::string& valueName) const
 	{
 		const size_t seed = 1;
 		const uint32_t typeNameHash = murmurHash3_x86_32(typeName.c_str(), typeName.size(), seed);
 		const uint32_t valueNameHash = murmurHash3_x86_32(valueName.c_str(), valueName.size(), seed);
-		return (uint64_t(typeNameHash) << 32u) | uint64_t(valueNameHash);
+		return (typeNameHash << 16u) | (valueNameHash >> 16u);
 	}
 }
