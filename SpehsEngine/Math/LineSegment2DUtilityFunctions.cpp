@@ -4,6 +4,7 @@
 #include "stdafx.h"
 #include "SpehsEngine/Math/LineSegment2DUtilityFunctions.h"
 
+#include <algorithm>
 #include "SpehsEngine/Math/LineSegment2D.h"
 
 namespace se

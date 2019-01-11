@@ -37,4 +37,47 @@ namespace se
 		}
 		return true;
 	}
+
+	template<typename T, typename SizeType = size_t>
+	void writeToArchive(Archive& archive, const std::string& valueName, const std::vector<T>& vector)
+	{
+		//static_assert(std::is_integral<SizeType>::value, "SizeType must be integral.");
+		//Archive subArchive;
+		//subArchive.write("size", vector.size());
+		//size_t index = 0;
+		//for (size_t i = 0; i < vector.size(); i++)
+		//{
+		//	subArchive.write(std::to_string(i), vector[i]);
+		//}
+		//archive.write(valueName, subArchive);
+		WriteBuffer writeBuffer;
+		writeToBuffer(writeBuffer, vector);
+		archive.write(valueName, writeBuffer);
+	}
+
+	template<typename T, typename SizeType = size_t>
+	bool readFromArchive(const Archive& archive, const std::string& valueName, std::vector<T>& vector)
+	{
+		//static_assert(std::is_integral<SizeType>::value, "SizeType must be integral.");
+		//Archive subArchive;
+		//archive.read(valueName, subArchive);
+		//size_t size = 0;
+		//subArchive.read("size", size);
+		//vector.resize(size);
+		//for (size_t i = 0; i < size; i++)
+		//{
+		//	if (!subArchive.read(std::to_string(i), vector[i]))
+		//	{
+		//		return false;
+		//	}
+		//}
+		WriteBuffer writeBuffer;
+		if (!archive.read(valueName, writeBuffer))
+		{
+			return false;
+		}
+		ReadBuffer readBuffer(writeBuffer[0], writeBuffer.getSize());
+		readFromBuffer(readBuffer, vector);
+		return true;
+	}
 }

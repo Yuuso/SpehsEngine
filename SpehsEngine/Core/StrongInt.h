@@ -1,7 +1,8 @@
 #pragma once
 #include <stdint.h>
-#include "SpehsEngine/Core/WriteBuffer.h"
+#include "SpehsEngine/Core/Archive.h"
 #include "SpehsEngine/Core/ReadBuffer.h"
+#include "SpehsEngine/Core/WriteBuffer.h"
 
 #define SE_STRONG_INT(p_IntType, p_TypeName) \
 struct p_TypeName \
@@ -21,6 +22,18 @@ struct p_TypeName \
 	bool read(se::ReadBuffer& readBuffer) \
 	{ \
 		se_read(readBuffer, value); \
+		return true; \
+	} \
+	void write(se::Archive& archive, const std::string& valueName) const \
+	{ \
+		archive.write(valueName, value); \
+	} \
+	bool read(const se::Archive& archive, const std::string& valueName) \
+	{ \
+		if (!archive.read(valueName, value)) \
+		{ \
+			return false; \
+		} \
 		return true; \
 	} \
 	p_TypeName() = default; \

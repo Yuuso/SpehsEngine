@@ -1,8 +1,5 @@
 #pragma once
 
-#include <algorithm>
-#include <string>
-
 namespace se
 {
 	class Color

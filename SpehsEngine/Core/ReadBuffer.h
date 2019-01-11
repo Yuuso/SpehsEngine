@@ -5,12 +5,13 @@
 
 namespace se
 {
-	SPEHS_HAS_MEMBER_FUNCTION(read, has_read);
 	/*
 		Does NOT own the underlying data!
 	*/
 	class ReadBuffer : public BufferBase
 	{
+	public:
+		SPEHS_HAS_MEMBER_FUNCTION(read, has_read);
 	public:
 		ReadBuffer(const void* pointedMemory, const size_t length);
 		~ReadBuffer() override;
@@ -26,11 +27,6 @@ namespace se
 		typename std::enable_if<!has_read<T, bool(T::*)(ReadBuffer&)>::value, bool>::type read(T& t)
 		{
 			return readFromBuffer(*this, t);
-//				se::log::info(typeid(T).name());
-//				se_assert(false && "To use 'ReadBuffer::read<T>(T&)' for a class type, the type T must have a 'bool read(ReadBuffer&)' method!");
-//#ifdef _WIN32 // NOTE: cannot use static assert because of g++ and SFINAE
-//				static_assert(false, "Class type T doesn't have a mutable read method.");
-//#endif
 		}
 		//Isn't class
 		template<typename T>

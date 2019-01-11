@@ -6,7 +6,7 @@
 
 namespace se
 {
-	SPEHS_HAS_MEMBER_FUNCTION(write, has_write);
+	class ReadBuffer;
 	/*
 		Write buffers can only be extended, but never contracted.
 		Owns the underlying data.
@@ -14,9 +14,14 @@ namespace se
 	class WriteBuffer : public BufferBase
 	{
 	public:
+		SPEHS_HAS_MEMBER_FUNCTION(write, has_write);
+	public:
 		WriteBuffer();
 		~WriteBuffer() override;
 		
+		void write(se::WriteBuffer& writeBuffer) const;
+		bool read(se::ReadBuffer& readBuffer);
+
 		void translate(const int bytes);
 		void resize(const size_t size);
 		void reserve(const size_t capacity);
@@ -32,35 +37,25 @@ namespace se
 		typename std::enable_if<!has_write<T, void(T::*)(WriteBuffer&) const>::value, void>::type write(const T& t)
 		{
 			writeToBuffer(*this, t);
-//				se::log::info(typeid(T).name());
-//				se_assert(false && "To use 'WriteBuffer::write<T>(const T&)' for a class type, the type T must have a 'void write(WriteBuffer&) const' method!");
-//#ifdef _WIN32 // NOTE: cannot use static assert because of g++ and SFINAE
-//				static_assert(false, "Class type T doesn't have a const write method.");
-//#endif
 		}
-		//Mutable class, has mutable write
-		template<class T>
-		typename std::enable_if<has_write<T, void(T::*)(WriteBuffer&)>::value, void>::type write(T& t)
-		{
-			t.write(*this);
-		}
-		//Mutable class, has const write
-		template<class T>
-		typename std::enable_if<has_write<T, void(T::*)(WriteBuffer&) const>::value, void>::type write(T& t)
-		{
-			t.write(*this);
-		}
-		//Mutable class, doesn't have mutable or const write
-		template<class T>
-		typename std::enable_if<!has_write<T, void(T::*)(WriteBuffer&)>::value && !has_write<T, void(T::*)(WriteBuffer&) const>::value, void>::type write(T& t)
-		{
-			writeToBuffer(*this, t);
-//				se::log::info(typeid(T).name());
-//				se_assert(false && "To use 'WriteBuffer::write<T>(T&)' for a class type, the type T must have a 'void write(WriteBuffer&)' or 'void write(WriteBuffer&) const' method!");
-//#ifdef _WIN32 // NOTE: cannot use static assert because of g++ and SFINAE
-//				static_assert(false, "Class type T doesn't have mutable or const write method.");
-//#endif
-		}
+		////Mutable class, has mutable write
+		//template<class T>
+		//typename std::enable_if<has_write<T, void(T::*)(WriteBuffer&)>::value, void>::type write(T& t)
+		//{
+		//	t.write(*this);
+		//}
+		////Mutable class, has const write
+		//template<class T>
+		//typename std::enable_if<has_write<T, void(T::*)(WriteBuffer&) const>::value, void>::type write(T& t)
+		//{
+		//	t.write(*this);
+		//}
+		////Mutable class, doesn't have mutable or const write
+		//template<class T>
+		//typename std::enable_if<!has_write<T, void(T::*)(WriteBuffer&)>::value && !has_write<T, void(T::*)(WriteBuffer&) const>::value, void>::type write(T& t)
+		//{
+		//	writeToBuffer(*this, t);
+		//}
 		//Isn't class
 		template<typename T>
 		typename std::enable_if<!std::is_class<T>::value, void>::type write (const T& t)

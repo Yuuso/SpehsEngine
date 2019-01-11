@@ -1,6 +1,8 @@
 #include "stdafx.h"
 #include "WriteBuffer.h"
 
+#include "SpehsEngine/Core/STLVectorUtilityFunctions.h"
+
 namespace se
 {
 	WriteBuffer::WriteBuffer()
@@ -12,7 +14,18 @@ namespace se
 	{
 
 	}
-	
+
+	void WriteBuffer::write(se::WriteBuffer& writeBuffer) const
+	{
+		writeBuffer.write(data);
+	}
+
+	bool WriteBuffer::read(se::ReadBuffer& readBuffer)
+	{
+		se_read(readBuffer, data);
+		return true;
+	}
+
 	void WriteBuffer::translate(const int bytes)
 	{
 		se_assert(bytes > 0 || offset >= size_t(std::abs(bytes)));
