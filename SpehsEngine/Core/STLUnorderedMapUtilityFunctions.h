@@ -47,26 +47,40 @@ namespace se
 	}
 
 	template<typename KeyType, typename T, typename Hasher = std::hash<KeyType>, typename SizeType = size_t>
-	void writeToArchive(Archive& archive, const std::string& valueName, const std::unordered_map<KeyType, T, Hasher>& unorderedMap)
+	Archive writeToArchive(const std::unordered_map<KeyType, T, Hasher>& unorderedMap)
 	{
 		static_assert(std::is_integral<SizeType>::value, "SizeType must be integral.");
-		WriteBuffer writeBuffer;
-		writeToBuffer(writeBuffer, unorderedMap);
-		archive.write(valueName, writeBuffer);
+		Archive archive;
+		const SizeType size = unorderedMap.size();
+		se_write_to_archive(archive, size);
+		size_t index = 0;
+		for (std::unordered_map<KeyType, T, Hasher>::const_iterator it = unorderedMap.begin(); it != unorderedMap.end(); it++)
+		{
+			archive.write(std::to_string(index) + "k", it->first);
+			archive.write(std::to_string(index) + "v", it->second);
+			index++;
+		}
+		return archive;
 	}
 
 	template<typename KeyType, typename T, typename Hasher = std::hash<KeyType>, typename SizeType = size_t>
-	bool readFromArchive(const Archive& archive, const std::string& valueName, std::unordered_map<KeyType, T, Hasher>& unorderedMap)
+	bool readFromArchive(const Archive& archive, std::unordered_map<KeyType, T, Hasher>& unorderedMap)
 	{
 		static_assert(std::is_integral<SizeType>::value, "SizeType must be integral.");
-		WriteBuffer writeBuffer;
-		if (!archive.read(valueName, writeBuffer))
+		SizeType size;
+		se_read_from_archive(archive, size);
+		for (size_t i = 0; i < size; i++)
 		{
-			return false;
+			KeyType key;
+			if (!archive.read(std::to_string(i) + "k", key))
+			{
+				return false;
+			}
+			if (!archive.read(std::to_string(i) + "v", unorderedMap[key]))
+			{
+				return false;
+			}
 		}
-		ReadBuffer readBuffer(writeBuffer[0], writeBuffer.getSize());
-		readFromBuffer(readBuffer, unorderedMap);
-		return true;
 		return true;
 	}
 }

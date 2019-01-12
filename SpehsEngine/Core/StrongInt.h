@@ -24,16 +24,15 @@ struct p_TypeName \
 		se_read(readBuffer, value); \
 		return true; \
 	} \
-	void write(se::Archive& archive, const std::string& valueName) const \
+	se::Archive write() const \
 	{ \
-		archive.write(valueName, value); \
+		se::Archive archive; \
+		se_write_to_archive(archive, value); \
+		return archive; \
 	} \
-	bool read(const se::Archive& archive, const std::string& valueName) \
+	bool read(const se::Archive& archive) \
 	{ \
-		if (!archive.read(valueName, value)) \
-		{ \
-			return false; \
-		} \
+		se_read_from_archive(archive, value); \
 		return true; \
 	} \
 	p_TypeName() = default; \

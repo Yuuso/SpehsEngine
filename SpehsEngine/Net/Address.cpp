@@ -1,7 +1,9 @@
 #include "stdafx.h"
-#include "Address.h"
-#include <SpehsEngine/Core/ReadBuffer.h>
-#include <SpehsEngine/Core/WriteBuffer.h>
+#include "SpehsEngine/Net/Address.h"
+
+#include "SpehsEngine/Core/ReadBuffer.h"
+#include "SpehsEngine/Core/WriteBuffer.h"
+#include "SpehsEngine/Core/StringUtilityFunctions.h"
 
 namespace se
 {

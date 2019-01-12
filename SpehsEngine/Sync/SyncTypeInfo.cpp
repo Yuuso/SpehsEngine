@@ -1,9 +1,9 @@
 #include "stdafx.h"
 #include "SpehsEngine/Sync/SyncTypeInfo.h"
-#include <SpehsEngine/Core/WriteBuffer.h>
-#include <SpehsEngine/Core/ReadBuffer.h>
 
-
+#include "SpehsEngine/Core/WriteBuffer.h"
+#include "SpehsEngine/Core/ReadBuffer.h"
+#include "SpehsEngine/Core/StringUtilityFunctions.h"
 
 namespace se
 {

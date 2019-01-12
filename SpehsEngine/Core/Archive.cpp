@@ -53,23 +53,29 @@ namespace se
 		return true;
 	}
 
-	void Archive::write(Archive& archive, const std::string& valueName) const
+	void Archive::write(const std::string& valueName, const Archive& archive)
 	{
 		WriteBuffer writeBuffer;
-		write(writeBuffer);
-		archive.write(valueName, writeBuffer);
+		archive.write(writeBuffer);
+		write(valueName, writeBuffer);
 	}
 
-	bool Archive::read(const Archive& archive, const std::string& valueName)
+	bool Archive::read(const std::string& valueName, Archive& archive) const
 	{
 		WriteBuffer writeBuffer;
-		if (!archive.read(valueName, writeBuffer))
+		if (!read(valueName, writeBuffer))
 		{
 			return false;
 		}
-		se_assert(writeBuffer.getSize() > 0);
-		ReadBuffer readBuffer(writeBuffer[0], writeBuffer.getSize());
-		return read(readBuffer);
+		if (writeBuffer.getSize() > 0)
+		{
+			ReadBuffer readBuffer(writeBuffer[0], writeBuffer.getSize());
+			return archive.read(readBuffer);
+		}
+		else
+		{
+			return true;
+		}
 	}
 
 	void Archive::write(const std::string& valueName, const se::WriteBuffer& writeBuffer)

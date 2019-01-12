@@ -40,25 +40,23 @@ namespace se
 	}
 	
 	template<typename SizeType = size_t>
-	void writeToArchive(Archive& archive, const std::string& valueName, const std::string& string)
+	Archive writeToArchive(const std::string& string)
 	{
 		static_assert(std::is_integral<SizeType>::value, "SizeType must be integral.");
 		WriteBuffer writeBuffer;
-		writeToBuffer(writeBuffer, string);
-		archive.write(valueName, writeBuffer);
+		writeToBuffer<SizeType>(writeBuffer, string);
+		Archive archive;
+		se_write_to_archive(archive, writeBuffer);
+		return archive;
 	}
 
 	template<typename SizeType = size_t>
-	bool readFromArchive(const Archive& archive, const std::string& valueName, std::string& string)
+	bool readFromArchive(const Archive& archive, std::string& string)
 	{
 		static_assert(std::is_integral<SizeType>::value, "SizeType must be integral.");
 		WriteBuffer writeBuffer;
-		if (!archive.read(valueName, writeBuffer))
-		{
-			return false;
-		}
+		se_read_from_archive(archive, writeBuffer);
 		ReadBuffer readBuffer(writeBuffer[0], writeBuffer.getSize());
-		readFromBuffer(readBuffer, string);
-		return true;
+		return readFromBuffer<SizeType>(readBuffer, string);
 	}
 }
