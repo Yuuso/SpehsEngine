@@ -14,7 +14,18 @@ namespace se
 	class WriteBuffer : public BufferBase
 	{
 	public:
-		SPEHS_HAS_MEMBER_FUNCTION(write, has_write);
+		SPEHS_HAS_MEMBER_FUNCTION(write, has_member_write);
+		template <typename T>
+		class has_free_write
+		{
+			template <typename T2>
+			static decltype(writeToBuffer(std::declval<WriteBuffer&>(), std::declval<T&>()), void()) test(int);
+			struct no {};
+			template <typename T2>
+			static no test(...);
+		public:
+			enum { value = !std::is_same<no, decltype(test<T>(0))>::value };
+		};
 	public:
 		WriteBuffer();
 		~WriteBuffer() override;
@@ -26,15 +37,15 @@ namespace se
 		void resize(const size_t size);
 		void reserve(const size_t capacity);
 
-		//Const class, has const write
+		//Const class, has member write
 		template<class T>
-		typename std::enable_if<has_write<T, void(T::*)(WriteBuffer&) const>::value, void>::type write(const T& t)
+		typename std::enable_if<has_member_write<T, void(T::*)(WriteBuffer&) const>::value, void>::type write(const T& t)
 		{
 			t.write(*this);
 		}
-		//Const class, doesn't have const write
+		//Const class, doesn't have member write but has free write
 		template<class T>
-		typename std::enable_if<!has_write<T, void(T::*)(WriteBuffer&) const>::value, void>::type write(const T& t)
+		typename std::enable_if<!has_member_write<T, void(T::*)(WriteBuffer&) const>::value && has_free_write<T>::value, void>::type write(const T& t)
 		{
 			writeToBuffer(*this, t);
 		}

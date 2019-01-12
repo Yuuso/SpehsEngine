@@ -1,6 +1,5 @@
 #pragma once
 #include <stdint.h>
-#include "SpehsEngine/Core/Archive.h"
 #include "SpehsEngine/Core/ReadBuffer.h"
 #include "SpehsEngine/Core/WriteBuffer.h"
 
@@ -22,17 +21,6 @@ struct p_TypeName \
 	bool read(se::ReadBuffer& readBuffer) \
 	{ \
 		se_read(readBuffer, value); \
-		return true; \
-	} \
-	se::Archive write() const \
-	{ \
-		se::Archive archive; \
-		se_write_to_archive(archive, value); \
-		return archive; \
-	} \
-	bool read(const se::Archive& archive) \
-	{ \
-		se_read_from_archive(archive, value); \
 		return true; \
 	} \
 	p_TypeName() = default; \

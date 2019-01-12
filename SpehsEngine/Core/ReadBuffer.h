@@ -11,20 +11,31 @@ namespace se
 	class ReadBuffer : public BufferBase
 	{
 	public:
-		SPEHS_HAS_MEMBER_FUNCTION(read, has_read);
+		SPEHS_HAS_MEMBER_FUNCTION(read, has_member_read);
+		template <typename T>
+		class has_free_read
+		{
+			template <typename T2>
+			static decltype(readFromBuffer(std::declval<ReadBuffer&>(), std::declval<T&>()), bool()) test(int);
+			struct no {};
+			template <typename T2>
+			static no test(...);
+		public:
+			enum { value = !std::is_same<no, decltype(test<T>(0))>::value };
+		};
 	public:
 		ReadBuffer(const void* pointedMemory, const size_t length);
 		~ReadBuffer() override;
 
-		//Is class, has mutable read
+		//Is class, has member read
 		template<class T>
-		typename std::enable_if<has_read<T, bool(T::*)(ReadBuffer&)>::value, bool>::type read(T& t)
+		typename std::enable_if<has_member_read<T, bool(T::*)(ReadBuffer&)>::value, bool>::type read(T& t)
 		{
 			return t.read(*this);
 		}
-		//Is class, doesn't have mutable read
+		//Is class, doesn't have member read but has free read
 		template<class T>
-		typename std::enable_if<!has_read<T, bool(T::*)(ReadBuffer&)>::value, bool>::type read(T& t)
+		typename std::enable_if<!has_member_read<T, bool(T::*)(ReadBuffer&)>::value && has_free_read<T>::value, bool>::type read(T& t)
 		{
 			return readFromBuffer(*this, t);
 		}

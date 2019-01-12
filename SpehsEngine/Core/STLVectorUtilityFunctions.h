@@ -41,7 +41,7 @@ namespace se
 
 	//Class, has write
 	template<typename T, typename SizeType = size_t>
-	typename std::enable_if<std::is_class<T>::value && Archive::has_write<T, Archive(T::*)() const>::value, Archive>::type
+	typename std::enable_if<std::is_class<T>::value && Archive::has_member_write<T, Archive(T::*)() const>::value, Archive>::type
 		writeToArchive(const std::vector<T>& vector)
 	{
 		Archive archive;
@@ -57,7 +57,7 @@ namespace se
 		return archive;
 	}
 	template<typename T, typename SizeType = size_t>
-	typename std::enable_if<std::is_class<T>::value && Archive::has_write<T, Archive(T::*)() const>::value, Archive>::type
+	typename std::enable_if<std::is_class<T>::value && Archive::has_member_write<T, Archive(T::*)() const>::value, Archive>::type
 		readFromArchive(const Archive& archive, std::vector<T>& vector)
 	{
 		SizeType size;
@@ -80,7 +80,7 @@ namespace se
 
 	//Class, no write
 	template<typename T, typename SizeType = size_t>
-	typename std::enable_if<std::is_class<T>::value && !Archive::has_write<T, Archive(T::*)() const>::value, Archive>::type
+	typename std::enable_if<std::is_class<T>::value && !Archive::has_member_write<T, Archive(T::*)() const>::value, Archive>::type
 		writeToArchive(const std::vector<T>& vector)
 	{
 		static_assert(std::is_integral<SizeType>::value, "SizeType must be integral.");
@@ -97,7 +97,7 @@ namespace se
 		return archive;
 	}
 	template<typename T, typename SizeType = size_t>
-	typename std::enable_if<std::is_class<T>::value && !Archive::has_write<T, Archive(T::*)() const>::value, Archive>::type
+	typename std::enable_if<std::is_class<T>::value && !Archive::has_member_write<T, Archive(T::*)() const>::value, Archive>::type
 		readFromArchive(const Archive& archive, std::vector<T>& vector)
 	{
 		static_assert(std::is_integral<SizeType>::value, "SizeType must be integral.");

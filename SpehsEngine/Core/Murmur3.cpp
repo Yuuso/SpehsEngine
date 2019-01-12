@@ -73,7 +73,7 @@ namespace se
 	uint32_t murmurHash3_x86_32(const void * key, size_t len, uint32_t seed)
 	{
 		const uint8_t * data = (const uint8_t*)key;
-		const int nblocks = len / 4;
+		const int nblocks = int(len) / 4;
 		int i;
 
 		uint32_t h1 = seed;
@@ -106,7 +106,7 @@ namespace se
 
 		uint32_t k1 = 0;
 
-		switch (len & 3)
+		switch (int(len) & 3)
 		{
 		case 3: k1 ^= tail[2] << 16;
 		case 2: k1 ^= tail[1] << 8;
@@ -117,7 +117,7 @@ namespace se
 		//----------
 		// finalization
 
-		h1 ^= len;
+		h1 ^= int(len);
 
 		h1 = fmix32(h1);
 
@@ -129,7 +129,7 @@ namespace se
 	void murmurHash3_x86_128(const void * key, const size_t len, uint32_t seed, void * out)
 	{
 		const uint8_t * data = (const uint8_t*)key;
-		const int nblocks = len / 16;
+		const int nblocks = int(len) / 16;
 		int i;
 
 		uint32_t h1 = seed;
@@ -181,7 +181,7 @@ namespace se
 		uint32_t k3 = 0;
 		uint32_t k4 = 0;
 
-		switch (len & 15)
+		switch (int(len) & 15)
 		{
 		case 15: k4 ^= tail[14] << 16;
 		case 14: k4 ^= tail[13] << 8;
@@ -210,7 +210,7 @@ namespace se
 		//----------
 		// finalization
 
-		h1 ^= len; h2 ^= len; h3 ^= len; h4 ^= len;
+		h1 ^= int(len); h2 ^= int(len); h3 ^= int(len); h4 ^= int(len);
 
 		h1 += h2; h1 += h3; h1 += h4;
 		h2 += h1; h3 += h1; h4 += h1;
@@ -234,7 +234,7 @@ namespace se
 	void murmurHash3_x64_128(const void * key, const size_t len, const uint32_t seed, void * out)
 	{
 		const uint8_t * data = (const uint8_t*)key;
-		const int nblocks = len / 16;
+		const int nblocks = int(len) / 16;
 		int i;
 
 		uint64_t h1 = seed;
@@ -270,7 +270,7 @@ namespace se
 		uint64_t k1 = 0;
 		uint64_t k2 = 0;
 
-		switch (len & 15)
+		switch (int(len) & 15)
 		{
 		case 15: k2 ^= (uint64_t)(tail[14]) << 48;
 		case 14: k2 ^= (uint64_t)(tail[13]) << 40;
@@ -295,7 +295,7 @@ namespace se
 		//----------
 		// finalization
 
-		h1 ^= len; h2 ^= len;
+		h1 ^= int(len); h2 ^= int(len);
 
 		h1 += h2;
 		h2 += h1;

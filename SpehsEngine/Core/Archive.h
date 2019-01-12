@@ -2,23 +2,45 @@
 #include <string>
 #include <unordered_map>
 #include "SpehsEngine/Core/HasMemberFunction.h"
+#include "SpehsEngine/Core/ReadBuffer.h"
+#include "SpehsEngine/Core/WriteBuffer.h"
 
 namespace se
 {
-	class WriteBuffer;
-	class ReadBuffer;
-
 	/*
 		Stores values in an unordered format.
 		Allows class data to be easily stored between versions (format changes).
 		Archive is not guaranteed to be platform independent - only the platform that wrote the archive can read it.
 		You can write fundamental types, write buffers and (sub) archives into an archive.
+		A user defined type does not have to implement archive write/read methods/free functions, in which case Write/ReadBuffer write/read methods/free functions are used.
 	*/
 	class Archive
 	{
 	public:
-		SPEHS_HAS_MEMBER_FUNCTION(write, has_write);
-		SPEHS_HAS_MEMBER_FUNCTION(read, has_read);
+		SPEHS_HAS_MEMBER_FUNCTION(write, has_member_write);
+		SPEHS_HAS_MEMBER_FUNCTION(read, has_member_read);
+		template <typename T>
+		class has_free_write
+		{
+			template <typename T2>
+			static decltype(writeToBuffer(std::declval<Archive&>(), std::declval<T&>()), void()) test(int);
+			struct no {};
+			template <typename T2>
+			static no test(...);
+		public:
+			enum { value = !std::is_same<no, decltype(test<T>(0))>::value };
+		};
+		template <typename T>
+		class has_free_read
+		{
+			template <typename T2>
+			static decltype(readFromBuffer(std::declval<const Archive&>(), std::declval<T&>()), bool()) test(int);
+			struct no {};
+			template <typename T2>
+			static no test(...);
+		public:
+			enum { value = !std::is_same<no, decltype(test<T>(0))>::value };
+		};
 	public:
 
 		Archive();
@@ -42,20 +64,7 @@ namespace se
 		void write(const std::string& valueName, const se::WriteBuffer& writeBuffer);
 		/* Reads (assigns) a write buffer from the archive. */
 		bool read(const std::string& valueName, se::WriteBuffer& writeBuffer) const;
-
-		/* Creates an archive from a class with the write member function. */
-		template<class T>
-		static typename std::enable_if<std::is_class<T>::value && has_write<T, Archive(T::*)() const>::value, Archive>::type create(const T& value)
-		{
-			return value.write();
-		}
-		/* Creates an archive from a class without the write member function. */
-		template<class T>
-		static typename std::enable_if<std::is_class<T>::value && !has_write<T, Archive(T::*)() const>::value, Archive>::type create(const T& value)
-		{
-			return writeToArchive(value);
-		}
-
+		
 		/* Writes a non-class value into the archive. */
 		template<typename T>
 		typename std::enable_if<!std::is_class<T>::value, void>::type write(const std::string& valueName, const T& value)
@@ -89,38 +98,84 @@ namespace se
 			}
 		}
 
-		/* Is class, has const write. Write a sub archive and write that into this. */
+		/* Is class, has member write. Write a sub archive and write that into this. */
 		template<class T>
-		typename std::enable_if<!std::is_same<typename std::remove_cv<T>::type, Archive>::value && !std::is_same<typename std::remove_cv<T>::type, WriteBuffer>::value && std::is_class<T>::value
-			&& has_write<T, Archive(T::*)() const>::value, void>::type write(const std::string& valueName, const T& value)
+		typename std::enable_if<std::is_class<T>::value && !std::is_same<typename std::remove_cv<T>::type, Archive>::value && !std::is_same<typename std::remove_cv<T>::type, WriteBuffer>::value
+			&& has_member_write<T, Archive(T::*)() const>::value, void>::type write(const std::string& valueName, const T& value)
 		{
-			const se::Archive archive = value.write();
+			const Archive archive = value.write();
 			write(valueName, archive);
 		}
-		/* Is class, doesn't have const write. Read a sub archive from this and read the value from the sub archive. */
+		/* Is class, has free write. Read a sub archive from this and read the value from the sub archive. */
 		template<class T>
-		typename std::enable_if<!std::is_same<typename std::remove_cv<T>::type, Archive>::value && !std::is_same<typename std::remove_cv<T>::type, WriteBuffer>::value && std::is_class<T>::value
-			&& !has_write<T, Archive(T::*)() const>::value, void>::type write(const std::string& valueName, T& value)
+		typename std::enable_if<std::is_class<T>::value && !std::is_same<typename std::remove_cv<T>::type, Archive>::value && !std::is_same<typename std::remove_cv<T>::type, WriteBuffer>::value
+			&& !has_member_write<T, Archive(T::*)() const>::value && has_free_write<T>::value, void>::type write(const std::string& valueName, T& value)
 		{
-			const se::Archive archive = writeToArchive(value);
+			const Archive archive = writeToArchive(value);
 			write(valueName, archive);
+		}
+		/* Is class, doesn't have any archive methods but has write buffer method. */
+		template<class T>
+		typename std::enable_if<std::is_class<T>::value && !std::is_same<typename std::remove_cv<T>::type, Archive>::value && !std::is_same<typename std::remove_cv<T>::type, WriteBuffer>::value
+			&& !has_member_write<T, Archive(T::*)() const>::value && !has_free_write<T>::value
+			&& has_member_write<T, void(T::*)(WriteBuffer&) const>::value, void>::type write(const std::string& valueName, T& value)
+		{
+			WriteBuffer writeBuffer;
+			value.write(writeBuffer);
+			write(valueName, writeBuffer);
+		}
+		/* Is class, doesn't have any archive methods but has write buffer free function. */
+		template<class T>
+		typename std::enable_if<std::is_class<T>::value && !std::is_same<typename std::remove_cv<T>::type, Archive>::value && !std::is_same<typename std::remove_cv<T>::type, WriteBuffer>::value
+			&& !has_member_write<T, Archive(T::*)() const>::value && !has_free_write<T>::value
+			&& !has_member_write<T, void(T::*)(WriteBuffer&) const>::value && WriteBuffer::has_free_write<T>::value, void>::type write(const std::string& valueName, T& value)
+		{
+			WriteBuffer writeBuffer;
+			writeToBuffer(writeBuffer, value);
+			write(valueName, writeBuffer);
 		}
 
-		/* Is class, has mutable read */
+		/* Is class, has member read. */
 		template<class T>
-		typename std::enable_if<has_read<T, bool(T::*)(const Archive&)>::value, bool>::type read(const std::string& valueName, T& value) const
+		typename std::enable_if<has_member_read<T, bool(T::*)(const Archive&)>::value, bool>::type read(const std::string& valueName, T& value) const
 		{
-			se::Archive archive;
+			Archive archive;
 			read(valueName, archive);
 			return value.read(archive);
 		}
-		/* Is class, doesn't have mutable read */
+		/* Is class, doesn't have member read but has free read. */
 		template<class T>
-		typename std::enable_if<!has_read<T, bool(T::*)(const Archive&)>::value, bool>::type read(const std::string& valueName, T& value) const
+		typename std::enable_if<!has_member_read<T, bool(T::*)(const Archive&)>::value && has_free_read<T>::value, bool>::type read(const std::string& valueName, T& value) const
 		{
-			se::Archive archive;
+			Archive archive;
 			read(valueName, archive);
 			return readFromArchive(archive, value);
+		}
+		/* Is class, doesn't have any archive methods but has read buffer method. */
+		template<class T>
+		typename std::enable_if<!has_member_read<T, bool(T::*)(const Archive&)>::value && !has_free_read<T>::value
+			&& ReadBuffer::has_member_read<T, bool(T::*)(ReadBuffer&)>::value, bool>::type read(const std::string& valueName, T& value) const
+		{
+			WriteBuffer writeBuffer;
+			if (!read(valueName, writeBuffer))
+			{
+				return false;
+			}
+			ReadBuffer readBuffer(writeBuffer[0], writeBuffer.getSize());
+			return value.read(readBuffer);
+		}
+		/* Is class, doesn't have any archive methods but has read buffer free function. */
+		template<class T>
+		typename std::enable_if<!has_member_read<T, bool(T::*)(const Archive&)>::value && !has_free_read<T>::value
+			&& !ReadBuffer::has_member_read<T, bool(T::*)(ReadBuffer&)>::value && ReadBuffer::has_free_read<T>::value, bool>::type read(const std::string& valueName, T& value) const
+		{
+			WriteBuffer writeBuffer;
+			if (!read(valueName, writeBuffer))
+			{
+				return false;
+			}
+			ReadBuffer readBuffer(writeBuffer[0], writeBuffer.getSize());
+			return readFromBuffer(readBuffer, value);
 		}
 		
 	private:
