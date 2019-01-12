@@ -39,9 +39,9 @@ namespace se
 		return true;
 	}
 
-	//Class, has write
+	//Is class
 	template<typename T, typename SizeType = size_t>
-	typename std::enable_if<std::is_class<T>::value && Archive::has_member_write<T, Archive(T::*)() const>::value, Archive>::type
+	typename std::enable_if<std::is_class<T>::value, Archive>::type
 		writeToArchive(const std::vector<T>& vector)
 	{
 		Archive archive;
@@ -49,7 +49,7 @@ namespace se
 		se_write_to_archive(archive, size);
 		for (size_t i = 0; i < size; i++)
 		{
-			archive.write(std::to_string(i), vector[i].write());
+			archive.write(std::to_string(i), vector[i]);
 		}
 		WriteBuffer writeBuffer;
 		writeToBuffer(writeBuffer, vector);
@@ -57,7 +57,7 @@ namespace se
 		return archive;
 	}
 	template<typename T, typename SizeType = size_t>
-	typename std::enable_if<std::is_class<T>::value && Archive::has_member_write<T, Archive(T::*)() const>::value, Archive>::type
+	typename std::enable_if<std::is_class<T>::value, Archive>::type
 		readFromArchive(const Archive& archive, std::vector<T>& vector)
 	{
 		SizeType size;
@@ -65,12 +65,7 @@ namespace se
 		vector.resize(size);
 		for (size_t i = 0; i < size; i++)
 		{
-			Archive subArchive;
-			if (!archive.read(std::to_string(i), subArchive))
-			{
-				return false;
-			}
-			if (!vector[i].read(subArchive))
+			if (!archive.read(std::to_string(i), vector[i]))
 			{
 				return false;
 			}
@@ -78,48 +73,7 @@ namespace se
 		return true;
 	}
 
-	//Class, no write
-	template<typename T, typename SizeType = size_t>
-	typename std::enable_if<std::is_class<T>::value && !Archive::has_member_write<T, Archive(T::*)() const>::value, Archive>::type
-		writeToArchive(const std::vector<T>& vector)
-	{
-		static_assert(std::is_integral<SizeType>::value, "SizeType must be integral.");
-		Archive archive;
-		const SizeType size = vector.size();
-		se_write_to_archive(archive, size);
-		for (size_t i = 0; i < size; i++)
-		{
-			archive.write(std::to_string(i), writeToArchive(vector[i]));
-		}
-		WriteBuffer writeBuffer;
-		writeToBuffer(writeBuffer, vector);
-		se_write_to_archive(archive, writeBuffer);
-		return archive;
-	}
-	template<typename T, typename SizeType = size_t>
-	typename std::enable_if<std::is_class<T>::value && !Archive::has_member_write<T, Archive(T::*)() const>::value, Archive>::type
-		readFromArchive(const Archive& archive, std::vector<T>& vector)
-	{
-		static_assert(std::is_integral<SizeType>::value, "SizeType must be integral.");
-		SizeType size;
-		se_read_from_archive(archive, size);
-		vector.resize(size);
-		for (size_t i = 0; i < size; i++)
-		{
-			Archive subArchive;
-			if (!archive.read(std::to_string(i), subArchive))
-			{
-				return false;
-			}
-			if (!readFromArchive(vector[i]))
-			{
-				return false;
-			}
-		}
-		return true;
-	}
-
-	//Not class
+	//Not class (Write/ReadBuffer optimization)
 	template<typename T, typename SizeType = size_t>
 	typename std::enable_if<!std::is_class<T>::value, Archive>::type
 		writeToArchive(const std::vector<T>& vector)
