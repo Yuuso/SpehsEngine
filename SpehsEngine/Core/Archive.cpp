@@ -101,7 +101,7 @@ namespace se
 
 	uint32_t Archive::getDataHash(const std::string& typeName, const std::string& valueName) const
 	{
-		const size_t seed = 1;
+		const uint32_t seed = 1;
 		const uint32_t typeNameHash = murmurHash3_x86_32(typeName.c_str(), typeName.size(), seed);
 		const uint32_t valueNameHash = murmurHash3_x86_32(valueName.c_str(), valueName.size(), seed);
 		return (typeNameHash << 16u) | (valueNameHash >> 16u);
