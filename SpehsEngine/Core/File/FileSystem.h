@@ -1,34 +1,22 @@
 #pragma once
 #include <string>
-#include <fstream>
 #include <vector>
+
 namespace se
 {
-	/**Writes string to stream*/
-	void writeString(std::string& string, std::ofstream* stream);
-	/**Writes string to buffer. Returns number of bytes read.*/
-	size_t writeString(std::string& string, unsigned char* buffer);
-
-	/**Reads string from stream, written in writeString() format*/
-	void readString(std::string& string, std::ifstream* stream);
-	/**Reads string from buffer, written in writeString() format. Returns number of bytes read.*/
-	size_t readString(std::string& string, unsigned char* buffer);
-
-	/**Returns true if directory exists at given path*/
-	bool directoryExists(const std::string& path);
-
-	/**Returns true if file exists at given path*/
+	/* Returns true if file exists at given path. File may be a directory. */
 	bool fileExists(const std::string& path);
+	bool isDirectory(const std::string& path);
 
-	/**Returns true if file exists and was removed succesfully*/
+	/* Returns true if file exists and is removed succesfully. */
 	bool removeFile(const std::string& path);
 
-	/**Returns false if failed to create directory at given path*/
+	/* Returns false if directory did not exist and failed to create directory at the given path. */
 	bool createDirectory(const std::string& path);
 
-	/**If directory doesn't exist, creates one. If creation fails, returns false*/
+	/* Returns false if directory did not exist and couldn't create one. */
 	bool verifyDirectory(const std::string& path);
-
+		
 	/**Returns a vector of strings, each string representing a file found in the given directory.
 	Directory path is not included in the file string. If file type is specified, the file type will not be included in the file string.
 	If file type is specified, only files of that type are returned.*/

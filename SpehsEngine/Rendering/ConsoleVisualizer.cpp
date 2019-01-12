@@ -8,9 +8,9 @@
 
 #include "SpehsEngine/Core/BitwiseOperations.h"
 #include "SpehsEngine/Core/StringOperations.h"
-#include "SpehsEngine/Core/Time.h"
+#include "SpehsEngine/Core/SE_Time.h"
 #include "SpehsEngine/Core/Log.h"
-#include "SpehsEngine/Input/Input.h"
+#include "SpehsEngine/Input/InputLib.h"
 #include "SpehsEngine/Input/InputManager.h"
 #include "SpehsEngine/Rendering/ConsoleVisualizer.h"
 #include "SpehsEngine/Rendering/Camera2D.h"

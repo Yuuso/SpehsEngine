@@ -6,7 +6,7 @@
 #include "SpehsEngine/Sync/SyncTypeInfo.h"
 #include "SpehsEngine/Sync/SyncEntry.h"
 #include "SpehsEngine/Sync/SyncHandle.h"
-#include "SpehsEngine/Core/Time.h"
+#include "SpehsEngine/Core/SE_Time.h"
 #include "SpehsEngine/Core/Log.h"
 
 namespace se

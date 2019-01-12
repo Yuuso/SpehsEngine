@@ -5,7 +5,7 @@
 #include "SpehsEngine/Audio/SoundSource.h"
 #include "SpehsEngine/Core/ColorUtilityFunctions.h"
 #include "SpehsEngine/Input/InputManager.h"
-#include "SpehsEngine/Input/Input.h"
+#include "SpehsEngine/Input/InputLib.h"
 #include "SpehsEngine/Rendering/Polygon.h"
 #include "SpehsEngine/GUI/GUIRectangle.h"
 #include "SpehsEngine/Rendering/TextureManager.h"

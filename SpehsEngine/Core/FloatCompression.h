@@ -2,7 +2,7 @@
 #include <cstdint>
 #include "SpehsEngine/Core/WriteBuffer.h"
 #include "SpehsEngine/Core/ReadBuffer.h"
-#include "SpehsEngine/Core/Assert.h"
+#include "SpehsEngine/Core/SE_Assert.h"
 
 namespace se
 {

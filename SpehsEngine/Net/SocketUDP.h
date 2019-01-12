@@ -13,7 +13,7 @@
 #include "SpehsEngine/Net/Port.h"
 #include "SpehsEngine/Net/Address.h"
 #include "SpehsEngine/Net/IOService.h"
-#include "SpehsEngine/Core/Time.h"
+#include "SpehsEngine/Core/SE_Time.h"
 
 namespace se
 {

@@ -1,6 +1,6 @@
 #pragma once
 #include <vector>
-#include "SpehsEngine/Core/Time.h"
+#include "SpehsEngine/Core/SE_Time.h"
 #include "SpehsEngine/Core/Color.h"
 #include "SpehsEngine/GUI/GUIContext.h"
 

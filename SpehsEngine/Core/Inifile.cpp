@@ -1,8 +1,10 @@
 #include "stdafx.h"
-#include "SpehsEngine/Core/StringOperations.h"
-#include "SpehsEngine/Core/FileStream.h"
 #include "SpehsEngine/Core/Inifile.h"
+
+#include "SpehsEngine/Core/StringOperations.h"
+#include "SpehsEngine/Core/File/FileSystem.h"
 #include "SpehsEngine/Core/Log.h"
+#include <fstream>
 
 namespace se
 {

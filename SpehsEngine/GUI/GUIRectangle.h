@@ -5,7 +5,7 @@
 #include <glm/vec2.hpp>
 #include "SpehsEngine/GUI/GUIContext.h"
 #include "SpehsEngine/Core/BitwiseOperations.h"
-#include "SpehsEngine/Core/Time.h"
+#include "SpehsEngine/Core/SE_Time.h"
 #include "SpehsEngine/Rendering/TextureManager.h"//Used to get TextureParameter...
 #include "SpehsEngine/Core/Color.h"
 #define GUIRECT_ID_TYPE							uint32_t

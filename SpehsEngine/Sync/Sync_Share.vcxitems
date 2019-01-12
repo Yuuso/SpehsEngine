@@ -18,7 +18,7 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)stdafx.cpp">
       <PrecompiledHeader>Create</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)Sync.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)SyncLib.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)SyncEntry.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)SyncHandle.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)SyncManager.cpp" />
@@ -28,7 +28,7 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)ISyncType.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)PrecompiledInclude.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)stdafx.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)Sync.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)SyncLib.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)SyncEntry.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)SyncHandle.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)SyncManager.h" />

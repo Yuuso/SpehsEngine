@@ -8,7 +8,7 @@
 #include "SpehsEngine/Rendering/BatchRenderResults.h"
 #include "SpehsEngine/Core/Vertex.h"
 #include "SpehsEngine/Rendering/Camera2D.h"
-#include "SpehsEngine/Core/Time.h"
+#include "SpehsEngine/Core/SE_Time.h"
 
 #include <GL/glew.h>
 #include <algorithm>

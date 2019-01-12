@@ -1,13 +1,13 @@
 #include "stdafx.h"
+#include "SpehsEngine/Core/SE_Time.h"
+
+#include "SpehsEngine/Core/Log.h"
+#include "SpehsEngine/Core/ReadBuffer.h"
+#include "SpehsEngine/Core/WriteBuffer.h"
 #include <algorithm>
 #include <chrono>
 #include <mutex>
 #include <string>
-
-#include "SpehsEngine/Core/Log.h"
-#include "SpehsEngine/Core/Time.h"
-#include "SpehsEngine/Core/ReadBuffer.h"
-#include "SpehsEngine/Core/WriteBuffer.h"
 
 namespace se
 {

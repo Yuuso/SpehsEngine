@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "SpehsEngine/GUI/GUIContext.h"
-#include "SpehsEngine/Core/Time.h"
+#include "SpehsEngine/Core/SE_Time.h"
 #include "SpehsEngine/Core/DeltaTimeSystem.h"
 #include "SpehsEngine/Rendering/BatchManager.h"
 

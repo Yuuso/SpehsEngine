@@ -1,11 +1,11 @@
 #include "stdafx.h"
-#include "SpehsEngine/Game/Game.h"
-#include "SpehsEngine/Core/Core.h"
-#include "SpehsEngine/Input/Input.h"
-#include "SpehsEngine/Rendering/Rendering.h"
-#include "SpehsEngine/Audio/Audio.h"
+#include "SpehsEngine/Game/GameLib.h"
+#include "SpehsEngine/Core/CoreLib.h"
+#include "SpehsEngine/Input/InputLib.h"
+#include "SpehsEngine/Rendering/RenderingLib.h"
+#include "SpehsEngine/Audio/AudioLib.h"
 #include "SpehsEngine/Core/Log.h"
-#include "SpehsEngine/Core/Time.h"
+#include "SpehsEngine/Core/SE_Time.h"
 
 namespace se
 {

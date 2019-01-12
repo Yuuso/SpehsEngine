@@ -1,8 +1,8 @@
 #include "stdafx.h"
-#include "SpehsEngine/Core/Core.h"
+#include "SpehsEngine/Core/CoreLib.h"
 #include "SpehsEngine/Core/Log.h"
-#include "SpehsEngine/Core/Time.h"
-#include "SpehsEngine/Audio/Audio.h"
+#include "SpehsEngine/Core/SE_Time.h"
+#include "SpehsEngine/Audio/AudioLib.h"
 #include "SpehsEngine/Audio/AudioManager.h"
 #include "SpehsEngine/Audio/AudioEngine.h"
 

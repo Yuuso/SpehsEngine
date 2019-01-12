@@ -24,7 +24,7 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)Device\Servo.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Device\ThreadedDevice.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Device\Ublox_M8N.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)GPIO.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)GPIOLib.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Pin.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Manipulator.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)stdafx.cpp">
@@ -42,7 +42,7 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)Device\Servo.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Device\ThreadedDevice.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Device\Ublox_M8N.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)GPIO.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)GPIOLib.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Pin.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Manipulator.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)PrecompiledInclude.h" />

@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "SpehsEngine/GPIO/Device/HC_SR04.h"
-#include "SpehsEngine/Core/Time.h"
+#include "SpehsEngine/Core/SE_Time.h"
 #include "SpehsEngine/Core/Log.h"
 
 

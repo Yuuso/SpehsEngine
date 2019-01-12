@@ -2,7 +2,7 @@
 #include <mutex>
 #include <vector>
 #include <thread>
-#include "SpehsEngine/Core/Time.h"
+#include "SpehsEngine/Core/SE_Time.h"
 #include "SpehsEngine/GPIO/Device/ThreadedDevice.h"
 #include "SpehsEngine/GPIO/Device/PinReader.h"
 #include "SpehsEngine/GPIO/Pin.h"

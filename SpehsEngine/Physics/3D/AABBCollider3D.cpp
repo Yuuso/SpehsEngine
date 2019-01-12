@@ -1,7 +1,7 @@
 
 #include "stdafx.h"
 #include "SpehsEngine/Physics/3D/AABBCollider3D.h"
-#include "SpehsEngine/Core/Assert.h"
+#include "SpehsEngine/Core/SE_Assert.h"
 
 
 namespace se

@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "SpehsEngine/Input/InputManager.h"
 
-#include "SpehsEngine/Input/Input.h"
+#include "SpehsEngine/Input/InputLib.h"
 #include "SpehsEngine/Input/EventCatcher.h"
 #include "SpehsEngine/Input/MouseUtilityFunctions.h"
 #include "SpehsEngine/Rendering/Window.h"

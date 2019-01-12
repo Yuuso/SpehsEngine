@@ -13,7 +13,7 @@
 #include "SpehsEngine/Net/Endpoint.h"
 #include "SpehsEngine/Net/IOService.h"
 #include "SpehsEngine/Net/PacketMessage.h"
-#include "SpehsEngine/Core/Time.h"
+#include "SpehsEngine/Core/SE_Time.h"
 
 namespace se
 {

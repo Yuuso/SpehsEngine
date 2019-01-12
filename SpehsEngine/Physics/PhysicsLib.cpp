@@ -1,6 +1,7 @@
 #include "stdafx.h"
-#include "SpehsEngine/Physics/Physics.h"
-#include "SpehsEngine/Math/Math.h"
+#include "SpehsEngine/Physics/PhysicsLib.h"
+
+#include "SpehsEngine/Math/MathLib.h"
 #include "SpehsEngine/Core/Log.h"
 
 namespace se

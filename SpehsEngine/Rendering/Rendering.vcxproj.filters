@@ -60,9 +60,6 @@
     <ClInclude Include="TextureManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Rendering.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="BatchRenderResults.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -120,6 +117,9 @@
     <ClInclude Include="Line3D.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="RenderingLib.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Arrow.cpp">
@@ -162,9 +162,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="TextureManager.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Rendering.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="GLContext.cpp">
@@ -216,6 +213,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Line3D.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderingLib.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

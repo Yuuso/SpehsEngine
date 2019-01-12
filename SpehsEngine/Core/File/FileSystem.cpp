@@ -1,82 +1,52 @@
 #include "stdafx.h"
+#include "SpehsEngine/Core/File/FileSystem.h"
+
 #include <mutex>
 #include <boost/filesystem.hpp>
-#include "SpehsEngine/Core/FileStream.h"
+
+namespace
+{
+	static std::recursive_mutex filestreamMutex;
+}
 
 namespace se
 {
-	std::recursive_mutex filestreamMutex;
-
-	void writeString(std::string& string, std::ofstream* stream)
-	{
-		const unsigned count = unsigned(string.size());
-		stream->write((char*)&count, sizeof(count));
-		for (unsigned i = 0; i < count; i++)
-			stream->write((char*)&string[i], sizeof(char));
-	}
-	size_t writeString(std::string& string, unsigned char* buffer)
-	{
-		const unsigned count = unsigned(string.size());
-		memcpy(buffer, &count, sizeof(count));
-		size_t offset = sizeof(count);
-		for (unsigned i = 0; i < count; i++)
-		{
-			memcpy(&buffer[offset], &string[i], sizeof(char));
-			offset += sizeof(char);
-		}
-		return offset;
-	}
-
-	void readString(std::string& string, std::ifstream* stream)
-	{
-		unsigned count;
-		stream->read((char*)&count, sizeof(count));
-		string.resize(count);//Could potentially invalidate string reference??
-		for (unsigned i = 0; i < count; i++)
-			stream->read((char*)&string[i], sizeof(char));
-	}
-	size_t readString(std::string& string, unsigned char* buffer)
-	{
-		unsigned count;
-		size_t offset = 0;
-		memcpy(&count, &buffer[offset], sizeof(count));
-		offset += sizeof(count);
-		string.resize(count);//Could potentially invalidate string reference??
-		memcpy(&string[0], &buffer[offset], sizeof(char) * count);
-		offset += sizeof(char) * count;
-		return offset;
-	}
-
-	bool directoryExists(const std::string& path)
-	{
-		std::lock_guard<std::recursive_mutex> lock(filestreamMutex);
-		if (boost::filesystem::exists(path))
-		{//File exists, check type
-			if (boost::filesystem::is_directory(path))
-				return true;
-			else
-				return false;
-		}
-		else
-			return false;
-	}
-
 	bool fileExists(const std::string& path)
 	{
 		std::lock_guard<std::recursive_mutex> lock(filestreamMutex);
 		if (boost::filesystem::exists(path))
-		{//File exists, check type
-			if (boost::filesystem::is_regular_file(path))
-				return true;
-			else
-				return false;
+		{
+			return true;
 		}
 		else
+		{
 			return false;
+		}
+	}
+
+	bool isDirectory(const std::string& path)
+	{
+		std::lock_guard<std::recursive_mutex> lock(filestreamMutex);
+		if (boost::filesystem::exists(path))
+		{
+			if (boost::filesystem::is_regular_file(path))
+			{
+				return false;
+			}
+			else
+			{
+				return true;
+			}
+		}
+		else
+		{
+			return false;
+		}
 	}
 
 	bool removeFile(const std::string& path)
 	{
+		std::lock_guard<std::recursive_mutex> lock(filestreamMutex);
 		return boost::filesystem::remove(path);
 	}
 
@@ -85,19 +55,25 @@ namespace se
 		std::lock_guard<std::recursive_mutex> lock(filestreamMutex);
 		return boost::filesystem::create_directory(path);
 	}
-
+	
 	bool verifyDirectory(const std::string& path)
 	{
-		std::lock_guard<std::recursive_mutex> lock(filestreamMutex);
-		if (!se::directoryExists(path))
+		if (fileExists(path))
 		{
-			if (!se::createDirectory(path))
+			if (isDirectory(path))
 			{
-				log::warning("Failed to create directory: \"" + path + "\"!");
+				return true;
+			}
+			else
+			{
+				//Another non-directory exists at the given path
 				return false;
 			}
 		}
-		return true;
+		else
+		{
+			return createDirectory(path);
+		}
 	}
 	
 	std::vector<std::string> listFilesInDirectory(const std::string& directoryPath, std::string fileType)
@@ -117,7 +93,9 @@ namespace se
 		}
 
 		if (fileType.size() > 0 && fileType[0] == '.')
+		{
 			fileType.erase(fileType.begin());
+		}
 
 		boost::filesystem::directory_iterator it(path);
 		boost::filesystem::directory_iterator end;
@@ -125,18 +103,17 @@ namespace se
 		{
 			std::string fileName(it->path().filename().generic_string());
 			if (fileType.size() > 0)
-			{//Looking for specific file type
+			{
+				//Looking for specific file type
 				std::string type;
 				for (unsigned i = 0; i < fileName.size(); i++)
 				{
-					if (fileName[i] == '.' &&
-						i < fileName.size() - 1/*There are still some characters to read*/)
+					if (fileName[i] == '.' && i < fileName.size() - 1/*There are still some characters to read*/)
 					{
 						type.resize(fileName.size() - i - 1);
 						memcpy(&type[0], &fileName[i + 1], sizeof(char)* (fileName.size() - i - 1));
 						if (type == fileType)
-						{//Correct type
-
+						{
 							//Copy file name without the file type into type
 							type.resize(i);
 							memcpy(&type[0], &fileName[0], sizeof(char) * i);
@@ -146,8 +123,10 @@ namespace se
 					}
 				}
 			}
-			else//Add all found files
+			else
+			{
 				files.push_back(fileName);
+			}
 			it++;
 		}
 
@@ -176,7 +155,9 @@ namespace se
 		{
 			std::string fileName(it->path().filename().generic_string());
 			if (boost::filesystem::is_directory(directoryPath + fileName))
+			{
 				subDirectories.push_back(fileName);
+			}
 			it++;
 		}
 

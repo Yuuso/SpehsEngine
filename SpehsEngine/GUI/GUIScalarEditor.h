@@ -1,6 +1,6 @@
 #pragma once
 #include "SpehsEngine/Core/StringOperations.h"
-#include "SpehsEngine/Core/Time.h"
+#include "SpehsEngine/Core/SE_Time.h"
 #include "SpehsEngine/Input/InputManager.h"
 #include "SpehsEngine/GUI/GUIRectangleRow.h"
 #include "SpehsEngine/GUI/GUIStringEditor.h"

@@ -136,7 +136,7 @@
     <ClInclude Include="AnimatedSprite.h" />
     <ClInclude Include="Collider.h" />
     <ClInclude Include="Component.h" />
-    <ClInclude Include="Game.h" />
+    <ClInclude Include="GameLib.h" />
     <ClInclude Include="GameObject.h" />
     <ClInclude Include="PhysicsWorld2D.h" />
     <ClInclude Include="PrecompiledInclude.h" />
@@ -149,7 +149,7 @@
     <ClCompile Include="AnimatedSprite.cpp" />
     <ClCompile Include="Collider.cpp" />
     <ClCompile Include="Component.cpp" />
-    <ClCompile Include="Game.cpp" />
+    <ClCompile Include="GameLib.cpp" />
     <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="PhysicsWorld2D.cpp" />
     <ClCompile Include="RigidBody2D.cpp" />

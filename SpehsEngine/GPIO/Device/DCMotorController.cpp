@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "SpehsEngine/GPIO/Device/DCMotorController.h"
-#include "SpehsEngine/Core/Time.h"
+#include "SpehsEngine/Core/SE_Time.h"
 #include "SpehsEngine/Core/Log.h"
 #include <cmath>
 #include <bcm2835.h>

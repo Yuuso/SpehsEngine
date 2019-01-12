@@ -1,6 +1,6 @@
 #include "stdafx.h"
 
-#include "SpehsEngine/Core/Time.h"
+#include "SpehsEngine/Core/SE_Time.h"
 #include "SpehsEngine/Audio/SoundSource.h"
 #include "SpehsEngine/Audio/AudioManager.h"
 #include "SpehsEngine/Audio/AudioEngine.h"

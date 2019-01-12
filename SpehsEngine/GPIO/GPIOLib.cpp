@@ -1,10 +1,10 @@
 #include "stdafx.h"
 
-#include "SpehsEngine/GPIO/GPIO.h"
-#include "SpehsEngine/Core/Core.h"
+#include "SpehsEngine/GPIO/GPIOLib.h"
+#include "SpehsEngine/Core/CoreLib.h"
 #include "SpehsEngine/Core/Log.h"
-#include "SpehsEngine/Core/Time.h"
-#include "SpehsEngine/Sync/Sync.h"
+#include "SpehsEngine/Core/SE_Time.h"
+#include "SpehsEngine/Sync/SyncLib.h"
 
 #include <string>
 #include <thread>

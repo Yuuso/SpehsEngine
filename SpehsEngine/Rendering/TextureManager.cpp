@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "SpehsEngine/Core/Color.h"
 #include "SpehsEngine/Core/RNG.h"
-#include "SpehsEngine/Input/Input.h"
+#include "SpehsEngine/Input/InputLib.h"
 #include "SpehsEngine/Rendering/GLContext.h"
 #include "SpehsEngine/Rendering/Window.h"
 #include "SpehsEngine/Rendering/OpenGLError.h"

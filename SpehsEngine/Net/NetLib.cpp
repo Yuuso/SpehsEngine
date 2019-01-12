@@ -1,8 +1,9 @@
 #include "stdafx.h"
-#include "SpehsEngine/Net/Net.h"
-#include "SpehsEngine/Core/Core.h"
+#include "SpehsEngine/Net/NetLib.h"
+
+#include "SpehsEngine/Core/CoreLib.h"
 #include "SpehsEngine/Core/Log.h"
-#include "SpehsEngine/Core/Time.h"
+#include "SpehsEngine/Core/SE_Time.h"
 
 #include <string>
 #include <thread>

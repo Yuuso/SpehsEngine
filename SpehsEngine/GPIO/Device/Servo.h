@@ -3,7 +3,7 @@
 #include <mutex>
 #include <iostream>
 #include <bcm2835.h>
-#include "SpehsEngine/Core/Time.h"
+#include "SpehsEngine/Core/SE_Time.h"
 #include "SpehsEngine/GPIO/Device/ThreadedDevice.h"
 #include "SpehsEngine/GPIO/Pin.h"
 #include "SpehsEngine/Sync/ISyncType.h"

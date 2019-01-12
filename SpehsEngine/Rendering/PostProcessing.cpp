@@ -2,7 +2,7 @@
 #include "SpehsEngine/Rendering/PostProcessing.h"
 #include "SpehsEngine/Rendering/ShaderManager.h"
 #include "SpehsEngine/Rendering/OpenGLError.h"
-#include "SpehsEngine/Input/Input.h"
+#include "SpehsEngine/Input/InputLib.h"
 
 #include <GL/glew.h>
 

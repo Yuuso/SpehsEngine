@@ -1,13 +1,13 @@
 #include "stdafx.h"
 #include <iostream>
 #include <algorithm>
-#include "SpehsEngine/Core/Time.h"
+#include "SpehsEngine/Core/SE_Time.h"
 #include "SpehsEngine/Core/DeltaTimeSystem.h"
 #include "SpehsEngine/Math/Geometry.h"
 #include "SpehsEngine/Rendering/BatchManager.h"
 #include "SpehsEngine/Rendering/Window.h"
 #include "SpehsEngine/Input/InputManager.h"
-#include "SpehsEngine/Input/Input.h"
+#include "SpehsEngine/Input/InputLib.h"
 #include "SpehsEngine/GUI/GUIWindow.h"
 #include "SpehsEngine/GUI/GUIStringEditor.h"
 #include "SpehsEngine/GUI/GUIRectangleScrollList.h"

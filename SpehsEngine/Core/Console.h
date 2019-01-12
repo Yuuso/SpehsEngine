@@ -7,7 +7,7 @@
 #include <boost/signal.hpp>
 #include "SpehsEngine/Core/ConsoleVariable.h"
 #include "SpehsEngine/Core/Color.h"
-#include "SpehsEngine/Core/Time.h"
+#include "SpehsEngine/Core/SE_Time.h"
 #define CONSOLE_FONT_COLOR 255, 153, 0
 
 /**

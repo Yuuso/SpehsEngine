@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "SpehsEngine/Input/Joystick.h"
 
-#include "SpehsEngine/Input/input.h"
+#include "SpehsEngine/Input/InputLib.h"
 
 #include <SDL/SDL.h>
 #include <SDL/SDL_joystick.h>

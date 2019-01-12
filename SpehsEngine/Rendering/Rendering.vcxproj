@@ -172,7 +172,7 @@
     <ClInclude Include="PrecompiledInclude.h" />
     <ClInclude Include="Primitive.h" />
     <ClInclude Include="Plane3D.h" />
-    <ClInclude Include="Rendering.h" />
+    <ClInclude Include="RenderingLib.h" />
     <ClInclude Include="ShaderManager.h" />
     <ClInclude Include="Skybox.h" />
     <ClInclude Include="stdafx.h" />
@@ -205,7 +205,7 @@
     <ClCompile Include="PostProcessing.cpp" />
     <ClCompile Include="Primitive.cpp" />
     <ClCompile Include="Plane3D.cpp" />
-    <ClCompile Include="Rendering.cpp" />
+    <ClCompile Include="RenderingLib.cpp" />
     <ClCompile Include="ShaderManager.cpp" />
     <ClCompile Include="Mesh.cpp" />
     <ClCompile Include="Skybox.cpp" />

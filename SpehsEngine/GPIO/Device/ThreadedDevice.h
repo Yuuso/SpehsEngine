@@ -1,7 +1,7 @@
 #pragma once
 #include <thread>
 #include <mutex>
-#include "SpehsEngine/Core/Time.h"
+#include "SpehsEngine/Core/SE_Time.h"
 
 namespace se
 {

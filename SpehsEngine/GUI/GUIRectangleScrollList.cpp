@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include <algorithm>
 #include "SpehsEngine/Input/InputManager.h"
-#include "SpehsEngine/Input/Input.h"
+#include "SpehsEngine/Input/InputLib.h"
 #include "SpehsEngine/Rendering/BatchManager.h"
 #include "SpehsEngine/Rendering/Window.h"
 #include "SpehsEngine/GUI/GUIRectangleScrollList.h"

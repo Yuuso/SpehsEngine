@@ -145,7 +145,7 @@
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Audio.cpp" />
+    <ClCompile Include="AudioLib.cpp" />
     <ClCompile Include="AudioEngine.cpp" />
     <ClCompile Include="AudioManager.cpp" />
     <ClCompile Include="OpenALError.cpp" />
@@ -158,7 +158,7 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Audio.h" />
+    <ClInclude Include="AudioLib.h" />
     <ClInclude Include="AudioEngine.h" />
     <ClInclude Include="AudioManager.h" />
     <ClInclude Include="OpenALError.h" />

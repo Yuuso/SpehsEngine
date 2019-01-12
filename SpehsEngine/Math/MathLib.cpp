@@ -1,6 +1,6 @@
 #include "stdafx.h"
-#include "SpehsEngine/Math/Math.h"
-#include "SpehsEngine/Core/Core.h"
+#include "SpehsEngine/Math/MathLib.h"
+#include "SpehsEngine/Core/CoreLib.h"
 #include "SpehsEngine/Core/Log.h"
 
 namespace se

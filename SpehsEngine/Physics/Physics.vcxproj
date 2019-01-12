@@ -127,7 +127,7 @@
     <ClCompile Include="3D\Collision3D.cpp" />
     <ClCompile Include="3D\Ray3D.cpp" />
     <ClCompile Include="3D\FrustumCollider3D.cpp" />
-    <ClCompile Include="Physics.cpp" />
+    <ClCompile Include="PhysicsLib.cpp" />
     <ClCompile Include="SATCollision.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
@@ -142,7 +142,7 @@
     <ClInclude Include="3D\Ray3D.h" />
     <ClInclude Include="3D\stdafx.h" />
     <ClInclude Include="3D\FrustumCollider3D.h" />
-    <ClInclude Include="Physics.h" />
+    <ClInclude Include="PhysicsLib.h" />
     <ClInclude Include="PrecompiledInclude.h" />
     <ClInclude Include="SATCollision.h" />
     <ClInclude Include="stdafx.h" />
