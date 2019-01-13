@@ -7,6 +7,7 @@
 #include "SpehsEngine/Core/ReadBuffer.h"
 #include "SpehsEngine/Core/STLVectorUtilityFunctions.h"
 #include "SpehsEngine/Core/StringUtilityFunctions.h"
+#include "SpehsEngine/Core/Murmur3.h"
 #include <boost/filesystem.hpp>
 
 namespace se
@@ -51,7 +52,58 @@ namespace se
 		return true;
 	}
 
-	void getDirectoryStateImpl(DirectoryState& directoryState, const std::string& fullDirectoryPath, const std::string& relativeDirectoryPath, const size_t fileDataHashSeed)
+	const DirectoryState::FileState* DirectoryState::findFileState(std::string filePath) const
+	{
+		while (filePath.size() > 0 && filePath.front() == '/')
+		{
+			filePath.erase(filePath.begin());
+		}
+
+		if (filePath.empty())
+		{
+			return nullptr;
+		}
+
+		std::string subDirectoryPath;
+		for (size_t i = 0; i < filePath.size(); i++)
+		{
+			if (filePath[i] == '/')
+			{
+				subDirectoryPath.resize(i);
+				if (i > 0)
+				{
+					memcpy(&subDirectoryPath[0], filePath.data(), i);
+					filePath.erase(filePath.begin(), filePath.begin() + i);
+				}
+				break;
+			}
+		}
+
+		if (subDirectoryPath.empty())
+		{
+			for (size_t i = 0; i < files.size(); i++)
+			{
+				if (files[i].path == filePath)
+				{
+					return &files[i];
+				}
+			}
+			return nullptr;
+		}
+		else
+		{
+			for (size_t i = 0; i < directories.size(); i++)
+			{
+				if (directories[i].path == subDirectoryPath)
+				{
+					return directories[i].findFileState(filePath);
+				}
+			}
+			return nullptr;
+		}
+	}
+
+	void getDirectoryStateImpl(DirectoryState& directoryState, const std::string& fullDirectoryPath, const std::string& relativeDirectoryPath, const DirectoryState::Flag::Type flags, const size_t fileDataHashSeed)
 	{
 		directoryState.path = relativeDirectoryPath;
 		const std::vector<std::string> files = se::listFilesInDirectory(fullDirectoryPath);
@@ -64,27 +116,34 @@ namespace se
 			if (se::isDirectory(fullFilePath))
 			{
 				directoryState.directories.push_back(DirectoryState());
-				getDirectoryStateImpl(directoryState.directories.back(), fullFilePath, relativeFilePath, fileDataHashSeed);
+				getDirectoryStateImpl(directoryState.directories.back(), fullFilePath, relativeFilePath, flags, fileDataHashSeed);
 			}
 			else
 			{
 				directoryState.files.push_back(DirectoryState::FileState());
 				directoryState.files.back().path = relativeFilePath;
-				if (fileDataHashSeed)
+				if (flags & (DirectoryState::Flag::read | DirectoryState::Flag::hash))
 				{
 					File file;
 					if (readFile(file, fullFilePath))
 					{
-						directoryState.files.back().dataHash = getFileDataHash(file, fileDataHashSeed);
+						if (flags & DirectoryState::Flag::hash)
+						{
+							directoryState.files.back().dataHash = murmurHash3_x86_32(file.data.data(), file.data.size(), fileDataHashSeed);
+						}
+						if (flags & DirectoryState::Flag::read)
+						{
+							directoryState.files.back().data.swap(file.data);
+						}
 					}
 				}
 			}
 		}
 	}
 
-	void getDirectoryState(DirectoryState& directoryState, const std::string& path, const size_t fileDataHashSeed)
+	void getDirectoryState(DirectoryState& directoryState, const std::string& path, const DirectoryState::Flag::Type flags, const size_t fileDataHashSeed)
 	{
-		getDirectoryStateImpl(directoryState, path, "", fileDataHashSeed);
+		getDirectoryStateImpl(directoryState, path, "", flags, fileDataHashSeed);
 	}
 
 	void getDirectoriesAndFiles(const DirectoryState& directoryState, std::vector<std::string>& directories, std::vector<std::string>& files)
@@ -109,7 +168,7 @@ namespace se
 			{
 				if (directoryState.files[i].dataHash != 0u)
 				{
-					const uint32_t dataHash = getFileDataHash(file, fileDataHashSeed);
+					const uint32_t dataHash = murmurHash3_x86_32(file.data.data(), file.data.size(), fileDataHashSeed);
 					if (dataHash != directoryState.files[i].dataHash)
 					{
 						unequalFiles.push_back(directoryState.files[i].path);

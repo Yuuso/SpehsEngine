@@ -15,6 +15,4 @@ namespace se
 
 	/* Opens file and truncates previous contents with the given data. */
 	bool writeFile(const File& file);
-
-	uint32_t getFileDataHash(const File& file, const size_t seed);
 }
