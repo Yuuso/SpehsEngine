@@ -80,16 +80,19 @@ namespace se
 	{
 		std::lock_guard<std::recursive_mutex> lock(filestreamMutex);
 		std::vector<std::string> files;
-		boost::filesystem::path path(directoryPath);
-		if (!boost::filesystem::exists(path))
+		const boost::filesystem::path path(directoryPath.empty() ? getCurrentPath() : directoryPath);
+		if (directoryPath.size() > 0)
 		{
-			log::warning("listFilesInDirectory failed: directory does not exist! : " + directoryPath);
-			return files;
-		}
-		if (!boost::filesystem::is_directory(path))
-		{
-			log::warning("listFilesInDirectory failed: directory path leads to a non-directory file! : " + directoryPath);
-			return files;
+			if (!boost::filesystem::exists(path))
+			{
+				log::warning("listFilesInDirectory failed: directory does not exist! : " + directoryPath);
+				return files;
+			}
+			if (!boost::filesystem::is_directory(path))
+			{
+				log::warning("listFilesInDirectory failed: directory path leads to a non-directory file! : " + directoryPath);
+				return files;
+			}
 		}
 
 		if (fileType.size() > 0 && fileType[0] == '.')
@@ -137,16 +140,19 @@ namespace se
 	{
 		std::lock_guard<std::recursive_mutex> lock(filestreamMutex);
 		std::vector<std::string> subDirectories;
-		boost::filesystem::path path(directoryPath);
-		if (!boost::filesystem::exists(path))
+		const boost::filesystem::path path(directoryPath.empty() ? getCurrentPath() : directoryPath);
+		if (directoryPath.size() > 0)
 		{
-			log::warning("listSubDirectoriesInDirectory failed: directory does not exist! : " + directoryPath);
-			return subDirectories;
-		}
-		if (!boost::filesystem::is_directory(path))
-		{
-			log::warning("listSubDirectoriesInDirectory failed: directory path leads to a non-directory file! : " + directoryPath);
-			return subDirectories;
+			if (!boost::filesystem::exists(path))
+			{
+				log::warning("listSubDirectoriesInDirectory failed: directory does not exist! : " + directoryPath);
+				return subDirectories;
+			}
+			if (!boost::filesystem::is_directory(path))
+			{
+				log::warning("listSubDirectoriesInDirectory failed: directory path leads to a non-directory file! : " + directoryPath);
+				return subDirectories;
+			}
 		}
 		
 		boost::filesystem::directory_iterator it(path);
@@ -162,5 +168,10 @@ namespace se
 		}
 
 		return subDirectories;
+	}
+
+	std::string getCurrentPath()
+	{
+		return boost::filesystem::current_path().generic_string();
 	}
 }

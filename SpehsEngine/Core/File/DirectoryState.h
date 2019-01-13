@@ -26,7 +26,17 @@ namespace se
 
 	/*
 		Returns directory state for given path recursively.
+		Returned DirectoryState paths will be relative to the given path.
 		If fileDataHashSeed is set to non-zero, each found file will be opened and data hash will be computed.
 	*/
-	void getDirectoryState(DirectoryState& directory, const std::string& path, const size_t fileDataHashSeed = 0);
+	void getDirectoryState(DirectoryState& directoryState, const std::string& path, const size_t fileDataHashSeed = 0);
+
+	void getDirectoriesAndFiles(const DirectoryState& directoryState, std::vector<std::string>& directories, std::vector<std::string>& files);
+
+	/*
+		Compares given directory state against given path.
+		Detects missing directories, files and unequal (data hash comparison) files.
+		DirectoryState file data hashes must be pre-calculated.
+	*/
+	void compare(const DirectoryState& directoryState, const std::string& path, const size_t fileDataHashSeed, std::vector<std::string>& missingDirectories, std::vector<std::string>& missingFiles, std::vector<std::string>& unequalFiles);
 }

@@ -25,4 +25,10 @@ namespace se
 	/**Returns a vector of strings, each string representing a sub directory found in the given directory.
 	Directory path is not included in the sub directory string.*/
 	std::vector<std::string> listSubDirectoriesInDirectory(const std::string& directoryPath);
+
+	/*
+		Note: The current path for many operating systems is a dangerous global state.
+		It may be changed unexpectedly by a third-party or system library functions, or by another thread.
+	*/
+	std::string getCurrentPath();
 }

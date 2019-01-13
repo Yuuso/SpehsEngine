@@ -3,7 +3,7 @@
 
 #include <fstream>
 #include "SpehsEngine/Core/File/FileSystem.h"
-
+#include "SpehsEngine/Core/Murmur3.h"
 
 namespace se
 {
@@ -51,5 +51,10 @@ namespace se
 			return false;
 		}
 		return true;
+	}
+
+	uint32_t getFileDataHash(const File& file, const size_t seed)
+	{
+		return murmurHash3_x86_32(file.data.data(), file.data.size(), seed);
 	}
 }
