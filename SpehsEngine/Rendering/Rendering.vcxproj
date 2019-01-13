@@ -96,7 +96,7 @@
       <AdditionalDependencies>SpehsCore$(TargetExt);SpehsInput$(TargetExt);glew32.lib;glew32s.lib;opengl32.lib;freetype.lib;SOIL.lib</AdditionalDependencies>
     </Link>
     <Lib>
-      <AdditionalDependencies>glew32.lib;glew32s.lib;SOIL.lib;freetype.lib;assimp-vc140-mt.lib</AdditionalDependencies>
+      <AdditionalDependencies>opengl32.lib;glew32.lib;glew32s.lib;SOIL.lib;freetype.lib;assimp-vc140-mt.lib</AdditionalDependencies>
     </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -109,7 +109,7 @@
       <AdditionalDependencies>SpehsCore$(TargetExt);SpehsInput$(TargetExt);glew32.lib;glew32s.lib;opengl32.lib;freetype.lib;SOIL.lib</AdditionalDependencies>
     </Link>
     <Lib>
-      <AdditionalDependencies>glew32.lib;glew32s.lib;SOIL.lib;freetype.lib</AdditionalDependencies>
+      <AdditionalDependencies>opengl32.lib;glew32.lib;glew32s.lib;SOIL.lib;freetype.lib;assimp-vc140-mt.lib</AdditionalDependencies>
     </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -125,7 +125,7 @@
       <AdditionalDependencies>SpehsCore$(TargetExt);SpehsInput$(TargetExt);glew32.lib;glew32s.lib;opengl32.lib;freetype.lib;SOIL.lib</AdditionalDependencies>
     </Link>
     <Lib>
-      <AdditionalDependencies>glew32.lib;glew32s.lib;SOIL.lib;freetype.lib;assimp-vc140-mt.lib</AdditionalDependencies>
+      <AdditionalDependencies>opengl32.lib;glew32.lib;glew32s.lib;SOIL.lib;freetype.lib;assimp-vc140-mt.lib</AdditionalDependencies>
     </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -141,7 +141,7 @@
       <AdditionalDependencies>SpehsCore$(TargetExt);SpehsInput$(TargetExt);glew32.lib;glew32s.lib;opengl32.lib;freetype.lib;SOIL.lib</AdditionalDependencies>
     </Link>
     <Lib>
-      <AdditionalDependencies>glew32.lib;glew32s.lib;SOIL.lib;freetype.lib</AdditionalDependencies>
+      <AdditionalDependencies>opengl32.lib;glew32.lib;glew32s.lib;SOIL.lib;freetype.lib;assimp-vc140-mt.lib</AdditionalDependencies>
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
