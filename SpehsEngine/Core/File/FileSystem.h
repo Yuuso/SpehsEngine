@@ -11,6 +11,9 @@ namespace se
 	/* Returns true if file exists and is removed succesfully. */
 	bool removeFile(const std::string& path);
 
+	/* Returns true if file exists and is renamed successfully. */
+	bool renameFile(const std::string& oldPath, const std::string& newPath);
+
 	/* Returns false if directory did not exist and failed to create directory at the given path. */
 	bool createDirectory(const std::string& path);
 

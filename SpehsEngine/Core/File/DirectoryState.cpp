@@ -15,7 +15,7 @@ namespace se
 	void DirectoryState::FileState::write(se::WriteBuffer& writeBuffer) const
 	{
 		writeToBuffer<uint32_t>(writeBuffer, path);
-		writeBuffer.write(dataHash);
+		writeBuffer.write(fileHash);
 	}
 
 	bool DirectoryState::FileState::read(se::ReadBuffer& readBuffer)
@@ -24,7 +24,7 @@ namespace se
 		{
 			return false;
 		}
-		se_read(readBuffer, dataHash);
+		se_read(readBuffer, fileHash);
 		return true;
 	}
 
@@ -52,28 +52,28 @@ namespace se
 		return true;
 	}
 
-	const DirectoryState::FileState* DirectoryState::findFileState(std::string filePath) const
+	const DirectoryState::FileState* DirectoryState::findFileState(std::string remainingFilePath) const
 	{
-		while (filePath.size() > 0 && filePath.front() == '/')
+		while (remainingFilePath.size() > 0 && remainingFilePath.front() == '/')
 		{
-			filePath.erase(filePath.begin());
+			remainingFilePath.erase(remainingFilePath.begin());
 		}
 
-		if (filePath.empty())
+		if (remainingFilePath.empty())
 		{
 			return nullptr;
 		}
 
 		std::string subDirectoryPath;
-		for (size_t i = 0; i < filePath.size(); i++)
+		for (size_t i = 0; i < remainingFilePath.size(); i++)
 		{
-			if (filePath[i] == '/')
+			if (remainingFilePath[i] == '/')
 			{
 				subDirectoryPath.resize(i);
 				if (i > 0)
 				{
-					memcpy(&subDirectoryPath[0], filePath.data(), i);
-					filePath.erase(filePath.begin(), filePath.begin() + i);
+					memcpy(&subDirectoryPath[0], remainingFilePath.data(), i);
+					remainingFilePath.erase(remainingFilePath.begin(), remainingFilePath.begin() + i + 1);
 				}
 				break;
 			}
@@ -81,9 +81,10 @@ namespace se
 
 		if (subDirectoryPath.empty())
 		{
+			const std::string fullFilePath = path.empty() ? remainingFilePath : path + '/' + remainingFilePath;
 			for (size_t i = 0; i < files.size(); i++)
 			{
-				if (files[i].path == filePath)
+				if (files[i].path == fullFilePath)
 				{
 					return &files[i];
 				}
@@ -96,14 +97,33 @@ namespace se
 			{
 				if (directories[i].path == subDirectoryPath)
 				{
-					return directories[i].findFileState(filePath);
+					return directories[i].findFileState(remainingFilePath);
 				}
 			}
 			return nullptr;
 		}
 	}
 
-	void getDirectoryStateImpl(DirectoryState& directoryState, const std::string& fullDirectoryPath, const std::string& relativeDirectoryPath, const DirectoryState::Flag::Type flags, const size_t fileDataHashSeed)
+	const DirectoryState::FileState* DirectoryState::findFileState(const uint32_t fileHash) const
+	{
+		for (size_t i = 0; i < files.size(); i++)
+		{
+			if (files[i].fileHash == fileHash)
+			{
+				return &files[i];
+			}
+		}
+		for (size_t i = 0; i < directories.size(); i++)
+		{
+			if (const DirectoryState::FileState* const fileState = directories[i].findFileState(fileHash))
+			{
+				return fileState;
+			}
+		}
+		return nullptr;
+	}
+
+	void getDirectoryStateImpl(DirectoryState& directoryState, const std::string& fullDirectoryPath, const std::string& relativeDirectoryPath, const DirectoryState::Flag::Type flags, const size_t fileHashSeed)
 	{
 		directoryState.path = relativeDirectoryPath;
 		const std::vector<std::string> files = se::listFilesInDirectory(fullDirectoryPath);
@@ -116,7 +136,7 @@ namespace se
 			if (se::isDirectory(fullFilePath))
 			{
 				directoryState.directories.push_back(DirectoryState());
-				getDirectoryStateImpl(directoryState.directories.back(), fullFilePath, relativeFilePath, flags, fileDataHashSeed);
+				getDirectoryStateImpl(directoryState.directories.back(), fullFilePath, relativeFilePath, flags, fileHashSeed);
 			}
 			else
 			{
@@ -129,7 +149,10 @@ namespace se
 					{
 						if (flags & DirectoryState::Flag::hash)
 						{
-							directoryState.files.back().dataHash = murmurHash3_x86_32(file.data.data(), file.data.size(), fileDataHashSeed);
+							std::vector<uint8_t> hashData(directoryState.files.back().path.size() + file.data.size());
+							memcpy(&hashData[0], directoryState.files.back().path.data(), directoryState.files.back().path.size());
+							memcpy(&hashData[directoryState.files.back().path.size()], file.data.data(), file.data.size());
+							directoryState.files.back().fileHash = murmurHash3_x86_32(hashData.data(), hashData.size(), fileHashSeed);
 						}
 						if (flags & DirectoryState::Flag::read)
 						{
@@ -141,9 +164,9 @@ namespace se
 		}
 	}
 
-	void getDirectoryState(DirectoryState& directoryState, const std::string& path, const DirectoryState::Flag::Type flags, const size_t fileDataHashSeed)
+	void getDirectoryState(DirectoryState& directoryState, const std::string& path, const DirectoryState::Flag::Type flags, const size_t fileHashSeed)
 	{
-		getDirectoryStateImpl(directoryState, path, "", flags, fileDataHashSeed);
+		getDirectoryStateImpl(directoryState, path, "", flags, fileHashSeed);
 	}
 
 	void getDirectoriesAndFiles(const DirectoryState& directoryState, std::vector<std::string>& directories, std::vector<std::string>& files)
@@ -158,7 +181,7 @@ namespace se
 		}
 	}
 
-	void compare(const DirectoryState& directoryState, const std::string& path, const size_t fileDataHashSeed, std::vector<std::string>& missingDirectories, std::vector<std::string>& missingFiles, std::vector<std::string>& unequalFiles)
+	void compare(const DirectoryState& directoryState, const std::string& path, const size_t fileHashSeed, std::vector<std::string>& missingDirectories, std::vector<std::string>& missingFiles, std::vector<std::string>& unequalFiles)
 	{
 		for (size_t i = 0; i < directoryState.files.size(); i++)
 		{
@@ -166,17 +189,17 @@ namespace se
 			File file;
 			if (readFile(file, filePath))
 			{
-				if (directoryState.files[i].dataHash != 0u)
+				if (directoryState.files[i].fileHash != 0u)
 				{
-					const uint32_t dataHash = murmurHash3_x86_32(file.data.data(), file.data.size(), fileDataHashSeed);
-					if (dataHash != directoryState.files[i].dataHash)
+					const uint32_t fileHash = murmurHash3_x86_32(file.data.data(), file.data.size(), fileHashSeed);
+					if (fileHash != directoryState.files[i].fileHash)
 					{
 						unequalFiles.push_back(directoryState.files[i].path);
 					}
 				}
 				else
 				{
-					se::log::error("DirectoryState file data hashes must be pre-calculated.");
+					se::log::error("DirectoryState file hashes must be pre-calculated.");
 				}
 			}
 			else
@@ -194,7 +217,7 @@ namespace se
 			}
 			else
 			{
-				compare(directoryState.directories[i], path, fileDataHashSeed, missingDirectories, missingFiles, unequalFiles);
+				compare(directoryState.directories[i], path, fileHashSeed, missingDirectories, missingFiles, unequalFiles);
 			}
 		}
 	}

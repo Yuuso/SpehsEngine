@@ -23,12 +23,13 @@ namespace se
 			bool read(se::ReadBuffer& readBuffer);
 			std::string path;
 			std::vector<uint8_t> data;
-			/* The data hash is the hash value of the file contents. */
-			uint32_t dataHash = 0u;
+			/* The file hash is a hash value that is computed using the file's local (DirectoryState) path and file data contents. */
+			uint32_t fileHash = 0u;
 		};
 		void write(se::WriteBuffer& writeBuffer) const;
 		bool read(se::ReadBuffer& readBuffer);
 		const FileState* findFileState(std::string filePath) const;
+		const FileState* findFileState(const uint32_t fileHash) const;
 		std::string path;
 		std::vector<FileState> files;
 		std::vector<DirectoryState> directories;
@@ -37,16 +38,15 @@ namespace se
 	/*
 		Returns directory state for given path recursively.
 		Returned DirectoryState paths will be relative to the given path.
-		If fileDataHashSeed is set to non-zero, each found file will be opened and data hash will be computed.
 	*/
-	void getDirectoryState(DirectoryState& directoryState, const std::string& path, const DirectoryState::Flag::Type flags, const size_t fileDataHashSeed = 0);
+	void getDirectoryState(DirectoryState& directoryState, const std::string& path, const DirectoryState::Flag::Type flags, const size_t fileHashSeed);
 
 	void getDirectoriesAndFiles(const DirectoryState& directoryState, std::vector<std::string>& directories, std::vector<std::string>& files);
 	
 	/*
 		Compares given directory state against given path.
 		Detects missing directories, files and unequal (data hash comparison) files.
-		DirectoryState file data hashes must be pre-calculated.
+		DirectoryState file hashes must be pre-calculated.
 	*/
-	void compare(const DirectoryState& directoryState, const std::string& path, const size_t fileDataHashSeed, std::vector<std::string>& missingDirectories, std::vector<std::string>& missingFiles, std::vector<std::string>& unequalFiles);
+	void compare(const DirectoryState& directoryState, const std::string& path, const size_t fileHashSeed, std::vector<std::string>& missingDirectories, std::vector<std::string>& missingFiles, std::vector<std::string>& unequalFiles);
 }

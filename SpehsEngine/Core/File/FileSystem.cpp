@@ -47,7 +47,28 @@ namespace se
 	bool removeFile(const std::string& path)
 	{
 		std::lock_guard<std::recursive_mutex> lock(filestreamMutex);
-		return boost::filesystem::remove(path);
+		boost::system::error_code error;
+		const bool result = boost::filesystem::remove(path, error);
+		if (error)
+		{
+			log::info("Error when trying to remove the file '" + path + "' : " + error.message());
+		}
+		return result;
+	}
+
+	bool renameFile(const std::string& oldPath, const std::string& newPath)
+	{
+		std::lock_guard<std::recursive_mutex> lock(filestreamMutex);
+		boost::system::error_code error;
+		boost::filesystem::rename(oldPath, newPath, error);
+		if (error)
+		{
+			return false;
+		}
+		else
+		{
+			return true;
+		}
 	}
 
 	bool createDirectory(const std::string& path)
