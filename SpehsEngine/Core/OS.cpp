@@ -5,13 +5,32 @@
 #else
 #endif
 
-
+namespace
+{
+#if (defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__))
+	std::string getLastErrorMessage()
+	{
+		LPVOID lpMsgBuf;
+		DWORD dw = GetLastError();
+		FormatMessage(
+			FORMAT_MESSAGE_ALLOCATE_BUFFER |
+			FORMAT_MESSAGE_FROM_SYSTEM |
+			FORMAT_MESSAGE_IGNORE_INSERTS,
+			NULL,
+			dw,
+			MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
+			(LPTSTR)&lpMsgBuf,
+			0, NULL);
+		return std::string((const char*)lpMsgBuf);
+	}
+#endif
+}
 
 namespace se
 {
 	bool copyToClipBoard(const void* data, size_t bytes)
 	{
-#if false && (defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__))
+#if (defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__))
 
 		if (!OpenClipboard(0))
 			return false;
@@ -33,19 +52,26 @@ namespace se
 		GlobalUnlock(hg);
 
 		//Set clipboard data
-		bool success = SetClipboardData(CF_TEXT, hg);
+		HANDLE success = SetClipboardData(CF_TEXT, hg);
 
 		//Close and return
 		while (!CloseClipboard()) {}
 		GlobalFree(hg);
-		return success;
+		if (success)
+		{
+			return true;
+		}
+		else
+		{
+			return false;
+		}
 #else
 		return false;
 #endif
 	}
 	std::string copyFromClipBoard()
 	{
-#if false && (defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__))
+#if (defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__))
 		std::string data;
 
 		if (!OpenClipboard(0))
@@ -63,6 +89,48 @@ namespace se
 		return data;
 #else
 		return "";
+#endif
+	}
+
+	bool createProcess(const std::string& filename, const std::string& commandLine)
+	{
+#if (defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__))
+		std::string commandLineCopy = commandLine;
+
+		// additional information
+		STARTUPINFO startupInfo;
+		PROCESS_INFORMATION processInfo;
+
+		// set the size of the structures
+		ZeroMemory(&startupInfo, sizeof(startupInfo));
+		startupInfo.cb = sizeof(startupInfo);
+		ZeroMemory(&processInfo, sizeof(processInfo));
+
+		// start the program up
+		auto result = CreateProcess(
+			filename.c_str(),				// the path
+			&commandLineCopy[0],			// Command line
+			NULL,							// Process handle not inheritable
+			NULL,							// Thread handle not inheritable
+			FALSE,							// Set handle inheritance to FALSE
+			0,								// No creation flags
+			NULL,							// Use parent's environment block
+			NULL,							// Use parent's starting directory 
+			&startupInfo,					// Pointer to STARTUPINFO structure
+			&processInfo					// Pointer to PROCESS_INFORMATION structure (removed extra parentheses)
+		);
+		if (result == 0)
+		{
+			se::log::error("Failed to create process '" + filename + "'. Error: " + getLastErrorMessage());
+			return false;
+		}
+		else
+		{
+			return true;
+		}
+#else
+		static_assert(false && "Create process implementation is missing.");
+		return false;
 #endif
 	}
 }
