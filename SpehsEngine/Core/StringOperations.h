@@ -46,4 +46,9 @@ namespace se
 
 	/** Process string into words (character sequences that are separated by the ' ' ascii character). Words are appended to the vector. */
 	void getWords(const std::string& string, std::vector<std::string>& wordsDeposit);
+
+	/* Iterates the input string from back to front. If dot character is encountered, returns the contents of that string after the first
+	Assigns the contents after the last dot character in the inString into the outString. If no dot character exists, returns false
+	*/
+	bool getFileExtension(const std::string& inString, std::string& outString);
 }

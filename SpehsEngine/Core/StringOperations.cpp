@@ -295,4 +295,21 @@ namespace se
 			}
 		}
 	}
+
+	bool getFileExtension(const std::string& inString, std::string& outString)
+	{
+		for (size_t i = inString.size(); i-- > 0;)
+		{
+			if (inString[i] == '.')
+			{
+				outString.clear();
+				if (i + 1 < inString.size())
+				{
+					outString.insert(outString.begin(), inString.begin() + i + 1, inString.end());
+				}
+				return true;
+			}
+		}
+		return false;
+	}
 }
