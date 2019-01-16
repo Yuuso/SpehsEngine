@@ -64,44 +64,33 @@ namespace se
 			return nullptr;
 		}
 
-		std::string subDirectoryPath;
 		for (size_t i = 0; i < remainingFilePath.size(); i++)
 		{
 			if (remainingFilePath[i] == '/')
 			{
-				subDirectoryPath.resize(i);
-				if (i > 0)
+				std::string subDirectoryPath = path.empty() ? "" : path + '/';
+				subDirectoryPath.insert(subDirectoryPath.end(), remainingFilePath.begin(), remainingFilePath.begin() + i);
+				remainingFilePath.erase(remainingFilePath.begin(), remainingFilePath.begin() + i + 1);
+				for (size_t i = 0; i < directories.size(); i++)
 				{
-					memcpy(&subDirectoryPath[0], remainingFilePath.data(), i);
-					remainingFilePath.erase(remainingFilePath.begin(), remainingFilePath.begin() + i + 1);
+					if (directories[i].path == subDirectoryPath)
+					{
+						return directories[i].findFileState(remainingFilePath);
+					}
 				}
-				break;
+				return nullptr;
 			}
 		}
 
-		if (subDirectoryPath.empty())
+		const std::string fullFilePath = path.empty() ? remainingFilePath : path + '/' + remainingFilePath;
+		for (size_t i = 0; i < files.size(); i++)
 		{
-			const std::string fullFilePath = path.empty() ? remainingFilePath : path + '/' + remainingFilePath;
-			for (size_t i = 0; i < files.size(); i++)
+			if (files[i].path == fullFilePath)
 			{
-				if (files[i].path == fullFilePath)
-				{
-					return &files[i];
-				}
+				return &files[i];
 			}
-			return nullptr;
 		}
-		else
-		{
-			for (size_t i = 0; i < directories.size(); i++)
-			{
-				if (directories[i].path == subDirectoryPath)
-				{
-					return directories[i].findFileState(remainingFilePath);
-				}
-			}
-			return nullptr;
-		}
+		return nullptr;
 	}
 
 	const DirectoryState::FileState* DirectoryState::findFileState(const uint32_t fileHash) const
@@ -191,7 +180,10 @@ namespace se
 			{
 				if (directoryState.files[i].fileHash != 0u)
 				{
-					const uint32_t fileHash = murmurHash3_x86_32(file.data.data(), file.data.size(), fileHashSeed);
+					std::vector<uint8_t> hashData(directoryState.files[i].path.size() + file.data.size());
+					memcpy(&hashData[0], directoryState.files[i].path.data(), directoryState.files[i].path.size());
+					memcpy(&hashData[directoryState.files[i].path.size()], file.data.data(), file.data.size());
+					const uint32_t fileHash = murmurHash3_x86_32(hashData.data(), hashData.size(), fileHashSeed);
 					if (fileHash != directoryState.files[i].fileHash)
 					{
 						unequalFiles.push_back(directoryState.files[i].path);
