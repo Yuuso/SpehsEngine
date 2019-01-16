@@ -168,6 +168,10 @@ namespace se
 		{
 			directories.push_back(directoryState.directories[i].path);
 		}
+		for (size_t i = 0; i < directoryState.directories.size(); i++)
+		{
+			getDirectoriesAndFiles(directoryState.directories[i], directories, files);
+		}
 	}
 
 	void compare(const DirectoryState& directoryState, const std::string& path, const size_t fileHashSeed, std::vector<std::string>& missingDirectories, std::vector<std::string>& missingFiles, std::vector<std::string>& unequalFiles)
