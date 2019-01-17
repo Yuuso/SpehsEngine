@@ -14,6 +14,8 @@ namespace se
 	{
 		class Mesh;
 		class TextureManager;
+		struct TextureData;
+
 		class Model
 		{
 			friend class BatchManager3D;

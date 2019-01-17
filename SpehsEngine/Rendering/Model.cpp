@@ -1,5 +1,6 @@
 
 #include "stdafx.h"
+#include "SpehsEngine/Rendering/BatchManager3D.h"
 #include "SpehsEngine/Rendering/Model.h"
 #include "SpehsEngine/Rendering/ModelManager.h"
 #include "SpehsEngine/Rendering/Mesh.h"

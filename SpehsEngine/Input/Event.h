@@ -1,4 +1,5 @@
 #pragma once
+#include "SpehsEngine/Input/InputEnumerations.h"
 #include "SpehsEngine/Input/Key.h"
 #include "SpehsEngine/Input/MouseButton.h"
 #include "glm/vec2.hpp"
@@ -8,6 +9,8 @@ namespace se
 {
 	namespace input
 	{
+		class Joystick;
+
 		enum class EventType
 		{
 			none,

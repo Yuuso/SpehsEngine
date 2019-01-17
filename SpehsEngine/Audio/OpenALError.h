@@ -1,8 +1,6 @@
 
 #pragma once
 
-#include <string>
-
 
 struct ALCdevice_struct;
 typedef struct ALCdevice_struct ALCdevice;

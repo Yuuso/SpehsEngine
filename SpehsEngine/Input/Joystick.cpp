@@ -2,6 +2,7 @@
 #include "SpehsEngine/Input/Joystick.h"
 
 #include "SpehsEngine/Input/InputLib.h"
+#include "SpehsEngine/Input/InputManager.h"
 
 #include <SDL/SDL.h>
 #include <SDL/SDL_joystick.h>

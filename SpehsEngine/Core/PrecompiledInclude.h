@@ -1,4 +1,12 @@
 #pragma once
+#include <memory>
+#include <functional>
+#include <algorithm>
+#include <stdint.h>
+#include <string>
+#include <vector>
+#include <unordered_map>
+#include "glm/glm.hpp"
 #include "SpehsEngine/Core/FinalRelease.h"
 #include "SpehsEngine/Core/SE_Assert.h"
 #include "SpehsEngine/Core/Log.h"

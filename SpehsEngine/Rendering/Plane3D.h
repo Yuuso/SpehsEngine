@@ -11,8 +11,11 @@ namespace se
 {
 	namespace rendering
 	{
-		class Mesh;
 		class BatchManager3D;
+		class Mesh;
+		struct TextureData;
+		class TextureManager;
+
 		class Plane3D
 		{
 			friend class BatchManager3D;
