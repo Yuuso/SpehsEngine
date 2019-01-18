@@ -22,13 +22,18 @@ namespace se
 			boost::random_device source;
 			log::info("RNG: random source entropy: " + std::to_string(source.entropy()));
 
+#if defined (RNG_USE_FULL_RANDOM_SEED)
+			const size_t randomDataSize = std::mt19937::state_size;
+#else
+			const size_t randomDataSize = 2;
+#endif
 			// 624 byte random seed data for mt19937
-			std::mt19937::result_type random_data[std::mt19937::state_size];
+			std::mt19937::result_type random_data[randomDataSize];
 			std::generate(std::begin(random_data), std::prev(std::end(random_data)), std::ref(source));
 
 			// Since random_device may not be always reliable, we'll use current time from chrono as well
 			std::mt19937::result_type timeSeed = (std::mt19937::result_type)std::chrono::system_clock::now().time_since_epoch().count();
-			random_data[std::mt19937::state_size - 1] = timeSeed;
+			random_data[randomDataSize - 1] = timeSeed;
 
 			std::seed_seq seeds(std::begin(random_data), std::end(random_data));
 
