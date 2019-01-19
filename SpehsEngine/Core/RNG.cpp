@@ -22,7 +22,7 @@ namespace se
 			boost::random_device source;
 			log::info("RNG: random source entropy: " + std::to_string(source.entropy()));
 
-#if defined (RNG_USE_FULL_RANDOM_SEED)
+#if defined (SE_RNG_USE_FULL_RANDOM_SEED)
 			const size_t randomDataSize = std::mt19937::state_size;
 #else
 			const size_t randomDataSize = 2;
