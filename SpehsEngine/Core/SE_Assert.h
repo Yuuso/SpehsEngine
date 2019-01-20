@@ -5,7 +5,9 @@
 #else
 #define se_assert(expression) \
 { \
-	if (!(expression)) \
-		se::log::error("Assert failed.\nExpression: " #expression "\nFILE: " __FILE__ "\nLINE: " + std::to_string(__LINE__)); \
+	if (!(expression)) { \
+		se::log::info("Assert failed.\nExpression: " #expression "\nFILE: " __FILE__ "\nLINE: " + std::to_string(__LINE__), se::log::DARKRED); \
+		__debugbreak(); \
+	} \
 }
 #endif

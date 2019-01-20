@@ -29,7 +29,7 @@ namespace se
 
 		void Line3D::addPoint(const glm::vec3& _point)
 		{
-			if (batchManager && mesh->vertexArray.size() > 0)
+			if (batchManager)
 				batchManager->removeMesh(*mesh);
 			if (mesh->vertexArray.size() > 1) mesh->elementArray.push_back((GLushort)mesh->vertexArray.size() - 1);
 			mesh->vertexArray.push_back(Vertex3D(_point, glm::vec2(0.0f), glm::vec3(0.0f)));
@@ -39,7 +39,7 @@ namespace se
 		}
 		void Line3D::addPoints(const std::vector<glm::vec3>& _points)
 		{
-			if (batchManager && mesh->vertexArray.size() > 0)
+			if (batchManager)
 				batchManager->removeMesh(*mesh);
 			for (size_t i = 0; i < _points.size(); i++)
 			{
@@ -70,9 +70,14 @@ namespace se
 			se_assert(_index < mesh->vertexArray.size());
 			mesh->setColor(_index, _color);
 		}
+		se::Color Line3D::getPointColor(const size_t _index)
+		{
+			se_assert(_index < mesh->vertexArray.size());
+			return mesh->getColor(_index);
+		}
 		void Line3D::clearPoints()
 		{
-			if (batchManager && mesh->vertexArray.size() > 0)
+			if (batchManager)
 				batchManager->removeMesh(*mesh);
 			mesh->vertexArray.clear();
 			mesh->elementArray.clear();

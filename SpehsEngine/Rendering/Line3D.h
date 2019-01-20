@@ -28,6 +28,7 @@ namespace se
 			void updatePoint(const size_t _index, const glm::vec3& _point);
 			void updatePoints(const std::vector<glm::vec3>& _points);
 			void setPointColor(const size_t _index, const Color _color);
+			se::Color getPointColor(const size_t _index);
 			void clearPoints();
 
 			glm::vec3 getPoint(const size_t _index);
