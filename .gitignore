@@ -9,6 +9,7 @@ ehthumbs.db
 *.sdf
 *.VS.db
 SpehsEngine/SpehsEngine.VS.db
+SpehsEngine/SpehsEngine\.VC\.db
 Dependencies/
 bin/
 obj/
@@ -56,3 +57,4 @@ Temporary Items
 *.suo
 *.v12.suo
 *.opensdf
+
