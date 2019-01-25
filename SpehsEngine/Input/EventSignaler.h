@@ -1,6 +1,6 @@
 #pragma once
 #include "SpehsEngine/Input/Event.h"
-#include "boost/signals.hpp"
+#include "boost/signals2.hpp"
 #include "glm/vec2.hpp"
 #include <vector>
 
@@ -36,20 +36,20 @@ namespace se
 
 			void signalEvents(EventCatcher& eventCatcher);
 			
-			void connectToPreUpdateSignal(boost::signals::scoped_connection& scopedConnection, const boost::function<void()>& callback) { scopedConnection = preUpdateSignal.connect(callback); }
-			void connectToPostUpdateSignal(boost::signals::scoped_connection& scopedConnection, const boost::function<void()>& callback) { scopedConnection = postUpdateSignal.connect(callback); }
-			void connectToKeyboardPressSignal(boost::signals::scoped_connection& scopedConnection, const boost::function<bool(const KeyboardPressEvent&)>& callback, const int priority);
-			void connectToKeyboardDownSignal(boost::signals::scoped_connection& scopedConnection, const boost::function<bool(const KeyboardDownEvent&)>& callback, const int priority);
-			void connectToKeyboardReleaseSignal(boost::signals::scoped_connection& scopedConnection, const boost::function<bool(const KeyboardReleaseEvent&)>& callback, const int priority);
-			void connectToMouseHoverSignal(boost::signals::scoped_connection& scopedConnection, const boost::function<bool(const MouseHoverEvent&)>& callback, const int priority);
-			void connectToMouseButtonPressSignal(boost::signals::scoped_connection& scopedConnection, const boost::function<bool(const MouseButtonPressEvent&)>& callback, const int priority);
-			void connectToMouseButtonDownSignal(boost::signals::scoped_connection& scopedConnection, const boost::function<bool(const MouseButtonDownEvent&)>& callback, const int priority);
-			void connectToMouseButtonReleaseSignal(boost::signals::scoped_connection& scopedConnection, const boost::function<bool(const MouseButtonReleaseEvent&)>& callback, const int priority);
-			void connectToMouseMotionSignal(boost::signals::scoped_connection& scopedConnection, const boost::function<bool(const MouseMotionEvent&)>& callback, const int priority);
-			void connectToMouseWheelSignal(boost::signals::scoped_connection& scopedConnection, const boost::function<bool(const MouseWheelEvent&)>& callback, const int priority);
+			void connectToPreUpdateSignal(boost::signals2::scoped_connection& scopedConnection, const boost::function<void()>& callback) { scopedConnection = preUpdateSignal.connect(callback); }
+			void connectToPostUpdateSignal(boost::signals2::scoped_connection& scopedConnection, const boost::function<void()>& callback) { scopedConnection = postUpdateSignal.connect(callback); }
+			void connectToKeyboardPressSignal(boost::signals2::scoped_connection& scopedConnection, const boost::function<bool(const KeyboardPressEvent&)>& callback, const int priority);
+			void connectToKeyboardDownSignal(boost::signals2::scoped_connection& scopedConnection, const boost::function<bool(const KeyboardDownEvent&)>& callback, const int priority);
+			void connectToKeyboardReleaseSignal(boost::signals2::scoped_connection& scopedConnection, const boost::function<bool(const KeyboardReleaseEvent&)>& callback, const int priority);
+			void connectToMouseHoverSignal(boost::signals2::scoped_connection& scopedConnection, const boost::function<bool(const MouseHoverEvent&)>& callback, const int priority);
+			void connectToMouseButtonPressSignal(boost::signals2::scoped_connection& scopedConnection, const boost::function<bool(const MouseButtonPressEvent&)>& callback, const int priority);
+			void connectToMouseButtonDownSignal(boost::signals2::scoped_connection& scopedConnection, const boost::function<bool(const MouseButtonDownEvent&)>& callback, const int priority);
+			void connectToMouseButtonReleaseSignal(boost::signals2::scoped_connection& scopedConnection, const boost::function<bool(const MouseButtonReleaseEvent&)>& callback, const int priority);
+			void connectToMouseMotionSignal(boost::signals2::scoped_connection& scopedConnection, const boost::function<bool(const MouseMotionEvent&)>& callback, const int priority);
+			void connectToMouseWheelSignal(boost::signals2::scoped_connection& scopedConnection, const boost::function<bool(const MouseWheelEvent&)>& callback, const int priority);
 			//TODO: joysticks...
-			void connectToQuitSignal(boost::signals::scoped_connection& scopedConnection, const boost::function<bool(const QuitEvent&)>& callback, const int priority);
-			void connectToFileDropSignal(boost::signals::scoped_connection& scopedConnection, const boost::function<bool(const FileDropEvent&)>& callback, const int priority);
+			void connectToQuitSignal(boost::signals2::scoped_connection& scopedConnection, const boost::function<bool(const QuitEvent&)>& callback, const int priority);
+			void connectToFileDropSignal(boost::signals2::scoped_connection& scopedConnection, const boost::function<bool(const FileDropEvent&)>& callback, const int priority);
 
 		private:
 			template<typename EventType>
@@ -71,11 +71,11 @@ namespace se
 						return false;
 					}
 				};
-				boost::signal<bool(const EventType&), Combiner> signal;
+				boost::signals2::signal<bool(const EventType&), Combiner> signal;
 				int priority = 0;
 			};
 			template<typename EventType>
-			void connectToEventSignal(boost::signals::scoped_connection& scopedConnection, const boost::function<bool(const EventType&)>& callback, const int priority, std::vector<std::unique_ptr<PrioritizedEventSignal<EventType>>>& signals)
+			void connectToEventSignal(boost::signals2::scoped_connection& scopedConnection, const boost::function<bool(const EventType&)>& callback, const int priority, std::vector<std::unique_ptr<PrioritizedEventSignal<EventType>>>& signals)
 			{
 				scopedConnection.disconnect();
 				const std::vector<std::unique_ptr<PrioritizedEventSignal<EventType>>>::iterator it = std::find_if(signals.begin(), signals.end(), [priority](const std::unique_ptr<PrioritizedEventSignal<EventType>>& signal)->bool { return priority == signal->priority; });
@@ -96,8 +96,8 @@ namespace se
 				}
 			}
 
-			boost::signal<void(void)> preUpdateSignal;
-			boost::signal<void(void)> postUpdateSignal;
+			boost::signals2::signal<void(void)> preUpdateSignal;
+			boost::signals2::signal<void(void)> postUpdateSignal;
 			std::vector<std::unique_ptr<PrioritizedEventSignal<KeyboardPressEvent>>> keyboardPressSignals;
 			std::vector<std::unique_ptr<PrioritizedEventSignal<KeyboardDownEvent>>> keyboardDownSignals;
 			std::vector<std::unique_ptr<PrioritizedEventSignal<KeyboardReleaseEvent>>> keyboardReleaseSignals;
@@ -123,7 +123,7 @@ namespace se
 
 	//.h
 	#include "SpehsEngine/Input/Event.h"
-	#include "boost/signals.hpp"
+	#include "boost/signals2.hpp"
 
 	void eventSignalerPreUpdateCallback();
 	void eventSignalerPostUpdateCallback();
@@ -137,17 +137,17 @@ namespace se
 	bool mouseMotionCallback(const se::input::MouseMotionEvent& event);
 	bool mouseWheelCallback(const se::input::MouseWheelEvent& event);
 
-	boost::signals::scoped_connection eventSignalerPreUpdateConnection;
-	boost::signals::scoped_connection eventSignalerPostUpdateConnection;
-	boost::signals::scoped_connection keyboardPressConnection;
-	boost::signals::scoped_connection keyboardDownConnection;
-	boost::signals::scoped_connection keyboardReleaseConnection;
-	boost::signals::scoped_connection mouseHoverConnection;
-	boost::signals::scoped_connection mouseButtonPressConnection;
-	boost::signals::scoped_connection mouseButtonDownConnection;
-	boost::signals::scoped_connection mouseButtonReleaseConnection;
-	boost::signals::scoped_connection mouseMotionConnection;
-	boost::signals::scoped_connection mouseWheelConnection;
+	boost::signals2::scoped_connection eventSignalerPreUpdateConnection;
+	boost::signals2::scoped_connection eventSignalerPostUpdateConnection;
+	boost::signals2::scoped_connection keyboardPressConnection;
+	boost::signals2::scoped_connection keyboardDownConnection;
+	boost::signals2::scoped_connection keyboardReleaseConnection;
+	boost::signals2::scoped_connection mouseHoverConnection;
+	boost::signals2::scoped_connection mouseButtonPressConnection;
+	boost::signals2::scoped_connection mouseButtonDownConnection;
+	boost::signals2::scoped_connection mouseButtonReleaseConnection;
+	boost::signals2::scoped_connection mouseMotionConnection;
+	boost::signals2::scoped_connection mouseWheelConnection;
 	
 	//.cpp
 	#include "boost/bind.hpp"

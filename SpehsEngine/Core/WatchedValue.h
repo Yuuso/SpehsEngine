@@ -1,5 +1,5 @@
 #pragma once
-#include <boost/signals.hpp>
+#include <boost/signals2.hpp>
 
 namespace se
 {
@@ -29,13 +29,13 @@ namespace se
 			return value;
 		}
 
-		void connectToChangedSignal(boost::signals::scoped_connection& scopedConnection, const boost::function<void(const T&)>& callback)
+		void connectToChangedSignal(boost::signals2::scoped_connection& scopedConnection, const boost::function<void(const T&)>& callback)
 		{
 			scopedConnection = changedSignal.connect(callback);
 		}
 
 	private:
 		T value;
-		boost::signal<void(const T&)> changedSignal;
+		boost::signals2::signal<void(const T&)> changedSignal;
 	};
 }

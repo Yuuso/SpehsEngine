@@ -78,57 +78,57 @@ namespace se
 			postUpdateSignal();
 		}
 
-		void EventSignaler::connectToKeyboardPressSignal(boost::signals::scoped_connection& scopedConnection, const boost::function<bool(const KeyboardPressEvent&)>& callback, const int priority)
+		void EventSignaler::connectToKeyboardPressSignal(boost::signals2::scoped_connection& scopedConnection, const boost::function<bool(const KeyboardPressEvent&)>& callback, const int priority)
 		{
 			connectToEventSignal<KeyboardPressEvent>(scopedConnection, callback, priority, keyboardPressSignals);
 		}
 
-		void EventSignaler::connectToKeyboardDownSignal(boost::signals::scoped_connection& scopedConnection, const boost::function<bool(const KeyboardDownEvent&)>& callback, const int priority)
+		void EventSignaler::connectToKeyboardDownSignal(boost::signals2::scoped_connection& scopedConnection, const boost::function<bool(const KeyboardDownEvent&)>& callback, const int priority)
 		{
 			connectToEventSignal<KeyboardDownEvent>(scopedConnection, callback, priority, keyboardDownSignals);
 		}
 
-		void EventSignaler::connectToKeyboardReleaseSignal(boost::signals::scoped_connection& scopedConnection, const boost::function<bool(const KeyboardReleaseEvent&)>& callback, const int priority)
+		void EventSignaler::connectToKeyboardReleaseSignal(boost::signals2::scoped_connection& scopedConnection, const boost::function<bool(const KeyboardReleaseEvent&)>& callback, const int priority)
 		{
 			connectToEventSignal<KeyboardReleaseEvent>(scopedConnection, callback, priority, keyboardReleaseSignals);
 		}
 
-		void EventSignaler::connectToMouseHoverSignal(boost::signals::scoped_connection& scopedConnection, const boost::function<bool(const MouseHoverEvent&)>& callback, const int priority)
+		void EventSignaler::connectToMouseHoverSignal(boost::signals2::scoped_connection& scopedConnection, const boost::function<bool(const MouseHoverEvent&)>& callback, const int priority)
 		{
 			connectToEventSignal<MouseHoverEvent>(scopedConnection, callback, priority, mouseHoverSignals);
 		}
 
-		void EventSignaler::connectToMouseButtonPressSignal(boost::signals::scoped_connection& scopedConnection, const boost::function<bool(const MouseButtonPressEvent&)>& callback, const int priority)
+		void EventSignaler::connectToMouseButtonPressSignal(boost::signals2::scoped_connection& scopedConnection, const boost::function<bool(const MouseButtonPressEvent&)>& callback, const int priority)
 		{
 			connectToEventSignal<MouseButtonPressEvent>(scopedConnection, callback, priority, mouseButtonPressSignals);
 		}
 
-		void EventSignaler::connectToMouseButtonDownSignal(boost::signals::scoped_connection& scopedConnection, const boost::function<bool(const MouseButtonDownEvent&)>& callback, const int priority)
+		void EventSignaler::connectToMouseButtonDownSignal(boost::signals2::scoped_connection& scopedConnection, const boost::function<bool(const MouseButtonDownEvent&)>& callback, const int priority)
 		{
 			connectToEventSignal<MouseButtonDownEvent>(scopedConnection, callback, priority, mouseButtonDownSignals);
 		}
 
-		void EventSignaler::connectToMouseButtonReleaseSignal(boost::signals::scoped_connection& scopedConnection, const boost::function<bool(const MouseButtonReleaseEvent&)>& callback, const int priority)
+		void EventSignaler::connectToMouseButtonReleaseSignal(boost::signals2::scoped_connection& scopedConnection, const boost::function<bool(const MouseButtonReleaseEvent&)>& callback, const int priority)
 		{
 			connectToEventSignal<MouseButtonReleaseEvent>(scopedConnection, callback, priority, mouseButtonReleaseSignals);
 		}
 
-		void EventSignaler::connectToMouseMotionSignal(boost::signals::scoped_connection& scopedConnection, const boost::function<bool(const MouseMotionEvent&)>& callback, const int priority)
+		void EventSignaler::connectToMouseMotionSignal(boost::signals2::scoped_connection& scopedConnection, const boost::function<bool(const MouseMotionEvent&)>& callback, const int priority)
 		{
 			connectToEventSignal<MouseMotionEvent>(scopedConnection, callback, priority, mouseMotionSignals);
 		}
 
-		void EventSignaler::connectToMouseWheelSignal(boost::signals::scoped_connection& scopedConnection, const boost::function<bool(const MouseWheelEvent&)>& callback, const int priority)
+		void EventSignaler::connectToMouseWheelSignal(boost::signals2::scoped_connection& scopedConnection, const boost::function<bool(const MouseWheelEvent&)>& callback, const int priority)
 		{
 			connectToEventSignal<MouseWheelEvent>(scopedConnection, callback, priority, mouseWheelSignals);
 		}
 
-		void EventSignaler::connectToQuitSignal(boost::signals::scoped_connection& scopedConnection, const boost::function<bool(const QuitEvent&)>& callback, const int priority)
+		void EventSignaler::connectToQuitSignal(boost::signals2::scoped_connection& scopedConnection, const boost::function<bool(const QuitEvent&)>& callback, const int priority)
 		{
 			connectToEventSignal<QuitEvent>(scopedConnection, callback, priority, quitSignals);
 		}
 
-		void EventSignaler::connectToFileDropSignal(boost::signals::scoped_connection& scopedConnection, const boost::function<bool(const FileDropEvent&)>& callback, const int priority)
+		void EventSignaler::connectToFileDropSignal(boost::signals2::scoped_connection& scopedConnection, const boost::function<bool(const FileDropEvent&)>& callback, const int priority)
 		{
 			connectToEventSignal<FileDropEvent>(scopedConnection, callback, priority, fileDropSignals);
 		}

@@ -1,19 +1,20 @@
-﻿# Windows image file caches
-Thumbs.db
-ehthumbs.db
-
-#Meid�n ignoret
+﻿#Spehs Engine
+SpehsEngine/SpehsEngine.VS.db
+SpehsEngine/SpehsEngine.VC.db
+SpehsEngine/.vs/
+Dependencies/
+bin/
+obj/
 *.TMP
 *.log
 *.dll
 *.sdf
 *.VS.db
-SpehsEngine/SpehsEngine.VS.db
-SpehsEngine/SpehsEngine\.VC\.db
-Dependencies/
-bin/
-obj/
+*.VC.db
 
+# Windows image file caches
+Thumbs.db
+ehthumbs.db
 
 # Folder config file
 Desktop.ini

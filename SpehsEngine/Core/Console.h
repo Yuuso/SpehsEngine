@@ -4,7 +4,7 @@
 #include <mutex>
 #include <functional>
 #include <stdint.h>
-#include <boost/signal.hpp>
+#include <boost/signals2.hpp>
 #include "SpehsEngine/Core/ConsoleVariable.h"
 #include "SpehsEngine/Core/Color.h"
 #include "SpehsEngine/Core/SE_Time.h"
@@ -54,7 +54,7 @@ namespace se
 		void clearCommands();
 		void clearLog();
 		
-		boost::signal<void(const Line&) > logSignal;
+		boost::signals2::signal<void(const Line&) > logSignal;
 
 	private:
 

@@ -15,17 +15,10 @@ namespace se
 	{
 	public:
 		SPEHS_HAS_MEMBER_FUNCTION(write, has_member_write);
-		template <typename T>
-		class has_free_write
-		{
-			template <typename T2>
-			static decltype(writeToBuffer(std::declval<WriteBuffer&>(), std::declval<T&>()), void()) test(int);
-			struct no {};
-			template <typename T2>
-			static no test(...);
-		public:
-			enum { value = !std::is_same<no, decltype(test<T>(0))>::value };
-		};
+		template<class> struct type_sink { typedef void type; }; // consumes a type, and makes it `void`
+		template<class T> using type_sink_t = typename type_sink<T>::type;
+		template<class T, class = void> struct has_free_write : std::false_type {};
+		template<class T> struct has_free_write<T, type_sink_t<decltype(writeToBuffer(std::declval<WriteBuffer&>(), std::declval<const T&>()), void())>> : std::true_type {};
 	public:
 		WriteBuffer();
 		~WriteBuffer() override;

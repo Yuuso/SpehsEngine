@@ -59,7 +59,7 @@ namespace se
 		archive.write(writeBuffer);
 		write(valueName, writeBuffer);
 	}
-
+	
 	bool Archive::read(const std::string& valueName, Archive& archive) const
 	{
 		WriteBuffer writeBuffer;

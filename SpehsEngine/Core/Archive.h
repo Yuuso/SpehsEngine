@@ -19,28 +19,12 @@ namespace se
 	public:
 		SPEHS_HAS_MEMBER_FUNCTION(write, has_member_write);
 		SPEHS_HAS_MEMBER_FUNCTION(read, has_member_read);
-		template <typename T>
-		class has_free_write
-		{
-			template <typename T2>
-			static decltype(writeToBuffer(std::declval<Archive&>(), std::declval<T&>()), void()) test(int);
-			struct no {};
-			template <typename T2>
-			static no test(...);
-		public:
-			enum { value = !std::is_same<no, decltype(test<T>(0))>::value };
-		};
-		template <typename T>
-		class has_free_read
-		{
-			template <typename T2>
-			static decltype(readFromBuffer(std::declval<const Archive&>(), std::declval<T&>()), bool()) test(int);
-			struct no {};
-			template <typename T2>
-			static no test(...);
-		public:
-			enum { value = !std::is_same<no, decltype(test<T>(0))>::value };
-		};
+		template<class> struct type_sink { typedef void type; }; // consumes a type, and makes it `void`
+		template<class T> using type_sink_t = typename type_sink<T>::type;
+		template<class T, class = void> struct has_free_write : std::false_type {};
+		template<class T> struct has_free_write<T, type_sink_t<decltype(writeToArchive(std::declval<const T&>()), Archive())>> : std::true_type {};
+		template<class T, class = void> struct has_free_read : std::false_type {};
+		template<class T> struct has_free_read<T, type_sink_t<decltype(readFromArchive(std::declval<const Archive&>(), std::declval<T&>()), bool())>> : std::true_type {};
 	public:
 
 		Archive();
@@ -109,7 +93,8 @@ namespace se
 		/* Is class, has free write. Read a sub archive from this and read the value from the sub archive. */
 		template<class T>
 		typename std::enable_if<std::is_class<T>::value && !std::is_same<typename std::remove_cv<T>::type, Archive>::value && !std::is_same<typename std::remove_cv<T>::type, WriteBuffer>::value
-			&& !has_member_write<T, Archive(T::*)() const>::value && has_free_write<T>::value, void>::type write(const std::string& valueName, T& value)
+			&& !has_member_write<T, Archive(T::*)() const>::value
+			&& has_free_write<T>::value, void>::type write(const std::string& valueName, T& value)
 		{
 			const Archive archive = writeToArchive(value);
 			write(valueName, archive);
@@ -117,7 +102,8 @@ namespace se
 		/* Is class, doesn't have any archive methods but has write buffer method. */
 		template<class T>
 		typename std::enable_if<std::is_class<T>::value && !std::is_same<typename std::remove_cv<T>::type, Archive>::value && !std::is_same<typename std::remove_cv<T>::type, WriteBuffer>::value
-			&& !has_member_write<T, Archive(T::*)() const>::value && !has_free_write<T>::value
+			&& !has_member_write<T, Archive(T::*)() const>::value
+			&& !has_free_write<T>::value
 			&& has_member_write<T, void(T::*)(WriteBuffer&) const>::value, void>::type write(const std::string& valueName, T& value)
 		{
 			WriteBuffer writeBuffer;
@@ -161,8 +147,15 @@ namespace se
 			{
 				return false;
 			}
-			ReadBuffer readBuffer(writeBuffer[0], writeBuffer.getSize());
-			return value.read(readBuffer);
+			if (writeBuffer.getSize() > 0)
+			{
+				ReadBuffer readBuffer(writeBuffer[0], writeBuffer.getSize());
+				return value.read(readBuffer);
+			}
+			else
+			{
+				return true;
+			}
 		}
 		/* Is class, doesn't have any archive methods but has read buffer free function. */
 		template<class T>
@@ -174,8 +167,15 @@ namespace se
 			{
 				return false;
 			}
-			ReadBuffer readBuffer(writeBuffer[0], writeBuffer.getSize());
-			return readFromBuffer(readBuffer, value);
+			if (writeBuffer.getSize() > 0)
+			{
+				ReadBuffer readBuffer(writeBuffer[0], writeBuffer.getSize());
+				return readFromBuffer(readBuffer, value);
+			}
+			else
+			{
+				return true;
+			}
 		}
 		
 	private:

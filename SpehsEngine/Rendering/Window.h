@@ -1,5 +1,5 @@
 #pragma once
-#include <boost/signal.hpp>
+#include <boost/signals2.hpp>
 #include "SpehsEngine/Core/Color.h"
 
 struct SDL_Window;
@@ -46,7 +46,7 @@ namespace se
 			int getHeight() const;
 
 			/* Fires when the size of the window is changed. */
-			boost::signal<void(const int, const int)> sizeChangedSignal;
+			boost::signals2::signal<void(const int, const int)> sizeChangedSignal;
 
 		private:
 			SDL_Window* sdlWindow;

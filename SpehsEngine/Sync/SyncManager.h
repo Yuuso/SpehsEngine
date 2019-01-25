@@ -2,7 +2,7 @@
 #include <functional>
 #include <vector>
 #include <atomic>
-#include <boost/signal.hpp>
+#include <boost/signals2.hpp>
 #include "SpehsEngine/Sync/SyncTypeInfo.h"
 #include "SpehsEngine/Sync/SyncEntry.h"
 #include "SpehsEngine/Sync/SyncHandle.h"
@@ -100,7 +100,7 @@ namespace se
 			}
 
 			/* Fires when a local type is instantiated by the remote sync manager. */
-			//boost::signal<void(Handle<TODO>&)> localTypeInstantiatedSignal;
+			//boost::signals2::signal<void(Handle<TODO>&)> localTypeInstantiatedSignal;
 
 		private:
 			bool receiveHandler(ReadBuffer& buffer);

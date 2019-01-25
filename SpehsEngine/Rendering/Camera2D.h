@@ -1,8 +1,8 @@
 #pragma once
 
-#include <glm/mat4x4.hpp>
-#include <glm/vec2.hpp>
-#include <boost/signal.hpp>
+#include "glm/mat4x4.hpp"
+#include "glm/vec2.hpp"
+#include "boost/signals2.hpp"
 
 namespace se
 {
@@ -42,7 +42,7 @@ namespace se
 			glm::mat4 defaultMatrix;
 			glm::mat4 cameraMatrix;
 
-			boost::signals::scoped_connection windowSizeChangedConnection;
+			boost::signals2::scoped_connection windowSizeChangedConnection;
 		};
 	}
 }

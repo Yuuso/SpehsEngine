@@ -2,7 +2,7 @@
 #include <mutex>
 #include <string>
 #include <stdint.h>
-#include <boost/signal.hpp>
+#include <boost/signals2.hpp>
 
 namespace se
 {
@@ -43,7 +43,7 @@ namespace se
 		std::string toString() const override;
 		bool fromString(const std::string& string) override;
 
-		boost::signal<void(const Inivar<T>&)> changedSignal;
+		boost::signals2::signal<void(const Inivar<T>&)> changedSignal;
 	private:
 		friend class Inisection;
 		Inivar(Inisection& _section, const std::string& _name, const T& _value);

@@ -2,6 +2,7 @@
 #include "SpehsEngine/Core/Console.h"
 #include "SpehsEngine/Core/LapTimer.h"
 #include "SpehsEngine/Input/KeyboardRecorder.h"
+#include "boost/signals2.hpp"
 #define CONSOLE_FONT_COLOR 255, 153, 0
 
 /**Console is accessed through these functions.
@@ -82,7 +83,7 @@ namespace se
 			int previousFontSize = 10;
 			int scrollState = 0;
 			Font* font = nullptr;
-			boost::signals::scoped_connection logConnection;
+			boost::signals2::scoped_connection logConnection;
 			time::Time carotTimer = 0;
 			time::Time inputTime = 0;//Point of time when the last input was received
 			time::LapTimer renderLapTimer;

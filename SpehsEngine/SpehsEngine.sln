@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.25420.1
+# Visual Studio 15
+VisualStudioVersion = 15.0.28307.271
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Audio", "Audio\Audio.vcxproj", "{F721E433-F0D2-4F4C-BEA0-1AA2B2824CBD}"
 	ProjectSection(ProjectDependencies) = postProject
@@ -92,10 +92,14 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Sync_Share", "Sync\Sync_Sha
 EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		Net\Net_Share.vcxitems*{1e65a9fa-c973-42fe-aa97-cd08c94e9bb4}*SharedItemsImports = 9
 		GPIO\GPIO_Share.vcxitems*{28510a11-2597-4e7f-8ab7-04d8d6617f73}*SharedItemsImports = 4
+		Core\CoreShare.vcxitems*{45d41acc-2c3c-43d2-bc10-02aa73ffc7c7}*SharedItemsImports = 9
 		Sync\Sync_Share.vcxitems*{7cdd365e-b7c3-4b9f-8107-3b94872bf6c9}*SharedItemsImports = 4
 		Core\CoreShare.vcxitems*{cbb134b8-c9fe-4129-a6dd-58b94cbe1096}*SharedItemsImports = 4
 		Net\Net_Share.vcxitems*{cdaef09b-dc58-42c8-81b8-83c3e5d8145e}*SharedItemsImports = 4
+		GPIO\GPIO_Share.vcxitems*{f3630e63-73ec-4338-a0a1-41346357311c}*SharedItemsImports = 9
+		Sync\Sync_Share.vcxitems*{f9a7362b-f51a-4941-bc6f-1ec1222c8b18}*SharedItemsImports = 9
 	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -211,5 +215,8 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {C60B4BC2-D355-4B57-A147-032191AD7A9C}
 	EndGlobalSection
 EndGlobal
