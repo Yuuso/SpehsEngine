@@ -102,8 +102,11 @@ namespace se
 	uint32_t Archive::getDataHash(const std::string& typeName, const std::string& valueName) const
 	{
 		const uint32_t seed = 1;
-		const uint32_t typeNameHash = murmurHash3_x86_32(typeName.c_str(), typeName.size(), seed);
-		const uint32_t valueNameHash = murmurHash3_x86_32(valueName.c_str(), valueName.size(), seed);
-		return (typeNameHash << 16u) | (valueNameHash >> 16u);
+		std::vector<uint8_t> hashData(typeName.size() + 1 + valueName.size());
+		memcpy(hashData.data(), typeName.data(), typeName.size());
+		//Separate type from value by a character that would not belong to a type, so that type-value name pairs like 'a'-'bc' and 'ab'-'c' wont produce the same hash
+		hashData[typeName.size()] = 0;
+		memcpy(hashData.data() + typeName.size() + 1, valueName.data(), valueName.size());
+		return murmurHash3_x86_32(hashData.data(), hashData.size(), seed);
 	}
 }

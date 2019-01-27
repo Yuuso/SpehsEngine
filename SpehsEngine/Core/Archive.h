@@ -10,7 +10,7 @@ namespace se
 	/*
 		Stores values in an unordered format.
 		Allows class data to be easily stored between versions (format changes).
-		Archive is not guaranteed to be platform independent - only the platform that wrote the archive can read it.
+		Archive is platform independent.
 		You can write fundamental types, write buffers and (sub) archives into an archive.
 		A user defined type does not have to implement archive write/read methods/free functions, in which case Write/ReadBuffer write/read methods/free functions are used.
 	*/
@@ -94,7 +94,7 @@ namespace se
 		template<class T>
 		typename std::enable_if<std::is_class<T>::value && !std::is_same<typename std::remove_cv<T>::type, Archive>::value && !std::is_same<typename std::remove_cv<T>::type, WriteBuffer>::value
 			&& !has_member_write<T, Archive(T::*)() const>::value
-			&& has_free_write<T>::value, void>::type write(const std::string& valueName, T& value)
+			&& has_free_write<T>::value, void>::type write(const std::string& valueName, const T& value)
 		{
 			const Archive archive = writeToArchive(value);
 			write(valueName, archive);
@@ -104,7 +104,7 @@ namespace se
 		typename std::enable_if<std::is_class<T>::value && !std::is_same<typename std::remove_cv<T>::type, Archive>::value && !std::is_same<typename std::remove_cv<T>::type, WriteBuffer>::value
 			&& !has_member_write<T, Archive(T::*)() const>::value
 			&& !has_free_write<T>::value
-			&& has_member_write<T, void(T::*)(WriteBuffer&) const>::value, void>::type write(const std::string& valueName, T& value)
+			&& has_member_write<T, void(T::*)(WriteBuffer&) const>::value, void>::type write(const std::string& valueName, const T& value)
 		{
 			WriteBuffer writeBuffer;
 			value.write(writeBuffer);
@@ -114,7 +114,7 @@ namespace se
 		template<class T>
 		typename std::enable_if<std::is_class<T>::value && !std::is_same<typename std::remove_cv<T>::type, Archive>::value && !std::is_same<typename std::remove_cv<T>::type, WriteBuffer>::value
 			&& !has_member_write<T, Archive(T::*)() const>::value && !has_free_write<T>::value
-			&& !has_member_write<T, void(T::*)(WriteBuffer&) const>::value && WriteBuffer::has_free_write<T>::value, void>::type write(const std::string& valueName, T& value)
+			&& !has_member_write<T, void(T::*)(WriteBuffer&) const>::value && WriteBuffer::has_free_write<T>::value, void>::type write(const std::string& valueName, const T& value)
 		{
 			WriteBuffer writeBuffer;
 			writeToBuffer(writeBuffer, value);

@@ -51,13 +51,10 @@ namespace se
 		{
 			archive.write(std::to_string(i), vector[i]);
 		}
-		WriteBuffer writeBuffer;
-		writeToBuffer(writeBuffer, vector);
-		se_write_to_archive(archive, writeBuffer);
 		return archive;
 	}
 	template<typename T, typename SizeType = size_t>
-	typename std::enable_if<std::is_class<T>::value, Archive>::type
+	typename std::enable_if<std::is_class<T>::value, bool>::type
 		readFromArchive(const Archive& archive, std::vector<T>& vector)
 	{
 		SizeType size;

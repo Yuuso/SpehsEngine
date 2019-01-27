@@ -56,7 +56,14 @@ namespace se
 		static_assert(std::is_integral<SizeType>::value, "SizeType must be integral.");
 		WriteBuffer writeBuffer;
 		se_read_from_archive(archive, writeBuffer);
-		ReadBuffer readBuffer(writeBuffer[0], writeBuffer.getSize());
-		return readFromBuffer<SizeType>(readBuffer, string);
+		if (writeBuffer.getSize() > 0)
+		{
+			ReadBuffer readBuffer(writeBuffer[0], writeBuffer.getSize());
+			return readFromBuffer<SizeType>(readBuffer, string);
+		}
+		else
+		{
+			return true;
+		}
 	}
 }
