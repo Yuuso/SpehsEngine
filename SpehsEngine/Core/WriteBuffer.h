@@ -81,3 +81,10 @@ namespace se
 		std::vector<uint8_t> data;
 	};
 }
+
+/*
+	Rationale for this macro:
+	Normally we would write 'writeBuffer.write(...)', but then we might accidentally use readBuffer.read(...) in the read function, without handling the read's return value.
+	Thus I decided that it would be better to have such macro, and use se_read/write everywhere.
+*/
+#define se_write(p_WriteBuffer, p_Value) do { (p_WriteBuffer).write(p_Value); } while (false)
