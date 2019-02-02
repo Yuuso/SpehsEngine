@@ -102,7 +102,7 @@ namespace se
 
 		void Window::setClearColor(const Color& color)
 		{
-			glClearColor((float)color.r / 255.0f, (float)color.g / 255.0f, (float)color.b / 255.0f, (float)color.a / 255.0f);
+			glClearColor((float)color.r, (float)color.g, (float)color.b, (float)color.a);
 			checkOpenGLErrors(__FILE__, __LINE__);
 		}
 
