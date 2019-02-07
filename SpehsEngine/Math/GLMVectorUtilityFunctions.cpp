@@ -8,44 +8,44 @@ namespace se
 {
 	void writeToBuffer(WriteBuffer& writeBuffer, const glm::vec2& vec)
 	{
-		writeBuffer.write(vec.x);
-		writeBuffer.write(vec.y);
+		se_write(writeBuffer, vec.x);
+		se_write(writeBuffer, vec.y);
 	}
 
 	void writeToBuffer(WriteBuffer& writeBuffer, const glm::vec3& vec)
 	{
-		writeBuffer.write(vec.x);
-		writeBuffer.write(vec.y);
-		writeBuffer.write(vec.z);
+		se_write(writeBuffer, vec.x);
+		se_write(writeBuffer, vec.y);
+		se_write(writeBuffer, vec.z);
 	}
 
 	void writeToBuffer(WriteBuffer& writeBuffer, const glm::vec4& vec)
 	{
-		writeBuffer.write(vec.x);
-		writeBuffer.write(vec.y);
-		writeBuffer.write(vec.z);
-		writeBuffer.write(vec.w);
+		se_write(writeBuffer, vec.x);
+		se_write(writeBuffer, vec.y);
+		se_write(writeBuffer, vec.z);
+		se_write(writeBuffer, vec.w);
 	}
 
 	void writeToBuffer(WriteBuffer& writeBuffer, const glm::ivec2& vec)
 	{
-		writeBuffer.write(vec.x);
-		writeBuffer.write(vec.y);
+		se_write(writeBuffer, vec.x);
+		se_write(writeBuffer, vec.y);
 	}
 
 	void writeToBuffer(WriteBuffer& writeBuffer, const glm::ivec3& vec)
 	{
-		writeBuffer.write(vec.x);
-		writeBuffer.write(vec.y);
-		writeBuffer.write(vec.z);
+		se_write(writeBuffer, vec.x);
+		se_write(writeBuffer, vec.y);
+		se_write(writeBuffer, vec.z);
 	}
 
 	void writeToBuffer(WriteBuffer& writeBuffer, const glm::ivec4& vec)
 	{
-		writeBuffer.write(vec.x);
-		writeBuffer.write(vec.y);
-		writeBuffer.write(vec.z);
-		writeBuffer.write(vec.w);
+		se_write(writeBuffer, vec.x);
+		se_write(writeBuffer, vec.y);
+		se_write(writeBuffer, vec.z);
+		se_write(writeBuffer, vec.w);
 	}
 
 	bool readFromBuffer(ReadBuffer& readBuffer, glm::vec2& vec)
