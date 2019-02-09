@@ -16,6 +16,12 @@ namespace se
 		class Camera3D
 		{
 		public:
+			enum ViewProjection
+			{
+				PERSPECTIVE,
+				ORTHOGRAPHIC
+			};
+
 			Camera3D(const Window& _window);
 
 			void update(const time::Time& _deltaTime);
@@ -29,12 +35,16 @@ namespace se
 			void setNear(const float& _near);
 			void setFar(const float& _far);
 
+			void setViewProjection(const ViewProjection _vp);
+			void toggleViewProjection();
+
 			glm::vec3 getPosition() const { return position; }
 			glm::vec3 getDirection() const { return direction; }
 			glm::vec3 getTarget() const { return target; }
 			float getNear() const { return zNear; }
 			float getFar() const { return zFar; }
 			float getFOV() const { return fov; }
+			ViewProjection getViewProjection() const { return viewProjection; };
 
 			glm::vec3 getFrustumPoint(const glm::vec3& _screenCoordinates) const;
 			glm::vec2 worldToScreen(const glm::vec3& _worldCoordinates) const;
@@ -43,6 +53,9 @@ namespace se
 
 		private:
 			const Window& window;
+
+			ViewProjection viewProjection = PERSPECTIVE;
+			void updateProjectionMatrix();
 
 			glm::vec3 position;
 			glm::vec3 direction;

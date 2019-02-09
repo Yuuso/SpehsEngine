@@ -25,9 +25,19 @@ namespace se
 			direction = glm::normalize(target - position);
 
 			view = glm::mat4(1.0f);
-			projection = glm::perspective(glm::radians(fov), (float)window.getWidth() / (float)window.getHeight(), zNear, zFar);
+			updateProjectionMatrix();
 
 			cameraMatrix = &view;
+		}
+
+		void Camera3D::updateProjectionMatrix()
+		{
+			if (viewProjection == PERSPECTIVE)
+				projection = glm::perspective(glm::radians(fov), (float)window.getWidth() / (float)window.getHeight(), zNear, zFar);
+			else if (viewProjection == ORTHOGRAPHIC)
+				projection = glm::ortho(-(float)window.getWidth() * 0.01f, (float)window.getWidth() * 0.01f,
+										-(float)window.getHeight() * 0.01f, (float)window.getHeight() * 0.01f, zNear, zFar);
+			else se_assert(false);
 		}
 
 		void Camera3D::update(const time::Time& deltaTime)
@@ -59,17 +69,28 @@ namespace se
 		void Camera3D::setFOV(const float &_fov)
 		{
 			fov = _fov;
-			projection = glm::perspective(glm::radians(fov), (float)window.getWidth() / (float)window.getHeight(), zNear, zFar);
+			updateProjectionMatrix();
 		}
 		void Camera3D::setNear(const float& _near)
 		{
 			zNear = _near;
-			projection = glm::perspective(glm::radians(fov), (float)window.getWidth() / (float)window.getHeight(), zNear, zFar);
+			updateProjectionMatrix();
 		}
 		void Camera3D::setFar(const float& _far)
 		{
 			zFar = _far;
-			projection = glm::perspective(glm::radians(fov), (float)window.getWidth() / (float)window.getHeight(), zNear, zFar);
+			updateProjectionMatrix();
+		}
+
+		void Camera3D::setViewProjection(const ViewProjection _vp)
+		{
+			viewProjection = _vp;
+			updateProjectionMatrix();
+		}
+		void Camera3D::toggleViewProjection()
+		{
+			viewProjection = viewProjection == PERSPECTIVE ? ORTHOGRAPHIC : PERSPECTIVE;
+			updateProjectionMatrix();
 		}
 
 		glm::vec3 Camera3D::getFrustumPoint(const glm::vec3& _screenCoordinates) const
