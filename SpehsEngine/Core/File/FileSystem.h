@@ -27,7 +27,7 @@ namespace se
 
 	/**Returns a vector of strings, each string representing a sub directory found in the given directory.
 	Directory path is not included in the sub directory string.*/
-	std::vector<std::string> listSubDirectoriesInDirectory(const std::string& directoryPath);
+	std::vector<std::string> listSubDirectoriesInDirectory(std::string directoryPath);
 
 	/*
 		Note: The current path for many operating systems is a dangerous global state.

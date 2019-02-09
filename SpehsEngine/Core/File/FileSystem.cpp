@@ -157,11 +157,19 @@ namespace se
 		return files;
 	}
 
-	std::vector<std::string> listSubDirectoriesInDirectory(const std::string& directoryPath)
+	std::vector<std::string> listSubDirectoriesInDirectory(std::string directoryPath)
 	{
 		std::lock_guard<std::recursive_mutex> lock(filestreamMutex);
 		std::vector<std::string> subDirectories;
-		const boost::filesystem::path path(directoryPath.empty() ? getCurrentPath() : directoryPath);
+		if (directoryPath.empty())
+		{
+			directoryPath = getCurrentPath();
+		}
+		if (directoryPath.size() > 0 && directoryPath.back() != '/' && directoryPath.back() != '\\')
+		{
+			directoryPath += '/';
+		}
+		const boost::filesystem::path path(directoryPath);
 		if (directoryPath.size() > 0)
 		{
 			if (!boost::filesystem::exists(path))
