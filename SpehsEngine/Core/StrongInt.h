@@ -7,6 +7,7 @@
 struct p_TypeName \
 { \
 	static_assert(std::is_integral<p_IntType>::value, "p_IntType must be an integral type."); \
+	typedef p_IntType ValueType;\
 	struct HashFunctor \
 	{ \
 		size_t operator()(const p_TypeName& strongInt) const \
