@@ -114,7 +114,7 @@ namespace se
 			if (paletteOnHold && !getInputManager().isKeyDown(MOUSE_BUTTON_LEFT))
 			{//Mouse press released
 				paletteOnHold = false;
-				editorValue = preview->getColor();
+				setEditorValue(preview->getColor());
 			}
 			if (checkPaletteHover())
 			{
@@ -125,7 +125,7 @@ namespace se
 				hoverColor.r = palette->worldVertexArray[2].color.r + horizontal * (1.0f - palette->worldVertexArray[2].color.r) * vertical;
 				hoverColor.g = palette->worldVertexArray[2].color.g + horizontal * (1.0f - palette->worldVertexArray[2].color.g) * vertical;
 				hoverColor.b = palette->worldVertexArray[2].color.b + horizontal * (1.0f - palette->worldVertexArray[2].color.b) * vertical;
-				hoverColor.a = editorValue.a;
+				hoverColor.a = getEditorValue().a;
 				preview->setColor(hoverColor);
 
 				if (getInputManager().isKeyPressed(MOUSE_BUTTON_LEFT) || (paletteOnHold && getInputManager().isKeyDown(MOUSE_BUTTON_LEFT)))
@@ -192,7 +192,9 @@ namespace se
 
 					if (alphaOnHold)
 					{
-						editorValue.a = (getInputManager().getMouseY() - alphaSliderBack->getY()) / alphaSliderBack->getHeight();
+						Color col = getEditorValue();
+						col.a = (getInputManager().getMouseY() - alphaSliderBack->getY()) / alphaSliderBack->getHeight();
+						setEditorValue(col);
 					}
 				}
 			}
@@ -205,7 +207,7 @@ namespace se
 		}
 
 		//Check changes in editor value
-		ValueEditor::update();
+		ValueEditor::valueEditorUpdate();
 	}
 
 	void GUIColorEditor::visualUpdate()
@@ -221,7 +223,7 @@ namespace se
 
 		if (alphaEnabled)
 		{
-			alphaSliderFront->resize(size.x / float(minSize.x) * sliderWidth, (size.y - 2 * colorEditorBorder) * (float)editorValue.a);
+			alphaSliderFront->resize(size.x / float(minSize.x) * sliderWidth, (size.y - 2 * colorEditorBorder) * (float)getEditorValue().a);
 		}
 	}
 
@@ -307,7 +309,9 @@ namespace se
 	{
 		if (!alphaEnabled)
 			return;
-		editorValue.a = 1.0f;
+		Color col = getEditorValue();
+		col.a = 1.0f;
+		setEditorValue(col);
 		alphaEnabled = false;
 		alphaOnHold = false;
 		alphaSliderBack->setRenderState(false);

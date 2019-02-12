@@ -14,9 +14,9 @@ namespace se
 {
 	size_t GUIStringEditor::defaultMaxStringEditorStringLength = 32;
 
-	GUIStringEditor::GUIStringEditor(GUIContext& context)
+	GUIStringEditor::GUIStringEditor(GUIContext& context, const std::string& initialValue)
 		: GUIRectangle(context)
-		, ValueEditor("")
+		, ValueEditor(initialValue)
 		, maxStringLength(defaultMaxStringEditorStringLength)
 		, keyboardRecorder(context.getInputManager())
 	{
@@ -87,7 +87,7 @@ namespace se
 
 	void GUIStringEditor::inputUpdate()
 	{
-		ValueEditor::update();
+		ValueEditor::valueEditorUpdate();
 		GUIRectangle::inputUpdate();
 
 		//Disable input receive?
@@ -171,10 +171,10 @@ namespace se
 		if (isReceivingInput())
 			return;
 		enableBit(state, GUIRECT_RECEIVING_INPUT_BIT);
-		typerPosition = int(editorValue.size());
+		typerPosition = int(getEditorValue().size());
 		typerBlinkTimer = 0;
 		stringUpdated = false;
-		input = editorValue;
+		input = getEditorValue();
 	}
 
 	void GUIStringEditor::endTyping()
@@ -185,7 +185,7 @@ namespace se
 		disableInputReceiveOnNextUpdate = true;
 		typerPosition = 0;
 		typerBlinkTimer = 0;
-		editorValue = input;
+		setEditorValue(input);
 	}
 
 	void GUIStringEditor::recordInput(const time::Time deltaTime)
@@ -330,12 +330,12 @@ namespace se
 
 	float GUIStringEditor::getEditorValueAsFloat() const
 	{
-		return getStringAsFloat(editorValue);
+		return getStringAsFloat(getEditorValue());
 	}
 
 	int GUIStringEditor::getEditorValueAsInt() const
 	{
-		return getStringAsInt(editorValue);
+		return getStringAsInt(getEditorValue());
 	}
 
 	void GUIStringEditor::onDisableInput()

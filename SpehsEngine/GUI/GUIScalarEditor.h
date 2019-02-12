@@ -29,7 +29,7 @@ namespace se
 			, holdTime(time::fromSeconds(0.15f))
 			, initialHoldTime(time::fromSeconds(1.0f))
 			, nameRect(new GUIRectangle(context))
-			, valueRect(new GUIStringEditor(context))
+			, valueRect(new GUIStringEditor(context, std::to_string(scalarEditorValue)))
 			, decreaseRect(new GUIRectangle(context))
 			, increaseRect(new GUIRectangle(context))
 		{
@@ -73,7 +73,7 @@ namespace se
 		void setTickAmount(const Scalar _tickAmount){ tickAmount = _tickAmount; }
 		void inputUpdate() override
 		{
-			ValueEditor::update();
+			ValueEditor::valueEditorUpdate();
 			GUIRectangleRow::inputUpdate();
 
 			if (valueRect->editorValueChanged())
@@ -86,13 +86,13 @@ namespace se
 				{//+
 					onHold = true;
 					holdTimer = initialHoldTime;
-					setEditorValue(editorValue + tickAmount);
+					setEditorValue(getEditorValue() + tickAmount);
 				}
 				else if (decreaseRect->getMouseHover())
 				{//-
 					onHold = true;
 					holdTimer = initialHoldTime;
-					setEditorValue(editorValue - tickAmount);
+					setEditorValue(getEditorValue() - tickAmount);
 				}
 			}
 			else if (getInputManager().isKeyDown(MOUSE_BUTTON_LEFT) && onHold)
@@ -103,7 +103,7 @@ namespace se
 					if (holdTimer <= se::time::Time::zero)
 					{
 						holdTimer = holdTime;
-						setEditorValue(editorValue + tickAmount);
+						setEditorValue(getEditorValue() + tickAmount);
 					}
 				}
 				else if (decreaseRect->getMouseHover())
@@ -112,14 +112,14 @@ namespace se
 					if (holdTimer <= se::time::Time::zero)
 					{
 						holdTimer = holdTime;
-						setEditorValue(editorValue - tickAmount);
+						setEditorValue(getEditorValue() - tickAmount);
 					}
 				}
 				else
 					onHold = false;
 			}
 		}
-		void setEditorValue(const Scalar newValue) override
+		void setEditorValue(const Scalar& newValue) override
 		{
 			if (newValue > max)
 				ValueEditor::setEditorValue(max);

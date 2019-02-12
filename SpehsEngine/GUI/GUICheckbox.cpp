@@ -44,18 +44,24 @@ namespace se
 
 		//Check mouse press
 		if (getInputEnabled() && getMouseHover() && getInputManager().isKeyPressed(MOUSE_BUTTON_LEFT))
-			editorValue = !editorValue;
+		{
+			setEditorValue(!getEditorValue());
+		}
 
-		ValueEditor::update();
+		ValueEditor::valueEditorUpdate();
 	}
 
 	void GUICheckbox::onEditorValueChange()
 	{
 		//Filling color
-		if (editorValue)
+		if (getEditorValue())
+		{
 			checkboxFilling->setAlpha(SELECTED_ALPHA);
+		}
 		else
+		{
 			checkboxFilling->setAlpha(UNSELECTED_ALPHA);
+		}
 	}
 
 	void GUICheckbox::setRenderState(const bool _state)

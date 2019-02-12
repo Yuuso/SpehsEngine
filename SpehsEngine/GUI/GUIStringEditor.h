@@ -11,7 +11,7 @@ namespace se
 	{
 		static size_t defaultMaxStringEditorStringLength;
 	public:
-		GUIStringEditor(GUIContext& context);
+		GUIStringEditor(GUIContext& context, const std::string& initialValue);
 		~GUIStringEditor() override;
 
 		void setRenderState(const bool _state) override;

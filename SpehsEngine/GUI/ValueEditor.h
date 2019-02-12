@@ -1,4 +1,5 @@
 #pragma once
+#include "boost/signals2.hpp"
 
 namespace se
 {
@@ -9,63 +10,54 @@ namespace se
 	class ValueEditor
 	{
 	public:
-		ValueEditor(ValueType initialValue) : _initialized(false), _valueChanged(false), editorValue(initialValue), previousEditorValue(initialValue)
+		ValueEditor(const ValueType& initialValue) : value(initialValue)
 		{
 		}
 
-		/**Input update will detect value change. Deriving class is responsible for calling the update method! */
-		virtual void update()
+		void valueEditorUpdate()
 		{
-			if (!_initialized)
+			if (valueChanged)
 			{
-				_initialized = true;
+				valueChanged = false;
 				onEditorValueChange();
-			}
-
-			if (editorValue == previousEditorValue)
-				_valueChanged = false;
-			else
-			{//Value change detected
-				onEditorValueChange();//Implementation reacts visually to the change
-				_valueChanged = true;
-				previousEditorValue = editorValue;
+				valueChangedSignal(value);
 			}
 		}
 
 		/**Returns true when user has edited the value and the value is ready to be processed. Should return true during a full program loop cycle (from input update to the next)*/
 		bool editorValueChanged() const
 		{
-			return _valueChanged/*Update has been run, value change was automatically detected*/ ||
-				!(editorValue == previousEditorValue)/*Update hasn't run yet, but change can be detected using previous value data*/;
+			return valueChanged;
 		}
 
-		/**Retrieves the editor's value*/
-		ValueType getEditorValue() const
+		const ValueType& getEditorValue() const
 		{
-			return editorValue;
+			return value;
 		}
 
-		/**Outside source sets the editor's value*/
-		virtual void setEditorValue(const ValueType newValue)
+		/* Value can be set by anyone. */
+		virtual void setEditorValue(const ValueType& newValue)
 		{
-			if (editorValue != newValue)
+			if (value != newValue)
 			{
-				editorValue = newValue;
-				onEditorValueChange();
+				valueChanged = true;
+				value = newValue;
 			}
 		}
+
+		void connectToValueChangedSignal(boost::signals2::scoped_connection& scopedConnection, const boost::function<void(const ValueType&)>& callback) { scopedConnection = valueChangedSignal.connect(callback); }
 
 	protected:
 
 		/**The GUI editor must implement this method in order to relay the changed editor value to the user through the graphical interface.*/
 		virtual void onEditorValueChange() = 0;
 
-		/**The current value of the editors value type*/
-		ValueType editorValue;
-
 	private:
-		bool _initialized;
-		bool _valueChanged;
-		ValueType previousEditorValue;//Used to automatically detect a change in the editor value between the loops (This is donw using the != operator)
+
+		/**The current value of the editors value type*/
+		ValueType value;
+		bool initialized = false;
+		bool valueChanged = false;
+		boost::signals2::signal<void(const ValueType&)> valueChangedSignal;
 	};
 }
