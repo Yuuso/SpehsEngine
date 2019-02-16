@@ -10,20 +10,22 @@ namespace se
 		class AABBCollider3D
 		{
 		public:
-			AABBCollider3D(const glm::vec3& _min, const glm::vec3& _max);
+			AABBCollider3D();
+			AABBCollider3D(const glm::vec3& _center, const glm::vec3& _extents);
+			static AABBCollider3D MinMax(const glm::vec3& _min, const glm::vec3& _max);
 
-			void set(const glm::vec3& _min, const glm::vec3& _max);
+			const glm::vec3 getMin() const;
+			const glm::vec3 getMax() const;
+			const glm::vec3 getExtents() const;
+			const glm::vec3 getCenter() const;
 
-			glm::vec3 min() const;
-			glm::vec3 max() const;
-
-			void setPosition(const glm::vec3& _position) { position = _position; }
-			glm::vec3 getPosition() const { return position; }
+			void setMinMax(const glm::vec3& _min, const glm::vec3& _max);
+			void setExtents(const glm::vec3& _extents);
+			void setCenter(const glm::vec3& _center);
 
 		private:
-			glm::vec3 minCorner;
-			glm::vec3 maxCorner;
-			glm::vec3 position;
+			glm::vec3 center;
+			glm::vec3 extents;
 		};
 	}
 }

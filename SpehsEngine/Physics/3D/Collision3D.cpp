@@ -21,8 +21,8 @@ namespace se
 			for (size_t i = 0; i < 3; i++)
 			{
 				const float invDirection = 1.0f / _ray.direction[glm::vec2::length_type(i)];
-				float t0 = (_aabb.min()[glm::vec2::length_type(i)] - _ray.origin[glm::vec2::length_type(i)]) * invDirection;
-				float t1 = (_aabb.max()[glm::vec2::length_type(i)] - _ray.origin[glm::vec2::length_type(i)]) * invDirection;
+				float t0 = (_aabb.getMin()[glm::vec2::length_type(i)] - _ray.origin[glm::vec2::length_type(i)]) * invDirection;
+				float t1 = (_aabb.getMax()[glm::vec2::length_type(i)] - _ray.origin[glm::vec2::length_type(i)]) * invDirection;
 				if (invDirection < 0.0f)
 					std::swap(t0, t1);
 				tmin = t0 > tmin ? t0 : tmin;
@@ -57,17 +57,17 @@ namespace se
 		glm::vec3 Collision3D::getPositiveVertex(const AABBCollider3D& _aabb, const glm::vec3& _normal)
 		{
 			glm::vec3 result;
-			result.x = (_normal.x > 0.0f) ? _aabb.max().x : _aabb.min().x;
-			result.y = (_normal.y > 0.0f) ? _aabb.max().y : _aabb.min().y;
-			result.z = (_normal.z > 0.0f) ? _aabb.max().z : _aabb.min().z;
+			result.x = (_normal.x > 0.0f) ? _aabb.getMax().x : _aabb.getMin().x;
+			result.y = (_normal.y > 0.0f) ? _aabb.getMax().y : _aabb.getMin().y;
+			result.z = (_normal.z > 0.0f) ? _aabb.getMax().z : _aabb.getMin().z;
 			return result;
 		}
 		glm::vec3 Collision3D::getNegativeVertex(const AABBCollider3D& _aabb, const glm::vec3& _normal)
 		{
 			glm::vec3 result;
-			result.x = (_normal.x < 0.0f) ? _aabb.max().x : _aabb.min().x;
-			result.y = (_normal.y < 0.0f) ? _aabb.max().y : _aabb.min().y;
-			result.z = (_normal.z < 0.0f) ? _aabb.max().z : _aabb.min().z;
+			result.x = (_normal.x < 0.0f) ? _aabb.getMax().x : _aabb.getMin().x;
+			result.y = (_normal.y < 0.0f) ? _aabb.getMax().y : _aabb.getMin().y;
+			result.z = (_normal.z < 0.0f) ? _aabb.getMax().z : _aabb.getMin().z;
 			return result;
 		}
 
