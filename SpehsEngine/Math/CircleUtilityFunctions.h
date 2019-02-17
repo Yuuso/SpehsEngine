@@ -11,6 +11,7 @@ namespace se
 
 	/* Returns true if containingCircle covers containedCircle completely. */
 	bool checkContains(const Circle& containingCircle, const Circle& containedCircle);
+	bool checkContains(const Circle& containingCircle, const glm::vec2& containedPoint);
 
 	Bounds2D getBounds(const Circle& circle);
 }
