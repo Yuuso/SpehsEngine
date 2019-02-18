@@ -106,6 +106,7 @@ namespace se
 
 	void GUIColorEditor::inputUpdate()
 	{
+		ValueEditor::valueEditorUpdate();
 		GUIRectangle::inputUpdate();
 
 		if (getInputEnabled())
@@ -205,9 +206,6 @@ namespace se
 			sliderOnHold = false;
 			alphaOnHold = false;
 		}
-
-		//Check changes in editor value
-		ValueEditor::valueEditorUpdate();
 	}
 
 	void GUIColorEditor::visualUpdate()
