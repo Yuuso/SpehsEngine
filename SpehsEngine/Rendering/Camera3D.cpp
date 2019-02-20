@@ -35,8 +35,8 @@ namespace se
 			if (viewProjection == PERSPECTIVE)
 				projection = glm::perspective(glm::radians(fov), (float)window.getWidth() / (float)window.getHeight(), zNear, zFar);
 			else if (viewProjection == ORTHOGRAPHIC)
-				projection = glm::ortho(-(float)window.getWidth() * 0.01f, (float)window.getWidth() * 0.01f,
-										-(float)window.getHeight() * 0.01f, (float)window.getHeight() * 0.01f, zNear, zFar);
+				projection = glm::ortho(-(float)window.getWidth() * 0.01f * orthographicZoom, (float)window.getWidth() * 0.01f * orthographicZoom,
+										-(float)window.getHeight() * 0.01f * orthographicZoom, (float)window.getHeight() * 0.01f * orthographicZoom, zNear, zFar);
 			else se_assert(false);
 		}
 
@@ -90,6 +90,11 @@ namespace se
 		void Camera3D::toggleViewProjection()
 		{
 			viewProjection = viewProjection == PERSPECTIVE ? ORTHOGRAPHIC : PERSPECTIVE;
+			updateProjectionMatrix();
+		}
+		void Camera3D::setOrthographicZoom(const float _value)
+		{
+			orthographicZoom = _value;
 			updateProjectionMatrix();
 		}
 
