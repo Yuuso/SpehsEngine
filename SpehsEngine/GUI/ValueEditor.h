@@ -20,6 +20,7 @@ namespace se
 			{
 				valueChanged = false;
 				onEditorValueChange();
+				valueChangedCallback(value);
 				valueChangedSignal(value);
 			}
 		}
@@ -45,8 +46,10 @@ namespace se
 			}
 		}
 
-		void connectToValueChangedSignal(boost::signals2::scoped_connection& scopedConnection, const boost::function<void(const ValueType&)>& callback) { scopedConnection = valueChangedSignal.connect(callback); }
+		void setValueChangedCallback(const std::function<void(const ValueType&)>& callback) { valueChangedCallback = callback; }
 
+		void connectToValueChangedSignal(boost::signals2::scoped_connection& scopedConnection, const boost::function<void(const ValueType&)>& callback) { scopedConnection = valueChangedSignal.connect(callback); }
+		
 	protected:
 
 		/**The GUI editor must implement this method in order to relay the changed editor value to the user through the graphical interface.*/
@@ -58,6 +61,7 @@ namespace se
 		ValueType value;
 		bool initialized = false;
 		bool valueChanged = false;
+		std::function<void(const ValueType&)> valueChangedCallback;
 		boost::signals2::signal<void(const ValueType&)> valueChangedSignal;
 	};
 }
