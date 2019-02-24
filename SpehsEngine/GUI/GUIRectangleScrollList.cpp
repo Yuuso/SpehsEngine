@@ -382,12 +382,13 @@ namespace se
 		disableState(GUIRECT_MIN_SIZE_UPDATED_BIT | GUIRECT_SCALE_UPDATED_BIT | GUIRECT_POSITION_UPDATED_BIT);
 	}
 
-	void GUIRectangleScrollList::addElement(GUIRectangle* element)
+	GUIRectangle* GUIRectangleScrollList::addElement(GUIRectangle* element)
 	{
 		GUIRectangleContainer::addElement(element);
 		if (updateElementCount < minVisibleElementCount)
 			incrementUpdateElementCount(1);
 		elements.back()->setRenderState(getRenderState() && checkState(GUIRECT_OPEN_BIT) && (beginElementIndex + updateElementCount == elements.size()/*is updated*/));
+		return element;
 	}
 
 	void GUIRectangleScrollList::setDepth(const int16_t depth)

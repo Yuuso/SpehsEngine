@@ -31,7 +31,7 @@ namespace se
 		void updateScale() override;
 		void updatePosition() override;
 		void setDepth(const int16_t depth) override;
-		void addElement(GUIRectangle* e) override;
+		GUIRectangle* addElement(GUIRectangle* e) override;
 		void clear() override;
 		bool open() override;
 		bool close() override;

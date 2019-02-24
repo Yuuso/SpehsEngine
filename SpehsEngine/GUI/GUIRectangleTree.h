@@ -24,8 +24,8 @@ namespace se
 		void setTreeOpenTime(const float seconds){ treeOpenTime = time::fromSeconds(seconds); }
 		bool open();
 		bool close();			
-		void addElement(const std::string& str, const GUIRECT_ID_TYPE _ID);///< Creates new node with given string and id
-		void addElement(GUIRectangle* element);
+		GUIRectangle* addElement(const std::string& str, const GUIRECT_ID_TYPE _ID);///< Creates new node with given string and id
+		GUIRectangle* addElement(GUIRectangle* element);
 
 		//Tree
 		int getPressedLeafNodeID(){ return pressedLeafNodeID; }

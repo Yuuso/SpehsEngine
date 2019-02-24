@@ -137,17 +137,19 @@ namespace se
 		pressedLeafNodeID = _ID;
 	}
 
-	void GUIRectangleTree::addElement(GUIRectangle* element)
+	GUIRectangle* GUIRectangleTree::addElement(GUIRectangle* element)
 	{
 		GUIRectangleContainer::addElement(element);
 		element->setRenderState(checkState(GUIRECT_OPEN_BIT) && getRenderState());
+		return element;
 	}
 
-	void GUIRectangleTree::addElement(const std::string& str, const GUIRECT_ID_TYPE _ID)
+	GUIRectangle* GUIRectangleTree::addElement(const std::string& str, const GUIRECT_ID_TYPE _ID)
 	{
 		addElement(new GUIRectangleTree(getGUIContext()));
 		elements.back()->setString(str);
 		elements.back()->setID(_ID);
+		return elements.back();
 	}
 
 	bool GUIRectangleTree::open()

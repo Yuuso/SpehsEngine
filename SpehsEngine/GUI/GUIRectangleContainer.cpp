@@ -100,7 +100,7 @@ namespace se
 			parent->disableStateRecursive(GUIRECT_MIN_SIZE_UPDATED_BIT);
 	}
 
-	void GUIRectangleContainer::addElement(GUIRectangle* element)
+	GUIRectangle* GUIRectangleContainer::addElement(GUIRectangle* element)
 	{
 		elements.push_back(element);
 		elements.back()->setParent(this);
@@ -114,6 +114,8 @@ namespace se
 
 		//Min size must be updated for everything above
 		disableStateRecursiveUpwards(GUIRECT_MIN_SIZE_UPDATED_BIT | GUIRECT_SCALE_UPDATED_BIT | GUIRECT_POSITION_UPDATED_BIT);
+
+		return element;
 	}
 
 	bool GUIRectangleContainer::removeElement(GUIRectangle* element)

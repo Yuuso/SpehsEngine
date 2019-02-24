@@ -140,10 +140,11 @@ namespace se
 			for (unsigned i = 0; i < elements.size(); i++)
 				elements[i]->setAlpha(alpha);
 		}
-		void addElement(se::GUIRectangle* element) override
+		GUIRectangle* addElement(se::GUIRectangle* element) override
 		{
 			GUIRectangleRow::addElement(element);
 			element->setColor(getColor());
+			return element;
 		}
 
 	protected:

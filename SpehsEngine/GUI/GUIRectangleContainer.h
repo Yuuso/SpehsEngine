@@ -40,7 +40,7 @@ namespace se
 		void setDepth(const int16_t depth) override;
 
 		//Element management
-		virtual void addElement(GUIRectangle* element);
+		virtual GUIRectangle* addElement(GUIRectangle* element);
 		virtual bool removeElement(GUIRectangle* element);//Searches elements list and removes element. If element is not found, returns false
 		virtual GUIRectangle* back() const { return elements.back(); }
 		virtual GUIRectangle* front() const { return elements.front(); }
