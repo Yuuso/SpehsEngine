@@ -34,6 +34,7 @@ namespace se
 			, increaseRect(new GUIRectangle(context))
 		{
 			nameRect->setString(scalarName);
+			valueRect->setString(valueRect->getEditorValue());
 			decreaseRect->setString("-");
 			increaseRect->setString("+");
 			setElementPositionMode(se::GUIRectangleRow::PositionMode::StackRight);
