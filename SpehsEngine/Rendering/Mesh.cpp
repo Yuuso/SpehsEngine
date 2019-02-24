@@ -188,6 +188,9 @@ namespace se
 		}
 		void Mesh::setColor(const Color _color)
 		{
+			se_assert(vertexArray.size() > 0);
+			if (vertexArray.size() <= 0)
+				return;
 			if (useMeshColor && _color == vertexArray[0].color)
 				return;
 			for (size_t i = 0; i < vertexArray.size(); i++)
@@ -200,6 +203,9 @@ namespace se
 		}
 		void Mesh::setAlpha(const float _alpha)
 		{
+			se_assert(vertexArray.size() > 0);
+			if (vertexArray.size() <= 0)
+				return;
 			if (useMeshAlpha && _alpha == vertexArray[0].color.a)
 				return;
 			for (size_t i = 0; i < vertexArray.size(); i++)
@@ -211,6 +217,9 @@ namespace se
 		}
 		void Mesh::setColor(const size_t _index, const Color _color)
 		{
+			se_assert(vertexArray.size() > _index);
+			if (vertexArray.size() <= _index)
+				return;
 			vertexArray[_index].color = _color;
 			useMeshColor = false;
 			useMeshAlpha = false;
@@ -218,6 +227,9 @@ namespace se
 		}
 		void Mesh::setAlpha(const size_t _index, const float _alpha)
 		{
+			se_assert(vertexArray.size() > _index);
+			if (vertexArray.size() <= _index)
+				return;
 			vertexArray[_index].color.a = _alpha;
 			useMeshAlpha = false;
 			enableBit(needUpdate, VERTEX_UPDATE_COLOR);

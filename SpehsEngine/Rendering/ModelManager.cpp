@@ -108,6 +108,8 @@ namespace se
 				ModelManager::Model* model = it->second;
 				for (size_t i = 0; i < model->meshes.size(); i++)
 				{
+					if (model->meshes[i].vertices.size() == 0)
+						continue;
 					_model.meshes.push_back(std::unique_ptr<se::rendering::Mesh>(new se::rendering::Mesh()));
 					_model.meshes[i]->name = model->meshes[i].name;
 					_model.meshes[i]->localPosition = model->meshes[i].position;

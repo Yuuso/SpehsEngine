@@ -15,6 +15,7 @@ namespace se
 			: position(0.0f, 0.0f, 0.0f)
 			, rotation(glm::vec3(0.0f, 0.0f, 0.0f))
 			, scale(1.0f, 1.0f, 1.0f)
+			, modelColor(1.0f, 1.0f, 1.0f, 1.0f)
 		{
 		}
 		Model::~Model()
@@ -29,7 +30,9 @@ namespace se
 				for (size_t m = 0; m < meshes.size(); m++)
 					batchManagers[b]->removeMesh(*meshes[m]);
 
+			meshes.clear();
 			_modelManager.loadModel(_filepath, *this);
+			setColor(modelColor);
 
 			for (size_t b = 0; b < batchManagers.size(); b++)
 			{
@@ -46,7 +49,9 @@ namespace se
 				for (size_t m = 0; m < meshes.size(); m++)
 					batchManagers[b]->removeMesh(*meshes[m]);
 
+			meshes.clear();
 			_modelManager.loadModel(_hash, *this);
+			setColor(modelColor);
 
 			for (size_t b = 0; b < batchManagers.size(); b++)
 			{
@@ -61,18 +66,20 @@ namespace se
 		void Model::addMesh(const Mesh& _mesh)
 		{
 			meshes.push_back(std::unique_ptr<se::rendering::Mesh>(new Mesh(_mesh)));
+			meshes.back()->setColor(modelColor);
+			updateMeshTransform(*meshes.back());
 			for (size_t b = 0; b < batchManagers.size(); b++)
 			{
-				updateMeshTransform(*meshes.back());
 				batchManagers[b]->addMesh(*meshes.back());
 			}
 		}
 		void Model::insertMesh(const size_t _position, const Mesh& _mesh)
 		{
 			meshes.insert(meshes.begin() + _position, std::unique_ptr<se::rendering::Mesh>(new Mesh(_mesh)));
+			meshes[_position]->setColor(modelColor);
+			updateMeshTransform(*meshes[_position]);
 			for (size_t b = 0; b < batchManagers.size(); b++)
 			{
-				updateMeshTransform(*meshes.back());
 				batchManagers[b]->addMesh(*meshes[_position]);
 			}
 		}
@@ -82,9 +89,10 @@ namespace se
 			for (size_t b = 0; b < batchManagers.size(); b++)
 				batchManagers[b]->removeMesh(*meshes[_position]);
 			meshes[_position] = std::unique_ptr<se::rendering::Mesh>(new Mesh(_mesh));
+			meshes[_position]->setColor(modelColor);
+			updateMeshTransform(*meshes[_position]);
 			for (size_t b = 0; b < batchManagers.size(); b++)
 			{
-				updateMeshTransform(*meshes.back());
 				batchManagers[b]->addMesh(*meshes[_position]);
 			}
 		}
@@ -154,11 +162,13 @@ namespace se
 
 		void Model::setColor(const Color _color)
 		{
+			modelColor = _color;
 			for (size_t i = 0; i < meshes.size(); i++)
 				meshes[i]->setColor(_color);
 		}
 		void Model::setAlpha(const float _alpha)
 		{
+			modelColor.a = _alpha;
 			for (size_t i = 0; i < meshes.size(); i++)
 				meshes[i]->setAlpha(_alpha);
 		}
