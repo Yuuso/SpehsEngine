@@ -20,7 +20,10 @@ namespace se
 			{
 				valueChanged = false;
 				onEditorValueChange();
-				valueChangedCallback(value);
+				if (valueChangedCallback)
+				{
+					valueChangedCallback(value);
+				}
 				valueChangedSignal(value);
 			}
 		}

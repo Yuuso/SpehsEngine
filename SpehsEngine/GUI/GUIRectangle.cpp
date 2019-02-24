@@ -470,6 +470,18 @@ namespace se
 		return "";
 	}
 
+	const Color GUIRectangle::getStringColor() const
+	{
+		if (text)
+		{
+			return text->getColor();
+		}
+		else
+		{
+			return defaultStringColor;
+		}
+	}
+
 	void GUIRectangle::createText()
 	{
 		if (text)

@@ -133,6 +133,7 @@ namespace se
 		virtual void setStringAlpha(const float alpha);
 		std::string getString() const;
 		virtual void setJustification(const GUIRECT_STATE_TYPE justificationBit);///<NOTE: if non-justification bit is given, all justification bits will be cleared and given bit will be enabled
+		virtual const Color getStringColor() const;
 		//Tooltip
 		void setTooltip(const std::string& tooltipString);
 		GUIRectangle* getTooltipPtr() const { return tooltip.get(); }
