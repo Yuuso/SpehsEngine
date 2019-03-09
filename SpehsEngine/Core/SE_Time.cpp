@@ -1,13 +1,18 @@
+
 #include "stdafx.h"
 #include "SpehsEngine/Core/SE_Time.h"
 
 #include "SpehsEngine/Core/Log.h"
 #include "SpehsEngine/Core/ReadBuffer.h"
 #include "SpehsEngine/Core/WriteBuffer.h"
+
 #include <algorithm>
 #include <chrono>
 #include <mutex>
-#include <string>
+#include <ctime>
+#include <sstream>
+#include <iomanip>
+
 
 namespace se
 {
@@ -76,6 +81,18 @@ namespace se
 				if (now - begin >= time)
 					return;
 			}
+		}
+
+		std::string date(const std::string& format)
+		{
+			std::time_t rawtime = std::time(nullptr);
+			std::tm tm;
+			const errno_t result = localtime_s(&tm, &rawtime);
+			se_assert(result == 0);
+
+			std::ostringstream stringstream;
+			stringstream << std::put_time(&tm, format.c_str());
+			return stringstream.str();
 		}
 
 		std::string engineBuildYear()

@@ -1,5 +1,6 @@
 #pragma once
 #include <stdint.h>
+#include <string>
 
 #ifdef delay
 #undef delay
@@ -84,6 +85,9 @@ namespace se
 
 		/* Waits in a while loop until specified time has passed. More precise than sleep, but hogs processor for the duration of delay. */
 		void delay(const Time time);
+
+		/* Get date and time string in strftime format. */
+		std::string date(const std::string& format);
 
 		/* Returns the current time stamp, relative to 'some' context. See getRunTime() for an alternative. */
 		Time now();
