@@ -23,7 +23,7 @@ namespace se
 	bool readFromBuffer(ReadBuffer& buffer, std::vector<T>& vector)
 	{
 		static_assert(std::is_integral<SizeType>::value, "SizeType must be integral.");
-		SizeType size;
+		SizeType size = 0;
 		if (!buffer.read(size))
 		{
 			return false;
@@ -57,7 +57,7 @@ namespace se
 	typename std::enable_if<std::is_class<T>::value, bool>::type
 		readFromArchive(const Archive& archive, std::vector<T>& vector)
 	{
-		SizeType size;
+		SizeType size = 0;
 		se_read_from_archive(archive, size);
 		vector.resize(size);
 		for (size_t i = 0; i < size; i++)

@@ -23,7 +23,7 @@ namespace se
 	bool readFromBuffer(ReadBuffer& buffer, std::string& string)
 	{
 		static_assert(std::is_integral<SizeType>::value, "SizeType must be integral.");
-		SizeType size;
+		SizeType size = 0;
 		if (!buffer.read(size))
 		{
 			return false;

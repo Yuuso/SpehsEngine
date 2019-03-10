@@ -24,7 +24,7 @@ namespace se
 	bool readFromBuffer(ReadBuffer& buffer, std::unordered_map<KeyType, T, Hasher>& unorderedMap)
 	{
 		static_assert(std::is_integral<SizeType>::value, "SizeType must be integral.");
-		SizeType size;
+		SizeType size = 0;
 		if (!buffer.read(size))
 		{
 			return false;
@@ -67,7 +67,7 @@ namespace se
 	bool readFromArchive(const Archive& archive, std::unordered_map<KeyType, T, Hasher>& unorderedMap)
 	{
 		static_assert(std::is_integral<SizeType>::value, "SizeType must be integral.");
-		SizeType size;
+		SizeType size = 0;
 		se_read_from_archive(archive, size);
 		for (size_t i = 0; i < size; i++)
 		{
