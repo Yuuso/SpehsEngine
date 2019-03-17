@@ -33,13 +33,13 @@ namespace se
 				if (_shapeID % 2)
 					firstPosition = 0;
 				else
-					firstPosition = (float(TWO_PI) / float(_shapeID)) / 2.0f;
+					firstPosition = (se::TWO_PI<float> / float(_shapeID)) / 2.0f;
 				vertexArray[0].position = glm::vec2(cos(firstPosition), sin(firstPosition));
 				float minX = vertexArray[0].position.x, minY = vertexArray[0].position.y, maxX = vertexArray[0].position.x, maxY = vertexArray[0].position.y;
 				for (int i = 1; i < _shapeID; i++)
 				{
 					//Set position
-					vertexArray[i].position = glm::vec2(cos(firstPosition + i * (float(TWO_PI) / _shapeID)), sin(firstPosition + i * (float(TWO_PI) / _shapeID)));
+					vertexArray[i].position = glm::vec2(cos(firstPosition + i * (se::TWO_PI<float> / _shapeID)), sin(firstPosition + i * (se::TWO_PI<float> / _shapeID)));
 
 					//Check min/max
 					if (vertexArray[i].position.x > maxX)

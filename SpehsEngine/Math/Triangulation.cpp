@@ -167,7 +167,7 @@ namespace se
 				end = *neighbours[n]->point(neighbourPointIndex + 1) - *neighbours[n]->point(neighbourPointIndex - 1);
 				const float angle2 = se::getAngle(se::getAngle(begin), se::getAngle(end));
 				////Conclusion
-				if (angle1 + angle2 < PI)
+				if (angle1 + angle2 < se::PI<float>)
 				{//Exchange
 
 					Triangle& other = *neighbours[n];

@@ -22,8 +22,8 @@ namespace se
 		case ISOSCELES_TRIANGLE:
 			vertexArray.resize(3);
 			vertexArray[0].position = glm::vec2(0.0f, 0.5f);
-			vertexArray[1].position = glm::vec2(cos((7.0f / 6.0f) * PI) * 0.5f, sin((7.0f / 6.0f) * PI) * 0.5f);
-			vertexArray[2].position = glm::vec2(cos((11.0f / 6.0f) * PI) * 0.5f, sin((11.0f / 6.0f) * PI) * 0.5f);
+			vertexArray[1].position = glm::vec2(cos((7.0f / 6.0f) * PI<float>) * 0.5f, sin((7.0f / 6.0f) * PI<float>) * 0.5f);
+			vertexArray[2].position = glm::vec2(cos((11.0f / 6.0f) * PI<float>) * 0.5f, sin((11.0f / 6.0f) * PI<float>) * 0.5f);
 			break;
 		case BUTTON:
 			vertexArray.resize(4);

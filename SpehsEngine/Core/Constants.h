@@ -1,8 +1,14 @@
+
 #pragma once
 
 namespace se
 {
-	const double PI = atan(1.0) * 4.0;
-	const double TWO_PI = PI * 2.0;
-	const double HALF_PI = PI * 0.5;
+	template<typename T>
+	constexpr T PI		= T(3.141592653589793238462643383279L);
+
+	template<typename T>
+	constexpr T TWO_PI	= T(6.283185307179586476925286766559L);
+
+	template<typename T>
+	constexpr T HALF_PI	= T(1.570796326794896619231321691639L);
 }
