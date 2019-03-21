@@ -13,8 +13,9 @@ namespace se
 		{
 			enum Type : uint8_t
 			{
-				read = 0x01,
-				hash = 0x02,
+				none = 0,
+				read = 1 << 0,
+				hash = 1 << 1,
 			};
 		};
 		struct FileState

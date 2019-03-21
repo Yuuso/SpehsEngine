@@ -71,10 +71,41 @@ namespace se
 		}
 	}
 
-	bool createDirectory(const std::string& path)
+	bool createDirectory(const std::string& fullPath)
 	{
 		std::lock_guard<std::recursive_mutex> lock(filestreamMutex);
-		return boost::filesystem::create_directory(path);
+		// NOTE: seems that boost isn't able to create multiple directories at a time if more than one new directories are required
+		auto verifyPath = [](const std::string& path)
+		{
+			if (fileExists(path))
+			{
+				if (isDirectory(path))
+				{
+					return true;
+				}
+				else
+				{
+					return false;
+				}
+			}
+			else
+			{
+				return boost::filesystem::create_directory(path);
+			}
+		};
+		for (size_t i = 0; i < fullPath.size(); i++)
+		{
+			if (fullPath[i] == '/' || fullPath[i] == '\\' && i != fullPath.size() - 1)
+			{
+				std::string partialPath;
+				partialPath.insert(partialPath.begin(), fullPath.begin(), fullPath.begin() + i);
+				if (!verifyPath(partialPath))
+				{
+					return false;
+				}
+			}
+		}
+		return boost::filesystem::create_directory(fullPath);
 	}
 	
 	bool verifyDirectory(const std::string& path)
@@ -87,7 +118,6 @@ namespace se
 			}
 			else
 			{
-				//Another non-directory exists at the given path
 				return false;
 			}
 		}

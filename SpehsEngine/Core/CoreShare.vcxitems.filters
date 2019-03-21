@@ -1,18 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <PropertyGroup Label="Globals">
-    <MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
-    <HasSharedItems>true</HasSharedItems>
-    <ItemsProjectGuid>{45D41ACC-2C3C-43D2-BC10-02AA73FFC7C7}</ItemsProjectGuid>
-  </PropertyGroup>
-  <ItemDefinitionGroup>
-    <ClCompile>
-      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(MSBuildThisFileDirectory)</AdditionalIncludeDirectories>
-    </ClCompile>
-  </ItemDefinitionGroup>
-  <ItemGroup>
-    <ProjectCapability Include="SourceItemsFromImports" />
-  </ItemGroup>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <ClCompile Include="$(MSBuildThisFileDirectory)Archive.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)ArchiveUtilityFunctions.cpp" />
@@ -26,10 +13,7 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)Console.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)CoreLib.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)DeltaTimeSystem.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)File\DirectoryState.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Endianness.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)File\File.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)File\FileSystem.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Inifile.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Inivar.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)LapTimer.cpp" />
@@ -40,9 +24,7 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)RNG.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)ScopeTimer.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Shapes.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)stdafx.cpp">
-      <PrecompiledHeader>Create</PrecompiledHeader>
-    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)stdafx.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)STLUnorderedMapUtilityFunctions.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)STLVectorUtilityFunctions.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)StringOperations.cpp" />
@@ -52,6 +34,15 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)SE_Time.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Vertex.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)WriteBuffer.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)File\File.cpp">
+      <Filter>File</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)File\FileSystem.cpp">
+      <Filter>File</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)File\DirectoryState.cpp">
+      <Filter>File</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="$(MSBuildThisFileDirectory)Archive.h" />
@@ -69,10 +60,7 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)Constants.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)CoreLib.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)DeltaTimeSystem.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)File\DirectoryState.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Endianness.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)File\File.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)File\FileSystem.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)FinalRelease.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)FloatCompression.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)HasMemberFunction.h" />
@@ -99,5 +87,19 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)Vertex.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)WatchedValue.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)WriteBuffer.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)File\File.h">
+      <Filter>File</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)File\FileSystem.h">
+      <Filter>File</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)File\DirectoryState.h">
+      <Filter>File</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="File">
+      <UniqueIdentifier>{ea955e6b-769d-476a-9b90-87d8ddde01a8}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
 </Project>
