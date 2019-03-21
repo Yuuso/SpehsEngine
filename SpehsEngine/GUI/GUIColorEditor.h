@@ -15,7 +15,7 @@ namespace se
 		static float colorPreviewWidth;
 		static int colorEditorBorder;
 	public:
-		GUIColorEditor(GUIContext& context);
+		GUIColorEditor(GUIContext& context, const Color& initialValue);
 		~GUIColorEditor();
 
 		void setDepth(const int16_t _depth) override;
@@ -30,11 +30,13 @@ namespace se
 		void disableAlphaEditing();
 		void toggleAlphaEditing();
 
+		GUIColorEditor* getAsGUIColorEditorPtr() override { return this; }
+
 	private:
 		void onEditorValueChange() override;
 		bool checkPaletteHover() const;
 		bool checkSliderHover() const;
-		bool checkAlphaHover()const;
+		bool checkAlphaHover() const;
 
 		se::rendering::Polygon* palette;
 		se::rendering::Polygon* sliderRG;

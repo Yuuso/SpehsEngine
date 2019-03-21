@@ -54,6 +54,7 @@ namespace se
 	class GUIButton;
 	class GUICheckbox;
 	class GUIStringEditor;
+	class GUIColorEditor;
 	class GUIRectangleRow;
 	class GUIRectangleTree;
 	class GUIRectangleScrollList;
@@ -235,6 +236,7 @@ namespace se
 		virtual GUIWindow* getAsGUIWindowPtr() { return nullptr; }
 		virtual GUICheckbox* getAsGUICheckboxPtr() { return nullptr; }
 		virtual GUIStringEditor* getAsGUIStringEditorPtr() { return nullptr; }
+		virtual GUIColorEditor* getAsGUIColorEditorPtr() { return nullptr; }
 		virtual GUIRectangleRow* getAsGUIRectangleRowPtr() { return nullptr; }
 		virtual GUIRectangleTree* getAsGUIRectangleTreePtr() { return nullptr; }
 		virtual GUIRectangleScrollList* getAsGUIRectangleScrollListPtr() { return nullptr; }

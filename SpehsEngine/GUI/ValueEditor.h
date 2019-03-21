@@ -62,7 +62,6 @@ namespace se
 
 		/**The current value of the editors value type*/
 		ValueType value;
-		bool initialized = false;
 		bool valueChanged = false;
 		std::function<void(const ValueType&)> valueChangedCallback;
 		boost::signals2::signal<void(const ValueType&)> valueChangedSignal;

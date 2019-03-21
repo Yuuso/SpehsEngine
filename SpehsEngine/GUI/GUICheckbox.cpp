@@ -6,18 +6,22 @@
 #include "SpehsEngine/Rendering/Text.h"
 
 
-#define CHECKBOX_BORDER 2
-#define SELECTED_ALPHA 255
-#define UNSELECTED_ALPHA 25
+
+namespace
+{
+	static const int checkboxBorder = 2;
+	static const float selectedAlpha = 1.0f;
+	static const float unselectedAlpha = 0.1f;
+}
 
 namespace se
 {
-	const se::Color GUICheckbox::defaultCheckboxFillingColor(30, 30, 30);
-	const se::Color GUICheckbox::defaultCheckboxOuterColor(160, 170, 180);
+	const se::Color GUICheckbox::defaultCheckboxFillingColor(0.12f, 0.12f, 0.12f);
+	const se::Color GUICheckbox::defaultCheckboxOuterColor(0.63f, 0.66f, 0.70f);
 
-	GUICheckbox::GUICheckbox(GUIContext& context)
+	GUICheckbox::GUICheckbox(GUIContext& context, const bool initialValue)
 		: GUIRectangle(context)
-		, ValueEditor(false)
+		, ValueEditor(initialValue)
 		, checkboxSize(20)
 	{
 		checkboxBackground = getBatchManager().createPolygon(Shape::BUTTON, getDepth() + 1, 1.0f, 1.0f);
@@ -56,11 +60,11 @@ namespace se
 		//Filling color
 		if (getEditorValue())
 		{
-			checkboxFilling->setAlpha(SELECTED_ALPHA);
+			checkboxFilling->setAlpha(selectedAlpha);
 		}
 		else
 		{
-			checkboxFilling->setAlpha(UNSELECTED_ALPHA);
+			checkboxFilling->setAlpha(unselectedAlpha);
 		}
 	}
 
@@ -80,10 +84,10 @@ namespace se
 
 	void GUICheckbox::updateMinSize()
 	{
-		minSize.x = 2 * CHECKBOX_BORDER + checkboxSize;
+		minSize.x = 2 * checkboxBorder + checkboxSize;
 		if (text)
 			minSize.x += (int)text->getTextWidth();
-		minSize.y = 2 * CHECKBOX_BORDER + checkboxSize;
+		minSize.y = 2 * checkboxBorder + checkboxSize;
 		if (text && text->getTextHeight() > (float)minSize.y)
 			minSize.y = (int)text->getTextHeight();
 	}
@@ -93,7 +97,7 @@ namespace se
 		GUIRectangle::updateScale();
 
 		checkboxBackground->resize((float)checkboxSize, (float)checkboxSize);
-		checkboxFilling->resize(float(checkboxSize - 2 * CHECKBOX_BORDER), float(checkboxSize - 2 * CHECKBOX_BORDER));
+		checkboxFilling->resize(float(checkboxSize - 2 * checkboxBorder), float(checkboxSize - 2 * checkboxBorder));
 	}
 
 	void GUICheckbox::updatePosition()
@@ -103,8 +107,8 @@ namespace se
 
 		GUIRectangle::updatePosition();
 
-		checkboxBackground->setPosition(float(getXGlobal() + size.x - CHECKBOX_BORDER - checkboxSize), float(getYGlobal() + (size.y - checkboxSize) * 0.5f));
-		checkboxFilling->setPosition(float(getXGlobal() + size.x - checkboxSize), (float)getYGlobal() + (size.y - checkboxSize) * 0.5f + float(CHECKBOX_BORDER));
+		checkboxBackground->setPosition(float(getXGlobal() + size.x - checkboxBorder - checkboxSize), float(getYGlobal() + (size.y - checkboxSize) * 0.5f));
+		checkboxFilling->setPosition(float(getXGlobal() + size.x - checkboxSize), (float)getYGlobal() + (size.y - checkboxSize) * 0.5f + float(checkboxBorder));
 
 		//Update minimum size
 		updateMinSize();
@@ -114,11 +118,11 @@ namespace se
 		{
 			float textX = float(getXGlobal());
 			if (checkBit(state, GUIRECT_TEXT_JUSTIFICATION_LEFT_BIT))
-				textX += float(CHECKBOX_BORDER);
+				textX += float(checkboxBorder);
 			else if (checkBit(state, GUIRECT_TEXT_JUSTIFICATION_RIGHT_BIT))
-				textX += float(size.x - size.y - CHECKBOX_BORDER - text->getTextWidth() - borderWidth);
+				textX += float(size.x - size.y - checkboxBorder - text->getTextWidth() - borderWidth);
 			else
-				textX += 0.5f * (size.x - size.y - CHECKBOX_BORDER - text->getTextWidth());
+				textX += 0.5f * (size.x - size.y - checkboxBorder - text->getTextWidth());
 			text->setPosition(std::round(textX), std::round(getYGlobal() + 0.5f * size.y - 0.5f * text->getTextHeight() - text->getFontDescender()));
 		}
 	}

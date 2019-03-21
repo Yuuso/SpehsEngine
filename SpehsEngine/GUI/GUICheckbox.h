@@ -16,7 +16,7 @@ namespace se
 		static const se::Color defaultCheckboxOuterColor;
 		static const se::Color defaultCheckboxFillingColor;
 	public:
-		GUICheckbox(GUIContext& context);
+		GUICheckbox(GUIContext& context, const bool initialValue);
 		~GUICheckbox() override;
 
 		void inputUpdate() override;

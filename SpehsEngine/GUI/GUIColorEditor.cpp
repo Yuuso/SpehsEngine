@@ -12,9 +12,9 @@ namespace se
 	int GUIColorEditor::colorEditorBorder = 3;
 	float GUIColorEditor::colorPreviewWidth = 20.0f;
 
-	GUIColorEditor::GUIColorEditor(GUIContext& context)
+	GUIColorEditor::GUIColorEditor(GUIContext& context, const Color& initialValue)
 		: GUIRectangle(context)
-		, ValueEditor(Color(1.0f, 1.0f, 1.0f, 1.0f))
+		, ValueEditor(initialValue)
 		, sliderState(0.0f)
 		, sliderOnHold(false)
 		, paletteOnHold(false)
