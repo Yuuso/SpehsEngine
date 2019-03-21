@@ -13,6 +13,7 @@
 #include "SpehsEngine/Core/SE_Time.h"
 #include "SpehsEngine/Core/Color.h"
 #include "SpehsEngine/Core/Constants.h"
+#include "SpehsEngine/Core/Guid.h"
 namespace se
 {
 	class Archive;
