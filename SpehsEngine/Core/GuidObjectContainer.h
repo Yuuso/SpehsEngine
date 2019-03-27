@@ -52,12 +52,13 @@ namespace se
 				}
 			}
 			std::sort(takenIndices.begin(), takenIndices.end());
-			uint32_t freeIndex = takenIndices.empty() ? 0 : takenIndices.front() + 1;
+			uint32_t freeIndex = takenIndices.empty() ? 0 : takenIndices.back() + 1;
 			for (size_t i = 1; i < takenIndices.size(); i++)
 			{
 				if (takenIndices[i - 1] < takenIndices[i] - 1)
 				{
 					freeIndex = takenIndices[i - 1] + 1;
+					break;
 				}
 			}
 

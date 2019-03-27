@@ -1,5 +1,6 @@
 #pragma once
 #include <stdint.h>
+#include <string>
 
 namespace se
 {
@@ -96,6 +97,8 @@ namespace se
 			static_assert(sizeof(Metadata) == sizeof(metadata), "Metadata size is invalid.");
 			return Metadata(metadata);
 		}
+
+		std::string toString() const;
 
 	private:
 		static const uint32_t invalidIndexValue = ~0u;
