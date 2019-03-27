@@ -4,6 +4,7 @@
 #include <functional>
 #include "SpehsEngine/Core/WriteBuffer.h"
 #include "SpehsEngine/Core/ReadBuffer.h"
+#include "SpehsEngine/Core/StringOperations.h"
 
 namespace se
 {
@@ -24,5 +25,10 @@ namespace se
 		se_read(readBuffer, u64);
 		(uint64_t&)(*this) = u64;
 		return true;
+	}
+
+	std::string Guid::toString() const
+	{
+		return "[f:" + toHexString(flags) + ", m:" + toHexString(metadata) + ", i:" + std::to_string(index) + "]";
 	}
 }
