@@ -13,6 +13,7 @@
 #include "SpehsEngine/Net/Port.h"
 #include "SpehsEngine/Net/Address.h"
 #include "SpehsEngine/Net/IOService.h"
+#include "SpehsEngine/Net/PacketMessage.h"
 #include "SpehsEngine/Core/SE_Time.h"
 
 namespace se
@@ -51,11 +52,11 @@ namespace se
 			/* Process arrived packets(onReceive callbacks). */
 			void update() override;
 
-			/* Sends buffer to the connected endpoint. */
-			bool sendPacket(const WriteBuffer& buffer);
+			/* Sends buffer to the set remote endpoint. */
+			bool sendPacket(const WriteBuffer& buffer, const PacketType packetType = PacketType::undefined);
 
 			/* Sends buffer to a specified endpoint. */
-			bool sendPacket(const WriteBuffer& buffer, const boost::asio::ip::udp::endpoint& endpoint);
+			bool sendPacket(const WriteBuffer& buffer, const boost::asio::ip::udp::endpoint& endpoint, const PacketType packetType = PacketType::undefined);
 
 			/* Returns false if the memory allocation fails, or the socket is currently receiving data. */
 			bool resizeReceiveBuffer(const size_t newSize);
@@ -63,6 +64,10 @@ namespace se
 			/* Starts receiving data from the connected endpoint. Non-blocking call. */
 			bool startReceiving();
 			bool isReceiving() const;
+
+			/* Heartbeat packets are sent between set intervals (requires calling update()). When set to 0, no heartbeats are sent. */
+			void setHeartbeatInterval(const time::Time interval);
+			time::Time getHeartbeatInterval() const;
 			
 			/* Returns the total number of sent bytes. Does not account bytes from the IP implementation. */
 			size_t getSentBytes() const override;
@@ -102,6 +107,8 @@ namespace se
 				boost::asio::ip::udp::socket socket;
 				std::vector<unsigned char> receiveBuffer;
 				time::Time lastReceiveTime;
+				time::Time lastSendTime;
+				time::Time heartbeatInterval = se::time::fromSeconds(5.0f);
 				bool receiving = false;
 				ReceiveType receiveType = ReceiveType::none;
 				std::function<void(ReadBuffer&, const boost::asio::ip::udp::endpoint&)> onReceiveCallback;//User defined receive handler
@@ -118,3 +125,4 @@ namespace se
 		};
 	}
 }
+

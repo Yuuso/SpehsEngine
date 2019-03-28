@@ -662,7 +662,7 @@ namespace se
 
 			std::lock_guard<std::recursive_mutex> lock(mutex);
 			boost::system::error_code error;
-						
+			
 			if (!connected && !connecting && acceptingState == AcceptingState::idle)
 			{//Can only send user defined packets in the connected state
 				log::info("SocketTCP: cannot send a packet. Socket is neither connected, connecting nor accepting.");

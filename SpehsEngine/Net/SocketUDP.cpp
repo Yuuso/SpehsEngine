@@ -22,6 +22,7 @@ namespace
 	level 3: prints receive buffer in hex string.
 	*/
 	int debugLogLevel = 0;
+	typedef uint16_t SizeType;
 }
 
 namespace se
@@ -133,6 +134,7 @@ namespace se
 				if (error)
 				{
 					log::info("SocketUDP connect() failed(). Boost asio error: " + std::to_string(error.value()) + ": " + error.message() + std::string(it != end ? ". Retrying with the next available endpoint..." : ". All available endpoints were iterated, connection cannot be established."));
+					return false;
 				}
 				else
 				{
@@ -149,7 +151,6 @@ namespace se
 		void SocketUDP::disconnect()
 		{
 			std::lock_guard<std::recursive_mutex> lock(sharedImpl->mutex);
-			se_assert(getConnectedEndpoint() != boost::asio::ip::udp::endpoint());
 			sharedImpl->connectedEndpoint = boost::asio::ip::udp::endpoint();
 		}
 		
@@ -160,12 +161,12 @@ namespace se
 			sharedImpl->receivedPackets.clear();
 		}
 
-		bool SocketUDP::sendPacket(const WriteBuffer& buffer)
+		bool SocketUDP::sendPacket(const WriteBuffer& buffer, const PacketType packetType)
 		{
 			if (isConnected())
 			{
 				std::lock_guard<std::recursive_mutex> lock(sharedImpl->mutex);
-				return sendPacket(buffer, sharedImpl->connectedEndpoint);
+				return sendPacket(buffer, sharedImpl->connectedEndpoint, packetType);
 			}
 			else
 			{
@@ -174,18 +175,39 @@ namespace se
 			}
 		}
 
-		bool SocketUDP::sendPacket(const WriteBuffer& buffer, const boost::asio::ip::udp::endpoint& endpoint)
+		bool SocketUDP::sendPacket(const WriteBuffer& buffer, const boost::asio::ip::udp::endpoint& endpoint, const PacketType packetType)
 		{
 			std::lock_guard<std::recursive_mutex> lock(sharedImpl->mutex);
 			boost::system::error_code error;
-			const size_t writtenBytes = sharedImpl->socket.send_to(boost::asio::buffer(buffer[0], buffer.getSize()), endpoint, 0, error);
+
+			const SizeType packetSize = SizeType(buffer.getSize());
+			std::vector<boost::asio::const_buffer> buffers;
+			buffers.push_back(boost::asio::buffer(&packetType, sizeof(packetType)));
+			buffers.push_back(boost::asio::buffer(&packetSize, sizeof(packetSize)));
+			if (buffer.getSize() > 0)
+			{
+				buffers.push_back(boost::asio::buffer(buffer[0], buffer.getSize()));
+			}
+
+			const size_t writtenBytes = sharedImpl->socket.send_to(buffers, endpoint, 0, error);
 			sharedImpl->sentBytes += writtenBytes;
 			if (error)
-				se::log::error("SocketUDP send failed.");
-			if (writtenBytes != buffer.getSize())
-				se::log::error("SocketUDP send failed.");			
+			{
+				se::log::error("SocketUDP send failed. Failed to send data buffer. Boost error: " + error.message());
+				return false;
+			}
+			if (writtenBytes != boost::asio::buffer_size(buffers))
+			{
+				se::log::error("SocketUDP send failed. Failed to send the whole packet.");
+				return false;
+			}
+
 			if (debugLogLevel >= 2)
+			{
 				log::info("SocketUDP: packet sent. Size: " + std::to_string(buffer.getSize()));
+			}
+
+			sharedImpl->lastSendTime = time::now();
 			return true;
 		}
 
@@ -272,6 +294,13 @@ namespace se
 		{
 			//Received packets
 			std::lock_guard<std::recursive_mutex> lock1(sharedImpl->mutex);
+
+			//Heartbeat
+			if (isConnected() && time::now() - sharedImpl->lastSendTime > sharedImpl->heartbeatInterval)
+			{
+				sendPacket(WriteBuffer(), PacketType::heartbeat);
+			}
+
 			std::lock_guard<std::recursive_mutex> lock2(sharedImpl->receivedPacketsMutex);
 			if (sharedImpl->onReceiveCallback)
 			{
@@ -282,6 +311,18 @@ namespace se
 				}
 			}
 			clearReceivedPackets();
+		}
+
+		void SocketUDP::setHeartbeatInterval(const time::Time interval)
+		{
+			std::lock_guard<std::recursive_mutex> lock1(sharedImpl->mutex);
+			sharedImpl->heartbeatInterval = interval;
+		}
+
+		time::Time SocketUDP::getHeartbeatInterval() const
+		{
+			std::lock_guard<std::recursive_mutex> lock1(sharedImpl->mutex);
+			return sharedImpl->heartbeatInterval;
 		}
 
 		bool SocketUDP::isReceiving() const
@@ -343,6 +384,7 @@ namespace se
 				log::info("SocketUDP receive handler received " + std::to_string(bytes) + " bytes.");
 
 			std::lock_guard<std::recursive_mutex> lock1(mutex);
+			se_assert(socketUDP);
 			se_assert(receiving);
 			se_assert(receiveType != ReceiveType::none);
 			receiveType = ReceiveType::none;
@@ -398,23 +440,53 @@ namespace se
 					log::info("Ignored ASIO error: " + std::to_string(error.value()) + ": " + error.message());
 				}
 			}
-
-			se_assert(socketUDP);
-			if (bytes > 0 && onReceiveCallback)
+			
+			if (bytes > 0)
 			{
 				ReadBuffer readBuffer(&receiveBuffer[0], bytes);
-				std::lock_guard<std::recursive_mutex> lock2(receivedPacketsMutex);
-				receivedPackets.push_back(std::unique_ptr<ReceivedPacket>());
-				receivedPackets.back().reset(new ReceivedPacket());
-				receivedPackets.back()->buffer.resize(bytes);
-				memcpy(receivedPackets.back()->buffer.data(), receiveBuffer.data(), bytes);
-				if (socketUDP->isConnected())
+
+				//Read header
+				PacketType packetType;
+				if (readBuffer.read(packetType))
 				{
-					receivedPackets.back()->senderEndpoint = connectedEndpoint;
-				}
-				else
-				{
-					receivedPackets.back()->senderEndpoint = senderEndpoint;
+					SizeType packetSize;
+					if (readBuffer.read(packetSize))
+					{
+						if (packetSize == readBuffer.getBytesRemaining())
+						{
+							if (packetType == PacketType::undefined)
+							{
+								if (onReceiveCallback && readBuffer.getBytesRemaining())
+								{
+									std::lock_guard<std::recursive_mutex> lock2(receivedPacketsMutex);
+									receivedPackets.push_back(std::unique_ptr<ReceivedPacket>());
+									receivedPackets.back().reset(new ReceivedPacket());
+									receivedPackets.back()->buffer.resize(readBuffer.getBytesRemaining());
+									memcpy(receivedPackets.back()->buffer.data(), readBuffer[readBuffer.getOffset()], readBuffer.getBytesRemaining());
+									if (socketUDP->isConnected())
+									{
+										receivedPackets.back()->senderEndpoint = connectedEndpoint;
+									}
+									else
+									{
+										receivedPackets.back()->senderEndpoint = senderEndpoint;
+									}
+								}
+							}
+							else if (packetType == PacketType::heartbeat)
+							{
+								se_assert(readBuffer.getBytesRemaining() == 0);
+							}
+							else
+							{
+								log::error("Received packet of unknown type: " + std::to_string(int(packetType)));
+							}
+						}
+						else
+						{
+							log::error("Remaining packet size was different from that of the declared packet size.");
+						}
+					}
 				}
 			}
 
