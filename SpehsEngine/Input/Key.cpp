@@ -161,7 +161,7 @@ namespace se
 			case Key::PRIOR: return "Prior";
 			case Key::RETURN2: return "Return2";
 			case Key::SEPARATOR: return "Separator";
-			case Key::OUT: return "Out";
+			case Key::KEY_OUT: return "Out";
 			case Key::OPER: return "Oper";
 			case Key::CLEARAGAIN: return "Clear again";
 			case Key::CRSEL: return "Crsel";
