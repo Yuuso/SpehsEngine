@@ -16,7 +16,7 @@
 
 #define DEBUG_LOG(level, message) if (getDebugLogLevel() >= level) \
 { \
-	se::log::info("SocketTCP(" + getLocalPort().toString() + "): " + message); \
+	se::log::info("SocketUDP(" + getLocalPort().toString() + "): " + message); \
 }
 
 /**/#pragma optimize("", off)
