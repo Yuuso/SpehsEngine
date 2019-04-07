@@ -16,7 +16,7 @@ namespace se
 			Endpoint(const Address& _address, const Port& _port) : address(_address), port(_port) {}
 			bool operator==(const Endpoint& other) const { return port == other.port && address == other.address; }
 			bool operator!=(const Endpoint& other) const { return port != other.port || address != other.address; }
-			operator bool() const { return *this != invalid; }
+			operator bool() const { return (bool)port && (bool)address; }
 			std::string toString() const { return address.toString() + ":" + port.toString(); }
 			Address address;
 			Port port;

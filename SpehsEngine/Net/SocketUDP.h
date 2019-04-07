@@ -22,6 +22,8 @@ namespace se
 	class ReadBuffer;
 	namespace net
 	{
+		class HandshakeUDP;
+
 		class SocketUDP : public ISocket
 		{
 		private:
@@ -34,11 +36,10 @@ namespace se
 			virtual ~SocketUDP();
 
 			/* Opens the socket. Must be called before packets can be received or sent. */
-			bool open();
-			void close();
-
+			bool open() override;
+			void close() override;
 			/* Binds the socket to a local endpoint. */
-			bool bind(const Port& port);
+			bool bind(const Port& port) override;
 
 			/*
 				Connects the socket to a remote endpoint. Blocking call.
@@ -78,10 +79,18 @@ namespace se
 			/* Received packets must be processed with a specified receive handler. While there exists no callback, all incoming packets are discarded. */
 			void setOnReceiveCallback(const std::function<void(ReadBuffer&, const boost::asio::ip::udp::endpoint&)> onReceiveCallback = std::function<void(ReadBuffer&, const boost::asio::ip::udp::endpoint&)>());
 
-			bool isOpen() const;
-			Port getLocalPort() const;
+			void setReuseAddress(const bool enabled);
+			bool getReuseAddress() const;
+
+			bool isOpen() const override;
+			Port getLocalPort() const override;
+
 			bool isConnected() const;
+			boost::asio::ip::udp::endpoint getLocalEndpoint() const;
 			boost::asio::ip::udp::endpoint getConnectedEndpoint() const;
+
+			void setDebugLogLevel(const int level);
+			int getDebugLogLevel() const;
 
 		private:
 
@@ -92,14 +101,18 @@ namespace se
 			struct SharedImpl : public boost::enable_shared_from_this<SharedImpl>
 			{
 				SharedImpl(IOService& ioService);
+				bool sendPacket(const WriteBuffer& buffer, const boost::asio::ip::udp::endpoint& endpoint, const PacketType packetType);
 				void receiveHandler(const boost::system::error_code& error, std::size_t bytes);
+				boost::asio::ip::udp::endpoint getLocalEndpoint() const;
+				Port getLocalPort() const;
+				void setDebugLogLevel(const int level);
+				int getDebugLogLevel() const;
 
 				struct ReceivedPacket
 				{
 					std::vector<uint8_t> buffer;
 					boost::asio::ip::udp::endpoint senderEndpoint;
 				};
-				enum class ReceiveType { none, connection, any };
 				mutable std::recursive_mutex mutex;
 				boost::asio::ip::udp::endpoint connectedEndpoint;
 				boost::asio::ip::udp::endpoint senderEndpoint;//Used by the receiver thread. Think carefully about thread sync!
@@ -110,19 +123,28 @@ namespace se
 				time::Time lastSendTime;
 				time::Time heartbeatInterval = se::time::fromSeconds(5.0f);
 				bool receiving = false;
-				ReceiveType receiveType = ReceiveType::none;
 				std::function<void(ReadBuffer&, const boost::asio::ip::udp::endpoint&)> onReceiveCallback;//User defined receive handler
+				std::function<void(const HandshakeUDP&)> handshakeResponseCallback;
 				std::recursive_mutex receivedPacketsMutex;
 				std::vector<std::unique_ptr<ReceivedPacket>> receivedPackets;
 				SocketUDP* socketUDP = nullptr;
 				size_t sentBytes = 0;
 				size_t receivedBytes = 0;
+
+				/*
+				level 1: prints most essential state changes.
+				level 2: prints some network traffic numbers.
+				level 3: prints receive buffer in hex string.
+				*/
+				int debugLogLevel = 0;
 			};
 			boost::shared_ptr<SharedImpl> sharedImpl;
 
 		private:
 			friend struct SharedImpl;
 		};
+
+		std::string toString(const boost::asio::ip::udp::endpoint& endpoint);
 	}
 }
 

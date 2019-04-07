@@ -21,7 +21,6 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)Endpoint.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)GameFileClient.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)GameFileServer.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)Handshake.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)IOService.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)MultiConnectionAcceptorTCP.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NetLib.cpp" />
@@ -42,7 +41,6 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)Endpoint.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)GameFileClient.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)GameFileServer.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)Handshake.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)IOService.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)MultiConnectionAcceptorTCP.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NetLib.h" />
