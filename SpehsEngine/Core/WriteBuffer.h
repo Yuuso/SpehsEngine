@@ -69,6 +69,8 @@ namespace se
 
 		void swap(std::vector<uint8_t>& other) { data.swap(other); }
 
+		bool isEmpty() const { return data.empty(); }
+		const uint8_t* getData() const { return data.data(); }
 		const uint8_t* operator[](const size_t index) const { return &data[index]; }
 		size_t getCapacity() const override { return data.capacity(); }
 		size_t getSize() const override { return data.size(); }

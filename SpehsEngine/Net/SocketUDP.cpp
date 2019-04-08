@@ -69,28 +69,28 @@ namespace se
 				//Magic
 				if (!buffer.read(magic))
 				{
-					log::info("Handshake::read() invalid handshake. No bytes left to read magic.");
+					log::info("HandshakeUDP::read() invalid handshake. No bytes left to read magic.");
 					valid = false;
 					return false;
 				}
 
 				if (magic != currentMagic)
 				{
-					log::info("Handshake::read() invalid handshake. Incompatible magic - my version: " + se::toHexString(currentMagic) + ", read magic: " + se::toHexString(magic));
+					log::info("HandshakeUDP::read() invalid handshake. Incompatible magic - my version: " + se::toHexString(currentMagic) + ", read magic: " + se::toHexString(magic));
 					valid = false;
 					return false;
 				}
 
 				if (!buffer.read(handshakeVersion))
 				{
-					log::info("Handshake::read() invalid handshake. No bytes left to read handshake version.");
+					log::info("HandshakeUDP::read() invalid handshake. No bytes left to read handshake version.");
 					valid = false;
 					return false;
 				}
 
 				if (handshakeVersion != currentVersion)
 				{
-					log::info("Handshake::read() invalid handshake. Incompatible versions - my version: " + std::to_string(currentVersion) + ", other version: " + std::to_string(handshakeVersion));
+					log::info("HandshakeUDP::read() invalid handshake. Incompatible versions - my version: " + std::to_string(currentVersion) + ", other version: " + std::to_string(handshakeVersion));
 					valid = false;
 					return false;
 				}
@@ -98,21 +98,21 @@ namespace se
 				uint16_t readEndiannessCheckBytes;
 				if (!buffer.read(readEndiannessCheckBytes))
 				{
-					log::info("Handshake::read() invalid handshake. No bytes left to read endianness check bytes.");
+					log::info("HandshakeUDP::read() invalid handshake. No bytes left to read endianness check bytes.");
 					valid = false;
 					return false;
 				}
 
 				if (readEndiannessCheckBytes != endiannessCheckBytes)
 				{
-					log::info("Handshake::read() invalid handshake. Invalid endianness check bytes.");
+					log::info("HandshakeUDP::read() invalid handshake. Invalid endianness check bytes.");
 					valid = false;
 					return false;
 				}
 
 				if (!buffer.read(key))
 				{
-					log::info("Handshake::read() invalid handshake. No bytes left to the read key value.");
+					log::info("HandshakeUDP::read() invalid handshake. No bytes left to the read key value.");
 					valid = false;
 					return false;
 				}

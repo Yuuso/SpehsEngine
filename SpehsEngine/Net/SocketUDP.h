@@ -36,22 +36,22 @@ namespace se
 			virtual ~SocketUDP();
 
 			/* Opens the socket. Must be called before packets can be received or sent. */
-			bool open() override;
-			void close() override;
+			bool open();
+			void close();
 			/* Binds the socket to a local endpoint. */
-			bool bind(const Port& port) override;
+			bool bind(const Port& port);
 
 			/*
 				Connects the socket to a remote endpoint. Blocking call.
 				Socket must be opened before calling.
 				UDP is a connectionless protocol, connection status cannot be maintained.
 			*/
-			bool connect(const Endpoint& remoteEndpoint) override;
+			bool connect(const Endpoint& remoteEndpoint);
 			/* Clears the connected endpoint value. */
 			void disconnect();
 
 			/* Process arrived packets(onReceive callbacks). */
-			void update() override;
+			void update();
 
 			/* Sends buffer to the set remote endpoint. */
 			bool sendPacket(const WriteBuffer& buffer, const PacketType packetType = PacketType::undefined);
@@ -82,8 +82,8 @@ namespace se
 			void setReuseAddress(const bool enabled);
 			bool getReuseAddress() const;
 
-			bool isOpen() const override;
-			Port getLocalPort() const override;
+			bool isOpen() const;
+			Port getLocalPort() const;
 
 			bool isConnected() const;
 			boost::asio::ip::udp::endpoint getLocalEndpoint() const;

@@ -43,18 +43,18 @@ namespace se
 			virtual ~SocketTCP();
 
 			/* Opens the socket with an available port. */
-			bool open() override;
-			void close() override;
-			bool bind(const Port& port) override;
+			bool open();
+			void close();
+			bool bind(const Port& port);
 
 			/*
 				Process incoming connections(onAccept callbacks).
 				Process arrived packets(onReceive callbacks).
 			*/
-			void update() override;
+			void update();
 
 			/* Perform a synchronous connection attempt. */
-			bool connect(const Endpoint& endpoint) override;
+			bool connect(const Endpoint& endpoint);
 
 			/* Disconnects the current connection. Socket still remains open, bound to its port. */
 			void disconnect();
@@ -96,8 +96,8 @@ namespace se
 			Port getRemotePort() const;
 			boost::asio::ip::tcp::endpoint getRemoteEndpoint() const;
 
-			bool isOpen() const override;
-			Port getLocalPort() const override;
+			bool isOpen() const;
+			Port getLocalPort() const;
 			boost::asio::ip::tcp::endpoint getLocalEndpoint() const;
 
 			AcceptingState getAcceptingState() const;
