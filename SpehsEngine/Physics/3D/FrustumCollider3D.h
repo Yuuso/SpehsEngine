@@ -25,12 +25,12 @@ namespace se
 			public:
 				enum
 				{
-					TOP = 0,
-					BOTTOM,
-					LEFT,
-					RIGHT,
-					NEAR,
-					FAR
+					_TOP = 0,
+					_BOTTOM,
+					_LEFT,
+					_RIGHT,
+					_NEAR, // when certain (unknown) conditions are met, the NEAR name doesn't compile and an underscore is required
+					_FAR
 				};
 
 				void construct(const glm::vec3& _point1, const glm::vec3& _point2, const glm::vec3& _point3);

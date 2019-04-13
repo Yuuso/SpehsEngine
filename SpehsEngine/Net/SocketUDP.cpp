@@ -37,11 +37,6 @@ namespace se
 	extern std::string workingDirectory;
 	namespace net
 	{
-		std::string toString(boost::asio::ip::udp::endpoint& endpoint)
-		{
-			return endpoint.address().to_string() + ":" + std::to_string(endpoint.port());
-		}
-
 		class HandshakeUDP
 		{
 		private:

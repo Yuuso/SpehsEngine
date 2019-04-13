@@ -27,12 +27,10 @@ namespace se
 {
 	namespace net
 	{
-		ConnectionManager::ConnectionManager(IOService& _ioService, const ProtocolId _protocolId, const std::string& _debugName)
-			: protocolId(_protocolId)
-			, debugName(_debugName)
+		ConnectionManager::ConnectionManager(IOService& _ioService, const std::string& _debugName)
+			: debugName(_debugName)
 			, socket(new SocketUDP2(_ioService, _debugName))
 		{
-			se_assert(protocolId);
 			socket->setReceiveHandler(std::bind(&ConnectionManager::receiveHandler, this, std::placeholders::_1, std::placeholders::_2));
 		}
 
@@ -71,7 +69,7 @@ namespace se
 				else if (accepting)
 				{
 					//New incoming connection
-					connections.push_back(std::shared_ptr<Connection>(new Connection(socket, receivedPackets[p].senderEndpoint, protocolId, Connection::EstablishmentType::incoming, "incomingConnection")));
+					connections.push_back(std::shared_ptr<Connection>(new Connection(socket, receivedPackets[p].senderEndpoint, Connection::EstablishmentType::incoming, "incomingConnection")));
 					connections.back()->setDebugLogLevel(getDebugLogLevel());
 					connections.back()->receivePacket(receivedPackets[p].data);
 					incomingConnectionSignal(connections.back());
@@ -117,7 +115,7 @@ namespace se
 			if (asioEndpoint != boost::asio::ip::udp::endpoint())
 			{
 				std::lock_guard<std::recursive_mutex> lock1(mutex);
-				connections.push_back(std::shared_ptr<Connection>(new Connection(socket, asioEndpoint, protocolId, Connection::EstablishmentType::outgoing, connectionDebugName)));
+				connections.push_back(std::shared_ptr<Connection>(new Connection(socket, asioEndpoint, Connection::EstablishmentType::outgoing, connectionDebugName)));
 				connections.back()->setDebugLogLevel(getDebugLogLevel());
 				return connections.back();
 			}

@@ -143,8 +143,6 @@ namespace se
 		private:
 			friend struct SharedImpl;
 		};
-
-		std::string toString(const boost::asio::ip::udp::endpoint& endpoint);
 	}
 }
 

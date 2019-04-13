@@ -1,10 +1,10 @@
 #pragma once
 #include "boost/bind.hpp"
 #include "boost/signals2.hpp"
+#include "SpehsEngine/Net/Connection.h"
 #include <functional>
 #include <mutex>
 
-#include "SpehsEngine/Net/Connection.h"
 
 namespace se
 {
@@ -23,7 +23,7 @@ namespace se
 		{
 		public:
 
-			ConnectionManager(IOService& ioService, const ProtocolId protocolId, const std::string& debugName = "ConnectionManager");
+			ConnectionManager(IOService& ioService, const std::string& debugName = "ConnectionManager");
 			~ConnectionManager();
 
 			void update();
@@ -58,7 +58,6 @@ namespace se
 			void setDebugLogLevel(const int level);
 			int getDebugLogLevel() const;
 
-			const ProtocolId protocolId;
 			const std::string debugName;
 
 		private:

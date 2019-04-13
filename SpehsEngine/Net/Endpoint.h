@@ -1,6 +1,7 @@
 #pragma once
 #include "SpehsEngine/Net/Address.h"
 #include "SpehsEngine/Net/Port.h"
+#include "boost/asio/ip/udp.hpp"
 
 namespace se
 {
@@ -22,6 +23,7 @@ namespace se
 			Port port;
 		};
 		Endpoint commandLineArgumentsToEndpoint(const int argc, const char** argv);
+		std::string toString(const boost::asio::ip::udp::endpoint& endpoint);
 	}
 
 	class WriteBuffer;

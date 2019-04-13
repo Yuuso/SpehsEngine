@@ -1,12 +1,11 @@
 #pragma once
 #include "boost/signals2.hpp"
-#include <functional>
-#include <mutex>
-
 #include "SpehsEngine/Net/Endpoint.h"
 #include "SpehsEngine/Net/SocketUDP2.h"
 #include "SpehsEngine/Core/SE_Time.h"
 #include "SpehsEngine/Core/StrongInt.h"
+#include <functional>
+#include <mutex>
 
 namespace se
 {
@@ -16,8 +15,6 @@ namespace se
 	{
 		class ConnectionManager;
 		class IOService;
-
-		SE_STRONG_INT(uint32_t, ProtocolId, 0u);
 		
 		class Connection
 		{
@@ -52,7 +49,6 @@ namespace se
 
 			const std::string debugName;
 			const boost::asio::ip::udp::endpoint endpoint;
-			const ProtocolId protocolId;
 			const EstablishmentType establishmentType;
 
 		private:
@@ -63,8 +59,8 @@ namespace se
 			{
 				enum class Type { none, connect, disconnect, userData };
 				WriteBuffer payload;
+				size_t payloadSentOffset = 0u; // confirmed sent bytes
 				Type type = Type::none;
-				uint16_t sequenceNumber = 0u;
 				size_t sendCount = 0u;
 				time::Time latestSendTime; // Set when sent the last time (unacknowledged packets get resent periodically).
 				time::Time firstSendTime; // Set when sent the first time. Measurement of ping.
@@ -77,12 +73,12 @@ namespace se
 			};
 			
 			Connection(const boost::shared_ptr<SocketUDP2>& _socket, const boost::asio::ip::udp::endpoint& _endpoint,
-				const ProtocolId _protocolId, const EstablishmentType _establishmentType, const std::string& _debugName = "Connection");
+				const EstablishmentType _establishmentType, const std::string& _debugName = "Connection");
 
 			void update();
 			void receivePacket(std::vector<uint8_t>& data);
 			void sendPacketImpl(const std::vector<boost::asio::const_buffer>& buffers, const bool logReliable, const bool logUnreliable);
-			void sendPacketAcknowledgement(const uint16_t sequenceNumber);
+			void sendPacketAcknowledgement(const uint16_t sequenceNumber, const uint16_t payloadSize);
 			void setConnected(const bool value);
 			void processIncomingPackets();
 			void processOutgoingPackets();
@@ -94,9 +90,10 @@ namespace se
 			std::vector<std::vector<uint8_t>> receivedPackets;
 			time::Time lastReceiveTime;
 			time::Time lastSendTime;
-			size_t mtu = 508u;
+			size_t mtu = 1400u;// 508u;
 			uint16_t sequenceNumber = 0u;
 			uint16_t remoteSequenceNumber = 0u;
+			uint16_t previousReceivedPayloadSize = 0u;
 			std::vector<uint8_t> reliableReceiveBuffer;
 			std::vector<std::vector<uint8_t>> receivedReliablePackets;
 			std::vector<std::vector<uint8_t>> receivedUnreliablePackets;
