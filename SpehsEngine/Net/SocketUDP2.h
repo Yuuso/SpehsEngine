@@ -8,6 +8,7 @@
 #include "boost/enable_shared_from_this.hpp"
 #include "boost/signals2.hpp"
 #include "SpehsEngine/Core/SE_Time.h"
+#include "SpehsEngine/Core/WriteBuffer.h"
 #include "SpehsEngine/Net/Endpoint.h"
 
 namespace se
@@ -21,6 +22,16 @@ namespace se
 		*/
 		class SocketUDP2 : public boost::enable_shared_from_this<SocketUDP2>
 		{
+		private:
+			void pushToBuffers(std::vector<boost::asio::const_buffer>& buffers, const WriteBuffer& writeBuffer)
+			{
+				buffers.push_back(boost::asio::const_buffer(writeBuffer.getData(), writeBuffer.getSize()));
+			}
+			template<typename ... Buffers>
+			void pushToBuffers(std::vector<boost::asio::const_buffer>& buffers, const WriteBuffer& writeBuffer, const Buffers&... writeBuffers)
+			{
+				pushToBuffers(buffers, writeBuffer, writeBuffers...);
+			}
 		public:
 			
 			struct ReceivedPacket
@@ -29,7 +40,7 @@ namespace se
 				boost::asio::ip::udp::endpoint senderEndpoint;
 			};
 
-			SocketUDP2(IOService& ioService);
+			SocketUDP2(IOService& ioService, const std::string& debugName = "SocketUDP2");
 
 			/*
 				Calls the currently set receive handler for all arrived packets.
@@ -40,10 +51,18 @@ namespace se
 			bool open();
 			void close();
 			bool bind(const Port& port);
-			bool sendPacket(const WriteBuffer& buffer, const boost::asio::ip::udp::endpoint& endpoint);
 			void startReceiving();
 			void setReceiveHandler(const std::function<void(std::vector<uint8_t>&, const boost::asio::ip::udp::endpoint&)>& _receiveHandler);
 			boost::asio::ip::udp::endpoint resolveRemoteEndpoint(const Endpoint& endpoint);
+			bool sendPacket(const WriteBuffer& buffer, const boost::asio::ip::udp::endpoint& endpoint);
+			bool sendPacket(const std::vector<boost::asio::const_buffer>& buffers, const boost::asio::ip::udp::endpoint& endpoint);
+			template<typename ... Buffers>
+			bool sendPacket(const Buffers&... writeBuffers, const boost::asio::ip::udp::endpoint& endpoint)
+			{
+				std::vector<boost::asio::const_buffer> buffers;
+				pushToBuffers(buffers, writeBuffers...);
+				return sendPacket(buffers, endpoint);
+			}
 
 			bool isOpen() const;
 			bool isReceiving() const;
@@ -53,6 +72,8 @@ namespace se
 			size_t getReceivedBytes() const;
 			void setDebugLogLevel(const int level);
 			int getDebugLogLevel() const;
+
+			const std::string debugName;
 
 		private:
 

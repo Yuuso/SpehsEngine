@@ -19,7 +19,7 @@
 	se::log::info("SocketUDP(" + getLocalPort().toString() + "): " + message); \
 }
 
-/**/#pragma optimize("", off)
+/**///#pragma optimize("", off)
 
 namespace
 {

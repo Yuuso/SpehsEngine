@@ -1,0 +1,84 @@
+#pragma once
+#include "boost/bind.hpp"
+#include "boost/signals2.hpp"
+#include <functional>
+#include <mutex>
+
+#include "SpehsEngine/Net/Connection.h"
+
+namespace se
+{
+	namespace net
+	{
+		/*
+			Built on top of UDP.
+			Must be able to do the following:
+			1. Connection status to the remote endpoint
+			2. Option to send packets reliably
+				2.1. Reliably received packets are processed in the send order
+				2.2. Packets that exceed the MTU must be split in parts
+
+		*/
+		class ConnectionManager
+		{
+		public:
+
+			ConnectionManager(IOService& ioService, const ProtocolId protocolId, const std::string& debugName = "ConnectionManager");
+			~ConnectionManager();
+
+			void update();
+
+			/*
+				Attempts to start a new outgoing connection.
+				May return an empty shared pointer if an error occurs.
+			*/
+			std::shared_ptr<Connection> startConnecting(const Endpoint& remoteEndpoint, const std::string& _debugName = "Connection");
+
+			/*
+				Sets the socket into 'accepting' mode, where incoming connections are accepted.
+			*/
+			void startAccepting();
+			/*
+				Stops accepting any new incoming connections.
+				Previously accepted and connecting incoming connections remain connecting.
+			*/
+			void stopAccepting();
+			bool isAccepting() const;
+			void connectToIncomingConnectionSignal(boost::signals2::scoped_connection& scopedConnection, const std::function<void(std::shared_ptr<Connection>&)>& callback);
+
+			//SocketUDP2 wrappers
+			bool open();
+			void close();
+			bool bind(const Port& port);
+			bool isOpen() const;
+			Port getLocalPort() const;
+			boost::asio::ip::udp::endpoint getLocalEndpoint() const;
+			size_t getSentBytes() const;
+			size_t getReceivedBytes() const;
+			void setDebugLogLevel(const int level);
+			int getDebugLogLevel() const;
+
+			const ProtocolId protocolId;
+			const std::string debugName;
+
+		private:
+
+			struct ReceivedPacket
+			{
+				std::vector<uint8_t> data;
+				boost::asio::ip::udp::endpoint senderEndpoint;
+			};
+			
+			void receiveHandler(std::vector<uint8_t>& data, const boost::asio::ip::udp::endpoint& senderEndpoint);
+			void processReceivedPackets();
+			void updateConnections();
+
+			boost::shared_ptr<SocketUDP2> socket;
+			mutable std::recursive_mutex mutex;
+			bool accepting = false;
+			std::vector<std::shared_ptr<Connection>> connections;
+			std::vector<ReceivedPacket> receivedPackets;
+			boost::signals2::signal<void(std::shared_ptr<Connection>&)> incomingConnectionSignal;
+		};
+	}
+}

@@ -10,10 +10,10 @@
 
 #define DEBUG_LOG(level, message) if (getDebugLogLevel() >= level) \
 { \
-	se::log::info("SocketUDP2(" + getLocalPort().toString() + "): " + message); \
+	se::log::info(debugName + "(" + getLocalPort().toString() + "): " + message); \
 }
 
-/**/#pragma optimize("", off)
+/**///#pragma optimize("", off)
 
 namespace
 {
@@ -29,8 +29,9 @@ namespace se
 {
 	namespace net
 	{
-		SocketUDP2::SocketUDP2(IOService& _ioService)
-			: ioService(_ioService)
+		SocketUDP2::SocketUDP2(IOService& _ioService, const std::string& _debugName)
+			: debugName(_debugName)
+			, ioService(_ioService)
 			, boostSocket(_ioService.getImplementationRef())
 			, receiveBuffer(65536)
 		{
@@ -85,7 +86,7 @@ namespace se
 			boostSocket.open(boost::asio::ip::udp::v4(), error);
 			if (error)
 			{
-				DEBUG_LOG(1, "failed to open. Boost asio error: " + error.message());
+				DEBUG_LOG(1, "failed to open. " + error.message());
 				return false;
 			}
 			return true;
@@ -100,12 +101,12 @@ namespace se
 				boostSocket.shutdown(boost::asio::socket_base::shutdown_both, error);
 				if (error)
 				{
-					DEBUG_LOG(1, "failed to shutdown. Boost asio error: " + error.message());
+					DEBUG_LOG(1, "failed to shutdown. " + error.message());
 				}
 				boostSocket.close(error);
 				if (error)
 				{
-					DEBUG_LOG(1, "failed to close. Boost asio error: " + error.message());
+					DEBUG_LOG(1, "failed to close. " + error.message());
 				}
 				DEBUG_LOG(1, "failed to close.");
 			}
@@ -132,7 +133,7 @@ namespace se
 			boostSocket.bind(endpoint, error);
 			if (error)
 			{
-				DEBUG_LOG(1, "failed to bind. Boost asio error: " + error.message());
+				DEBUG_LOG(1, "failed to bind. " + error.message());
 				return false;
 			}
 			DEBUG_LOG(1, "binding successful.");
@@ -141,7 +142,14 @@ namespace se
 
 		bool SocketUDP2::sendPacket(const WriteBuffer& writeBuffer, const boost::asio::ip::udp::endpoint& endpoint)
 		{
-			if (writeBuffer.isEmpty())
+			const std::vector<boost::asio::const_buffer> buffers{ boost::asio::const_buffer(writeBuffer.getData(), writeBuffer.getSize()) };
+			return sendPacket(buffers, endpoint);
+		}
+
+		bool SocketUDP2::sendPacket(const std::vector<boost::asio::const_buffer>& buffers, const boost::asio::ip::udp::endpoint& endpoint)
+		{
+			const size_t bufferSize = boost::asio::buffer_size(buffers);
+			if (bufferSize == 0)
 			{
 				DEBUG_LOG(1, "empty buffer provided. Returning success.");
 				return true;
@@ -150,20 +158,20 @@ namespace se
 			std::lock_guard<std::recursive_mutex> lock(mutex);
 			boost::system::error_code error;
 			
-			const size_t writtenBytes = boostSocket.send_to(boost::asio::buffer(writeBuffer.getData(), writeBuffer.getSize()), endpoint, 0, error);
+			const size_t writtenBytes = boostSocket.send_to(buffers, endpoint, 0, error);
 			sentBytes += writtenBytes;
 			if (error)
 			{
 				DEBUG_LOG(1, "send failed. Failed to send data buffer. Boost error: " + error.message());
 				return false;
 			}
-			if (writtenBytes != writeBuffer.getSize())
+			if (writtenBytes != bufferSize)
 			{
 				DEBUG_LOG(1, "send failed. Failed to send the whole packet.");
 				return false;
 			}
 
-			DEBUG_LOG(2, "packet sent to: " + endpoint.address().to_string() + ":" + std::to_string(endpoint.port()) + ". Size: " + std::to_string(writeBuffer.getSize()));
+			DEBUG_LOG(2, "packet sent to: " + endpoint.address().to_string() + ":" + std::to_string(endpoint.port()) + ". Size: " + std::to_string(bufferSize));
 
 			lastSendTime = time::now();
 			return true;
@@ -233,15 +241,12 @@ namespace se
 		{
 			std::lock_guard<std::recursive_mutex> lock1(mutex);
 
-			if (!error)
+			DEBUG_LOG(2, "received " + std::to_string(bytes) + " bytes from: " + senderEndpoint.address().to_string() + ":" + std::to_string(senderEndpoint.port()));
+			if (bytes > 0 && debugLogLevel >= 3)
 			{
-				DEBUG_LOG(2, "received " + std::to_string(bytes) + " bytes from: " + senderEndpoint.address().to_string() + ":" + std::to_string(senderEndpoint.port()));
-				if (debugLogLevel >= 3)
+				for (size_t i = 0; i < bytes; i++)
 				{
-					for (size_t i = 0; i < bytes; i++)
-					{
-						log::info("    [" + std::to_string(i) + "] " + toHexString(receiveBuffer[i]));
-					}
+					log::info("    [" + std::to_string(i) + "] " + toHexString(receiveBuffer[i]));
 				}
 			}
 
@@ -270,7 +275,7 @@ namespace se
 				}
 				else
 				{
-					DEBUG_LOG(1, "error while receiving. Ignored boost asio error: " + std::to_string(error.value()) + ": " + error.message());
+					DEBUG_LOG(1, "error while receiving. " + std::to_string(error.value()) + ": " + error.message());
 				}
 			}
 
@@ -307,7 +312,7 @@ namespace se
 			{
 				if (debugLogLevel >= 1)
 				{
-					log::info("SocketUDP2: failed to get local endpoint. Boost asio error: " + error.message());
+					log::info(debugName + ": failed to get local endpoint. " + error.message());
 				}
 			}
 			return localEndpoint;
