@@ -5,6 +5,8 @@
 #include "SpehsEngine/Core/ReadBuffer.h"
 #include "SpehsEngine/Core/StringOperations.h"
 #include "SpehsEngine/Core/StringUtilityFunctions.h"
+#include "SpehsEngine/Core/Thread.h"
+#include "SpehsEngine/Net/AddressUtilityFunctions.h"
 
 #define DEBUG_LOG(level, message) if (getDebugLogLevel() >= level) \
 { \
@@ -30,26 +32,75 @@ namespace se
 		ConnectionManager::ConnectionManager(IOService& _ioService, const std::string& _debugName)
 			: debugName(_debugName)
 			, socket(new SocketUDP2(_ioService, _debugName))
+			, thread(std::bind(&ConnectionManager::run, this))
 		{
 			socket->setReceiveHandler(std::bind(&ConnectionManager::receiveHandler, this, std::placeholders::_1, std::placeholders::_2));
 		}
 
 		ConnectionManager::~ConnectionManager()
 		{
-			socket->close();
-			std::lock_guard<std::recursive_mutex> lock1(mutex);
-			//One last update to lose the connection status
-			for (size_t i = 0; i < connections.size(); i++)
+			//Finish async running
 			{
-				connections[i]->update();
+				std::lock_guard<std::recursive_mutex> lock1(mutex);
+				destructorCalled = true;
+			}
+			thread.join();
+			
+			//Close socket
+			socket->close();
+		}
+
+		void ConnectionManager::run()
+		{
+			setThreadName("ConnectionManager::run()");
+			while (true)
+			{
+				se::time::ScopedFrameLimiter frameLimiter(se::time::fromSeconds(1.0f / 60.0f));
+				
+				//Process incoming data
+				socket->update();
+				processReceivedPackets();
+
+				//Deliver outgoing data
+				deliverOutgoingPackets();
+
+				std::lock_guard<std::recursive_mutex> lock1(mutex);
+				if (destructorCalled)
+				{
+					//Check if there are still pending operations
+					bool pendingOperations = false;
+					for (size_t i = 0; i < connections.size(); i++)
+					{
+						if (connections[i]->isConnected() && !connections[i]->reliablePacketSendQueue.empty())
+						{
+							pendingOperations = true;
+						}
+					}
+					if (!pendingOperations)
+					{
+						break;
+					}
+				}
 			}
 		}
 
 		void ConnectionManager::update()
 		{
-			socket->update();
-			processReceivedPackets();
-			updateConnections();
+			std::lock_guard<std::recursive_mutex> lock1(mutex);
+			for (size_t i = 0; i < connections.size(); i++)
+			{
+				//Remove disconnected and unreferenced connections
+				if (connections[i].use_count() == 1 && !connections[i]->isConnected() && !connections[i]->isConnecting())
+				{
+					connections.erase(connections.begin() + i);
+					i--;
+				}
+				else
+				{
+					//Call update
+					connections[i]->update();
+				}
+			}
 		}
 
 		void ConnectionManager::processReceivedPackets()
@@ -64,6 +115,7 @@ namespace se
 				if (connectionIt != connections.end())
 				{
 					//Existing connection
+					//se::log::info("Endpoint match: " + se::net::toString(connectionIt->get()->getRemoteEndpoint()) + " == " + se::net::toString(receivedPackets[p].senderEndpoint) + ", size: " + std::to_string(receivedPackets[p].data.size()));
 					connectionIt->get()->receivePacket(receivedPackets[p].data);
 				}
 				else if (accepting)
@@ -74,27 +126,24 @@ namespace se
 					connections.back()->receivePacket(receivedPackets[p].data);
 					incomingConnectionSignal(connections.back());
 				}
-			}
-			receivedPackets.clear();
-		}
-
-		void ConnectionManager::updateConnections()
-		{
-			std::lock_guard<std::recursive_mutex> lock1(mutex);
-
-			for (size_t i = 0; i < connections.size(); i++)
-			{
-				//Remove disconnected and unreferenced connections
-				if (connections[i].use_count() == 1 && !connections[i]->isConnected() && !connections[i]->isConnecting())
-				{
-					connections.erase(connections.begin() + i);
-					i--;
-				}
 				else
 				{
-					//Call update
-					connections[i]->update();
+					DEBUG_LOG(1, "Received packet from an untracked endpoint: " + se::net::toString(receivedPackets[p].senderEndpoint));
 				}
+			}
+			receivedPackets.clear();
+			for (size_t i = 0; i < connections.size(); i++)
+			{
+				connections[i]->processReceivedPackets();
+			}
+		}
+
+		void ConnectionManager::deliverOutgoingPackets()
+		{
+			std::lock_guard<std::recursive_mutex> lock1(mutex);
+			for (size_t i = 0; i < connections.size(); i++)
+			{
+				connections[i]->deliverOutgoingPackets();
 			}
 		}
 
@@ -200,9 +249,9 @@ namespace se
 			return socket->getLocalPort();
 		}
 
-		boost::asio::ip::udp::endpoint ConnectionManager::getLocalEndpoint() const
+		Endpoint ConnectionManager::getLocalEndpoint() const
 		{
-			return socket->getLocalEndpoint();
+			return Endpoint(getLocalAddress(), getLocalPort());
 		}
 
 		size_t ConnectionManager::getSentBytes() const

@@ -52,7 +52,7 @@ namespace se
 			bool bind(const Port& port);
 			bool isOpen() const;
 			Port getLocalPort() const;
-			boost::asio::ip::udp::endpoint getLocalEndpoint() const;
+			Endpoint getLocalEndpoint() const;
 			size_t getSentBytes() const;
 			size_t getReceivedBytes() const;
 			void setDebugLogLevel(const int level);
@@ -67,14 +67,18 @@ namespace se
 				std::vector<uint8_t> data;
 				boost::asio::ip::udp::endpoint senderEndpoint;
 			};
+
+			void run();
 			
 			void receiveHandler(std::vector<uint8_t>& data, const boost::asio::ip::udp::endpoint& senderEndpoint);
 			void processReceivedPackets();
-			void updateConnections();
+			void deliverOutgoingPackets();
 
 			boost::shared_ptr<SocketUDP2> socket;
 			mutable std::recursive_mutex mutex;
+			std::thread thread;
 			bool accepting = false;
+			bool destructorCalled = false;
 			std::vector<std::shared_ptr<Connection>> connections;
 			std::vector<ReceivedPacket> receivedPackets;
 			boost::signals2::signal<void(std::shared_ptr<Connection>&)> incomingConnectionSignal;

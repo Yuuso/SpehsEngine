@@ -108,7 +108,10 @@ namespace se
 				{
 					DEBUG_LOG(1, "failed to close. " + error.message());
 				}
-				DEBUG_LOG(1, "failed to close.");
+				else
+				{
+					DEBUG_LOG(1, "socket closed.");
+				}
 			}
 		}
 
@@ -136,8 +139,12 @@ namespace se
 				DEBUG_LOG(1, "failed to bind. " + error.message());
 				return false;
 			}
-			DEBUG_LOG(1, "binding successful.");
-			return true;
+			else
+			{
+				DEBUG_LOG(1, "binding successful.");
+				debugLocalPort = std::to_string(port.value);
+				return true;
+			}
 		}
 
 		bool SocketUDP2::sendPacket(const WriteBuffer& writeBuffer, const boost::asio::ip::udp::endpoint& endpoint)
@@ -176,6 +183,12 @@ namespace se
 			lastSendTime = time::now();
 			return true;
 		}
+
+		void SocketUDP2::setReceiveHandler(const std::function<void(std::vector<uint8_t>&, const boost::asio::ip::udp::endpoint&)>& _receiveHandler)
+		{
+			std::lock_guard<std::recursive_mutex> lock1(mutex);
+			receiveHandler = _receiveHandler;
+		}
 		
 		void SocketUDP2::startReceiving()
 		{
@@ -184,7 +197,8 @@ namespace se
 			try
 			{
 				receiving = true;
-				boostSocket.async_receive_from(boost::asio::buffer(receiveBuffer), senderEndpoint,
+				boostSenderEndpoint = boost::asio::ip::udp::endpoint();
+				boostSocket.async_receive_from(boost::asio::buffer(receiveBuffer), boostSenderEndpoint,
 					boost::bind(&SocketUDP2::boostReceiveHandler, shared_from_this(),
 						boost::asio::placeholders::error,
 						boost::asio::placeholders::bytes_transferred));
@@ -196,52 +210,11 @@ namespace se
 			}
 		}
 
-		void SocketUDP2::setReceiveHandler(const std::function<void(std::vector<uint8_t>&, const boost::asio::ip::udp::endpoint&)>& _receiveHandler)
-		{
-			std::lock_guard<std::recursive_mutex> lock1(mutex);
-			receiveHandler = _receiveHandler;
-		}
-
-		boost::asio::ip::udp::endpoint SocketUDP2::resolveRemoteEndpoint(const Endpoint& remoteEndpoint)
-		{
-			std::lock_guard<std::recursive_mutex> lock(mutex);
-			boost::asio::ip::udp::resolver resolverUDP(ioService.getImplementationRef());
-			const boost::asio::ip::udp::resolver::query queryUDP(boost::asio::ip::udp::v4(), remoteEndpoint.address.toString(), remoteEndpoint.port.toString());
-			boost::asio::ip::udp::resolver::iterator it = resolverUDP.resolve(queryUDP);
-			const boost::asio::ip::udp::resolver::iterator end;
-			if (it == end)
-			{
-				DEBUG_LOG(1, "failed to resolve remote endpoint.");
-				return boost::asio::ip::udp::endpoint();
-			}
-			while (it != end)
-			{
-				const boost::asio::ip::udp::endpoint remoteAsioEndpoint = *it++;
-				boost::system::error_code error;
-				boostSocket.connect(remoteAsioEndpoint, error);
-				if (error)
-				{
-					if (it == end)
-					{
-						DEBUG_LOG(1, "failed to resolve remote endpoint. All available endpoints were iterated, connection cannot be established.");
-						return boost::asio::ip::udp::endpoint();
-					}
-				}
-				else
-				{
-					se_assert(remoteAsioEndpoint.address().to_v4().to_ulong() != 0);
-					se_assert(remoteAsioEndpoint.port() != 0);
-					return remoteAsioEndpoint;
-				}
-			}
-			return boost::asio::ip::udp::endpoint();
-		}
-
 		void SocketUDP2::boostReceiveHandler(const boost::system::error_code& error, const std::size_t bytes)
 		{
 			std::lock_guard<std::recursive_mutex> lock1(mutex);
 
-			DEBUG_LOG(2, "received " + std::to_string(bytes) + " bytes from: " + senderEndpoint.address().to_string() + ":" + std::to_string(senderEndpoint.port()));
+			DEBUG_LOG(2, "received " + std::to_string(bytes) + " bytes from: " + boostSenderEndpoint.address().to_string() + ":" + std::to_string(boostSenderEndpoint.port()));
 			if (bytes > 0 && debugLogLevel >= 3)
 			{
 				for (size_t i = 0; i < bytes; i++)
@@ -283,12 +256,47 @@ namespace se
 			{
 				std::lock_guard<std::recursive_mutex> lock2(receivedPacketsMutex);
 				receivedPackets.push_back(std::make_unique<ReceivedPacket>());
-				receivedPackets.back()->senderEndpoint = senderEndpoint;
+				receivedPackets.back()->senderEndpoint = boostSenderEndpoint;
 				receivedPackets.back()->buffer.resize(bytes);
 				memcpy(receivedPackets.back()->buffer.data(), receiveBuffer.data(), bytes);
 			}
 
 			startReceiving();
+		}
+
+		boost::asio::ip::udp::endpoint SocketUDP2::resolveRemoteEndpoint(const Endpoint& remoteEndpoint)
+		{
+			std::lock_guard<std::recursive_mutex> lock(mutex);
+			boost::asio::ip::udp::resolver resolverUDP(ioService.getImplementationRef());
+			const boost::asio::ip::udp::resolver::query queryUDP(boost::asio::ip::udp::v4(), remoteEndpoint.address.toString(), remoteEndpoint.port.toString());
+			boost::asio::ip::udp::resolver::iterator it = resolverUDP.resolve(queryUDP);
+			const boost::asio::ip::udp::resolver::iterator end;
+			if (it == end)
+			{
+				DEBUG_LOG(1, "failed to resolve remote endpoint.");
+				return boost::asio::ip::udp::endpoint();
+			}
+			while (it != end)
+			{
+				const boost::asio::ip::udp::endpoint remoteAsioEndpoint = *it++;
+				boost::system::error_code error;
+				boostSocket.connect(remoteAsioEndpoint, error);
+				if (error)
+				{
+					if (it == end)
+					{
+						DEBUG_LOG(1, "failed to resolve remote endpoint. All available endpoints were iterated, connection cannot be established.");
+						return boost::asio::ip::udp::endpoint();
+					}
+				}
+				else
+				{
+					se_assert(remoteAsioEndpoint.address().to_v4().to_ulong() != 0);
+					se_assert(remoteAsioEndpoint.port() != 0);
+					return remoteAsioEndpoint;
+				}
+			}
+			return boost::asio::ip::udp::endpoint();
 		}
 
 		bool SocketUDP2::isOpen() const
@@ -303,7 +311,7 @@ namespace se
 			return receiving;
 		}
 
-		boost::asio::ip::udp::endpoint SocketUDP2::getLocalEndpoint() const
+		Port SocketUDP2::getLocalPort() const
 		{
 			std::lock_guard<std::recursive_mutex> lock(mutex);
 			boost::system::error_code error;
@@ -315,12 +323,7 @@ namespace se
 					log::info(debugName + ": failed to get local endpoint. " + error.message());
 				}
 			}
-			return localEndpoint;
-		}
-
-		Port SocketUDP2::getLocalPort() const
-		{
-			return Port(getLocalEndpoint().port());
+			return localEndpoint.port();
 		}
 
 		size_t SocketUDP2::getSentBytes() const

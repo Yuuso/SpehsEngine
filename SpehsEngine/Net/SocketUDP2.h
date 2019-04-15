@@ -66,7 +66,6 @@ namespace se
 
 			bool isOpen() const;
 			bool isReceiving() const;
-			boost::asio::ip::udp::endpoint getLocalEndpoint() const;
 			Port getLocalPort() const;
 			size_t getSentBytes() const;
 			size_t getReceivedBytes() const;
@@ -81,7 +80,7 @@ namespace se
 
 			mutable std::recursive_mutex mutex;
 			IOService& ioService;
-			boost::asio::ip::udp::endpoint senderEndpoint;
+			boost::asio::ip::udp::endpoint boostSenderEndpoint; // Used to receive the sender endpoint from boost during async receive.
 			boost::asio::ip::udp::socket boostSocket;
 			std::vector<unsigned char> receiveBuffer;
 			bool receiving = false;
@@ -90,9 +89,10 @@ namespace se
 			time::Time lastSendTime;
 			size_t sentBytes = 0;
 			size_t receivedBytes = 0;
-			int debugLogLevel = 0;
 			std::recursive_mutex receivedPacketsMutex;
 			std::vector<std::unique_ptr<ReceivedPacket>> receivedPackets;
+			int debugLogLevel = 0;
+			std::string debugLocalPort; // Only set when bound to new port, never unset.
 		};
 	}
 }

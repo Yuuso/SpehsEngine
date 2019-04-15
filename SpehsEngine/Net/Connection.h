@@ -48,6 +48,7 @@ namespace se
 			int getDebugLogLevel() const;
 
 			const std::string debugName;
+			const std::string debugEndpoint;
 			const boost::asio::ip::udp::endpoint endpoint;
 			const EstablishmentType establishmentType;
 
@@ -57,8 +58,8 @@ namespace se
 
 			struct ReliablePacketOut
 			{
-				enum class Type { none, connect, disconnect, userData };
-				WriteBuffer payload;
+				enum class Type { none, connect, userData };
+				std::vector<uint8_t> payload;
 				size_t payloadSentOffset = 0u; // confirmed sent bytes
 				Type type = Type::none;
 				size_t sendCount = 0u;
@@ -69,7 +70,7 @@ namespace se
 
 			struct UnreliablePacketOut
 			{
-				WriteBuffer writeBuffer;
+				std::vector<uint8_t> payload;
 			};
 			
 			Connection(const boost::shared_ptr<SocketUDP2>& _socket, const boost::asio::ip::udp::endpoint& _endpoint,
@@ -80,8 +81,9 @@ namespace se
 			void sendPacketImpl(const std::vector<boost::asio::const_buffer>& buffers, const bool logReliable, const bool logUnreliable);
 			void sendPacketAcknowledgement(const uint16_t sequenceNumber, const uint16_t payloadSize);
 			void setConnected(const bool value);
-			void processIncomingPackets();
-			void processOutgoingPackets();
+			void processReceivedPackets();
+			void deliverReceivedPackets();
+			void deliverOutgoingPackets();
 
 			mutable std::recursive_mutex mutex;
 			boost::shared_ptr<SocketUDP2> socket;
