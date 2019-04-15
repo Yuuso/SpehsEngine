@@ -264,39 +264,28 @@ namespace se
 			startReceiving();
 		}
 
-		boost::asio::ip::udp::endpoint SocketUDP2::resolveRemoteEndpoint(const Endpoint& remoteEndpoint)
+		boost::asio::ip::udp::endpoint SocketUDP2::resolveRemoteEndpoint(const Endpoint& remoteEndpoint) const
 		{
 			std::lock_guard<std::recursive_mutex> lock(mutex);
 			boost::asio::ip::udp::resolver resolverUDP(ioService.getImplementationRef());
 			const boost::asio::ip::udp::resolver::query queryUDP(boost::asio::ip::udp::v4(), remoteEndpoint.address.toString(), remoteEndpoint.port.toString());
-			boost::asio::ip::udp::resolver::iterator it = resolverUDP.resolve(queryUDP);
+			boost::system::error_code error;
+			boost::asio::ip::udp::resolver::iterator it = resolverUDP.resolve(queryUDP, error);
+			if (error)
+			{
+				DEBUG_LOG(1, "failed to resolve remote endpoint. Boost error: " + error.message());
+				return boost::asio::ip::udp::endpoint();
+			}
 			const boost::asio::ip::udp::resolver::iterator end;
-			if (it == end)
+			if (it != end)
+			{
+				return *it;
+			}
+			else
 			{
 				DEBUG_LOG(1, "failed to resolve remote endpoint.");
 				return boost::asio::ip::udp::endpoint();
 			}
-			while (it != end)
-			{
-				const boost::asio::ip::udp::endpoint remoteAsioEndpoint = *it++;
-				boost::system::error_code error;
-				boostSocket.connect(remoteAsioEndpoint, error);
-				if (error)
-				{
-					if (it == end)
-					{
-						DEBUG_LOG(1, "failed to resolve remote endpoint. All available endpoints were iterated, connection cannot be established.");
-						return boost::asio::ip::udp::endpoint();
-					}
-				}
-				else
-				{
-					se_assert(remoteAsioEndpoint.address().to_v4().to_ulong() != 0);
-					se_assert(remoteAsioEndpoint.port() != 0);
-					return remoteAsioEndpoint;
-				}
-			}
-			return boost::asio::ip::udp::endpoint();
 		}
 
 		bool SocketUDP2::isOpen() const
