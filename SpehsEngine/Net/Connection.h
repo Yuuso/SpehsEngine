@@ -35,7 +35,9 @@ namespace se
 			bool isConnected() const;
 			boost::asio::ip::udp::endpoint getRemoteEndpoint() const;
 			Port getLocalPort() const;
+
 			time::Time getPing() const;
+			float getAverageReliableFragmentSendCount() const;
 			size_t getSentBytes() const;
 			size_t getSentBytes(const bool reliable) const;
 			size_t getReceivedBytes() const;
@@ -55,22 +57,59 @@ namespace se
 		private:
 
 			friend class ConnectionManager;
-
+			
 			struct ReliablePacketOut
 			{
-				enum class Type { none, connect, userData };
+				struct UnacknowledgedFragment
+				{
+					time::Time firstSendTime; // Set when sent the first time. Measurement of ping.
+					time::Time latestSendTime; // Set when sent the last time (unacknowledged packets get resent periodically).
+					size_t sendCount = 0u;
+					size_t offset = 0u; // Offset to the reliable stream
+					uint16_t size = 0u;
+				};
+				struct AcknowledgedFragment
+				{
+					size_t offset = 0u;
+					uint16_t size = 0u;
+				};
+				
+				ReliablePacketOut() = default;
+				ReliablePacketOut(const bool _userData, const size_t _payloadOffset, const uint8_t* _payloadPtr, const size_t _payloadSize)
+					: userData(_userData)
+					, payloadOffset(_payloadOffset)
+					, payload(_payloadSize)
+				{
+					se_assert(_payloadSize > 0);
+					memcpy(payload.data(), _payloadPtr, _payloadSize);
+				}
+				bool userData = false;
+				bool delivered = false;
+				size_t payloadOffset = 0u; // payload's offset in the reliable stream
 				std::vector<uint8_t> payload;
-				size_t payloadSentOffset = 0u; // confirmed sent bytes
-				Type type = Type::none;
-				size_t sendCount = 0u;
-				time::Time latestSendTime; // Set when sent the last time (unacknowledged packets get resent periodically).
-				time::Time firstSendTime; // Set when sent the first time. Measurement of ping.
+				std::vector<UnacknowledgedFragment> unacknowledgedFragments;
+				std::vector<AcknowledgedFragment> acknowledgedFragments;
+				//Type type = Type::none;
 				time::Time createTime = time::now();
 			};
 
 			struct UnreliablePacketOut
 			{
+				UnreliablePacketOut(const uint8_t* _payloadPtr, const size_t _payloadSize)
+					: payload(_payloadSize)
+				{
+					se_assert(_payloadSize > 0);
+					memcpy(payload.data(), _payloadPtr, _payloadSize);
+				}
 				std::vector<uint8_t> payload;
+			};
+
+			struct ReceivedFragment
+			{
+				size_t offset = 0u;
+				bool userData = false;
+				bool endOfPayload = false;
+				std::vector<uint8_t> data;
 			};
 			
 			Connection(const boost::shared_ptr<SocketUDP2>& _socket, const boost::asio::ip::udp::endpoint& _endpoint,
@@ -79,11 +118,14 @@ namespace se
 			void update();
 			void receivePacket(std::vector<uint8_t>& data);
 			void sendPacketImpl(const std::vector<boost::asio::const_buffer>& buffers, const bool logReliable, const bool logUnreliable);
-			void sendPacketAcknowledgement(const uint16_t sequenceNumber, const uint16_t payloadSize);
+			void sendPacketAcknowledgement(const size_t reliableStreamOffset, const uint16_t payloadSize);
 			void setConnected(const bool value);
 			void processReceivedPackets();
+			void reliableFragmentReceiveHandler(const size_t reliableStreamOffset, const uint8_t* const dataPtr, const uint16_t dataSize, const bool userData, const bool endOfPayload);
+			void acknowledgementReceiveHandler(const size_t reliableStreamOffset, const uint16_t payloadSize);
 			void deliverReceivedPackets();
 			void deliverOutgoingPackets();
+			void spehsReceiveHandler(ReadBuffer& readBuffer);
 
 			mutable std::recursive_mutex mutex;
 			boost::shared_ptr<SocketUDP2> socket;
@@ -93,10 +135,9 @@ namespace se
 			time::Time lastReceiveTime;
 			time::Time lastSendTime;
 			size_t mtu = 1400u;// 508u;
-			uint16_t sequenceNumber = 0u;
-			uint16_t remoteSequenceNumber = 0u;
-			uint16_t previousReceivedPayloadSize = 0u;
-			std::vector<uint8_t> reliableReceiveBuffer;
+			size_t reliableStreamOffsetSend = 0u; // bytes from past packets that have been delivered
+			size_t reliableStreamOffsetReceive = 0u; // bytes from past packets that have been received
+			std::vector<ReceivedFragment> receivedReliableFragments;
 			std::vector<std::vector<uint8_t>> receivedReliablePackets;
 			std::vector<std::vector<uint8_t>> receivedUnreliablePackets;
 			std::function<void(ReadBuffer&, const boost::asio::ip::udp::endpoint&, const bool)> receiveHandler;
@@ -117,6 +158,10 @@ namespace se
 			std::vector<time::Time> recentRoundTripTimes;
 			bool estimatedRoundTripTimeQueued = false;
 			
+			//Track how many times a reliable fragment had to be sent in order to go through
+			std::vector<std::pair<uint16_t, uint16_t>> recentReliableFragmentSendCounts; // send times + packet size
+			float averageReliableFragmentSendCount = 0.0f;
+
 			int debugLogLevel = 0;
 			float simulatedPacketLossChanceIncoming = 0.0f;
 			float simulatedPacketLossChanceOutgoing = 0.0f;

@@ -64,21 +64,23 @@ namespace se
 				//Deliver outgoing data
 				deliverOutgoingPackets();
 
-				std::lock_guard<std::recursive_mutex> lock1(mutex);
-				if (destructorCalled)
 				{
-					//Check if there are still pending operations
-					bool pendingOperations = false;
-					for (size_t i = 0; i < connections.size(); i++)
+					std::lock_guard<std::recursive_mutex> lock1(mutex);
+					if (destructorCalled)
 					{
-						if (connections[i]->isConnected() && !connections[i]->reliablePacketSendQueue.empty())
+						//Check if there are still pending operations
+						bool pendingOperations = false;
+						for (size_t i = 0; i < connections.size(); i++)
 						{
-							pendingOperations = true;
+							if (connections[i]->isConnected() && !connections[i]->reliablePacketSendQueue.empty())
+							{
+								pendingOperations = true;
+							}
 						}
-					}
-					if (!pendingOperations)
-					{
-						break;
+						if (!pendingOperations)
+						{
+							break;
+						}
 					}
 				}
 			}
