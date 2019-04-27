@@ -55,7 +55,7 @@ namespace se
 			setThreadName("ConnectionManager::run()");
 			while (true)
 			{
-				se::time::ScopedFrameLimiter frameLimiter(se::time::fromSeconds(1.0f / 60.0f));
+				se::time::ScopedFrameLimiter frameLimiter(se::time::fromSeconds(1.0f / 1000.0f));
 				
 				//Process incoming data
 				socket->update();

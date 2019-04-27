@@ -121,7 +121,7 @@ namespace se
 			void sendPacketAcknowledgement(const size_t reliableStreamOffset, const uint16_t payloadSize);
 			void setConnected(const bool value);
 			void processReceivedPackets();
-			void reliableFragmentReceiveHandler(const size_t reliableStreamOffset, const uint8_t* const dataPtr, const uint16_t dataSize, const bool userData, const bool endOfPayload);
+			void reliableFragmentReceiveHandler(const size_t reliableStreamOffset, const uint8_t* const dataPtr, const uint16_t dataSize, const bool userData, const bool endOfPayload, const size_t payloadTotalSize);
 			void acknowledgementReceiveHandler(const size_t reliableStreamOffset, const uint16_t payloadSize);
 			void deliverReceivedPackets();
 			void deliverOutgoingPackets();

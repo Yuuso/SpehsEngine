@@ -69,6 +69,7 @@ namespace se
 				if (controlBits & ControlBit::reliable)
 				{
 					se_write(writeBuffer, streamOffset);
+					se_write(writeBuffer, payloadTotalSize);
 				}
 				if (controlBits & ControlBit::acknowledgePacket)
 				{
@@ -83,6 +84,7 @@ namespace se
 				if (controlBits & ControlBit::reliable)
 				{
 					se_read(readBuffer, streamOffset);
+					se_read(readBuffer, payloadTotalSize);
 				}
 				if (controlBits & ControlBit::acknowledgePacket)
 				{
@@ -94,6 +96,7 @@ namespace se
 			ProtocolId protocolId;
 			uint8_t controlBits = 0u;
 			size_t streamOffset = 0u;
+			size_t payloadTotalSize = 0u;
 			uint16_t receivedPayloadSize = 0u;
 		};
 
@@ -169,7 +172,7 @@ namespace se
 								const bool userData = packetHeader.controlBits & PacketHeader::ControlBit::userData;
 								const bool endOfPayload = packetHeader.controlBits & PacketHeader::ControlBit::endOfPayload;
 								const uint16_t payloadSize = uint16_t(readBuffer.getBytesRemaining());
-								reliableFragmentReceiveHandler(packetHeader.streamOffset, readBuffer[readBuffer.getOffset()], payloadSize, userData, endOfPayload);
+								reliableFragmentReceiveHandler(packetHeader.streamOffset, readBuffer[readBuffer.getOffset()], payloadSize, userData, endOfPayload, packetHeader.payloadTotalSize);
 								sendPacketAcknowledgement(packetHeader.streamOffset, payloadSize);
 							}
 						}
@@ -198,15 +201,16 @@ namespace se
 			}
 		}
 
-		void Connection::reliableFragmentReceiveHandler(const size_t reliableStreamOffset, const uint8_t* const dataPtr, const uint16_t dataSize, const bool userData, const bool endOfPayload)
+		void Connection::reliableFragmentReceiveHandler(const size_t reliableStreamOffset, const uint8_t* const dataPtr, const uint16_t dataSize, const bool userData, const bool endOfPayload, const size_t payloadTotalSize)
 		{
 			se_assert(dataSize > 0);
 			if (reliableStreamOffset >= reliableStreamOffsetReceive)
 			{
-				auto checkMerge = [&](const size_t insertIndex)
+				auto postInsert = [&](size_t insertIndex)
 				{
-					if (insertIndex < receivedReliableFragments.size())
+					auto checkMergeWithNext = [&](const size_t insertIndex)->bool
 					{
+						se_assert(insertIndex < receivedReliableFragments.size() - 1);
 						//Check if fragment is to be merged with the next fragment
 						if (!receivedReliableFragments[insertIndex].endOfPayload && insertIndex + 1 < receivedReliableFragments.size())
 						{
@@ -215,7 +219,7 @@ namespace se
 							{
 								const size_t overlappingSize = endOffset - receivedReliableFragments[insertIndex + 1].offset;
 
-#ifdef _DEBUG // Check that overlapping data matches
+#ifndef SE_FINAL_RELEASE // Check that overlapping data matches
 								for (size_t o = 0; o < overlappingSize; o++)
 								{
 									se_assert(receivedReliableFragments[insertIndex].data[receivedReliableFragments[insertIndex].data.size() - overlappingSize + o] == receivedReliableFragments[insertIndex + 1].data[o]);
@@ -232,8 +236,26 @@ namespace se
 									receivedReliableFragments[insertIndex + 1].data.size() - overlappingSize);
 								receivedReliableFragments[insertIndex].endOfPayload = receivedReliableFragments[insertIndex + 1].endOfPayload;
 								receivedReliableFragments.erase(receivedReliableFragments.begin() + insertIndex + 1);
+								return true;
 							}
 						}
+						return false;
+					};
+
+					if (insertIndex > 0)
+					{
+						if (checkMergeWithNext(insertIndex - 1))
+						{
+							insertIndex--;
+						}
+					}
+					if (insertIndex + 1 < receivedReliableFragments.size())
+					{
+						checkMergeWithNext(insertIndex);
+					}
+					if (insertIndex == 0 && receivedReliableFragments[insertIndex].endOfPayload)
+					{
+						se_assert(receivedReliableFragments[insertIndex].data.size() == payloadTotalSize);
 					}
 				};
 
@@ -249,11 +271,7 @@ namespace se
 						receivedFragment.offset = reliableStreamOffset;
 						receivedFragment.data.resize(dataSize);
 						memcpy(receivedFragment.data.data(), dataPtr, dataSize);
-						if (f > 0)
-						{
-							checkMerge(f - 1);
-						}
-						checkMerge(f);
+						postInsert(f);
 						return;
 					}
 					else if (reliableStreamOffset < receivedReliableFragments[f].offset + receivedReliableFragments[f].data.size())
@@ -262,100 +280,16 @@ namespace se
 						//Check if any new data was received
 						if (reliableStreamOffset + dataSize > receivedReliableFragments[f].offset + receivedReliableFragments[f].data.size())
 						{
+							se_assert(!receivedReliableFragments[f].endOfPayload);
 							const size_t newBytes = reliableStreamOffset + dataSize - receivedReliableFragments[f].offset - receivedReliableFragments[f].data.size();
 							const size_t prevSize = receivedReliableFragments[f].data.size();
 							receivedReliableFragments[f].data.resize(prevSize + newBytes);
 							memcpy(&receivedReliableFragments[f].data[prevSize], dataPtr + (dataSize - newBytes), newBytes);
-							if (f > 0)
-							{
-								checkMerge(f - 1);
-							}
-							checkMerge(f);
-						}
-
-						return;
-					}
-					
-					/*
-					size_t insertIndex = ~0u;
-					if (reliableStreamOffset < receivedReliableFragments[f].offset)
-					{
-						//Insert before
-						const std::vector<ReceivedFragment>::iterator it = receivedReliableFragments.insert(receivedReliableFragments.begin() + f, ReceivedFragment());
-						it->userData = userData;
-						it->endOfPayload = endOfPayload;
-						it->offset = reliableStreamOffset;
-						it->data.resize(dataSize);
-						memcpy(it->data.data(), dataPtr, dataSize);
-						insertIndex = f;
-					}
-					else if (reliableStreamOffset == receivedReliableFragments[f].offset + receivedReliableFragments[f].data.size())
-					{
-						if (dataSize <= receivedReliableFragments[f].data.size())
-						{
-							//Nothing new was received
-							DEBUG_LOG(2, "received duplicate data.");
-							return;
-						}
-
-						if (receivedReliableFragments[f].endOfPayload)
-						{
-							//Insert after
-							const std::vector<ReceivedFragment>::iterator it = receivedReliableFragments.insert(receivedReliableFragments.begin() + f + 1, ReceivedFragment());
-							it->userData = userData;
-							it->endOfPayload = endOfPayload;
-							it->offset = reliableStreamOffset;
-							it->data.resize(dataSize);
-							memcpy(it->data.data(), dataPtr, dataSize);
-							insertIndex = f + 1;
-						}
-						else
-						{
-							//Insert into
-							const size_t prevSize = receivedReliableFragments[f].data.size();
-							receivedReliableFragments[f].data.resize(prevSize + dataSize);
-							memcpy(&receivedReliableFragments[f].data[prevSize], dataPtr, dataSize);
-							se_assert(receivedReliableFragments[f].userData == userData);
 							receivedReliableFragments[f].endOfPayload = endOfPayload;
-							insertIndex = f;
+							postInsert(f);
 						}
-						se_assert(insertIndex < receivedReliableFragments.size());
-					}
-
-					if (insertIndex < receivedReliableFragments.size())
-					{
-						//Check if fragment is to be merged with the next fragment
-						if (!receivedReliableFragments[insertIndex].endOfPayload && insertIndex + 1 < receivedReliableFragments.size())
-						{
-							const size_t endOffset = receivedReliableFragments[insertIndex].offset + receivedReliableFragments[insertIndex].data.size();
-							if (endOffset >= receivedReliableFragments[insertIndex + 1].offset)
-							{
-								const size_t overlappingSize = endOffset - receivedReliableFragments[insertIndex + 1].offset;
-
-#ifdef _DEBUG // Check that overlapping data matches
-								for (size_t o = 0; o < overlappingSize; o++)
-								{
-									se_assert(receivedReliableFragments[insertIndex].data[receivedReliableFragments[insertIndex].data.size() - overlappingSize + o] == receivedReliableFragments[insertIndex + 1].data[o]);
-								}
-#endif
-
-								//Copy next fragment's contents and erase it
-								const size_t prevSize = receivedReliableFragments[insertIndex].data.size();
-								const size_t mergedSize = prevSize + receivedReliableFragments[insertIndex + 1].data.size() - overlappingSize;
-								receivedReliableFragments[insertIndex].data.resize(mergedSize);
-								memcpy(
-									&receivedReliableFragments[insertIndex].data[prevSize],
-									&receivedReliableFragments[insertIndex + 1].data[overlappingSize],
-									receivedReliableFragments[insertIndex + 1].data.size() - overlappingSize);
-								receivedReliableFragments[insertIndex].endOfPayload = receivedReliableFragments[insertIndex + 1].endOfPayload;
-								receivedReliableFragments.erase(receivedReliableFragments.begin() + insertIndex + 1);
-							}
-						}
-
-						//Insertion took place -> return
 						return;
 					}
-					*/
 				}
 
 				receivedReliableFragments.emplace_back();
@@ -364,10 +298,7 @@ namespace se
 				receivedReliableFragments.back().endOfPayload = endOfPayload;
 				receivedReliableFragments.back().data.resize(dataSize);
 				memcpy(receivedReliableFragments.back().data.data(), dataPtr, dataSize);
-				if (receivedReliableFragments.size() > 1)
-				{
-					checkMerge(receivedReliableFragments.size() - 2);
-				}
+				postInsert(receivedReliableFragments.size() - 1);
 			}
 			//else if (reliableStreamOffset == 0 && reliableStreamOffsetReceive > dataSize)
 			//{
@@ -408,13 +339,10 @@ namespace se
 									recentReliableFragmentSendCounts.erase(recentReliableFragmentSendCounts.begin());
 								}
 								averageReliableFragmentSendCount = 0.0f;
-								if (!recentReliableFragmentSendCounts.empty())
+								const float weigth = 1.0f / recentReliableFragmentSendCounts.size();
+								for (size_t a = 0; a < recentReliableFragmentSendCounts.size(); a++)
 								{
-									const float weigth = 1.0f / recentReliableFragmentSendCounts.size();
-									for (size_t a = 0; a < recentReliableFragmentSendCounts.size(); a++)
-									{
-										averageReliableFragmentSendCount += weigth * float(recentReliableFragmentSendCounts[a].first);
-									}
+									averageReliableFragmentSendCount += weigth * float(recentReliableFragmentSendCounts[a].first);
 								}
 
 								//Add to acknowledged fragments
@@ -433,31 +361,6 @@ namespace se
 								{
 									reliablePacketSendQueue[p].delivered = true;
 								}
-								/*
-								if (reliablePacketSendQueue[p].acknowledgedFragments.back().offset + reliablePacketSendQueue[p].acknowledgedFragments.back().size ==
-									reliablePacketSendQueue[p].payload.size()) // small optimization conditional: usually the last packet is the last to deliver, test it first...
-								{
-									bool delivered = true;
-									size_t offset = reliablePacketSendQueue[p].payloadOffset;
-									for (size_t f = 0; f < reliablePacketSendQueue[p].acknowledgedFragments.size(); f++)
-									{
-										if (reliablePacketSendQueue[p].acknowledgedFragments[f].offset == offset)
-										{
-											offset += reliablePacketSendQueue[p].acknowledgedFragments[f].size;
-										}
-										else
-										{
-											delivered = false;
-											break;
-										}
-									}
-									if (delivered)
-									{
-										reliableStreamOffsetSend += reliablePacketSendQueue[p].payload.size();
-										reliablePacketSendQueue.erase(reliablePacketSendQueue.begin() + p);
-									}
-								}
-								*/
 
 								break;
 							}
@@ -490,8 +393,8 @@ namespace se
 				reliablePacketSendQueue.erase(reliablePacketSendQueue.begin());
 			}
 			
-			int remainingSendQuota = 1; // TODO: define the send quota to avoid congestion
-			mtu = 64000;//TEMP...
+			int remainingSendQuota = 4000; // TODO: define the send quota to avoid congestion
+			mtu = 1400;//TEMP...
 			for (size_t q = 0; q < reliablePacketSendQueue.size() && remainingSendQuota > 0; q++)
 			{
 				ReliablePacketOut& reliablePacketOut = reliablePacketSendQueue[q];
@@ -526,12 +429,14 @@ namespace se
 							PacketHeader packetHeader;
 							packetHeader.protocolId = spehsProtocolId;
 							packetHeader.streamOffset = unacknowledgedFragment.offset;
+							packetHeader.payloadTotalSize = reliablePacketOut.payload.size();
 							packetHeader.controlBits |= PacketHeader::ControlBit::reliable;
 							if (reliablePacketOut.userData)
 							{
 								packetHeader.controlBits |= PacketHeader::ControlBit::userData;
 							}
-							if (f + 1 == reliablePacketOut.unacknowledgedFragments.size())
+							const bool endOfPayload = (unacknowledgedFragment.offset + unacknowledgedFragment.size) == (reliablePacketOut.payloadOffset + reliablePacketOut.payload.size());
+							if (endOfPayload)
 							{
 								packetHeader.controlBits |= PacketHeader::ControlBit::endOfPayload;
 							}
