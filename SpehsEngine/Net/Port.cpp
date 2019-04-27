@@ -8,7 +8,6 @@ namespace se
 	namespace net
 	{
 		const Port Port::invalid = Port(0);
-		const Port Port::default = Port(41623);
 
 		Port::Port()
 			: value(invalid.value)

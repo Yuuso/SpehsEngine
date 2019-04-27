@@ -11,6 +11,11 @@ namespace se
 	{
 		const Endpoint Endpoint::invalid = Endpoint(Address::invalid, Port::invalid);
 
+		std::string toString(const boost::asio::ip::udp::endpoint& endpoint)
+		{
+			return endpoint.address().to_string() + ":" + std::to_string(endpoint.port());
+		}
+
 		Endpoint commandLineArgumentsToEndpoint(const int argc, const char** argv)
 		{
 			if (argc < 3)

@@ -18,7 +18,10 @@ namespace se
 			boost::asio::ip::tcp::resolver::query queryTCP(localHostName, "");
 			boost::asio::ip::tcp::resolver::iterator end, it = resolver.resolve(queryTCP, error);
 			if (error)
-				se::log::warning(error.message());
+			{
+				se::log::warning("se::net::getLocalAddress(): failed to resolve local address. Boost error" + error.message());
+				return Address();
+			}
 			while (it != end)
 			{
 				boost::asio::ip::tcp::endpoint endpoint = *it;

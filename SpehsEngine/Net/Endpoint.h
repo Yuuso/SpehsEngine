@@ -1,6 +1,7 @@
 #pragma once
 #include "SpehsEngine/Net/Address.h"
 #include "SpehsEngine/Net/Port.h"
+#include "boost/asio/ip/udp.hpp"
 
 namespace se
 {
@@ -16,12 +17,13 @@ namespace se
 			Endpoint(const Address& _address, const Port& _port) : address(_address), port(_port) {}
 			bool operator==(const Endpoint& other) const { return port == other.port && address == other.address; }
 			bool operator!=(const Endpoint& other) const { return port != other.port || address != other.address; }
-			operator bool() const { return *this != invalid; }
+			operator bool() const { return (bool)port && (bool)address; }
 			std::string toString() const { return address.toString() + ":" + port.toString(); }
 			Address address;
 			Port port;
 		};
 		Endpoint commandLineArgumentsToEndpoint(const int argc, const char** argv);
+		std::string toString(const boost::asio::ip::udp::endpoint& endpoint);
 	}
 
 	class WriteBuffer;

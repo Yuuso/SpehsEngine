@@ -6,7 +6,6 @@
 #include <string>
 #include "SpehsEngine/Net/Acceptor.h"
 #include "SpehsEngine/Net/IOService.h"
-#include "SpehsEngine/Net/Handshake.h"
 #include <SpehsEngine/Core/WriteBuffer.h>
 #include <SpehsEngine/Core/ReadBuffer.h>
 #include "SpehsEngine/Core/RAIIVariableSetter.h"
@@ -14,14 +13,22 @@
 #include "SpehsEngine/Core/SE_Time.h"
 #include "SpehsEngine/Core/StringOperations.h"
 
+#define DEBUG_LOG(level, message) if (getDebugLogLevel() >= level) \
+{ \
+	se::log::info("SocketTCP(" + getLocalPort().toString() + "): " + message); \
+}
+
+/**///#pragma optimize("", off)
+
 namespace
 {
-	/*
-	level 1: prints most essential state changes.
-	level 2: prints some network traffic numbers.
-	level 3: prints receive buffer in hex string.
-	*/
-	int debugLogLevel = 0;
+#ifdef SE_FINAL_RELEASE
+		static const se::time::Time handshakeReceiveTimeout = se::time::fromSeconds(5.0f);
+		static const se::time::Time connectionTimeout = se::time::fromSeconds(5.0f);
+#else
+		static const se::time::Time handshakeReceiveTimeout = se::time::fromSeconds(10000.0f);
+		static const se::time::Time connectionTimeout = se::time::fromSeconds(10000.0f);
+#endif
 }
 
 namespace se
@@ -29,15 +36,90 @@ namespace se
 	extern std::string workingDirectory;
 	namespace net
 	{
-#ifdef SE_FINAL_RELEASE
-		static const time::Time handshakeReceiveTimeout = time::fromSeconds(5.0f);
-		static const time::Time connectionTimeout = time::fromSeconds(5.0f);
-#else
-		static const time::Time handshakeReceiveTimeout = time::fromSeconds(10000.0f);
-		static const time::Time connectionTimeout = time::fromSeconds(10000.0f);
-		//static const time::Time handshakeReceiveTimeout = time::fromSeconds(5.0f);
-		//static const time::Time connectionTimeout = time::fromSeconds(5.0f);
-#endif
+		std::string toString(const boost::asio::ip::tcp::endpoint& endpoint)
+		{
+			return endpoint.address().to_string() + ":" + std::to_string(endpoint.port());
+		}
+
+		class Handshake
+		{
+			static const uint16_t endiannessCheckBytes = 0xACDC;
+		public:
+
+			bool Handshake::isValid() const
+			{
+				return valid;
+			}
+			
+			void write(WriteBuffer& buffer) const
+			{
+				buffer.write(currentMagic);
+				buffer.write(handshakeVersion);
+				buffer.write(endiannessCheckBytes);
+			}
+
+			bool read(ReadBuffer& buffer)
+			{
+				//NOTE: buffer can contain invalid data! If so, set the valid boolean to false
+				valid = true;
+
+				//Magic
+				if (!buffer.read(magic))
+				{
+					log::info("Handshake::read() invalid handshake. No bytes left to read magic.");
+					valid = false;
+					return false;
+				}
+
+				if (magic != currentMagic)
+				{
+					log::info("Handshake::read() invalid handshake. Incompatible magic - my version: " + se::toHexString(currentMagic) + ", read magic: " + se::toHexString(magic));
+					valid = false;
+					return false;
+				}
+
+				//Handshake version
+				if (!buffer.read(handshakeVersion))
+				{
+					log::info("Handshake::read() invalid handshake. No bytes left to read handshake version.");
+					valid = false;
+					return false;
+				}
+
+				if (handshakeVersion != currentVersion)
+				{
+					log::info("Handshake::read() invalid handshake. Incompatible versions - my version: " + std::to_string(currentVersion) + ", other version: " + std::to_string(handshakeVersion));
+					valid = false;
+					return false;
+				}
+
+				//Endianness check bytes
+				uint16_t readEndiannessCheckBytes;
+				if (!buffer.read(readEndiannessCheckBytes))
+				{
+					log::info("Handshake::read() invalid handshake. No bytes left to read endianness check bytes.");
+					valid = false;
+					return false;
+				}
+
+				if (readEndiannessCheckBytes != endiannessCheckBytes)
+				{
+					log::info("Handshake::read() invalid handshake. Invalid endianness check bytes.");
+					valid = false;
+					return false;
+				}
+
+				return true;
+			}
+
+		private:
+			typedef uint16_t VersionType;
+			static const VersionType currentVersion = 1;
+			static const uint64_t currentMagic = 0xC0DEC5F070C01001;//Mmmm...magic
+			uint64_t magic = currentMagic;
+			VersionType handshakeVersion = currentVersion;
+			bool valid = true;
+		};
 
 		SocketTCP::SocketTCP(IOService& _ioService)
 			: sharedImpl(new SharedImpl(_ioService))
@@ -50,9 +132,31 @@ namespace se
 			if (isConnected())
 				disconnect(DisconnectType::socketDestructor);
 			stopAccepting();
+			close();
 			std::lock_guard<std::recursive_mutex> lock1(sharedImpl->mutex);
 			se_assert(sharedImpl->socketTCP);
 			sharedImpl->socketTCP = nullptr;
+		}
+
+		bool SocketTCP::open()
+		{
+			return sharedImpl->open();
+		}
+
+		void SocketTCP::close()
+		{
+			sharedImpl->disconnect();
+			sharedImpl->close();
+		}
+
+		bool SocketTCP::bind(const Port& port)
+		{
+			return sharedImpl->bind(port);
+		}
+
+		bool SocketTCP::isOpen() const
+		{
+			return sharedImpl->isOpen();
 		}
 
 		void SocketTCP::waitUntilFinishedReceiving()
@@ -150,6 +254,16 @@ namespace se
 			return sharedImpl->getNoDelay();
 		}
 
+		void SocketTCP::setReuseAddress(const bool enabled)
+		{
+			sharedImpl->setReuseAddress(enabled);
+		}
+
+		bool SocketTCP::getReuseAddress() const
+		{
+			return sharedImpl->getReuseAddress();
+		}
+
 		void SocketTCP::setKeepAlive(const bool enabled)
 		{
 			sharedImpl->setKeepAlive(enabled);
@@ -170,9 +284,19 @@ namespace se
 			return sharedImpl->getRemotePort();
 		}
 
-		Endpoint SocketTCP::getRemoteEndpoint() const
+		boost::asio::ip::tcp::endpoint SocketTCP::getRemoteEndpoint() const
 		{
 			return sharedImpl->getRemoteEndpoint();
+		}
+
+		Port SocketTCP::getLocalPort() const
+		{
+			return sharedImpl->getLocalPort();
+		}
+
+		boost::asio::ip::tcp::endpoint SocketTCP::getLocalEndpoint() const
+		{
+			return sharedImpl->getLocalEndpoint();
 		}
 
 		SocketTCP::AcceptingState SocketTCP::getAcceptingState() const
@@ -195,7 +319,15 @@ namespace se
 			return sharedImpl->isConnected();
 		}
 
+		void SocketTCP::setDebugLogLevel(const int level)
+		{
+			sharedImpl->setDebugLogLevel(level);
+		}
 
+		int SocketTCP::getDebugLogLevel() const
+		{
+			return sharedImpl->getDebugLogLevel();
+		}
 
 		SocketTCP::SharedImpl::SharedImpl(IOService& _ioService)
 			: ioService(_ioService)
@@ -217,37 +349,174 @@ namespace se
 			}
 		}
 
-		void SocketTCP::SharedImpl::receiveHandler(const boost::system::error_code& error, std::size_t bytes)
+		bool SocketTCP::SharedImpl::open()
 		{
-			if (debugLogLevel >= 2)
-				log::info("SocketTCP receive handler received " + std::to_string(bytes) + " bytes.");
+			std::lock_guard<std::recursive_mutex> lock(mutex);
+			if (socket.is_open())
+			{
+				return true;
+			}
+			boost::system::error_code error;
+			socket.open(boost::asio::ip::tcp::v4(), error);
+			if (error)
+			{
+				if (debugLogLevel >= 1)
+				{
+					se::log::error("Failed to open SocketTCP. Boost asio error: " + error.message());
+				}
+				return false;
+			}
+			return true;
+		}
+
+		void SocketTCP::SharedImpl::close()
+		{
+			{
+				std::lock_guard<std::recursive_mutex> lock(mutex);
+				if (socket.is_open())
+				{
+					onReceiveCallback = std::function<void(ReadBuffer&)>();
+					boost::system::error_code error;
+					socket.shutdown(boost::asio::socket_base::shutdown_both, error);
+					if (error)
+					{
+						DEBUG_LOG(1, "failed to shutdown. Boost asio error on shutdown(): " + error.message());
+					}
+					socket.close(error);
+					if (error)
+					{
+						DEBUG_LOG(1, "failed to close socket. Boost asio error on close(): " + error.message());
+					}
+					DEBUG_LOG(1, "closed.");
+				}
+				{
+					std::lock_guard<std::recursive_mutex> lock(receivedPacketsMutex);
+					if (receivedPackets.size() > 0)
+					{
+						se::log::error("Received packets will be cleared. Should this really happen?");
+					}
+					clearReceivedPackets();
+				}
+			}
+			while (isReceiving())
+			{
+				//Blocks
+			}
+		}
+
+		bool SocketTCP::SharedImpl::bind(const Port& port)
+		{
+			if (!isOpen())
+			{
+				if (!open())
+				{
+					DEBUG_LOG(1, "failed to bind SocketTCP. Socket was not open and could not be opened.");
+					return false;
+				}
+			}
+			boost::system::error_code error;
+			const boost::asio::ip::tcp::endpoint endpoint(boost::asio::ip::tcp::v4(), port.value);
 
 			std::lock_guard<std::recursive_mutex> lock(mutex);
+			socket.bind(endpoint, error);
+			if (error)
+			{
+				DEBUG_LOG(1, "failed to bind SocketTCP. Boost asio error: " + error.message());
+				return false;
+			}
+			DEBUG_LOG(1, "opened at port: " + port.toString());
+			return true;
+		}
+
+		bool SocketTCP::SharedImpl::isOpen() const
+		{
+			std::lock_guard<std::recursive_mutex> lock(mutex);
+			return socket.is_open();
+		}
+
+		Port SocketTCP::SharedImpl::getLocalPort() const
+		{
+			return getLocalEndpoint().port();
+		}
+
+		boost::asio::ip::tcp::endpoint SocketTCP::SharedImpl::getLocalEndpoint() const
+		{
+			std::lock_guard<std::recursive_mutex> lock(mutex);
+			boost::system::error_code error;
+			boost::asio::ip::tcp::endpoint localEndpoint = socket.local_endpoint(error);
+			if (error)
+			{
+				if (debugLogLevel >= 1)
+				{
+					log::info("SocketTCP: failed to get local endpoint. Boost asio error: " + error.message());
+				}
+			}
+			return localEndpoint;
+		}
+
+		Address SocketTCP::SharedImpl::getRemoteAddress() const
+		{
+			return Address(getRemoteEndpoint().address().to_string());
+		}
+
+		Port SocketTCP::SharedImpl::getRemotePort() const
+		{
+			return Port(getRemoteEndpoint().port());
+		}
+
+		boost::asio::ip::tcp::endpoint SocketTCP::SharedImpl::getRemoteEndpoint() const
+		{
+			std::lock_guard<std::recursive_mutex> lock(mutex);
+			boost::system::error_code error;
+			boost::asio::ip::tcp::endpoint remoteEndpoint = socket.remote_endpoint(error);
+			if (error)
+			{
+				log::error("SocketTCP: failed to get remote endpoint. Boost asio error: " + error.message());
+			}
+			return remoteEndpoint;
+		}
+
+		void SocketTCP::SharedImpl::receiveHandler(const boost::system::error_code& error, std::size_t bytes)
+		{
+			std::lock_guard<std::recursive_mutex> lock(mutex);
+
+			if (!error)
+			{
+				DEBUG_LOG(2, "received " + std::to_string(bytes) + " bytes." + (error ? "Boost asio error: " + error.message() : ""));
+				if (debugLogLevel >= 3)
+				{
+					for (size_t i = 0; i < bytes; i++)
+					{
+						log::info("    [" + std::to_string(i) + "] " + toHexString(receiveBuffer[i]));
+					}
+				}
+			}
+
 			receivedBytes += bytes;
 			receiving = false;
 			lastReceiveTime = time::now();
 
-			if (debugLogLevel >= 3)
-			{
-				log::info("Received bytes: ");
-				for (size_t i = 0; i < bytes; i++)
-					log::info("    [" + std::to_string(i) + "] " + toHexString(receiveBuffer[i]));
-			}
 
 			if (error)
 			{
 				if (error == boost::asio::error::eof)
-				{//Connection gracefully closed
-					log::info("SocketTCP disconnected. Remote socket closed connection.");
+				{
+					//Connection gracefully closed
+					DEBUG_LOG(1, "disconnected. Remote socket closed connection.");
 					if (socketTCP)
+					{
 						socketTCP->disconnect(DisconnectType::doNotSendDisconnectPacket);
+					}
 					return;
 				}
 				else if (error == boost::asio::error::connection_reset)
-				{//Disconnect
-					log::info("SocketTCP disconnected. Remote socket closed connection.");
+				{
+					//Disconnect
+					DEBUG_LOG(1, "SocketTCP disconnected. Remote socket closed connection.");
 					if (socketTCP)
+					{
 						socketTCP->disconnect(DisconnectType::doNotSendDisconnectPacket);
+					}
 					return;
 				}
 				else if (error == boost::asio::error::connection_aborted ||
@@ -255,22 +524,18 @@ namespace se
 					error == boost::asio::error::bad_descriptor ||
 					error == boost::asio::error::operation_aborted)
 				{
-					log::info("Boost asio error: " + std::to_string(error.value()));
-					if (error == boost::asio::error::connection_aborted)
-						log::info("Closing client: boost asio error: connection_aborted");
-					if (error == boost::asio::error::connection_refused)
-						log::info("Closing client: boost asio error: connection_refused");
-					if (error == boost::asio::error::bad_descriptor)
-						log::info("Closing client: boost asio error: bad_descriptor");
-					if (error == boost::asio::error::operation_aborted)
-						log::info("Closing client: boost asio error: operation_aborted");
+					DEBUG_LOG(1, "error while receiving. Boost asio error: (" + std::to_string(error.value()) + ") " + error.message() + ". Disconnecting.");
+
 					if (socketTCP)
+					{
 						socketTCP->disconnect(DisconnectType::doNotSendDisconnectPacket);
+					}
+
 					return;
 				}
 				else
 				{//Ignored error
-					log::info("Ignored ASIO error: " + std::to_string(error.value()) + ": " + error.message());
+					DEBUG_LOG(1, "error while receiving. Ignored boost asio error: " + std::to_string(error.value()) + ": " + error.message());
 				}
 			}
 
@@ -293,7 +558,10 @@ namespace se
 				}
 				else
 				{
-					log::error("SocketTCP received unexpected amount of bytes! Canceling receiving!");
+					if (debugLogLevel >= 1)
+					{
+						log::error("SocketTCP received unexpected amount of bytes! Canceling receiving!");
+					}
 				}
 			}
 		}
@@ -303,12 +571,12 @@ namespace se
 			std::lock_guard<std::recursive_mutex> lock(mutex);
 			if (acceptingState != AcceptingState::idle)
 			{
-				log::info("SocketTCP failed to start accepting! Socket is already accepting!");
+				DEBUG_LOG(1, "failed to start accepting! Socket is already accepting!");
 				return false;
 			}
 			if (connected)
 			{
-				log::warning("SocketTCP failed start accepting! Socket is currently connected!");
+				DEBUG_LOG(1, "failed start accepting! Socket is currently connected!");
 				return false;
 			}
 			se_assert(!handshakeSent);
@@ -324,7 +592,7 @@ namespace se
 			acceptor->open(endpoint.protocol(), error);
 			if (error)
 			{
-				log::warning("Failed to open acceptor! Boost asio error: " + error.message());
+				DEBUG_LOG(1, "failed to open acceptor! Boost asio error: " + error.message());
 				return false;
 			}
 
@@ -332,12 +600,7 @@ namespace se
 			acceptor->bind(endpoint, error);
 			if (error)
 			{
-				log::warning("Failed to bind acceptor! Boost asio error: " + error.message());
-				return false;
-			}
-			if (!acceptor->is_open())
-			{
-				log::warning("Boost acceptor failed to open!");
+				DEBUG_LOG(1, "failed to bind acceptor! Boost asio error: " + error.message());
 				return false;
 			}
 
@@ -345,7 +608,7 @@ namespace se
 			acceptor->listen(boost::asio::socket_base::max_connections, error);
 			if (error)
 			{
-				log::warning("Failed to make acceptor listen! Boost asio error: " + error.message());
+				DEBUG_LOG(1, "failed to make acceptor listen! Boost asio error: " + error.message());
 				return false;
 			}
 
@@ -371,7 +634,7 @@ namespace se
 			acceptor->close();
 			if (error)
 			{
-				log::warning("SocketTCP failed to accept an incoming connection! Boost asio error: " + error.message() + "Accepting has stopped.");
+				DEBUG_LOG(1, "failed to accept an incoming connection! Boost asio error: " + error.message() + "Accepting has stopped.");
 				socketTCP->disconnect(DisconnectType::doNotSendDisconnectPacket);
 				acceptingState = AcceptingState::idle;
 				return;
@@ -388,9 +651,10 @@ namespace se
 			{
 				std::lock_guard<std::recursive_mutex> lock(mutex);
 				if (!socketTCP)
+				{
 					return;
-				if (debugLogLevel >= 1)
-					log::info("Accepting SocketTCP expecting a handshake...");
+				}
+				DEBUG_LOG(1, "accepting socket expecting a handshake...");
 				acceptingState = AcceptingState::establishingConnection;
 				startReceiving();
 			}
@@ -401,19 +665,20 @@ namespace se
 			//Lock the mutex
 			std::lock_guard<std::recursive_mutex> lock(mutex);
 			if (!socketTCP)
+			{
 				return;
+			}
 
 			//Check if received the handshake in time
 			if (!handshakeReceived)
 			{
-				log::info("SocketTCP failed to accept an incoming connection! No response handshake received!");
+				DEBUG_LOG(1, "failed to accept an incoming connection! No response handshake received!");
 				socketTCP->disconnect(DisconnectType::doNotSendDisconnectPacket);
 				onAcceptCallbackQueued = true;
 				return;
 			}
 
-			if (debugLogLevel >= 1)
-				log::info("Accepting SocketTCP received a handshake.");
+			DEBUG_LOG(1, "accepting socket received a handshake.");
 
 			//Send a response handshake
 			WriteBuffer buffer;
@@ -421,13 +686,12 @@ namespace se
 			buffer.write(handshake);
 			if (socketTCP->sendPacket(buffer, PacketType::handshake))
 			{
-				if (debugLogLevel >= 1)
-					log::info("Accepting SocketTCP sent a handshake.");
+				DEBUG_LOG(1, "accepting socket sent a handshake.");
 				handshakeSent = true;
 			}
 			else
 			{
-				log::info("SocketTCP failed to accept an incoming connection! Could not send handshake!");
+				DEBUG_LOG(1, "failed to accept an incoming connection! Could not send handshake!");
 				socketTCP->disconnect(DisconnectType::doNotSendDisconnectPacket);
 				onAcceptCallbackQueued = true;
 				acceptingState = AcceptingState::idle;
@@ -449,6 +713,7 @@ namespace se
 				if (time::now() - beginTime > timeout)
 					return false;
 				std::lock_guard<std::recursive_mutex> lock(mutex);
+				update();
 				if (handshakeReceived)
 					return true;
 				if (destructorCalled)
@@ -461,7 +726,7 @@ namespace se
 			std::lock_guard<std::recursive_mutex> lock(mutex);
 			if (receiving)
 			{
-				se_assert(false && "Already receiving");
+				log::error("SocketTCP is already receiving.");
 				return;
 			}
 			if (expectedBytes == 0)
@@ -476,8 +741,7 @@ namespace se
 			{//Receive data
 				if (receiveBuffer.size() < expectedBytes)
 				{
-					if (debugLogLevel >= 1)
-						log::info("SocketTCP: the current receive buffer is insufficient! Expanding to " + std::to_string(expectedBytes));
+					DEBUG_LOG(1, "the current receive buffer is insufficient! Expanding to " + std::to_string(expectedBytes));
 					receiveBuffer.resize(expectedBytes);
 				}
 				boost::asio::async_read(socket, boost::asio::buffer(&receiveBuffer[0], expectedBytes),
@@ -499,13 +763,11 @@ namespace se
 			std::lock_guard<std::recursive_mutex> lock(mutex);
 			if (acceptor)
 			{
-				try
+				boost::system::error_code error;
+				acceptor->close(error);
+				if (error)
 				{
-					acceptor->close();
-				}
-				catch (std::exception& e)
-				{
-					log::info(e.what());
+					DEBUG_LOG(1, "failed to stop accepting. Boost asio error: " + error.message());
 				}
 			}
 		}
@@ -513,18 +775,15 @@ namespace se
 		bool SocketTCP::SharedImpl::connect(const Endpoint& endpoint)
 		{
 			if (isConnected())
-				disconnect();
+			{
+				DEBUG_LOG(1, "failed to connect. Socket is already connected.");
+				return false;
+			}
 
 			RAIIMutexVariableSetter<bool, std::recursive_mutex> connectingSetter(connecting, true, mutex);
 
 			{
 				std::lock_guard<std::recursive_mutex> lock(mutex);
-
-				if (connected)
-				{
-					log::info("SocketTCP::connect: failed to connect. Socket is already at the connected state!");
-					return false;
-				}
 
 				//Start a new connection
 				expectedBytes = 0;
@@ -538,34 +797,24 @@ namespace se
 				const boost::asio::ip::tcp::endpoint asioEndpoint = *resolverTCP.resolve(query, error);
 				if (error)
 				{
-					log::info("SocketTCP::connect: failed to resolve the endpoint. Boost asio error: " + error.message());
+					DEBUG_LOG(1, "failed to resolve the endpoint. Boost asio error: " + error.message());
 					return false;
 				}
 				else
 				{
-					if (debugLogLevel >= 1)
-						log::info("SocketTCP::connect: successfully resolved the remote endpoint.");
+					DEBUG_LOG(1, "successfully resolved the remote endpoint.");
 				}
 
 				//Connect to the remote boost socket
-				try
-				{
-					socket.connect(asioEndpoint, error);
-				}
-				catch (std::exception& exception)
-				{
-					log::info(std::string("SocketTCP::connect: failed to connect. Exception thrown: ") + exception.what());
-					return false;
-				}
+				socket.connect(asioEndpoint, error);
 				if (error)
 				{
-					log::info("SocketTCP::connect: failed to connect. Boost asio error: " + error.message());
+					DEBUG_LOG(1, "failed to connect(). Boost asio error: " + error.message());
 					return false;
 				}
 				else
 				{
-					if (debugLogLevel >= 1)
-						log::info("SocketTCP::connect: successfully connected the remote boost::asio::ip::tcp::socket.");
+					DEBUG_LOG(1, "successfully connected the remote boost socket.");
 				}
 
 				//Expect an incoming handshake after sending one
@@ -586,12 +835,11 @@ namespace se
 				}
 				if (handshakeSent)
 				{
-					if (debugLogLevel >= 1)
-						log::info("SocketTCP::connect: successfully sent handshake to the remote endpoint.");
+					DEBUG_LOG(1, "successfully sent handshake to the remote endpoint.");
 				}
 				else
 				{
-					log::info("SocketTCP::connect: failed to connect. Failed to send handshake.");
+					DEBUG_LOG(1, "failed to connect. Failed to send handshake.");
 					return false;//If sending the handshake fails, connection was not successful
 				}
 			}
@@ -602,14 +850,13 @@ namespace se
 				std::lock_guard<std::recursive_mutex> lock(mutex);
 				if (!handshakeReceived)
 				{
-					log::info("SocketTCP::connect: failed to connect! No response handshake received!");
+					DEBUG_LOG(1, "failed to connect! No response handshake received!");
 					return false;
 				}
 			}
-			if (debugLogLevel >= 1)
-				log::info("SocketTCP::connect: successfully received handshake from the remote endpoint. Socket is now in connected state.");
-
+			
 			//All done, socket is now at connected state!
+			DEBUG_LOG(1, "successfully received handshake from the remote endpoint. Socket is now in connected state.");
 			std::lock_guard<std::recursive_mutex> lock(mutex);
 			connected = true;
 
@@ -624,7 +871,9 @@ namespace se
 		void SocketTCP::SharedImpl::disconnect(const DisconnectType disconnectType)
 		{
 			if (!isConnected())
+			{
 				return;
+			}
 
 			if (disconnectType != DisconnectType::doNotSendDisconnectPacket)
 			{//Try sending the disconnect packet before disconnecting
@@ -637,17 +886,20 @@ namespace se
 			std::lock_guard<std::recursive_mutex> lock(mutex);
 			if (socket.is_open())
 			{
-				try
+				boost::system::error_code error;
+				socket.shutdown(boost::asio::socket_base::shutdown_both, error);
+				if (error)
 				{
-					socket.shutdown(boost::asio::ip::tcp::socket::shutdown_both);
-					socket.close();//TODO: this actually cancels all asynchronous operations, not just receiving...
+					DEBUG_LOG(1, "failed to shutdown. Boost asio error: " + error.message());
 				}
-				catch (std::exception& e)
+				socket.close(error);
+				if (error)
 				{
-					log::info(e.what());
+					DEBUG_LOG(1, "failed to close. Boost asio error: " + error.message());
 				}
 			}
 			connected = false;
+			receiving = false;
 			handshakeSent = false;
 			handshakeReceived = false;
 		}
@@ -665,7 +917,7 @@ namespace se
 			
 			if (!connected && !connecting && acceptingState == AcceptingState::idle)
 			{//Can only send user defined packets in the connected state
-				log::info("SocketTCP: cannot send a packet. Socket is neither connected, connecting nor accepting.");
+				DEBUG_LOG(1, "cannot send a packet. Socket is neither connected, connecting nor accepting.");
 				return false;
 			}
 
@@ -686,7 +938,7 @@ namespace se
 				sentBytes += writtenBytes;
 				if (error)
 				{//Error occured while sending data...
-					log::warning("SocketTCP: failed to send packet's spehs header! Boost asio error: " + error.message());
+					DEBUG_LOG(0, "failed to send packet's spehs header! Boost asio error: " + error.message());
 					return false;
 				}
 			}
@@ -700,13 +952,14 @@ namespace se
 				sentBytes += writtenBytes;
 				if (error)
 				{//Error occured while sending data...
-					log::warning("SocketTCP: failed to send packet! Boost asio error: " + error.message());
+					DEBUG_LOG(0, "SocketTCP: failed to send packet! Boost asio error: " + error.message());
 					return false;
 				}
 			}
 
-			if (debugLogLevel >= 2)
-				log::info("SocketTCP: packet sent. Contents: 4(packet byte size) + 1(packet type) + " + std::to_string(buffer.getSize()) + "(data)");
+			DEBUG_LOG(2, "sent 4(packet byte size) + 1(packet type) + " + std::to_string(buffer.getSize()) +
+				" bytes to: " + getLocalEndpoint().address().to_string() + ":" + std::to_string(getLocalEndpoint().port()));
+
 			return true;
 		}
 
@@ -729,23 +982,44 @@ namespace se
 
 		void SocketTCP::SharedImpl::update()
 		{
-			std::lock_guard<std::recursive_mutex> lock(mutex);
-
-			//onAccept callback
-			if (onAcceptCallbackQueued)
 			{
-				onAcceptCallbackQueued = false;
-				if (socketTCP)
-					onAcceptCallback(*socketTCP);
+				//onAccept callback
+				std::lock_guard<std::recursive_mutex> lock(mutex);
+				if (onAcceptCallbackQueued)
+				{
+					onAcceptCallbackQueued = false;
+					if (socketTCP)
+						onAcceptCallback(*socketTCP);
+				}
 			}
 
-			//Received packets
-			std::lock_guard<std::recursive_mutex> lock2(receivedPacketsMutex);
-			while (receivedPackets.size() > 0 && onReceiveCallback)
+			/*
+				Processing received packets
+					-One at the time
+					-Do not leave mutex locked for the duration of receive handler
+					-Assume that receive handler might change/reset during receive handling
+			*/
+			while (true)
 			{
-				ReadBuffer buffer(receivedPackets.front()->data.data(), receivedPackets.front()->data.size());//TODO: empty buffer assert?
-				onReceiveCallback(buffer);
-				receivedPackets.erase(receivedPackets.begin());
+				std::vector<uint8_t> data;
+				std::function<void(ReadBuffer&)> handler;
+				{
+					std::lock_guard<std::recursive_mutex> lock(mutex);
+					std::lock_guard<std::recursive_mutex> lock2(receivedPacketsMutex);
+					if (receivedPackets.empty() || !onReceiveCallback)
+					{
+						break;
+					}
+					else
+					{
+						//Copy contents to non-mutex protected memory
+						data.swap(receivedPackets.front().get()->data);
+						handler = onReceiveCallback;
+						receivedPackets.erase(receivedPackets.begin());
+					}
+				}
+				ReadBuffer readBuffer(data.data(), data.size());
+				handler(readBuffer);
 			}
 		}
 
@@ -756,8 +1030,7 @@ namespace se
 			//Read packet type
 			PacketType packetType;
 			buffer.read(packetType);
-			if (debugLogLevel >= 2)
-				log::info("SocketTCP protocol receive handler received packet of type: " + std::to_string((int)packetType) + ", " + std::to_string(buffer.getBytesRemaining()) + " bytes.");
+			DEBUG_LOG(2, "received packet of type: " + std::to_string((int)packetType) + ", " + std::to_string(buffer.getBytesRemaining()) + " bytes.");
 
 			//Process packet
 			switch (packetType)
@@ -765,8 +1038,7 @@ namespace se
 			case PacketType::undefined:
 			{
 				const size_t userBytes = buffer.getBytesRemaining();
-				if (debugLogLevel >= 2)
-					log::info("SocketTCP received user defined packet. Bytes: " + std::to_string(userBytes));
+				DEBUG_LOG(2, "received user defined packet. Bytes: " + std::to_string(userBytes));
 				se_assert(userBytes > 0);
 
 				//Push to received packets queue
@@ -780,7 +1052,7 @@ namespace se
 				DisconnectType disconnectType;
 				buffer.read(disconnectType);
 				disconnect(DisconnectType::doNotSendDisconnectPacket);
-				log::info("SocketTCP: remote socket gracefully disconnected. Disconnect type was: " + std::to_string((uint8_t)disconnectType));
+				DEBUG_LOG(1, "remote socket gracefully disconnected. Disconnect type was: " + std::to_string((uint8_t)disconnectType));
 				return false;
 			}
 			case PacketType::handshake:
@@ -794,15 +1066,14 @@ namespace se
 				buffer.read(handshake);
 
 				if (handshake.isValid())
-				{//VALID HANDSHAKE
-					if (debugLogLevel >= 1)
-						log::info("SocketTCP valid handshake received.");
+				{
+					DEBUG_LOG(1, "valid spehs handshake received.");
+					handshakeReceived = true;
 				}
 				else
-				{//INVALID HANDSHAKE -> DISCARD
-					log::warning("Received an invalid spehs handshake!");
+				{
+					DEBUG_LOG(1, "received an invalid spehs handshake!");
 				}
-				handshakeReceived = true;
 				return true;
 			}
 			}
@@ -811,13 +1082,14 @@ namespace se
 
 		void SocketTCP::SharedImpl::setNoDelay(const bool enabled)
 		{
+			se_assert(isOpen());
 			const boost::asio::ip::tcp::no_delay option(true);
 			boost::system::error_code error;
 			std::lock_guard<std::recursive_mutex> lock1(mutex);
 			socket.set_option(option, error);
 			if (error)
 			{
-				se::log::error(error.message());
+				DEBUG_LOG(1, "failed to set no_delay option. Boost asio error: " + error.message());
 			}
 		}
 
@@ -829,7 +1101,32 @@ namespace se
 			socket.get_option(option, error);
 			if (error)
 			{
-				se::log::error(error.message());
+				DEBUG_LOG(1, "failed to get no_delay option. Boost asio error: " + error.message());
+			}
+			return option;
+		}
+
+		void SocketTCP::SharedImpl::setReuseAddress(const bool enabled)
+		{
+			se_assert(isOpen());
+			boost::system::error_code error;
+			std::lock_guard<std::recursive_mutex> lock1(mutex);
+			socket.set_option(boost::asio::socket_base::reuse_address(enabled), error);
+			if (error)
+			{
+				DEBUG_LOG(1, "failed to set reuse_address option. Boost asio error: " + error.message());
+			}
+		}
+
+		bool SocketTCP::SharedImpl::getReuseAddress() const
+		{
+			boost::asio::socket_base::reuse_address option;
+			boost::system::error_code error;
+			std::lock_guard<std::recursive_mutex> lock1(mutex);
+			socket.get_option(option, error);
+			if (error)
+			{
+				DEBUG_LOG(1, "failed to get reuse_address option. Boost asio error: " + error.message());
 			}
 			return option;
 		}
@@ -842,7 +1139,7 @@ namespace se
 			socket.set_option(option, error);
 			if (error)
 			{
-				se::log::error(error.message());
+				DEBUG_LOG(1, "failed to set keep_alive option. Boost asio error: " + error.message());
 			}
 		}
 
@@ -854,46 +1151,9 @@ namespace se
 			socket.get_option(option, error);
 			if (error)
 			{
-				se::log::error(error.message());
+				DEBUG_LOG(1, "failed to get keep_alive option. Boost asio error: " + error.message());
 			}
 			return option;
-		}
-
-		Address SocketTCP::SharedImpl::getRemoteAddress() const
-		{
-			std::lock_guard<std::recursive_mutex> lock(mutex);
-			if (!isConnected())
-			{
-				log::info("SocketTCP: cannot retrieve remote endpoint address! Socket is not connected!");
-				return "0.0.0.0";
-			}
-			boost::asio::ip::tcp::endpoint endpoint = socket.remote_endpoint();
-			boost::asio::ip::address address = endpoint.address();
-			boost::asio::ip::address_v4 address_v4 = address.to_v4();
-			return address_v4.to_string();
-		}
-
-		Port SocketTCP::SharedImpl::getRemotePort() const
-		{
-			std::lock_guard<std::recursive_mutex> lock(mutex);
-			if (!isConnected())
-			{
-				log::info("SocketTCP: cannot retrieve remote endpoint port! Socket is not connected!");
-				return 0;
-			}
-			boost::asio::ip::tcp::endpoint endpoint = socket.remote_endpoint();
-			return endpoint.port();
-		}
-
-		Endpoint SocketTCP::SharedImpl::getRemoteEndpoint() const
-		{
-			std::lock_guard<std::recursive_mutex> lock(mutex);
-			if (!isConnected())
-			{
-				log::info("SocketTCP: cannot retrieve remote endpoint port! Socket is not connected!");
-				return Endpoint::invalid;
-			}
-			return Endpoint(socket.remote_endpoint().address().to_v4().to_string(), socket.remote_endpoint().port());
 		}
 
 		SocketTCP::AcceptingState SocketTCP::SharedImpl::getAcceptingState() const
@@ -932,6 +1192,18 @@ namespace se
 		{
 			std::lock_guard<std::recursive_mutex> lock(mutex);
 			return receivedBytes;
+		}
+
+		void SocketTCP::SharedImpl::setDebugLogLevel(const int level)
+		{
+			std::lock_guard<std::recursive_mutex> lock(mutex);
+			debugLogLevel = level;
+		}
+
+		int SocketTCP::SharedImpl::getDebugLogLevel() const
+		{
+			std::lock_guard<std::recursive_mutex> lock(mutex);
+			return debugLogLevel;
 		}
 	}
 }

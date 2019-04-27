@@ -19,12 +19,12 @@ namespace se
 												const glm::vec3& _farBottomLeft,
 												const glm::vec3& _farBottomRight)
 		{
-			planes[Plane::TOP].construct(	_farTopLeft,		_farTopRight,		_nearTopRight);
-			planes[Plane::BOTTOM].construct(_nearBottomLeft,	_nearBottomRight,	_farBottomRight);
-			planes[Plane::LEFT].construct(	_farTopLeft,		_nearTopLeft,		_nearBottomLeft);
-			planes[Plane::RIGHT].construct(	_nearTopRight,		_farTopRight,		_farBottomRight);
-			planes[Plane::NEAR].construct(	_nearTopLeft,		_nearTopRight,		_nearBottomRight);
-			planes[Plane::FAR].construct(	_farTopRight,		_farTopLeft,		_farBottomLeft);
+			planes[Plane::_TOP].construct(	_farTopLeft,		_farTopRight,		_nearTopRight);
+			planes[Plane::_BOTTOM].construct(_nearBottomLeft,	_nearBottomRight,	_farBottomRight);
+			planes[Plane::_LEFT].construct(	_farTopLeft,		_nearTopLeft,		_nearBottomLeft);
+			planes[Plane::_RIGHT].construct(	_nearTopRight,		_farTopRight,		_farBottomRight);
+			planes[Plane::_NEAR].construct(	_nearTopLeft,		_nearTopRight,		_nearBottomRight);
+			planes[Plane::_FAR].construct(	_farTopRight,		_farTopLeft,		_farBottomLeft);
 		}
 
 		void FrustumCollider3D::Plane::construct(const glm::vec3& _point1, const glm::vec3& _point2, const glm::vec3& _point3)

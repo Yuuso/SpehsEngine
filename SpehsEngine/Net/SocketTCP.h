@@ -42,16 +42,21 @@ namespace se
 			SocketTCP(IOService& ioService);
 			virtual ~SocketTCP();
 
+			/* Opens the socket with an available port. */
+			bool open();
+			void close();
+			bool bind(const Port& port);
+
 			/*
 				Process incoming connections(onAccept callbacks).
 				Process arrived packets(onReceive callbacks).
 			*/
-			void update() override;
+			void update();
 
 			/* Perform a synchronous connection attempt. */
-			bool connect(const Endpoint& endpoint) override;
+			bool connect(const Endpoint& endpoint);
 
-			/* Disconnect from the currently connected endpoint. */
+			/* Disconnects the current connection. Socket still remains open, bound to its port. */
 			void disconnect();
 
 			/* Sends buffer to the connected endpoint. Spehs-level packet type specification is also possible (only for advanced use). */
@@ -69,9 +74,12 @@ namespace se
 			/* Stops accepting an incoming connection. */
 			void stopAccepting();
 
-			/* Enabling the 'no delay' option disables Nagle algorithm. */
+			/* Enabling the 'no delay' option disables Nagle's algorithm. */
 			void setNoDelay(const bool enabled);
 			bool getNoDelay() const;
+
+			void setReuseAddress(const bool enabled);
+			bool getReuseAddress() const;
 
 			/* Enabling the 'keep alive' option causes socket to send keep-alive messages. */
 			void setKeepAlive(const bool enabled);
@@ -86,7 +94,11 @@ namespace se
 			/* Remote endpoint. */
 			Address getRemoteAddress() const;
 			Port getRemotePort() const;
-			Endpoint getRemoteEndpoint() const;
+			boost::asio::ip::tcp::endpoint getRemoteEndpoint() const;
+
+			bool isOpen() const;
+			Port getLocalPort() const;
+			boost::asio::ip::tcp::endpoint getLocalEndpoint() const;
 
 			AcceptingState getAcceptingState() const;
 			/* Returns true if the socket is currently listening for an incoming connection on a port, or the accepted connection is currently being established. */
@@ -95,7 +107,10 @@ namespace se
 			bool isReceiving() const;
 			/* Returns true if the socket is currently connected to a remote spehs socket. */
 			bool isConnected() const;
-			
+
+			void setDebugLogLevel(const int level);
+			int getDebugLogLevel() const;
+
 		private:
 
 			void startReceiving();
@@ -123,6 +138,9 @@ namespace se
 				SharedImpl(IOService& ioService);
 				~SharedImpl();
 
+				bool open();
+				void close();
+				bool bind(const Port& port);
 				/* Boost initially passes received data to this receive handler. */
 				void receiveHandler(const boost::system::error_code& error, std::size_t bytes);
 				bool startAccepting(const Port& port, const std::function<void(SocketTCP&)> callbackFunction);
@@ -143,16 +161,21 @@ namespace se
 				bool spehsReceiveHandler(ReadBuffer& buffer);
 				void setNoDelay(const bool enabled);
 				bool getNoDelay() const;
+				void setReuseAddress(const bool enabled);
+				bool getReuseAddress() const;
 				void setKeepAlive(const bool enabled);
 				bool getKeepAlive() const;
 
 				Address getRemoteAddress() const;
 				Port getRemotePort() const;
-				Endpoint getRemoteEndpoint() const;
+				boost::asio::ip::tcp::endpoint getRemoteEndpoint() const;
 				AcceptingState getAcceptingState() const;
 				bool isAccepting() const;
 				bool isReceiving() const;
 				bool isConnected() const;
+				bool isOpen() const;
+				Port getLocalPort() const;
+				boost::asio::ip::tcp::endpoint getLocalEndpoint() const;
 
 				size_t getSentBytes() const;
 				size_t getReceivedBytes() const;
@@ -187,11 +210,22 @@ namespace se
 					std::vector<uint8_t> data;
 				};
 				std::vector<std::unique_ptr<ReceivedPacket>> receivedPackets;
+
+				/*
+					level 1: prints most essential state changes.
+					level 2: prints some network traffic numbers.
+					level 3: prints receive buffer in hex string.
+				*/
+				int debugLogLevel = 0;
+				void setDebugLogLevel(const int level);
+				int getDebugLogLevel() const;
 			};
 			boost::shared_ptr<SharedImpl> sharedImpl;
 
 		private:
 			friend struct SharedImpl;
 		};
+
+		std::string toString(const boost::asio::ip::tcp::endpoint& endpoint);
 	}
 }

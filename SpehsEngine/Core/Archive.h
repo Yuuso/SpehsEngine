@@ -14,6 +14,7 @@ namespace se
 		You can write fundamental types, write buffers and (sub) archives into an archive.
 		A user defined type does not have to implement archive write/read methods/free functions, in which case Write/ReadBuffer write/read methods/free functions are used.
 	*/
+	class Archive;
 	class Archive
 	{
 	public:
@@ -22,7 +23,7 @@ namespace se
 		template<class> struct type_sink { typedef void type; }; // consumes a type, and makes it `void`
 		template<class T> using type_sink_t = typename type_sink<T>::type;
 		template<class T, class = void> struct has_free_write : std::false_type {};
-		template<class T> struct has_free_write<T, type_sink_t<decltype(writeToArchive(std::declval<const T&>()), Archive())>> : std::true_type {};
+		template<class T> struct has_free_write<T, type_sink_t<decltype(writeToArchive(std::declval<const T&>()), std::declval<Archive>())>> : std::true_type {};
 		template<class T, class = void> struct has_free_read : std::false_type {};
 		template<class T> struct has_free_read<T, type_sink_t<decltype(readFromArchive(std::declval<const Archive&>(), std::declval<T&>()), bool())>> : std::true_type {};
 	public:

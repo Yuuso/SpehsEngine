@@ -96,6 +96,7 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)File\DirectoryState.h">
       <Filter>File</Filter>
     </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)ScopedFrameLimiter.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="File">

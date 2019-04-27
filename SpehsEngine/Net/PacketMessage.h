@@ -24,6 +24,7 @@ namespace se
 		{
 			invalid = 0,					//Not in use
 			handshake,						//Packet contains spehs defined handshake data
+			handshakeResponse,
 			disconnect,						//The remote end sends a packet to indicate disconnection
 			heartbeat,
 			undefined = 255,				//Sent data is user defined data, which is processed by a user defined receive handler.			

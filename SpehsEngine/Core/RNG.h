@@ -186,7 +186,7 @@ namespace se
 			//Special functions
 			glm::vec2 circle(const float _radius = 1.0f)
 			{
-				float angle = random<float>(0.0f, 2.0f * PI<float>);
+				const float angle = random<float>(0.0f, static_cast<float>(6.283185307179586476925286766559L));
 				return glm::vec2(cos(angle) * _radius, sin(angle) * _radius);
 			}
 
@@ -206,7 +206,7 @@ namespace se
 			FloatingPointType angle()
 			{
 				static_assert(std::is_floating_point<FloatingPointType>::value, "Angle random uses only floating points!");
-				return random<FloatingPointType>(static_cast<FloatingPointType>(0.0f), static_cast<FloatingPointType>(se::TWO_PI<float>));
+				return random<FloatingPointType>(static_cast<FloatingPointType>(0.0f), static_cast<FloatingPointType>(6.283185307179586476925286766559L));
 			}
 
 			bool coin()

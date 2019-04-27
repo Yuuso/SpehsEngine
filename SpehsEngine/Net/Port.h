@@ -8,7 +8,6 @@ namespace se
 		struct Port
 		{
 			static const Port invalid;
-			static const Port default;
 			typedef uint16_t ValueType;
 			Port();
 			Port(const ValueType& _value) : value(_value) {}

@@ -34,19 +34,19 @@ namespace se
 		void IOService::run()
 		{
 			setThreadName("IOService::run()");
-			try
+			boost::system::error_code error;
+			while (true)
 			{
-				while (true)
+				std::lock_guard<std::recursive_mutex> lock(mutex);
+				io_service.run_one(error);
+				if (stop)
 				{
-					std::lock_guard<std::recursive_mutex> lock(mutex);
-					io_service.run_one();
-					if (stop)
-						break;
+					break;
 				}
-			}
-			catch (std::exception& e)
-			{
-				log::info(e.what());
+				if (error)
+				{
+					se::log::info("IOService: failed to run_one(). Boost asio error: " + error.message());
+				}
 			}
 		}
 

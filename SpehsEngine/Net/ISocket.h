@@ -1,4 +1,5 @@
 #pragma once
+#include "SpehsEngine/Net/Port.h"
 
 namespace se
 {
@@ -9,11 +10,7 @@ namespace se
 		class ISocket
 		{
 		public:
-
-			virtual void update() = 0;
-
-			virtual bool connect(const Endpoint& endpoint) = 0;
-
+			
 			/* Returns the total number of sent bytes. Does not account bytes from the IP implementation. */
 			virtual size_t getSentBytes() const = 0;
 
