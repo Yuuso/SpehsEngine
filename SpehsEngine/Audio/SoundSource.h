@@ -68,6 +68,7 @@ namespace se
 			bool getRelative(){ return relativeToSource; }
 			size_t getSoundHash() const { return sound.first; }
 			int getAudioChannel() const { return audioChannel; }
+			bool isPlayQueued() const { return playQueued; }
 
 			bool soundQueued();
 

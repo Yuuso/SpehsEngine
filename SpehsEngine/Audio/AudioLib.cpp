@@ -51,6 +51,11 @@ namespace se
 		}
 	}
 
+	void AudioLib::update()
+	{
+		audio::AudioEngine::update();
+	}
+
 	bool AudioLib::isValid()
 	{
 		return valid;

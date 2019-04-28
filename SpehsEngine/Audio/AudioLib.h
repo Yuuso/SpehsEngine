@@ -13,6 +13,8 @@ namespace se
 		/* Uninitializes audio library */
 		~AudioLib();
 
+		void update();
+
 		/* Returns whether the audio library has successfully been initialized */
 		static bool isValid();
 
