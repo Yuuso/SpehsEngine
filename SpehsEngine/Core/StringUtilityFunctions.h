@@ -67,4 +67,7 @@ namespace se
 			return true;
 		}
 	}
+
+	bool doesStartWith(const std::string& string, const std::string& searchParameter);
+	bool doesEndWith(const std::string& string, const std::string& searchParameter);
 }
