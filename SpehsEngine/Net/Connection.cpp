@@ -416,7 +416,9 @@ namespace se
 				}
 
 				//Keep (re)sending unacknowledged fragments
-				const time::Time resendTime = estimatedRoundTripTime.value + estimatedRoundTripTime.value / 6;
+				const time::Time resendTime = estimatedRoundTripTime != time::Time::zero
+					? estimatedRoundTripTime.value + estimatedRoundTripTime.value / 6
+					: se::time::fromSeconds(1.0f / 10.0f);
 				const time::Time now = time::now();
 				for (size_t f = 0; f < reliablePacketOut.unacknowledgedFragments.size() && remainingSendQuota > 0; f++)
 				{
