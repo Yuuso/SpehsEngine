@@ -95,13 +95,15 @@ namespace se
 
 			struct UnreliablePacketOut
 			{
-				UnreliablePacketOut(const uint8_t* _payloadPtr, const size_t _payloadSize)
+				UnreliablePacketOut(const uint8_t* _payloadPtr, const size_t _payloadSize, const bool _userData)
 					: payload(_payloadSize)
+					, userData(_userData)
 				{
 					se_assert(_payloadSize > 0);
 					memcpy(payload.data(), _payloadPtr, _payloadSize);
 				}
 				std::vector<uint8_t> payload;
+				bool userData;
 			};
 
 			struct ReceivedFragment

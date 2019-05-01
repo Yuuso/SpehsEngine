@@ -154,8 +154,13 @@ namespace se
 			std::lock_guard<std::recursive_mutex> lock(mutex);
 			while (!receivedPackets.empty())
 			{
-				receivedBytes += receivedPackets.front().size();
-				ReadBuffer readBuffer(receivedPackets.front().data(), receivedPackets.front().size());
+				//Swap data and erase packet: receive handler might modify received packets vector!
+				std::vector<uint8_t> data;
+				data.swap(receivedPackets.front());
+				receivedBytes += data.size();
+				receivedPackets.erase(receivedPackets.begin());
+				ReadBuffer readBuffer(data.data(), data.size());
+
 				PacketHeader packetHeader;
 				if (packetHeader.read(readBuffer))
 				{
@@ -180,10 +185,17 @@ namespace se
 						{
 							if (readBuffer.getBytesRemaining())
 							{
-								receivedBytesUnreliable += readBuffer.getBytesRemaining();
-								receivedUnreliablePackets.emplace_back();
-								receivedUnreliablePackets.back().resize(readBuffer.getBytesRemaining());
-								memcpy(receivedUnreliablePackets.back().data(), readBuffer[readBuffer.getOffset()], readBuffer.getBytesRemaining());
+								if (packetHeader.controlBits & PacketHeader::userData)
+								{
+									receivedBytesUnreliable += readBuffer.getBytesRemaining();
+									receivedUnreliablePackets.emplace_back();
+									receivedUnreliablePackets.back().resize(readBuffer.getBytesRemaining());
+									memcpy(receivedUnreliablePackets.back().data(), readBuffer[readBuffer.getOffset()], readBuffer.getBytesRemaining());
+								}
+								else
+								{
+									spehsReceiveHandler(ReadBuffer(readBuffer[readBuffer.getOffset()], readBuffer.getBytesRemaining()));
+								}
 							}
 							else
 							{
@@ -196,8 +208,6 @@ namespace se
 						DEBUG_LOG(1, "received packet header had unmatching protocol id.");
 					}
 				}
-
-				receivedPackets.erase(receivedPackets.begin());
 			}
 		}
 
@@ -485,6 +495,10 @@ namespace se
 			{
 				PacketHeader packetHeader;
 				packetHeader.protocolId = spehsProtocolId;
+				if (unreliablePacketSendQueue[i].userData)
+				{
+					packetHeader.controlBits |= PacketHeader::ControlBit::userData;
+				}
 				WriteBuffer writeBuffer;
 				writeBuffer.write(packetHeader);
 				const std::vector<boost::asio::const_buffer> sendBuffers
@@ -634,7 +648,7 @@ namespace se
 			}
 			else
 			{
-				unreliablePacketSendQueue.push_back(UnreliablePacketOut(writeBuffer.getData(), writeBuffer.getSize()));
+				unreliablePacketSendQueue.push_back(UnreliablePacketOut(writeBuffer.getData(), writeBuffer.getSize(), true));
 			}
 		}
 
@@ -698,11 +712,18 @@ namespace se
 		void Connection::disconnect()
 		{
 			std::lock_guard<std::recursive_mutex> lock(mutex);
+			PacketHeader packetHeader;
+			packetHeader.protocolId = spehsProtocolId;
 			DisconnectPacket disconnectPacket;
 			WriteBuffer writeBuffer;
+			writeBuffer.write(packetHeader);
 			writeBuffer.write(PacketType::disconnect);
 			writeBuffer.write(disconnectPacket);
-			socket->sendPacket(writeBuffer, endpoint); // Send packet directly, immediately, unreliably.
+			const std::vector<boost::asio::const_buffer> sendBuffers
+			{
+				boost::asio::const_buffer(writeBuffer.getData(), writeBuffer.getSize()),
+			};
+			sendPacketImpl(sendBuffers, false, true); // Send packet directly, immediately, unreliably.
 			setConnected(false);
 		}
 
