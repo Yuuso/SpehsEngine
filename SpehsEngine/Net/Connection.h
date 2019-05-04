@@ -26,6 +26,8 @@ namespace se
 			};
 		public:
 
+			~Connection();
+
 			void setReceiveHandler(const std::function<void(ReadBuffer&, const boost::asio::ip::udp::endpoint&, const bool)> callback = std::function<void(ReadBuffer&, const boost::asio::ip::udp::endpoint&, const bool)>());
 			void sendPacket(const WriteBuffer& buffer, const bool reliable);
 
@@ -113,6 +115,11 @@ namespace se
 				bool endOfPayload = false;
 				std::vector<uint8_t> data;
 			};
+
+			enum class ConnectionStatus
+			{
+				connecting, connected, disconnecting, disconnected
+			};
 			
 			Connection(const boost::shared_ptr<SocketUDP2>& _socket, const boost::asio::ip::udp::endpoint& _endpoint,
 				const EstablishmentType _establishmentType, const std::string& _debugName = "Connection");
@@ -129,6 +136,9 @@ namespace se
 			void deliverOutgoingPackets();
 			void spehsReceiveHandler(ReadBuffer& readBuffer);
 
+			/* Declared and defined privately, used by ConnectionManager. */
+			bool hasPendingOperations() const;
+
 			mutable std::recursive_mutex mutex;
 			boost::shared_ptr<SocketUDP2> socket;
 			std::vector<ReliablePacketOut> reliablePacketSendQueue;
@@ -143,8 +153,7 @@ namespace se
 			std::vector<std::vector<uint8_t>> receivedReliablePackets;
 			std::vector<std::vector<uint8_t>> receivedUnreliablePackets;
 			std::function<void(ReadBuffer&, const boost::asio::ip::udp::endpoint&, const bool)> receiveHandler;
-			bool connecting = true; // Every connection begins in the connecting state
-			bool connected = false;
+			ConnectionStatus connectionStatus = ConnectionStatus::connecting; // Every connection begins in the connecting state
 			boost::signals2::signal<void(const bool)> connectionStatusChangedSignal;
 
 			//Transmitted byte counts

@@ -43,11 +43,29 @@ namespace se
 			{
 				std::lock_guard<std::recursive_mutex> lock1(mutex);
 				destructorCalled = true;
+				//Queue disconnections for all
+				for (size_t i = 0; i < connections.size(); i++)
+				{
+					if (connections[i]->isConnected())
+					{
+						connections[i]->disconnect();
+					}
+				}
 			}
 			thread.join();
 			
 			//Close socket
 			socket->close();
+
+			//Log warnings if connections are still referenced somewhere (but will not receive any further network updates)
+			std::lock_guard<std::recursive_mutex> lock1(mutex);
+			for (size_t i = 0; i < connections.size(); i++)
+			{
+				if (connections[i].use_count() > 1)
+				{
+					log::warning("Connection: " + connections[i]->debugName + " is still referenced somewhere, but will not receive any further updates.");
+				}
+			}
 		}
 
 		void ConnectionManager::run()
@@ -72,7 +90,7 @@ namespace se
 						bool pendingOperations = false;
 						for (size_t i = 0; i < connections.size(); i++)
 						{
-							if (connections[i]->isConnected() && !connections[i]->reliablePacketSendQueue.empty())
+							if (connections[i]->hasPendingOperations())
 							{
 								pendingOperations = true;
 							}
@@ -91,8 +109,8 @@ namespace se
 			std::lock_guard<std::recursive_mutex> lock1(mutex);
 			for (size_t i = 0; i < connections.size(); i++)
 			{
-				//Remove disconnected and unreferenced connections
-				if (connections[i].use_count() == 1 && !connections[i]->isConnected() && !connections[i]->isConnecting())
+				//Remove unreferenced connections that don'h have pending operations
+				if (connections[i].use_count() == 1 && !connections[i]->hasPendingOperations())
 				{
 					connections.erase(connections.begin() + i);
 					i--;
