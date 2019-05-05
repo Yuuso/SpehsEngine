@@ -36,11 +36,41 @@ namespace se
 			+ std::to_string((unsigned char)(boost::algorithm::clamp(color.a, 0.0f, 1.0f) * 255.0f)) + "]";
 	}
 
-	void brightness(Color& _color, const float _brightnessFactor)
+	void brightnessAdd(Color& _color, const float _brightness, const bool _clamp)
 	{
-		_color.r *= _brightnessFactor;
-		_color.g *= _brightnessFactor;
-		_color.b *= _brightnessFactor;
+		_color.r += _brightness;
+		_color.g += _brightness;
+		_color.b += _brightness;
+		if (_clamp)
+		{
+			glm::clamp(_color.r, 0.0f, 1.0f);
+			glm::clamp(_color.g, 0.0f, 1.0f);
+			glm::clamp(_color.b, 0.0f, 1.0f);
+		}
+	}
+	void brightnessFactor(Color& _color, const float _brightness, const bool _clamp)
+	{
+		_color.r *= _brightness;
+		_color.g *= _brightness;
+		_color.b *= _brightness;
+		if (_clamp)
+		{
+			glm::clamp(_color.r, 0.0f, 1.0f);
+			glm::clamp(_color.g, 0.0f, 1.0f);
+			glm::clamp(_color.b, 0.0f, 1.0f);
+		}
+	}
+	Color brightnessAddNewColor(const Color& _color, const float _brightness, const bool _clamp)
+	{
+		Color result = _color;
+		brightnessAdd(result, _brightness, _clamp);
+		return result;
+	}
+	Color brightnessFactorNewColor(const Color& _color, const float _brightness, const bool _clamp)
+	{
+		Color result = _color;
+		brightnessFactor(result, _brightness, _clamp);
+		return result;
 	}
 
 	Color mixColor(const Color& color1, const Color& color2, const float factor)

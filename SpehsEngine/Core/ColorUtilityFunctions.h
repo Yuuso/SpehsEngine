@@ -12,8 +12,14 @@ namespace se
 
 	void writeToBuffer(WriteBuffer& writeBuffer, const Color& color);
 	bool readFromBuffer(ReadBuffer& readBuffer, Color& color);
+
 	std::string toString(const Color& color);
-	void brightness(Color& color, const float brightnessFactor);
+
+	void brightnessAdd(Color& color, const float brightness, const bool clamp = false);
+	void brightnessFactor(Color& color, const float brightness, const bool clamp = false);
+	[[nodiscard]] Color brightnessAddNewColor(const Color& color, const float brightness, const bool clamp = false);
+	[[nodiscard]] Color brightnessFactorNewColor(const Color& color, const float brightness, const bool clamp = false);
+
 	Color mixColor(const Color& color1, const Color& color2, const float factor);
 
 	// Generate colors

@@ -139,13 +139,7 @@ namespace se
 		{
 			if (getMouseHover())
 			{
-				//Create temp vec4 col, lighten it a bit from color
-				Color col = color;
-				brightness(col, 1.1f);
-				col.r += 0.05f;
-				col.g += 0.05f;
-				col.b += 0.05f;
-				polygon->setColor(col);
+				polygon->setColor(brightnessAddNewColor(color, 0.15f));
 			}
 			else
 				polygon->setColor(color);

@@ -67,9 +67,10 @@ namespace se
 			void setScale(const glm::vec3& _newScale);
 			void translate(const glm::vec3& _translation);
 
-			glm::vec3 getPosition() const { return position; };
-			glm::quat getRotation() const { return rotation; };
-			glm::vec3 getScale() const { return scale; };
+			const glm::vec3& getPosition() const { return position; };
+			const glm::quat& getRotation() const { return rotation; };
+			const glm::vec3& getScale() const { return scale; };
+			const se::Color& getColor() const { return modelColor; }
 
 
 		protected:
