@@ -88,7 +88,7 @@ namespace se
 				}
 				else
 				{
-					if (priority != maxPriority && priority != minPriority)
+					if (priority != maxPriority && priority != minPriority && (*it)->signal.num_slots() > 0)
 					{
 						log::warning("Another source has already connected to this signal with the same priority");
 					}
