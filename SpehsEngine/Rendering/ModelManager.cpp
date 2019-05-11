@@ -112,11 +112,11 @@ namespace se
 						continue;
 					_model.meshes.push_back(std::unique_ptr<se::rendering::Mesh>(new se::rendering::Mesh()));
 					_model.meshes[i]->name = model->meshes[i].name;
-					_model.meshes[i]->localPosition = model->meshes[i].position;
-					_model.meshes[i]->localRotation = model->meshes[i].rotation;
-					_model.meshes[i]->localScale = model->meshes[i].scale;
 					_model.meshes[i]->vertexArray = model->meshes[i].vertices;
 					_model.meshes[i]->elementArray = model->meshes[i].indices;
+					_model.meshes[i]->meshRotation = model->meshes[i].rotation;
+					_model.meshes[i]->meshScale = model->meshes[i].scale;
+					_model.meshes[i]->meshPosition = model->meshes[i].position;
 				}
 			}
 		}

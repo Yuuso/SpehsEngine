@@ -255,7 +255,8 @@ namespace se
 			const size_t size = _mesh.vertexArray.size();
 			if (checkBit(_updates, VERTEX_UPDATE_VERTEX))
 			{
-				transformMatrix = glm::translate(_mesh.getPosition()) * glm::mat4_cast(_mesh.getRotation()) * glm::scale(_mesh.getScale());
+				transformMatrix = glm::translate(_mesh.localPosition + _mesh.meshPosition) * glm::mat4_cast(_mesh.localRotation * _mesh.meshRotation) * glm::scale(_mesh.localScale * _mesh.meshScale);
+				transformMatrix = glm::translate(_mesh.position) * glm::mat4_cast(_mesh.rotation) * glm::scale(_mesh.scale) * transformMatrix;
 				for (size_t i = 0; i < size; i++)
 				{
 					// Vertices

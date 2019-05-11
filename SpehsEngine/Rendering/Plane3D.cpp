@@ -96,15 +96,15 @@ namespace se
 
 		glm::vec3 Plane3D::getPosition() const
 		{
-			return mesh->getPosition();
+			return mesh->getGlobalPosition();
 		}
 		glm::quat Plane3D::getRotation() const
 		{
-			return mesh->getRotation();
+			return mesh->getGlobalRotation();
 		}
 		glm::vec3 Plane3D::getScale() const
 		{
-			return mesh->getScale();
+			return mesh->getGlobalScale();
 		}
 		bool Plane3D::getRenderState() const
 		{

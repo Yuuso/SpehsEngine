@@ -37,9 +37,10 @@ namespace se
 			void addMesh(const Mesh& _mesh);
 			void insertMesh(const size_t _position, const Mesh& _mesh);
 			void replaceMesh(const size_t _position, const Mesh& _mesh);
-			std::vector<Mesh*> findMeshes(const std::string& _name);
-			std::vector<Mesh*> findMeshesContains(const std::string& _partialName);
+			std::vector<Mesh*> findMeshes(const std::string& _name) const;
+			std::vector<Mesh*> findMeshesContains(const std::string& _partialName) const;
 			std::vector<std::unique_ptr<Mesh>>& getMeshes();
+			const std::vector<std::unique_ptr<Mesh>>& getMeshes() const;
 			Mesh* getMesh(size_t _index) const;
 			void removeMeshes(const std::string& _name);
 			void removeMesh(const size_t _index);

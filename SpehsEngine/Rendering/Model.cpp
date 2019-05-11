@@ -96,29 +96,29 @@ namespace se
 				batchManagers[b]->addMesh(*meshes[_position]);
 			}
 		}
-		std::vector<Mesh*> Model::findMeshes(const std::string& _name)
+		std::vector<Mesh*> Model::findMeshes(const std::string& _name) const
 		{
 			se_assert(meshes.size() > 0);
 			std::vector<Mesh*> result;
 			for (size_t m = 0; m < meshes.size(); m++)
 				if (meshes[m]->name == _name)
 					result.push_back(meshes[m].get());
-			//if (result.size() == 0)
-			//	se::log::error("Model::findMesh: Meshes with name \"" + _name + "\" not found!");
 			return result;
 		}
-		std::vector<Mesh*> Model::findMeshesContains(const std::string& _partialName)
+		std::vector<Mesh*> Model::findMeshesContains(const std::string& _partialName) const
 		{
 			se_assert(meshes.size() > 0);
 			std::vector<Mesh*> result;
 			for (size_t m = 0; m < meshes.size(); m++)
 				if (meshes[m]->name.find(_partialName) != std::string::npos)
 					result.push_back(meshes[m].get());
-			//if (result.size() == 0)
-			//	se::log::error("Model::findMesh: Meshes with name containing \"" + _partialName + "\" not found!");
 			return result;
 		}
 		std::vector<std::unique_ptr<Mesh>>& Model::getMeshes()
+		{
+			return meshes;
+		}
+		const std::vector<std::unique_ptr<Mesh>>& Model::getMeshes() const
 		{
 			return meshes;
 		}
@@ -130,9 +130,6 @@ namespace se
 		void Model::removeMeshes(const std::string& _name)
 		{
 			se_assert(meshes.size() > 0);
-#ifdef _DEBUG
-			int removed = 0;
-#endif
 			for (size_t m = 0; m < meshes.size(); /*m++*/)
 			{
 				if (meshes[m]->name == _name)
@@ -140,17 +137,12 @@ namespace se
 					for (size_t b = 0; b < batchManagers.size(); b++)
 						batchManagers[b]->removeMesh(*meshes[m]);
 					meshes.erase(meshes.begin() + m);
-#ifdef _DEBUG
-					removed++;
-#endif
 				}
 				else
+				{
 					m++;
+				}
 			}
-#ifdef _DEBUG
-			if (removed == 0)
-				se::log::error("Model::removeMeshes: Meshes with name \"" + _name + "\" not found!");
-#endif
 		}
 		void Model::removeMesh(const size_t _index)
 		{

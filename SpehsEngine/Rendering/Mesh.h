@@ -73,16 +73,20 @@ namespace se
 			glm::vec3 getLocalPosition() const { return localPosition; }
 			glm::quat getLocalRotation() const { return localRotation; }
 			glm::vec3 getLocalScale() const { return localScale; }
-			glm::vec3 getPosition() const { return position + localPosition; }
-			glm::quat getRotation() const { return rotation * localRotation; }
-			glm::vec3 getScale() const { return scale * localScale; }
 
-			se::Color getColor(const size_t _index) const { se_assert(_index < vertexArray.size()); return vertexArray[_index].color; }
-			float getAlpha(const size_t _index) const { se_assert(_index < vertexArray.size()); return vertexArray[_index].color.a; }
+			glm::vec3 getMeshPosition() const { return meshPosition; }
+			glm::quat getMeshRotation() const { return meshRotation; }
+			glm::vec3 getMeshScale() const { return meshScale; }
 
-			// NOTE: Color of first vertex
-			se::Color getColor() const { return vertexArray.size() ? vertexArray[0].color : se::Color(); }
-			float getAlpha() const { return vertexArray.size() ? vertexArray[0].color.a : 1.0f; }
+			// TODO: Should these return the actual global transform, not the models transform?
+			glm::vec3 getGlobalPosition() const { return position; }
+			glm::quat getGlobalRotation() const { return rotation; }
+			glm::vec3 getGlobalScale() const { return scale; }
+
+			const se::Color& getColor() const;
+			float getAlpha() const;
+			const se::Color& getColor(const size_t _index) const;
+			float getAlpha(const size_t _index) const;
 
 			bool getBackFaceCulling() const { return backFaceCulling; }
 			bool getRenderState() const { return renderState; }
@@ -129,9 +133,17 @@ namespace se
 			Mesh& operator=(const Mesh& _other) = delete;
 			Mesh& operator=(const Mesh&& _other) = delete;
 
+			// User transform in Local space
 			glm::vec3 localPosition;
 			glm::quat localRotation;
 			glm::vec3 localScale;
+
+			// Loaded transform in Local space
+			glm::vec3 meshPosition;
+			glm::quat meshRotation;
+			glm::vec3 meshScale;
+
+			// Global space
 			glm::vec3 position;
 			glm::quat rotation;
 			glm::vec3 scale;

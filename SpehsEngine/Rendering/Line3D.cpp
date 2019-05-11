@@ -143,15 +143,15 @@ namespace se
 
 		glm::vec3 Line3D::getPosition() const
 		{
-			return mesh->getPosition();
+			return mesh->getGlobalPosition();
 		}
 		glm::quat Line3D::getRotation() const
 		{
-			return mesh->getRotation();
+			return mesh->getGlobalRotation();
 		}
 		glm::vec3 Line3D::getScale() const
 		{
-			return mesh->getScale();
+			return mesh->getGlobalScale();
 		}
 		bool Line3D::getRenderState() const
 		{

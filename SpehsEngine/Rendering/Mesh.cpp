@@ -33,6 +33,9 @@ namespace se
 			, localPosition(0.0f, 0.0f, 0.0f)
 			, localRotation(glm::vec3(0.0f, 0.0f, 0.0f))
 			, localScale(1.0f, 1.0f, 1.0f)
+			, meshPosition(0.0f, 0.0f, 0.0f)
+			, meshRotation(glm::vec3(0.0f, 0.0f, 0.0f))
+			, meshScale(1.0f, 1.0f, 1.0f)
 			, position(0.0f, 0.0f, 0.0f)
 			, rotation(glm::vec3(0.0f, 0.0f, 0.0f))
 			, scale(1.0f, 1.0f, 1.0f)
@@ -313,6 +316,27 @@ namespace se
 				return;
 			textureDataIDs[_index] = _textureDataPtr->textureDataID;
 			unbatch();
+		}
+
+		const se::Color& Mesh::getColor() const
+		{
+			return getColor(0);
+		}
+		float Mesh::getAlpha() const
+		{
+			return getAlpha(0);
+		}
+		const se::Color& Mesh::getColor(const size_t _index) const
+		{
+			se_assert(_index < vertexArray.size());
+			if (!useMeshColor) se::log::warning("Mesh color may not be accurate!");
+			return vertexArray[_index].color;
+		}
+		float Mesh::getAlpha(const size_t _index) const
+		{
+			se_assert(_index < vertexArray.size());
+			if (!useMeshAlpha) se::log::warning("Mesh alpha may not be accurate!");
+			return vertexArray[_index].color.a;
 		}
 
 		void Mesh::unbatch()
