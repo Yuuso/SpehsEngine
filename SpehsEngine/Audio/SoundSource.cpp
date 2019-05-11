@@ -42,7 +42,7 @@ namespace se
 			sound.first = AudioManager::load(_filepath);
 			sound.second = 0;
 		}
-		
+
 		void SoundSource::setParameters()
 		{
 			if (source)
@@ -79,10 +79,14 @@ namespace se
 					{
 						if (playQueued)
 						{
+							if (source ||
+								(!source && AudioEngine::getFreeSource(this)))
+							{
+								setParameters();
+								alSourcePlay(source->sourceID);
+								checkOpenALErrors(__FILE__, __LINE__);
+							}
 							playQueued = false;
-							setParameters();
-							alSourcePlay(source->sourceID);
-							checkOpenALErrors(__FILE__, __LINE__);
 						}
 					}
 				}
@@ -276,7 +280,7 @@ namespace se
 			gainAutomationTime = _fadeTimer;
 			gainAutomationTimer = _fadeTimer;
 		}
-		
+
 		void SoundSource::setPitch(const float _pitch)
 		{
 			pitch = _pitch;
