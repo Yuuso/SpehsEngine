@@ -320,22 +320,22 @@ namespace se
 
 		const se::Color& Mesh::getColor() const
 		{
+			if (!useMeshColor) se::log::warning("Mesh color may not be accurate!");
 			return getColor(0);
 		}
 		float Mesh::getAlpha() const
 		{
+			if (!useMeshAlpha) se::log::warning("Mesh alpha may not be accurate!");
 			return getAlpha(0);
 		}
 		const se::Color& Mesh::getColor(const size_t _index) const
 		{
 			se_assert(_index < vertexArray.size());
-			if (!useMeshColor) se::log::warning("Mesh color may not be accurate!");
 			return vertexArray[_index].color;
 		}
 		float Mesh::getAlpha(const size_t _index) const
 		{
 			se_assert(_index < vertexArray.size());
-			if (!useMeshAlpha) se::log::warning("Mesh alpha may not be accurate!");
 			return vertexArray[_index].color.a;
 		}
 
