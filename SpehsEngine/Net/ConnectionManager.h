@@ -32,12 +32,12 @@ namespace se
 				Attempts to start a new outgoing connection.
 				May return an empty shared pointer if an error occurs.
 			*/
-			std::shared_ptr<Connection> startConnecting(const Endpoint& remoteEndpoint, const std::string& _debugName = "Connection");
+			[[nodiscard]] std::shared_ptr<Connection> startConnecting(const Endpoint& remoteEndpoint, const std::string& _debugName = "Connection");
 
 			/*
 				Sets the socket into 'accepting' mode, where incoming connections are accepted.
 			*/
-			void startAccepting();
+			bool startAccepting();
 			/*
 				Stops accepting any new incoming connections.
 				Previously accepted and connecting incoming connections remain connecting.
@@ -49,7 +49,7 @@ namespace se
 			//SocketUDP2 wrappers
 			bool open();
 			void close();
-			bool bind(const Port& port);
+			bool bind(const Port port = Port());
 			bool isOpen() const;
 			Port getLocalPort() const;
 			Endpoint getLocalEndpoint() const;

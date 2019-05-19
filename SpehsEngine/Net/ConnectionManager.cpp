@@ -169,16 +169,26 @@ namespace se
 
 		std::shared_ptr<Connection> ConnectionManager::startConnecting(const Endpoint& remoteEndpoint, const std::string& connectionDebugName)
 		{
-			if (!isOpen())
+			if (!socket->isOpen())
 			{
-				if (!open())
+				if (!socket->open())
 				{
+					log::error("ConnectionManager failed to start connecting, failed to open socket.");
 					return std::shared_ptr<Connection>();
 				}
 			}
+			if (!socket->isBound())
+			{
+				log::error("ConnectionManager failed to start connecting, socket is not bound.");
+				return std::shared_ptr<Connection>();
+			}
 			if (!socket->isReceiving())
 			{
-				socket->startReceiving();
+				if (!socket->startReceiving())
+				{
+					log::error("ConnectionManager failed to start connecting, failed to start receiving with the socket.");
+					return std::shared_ptr<Connection>();
+				}
 			}
 			const boost::asio::ip::udp::endpoint asioEndpoint = socket->resolveRemoteEndpoint(remoteEndpoint);
 			if (asioEndpoint != boost::asio::ip::udp::endpoint())
@@ -195,11 +205,23 @@ namespace se
 			}
 		}
 
-		void ConnectionManager::startAccepting()
+		bool ConnectionManager::startAccepting()
 		{
 			std::lock_guard<std::recursive_mutex> lock1(mutex);
-			se_assert(!isAccepting());
-			accepting = true;
+			if (socket->isBound())
+			{
+				if (isAccepting())
+				{
+					log::warning("ConnectionManager is already accepting.");
+				}
+				accepting = true;
+				return true;
+			}
+			else
+			{
+				log::error("Must bind ConnectionManager first.");
+				return false;
+			}
 		}
 
 		void ConnectionManager::stopAccepting()
@@ -239,7 +261,7 @@ namespace se
 			socket->close();
 		}
 
-		bool ConnectionManager::bind(const Port& port)
+		bool ConnectionManager::bind(const Port port)
 		{
 			if (socket->open())
 			{

@@ -50,8 +50,8 @@ namespace se
 
 			bool open();
 			void close();
-			bool bind(const Port& port);
-			void startReceiving();
+			bool bind(const Port port = Port());
+			bool startReceiving();
 			void setReceiveHandler(const std::function<void(std::vector<uint8_t>&, const boost::asio::ip::udp::endpoint&)>& _receiveHandler);
 			bool sendPacket(const WriteBuffer& buffer, const boost::asio::ip::udp::endpoint& endpoint);
 			bool sendPacket(const std::vector<boost::asio::const_buffer>& buffers, const boost::asio::ip::udp::endpoint& endpoint);
@@ -64,6 +64,7 @@ namespace se
 			}
 
 			bool isOpen() const;
+			bool isBound() const;
 			bool isReceiving() const;
 			Port getLocalPort() const;
 			boost::asio::ip::udp::endpoint resolveRemoteEndpoint(const Endpoint& endpoint) const;

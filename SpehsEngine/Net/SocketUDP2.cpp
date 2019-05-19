@@ -115,7 +115,7 @@ namespace se
 			}
 		}
 
-		bool SocketUDP2::bind(const Port& port)
+		bool SocketUDP2::bind(const Port port)
 		{
 			if (!isOpen())
 			{
@@ -130,8 +130,8 @@ namespace se
 				return false;
 			}
 			boost::system::error_code error;
-			const boost::asio::ip::udp::endpoint endpoint(boost::asio::ip::udp::v4(), port.value);
 
+			const boost::asio::ip::udp::endpoint endpoint(boost::asio::ip::udp::v4(), port.value);
 			std::lock_guard<std::recursive_mutex> lock(mutex);
 			boostSocket.bind(endpoint, error);
 			if (error)
@@ -190,7 +190,7 @@ namespace se
 			receiveHandler = _receiveHandler;
 		}
 		
-		void SocketUDP2::startReceiving()
+		bool SocketUDP2::startReceiving()
 		{
 			std::lock_guard<std::recursive_mutex> lock(mutex);
 			se_assert(!receiving);
@@ -202,11 +202,13 @@ namespace se
 					boost::bind(&SocketUDP2::boostReceiveHandler, shared_from_this(),
 						boost::asio::placeholders::error,
 						boost::asio::placeholders::bytes_transferred));
+				return true;
 			}
 			catch (const std::exception& e)
 			{
 				receiving = false;
 				log::error(std::string("SocketUDP2::startReceiving(): async_receive_from(): exception thrown: ") + e.what());
+				return false;
 			}
 		}
 
@@ -292,6 +294,14 @@ namespace se
 		{
 			std::lock_guard<std::recursive_mutex> lock(mutex);
 			return boostSocket.is_open();
+		}
+
+		bool SocketUDP2::isBound() const
+		{
+			std::lock_guard<std::recursive_mutex> lock(mutex);
+			boost::system::error_code error;
+			boostSocket.local_endpoint(error);
+			return !error;
 		}
 
 		bool SocketUDP2::isReceiving() const
