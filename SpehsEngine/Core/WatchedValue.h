@@ -17,6 +17,10 @@ namespace se
 		{
 			value = _value;
 			changedSignal(value);
+			if (changedCallback)
+			{
+				changedCallback(value);
+			}
 		}
 
 		operator const T&() const
@@ -34,8 +38,18 @@ namespace se
 			scopedConnection = changedSignal.connect(callback);
 		}
 
+		void setValueChangedCallback(const std::function<void(const T&)>& callback)
+		{
+			if (changedCallback)
+			{
+				se_assert(!callback && "Callback has already been set. Setting the callback erases the previously set callback!");
+			}
+			changedCallback = callback;
+		}
+
 	private:
 		T value;
 		boost::signals2::signal<void(const T&)> changedSignal;
+		std::function<void(const T&)> changedCallback;
 	};
 }
