@@ -59,6 +59,10 @@ namespace se
 #ifdef _DEBUG
 			Batch3DAllocations++;
 #endif
+			const Shader& shader = batchManager.shaderManager.getShader(shaderIndex);
+			const Uniforms* const uniforms = shader.uniforms;
+			se_assert(uniforms);
+			se_assert(uniforms->textureData.size() >= textureDataIDs.size());
 			initBuffers();
 		}
 
@@ -179,16 +183,20 @@ namespace se
 
 			updateBuffers();
 
-			batchManager.shaderManager.use(shaderIndex);
+			Shader& shader = batchManager.shaderManager.getShader(shaderIndex);
+			shader.shader.use();
 
 			// Texture
+			Uniforms* uniforms = shader.uniforms;
+			se_assert(uniforms);
+			se_assert(uniforms->textureData.size() >= textureDataIDs.size());
 			for (size_t i = 0; i < textureDataIDs.size(); i++)
-				batchManager.shaderManager.getShader(shaderIndex).uniforms->textureData[i].textureDataID = textureDataIDs[i];
+				uniforms->textureData[i].textureDataID = textureDataIDs[i];
 
-			batchManager.shaderManager.getShader(shaderIndex).uniforms->cameraMatrix = *batchManager.camera3D.cameraMatrix;
+			uniforms->cameraMatrix = *batchManager.camera3D.cameraMatrix;
 
 			// Uniforms
-			batchManager.shaderManager.setUniforms(shaderIndex);
+			uniforms->setUniforms();
 
 			// Draw
 			glBindVertexArray(vertexArrayObjectID);
@@ -197,7 +205,7 @@ namespace se
 
 			checkOpenGLErrors(__FILE__, __LINE__);
 
-			batchManager.shaderManager.unuse(shaderIndex);
+			shader.shader.unuse();
 
 			if (results)
 			{
