@@ -118,6 +118,7 @@ namespace se
 					_model.meshes[i]->meshScale = model->meshes[i].scale;
 					_model.meshes[i]->meshPosition = model->meshes[i].position;
 				}
+				se_assert(_model.meshes.size() > 0);
 			}
 		}
 		size_t ModelManager::preloadModel(const std::string& _filepath)
@@ -134,7 +135,7 @@ namespace se
 			log::info("Loading model: " + _filepath, log::TextColor::DARKCYAN);
 			Assimp::Importer importer;
 			importer.SetPropertyInteger(AI_CONFIG_PP_SLM_VERTEX_LIMIT, UINT16_MAX);
-			importer.SetPropertyInteger(AI_CONFIG_PP_SLM_TRIANGLE_LIMIT, UINT16_MAX / 3);
+			//importer.SetPropertyInteger(AI_CONFIG_PP_SLM_TRIANGLE_LIMIT, UINT16_MAX / 3);
 			const aiScene* scene = importer.ReadFile(_filepath, aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_SplitLargeMeshes);
 			if(!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
 			{
@@ -143,6 +144,7 @@ namespace se
 			}
 
 			processNode(it->second, scene->mRootNode, scene, aiMatrix4x4());
+			se_assert(it->second->meshes.size() > 0);
 			return hash;
 		}
 
