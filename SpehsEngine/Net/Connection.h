@@ -38,8 +38,10 @@ namespace se
 			boost::asio::ip::udp::endpoint getRemoteEndpoint() const;
 			Port getLocalPort() const;
 
+			uint16_t getMaximumSegmentSize() const;
 			time::Time getPing() const;
 			float getAverageReliableFragmentSendCount() const;
+			double getSendQuotaPerSecond() const;
 			size_t getSentBytes() const;
 			size_t getSentBytes(const bool reliable) const;
 			size_t getReceivedBytes() const;
@@ -60,6 +62,11 @@ namespace se
 
 			friend class ConnectionManager;
 			
+			enum class ConnectionStatus
+			{
+				connecting, connected, disconnecting, disconnected
+			};
+
 			struct ReliablePacketOut
 			{
 				struct UnacknowledgedFragment
@@ -100,12 +107,14 @@ namespace se
 				UnreliablePacketOut(const uint8_t* _payloadPtr, const size_t _payloadSize, const bool _userData)
 					: payload(_payloadSize)
 					, userData(_userData)
+					, createTime(time::now())
 				{
 					se_assert(_payloadSize > 0);
 					memcpy(payload.data(), _payloadPtr, _payloadSize);
 				}
 				std::vector<uint8_t> payload;
 				bool userData;
+				time::Time createTime;
 			};
 
 			struct ReceivedFragment
@@ -114,11 +123,6 @@ namespace se
 				bool userData = false;
 				bool endOfPayload = false;
 				std::vector<uint8_t> data;
-			};
-
-			enum class ConnectionStatus
-			{
-				connecting, connected, disconnecting, disconnected
 			};
 			
 			Connection(const boost::shared_ptr<SocketUDP2>& _socket, const boost::asio::ip::udp::endpoint& _endpoint,
@@ -139,6 +143,8 @@ namespace se
 			/* Declared and defined privately, used by ConnectionManager. */
 			bool hasPendingOperations() const;
 
+			void reliableFragmentTransmitted(const size_t sendCount, const uint16_t fragmentSize);
+
 			mutable std::recursive_mutex mutex;
 			boost::shared_ptr<SocketUDP2> socket;
 			std::vector<ReliablePacketOut> reliablePacketSendQueue;
@@ -146,7 +152,7 @@ namespace se
 			std::vector<std::vector<uint8_t>> receivedPackets;
 			time::Time lastReceiveTime;
 			time::Time lastSendTime;
-			size_t mtu = 1400u;// 508u;
+			time::Time lastSendTimeReliable;
 			size_t reliableStreamOffsetSend = 0u; // bytes from past packets that have been delivered
 			size_t reliableStreamOffsetReceive = 0u; // bytes from past packets that have been received
 			std::vector<ReceivedFragment> receivedReliableFragments;
@@ -156,6 +162,35 @@ namespace se
 			ConnectionStatus connectionStatus = ConnectionStatus::connecting; // Every connection begins in the connecting state
 			boost::signals2::signal<void(const bool)> connectionStatusChangedSignal;
 
+			//Congestion avoidance
+			struct CongestionAvoidanceState
+			{
+				//Track how many times a reliable fragment had to be sent in order to go through
+				struct ReliableFragmentSendCount
+				{
+					size_t sendCount = 0u;
+					uint16_t size = 0u;
+				};
+				std::vector<ReliableFragmentSendCount> recentReliableFragmentSendCounts;
+				time::Time reEvaluationTimestamp;
+				time::Time reEvaluationInterval = time::fromSeconds(1.0f / 10.0f);
+				double prevSendQuotaGrowthFactor = 1.0;
+				size_t prevReliableStreamOffsetSend = 0u;
+			};
+			CongestionAvoidanceState congestionAvoidanceState;
+			double sendQuotaPerSecond = 56600.0; // 56 kbps
+			bool moreSendQuotaRequested = false;
+			time::Time lastSendQuotaReplenishTimestamp = time::Time::zero;
+			uint16_t maximumSegmentSize = 1400u; // 508u;
+			size_t reliableSendQuota = 0u;
+			size_t unreliableSendQuota = 0u;
+			float averageReliableFragmentSendCount = 0.0f;
+
+			//RTT
+			time::Time estimatedRoundTripTime;
+			std::vector<time::Time> recentRoundTripTimes;
+			bool estimatedRoundTripTimeQueued = false;
+
 			//Transmitted byte counts
 			size_t sentBytes = 0u;
 			size_t receivedBytes = 0u;
@@ -163,16 +198,7 @@ namespace se
 			size_t sentBytesUnreliable = 0u;
 			size_t receivedBytesReliable = 0u;
 			size_t receivedBytesUnreliable = 0u;
-
-			//RTT
-			time::Time estimatedRoundTripTime;
-			std::vector<time::Time> recentRoundTripTimes;
-			bool estimatedRoundTripTimeQueued = false;
 			
-			//Track how many times a reliable fragment had to be sent in order to go through
-			std::vector<std::pair<uint16_t, uint16_t>> recentReliableFragmentSendCounts; // send times + packet size
-			float averageReliableFragmentSendCount = 0.0f;
-
 			int debugLogLevel = 0;
 			float simulatedPacketLossChanceIncoming = 0.0f;
 			float simulatedPacketLossChanceOutgoing = 0.0f;
