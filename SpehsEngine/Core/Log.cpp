@@ -1,21 +1,27 @@
-#include "stdafx.h"
-#include "SpehsEngine/Core/Log.h"
 
-#ifdef _WIN32
+#include "stdafx.h"
+#include "Log.h"
+
+#if !defined(SE_FINAL_RELEASE)
+#include "SystemMessageBox.h"
+#endif
+
+#if defined(_WIN32)
 #include <Windows.h>
 #endif
 
 #include <iostream>
 #include <mutex>
 
+
 namespace se
 {
 	namespace log
 	{
 		std::mutex mutex;
-		static void writeConsole(const std::string& message, /*[[maybe_unused]]*/ const TextColor color)
+		static void writeConsole(const std::string_view message, [[maybe_unused]] const TextColor color)
 		{
-#ifdef _WIN32
+#if defined(_WIN32)
 			HANDLE handle = INVALID_HANDLE_VALUE;
 			WORD oldColorAttributes = 0;
 			if (color != NONE)
@@ -32,40 +38,54 @@ namespace se
 			}
 #endif
 			std::cout << message << std::endl;
-#ifdef _WIN32
+#if defined(_WIN32)
 			if (color != NONE)
 			{
 				BOOL result;
 				result = SetConsoleTextAttribute(handle, oldColorAttributes);
 				se_assert(result != FALSE);
 			}
-#else
-		(void)color;
 #endif
 		}
 
-		void info(const std::string& message, const TextColor color)
+		void info([[maybe_unused]] const std::string_view message, [[maybe_unused]] const TextColor color)
 		{
+#if !defined(SE_FINAL_RELEASE)
 			std::lock_guard<std::mutex> lock(mutex);
 			writeConsole(message, color);
+#endif
 		}
-		void info(const std::string& message)
+		void info([[maybe_unused]] const std::string_view message)
 		{
+#if !defined(SE_FINAL_RELEASE)
 			std::lock_guard<std::mutex> lock(mutex);
 			writeConsole(message, NONE);
+#endif
 		}
-		void warning(const std::string& message)
+		void warning([[maybe_unused]] const std::string_view message)
 		{
+#if !defined(SE_FINAL_RELEASE)
 			std::lock_guard<std::mutex> lock(mutex);
-			writeConsole("Warning: " + message, YELLOW);
+			std::string warningMessage("Warning: ");
+			warningMessage += message;
+			writeConsole(warningMessage, YELLOW);
+#endif
 		}
-		void error(const std::string& message)
+		void error(const std::string_view message)
 		{
+#if false//!defined(SE_FINAL_RELEASE)
 			std::lock_guard<std::mutex> lock(mutex);
-			writeConsole("Error: " + message, RED);
+			std::string errorMessage("Error: ");
+			errorMessage += message;
+			writeConsole(errorMessage, RED);
 			writeConsole("Press enter to continue...", NONE);
 			_ASSERT(false && message.c_str()); // NOTE: use the non se_assert here!
 			std::getchar();
+#else
+			const std::string fatalError(message);
+			SystemMessageBox("Fatal Error!", fatalError, BUTTONS_OK | ICON_ERROR);
+			exit(1);
+#endif
 		}
 	}
 }
