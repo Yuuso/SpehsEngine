@@ -1,0 +1,57 @@
+
+#pragma once
+
+#include <string>
+
+
+namespace se
+{
+	enum class MessageResult : int
+	{
+		RESULT_ERROR	= -1,	// MessageBox failed
+		RESULT_OK		= 1,	// IDOK
+		RESULT_CANCEL	= 2,	// IDCANCEL
+		RESULT_ABORT	= 3,	// IDABORT
+		RESULT_RETRY	= 4,	// IDRETRY
+		RESULT_IGNORE	= 5,	// IDIGNORE
+		RESULT_YES		= 6,	// IDYES
+		RESULT_NO		= 7,	// IDNO
+		RESULT_TRYAGAIN = 10,	// IDTRYAGAIN
+		RESULT_CONTINUE = 11,	// IDCONTINUE
+	};
+
+	// Flags
+	enum MessageButtonsType : unsigned int
+	{
+		BUTTONS_OK							= 0x00000000L, // MB_OK
+		BUTTONS_OK_CANCEL					= 0x00000001L, // MB_OKCANCEL
+		BUTTONS_ABORT_RETRY_IGNORE			= 0x00000002L, // MB_ABORTRETRYIGNORE
+		BUTTONS_YES_NO_CANCEL				= 0x00000003L, // MB_YESNOCANCEL
+		BUTTONS_YES_NO						= 0x00000004L, // MB_YESNO
+		BUTTONS_RETRY_CANCEL				= 0x00000005L, // MB_RETRYCANCEL
+		BUTTONS_CANCEL_TRYAGAIN_CONTINUE	= 0x00000006L, // MB_CANCELTRYCONTINUE
+		BUTTONS_HELP						= 0x00004000L, // MB_HELP
+	};
+	enum MessageButtonsDefault : unsigned int
+	{
+		BUTTONS_DEFAULT1					= 0x00000000L, // MB_DEFBUTTON1
+		BUTTONS_DEFAULT2					= 0x00000100L, // MB_DEFBUTTON2
+		BUTTONS_DEFAULT3					= 0x00000200L, // MB_DEFBUTTON3
+		BUTTONS_DEFAULT4					= 0x00000300L, // MB_DEFBUTTON4
+
+	};
+	enum MessageIcon : unsigned int
+	{
+		ICON_ERROR							= 0x00000010L, // MB_ICONERROR
+		ICON_QUESTION						= 0x00000020L, // MB_ICONQUESTION
+		ICON_WARNING						= 0x00000030L, // MB_ICONEXCLAMATION
+		ICON_INFORMATION					= 0x00000040L, // MB_ICONINFORMATION
+	};
+	enum : unsigned int
+	{
+		MESSAGE_SET_FOREGROUND				= 0x00010000L, // MB_SETFOREGROUND
+		TEXT_JUSTIFY_RIGHT					= 0x00080000L, // MB_RIGHT
+	};
+
+	MessageResult SystemMessageBox(const std::string& _caption, const std::string& _message, const unsigned int _flags);
+}

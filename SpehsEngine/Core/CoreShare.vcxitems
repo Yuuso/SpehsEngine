@@ -48,6 +48,7 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)StringOperations.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)StringUtilityFunctions.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)StrongInt.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)SystemMessageBox.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Thread.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)SE_Time.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Vertex.cpp" />
@@ -95,6 +96,7 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)StringOperations.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)StringUtilityFunctions.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)StrongInt.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)SystemMessageBox.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Thread.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)SE_Time.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Vertex.h" />
