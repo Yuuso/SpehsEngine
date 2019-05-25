@@ -1,4 +1,5 @@
 #pragma once
+#include "Log.h"
 #ifdef FINAL_RELEASE
 //Generate no code!
 #define se_assert(_file) ((void)0)
