@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include "SpehsEngine/Math/LineSegment2D.h"
+#include "SpehsEngine/Math/Bounds2D.h"
 
 namespace se
 {
@@ -70,5 +71,39 @@ namespace se
 		{
 			return false;
 		}
+	}
+
+	bool checkOverlap(const LineSegment2D& lineSegment, const Bounds2D& bounds2D)
+	{
+		//Check if the line segment is inside the bounds
+		if (bounds2D.contains(lineSegment.begin) || bounds2D.contains(lineSegment.end))
+		{
+			return true;
+		}
+
+		//Check if the line segments overlaps with any of the bounds' edges
+		const glm::vec2 boundsVertices[4] =
+		{
+			glm::vec2(bounds2D.center.x - bounds2D.extents.x, bounds2D.center.y - bounds2D.extents.y),
+			glm::vec2(bounds2D.center.x - bounds2D.extents.x, bounds2D.center.y + bounds2D.extents.y),
+			glm::vec2(bounds2D.center.x + bounds2D.extents.x, bounds2D.center.y + bounds2D.extents.y),
+			glm::vec2(bounds2D.center.x + bounds2D.extents.x, bounds2D.center.y - bounds2D.extents.y)
+		};
+		const LineSegment2D boundsLineSegments[4] =
+		{
+			LineSegment2D(boundsVertices[0], boundsVertices[1]),
+			LineSegment2D(boundsVertices[1], boundsVertices[2]),
+			LineSegment2D(boundsVertices[2], boundsVertices[3]),
+			LineSegment2D(boundsVertices[3], boundsVertices[0])
+		};
+		for (size_t i = 0; i < 4; i++)
+		{
+			if (checkOverlap(lineSegment, boundsLineSegments[i]))
+			{
+				return true;
+			}
+		}
+
+		return false;
 	}
 }
