@@ -24,3 +24,139 @@
 5. Lines to fit within one screen (~200 characters).
 6. Prefer longer, descriptive variable/function names that are consistent with the rest of the code (BatchManager batchManager is better than BatchManager batchMan).
 7. Prefer to prefix member function parameters with an underscore if they have a name clash with a member variable.
+8. Always use "" characters for includes (#include "SpehsEngine/Core/Color.h" instead of #include <SpehsEngine/Core/Color.h>)
+9. Always use full include paths when possible (#include "SpehsEngine/Core/Color.h" instead of #include "Color.h")
+10. For header/source file layout, see format below:
+
+HEADER:
+
+#pragma once 
+Empty line
+All other includes formatted
+Empty line
+Conditional includes
+Empty line
+Definitions
+Empty line
+Forward declarations
+2 Empty lines
+Classes and stuff
+
+
+//Example .h
+#pragma once
+
+#include "Base/Packet/UnitInspectorUpdate.h"
+#include "Base/UniqueId.h"
+#include "boost/signals2.hpp"
+#include "Client/ModelCollider.h"
+#include "SpehsEngine/Core/SE_Time.h"
+#include "SpehsEngine/Physics/3D/AABBCollider3D.h"
+#include "SpehsEngine/Rendering/Line3D.h"
+#include <glm/vec2.hpp>
+#include <utility>
+
+#if defined(_WIN32)
+#include <Windows.h>
+#endif
+
+#define USE_THING_X
+
+namespace se
+{
+class A;
+class B;
+    namespace rendering
+    {
+class R;
+class S;
+}
+}
+
+namespace other
+{
+class X;
+class Y;
+class Z;
+}
+
+
+namespace client
+{
+	class ClientClass1;
+	class CLientClass2;
+
+	class Thing
+	{
+	public:
+
+		Thing(SubSystem& dependency);
+
+		void publicFunc();
+
+	private:
+
+		enum class Enum
+		{
+			val1,
+			Val2,
+			Val3
+		}
+
+		struct Data
+		{
+			int value = 0;
+		}
+
+		void privateFunc();
+
+		SubSystem& dependency;
+
+		int x;
+		Data d;    
+	}
+}
+
+
+
+SOURCE:
+
+stdafx.h
+Header for this file
+Empty line
+All other includes formatted
+Empty line
+Conditional includes
+Empty line
+Definitions
+Empty line
+2 Empty lines
+Code and stuff
+
+//Example .cpp
+#include "stdafx.h"
+#include "Client/Unit.h"
+
+#include "Base/Packet/GameEnd.h"
+#include "Base/Type/UnitType.h"
+#include "Base/UnitAttributesUtilityFunctions.h"
+#include "Client/World.h"
+#include "SpehsEngine/Core/ColorUtilityFunctions.h"
+#include "SpehsEngine/Math/Circle.h"
+#include "SpehsEngine/Physics/SATCollision.h"
+#include "SpehsEngine/Rendering/Arrow.h"
+#include <glm/geometric.hpp>
+#include <glm/gtc/quaternion.hpp>
+#include <glm/gtx/quaternion.hpp>
+
+
+namespace client
+{
+    Unit::Unit(const packet::UnitCreated& _unitCreatedPacket)
+        : unitId(_unitCreatedPacket.unitId)
+        , masterUnitId(_unitCreatedPacket.masterUnitId)
+        , allianceManager(_allianceManager)
+    {
+        
+    }
+}
