@@ -78,18 +78,18 @@ namespace se
 
 		void BatchManager3D::addMesh(Mesh& _mesh)
 		{
-			meshes.push_back(MeshObject(_mesh));
+			meshes.push_back(std::make_unique<MeshObject>(_mesh));
 			_mesh.batchManagers.push_back(this);
 		}
 		void BatchManager3D::removeMesh(Mesh& _mesh)
 		{
 			for (size_t i = 0; i < meshes.size(); i++)
 			{
-				if (&_mesh == meshes[i].mesh)
+				if (&_mesh == meshes[i]->mesh)
 				{
-					if (meshes[i].batch != nullptr)
+					if (meshes[i]->batch != nullptr)
 					{
-						unbatch(meshes[i]);
+						unbatch(*meshes[i].get());
 					}
 					for (size_t i = 0; i < _mesh.batchManagers.size(); i++)
 					{
@@ -99,7 +99,7 @@ namespace se
 							break;
 						}
 					}
-					meshes[i] = meshes.back();
+					meshes[i].reset(meshes.back().release());
 					meshes.pop_back();
 					return;
 				}
@@ -110,10 +110,10 @@ namespace se
 		{
 			for (size_t i = 0; i < meshes.size(); i++)
 			{
-				if (&_mesh == meshes[i].mesh)
+				if (&_mesh == meshes[i]->mesh)
 				{
-					if (meshes[i].batch != nullptr)
-						unbatch(meshes[i]);
+					if (meshes[i]->batch != nullptr)
+						unbatch(*meshes[i].get());
 					return;
 				}
 			}
@@ -128,10 +128,10 @@ namespace se
 			_object.mesh->needUpdate = VERTEX_UPDATE_ALL;
 			for (size_t i = 0; i < meshes.size(); i++)
 			{
-				if (meshes[i].batch != nullptr && meshes[i].batch == comp && meshes[i].indexInBatch.first >= _object.indexInBatch.first)
+				if (meshes[i]->batch != nullptr && meshes[i]->batch == comp && meshes[i]->indexInBatch.first >= _object.indexInBatch.first)
 				{
-					meshes[i].indexInBatch.first -= _object.sizeInBatch.first;
-					meshes[i].indexInBatch.second -= _object.sizeInBatch.second;
+					meshes[i]->indexInBatch.first -= _object.sizeInBatch.first;
+					meshes[i]->indexInBatch.second -= _object.sizeInBatch.second;
 				}
 			}
 		}
@@ -158,33 +158,33 @@ namespace se
 			// Update
 			for (size_t i = 0; i < meshes.size(); i++)
 			{
-				if (meshes[i].batch != nullptr)
+				if (meshes[i]->batch != nullptr)
 				{
-					if (!meshes[i].mesh->renderState || meshes[i].mesh->vertexArray.size() == 0)
-						unbatch(meshes[i]);
+					if (!meshes[i]->mesh->renderState || meshes[i]->mesh->vertexArray.size() == 0)
+						unbatch(*meshes[i].get());
 					else
-						updateMeshVertices(meshes[i]);
+						updateMeshVertices(*meshes[i].get());
 				}
-				else if (meshes[i].mesh->renderState && meshes[i].mesh->vertexArray.size() != 0)
+				else if (meshes[i]->mesh->renderState && meshes[i]->mesh->vertexArray.size() != 0)
 				{
 					batchFound = false;
 					for (size_t j = 0; j < batches.size(); j++)
 					{
-						if (batches[j]->checkCompatibility(*(meshes[i].mesh)))
+						if (batches[j]->checkCompatibility(*(meshes[i]->mesh)))
 						{
-							batch(meshes[i], batches[j]);
+							batch(*meshes[i].get(), batches[j]);
 							batchFound = true;
 							j = batches.size();
 						}
 					}
 					if (!batchFound)
 					{
-						batches.push_back(new MeshBatch(*this, meshes[i].mesh->shaderIndex, meshes[i].mesh->textureDataIDs, meshes[i].mesh->depthTest,
-																	meshes[i].mesh->blending, meshes[i].mesh->backFaceCulling, meshes[i].mesh->drawMode,
-																	meshes[i].mesh->lineWidth, meshes[i].mesh->smoothLine, meshes[i].mesh->staticDraw));
-						batch(meshes[i], batches.back());
+						batches.push_back(new MeshBatch(*this, meshes[i]->mesh->shaderIndex, meshes[i]->mesh->textureDataIDs, meshes[i]->mesh->depthTest,
+																	meshes[i]->mesh->blending, meshes[i]->mesh->backFaceCulling, meshes[i]->mesh->drawMode,
+																	meshes[i]->mesh->lineWidth, meshes[i]->mesh->smoothLine, meshes[i]->mesh->staticDraw));
+						batch(*meshes[i].get(), batches.back());
 					}
-					updateMeshVertices(meshes[i]);
+					updateMeshVertices(*meshes[i].get());
 				}
 			}
 

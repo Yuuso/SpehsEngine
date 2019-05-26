@@ -64,7 +64,7 @@ namespace se
 			void batch(MeshObject& _object, MeshBatch* _batch);
 			void unbatch(MeshObject& _object);
 			void updateMeshVertices(MeshObject& _object);
-			std::vector<MeshObject> meshes;
+			std::vector<std::unique_ptr<MeshObject>> meshes;
 
 			std::vector<MeshBatch*> batches;
 		};
