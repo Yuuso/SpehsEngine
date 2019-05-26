@@ -1,10 +1,10 @@
 
 #include "stdafx.h"
-#include "SE_Assert.h"
+#include "SpehsEngine/Core/SE_Assert.h"
 
 #if !defined(FINAL_RELEASE)
-#include "Log.h"
-#include "SystemMessageBox.h"
+#include "SpehsEngine/Core/Log.h"
+#include "SpehsEngine/Core/SystemMessageBox.h"
 
 
 namespace se

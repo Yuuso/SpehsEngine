@@ -1,9 +1,9 @@
 
 #include "stdafx.h"
-#include "Log.h"
+#include "SpehsEngine/Core/Log.h"
 
 #if !defined(SE_FINAL_RELEASE)
-#include "SystemMessageBox.h"
+#include "SpehsEngine/Core/SystemMessageBox.h"
 #endif
 
 #if defined(_WIN32)
@@ -73,7 +73,7 @@ namespace se
 		}
 		void error(const std::string_view message)
 		{
-#if false//!defined(SE_FINAL_RELEASE)
+#if !defined(SE_FINAL_RELEASE)
 			std::lock_guard<std::mutex> lock(mutex);
 			std::string errorMessage("Error: ");
 			errorMessage += message;
