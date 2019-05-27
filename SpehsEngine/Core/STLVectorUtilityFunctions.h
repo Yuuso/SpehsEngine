@@ -48,7 +48,7 @@ namespace se
 		Archive archive;
 		const SizeType size = SizeType(vector.size());
 		se_write_to_archive(archive, size);
-		for (size_t i = 0; i < size; i++)
+		for (SizeType i = 0; i < size; i++)
 		{
 			archive.write(std::to_string(i), vector[i]);
 		}
@@ -63,7 +63,7 @@ namespace se
 		vector.resize(size_t(size));
 		for (size_t i = 0; i < size; i++)
 		{
-			if (!archive.read(std::to_string(i), vector[i]))
+			if (!archive.read(std::to_string(i), vector[size_t(i)]))
 			{
 				return false;
 			}
