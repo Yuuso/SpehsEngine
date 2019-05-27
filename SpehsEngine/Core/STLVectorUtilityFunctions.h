@@ -44,8 +44,9 @@ namespace se
 	typename std::enable_if<std::is_class<T>::value, Archive>::type
 		writeToArchive(const std::vector<T>& vector)
 	{
+		se_assert(vector.size() <= size_t(std::numeric_limits<SizeType>::max()));
 		Archive archive;
-		const SizeType size = vector.size();
+		const SizeType size = SizeType(vector.size());
 		se_write_to_archive(archive, size);
 		for (size_t i = 0; i < size; i++)
 		{
@@ -59,7 +60,7 @@ namespace se
 	{
 		SizeType size = 0;
 		se_read_from_archive(archive, size);
-		vector.resize(size);
+		vector.resize(size_t(size));
 		for (size_t i = 0; i < size; i++)
 		{
 			if (!archive.read(std::to_string(i), vector[i]))
