@@ -143,6 +143,7 @@
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="AimPrediction.cpp" />
     <ClCompile Include="Bounds2D.cpp" />
     <ClCompile Include="Circle.cpp" />
     <ClCompile Include="CircleUtilityFunctions.cpp" />
@@ -163,6 +164,7 @@
     <ClCompile Include="Triangulation.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="AimPrediction.h" />
     <ClInclude Include="Bounds2D.h" />
     <ClInclude Include="Circle.h" />
     <ClInclude Include="CircleUtilityFunctions.h" />
