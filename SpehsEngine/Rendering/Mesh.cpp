@@ -8,6 +8,7 @@
 #include "SpehsEngine/Rendering/ShaderManager.h"
 #include "SpehsEngine/Rendering/TextureManager.h"
 #include "SpehsEngine/Rendering/ModelManager.h"
+#include "SpehsEngine/Rendering/Camera3D.h"
 
 #include <GL/glew.h>
 
@@ -85,6 +86,11 @@ namespace se
 		{
 			elementArray = _indices;
 			unbatch();
+		}
+
+		void Mesh::setBillboarding(const Billboarding _value)
+		{
+			billboarding = _value;
 		}
 
 		void Mesh::setLocalPosition(const glm::vec3& _newPosition)

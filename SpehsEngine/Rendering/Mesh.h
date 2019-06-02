@@ -24,6 +24,14 @@ namespace se
 		class TextureManager;
 		struct TextureData;
 
+		enum class Billboarding : int
+		{
+			disabled,
+			x_only, // This doesn't work
+			z_only, // This doesn't work
+			enabled
+		};
+
 		class Mesh
 		{
 			friend class BatchManager3D;
@@ -97,6 +105,9 @@ namespace se
 			bool getLineSmoothing() const { return smoothLine; }
 			bool getStaticDraw() const { return staticDraw; }
 
+			void setBillboarding(const Billboarding _value);
+			Billboarding getBillboarding() const { return billboarding; }
+
 		protected:
 			Mesh(const Mesh& _other);
 
@@ -119,6 +130,8 @@ namespace se
 			unsigned int shaderIndex;
 			std::vector<GLuint> textureDataIDs;
 			GLenum drawMode;
+
+			Billboarding billboarding = Billboarding::disabled;
 
 			void updatePosition(const glm::vec3& _newPosition);
 			void updateRotation(const glm::quat& _newRotation);

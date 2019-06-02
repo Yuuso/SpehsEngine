@@ -27,6 +27,8 @@ namespace se
 			view = glm::mat4(1.0f);
 			updateProjectionMatrix();
 
+			update(se::time::Time::zero);
+
 			cameraMatrix = &view;
 		}
 
@@ -40,10 +42,13 @@ namespace se
 			else se_assert(false);
 		}
 
-		void Camera3D::update(const time::Time& deltaTime)
+		void Camera3D::update(const time::Time& /*deltaTime*/)
 		{
 			view = glm::lookAt(position, target, up);
 			view = projection * view;
+
+			worldRight = glm::normalize(glm::vec3(view[0][0], view[1][0], view[2][0]));
+			worldUp = glm::normalize(glm::vec3(view[0][1], view[1][1], view[2][1]));
 		}
 
 		void Camera3D::setPosition(const glm::vec3 &_position)
@@ -96,6 +101,15 @@ namespace se
 		{
 			orthographicZoom = _value;
 			updateProjectionMatrix();
+		}
+
+		const glm::vec3& Camera3D::getWorldUp() const
+		{
+			return worldUp;
+		}
+		const glm::vec3& Camera3D::getWorldRight() const
+		{
+			return worldRight;
 		}
 
 		glm::vec3 Camera3D::getFrustumPoint(const glm::vec3& _screenCoordinates) const

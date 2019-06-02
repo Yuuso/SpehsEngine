@@ -2,7 +2,6 @@
 #include "stdafx.h"
 
 #include "SpehsEngine/Rendering/Plane3D.h"
-#include "SpehsEngine/Rendering/Mesh.h"
 #include "SpehsEngine/Rendering/BatchManager3D.h"
 #include "SpehsEngine/Rendering/Vertex3D.h"
 
@@ -31,6 +30,11 @@ namespace se
 			if (batchManager)
 				batchManager->remove(*this);
 			delete mesh;
+		}
+
+		void Plane3D::setBillboarding(const Billboarding _value)
+		{
+			mesh->setBillboarding(_value);
 		}
 
 		void Plane3D::setPosition(const glm::vec3& _newPosition)
@@ -133,6 +137,10 @@ namespace se
 		float Plane3D::getAlpha() const
 		{
 			return mesh->getAlpha();
+		}
+		Billboarding Plane3D::getBillboarding() const
+		{
+			return mesh->getBillboarding();
 		}
 	}
 }

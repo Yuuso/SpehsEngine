@@ -144,7 +144,7 @@ namespace se
 		}
 		void BatchManager3D::updateMeshVertices(MeshObject& _object)
 		{
-			if (_object.mesh->needUpdate != VERTEX_UPDATE_NONE)
+			if (_object.mesh->needUpdate != VERTEX_UPDATE_NONE || _object.mesh->billboarding != Billboarding::disabled)
 			{
 				_object.batch->updateVertices(_object.indexInBatch.first, *_object.mesh, _object.mesh->needUpdate);
 				_object.mesh->needUpdate = VERTEX_UPDATE_NONE;

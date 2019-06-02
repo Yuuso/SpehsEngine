@@ -261,7 +261,7 @@ namespace se
 			glm::mat4 transformMatrix;
 
 			const size_t size = _mesh.vertexArray.size();
-			if (checkBit(_updates, VERTEX_UPDATE_VERTEX))
+			if (checkBit(_updates, VERTEX_UPDATE_VERTEX) || _mesh.billboarding != Billboarding::disabled)
 			{
 				transformMatrix = glm::translate(_mesh.localPosition + _mesh.meshPosition) * glm::mat4_cast(_mesh.localRotation * _mesh.meshRotation) * glm::scale(_mesh.localScale * _mesh.meshScale);
 				transformMatrix = glm::translate(_mesh.position) * glm::mat4_cast(_mesh.rotation) * glm::scale(_mesh.scale) * transformMatrix;
@@ -272,6 +272,50 @@ namespace se
 					vertices[_index + i].position.x = newVertex.x;
 					vertices[_index + i].position.y = newVertex.y;
 					vertices[_index + i].position.z = newVertex.z;
+				}
+			}
+			if (_mesh.billboarding != Billboarding::disabled)
+			{
+				const glm::vec3& cameraUp = batchManager.camera3D.getWorldUp();
+				const glm::vec3& cameraRight = batchManager.camera3D.getWorldRight();
+
+				se_assert_m(size == 4, "Billboarding is only supported for planes!");
+				const float width = _mesh.scale.x;
+				const float height = _mesh.scale.z;
+
+				glm::vec3 centerPosition(0.0f);
+				for (size_t i = 0; i < size; i++)
+					centerPosition += vertices[_index + i].position;
+				centerPosition /= (float)size;
+				// Todo: Take position into account to here -> possible to make pivot point somewhere other than center
+
+				glm::vec3 newPosition;
+				for (size_t i = 0; i < size; i++)
+				{
+					newPosition = centerPosition;
+					if (_mesh.billboarding == Billboarding::x_only || _mesh.billboarding == Billboarding::enabled)
+					{
+						newPosition += cameraRight * width * _mesh.vertexArray[i].position.x;
+					}
+					else
+					{
+						// Don't know what should be here...
+						se_assert_m(false, "Billboarding::z_only not properly implemented.");
+						newPosition.x -= centerPosition.x;
+						newPosition.x += vertices[_index + i].position.x;
+					}
+					if (_mesh.billboarding == Billboarding::z_only || _mesh.billboarding == Billboarding::enabled)
+					{
+						newPosition += cameraUp * height * -_mesh.vertexArray[i].position.z; // negative? Is this right?
+					}
+					else
+					{
+						// Don't know what should be here...
+						se_assert_m(false, "Billboarding::x_only not properly implemented.");
+						newPosition.z -= centerPosition.z;
+						newPosition.z += vertices[_index + i].position.z;
+					}
+					vertices[_index + i].position = newPosition;
 				}
 			}
 			if (checkBit(_updates, VERTEX_UPDATE_NORMAL))

@@ -2,6 +2,7 @@
 #pragma once
 
 #include "SpehsEngine/Core/Color.h"
+#include "SpehsEngine/Rendering/Mesh.h"
 
 #include <glm/vec3.hpp>
 #include <glm/gtc/quaternion.hpp>
@@ -12,7 +13,6 @@ namespace se
 	namespace rendering
 	{
 		class BatchManager3D;
-		class Mesh;
 		struct TextureData;
 		class TextureManager;
 
@@ -21,6 +21,7 @@ namespace se
 			friend class BatchManager3D;
 
 		public:
+
 			Plane3D();
 			~Plane3D();
 
@@ -37,6 +38,7 @@ namespace se
 			void setDepthTest(const bool _value);
 			void setShaderIndex(const unsigned int _newShaderIndex);
 			void setBackFaceCulling(const bool _value);
+			void setBillboarding(const Billboarding _value);
 
 			void setTexture(TextureManager& _textureManager, const std::string& _texturePath, const size_t _index = 0);
 			void setTexture(TextureManager& _textureManager, const size_t _textureID, const size_t _index = 0);
@@ -53,6 +55,7 @@ namespace se
 			bool getDepthTest() const;
 			bool getBackFaceCulling() const;
 			unsigned int getShaderIndex() const;
+			Billboarding getBillboarding() const;
 
 		protected:
 			BatchManager3D* batchManager = nullptr;

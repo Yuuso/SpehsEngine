@@ -39,14 +39,18 @@ namespace se
 			void toggleViewProjection();
 			void setOrthographicZoom(const float _value);
 
-			glm::vec3 getPosition() const { return position; }
-			glm::vec3 getDirection() const { return direction; }
-			glm::vec3 getTarget() const { return target; }
+			const glm::vec3& getPosition() const { return position; }
+			const glm::vec3& getDirection() const { return direction; }
+			const glm::vec3& getTarget() const { return target; }
 			float getNear() const { return zNear; }
 			float getFar() const { return zFar; }
 			float getFOV() const { return fov; }
 			ViewProjection getViewProjection() const { return viewProjection; };
 			float getOrthographicZoom() const { return orthographicZoom; }
+
+			// In world space
+			const glm::vec3& getWorldUp() const;
+			const glm::vec3& getWorldRight() const;
 
 			glm::vec3 getFrustumPoint(const glm::vec3& _screenCoordinates) const;
 			glm::vec2 worldToScreen(const glm::vec3& _worldCoordinates) const;
@@ -65,6 +69,9 @@ namespace se
 
 			glm::vec3 up;
 			glm::vec3 right;
+
+			glm::vec3 worldUp;
+			glm::vec3 worldRight;
 
 			glm::mat4 view;
 			glm::mat4 projection;
