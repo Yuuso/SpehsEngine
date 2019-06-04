@@ -79,7 +79,7 @@ namespace se
 			errorMessage += message;
 			writeConsole(errorMessage, RED);
 			writeConsole("Press enter to continue...", NONE);
-			_ASSERT(false && message.c_str()); // NOTE: use the non se_assert here!
+			SystemMessageBox("Fatal Error!", errorMessage, BUTTONS_OK | ICON_ERROR);
 			std::getchar();
 #else
 			const std::string fatalError(message);
