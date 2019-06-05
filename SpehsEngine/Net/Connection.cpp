@@ -321,7 +321,7 @@ namespace se
 					if (reliableStreamOffset < receivedReliableFragments[f].offset)
 					{
 						//Insert before
-						ReceivedFragment& receivedFragment = *receivedReliableFragments.insert(receivedReliableFragments.begin() + f, ReceivedFragment());
+						ReceivedReliableFragment& receivedFragment = *receivedReliableFragments.insert(receivedReliableFragments.begin() + f, ReceivedReliableFragment());
 						receivedFragment.userData = userData;
 						receivedFragment.endOfPayload = endOfPayload;
 						receivedFragment.offset = reliableStreamOffset;
@@ -415,7 +415,7 @@ namespace se
 					else
 					{
 						//Not in this packet
-						se_assert(p + 1 < reliablePacketSendQueue.size());
+						se_assert(p + 1 < reliablePacketSendQueue.size()); // TODO?: asserted here once
 						offset += reliablePacketSendQueue[p].payload.size();
 					}
 				}
@@ -491,7 +491,7 @@ namespace se
 			for (size_t q = 0; q < reliablePacketSendQueue.size(); q++)
 			{
 				ReliablePacketOut& reliablePacketOut = reliablePacketSendQueue[q];
-				
+
 				//Generate unacknowledged fragments
 				if (!reliablePacketOut.delivered && reliablePacketOut.unacknowledgedFragments.empty())
 				{
@@ -569,7 +569,7 @@ namespace se
 							const size_t originalOffset = unacknowledgedFragment.offset;
 							const uint16_t size1 = unacknowledgedFragment.size / 2;
 							const uint16_t size2 = unacknowledgedFragment.size - size1;
-							ReliablePacketOut::UnacknowledgedFragment &unacknowledgedFragment2 = 
+							ReliablePacketOut::UnacknowledgedFragment &unacknowledgedFragment2 =
 								(*reliablePacketOut.unacknowledgedFragments.insert(reliablePacketOut.unacknowledgedFragments.begin() + f + 1, ReliablePacketOut::UnacknowledgedFragment()));
 							unacknowledgedFragment = ReliablePacketOut::UnacknowledgedFragment();
 							unacknowledgedFragment.offset = originalOffset;
@@ -624,24 +624,6 @@ namespace se
 					i++;
 				}
 			}
-
-			//Disconnecting using an unreliable packet...? Doesn't seems to work without this
-			if (connectionStatus == ConnectionStatus::disconnecting && reliablePacketSendQueue.empty())
-			{
-				PacketHeader packetHeader;
-				packetHeader.protocolId = spehsProtocolId;
-				DisconnectPacket disconnectPacket;
-				WriteBuffer writeBuffer;
-				writeBuffer.write(packetHeader);
-				writeBuffer.write(PacketType::disconnect);
-				writeBuffer.write(disconnectPacket);
-				const std::vector<boost::asio::const_buffer> sendBuffers
-				{
-					boost::asio::const_buffer(writeBuffer.getData(), writeBuffer.getSize()),
-				};
-				sendPacketImpl(sendBuffers, false, true); // Send packet directly, immediately, unreliably.
-				setConnected(false);
-			}
 		}
 
 		void Connection::deliverReceivedPackets()
@@ -651,77 +633,90 @@ namespace se
 				std::lock_guard<std::recursive_mutex> lock(mutex);
 				while (!receivedReliableFragments.empty() && receivedReliableFragments.front().endOfPayload && receivedReliableFragments.front().offset == reliableStreamOffsetReceive)
 				{
+					se_assert(receivedReliableFragments.front().data.size() > 0);
 					reliableStreamOffsetReceive += receivedReliableFragments.front().data.size();
-					if (receivedReliableFragments.front().userData)
-					{
-						receivedReliablePackets.emplace_back();
-						receivedReliablePackets.back().swap(receivedReliableFragments.front().data);
-					}
-					else
-					{
-						spehsReceiveHandler(ReadBuffer(receivedReliableFragments.front().data.data(), receivedReliableFragments.front().data.size()));
-					}
+					receivedReliablePackets.emplace_back();
+					receivedReliablePackets.back().data.swap(receivedReliableFragments.front().data);
+					receivedReliablePackets.back().userData = receivedReliableFragments.front().userData;
 					receivedReliableFragments.erase(receivedReliableFragments.begin());
 				}
 			}
 
-			if (isConnected())
+			//Deliver received reliable packets
+			while (true)
 			{
-				//Deliver received reliable packets
-				while (true)
+				std::vector<uint8_t> data;
+				std::function<void(ReadBuffer&, const boost::asio::ip::udp::endpoint&, const bool)> handler;
 				{
-					std::vector<uint8_t> data;
-					std::function<void(ReadBuffer&, const boost::asio::ip::udp::endpoint&, const bool)> handler;
+					std::lock_guard<std::recursive_mutex> lock(mutex);
+					if (!receivedReliablePackets.empty())
 					{
-						std::lock_guard<std::recursive_mutex> lock(mutex);
-						if (receivedReliablePackets.empty() || !receiveHandler)
+						if (receivedReliablePackets.front().userData)
 						{
-							if (receivedReliablePackets.size() > 1000)
+							if (receiveHandler)
 							{
-								log::warning(debugName + std::to_string(receivedReliablePackets.size()) + " received reliable packets awaiting.");
+								handler = receiveHandler;
+								data.swap(receivedReliablePackets.front().data);
+								receivedReliablePackets.erase(receivedReliablePackets.begin());
 							}
-							break;
+							else
+							{
+								//Must wait until a receive handler is specified
+								if (receivedReliablePackets.size() > 1000)
+								{
+									log::warning(debugName + std::to_string(receivedReliablePackets.size()) + " received reliable packets awaiting.");
+								}
+								break;
+							}
 						}
 						else
 						{
-							//Copy contents to non-mutex protected memory
-							data.swap(receivedReliablePackets.front());
-							handler = receiveHandler;
+							handler = std::bind(&Connection::spehsReceiveHandler, this, std::placeholders::_1);
+							data.swap(receivedReliablePackets.front().data);
 							receivedReliablePackets.erase(receivedReliablePackets.begin());
 						}
 					}
+				}
+				if (handler)
+				{
+					se_assert(data.size() > 0);
 					ReadBuffer readBuffer(data.data(), data.size());
 					handler(readBuffer, endpoint, true);
 				}
-
-				//Deliver received unreliable packets
-				while (true)
+				else
 				{
-					std::vector<uint8_t> data;
-					std::function<void(ReadBuffer&, const boost::asio::ip::udp::endpoint&, const bool)> handler;
-					{
-						std::lock_guard<std::recursive_mutex> lock(mutex);
-						if (receivedUnreliablePackets.empty())
-						{
-							break;
-						}
-						else if (!receiveHandler)
-						{
-							DEBUG_LOG(1, std::to_string(receivedUnreliablePackets.size()) + " received unrealiable packets were discarded because no receive handler is set.");
-							receivedUnreliablePackets.clear();
-							break;
-						}
-						else
-						{
-							//Copy contents to non-mutex protected memory
-							data.swap(receivedUnreliablePackets.front());
-							handler = receiveHandler;
-							receivedUnreliablePackets.erase(receivedUnreliablePackets.begin());
-						}
-					}
-					ReadBuffer readBuffer(data.data(), data.size());
-					handler(readBuffer, endpoint, false);
+					se_assert(data.empty());
+					break;
 				}
+			}
+
+			//Deliver received unreliable packets
+			while (true)
+			{
+				std::vector<uint8_t> data;
+				std::function<void(ReadBuffer&, const boost::asio::ip::udp::endpoint&, const bool)> handler;
+				{
+					std::lock_guard<std::recursive_mutex> lock(mutex);
+					if (receivedUnreliablePackets.empty())
+					{
+						break;
+					}
+					else if (!receiveHandler)
+					{
+						DEBUG_LOG(1, std::to_string(receivedUnreliablePackets.size()) + " received unrealiable packets were discarded because no receive handler is set.");
+						receivedUnreliablePackets.clear();
+						break;
+					}
+					else
+					{
+						//Copy contents to non-mutex protected memory
+						data.swap(receivedUnreliablePackets.front());
+						handler = receiveHandler;
+						receivedUnreliablePackets.erase(receivedUnreliablePackets.begin());
+					}
+				}
+				ReadBuffer readBuffer(data.data(), data.size());
+				handler(readBuffer, endpoint, false);
 			}
 		}
 
@@ -757,7 +752,7 @@ namespace se
 			}
 			else
 			{
-				log::warning("Connection::spehsReceiveHandler: received invalid data.");
+				log::error("Connection::spehsReceiveHandler: received invalid data.");
 				return;
 			}
 		}
@@ -765,7 +760,7 @@ namespace se
 		void Connection::setReceiveHandler(const std::function<void(ReadBuffer&, const boost::asio::ip::udp::endpoint&, const bool)> callback)
 		{
 			std::lock_guard<std::recursive_mutex> lock(mutex);
-			receiveHandler = callback;		
+			receiveHandler = callback;
 		}
 
 		void Connection::sendPacket(const WriteBuffer& writeBuffer, const bool reliable)
@@ -867,17 +862,15 @@ namespace se
 			if (connectionStatus == ConnectionStatus::connected)
 			{
 				connectionStatus = ConnectionStatus::disconnecting;
-
-				//Add a disconnect packet to the reliable send queue
-				PacketHeader packetHeader;
-				packetHeader.protocolId = spehsProtocolId;
+				const size_t payloadOffset = reliablePacketSendQueue.empty() ? reliableStreamOffsetSend : reliablePacketSendQueue.back().payloadOffset + reliablePacketSendQueue.back().payload.size();
+				reliablePacketSendQueue.emplace_back();
+				reliablePacketSendQueue.back().userData = false;
+				reliablePacketSendQueue.back().payloadOffset = payloadOffset;
 				DisconnectPacket disconnectPacket;
 				WriteBuffer writeBuffer;
-				writeBuffer.write(packetHeader);
 				writeBuffer.write(PacketType::disconnect);
 				writeBuffer.write(disconnectPacket);
-				const size_t payloadOffset = reliablePacketSendQueue.empty() ? reliableStreamOffsetSend : reliablePacketSendQueue.back().payloadOffset + reliablePacketSendQueue.back().payload.size();
-				reliablePacketSendQueue.push_back(ReliablePacketOut(false, payloadOffset, writeBuffer.getData(), writeBuffer.getSize()));
+				writeBuffer.swap(reliablePacketSendQueue.back().payload);
 			}
 			else
 			{
@@ -960,7 +953,7 @@ namespace se
 			std::lock_guard<std::recursive_mutex> lock(mutex);
 			return connectionStatus == ConnectionStatus::connected;
 		}
-		
+
 		void Connection::setConnected(const bool value)
 		{
 			std::lock_guard<std::recursive_mutex> lock(mutex);

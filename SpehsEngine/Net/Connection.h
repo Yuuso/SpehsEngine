@@ -15,7 +15,7 @@ namespace se
 	{
 		class ConnectionManager;
 		class IOService;
-		
+
 		class Connection
 		{
 		public:
@@ -61,7 +61,7 @@ namespace se
 		private:
 
 			friend class ConnectionManager;
-			
+
 			enum class ConnectionStatus
 			{
 				connecting, connected, disconnecting, disconnected
@@ -82,7 +82,7 @@ namespace se
 					size_t offset = 0u;
 					uint16_t size = 0u;
 				};
-				
+
 				ReliablePacketOut() = default;
 				ReliablePacketOut(const bool _userData, const size_t _payloadOffset, const uint8_t* _payloadPtr, const size_t _payloadSize)
 					: userData(_userData)
@@ -117,14 +117,19 @@ namespace se
 				time::Time createTime;
 			};
 
-			struct ReceivedFragment
+			struct ReceivedReliableFragment
 			{
 				size_t offset = 0u;
 				bool userData = false;
 				bool endOfPayload = false;
 				std::vector<uint8_t> data;
 			};
-			
+			struct ReceivedReliablePacket
+			{
+				bool userData = false;
+				std::vector<uint8_t> data;
+			};
+
 			Connection(const boost::shared_ptr<SocketUDP2>& _socket, const boost::asio::ip::udp::endpoint& _endpoint,
 				const EstablishmentType _establishmentType, const std::string& _debugName = "Connection");
 
@@ -155,8 +160,8 @@ namespace se
 			time::Time lastSendTimeReliable;
 			size_t reliableStreamOffsetSend = 0u; // bytes from past packets that have been delivered
 			size_t reliableStreamOffsetReceive = 0u; // bytes from past packets that have been received
-			std::vector<ReceivedFragment> receivedReliableFragments;
-			std::vector<std::vector<uint8_t>> receivedReliablePackets;
+			std::vector<ReceivedReliableFragment> receivedReliableFragments;
+			std::vector<ReceivedReliablePacket> receivedReliablePackets;
 			std::vector<std::vector<uint8_t>> receivedUnreliablePackets;
 			std::function<void(ReadBuffer&, const boost::asio::ip::udp::endpoint&, const bool)> receiveHandler;
 			ConnectionStatus connectionStatus = ConnectionStatus::connecting; // Every connection begins in the connecting state
@@ -196,9 +201,8 @@ namespace se
 			size_t receivedBytes = 0u;
 			size_t sentBytesReliable = 0u;
 			size_t sentBytesUnreliable = 0u;
-			size_t receivedBytesReliable = 0u;
 			size_t receivedBytesUnreliable = 0u;
-			
+
 			int debugLogLevel = 0;
 			float simulatedPacketLossChanceIncoming = 0.0f;
 			float simulatedPacketLossChanceOutgoing = 0.0f;
