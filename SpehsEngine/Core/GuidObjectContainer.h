@@ -39,12 +39,13 @@ namespace se
 			return readFromArchive<SizeType>(objects);
 		}
 
-		template<typename ObjectType = Object, typename Metadata, typename ... Args>
-		Iterator allocate(const Guid::Flag _flags, const Metadata _metadata, Args ... args)
+		/* Generates a free Guid in the container's context. */
+		template<typename Metadata>
+		Guid generateGuid(const Guid::Flag _flags, const Metadata _metadata) const
 		{
 			//Find a free index for this flag + metadata combination
 			std::vector<uint32_t> takenIndices;
-			for (Iterator it = begin(); it != end(); it++)
+			for (ConstIterator it = begin(); it != end(); it++)
 			{
 				if (it->first.getFlags() == _flags && it->first.getMetadata<uint16_t>() == uint16_t(_metadata))
 				{
@@ -62,7 +63,13 @@ namespace se
 				}
 			}
 
-			const Guid guid(_flags, _metadata, freeIndex);
+			return Guid(_flags, _metadata, freeIndex);
+		}
+
+		template<typename ObjectType = Object, typename Metadata, typename ... Args>
+		Iterator allocate(const Guid::Flag _flags, const Metadata _metadata, Args ... args)
+		{
+			const Guid guid = generateGuid(_flags, _metadata);
 			if (find(guid))
 			{
 				se_assert(false && "Object allocation failed. Next index was taken.");
