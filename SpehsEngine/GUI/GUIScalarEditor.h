@@ -38,7 +38,7 @@ namespace se
 			decreaseRect->setString("-");
 			increaseRect->setString("+");
 			setElementPositionMode(se::GUIRectangleRow::PositionMode::StackRight);
-			min = std::numeric_limits<Scalar>::min();
+			min = std::numeric_limits<Scalar>::lowest();
 			max = std::numeric_limits<Scalar>::max();
 
 			//Add to container
@@ -79,7 +79,7 @@ namespace se
 
 			if (valueRect->editorValueChanged())
 				setEditorValue(getValueFromTextField());
-			
+
 			//+/- buttons
 			if (getInputManager().isKeyPressed(MOUSE_BUTTON_LEFT))
 			{//Press
