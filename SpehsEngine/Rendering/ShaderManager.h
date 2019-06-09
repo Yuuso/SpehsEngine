@@ -49,7 +49,6 @@ namespace se
 			std::vector<UniformTexture> textureData;
 
 		protected:
-			GLSLProgram& shader;
 			GLint cameraLocation = 0;
 		};
 

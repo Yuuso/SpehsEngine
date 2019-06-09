@@ -13,8 +13,7 @@ namespace se
 {
 	namespace rendering
 	{
-		Uniforms::Uniforms(GLSLProgram& _shader)
-			: shader(_shader)
+		Uniforms::Uniforms(GLSLProgram& shader)
 		{
 			cameraLocation = shader.getUniformLocation("cameraMatrix");
 		}
@@ -34,12 +33,12 @@ namespace se
 			bind = cubemap ? bindCubeMapTexture : bind2DTexture;
 		}
 
-		DefaultTextureUniforms::DefaultTextureUniforms(GLSLProgram& _shader) : Uniforms(_shader)
+		DefaultTextureUniforms::DefaultTextureUniforms(GLSLProgram& shader) : Uniforms(shader)
 		{
 			textureData.push_back(UniformTexture(shader.getUniformLocation("tex")));
 		}
 
-		DefaultCubemapUniforms::DefaultCubemapUniforms(GLSLProgram& _shader) : Uniforms(_shader)
+		DefaultCubemapUniforms::DefaultCubemapUniforms(GLSLProgram& shader) : Uniforms(shader)
 		{
 			textureData.push_back(UniformTexture(shader.getUniformLocation("tex"), true));
 		}
