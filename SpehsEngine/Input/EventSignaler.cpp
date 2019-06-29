@@ -36,7 +36,7 @@ namespace se
 
 		EventSignaler::EventSignaler()
 		{
-			
+
 		}
 
 		void EventSignaler::signalEvents(EventCatcher& eventCatcher)
@@ -59,17 +59,17 @@ namespace se
 			//const std::vector<JoystickAxisEvent>& joystickAxisEvents = eventCatcher.get;
 			const std::vector<QuitEvent>& quitEvents = eventCatcher.getQuitEvents();
 			const std::vector<FileDropEvent>& fileDropEvents = eventCatcher.getFileDropEvents();
-			
-			//Signal events
-			signalEventsImpl(keyboardPressEvents, keyboardPressSignals);
-			signalEventsImpl(keyboardDownEvents, keyboardDownSignals);
-			signalEventsImpl(keyboardReleaseEvents, keyboardReleaseSignals);
+
+			// Signal events
 			signalEventsImpl(mouseHoverEvents, mouseHoverSignals);
+			signalEventsImpl(mouseMotionEvents, mouseMotionSignals);
+			signalEventsImpl(mouseWheelEvents, mouseWheelSignals);
 			signalEventsImpl(mouseButtonPressEvents, mouseButtonPressSignals);
 			signalEventsImpl(mouseButtonDownEvents, mouseButtonDownSignals);
 			signalEventsImpl(mouseButtonReleaseEvents, mouseButtonReleaseSignals);
-			signalEventsImpl(mouseMotionEvents, mouseMotionSignals);
-			signalEventsImpl(mouseWheelEvents, mouseWheelSignals);
+			signalEventsImpl(keyboardPressEvents, keyboardPressSignals);
+			signalEventsImpl(keyboardDownEvents, keyboardDownSignals);
+			signalEventsImpl(keyboardReleaseEvents, keyboardReleaseSignals);
 			//signalEventsImpl(joystickButtonPressEvents, joystickButtonPressSignals);
 			//signalEventsImpl(joystickButtonDownEvents, joystickButtonDownSignals);
 			//signalEventsImpl(joystickButtonReleaseEvents, joystickButtonReleaseSignals);
