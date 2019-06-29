@@ -104,6 +104,7 @@ namespace se
 			float getAlpha() const { return primitiveColor.a; }
 			float getScaleX() const { return scaleX; }
 			float getScaleY() const { return scaleY; }
+			glm::vec2 getScale() const { return glm::vec2(scaleX, scaleY); }
 			std::vector<se::Vertex> getVertexArray() const { return vertexArray; }
 			//Public Variables
 			std::vector<se::Vertex> worldVertexArray; //Transformed vertices
