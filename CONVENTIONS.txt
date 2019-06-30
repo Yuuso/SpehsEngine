@@ -26,7 +26,9 @@
 7. Prefer to prefix member function parameters with an underscore if they have a name clash with a member variable.
 8. Always use "" characters for includes (#include "SpehsEngine/Core/Color.h" instead of #include <SpehsEngine/Core/Color.h>)
 9. Always use full include paths when possible (#include "SpehsEngine/Core/Color.h" instead of #include "Color.h")
-10. For header/source file layout, see format below:
+10. Single line comments with // and a space. Like this: // Comment about something
+
+For header/source file layout, see format below:
 
 HEADER:
 
