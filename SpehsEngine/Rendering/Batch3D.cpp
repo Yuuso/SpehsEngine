@@ -18,6 +18,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtx/transform.hpp>
 #include <glm/gtx/quaternion.hpp>
+#include <glm/gtx/rotate_vector.hpp>
 
 #include <algorithm>
 #include <atomic>
@@ -293,9 +294,10 @@ namespace se
 				for (size_t i = 0; i < size; i++)
 				{
 					newPosition = centerPosition;
+					const glm::vec2 vertexPosition = glm::rotate(glm::vec2(_mesh.vertexArray[i].position.x, _mesh.vertexArray[i].position.z), _mesh.rotation.x);
 					if (_mesh.billboarding == Billboarding::x_only || _mesh.billboarding == Billboarding::enabled)
 					{
-						newPosition += cameraRight * width * _mesh.vertexArray[i].position.x;
+						newPosition += cameraRight * width * vertexPosition.x;
 					}
 					else
 					{
@@ -306,7 +308,7 @@ namespace se
 					}
 					if (_mesh.billboarding == Billboarding::z_only || _mesh.billboarding == Billboarding::enabled)
 					{
-						newPosition += cameraUp * height * -_mesh.vertexArray[i].position.z; // negative? Is this right?
+						newPosition += cameraUp * height * -vertexPosition.y; // negative? Is this right?
 					}
 					else
 					{
@@ -315,6 +317,7 @@ namespace se
 						newPosition.z -= centerPosition.z;
 						newPosition.z += vertices[_index + i].position.z;
 					}
+
 					vertices[_index + i].position = newPosition;
 				}
 			}
