@@ -155,6 +155,8 @@
     <ClCompile Include="Mathematics.cpp" />
     <ClCompile Include="Quadtree.cpp" />
     <ClCompile Include="QuatUtilityFunctions.cpp" />
+    <ClCompile Include="Sphere.cpp" />
+    <ClCompile Include="SphereUtilityFunctions.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
@@ -178,6 +180,8 @@
     <ClInclude Include="PrecompiledInclude.h" />
     <ClInclude Include="Quadtree.h" />
     <ClInclude Include="QuatUtilityFunctions.h" />
+    <ClInclude Include="Sphere.h" />
+    <ClInclude Include="SphereUtilityFunctions.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="Triangulation.h" />
   </ItemGroup>
