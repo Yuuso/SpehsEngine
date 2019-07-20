@@ -60,28 +60,29 @@ namespace se
 					vertexArray[i].position.y /= theight;
 				}
 
-				worldVertexArray = vertexArray;
-
 				setUVCoords();
+
+				worldVertexArray = vertexArray;
 			}
 			else //Polygons from Shapes
 			{
 				vertexArray = getShapeVertexArray(se::Shape(_shapeID));
-				worldVertexArray = vertexArray;
 
 				//Custom UV Coords for Button
 				if (_shapeID == se::Shape::BUTTON)
 				{
-					for (size_t i = 0; i < worldVertexArray.size(); i++)
+					for (size_t i = 0; i < vertexArray.size(); i++)
 					{
-						worldVertexArray[i].uv.u = (worldVertexArray[i].position.x);
-						worldVertexArray[i].uv.v = (-worldVertexArray[i].position.y);
+						vertexArray[i].uv.u = (vertexArray[i].position.x);
+						vertexArray[i].uv.v = (-vertexArray[i].position.y);
 					}
 				}
 				else
 				{
 					setUVCoords();
 				}
+
+				worldVertexArray = vertexArray;
 			}
 		}
 
@@ -93,9 +94,8 @@ namespace se
 				log::error("Can't create a polygon with less than 3 vertices!");
 
 			vertexArray = _vertexData;
-			worldVertexArray = vertexArray;
-
 			setUVCoords();
+			worldVertexArray = vertexArray;
 		}
 
 		Polygon::Polygon(BatchManager& _batchManager, const std::vector<se::Vertex>& _vertexData, const float _width, const float _height)
@@ -116,9 +116,8 @@ namespace se
 			{
 				vertexArray[i].position = _positionData[i];
 			}
-			worldVertexArray = vertexArray;
-
 			setUVCoords();
+			worldVertexArray = vertexArray;
 		}
 
 		Polygon::Polygon(BatchManager& _batchManager, const float _width, const float _height)
@@ -178,8 +177,8 @@ namespace se
 		{
 			for (size_t i = 0; i < worldVertexArray.size(); i++)
 			{
-				worldVertexArray[i].uv.u *= _newScale;
-				worldVertexArray[i].uv.v *= _newScale;
+				worldVertexArray[i].uv.u = vertexArray[i].uv.u * _newScale;
+				worldVertexArray[i].uv.v = vertexArray[i].uv.v * _newScale;
 			}
 		}
 
@@ -187,8 +186,8 @@ namespace se
 		{
 			for (size_t i = 0; i < worldVertexArray.size(); i++)
 			{
-				worldVertexArray[i].uv.u *= _newScaleX;
-				worldVertexArray[i].uv.v *= _newScaleY;
+				worldVertexArray[i].uv.u = vertexArray[i].uv.u * _newScaleX;
+				worldVertexArray[i].uv.v = vertexArray[i].uv.v * _newScaleY;
 			}
 		}
 
@@ -196,8 +195,8 @@ namespace se
 		{
 			for (size_t i = 0; i < worldVertexArray.size(); i++)
 			{
-				worldVertexArray[i].uv.u *= _newScale.x;
-				worldVertexArray[i].uv.v *= _newScale.y;
+				worldVertexArray[i].uv.u = vertexArray[i].uv.u * _newScale.x;
+				worldVertexArray[i].uv.v = vertexArray[i].uv.v * _newScale.y;
 			}
 		}
 
@@ -269,10 +268,10 @@ namespace se
 
 		void Polygon::setUVCoords()
 		{
-			for (size_t i = 0; i < worldVertexArray.size(); i++)
+			for (size_t i = 0; i < vertexArray.size(); i++)
 			{
-				worldVertexArray[i].uv.u = (worldVertexArray[i].position.x + 0.5f);
-				worldVertexArray[i].uv.v = (-worldVertexArray[i].position.y + 0.5f);
+				vertexArray[i].uv.u = (vertexArray[i].position.x + 0.5f);
+				vertexArray[i].uv.v = (-vertexArray[i].position.y + 0.5f);
 			}
 		}
 	}
