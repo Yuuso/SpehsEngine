@@ -31,6 +31,8 @@ namespace se
 			/*
 				Attempts to start a new outgoing connection.
 				May return an empty shared pointer if an error occurs.
+				Returns an empty connection if connection was already established.
+				(The connection may only be obtained from the entity who originally initiated it.)
 			*/
 			[[nodiscard]] std::shared_ptr<Connection> startConnecting(const Endpoint& remoteEndpoint, const std::string& _debugName = "Connection");
 
@@ -69,7 +71,7 @@ namespace se
 			};
 
 			void run();
-			
+
 			void receiveHandler(std::vector<uint8_t>& data, const boost::asio::ip::udp::endpoint& senderEndpoint);
 			void processReceivedPackets();
 			void deliverOutgoingPackets();

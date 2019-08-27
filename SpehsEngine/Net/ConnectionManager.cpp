@@ -15,16 +15,6 @@
 
 /**///#pragma optimize("", off)
 
-namespace
-{
-	typedef uint16_t SizeType;
-#ifdef SE_FINAL_RELEASE
-	static const se::time::Time connectionTimeout = se::time::fromSeconds(5.0f);
-#else
-	static const se::time::Time connectionTimeout = se::time::fromSeconds(10000.0f);
-#endif
-}
-
 namespace se
 {
 	namespace net
@@ -53,7 +43,7 @@ namespace se
 				}
 			}
 			thread.join();
-			
+
 			//Close socket
 			socket->close();
 
@@ -74,7 +64,7 @@ namespace se
 			while (true)
 			{
 				se::time::ScopedFrameLimiter frameLimiter(se::time::fromSeconds(1.0f / 1000.0f));
-				
+
 				//Process incoming data
 				socket->update();
 				processReceivedPackets();
@@ -109,8 +99,8 @@ namespace se
 			std::lock_guard<std::recursive_mutex> lock1(mutex);
 			for (size_t i = 0; i < connections.size(); i++)
 			{
-				//Remove unreferenced connections that don'h have pending operations
-				if (connections[i].use_count() == 1 && !connections[i]->hasPendingOperations())
+				//Remove unreferenced connections that don't have pending operations
+				if (connections[i].use_count() == 1 && (!connections[i]->hasPendingOperations() || connections[i]->isConnecting()))
 				{
 					connections.erase(connections.begin() + i);
 					i--;
@@ -194,6 +184,16 @@ namespace se
 			if (asioEndpoint != boost::asio::ip::udp::endpoint())
 			{
 				std::lock_guard<std::recursive_mutex> lock1(mutex);
+
+				// Return an empty connection if connection was already established
+				for (const std::shared_ptr<Connection>& connection : connections)
+				{
+					if (connection->endpoint == asioEndpoint)
+					{
+						return std::shared_ptr<Connection>();
+					}
+				}
+
 				connections.push_back(std::shared_ptr<Connection>(new Connection(socket, asioEndpoint, Connection::EstablishmentType::outgoing, connectionDebugName)));
 				connections.back()->setDebugLogLevel(getDebugLogLevel());
 				return connections.back();
