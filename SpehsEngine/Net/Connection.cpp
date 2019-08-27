@@ -16,16 +16,6 @@
 
 /**///#pragma optimize("", off)
 
-namespace
-{
-	typedef uint16_t SizeType;
-#ifdef SE_FINAL_RELEASE
-	static const se::time::Time connectionTimeout = se::time::fromSeconds(5.0f);
-#else
-	static const se::time::Time connectionTimeout = se::time::fromSeconds(10000.0f);
-#endif
-}
-
 namespace se
 {
 	namespace net
@@ -150,7 +140,7 @@ namespace se
 		Connection::~Connection()
 		{
 			std::lock_guard<std::recursive_mutex> lock(mutex);
-			se_assert(reliablePacketSendQueue.empty());
+			se_assert(reliablePacketSendQueue.empty() || isConnecting());
 		}
 
 		void Connection::update()
@@ -183,13 +173,30 @@ namespace se
 				}
 			}
 
-			static const time::Time reliableHeartbeatInterval = time::fromSeconds(5.0f);
-			if (time::now() - lastSendTimeReliable >= reliableHeartbeatInterval)
+			if (isConnected())
 			{
-				HeartbeatPacket heartbeatPacket;
-				WriteBuffer writeBuffer;
-				se_write(writeBuffer, heartbeatPacket);
-				//sendPacket(writeBuffer, true);
+				// Heartbeat
+				static const time::Time reliableHeartbeatInterval = time::fromSeconds(1.0f);
+				if (time::now() - lastSendTimeReliable >= reliableHeartbeatInterval)
+				{
+					HeartbeatPacket heartbeatPacket;
+					WriteBuffer writeBuffer;
+					se_write(writeBuffer, PacketType::heartbeat);
+					se_write(writeBuffer, heartbeatPacket);
+
+					const size_t payloadOffset = reliablePacketSendQueue.empty() ? reliableStreamOffsetSend : reliablePacketSendQueue.back().payloadOffset + reliablePacketSendQueue.back().payload.size();
+					reliablePacketSendQueue.emplace_back();
+					reliablePacketSendQueue.back().userData = false;
+					reliablePacketSendQueue.back().payloadOffset = payloadOffset;
+					writeBuffer.swap(reliablePacketSendQueue.back().payload);
+				}
+
+				// Timeout disconnection
+				const time::Time timeoutTime = reliableHeartbeatInterval * 5;
+				if (time::now() - lastReceiveTime >= timeoutTime)
+				{
+					setConnected(false);
+				}
 			}
 		}
 
@@ -730,7 +737,11 @@ namespace se
 				return;
 			}
 
-			if (packetType == PacketType::connect)
+			if (packetType == PacketType::heartbeat)
+			{
+				// Do nothing
+			}
+			else if (packetType == PacketType::connect)
 			{
 				ConnectPacket connectPacket;
 				if (!readBuffer.read(connectPacket))
