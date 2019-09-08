@@ -1,5 +1,7 @@
 #pragma once
+
 #include "SpehsEngine/Core/Inivar.h"
+
 
 namespace se
 {
@@ -56,7 +58,7 @@ namespace se
 		/* Returns a reference to an appvar. If var didn't exist before, it is added with the specified default value. */
 		template<typename T>
 		Inivar<T>& get(const std::string& section, const std::string& name, const T& defaultValue);
-		
+
 		/* This is the name for the file that resides in the working directory of the executable. */
 		const std::string name;
 		/* File extension, includes the dot. */
@@ -66,10 +68,10 @@ namespace se
 		Inisection& getSection(const std::string& name);
 
 		mutable std::recursive_mutex mutex;
-		bool unwrittenChanges;		
+		bool unwrittenChanges;
 		std::vector<Inisection*> sections;
 	};
-	
+
 
 
 	//TEMPLATE DEFINITIONS

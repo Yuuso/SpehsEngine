@@ -127,7 +127,7 @@ namespace se
 			else if (receiveState == ReceiveState::receivingData)
 			{
 				assert(transmittingUnitBitIndex < transmissionUnitLength);
-				
+
 				bool bitReceived = false;
 				if (readState != previousReadState)
 				{
@@ -142,7 +142,7 @@ namespace se
 
 				if (bitReceived)
 				{//Reached the next read time mark without the pin state changing
-					
+
 					if (debugLogLevel >= 3)
 						se::log::info("RS232_PinReader data bit received.");
 
@@ -182,7 +182,7 @@ namespace se
 
 				if (bitReceived)
 				{//Read a parity bit from the stream
-					
+
 					if (debugLogLevel >= 2)
 						se::log::info("RS232_PinReader parity bit received.");
 
@@ -220,7 +220,7 @@ namespace se
 					}
 					else
 					{//No stop bit?
-						
+
 					 	std::string hexStr;
 					 	std::string charStr;
 					 	hexStr.reserve(3 * receiveBuffer.size());
@@ -258,7 +258,7 @@ namespace se
 		{
 
 		}
-		
+
 		bool RS232_PinReader::detectStreamBoundaries()
 		{
 			std::lock_guard<std::recursive_mutex> lock(mutex);
@@ -266,7 +266,7 @@ namespace se
 
 			if (debugLogLevel >= 1)
 				se::log::info("RS232_PinReader: Starting to detect stream boundaries. Set options: baud rate '" + std::to_string(int(1.0f / ((float)readInterval.value / (float)se::time::conversionRate::second))) + "', parity check " + (parityCheckEnabled ? "enabled" : "disabled"));
-			
+
 			std::vector<gpio::PinState> history(16384);
 			size_t analyzeCount = 0;
 			size_t changingEdgeSamples = 0;
@@ -434,11 +434,11 @@ namespace se
 						//log::info("Pattern begins at: " + std::to_string(validPatterns[0]));
 						//log::info("Sequence length: " + std::to_string(sequenceLength));
 
-						const gpio::PinState initialPinState = gpio::read(pin);
+						const gpio::PinState initialPinState2 = gpio::read(pin);
 						while (readSkipCount > 0)
 						{
 							const gpio::PinState readState = gpio::read(pin);
-							if (readState != initialPinState)
+							if (readState != initialPinState2)
 							{//State changed, synchronize clock at this point
 								nextReadTime = se::time::now() + readInterval + readInterval / 2;
 								readSkipCount--;
@@ -460,7 +460,7 @@ namespace se
 							se::log::info("RS232_PinReader failed to arrive at the stop bit!");
 							return false;
 						}
-						
+
 						receiveState = ReceiveState::awaitingStartBit;
 						if (debugLogLevel >= 2)
 						{

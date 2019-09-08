@@ -223,7 +223,7 @@ namespace se
 									bodies[cycle2]->ownerObject->getComponent<Sprite>()->setColor(se::Color(255,255,255,255));
 								}
 								//Ignore
-								char breakpoint = 0;
+								//char breakpoint = 0;
 							}
 						}
 					}

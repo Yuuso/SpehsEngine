@@ -7,7 +7,7 @@ namespace se
 	{
 		HeaderIPv4::HeaderIPv4()
 		{
-			std::fill(rep, rep + sizeof(rep), 0);
+			std::fill(rep, rep + sizeof(rep), uint8_t(0));
 		}
 
 		uint8_t HeaderIPv4::getVersion() const

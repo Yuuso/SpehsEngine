@@ -389,8 +389,10 @@ namespace se
 			std::lock_guard<std::recursive_mutex> lock(mutex);
 			updateLines = true;
 			const size_t maxScrollState = getMaxScrollState();
-			if (maxScrollState != 0 && scrollState == maxScrollState - 1)
+			if (maxScrollState != 0u && scrollState == int(maxScrollState) - 1)
+			{
 				scrollState++;
+			}
 		}
 
 		size_t ConsoleVisualizer::getInputLineIndex() const

@@ -30,7 +30,7 @@ namespace se
 		void setSize(const float _x, const float _y);
 		void setColor(const Color &_newColor);
 		void setAlpha(const float _a);
-		void setDepth(const int _depth);
+		void setDepth(const PlaneDepth _depth);
 		void setRenderState(const bool _state);
 		void updateVertices();
 		const rendering::Polygon* getSpritePolygon(){ return sprite; }

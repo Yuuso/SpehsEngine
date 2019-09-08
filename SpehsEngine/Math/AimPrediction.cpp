@@ -23,7 +23,7 @@ namespace se
 			float t = -1.0f;
 			if (t1 >= 0.0f && t2 >= 0.0f)
 			{
-				const float t = std::min(t1, t2);
+				t = std::min(t1, t2);
 			}
 			else if (t1 >= 0.0f && t2 < 0.0f)
 			{

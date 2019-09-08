@@ -64,18 +64,18 @@ namespace se
 			return nullptr;
 		}
 
-		for (size_t i = 0; i < remainingFilePath.size(); i++)
+		for (size_t p = 0; p < remainingFilePath.size(); p++)
 		{
-			if (remainingFilePath[i] == '/')
+			if (remainingFilePath[p] == '/')
 			{
 				std::string subDirectoryPath = path.empty() ? "" : path + '/';
-				subDirectoryPath.insert(subDirectoryPath.end(), remainingFilePath.begin(), remainingFilePath.begin() + i);
-				remainingFilePath.erase(remainingFilePath.begin(), remainingFilePath.begin() + i + 1);
-				for (size_t i = 0; i < directories.size(); i++)
+				subDirectoryPath.insert(subDirectoryPath.end(), remainingFilePath.begin(), remainingFilePath.begin() + p);
+				remainingFilePath.erase(remainingFilePath.begin(), remainingFilePath.begin() + p + 1);
+				for (size_t d = 0; d < directories.size(); d++)
 				{
-					if (directories[i].path == subDirectoryPath)
+					if (directories[d].path == subDirectoryPath)
 					{
-						return directories[i].findFileState(remainingFilePath);
+						return directories[d].findFileState(remainingFilePath);
 					}
 				}
 				return nullptr;

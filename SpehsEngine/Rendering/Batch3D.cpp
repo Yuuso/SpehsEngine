@@ -62,8 +62,7 @@ namespace se
 #endif
 			const Shader& shader = batchManager.shaderManager.getShader(shaderIndex);
 			const Uniforms* const uniforms = shader.uniforms;
-			se_assert(uniforms);
-			se_assert(uniforms->textureData.size() >= textureDataIDs.size());
+			se_assert(uniforms && uniforms->textureData.size() >= textureDataIDs.size());
 			initBuffers();
 		}
 
@@ -187,17 +186,22 @@ namespace se
 			Shader& shader = batchManager.shaderManager.getShader(shaderIndex);
 			shader.shader.use();
 
-			// Texture
-			Uniforms* uniforms = shader.uniforms;
-			se_assert(uniforms);
-			se_assert(uniforms->textureData.size() >= textureDataIDs.size());
-			for (size_t i = 0; i < textureDataIDs.size(); i++)
-				uniforms->textureData[i].textureDataID = textureDataIDs[i];
+			if (Uniforms* const uniforms = shader.uniforms)
+			{
+				// Texture
+				se_assert(uniforms->textureData.size() >= textureDataIDs.size());
+				for (size_t i = 0; i < textureDataIDs.size(); i++)
+					uniforms->textureData[i].textureDataID = textureDataIDs[i];
 
-			uniforms->cameraMatrix = *batchManager.camera3D.cameraMatrix;
+				uniforms->cameraMatrix = *batchManager.camera3D.cameraMatrix;
 
-			// Uniforms
-			uniforms->setUniforms();
+				// Uniforms
+				uniforms->setUniforms();
+			}
+			else
+			{
+				log::error("Shader has no uniforms.");
+			}
 
 			// Draw
 			glBindVertexArray(vertexArrayObjectID);

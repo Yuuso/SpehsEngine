@@ -425,14 +425,14 @@ namespace se
 		disableStateRecursiveUpwards(GUIRECT_POSITION_UPDATED_BIT);
 	}
 
-	void GUIRectangle::setStringSize(const int size)
+	void GUIRectangle::setStringSize(const int _size)
 	{
 		if (!text)
 			createText();
-		else if (text->getFontSize() == size)
+		else if (text->getFontSize() == _size)
 			return;
 
-		text->setFontSize(size);
+		text->setFontSize(_size);
 		disableStateRecursiveUpwards(GUIRECT_SCALE_UPDATED_BIT);
 		disableStateRecursiveUpwards(GUIRECT_MIN_SIZE_UPDATED_BIT);
 		disableStateRecursiveUpwards(GUIRECT_POSITION_UPDATED_BIT);
@@ -497,8 +497,8 @@ namespace se
 		displayTexture->polygon->setTexture(texData);
 		displayTexture->polygon->setCameraMatrixState(false);
 		displayTexture->polygon->setRenderState(polygon->getRenderState());
-		displayTexture->width = texData->width;
-		displayTexture->height = texData->height;
+		displayTexture->width = uint16_t(texData->width);
+		displayTexture->height = uint16_t(texData->height);
 		displayTexture->polygon->setPlaneDepth(getDepth() + 1);
 		disableStateRecursiveUpwards(GUIRECT_POSITION_UPDATED_BIT | GUIRECT_SCALE_UPDATED_BIT);
 	}
@@ -508,10 +508,12 @@ namespace se
 		setDisplayTexture(path, defaultTextureParameters);
 	}
 
-	void GUIRectangle::setDisplayTextureColor(const Color& color)
+	void GUIRectangle::setDisplayTextureColor(const Color& _color)
 	{
 		if (displayTexture)
-			displayTexture->polygon->setColor(color);
+		{
+			displayTexture->polygon->setColor(_color);
+		}
 	}
 
 	void GUIRectangle::setTexture(const std::string& path, const se::rendering::TextureParameter& _parameters)

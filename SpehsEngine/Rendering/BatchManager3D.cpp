@@ -91,11 +91,11 @@ namespace se
 					{
 						unbatch(*meshes[i].get());
 					}
-					for (size_t i = 0; i < _mesh.batchManagers.size(); i++)
+					for (size_t j = 0; j < _mesh.batchManagers.size(); j++)
 					{
-						if (_mesh.batchManagers[i] == this)
+						if (_mesh.batchManagers[j] == this)
 						{
-							_mesh.batchManagers.erase(_mesh.batchManagers.begin() + i);
+							_mesh.batchManagers.erase(_mesh.batchManagers.begin() + j);
 							break;
 						}
 					}

@@ -150,31 +150,30 @@ namespace se
 			return;
 		words[0].erase(words[0].begin());
 
-		bool foundCommand = false;
 		if (words[0] == "set")
 		{//Set variables
 			if (words.size() >= 3)
 			{
 				bool isFloat = false;
-				for (unsigned i = 0; i < words[2].size(); i++)
-					if ((words[2][i] < 48 || words[2][i] > 57) && words[2][i] != 45)//if the character is not "numeric" (number or -)
+				for (size_t w = 0; w < words[2].size(); w++)
+					if ((words[2][w] < 48 || words[2][w] > 57) && words[2][w] != 45)//if the character is not "numeric" (number or -)
 					{//Value is not numeric
 
 						//Check booleans
 						if (words[2] == "true" || words[2] == "false")
 						{
-							for (unsigned i = 0; i < boolVariables.size(); i++)
-								if (words[1] == boolVariables[i]._identifier)
+							for (size_t v = 0; v < boolVariables.size(); v++)
+								if (words[1] == boolVariables[v]._identifier)
 								{
 									if (words[2] == "true")
 									{
-										log("Setting " + boolVariables[i]._identifier + " as true");
-										boolVariables[i].set(true);
+										log("Setting " + boolVariables[v]._identifier + " as true");
+										boolVariables[v].set(true);
 									}
 									else
 									{
-										log("Setting " + boolVariables[i]._identifier + " as false");
-										boolVariables[i].set(false);
+										log("Setting " + boolVariables[v]._identifier + " as false");
+										boolVariables[v].set(false);
 									}
 									return;
 								}
@@ -183,19 +182,19 @@ namespace se
 						}
 
 						//Check string variables
-						for (unsigned i = 0; i < stringVariables.size(); i++)
+						for (unsigned v = 0; v < stringVariables.size(); v++)
 						{
-							if (stringVariables[i]._identifier == words[1])
+							if (stringVariables[v]._identifier == words[1])
 							{
-								log("Setting " + stringVariables[i]._identifier + " to " + words[2]);
-								*stringVariables[i]._variablePtr = words[2];
+								log("Setting " + stringVariables[v]._identifier + " to " + words[2]);
+								*stringVariables[v]._variablePtr = words[2];
 								return;
 							}
 						}
 						log("Invalid command!");
 						return;
 					}
-					else if (words[2][i] == 46)//Test for period (decimal numbers/aka floats)
+					else if (words[2][w] == 46)//Test for period (decimal numbers/aka floats)
 					{
 						if (isFloat == false)
 							isFloat = true;
@@ -259,14 +258,14 @@ namespace se
 		{
 			if (words.size() > 1 && words[1] == "memory")
 			{
-				const Color color(204, 204, 204);
-				log("-------------------", color);
-				log("Spehs Engine select memory allocations:", color);
-				log("Remaining allocations / Total (runtime) allocations", color);
-				log("GUI Rectangles: " + std::to_string(guiRectangleAllocations - guiRectangleDeallocations) + "/" + std::to_string(guiRectangleAllocations), color);
-				log("Primitives: " + std::to_string(primitiveAllocations - primitiveDeallocations) + "/" + std::to_string(primitiveAllocations), color);
-				log("PrimitiveBatches: " + std::to_string(BatchAllocations - BatchDeallocations) + "/" + std::to_string(BatchAllocations), color);
-				log("-------------------", color);
+				const Color overrideColor(0.8f, 0.8f, 0.8f);
+				log("-------------------", overrideColor);
+				log("Spehs Engine select memory allocations:", overrideColor);
+				log("Remaining allocations / Total (runtime) allocations", overrideColor);
+				log("GUI Rectangles: " + std::to_string(guiRectangleAllocations - guiRectangleDeallocations) + "/" + std::to_string(guiRectangleAllocations), overrideColor);
+				log("Primitives: " + std::to_string(primitiveAllocations - primitiveDeallocations) + "/" + std::to_string(primitiveAllocations), overrideColor);
+				log("PrimitiveBatches: " + std::to_string(BatchAllocations - BatchDeallocations) + "/" + std::to_string(BatchAllocations), overrideColor);
+				log("-------------------", overrideColor);
 				return;
 			}
 		}
@@ -287,7 +286,7 @@ namespace se
 					}
 					else
 					{
-						se_assert(false && "No callback set");
+						log::error("No callback set");
 					}
 					return;
 				}

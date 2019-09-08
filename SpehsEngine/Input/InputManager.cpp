@@ -46,14 +46,14 @@ namespace se
 				joystickDisconnected();
 			else if (SDL_NumJoysticks() > joystickCount)
 				joystickConnected();
-			
+
 			const std::vector<KeyboardPressEvent>& keyboardPressEvents = eventCatcher.getKeyboardPressEvents();
 			const std::vector<KeyboardReleaseEvent>& keyboardReleaseEvents = eventCatcher.getKeyboardReleaseEvents();
 			const std::vector<MouseButtonPressEvent>& mouseButtonPressEvents = eventCatcher.getMouseButtonPressEvents();
 			const std::vector<MouseButtonReleaseEvent>& mouseButtonReleaseEvents = eventCatcher.getMouseButtonReleaseEvents();
 			const std::vector<MouseMotionEvent>& mouseMotionEvents = eventCatcher.getMouseMotionEvents();
 			const std::vector<MouseWheelEvent>& mouseWheelEvents = eventCatcher.getMouseWheelEvents();
-			const std::vector<MouseHoverEvent>& mouseHoverEvents = eventCatcher.getMouseHoverEvents();
+			//const std::vector<MouseHoverEvent>& mouseHoverEvents = eventCatcher.getMouseHoverEvents();
 			const std::vector<QuitEvent>& quitEvents = eventCatcher.getQuitEvents();
 			const std::vector<FileDropEvent>& fileDropEvents = eventCatcher.getFileDropEvents();
 
@@ -94,7 +94,7 @@ namespace se
 			{
 				droppedFilePath = fileDropEvents[i].filepath;
 			}
-			
+
 			if (mouseLocked)
 			{
 				//If mouse is locked, keep mouse in the center of the screen without creating a mousemotion event
@@ -265,7 +265,8 @@ namespace se
 
 					//Check suitable offline joysticks
 					bool foundOffline = false;
-					for (unsigned i = 0; i < joysticks.size(); i++)
+					for (size_t i = 0; i < joysticks.size(); i++)
+					{
 						if (joysticks[i]->offline && joysticks[i]->guid == SDL_JoystickGetDeviceGUID(c))
 						{//Found matching offline joystick, bring it online
 							SDL_Joystick* js = SDL_JoystickOpen(c);
@@ -279,6 +280,7 @@ namespace se
 							foundOffline = true;
 							break;
 						}
+					}
 
 					if (!foundOffline)
 					{//No matching offline joystick found, create new

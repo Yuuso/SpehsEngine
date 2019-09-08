@@ -71,7 +71,7 @@ namespace se
 	bool Inivar<Type>::fromString(const std::string& string) \
 	{ \
 		std::lock_guard<std::recursive_mutex> lock(mutex); \
-		value = std::atoi(string.c_str()); \
+		value = Type(std::atoi(string.c_str())); \
 		return true; \
 	}
 

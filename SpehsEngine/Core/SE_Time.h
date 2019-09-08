@@ -60,23 +60,23 @@ namespace se
 			inline float asMilliseconds() const { return (float)value / (float)conversionRate::millisecond; }
 			inline float asMicroseconds() const { return (float)value / (float)conversionRate::microsecond; }
 			inline float asNanoseconds() const { return (float)value / (float)conversionRate::nanosecond; }
-			
+
 			TimeValueType value;
 		};
 
 		Time operator*(const float multiplier, const Time time);
 		Time operator*(const int multiplier, const Time time);
-		
+
 		inline float asSeconds(const Time time) { return (float)time.value / (float)conversionRate::second; }
 		inline float asMilliseconds(const Time time) { return (float)time.value / (float)conversionRate::millisecond; }
 		inline float asMicroseconds(const Time time) { return (float)time.value / (float)conversionRate::microsecond; }
 		inline float asNanoseconds(const Time time) { return (float)time.value / (float)conversionRate::nanosecond; }
-		
-		inline Time fromSeconds(const float seconds) { return TimeValueType(seconds * (float)conversionRate::second); }
-		inline Time fromMilliseconds(const float milliseconds) { return TimeValueType(milliseconds * (float)conversionRate::millisecond); }
-		inline Time fromMicroseconds(const float microseconds) { return TimeValueType(microseconds * (float)conversionRate::microsecond); }
-		inline Time fromNanoseconds(const float nanoseconds) { return TimeValueType(nanoseconds * (float)conversionRate::nanosecond); }
-		
+
+		inline Time fromSeconds(const float seconds) { return TimeValueType((double)seconds * (double)conversionRate::second); }
+		inline Time fromMilliseconds(const float milliseconds) { return TimeValueType((double)milliseconds * (double)conversionRate::millisecond); }
+		inline Time fromMicroseconds(const float microseconds) { return TimeValueType((double)microseconds * (double)conversionRate::microsecond); }
+		inline Time fromNanoseconds(const float nanoseconds) { return TimeValueType((double)nanoseconds * (double)conversionRate::nanosecond); }
+
 		/* Initializes the time system. */
 		void initialize();
 
@@ -98,7 +98,7 @@ namespace se
 		/* Returns time when se::time was initialized. */
 		Time getInitializationTime();
 	}
-	
+
 	class WriteBuffer;
 	class ReadBuffer;
 	void writeToBuffer(WriteBuffer& writeBuffer, const time::Time& time);

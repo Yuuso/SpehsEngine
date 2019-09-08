@@ -50,7 +50,7 @@ namespace se
 			{
 				return valid;
 			}
-			
+
 			void write(WriteBuffer& buffer) const
 			{
 				buffer.write(currentMagic);
@@ -243,7 +243,7 @@ namespace se
 		{
 			return sharedImpl->startAccepting(port, callbackFunction);
 		}
-		
+
 		void SocketTCP::setNoDelay(const bool enabled)
 		{
 			sharedImpl->setNoDelay(enabled);
@@ -390,7 +390,7 @@ namespace se
 					DEBUG_LOG(1, "closed.");
 				}
 				{
-					std::lock_guard<std::recursive_mutex> lock(receivedPacketsMutex);
+					std::lock_guard<std::recursive_mutex> lock2(receivedPacketsMutex);
 					if (receivedPackets.size() > 0)
 					{
 						se::log::error("Received packets will be cleared. Should this really happen?");
@@ -854,7 +854,7 @@ namespace se
 					return false;
 				}
 			}
-			
+
 			//All done, socket is now at connected state!
 			DEBUG_LOG(1, "successfully received handshake from the remote endpoint. Socket is now in connected state.");
 			std::lock_guard<std::recursive_mutex> lock(mutex);
@@ -914,7 +914,7 @@ namespace se
 
 			std::lock_guard<std::recursive_mutex> lock(mutex);
 			boost::system::error_code error;
-			
+
 			if (!connected && !connecting && acceptingState == AcceptingState::idle)
 			{//Can only send user defined packets in the connected state
 				DEBUG_LOG(1, "cannot send a packet. Socket is neither connected, connecting nor accepting.");

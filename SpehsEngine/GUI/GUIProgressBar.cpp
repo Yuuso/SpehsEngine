@@ -32,9 +32,9 @@ namespace se
 		enableState(GUIRECT_POSITION_UPDATED_BIT);
 	}
 
-	void GUIProgressBar::setProgressBarFrontColor(const se::Color& color)
+	void GUIProgressBar::setProgressBarFrontColor(const se::Color& _color)
 	{
-		progressBarFront->setColor(color);
+		progressBarFront->setColor(_color);
 	}
 
 	void GUIProgressBar::setProgressBarFrontAlpha(const float a)
@@ -42,9 +42,9 @@ namespace se
 		progressBarFront->setAlpha(a);
 	}
 
-	void GUIProgressBar::setProgressBarBackColor(const se::Color& color)
+	void GUIProgressBar::setProgressBarBackColor(const se::Color& _color)
 	{
-		progressBarBack->setColor(color);
+		progressBarBack->setColor(_color);
 	}
 
 	void GUIProgressBar::setProgressBarBackAlpha(const float a)

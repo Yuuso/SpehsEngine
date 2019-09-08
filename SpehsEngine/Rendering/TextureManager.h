@@ -75,9 +75,9 @@ namespace se
 		{
 			TextureData(const GLuint _dataID, const unsigned int _width, const unsigned int _height) : textureDataID(_dataID), width(_width), height(_height) {}
 			TextureData(const GLuint _dataID, const unsigned int _width, const unsigned int _height, const unsigned int _seed) : textureDataID(_dataID), width(_width), height(_height), noiseSeed(_seed) {}
-			unsigned int width, height;
-			unsigned int noiseSeed;
-			GLuint textureDataID;
+			unsigned int width = 0u, height = 0u;
+			unsigned int noiseSeed = 0u;
+			GLuint textureDataID = 0u;
 		};
 
 		class TextureManager
@@ -95,7 +95,7 @@ namespace se
 			TextureData* getTextureData(const size_t _hash);
 			size_t preloadTexture(const std::string& _texturePath, const TextureParameter& _parameters);
 			size_t preloadTexture(const std::string& _texturePath);
-			
+
 			TextureData* getCubeMapData(const std::string& _filepath, const std::string& _fileEnding, const TextureParameter& _parameters = TextureParameter::defaultParameters);
 			TextureData* getCubeMapData(const std::string& _negx, const std::string& _posx,
 				const std::string& _negy, const std::string& _posy,

@@ -7,7 +7,7 @@ namespace se
 	{
 		HeaderICMP::HeaderICMP()
 		{
-			std::fill(rep_, rep_ + sizeof(rep_), 0);
+			std::fill(rep_, rep_ + sizeof(rep_), uint8_t(0));
 		}
 
 		void HeaderICMP::setType(const uint8_t n)
@@ -59,7 +59,7 @@ namespace se
 		{
 			return decode(6, 7);
 		}
-		
+
 		uint16_t HeaderICMP::decode(const int a, const int b) const
 		{
 			return (rep_[a] << 8) + rep_[b];

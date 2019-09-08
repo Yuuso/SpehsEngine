@@ -260,7 +260,7 @@ namespace se
 	void GUIColorEditor::updatePosition()
 	{
 		GUIRectangle::updatePosition();
-		float scaleX(size.x / float(minSize.x));
+		const float scaleX(float(size.x) / float(minSize.x));
 		palette->setPosition(float(getXGlobal() + colorEditorBorder), float(getYGlobal() + colorEditorBorder));
 
 		const int sliderThirdHeight = int(std::floor(float(size.y - 2 * colorEditorBorder) / 3.0f));

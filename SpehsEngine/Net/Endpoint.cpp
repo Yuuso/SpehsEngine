@@ -24,7 +24,7 @@ namespace se
 				return Endpoint::invalid;
 			}
 
-			const net::Endpoint endpoint(std::string(argv[1]), std::atoi(argv[2]));
+			const net::Endpoint endpoint(std::string(argv[1]), Port::ValueType(std::atoi(argv[2])));
 
 			//Some endpoint validation...
 			int periodCount = 0;

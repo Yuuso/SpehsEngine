@@ -60,7 +60,7 @@ namespace se
 					//Start receiving
 					socket.setOnReceiveCallback(std::bind(&Connector::onReceive, this, std::placeholders::_1));
 
-					//Prepare to ping				
+					//Prepare to ping
 					{
 						std::lock_guard<std::mutex> lock(pingMutex);
 						lastPingSendTime = se::time::now();
@@ -193,7 +193,7 @@ namespace se
 				}
 			}
 
-			void Connector::onAccept(SocketTCP& socket)
+			void Connector::onAccept(SocketTCP& _socket)
 			{
 				//Nothing to do here
 			}
@@ -207,25 +207,22 @@ namespace se
 				: server(_server)
 				, socket(_server.ioService)
 				, id(nextClientId++)
-				, name()
-				, counterpart()
-				, localPortForWaiting(0)
 			{
 
 			}
 
-			void Client::onAccept(SocketTCP& socket)
+			void Client::onAccept(SocketTCP& _socket)
 			{
-				if (socket.isConnected())
+				if (_socket.isConnected())
 				{
 					//Send name and counterpart query
 					WriteBuffer buffer;
 					buffer.write(ariaMagicHeader);
 					buffer.write(PacketType::enter);
-					socket.sendPacket(buffer);
+					_socket.sendPacket(buffer);
 
 					//Start receiving
-					socket.setOnReceiveCallback(std::bind(&Client::onReceive, this, std::placeholders::_1));
+					_socket.setOnReceiveCallback(std::bind(&Client::onReceive, this, std::placeholders::_1));
 				}
 			}
 
@@ -391,7 +388,7 @@ namespace se
 							client = new Client(*this);
 							clients.push_back(client);
 						}
-						std::lock_guard<std::mutex> lock(client->enterDetailsMutex);
+						std::lock_guard<std::mutex> lock2(client->enterDetailsMutex);
 						client->name.clear();
 						client->counterpart.clear();
 						client->socket.startAccepting(localPort, std::bind(&Client::onAccept, client, std::placeholders::_1));

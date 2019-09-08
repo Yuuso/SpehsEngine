@@ -30,12 +30,12 @@ namespace se
 		void setAnimationSpeed(const time::Time& _speed);
 
 	private:
-		rendering::TextureData* textureData;
+		rendering::TextureData* textureData = nullptr;
 
-		uint16_t spriteFrameSize[2];
-		uint8_t frameStructure[2];
-		uint16_t maxFrames;
-		uint16_t currentFrame;
+		uint16_t spriteFrameSize[2] = { 0 };
+		uint8_t frameStructure[2] = { 0 };
+		uint16_t maxFrames = 0;
+		uint16_t currentFrame = 0;
 		time::Time animationSpeed = time::fromSeconds(1.0f);
 		time::Time speedCounter = animationSpeed;
 	};

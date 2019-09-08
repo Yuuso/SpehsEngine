@@ -135,8 +135,8 @@ namespace se
 			Projection p2 = projectPolygon(axis2[i], _vertexArray2, _size2);
 			if (!p1.overlap(p2))
 			{
-				delete axis1;
-				delete axis2;
+				delete [] axis1;
+				delete [] axis2;
 				return false;
 			}
 		}
@@ -148,8 +148,8 @@ namespace se
 			Projection p2 = projectPolygon(axis1[i], _vertexArray2, _size2);
 			if (!p1.overlap(p2))
 			{
-				delete axis1;
-				delete axis2;
+				delete [] axis1;
+				delete [] axis2;
 				return false;
 			}
 		}
@@ -182,8 +182,8 @@ namespace se
 			Projection p2 = projectPolygon(axis2[i], _vertexArray2, _size2);
 			if (!p1.overlap(p2))
 			{
-				delete axis1;
-				delete axis2;
+				delete [] axis1;
+				delete [] axis2;
 				return false;
 			}
 		}
@@ -195,8 +195,8 @@ namespace se
 			Projection p2 = projectPolygon(axis1[i], _vertexArray2, _size2);
 			if (!p1.overlap(p2))
 			{
-				delete axis1;
-				delete axis2;
+				delete [] axis1;
+				delete [] axis2;
 				return false;
 			}
 		}
@@ -223,18 +223,18 @@ namespace se
 		Projection p2 = projectCircle(axis2, _circleCenterPoint, _circleRadius);
 		if (!p1.overlap(p2))
 		{
-			delete axis1;
+			delete [] axis1;
 			return false;
 		}
 
 		//Loop through axes1
 		for (size_t i = 0; i < _size; i++)
 		{
-			Projection p1 = projectPolygon(axis1[i], _vertexArray, _size);
-			Projection p2 = projectCircle(axis1[i], _circleCenterPoint, _circleRadius);
-			if (!p1.overlap(p2))
+			Projection p3 = projectPolygon(axis1[i], _vertexArray, _size);
+			Projection p4 = projectCircle(axis1[i], _circleCenterPoint, _circleRadius);
+			if (!p3.overlap(p4))
 			{
-				delete axis1;
+				delete [] axis1;
 				return false;
 			}
 		}
@@ -260,18 +260,18 @@ namespace se
 		Projection p2 = projectCircle(axis2, _circleCenterPoint, _circleRadius);
 		if (!p1.overlap(p2))
 		{
-			delete axis1;
+			delete [] axis1;
 			return false;
 		}
 
 		//Loop through axes1
 		for (size_t i = 0; i < _size; i++)
 		{
-			Projection p1 = projectPolygon(axis1[i], _vertexArray, _size);
-			Projection p2 = projectCircle(axis1[i], _circleCenterPoint, _circleRadius);
-			if (!p1.overlap(p2))
+			Projection p3 = projectPolygon(axis1[i], _vertexArray, _size);
+			Projection p4 = projectCircle(axis1[i], _circleCenterPoint, _circleRadius);
+			if (!p3.overlap(p4))
 			{
-				delete axis1;
+				delete [] axis1;
 				return false;
 			}
 		}
@@ -425,11 +425,11 @@ namespace se
 
 				//Find normal
 				glm::vec2 pointVector = testPoint - getCenter(_vertexArray2, _size2);
-				for (unsigned i = 1; i < _size2; i++)
+				for (size_t j = 1u; j < _size2; j++)
 				{
-					if (glm::dot(pointVector, axis2[i]) > glm::dot(pointVector, deposit.points.back().normal))
+					if (glm::dot(pointVector, axis2[j]) > glm::dot(pointVector, deposit.points.back().normal))
 					{
-						deposit.points.back().normal = axis2[i];
+						deposit.points.back().normal = axis2[j];
 					}
 				}
 			}
@@ -445,11 +445,11 @@ namespace se
 
 				//Find normal
 				glm::vec2 pointVector = deposit.points.back().position - getCenter(_vertexArray1, _size1);
-				for (unsigned i = 1; i < _size1; i++)
+				for (size_t j = 1; j < _size1; j++)
 				{
-					if (glm::dot(pointVector, axis1[i]) > glm::dot(pointVector, deposit.points.back().normal))
+					if (glm::dot(pointVector, axis1[j]) > glm::dot(pointVector, deposit.points.back().normal))
 					{
-						deposit.points.back().normal = axis1[i];
+						deposit.points.back().normal = axis1[j];
 					}
 				}
 				deposit.points.back().normal = -deposit.points.back().normal; //?
@@ -552,11 +552,11 @@ namespace se
 
 				//Find normal
 				glm::vec2 pointVector = deposit.points.back().position - getCenter(_vertexArray2, _size2);
-				for (unsigned i = 1; i < _size2; i++)
+				for (size_t j = 1u; j < _size2; j++)
 				{
-					if (glm::dot(pointVector, axis2[i]) > glm::dot(pointVector, deposit.points.back().normal))
+					if (glm::dot(pointVector, axis2[j]) > glm::dot(pointVector, deposit.points.back().normal))
 					{
-						deposit.points.back().normal = axis2[i];
+						deposit.points.back().normal = axis2[j];
 					}
 				}
 			}
@@ -572,11 +572,11 @@ namespace se
 
 				//Find normal
 				glm::vec2 pointVector = deposit.points.back().position - getCenter(_vertexArray1, _size1);
-				for (unsigned i = 1; i < _size1; i++)
+				for (size_t j = 1u; j < _size1; j++)
 				{
-					if (glm::dot(pointVector, axis1[i]) > glm::dot(pointVector, deposit.points.back().normal))
+					if (glm::dot(pointVector, axis1[j]) > glm::dot(pointVector, deposit.points.back().normal))
 					{
-						deposit.points.back().normal = axis1[i];
+						deposit.points.back().normal = axis1[j];
 					}
 				}
 				deposit.points.back().normal = -deposit.points.back().normal; //?
@@ -612,7 +612,7 @@ namespace se
 		Projection p2 = projectCircle(axis2, _circleCenterPoint, _circleRadius);
 		if (!p1.overlap(p2))
 		{
-			delete axis1;
+			delete [] axis1;
 			return false;
 		}
 		else
@@ -628,16 +628,16 @@ namespace se
 		//Loop through axes1
 		for (size_t i = 0; i < _size; i++)
 		{
-			Projection p1 = projectPolygon(axis1[i], _vertexArray, _size);
-			Projection p2 = projectCircle(axis1[i], _circleCenterPoint, _circleRadius);
-			if (!p1.overlap(p2))
+			Projection p3 = projectPolygon(axis1[i], _vertexArray, _size);
+			Projection p4 = projectCircle(axis1[i], _circleCenterPoint, _circleRadius);
+			if (!p3.overlap(p4))
 			{
-				delete axis1;
+				delete [] axis1;
 				return false;
 			}
 			else
 			{
-				float o = p1.getOverlap(p2);
+				float o = p3.getOverlap(p4);
 				if (o < overlap)
 				{
 					overlap = o;
@@ -719,7 +719,7 @@ namespace se
 		Projection p2 = projectCircle(axis2, _circleCenterPoint, _circleRadius);
 		if (!p1.overlap(p2))
 		{
-			delete axis1;
+			delete [] axis1;
 			return false;
 		}
 		else
@@ -735,16 +735,16 @@ namespace se
 		//Loop through axes1
 		for (size_t i = 0; i < _size; i++)
 		{
-			Projection p1 = projectPolygon(axis1[i], _vertexArray, _size);
-			Projection p2 = projectCircle(axis1[i], _circleCenterPoint, _circleRadius);
-			if (!p1.overlap(p2))
+			Projection p3 = projectPolygon(axis1[i], _vertexArray, _size);
+			Projection p4 = projectCircle(axis1[i], _circleCenterPoint, _circleRadius);
+			if (!p3.overlap(p4))
 			{
-				delete axis1;
+				delete [] axis1;
 				return false;
 			}
 			else
 			{
-				float o = p1.getOverlap(p2);
+				float o = p3.getOverlap(p4);
 				if (o < overlap)
 				{
 					overlap = o;

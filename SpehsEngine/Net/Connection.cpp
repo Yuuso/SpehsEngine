@@ -246,7 +246,8 @@ namespace se
 								}
 								else
 								{
-									spehsReceiveHandler(ReadBuffer(readBuffer[readBuffer.getOffset()], readBuffer.getBytesRemaining()));
+									ReadBuffer readBuffer2(readBuffer[readBuffer.getOffset()], readBuffer.getBytesRemaining());
+									spehsReceiveHandler(readBuffer2);
 								}
 							}
 							else
@@ -502,7 +503,6 @@ namespace se
 				//Generate unacknowledged fragments
 				if (!reliablePacketOut.delivered && reliablePacketOut.unacknowledgedFragments.empty())
 				{
-					size_t offset = reliablePacketOut.payloadOffset;
 					const size_t offsetEnd = reliablePacketOut.payloadOffset + reliablePacketOut.payload.size();
 					size_t remaining = reliablePacketOut.payload.size();
 					while (remaining > 0)
@@ -519,7 +519,6 @@ namespace se
 				const time::Time resendTime = estimatedRoundTripTime != time::Time::zero
 					? estimatedRoundTripTime.value + estimatedRoundTripTime.value / 6
 					: se::time::fromSeconds(1.0f / 10.0f);
-				const time::Time now = time::now();
 				for (size_t f = 0; f < reliablePacketOut.unacknowledgedFragments.size(); f++)
 				{
 					ReliablePacketOut::UnacknowledgedFragment &unacknowledgedFragment = reliablePacketOut.unacknowledgedFragments[f];

@@ -54,10 +54,10 @@ namespace se
 				const size_t id;
 
 				std::mutex enterDetailsMutex;
-				bool enterDetailsChanged;
+				bool enterDetailsChanged = false;
 				std::string name;
 				std::string counterpart;
-				Port localPortForWaiting;
+				Port localPortForWaiting = 0u;
 			};
 
 			/* Aria server instance, thread-safe */

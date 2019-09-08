@@ -57,8 +57,8 @@ namespace se
 			//const std::vector<JoystickButtonDownEvent>& joystickButtonDownEvents = eventCatcher.get;
 			//const std::vector<JoystickButtonReleaseEvent>& joystickButtonReleaseEvents = eventCatcher.get;
 			//const std::vector<JoystickAxisEvent>& joystickAxisEvents = eventCatcher.get;
-			const std::vector<QuitEvent>& quitEvents = eventCatcher.getQuitEvents();
-			const std::vector<FileDropEvent>& fileDropEvents = eventCatcher.getFileDropEvents();
+			//const std::vector<QuitEvent>& quitEvents = eventCatcher.getQuitEvents();
+			//const std::vector<FileDropEvent>& fileDropEvents = eventCatcher.getFileDropEvents();
 
 			// Signal events
 			signalEventsImpl(mouseHoverEvents, mouseHoverSignals);

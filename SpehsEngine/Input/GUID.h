@@ -12,14 +12,17 @@ namespace se
 {
 	struct GUID
 	{
-		GUID();
+		GUID() = default;
 		GUID(const SDL_JoystickGUID& other);
+		GUID(const SDL_JoystickGUID&& other);
 		void operator=(GUID& other);
 		void operator=(SDL_JoystickGUID& other);
-		bool operator==(GUID& other);
-		bool operator==(SDL_JoystickGUID& other);
-		bool operator!=(GUID& other);
-		uint8_t operator[](int index);
+		void operator=(GUID&& other);
+		void operator=(SDL_JoystickGUID&& other);
+		bool operator==(const GUID& other) const;
+		bool operator==(const SDL_JoystickGUID& other) const;
+		bool operator!=(const GUID& other) const;
+		uint8_t operator[](const int index) const;
 		uint8_t guid[16];
 	};
 }

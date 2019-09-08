@@ -240,11 +240,11 @@ namespace se
 				window->open();
 				if (window != windows.back())
 				{//Send window to back of the windows vector
-					for (unsigned i = 0; i < windows.size(); i++)
+					for (size_t j = 0; j < windows.size(); j++)
 					{
-						if (windows[i] == window)
+						if (windows[j] == window)
 						{
-							windows.erase(windows.begin() + i);
+							windows.erase(windows.begin() + j);
 							windows.push_back(window);
 							updateDepths();
 							return;
@@ -292,11 +292,15 @@ namespace se
 
 	void GUIWindowManager::updateDepths()
 	{
-		for (unsigned i = 0; i < windows.size(); i++)
-			windows[i]->setDepth(systemDepth + i * depthPerWindow);
+		for (size_t i = 0; i < windows.size(); i++)
+		{
+			windows[i]->setDepth(systemDepth + int16_t(i * depthPerWindow));
+		}
 		popupShade->setPlaneDepth(int16_t(systemDepth + windows.size() * depthPerWindow));
-		for (unsigned i = 0; i < popups.size(); i++)
+		for (size_t i = 0; i < popups.size(); i++)
+		{
 			popups[i]->setDepth(int16_t(systemDepth + windows.size() * depthPerWindow + 1 + (popups.size() - 1) * 20 - i * 20));
+		}
 	}
 
 	void GUIWindowManager::setPopupShadeColor(const se::Color& col)

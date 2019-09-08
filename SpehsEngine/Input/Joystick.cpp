@@ -38,7 +38,7 @@ namespace se
 
 			ID = SDL_JoystickInstanceID(joystick);
 			name = SDL_JoystickNameForIndex(index);
-			guid = SDL_JoystickGetDeviceGUID(index);
+			guid = GUID(SDL_JoystickGetDeviceGUID(index));
 			buttonCount = SDL_JoystickNumButtons(joystick);
 			axisCount = SDL_JoystickNumAxes(joystick);
 			hatCount = SDL_JoystickNumHats(joystick);
@@ -120,7 +120,7 @@ namespace se
 				else if (inputManager.joysticks[i]->guid == guid)
 					index++;//Found same guid among joysticks before this
 			}
-			return ~0;
+			return ~0u;
 		}
 	}
 }

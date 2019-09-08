@@ -46,10 +46,10 @@ namespace se
 		typeCharacter->setPlaneDepth(depth + 1);
 	}
 
-	void GUIStringEditor::setStringSize(const int size)
+	void GUIStringEditor::setStringSize(const int _size)
 	{
-		GUIRectangle::setStringSize(size);
-		typeCharacter->setFontSize(size);
+		GUIRectangle::setStringSize(_size);
+		typeCharacter->setFontSize(_size);
 	}
 
 	void GUIStringEditor::setStringSizeRelative(const int relativeSize)
@@ -207,9 +207,9 @@ namespace se
 		//COMMAND INPUT
 		const bool ctrl(getInputManager().isKeyDown(KEYBOARD_LCTRL) || getInputManager().isKeyDown(KEYBOARD_RCTRL));
 		const bool shift(getInputManager().isKeyDown(KEYBOARD_LSHIFT) || getInputManager().isKeyDown(KEYBOARD_RSHIFT));
-		for (unsigned i = 0; i < keyboardRecorder.commandInput.size(); i++)
+		for (size_t c = 0; c < keyboardRecorder.commandInput.size(); c++)
 		{
-			switch (keyboardRecorder.commandInput[i])
+			switch (keyboardRecorder.commandInput[c])
 			{
 			case KEYBOARD_BACKSPACE:
 				if (typerPosition > 0)
@@ -218,9 +218,9 @@ namespace se
 					if (ctrl)
 					{
 						length = 0;
-						for (int i = typerPosition - 1; i >= 0; i--)
+						for (int j = typerPosition - 1; j >= 0; j--)
 						{
-							if (input[i] == ' ')
+							if (input[size_t(j)] == ' ')
 								break;
 							length++;
 						}
@@ -242,9 +242,9 @@ namespace se
 					if (ctrl)
 					{//Erase to the end of current word
 						length = 0;
-						for (unsigned i = typerPosition; i < input.size(); i++)
+						for (size_t j = typerPosition; j < input.size(); j++)
 						{
-							if (input[i] == ' ')
+							if (input[j] == ' ')
 								break;
 							length++;
 						}
@@ -261,9 +261,9 @@ namespace se
 				if (ctrl)
 				{
 					length = 0;
-					for (int i = typerPosition - 1; i >= 0; i--)
+					for (int j = typerPosition - 1; j >= 0; j--)
 					{
-						if (input[i] == ' ')
+						if (input[j] == ' ')
 							break;
 						length++;
 					}
@@ -281,9 +281,9 @@ namespace se
 				if (ctrl)
 				{
 					length = 0;
-					for (size_t i = size_t(typerPosition); i < input.size(); i++)
+					for (size_t j = size_t(typerPosition); j < input.size(); j++)
 					{
-						if (input[i] == ' ')
+						if (input[j] == ' ')
 							break;
 						length++;
 					}

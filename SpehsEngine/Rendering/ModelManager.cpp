@@ -78,7 +78,11 @@ namespace se
 			{
 				aiFace& face = _mesh->mFaces[i];
 				for (unsigned int j = 0; j < face.mNumIndices; j++)
-					mesh.indices.push_back(face.mIndices[j]);
+				{
+					unsigned int index = face.mIndices[size_t(j)];
+					se_assert(index < std::numeric_limits<GLushort>::max())
+					mesh.indices.push_back(GLushort(index));
+				}
 			}
 
 			// Materials

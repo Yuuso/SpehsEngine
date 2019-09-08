@@ -25,9 +25,9 @@ namespace se
 				}
 				delete (FT_Face*)ftFace;
 
-				for (unsigned i = 0; i < characters.size(); i++)
+				for (const std::pair<const GLchar, Character> &pair : characters)
 				{
-					glDeleteTextures(1, &characters[i].textureID);
+					glDeleteTextures(1, &pair.second.textureID);
 				}
 			}
 		}

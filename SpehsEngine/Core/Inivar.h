@@ -39,7 +39,7 @@ namespace se
 		operator T() const;
 		bool operator==(const T &other) const;
 		bool operator!=(const T &other) const;
-		
+
 		std::string toString() const override;
 		bool fromString(const std::string& string) override;
 
@@ -54,8 +54,8 @@ namespace se
 		mutable std::recursive_mutex mutex;
 		T value;
 	};
-	
-	//Get nicely formated type name
+
+	// Get nicely formated type name
 	template<typename T>
 	inline std::string getTypeName()
 	{
@@ -68,7 +68,7 @@ namespace se
 	}
 
 
-	//TEMPLATE DEFINITIONS
+	// TEMPLATE DEFINITIONS
 
 	template<typename T>
 	Inivar<T>::Inivar(Inisection& _section, const std::string& _name, const T& _value)

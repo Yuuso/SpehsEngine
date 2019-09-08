@@ -144,7 +144,7 @@ namespace se
 				for (unsigned i = 97; i <= 122; i++)
 				{
 					if (tryKey(i))
-						characterInput.push_back(i + capital);
+						characterInput.push_back(char(i + unsigned(capital)));
 				}
 
 				//Numbers
@@ -153,9 +153,9 @@ namespace se
 					if (tryKey(i))
 					{
 						if (shiftDown)
-							characterInput.push_back(i - 10);
+							characterInput.push_back(char(i - 10));
 						else
-							characterInput.push_back(i);
+							characterInput.push_back(char(i));
 					}
 				}
 				for (int i = KEYBOARD_KP_1; i <= KEYBOARD_KP_9; i++)

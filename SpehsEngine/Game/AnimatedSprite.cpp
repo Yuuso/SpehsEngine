@@ -40,14 +40,14 @@ namespace se
 			}
 			speedCounter = animationSpeed;
 		}
-		
+
 		glm::vec2 currentFramePosition(currentFrame, 0);
 		while (currentFramePosition.x >= frameStructure[0])
 		{
 			currentFramePosition.x -= frameStructure[0];
 			currentFramePosition.y++;
 		}
-		
+
 		sprite->worldVertexArray[0].uv.u = float(spriteFrameSize[0]) / float(textureData->width) * currentFramePosition.x;
 		sprite->worldVertexArray[0].uv.v = float(spriteFrameSize[1]) / float(textureData->height) * currentFramePosition.y;
 		sprite->worldVertexArray[1].uv.u = sprite->worldVertexArray[0].uv.u + float(spriteFrameSize[0]) / float(textureData->width);
@@ -74,8 +74,8 @@ namespace se
 
 	void AnimatedSprite::setAnimation(const glm::ivec2& _frameSize, const uint8_t _rows, const uint8_t _columns, const uint16_t _amountOfFrames, const uint16_t _startingFrame)
 	{
-		spriteFrameSize[0] = _frameSize.x;
-		spriteFrameSize[1] = _frameSize.y;
+		spriteFrameSize[0] = uint16_t(_frameSize.x);
+		spriteFrameSize[1] = uint16_t(_frameSize.y);
 		frameStructure[0] = _columns;
 		frameStructure[1] = _rows;
 		maxFrames = _amountOfFrames;

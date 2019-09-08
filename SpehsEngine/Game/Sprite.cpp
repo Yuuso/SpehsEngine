@@ -61,7 +61,7 @@ namespace se
 	{
 		sprite->setAlpha(_a);
 	}
-	void Sprite::setDepth(const int _depth)
+	void Sprite::setDepth(const PlaneDepth _depth)
 	{
 		sprite->setPlaneDepth(_depth);
 	}
