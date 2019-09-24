@@ -14,7 +14,7 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <WarningLevel>Level4</WarningLevel>
-      <AdditionalOptions>/wd26439 /wd26495 /wd4201 /wd4100 /wd4127 %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions>/wd26439 /wd26495 /wd4201 /wd4100 /wd4127 /w44062 %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Lib>
       <AdditionalLibraryDirectories>$(SPEHSENGINE_ROOT)/Dependencies/lib/;$(SPEHSENGINE_ROOT)/bin/$(Platform)/$(Configuration)/$(PlatformToolset);</AdditionalLibraryDirectories>

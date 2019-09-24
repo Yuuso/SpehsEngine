@@ -7,10 +7,11 @@ namespace se
 	{
 		switch (endianness)
 		{
+		case Endianness::unknown: return "unknown";
 		case Endianness::big: return "big";
 		case Endianness::little: return "little";
-		default: return "unknown";
 		}
+		return "error";
 	}
 
 	enum
