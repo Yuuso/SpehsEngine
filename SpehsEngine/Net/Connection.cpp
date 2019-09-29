@@ -135,6 +135,10 @@ namespace se
 			writeBuffer.write(PacketType::connect);
 			writeBuffer.write(connectPacket);
 			writeBuffer.swap(reliablePacketSendQueue.back().payload);
+
+#ifndef SE_FINAL_RELEASE // Disable timeouts in dev builds by default
+			setTimeoutEnabled(false);
+#endif
 		}
 
 		Connection::~Connection()
@@ -192,10 +196,13 @@ namespace se
 				}
 
 				// Timeout disconnection
-				const time::Time timeoutTime = reliableHeartbeatInterval * 5;
-				if (time::now() - lastReceiveTime >= timeoutTime)
+				if (timeoutEnabled)
 				{
-					setConnected(false);
+					const time::Time timeoutTime = reliableHeartbeatInterval * 5;
+					if (time::now() - lastReceiveTime >= timeoutTime)
+					{
+						setConnected(false);
+					}
 				}
 			}
 		}
@@ -1070,6 +1077,18 @@ namespace se
 		{
 			std::lock_guard<std::recursive_mutex> lock(mutex);
 			scopedConnection = connectionStatusChangedSignal.connect(callback);
+		}
+
+		void Connection::setTimeoutEnabled(const bool value)
+		{
+			std::lock_guard<std::recursive_mutex> lock(mutex);
+			timeoutEnabled = value;
+		}
+
+		bool Connection::getTimeoutEnabled() const
+		{
+			std::lock_guard<std::recursive_mutex> lock(mutex);
+			return timeoutEnabled;
 		}
 
 		void Connection::setSimulatedPacketLoss(const float chanceToDropIncoming, const float chanceToDropOutgoing)

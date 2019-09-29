@@ -49,6 +49,8 @@ namespace se
 
 			void connectToConnectionStatusChangedSignal(boost::signals2::scoped_connection& scopedConnection, const std::function<void(const bool)>& callback);
 
+			void setTimeoutEnabled(const bool value);
+			bool getTimeoutEnabled() const;
 			void setSimulatedPacketLoss(const float chanceToDropIncoming, const float chanceToDropOutgoing);
 			void setDebugLogLevel(const int level);
 			int getDebugLogLevel() const;
@@ -204,6 +206,7 @@ namespace se
 			size_t receivedBytesUnreliable = 0u;
 
 			int debugLogLevel = 0;
+			bool timeoutEnabled = true;
 			float simulatedPacketLossChanceIncoming = 0.0f;
 			float simulatedPacketLossChanceOutgoing = 0.0f;
 		};
