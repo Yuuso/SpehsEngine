@@ -162,6 +162,7 @@ namespace se
 					buffer.read(packetType);
 					switch (packetType)
 					{
+					case PacketType::enter: break;
 					case PacketType::counterpartEndpointAccept:
 						enterResult = EnterResult::accept;
 						break;
@@ -236,6 +237,7 @@ namespace se
 					buffer.read(packetType);
 					switch (packetType)
 					{
+					default: break;
 					case PacketType::enter:
 					{//Received name, counterpart and wait port
 						std::lock_guard<std::mutex> lock(enterDetailsMutex);

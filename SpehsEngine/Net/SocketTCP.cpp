@@ -1035,6 +1035,8 @@ namespace se
 			//Process packet
 			switch (packetType)
 			{
+			default:
+				break;
 			case PacketType::undefined:
 			{
 				const size_t userBytes = buffer.getBytesRemaining();
