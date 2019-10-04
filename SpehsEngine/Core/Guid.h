@@ -22,7 +22,7 @@ namespace se
 		{
 			none = 0,
 			engine = 1 << 0, // the guid refers to an engine object
-			user = 1 << 1, // the guid was created by a (non-developer) user
+			temporary = 1 << 1, // the guid refers to a temporary type
 			// reserved flags are reserved for future engine use
 			reserved6 = 1 << 7,
 			reserved5 = 1 << 6,
