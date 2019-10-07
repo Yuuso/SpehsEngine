@@ -1,8 +1,11 @@
 #pragma once
-#include <unordered_map>
+
 #include "SpehsEngine/Core/Archive.h"
 #include "SpehsEngine/Core/ReadBuffer.h"
+#include "SpehsEngine/Core/TypeTraits.h"
 #include "SpehsEngine/Core/WriteBuffer.h"
+#include <unordered_map>
+
 
 namespace se
 {
@@ -47,7 +50,59 @@ namespace se
 	}
 
 	template<typename KeyType, typename T, typename Hasher = std::hash<KeyType>, typename SizeType = size_t>
-	Archive writeToArchive(const std::unordered_map<KeyType, T, Hasher>& unorderedMap)
+	typename std::enable_if<IsUniquePtr<T>::value, Archive>::type writeToArchive(const std::unordered_map<KeyType, T, Hasher>& unorderedMap)
+	{
+		static_assert(std::is_integral<SizeType>::value, "SizeType must be integral.");
+		Archive archive;
+		const SizeType size = unorderedMap.size();
+		se_write_to_archive(archive, size);
+		size_t index = 0;
+		for (std::unordered_map<KeyType, T, Hasher>::const_iterator it = unorderedMap.begin(); it != unorderedMap.end(); it++)
+		{
+			archive.write(std::to_string(index) + "k", it->first);
+			const bool allocated = it->second.get() != nullptr;
+			archive.write(std::to_string(index) + "va", allocated);
+			if (allocated)
+			{
+				archive.write(std::to_string(index) + "vv", *it->second.get());
+			}
+			index++;
+		}
+		return archive;
+	}
+
+	template<typename KeyType, typename T, typename Hasher = std::hash<KeyType>, typename SizeType = size_t>
+	typename std::enable_if<IsUniquePtr<T>::value, bool>::type readFromArchive(const Archive& archive, std::unordered_map<KeyType, T, Hasher>& unorderedMap)
+	{
+		static_assert(std::is_integral<SizeType>::value, "SizeType must be integral.");
+		SizeType size = 0;
+		se_read_from_archive(archive, size);
+		for (size_t i = 0; i < size; i++)
+		{
+			KeyType key;
+			if (!archive.read(std::to_string(i) + "k", key))
+			{
+				return false;
+			}
+			bool allocated = false;
+			if (!archive.read(std::to_string(i) + "va", allocated))
+			{
+				return false;
+			}
+			if (allocated)
+			{
+				unorderedMap[key].reset(new T::element_type());
+				if (!archive.read(std::to_string(i) + "vv", *unorderedMap[key].get()))
+				{
+					return false;
+				}
+			}
+		}
+		return true;
+	}
+
+	template<typename KeyType, typename T, typename Hasher = std::hash<KeyType>, typename SizeType = size_t>
+	typename std::enable_if<!IsUniquePtr<T>::value, Archive>::type writeToArchive(const std::unordered_map<KeyType, T, Hasher>& unorderedMap)
 	{
 		static_assert(std::is_integral<SizeType>::value, "SizeType must be integral.");
 		Archive archive;
@@ -64,7 +119,7 @@ namespace se
 	}
 
 	template<typename KeyType, typename T, typename Hasher = std::hash<KeyType>, typename SizeType = size_t>
-	bool readFromArchive(const Archive& archive, std::unordered_map<KeyType, T, Hasher>& unorderedMap)
+	typename std::enable_if<!IsUniquePtr<T>::value, bool>::type readFromArchive(const Archive& archive, std::unordered_map<KeyType, T, Hasher>& unorderedMap)
 	{
 		static_assert(std::is_integral<SizeType>::value, "SizeType must be integral.");
 		SizeType size = 0;
