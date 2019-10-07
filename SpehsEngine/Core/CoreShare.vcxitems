@@ -99,6 +99,7 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)SystemMessageBox.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Thread.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)SE_Time.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)TypeTraits.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Vertex.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)WatchedValue.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)WriteBuffer.h" />

@@ -99,6 +99,7 @@
     </ClInclude>
     <ClInclude Include="$(MSBuildThisFileDirectory)ScopedFrameLimiter.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)SystemMessageBox.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)TypeTraits.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="File">
