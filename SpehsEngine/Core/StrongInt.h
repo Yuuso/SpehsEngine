@@ -24,6 +24,7 @@ struct p_TypeName \
 		se_read(readBuffer, value); \
 		return true; \
 	} \
+	bool isValid() const { return value != p_InvalidValue; } \
 	p_TypeName() = default; \
 	p_TypeName(const p_IntType _value) : value(_value) {} \
 	bool operator==(const p_TypeName& other) const { return value == other.value; } \
