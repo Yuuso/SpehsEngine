@@ -86,6 +86,7 @@ namespace se
 
 			void setDefaultTexture(const std::string& _filepath, const TextureParameter& _parameters);
 			void setDefaultTexture(const std::string& _filepath);
+			const TextureData* getDefaultTexture() const { return defaultTexture; }
 
 			bool isTexture(const std::string& _ID);
 			bool isTexture(const size_t _hash);

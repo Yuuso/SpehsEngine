@@ -56,7 +56,7 @@ namespace se
 			void setStaticDraw(const bool _value);
 			void setTexture(TextureManager& _textureManager, const std::string& _texturePath, const size_t _index = 0);
 			void setTexture(TextureManager& _textureManager, const size_t _textureID, const size_t _index = 0);
-			void setTexture(TextureData* _textureDataPtr, const size_t _index = 0);
+			void setTexture(TextureData& _textureDataPtr, const size_t _index = 0);
 
 
 			// --------------------

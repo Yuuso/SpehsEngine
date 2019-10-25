@@ -93,9 +93,9 @@ namespace se
 		{
 			mesh->setTexture(_textureManager, _textureID, _index);
 		}
-		void Plane3D::setTexture(TextureData* _textureDataPtr, const size_t _index)
+		void Plane3D::setTexture(TextureData& _textureData, const size_t _index)
 		{
-			mesh->setTexture(_textureDataPtr, _index);
+			mesh->setTexture(_textureData, _index);
 		}
 
 		glm::vec3 Plane3D::getPosition() const

@@ -209,10 +209,10 @@ namespace se
 			for (size_t i = 0; i < meshes.size(); i++)
 				meshes[i]->setTexture(_textureManager, _textureID, _index);
 		}
-		void Model::setTexture(TextureData* _textureDataPtr, const size_t _index)
+		void Model::setTexture(TextureData& _textureData, const size_t _index)
 		{
 			for (size_t i = 0; i < meshes.size(); i++)
-				meshes[i]->setTexture(_textureDataPtr, _index);
+				meshes[i]->setTexture(_textureData, _index);
 		}
 
 

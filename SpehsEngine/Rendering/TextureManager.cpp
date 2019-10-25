@@ -82,11 +82,7 @@ namespace se
 			{
 				return it->second;
 			}
-			TextureData* temp = toTexture(_texturePath, _parameters);
-			if (temp)
-				return temp;
-			else
-				return defaultTexture;
+			return toTexture(_texturePath, _parameters);
 		}
 
 		TextureData* TextureManager::getTextureData(const std::string& _texturePath)
@@ -102,7 +98,7 @@ namespace se
 				return it->second;
 			}
 			log::warning("Texture not found, using default.");
-			return defaultTexture;
+			return nullptr;
 		}
 
 		size_t TextureManager::preloadTexture(const std::string& _texturePath, const TextureParameter& _parameters)

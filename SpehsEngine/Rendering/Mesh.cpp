@@ -306,21 +306,33 @@ namespace se
 		}
 		void Mesh::setTexture(TextureManager& _textureManager, const std::string& _texturePath, const size_t _index)
 		{
-			TextureData* value = _textureManager.getTextureData(_texturePath);
-			setTexture(value, _index);
+			if (TextureData* value = _textureManager.getTextureData(_texturePath))
+			{
+				setTexture(*value, _index);
+			}
+			else if (const TextureData* defaultTexture = _textureManager.getDefaultTexture())
+			{
+				setTexture(*defaultTexture, _index);
+			}
 		}
 		void Mesh::setTexture(TextureManager& _textureManager, const size_t _textureID, const size_t _index)
 		{
-			TextureData* value = _textureManager.getTextureData(_textureID);
-			setTexture(value, _index);
+			if (TextureData* value = _textureManager.getTextureData(_textureID))
+			{
+				setTexture(*value, _index);
+			}
+			else if (const TextureData* defaultTexture = _textureManager.getDefaultTexture())
+			{
+				setTexture(*defaultTexture, _index);
+			}
 		}
-		void Mesh::setTexture(TextureData* _textureDataPtr, const size_t _index)
+		void Mesh::setTexture(const TextureData& _textureData, const size_t _index)
 		{
 			if (textureDataIDs.size() < (_index + 1))
 				textureDataIDs.resize(_index + 1);
-			else if (_textureDataPtr->textureDataID == textureDataIDs[_index])
+			else if (_textureData.textureDataID == textureDataIDs[_index])
 				return;
-			textureDataIDs[_index] = _textureDataPtr->textureDataID;
+			textureDataIDs[_index] = _textureData.textureDataID;
 			unbatch();
 		}
 

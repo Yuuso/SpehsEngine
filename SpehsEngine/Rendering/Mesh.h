@@ -72,7 +72,7 @@ namespace se
 
 			void setTexture(TextureManager& _textureManager, const std::string& _texturePath, const size_t _index = 0);
 			void setTexture(TextureManager& _textureManager, const size_t _textureID, const size_t _index = 0);
-			void setTexture(TextureData* _textureDataPtr, const size_t _index);
+			void setTexture(const TextureData& _textureDataPtr, const size_t _index);
 
 			const std::string& getName() const { return name; }
 			const std::vector<Vertex3D>& getVertices() const { return vertexArray; }

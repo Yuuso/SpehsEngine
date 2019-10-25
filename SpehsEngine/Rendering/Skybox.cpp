@@ -48,13 +48,17 @@ namespace se
 		void Skybox::setCubeMap(TextureManager& _textureManager, const std::string& _negx, const std::string& _posx, const std::string& _negy,
 								const std::string& _posy, const std::string& _negz, const std::string& _posz)
 		{
-			se::rendering::TextureData* data = _textureManager.getCubeMapData(_negx, _posx, _negy, _posy, _negz, _posz);
-			model->setTexture(data);
+			if (se::rendering::TextureData* const data = _textureManager.getCubeMapData(_negx, _posx, _negy, _posy, _negz, _posz))
+			{
+				model->setTexture(*data);
+			}
 		}
 		void Skybox::setCubeMap(TextureManager& _textureManager, const std::string& _filepath, const std::string& _fileEnding)
 		{
-			se::rendering::TextureData* data = _textureManager.getCubeMapData(_filepath, _fileEnding);
-			model->setTexture(data);
+			if (se::rendering::TextureData* const data = _textureManager.getCubeMapData(_filepath, _fileEnding))
+			{
+				model->setTexture(*data);
+			}
 		}
 		void Skybox::setCubeMap(TextureManager& _textureManager, const size_t& _hash)
 		{
