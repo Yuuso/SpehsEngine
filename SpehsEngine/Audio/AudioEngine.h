@@ -3,6 +3,7 @@
 
 #include <vector>
 #include <glm/vec2.hpp>
+#include <glm/vec3.hpp>
 
 
 struct ALCdevice_struct;
@@ -39,14 +40,19 @@ namespace se
 			static void setMaxSources(const unsigned int _maxSources);
 
 			static void setListenerPosition(const glm::vec2& _pos);
-			static void setListenerPosition(const glm::vec2& _pos, const float _z);
+			static void setListenerPosition(const glm::vec3& _pos);
+
 			static void setListenerVelocity(const glm::vec2& _vel);
-			static void setListenerVelocity(const glm::vec2& _vel, const float _z);
+			static void setListenerVelocity(const glm::vec3& _vel);
+
+			static void setListenerUp(const glm::vec3& _up);
+			static void setListenerForward(const glm::vec3& _forward);
+
 			static void setListenerGain(const float _gain);
 
 			//These correction factors are applied to all sound and the listener positions and velocities. They are used to set the scale of the units used in positions.
 			static void setPositionCorrectionFactor(const glm::vec2& _poscor);
-			static void setScaleCorrectionFactor(const float _sclcor); //z
+			static void setPositionCorrectionFactor(const glm::vec3& _poscor);
 
 			static glm::vec2 getListenerPosition();
 			static glm::vec2 getListenerVelocity();
@@ -62,7 +68,7 @@ namespace se
 
 			static float masterVolume;
 
-		protected:			
+		protected:
 			static void updateGain(); //Call when master volume has changed
 			static bool getFreeSource(SoundSource* _soundSource);
 		};

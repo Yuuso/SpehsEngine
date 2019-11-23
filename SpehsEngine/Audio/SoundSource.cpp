@@ -11,8 +11,7 @@
 #include <algorithm>
 
 
-extern glm::vec2 positionCorrectionFactor;
-extern float scaleCorrectionFactor;
+extern glm::vec3 positionCorrectionFactor;
 
 extern const float defaultRollOffFactor;
 
@@ -421,8 +420,8 @@ namespace se
 
 		void ActiveSoundSource::setParameters()
 		{
-			alSource3f(source->sourceID, AL_POSITION, position.x * positionCorrectionFactor.x, position.y * positionCorrectionFactor.y, position.z * scaleCorrectionFactor);
-			alSource3f(source->sourceID, AL_VELOCITY, velocity.x * positionCorrectionFactor.x, velocity.y * positionCorrectionFactor.y, velocity.z * scaleCorrectionFactor);
+			alSource3f(source->sourceID, AL_POSITION, position.x * positionCorrectionFactor.x, position.y * positionCorrectionFactor.y, position.z * positionCorrectionFactor.z);
+			alSource3f(source->sourceID, AL_VELOCITY, velocity.x * positionCorrectionFactor.x, velocity.y * positionCorrectionFactor.y, velocity.z * positionCorrectionFactor.z);
 			alSource3f(source->sourceID, AL_DIRECTION, direction.x, direction.y, 0.0f);
 			alSourcef(source->sourceID, AL_ROLLOFF_FACTOR, rollOffFactor);
 			SoundSource::setParameters();
@@ -434,7 +433,7 @@ namespace se
 			position.y = _pos.y;
 			if (source)
 			{
-				alSource3f(source->sourceID, AL_POSITION, position.x * positionCorrectionFactor.x, position.y * positionCorrectionFactor.y, position.z * scaleCorrectionFactor);
+				alSource3f(source->sourceID, AL_POSITION, position.x * positionCorrectionFactor.x, position.y * positionCorrectionFactor.y, position.z * positionCorrectionFactor.z);
 			}
 		}
 
@@ -445,7 +444,7 @@ namespace se
 			position.y = _z;
 			if (source)
 			{
-				alSource3f(source->sourceID, AL_POSITION, position.x * positionCorrectionFactor.x, position.y * positionCorrectionFactor.y, position.z * scaleCorrectionFactor);
+				alSource3f(source->sourceID, AL_POSITION, position.x * positionCorrectionFactor.x, position.y * positionCorrectionFactor.y, position.z * positionCorrectionFactor.z);
 			}
 		}
 
@@ -455,7 +454,7 @@ namespace se
 			velocity.y = _vel.y;
 			if (source)
 			{
-				alSource3f(source->sourceID, AL_VELOCITY, velocity.x * positionCorrectionFactor.x, velocity.y * positionCorrectionFactor.y, velocity.z * scaleCorrectionFactor);
+				alSource3f(source->sourceID, AL_VELOCITY, velocity.x * positionCorrectionFactor.x, velocity.y * positionCorrectionFactor.y, velocity.z * positionCorrectionFactor.z);
 			}
 		}
 
@@ -466,7 +465,7 @@ namespace se
 			velocity.z = _z;
 			if (source)
 			{
-				alSource3f(source->sourceID, AL_VELOCITY, velocity.x * positionCorrectionFactor.x, velocity.y * positionCorrectionFactor.y, velocity.z * scaleCorrectionFactor);
+				alSource3f(source->sourceID, AL_VELOCITY, velocity.x * positionCorrectionFactor.x, velocity.y * positionCorrectionFactor.y, velocity.z * positionCorrectionFactor.z);
 			}
 		}
 
@@ -484,7 +483,7 @@ namespace se
 			position.z = _z;
 			if (source)
 			{
-				alSource3f(source->sourceID, AL_POSITION, position.x * positionCorrectionFactor.x, position.y * positionCorrectionFactor.y, position.z * scaleCorrectionFactor);
+				alSource3f(source->sourceID, AL_POSITION, position.x * positionCorrectionFactor.x, position.y * positionCorrectionFactor.y, position.z * positionCorrectionFactor.z);
 			}
 		}
 

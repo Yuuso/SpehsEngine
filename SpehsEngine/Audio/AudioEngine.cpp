@@ -16,10 +16,9 @@
 #define DEFAULT_MAX_SOURCES 255
 
 
-glm::vec2 positionCorrectionFactor = glm::vec2(1.0f, 1.0f);
-float scaleCorrectionFactor = 1.0f;
+glm::vec3 positionCorrectionFactor = glm::vec3(1.0f, 1.0f, 1.0f);
 
-extern const float defaultRollOffFactor = 1.75f;
+extern const float defaultRollOffFactor = 1.0f;
 
 
 namespace audioVar
@@ -34,6 +33,24 @@ namespace audioVar
 	default: {0, 0, 0}
 	*/
 	glm::vec3 listenerVelocity;
+
+	/*
+	default: {0, 0, -1, 0, 1, 0}
+	*/
+	struct Orientation
+	{
+		Orientation(){}
+		union
+		{
+			float data[6];
+			struct
+			{
+				glm::vec3 fw;
+				glm::vec3 up;
+			};
+		};
+	};
+	Orientation listenerOrientation;
 
 	/*
 	range: 0.0 -
@@ -108,6 +125,8 @@ namespace se
 			audioVar::listenerGain = 1.0f;
 			audioVar::listenerPosition = glm::vec3(0.0f, 0.0f, 1.0f);
 			audioVar::listenerVelocity = glm::vec3(0.0f, 0.0f, 0.0f);
+			audioVar::listenerOrientation.up = glm::vec3(0.0f, 1.0f, 0.0f);
+			audioVar::listenerOrientation.fw = glm::vec3(0.0f, 0.0f, -1.0f);
 			audioVar::deltaTimeSystem.deltaTimeSystemInitialize();
 
 			audioVar::device = alcOpenDevice(NULL);
@@ -182,27 +201,49 @@ namespace se
 		{
 			audioVar::listenerPosition.x = _pos.x;
 			audioVar::listenerPosition.y = _pos.y;
-			alListener3f(AL_POSITION, _pos.x * positionCorrectionFactor.x, _pos.y * positionCorrectionFactor.y, audioVar::listenerPosition.z * scaleCorrectionFactor);
+			alListener3f(AL_POSITION,
+						 audioVar::listenerPosition.x * positionCorrectionFactor.x,
+						 audioVar::listenerPosition.y * positionCorrectionFactor.y,
+						 audioVar::listenerPosition.z * positionCorrectionFactor.z);
 		}
-		void AudioEngine::setListenerPosition(const glm::vec2& _pos, const float _z)
+		void AudioEngine::setListenerPosition(const glm::vec3& _pos)
 		{
 			audioVar::listenerPosition.x = _pos.x;
 			audioVar::listenerPosition.y = _pos.y;
-			audioVar::listenerPosition.z = _z;
-			alListener3f(AL_POSITION, _pos.x * positionCorrectionFactor.x, _pos.y * positionCorrectionFactor.y, _z * scaleCorrectionFactor);
+			audioVar::listenerPosition.z = _pos.z;
+			alListener3f(AL_POSITION,
+						 audioVar::listenerPosition.x * positionCorrectionFactor.x,
+						 audioVar::listenerPosition.y * positionCorrectionFactor.y,
+						 audioVar::listenerPosition.z * positionCorrectionFactor.z);
 		}
 		void AudioEngine::setListenerVelocity(const glm::vec2& _vel)
 		{
 			audioVar::listenerVelocity.x = _vel.x;
 			audioVar::listenerVelocity.y = _vel.y;
-			alListener3f(AL_VELOCITY, _vel.x * positionCorrectionFactor.x, _vel.y * positionCorrectionFactor.y, audioVar::listenerVelocity.z * scaleCorrectionFactor);
+			alListener3f(AL_VELOCITY,
+						 audioVar::listenerVelocity.x * positionCorrectionFactor.x,
+						 audioVar::listenerVelocity.y * positionCorrectionFactor.y,
+						 audioVar::listenerVelocity.z * positionCorrectionFactor.z);
 		}
-		void AudioEngine::setListenerVelocity(const glm::vec2& _vel, const float _z)
+		void AudioEngine::setListenerVelocity(const glm::vec3& _vel)
 		{
 			audioVar::listenerVelocity.x = _vel.x;
 			audioVar::listenerVelocity.y = _vel.y;
-			audioVar::listenerVelocity.z = _z;
-			alListener3f(AL_VELOCITY, _vel.x * positionCorrectionFactor.x, _vel.y * positionCorrectionFactor.y, _z * scaleCorrectionFactor);
+			audioVar::listenerVelocity.z = _vel.z;
+			alListener3f(AL_VELOCITY,
+						 audioVar::listenerVelocity.x * positionCorrectionFactor.x,
+						 audioVar::listenerVelocity.y * positionCorrectionFactor.y,
+						 audioVar::listenerVelocity.z * positionCorrectionFactor.z);
+		}
+		void AudioEngine::setListenerUp(const glm::vec3& _up)
+		{
+			audioVar::listenerOrientation.up = _up;
+			alListenerfv(AL_ORIENTATION, audioVar::listenerOrientation.data);
+		}
+		void AudioEngine::setListenerForward(const glm::vec3& _forward)
+		{
+			audioVar::listenerOrientation.fw = _forward;
+			alListenerfv(AL_ORIENTATION, audioVar::listenerOrientation.data);
 		}
 		void AudioEngine::setListenerGain(const float _gain)
 		{
@@ -256,15 +297,28 @@ namespace se
 		}
 		void AudioEngine::setPositionCorrectionFactor(const glm::vec2& _poscor)
 		{
-			positionCorrectionFactor = _poscor;
-			alListener3f(AL_POSITION, audioVar::listenerPosition.x * positionCorrectionFactor.x, audioVar::listenerPosition.y * positionCorrectionFactor.y, audioVar::listenerPosition.z * scaleCorrectionFactor);
-			alListener3f(AL_VELOCITY, audioVar::listenerVelocity.x * positionCorrectionFactor.x, audioVar::listenerVelocity.y * positionCorrectionFactor.y, audioVar::listenerVelocity.z * scaleCorrectionFactor);
+			positionCorrectionFactor.x = _poscor.x;
+			positionCorrectionFactor.y = _poscor.y;
+			alListener3f(AL_POSITION,
+						 audioVar::listenerPosition.x * positionCorrectionFactor.x,
+						 audioVar::listenerPosition.y * positionCorrectionFactor.y,
+						 audioVar::listenerPosition.z * positionCorrectionFactor.z);
+			alListener3f(AL_VELOCITY,
+						 audioVar::listenerVelocity.x * positionCorrectionFactor.x,
+						 audioVar::listenerVelocity.y * positionCorrectionFactor.y,
+						 audioVar::listenerVelocity.z * positionCorrectionFactor.z);
 		}
-		void AudioEngine::setScaleCorrectionFactor(const float _sclcor)
+		void AudioEngine::setPositionCorrectionFactor(const glm::vec3& _poscor)
 		{
-			scaleCorrectionFactor = _sclcor;
-			alListener3f(AL_POSITION, audioVar::listenerPosition.x * positionCorrectionFactor.x, audioVar::listenerPosition.y * positionCorrectionFactor.y, audioVar::listenerPosition.z * scaleCorrectionFactor);
-			alListener3f(AL_VELOCITY, audioVar::listenerVelocity.x * positionCorrectionFactor.x, audioVar::listenerVelocity.y * positionCorrectionFactor.y, audioVar::listenerVelocity.z * scaleCorrectionFactor);
+			positionCorrectionFactor = _poscor;
+			alListener3f(AL_POSITION,
+						 audioVar::listenerPosition.x * positionCorrectionFactor.x,
+						 audioVar::listenerPosition.y * positionCorrectionFactor.y,
+						 audioVar::listenerPosition.z * positionCorrectionFactor.z);
+			alListener3f(AL_VELOCITY,
+						 audioVar::listenerVelocity.x * positionCorrectionFactor.x,
+						 audioVar::listenerVelocity.y * positionCorrectionFactor.y,
+						 audioVar::listenerVelocity.z * positionCorrectionFactor.z);
 		}
 		glm::vec2 AudioEngine::getListenerPosition()
 		{
