@@ -27,7 +27,6 @@ namespace se
 
 			struct WAVEFormat
 			{
-				char subChunkID[4];
 				int32_t subChunkSize;
 				int16_t audioFormat;
 				int16_t numChannels;
@@ -70,7 +69,7 @@ namespace se
 
 		static void init();
 		static void uninit();
-		
+
 		//Check if sound loading is ready. Returns 0 if not ready. Returns buffer ID if ready. If sound doesn't exist gives a warning.
 		static ALuint isReady(const size_t& _hashID);
 

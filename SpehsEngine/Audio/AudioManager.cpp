@@ -94,6 +94,7 @@ namespace se
 		if (error != 0)
 		{
 			log::error("Failed to open WAVE file, error: " + std::to_string(error));
+			return;
 		}
 
 		//Read RIFF header
@@ -109,22 +110,42 @@ namespace se
 			waveFile.riffHeader.format[2] != 'V' ||
 			waveFile.riffHeader.format[3] != 'E'))
 		{
-			fclose(fileData);
 			log::error("Invalid RIFF or WAVE header!");
+			fclose(fileData);
+			return;
 		}
 
 		//Read format
-		fread(&waveFile.waveFormat, sizeof(WAVE::WAVEFormat), 1, fileData);
+		char subChunkID[4];
+
+		fread(&subChunkID, sizeof(subChunkID), 1, fileData);
+
+		// Check for JUNK chunk
+		if (subChunkID[0] == 'J' &&
+			subChunkID[1] == 'U' &&
+			subChunkID[2] == 'N' &&
+			subChunkID[3] == 'K')
+		{
+			// Some alignment junk -> skip
+			int junkSize;
+			fread(&junkSize, sizeof(junkSize), 1, fileData);
+			fseek(fileData, junkSize, SEEK_CUR);
+
+			fread(&subChunkID, sizeof(subChunkID), 1, fileData);
+		}
 
 		//Check for correct tag
-		if (waveFile.waveFormat.subChunkID[0] != 'f' ||
-			waveFile.waveFormat.subChunkID[1] != 'm' ||
-			waveFile.waveFormat.subChunkID[2] != 't' ||
-			waveFile.waveFormat.subChunkID[3] != ' ')
+		if (subChunkID[0] != 'f' ||
+			subChunkID[1] != 'm' ||
+			subChunkID[2] != 't' ||
+			subChunkID[3] != ' ')
 		{
-			fclose(fileData);
 			log::error("Invalid Wave format!");
+			fclose(fileData);
+			return;
 		}
+
+		fread(&waveFile.waveFormat, sizeof(WAVE::WAVEFormat), 1, fileData);
 
 		//Check for extra parameters
 		if (waveFile.waveFormat.subChunkSize > 16)
@@ -141,8 +162,9 @@ namespace se
 				it->second.format = AL_FORMAT_MONO16;
 			else
 			{
-				fclose(fileData);
 				log::error("Bit depth of loaded mono audio file not supported! (File name: " + _filepath + " )");
+				fclose(fileData);
+				return;
 			}
 		}
 		else if (waveFile.waveFormat.numChannels == 2)
@@ -153,14 +175,16 @@ namespace se
 				it->second.format = AL_FORMAT_STEREO16;
 			else
 			{
-				fclose(fileData);
 				log::error("Bit depth of loaded stereo audio file not supported! (File name : " + _filepath + ")");
+				fclose(fileData);
+				return;
 			}
 		}
 		else
 		{
-			fclose(fileData);
 			log::error("Invalid number of channels! (File name : " + _filepath + ")");
+			fclose(fileData);
+			return;
 		}
 
 		//Read WAVE data
@@ -172,8 +196,9 @@ namespace se
 			waveFile.waveData.subChunkID[2] != 't' ||
 			waveFile.waveData.subChunkID[3] != 'a')
 		{
-			fclose(fileData);
 			log::error("Invalid data tag!");
+			fclose(fileData);
+			return;
 		}
 
 		//Set variables
@@ -184,8 +209,10 @@ namespace se
 		waveFile.data = new unsigned char[waveFile.waveData.subChunkSize];
 		if (!fread(waveFile.data, waveFile.waveData.subChunkSize, 1, fileData))
 		{
-			fclose(fileData);
 			log::error("Error loading WAVE sound file!");
+			fclose(fileData);
+			delete [] waveFile.data;
+			return;
 		}
 
 		//Generate OpenAL buffer
