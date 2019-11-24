@@ -36,7 +36,7 @@ namespace se
 			sound.second = AudioManager::isReady(_hashID);
 		}
 
-		void SoundSource::setSound(const std::string _filepath)
+		void SoundSource::setSound(const std::string& _filepath)
 		{
 			sound.first = AudioManager::load(_filepath);
 			sound.second = 0;

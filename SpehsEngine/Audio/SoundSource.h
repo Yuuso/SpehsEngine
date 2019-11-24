@@ -24,7 +24,7 @@ namespace se
 			virtual ~SoundSource();
 
 			void setSound(const size_t _hashID);
-			void setSound(const std::string _filepath);
+			void setSound(const std::string& _filepath);
 
 			virtual void setParameters();
 
@@ -161,7 +161,7 @@ namespace se
 			~ActiveSoundSource();
 
 			void setParameters();
-			
+
 			void setPosition(const glm::vec2& _pos);
 			void setPosition(const glm::vec2& _pos, const float _z);
 			void setVelocity(const glm::vec2& _vel);
