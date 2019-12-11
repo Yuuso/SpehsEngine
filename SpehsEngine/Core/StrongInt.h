@@ -34,3 +34,23 @@ struct p_TypeName \
 	operator p_IntType() const { return value; } \
 	p_IntType value = p_InvalidValue; \
 };
+
+// Must be used from the global namespace
+#define SE_STRONG_INT_STD(p_TypeName) \
+namespace std \
+{ \
+	template<> struct hash<p_TypeName> \
+	{ \
+		size_t operator()(const p_TypeName& p_value) const \
+		{ \
+			return p_TypeName::HashFunctor()(p_value); \
+		} \
+	}; \
+	template<> struct less<p_TypeName> \
+	{ \
+		size_t operator()(const p_TypeName& a, const p_TypeName& b) const \
+		{ \
+			return p_TypeName::HashFunctor()(a) < p_TypeName::HashFunctor()(b); \
+		} \
+	}; \
+}

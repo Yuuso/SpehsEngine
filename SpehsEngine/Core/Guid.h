@@ -107,3 +107,21 @@ namespace se
 		uint16_t metadata = 0u;
 	};
 }
+
+namespace std
+{
+	template<> struct hash<se::Guid>
+	{
+		size_t operator()(const se::Guid& p_value) const
+		{
+			return se::Guid::HashFunctor()(p_value);
+		}
+	};
+	template<> struct less<se::Guid>
+	{
+		size_t operator()(const se::Guid& a, const se::Guid& b) const
+		{
+			return se::Guid::HashFunctor()(a) < se::Guid::HashFunctor()(b);
+		}
+	};
+}
