@@ -24,14 +24,14 @@
 #define FPS_REFRESH_RATE 5
 
 
-extern std::atomic<int> guiRectangleAllocations;
-extern std::atomic<int> guiRectangleDeallocations;
-extern std::atomic<int> primitiveAllocations;
-extern std::atomic<int> primitiveDeallocations;
-extern std::atomic<int> BatchAllocations;
-extern std::atomic<int> BatchDeallocations;
-extern std::atomic<int> textAllocations;
-extern std::atomic<int> textDeallocations;
+//extern std::atomic<int> guiRectangleAllocations;
+//extern std::atomic<int> guiRectangleDeallocations;
+//extern std::atomic<int> primitiveAllocations;
+//extern std::atomic<int> primitiveDeallocations;
+//extern std::atomic<int> BatchAllocations;
+//extern std::atomic<int> BatchDeallocations;
+//extern std::atomic<int> textAllocations;
+//extern std::atomic<int> textDeallocations;
 
 
 
@@ -262,9 +262,9 @@ namespace se
 				log("-------------------", overrideColor);
 				log("Spehs Engine select memory allocations:", overrideColor);
 				log("Remaining allocations / Total (runtime) allocations", overrideColor);
-				log("GUI Rectangles: " + std::to_string(guiRectangleAllocations - guiRectangleDeallocations) + "/" + std::to_string(guiRectangleAllocations), overrideColor);
-				log("Primitives: " + std::to_string(primitiveAllocations - primitiveDeallocations) + "/" + std::to_string(primitiveAllocations), overrideColor);
-				log("PrimitiveBatches: " + std::to_string(BatchAllocations - BatchDeallocations) + "/" + std::to_string(BatchAllocations), overrideColor);
+				//log("GUI Rectangles: " + std::to_string(guiRectangleAllocations - guiRectangleDeallocations) + "/" + std::to_string(guiRectangleAllocations), overrideColor);
+				//log("Primitives: " + std::to_string(primitiveAllocations - primitiveDeallocations) + "/" + std::to_string(primitiveAllocations), overrideColor);
+				//log("PrimitiveBatches: " + std::to_string(BatchAllocations - BatchDeallocations) + "/" + std::to_string(BatchAllocations), overrideColor);
 				log("-------------------", overrideColor);
 				return;
 			}
