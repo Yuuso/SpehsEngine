@@ -77,5 +77,10 @@ namespace se
 			std::lock_guard<std::mutex> rnglock(rngmutex);
 			return defaultRandom.square(_side);
 		}
+		glm::vec3 cube(const float _side)
+		{
+			std::lock_guard<std::mutex> rnglock(rngmutex);
+			return defaultRandom.cube(_side);
+		}
 	}
 }

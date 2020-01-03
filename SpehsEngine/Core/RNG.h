@@ -1,7 +1,9 @@
 
 #pragma once
 
-#include <glm/vec2.hpp>
+#include "SpehsEngine/Core/SE_Assert.h"
+#include "glm/vec2.hpp"
+#include "glm/vec3.hpp"
 
 #include <random>
 #include <stdint.h>
@@ -195,6 +197,11 @@ namespace se
 				return glm::vec2(random<float>(0.0f, _side), random<float>(0.0f, _side));
 			}
 
+			glm::vec3 cube(const float _side = 1.0f)
+			{
+				return glm::vec3(random<float>(0.0f, _side), random<float>(0.0f, _side), random<float>(0.0f, _side));
+			}
+
 			template<typename FloatingPointType = float>
 			FloatingPointType unit()
 			{
@@ -301,5 +308,6 @@ namespace se
 		unsigned weightedDice(const std::initializer_list<double> _propabilities);
 		glm::vec2 circle(const float _radius = 1.0f);
 		glm::vec2 square(const float _side = 1.0f);
+		glm::vec3 cube(const float _side = 1.0f);
 	}
 }
