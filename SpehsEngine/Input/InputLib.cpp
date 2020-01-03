@@ -27,16 +27,16 @@ namespace se
 		std::string version("0");
 	}
 
-	InputLib::InputLib(const se::rendering::RenderingLib& renderingLib)
+	InputLib::InputLib(/*const se::rendering::RenderingLib& renderingLib*/)
 	{
 		instanceCount++;
 		if (!valid)
 		{
-			if (!renderingLib.isValid())
-			{
-				log::error("Cannot initialize input library, rendering library is invalid.");
-				return;
-			}
+			//if (!renderingLib.isValid())
+			//{
+			//	log::error("Cannot initialize input library, rendering library is invalid.");
+			//	return;
+			//}
 
 			log::info("Current SpehsEngine input library version: " + getVersion());
 

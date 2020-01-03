@@ -12,7 +12,7 @@ namespace se
 	{
 	public:
 		/* Initializes input library */
-		InputLib(const se::rendering::RenderingLib& renderingLib);
+		InputLib(/*const se::rendering::RenderingLib& renderingLib*/);
 
 		/* Uninitializes input library */
 		~InputLib();

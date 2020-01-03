@@ -53,7 +53,6 @@ namespace se
 	{
 		if (--instanceCount == 0)
 		{
-			rng::unit();
 			valid = false;
 		}
 	}

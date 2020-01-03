@@ -20,10 +20,9 @@ namespace se
 {
 	namespace input
 	{
-		InputManager::InputManager(se::rendering::Window& _window)
-			: window(_window)
+		InputManager::InputManager(/*se::rendering::Window& _window*/)
+			//: window(_window)
 		{
-			SDL_InitSubSystem(SDL_INIT_JOYSTICK);
 		}
 
 		InputManager::~InputManager()
@@ -95,16 +94,16 @@ namespace se
 				droppedFilePath = fileDropEvents[i].filepath;
 			}
 
-			if (mouseLocked)
-			{
-				//If mouse is locked, keep mouse in the center of the screen without creating a mousemotion event
-				window.setMousePosition(glm::ivec2(window.getWidth() / 2, window.getHeight() / 2));
-			}
-			if (!setRelativeMouseMode(mouseLocked))
-			{
-				window.setInputGrab(mouseLocked);
-				setShowCursor(!mouseLocked);
-			}
+			//if (mouseLocked)
+			//{
+			//	//If mouse is locked, keep mouse in the center of the screen without creating a mousemotion event
+			//	window.setMousePosition(glm::ivec2(window.getWidth() / 2, window.getHeight() / 2));
+			//}
+			//if (!setRelativeMouseMode(mouseLocked))
+			//{
+			//	window.setInputGrab(mouseLocked);
+			//	setShowCursor(!mouseLocked);
+			//}
 		}
 
 		void InputManager::pressKey(unsigned int keyID)
