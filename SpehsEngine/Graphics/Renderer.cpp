@@ -4,6 +4,7 @@
 #include "SpehsEngine/Core/Thread.h"
 #include "SpehsEngine/Core/SE_Time.h"
 #include "SpehsEngine/Core/Log.h"
+#include "SpehsEngine/Graphics/Internal/RenderContext.h"
 #include "bgfx/bgfx.h"
 #include "bgfx/platform.h"
 
@@ -52,9 +53,10 @@ namespace se
 
 		void Renderer::render()
 		{
+			RenderContext renderContext;
 			for (auto&& window : windows)
 			{
-				window->render();
+				window->render(renderContext);
 			}
 			bgfx::frame();
 			bgfx::dbgTextClear();

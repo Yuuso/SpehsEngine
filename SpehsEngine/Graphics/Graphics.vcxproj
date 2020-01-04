@@ -182,13 +182,14 @@
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="Batch.h" />
-    <ClInclude Include="BatchPosition.h" />
+    <ClInclude Include="Internal\Batch.h" />
+    <ClInclude Include="Internal\BatchPosition.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="GraphicsLib.h" />
     <ClInclude Include="PrecompiledInclude.h" />
     <ClInclude Include="Primitive.h" />
-    <ClInclude Include="PrimitiveInstance.h" />
+    <ClInclude Include="Internal\PrimitiveInstance.h" />
+    <ClInclude Include="Internal\RenderContext.h" />
     <ClInclude Include="Renderer.h" />
     <ClInclude Include="RenderFlags.h" />
     <ClInclude Include="Scene.h" />
@@ -198,16 +199,16 @@
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="Vertex.h" />
     <ClInclude Include="View.h" />
-    <ClInclude Include="ViewInstance.h" />
+    <ClInclude Include="Internal\ViewInstance.h" />
     <ClInclude Include="Window.h" />
-    <ClInclude Include="WindowInstance.h" />
+    <ClInclude Include="Internal\WindowInstance.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Batch.cpp" />
+    <ClCompile Include="Internal\Batch.cpp" />
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="GraphicsLib.cpp" />
     <ClCompile Include="Primitive.cpp" />
-    <ClCompile Include="PrimitiveInstance.cpp" />
+    <ClCompile Include="Internal\PrimitiveInstance.cpp" />
     <ClCompile Include="Renderer.cpp" />
     <ClCompile Include="Scene.cpp" />
     <ClCompile Include="Shader.cpp" />
@@ -220,9 +221,9 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="View.cpp" />
-    <ClCompile Include="ViewInstance.cpp" />
+    <ClCompile Include="Internal\ViewInstance.cpp" />
     <ClCompile Include="Window.cpp" />
-    <ClCompile Include="WindowInstance.cpp" />
+    <ClCompile Include="Internal\WindowInstance.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

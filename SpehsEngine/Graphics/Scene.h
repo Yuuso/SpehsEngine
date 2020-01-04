@@ -1,8 +1,9 @@
 #pragma once
 
-#include "SpehsEngine/Graphics/Batch.h"
+#include "SpehsEngine/Graphics/Internal/Batch.h"
 #include "SpehsEngine/Graphics/Primitive.h"
-#include "SpehsEngine/Graphics/PrimitiveInstance.h"
+#include "SpehsEngine/Graphics/Internal/PrimitiveInstance.h"
+#include "SpehsEngine/Graphics/Internal/RenderContext.h"
 #include <vector>
 #include <memory>
 
@@ -34,7 +35,7 @@ namespace se
 
 			friend class ViewInstance;
 
-			void render() const;
+			void render(RenderContext& _renderContext) const;
 
 		private:
 

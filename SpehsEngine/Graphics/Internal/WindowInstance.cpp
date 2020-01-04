@@ -1,7 +1,8 @@
 #include "stdafx.h"
-#include "SpehsEngine/Graphics/WindowInstance.h"
+#include "SpehsEngine/Graphics/Internal/WindowInstance.h"
 
 #include <Windows.h>
+#include "bgfx/bgfx.h"
 #include "bgfx/platform.h"
 #include "SDL/SDL.h"
 #include "SDL/SDL_syswm.h"
@@ -64,11 +65,16 @@ namespace se
 			return &window == &_other;
 		}
 
-		void WindowInstance::render()
+		void WindowInstance::render(RenderContext& _renderContext)
 		{
 			for (auto& view : window.views)
 			{
-				view->render();
+				if (bgfx::isValid(frameBufferHandle))
+				{
+					bgfx::setViewFrameBuffer(_renderContext.currentViewId, frameBufferHandle);
+					bgfx::setViewClear(_renderContext.currentViewId, BGFX_CLEAR_COLOR | BGFX_CLEAR_DEPTH, 0x101010ff, 1.0f, 0);
+				}
+				view->render(_renderContext);
 			}
 		}
 	}

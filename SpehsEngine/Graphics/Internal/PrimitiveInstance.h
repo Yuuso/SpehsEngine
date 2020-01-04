@@ -1,8 +1,8 @@
 #pragma once
 
 #include "SpehsEngine/Graphics/Primitive.h"
-#include "SpehsEngine/Graphics/BatchPosition.h"
-#include "SpehsEngine/Graphics/Batch.h"
+#include "SpehsEngine/Graphics/Internal/BatchPosition.h"
+#include "SpehsEngine/Graphics/Internal/Batch.h"
 
 
 namespace se

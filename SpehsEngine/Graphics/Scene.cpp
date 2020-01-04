@@ -2,6 +2,7 @@
 #include "SpehsEngine/Graphics/Scene.h"
 
 #include "SpehsEngine/Graphics/Shader.h"
+#include "SpehsEngine/Graphics/Internal/BatchPosition.h"
 
 
 namespace se
@@ -76,10 +77,10 @@ namespace se
 			//
 		}
 
-		void Scene::render() const
+		void Scene::render(RenderContext& _renderContext) const
 		{
 			for (auto&& batch : batches)
-				batch->render();
+				batch->render(_renderContext);
 		}
 	}
 }

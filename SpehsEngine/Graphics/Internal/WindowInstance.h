@@ -1,6 +1,7 @@
 #pragma once
 
 #include "SpehsEngine/Graphics/Window.h"
+#include "SpehsEngine/Graphics/Internal/RenderContext.h"
 #include "bgfx/bgfx.h" // TODO: No bgfx includes in headers!
 
 
@@ -27,7 +28,7 @@ namespace se
 			bool operator==(const Window& _other);
 
 
-			void render();
+			void render(RenderContext& _renderContext);
 
 			const bool isDefault;
 
@@ -35,7 +36,7 @@ namespace se
 
 			const Window& window;
 			SDL_Window* sdlWindow = nullptr;
-			bgfx::FrameBufferHandle frameBufferHandle;
+			bgfx::FrameBufferHandle frameBufferHandle = BGFX_INVALID_HANDLE;
 		};
 	}
 }

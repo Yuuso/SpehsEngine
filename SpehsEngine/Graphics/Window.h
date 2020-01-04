@@ -1,7 +1,7 @@
 #pragma once
 
 #include "SpehsEngine/Graphics/View.h"
-#include "SpehsEngine/Graphics/ViewInstance.h"
+#include "SpehsEngine/Graphics/Internal/ViewInstance.h"
 #include "SpehsEngine/Graphics/Camera.h"
 #include <vector>
 #include <memory>

@@ -1,5 +1,5 @@
 #include "stdafx.h"
-#include "SpehsEngine/Graphics/Batch.h"
+#include "SpehsEngine/Graphics/Internal/Batch.h"
 
 
 namespace se
@@ -66,7 +66,7 @@ namespace se
 			updateBuffers();
 		}
 
-		void Batch::render() const
+		void Batch::render(RenderContext& _renderContext) const
 		{
 			//bgfx::TransientIndexBuffer tib;
 			//bgfx::TransientVertexBuffer tvb;
@@ -101,7 +101,7 @@ namespace se
 						   | BGFX_STATE_CULL_CCW
 						   | BGFX_STATE_MSAA);
 
-			bgfx::submit(0, programHandle);
+			bgfx::submit(_renderContext.currentViewId, programHandle);
 		}
 
 		void Batch::updateBuffers()

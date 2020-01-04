@@ -2,6 +2,7 @@
 
 #include "SpehsEngine/Graphics/View.h"
 #include "SpehsEngine/Graphics/Camera.h"
+#include "SpehsEngine/Graphics/Internal/RenderContext.h"
 
 
 namespace se
@@ -24,7 +25,7 @@ namespace se
 			bool operator==(const View& _other);
 
 
-			void render();
+			void render(RenderContext& _renderContext);
 
 		private:
 

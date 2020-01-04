@@ -1,8 +1,9 @@
 #pragma once
 
-#include "SpehsEngine/Graphics/BatchPosition.h"
 #include "SpehsEngine/Graphics/RenderFlags.h"
 #include "SpehsEngine/Graphics/Vertex.h"
+#include "SpehsEngine/Graphics/Internal/BatchPosition.h"
+#include "SpehsEngine/Graphics/Internal/RenderContext.h"
 #include "bgfx/bgfx.h" // TODO: No bgfx includes in headers!
 #include <vector>
 
@@ -31,7 +32,7 @@ namespace se
 			[[nodiscard]] BatchPosition add(const std::vector<Vertex>& _vertices, const std::vector<uint16_t>& _indices);
 			void remove(const BatchPosition& _positionInBatch);
 
-			void render() const;
+			void render(RenderContext& _renderContext) const;
 
 		private:
 
@@ -43,8 +44,8 @@ namespace se
 			std::vector<Vertex> vertices;
 			std::vector<uint16_t> indices;
 
-			bgfx::DynamicVertexBufferHandle vertexBufferHandle;
-			bgfx::DynamicIndexBufferHandle indexBufferHandle;
+			bgfx::DynamicVertexBufferHandle vertexBufferHandle = BGFX_INVALID_HANDLE;
+			bgfx::DynamicIndexBufferHandle indexBufferHandle = BGFX_INVALID_HANDLE;
 		};
 	}
 }

@@ -1,5 +1,5 @@
 #include "stdafx.h"
-#include "SpehsEngine/Graphics/PrimitiveInstance.h"
+#include "SpehsEngine/Graphics/Internal/PrimitiveInstance.h"
 
 
 namespace se

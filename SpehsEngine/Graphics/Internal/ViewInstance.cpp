@@ -1,13 +1,9 @@
 #include "stdafx.h"
-#include "SpehsEngine/Graphics/ViewInstance.h"
+#include "SpehsEngine/Graphics/Internal/ViewInstance.h"
 
 #pragma warning(disable : 4127)
 #define GLM_ENABLE_EXPERIMENTAL
 #include <glm/gtx/transform.hpp>
-
-#include "Shader.h"
-#include "bx/math.h"
-#include "SpehsEngine/Core/ColorUtilityFunctions.h"
 
 
 namespace se
@@ -27,7 +23,7 @@ namespace se
 			return &view == &_other;
 		}
 
-		void ViewInstance::render()
+		void ViewInstance::render(RenderContext& _renderContext)
 		{
 			// Camera
 			{
@@ -57,13 +53,15 @@ namespace se
 
 				viewMatrix = glm::lookAt(view.camera.positionGet(), view.camera.directionGet(), view.camera.worldUpGet());
 
-				bgfx::setViewTransform(0, &viewMatrix, &projectionMatrix);
-				bgfx::setViewRect(0, 10, 10, (uint16_t)view.widthGet() - 20, (uint16_t)view.heightGet() - 20);
+				bgfx::setViewTransform(_renderContext.currentViewId, &viewMatrix, &projectionMatrix);
+				bgfx::setViewRect(_renderContext.currentViewId, 10, 10, (uint16_t)view.widthGet() - 20, (uint16_t)view.heightGet() - 20);
 			}
 
-			bgfx::touch(0);
+			bgfx::touch(_renderContext.currentViewId);
 
-			view.scene.render();
+			view.scene.render(_renderContext);
+
+			_renderContext.currentViewId++;
 		}
 	}
 }
