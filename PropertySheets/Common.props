@@ -17,6 +17,7 @@
       <AdditionalOptions>/wd26439 /wd26495 /wd4201 /wd4100 /wd4127 /w44062 %(AdditionalOptions)</AdditionalOptions>
       <SDLCheck>true</SDLCheck>
       <LanguageStandard>stdcpp17</LanguageStandard>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
     </ClCompile>
     <Lib>
       <AdditionalLibraryDirectories>$(SPEHSENGINE_ROOT)/Dependencies/lib/;$(SPEHSENGINE_ROOT)/bin/$(Platform)/$(Configuration)/$(PlatformToolset);</AdditionalLibraryDirectories>
