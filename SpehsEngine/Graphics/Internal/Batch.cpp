@@ -6,12 +6,13 @@ namespace se
 {
 	namespace graphics
 	{
-		Batch::Batch(const RenderFlagsType _renderFlags, bgfx::ProgramHandle _programHandle)
+		Batch::Batch(const RenderFlagsType _renderFlags, const Shader& _shader)
 			: renderFlags(_renderFlags)
-			, programHandle(_programHandle)
+			, shader(_shader)
 		{
 			vertexBufferHandle = bgfx::createDynamicVertexBuffer(1024, Vertex::getVertexLayout());
 			indexBufferHandle = bgfx::createDynamicIndexBuffer(1024);
+			static_assert(sizeof(IndexType) == 2);
 		}
 		Batch::~Batch()
 		{
@@ -29,7 +30,7 @@ namespace se
 				   (1024 - indices.size()) > numIndices;
 		}
 
-		[[nodiscard]] BatchPosition Batch::add(const std::vector<Vertex>& _vertices, const std::vector<uint16_t>& _indices)
+		[[nodiscard]] BatchPosition Batch::add(const std::vector<Vertex>& _vertices, const std::vector<IndexType>& _indices)
 		{
 			BatchPosition result;
 			result.verticesStart = vertices.size();
@@ -44,7 +45,7 @@ namespace se
 			if (firstIndex != 0)
 			{
 				for (size_t i = indicesOldSize; i < indices.size(); i++)
-					indices[i] += (uint16_t)firstIndex;
+					indices[i] += (IndexType)firstIndex;
 			}
 
 			vertices.insert(vertices.end(), _vertices.begin(), _vertices.end());
@@ -61,7 +62,7 @@ namespace se
 
 			const size_t numRemovedIndices = _positionInBatch.indicesEnd - _positionInBatch.indicesStart;
 			for (size_t i = _positionInBatch.indicesStart; i < indices.size(); i++)
-				indices[i] -= (uint16_t)numRemovedIndices;
+				indices[i] -= (IndexType)numRemovedIndices;
 
 			updateBuffers();
 		}
@@ -101,7 +102,7 @@ namespace se
 						   | BGFX_STATE_CULL_CCW
 						   | BGFX_STATE_MSAA);
 
-			bgfx::submit(_renderContext.currentViewId, programHandle);
+			bgfx::submit(_renderContext.currentViewId, shader.programHandle);
 		}
 
 		void Batch::updateBuffers()

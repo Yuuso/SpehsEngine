@@ -77,14 +77,17 @@ namespace se
 		}
 		void Camera::fovSet(const float _fov)
 		{
+			se_assert(_fov > 0.0f && _fov < 360.0f);
 			fov = _fov;
 		}
 		void Camera::nearSet(const float _near)
 		{
+			se_assert(_near > 0.0f && _near < farPlane);
 			nearPlane = _near;
 		}
 		void Camera::farSet(const float _far)
 		{
+			se_assert(_far > nearPlane);
 			farPlane = _far;
 		}
 	}

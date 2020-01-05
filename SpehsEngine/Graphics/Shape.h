@@ -11,7 +11,7 @@ namespace se
 		{
 		public:
 
-			Shape(const unsigned int numVertices = 4);
+			Shape(const unsigned _numVertices = 4);
 			~Shape();
 
 			Shape(const Shape& _other) = delete;
@@ -20,8 +20,8 @@ namespace se
 			Shape(Shape&& _other) = delete;
 			Shape& operator=(Shape&& _other) = delete;
 
-		private:
 
+			void recreate(const unsigned _numVertices);
 		};
 	}
 }

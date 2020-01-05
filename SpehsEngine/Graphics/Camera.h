@@ -18,7 +18,7 @@ namespace se
 			};
 
 
-			Camera();
+								Camera();
 
 
 			Projection			projectionGet() const;

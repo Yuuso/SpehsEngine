@@ -45,9 +45,6 @@
     <ClInclude Include="Scene.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Vertex.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="ShaderManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -63,9 +60,6 @@
     <ClInclude Include="Internal\WindowInstance.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="RenderFlags.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Internal\RenderContext.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -73,6 +67,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Internal\BatchPosition.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Types.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

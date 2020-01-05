@@ -7,25 +7,50 @@ namespace se
 	namespace graphics
 	{
 
-		Shape::Shape(const unsigned int numVertices)
+		Shape::Shape(const unsigned _numVertices)
 			: Primitive()
 		{
-			se_assert(numVertices >= 3);
+			recreate(_numVertices);
+		}
+		Shape::~Shape()
+		{
+		}
+
+		void Shape::recreate(const unsigned _numVertices)
+		{
+			// Generate an equilateral convex polygon with the given amount of vertices
+
+			se_assert(_numVertices >= 3);
+			vertices.clear();
+			indices.clear();
+
+			switch (_numVertices)
+			{
+				case 3: name = "triangle"; break;
+				case 4: name = "square"; break;
+				case 5: name = "pentagon"; break;
+				case 6: name = "hexagon"; break;
+				case 7: name = "heptagon"; break;
+				case 8: name = "octagon"; break;
+				case 9: name = "nonegon"; break;
+				case 10: name = "decagon"; break;
+				default: name = "circle";  break;
+			}
 
 			// Position
 			{
-				vertices.resize(numVertices);
+				vertices.resize(_numVertices);
 
+				// Initial rotation is set so that the "lowest" (bottom) line is horizontal
 				// firstPosition adjusts initial the rotation for even numbered polygons
-				// Initial rotation is set so that the "lowest" (bottom) line is drawn horizontally
 				float firstPosition;
-				if (numVertices % 2)
+				if (_numVertices % 2)
 				{
 					firstPosition = 0;
 				}
 				else
 				{
-					firstPosition = (se::TWO_PI<float> / float(numVertices)) / 2.0f;
+					firstPosition = (se::TWO_PI<float> / float(_numVertices)) / 2.0f;
 				}
 
 				vertices[0].position = glm::vec3(cos(firstPosition), 0.0f, sin(firstPosition));
@@ -35,9 +60,9 @@ namespace se
 				float maxX = vertices[0].position.x;
 				float maxZ = vertices[0].position.z;
 
-				for (unsigned i = 1; i < numVertices; i++)
+				for (unsigned i = 1; i < _numVertices; i++)
 				{
-					vertices[i].position = glm::vec3(cos(firstPosition + i * (se::TWO_PI<float> / numVertices)), 0.0f, sin(firstPosition + i * (se::TWO_PI<float> / numVertices)));
+					vertices[i].position = glm::vec3(cos(firstPosition + i * (se::TWO_PI<float> / _numVertices)), 0.0f, sin(firstPosition + i * (se::TWO_PI<float> / _numVertices)));
 
 					if		(vertices[i].position.x > maxX)		maxX = vertices[i].position.x;
 					else if (vertices[i].position.x < minX)		minX = vertices[i].position.x;
@@ -47,7 +72,7 @@ namespace se
 
 				const float width = abs(maxX) + abs(minX);
 				const float height = abs(maxZ) + abs(minZ);
-				for (unsigned i = 0; i < numVertices; i++)
+				for (unsigned i = 0; i < _numVertices; i++)
 				{
 					vertices[i].position.x /= width;
 					vertices[i].position.z /= height;
@@ -92,10 +117,6 @@ namespace se
 					currentIndex += 4;
 				}
 			}
-		}
-		Shape::~Shape()
-		{
-
 		}
 	}
 }

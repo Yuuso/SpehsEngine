@@ -3,6 +3,7 @@
 
 #include "SpehsEngine/Graphics/Shader.h"
 #include "SpehsEngine/Graphics/Internal/BatchPosition.h"
+#include "SpehsEngine/Graphics/Types.h"
 
 
 namespace se
@@ -30,25 +31,6 @@ namespace se
 				return;
 			}
 			primitives.emplace_back(std::make_unique<PrimitiveInstance>(_primitive));
-
-
-			bool found = false;
-			for (auto&& batch : batches)
-			{
-				if (batch->check(primitives.back()->primitive.renderFlags) ||
-					batch->check(primitives.back()->primitive.vertices.size(), primitives.back()->primitive.indices.size()))
-				{
-					primitives.back()->batchPosition = batch->add(primitives.back()->primitive.vertices, primitives.back()->primitive.indices);
-					primitives.back()->batch = batch.get();
-					found = true;
-				}
-			}
-			if (!found)
-			{
-				batches.emplace_back(std::make_unique<Batch>(primitives.back()->primitive.renderFlags, primitives.back()->primitive.shader->programHandle));
-				primitives.back()->batchPosition = batches.back()->add(primitives.back()->primitive.vertices, primitives.back()->primitive.indices);
-				primitives.back()->batch = batches.back().get();
-			}
 		}
 		void Scene::remove(const Primitive& _primitive)
 		{
@@ -66,7 +48,7 @@ namespace se
 
 			if (it->get()->batch)
 			{
-				it->get()->batch->remove(it->get()->batchPosition);
+				unbatch(*it->get());
 			}
 
 			primitives.erase(it);
@@ -74,13 +56,76 @@ namespace se
 
 		void Scene::update()
 		{
-			//
+			for (auto&& primitive : primitives)
+			{
+				// TODO: Check update
+				if (primitive->primitive.renderStateGet())
+				{
+					if (primitive->primitive.renderModeGet() == RenderMode::Static)
+					{
+						if (primitive->batch == nullptr)
+						{
+							batch(*primitive.get());
+						}
+					}
+					else
+					{
+						// TODO: A bunch of stuff, including Transient rendering
+						primitive->updateTransformMatrix();
+					}
+				}
+				else
+				{
+					if (primitive->batch != nullptr)
+						unbatch(*primitive.get());
+					primitive->destroyBuffers();
+				}
+			}
 		}
 
 		void Scene::render(RenderContext& _renderContext) const
 		{
+			for (auto&& primitive : primitives)
+			{
+				if (primitive->primitive.renderStateGet()
+					&& primitive->batch == nullptr)
+				{
+					primitive->render(_renderContext);
+				}
+			}
+
 			for (auto&& batch : batches)
 				batch->render(_renderContext);
+		}
+
+		void Scene::batch(PrimitiveInstance& _primitive)
+		{
+			se_assert(!_primitive.batch);
+			bool found = false;
+			for (auto&& batch : batches)
+			{
+				if (batch->check(_primitive.primitive.renderFlagsGet()) ||
+					batch->check(_primitive.primitive.verticesGet().size(), _primitive.primitive.indicesGet().size()))
+				{
+					_primitive.batchPosition = batch->add(_primitive.primitive.verticesGet(), _primitive.primitive.indicesGet());
+					_primitive.batch = batch.get();
+					found = true;
+				}
+			}
+			if (!found)
+			{
+				se_assert(_primitive.primitive.shaderGet() != nullptr);
+				batches.emplace_back(std::make_unique<Batch>(_primitive.primitive.renderFlagsGet(), *_primitive.primitive.shaderGet()));
+				_primitive.batchPosition = batches.back()->add(_primitive.primitive.verticesGet(), _primitive.primitive.indicesGet());
+				_primitive.batch = batches.back().get();
+			}
+
+		}
+		void Scene::unbatch(PrimitiveInstance& _primitive)
+		{
+			se_assert(_primitive.batch);
+			_primitive.batch->remove(_primitive.batchPosition);
+			_primitive.batch = nullptr;
 		}
 	}
 }
