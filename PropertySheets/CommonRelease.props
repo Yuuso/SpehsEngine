@@ -5,8 +5,13 @@
   <PropertyGroup />
   <ItemDefinitionGroup>
     <ClCompile>
-      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>NDEBUG;GLM_FORCE_INLINE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
     </ClCompile>
+    <Link>
+      <OptimizeReferences>true</OptimizeReferences>
+    </Link>
   </ItemDefinitionGroup>
   <ItemGroup />
 </Project>

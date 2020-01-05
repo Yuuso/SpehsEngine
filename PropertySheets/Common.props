@@ -9,12 +9,14 @@
   <ItemDefinitionGroup>
     <ClCompile>
       <AdditionalIncludeDirectories>$(SPEHSENGINE_ROOT)/;$(SPEHSENGINE_ROOT)/Dependencies/include/;$(ProjectDir)/;</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>GLM_FORCE_RADIANS;GLM_FORCE_CTOR_INIT;NOMINMAX;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>GLM_FORCE_RADIANS;GLM_FORCE_CTOR_INIT;GLM_FORCE_SILENT_WARNINGS;NOMINMAX;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <TreatWarningAsError>true</TreatWarningAsError>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <WarningLevel>Level4</WarningLevel>
       <AdditionalOptions>/wd26439 /wd26495 /wd4201 /wd4100 /wd4127 /w44062 %(AdditionalOptions)</AdditionalOptions>
+      <SDLCheck>true</SDLCheck>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Lib>
       <AdditionalLibraryDirectories>$(SPEHSENGINE_ROOT)/Dependencies/lib/;$(SPEHSENGINE_ROOT)/bin/$(Platform)/$(Configuration)/$(PlatformToolset);</AdditionalLibraryDirectories>
