@@ -29,8 +29,8 @@ namespace se
 			void add(const View& _view);
 			void remove(const View& _view);
 
-			uint16_t widthGet() const  { return width;  };
-			uint16_t heightGet() const { return height; };
+			uint16_t getWidth() const;
+			uint16_t getHeight() const;
 
 		protected:
 
@@ -40,7 +40,7 @@ namespace se
 
 		private:
 
-			uint16_t width = 600;
+			uint16_t width = 800;
 			uint16_t height = 600;
 		};
 	}

@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "SpehsEngine/Graphics/Internal/WindowInstance.h"
 
+#include "SpehsEngine/Core/Log.h"
 #include <Windows.h>
 #include "bgfx/bgfx.h"
 #include "bgfx/platform.h"
@@ -19,10 +20,10 @@ namespace se
 			, isDefault(_isDefault)
 		{
 			sdlWindow = SDL_CreateWindow("SpehsEngine Window",
-										 SDL_WINDOWPOS_CENTERED,
-										 SDL_WINDOWPOS_CENTERED,
-										 window.widthGet(),
-										 window.widthGet(),
+										 SDL_WINDOWPOS_UNDEFINED,
+										 SDL_WINDOWPOS_UNDEFINED,
+										 window.getWidth(),
+										 window.getHeight(),
 										 SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE);
 
 			SDL_SysWMinfo wmi;
@@ -52,7 +53,7 @@ namespace se
 			}
 			else
 			{
-				frameBufferHandle = bgfx::createFrameBuffer(wmi.info.win.window, window.widthGet(), window.widthGet());
+				frameBufferHandle = bgfx::createFrameBuffer(wmi.info.win.window, window.getWidth(), window.getHeight());
 			}
 		}
 		WindowInstance::~WindowInstance()

@@ -27,7 +27,7 @@ namespace se
 			return true;
 		}
 
-		const std::string& Shader::nameGet() const
+		const std::string& Shader::getName() const
 		{
 			return name;
 		}

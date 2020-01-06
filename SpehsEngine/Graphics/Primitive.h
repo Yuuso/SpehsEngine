@@ -27,38 +27,38 @@ namespace se
 			Primitive&						operator=(Primitive&& _other) = delete;
 
 
-			const std::string&				nameGet() const;
-			const bool						renderStateGet() const;
-			const Shader*					shaderGet() const;
-			const std::vector<Vertex>&		verticesGet() const;
-			const std::vector<IndexType>&	indicesGet() const;
+			const std::string&				getName() const;
+			const bool						getRenderState() const;
+			const Shader*					getShader() const;
+			const std::vector<Vertex>&		getVertices() const;
+			const std::vector<IndexType>&	getIndices() const;
 
-			const RenderFlagsType			renderFlagsGet() const;
-			const bool						renderFlagCheck(const RenderFlag _renderFlag) const;
-			const RenderStyle				renderStyleGet() const;
-			const RenderMode				renderModeGet() const;
+			const RenderFlagsType			getRenderFlags() const;
+			const bool						checkRenderFlag(const RenderFlag _renderFlag) const;
+			const RenderStyle				getRenderStyle() const;
+			const RenderMode				getRenderMode() const;
 
-			const glm::vec3&				positionGet() const;
-			const glm::vec3&				localPositionGet() const;
-			const glm::vec3&				scaleGet() const;
-			const glm::quat&				rotationGet() const;
+			const glm::vec3&				getPosition() const;
+			const glm::vec3&				getLocalPosition() const;
+			const glm::vec3&				getScale() const;
+			const glm::quat&				getRotation() const;
 
-			void							nameSet(const std::string_view _name);
-			void							renderStateSet(const bool _state);
-			void							shaderSet(const Shader* _shader);
-			void							verticesSet(const std::vector<Vertex>& _vertices);
-			void							indicesSet(const std::vector<uint16_t>& _indices);
+			void							setName(const std::string_view _name);
+			void							setRenderState(const bool _state);
+			void							setShader(const Shader* _shader);
+			void							setVertices(const std::vector<Vertex>& _vertices);
+			void							setIndices(const std::vector<uint16_t>& _indices);
 
-			void							renderFlagsSet(const RenderFlagsType _renderFlags);
-			void							renderFlagEnable(const RenderFlag _renderFlag);
-			void							renderFlagDisable(const RenderFlag _renderFlag);
-			void							renderStyleSet(const RenderStyle _renderStyle);
-			void							renderModeSet(const RenderMode _renderMode);
+			void							setRenderFlags(const RenderFlagsType _renderFlags);
+			void							enableRenderFlag(const RenderFlag _renderFlag);
+			void							disableRenderFlag(const RenderFlag _renderFlag);
+			void							setRenderStyle(const RenderStyle _renderStyle);
+			void							setRenderMode(const RenderMode _renderMode);
 
-			void							positionSet(const glm::vec3& _position);
-			void							localPositionSet(const glm::vec3& _position);
-			void							scaleSet(const glm::vec3& _scale);
-			void							rotationSet(const glm::quat& _rotation);
+			void							setPosition(const glm::vec3& _position);
+			void							setLocalPosition(const glm::vec3& _position);
+			void							setScale(const glm::vec3& _scale);
+			void							setRotation(const glm::quat& _rotation);
 
 		protected:
 

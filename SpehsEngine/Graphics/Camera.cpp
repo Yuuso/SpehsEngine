@@ -10,82 +10,89 @@ namespace se
 		{
 		}
 
-		Camera::Projection Camera::projectionGet() const
+		Camera::Projection Camera::getProjection() const
 		{
 			return projection;
 		}
-		const glm::vec3& Camera::positionGet() const
+		const glm::vec3& Camera::getPosition() const
 		{
 			return position;
 		}
-		const glm::vec3 Camera::directionGet() const
+		const glm::vec3 Camera::getDirection() const
 		{
 			return glm::normalize(target - position);
 		}
-		const glm::vec3& Camera::targetGet() const
+		const glm::vec3& Camera::getTarget() const
 		{
 			return target;
 		}
-		const glm::vec3& Camera::worldUpGet() const
+		const glm::vec3& Camera::getUp() const
 		{
-			return worldUp;
+			return up;
 		}
-		float Camera::zoomGet() const
+		const glm::vec3 Camera::getLeft() const
+		{
+			return glm::normalize(glm::cross(up, getDirection()));
+		}
+		float Camera::getZoom() const
 		{
 			return zoom;
 		}
-		float Camera::fovGet() const
+		float Camera::getFov() const
 		{
 			return fov;
 		}
-		float Camera::nearGet() const
+		float Camera::getNear() const
 		{
 			return nearPlane;
 		}
-		float Camera::farGet() const
+		float Camera::getFar() const
 		{
 			return farPlane;
 		}
 
-		void Camera::projectionSet(const Projection _projection)
+		void Camera::setProjection(const Projection _projection)
 		{
 			projection = _projection;
 		}
-		void Camera::positionSet(const glm::vec3& _position)
+		void Camera::setPosition(const glm::vec3& _position)
 		{
 			if (!followTarget)
-				target = _position + (target - position);
+				target = _position + getDirection();
 			position = _position;
 		}
-		void Camera::directionSet(const glm::vec3& _direction)
+		void Camera::setDirection(const glm::vec3& _direction)
 		{
+			se_assert(glm::normalize(_direction) != -up);
 			followTarget = false;
 			target = position + _direction;
 		}
-		void Camera::targetSet(const glm::vec3& _target)
+		void Camera::setTarget(const glm::vec3& _target)
 		{
+			se_assert(glm::normalize(_target) != -up);
 			followTarget = true;
 			target = _target;
 		}
-		void Camera::worldUpSet(const glm::vec3& _worldUp)
+		void Camera::setUp(const glm::vec3& _up)
 		{
-			worldUp = _worldUp;
+			se_assert(glm::normalize(_up) != getDirection());
+			up = glm::normalize(_up);
 		}
-		void Camera::zoomSet(const float _zoom)
+		void Camera::setZoom(const float _zoom)
 		{
 			zoom = _zoom;
 		}
-		void Camera::fovSet(const float _fov)
+		void Camera::setFov(const float _fov)
 		{
 			se_assert(_fov > 0.0f && _fov < 360.0f);
 			fov = _fov;
 		}
-		void Camera::nearSet(const float _near)
+		void Camera::setNear(const float _near)
 		{
 			se_assert(_near > 0.0f && _near < farPlane);
 			nearPlane = _near;
 		}
-		void Camera::farSet(const float _far)
+		void Camera::setFar(const float _far)
 		{
 			se_assert(_far > nearPlane);
 			farPlane = _far;

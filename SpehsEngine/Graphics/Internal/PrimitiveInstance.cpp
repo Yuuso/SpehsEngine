@@ -2,6 +2,7 @@
 #include "SpehsEngine/Graphics/Internal/PrimitiveInstance.h"
 
 #include "SpehsEngine/Graphics/Types.h"
+#include "SpehsEngine/Core/SE_Assert.h"
 
 #define GLM_ENABLE_EXPERIMENTAL
 #include "glm/gtc/matrix_transform.hpp"
@@ -38,15 +39,16 @@ namespace se
 		}
 		void PrimitiveInstance::render(RenderContext& _renderContext)
 		{
+			se_assert(primitive.getIndices().size() > 0 && primitive.getVertices().size() > 0);
 			if (!bgfx::isValid(vertexBufferHandle))
 			{
-				const std::vector<Vertex>& vertices = primitive.verticesGet();
+				const std::vector<Vertex>& vertices = primitive.getVertices();
 				const bgfx::Memory* bufferMemory = bgfx::copy(&vertices[0], vertices.size() * sizeof(vertices[0]));
 				vertexBufferHandle = bgfx::createVertexBuffer(bufferMemory, Vertex::getVertexLayout());
 			}
 			if (!bgfx::isValid(indexBufferHandle))
 			{
-				const std::vector<IndexType>& indices = primitive.indicesGet();
+				const std::vector<IndexType>& indices = primitive.getIndices();
 				const bgfx::Memory* bufferMemory = bgfx::copy(&indices[0], indices.size() * sizeof(indices[0]));
 				indexBufferHandle = bgfx::createIndexBuffer(bufferMemory);
 				static_assert(sizeof(IndexType) == 2);
@@ -63,7 +65,7 @@ namespace se
 						   | BGFX_STATE_WRITE_A
 						   | BGFX_STATE_WRITE_Z
 						   | BGFX_STATE_DEPTH_TEST_LESS
-						   | BGFX_STATE_CULL_CCW
+//						   | BGFX_STATE_CULL_CCW
 						   | BGFX_STATE_MSAA);
 
 			bgfx::submit(_renderContext.currentViewId, primitive.shader->programHandle);
@@ -71,8 +73,8 @@ namespace se
 
 		void PrimitiveInstance::updateTransformMatrix()
 		{
-			transformMatrix = glm::translate(primitive.localPositionGet() + primitive.initialLocalPosition) * glm::mat4_cast(primitive.initialLocalRotation) * glm::scale(primitive.initialLocalScale);
-			transformMatrix = glm::translate(primitive.positionGet()) * glm::mat4_cast(primitive.rotationGet()) * glm::scale(primitive.scaleGet()) * transformMatrix;
+			transformMatrix = glm::translate(primitive.getLocalPosition() + primitive.initialLocalPosition) * glm::mat4_cast(primitive.initialLocalRotation) * glm::scale(primitive.initialLocalScale);
+			transformMatrix = glm::translate(primitive.getPosition()) * glm::mat4_cast(primitive.getRotation()) * glm::scale(primitive.getScale()) * transformMatrix;
 		}
 	}
 }

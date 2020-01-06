@@ -49,7 +49,7 @@ namespace se
 		{
 			for (auto&& shader : shaders)
 			{
-				if (shader->nameGet() == _name)
+				if (shader->getName() == _name)
 					return shader.get();
 			}
 			return nullptr;

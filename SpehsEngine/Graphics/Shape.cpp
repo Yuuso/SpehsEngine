@@ -76,9 +76,6 @@ namespace se
 				{
 					vertices[i].position.x /= width;
 					vertices[i].position.z /= height;
-
-					vertices[i].position.x *= 10.0f;
-					vertices[i].position.z *= 10.0f;
 				}
 			}
 
@@ -101,20 +98,15 @@ namespace se
 
 			// Indices
 			{
-				uint16_t currentIndex = 0;
+				// TODO: This is assuming triangle draw mode
+				IndexType currentIndex = 0;
 				size_t index = 0;
-
-				indices.resize((vertices.size() / 4) * 6);
-
-				while (index < indices.size())
+				indices.resize((_numVertices - 2) * 3);
+				for (size_t i = 1; index < (_numVertices - 2) * 3;)
 				{
-					for (uint16_t i = 1; i < 3; i++)
-					{
-						indices[index++] = currentIndex;
-						indices[index++] = currentIndex + i;
-						indices[index++] = currentIndex + i + 1;
-					}
-					currentIndex += 4;
+					indices[index++] = currentIndex;
+					indices[index++] = currentIndex + (IndexType)i++;
+					indices[index++] = currentIndex + (IndexType)i;
 				}
 			}
 		}

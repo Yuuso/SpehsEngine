@@ -43,5 +43,14 @@ namespace se
 			}
 			views.erase(it);
 		}
+
+		uint16_t Window::getWidth() const
+		{
+			return width;
+		}
+		uint16_t Window::getHeight() const
+		{
+			return height;
+		}
 	}
 }

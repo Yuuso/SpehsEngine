@@ -59,9 +59,9 @@ namespace se
 			for (auto&& primitive : primitives)
 			{
 				// TODO: Check update
-				if (primitive->primitive.renderStateGet())
+				if (primitive->primitive.getRenderState())
 				{
-					if (primitive->primitive.renderModeGet() == RenderMode::Static)
+					if (primitive->primitive.getRenderMode() == RenderMode::Static)
 					{
 						if (primitive->batch == nullptr)
 						{
@@ -87,7 +87,7 @@ namespace se
 		{
 			for (auto&& primitive : primitives)
 			{
-				if (primitive->primitive.renderStateGet()
+				if (primitive->primitive.getRenderState()
 					&& primitive->batch == nullptr)
 				{
 					primitive->render(_renderContext);
@@ -104,19 +104,19 @@ namespace se
 			bool found = false;
 			for (auto&& batch : batches)
 			{
-				if (batch->check(_primitive.primitive.renderFlagsGet()) ||
-					batch->check(_primitive.primitive.verticesGet().size(), _primitive.primitive.indicesGet().size()))
+				if (batch->check(_primitive.primitive.getRenderFlags()) ||
+					batch->check(_primitive.primitive.getVertices().size(), _primitive.primitive.getIndices().size()))
 				{
-					_primitive.batchPosition = batch->add(_primitive.primitive.verticesGet(), _primitive.primitive.indicesGet());
+					_primitive.batchPosition = batch->add(_primitive.primitive.getVertices(), _primitive.primitive.getIndices());
 					_primitive.batch = batch.get();
 					found = true;
 				}
 			}
 			if (!found)
 			{
-				se_assert(_primitive.primitive.shaderGet() != nullptr);
-				batches.emplace_back(std::make_unique<Batch>(_primitive.primitive.renderFlagsGet(), *_primitive.primitive.shaderGet()));
-				_primitive.batchPosition = batches.back()->add(_primitive.primitive.verticesGet(), _primitive.primitive.indicesGet());
+				se_assert(_primitive.primitive.getShader() != nullptr);
+				batches.emplace_back(std::make_unique<Batch>(_primitive.primitive.getRenderFlags(), *_primitive.primitive.getShader()));
+				_primitive.batchPosition = batches.back()->add(_primitive.primitive.getVertices(), _primitive.primitive.getIndices());
 				_primitive.batch = batches.back().get();
 			}
 

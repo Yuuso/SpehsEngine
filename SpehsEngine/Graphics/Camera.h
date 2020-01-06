@@ -13,40 +13,41 @@ namespace se
 
 			enum Projection
 			{
-				perspective,
-				orthographic
+				Perspective,
+				Orthographic
 			};
 
 
 								Camera();
 
 
-			Projection			projectionGet() const;
-			const glm::vec3&	positionGet() const;
-			const glm::vec3		directionGet() const;
-			const glm::vec3&	targetGet() const;
-			const glm::vec3&	worldUpGet() const;
-			float				zoomGet() const;
-			float				fovGet() const;
-			float				nearGet() const;
-			float				farGet() const;
+			Projection			getProjection() const;
+			const glm::vec3&	getPosition() const;
+			const glm::vec3		getDirection() const;
+			const glm::vec3&	getTarget() const;
+			const glm::vec3&	getUp() const;
+			const glm::vec3		getLeft() const;
+			float				getZoom() const;
+			float				getFov() const;
+			float				getNear() const;
+			float				getFar() const;
 
-			void				projectionSet(const Projection _projection);
-			void				positionSet(const glm::vec3& _position);
-			void				directionSet(const glm::vec3& _direction);
-			void				targetSet(const glm::vec3& _target);
-			void				worldUpSet(const glm::vec3& _worldUp);
-			void				zoomSet(const float _zoom);
-			void				fovSet(const float _fov);
-			void				nearSet(const float _near);
-			void				farSet(const float _far);
+			void				setProjection(const Projection _projection);
+			void				setPosition(const glm::vec3& _position);
+			void				setDirection(const glm::vec3& _direction);
+			void				setTarget(const glm::vec3& _target);
+			void				setUp(const glm::vec3& _up);
+			void				setZoom(const float _zoom);
+			void				setFov(const float _fov);
+			void				setNear(const float _near);
+			void				setFar(const float _far);
 
 		private:
 
-			Projection			projection		= Projection::perspective;
+			Projection			projection		= Projection::Perspective;
 			bool				followTarget	= false;
 
-			glm::vec3			worldUp			= glm::vec3(0.0f, 1.0f, 0.0f);
+			glm::vec3			up				= glm::vec3(0.0f, 1.0f, 0.0f);
 
 			glm::vec3			position		= glm::vec3(0.0f, 10.0f, -15.0f);
 			glm::vec3			target			= glm::vec3(0.0f, 0.0f, 0.0f);

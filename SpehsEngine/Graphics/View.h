@@ -23,8 +23,8 @@ namespace se
 			View& operator=(View&& _other) = delete;
 
 
-			float widthGet() const;
-			float heightGet() const;
+			float getWidth() const;
+			float getHeight() const;
 
 		protected:
 

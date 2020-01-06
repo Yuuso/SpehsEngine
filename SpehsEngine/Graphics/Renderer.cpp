@@ -29,9 +29,9 @@ namespace se
 			{
 				bgfx::Init init;
 				//init.type = bgfx::RendererType::OpenGL;
-				init.resolution.width = (uint32_t)_window.widthGet();
-				init.resolution.height = (uint32_t)_window.heightGet();
-				init.resolution.reset = BGFX_RESET_VSYNC;
+				init.resolution.width = (uint32_t)_window.getWidth();
+				init.resolution.height = (uint32_t)_window.getHeight();
+				init.resolution.reset = BGFX_RESET_VSYNC | BGFX_RESET_MSAA_X2;
 				bgfx::init(init);
 
 				bgfx::setDebug(BGFX_DEBUG_TEXT);

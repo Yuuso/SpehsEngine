@@ -24,7 +24,7 @@ namespace se
 			bool load(const std::string_view _vertexShader, const std::string_view _fragmentShader);
 			bool load(const bgfx::ProgramHandle _programHandle);
 
-			const std::string& nameGet() const;
+			const std::string& getName() const;
 
 		//private:
 			bgfx::ProgramHandle programHandle;

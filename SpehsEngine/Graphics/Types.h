@@ -28,11 +28,11 @@ namespace se
 		typedef uint32_t UpdateFlagsType;
 		enum UpdateFlag : UpdateFlagsType
 		{
-			NothingChanged = 0,
-			TransformChanged = (1 << 0),
-			RenderInfoChanged = (1 << 1),
-			VerticesChanged = (1 << 2),
-			IndicesChanged = (1 << 3),
+			NothingChanged		= 0,
+			TransformChanged	= (1 << 0),
+			RenderInfoChanged	= (1 << 1),
+			VerticesChanged		= (1 << 2),
+			IndicesChanged		= (1 << 3),
 		};
 
 		enum RenderStyle

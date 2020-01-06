@@ -1,6 +1,8 @@
 #include "stdafx.h"
 #include "SpehsEngine/Graphics/Internal/Batch.h"
 
+#include "SpehsEngine/Core/SE_Assert.h"
+
 
 namespace se
 {
