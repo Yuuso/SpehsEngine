@@ -1,6 +1,7 @@
 #pragma once
 
-#include <glm/vec3.hpp>
+#include "glm/vec3.hpp"
+#include "SpehsEngine/Graphics/Types.h"
 
 
 namespace se
@@ -10,13 +11,6 @@ namespace se
 		class Camera
 		{
 		public:
-
-			enum Projection
-			{
-				Perspective,
-				Orthographic
-			};
-
 
 								Camera();
 

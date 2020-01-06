@@ -10,7 +10,7 @@ namespace se
 		{
 		}
 
-		Camera::Projection Camera::getProjection() const
+		Projection Camera::getProjection() const
 		{
 			return projection;
 		}

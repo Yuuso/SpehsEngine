@@ -7,9 +7,7 @@ namespace se
 	namespace graphics
 	{
 		View::View(const Scene& _scene, const Camera& _camera)
-			: width(800)
-			, height(600)
-			, scene(_scene)
+			: scene(_scene)
 			, camera(_camera)
 		{
 		}
@@ -17,13 +15,21 @@ namespace se
 		{
 		}
 
-		float View::getWidth() const
+		const ViewSize& View::getSize() const
 		{
-			return width;
+			return size;
 		}
-		float View::getHeight() const
+		const ViewSize& View::getOffset() const
 		{
-			return height;
+			return offset;
+		}
+		void View::setSize(const ViewSize& _size)
+		{
+			size = _size;
+		}
+		void View::setOffset(const ViewSize& _offset)
+		{
+			offset = _offset;
 		}
 	}
 }

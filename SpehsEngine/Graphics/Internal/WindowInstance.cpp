@@ -68,15 +68,24 @@ namespace se
 
 		void WindowInstance::render(RenderContext& _renderContext)
 		{
+			_renderContext.currentWindow = this;
 			for (auto& view : window.views)
 			{
 				if (bgfx::isValid(frameBufferHandle))
 				{
 					bgfx::setViewFrameBuffer(_renderContext.currentViewId, frameBufferHandle);
-					bgfx::setViewClear(_renderContext.currentViewId, BGFX_CLEAR_COLOR | BGFX_CLEAR_DEPTH, 0x101010ff, 1.0f, 0);
 				}
 				view->render(_renderContext);
 			}
+		}
+
+		float WindowInstance::getWidth() const
+		{
+			return (float)window.getWidth();
+		}
+		float WindowInstance::getHeight() const
+		{
+			return (float)window.getHeight();
 		}
 	}
 }

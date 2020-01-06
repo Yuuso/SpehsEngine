@@ -30,6 +30,9 @@ namespace se
 
 			void render(RenderContext& _renderContext);
 
+			float getWidth() const;
+			float getHeight() const;
+
 			const bool isDefault;
 
 		private:

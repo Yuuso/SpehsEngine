@@ -2,6 +2,7 @@
 
 #include "SpehsEngine/Graphics/Scene.h"
 #include "SpehsEngine/Graphics/Camera.h"
+#include "SpehsEngine/Graphics/Types.h"
 #include <memory>
 
 
@@ -23,8 +24,11 @@ namespace se
 			View& operator=(View&& _other) = delete;
 
 
-			float getWidth() const;
-			float getHeight() const;
+			const ViewSize& getSize() const;
+			const ViewSize& getOffset() const;
+
+			void setSize(const ViewSize& _size);
+			void setOffset(const ViewSize& _offset);
 
 		protected:
 
@@ -35,8 +39,8 @@ namespace se
 
 		private:
 
-			float width;
-			float height;
+			ViewSize size = ViewSize(1.0f, 1.0f, ViewSize::ViewSizeType::Relative);
+			ViewSize offset = ViewSize(0.0f, 0.0f, ViewSize::ViewSizeType::Pixels);
 		};
 	}
 }

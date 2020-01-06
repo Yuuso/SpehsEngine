@@ -9,6 +9,7 @@ namespace se
 	{
 		struct RenderContext
 		{
+			const class WindowInstance* currentWindow = nullptr;
 			bgfx::ViewId currentViewId = 0;
 		};
 	}
