@@ -196,10 +196,18 @@ namespace se
 			{
 				return glm::vec2(random<float>(0.0f, _side), random<float>(0.0f, _side));
 			}
+			glm::vec2 square(const glm::vec2& _min, const glm::vec2& _max)
+			{
+				return glm::vec2(random<float>(_min.x, _max.x), random<float>(_min.y, _max.y));
+			}
 
 			glm::vec3 cube(const float _side = 1.0f)
 			{
 				return glm::vec3(random<float>(0.0f, _side), random<float>(0.0f, _side), random<float>(0.0f, _side));
+			}
+			glm::vec3 cube(const glm::vec3& _min, const glm::vec3& _max)
+			{
+				return glm::vec3(random<float>(_min.x, _max.x), random<float>(_min.y, _max.y), random<float>(_min.z, _max.z));
 			}
 
 			template<typename FloatingPointType = float>
@@ -308,6 +316,8 @@ namespace se
 		unsigned weightedDice(const std::initializer_list<double> _propabilities);
 		glm::vec2 circle(const float _radius = 1.0f);
 		glm::vec2 square(const float _side = 1.0f);
+		glm::vec2 square(const glm::vec2& _min, const glm::vec2& _max);
 		glm::vec3 cube(const float _side = 1.0f);
+		glm::vec3 cube(const glm::vec3& _min, const glm::vec3& _max);
 	}
 }
