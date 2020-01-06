@@ -30,7 +30,7 @@ namespace se
 		class InputManager
 		{
 		public:
-			InputManager(/*se::rendering::Window& _window*/);
+			InputManager(se::rendering::Window& _window);
 			~InputManager();
 
 			void update(EventCatcher& _eventCatcher);
@@ -77,7 +77,7 @@ namespace se
 			std::string getDroppedFilePath() { std::string path = droppedFilePath; droppedFilePath.clear();/*Reset dropped file path*/ return path; }
 
 			//Public access members
-			//se::rendering::Window& window;
+			se::rendering::Window& window;
 			std::vector<Joystick*> joysticks;
 			KeyboardKey latestKeyboardPress = KeyboardKey::KEYBOARD_UNKNOWN;///< Latest key pressed. Reset for each update (0) if nothing was pressed during that update
 			KeyboardKey latestMouseButtonPress = KEYBOARD_UNKNOWN;///< Latest mouse buton pressed. Reset for each update (0) if nothing was pressed during that update
