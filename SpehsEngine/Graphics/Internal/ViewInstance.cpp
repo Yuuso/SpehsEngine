@@ -13,49 +13,58 @@ namespace se
 {
 	namespace graphics
 	{
-		ViewInstance::ViewInstance(const View& _view)
-			: view(_view)
+		ViewInstance::ViewInstance(View& _view)
+			: view(&_view)
 		{
+			viewDestroyedConnection = view->destroyedSignal.connect(boost::bind(&ViewInstance::viewDestroyed, this));
 		}
 		ViewInstance::~ViewInstance()
 		{
 		}
 
-		bool ViewInstance::operator==(const View& _other)
+		void ViewInstance::viewDestroyed()
 		{
-			return &view == &_other;
+			view = nullptr;
 		}
 
-		void ViewInstance::render(RenderContext& _renderContext)
+		bool ViewInstance::operator==(const View& _other) const
 		{
+			return view == &_other;
+		}
+
+		bool ViewInstance::render(RenderContext& _renderContext)
+		{
+			if (!view)
+				return false;
+
 			bgfx::setViewClear(_renderContext.currentViewId, BGFX_CLEAR_COLOR | BGFX_CLEAR_DEPTH, 0x101010ff * _renderContext.currentViewId, 1.0f, 0);
 
 			float viewWidthPixels;
 			float viewHeightPixels;
-			if (view.size.type == ViewSize::Relative)
+			if (view->size.type == ViewSize::Relative)
 			{
-				viewWidthPixels = _renderContext.currentWindow->getWidth() * view.size.width;
-				viewHeightPixels = _renderContext.currentWindow->getHeight() * view.size.height;
+				viewWidthPixels = _renderContext.currentWindow->getWidth() * view->size.width;
+				viewHeightPixels = _renderContext.currentWindow->getHeight() * view->size.height;
 			}
 			else
 			{
-				se_assert(view.size.type == ViewSize::Pixels);
-				viewWidthPixels = view.size.width;
-				viewHeightPixels = view.size.height;
+				se_assert(view->size.type == ViewSize::Pixels);
+				viewWidthPixels = view->size.width;
+				viewHeightPixels = view->size.height;
 			}
 
 			float viewOffsetXPixels;
 			float viewOffsetYPixels;
-			if (view.offset.type == ViewSize::Relative)
+			if (view->offset.type == ViewSize::Relative)
 			{
-				viewOffsetXPixels = _renderContext.currentWindow->getWidth() * view.offset.width;
-				viewOffsetYPixels = _renderContext.currentWindow->getHeight() * view.offset.height;
+				viewOffsetXPixels = _renderContext.currentWindow->getWidth() * view->offset.width;
+				viewOffsetYPixels = _renderContext.currentWindow->getHeight() * view->offset.height;
 			}
 			else
 			{
-				se_assert(view.offset.type == ViewSize::Pixels);
-				viewOffsetXPixels = view.offset.width;
-				viewOffsetYPixels = view.offset.height;
+				se_assert(view->offset.type == ViewSize::Pixels);
+				viewOffsetXPixels = view->offset.width;
+				viewOffsetYPixels = view->offset.height;
 			}
 
 			// Camera
@@ -63,20 +72,20 @@ namespace se
 				glm::mat4 viewMatrix;
 				glm::mat4 projectionMatrix;
 
-				switch (view.camera.getProjection())
+				switch (view->camera.getProjection())
 				{
 					case Projection::Perspective:
 					{
-						projectionMatrix = glm::perspective(glm::radians(view.camera.getFov()),
+						projectionMatrix = glm::perspective(glm::radians(view->camera.getFov()),
 															viewWidthPixels / viewHeightPixels,
-															view.camera.getNear(), view.camera.getFar());
+															view->camera.getNear(), view->camera.getFar());
 						break;
 					}
 					case Projection::Orthographic:
 					{
-						projectionMatrix = glm::ortho(-viewWidthPixels * 0.01f * view.camera.getZoom(), viewWidthPixels * 0.01f * view.camera.getZoom(),
-													  -viewHeightPixels * 0.01f * view.camera.getZoom(), viewHeightPixels * 0.01f * view.camera.getZoom(),
-													  view.camera.getNear(), view.camera.getFar());
+						projectionMatrix = glm::ortho(-viewWidthPixels * 0.01f * view->camera.getZoom(), viewWidthPixels * 0.01f * view->camera.getZoom(),
+													  -viewHeightPixels * 0.01f * view->camera.getZoom(), viewHeightPixels * 0.01f * view->camera.getZoom(),
+													  view->camera.getNear(), view->camera.getFar());
 						break;
 					}
 					default:
@@ -84,7 +93,7 @@ namespace se
 						break;
 				}
 
-				viewMatrix = glm::lookAt(view.camera.getPosition(), view.camera.getTarget(), view.camera.getUp());
+				viewMatrix = glm::lookAt(view->camera.getPosition(), view->camera.getTarget(), view->camera.getUp());
 
 				bgfx::setViewTransform(_renderContext.currentViewId, &viewMatrix, &projectionMatrix);
 				bgfx::setViewRect(_renderContext.currentViewId, (uint16_t)viewOffsetXPixels, (uint16_t)viewOffsetYPixels, (uint16_t)viewWidthPixels, (uint16_t)viewHeightPixels);
@@ -92,9 +101,11 @@ namespace se
 
 			bgfx::touch(_renderContext.currentViewId);
 
-			view.scene.render(_renderContext);
+			view->scene.render(_renderContext);
 
 			_renderContext.currentViewId++;
+
+			return true;
 		}
 	}
 }

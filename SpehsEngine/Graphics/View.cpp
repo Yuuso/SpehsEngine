@@ -6,13 +6,14 @@ namespace se
 {
 	namespace graphics
 	{
-		View::View(const Scene& _scene, const Camera& _camera)
+		View::View(Scene& _scene, Camera& _camera)
 			: scene(_scene)
 			, camera(_camera)
 		{
 		}
 		View::~View()
 		{
+			destroyedSignal();
 		}
 
 		const ViewSize& View::getSize() const

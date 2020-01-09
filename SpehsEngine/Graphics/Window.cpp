@@ -1,6 +1,8 @@
 #include "stdafx.h"
 #include "SpehsEngine/Graphics/Window.h"
 
+#include "SpehsEngine/Graphics/Renderer.h"
+
 
 namespace se
 {
@@ -11,9 +13,10 @@ namespace se
 		}
 		Window::~Window()
 		{
+			destroyedSignal();
 		}
 
-		void Window::add(const View& _view)
+		void Window::add(View& _view)
 		{
 			auto it = std::find_if(views.begin(),
 								   views.end(),
@@ -28,7 +31,7 @@ namespace se
 			}
 			views.emplace_back(std::make_unique<ViewInstance>(_view));
 		}
-		void Window::remove(const View& _view)
+		void Window::remove(View& _view)
 		{
 			auto it = std::find_if(views.begin(),
 								   views.end(),

@@ -26,16 +26,14 @@ namespace se
 			Scene& operator=(Scene&& _other) = delete;
 
 
-			void add(const Primitive& _primitive);
-			void remove(const Primitive& _primitive);
-
-			void update();
+			void add(Primitive& _primitive);
+			void remove(Primitive& _primitive);
 
 		protected:
 
 			friend class ViewInstance;
 
-			void render(RenderContext& _renderContext) const;
+			void render(RenderContext& _renderContext);
 
 			void batch(PrimitiveInstance& _primitive);
 			void unbatch(PrimitiveInstance& _primitive);

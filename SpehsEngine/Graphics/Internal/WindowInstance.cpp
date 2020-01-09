@@ -2,6 +2,7 @@
 #include "SpehsEngine/Graphics/Internal/WindowInstance.h"
 
 #include "SpehsEngine/Core/Log.h"
+#include "SpehsEngine/Core/SE_Assert.h"
 #include <Windows.h>
 #include "bgfx/bgfx.h"
 #include "bgfx/platform.h"
@@ -15,15 +16,17 @@ namespace se
 {
 	namespace graphics
 	{
-		WindowInstance::WindowInstance(const Window& _window, const bool _isDefault)
-			: window(_window)
+		WindowInstance::WindowInstance(Window& _window, const bool _isDefault)
+			: window(&_window)
 			, isDefault(_isDefault)
 		{
+			windowDestroyedConnection = window->destroyedSignal.connect(boost::bind(&WindowInstance::windowDestroyed, this));
+
 			sdlWindow = SDL_CreateWindow("SpehsEngine Window",
 										 SDL_WINDOWPOS_UNDEFINED,
 										 SDL_WINDOWPOS_UNDEFINED,
-										 window.getWidth(),
-										 window.getHeight(),
+										 window->getWidth(),
+										 window->getHeight(),
 										 SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE);
 
 			SDL_SysWMinfo wmi;
@@ -53,39 +56,56 @@ namespace se
 			}
 			else
 			{
-				frameBufferHandle = bgfx::createFrameBuffer(wmi.info.win.window, window.getWidth(), window.getHeight());
+				frameBufferHandle = bgfx::createFrameBuffer(wmi.info.win.window, window->getWidth(), window->getHeight());
 			}
 		}
 		WindowInstance::~WindowInstance()
 		{
+			if (bgfx::isValid(frameBufferHandle))
+				bgfx::destroy(frameBufferHandle);
 			SDL_DestroyWindow(sdlWindow);
 		}
 
-		bool WindowInstance::operator==(const Window& _other)
+		void WindowInstance::windowDestroyed()
 		{
-			return &window == &_other;
+			window = nullptr;
 		}
 
-		void WindowInstance::render(RenderContext& _renderContext)
+		bool WindowInstance::operator==(const Window& _other) const
 		{
+			return window == &_other;
+		}
+
+		bool WindowInstance::render(RenderContext& _renderContext)
+		{
+			if (!window)
+				return false;
+
 			_renderContext.currentWindow = this;
-			for (auto& view : window.views)
+			for (auto it = window->views.begin(); it != window->views.end();)
 			{
 				if (bgfx::isValid(frameBufferHandle))
-				{
 					bgfx::setViewFrameBuffer(_renderContext.currentViewId, frameBufferHandle);
+				if (!it->get()->render(_renderContext))
+				{
+					it->reset(window->views.back().release());
+					window->views.pop_back();
+					continue;
 				}
-				view->render(_renderContext);
+				it++;
 			}
+			return true;
 		}
 
 		float WindowInstance::getWidth() const
 		{
-			return (float)window.getWidth();
+			se_assert(window);
+			return (float)window->getWidth();
 		}
 		float WindowInstance::getHeight() const
 		{
-			return (float)window.getHeight();
+			se_assert(window);
+			return (float)window->getHeight();
 		}
 	}
 }

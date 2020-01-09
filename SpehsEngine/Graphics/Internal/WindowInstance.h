@@ -16,7 +16,7 @@ namespace se
 		{
 		public:
 
-			WindowInstance(const Window& _window, const bool _isDefault);
+			WindowInstance(Window& _window, const bool _isDefault);
 			~WindowInstance();
 
 			WindowInstance(const WindowInstance& _other) = delete;
@@ -25,10 +25,10 @@ namespace se
 			WindowInstance(WindowInstance&& _other) = delete;
 			WindowInstance& operator=(WindowInstance&& _other) = delete;
 
-			bool operator==(const Window& _other);
+			bool operator==(const Window& _other) const;
 
 
-			void render(RenderContext& _renderContext);
+			bool render(RenderContext& _renderContext);
 
 			float getWidth() const;
 			float getHeight() const;
@@ -37,7 +37,12 @@ namespace se
 
 		private:
 
-			const Window& window;
+			void windowDestroyed();
+
+			boost::signals2::scoped_connection windowDestroyedConnection;
+
+			Window* window;
+
 			SDL_Window* sdlWindow = nullptr;
 			bgfx::FrameBufferHandle frameBufferHandle = BGFX_INVALID_HANDLE;
 		};

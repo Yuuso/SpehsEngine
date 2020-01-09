@@ -1,5 +1,6 @@
 #pragma once
 
+#include "boost/signals2.hpp"
 #include "SpehsEngine/Graphics/Types.h"
 #include "glm/vec3.hpp"
 #include "glm/gtc/quaternion.hpp"
@@ -80,13 +81,17 @@ namespace se
 			// Local space
 			glm::vec3						localPosition			= glm::vec3(0.0f);
 
-			friend class PrimitiveInstance;
-
 			glm::vec3						initialLocalPosition	= glm::vec3(0.0f);
 			glm::vec3						initialLocalScale		= glm::vec3(1.0f);
 			glm::quat						initialLocalRotation	= glm::vec3(0.0f);
 
+		private:
+
+			friend class PrimitiveInstance;
+
 			UpdateFlagsType					updateFlags				= UpdateFlag::NothingChanged;
+
+			boost::signals2::signal<void(void)> destroyedSignal;
 		};
 	}
 }

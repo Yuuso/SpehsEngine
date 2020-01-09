@@ -13,7 +13,7 @@ namespace se
 		{
 		public:
 
-			ViewInstance(const View& _view);
+			ViewInstance(View& _view);
 			~ViewInstance();
 
 			ViewInstance(const ViewInstance& _other) = delete;
@@ -22,14 +22,18 @@ namespace se
 			ViewInstance(ViewInstance&& _other) = delete;
 			ViewInstance& operator=(ViewInstance&& _other) = delete;
 
-			bool operator==(const View& _other);
+			bool operator==(const View& _other) const;
 
 
-			void render(RenderContext& _renderContext);
+			bool render(RenderContext& _renderContext);
 
 		private:
 
-			const View& view;
+			void viewDestroyed();
+
+			boost::signals2::scoped_connection viewDestroyedConnection;
+
+			View* view;
 		};
 	}
 }

@@ -1,5 +1,6 @@
 #pragma once
 
+#include "boost/signals2.hpp"
 #include "SpehsEngine/Graphics/View.h"
 #include "SpehsEngine/Graphics/Internal/ViewInstance.h"
 #include "SpehsEngine/Graphics/Camera.h"
@@ -26,22 +27,22 @@ namespace se
 			Window& operator=(Window&& _other) = delete;
 
 
-			void add(const View& _view);
-			void remove(const View& _view);
+			void add(View& _view);
+			void remove(View& _view);
 
 			uint16_t getWidth() const;
 			uint16_t getHeight() const;
 
-		protected:
+		private:
 
 			friend class WindowInstance;
 
 			std::vector<std::unique_ptr<ViewInstance>> views;
 
-		private:
-
 			uint16_t width = 800;
 			uint16_t height = 600;
+
+			boost::signals2::signal<void(void)> destroyedSignal;
 		};
 	}
 }

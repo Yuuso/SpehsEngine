@@ -15,7 +15,7 @@ namespace se
 	{
 		static bool initialized = false;
 
-		Renderer::Renderer(const Window& _window)
+		Renderer::Renderer(Window& _window)
 		{
 			if (initialized)
 			{
@@ -54,15 +54,21 @@ namespace se
 		void Renderer::render()
 		{
 			RenderContext renderContext;
-			for (auto&& window : windows)
+			for (auto it = windows.begin(); it != windows.end();)
 			{
-				window->render(renderContext);
+				if (!it->get()->render(renderContext))
+				{
+					it->reset(windows.back().release());
+					windows.pop_back();
+					continue;
+				}
+				it++;
 			}
 			bgfx::frame();
 			bgfx::dbgTextClear();
 		}
 
-		void Renderer::add(const Window& _window)
+		void Renderer::add(Window& _window)
 		{
 			auto it = std::find_if(windows.begin(),
 								   windows.end(),
@@ -77,7 +83,7 @@ namespace se
 			}
 			windows.emplace_back(std::make_unique<WindowInstance>(_window, false));
 		}
-		void Renderer::remove(const Window& _window)
+		void Renderer::remove(Window& _window)
 		{
 			auto it = std::find_if(windows.begin(),
 								   windows.end(),
@@ -98,11 +104,11 @@ namespace se
 			windows.erase(it);
 		}
 
-		void Renderer::debugTextPrintf(const uint16_t _x, const uint16_t _y, const char* _format, ...)
+		void Renderer::debugTextPrintf(const uint16_t _column, const uint16_t _line, const char* _format, ...)
 		{
 			va_list args;
 			va_start(args, _format);
-			bgfx::dbgTextPrintfVargs(_x, _y, 0x0f, _format, args);
+			bgfx::dbgTextPrintfVargs(_column, _line, 0x0f, _format, args);
 			va_end(args);
 		}
 	}

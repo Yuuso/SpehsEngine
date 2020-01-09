@@ -14,7 +14,7 @@ namespace se
 		{
 		public:
 
-			Renderer(const Window& _window);
+			Renderer(Window& _window);
 			~Renderer();
 
 			Renderer(const Renderer& _other) = delete;
@@ -26,10 +26,10 @@ namespace se
 
 			void render();
 
-			void add(const Window& _window);
-			void remove(const Window& _window);
+			void add(Window& _window);
+			void remove(Window& _window);
 
-			void debugTextPrintf(const uint16_t _x, const uint16_t _y, const char* _format, ...);
+			static void debugTextPrintf(const uint16_t _column, const uint16_t _line, const char* _format, ...);
 
 		private:
 

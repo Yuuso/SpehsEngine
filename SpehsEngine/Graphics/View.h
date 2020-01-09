@@ -1,5 +1,6 @@
 #pragma once
 
+#include "boost/signals2.hpp"
 #include "SpehsEngine/Graphics/Scene.h"
 #include "SpehsEngine/Graphics/Camera.h"
 #include "SpehsEngine/Graphics/Types.h"
@@ -14,7 +15,7 @@ namespace se
 		{
 		public:
 
-			View(const Scene& _scene, const Camera& _camera);
+			View(Scene& _scene, Camera& _camera);
 			~View();
 
 			View(const View& _other) = delete;
@@ -30,17 +31,17 @@ namespace se
 			void setSize(const ViewSize& _size);
 			void setOffset(const ViewSize& _offset);
 
-		protected:
+		private:
 
 			friend class ViewInstance;
 
-			const Scene& scene;
-			const Camera& camera;
-
-		private:
+			Scene& scene;
+			Camera& camera;
 
 			ViewSize size = ViewSize(1.0f, 1.0f, ViewSize::ViewSizeType::Relative);
 			ViewSize offset = ViewSize(0.0f, 0.0f, ViewSize::ViewSizeType::Pixels);
+
+			boost::signals2::signal<void(void)> destroyedSignal;
 		};
 	}
 }

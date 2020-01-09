@@ -13,6 +13,7 @@ namespace se
 		}
 		Primitive::~Primitive()
 		{
+			destroyedSignal();
 		}
 
 		const std::string& Primitive::getName() const

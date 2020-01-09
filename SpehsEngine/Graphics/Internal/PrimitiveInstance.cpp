@@ -16,18 +16,24 @@ namespace se
 {
 	namespace graphics
 	{
-		PrimitiveInstance::PrimitiveInstance(const Primitive& _primitive)
-			: primitive(_primitive)
+		PrimitiveInstance::PrimitiveInstance(Primitive& _primitive)
+			: primitive(&_primitive)
 		{
+			primitiveDestroyedConnection = primitive->destroyedSignal.connect(boost::bind(&PrimitiveInstance::primitiveDestroyed, this));
 		}
 		PrimitiveInstance::~PrimitiveInstance()
 		{
 			destroyBuffers();
 		}
 
-		bool PrimitiveInstance::operator==(const Primitive& _other)
+		void PrimitiveInstance::primitiveDestroyed()
 		{
-			return &_other == &primitive;
+			primitive = nullptr;
+		}
+
+		bool PrimitiveInstance::operator==(const Primitive& _other) const
+		{
+			return &_other == primitive;
 		}
 
 		void PrimitiveInstance::destroyBuffers()
@@ -39,16 +45,17 @@ namespace se
 		}
 		void PrimitiveInstance::render(RenderContext& _renderContext)
 		{
-			se_assert(primitive.getIndices().size() > 0 && primitive.getVertices().size() > 0);
+			se_assert(primitive);
+			se_assert(primitive->getIndices().size() > 0 && primitive->getVertices().size() > 0);
 			if (!bgfx::isValid(vertexBufferHandle))
 			{
-				const std::vector<Vertex>& vertices = primitive.getVertices();
+				const std::vector<Vertex>& vertices = primitive->getVertices();
 				const bgfx::Memory* bufferMemory = bgfx::copy(&vertices[0], vertices.size() * sizeof(vertices[0]));
 				vertexBufferHandle = bgfx::createVertexBuffer(bufferMemory, Vertex::getVertexLayout());
 			}
 			if (!bgfx::isValid(indexBufferHandle))
 			{
-				const std::vector<IndexType>& indices = primitive.getIndices();
+				const std::vector<IndexType>& indices = primitive->getIndices();
 				const bgfx::Memory* bufferMemory = bgfx::copy(&indices[0], indices.size() * sizeof(indices[0]));
 				indexBufferHandle = bgfx::createIndexBuffer(bufferMemory);
 				static_assert(sizeof(IndexType) == 2);
@@ -68,13 +75,14 @@ namespace se
 //						   | BGFX_STATE_CULL_CCW
 						   | BGFX_STATE_MSAA);
 
-			bgfx::submit(_renderContext.currentViewId, primitive.shader->programHandle);
+			bgfx::submit(_renderContext.currentViewId, primitive->shader->programHandle);
 		}
 
 		void PrimitiveInstance::updateTransformMatrix()
 		{
-			transformMatrix = glm::translate(primitive.getLocalPosition() + primitive.initialLocalPosition) * glm::mat4_cast(primitive.initialLocalRotation) * glm::scale(primitive.initialLocalScale);
-			transformMatrix = glm::translate(primitive.getPosition()) * glm::mat4_cast(primitive.getRotation()) * glm::scale(primitive.getScale()) * transformMatrix;
+			se_assert(primitive);
+			transformMatrix = glm::translate(primitive->getLocalPosition() + primitive->initialLocalPosition) * glm::mat4_cast(primitive->initialLocalRotation) * glm::scale(primitive->initialLocalScale);
+			transformMatrix = glm::translate(primitive->getPosition()) * glm::mat4_cast(primitive->getRotation()) * glm::scale(primitive->getScale()) * transformMatrix;
 		}
 	}
 }
