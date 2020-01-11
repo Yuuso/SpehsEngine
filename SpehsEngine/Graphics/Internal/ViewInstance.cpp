@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "SpehsEngine/Graphics/Internal/ViewInstance.h"
 
+#include "SpehsEngine/Core/BitwiseOperations.h"
 #include "SpehsEngine/Core/SE_Assert.h"
 #include "SpehsEngine/Graphics/Internal/WindowInstance.h"
 
@@ -100,6 +101,11 @@ namespace se
 			}
 
 			bgfx::touch(_renderContext.currentViewId);
+
+			_renderContext.enableMSAA = view->getMSAAEnabled() && (checkBit(_renderContext.rendererFlags, MSAAX2) ||
+																   checkBit(_renderContext.rendererFlags, MSAAX4) ||
+																   checkBit(_renderContext.rendererFlags, MSAAX8) ||
+																   checkBit(_renderContext.rendererFlags, MSAAX16));
 
 			view->scene.render(_renderContext);
 

@@ -39,8 +39,8 @@ namespace se
 
 			std::vector<std::unique_ptr<ViewInstance>> views;
 
-			uint16_t width = 800;
-			uint16_t height = 600;
+			uint16_t width = 1600;
+			uint16_t height = 900;
 
 			boost::signals2::signal<void(void)> destroyedSignal;
 		};

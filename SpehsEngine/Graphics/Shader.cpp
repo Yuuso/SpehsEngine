@@ -14,7 +14,10 @@ namespace se
 		Shader::~Shader()
 		{
 			if (bgfx::isValid(programHandle))
+			{
 				bgfx::destroy(programHandle);
+				programHandle = BGFX_INVALID_HANDLE;
+			}
 		}
 
 		bool Shader::load(const std::string_view /*_vertexShader*/, const std::string_view /*_fragmentShader*/)

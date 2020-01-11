@@ -24,6 +24,11 @@ namespace se
 		{
 			return offset;
 		}
+		const bool View::getMSAAEnabled() const
+		{
+			return enableMSAA;
+		}
+
 		void View::setSize(const ViewSize& _size)
 		{
 			size = _size;
@@ -31,6 +36,10 @@ namespace se
 		void View::setOffset(const ViewSize& _offset)
 		{
 			offset = _offset;
+		}
+		void View::setMSAAEnabled(const bool _enabled)
+		{
+			enableMSAA = _enabled;
 		}
 	}
 }

@@ -15,6 +15,7 @@ namespace se
 		public:
 
 			Renderer(Window& _window);
+			Renderer(Window& _window, const RendererFlagsType _rendererFlags);
 			~Renderer();
 
 			Renderer(const Renderer& _other) = delete;
@@ -29,11 +30,22 @@ namespace se
 			void add(Window& _window);
 			void remove(Window& _window);
 
+			const RendererFlagsType getRenderOptions() const;
+			const bool checkRenderOption(const RendererFlag _rendererFlag) const;
+			void setRenderOptions(const RendererFlagsType _rendererFlags);
+			void enableRenderOption(const RendererFlag _rendererFlag);
+			void disableRenderOption(const RendererFlag _rendererFlag);
+
+
 			static void debugTextPrintf(const uint16_t _column, const uint16_t _line, const char* _format, ...);
 
 		private:
 
 			std::vector<std::unique_ptr<WindowInstance>> windows;
+			const WindowInstance* defaultWindow = nullptr;
+
+			RendererFlagsType rendererFlags;
+			bool rendererFlagsChanged = false;
 		};
 	}
 }

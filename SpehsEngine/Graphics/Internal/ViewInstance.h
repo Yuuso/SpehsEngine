@@ -2,7 +2,7 @@
 
 #include "SpehsEngine/Graphics/View.h"
 #include "SpehsEngine/Graphics/Camera.h"
-#include "SpehsEngine/Graphics/Internal/RenderContext.h"
+#include "SpehsEngine/Graphics/Internal/InternalTypes.h"
 
 
 namespace se

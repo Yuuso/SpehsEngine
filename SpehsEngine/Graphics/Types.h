@@ -18,24 +18,25 @@ namespace se
 		typedef uint32_t RenderFlagsType;
 		enum RenderFlag : RenderFlagsType
 		{
-			None				= 0,
-			FrontFaceCulling	= (1 << 0),
-			BackFaceCulling		= (1 << 1),
-			Blending			= (1 << 2),
-			DepthTest			= (1 << 3),
+			CullFrontFace		= (1 << 0),
+			CullBackFace		= (1 << 1),
+			DepthTest			= (1 << 2),
+		};
+
+		typedef uint32_t RendererFlagsType;
+		enum RendererFlag : RendererFlagsType
+		{
+			CWFrontFace			= (1 << 0),
+			MSAAX2				= (1 << 1),
+			MSAAX4				= (1 << 2),
+			MSAAX8				= (1 << 3),
+			MSAAX16				= (1 << 4),
+			VSync				= (1 << 5),
 		};
 
 		typedef uint32_t UpdateFlagsType;
-		enum UpdateFlag : UpdateFlagsType
-		{
-			NothingChanged		= 0,
-			TransformChanged	= (1 << 0),
-			RenderInfoChanged	= (1 << 1),
-			VerticesChanged		= (1 << 2),
-			IndicesChanged		= (1 << 3),
-		};
 
-		enum RenderStyle
+		enum PrimitiveType
 		{
 			Triangles,
 			TriangleStrip,

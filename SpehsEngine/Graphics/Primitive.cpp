@@ -2,6 +2,7 @@
 #include "SpehsEngine/Graphics/Primitive.h"
 
 #include "SpehsEngine/Core/BitwiseOperations.h"
+#include "SpehsEngine/Graphics/Internal/InternalTypes.h"
 
 
 namespace se
@@ -45,9 +46,9 @@ namespace se
 		{
 			return checkBit(renderFlags, _renderFlag);
 		}
-		const RenderStyle Primitive::getRenderStyle() const
+		const PrimitiveType Primitive::getPrimitiveType() const
 		{
-			return renderStyle;
+			return primitiveType;
 		}
 		const RenderMode Primitive::getRenderMode() const
 		{
@@ -78,6 +79,10 @@ namespace se
 		void Primitive::setRenderState(const bool _state)
 		{
 			renderState = _state;
+		}
+		void Primitive::toggleRenderState()
+		{
+			renderState = !renderState;
 		}
 		void Primitive::setShader(const Shader* _shader)
 		{
@@ -110,9 +115,9 @@ namespace se
 			disableBit(renderFlags, _renderFlag);
 			enableBit(updateFlags, UpdateFlag::RenderInfoChanged);
 		}
-		void Primitive::setRenderStyle(const RenderStyle _renderStyle)
+		void Primitive::setPrimitiveType(const PrimitiveType _primitiveType)
 		{
-			renderStyle = _renderStyle;
+			primitiveType = _primitiveType;
 			enableBit(updateFlags, UpdateFlag::RenderInfoChanged);
 		}
 		void Primitive::setRenderMode(const RenderMode _renderMode)
@@ -136,9 +141,19 @@ namespace se
 			scale = _scale;
 			enableBit(updateFlags, UpdateFlag::TransformChanged);
 		}
+		void Primitive::setLocalScale(const glm::vec3& _scale)
+		{
+			localScale = _scale;
+			enableBit(updateFlags, UpdateFlag::TransformChanged);
+		}
 		void Primitive::setRotation(const glm::quat& _rotation)
 		{
 			rotation = _rotation;
+			enableBit(updateFlags, UpdateFlag::TransformChanged);
+		}
+		void Primitive::setLocalRotation(const glm::quat& _rotation)
+		{
+			localRotation = _rotation;
 			enableBit(updateFlags, UpdateFlag::TransformChanged);
 		}
 	}

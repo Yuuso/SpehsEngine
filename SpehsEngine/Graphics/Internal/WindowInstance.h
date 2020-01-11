@@ -1,7 +1,7 @@
 #pragma once
 
 #include "SpehsEngine/Graphics/Window.h"
-#include "SpehsEngine/Graphics/Internal/RenderContext.h"
+#include "SpehsEngine/Graphics/Internal/InternalTypes.h"
 #include "bgfx/bgfx.h" // TODO: No bgfx includes in headers!
 
 
@@ -30,16 +30,18 @@ namespace se
 
 			bool render(RenderContext& _renderContext);
 
+			bool wasDestroyed() const;
+
 			float getWidth() const;
 			float getHeight() const;
-
-			const bool isDefault;
 
 		private:
 
 			void windowDestroyed();
 
 			boost::signals2::scoped_connection windowDestroyedConnection;
+
+			const bool isDefault;
 
 			Window* window;
 

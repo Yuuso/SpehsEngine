@@ -151,13 +151,13 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="Internal\Batch.h" />
-    <ClInclude Include="Internal\BatchPosition.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="GraphicsLib.h" />
+    <ClInclude Include="Internal\InternalTypes.h" />
+    <ClInclude Include="Internal\InternalUtilities.h" />
     <ClInclude Include="PrecompiledInclude.h" />
     <ClInclude Include="Primitive.h" />
     <ClInclude Include="Internal\PrimitiveInstance.h" />
-    <ClInclude Include="Internal\RenderContext.h" />
     <ClInclude Include="Renderer.h" />
     <ClInclude Include="Types.h" />
     <ClInclude Include="Scene.h" />
@@ -174,6 +174,7 @@
     <ClCompile Include="Internal\Batch.cpp" />
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="GraphicsLib.cpp" />
+    <ClCompile Include="Internal\InternalUtilities.cpp" />
     <ClCompile Include="Primitive.cpp" />
     <ClCompile Include="Internal\PrimitiveInstance.cpp" />
     <ClCompile Include="Renderer.cpp" />

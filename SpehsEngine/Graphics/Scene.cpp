@@ -1,8 +1,8 @@
 #include "stdafx.h"
 #include "SpehsEngine/Graphics/Scene.h"
 
+#include "SpehsEngine/Core/BitwiseOperations.h"
 #include "SpehsEngine/Graphics/Shader.h"
-#include "SpehsEngine/Graphics/Internal/BatchPosition.h"
 #include "SpehsEngine/Graphics/Types.h"
 
 
@@ -46,91 +46,86 @@ namespace se
 				return;
 			}
 
-			if (it->get()->batch)
-				unbatch(*it->get());
+			if (it->get()->isBatched())
+				it->get()->unbatch();
 
-			primitives.erase(it);
+			it->reset(primitives.back().release());
+			primitives.pop_back();
 		}
 
 		void Scene::render(RenderContext& _renderContext)
 		{
-			// TODO: Organize!!
-			for (auto it = primitives.begin(); it != primitives.end(); )
+			// TODO: Optimize unbatching
+
+			for (size_t i = 0; i < primitives.size(); )
 			{
-				// TODO: ?
-				if (!it->get()->primitive)
+				if (primitives[i]->wasDestroyed())
 				{
-					it = primitives.erase(it);
+					if (primitives[i]->isBatched())
+						primitives[i]->unbatch();
+					primitives[i].reset(primitives.back().release());
+					primitives.pop_back();
 					continue;
 				}
 
-				// TODO: Check update
-				if (it->get()->primitive->getRenderState())
+				if (primitives[i]->getRenderState())
 				{
-					if (it->get()->primitive->getRenderMode() == RenderMode::Static)
+					if (primitives[i]->getRenderMode() == RenderMode::Static)
 					{
-						if (it->get()->batch == nullptr)
-						{
-							batch(*it->get());
-						}
+						primitives[i]->destroyBuffers();
+						primitives[i]->updateBatch();
+						if (!primitives[i]->isBatched())
+							batch(*primitives[i].get());
 					}
 					else
 					{
-						// TODO: A bunch of stuff, including Transient rendering
-						it->get()->updateTransformMatrix();
+						if (primitives[i]->isBatched())
+							primitives[i]->unbatch();
+						primitives[i]->update();
+						primitives[i]->render(_renderContext);
 					}
 				}
 				else
 				{
-					if (!it->get()->batch)
-						unbatch(*it->get());
-					it->get()->destroyBuffers();
+					if (primitives[i]->isBatched())
+						primitives[i]->unbatch();
+					primitives[i]->destroyBuffers();
 				}
 
-				it++;
+				i++;
 			}
 
-			for (auto&& primitive : primitives)
+			for (size_t i = 0; i < batches.size(); )
 			{
-				if (primitive->primitive != nullptr
-					&& primitive->primitive->getRenderState()
-					&& primitive->batch == nullptr)
+				if (!batches[i]->render(_renderContext))
 				{
-					primitive->render(_renderContext);
+					batches[i].reset(batches.back().release());
+					batches.pop_back();
+					continue;
 				}
+				i++;
 			}
-
-			for (auto&& batch : batches)
-				batch->render(_renderContext);
 		}
 
 		void Scene::batch(PrimitiveInstance& _primitive)
 		{
-			se_assert(!_primitive.batch);
+			se_assert(!_primitive.wasDestroyed());
 			bool found = false;
 			for (auto&& batch : batches)
 			{
-				if (batch->check(_primitive.primitive->getRenderFlags()) ||
-					batch->check(_primitive.primitive->getVertices().size(), _primitive.primitive->getIndices().size()))
+				if (batch->check(_primitive.getRenderInfo()) ||
+					batch->check(_primitive.getVertices().size(), _primitive.getIndices().size()))
 				{
-					_primitive.batchPosition = batch->add(_primitive.primitive->getVertices(), _primitive.primitive->getIndices());
-					_primitive.batch = batch.get();
+					_primitive.batch(*batch.get());
 					found = true;
+					break;
 				}
 			}
 			if (!found)
 			{
-				se_assert(_primitive.primitive->getShader() != nullptr);
-				batches.emplace_back(std::make_unique<Batch>(_primitive.primitive->getRenderFlags(), *_primitive.primitive->getShader()));
-				_primitive.batchPosition = batches.back()->add(_primitive.primitive->getVertices(), _primitive.primitive->getIndices());
-				_primitive.batch = batches.back().get();
+				batches.emplace_back(std::make_unique<Batch>(_primitive.getRenderInfo()));
+				_primitive.batch(*batches.back());
 			}
-		}
-		void Scene::unbatch(PrimitiveInstance& _primitive)
-		{
-			se_assert(_primitive.batch);
-			_primitive.batch->remove(_primitive.batchPosition);
-			_primitive.batch = nullptr;
 		}
 	}
 }

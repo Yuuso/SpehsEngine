@@ -36,7 +36,7 @@ namespace se
 
 			const RenderFlagsType			getRenderFlags() const;
 			const bool						checkRenderFlag(const RenderFlag _renderFlag) const;
-			const RenderStyle				getRenderStyle() const;
+			const PrimitiveType				getPrimitiveType() const;
 			const RenderMode				getRenderMode() const;
 
 			const glm::vec3&				getPosition() const;
@@ -46,6 +46,7 @@ namespace se
 
 			void							setName(const std::string_view _name);
 			void							setRenderState(const bool _state);
+			void							toggleRenderState();
 			void							setShader(const Shader* _shader);
 			void							setVertices(const std::vector<Vertex>& _vertices);
 			void							setIndices(const std::vector<uint16_t>& _indices);
@@ -53,23 +54,24 @@ namespace se
 			void							setRenderFlags(const RenderFlagsType _renderFlags);
 			void							enableRenderFlag(const RenderFlag _renderFlag);
 			void							disableRenderFlag(const RenderFlag _renderFlag);
-			void							setRenderStyle(const RenderStyle _renderStyle);
+			void							setPrimitiveType(const PrimitiveType _primitiveType);
 			void							setRenderMode(const RenderMode _renderMode);
 
 			void							setPosition(const glm::vec3& _position);
 			void							setLocalPosition(const glm::vec3& _position);
 			void							setScale(const glm::vec3& _scale);
+			void							setLocalScale(const glm::vec3& _scale);
 			void							setRotation(const glm::quat& _rotation);
+			void							setLocalRotation(const glm::quat& _rotation);
 
 		protected:
 
 			std::string						name					= "primitive";
 			bool							renderState				= true;
-			RenderFlagsType					renderFlags				= RenderFlag::BackFaceCulling
-																	| RenderFlag::DepthTest;
-			RenderStyle						renderStyle				= RenderStyle::Triangles;
+			RenderFlagsType					renderFlags				= RenderFlag::DepthTest;
+			PrimitiveType					primitiveType			= PrimitiveType::Triangles;
 			RenderMode						renderMode				= RenderMode::Dynamic;
-			const Shader*					shader					= nullptr;
+			const Shader*					shader					= nullptr; // TODO: default shader
 			std::vector<Vertex>				vertices;
 			std::vector<IndexType>			indices;
 
@@ -80,6 +82,8 @@ namespace se
 
 			// Local space
 			glm::vec3						localPosition			= glm::vec3(0.0f);
+			glm::vec3						localScale				= glm::vec3(1.0f);
+			glm::quat						localRotation			= glm::vec3(0.0f);
 
 			glm::vec3						initialLocalPosition	= glm::vec3(0.0f);
 			glm::vec3						initialLocalScale		= glm::vec3(1.0f);
@@ -89,7 +93,7 @@ namespace se
 
 			friend class PrimitiveInstance;
 
-			UpdateFlagsType					updateFlags				= UpdateFlag::NothingChanged;
+			UpdateFlagsType					updateFlags				= 0/*UpdateFlag::NothingChanged*/;
 
 			boost::signals2::signal<void(void)> destroyedSignal;
 		};

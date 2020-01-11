@@ -62,7 +62,10 @@ namespace se
 		WindowInstance::~WindowInstance()
 		{
 			if (bgfx::isValid(frameBufferHandle))
+			{
 				bgfx::destroy(frameBufferHandle);
+				frameBufferHandle = BGFX_INVALID_HANDLE;
+			}
 			SDL_DestroyWindow(sdlWindow);
 		}
 
@@ -82,19 +85,24 @@ namespace se
 				return false;
 
 			_renderContext.currentWindow = this;
-			for (auto it = window->views.begin(); it != window->views.end();)
+			for (size_t i = 0; i < window->views.size(); )
 			{
 				if (bgfx::isValid(frameBufferHandle))
 					bgfx::setViewFrameBuffer(_renderContext.currentViewId, frameBufferHandle);
-				if (!it->get()->render(_renderContext))
+				if (!window->views[i]->render(_renderContext))
 				{
-					it->reset(window->views.back().release());
+					window->views[i].reset(window->views.back().release());
 					window->views.pop_back();
 					continue;
 				}
-				it++;
+				i++;
 			}
 			return true;
+		}
+
+		bool WindowInstance::wasDestroyed() const
+		{
+			return window == nullptr;
 		}
 
 		float WindowInstance::getWidth() const

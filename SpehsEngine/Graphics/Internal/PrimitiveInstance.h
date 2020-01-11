@@ -4,9 +4,9 @@
 #include "glm/mat4x4.hpp"
 #include "boost/signals2/connection.hpp"
 #include "SpehsEngine/Graphics/Internal/Batch.h"
-#include "SpehsEngine/Graphics/Internal/BatchPosition.h"
-#include "SpehsEngine/Graphics/Internal/RenderContext.h"
+#include "SpehsEngine/Graphics/Internal/InternalTypes.h"
 #include "SpehsEngine/Graphics/Primitive.h"
+#include <vector>
 
 
 namespace se
@@ -29,23 +29,36 @@ namespace se
 			bool operator==(const Primitive& _other) const;
 
 
+			void destroyBuffers();
+			void update();
 			void render(RenderContext& _renderContext);
 
-			void destroyBuffers();
-			void updateTransformMatrix();
+			void updateBatch();
+			void batch(Batch& _batch);
+			void unbatch();
 
+			void clearUpdateFlags();
 
-			// TODO: Privatize!
-			Primitive* primitive;
-
-			Batch* batch = nullptr;
-			BatchPosition batchPosition;
+			const bool isBatched() const;
+			const bool wasDestroyed() const;
+			const RenderInfo getRenderInfo() const;
+			const bool getRenderState() const;
+			const RenderMode getRenderMode() const;
+			const std::vector<Vertex>& getVertices() const;
+			const std::vector<IndexType>& getIndices() const;
 
 		private:
+
+			const bool sizeInBatchChanged() const;
+			void updateTransformMatrix();
 
 			void primitiveDestroyed();
 
 			boost::signals2::scoped_connection primitiveDestroyedConnection;
+
+			Primitive* primitive;
+			Batch* batch_ = nullptr;
+			const BatchPosition* batchPosition = nullptr;
 
 			glm::mat4 transformMatrix;
 

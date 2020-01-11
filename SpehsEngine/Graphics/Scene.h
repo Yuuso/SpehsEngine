@@ -1,8 +1,8 @@
 #pragma once
 
 #include "SpehsEngine/Graphics/Internal/Batch.h"
+#include "SpehsEngine/Graphics/Internal/InternalTypes.h"
 #include "SpehsEngine/Graphics/Internal/PrimitiveInstance.h"
-#include "SpehsEngine/Graphics/Internal/RenderContext.h"
 #include "SpehsEngine/Graphics/Primitive.h"
 #include <memory>
 #include <vector>
@@ -36,7 +36,6 @@ namespace se
 			void render(RenderContext& _renderContext);
 
 			void batch(PrimitiveInstance& _primitive);
-			void unbatch(PrimitiveInstance& _primitive);
 
 		private:
 
