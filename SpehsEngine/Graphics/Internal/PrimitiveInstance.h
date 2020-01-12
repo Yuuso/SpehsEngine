@@ -29,11 +29,11 @@ namespace se
 			bool operator==(const Primitive& _other) const;
 
 
-			void destroyBuffers();
 			void update();
+
+			void destroyBuffers();
 			void render(RenderContext& _renderContext);
 
-			void updateBatch();
 			void batch(Batch& _batch);
 			void unbatch();
 
@@ -62,6 +62,7 @@ namespace se
 
 			glm::mat4 transformMatrix;
 
+			// TODO: Test dynamic buffers
 			bgfx::VertexBufferHandle vertexBufferHandle = BGFX_INVALID_HANDLE;
 			bgfx::IndexBufferHandle indexBufferHandle = BGFX_INVALID_HANDLE;
 		};

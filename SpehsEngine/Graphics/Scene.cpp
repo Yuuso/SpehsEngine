@@ -68,28 +68,18 @@ namespace se
 					continue;
 				}
 
+				primitives[i]->update();
 				if (primitives[i]->getRenderState())
 				{
 					if (primitives[i]->getRenderMode() == RenderMode::Static)
 					{
-						primitives[i]->destroyBuffers();
-						primitives[i]->updateBatch();
 						if (!primitives[i]->isBatched())
 							batch(*primitives[i].get());
 					}
 					else
 					{
-						if (primitives[i]->isBatched())
-							primitives[i]->unbatch();
-						primitives[i]->update();
 						primitives[i]->render(_renderContext);
 					}
-				}
-				else
-				{
-					if (primitives[i]->isBatched())
-						primitives[i]->unbatch();
-					primitives[i]->destroyBuffers();
 				}
 
 				i++;
@@ -113,7 +103,7 @@ namespace se
 			bool found = false;
 			for (auto&& batch : batches)
 			{
-				if (batch->check(_primitive.getRenderInfo()) ||
+				if (batch->check(_primitive.getRenderInfo()) &&
 					batch->check(_primitive.getVertices().size(), _primitive.getIndices().size()))
 				{
 					_primitive.batch(*batch.get());

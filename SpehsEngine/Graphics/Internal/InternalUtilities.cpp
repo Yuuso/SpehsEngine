@@ -32,17 +32,14 @@ namespace se
 
 			switch (_renderInfo.primitiveType)
 			{
+				default:
+					se_assert_m(false, "Unknown primitive type!");
+					[[fallthrough]];
 				case PrimitiveType::Triangles:
 					// Default
 					break;
-				case PrimitiveType::TriangleStrip:
-					state |= BGFX_STATE_PT_TRISTRIP;
-					break;
 				case PrimitiveType::Lines:
 					state |= BGFX_STATE_PT_LINES;
-					break;
-				case PrimitiveType::LineStrip:
-					state |= BGFX_STATE_PT_LINESTRIP;
 					break;
 				case PrimitiveType::Points:
 					state |= BGFX_STATE_PT_POINTS;

@@ -21,7 +21,15 @@ namespace se
 			Shape& operator=(Shape&& _other) = delete;
 
 
-			void recreate(const unsigned _numVertices);
+			void generate(const unsigned _numVertices);
+
+			void setPrimitiveType(const PrimitiveType _primitiveType) override;
+			void setVertices(const std::vector<Vertex>& _vertices) override;
+			void setIndices(const std::vector<uint16_t>& _indices) override;
+
+		private:
+
+			void generateIndices();
 		};
 	}
 }

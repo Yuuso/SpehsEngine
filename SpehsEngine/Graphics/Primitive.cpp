@@ -67,9 +67,17 @@ namespace se
 		{
 			return scale;
 		}
+		const glm::vec3& Primitive::getLocalScale() const
+		{
+			return localScale;
+		}
 		const glm::quat& Primitive::getRotation() const
 		{
 			return rotation;
+		}
+		const glm::quat& Primitive::getLocalRotation() const
+		{
+			return localRotation;
 		}
 
 		void Primitive::setName(const std::string_view _name)

@@ -39,9 +39,7 @@ namespace se
 		enum PrimitiveType
 		{
 			Triangles,
-			TriangleStrip,
 			Lines,
-			LineStrip,
 			Points
 		};
 

@@ -41,6 +41,65 @@ namespace se
 		}
 
 
+		void PrimitiveInstance::update()
+		{
+			if (!getRenderState())
+			{
+				destroyBuffers();
+				if (isBatched())
+					unbatch();
+				return;
+			}
+
+			if (getRenderMode() == RenderMode::Static)
+			{
+				destroyBuffers();
+				if (isBatched())
+				{
+					const std::vector<Vertex>& vertices = getVertices();
+					const std::vector<IndexType>& indices = getIndices();
+					se_assert(vertices.size() != 0 && indices.size() != 0);
+					if ((checkBit(primitive->updateFlags, UpdateFlag::RenderInfoChanged) || sizeInBatchChanged()))
+					{
+						unbatch();
+					}
+					else
+					{
+						if (checkBit(primitive->updateFlags, UpdateFlag::TransformChanged))
+						{
+							updateTransformMatrix();
+							batch_->updateVertices(*batchPosition, vertices, transformMatrix);
+						}
+						else if (checkBit(primitive->updateFlags, UpdateFlag::VerticesChanged))
+						{
+							batch_->updateVertices(*batchPosition, vertices, transformMatrix);
+						}
+
+						if (checkBit(primitive->updateFlags, UpdateFlag::IndicesChanged))
+						{
+							batch_->updateIndices(*batchPosition, indices);
+						}
+					}
+				}
+			}
+			else
+			{
+				if (isBatched())
+					unbatch();
+				if (checkBit(primitive->updateFlags, UpdateFlag::VerticesChanged) ||
+					checkBit(primitive->updateFlags, UpdateFlag::IndicesChanged))
+				{
+					destroyBuffers();
+				}
+				if (checkBit(primitive->updateFlags, UpdateFlag::TransformChanged))
+				{
+					updateTransformMatrix();
+				}
+				// UpdateFlag::RenderInfoChanged doesn't matter
+			}
+			clearUpdateFlags();
+		}
+
 		void PrimitiveInstance::destroyBuffers()
 		{
 			// TODO: No need to destroy both buffers every time
@@ -54,20 +113,6 @@ namespace se
 				bgfx::destroy(indexBufferHandle);
 				indexBufferHandle = BGFX_INVALID_HANDLE;
 			}
-		}
-		void PrimitiveInstance::update()
-		{
-			if (checkBit(primitive->updateFlags, UpdateFlag::VerticesChanged) ||
-				checkBit(primitive->updateFlags, UpdateFlag::IndicesChanged))
-			{
-				destroyBuffers();
-			}
-			if (checkBit(primitive->updateFlags, UpdateFlag::TransformChanged))
-			{
-				updateTransformMatrix();
-			}
-			// UpdateFlag::RenderInfoChanged doesn't matter
-			clearUpdateFlags();
 		}
 		void PrimitiveInstance::render(RenderContext& _renderContext)
 		{
@@ -117,37 +162,6 @@ namespace se
 			bgfx::submit(_renderContext.currentViewId, renderInfo.shader->programHandle);
 		}
 
-		void PrimitiveInstance::updateBatch()
-		{
-			if (isBatched())
-			{
-				const std::vector<Vertex>& vertices = getVertices();
-				const std::vector<IndexType>& indices = getIndices();
-				se_assert(vertices.size() != 0 && indices.size() != 0);
-				if ((checkBit(primitive->updateFlags, UpdateFlag::RenderInfoChanged) || sizeInBatchChanged()))
-				{
-					unbatch();
-				}
-				else
-				{
-					if (checkBit(primitive->updateFlags, UpdateFlag::TransformChanged))
-					{
-						updateTransformMatrix();
-						batch_->updateVertices(*batchPosition, vertices, transformMatrix);
-					}
-					else if (checkBit(primitive->updateFlags, UpdateFlag::VerticesChanged))
-					{
-						batch_->updateVertices(*batchPosition, vertices, transformMatrix);
-					}
-
-					if (checkBit(primitive->updateFlags, UpdateFlag::IndicesChanged))
-					{
-						batch_->updateIndices(*batchPosition, indices);
-					}
-				}
-			}
-			clearUpdateFlags();
-		}
 		void PrimitiveInstance::batch(Batch& _batch)
 		{
 			const std::vector<Vertex>& vertices = getVertices();
@@ -218,9 +232,9 @@ namespace se
 		}
 		void PrimitiveInstance::updateTransformMatrix()
 		{
-			transformMatrix = glm::translate(primitive->getLocalPosition() + primitive->initialLocalPosition) *
-							  glm::mat4_cast(primitive->initialLocalRotation * primitive->localRotation) *
-							  glm::scale(primitive->initialLocalScale * primitive->localScale);
+			transformMatrix = glm::translate(primitive->getLocalPosition()) *
+							  glm::mat4_cast(primitive->getLocalRotation()) *
+							  glm::scale(primitive->getLocalScale());
 			transformMatrix = glm::translate(primitive->getPosition()) *
 							  glm::mat4_cast(primitive->getRotation()) *
 							  glm::scale(primitive->getScale()) *
