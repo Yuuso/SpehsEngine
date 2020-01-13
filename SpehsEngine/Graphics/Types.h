@@ -5,6 +5,7 @@
 #include "glm/vec2.hpp"
 #include "glm/vec3.hpp"
 #include <stdint.h>
+#include <numeric>
 
 // TODO: Separate all or at least separate internal
 
@@ -27,14 +28,24 @@ namespace se
 		enum RendererFlag : RendererFlagsType
 		{
 			CWFrontFace			= (1 << 0),
-			MSAAX2				= (1 << 1),
-			MSAAX4				= (1 << 2),
-			MSAAX8				= (1 << 3),
-			MSAAX16				= (1 << 4),
+			MSAA2				= (1 << 1),
+			MSAA4				= (1 << 2),
+			MSAA8				= (1 << 3),
+			MSAA16				= (1 << 4),
 			VSync				= (1 << 5),
+			Direct3D9			= (1 << 6),
+			Direct3D11			= (1 << 7),
+			Direct3D12			= (1 << 8),
+			Gnm					= (1 << 9),
+			Metal				= (1 << 10),
+			Nvn					= (1 << 11),
+			OpenGLES			= (1 << 12),
+			OpenGL				= (1 << 13),
+			Vulkan				= (1 << 14),
 		};
 
-		typedef uint32_t UpdateFlagsType;
+		typedef uint32_t PrimitiveUpdateFlagsType;
+		typedef uint32_t WindowUpdateFlagsType;
 
 		enum PrimitiveType
 		{
@@ -103,6 +114,27 @@ namespace se
 			ViewSizeType type = Relative;
 			float width = 1.0f;
 			float height = 1.0f;
+		};
+
+		struct AspectRatio
+		{
+			AspectRatio(const uint16_t _numerator, const uint16_t _denominator)
+			{
+				const uint16_t gcd = std::gcd(_numerator, _denominator);
+				numerator = _numerator / gcd;
+				denominator = _denominator / gcd;
+			}
+			bool operator==(const AspectRatio& _other) const
+			{
+				return numerator == _other.numerator && denominator == _other.denominator;
+			}
+			bool operator!=(const AspectRatio& _other) const
+			{
+				return numerator != _other.numerator || denominator != _other.denominator;
+			}
+
+			uint16_t numerator;
+			uint16_t denominator;
 		};
 	}
 }

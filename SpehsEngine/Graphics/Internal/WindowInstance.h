@@ -6,6 +6,7 @@
 
 
 struct SDL_Window;
+struct SDL_WindowEvent;
 
 
 namespace se
@@ -28,12 +29,19 @@ namespace se
 			bool operator==(const Window& _other) const;
 
 
-			bool render(RenderContext& _renderContext);
+			void render(RenderContext& _renderContext);
 
-			bool wasDestroyed() const;
+			const bool wasDestroyed() const;
 
-			float getWidth() const;
-			float getHeight() const;
+			const uint32_t getID() const;
+			const float getWidth() const;
+			const float getHeight() const;
+
+			void update();
+			void handleWindowEvent(const SDL_WindowEvent& _event);
+
+			const bool isDefault;
+			const bool getBackBufferReset();
 
 		private:
 
@@ -41,12 +49,11 @@ namespace se
 
 			boost::signals2::scoped_connection windowDestroyedConnection;
 
-			const bool isDefault;
-
 			Window* window;
 
 			SDL_Window* sdlWindow = nullptr;
 			bgfx::FrameBufferHandle frameBufferHandle = BGFX_INVALID_HANDLE;
+			bool resetBackBuffer = false;
 		};
 	}
 }

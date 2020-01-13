@@ -2,6 +2,7 @@
 
 #include "SpehsEngine/Graphics/Window.h"
 #include "SpehsEngine/Graphics/Internal/WindowInstance.h"
+#include "glm/vec2.hpp"
 #include <vector>
 #include <memory>
 
@@ -36,13 +37,18 @@ namespace se
 			void enableRenderOption(const RendererFlag _rendererFlag);
 			void disableRenderOption(const RendererFlag _rendererFlag);
 
+			const glm::ivec2 getDisplaySize() const;
+			const int getDisplayRefreshRate() const;
+
 
 			static void debugTextPrintf(const uint16_t _column, const uint16_t _line, const char* _format, ...);
 
 		private:
 
+			void inputUpdate();
+
 			std::vector<std::unique_ptr<WindowInstance>> windows;
-			const WindowInstance* defaultWindow = nullptr;
+			WindowInstance* defaultWindow = nullptr;
 
 			RendererFlagsType rendererFlags;
 			bool rendererFlagsChanged = false;

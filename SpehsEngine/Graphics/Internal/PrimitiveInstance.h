@@ -37,8 +37,6 @@ namespace se
 			void batch(Batch& _batch);
 			void unbatch();
 
-			void clearUpdateFlags();
-
 			const bool isBatched() const;
 			const bool wasDestroyed() const;
 			const RenderInfo getRenderInfo() const;

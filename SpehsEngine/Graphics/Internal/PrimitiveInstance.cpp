@@ -25,8 +25,9 @@ namespace se
 		}
 		PrimitiveInstance::~PrimitiveInstance()
 		{
-			se_assert(!batch_);
-			se_assert(!batchPosition);
+			// TODO: These asserts can trigger when deleting scene
+			//se_assert(!batch_);
+			//se_assert(!batchPosition);
 			destroyBuffers();
 		}
 
@@ -59,23 +60,23 @@ namespace se
 					const std::vector<Vertex>& vertices = getVertices();
 					const std::vector<IndexType>& indices = getIndices();
 					se_assert(vertices.size() != 0 && indices.size() != 0);
-					if ((checkBit(primitive->updateFlags, UpdateFlag::RenderInfoChanged) || sizeInBatchChanged()))
+					if ((checkBit(primitive->updateFlags, PrimitiveUpdateFlag::RenderInfoChanged) || sizeInBatchChanged()))
 					{
 						unbatch();
 					}
 					else
 					{
-						if (checkBit(primitive->updateFlags, UpdateFlag::TransformChanged))
+						if (checkBit(primitive->updateFlags, PrimitiveUpdateFlag::TransformChanged))
 						{
 							updateTransformMatrix();
 							batch_->updateVertices(*batchPosition, vertices, transformMatrix);
 						}
-						else if (checkBit(primitive->updateFlags, UpdateFlag::VerticesChanged))
+						else if (checkBit(primitive->updateFlags, PrimitiveUpdateFlag::VerticesChanged))
 						{
 							batch_->updateVertices(*batchPosition, vertices, transformMatrix);
 						}
 
-						if (checkBit(primitive->updateFlags, UpdateFlag::IndicesChanged))
+						if (checkBit(primitive->updateFlags, PrimitiveUpdateFlag::IndicesChanged))
 						{
 							batch_->updateIndices(*batchPosition, indices);
 						}
@@ -86,18 +87,18 @@ namespace se
 			{
 				if (isBatched())
 					unbatch();
-				if (checkBit(primitive->updateFlags, UpdateFlag::VerticesChanged) ||
-					checkBit(primitive->updateFlags, UpdateFlag::IndicesChanged))
+				if (checkBit(primitive->updateFlags, PrimitiveUpdateFlag::VerticesChanged) ||
+					checkBit(primitive->updateFlags, PrimitiveUpdateFlag::IndicesChanged))
 				{
 					destroyBuffers();
 				}
-				if (checkBit(primitive->updateFlags, UpdateFlag::TransformChanged))
+				if (checkBit(primitive->updateFlags, PrimitiveUpdateFlag::TransformChanged))
 				{
 					updateTransformMatrix();
 				}
-				// UpdateFlag::RenderInfoChanged doesn't matter
+				// PrimitiveUpdateFlag::RenderInfoChanged doesn't matter
 			}
-			clearUpdateFlags();
+			primitive->updateFlags = 0;
 		}
 
 		void PrimitiveInstance::destroyBuffers()
@@ -181,11 +182,6 @@ namespace se
 			batchPosition = nullptr;
 		}
 
-		void PrimitiveInstance::clearUpdateFlags()
-		{
-			primitive->updateFlags = UpdateFlag::NothingChanged;
-		}
-
 		const bool PrimitiveInstance::isBatched() const
 		{
 			return batch_ != nullptr;
@@ -222,8 +218,8 @@ namespace se
 		const bool PrimitiveInstance::sizeInBatchChanged() const
 		{
 			se_assert(isBatched());
-			if (checkBit(primitive->updateFlags, UpdateFlag::VerticesChanged) ||
-				checkBit(primitive->updateFlags, UpdateFlag::IndicesChanged))
+			if (checkBit(primitive->updateFlags, PrimitiveUpdateFlag::VerticesChanged) ||
+				checkBit(primitive->updateFlags, PrimitiveUpdateFlag::IndicesChanged))
 			{
 				return (primitive->getVertices().size() == (batchPosition->verticesEnd - batchPosition->verticesStart)) &&
 					   (primitive->getIndices().size() == (batchPosition->indicesEnd - batchPosition->indicesStart));

@@ -19,11 +19,10 @@ namespace se
 		instanceCount++;
 		if (!valid)
 		{
-			if (SDL_Init(0) != 0)
+			if (SDL_WasInit(0) == 0 && SDL_Init(0) != 0)
 			{
-				std::string error = "Unable to init SDL: ";
-				error += SDL_GetError();
-				se::log::error(error);
+				const std::string error("Unable to initialize SDL: %s", SDL_GetError());
+				log::error(error);
 				return;
 			}
 			if (SDL_InitSubSystem(SDL_INIT_VIDEO) != 0)

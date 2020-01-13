@@ -33,10 +33,9 @@ namespace se
 			return view == &_other;
 		}
 
-		bool ViewInstance::render(RenderContext& _renderContext)
+		void ViewInstance::render(RenderContext& _renderContext)
 		{
-			if (!view)
-				return false;
+			se_assert(view);
 
 			bgfx::setViewClear(_renderContext.currentViewId, BGFX_CLEAR_COLOR | BGFX_CLEAR_DEPTH, 0x101010ff * _renderContext.currentViewId, 1.0f, 0);
 
@@ -102,16 +101,19 @@ namespace se
 
 			bgfx::touch(_renderContext.currentViewId);
 
-			_renderContext.enableMSAA = view->getMSAAEnabled() && (checkBit(_renderContext.rendererFlags, MSAAX2) ||
-																   checkBit(_renderContext.rendererFlags, MSAAX4) ||
-																   checkBit(_renderContext.rendererFlags, MSAAX8) ||
-																   checkBit(_renderContext.rendererFlags, MSAAX16));
+			_renderContext.enableMSAA = view->getMSAAEnabled() && (checkBit(_renderContext.rendererFlags, MSAA2) ||
+																   checkBit(_renderContext.rendererFlags, MSAA4) ||
+																   checkBit(_renderContext.rendererFlags, MSAA8) ||
+																   checkBit(_renderContext.rendererFlags, MSAA16));
 
 			view->scene.render(_renderContext);
 
 			_renderContext.currentViewId++;
+		}
 
-			return true;
+		const bool ViewInstance::wasDestroyed() const
+		{
+			return view == nullptr;
 		}
 	}
 }

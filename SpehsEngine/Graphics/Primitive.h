@@ -89,7 +89,7 @@ namespace se
 
 			friend class PrimitiveInstance;
 			boost::signals2::signal<void(void)>		destroyedSignal;
-			UpdateFlagsType							updateFlags = 0/*UpdateFlag::NothingChanged*/;
+			PrimitiveUpdateFlagsType				updateFlags = 0;
 		};
 	}
 }

@@ -25,7 +25,9 @@ namespace se
 			bool operator==(const View& _other) const;
 
 
-			bool render(RenderContext& _renderContext);
+			void render(RenderContext& _renderContext);
+
+			const bool wasDestroyed() const;
 
 		private:
 

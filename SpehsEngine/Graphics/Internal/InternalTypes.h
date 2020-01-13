@@ -17,13 +17,28 @@ namespace se
 			bool enableMSAA								= true;
 		};
 
-		enum UpdateFlag : UpdateFlagsType
+		enum PrimitiveUpdateFlag : PrimitiveUpdateFlagsType
 		{
-			NothingChanged		= 0,
 			TransformChanged	= (1 << 0),
 			RenderInfoChanged	= (1 << 1),
 			VerticesChanged		= (1 << 2),
 			IndicesChanged		= (1 << 3),
+		};
+
+		enum WindowUpdateFlag : WindowUpdateFlagsType
+		{
+			PositionChanged			= (1 << 0),
+			SizeChanged				= (1 << 1),
+			ResizableChanged		= (1 << 2),
+			Minimized				= (1 << 3),
+			Maximized				= (1 << 4),
+			Restored				= (1 << 5),
+			InputFocused			= (1 << 6),
+			Raised					= (1 << 7),
+			NameChanged				= (1 << 8),
+			BorderlessChanged		= (1 << 9),
+			ConfinedInputChanged	= (1 << 10),
+			ShownChanged			= (1 << 11),
 		};
 
 		struct RenderInfo

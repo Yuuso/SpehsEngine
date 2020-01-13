@@ -95,74 +95,74 @@ namespace se
 		void Primitive::setShader(const Shader* _shader)
 		{
 			shader = _shader;
-			enableBit(updateFlags, UpdateFlag::RenderInfoChanged);
+			enableBit(updateFlags, PrimitiveUpdateFlag::RenderInfoChanged);
 		}
 		void Primitive::setVertices(const std::vector<Vertex>& _vertices)
 		{
 			vertices = _vertices;
-			enableBit(updateFlags, UpdateFlag::VerticesChanged);
+			enableBit(updateFlags, PrimitiveUpdateFlag::VerticesChanged);
 		}
 		void Primitive::setIndices(const std::vector<uint16_t>& _indices)
 		{
 			indices = _indices;
-			enableBit(updateFlags, UpdateFlag::IndicesChanged);
+			enableBit(updateFlags, PrimitiveUpdateFlag::IndicesChanged);
 		}
 
 		void Primitive::setRenderFlags(const RenderFlagsType _renderFlags)
 		{
 			renderFlags = _renderFlags;
-			enableBit(updateFlags, UpdateFlag::RenderInfoChanged);
+			enableBit(updateFlags, PrimitiveUpdateFlag::RenderInfoChanged);
 		}
 		void Primitive::enableRenderFlag(const RenderFlag _renderFlag)
 		{
 			enableBit(renderFlags, _renderFlag);
-			enableBit(updateFlags, UpdateFlag::RenderInfoChanged);
+			enableBit(updateFlags, PrimitiveUpdateFlag::RenderInfoChanged);
 		}
 		void Primitive::disableRenderFlag(const RenderFlag _renderFlag)
 		{
 			disableBit(renderFlags, _renderFlag);
-			enableBit(updateFlags, UpdateFlag::RenderInfoChanged);
+			enableBit(updateFlags, PrimitiveUpdateFlag::RenderInfoChanged);
 		}
 		void Primitive::setPrimitiveType(const PrimitiveType _primitiveType)
 		{
 			primitiveType = _primitiveType;
-			enableBit(updateFlags, UpdateFlag::RenderInfoChanged);
+			enableBit(updateFlags, PrimitiveUpdateFlag::RenderInfoChanged);
 		}
 		void Primitive::setRenderMode(const RenderMode _renderMode)
 		{
 			renderMode = _renderMode;
-			enableBit(updateFlags, UpdateFlag::RenderInfoChanged);
+			enableBit(updateFlags, PrimitiveUpdateFlag::RenderInfoChanged);
 		}
 
 		void Primitive::setPosition(const glm::vec3& _position)
 		{
 			position = _position;
-			enableBit(updateFlags, UpdateFlag::TransformChanged);
+			enableBit(updateFlags, PrimitiveUpdateFlag::TransformChanged);
 		}
 		void Primitive::setLocalPosition(const glm::vec3& _position)
 		{
 			localPosition = _position;
-			enableBit(updateFlags, UpdateFlag::TransformChanged);
+			enableBit(updateFlags, PrimitiveUpdateFlag::TransformChanged);
 		}
 		void Primitive::setScale(const glm::vec3& _scale)
 		{
 			scale = _scale;
-			enableBit(updateFlags, UpdateFlag::TransformChanged);
+			enableBit(updateFlags, PrimitiveUpdateFlag::TransformChanged);
 		}
 		void Primitive::setLocalScale(const glm::vec3& _scale)
 		{
 			localScale = _scale;
-			enableBit(updateFlags, UpdateFlag::TransformChanged);
+			enableBit(updateFlags, PrimitiveUpdateFlag::TransformChanged);
 		}
 		void Primitive::setRotation(const glm::quat& _rotation)
 		{
 			rotation = _rotation;
-			enableBit(updateFlags, UpdateFlag::TransformChanged);
+			enableBit(updateFlags, PrimitiveUpdateFlag::TransformChanged);
 		}
 		void Primitive::setLocalRotation(const glm::quat& _rotation)
 		{
 			localRotation = _rotation;
-			enableBit(updateFlags, UpdateFlag::TransformChanged);
+			enableBit(updateFlags, PrimitiveUpdateFlag::TransformChanged);
 		}
 	}
 }
