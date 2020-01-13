@@ -83,6 +83,10 @@ namespace se
 		{
 			return borderless;
 		}
+		const float Window::getOpacity() const
+		{
+			return opacity;
+		}
 		const bool Window::isShown() const
 		{
 			return shown;
@@ -152,6 +156,11 @@ namespace se
 		{
 			borderless = _value;
 			enableBit(updateFlags, WindowUpdateFlag::BorderlessChanged);
+		}
+		void Window::setOpacity(const float _value)
+		{
+			opacity = _value;
+			enableBit(updateFlags, WindowUpdateFlag::OpacityChanged);
 		}
 		void Window::show()
 		{

@@ -65,6 +65,10 @@ namespace se
 				window->x = windowX;
 				window->y = windowY;
 			}
+			if (window->getOpacity() != 1.0f)
+			{
+				SDL_SetWindowOpacity(sdlWindow, window->getOpacity());
+			}
 			window->updateFlags = 0;
 
 			SDL_SysWMinfo wmi;
@@ -228,6 +232,10 @@ namespace se
 					SDL_ShowWindow(sdlWindow);
 				else
 					SDL_HideWindow(sdlWindow);
+			}
+			if (checkBit(window->updateFlags, WindowUpdateFlag::OpacityChanged))
+			{
+				SDL_SetWindowOpacity(sdlWindow, window->getOpacity());
 			}
 			window->updateFlags = 0;
 		}

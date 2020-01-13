@@ -39,6 +39,7 @@ namespace se
 			BorderlessChanged		= (1 << 9),
 			ConfinedInputChanged	= (1 << 10),
 			ShownChanged			= (1 << 11),
+			OpacityChanged			= (1 << 12),
 		};
 
 		struct RenderInfo

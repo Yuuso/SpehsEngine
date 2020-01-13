@@ -38,6 +38,7 @@ namespace se
 			const AspectRatio		getAspectRatio() const;
 			const bool				getResizable() const;
 			const bool				getBorderless() const;
+			const float				getOpacity() const;
 			const bool				isShown() const;
 			const bool				getMinimized() const;
 			const bool				getMaximized() const;
@@ -54,6 +55,7 @@ namespace se
 			void					forceKeepAspectRatio(const bool _value);
 			void					setResizable(const bool _value);
 			void					setBorderless(const bool _value);
+			void					setOpacity(const float _value);
 			void					show();
 			void					hide();
 			void					minimize();
@@ -76,6 +78,7 @@ namespace se
 			AspectRatio				aspectRatio;
 			bool					resizable			= true;
 			bool					borderless			= false;
+			float					opacity				= 1.0f;
 
 			bool					shown				= true;
 			bool					minimized			= false;
