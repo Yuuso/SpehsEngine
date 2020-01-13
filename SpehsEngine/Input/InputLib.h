@@ -3,22 +3,14 @@
 
 namespace se
 {
-	namespace rendering
-	{
-		class RenderingLib;
-	}
-
 	class InputLib
 	{
 	public:
 		/* Initializes input library */
-		InputLib(/*const se::rendering::RenderingLib& renderingLib*/);
+		InputLib();
 
 		/* Uninitializes input library */
 		~InputLib();
-
-		/* Updates input library state. */
-		void update();
 
 		/* Returns whether the input library has successfully been initialized */
 		static bool isValid();

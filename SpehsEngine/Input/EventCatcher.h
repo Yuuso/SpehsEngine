@@ -18,7 +18,7 @@ namespace se
 
 			/* Discards all previous events and polls for new ones. */
 			void pollEvents();
-			
+
 			const std::vector<KeyboardPressEvent>& getKeyboardPressEvents() const { return keyboardPressEvents; }
 			const std::vector<KeyboardDownEvent>& getKeyboardDownEvents() const { return keyboardDownEvents; }
 			const std::vector<KeyboardReleaseEvent>& getKeyboardReleaseEvents() const { return keyboardReleaseEvents; }

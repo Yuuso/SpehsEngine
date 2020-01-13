@@ -27,20 +27,14 @@ namespace se
 		std::string version("0");
 	}
 
-	InputLib::InputLib(/*const se::rendering::RenderingLib& renderingLib*/)
+	InputLib::InputLib()
 	{
 		instanceCount++;
 		if (!valid)
 		{
-			//if (!renderingLib.isValid())
-			//{
-			//	log::error("Cannot initialize input library, rendering library is invalid.");
-			//	return;
-			//}
-
 			log::info("Current SpehsEngine input library version: " + getVersion());
 
-			if (SDL_Init(0) != 0)
+			if (SDL_WasInit(0) == 0 && SDL_Init(0) != 0)
 			{
 				const std::string error("Unable to initialize SDL: %s", SDL_GetError());
 				log::error(error);
@@ -79,11 +73,6 @@ namespace se
 			SDL_Quit();
 			valid = false;
 		}
-	}
-
-	void InputLib::update()
-	{
-		SDL_PumpEvents();
 	}
 
 	bool InputLib::isValid()

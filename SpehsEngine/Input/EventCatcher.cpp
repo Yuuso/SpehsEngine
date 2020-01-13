@@ -19,7 +19,7 @@ namespace se
 
 		void EventCatcher::pollEvents()
 		{
-			//Clear all previous events
+			// Clear all previous events
 			keyboardPressEvents.clear();
 			keyboardDownEvents.clear();
 			keyboardReleaseEvents.clear();
@@ -36,77 +36,132 @@ namespace se
 			quitEvents.clear();
 			fileDropEvents.clear();
 
-			//Poll all SDL events
+			// Get all non-window SDL events
 			bool mouseMotionCaught = false;
 			glm::vec2 mousePosition;
-			SDL_Event sdlEvent;
-			while (SDL_PollEvent(&sdlEvent))
+
+			SDL_PumpEvents();
+
+			static const size_t MAX_EVENTS = 256;
+			SDL_Event sdlEvents[MAX_EVENTS];
+
+			const int numQuitEvents = SDL_PeepEvents(sdlEvents, (int)MAX_EVENTS, SDL_GETEVENT, SDL_FIRSTEVENT, SDL_APP_DIDENTERFOREGROUND);
+			if (numQuitEvents > 0)
 			{
-				switch (sdlEvent.type)
+				for (size_t i = 0; i < (size_t)numQuitEvents; i++)
 				{
-				default: break;
-				case SDL_KEYDOWN:
-				{
-					const Key key = Key(sdlEvent.key.keysym.sym);
-					keyboardPressEvents.push_back(KeyboardPressEvent());
-					keyboardPressEvents.back().key = key;
-					heldKeyboardKeys.emplace(key);
-				}
-					break;
-				case SDL_KEYUP:
-				{
-					/* Generate release event only if press event was generated! */
-					const Key key = Key(sdlEvent.key.keysym.sym);
-					const std::unordered_set<Key>::iterator it = heldKeyboardKeys.find(key);
-					if (it != heldKeyboardKeys.end())
+					const SDL_Event& sdlEvent = sdlEvents[i];
+
+					switch (sdlEvent.type)
 					{
-						heldKeyboardKeys.erase(it);
-						keyboardReleaseEvents.push_back(KeyboardReleaseEvent());
-						keyboardReleaseEvents.back().key = key;
+						// Quit event
+						case SDL_QUIT:
+						{
+							quitEvents.push_back(QuitEvent());
+							break;
+						}
 					}
 				}
-					break;
-				case SDL_MOUSEBUTTONDOWN:
+			}
+			else if (numQuitEvents == -1)
+			{
+				std::string error = "EventCatcher: SDL_PeepEvents failed! ";
+				error += SDL_GetError();
+				log::error(error);
+			}
+
+			const int numInputEvents = SDL_PeepEvents(sdlEvents, (int)MAX_EVENTS, SDL_GETEVENT, SDL_KEYDOWN, SDL_LASTEVENT);
+			if (numInputEvents > 0)
+			{
+				for (size_t i = 0; i < (size_t)numInputEvents; i++)
 				{
-					const MouseButton button = MouseButton(sdlEvent.button.button);
-					mouseButtonPressEvents.push_back(MouseButtonPressEvent());
-					mouseButtonPressEvents.back().button = button;
-					heldMouseButtons.emplace(button);
-				}
-					break;
-				case SDL_MOUSEBUTTONUP:
-				{
-					/* Generate release event only if press event was generated! */
-					const MouseButton button = MouseButton(sdlEvent.button.button);
-					const std::unordered_set<MouseButton>::iterator it = heldMouseButtons.find(button);
-					if (it != heldMouseButtons.end())
+					const SDL_Event& sdlEvent = sdlEvents[i];
+
+					switch (sdlEvent.type)
 					{
-						heldMouseButtons.erase(it);
-						mouseButtonReleaseEvents.push_back(MouseButtonReleaseEvent());
-						mouseButtonReleaseEvents.back().button = button;
+						// Keyboard events
+						case SDL_KEYDOWN:
+						{
+							const Key key = Key(sdlEvent.key.keysym.sym);
+							keyboardPressEvents.push_back(KeyboardPressEvent());
+							keyboardPressEvents.back().key = key;
+							heldKeyboardKeys.emplace(key);
+							break;
+						}
+						case SDL_KEYUP:
+						{
+							/* Generate release event only if press event was generated! */
+							const Key key = Key(sdlEvent.key.keysym.sym);
+							const std::unordered_set<Key>::iterator it = heldKeyboardKeys.find(key);
+							if (it != heldKeyboardKeys.end())
+							{
+								heldKeyboardKeys.erase(it);
+								keyboardReleaseEvents.push_back(KeyboardReleaseEvent());
+								keyboardReleaseEvents.back().key = key;
+							}
+							break;
+						}
+						//SDL_TEXTEDITING
+						//SDL_TEXTINPUT
+						//SDL_KEYMAPCHANGED
+
+						// Mouse events
+						case SDL_MOUSEMOTION:
+						{
+							/*
+								The mouse position in the event uses the top-left centered coordinate system.
+								Let's just use the global getter instead to avoid window dependency.
+							*/
+							mousePosition = getMousePosition();
+							mouseMotionCaught = true;
+							break;
+						}
+						case SDL_MOUSEBUTTONDOWN:
+						{
+							const MouseButton button = MouseButton(sdlEvent.button.button);
+							mouseButtonPressEvents.push_back(MouseButtonPressEvent());
+							mouseButtonPressEvents.back().button = button;
+							heldMouseButtons.emplace(button);
+							break;
+						}
+						case SDL_MOUSEBUTTONUP:
+						{
+							/* Generate release event only if press event was generated! */
+							const MouseButton button = MouseButton(sdlEvent.button.button);
+							const std::unordered_set<MouseButton>::iterator it = heldMouseButtons.find(button);
+							if (it != heldMouseButtons.end())
+							{
+								heldMouseButtons.erase(it);
+								mouseButtonReleaseEvents.push_back(MouseButtonReleaseEvent());
+								mouseButtonReleaseEvents.back().button = button;
+							}
+							break;
+						}
+						case SDL_MOUSEWHEEL:
+						{
+							mouseWheelEvents.push_back(MouseWheelEvent());
+							mouseWheelEvents.back().wheelDelta = int(sdlEvent.wheel.y);
+							break;
+						}
+
+						// Clipboard events
+						//SDL_CLIPBOARDUPDATE
+
+						// Drag and drop events
+						case SDL_DROPFILE:
+						{
+							fileDropEvents.push_back(FileDropEvent());
+							fileDropEvents.back().filepath = sdlEvent.drop.file;
+							break;
+						}
 					}
 				}
-					break;
-				case SDL_MOUSEMOTION:
-					/*
-						The mouse position in the event uses the top-left centered coordinate system.
-						Let's just use the global getter instead to avoid window dependency.
-					*/
-					mousePosition = getMousePosition();
-					mouseMotionCaught = true;
-					break;
-				case SDL_MOUSEWHEEL:
-					mouseWheelEvents.push_back(MouseWheelEvent());
-					mouseWheelEvents.back().wheelDelta = int(sdlEvent.wheel.y);
-					break;
-				case SDL_QUIT:
-					quitEvents.push_back(QuitEvent());
-					break;
-				case SDL_DROPFILE:
-					fileDropEvents.push_back(FileDropEvent());
-					fileDropEvents.back().filepath = sdlEvent.drop.file;
-					break;
-				}
+			}
+			else if (numQuitEvents == -1)
+			{
+				std::string error = "EventCatcher: SDL_PeepEvents failed! ";
+				error += SDL_GetError();
+				log::error(error);
 			}
 
 			//Handle mouse motion

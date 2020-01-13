@@ -30,7 +30,7 @@ namespace se
 		class InputManager
 		{
 		public:
-			InputManager(/*se::rendering::Window& _window*/);
+			InputManager();
 			~InputManager();
 
 			void update(EventCatcher& _eventCatcher);
