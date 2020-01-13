@@ -89,6 +89,9 @@ namespace se
 		/* Get date and time string in strftime format. */
 		std::string date(const std::string& format);
 
+		// Return time since the given time stamp
+		Time timeSince(const Time _time);
+
 		/* Returns the current time stamp, relative to 'some' context. See getRunTime() for an alternative. */
 		Time now();
 

@@ -27,8 +27,8 @@ namespace se
 		}
 
 		//Global variables
-		Time maxDeltaTime(0);		
-		
+		Time maxDeltaTime(0);
+
 		namespace
 		{//Local variables
 			bool initialized = false;
@@ -47,7 +47,7 @@ namespace se
 			log::info("SpehsEngine time accuracy is " + std::to_string(conversionRate::second) + " ticks per second.");
 			initialized = true;
 		}
-		
+
 		Time now()
 		{
 			return std::chrono::high_resolution_clock::now().time_since_epoch().count();
@@ -81,6 +81,11 @@ namespace se
 				if (now - begin >= time)
 					return;
 			}
+		}
+
+		Time timeSince(const Time _time)
+		{
+			return now() - _time;
 		}
 
 		std::string date(const std::string& format)
