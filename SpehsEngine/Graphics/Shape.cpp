@@ -2,6 +2,7 @@
 #include "SpehsEngine/Graphics/Shape.h"
 
 #include "SpehsEngine/Core/Log.h"
+#include "SpehsEngine/Core/ColorUtilityFunctions.h"
 
 
 namespace se
@@ -95,6 +96,13 @@ namespace se
 					newVertices[i].uv.x = (newVertices[i].position.x + 0.5f);
 					newVertices[i].uv.y = (-newVertices[i].position.y + 0.5f);
 				}
+			}
+
+			//! Color
+			{
+				const Color vertexColor = randomBrightColor();
+				for (size_t i = 0; i < newVertices.size(); i++)
+					newVertices[i].color = vertexColor;
 			}
 
 			Primitive::setVertices(newVertices);

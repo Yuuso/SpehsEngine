@@ -136,5 +136,13 @@ namespace se
 			uint16_t numerator;
 			uint16_t denominator;
 		};
+
+		typedef uint16_t ViewClearFlagsType;
+		enum ViewClearFlag : ViewClearFlagsType
+		{
+			ClearColor		= (1 << 0),
+			ClearDepth		= (1 << 1),
+			ClearStencil	= (1 << 2),
+		};
 	}
 }

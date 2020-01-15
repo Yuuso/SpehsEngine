@@ -186,25 +186,25 @@ namespace se
 			windows.erase(it);
 		}
 
-		const RendererFlagsType Renderer::getRenderOptions() const
+		const RendererFlagsType Renderer::getRendererFlags() const
 		{
 			return rendererFlags;
 		}
-		const bool Renderer::checkRenderOption(const RendererFlag _renderFlag) const
+		const bool Renderer::checkRendererFlag(const RendererFlag _renderFlag) const
 		{
 			return checkBit(rendererFlags, _renderFlag);
 		}
-		void Renderer::setRenderOptions(const RendererFlagsType _rendererFlags)
+		void Renderer::setRendererFlags(const RendererFlagsType _rendererFlags)
 		{
 			rendererFlags = _rendererFlags;
 			rendererFlagsChanged = true;
 		}
-		void Renderer::enableRenderOption(const RendererFlag _renderFlag)
+		void Renderer::enableRendererFlag(const RendererFlag _renderFlag)
 		{
 			enableBit(rendererFlags, _renderFlag);
 			rendererFlagsChanged = true;
 		}
-		void Renderer::disableRenderOption(const RendererFlag _renderFlag)
+		void Renderer::disableRendererFlag(const RendererFlag _renderFlag)
 		{
 			disableBit(rendererFlags, _renderFlag);
 			rendererFlagsChanged = true;

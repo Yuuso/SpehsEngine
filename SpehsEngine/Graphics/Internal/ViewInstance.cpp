@@ -37,7 +37,10 @@ namespace se
 		{
 			se_assert(view);
 
-			bgfx::setViewClear(_renderContext.currentViewId, BGFX_CLEAR_COLOR | BGFX_CLEAR_DEPTH, 0x101010ff * _renderContext.currentViewId, 1.0f, 0);
+			static_assert(ViewClearFlag::ClearColor == BGFX_CLEAR_COLOR
+						  && ViewClearFlag::ClearDepth == BGFX_CLEAR_DEPTH
+						  && ViewClearFlag::ClearStencil == BGFX_CLEAR_STENCIL, "ViewClearFlags don't match bgfx values!");
+			bgfx::setViewClear(_renderContext.currentViewId, view->getClearFlags(), view->getClearColor(), 1.0f, 0);
 
 			float viewWidthPixels;
 			float viewHeightPixels;
@@ -83,9 +86,9 @@ namespace se
 					}
 					case Projection::Orthographic:
 					{
-						projectionMatrix = glm::ortho(-viewWidthPixels * 0.01f * view->camera.getZoom(), viewWidthPixels * 0.01f * view->camera.getZoom(),
-													  -viewHeightPixels * 0.01f * view->camera.getZoom(), viewHeightPixels * 0.01f * view->camera.getZoom(),
-													  view->camera.getNear(), view->camera.getFar());
+						projectionMatrix = glm::orthoRH_ZO(-(viewWidthPixels * 0.5f) * view->camera.getZoom(),  (viewWidthPixels * 0.5f) * view->camera.getZoom(),
+														   -(viewHeightPixels * 0.5f) * view->camera.getZoom(), (viewHeightPixels * 0.5f) * view->camera.getZoom(),
+														   view->camera.getNear(), view->camera.getFar());
 						break;
 					}
 					default:

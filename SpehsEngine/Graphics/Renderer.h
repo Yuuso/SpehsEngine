@@ -31,11 +31,11 @@ namespace se
 			void add(Window& _window);
 			void remove(Window& _window);
 
-			const RendererFlagsType getRenderOptions() const;
-			const bool checkRenderOption(const RendererFlag _rendererFlag) const;
-			void setRenderOptions(const RendererFlagsType _rendererFlags);
-			void enableRenderOption(const RendererFlag _rendererFlag);
-			void disableRenderOption(const RendererFlag _rendererFlag);
+			const RendererFlagsType getRendererFlags() const;
+			const bool checkRendererFlag(const RendererFlag _rendererFlag) const;
+			void setRendererFlags(const RendererFlagsType _rendererFlags);
+			void enableRendererFlag(const RendererFlag _rendererFlag);
+			void disableRendererFlag(const RendererFlag _rendererFlag);
 
 			const glm::ivec2 getDisplaySize() const;
 			const int getDisplayRefreshRate() const;

@@ -107,6 +107,12 @@ namespace se
 			indices = _indices;
 			enableBit(updateFlags, PrimitiveUpdateFlag::IndicesChanged);
 		}
+		void Primitive::setColor(const Color& _color)
+		{
+			for (auto&& vertex : vertices)
+				vertex.color = _color;
+			enableBit(updateFlags, PrimitiveUpdateFlag::VerticesChanged);
+		}
 
 		void Primitive::setRenderFlags(const RenderFlagsType _renderFlags)
 		{

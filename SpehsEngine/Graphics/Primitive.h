@@ -52,6 +52,7 @@ namespace se
 			virtual void							setShader(const Shader* _shader);
 			virtual void							setVertices(const std::vector<Vertex>& _vertices);
 			virtual void							setIndices(const std::vector<uint16_t>& _indices);
+			virtual void							setColor(const Color& _color); // TODO: How to deal with colors?
 
 			virtual void							setRenderFlags(const RenderFlagsType _renderFlags);
 			virtual void							enableRenderFlag(const RenderFlag _renderFlag);

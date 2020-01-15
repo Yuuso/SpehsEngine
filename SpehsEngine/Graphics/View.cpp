@@ -28,6 +28,14 @@ namespace se
 		{
 			return enableMSAA;
 		}
+		const uint32_t View::getClearColor() const
+		{
+			return clearColor;
+		}
+		const ViewClearFlagsType View::getClearFlags() const
+		{
+			return clearFlags;
+		}
 
 		void View::setSize(const ViewSize& _size)
 		{
@@ -40,6 +48,14 @@ namespace se
 		void View::setMSAAEnabled(const bool _enabled)
 		{
 			enableMSAA = _enabled;
+		}
+		void View::setClearColor(const uint32_t _color)
+		{
+			clearColor = _color;
+		}
+		void View::setClearFlags(const ViewClearFlagsType _flags)
+		{
+			clearFlags = _flags;
 		}
 	}
 }
