@@ -24,7 +24,7 @@ namespace se
 			void generate(const unsigned _numVertices);
 
 			void setPrimitiveType(const PrimitiveType _primitiveType) override;
-			void setVertices(const std::vector<Vertex>& _vertices) override;
+			void setVertices(const VertexBuffer& _vertices) override;
 			void setIndices(const std::vector<uint16_t>& _indices) override;
 
 		private:

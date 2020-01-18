@@ -1,9 +1,9 @@
 #include "stdafx.h"
 #include "SpehsEngine/Graphics/Internal/Batch.h"
 
-#include "SpehsEngine/Graphics/Internal/InternalUtilities.h"
-
+#include "SpehsEngine/Core/BitwiseOperations.h"
 #include "SpehsEngine/Core/SE_Assert.h"
+#include "SpehsEngine/Graphics/Internal/InternalUtilities.h"
 
 
 namespace se
@@ -16,8 +16,9 @@ namespace se
 			: renderInfo(_renderInfo)
 		{
 			// TODO: Test BGFX_BUFFER_ALLOW_RESIZE?
-			vertexBufferHandle = bgfx::createDynamicVertexBuffer(MAX_BUFFER_SIZE, Vertex::getVertexLayout());
+			vertexBufferHandle = bgfx::createDynamicVertexBuffer(MAX_BUFFER_SIZE, findVertexLayout(renderInfo.attributes));
 			indexBufferHandle = bgfx::createDynamicIndexBuffer(MAX_BUFFER_SIZE);
+			vertices.setAttributes(renderInfo.attributes);
 			static_assert(sizeof(IndexType) == 2);
 		}
 		Batch::~Batch()
@@ -48,7 +49,7 @@ namespace se
 				   (MAX_BUFFER_SIZE - indices.size()) >= numIndices;
 		}
 
-		[[nodiscard]] const BatchPosition& Batch::add(const std::vector<Vertex>& _vertices, const std::vector<IndexType>& _indices)
+		[[nodiscard]] const BatchPosition& Batch::add(const VertexBuffer& _vertices, const std::vector<IndexType>& _indices)
 		{
 			batchPositions.emplace_back(std::make_unique<BatchPosition>());
 			batchPositions.back()->verticesStart = vertices.size();
@@ -66,7 +67,7 @@ namespace se
 					indices[i] += (IndexType)firstIndex;
 			}
 
-			vertices.insert(vertices.end(), _vertices.begin(), _vertices.end());
+			vertices.pushBack(_vertices);
 
 			se_assert(vertices.size() <= MAX_BUFFER_SIZE && indices.size() <= MAX_BUFFER_SIZE);
 
@@ -81,7 +82,7 @@ namespace se
 			const size_t numRemovedVertices = _positionInBatch.verticesEnd - _positionInBatch.verticesStart;
 			se_assert(numRemovedIndices > 0 && numRemovedVertices > 0);
 
-			vertices.erase(vertices.begin() + _positionInBatch.verticesStart, vertices.begin() + _positionInBatch.verticesEnd);
+			vertices.erase(_positionInBatch.verticesStart, _positionInBatch.verticesEnd);
 			indices.erase(indices.begin() + _positionInBatch.indicesStart, indices.begin() + _positionInBatch.indicesEnd);
 
 			for (size_t i = _positionInBatch.indicesStart; i < indices.size(); i++)
@@ -113,31 +114,89 @@ namespace se
 			needsIndexBufferUpdate = true;
 		}
 
-		void Batch::updateVertices(const BatchPosition& _positionInBatch, const std::vector<Vertex>& _vertices, const glm::mat4& _transformMatrix)
+		void Batch::updateVertices(const BatchPosition& _positionInBatch, const VertexBuffer& _vertices, const glm::mat4& _transformMatrix)
 		{
 			se_assert(_vertices.size() == (_positionInBatch.verticesEnd - _positionInBatch.verticesStart));
+			se_assert(vertices.getAttributes() == _vertices.getAttributes());
 			const glm::mat4 normalMatrix = glm::mat4(glm::inverse(glm::transpose(glm::mat3(_transformMatrix))));
 			glm::vec4 newVertex;
 			for (size_t i = 0; i < _vertices.size(); i++)
 			{
-				// Vertices
-				newVertex = _transformMatrix * glm::vec4(_vertices[i].position, 1.0f);
-				vertices[_positionInBatch.verticesStart + i].position.x = newVertex.x;
-				vertices[_positionInBatch.verticesStart + i].position.y = newVertex.y;
-				vertices[_positionInBatch.verticesStart + i].position.z = newVertex.z;
-
-				// Normals
-				newVertex = normalMatrix * glm::vec4(_vertices[i].normal, 1.0f);
-				newVertex = glm::normalize(newVertex);
-				vertices[_positionInBatch.verticesStart + i].normal.x = newVertex.x;
-				vertices[_positionInBatch.verticesStart + i].normal.y = newVertex.y;
-				vertices[_positionInBatch.verticesStart + i].normal.z = newVertex.z;
-
-				// UVs
-				vertices[_positionInBatch.verticesStart + i].uv = _vertices[i].uv;
-
-				// Color
-				vertices[_positionInBatch.verticesStart + i].color = _vertices[i].color;
+				if (checkBit(renderInfo.attributes, VertexAttributeFlag::Position))
+				{
+					newVertex = _transformMatrix * glm::vec4(_vertices.get<Position>(i), 1.0f);
+					vertices.get<Position>(i + _positionInBatch.verticesStart) = newVertex;
+				}
+				if (checkBit(renderInfo.attributes, VertexAttributeFlag::Normal))
+				{
+					newVertex = normalMatrix * glm::vec4(_vertices.get<Normal>(i), 1.0f);
+					newVertex = glm::normalize(newVertex);
+					vertices.get<Normal>(i + _positionInBatch.verticesStart) = newVertex;
+				}
+				if (checkBit(renderInfo.attributes, VertexAttributeFlag::Tangent))
+				{
+					newVertex = normalMatrix * glm::vec4(_vertices.get<Tangent>(i), 1.0f);
+					newVertex = glm::normalize(newVertex);
+					vertices.get<Tangent>(i + _positionInBatch.verticesStart) = newVertex;
+				}
+				if (checkBit(renderInfo.attributes, VertexAttributeFlag::Bitangent))
+				{
+					newVertex = normalMatrix * glm::vec4(_vertices.get<Bitangent>(i), 1.0f);
+					newVertex = glm::normalize(newVertex);
+					vertices.get<Bitangent>(i + _positionInBatch.verticesStart) = newVertex;
+				}
+				if (checkBit(renderInfo.attributes, VertexAttributeFlag::Color0))
+				{
+					vertices.get<Color0>(i + _positionInBatch.verticesStart) = _vertices.get<Color0>(i);
+				}
+				if (checkBit(renderInfo.attributes, VertexAttributeFlag::Color1))
+				{
+					vertices.get<Color1>(i + _positionInBatch.verticesStart) = _vertices.get<Color1>(i);
+				}
+				if (checkBit(renderInfo.attributes, VertexAttributeFlag::Color2))
+				{
+					vertices.get<Color2>(i + _positionInBatch.verticesStart) = _vertices.get<Color2>(i);
+				}
+				if (checkBit(renderInfo.attributes, VertexAttributeFlag::Color3))
+				{
+					vertices.get<Color3>(i + _positionInBatch.verticesStart) = _vertices.get<Color3>(i);
+				}
+				if (checkBit(renderInfo.attributes, VertexAttributeFlag::Weight))
+				{
+					vertices.get<Weight>(i + _positionInBatch.verticesStart) = _vertices.get<Weight>(i);
+				}
+				if (checkBit(renderInfo.attributes, VertexAttributeFlag::TexCoord0))
+				{
+					vertices.get<TexCoord0>(i + _positionInBatch.verticesStart) = _vertices.get<TexCoord0>(i);
+				}
+				if (checkBit(renderInfo.attributes, VertexAttributeFlag::TexCoord1))
+				{
+					vertices.get<TexCoord1>(i + _positionInBatch.verticesStart) = _vertices.get<TexCoord1>(i);
+				}
+				if (checkBit(renderInfo.attributes, VertexAttributeFlag::TexCoord2))
+				{
+					vertices.get<TexCoord2>(i + _positionInBatch.verticesStart) = _vertices.get<TexCoord2>(i);
+				}
+				if (checkBit(renderInfo.attributes, VertexAttributeFlag::TexCoord3))
+				{
+					vertices.get<TexCoord3>(i + _positionInBatch.verticesStart) = _vertices.get<TexCoord3>(i);
+				}
+				if (checkBit(renderInfo.attributes, VertexAttributeFlag::TexCoord4))
+				{
+					vertices.get<TexCoord4>(i + _positionInBatch.verticesStart) = _vertices.get<TexCoord4>(i);
+				}
+				if (checkBit(renderInfo.attributes, VertexAttributeFlag::TexCoord5))
+				{
+					vertices.get<TexCoord5>(i + _positionInBatch.verticesStart) = _vertices.get<TexCoord5>(i);
+				}
+				if (checkBit(renderInfo.attributes, VertexAttributeFlag::TexCoord6))
+				{
+					vertices.get<TexCoord6>(i + _positionInBatch.verticesStart) = _vertices.get<TexCoord6>(i);
+				}
+				if (checkBit(renderInfo.attributes, VertexAttributeFlag::TexCoord7))
+				{
+					vertices.get<TexCoord7>(i + _positionInBatch.verticesStart) = _vertices.get<TexCoord7>(i);
+				}
 			}
 			needsVertexBufferUpdate = true;
 		}
@@ -181,7 +240,7 @@ namespace se
 			}
 			if (needsVertexBufferUpdate)
 			{
-				bufferMemory = bgfx::copy(&vertices[0], vertices.size() * sizeof(vertices[0]));
+				bufferMemory = bgfx::copy(vertices.data(), vertices.bytes());
 				bgfx::update(vertexBufferHandle, 0, bufferMemory);
 				needsVertexBufferUpdate = false;
 			}

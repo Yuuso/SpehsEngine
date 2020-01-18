@@ -2,6 +2,7 @@
 
 #include "boost/signals2.hpp"
 #include "SpehsEngine/Graphics/Types.h"
+#include "SpehsEngine/Graphics/VertexBuffer.h"
 #include "glm/vec3.hpp"
 #include "glm/gtc/quaternion.hpp"
 #include <vector>
@@ -31,7 +32,7 @@ namespace se
 			virtual const std::string&				getName() const;
 			virtual const bool						getRenderState() const;
 			virtual const Shader*					getShader() const;
-			virtual const std::vector<Vertex>&		getVertices() const;
+			virtual const VertexBuffer&		getVertices() const;
 			virtual const std::vector<IndexType>&	getIndices() const;
 
 			virtual const RenderFlagsType			getRenderFlags() const;
@@ -50,7 +51,7 @@ namespace se
 			virtual void							setRenderState(const bool _state);
 			virtual void							toggleRenderState();
 			virtual void							setShader(const Shader* _shader);
-			virtual void							setVertices(const std::vector<Vertex>& _vertices);
+			virtual void							setVertices(const VertexBuffer& _vertices);
 			virtual void							setIndices(const std::vector<uint16_t>& _indices);
 			virtual void							setColor(const Color& _color); // TODO: How to deal with colors?
 
@@ -75,7 +76,7 @@ namespace se
 			PrimitiveType							primitiveType			= PrimitiveType::Triangles;
 			RenderMode								renderMode				= RenderMode::Dynamic;
 			const Shader*							shader					= nullptr; // TODO: default shader
-			std::vector<Vertex>						vertices;
+			VertexBuffer							vertices;
 			std::vector<IndexType>					indices;
 
 			// Global space
@@ -90,7 +91,8 @@ namespace se
 
 			friend class PrimitiveInstance;
 			boost::signals2::signal<void(void)>		destroyedSignal;
-			PrimitiveUpdateFlagsType				updateFlags = 0;
+			PrimitiveUpdateFlagsType				updateFlags				= 0;
+			Color									primitiveColor;
 		};
 	}
 }

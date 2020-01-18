@@ -47,6 +47,7 @@ namespace se
 			RenderFlagsType renderFlags;
 			PrimitiveType primitiveType;
 			const Shader* shader;
+			VertexAttributeFlagsType attributes;
 		};
 
 		struct BatchPosition

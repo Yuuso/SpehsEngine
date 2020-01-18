@@ -57,7 +57,7 @@ namespace se
 				destroyBuffers();
 				if (isBatched())
 				{
-					const std::vector<Vertex>& vertices = getVertices();
+					const VertexBuffer& vertices = getVertices();
 					const std::vector<IndexType>& indices = getIndices();
 					se_assert(vertices.size() != 0 && indices.size() != 0);
 					if ((checkBit(primitive->updateFlags, PrimitiveUpdateFlag::RenderInfoChanged) || sizeInBatchChanged()))
@@ -117,7 +117,7 @@ namespace se
 		}
 		void PrimitiveInstance::render(RenderContext& _renderContext)
 		{
-			const std::vector<Vertex>& vertices = getVertices();
+			const VertexBuffer& vertices = getVertices();
 			const std::vector<IndexType>& indices = getIndices();
 
 			se_assert(vertices.size() != 0 && indices.size() != 0);
@@ -132,9 +132,9 @@ namespace se
 				bgfx::TransientIndexBuffer transientIndexBuffer;
 				bgfx::TransientVertexBuffer transientVertexBuffer;
 				bgfx::allocTransientIndexBuffer(&transientIndexBuffer, indices.size());
-				bgfx::allocTransientVertexBuffer(&transientVertexBuffer, vertices.size(), Vertex::getVertexLayout());
+				bgfx::allocTransientVertexBuffer(&transientVertexBuffer, vertices.size(), findVertexLayout(vertices.getAttributes()));
 				memcpy(transientIndexBuffer.data, &indices[0], indices.size() * sizeof(indices[0]));
-				memcpy(transientVertexBuffer.data, &vertices[0], vertices.size() * sizeof(vertices[0]));
+				memcpy(transientVertexBuffer.data, vertices.data(), vertices.bytes());
 
 				bgfx::setIndexBuffer(&transientIndexBuffer, 0, indices.size());
 				bgfx::setVertexBuffer(0, &transientVertexBuffer, 0, vertices.size());
@@ -145,8 +145,8 @@ namespace se
 
 				if (!bgfx::isValid(vertexBufferHandle))
 				{
-					const bgfx::Memory* bufferMemory = bgfx::copy(&vertices[0], vertices.size() * sizeof(vertices[0]));
-					vertexBufferHandle = bgfx::createVertexBuffer(bufferMemory, Vertex::getVertexLayout());
+					const bgfx::Memory* bufferMemory = bgfx::copy(vertices.data(), vertices.bytes());
+					vertexBufferHandle = bgfx::createVertexBuffer(bufferMemory, findVertexLayout(vertices.getAttributes()));
 				}
 				if (!bgfx::isValid(indexBufferHandle))
 				{
@@ -165,7 +165,7 @@ namespace se
 
 		void PrimitiveInstance::batch(Batch& _batch)
 		{
-			const std::vector<Vertex>& vertices = getVertices();
+			const VertexBuffer& vertices = getVertices();
 			const std::vector<IndexType>& indices = getIndices();
 			se_assert(vertices.size() != 0 && indices.size() != 0);
 			se_assert(!isBatched());
@@ -196,6 +196,7 @@ namespace se
 			result.renderFlags = primitive->getRenderFlags();
 			result.primitiveType = primitive->getPrimitiveType();
 			result.shader = primitive->getShader();
+			result.attributes = primitive->getVertices().getAttributes();
 			return result;
 		}
 		const bool PrimitiveInstance::getRenderState() const
@@ -206,7 +207,7 @@ namespace se
 		{
 			return primitive->getRenderMode();
 		}
-		const std::vector<Vertex>& PrimitiveInstance::getVertices() const
+		const VertexBuffer& PrimitiveInstance::getVertices() const
 		{
 			return primitive->getVertices();
 		}

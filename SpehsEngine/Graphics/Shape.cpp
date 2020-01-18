@@ -24,7 +24,11 @@ namespace se
 			// Generate an equilateral convex polygon with the given amount of vertices
 
 			se_assert(_numVertices >= 3);
-			std::vector<Vertex> newVertices;
+			VertexBuffer newVertices;
+			newVertices.setAttributes(VertexAttributeFlag::Position
+									| VertexAttributeFlag::Normal
+									| VertexAttributeFlag::Color0
+									| VertexAttributeFlag::TexCoord0);
 
 			switch (_numVertices)
 			{
@@ -55,29 +59,29 @@ namespace se
 					firstPosition = (se::TWO_PI<float> / float(_numVertices)) / 2.0f;
 				}
 
-				newVertices[0].position = glm::vec3(cos(firstPosition), 0.0f, sin(firstPosition));
+				newVertices.get<Position>(0) = glm::vec3(cos(firstPosition), 0.0f, sin(firstPosition));
 
-				float minX = newVertices[0].position.x;
-				float minZ = newVertices[0].position.z;
-				float maxX = newVertices[0].position.x;
-				float maxZ = newVertices[0].position.z;
+				float minX = newVertices.get<Position>(0).x;
+				float minZ = newVertices.get<Position>(0).z;
+				float maxX = newVertices.get<Position>(0).x;
+				float maxZ = newVertices.get<Position>(0).z;
 
 				for (unsigned i = 1; i < _numVertices; i++)
 				{
-					newVertices[i].position = glm::vec3(cos(firstPosition + i * (se::TWO_PI<float> / _numVertices)), 0.0f, sin(firstPosition + i * (se::TWO_PI<float> / _numVertices)));
+					newVertices.get<Position>(i) = glm::vec3(cos(firstPosition + i * (se::TWO_PI<float> / _numVertices)), 0.0f, sin(firstPosition + i * (se::TWO_PI<float> / _numVertices)));
 
-					if		(newVertices[i].position.x > maxX)		maxX = newVertices[i].position.x;
-					else if (newVertices[i].position.x < minX)		minX = newVertices[i].position.x;
-					if		(newVertices[i].position.z > maxZ)		maxZ = newVertices[i].position.z;
-					else if (newVertices[i].position.z < minZ)		minZ = newVertices[i].position.z;
+					if		(newVertices.get<Position>(i).x > maxX)		maxX = newVertices.get<Position>(i).x;
+					else if (newVertices.get<Position>(i).x < minX)		minX = newVertices.get<Position>(i).x;
+					if		(newVertices.get<Position>(i).z > maxZ)		maxZ = newVertices.get<Position>(i).z;
+					else if (newVertices.get<Position>(i).z < minZ)		minZ = newVertices.get<Position>(i).z;
 				}
 
 				const float width = abs(maxX) + abs(minX);
 				const float height = abs(maxZ) + abs(minZ);
 				for (unsigned i = 0; i < _numVertices; i++)
 				{
-					newVertices[i].position.x /= width;
-					newVertices[i].position.z /= height;
+					newVertices.get<Position>(i).x /= width;
+					newVertices.get<Position>(i).z /= height;
 				}
 			}
 
@@ -85,7 +89,7 @@ namespace se
 			{
 				for (size_t i = 0; i < newVertices.size(); i++)
 				{
-					newVertices[i].normal = glm::vec3(0.0f, 1.0f, 0.0f);
+					newVertices.get<Normal>(i) = glm::vec3(0.0f, 1.0f, 0.0f);
 				}
 			}
 
@@ -93,16 +97,16 @@ namespace se
 			{
 				for (size_t i = 0; i < newVertices.size(); i++)
 				{
-					newVertices[i].uv.x = (newVertices[i].position.x + 0.5f);
-					newVertices[i].uv.y = (-newVertices[i].position.y + 0.5f);
+					newVertices.get<TexCoord0>(i).x = (newVertices.get<TexCoord0>(i).x + 0.5f);
+					newVertices.get<TexCoord0>(i).y = (-newVertices.get<TexCoord0>(i).y + 0.5f);
 				}
 			}
 
-			//! Color
+			// Color
 			{
 				const Color vertexColor = randomBrightColor();
 				for (size_t i = 0; i < newVertices.size(); i++)
-					newVertices[i].color = vertexColor;
+					newVertices.get<Color0>(i) = vertexColor;
 			}
 
 			Primitive::setVertices(newVertices);
@@ -118,7 +122,7 @@ namespace se
 			Primitive::setPrimitiveType(_primitiveType);
 			generateIndices();
 		}
-		void Shape::setVertices(const std::vector<Vertex>& _vertices)
+		void Shape::setVertices(const VertexBuffer& _vertices)
 		{
 			log::error("setVertices should not be used with shapes!");
 		}

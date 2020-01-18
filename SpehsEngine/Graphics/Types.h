@@ -64,31 +64,29 @@ namespace se
 			Static,
 			Dynamic,
 			Transient
+			// TODO: Split Dynamic into 'DynamicDynamic' and 'StaticDynamic'?
 		};
 
-		struct Vertex
+		typedef uint32_t VertexAttributeFlagsType;
+		enum VertexAttributeFlag : VertexAttributeFlagsType
 		{
-			glm::vec3 position;
-			glm::vec3 normal;
-			glm::vec2 uv;
-			se::Color color = { 1.0f, 1.0f, 1.0f, 1.0f };
-
-			static const bgfx::VertexLayout& getVertexLayout()
-			{
-				static bgfx::VertexLayout layout;
-				static bool set = false;
-				if (!set)
-				{
-					layout.begin()
-						  .add(bgfx::Attrib::Position,	3, bgfx::AttribType::Float)
-						  .add(bgfx::Attrib::Normal,	3, bgfx::AttribType::Float)
-						  .add(bgfx::Attrib::TexCoord0,	2, bgfx::AttribType::Float)
-						  .add(bgfx::Attrib::Color0,	4, bgfx::AttribType::Float, true)
-						  .end();
-					set = true;
-				}
-				return layout;
-			}
+			Position			= (1 << 0),
+			Normal				= (1 << 1),
+			Tangent				= (1 << 2),
+			Bitangent			= (1 << 3),
+			Color0				= (1 << 4),
+			Color1				= (1 << 5),
+			Color2				= (1 << 6),
+			Color3				= (1 << 7),
+			Weight				= (1 << 9),
+			TexCoord0			= (1 << 10),
+			TexCoord1			= (1 << 11),
+			TexCoord2			= (1 << 12),
+			TexCoord3			= (1 << 13),
+			TexCoord4			= (1 << 14),
+			TexCoord5			= (1 << 15),
+			TexCoord6			= (1 << 16),
+			TexCoord7			= (1 << 17),
 		};
 
 		enum Projection
