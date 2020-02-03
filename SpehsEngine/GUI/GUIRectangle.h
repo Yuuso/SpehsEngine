@@ -11,32 +11,32 @@
 #define GUIRECT_ID_TYPE							uint32_t
 ////GUI rectangle states
 #define GUIRECT_STATE_TYPE						uint32_t
-#define GUIRECT_MOUSE_HOVER_BIT					0x00000001
-#define GUIRECT_SCALE_UPDATED_BIT				0x00000002
-#define GUIRECT_POSITION_UPDATED_BIT			0x00000004
-#define GUIRECT_MIN_SIZE_UPDATED_BIT			0x00000008
-#define GUIRECT_REMOVE_BIT						0x00000010//Does not actually remove element. Must have a higher level manager to monitor remove status and act accordingly to it
-#define GUIRECT_MOUSE_HOVER_PREVIOUS_BIT		0x00000020
-#define GUIRECT_UNUSED1							0x00000040
-#define GUIRECT_UNUSED2							0x00000080
-#define GUIRECT_UNUSED3							0x00000100
-#define GUIRECT_UNUSED4							0x00000200
-#define GUIRECT_UNUSED5							0x00000400
+#define GUIRECT_MOUSE_HOVER_BIT					uint32_t(0x00000001)
+#define GUIRECT_SCALE_UPDATED_BIT				uint32_t(0x00000002)
+#define GUIRECT_POSITION_UPDATED_BIT			uint32_t(0x00000004)
+#define GUIRECT_MIN_SIZE_UPDATED_BIT			uint32_t(0x00000008)
+#define GUIRECT_REMOVE_BIT						uint32_t(0x00000010)//Does not actually remove element. Must have a higher level manager to monitor remove status and act accordingly to it
+#define GUIRECT_MOUSE_HOVER_PREVIOUS_BIT		uint32_t(0x00000020)
+#define GUIRECT_UNUSED1							uint32_t(0x00000040)
+#define GUIRECT_UNUSED2							uint32_t(0x00000080)
+#define GUIRECT_UNUSED3							uint32_t(0x00000100)
+#define GUIRECT_UNUSED4							uint32_t(0x00000200)
+#define GUIRECT_UNUSED5							uint32_t(0x00000400)
 //GUI rectangle container
-#define GUIRECT_MOUSE_HOVER_CONTAINER_BIT		0x00000800//Whether mouse hover has been detected inside an element of the container
-#define GUIRECT_OPEN_BIT						0x00001000//Open containers update elements inside
+#define GUIRECT_MOUSE_HOVER_CONTAINER_BIT		uint32_t(0x00000800)//Whether mouse hover has been detected inside an element of the container
+#define GUIRECT_OPEN_BIT						uint32_t(0x00001000)//Open containers update elements inside
 //GUI window specific
-#define GUIWINDOW_DRAGGING_BIT					0x00004000
-#define GUIWINDOW_STRECHING_BIT					0x00008000
-#define GUIWINDOW_LIMIT_WITHIN_MAIN_WINDOW_BIT	0x00010000//Request a limit within the main window
+#define GUIWINDOW_DRAGGING_BIT					uint32_t(0x00004000)
+#define GUIWINDOW_STRECHING_BIT					uint32_t(0x00008000)
+#define GUIWINDOW_LIMIT_WITHIN_MAIN_WINDOW_BIT	uint32_t(0x00010000)//Request a limit within the main window
 //Text justification
-#define GUIRECT_TEXT_JUSTIFICATION_LEFT_BIT		0x00020000
-#define GUIRECT_TEXT_JUSTIFICATION_CENTER_BIT	0x00040000
-#define GUIRECT_TEXT_JUSTIFICATION_RIGHT_BIT	0x00080000
+#define GUIRECT_TEXT_JUSTIFICATION_LEFT_BIT		uint32_t(0x00020000)
+#define GUIRECT_TEXT_JUSTIFICATION_CENTER_BIT	uint32_t(0x00040000)
+#define GUIRECT_TEXT_JUSTIFICATION_RIGHT_BIT	uint32_t(0x00080000)
 ////Misc
-#define GUIRECT_RECEIVING_INPUT_BIT				0x00100000//Underlings should inform their first generation parents when receiving input
-#define GUIRECT_SELECTED_BIT					0x00200000
-#define GUIRECT_HOVER_COLOR_BIT					0x00400000//If enabled, rectangle will highlight when under mouse
+#define GUIRECT_RECEIVING_INPUT_BIT				uint32_t(0x00100000)//Underlings should inform their first generation parents when receiving input
+#define GUIRECT_SELECTED_BIT					uint32_t(0x00200000)
+#define GUIRECT_HOVER_COLOR_BIT					uint32_t(0x00400000)//If enabled, rectangle will highlight when under mouse
 
 namespace se
 {

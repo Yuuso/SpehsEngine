@@ -9,7 +9,7 @@ namespace se
 {
 	namespace rendering
 	{
-		enum
+		enum VertexUpdate
 		{
 			VERTEX_UPDATE_NONE			= 0,
 			VERTEX_UPDATE_VERTEX		= (1 << 0),

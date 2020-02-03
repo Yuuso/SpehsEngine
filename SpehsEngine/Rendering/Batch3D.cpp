@@ -255,7 +255,7 @@ namespace se
 			needIndexBufferUpdate = true;
 		}
 
-		void MeshBatch::updateVertices(const size_t _index, const Mesh& _mesh, const int _updates)
+		void MeshBatch::updateVertices(const size_t _index, const Mesh& _mesh, const VertexUpdate _updates)
 		{
 #if false
 			if (usage == GL_STATIC_DRAW)

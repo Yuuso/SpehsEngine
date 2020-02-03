@@ -54,7 +54,7 @@ namespace se
 		{
 			se_assert(_index < mesh->vertexArray.size());
 			mesh->vertexArray[_index].position = _point;
-			mesh->needUpdate = true;
+			mesh->needUpdate = VertexUpdate::VERTEX_UPDATE_ALL;
 		}
 		void Line3D::updatePoints(const std::vector<glm::vec3>& _points)
 		{
@@ -63,7 +63,7 @@ namespace se
 			{
 				mesh->vertexArray[i].position = _points[i];
 			}
-			mesh->needUpdate = true;
+			mesh->needUpdate = VertexUpdate::VERTEX_UPDATE_ALL;
 		}
 		void Line3D::setPointColor(const size_t _index, const Color _color)
 		{
