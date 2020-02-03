@@ -1,11 +1,61 @@
 #pragma once
-/*
-These bitwise operations are pretty fast but be very careful when using them.
-'variable' parameter is the variable whose state we want to change.
-'bit' is the bit which the operation is applied to.
-	-For example, to change the least significant bit, use 1. To change the 4th least significant bit, use 8...
-*/
-#define enableBit(variable, bit) (variable |= bit)
-#define disableBit(variable, bit) (variable &= ~bit)
-#define toggleBit(variable, bit) (variable ^= bit)
-#define checkBit(variable, bit) (variable & bit)
+
+#include <type_traits>
+
+
+namespace se
+{
+	template<typename Integer>
+	inline typename std::enable_if<std::is_integral<Integer>::value, void>::type enableBit(Integer& variable, const Integer bits)
+	{
+		variable |= bits;
+	}
+
+	template<typename Enum>
+	inline typename std::enable_if<std::is_enum<Enum>::value, void>::type enableBit(Enum& variable, const Enum bits)
+	{
+		variable = Enum(std::underlying_type<Enum>::type(variable) | std::underlying_type<Enum>::type(bits));
+	}
+
+	template<typename Integer>
+	inline typename std::enable_if<std::is_integral<Integer>::value, void>::type disableBit(Integer& variable, const Integer bits)
+	{
+		variable &= ~bits;
+	}
+
+	template<typename Enum>
+	inline typename std::enable_if<std::is_enum<Enum>::value, void>::type disableBit(Enum& variable, const Enum bits)
+	{
+		variable = Enum(std::underlying_type<Enum>::type(variable) & ~std::underlying_type<Enum>::type(bits));
+	}
+
+	template<typename Integer>
+	inline typename std::enable_if<std::is_integral<Integer>::value, void>::type toggleBit(Integer& variable, const Integer bits)
+	{
+		variable ^= bits;
+	}
+
+	template<typename Enum>
+	inline typename std::enable_if<std::is_enum<Enum>::value, void>::type toggleBit(Enum& variable, const Enum bits)
+	{
+		variable = Enum(std::underlying_type<Enum>::type(variable) ^ std::underlying_type<Enum>::type(bits));
+	}
+
+	/*
+		Returns true if all of the specified bits are enabled.
+	*/
+	template<typename Integer>
+	inline typename std::enable_if<std::is_integral<Integer>::value, bool>::type checkBit(const Integer variable, const Integer bits)
+	{
+		return (variable & bits) == bits;
+	}
+
+	/*
+		Returns true if all of the specified bits are enabled.
+	*/
+	template<typename Enum>
+	inline typename std::enable_if<std::is_enum<Enum>::value, bool>::type checkBit(const Enum variable, const Enum bits)
+	{
+		return (std::underlying_type<Enum>::type(variable) & std::underlying_type<Enum>::type(bits)) == std::underlying_type<Enum>::type(bits);
+	}
+}

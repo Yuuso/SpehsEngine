@@ -8,7 +8,7 @@ namespace se
 {
 	float getStringAsFloat(const std::string& string)
 	{
-		int8_t stringState = 0;
+		int stringState = 0;
 		int intValue = 0;
 		float floatValue = 0.0f;
 		float decimalFactor = 0.1f;
@@ -59,7 +59,7 @@ namespace se
 	
 	int getStringAsInt(const std::string& string)
 	{
-		int8_t stringState = 0;
+		int stringState = 0;
 		int intValue = 0;
 		for (unsigned i = 0; i < string.size(); i++)
 		{

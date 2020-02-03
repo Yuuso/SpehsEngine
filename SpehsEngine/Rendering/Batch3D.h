@@ -32,7 +32,7 @@ namespace se
 
 			std::pair<size_t, size_t> push(const Mesh& _mesh);
 			void remove(const std::pair<size_t, size_t> _index, std::pair<size_t, size_t> _size);
-			void updateVertices(const size_t _index, const Mesh& _mesh, const int _updates);
+			void updateVertices(const size_t _index, const Mesh& _mesh, const VertexUpdate _updates);
 
 			bool render(BatchRenderResults* results = nullptr);
 

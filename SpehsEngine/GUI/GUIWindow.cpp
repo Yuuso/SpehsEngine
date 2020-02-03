@@ -15,12 +15,12 @@
 //#define DOCK_BORDER 50
 #define DOUBLE_CLICK_TIME 200
 /*Strech state*/
-#define STRECH_STATE_HORIZONTAL 1
-#define STRECH_STATE_VERTICAL 2
-#define STRECH_STATE_N 4
-#define STRECH_STATE_E 8
-#define STRECH_STATE_S 16
-#define STRECH_STATE_W 32
+#define STRECH_STATE_HORIZONTAL int8_t(1)
+#define STRECH_STATE_VERTICAL int8_t(2)
+#define STRECH_STATE_N int8_t(4)
+#define STRECH_STATE_E int8_t(8)
+#define STRECH_STATE_S int8_t(16)
+#define STRECH_STATE_W int8_t(32)
 #define STRECH_CORNER_PERCENTAGE 0.1f
 
 namespace se

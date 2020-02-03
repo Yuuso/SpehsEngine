@@ -117,7 +117,7 @@ namespace se
 			if (_newRotation == localRotation)
 				return;
 			localRotation = _newRotation;
-			enableBit(needUpdate, VERTEX_UPDATE_VERTEX | VERTEX_UPDATE_NORMAL);
+			enableBit(needUpdate, VertexUpdate(VERTEX_UPDATE_VERTEX | VERTEX_UPDATE_NORMAL));
 		}
 		void Mesh::setLocalScale(const glm::vec3& _newScale)
 		{
@@ -169,7 +169,7 @@ namespace se
 			if (_newRotation == rotation)
 				return;
 			rotation = _newRotation;
-			enableBit(needUpdate, VERTEX_UPDATE_VERTEX | VERTEX_UPDATE_NORMAL);
+			enableBit(needUpdate, VertexUpdate(VERTEX_UPDATE_VERTEX | VERTEX_UPDATE_NORMAL));
 		}
 		void Mesh::updateScale(const glm::vec3& _newScale)
 		{

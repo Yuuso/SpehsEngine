@@ -16,17 +16,18 @@
 1. Pointer and reference sign next to the type (int& i, float* f).
 2. Class names upper camel case (MyClass).
 3. Function and variable names lower camel case (funcName).
-4. Class constructor member variable initializer lists with the following format:
+4. Enum names and values in pascal case: enum class MyEnum { Value1, Value2, ValueN }
+5. Class constructor member variable initializer lists with the following format:
 	MyClass(const int p1, const int p2, const int p3)
 		: var1(p1)
 		, var2(p2)
 		, var3(p3)
-5. Lines to fit within one screen (~200 characters).
-6. Prefer longer, descriptive variable/function names that are consistent with the rest of the code (BatchManager batchManager is better than BatchManager batchMan).
-7. Prefer to prefix member function parameters with an underscore if they have a name clash with a member variable.
-8. Always use "" characters for includes (#include "SpehsEngine/Core/Color.h" instead of #include <SpehsEngine/Core/Color.h>)
-9. Always use full include paths when possible (#include "SpehsEngine/Core/Color.h" instead of #include "Color.h")
-10. Single line comments with // and a space. Like this: // Comment about something
+6. Lines to fit within one screen (~200 characters).
+7. Prefer longer, descriptive variable/function names that are consistent with the rest of the code (BatchManager batchManager is better than BatchManager batchMan).
+8. Prefer to prefix member function parameters with an underscore if they have a name clash with a member variable.
+9. Always use "" characters for includes (#include "SpehsEngine/Core/Color.h" instead of #include <SpehsEngine/Core/Color.h>)
+10. Always use full include paths when possible (#include "SpehsEngine/Core/Color.h" instead of #include "Color.h")
+11. Single line comments with // and a space. Like this: // Comment about something
 
 For header/source file layout, see format below:
 
@@ -100,7 +101,7 @@ namespace client
 
 		enum class Enum
 		{
-			val1,
+			Val1,
 			Val2,
 			Val3
 		}

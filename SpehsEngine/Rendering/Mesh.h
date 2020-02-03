@@ -113,7 +113,7 @@ namespace se
 
 			std::vector<BatchManager3D*> batchManagers;
 
-			int needUpdate = VERTEX_UPDATE_ALL;
+			VertexUpdate needUpdate = VERTEX_UPDATE_ALL;
 			void unbatch();
 
 			// Single color for full mesh
