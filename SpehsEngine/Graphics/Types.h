@@ -95,21 +95,19 @@ namespace se
 			Orthographic
 		};
 
+		enum class ViewSizeType
+		{
+			Pixels,
+			Relative
+		};
+
 		struct ViewSize
 		{
-			enum ViewSizeType
-			{
-				Pixels,
-				Relative
-			};
-
-
-			ViewSize() {}
-			ViewSize(const float _width, const float _height, const ViewSizeType _type = Relative)
+			ViewSize() = default;
+			ViewSize(const float _width, const float _height, const ViewSizeType _type = ViewSizeType::Relative)
 				: width(_width), height(_height), type(_type) {}
-
-
-			ViewSizeType type = Relative;
+			
+			ViewSizeType type = ViewSizeType::Relative;
 			float width = 1.0f;
 			float height = 1.0f;
 		};

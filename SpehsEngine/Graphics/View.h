@@ -44,8 +44,8 @@ namespace se
 			Scene& scene;
 			Camera& camera;
 
-			ViewSize size = ViewSize(1.0f, 1.0f, ViewSize::ViewSizeType::Relative);
-			ViewSize offset = ViewSize(0.0f, 0.0f, ViewSize::ViewSizeType::Pixels);
+			ViewSize size = ViewSize(1.0f, 1.0f, ViewSizeType::Relative);
+			ViewSize offset = ViewSize(0.0f, 0.0f, ViewSizeType::Pixels);
 
 			bool enableMSAA = true; // TODO: Test if this works, move to window if not
 			ViewClearFlagsType clearFlags = ViewClearFlag::ClearColor

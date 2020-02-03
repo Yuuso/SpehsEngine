@@ -44,28 +44,28 @@ namespace se
 
 			float viewWidthPixels;
 			float viewHeightPixels;
-			if (view->size.type == ViewSize::Relative)
+			if (view->size.type == ViewSizeType::Relative)
 			{
 				viewWidthPixels = _renderContext.currentWindow->getWidth() * view->size.width;
 				viewHeightPixels = _renderContext.currentWindow->getHeight() * view->size.height;
 			}
 			else
 			{
-				se_assert(view->size.type == ViewSize::Pixels);
+				se_assert(view->size.type == ViewSizeType::Pixels);
 				viewWidthPixels = view->size.width;
 				viewHeightPixels = view->size.height;
 			}
 
 			float viewOffsetXPixels;
 			float viewOffsetYPixels;
-			if (view->offset.type == ViewSize::Relative)
+			if (view->offset.type == ViewSizeType::Relative)
 			{
 				viewOffsetXPixels = _renderContext.currentWindow->getWidth() * view->offset.width;
 				viewOffsetYPixels = _renderContext.currentWindow->getHeight() * view->offset.height;
 			}
 			else
 			{
-				se_assert(view->offset.type == ViewSize::Pixels);
+				se_assert(view->offset.type == ViewSizeType::Pixels);
 				viewOffsetXPixels = view->offset.width;
 				viewOffsetYPixels = view->offset.height;
 			}
