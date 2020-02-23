@@ -1,13 +1,12 @@
 #include "stdafx.h"
-
 #include "SpehsEngine/Rendering/BatchManager.h"
+
 #include "SpehsEngine/Rendering/Primitive.h"
 #include "SpehsEngine/Rendering/Batch.h"
 #include "SpehsEngine/Rendering/Polygon.h"
 #include "SpehsEngine/Rendering/Line.h"
 #include "SpehsEngine/Rendering/Point.h"
 #include "SpehsEngine/Rendering/Window.h"
-
 #include <algorithm>
 
 
@@ -97,6 +96,7 @@ namespace se
 
 		void BatchManager::render(BatchRenderResults* results)
 		{
+			SE_SCOPE_PROFILER();
 			bool batchFound = false;
 
 			//Batch primitives

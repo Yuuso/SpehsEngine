@@ -1,24 +1,23 @@
 #include "stdafx.h"
-#include <algorithm>
-#include <iostream>
-#include <atomic>
-#include <mutex>
-
-#include <boost/bind.hpp>
+#include "SpehsEngine/Rendering/ConsoleVisualizer.h"
 
 #include "SpehsEngine/Core/BitwiseOperations.h"
-#include "SpehsEngine/Core/StringOperations.h"
-#include "SpehsEngine/Core/SE_Time.h"
 #include "SpehsEngine/Core/Log.h"
+#include "SpehsEngine/Core/SE_Time.h"
+#include "SpehsEngine/Core/StringOperations.h"
 #include "SpehsEngine/Input/InputLib.h"
 #include "SpehsEngine/Input/InputManager.h"
-#include "SpehsEngine/Rendering/ConsoleVisualizer.h"
+#include "SpehsEngine/Rendering/BatchManager.h"
 #include "SpehsEngine/Rendering/Camera2D.h"
 #include "SpehsEngine/Rendering/FontManager.h"
-#include "SpehsEngine/Rendering/Text.h"
-#include "SpehsEngine/Rendering/BatchManager.h"
-#include "SpehsEngine/Rendering/Window.h"
 #include "SpehsEngine/Rendering/Polygon.h"
+#include "SpehsEngine/Rendering/Text.h"
+#include "SpehsEngine/Rendering/Window.h"
+#include <algorithm>
+#include <atomic>
+#include <boost/bind.hpp>
+#include <iostream>
+#include <mutex>
 
 //Misc
 #define CONSOLE_COMMANDS_KEPT_IN_MEMORY 10
@@ -148,6 +147,7 @@ namespace se
 
 		void ConsoleVisualizer::update(const time::Time& deltaTime)
 		{
+			SE_SCOPE_PROFILER();
 			std::lock_guard<std::recursive_mutex> lock(mutex);
 
 			if (openState)
@@ -238,6 +238,7 @@ namespace se
 
 		void ConsoleVisualizer::render(const std::string& customDebugText)
 		{
+			SE_SCOPE_PROFILER();
 			std::lock_guard<std::recursive_mutex> lock(mutex);
 			const bool renderState = getRenderState();
 			statsText.setRenderState(renderState && showStats);
