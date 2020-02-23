@@ -8,6 +8,7 @@
 #include "SDL/SDL_joystick.h"
 #include "SDL/SDL_events.h"
 
+
 namespace se
 {
 	namespace input
@@ -19,6 +20,7 @@ namespace se
 
 		void EventCatcher::pollEvents()
 		{
+			SE_SCOPE_PROFILER();
 			//Clear all previous events
 			keyboardPressEvents.clear();
 			keyboardDownEvents.clear();

@@ -5,11 +5,9 @@
 #include "SpehsEngine/Input/EventCatcher.h"
 #include "SpehsEngine/Input/MouseUtilityFunctions.h"
 #include "SpehsEngine/Rendering/Window.h"
-
 #include <SDL/SDL.h>
 #include <SDL/SDL_joystick.h>
 #include <SDL/SDL_events.h>
-
 #include <iostream>
 
 #define SINT16_MIN -32768
@@ -36,6 +34,7 @@ namespace se
 
 		void InputManager::update(EventCatcher& eventCatcher)
 		{
+			SE_SCOPE_PROFILER();
 			for (auto& it : keyMap) //foreach loop, c++11
 			{
 				previousKeyMap[it.first] = it.second;

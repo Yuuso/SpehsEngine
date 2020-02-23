@@ -3,6 +3,7 @@
 
 #include "SpehsEngine/Input/EventCatcher.h"
 
+
 namespace se
 {
 	namespace input
@@ -41,6 +42,7 @@ namespace se
 
 		void EventSignaler::signalEvents(EventCatcher& eventCatcher)
 		{
+			SE_SCOPE_PROFILER();
 			preUpdateSignal();
 
 			//Get events
