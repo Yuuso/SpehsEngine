@@ -40,8 +40,8 @@ namespace se
 			void incrementString(const std::string& _str);
 			void incrementFrontString(const std::string& _str);
 
-			void setFont(const std::string& _fontPath, const int _size);
-			void setFont(Font* _font);
+			bool setFont(const std::string& _fontPath, const int _size);
+			void setFont(Font* const _font);
 			void setFontSize(const int _size);
 
 			void setColor(const Color& _newColor);
