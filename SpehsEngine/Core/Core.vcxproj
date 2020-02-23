@@ -18,6 +18,14 @@
       <Platform>x64</Platform>
     </ProjectConfiguration>
   </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="LockGuard.h" />
+    <ClInclude Include="ScopeProfiler.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="LockGuard.cpp" />
+    <ClCompile Include="ScopeProfiler.cpp" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{CBB134B8-C9FE-4129-A6DD-58B94CBE1096}</ProjectGuid>
     <RootNamespace>Core</RootNamespace>
