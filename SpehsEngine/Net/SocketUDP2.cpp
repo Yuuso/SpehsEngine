@@ -1,12 +1,13 @@
 #include "stdafx.h"
 #include "SpehsEngine/Net/SocketUDP2.h"
 
-#include <string>
 #include "SpehsEngine/Net/IOService.h"
 #include "SpehsEngine/Core/Log.h"
 #include "SpehsEngine/Core/StringOperations.h"
 #include "boost/bind.hpp"
 #include "boost/asio/placeholders.hpp"
+#include <string>
+
 
 #define DEBUG_LOG(level, message) if (getDebugLogLevel() >= level) \
 { \
@@ -40,6 +41,18 @@ namespace se
 
 		void SocketUDP2::update()
 		{
+			// Set a limit to the number of packets processed during this update -> avoid staying in an infinite loop
+			size_t numberOfPacketsToProcess = 0u;
+			{
+				std::lock_guard<std::recursive_mutex> lock1(mutex);
+				std::lock_guard<std::recursive_mutex> lock2(receivedPacketsMutex);
+				numberOfPacketsToProcess = receivedPackets.size();
+				if (getDebugLogLevel() >= 1 && numberOfPacketsToProcess > 1000)
+				{
+					se::log::warning("SocketUDP2: processing " + std::to_string(numberOfPacketsToProcess) + " packets in a single update.");
+				}
+			}
+
 			/*
 				Receive handler calls are made outside the mutex protection:
 					-receiveHandler may change in-between packet processing
@@ -51,28 +64,33 @@ namespace se
 			std::function<void(std::vector<uint8_t>&, const boost::asio::ip::udp::endpoint&)> handler;
 			while (true)
 			{
+				if (packetIndex < numberOfPacketsToProcess)
 				{
+					//Copy contents to non-mutex protected memory
 					std::lock_guard<std::recursive_mutex> lock1(mutex);
 					std::lock_guard<std::recursive_mutex> lock2(receivedPacketsMutex);
-					if (packetIndex < receivedPackets.size())
-					{
-						//Copy contents to non-mutex protected memory
-						data.swap(receivedPackets[packetIndex]->buffer);
-						senderEndpoint = receivedPackets[packetIndex]->senderEndpoint;
-						handler = receiveHandler;
-						packetIndex++;
-					}
-					else
-					{
-						break;
-					}
+					data.swap(receivedPackets[packetIndex]->buffer);
+					senderEndpoint = receivedPackets[packetIndex]->senderEndpoint;
+					handler = receiveHandler;
+					packetIndex++;
+				}
+				else
+				{
+					break;
 				}
 				handler(data, senderEndpoint);
 			}
 
 			std::lock_guard<std::recursive_mutex> lock1(mutex);
 			std::lock_guard<std::recursive_mutex> lock2(receivedPacketsMutex);
-			receivedPackets.clear();
+			if (receivedPackets.size() == numberOfPacketsToProcess)
+			{
+				receivedPackets.clear();
+			}
+			else
+			{
+				receivedPackets.erase(receivedPackets.begin(), receivedPackets.begin() + numberOfPacketsToProcess);
+			}
 		}
 
 		bool SocketUDP2::open()

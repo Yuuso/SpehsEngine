@@ -129,8 +129,6 @@
       <AdditionalLibraryDirectories>$(SPEHSENGINE_ROOT)/Dependencies/lib/;$(SolutionDir)/Dependencies/lib/;$(SPEHSENGINE_ROOT)/bin/$(Platform)/$(Configuration)/$(PlatformToolset)/</AdditionalLibraryDirectories>
     </Lib>
   </ItemDefinitionGroup>
-  <ItemGroup>
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

@@ -1,11 +1,12 @@
 #include "stdafx.h"
 #include "SpehsEngine/Net/ConnectionManager.h"
 
-#include "SpehsEngine/Core/WriteBuffer.h"
+#include "SpehsEngine/Core/LockGuard.h"
 #include "SpehsEngine/Core/ReadBuffer.h"
 #include "SpehsEngine/Core/StringOperations.h"
 #include "SpehsEngine/Core/StringUtilityFunctions.h"
 #include "SpehsEngine/Core/Thread.h"
+#include "SpehsEngine/Core/WriteBuffer.h"
 #include "SpehsEngine/Net/AddressUtilityFunctions.h"
 
 #define DEBUG_LOG(level, message) if (getDebugLogLevel() >= level) \
@@ -60,7 +61,7 @@ namespace se
 
 		void ConnectionManager::run()
 		{
-			setThreadName("ConnectionManager::run()");
+			setThreadName("ConnectionManager::run() " + debugName);
 			while (true)
 			{
 				se::time::ScopedFrameLimiter frameLimiter(se::time::fromSeconds(1.0f / 1000.0f));
@@ -96,11 +97,13 @@ namespace se
 
 		void ConnectionManager::update()
 		{
+			SE_SCOPE_PROFILER();
+			LockGuard lock(mutex);
 			std::lock_guard<std::recursive_mutex> lock1(mutex);
 			for (size_t i = 0; i < connections.size(); i++)
 			{
 				//Remove unreferenced connections that don't have pending operations
-				if (connections[i].use_count() == 1 && (!connections[i]->hasPendingOperations() || connections[i]->isConnecting()))
+				if (connections[i].use_count() == 1 && !connections[i]->hasPendingOperations() && !connections[i]->isConnecting())
 				{
 					connections.erase(connections.begin() + i);
 					i--;
@@ -119,9 +122,9 @@ namespace se
 			for (size_t p = 0; p < receivedPackets.size(); p++)
 			{
 				const std::vector<std::shared_ptr<Connection>>::iterator connectionIt = std::find_if(connections.begin(), connections.end(), [&](std::shared_ptr<Connection>& connection)->bool
-				{
-					return connection->getRemoteEndpoint() == receivedPackets[p].senderEndpoint;
-				});
+					{
+						return connection->getRemoteEndpoint() == receivedPackets[p].senderEndpoint;
+					});
 				if (connectionIt != connections.end())
 				{
 					//Existing connection
@@ -130,11 +133,30 @@ namespace se
 				}
 				else if (accepting)
 				{
-					//New incoming connection
+					// New incoming connection
 					connections.push_back(std::shared_ptr<Connection>(new Connection(socket, receivedPackets[p].senderEndpoint, Connection::EstablishmentType::incoming, "incomingConnection")));
 					connections.back()->setDebugLogLevel(getDebugLogLevel());
+
+					// The new connection starts in 'connecting' state, wait for it to connect before firing the incomingConnectionSignal
+					Connection* const connectionPtr = connections.back().get();
+					boost::signals2::scoped_connection& incomingConnectionStatusChangedConnection = incomingConnectionStatusChangedConnections[connectionPtr];
+					connections.back()->connectToConnectionStatusChangedSignal(incomingConnectionStatusChangedConnection, [connectionPtr, this](const bool connected)
+						{
+							const std::unordered_map<Connection*, boost::signals2::scoped_connection>::iterator it = incomingConnectionStatusChangedConnections.find(connectionPtr);
+							se_assert(it != incomingConnectionStatusChangedConnections.end());
+							incomingConnectionStatusChangedConnections.erase(it);
+							if (connected)
+							{
+								DEBUG_LOG(1, "Incoming connection from: " + connectionPtr->debugEndpoint + " successfully connected.");
+								incomingConnectionSignal(connections.back());
+							}
+							else
+							{
+								DEBUG_LOG(1, "Incoming connection from: " + connectionPtr->debugEndpoint + " failed to connect.");
+							}
+						});
+
 					connections.back()->receivePacket(receivedPackets[p].data);
-					incomingConnectionSignal(connections.back());
 				}
 				else
 				{
@@ -241,6 +263,12 @@ namespace se
 		{
 			std::lock_guard<std::recursive_mutex> lock1(mutex);
 			scopedConnection = incomingConnectionSignal.connect(callback);
+		}
+
+		std::vector<std::shared_ptr<Connection>> ConnectionManager::getConnections()
+		{
+			std::lock_guard<std::recursive_mutex> lock1(mutex);
+			return connections;
 		}
 
 		void ConnectionManager::receiveHandler(std::vector<uint8_t>& data, const boost::asio::ip::udp::endpoint& senderEndpoint)
