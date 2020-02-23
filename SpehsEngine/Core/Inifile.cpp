@@ -26,6 +26,7 @@ namespace se
 
 	void Inifile::update()
 	{
+		SE_SCOPE_PROFILER();
 		//std::lock_guard<std::recursive_mutex> lock(mutex);
 		if (hasUnwrittenChanges())
 		{
