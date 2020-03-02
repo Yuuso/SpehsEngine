@@ -44,8 +44,8 @@
       <Filter>File</Filter>
     </ClCompile>
     <ClCompile Include="$(MSBuildThisFileDirectory)SystemMessageBox.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)ScopeProfiler.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)LockGuard.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)ScopeProfiler.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="$(MSBuildThisFileDirectory)Archive.h" />
@@ -101,8 +101,8 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)ScopedFrameLimiter.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)SystemMessageBox.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)TypeTraits.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)ScopeProfiler.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)LockGuard.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)ScopeProfiler.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="File">
