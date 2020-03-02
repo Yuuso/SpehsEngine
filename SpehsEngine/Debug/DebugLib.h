@@ -3,13 +3,15 @@
 
 namespace se
 {
+	class GUILib;
+
 	namespace debug
 	{
 		class DebugLib
 		{
 		public:
 			/* Initializes debug library */
-			DebugLib();
+			DebugLib(GUILib& guiLib);
 
 			/* Uninitializes debug library */
 			~DebugLib();

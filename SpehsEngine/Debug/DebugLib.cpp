@@ -19,7 +19,7 @@ namespace se
 			std::string version("0");
 		}
 
-		DebugLib::DebugLib()
+		DebugLib::DebugLib(GUILib& guiLib)
 		{
 			instanceCount++;
 			if (!valid)
