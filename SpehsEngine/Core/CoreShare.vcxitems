@@ -18,6 +18,7 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)ArchiveUtilityFunctions.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Guid.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)GuidObjectContainer.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)LockGuard.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)SE_Assert.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)BufferBase.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Color.cpp" />
@@ -57,6 +58,7 @@
   <ItemGroup>
     <ClInclude Include="$(MSBuildThisFileDirectory)Archive.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)ArchiveUtilityFunctions.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)LockGuard.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)ScopedFrameLimiter.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Guid.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)GuidObjectContainer.h" />
