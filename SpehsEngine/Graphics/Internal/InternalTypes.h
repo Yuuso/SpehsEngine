@@ -12,6 +12,7 @@ namespace se
 		struct RenderContext
 		{
 			const class WindowInstance* currentWindow	= nullptr;
+			class DefaultUniforms* defaultUniforms		= nullptr;
 			bgfx::ViewId currentViewId					= 0;
 			RendererFlagsType rendererFlags				= 0;
 			bool enableMSAA								= true;
@@ -46,7 +47,7 @@ namespace se
 		{
 			RenderFlagsType renderFlags;
 			PrimitiveType primitiveType;
-			const Shader* shader;
+			std::shared_ptr<Shader> shader;
 			VertexAttributeFlagsType attributes;
 		};
 

@@ -5,6 +5,7 @@
 #include "SpehsEngine/Core/SE_Assert.h"
 #include "SpehsEngine/Graphics/Types.h"
 #include "SpehsEngine/Graphics/Internal/InternalUtilities.h"
+#include "SpehsEngine/Graphics/Internal/DefaultUniforms.h"
 
 #define GLM_ENABLE_EXPERIMENTAL
 #include "glm/gtc/matrix_transform.hpp"
@@ -69,11 +70,11 @@ namespace se
 						if (checkBit(primitive->updateFlags, PrimitiveUpdateFlag::TransformChanged))
 						{
 							updateTransformMatrix();
-							batch_->updateVertices(*batchPosition, vertices, transformMatrix);
+							batch_->updateVertices(*batchPosition, vertices, transformMatrix, normalMatrix);
 						}
 						else if (checkBit(primitive->updateFlags, PrimitiveUpdateFlag::VerticesChanged))
 						{
-							batch_->updateVertices(*batchPosition, vertices, transformMatrix);
+							batch_->updateVertices(*batchPosition, vertices, transformMatrix, normalMatrix);
 						}
 
 						if (checkBit(primitive->updateFlags, PrimitiveUpdateFlag::IndicesChanged))
@@ -96,7 +97,13 @@ namespace se
 				{
 					updateTransformMatrix();
 				}
-				// PrimitiveUpdateFlag::RenderInfoChanged doesn't matter
+				if (checkBit(primitive->updateFlags, PrimitiveUpdateFlag::RenderInfoChanged))
+				{
+					if (primitive->getRenderMode() == RenderMode::Dynamic)
+					{
+						destroyBuffers();
+					}
+				}
 			}
 			primitive->updateFlags = 0;
 		}
@@ -124,7 +131,8 @@ namespace se
 
 			const RenderInfo renderInfo = getRenderInfo();
 
-			bgfx::setTransform(&transformMatrix[0][0]);
+			bgfx::setTransform(reinterpret_cast<const void*>(&transformMatrix));
+			_renderContext.defaultUniforms->setNormalMatrix(normalMatrix);
 
 			if (getRenderMode() == RenderMode::Transient)
 			{
@@ -172,7 +180,7 @@ namespace se
 			batchPosition = &_batch.add(vertices, indices);
 			batch_ = &_batch;
 			updateTransformMatrix();
-			batch_->updateVertices(*batchPosition, vertices, transformMatrix);
+			batch_->updateVertices(*batchPosition, vertices, transformMatrix, normalMatrix);
 		}
 		void PrimitiveInstance::unbatch()
 		{
@@ -236,6 +244,7 @@ namespace se
 							  glm::mat4_cast(primitive->getRotation()) *
 							  glm::scale(primitive->getScale()) *
 							  transformMatrix;
+			normalMatrix	= glm::mat4(glm::inverse(glm::transpose(glm::mat3(transformMatrix))));
 		}
 	}
 }

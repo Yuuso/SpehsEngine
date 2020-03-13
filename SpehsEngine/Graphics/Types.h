@@ -33,15 +33,20 @@ namespace se
 			MSAA8				= (1 << 3),
 			MSAA16				= (1 << 4),
 			VSync				= (1 << 5),
-			Direct3D9			= (1 << 6),
-			Direct3D11			= (1 << 7),
-			Direct3D12			= (1 << 8),
-			Gnm					= (1 << 9),
-			Metal				= (1 << 10),
-			Nvn					= (1 << 11),
-			OpenGLES			= (1 << 12),
-			OpenGL				= (1 << 13),
-			Vulkan				= (1 << 14),
+		};
+
+		enum class RendererBackend
+		{
+			Auto,
+			Direct3D9,
+			Direct3D11,
+			Direct3D12,
+			Gnm,
+			Metal,
+			Nvn,
+			OpenGLES,
+			OpenGL,
+			Vulkan
 		};
 
 		typedef uint32_t PrimitiveUpdateFlagsType;
@@ -101,12 +106,20 @@ namespace se
 			Relative
 		};
 
+		enum class UniformType
+		{
+			Sampler,
+			Vec4,
+			Mat3,
+			Mat4,
+		};
+
 		struct ViewSize
 		{
 			ViewSize() = default;
 			ViewSize(const float _width, const float _height, const ViewSizeType _type = ViewSizeType::Relative)
 				: width(_width), height(_height), type(_type) {}
-			
+
 			ViewSizeType type = ViewSizeType::Relative;
 			float width = 1.0f;
 			float height = 1.0f;

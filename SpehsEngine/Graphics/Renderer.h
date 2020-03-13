@@ -2,6 +2,7 @@
 
 #include "SpehsEngine/Graphics/Window.h"
 #include "SpehsEngine/Graphics/Internal/WindowInstance.h"
+#include "SpehsEngine/Graphics/Internal/DefaultUniforms.h"
 #include "glm/vec2.hpp"
 #include <vector>
 #include <memory>
@@ -16,7 +17,7 @@ namespace se
 		public:
 
 			Renderer(Window& _window);
-			Renderer(Window& _window, const RendererFlagsType _rendererFlags);
+			Renderer(Window& _window, const RendererFlagsType _rendererFlags, const RendererBackend _rendererBackend = RendererBackend::Auto);
 			~Renderer();
 
 			Renderer(const Renderer& _other) = delete;
@@ -37,6 +38,8 @@ namespace se
 			void enableRendererFlag(const RendererFlag _rendererFlag);
 			void disableRendererFlag(const RendererFlag _rendererFlag);
 
+			static const RendererBackend getRendererBackend();
+
 			const glm::ivec2 getDisplaySize() const;
 			const int getDisplayRefreshRate() const;
 
@@ -52,6 +55,8 @@ namespace se
 
 			RendererFlagsType rendererFlags;
 			bool rendererFlagsChanged = false;
+
+			std::unique_ptr<DefaultUniforms> defaultUniforms;
 		};
 	}
 }

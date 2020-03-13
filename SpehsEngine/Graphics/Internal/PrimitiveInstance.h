@@ -60,6 +60,7 @@ namespace se
 			const BatchPosition* batchPosition = nullptr;
 
 			glm::mat4 transformMatrix;
+			glm::mat4 normalMatrix;
 
 			// TODO: Test dynamic buffers?
 			bgfx::VertexBufferHandle vertexBufferHandle = BGFX_INVALID_HANDLE;

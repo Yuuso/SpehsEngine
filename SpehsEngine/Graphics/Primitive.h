@@ -7,6 +7,7 @@
 #include "glm/gtc/quaternion.hpp"
 #include <vector>
 #include <string>
+#include <memory>
 
 
 namespace se
@@ -31,8 +32,8 @@ namespace se
 
 			virtual const std::string&				getName() const;
 			virtual const bool						getRenderState() const;
-			virtual const Shader*					getShader() const;
-			virtual const VertexBuffer&		getVertices() const;
+			virtual const std::shared_ptr<Shader>	getShader() const;
+			virtual const VertexBuffer&				getVertices() const;
 			virtual const std::vector<IndexType>&	getIndices() const;
 
 			virtual const RenderFlagsType			getRenderFlags() const;
@@ -50,7 +51,7 @@ namespace se
 			virtual void							setName(const std::string_view _name);
 			virtual void							setRenderState(const bool _state);
 			virtual void							toggleRenderState();
-			virtual void							setShader(const Shader* _shader);
+			virtual void							setShader(std::shared_ptr<Shader> _shader);
 			virtual void							setVertices(const VertexBuffer& _vertices);
 			virtual void							setIndices(const std::vector<uint16_t>& _indices);
 			virtual void							setColor(const Color& _color); // TODO: How to deal with colors?
@@ -75,7 +76,7 @@ namespace se
 			RenderFlagsType							renderFlags				= RenderFlag::DepthTest;
 			PrimitiveType							primitiveType			= PrimitiveType::Triangles;
 			RenderMode								renderMode				= RenderMode::Dynamic;
-			const Shader*							shader					= nullptr; // TODO: default shader
+			std::shared_ptr<Shader>					shader					= nullptr;
 			VertexBuffer							vertices;
 			std::vector<IndexType>					indices;
 
@@ -92,7 +93,7 @@ namespace se
 			friend class PrimitiveInstance;
 			boost::signals2::signal<void(void)>		destroyedSignal;
 			PrimitiveUpdateFlagsType				updateFlags				= 0;
-			Color									primitiveColor;
+			Color									primitiveColor			= { -1.0f, -1.0f, -1.0f, -1.0f };
 		};
 	}
 }

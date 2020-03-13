@@ -34,7 +34,8 @@ namespace se
 			[[nodiscard]] const BatchPosition& add(const VertexBuffer& _vertices, const std::vector<IndexType>& _indices);
 			void remove(const BatchPosition& _positionInBatch);
 
-			void updateVertices(const BatchPosition& _positionInBatch, const VertexBuffer& _vertices, const glm::mat4& _transformMatrix);
+			void updateVertices(const BatchPosition& _positionInBatch, const VertexBuffer& _vertices,
+								const glm::mat4& _transformMatrix, const glm::mat4& _normalMatrix);
 			void updateIndices(const BatchPosition& _positionInBatch, const std::vector<IndexType>& _indices);
 
 			bool render(RenderContext& _renderContext);

@@ -4,6 +4,7 @@
 #include "SpehsEngine/Core/BitwiseOperations.h"
 #include "SpehsEngine/Core/SE_Assert.h"
 #include "SpehsEngine/Graphics/Internal/InternalUtilities.h"
+#include "SpehsEngine/Graphics/Internal/DefaultUniforms.h"
 
 
 namespace se
@@ -114,11 +115,11 @@ namespace se
 			needsIndexBufferUpdate = true;
 		}
 
-		void Batch::updateVertices(const BatchPosition& _positionInBatch, const VertexBuffer& _vertices, const glm::mat4& _transformMatrix)
+		void Batch::updateVertices(const BatchPosition& _positionInBatch, const VertexBuffer& _vertices,
+								   const glm::mat4& _transformMatrix, const glm::mat4& _normalMatrix)
 		{
 			se_assert(_vertices.size() == (_positionInBatch.verticesEnd - _positionInBatch.verticesStart));
 			se_assert(vertices.getAttributes() == _vertices.getAttributes());
-			const glm::mat4 normalMatrix = glm::mat4(glm::inverse(glm::transpose(glm::mat3(_transformMatrix))));
 			glm::vec4 newVertex;
 			for (size_t i = 0; i < _vertices.size(); i++)
 			{
@@ -129,19 +130,19 @@ namespace se
 				}
 				if (checkBit(renderInfo.attributes, VertexAttributeFlag::Normal))
 				{
-					newVertex = normalMatrix * glm::vec4(_vertices.get<Normal>(i), 1.0f);
+					newVertex = _normalMatrix * glm::vec4(_vertices.get<Normal>(i), 1.0f);
 					newVertex = glm::normalize(newVertex);
 					vertices.get<Normal>(i + _positionInBatch.verticesStart) = newVertex;
 				}
 				if (checkBit(renderInfo.attributes, VertexAttributeFlag::Tangent))
 				{
-					newVertex = normalMatrix * glm::vec4(_vertices.get<Tangent>(i), 1.0f);
+					newVertex = _normalMatrix * glm::vec4(_vertices.get<Tangent>(i), 1.0f);
 					newVertex = glm::normalize(newVertex);
 					vertices.get<Tangent>(i + _positionInBatch.verticesStart) = newVertex;
 				}
 				if (checkBit(renderInfo.attributes, VertexAttributeFlag::Bitangent))
 				{
-					newVertex = normalMatrix * glm::vec4(_vertices.get<Bitangent>(i), 1.0f);
+					newVertex = _normalMatrix * glm::vec4(_vertices.get<Bitangent>(i), 1.0f);
 					newVertex = glm::normalize(newVertex);
 					vertices.get<Bitangent>(i + _positionInBatch.verticesStart) = newVertex;
 				}
@@ -215,6 +216,10 @@ namespace se
 			se_assert(vertices.size() != 0 && indices.size() != 0 && batchPositions.size() != 0);
 
 			updateBuffers();
+
+			static const glm::mat4 identity = glm::mat4(1.0f);
+			bgfx::setTransform(reinterpret_cast<const void*>(&identity));
+			_renderContext.defaultUniforms->setNormalMatrix(identity);
 
 			bgfx::setIndexBuffer(indexBufferHandle, 0, (uint32_t)indices.size());
 			bgfx::setVertexBuffer(0, vertexBufferHandle);

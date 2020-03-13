@@ -25,7 +25,7 @@ namespace se
 		{
 			return renderState;
 		}
-		const Shader* Primitive::getShader() const
+		const std::shared_ptr<Shader> Primitive::getShader() const
 		{
 			return shader;
 		}
@@ -92,7 +92,7 @@ namespace se
 		{
 			renderState = !renderState;
 		}
-		void Primitive::setShader(const Shader* _shader)
+		void Primitive::setShader(std::shared_ptr<Shader> _shader)
 		{
 			if (shader == _shader)
 				return;
@@ -113,6 +113,7 @@ namespace se
 		{
 			if (_color == primitiveColor)
 				return;
+			primitiveColor = _color;
 			if (!checkBit(vertices.getAttributes(), VertexAttributeFlag::Color0))
 			{
 				log::warning("Cannot set primitive color, no color attribute in vertices!");

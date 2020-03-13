@@ -1,6 +1,8 @@
 #pragma once
 
-#include "bgfx/bgfx.h" // TODO: No bgfx includes in headers!
+#include <bgfx/bgfx.h> // !
+#include "SpehsEngine/Graphics/Uniform.h"
+#include <string>
 
 
 namespace se
@@ -11,7 +13,6 @@ namespace se
 		{
 		public:
 
-			Shader(const std::string_view _name);
 			~Shader();
 
 			Shader(const Shader& _other) = delete;
@@ -21,14 +22,30 @@ namespace se
 			Shader& operator=(Shader&& _other) = delete;
 
 
-			bool load(const std::string_view _vertexShader, const std::string_view _fragmentShader);
-			bool load(const bgfx::ProgramHandle _programHandle);
+			void reload();
 
 			const std::string& getName() const;
 
-		//private:
-			bgfx::ProgramHandle programHandle;
+			Shader(const std::string_view _name);
+
+		private:
+
+			friend class PrimitiveInstance;
+			friend class Batch;
+			friend class ShaderManager;
+
+			void destroy();
+			void create(const std::string_view _vertexShaderPath, const std::string_view _fragmentShaderPath);
+			void create(bgfx::ShaderHandle _vertexShader, bgfx::ShaderHandle _fragmentShader);
+
 			const std::string name;
+
+			std::string vertexShaderPath;
+			std::string fragmentShaderPath;
+
+			std::vector<std::shared_ptr<Uniform>> uniforms;
+
+			bgfx::ProgramHandle programHandle;
 		};
 	}
 }

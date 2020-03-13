@@ -15,6 +15,9 @@ namespace se
 {
 	namespace graphics
 	{
+		//? Remove this stuff from Renderer class
+		//? Maybe additional Renderer classes can be used for multithreaded rendering?
+		//? static functions?
 		static bool initialized = false;
 
 		static uint32_t getResetParameters(const RendererFlagsType _rendererFlags)
@@ -45,32 +48,26 @@ namespace se
 			return result;
 		}
 
-		static bgfx::RendererType::Enum getRendererType(const RendererFlagsType _rendererFlags)
+		static bgfx::RendererType::Enum getRendererType(const RendererBackend _rendererBackend)
 		{
-			bgfx::RendererType::Enum result = bgfx::RendererType::Count;
-			if (checkBit(_rendererFlags, RendererFlag::Direct3D9))
-				result = bgfx::RendererType::Direct3D9;
-			else if (checkBit(_rendererFlags, RendererFlag::Direct3D11))
-				result = bgfx::RendererType::Direct3D11;
-			else if (checkBit(_rendererFlags, RendererFlag::Direct3D12))
-				result = bgfx::RendererType::Direct3D12;
-			else if (checkBit(_rendererFlags, RendererFlag::Gnm))
-				result = bgfx::RendererType::Gnm;
-			else if (checkBit(_rendererFlags, RendererFlag::Metal))
-				result = bgfx::RendererType::Metal;
-			else if (checkBit(_rendererFlags, RendererFlag::Nvn))
-				result = bgfx::RendererType::Nvn;
-			else if (checkBit(_rendererFlags, RendererFlag::OpenGLES))
-				result = bgfx::RendererType::OpenGLES;
-			else if (checkBit(_rendererFlags, RendererFlag::OpenGL))
-				result = bgfx::RendererType::OpenGL;
-			else if (checkBit(_rendererFlags, RendererFlag::Vulkan))
-				result = bgfx::RendererType::Vulkan;
-			return result;
+			switch (_rendererBackend)
+			{
+				case RendererBackend::Auto:			return bgfx::RendererType::Count;
+				case RendererBackend::Direct3D9:	return bgfx::RendererType::Direct3D9;
+				case RendererBackend::Direct3D11:	return bgfx::RendererType::Direct3D11;
+				case RendererBackend::Direct3D12:	return bgfx::RendererType::Direct3D12;
+				case RendererBackend::Gnm:			return bgfx::RendererType::Gnm;
+				case RendererBackend::Metal:		return bgfx::RendererType::Metal;
+				case RendererBackend::Nvn:			return bgfx::RendererType::Nvn;
+				case RendererBackend::OpenGLES:		return bgfx::RendererType::OpenGLES;
+				case RendererBackend::OpenGL:		return bgfx::RendererType::OpenGL;
+				case RendererBackend::Vulkan:		return bgfx::RendererType::Vulkan;
+			}
+			return bgfx::RendererType::Count;
 		}
 
 
-		Renderer::Renderer(Window& _window, const RendererFlagsType _rendererFlags)
+		Renderer::Renderer(Window& _window, const RendererFlagsType _rendererFlags, const RendererBackend _rendererBackend)
 			: rendererFlags(_rendererFlags)
 		{
 			if (initialized)
@@ -85,7 +82,7 @@ namespace se
 
 			{
 				bgfx::Init init;
-				init.type = getRendererType(rendererFlags);
+				init.type = getRendererType(_rendererBackend);
 				init.resolution.width = (uint32_t)_window.getWidth();
 				init.resolution.height = (uint32_t)_window.getHeight();
 				init.resolution.reset = getResetParameters(rendererFlags);
@@ -102,6 +99,8 @@ namespace se
 				//const bgfx::Caps* caps = bgfx::getCaps();
 				// TODO: Print infos...
 			}
+
+			defaultUniforms = std::make_unique<DefaultUniforms>();
 		}
 		Renderer::Renderer(Window& _window)
 			: Renderer(_window, 0)
@@ -135,6 +134,8 @@ namespace se
 
 			RenderContext renderContext;
 			renderContext.rendererFlags = rendererFlags;
+			renderContext.defaultUniforms = defaultUniforms.get();
+			defaultUniforms->setLightParams(); //
 			for (size_t i = 0; i < windows.size(); )
 			{
 				if (windows[i]->wasDestroyed())
@@ -208,6 +209,27 @@ namespace se
 		{
 			disableBit(rendererFlags, _renderFlag);
 			rendererFlagsChanged = true;
+		}
+
+		const RendererBackend Renderer::getRendererBackend()
+		{
+			switch (bgfx::getRendererType())
+			{
+				default:
+				{
+					se_assert_m(false, "Renderer type not defined?");
+					return RendererBackend::Auto;
+				}
+				case bgfx::RendererType::Direct3D9:		return RendererBackend::Direct3D9;
+				case bgfx::RendererType::Direct3D11:	return RendererBackend::Direct3D11;
+				case bgfx::RendererType::Direct3D12:	return RendererBackend::Direct3D12;
+				case bgfx::RendererType::Gnm:			return RendererBackend::Gnm;
+				case bgfx::RendererType::Metal:			return RendererBackend::Metal;
+				case bgfx::RendererType::Nvn:			return RendererBackend::Nvn;
+				case bgfx::RendererType::OpenGLES:		return RendererBackend::OpenGLES;
+				case bgfx::RendererType::OpenGL:		return RendererBackend::OpenGL;
+				case bgfx::RendererType::Vulkan:		return RendererBackend::Vulkan;
+			}
 		}
 
 		const glm::ivec2 Renderer::getDisplaySize() const
