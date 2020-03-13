@@ -56,10 +56,10 @@ namespace se
 			bool operator>=(const Time& other) const;
 			bool operator<=(const Time& other) const;
 
-			inline float asSeconds() const { return (float)value / (float)conversionRate::second; }
-			inline float asMilliseconds() const { return (float)value / (float)conversionRate::millisecond; }
-			inline float asMicroseconds() const { return (float)value / (float)conversionRate::microsecond; }
-			inline float asNanoseconds() const { return (float)value / (float)conversionRate::nanosecond; }
+			template<typename T = float> inline T asSeconds() const		 { return (T)value / (T)conversionRate::second;		 }
+			template<typename T = float> inline T asMilliseconds() const { return (T)value / (T)conversionRate::millisecond; }
+			template<typename T = float> inline T asMicroseconds() const { return (T)value / (T)conversionRate::microsecond; }
+			template<typename T = float> inline T asNanoseconds() const	 { return (T)value / (T)conversionRate::nanosecond;	 }
 
 			TimeValueType value;
 		};
@@ -67,15 +67,15 @@ namespace se
 		Time operator*(const float multiplier, const Time time);
 		Time operator*(const int multiplier, const Time time);
 
-		inline float asSeconds(const Time time) { return (float)time.value / (float)conversionRate::second; }
-		inline float asMilliseconds(const Time time) { return (float)time.value / (float)conversionRate::millisecond; }
-		inline float asMicroseconds(const Time time) { return (float)time.value / (float)conversionRate::microsecond; }
-		inline float asNanoseconds(const Time time) { return (float)time.value / (float)conversionRate::nanosecond; }
+		template<typename T = float> inline T asSeconds(const Time time)		{ return time.asSeconds<T>();		}
+		template<typename T = float> inline T asMilliseconds(const Time time)	{ return time.asMilliseconds<T>();	}
+		template<typename T = float> inline T asMicroseconds(const Time time)	{ return time.asMicroseconds<T>();	}
+		template<typename T = float> inline T asNanoseconds(const Time time)	{ return time.asNanoseconds<T>();	}
 
-		inline Time fromSeconds(const float seconds) { return TimeValueType((double)seconds * (double)conversionRate::second); }
-		inline Time fromMilliseconds(const float milliseconds) { return TimeValueType((double)milliseconds * (double)conversionRate::millisecond); }
-		inline Time fromMicroseconds(const float microseconds) { return TimeValueType((double)microseconds * (double)conversionRate::microsecond); }
-		inline Time fromNanoseconds(const float nanoseconds) { return TimeValueType((double)nanoseconds * (double)conversionRate::nanosecond); }
+		inline Time fromSeconds(const double seconds)			{ return TimeValueType(seconds * (double)conversionRate::second); }
+		inline Time fromMilliseconds(const double milliseconds)	{ return TimeValueType(milliseconds * (double)conversionRate::millisecond); }
+		inline Time fromMicroseconds(const double microseconds)	{ return TimeValueType(microseconds * (double)conversionRate::microsecond); }
+		inline Time fromNanoseconds(const double nanoseconds)	{ return TimeValueType(nanoseconds * (double)conversionRate::nanosecond); }
 
 		/* Initializes the time system. */
 		void initialize();
