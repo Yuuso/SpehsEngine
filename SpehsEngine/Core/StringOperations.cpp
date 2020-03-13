@@ -56,7 +56,7 @@ namespace se
 
 		return floatValue;
 	}
-	
+
 	int getStringAsInt(const std::string& string)
 	{
 		int stringState = 0;
@@ -135,7 +135,7 @@ namespace se
 		else
 			return toString(value, precision);
 	}
-	
+
 	static const char hexTable[16] = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F' };
 	std::string toHexString(const uint8_t integer)
 	{
@@ -197,7 +197,7 @@ namespace se
 			(minutes < 10 ? "0" : "") + std::to_string(minutes) + ":" +
 			(seconds < 10 ? "0" : "") + std::to_string(seconds);
 	}
-	
+
 	unsigned getStringAsIPv4Address(const std::string& string)
 	{
 		unsigned address = 0;
@@ -311,5 +311,18 @@ namespace se
 			}
 		}
 		return false;
+	}
+
+	std::string operator+(const std::string& _string, const std::string_view _string_view)
+	{
+		return _string + std::string(_string_view);
+	}
+	std::string operator+(const std::string_view _string_view, const std::string& _string)
+	{
+		return _string + std::string(_string_view);
+	}
+	void operator+=(std::string& _string, const std::string_view _string_view)
+	{
+		_string += std::string(_string_view);
 	}
 }
