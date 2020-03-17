@@ -217,6 +217,7 @@ namespace se
 
 			updateBuffers();
 
+			// TODO: Optimize?
 			static const glm::mat4 identity = glm::mat4(1.0f);
 			bgfx::setTransform(reinterpret_cast<const void*>(&identity));
 			_renderContext.defaultUniforms->setNormalMatrix(identity);

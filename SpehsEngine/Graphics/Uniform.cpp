@@ -7,7 +7,27 @@ namespace se
 	namespace graphics
 	{
 		Uniform::Uniform(const bgfx::UniformInfo& _uniformInfo, const bgfx::UniformHandle _uniformHandle)
+			: uniformHandle(BGFX_INVALID_HANDLE)
 		{
+			reset(_uniformInfo, _uniformHandle);
+		}
+		Uniform::~Uniform()
+		{
+			if (bgfx::isValid(uniformHandle))
+			{
+				bgfx::destroy(uniformHandle);
+				uniformHandle = BGFX_INVALID_HANDLE;
+			}
+		}
+
+		void Uniform::reset(const bgfx::UniformInfo& _uniformInfo, const bgfx::UniformHandle _uniformHandle)
+		{
+			if (bgfx::isValid(uniformHandle))
+			{
+				bgfx::destroy(uniformHandle);
+				uniformHandle = BGFX_INVALID_HANDLE;
+			}
+
 			name = _uniformInfo.name;
 			numElements = _uniformInfo.num;
 			switch (_uniformInfo.type)
@@ -35,14 +55,6 @@ namespace se
 				}
 			}
 			uniformHandle = _uniformHandle;
-		}
-		Uniform::~Uniform()
-		{
-			if (bgfx::isValid(uniformHandle))
-			{
-				bgfx::destroy(uniformHandle);
-				uniformHandle = BGFX_INVALID_HANDLE;
-			}
 		}
 
 		bool Uniform::operator==(const Uniform& _other) const

@@ -66,6 +66,8 @@ namespace se
 
 			friend class Shader;
 
+			void reset(const bgfx::UniformInfo& _uniformInfo, const bgfx::UniformHandle _uniformHandle);
+
 			std::string name;
 			UniformType type;
 			uint16_t numElements;

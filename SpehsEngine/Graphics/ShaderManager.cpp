@@ -27,12 +27,13 @@ namespace se
 
 		ShaderManager::ShaderManager()
 		{
+			shaderPathFinder = std::make_shared<ShaderPathFinder>();
 			createDefaultShaders();
 		}
 		ShaderManager::~ShaderManager()
 		{
-			uniforms.clear();
 			shaders.clear();
+			uniforms.clear();
 			defaultShaders.clear();
 		}
 
@@ -117,9 +118,33 @@ namespace se
 															const std::string_view _vertexShader,
 															const std::string_view _fragmentShader)
 		{
-			std::shared_ptr<Shader>& shader = defaultShaders.emplace_back(std::make_shared<Shader>(_name));
-			shader->create(shaderPathFinder->getShaderPath(Renderer::getRendererBackend()) + _vertexShader,
-						   shaderPathFinder->getShaderPath(Renderer::getRendererBackend()) + _vertexShader);
+			const std::string shaderPath = shaderPathFinder->getShaderPath(Renderer::getRendererBackend());
+			const std::string vertexShaderPath = shaderPath + _vertexShader;
+			const std::string fragmentShaderPath = shaderPath + _fragmentShader;
+
+			std::shared_ptr<Shader> foundShader;
+			for (auto& shader : defaultShaders)
+			{
+				if (shader->getName() == _name)
+					foundShader = shader;
+			}
+			if (!foundShader)
+			{
+				for (auto& shader : shaders)
+				{
+					if (shader->getName() == _name)
+						foundShader = shader;
+				}
+			}
+			if (foundShader)
+			{
+				log::warning("Cannot create shader '" + _name + "', shader with that name already exists!");
+				se_assert(foundShader->vertexShaderPath == vertexShaderPath && foundShader->fragmentShaderPath == fragmentShaderPath);
+				return foundShader;
+			}
+
+			std::shared_ptr<Shader>& shader = shaders.emplace_back(std::make_shared<Shader>(_name));
+			shader->create(vertexShaderPath, fragmentShaderPath);
 			extractUniforms(shader);
 			return shader;
 		}

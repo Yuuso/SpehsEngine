@@ -27,10 +27,14 @@ namespace se
 			DefaultUniforms& operator=(DefaultUniforms&& _other) = delete;
 
 
+			void reload();
+
 			void setNormalMatrix(const glm::mat4& _normal);
 			void setLightParams();
 
 		private:
+
+			void destroy();
 
 			bgfx::UniformHandle normal;
 

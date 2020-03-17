@@ -52,11 +52,15 @@ namespace se
 		}
 		void Shader::create(bgfx::ShaderHandle _vertexShader, bgfx::ShaderHandle _fragmentShader)
 		{
-			destroy();
+			if (bgfx::isValid(programHandle))
+			{
+				bgfx::destroy(programHandle);
+				programHandle = BGFX_INVALID_HANDLE;
+			}
 
 			programHandle = bgfx::createProgram(_vertexShader, _fragmentShader, true);
 
-			static constexpr size_t MAX_UNIFORMS = 128;
+			static constexpr size_t MAX_UNIFORMS = 256;
 			bgfx::UniformHandle temp[MAX_UNIFORMS];
 
 			const uint16_t numVertexUniforms = bgfx::getShaderUniforms(_vertexShader, temp, sizeof(temp));
@@ -65,6 +69,20 @@ namespace se
 			{
 				bgfx::UniformInfo info;
 				bgfx::getUniformInfo(temp[i], info);
+
+				bool oldFound = false;
+				for (auto& uniform : uniforms)
+				{
+					if (uniform->getName() == info.name)
+					{
+						uniform->reset(info, temp[i]);
+						oldFound = true;
+						break;
+					}
+				}
+				if (oldFound)
+					continue;
+
 				uniforms.emplace_back(std::make_shared<Uniform>(info, temp[i]));
 			}
 
@@ -74,17 +92,25 @@ namespace se
 			{
 				bgfx::UniformInfo info;
 				bgfx::getUniformInfo(temp[i], info);
+
+				// TODO: Skip duplicates from vertex shader
+				//bgfx::destroy(temp[i]);
+				//temp[i] = BGFX_INVALID_HANDLE;
+
+				bool oldFound = false;
 				for (auto& uniform : uniforms)
 				{
 					if (uniform->getName() == info.name)
 					{
-						bgfx::destroy(temp[i]);
-						temp[i] = BGFX_INVALID_HANDLE;
+						uniform->reset(info, temp[i]);
+						oldFound = true;
+						break;
 					}
 				}
+				if (oldFound)
+					continue;
 
-				if (bgfx::isValid(temp[i]))
-					uniforms.emplace_back(std::make_shared<Uniform>(info, temp[i]));
+				uniforms.emplace_back(std::make_shared<Uniform>(info, temp[i]));
 			}
 		}
 

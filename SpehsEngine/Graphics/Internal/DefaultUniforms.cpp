@@ -13,14 +13,20 @@ namespace se
 	namespace graphics
 	{
 		DefaultUniforms::DefaultUniforms()
+			: normal(BGFX_INVALID_HANDLE)
+			, ambientLight_ColorIntensity(BGFX_INVALID_HANDLE)
+			, pointLight_Count(BGFX_INVALID_HANDLE)
+			, pointLight_PositionIRadius(BGFX_INVALID_HANDLE)
+			, pointLight_ColorORadius(BGFX_INVALID_HANDLE)
 		{
-			normal = bgfx::createUniform("u_normal", bgfx::UniformType::Mat4);
-			ambientLight_ColorIntensity = bgfx::createUniform("u_ambientLight_ColorIntensity", bgfx::UniformType::Vec4);
-			pointLight_Count = bgfx::createUniform("u_pointLight_Count", bgfx::UniformType::Vec4);
-			pointLight_PositionIRadius = bgfx::createUniform("u_pointLight_PositionIRadius", bgfx::UniformType::Vec4, MAX_NUM_LIGHTS);
-			pointLight_ColorORadius = bgfx::createUniform("u_pointLight_ColorORadius", bgfx::UniformType::Vec4, MAX_NUM_LIGHTS);
+			reload();
 		}
 		DefaultUniforms::~DefaultUniforms()
+		{
+			destroy();
+		}
+
+		void DefaultUniforms::destroy()
 		{
 			if (bgfx::isValid(normal))
 			{
@@ -47,6 +53,15 @@ namespace se
 				bgfx::destroy(pointLight_ColorORadius);
 				pointLight_ColorORadius = BGFX_INVALID_HANDLE;
 			}
+		}
+		void DefaultUniforms::reload()
+		{
+			destroy();
+			normal = bgfx::createUniform("u_normal", bgfx::UniformType::Mat4);
+			ambientLight_ColorIntensity = bgfx::createUniform("u_ambientLight_ColorIntensity", bgfx::UniformType::Vec4);
+			pointLight_Count = bgfx::createUniform("u_pointLight_Count", bgfx::UniformType::Vec4);
+			pointLight_PositionIRadius = bgfx::createUniform("u_pointLight_PositionIRadius", bgfx::UniformType::Vec4, MAX_NUM_LIGHTS);
+			pointLight_ColorORadius = bgfx::createUniform("u_pointLight_ColorORadius", bgfx::UniformType::Vec4, MAX_NUM_LIGHTS);
 		}
 
 		void DefaultUniforms::setNormalMatrix(const glm::mat4& _normal)
