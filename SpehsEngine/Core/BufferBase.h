@@ -2,15 +2,12 @@
 
 namespace se
 {
-	class Handshake;
 	/*
 		An abstract base class for read/write buffers.
 		Buffer read/write handles endianness conversion.
 	*/
 	class BufferBase
 	{
-	public:
-		friend class Handshake;
 	public:
 		BufferBase();
 		virtual ~BufferBase() = 0;

@@ -45,7 +45,7 @@ namespace se
 		/*Relative addition to the number of elements updated*/
 		virtual void incrementUpdateElementCount(int incrementation);
 		/*The list cannot be minimized below the size required to fit this many elements*/
-		void setMinVisibleElementCount(const int count);///< Min visible element count must be at least 4 because of how the scroll bar is aligned
+		void setMinVisibleElementCount(const size_t count);///< Min visible element count must be at least 4 because of how the scroll bar is aligned
 		inline size_t getMinVisibleElementCount() const { return minVisibleElementCount; }
 		/*Returns true if any amount of elements are not being displayed at the moment*/
 		bool invisibleElements() const { return elements.size() > updateElementCount; }

@@ -6,7 +6,7 @@
 
 namespace se
 {
-	template<typename T, typename SizeType = size_t>
+	template<typename T, typename SizeType = uint32_t>
 	void writeToBuffer(WriteBuffer& buffer, const std::vector<T>& vector)
 	{
 		static_assert(std::is_integral<SizeType>::value, "SizeType must be integral.");
@@ -19,7 +19,7 @@ namespace se
 		}
 	}
 
-	template<typename T, typename SizeType = size_t>
+	template<typename T, typename SizeType = uint32_t>
 	bool readFromBuffer(ReadBuffer& buffer, std::vector<T>& vector)
 	{
 		static_assert(std::is_integral<SizeType>::value, "SizeType must be integral.");
@@ -40,7 +40,7 @@ namespace se
 	}
 
 	//Is class
-	template<typename T, typename SizeType = size_t>
+	template<typename T, typename SizeType = uint32_t>
 	typename std::enable_if<std::is_class<T>::value, Archive>::type
 		writeToArchive(const std::vector<T>& vector)
 	{
@@ -54,7 +54,7 @@ namespace se
 		}
 		return archive;
 	}
-	template<typename T, typename SizeType = size_t>
+	template<typename T, typename SizeType = uint32_t>
 	typename std::enable_if<std::is_class<T>::value, bool>::type
 		readFromArchive(const Archive& archive, std::vector<T>& vector)
 	{
@@ -72,7 +72,7 @@ namespace se
 	}
 
 	//Not class (Write/ReadBuffer optimization)
-	template<typename T, typename SizeType = size_t>
+	template<typename T, typename SizeType = uint32_t>
 	typename std::enable_if<!std::is_class<T>::value, Archive>::type
 		writeToArchive(const std::vector<T>& vector)
 	{
@@ -83,7 +83,7 @@ namespace se
 		se_write_to_archive(archive, writeBuffer);
 		return archive;
 	}
-	template<typename T, typename SizeType = size_t>
+	template<typename T, typename SizeType = uint32_t>
 	typename std::enable_if<!std::is_class<T>::value, bool>::type
 		readFromArchive(const Archive& archive, std::vector<T>& vector)
 	{

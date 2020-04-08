@@ -111,13 +111,13 @@ namespace se
 		}
 	}
 
-	std::string toString(const float value, const int precision)
+	std::string toString(const float value, const size_t precision)
 	{
 #ifdef _DEBUG
 		if (precision > 6)	log::error("se::toString() precision too high! Maximum precision 6!");
 #endif
 		std::string str(std::to_string(value));
-		for (unsigned i = 0; i < str.size(); i++)
+		for (size_t i = 0; i < str.size(); i++)
 		{
 			if (str[i] == '.')
 			{
@@ -128,7 +128,7 @@ namespace se
 		return std::string("");
 	}
 
-	std::string toSignedString(const float value, const int precision)
+	std::string toSignedString(const float value, const size_t precision)
 	{
 		if (value > 0)
 			return "+" + toString(value, precision);

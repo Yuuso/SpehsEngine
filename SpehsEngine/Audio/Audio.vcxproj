@@ -90,7 +90,7 @@
     <ClCompile>
     </ClCompile>
     <Lib>
-      <AdditionalDependencies>SpehsCore.lib;OpenAL32.lib;libogg_static.lib;libvorbis_static.lib;libvorbisfile_static.lib</AdditionalDependencies>
+      <AdditionalDependencies>SpehsCore.lib;OpenAL32.lib;libogg.lib;libvorbis_static.lib;libvorbisfile_static.lib</AdditionalDependencies>
     </Lib>
     <Link>
       <AdditionalDependencies>SpehsCore$(TargetExt);OpenAL32.lib;libogg_static.lib;libvorbis_static.lib;libvorbisfile_static.lib;%(AdditionalDependencies)</AdditionalDependencies>
@@ -100,7 +100,7 @@
     <ClCompile>
     </ClCompile>
     <Lib>
-      <AdditionalDependencies>SpehsCore.lib;OpenAL32.lib;libogg_static-x64.lib;libvorbis_static-x64.lib;libvorbisfile_static-x64.lib</AdditionalDependencies>
+      <AdditionalDependencies>SpehsCore.lib;OpenAL32.lib;libogg.lib;libvorbis_static.lib;libvorbisfile_static.lib</AdditionalDependencies>
     </Lib>
     <Link>
       <AdditionalDependencies>SpehsCore$(TargetExt);OpenAL32.lib;libogg_static.lib;libvorbis_static.lib;libvorbisfile_static.lib;%(AdditionalDependencies)</AdditionalDependencies>
@@ -113,7 +113,7 @@
       <AdditionalDependencies>SpehsCore$(TargetExt);OpenAL32.lib;libogg_static.lib;libvorbis_static.lib;libvorbisfile_static.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <Lib>
-      <AdditionalDependencies>SpehsCore.lib;OpenAL32.lib;libogg_static.lib;libvorbis_static.lib;libvorbisfile_static.lib</AdditionalDependencies>
+      <AdditionalDependencies>SpehsCore.lib;OpenAL32.lib;libogg.lib;libvorbis_static.lib;libvorbisfile_static.lib</AdditionalDependencies>
     </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -123,7 +123,7 @@
       <AdditionalDependencies>SpehsCore$(TargetExt);OpenAL32.lib;libogg_static.lib;libvorbis_static.lib;libvorbisfile_static.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <Lib>
-      <AdditionalDependencies>SpehsCore.lib;OpenAL32.lib;libogg_static-x64.lib;libvorbis_static-x64.lib;libvorbisfile_static-x64.lib</AdditionalDependencies>
+      <AdditionalDependencies>SpehsCore.lib;OpenAL32.lib;libogg.lib;libvorbis_static.lib;libvorbisfile_static.lib</AdditionalDependencies>
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>

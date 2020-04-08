@@ -7,7 +7,7 @@
 
 namespace se
 {
-	template<typename SizeType = size_t>
+	template<typename SizeType = uint32_t>
 	void writeToBuffer(WriteBuffer& buffer, const std::string& string)
 	{
 		static_assert(std::is_integral<SizeType>::value, "SizeType must be integral.");
@@ -20,7 +20,7 @@ namespace se
 		}
 	}
 
-	template<typename SizeType = size_t>
+	template<typename SizeType = uint32_t>
 	bool readFromBuffer(ReadBuffer& buffer, std::string& string)
 	{
 		static_assert(std::is_integral<SizeType>::value, "SizeType must be integral.");
@@ -40,7 +40,7 @@ namespace se
 		return true;
 	}
 	
-	template<typename SizeType = size_t>
+	template<typename SizeType = uint32_t>
 	Archive writeToArchive(const std::string& string)
 	{
 		static_assert(std::is_integral<SizeType>::value, "SizeType must be integral.");
@@ -51,7 +51,7 @@ namespace se
 		return archive;
 	}
 
-	template<typename SizeType = size_t>
+	template<typename SizeType = uint32_t>
 	bool readFromArchive(const Archive& archive, std::string& string)
 	{
 		static_assert(std::is_integral<SizeType>::value, "SizeType must be integral.");

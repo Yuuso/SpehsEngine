@@ -371,7 +371,7 @@ namespace se
 		disableStateRecursiveUpwards(GUIRECT_MIN_SIZE_UPDATED_BIT | GUIRECT_SCALE_UPDATED_BIT | GUIRECT_POSITION_UPDATED_BIT);
 	}
 
-	void GUIRectangleScrollList::setMinVisibleElementCount(const int count)
+	void GUIRectangleScrollList::setMinVisibleElementCount(const size_t count)
 	{
 		minVisibleElementCount = count;
 		if (minVisibleElementCount < 4)
