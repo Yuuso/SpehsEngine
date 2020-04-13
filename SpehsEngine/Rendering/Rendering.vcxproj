@@ -87,49 +87,41 @@
     <TargetName>SpehsRendering</TargetName>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <ClCompile>
-      <AdditionalIncludeDirectories>$(SPEHSENGINE_ROOT)/;$(SPEHSENGINE_ROOT)/Dependencies/include/;$(SPEHSENGINE_ROOT)/Dependencies/include/freetype/</AdditionalIncludeDirectories>
-    </ClCompile>
+    <ClCompile />
     <Link>
       <AdditionalDependencies>SpehsCore$(TargetExt);SpehsInput$(TargetExt);glew32.lib;glew32s.lib;opengl32.lib;freetype.lib;SOIL.lib</AdditionalDependencies>
     </Link>
     <Lib>
-      <AdditionalDependencies>opengl32.lib;glew32.lib;glew32s.lib;SOIL.lib;freetype.lib;assimp-vc142-mt.lib</AdditionalDependencies>
+      <AdditionalDependencies>opengl32.lib;glew32.lib;glew32s.lib;SOIL.lib;freetype.lib;IrrXMLd.lib;assimp-vc142-mtd.lib;zlibstaticd.lib;SDL2-staticd.lib;</AdditionalDependencies>
     </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <ClCompile>
-      <AdditionalIncludeDirectories>$(SPEHSENGINE_ROOT)/;$(SPEHSENGINE_ROOT)/Dependencies/include/;$(SPEHSENGINE_ROOT)/Dependencies/include/freetype/</AdditionalIncludeDirectories>
-    </ClCompile>
+    <ClCompile />
     <Link>
       <AdditionalDependencies>SpehsCore$(TargetExt);SpehsInput$(TargetExt);glew32.lib;glew32s.lib;opengl32.lib;freetype.lib;SOIL.lib</AdditionalDependencies>
     </Link>
     <Lib>
-      <AdditionalDependencies>opengl32.lib;glew32.lib;glew32s.lib;SOIL.lib;freetype.lib;assimp-vc142-mt.lib</AdditionalDependencies>
+      <AdditionalDependencies>opengl32.lib;glew32.lib;glew32s.lib;SOIL.lib;freetype.lib;IrrXMLd.lib;assimp-vc142-mtd.lib;zlibstaticd.lib;SDL2-staticd.lib;</AdditionalDependencies>
     </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <ClCompile>
-      <AdditionalIncludeDirectories>$(SPEHSENGINE_ROOT)/;$(SPEHSENGINE_ROOT)/Dependencies/include/;$(SPEHSENGINE_ROOT)/Dependencies/include/freetype/</AdditionalIncludeDirectories>
-    </ClCompile>
+    <ClCompile />
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <AdditionalDependencies>SpehsCore$(TargetExt);SpehsInput$(TargetExt);glew32.lib;glew32s.lib;opengl32.lib;freetype.lib;SOIL.lib</AdditionalDependencies>
     </Link>
     <Lib>
-      <AdditionalDependencies>opengl32.lib;glew32.lib;glew32s.lib;SOIL.lib;freetype.lib;assimp-vc142-mt.lib</AdditionalDependencies>
+      <AdditionalDependencies>opengl32.lib;glew32.lib;glew32s.lib;SOIL.lib;freetype.lib;IrrXML.lib;assimp-vc142-mt.lib;zlibstatic.lib;</AdditionalDependencies>
     </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <ClCompile>
-      <AdditionalIncludeDirectories>$(SPEHSENGINE_ROOT)/;$(SPEHSENGINE_ROOT)/Dependencies/include/;$(SPEHSENGINE_ROOT)/Dependencies/include/freetype/</AdditionalIncludeDirectories>
-    </ClCompile>
+    <ClCompile />
     <Link>
       <AdditionalDependencies>SpehsCore$(TargetExt);SpehsInput$(TargetExt);glew32.lib;glew32s.lib;opengl32.lib;freetype.lib;SOIL.lib</AdditionalDependencies>
     </Link>
     <Lib>
-      <AdditionalDependencies>opengl32.lib;glew32.lib;glew32s.lib;SOIL.lib;freetype.lib;assimp-vc142-mt.lib</AdditionalDependencies>
+      <AdditionalDependencies>opengl32.lib;glew32.lib;glew32s.lib;SOIL.lib;freetype.lib;IrrXML.lib;assimp-vc142-mt.lib;zlibstatic.lib;</AdditionalDependencies>
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
