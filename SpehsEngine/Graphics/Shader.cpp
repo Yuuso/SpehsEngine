@@ -38,8 +38,8 @@ namespace se
 			File fragmentShaderFile;
 			readFile(vertexShaderFile, vertexShaderPath);
 			readFile(fragmentShaderFile, fragmentShaderPath);
-			const bgfx::Memory* vertexBuffer = bgfx::copy(vertexShaderFile.data.data(), vertexShaderFile.data.size());
-			const bgfx::Memory* fragmentBuffer = bgfx::copy(fragmentShaderFile.data.data(), fragmentShaderFile.data.size());
+			const bgfx::Memory* vertexBuffer = bgfx::copy(vertexShaderFile.data.data(), uint32_t(vertexShaderFile.data.size()));
+			const bgfx::Memory* fragmentBuffer = bgfx::copy(fragmentShaderFile.data.data(), uint32_t(fragmentShaderFile.data.size()));
 			bgfx::ShaderHandle vertexShader = bgfx::createShader(vertexBuffer);
 			bgfx::ShaderHandle fragmentShader = bgfx::createShader(fragmentBuffer);
 			create(vertexShader, fragmentShader);

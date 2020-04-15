@@ -139,13 +139,13 @@ namespace se
 				// TODO: getAvailTransientVertexBuffer
 				bgfx::TransientIndexBuffer transientIndexBuffer;
 				bgfx::TransientVertexBuffer transientVertexBuffer;
-				bgfx::allocTransientIndexBuffer(&transientIndexBuffer, indices.size());
-				bgfx::allocTransientVertexBuffer(&transientVertexBuffer, vertices.size(), findVertexLayout(vertices.getAttributes()));
+				bgfx::allocTransientIndexBuffer(&transientIndexBuffer, uint32_t(indices.size()));
+				bgfx::allocTransientVertexBuffer(&transientVertexBuffer, uint32_t(vertices.size()), findVertexLayout(vertices.getAttributes()));
 				memcpy(transientIndexBuffer.data, &indices[0], indices.size() * sizeof(indices[0]));
 				memcpy(transientVertexBuffer.data, vertices.data(), vertices.bytes());
 
-				bgfx::setIndexBuffer(&transientIndexBuffer, 0, indices.size());
-				bgfx::setVertexBuffer(0, &transientVertexBuffer, 0, vertices.size());
+				bgfx::setIndexBuffer(&transientIndexBuffer, 0, uint32_t(indices.size()));
+				bgfx::setVertexBuffer(0, &transientVertexBuffer, 0, uint32_t(vertices.size()));
 			}
 			else
 			{
@@ -153,12 +153,12 @@ namespace se
 
 				if (!bgfx::isValid(vertexBufferHandle))
 				{
-					const bgfx::Memory* bufferMemory = bgfx::copy(vertices.data(), vertices.bytes());
+					const bgfx::Memory* bufferMemory = bgfx::copy(vertices.data(), uint32_t(vertices.bytes()));
 					vertexBufferHandle = bgfx::createVertexBuffer(bufferMemory, findVertexLayout(vertices.getAttributes()));
 				}
 				if (!bgfx::isValid(indexBufferHandle))
 				{
-					const bgfx::Memory* bufferMemory = bgfx::copy(&indices[0], indices.size() * sizeof(indices[0]));
+					const bgfx::Memory* bufferMemory = bgfx::copy(&indices[0], uint32_t(indices.size() * sizeof(indices[0])));
 					indexBufferHandle = bgfx::createIndexBuffer(bufferMemory);
 					static_assert(sizeof(IndexType) == 2);
 				}

@@ -240,13 +240,13 @@ namespace se
 			// TODO: Can I do a partial update?
 			if (needsIndexBufferUpdate)
 			{
-				bufferMemory = bgfx::copy(&indices[0], indices.size() * sizeof(indices[0]));
+				bufferMemory = bgfx::copy(&indices[0], uint32_t(indices.size() * sizeof(indices[0])));
 				bgfx::update(indexBufferHandle, 0, bufferMemory);
 				needsIndexBufferUpdate = false;
 			}
 			if (needsVertexBufferUpdate)
 			{
-				bufferMemory = bgfx::copy(vertices.data(), vertices.bytes());
+				bufferMemory = bgfx::copy(vertices.data(), uint32_t(vertices.bytes()));
 				bgfx::update(vertexBufferHandle, 0, bufferMemory);
 				needsVertexBufferUpdate = false;
 			}
