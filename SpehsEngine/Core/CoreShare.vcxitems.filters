@@ -44,6 +44,8 @@
       <Filter>File</Filter>
     </ClCompile>
     <ClCompile Include="$(MSBuildThisFileDirectory)SystemMessageBox.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)LockGuard.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)ScopeProfiler.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="$(MSBuildThisFileDirectory)Archive.h" />
@@ -62,7 +64,6 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)CoreLib.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)DeltaTimeSystem.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Endianness.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)FinalRelease.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)FloatCompression.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)HasMemberFunction.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Inifile.h" />
@@ -100,6 +101,8 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)ScopedFrameLimiter.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)SystemMessageBox.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)TypeTraits.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)LockGuard.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)ScopeProfiler.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="File">

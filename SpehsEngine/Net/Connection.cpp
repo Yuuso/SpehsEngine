@@ -1,18 +1,38 @@
 #include "stdafx.h"
 #include "SpehsEngine/Net/Connection.h"
 
-#include "SpehsEngine/Core/WriteBuffer.h"
+#include "SpehsEngine/Core/LockGuard.h"
 #include "SpehsEngine/Core/ReadBuffer.h"
 #include "SpehsEngine/Core/RNG.h"
+#include "SpehsEngine/Core/STLVectorUtilityFunctions.h"
 #include "SpehsEngine/Core/StringOperations.h"
 #include "SpehsEngine/Core/StringUtilityFunctions.h"
-#include "SpehsEngine/Core/StringOperations.h"
-#include "SpehsEngine/Core/STLVectorUtilityFunctions.h"
+#include "SpehsEngine/Core/WriteBuffer.h"
 
 #define DEBUG_LOG(level, message) if (getDebugLogLevel() >= level) \
 { \
 	se::log::info(debugName + "(" + getLocalPort().toString() + "): " + message); \
 }
+
+
+#define LOCK_GUARD(p_name, p_mutex, p_time) \
+LockGuard p_name(p_mutex, acquireMutexTimes.p_time, holdMutexTimes.p_time); \
+do{} while (false)
+
+//#define LOCK_GUARD(p_name, p_mutex) \
+//const se::time::Time p_name##BeginTime = se::time::now(); \
+//std::lock_guard<decltype(p_mutex)> p_name(p_mutex); \
+//const se::time::Time p_name##EndTime = se::time::now(); \
+//const se::time::Time p_name##Duration = p_name##EndTime - p_name##BeginTime; \
+//do{} while (false)
+
+//#define LOCK_GUARD(p_name, p_mutex) \
+//const se::time::Time p_name##BeginTime = se::time::getProfilerTimestamp(); \
+//std::lock_guard<decltype(p_mutex)> p_name(p_mutex); \
+//const se::time::Time p_name##EndTime = se::time::getProfilerTimestamp(); \
+//const se::time::Time p_name##Duration = p_name##EndTime - p_name##BeginTime; \
+//do{} while (false)
+
 
 /**///#pragma optimize("", off)
 
@@ -127,7 +147,7 @@ namespace se
 			, establishmentType(_establishmentType)
 			, socket(_socket)
 		{
-			std::lock_guard<std::recursive_mutex> lock(mutex);
+			LOCK_GUARD(lock, mutex, other);
 			reliablePacketSendQueue.emplace_back();
 			reliablePacketSendQueue.back().userData = false;
 			ConnectPacket connectPacket;
@@ -143,13 +163,13 @@ namespace se
 
 		Connection::~Connection()
 		{
-			std::lock_guard<std::recursive_mutex> lock(mutex);
+			LOCK_GUARD(lock, mutex, other);
 			se_assert(reliablePacketSendQueue.empty() || isConnecting());
 		}
 
 		void Connection::update()
 		{
-			std::lock_guard<std::recursive_mutex> lock(mutex);
+			SE_SCOPE_PROFILER(debugName);
 			if (socket->isOpen())
 			{
 				deliverReceivedPackets();
@@ -159,30 +179,38 @@ namespace se
 				setConnected(false);
 			}
 
-			if (estimatedRoundTripTimeQueued)
 			{
-				estimatedRoundTripTimeQueued = false;
-				if (recentRoundTripTimes.empty())
+				LOCK_GUARD(lock, mutex, estimateRoundTripTime);
+				if (estimatedRoundTripTimeQueued)
 				{
-					estimatedRoundTripTime = time::Time::zero;
-				}
-				else
-				{
-					float totalMilliseconds = 0.0f;
-					for (size_t i = 0; i < recentRoundTripTimes.size(); i++)
+					estimatedRoundTripTimeQueued = false;
+					if (recentRoundTripTimes.empty())
 					{
-						totalMilliseconds += recentRoundTripTimes[i].asMilliseconds();
+						estimatedRoundTripTime = time::Time::zero;
 					}
-					estimatedRoundTripTime = time::fromMilliseconds(totalMilliseconds / float(recentRoundTripTimes.size()));
+					else
+					{
+						float totalMilliseconds = 0.0f;
+						for (size_t i = 0; i < recentRoundTripTimes.size(); i++)
+						{
+							totalMilliseconds += recentRoundTripTimes[i].asMilliseconds();
+						}
+						estimatedRoundTripTime = time::fromMilliseconds(totalMilliseconds / float(recentRoundTripTimes.size()));
+					}
 				}
 			}
 
 			if (isConnected())
 			{
 				// Heartbeat
+				LOCK_GUARD(lock, mutex, heartbeat);
+				const se::time::Time now = time::now();
 				static const time::Time reliableHeartbeatInterval = time::fromSeconds(1.0f);
-				if (time::now() - lastSendTimeReliable >= reliableHeartbeatInterval)
+				if (now - lastQueueHeartbeatTime >= reliableHeartbeatInterval &&
+					now - lastSendTimeReliable >= reliableHeartbeatInterval)
 				{
+					lastQueueHeartbeatTime = now;
+
 					HeartbeatPacket heartbeatPacket;
 					WriteBuffer writeBuffer;
 					se_write(writeBuffer, PacketType::heartbeat);
@@ -209,8 +237,9 @@ namespace se
 
 		void Connection::processReceivedPackets()
 		{
+			SE_SCOPE_PROFILER(debugName);
 			//Process received raw packets
-			std::lock_guard<std::recursive_mutex> lock(mutex);
+			LOCK_GUARD(lock, mutex, processReceivedPackets);
 			while (!receivedPackets.empty())
 			{
 				//Swap data and erase packet: receive handler might modify received packets vector!
@@ -380,6 +409,7 @@ namespace se
 
 		void Connection::acknowledgementReceiveHandler(const size_t reliableStreamOffset, const uint16_t payloadSize)
 		{
+			SE_SCOPE_PROFILER(debugName);
 			if (reliableStreamOffset >= reliableStreamOffsetSend)
 			{
 				size_t offset = reliableStreamOffsetSend;
@@ -410,6 +440,10 @@ namespace se
 								reliablePacketSendQueue[p].acknowledgedFragments.back().size = payloadSize;
 
 								//Remove from unacknowledged fragments
+								if (reliablePacketSendQueue[p].unacknowledgedFragments[f].sendCount > 2 && getDebugLogLevel() >= 1)
+								{
+									se::log::info("Connection: reliable fragment with " + std::to_string(reliablePacketSendQueue[p].unacknowledgedFragments[f].size) + " bytes was sent " + std::to_string(reliablePacketSendQueue[p].unacknowledgedFragments[f].sendCount) + " times.", se::log::TextColor::YELLOW);
+								}
 								reliablePacketSendQueue[p].unacknowledgedFragments.erase(reliablePacketSendQueue[p].unacknowledgedFragments.begin() + f);
 
 								//Remove all unacknowledged fragments that have been delivered through other fragments
@@ -443,8 +477,9 @@ namespace se
 
 		void Connection::deliverOutgoingPackets()
 		{
+			SE_SCOPE_PROFILER(debugName);
 			const time::Time now = time::now();
-			std::lock_guard<std::recursive_mutex> lock(mutex);
+			LOCK_GUARD(lock, mutex, deliverOutgoingPackets);
 
 			//Remove delivered reliable packets from the send queue
 			while (!reliablePacketSendQueue.empty() && reliablePacketSendQueue.front().delivered)
@@ -641,9 +676,10 @@ namespace se
 
 		void Connection::deliverReceivedPackets()
 		{
+			SE_SCOPE_PROFILER(debugName);
 			//Check if all data for the next packet has been received
 			{
-				std::lock_guard<std::recursive_mutex> lock(mutex);
+				LOCK_GUARD(lock, mutex, deliverReceivedPackets);
 				while (!receivedReliableFragments.empty() && receivedReliableFragments.front().endOfPayload && receivedReliableFragments.front().offset == reliableStreamOffsetReceive)
 				{
 					se_assert(receivedReliableFragments.front().data.size() > 0);
@@ -661,7 +697,7 @@ namespace se
 				std::vector<uint8_t> data;
 				std::function<void(ReadBuffer&, const boost::asio::ip::udp::endpoint&, const bool)> handler;
 				{
-					std::lock_guard<std::recursive_mutex> lock(mutex);
+					LOCK_GUARD(lock, mutex, deliverReceivedPackets);
 					if (!receivedReliablePackets.empty())
 					{
 						if (receivedReliablePackets.front().userData)
@@ -692,6 +728,7 @@ namespace se
 				}
 				if (handler)
 				{
+					SE_SCOPE_PROFILER("handler");
 					se_assert(data.size() > 0);
 					ReadBuffer readBuffer(data.data(), data.size());
 					handler(readBuffer, endpoint, true);
@@ -709,7 +746,7 @@ namespace se
 				std::vector<uint8_t> data;
 				std::function<void(ReadBuffer&, const boost::asio::ip::udp::endpoint&, const bool)> handler;
 				{
-					std::lock_guard<std::recursive_mutex> lock(mutex);
+					LOCK_GUARD(lock, mutex, deliverReceivedPackets);
 					if (receivedUnreliablePackets.empty())
 					{
 						break;
@@ -735,7 +772,7 @@ namespace se
 
 		void Connection::spehsReceiveHandler(ReadBuffer& readBuffer)
 		{
-			std::lock_guard<std::recursive_mutex> lock(mutex);
+			LOCK_GUARD(lock, mutex, spehsReceiveHandler);
 			PacketType packetType;
 			if (!readBuffer.read(packetType))
 			{
@@ -776,17 +813,18 @@ namespace se
 
 		void Connection::setReceiveHandler(const std::function<void(ReadBuffer&, const boost::asio::ip::udp::endpoint&, const bool)> callback)
 		{
-			std::lock_guard<std::recursive_mutex> lock(mutex);
+			LOCK_GUARD(lock, mutex, other);
 			receiveHandler = callback;
 		}
 
 		void Connection::sendPacket(const WriteBuffer& writeBuffer, const bool reliable)
 		{
+			SE_SCOPE_PROFILER(debugName);
 			if (writeBuffer.isEmpty())
 			{
 				return;
 			}
-			std::lock_guard<std::recursive_mutex> lock(mutex);
+			LOCK_GUARD(lock, mutex, sendPacket);
 			if (connectionStatus == ConnectionStatus::connected)
 			{
 				if (reliable)
@@ -808,9 +846,10 @@ namespace se
 		void Connection::sendPacketImpl(const std::vector<boost::asio::const_buffer>& buffers, const bool logReliable, const bool logUnreliable)
 		{
 			const size_t bufferSize = boost::asio::buffer_size(buffers);
-			std::lock_guard<std::recursive_mutex> lock(mutex);
+
+			LOCK_GUARD(lock, mutex, sendPacketImpl);
 #ifndef SE_FINAL_RELEASE
-			if (rng::weightedCoin(simulatedPacketLossChanceOutgoing))
+			if (simulatedPacketLossChanceOutgoing > 0.0f && rng::weightedCoin(simulatedPacketLossChanceOutgoing))
 			{
 				sentBytes += bufferSize;
 				if (logReliable)
@@ -862,7 +901,7 @@ namespace se
 
 		void Connection::stopConnecting()
 		{
-			std::lock_guard<std::recursive_mutex> lock(mutex);
+			LOCK_GUARD(lock, mutex, other);
 			if (connectionStatus == ConnectionStatus::connecting)
 			{
 				connectionStatus = ConnectionStatus::disconnected;
@@ -875,7 +914,7 @@ namespace se
 
 		void Connection::disconnect()
 		{
-			std::lock_guard<std::recursive_mutex> lock(mutex);
+			LOCK_GUARD(lock, mutex, other);
 			if (connectionStatus == ConnectionStatus::connected)
 			{
 				connectionStatus = ConnectionStatus::disconnecting;
@@ -897,9 +936,9 @@ namespace se
 
 		void Connection::receivePacket(std::vector<uint8_t>& data)
 		{
-			std::lock_guard<std::recursive_mutex> lock(mutex);
+			LOCK_GUARD(lock, mutex, receivePacket);
 #ifndef SE_FINAL_RELEASE
-			if (rng::weightedCoin(simulatedPacketLossChanceIncoming))
+			if (simulatedPacketLossChanceIncoming > 0.0f && rng::weightedCoin(simulatedPacketLossChanceIncoming))
 			{
 				return;
 			}
@@ -927,6 +966,17 @@ namespace se
 			for (size_t i = 0; i < congestionAvoidanceState.recentReliableFragmentSendCounts.size(); i++)
 			{
 				averageReliableFragmentSendCount += weigth * float(congestionAvoidanceState.recentReliableFragmentSendCounts[i].sendCount);
+			}
+
+			//Add to total reliable fragment send counts
+			const std::map<size_t, size_t>::iterator it = congestionAvoidanceState.reliableFragmentSendCounters.find(sendCount);
+			if (it != congestionAvoidanceState.reliableFragmentSendCounters.end())
+			{
+				(*it).second++;
+			}
+			else
+			{
+				congestionAvoidanceState.reliableFragmentSendCounters[sendCount] = 1;
 			}
 
 			double sendQuotaGrowthIncrease = 0.0;
@@ -959,21 +1009,9 @@ namespace se
 			congestionAvoidanceState.reEvaluationTimestamp = time::now();
 		}
 
-		bool Connection::isConnecting() const
-		{
-			std::lock_guard<std::recursive_mutex> lock(mutex);
-			return connectionStatus == ConnectionStatus::connecting;
-		}
-
-		bool Connection::isConnected() const
-		{
-			std::lock_guard<std::recursive_mutex> lock(mutex);
-			return connectionStatus == ConnectionStatus::connected;
-		}
-
 		void Connection::setConnected(const bool value)
 		{
-			std::lock_guard<std::recursive_mutex> lock(mutex);
+			LOCK_GUARD(lock, mutex, other);
 			const bool connected = isConnected();
 			if (connected != value)
 			{
@@ -1000,15 +1038,27 @@ namespace se
 			}
 		}
 
+		bool Connection::isConnecting() const
+		{
+			LOCK_GUARD(lock, mutex, other);
+			return connectionStatus == ConnectionStatus::connecting;
+		}
+
+		bool Connection::isConnected() const
+		{
+			LOCK_GUARD(lock, mutex, other);
+			return connectionStatus == ConnectionStatus::connected;
+		}
+
 		boost::asio::ip::udp::endpoint Connection::getRemoteEndpoint() const
 		{
-			std::lock_guard<std::recursive_mutex> lock(mutex);
+			LOCK_GUARD(lock, mutex, other);
 			return endpoint;
 		}
 
 		Port Connection::getLocalPort() const
 		{
-			std::lock_guard<std::recursive_mutex> lock(mutex);
+			LOCK_GUARD(lock, mutex, other);
 			return socket->getLocalPort();
 		}
 
@@ -1019,31 +1069,31 @@ namespace se
 
 		time::Time Connection::getPing() const
 		{
-			std::lock_guard<std::recursive_mutex> lock(mutex);
+			LOCK_GUARD(lock, mutex, other);
 			return estimatedRoundTripTime;
 		}
 
 		float Connection::getAverageReliableFragmentSendCount() const
 		{
-			std::lock_guard<std::recursive_mutex> lock(mutex);
+			LOCK_GUARD(lock, mutex, other);
 			return averageReliableFragmentSendCount;
 		}
 
 		double Connection::getSendQuotaPerSecond() const
 		{
-			std::lock_guard<std::recursive_mutex> lock(mutex);
+			LOCK_GUARD(lock, mutex, other);
 			return sendQuotaPerSecond;
 		}
 
 		size_t Connection::getSentBytes() const
 		{
-			std::lock_guard<std::recursive_mutex> lock(mutex);
+			LOCK_GUARD(lock, mutex, other);
 			return sentBytes;
 		}
 
 		size_t Connection::getSentBytes(const bool reliable) const
 		{
-			std::lock_guard<std::recursive_mutex> lock(mutex);
+			LOCK_GUARD(lock, mutex, other);
 			if (reliable)
 			{
 				return sentBytesReliable;
@@ -1056,13 +1106,13 @@ namespace se
 
 		size_t Connection::getReceivedBytes() const
 		{
-			std::lock_guard<std::recursive_mutex> lock(mutex);
+			LOCK_GUARD(lock, mutex, other);
 			return receivedBytes;
 		}
 
 		size_t Connection::getReceivedBytes(const bool reliable) const
 		{
-			std::lock_guard<std::recursive_mutex> lock(mutex);
+			LOCK_GUARD(lock, mutex, other);
 			if (reliable)
 			{
 				return reliableStreamOffsetReceive;
@@ -1073,46 +1123,77 @@ namespace se
 			}
 		}
 
+		std::map<size_t, size_t> Connection::getReliableFragmentSendCounters() const
+		{
+			LOCK_GUARD(lock, mutex, other);
+			return congestionAvoidanceState.reliableFragmentSendCounters;
+		}
+
+		void Connection::resetReliableFragmentSendCounters()
+		{
+			LOCK_GUARD(lock, mutex, other);
+			congestionAvoidanceState.reliableFragmentSendCounters.clear();
+		}
+
+		Connection::MutexTimes Connection::getAcquireMutexTimes() const
+		{
+			LOCK_GUARD(lock, mutex, other);
+			return acquireMutexTimes;
+		}
+
+		Connection::MutexTimes Connection::getHoldMutexTimes() const
+		{
+			LOCK_GUARD(lock, mutex, other);
+			return holdMutexTimes;
+		}
+
+		void Connection::resetMutexTimes()
+		{
+			LOCK_GUARD(lock, mutex, other);
+			acquireMutexTimes = MutexTimes();
+			holdMutexTimes = MutexTimes();
+		}
+
 		void Connection::connectToConnectionStatusChangedSignal(boost::signals2::scoped_connection& scopedConnection, const std::function<void(const bool)>& callback)
 		{
-			std::lock_guard<std::recursive_mutex> lock(mutex);
+			LOCK_GUARD(lock, mutex, other);
 			scopedConnection = connectionStatusChangedSignal.connect(callback);
 		}
 
 		void Connection::setTimeoutEnabled(const bool value)
 		{
-			std::lock_guard<std::recursive_mutex> lock(mutex);
+			LOCK_GUARD(lock, mutex, other);
 			timeoutEnabled = value;
 		}
 
 		bool Connection::getTimeoutEnabled() const
 		{
-			std::lock_guard<std::recursive_mutex> lock(mutex);
+			LOCK_GUARD(lock, mutex, other);
 			return timeoutEnabled;
 		}
 
 		void Connection::setSimulatedPacketLoss(const float chanceToDropIncoming, const float chanceToDropOutgoing)
 		{
-			std::lock_guard<std::recursive_mutex> lock(mutex);
+			LOCK_GUARD(lock, mutex, other);
 			simulatedPacketLossChanceIncoming = chanceToDropIncoming;
 			simulatedPacketLossChanceOutgoing = chanceToDropOutgoing;
 		}
 
 		void Connection::setDebugLogLevel(const int level)
 		{
-			std::lock_guard<std::recursive_mutex> lock(mutex);
+			LOCK_GUARD(lock, mutex, other);
 			debugLogLevel = level;
 		}
 
 		int Connection::getDebugLogLevel() const
 		{
-			std::lock_guard<std::recursive_mutex> lock(mutex);
+			LOCK_GUARD(lock, mutex, other);
 			return debugLogLevel;
 		}
 
 		bool Connection::hasPendingOperations() const
 		{
-			std::lock_guard<std::recursive_mutex> lock(mutex);
+			LOCK_GUARD(lock, mutex, other);
 			return reliablePacketSendQueue.size() > 0;
 		}
 	}

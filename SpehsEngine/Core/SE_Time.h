@@ -48,6 +48,7 @@ namespace se
 			Time operator/(const TimeValueType divisor) const;
 			Time operator+(const Time& other) const;
 			Time operator-(const Time& other) const;
+			Time operator-() const;
 			void operator=(const Time& other);
 			bool operator==(const Time& other) const;
 			bool operator!=(const Time& other) const;
@@ -100,6 +101,12 @@ namespace se
 
 		/* Returns time when se::time was initialized. */
 		Time getInitializationTime();
+
+		/*
+			Potentially more efficient than now().
+			Prefer now() for non-profiling purposes.
+		*/
+		Time getProfilerTimestamp();
 	}
 
 	class WriteBuffer;

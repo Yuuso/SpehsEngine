@@ -17,7 +17,7 @@
 
 #include <GL/glew.h>
 
-#include <freetype/ft2build.h>
+#include <ft2build.h>
 #include FT_FREETYPE_H
 
 #include <iostream>
@@ -148,12 +148,20 @@ namespace se
 			renderState = _state;
 		}
 
-		void Text::setFont(const std::string& _fontPath, const int _size)
+		bool Text::setFont(const std::string& _fontPath, const int _size)
 		{
-			setFont(batchManager.fontManager.getFont(_fontPath, _size));
+			if (Font* const fontParam = batchManager.fontManager.getFont(_fontPath, _size))
+			{
+				setFont(fontParam);
+				return true;
+			}
+			else
+			{
+				return false;
+			}
 		}
 
-		void Text::setFont(Font *fontParam)
+		void Text::setFont(Font *const fontParam)
 		{
 			if (font == fontParam)
 				return;

@@ -8,7 +8,7 @@ namespace se
 		DeltaTimeSystem::DeltaTimeSystem(const std::string& debugName)
 			: name(debugName)
 		{
-
+			deltaTimeSystemInitialize();
 		}
 
 		DeltaTimeSystem::~DeltaTimeSystem()

@@ -5,6 +5,7 @@
 #include "SpehsEngine/Core/SE_Time.h"
 #include "SpehsEngine/Core/StrongInt.h"
 #include <functional>
+#include <map>
 #include <mutex>
 
 namespace se
@@ -19,12 +20,26 @@ namespace se
 		class Connection
 		{
 		public:
+
 			enum class EstablishmentType
 			{
 				outgoing,
 				incoming
 			};
-		public:
+
+			struct MutexTimes
+			{
+				time::Time estimateRoundTripTime;
+				time::Time heartbeat;
+				time::Time processReceivedPackets;
+				time::Time deliverOutgoingPackets;
+				time::Time deliverReceivedPackets;
+				time::Time spehsReceiveHandler;
+				time::Time sendPacket;
+				time::Time sendPacketImpl;
+				time::Time receivePacket;
+				time::Time other;
+			};
 
 			~Connection();
 
@@ -46,6 +61,11 @@ namespace se
 			size_t getSentBytes(const bool reliable) const;
 			size_t getReceivedBytes() const;
 			size_t getReceivedBytes(const bool reliable) const;
+			std::map<size_t, size_t> getReliableFragmentSendCounters() const;
+			void resetReliableFragmentSendCounters();
+			MutexTimes getAcquireMutexTimes() const;
+			MutexTimes getHoldMutexTimes() const;
+			void resetMutexTimes();
 
 			void connectToConnectionStatusChangedSignal(boost::signals2::scoped_connection& scopedConnection, const std::function<void(const bool)>& callback);
 
@@ -160,6 +180,7 @@ namespace se
 			time::Time lastReceiveTime;
 			time::Time lastSendTime;
 			time::Time lastSendTimeReliable;
+			time::Time lastQueueHeartbeatTime;
 			size_t reliableStreamOffsetSend = 0u; // bytes from past packets that have been delivered
 			size_t reliableStreamOffsetReceive = 0u; // bytes from past packets that have been received
 			std::vector<ReceivedReliableFragment> receivedReliableFragments;
@@ -169,16 +190,17 @@ namespace se
 			ConnectionStatus connectionStatus = ConnectionStatus::connecting; // Every connection begins in the connecting state
 			boost::signals2::signal<void(const bool)> connectionStatusChangedSignal;
 
-			//Congestion avoidance
+			// Congestion avoidance
 			struct CongestionAvoidanceState
 			{
-				//Track how many times a reliable fragment had to be sent in order to go through
+				// Track how many times a reliable fragment had to be sent in order to go through
 				struct ReliableFragmentSendCount
 				{
 					size_t sendCount = 0u;
 					uint16_t size = 0u;
 				};
 				std::vector<ReliableFragmentSendCount> recentReliableFragmentSendCounts;
+				std::map<size_t, size_t> reliableFragmentSendCounters;
 				time::Time reEvaluationTimestamp;
 				time::Time reEvaluationInterval = time::fromSeconds(1.0f / 10.0f);
 				double prevSendQuotaGrowthFactor = 1.0;
@@ -193,12 +215,16 @@ namespace se
 			size_t unreliableSendQuota = 0u;
 			float averageReliableFragmentSendCount = 0.0f;
 
-			//RTT
+			// RTT
 			time::Time estimatedRoundTripTime;
 			std::vector<time::Time> recentRoundTripTimes;
 			bool estimatedRoundTripTimeQueued = false;
 
-			//Transmitted byte counts
+			// Time spent locking mutexes
+			mutable MutexTimes acquireMutexTimes;
+			mutable MutexTimes holdMutexTimes;
+
+			// Transmitted byte counts
 			size_t sentBytes = 0u;
 			size_t receivedBytes = 0u;
 			size_t sentBytesReliable = 0u;

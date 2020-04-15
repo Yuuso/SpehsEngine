@@ -1,5 +1,8 @@
 #pragma once
+
 #include "SpehsEngine/Core/SE_Time.h"
+#include "SpehsEngine/Core/ScopeProfiler.h"
+
 
 namespace se
 {
@@ -14,6 +17,7 @@ namespace se
 			}
 			~ScopedFrameLimiter()
 			{
+				SE_SCOPE_PROFILER();
 				const Time remaining = endTime - now();
 				if (remaining.value > 0)
 				{

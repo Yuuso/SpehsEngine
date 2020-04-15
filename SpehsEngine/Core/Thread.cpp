@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "SpehsEngine/Core/Thread.h"
 #include <thread>
-#ifdef _WIN32
+#if SE_PLATFORM == SE_PLATFORM_WINDOWS
 #include <windows.h>
 #endif
 
@@ -9,7 +9,7 @@
 
 namespace se
 {
-#ifdef _WIN32
+#if SE_PLATFORM == SE_PLATFORM_WINDOWS
 #pragma pack(push,8)
 	typedef struct tagTHREADNAME_INFO
 	{

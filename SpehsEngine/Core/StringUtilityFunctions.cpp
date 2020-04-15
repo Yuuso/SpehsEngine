@@ -1,6 +1,9 @@
 #include "stdafx.h"
 #include "SpehsEngine/Core/StringUtilityFunctions.h"
 
+#include "SpehsEngine/Core/StringOperations.h"
+
+
 namespace se
 {
 	bool doesStartWith(const std::string& string, const std::string& searchParameter)
@@ -39,6 +42,31 @@ namespace se
 				}
 			}
 			return true;
+		}
+	}
+
+	std::string toTimeLengthString(const time::Time& time, const size_t precision)
+	{
+		// TODO: proper precision
+		if (time.value >= time::conversionRate::second)
+		{
+			const float f = time.asSeconds();
+			return toString(f, precision) + " s";
+		}
+		else if (time.value >= time::conversionRate::millisecond)
+		{
+			const float f = time.asMilliseconds();
+			return toString(f, precision) + " ms";
+		}
+		else if (time.value >= time::conversionRate::microsecond)
+		{
+			const float f = time.asMicroseconds();
+			return toString(f, precision) + " us";
+		}
+		else
+		{
+			const float f = time.asNanoseconds();
+			return toString(f, precision) + " ns";
 		}
 	}
 }

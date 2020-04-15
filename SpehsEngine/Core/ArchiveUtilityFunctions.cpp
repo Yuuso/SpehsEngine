@@ -20,7 +20,7 @@ namespace se
 		se::File file;
 		if (se::readFile(file, filepath))
 		{
-			se::ReadBuffer readBuffer(file.data.data(), file.data.size());
+			se::ReadBuffer readBuffer(file.data.data(), uint32_t(file.data.size()));
 			return archive.read(readBuffer);
 		}
 		else

@@ -1,5 +1,5 @@
 #include "stdafx.h"
-#define ZLIB_WINAPI//Needed for linkage
+//#define ZLIB_WINAPI//Needed for linkage
 #include "SpehsEngine/Core/Compression.h"
 
 //#include "zlib/zlib.h"

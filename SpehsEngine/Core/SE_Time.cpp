@@ -12,6 +12,9 @@
 #include <ctime>
 #include <sstream>
 #include <iomanip>
+#if SE_PLATFORM == SE_PLATFORM_WINDOWS
+#include <Windows.h>
+#endif
 
 
 namespace se
@@ -26,13 +29,14 @@ namespace se
 			const TimeValueType nanosecond = microsecond / 1000;
 		}
 
-		//Global variables
-		Time maxDeltaTime(0);
-
 		namespace
-		{//Local variables
+		{ // Local variables
 			bool initialized = false;
 			std::chrono::high_resolution_clock::rep initializationTime;
+
+#if SE_PLATFORM == SE_PLATFORM_WINDOWS
+			double queryPerformanceFrequency = 0.0f;
+#endif
 		}
 
 		void initialize()
@@ -42,6 +46,17 @@ namespace se
 				se::log::warning("se::time has already been initialized!");
 				return;
 			}
+
+#if SE_PLATFORM == SE_PLATFORM_WINDOWS
+			{
+				LARGE_INTEGER counter;
+				if (!QueryPerformanceFrequency(&counter))
+				{
+					se::log::error("QueryPerformanceFrequency failed!");
+				}
+				queryPerformanceFrequency = double(counter.QuadPart);
+			}
+#endif
 
 			initializationTime = std::chrono::high_resolution_clock::now().time_since_epoch().count();
 			log::info("SpehsEngine time accuracy is " + std::to_string(conversionRate::second) + " ticks per second.");
@@ -63,6 +78,24 @@ namespace se
 		{
 			se_assert(initialized);
 			return initializationTime;
+		}
+
+		Time getProfilerTimestamp()
+		{
+#if SE_PLATFORM == SE_PLATFORM_WINDOWS
+			LARGE_INTEGER counter;
+			if (QueryPerformanceCounter(&counter))
+			{
+				return se::time::Time(se::time::TimeValueType(double(counter.QuadPart) / (queryPerformanceFrequency / double(se::time::conversionRate::second))));
+			}
+			else
+			{
+				se::log::error("QueryPerformanceCounter failed.");
+			}
+#else
+#error getProfilerTimestamp() implementation is missing.
+#endif
+			return now();
 		}
 
 		void sleep(const Time time)
@@ -176,6 +209,7 @@ namespace se
 		Time Time::operator/(const TimeValueType factor) const { return Time(value / factor); }
 		Time Time::operator+(const Time& other) const { return Time(value + other.value); }
 		Time Time::operator-(const Time& other) const { return Time(value - other.value); }
+		Time Time::operator-() const { return Time(-value); }
 		void Time::operator=(const Time& other) { value = other.value; }
 		void Time::operator*=(const double factor) { value = TimeValueType((double)value * factor); }
 		void Time::operator*=(const float factor) { value = TimeValueType((float)value * factor); }

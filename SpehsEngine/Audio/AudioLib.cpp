@@ -1,15 +1,16 @@
 #include "stdafx.h"
+#include "SpehsEngine/Audio/AudioLib.h"
+
+#include "SpehsEngine/Audio/AudioEngine.h"
+#include "SpehsEngine/Audio/AudioManager.h"
 #include "SpehsEngine/Core/CoreLib.h"
 #include "SpehsEngine/Core/Log.h"
 #include "SpehsEngine/Core/SE_Time.h"
-#include "SpehsEngine/Audio/AudioLib.h"
-#include "SpehsEngine/Audio/AudioManager.h"
-#include "SpehsEngine/Audio/AudioEngine.h"
-
-#include <string>
-#include <thread>
 #include <iostream>
 #include <stdint.h>
+#include <string>
+#include <thread>
+
 
 namespace se
 {
@@ -53,6 +54,7 @@ namespace se
 
 	void AudioLib::update()
 	{
+		SE_SCOPE_PROFILER();
 		audio::AudioEngine::update();
 	}
 

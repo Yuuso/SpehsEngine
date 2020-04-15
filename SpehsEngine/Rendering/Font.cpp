@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "SpehsEngine/Rendering/Font.h"
 #include "SpehsEngine/Core/Log.h"
-#include <freetype/ft2build.h>
+#include <ft2build.h>
 #include FT_FREETYPE_H
 #include <GL/glew.h>
 

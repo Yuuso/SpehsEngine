@@ -18,12 +18,12 @@ namespace se
 
 	void Archive::write(WriteBuffer& writeBuffer) const
 	{
-		writeBuffer.write(data.size());
+		writeBuffer.write(uint32_t(data.size()));
 		for (std::unordered_map<uint32_t, WriteBuffer>::const_iterator it = data.begin(); it != data.end(); it++)
 		{
 			writeBuffer.write(it->first);
-			writeBuffer.write(it->second.getSize());
-			for (size_t i = 0; i < it->second.getSize(); i++)
+			writeBuffer.write(uint32_t(it->second.getSize()));
+			for (uint32_t i = 0; i < it->second.getSize(); i++)
 			{
 				writeBuffer.write(*it->second[i]);
 			}
@@ -33,17 +33,17 @@ namespace se
 	bool Archive::read(ReadBuffer& readBuffer)
 	{
 		clear();
-		size_t containerSize;
+		uint32_t containerSize;
 		se_read(readBuffer, containerSize);
-		for (size_t c = 0; c < containerSize; c++)
+		for (uint32_t c = 0; c < containerSize; c++)
 		{
 			uint32_t dataHash;
 			se_read(readBuffer, dataHash);
 			se_assert(data.find(dataHash) == data.end());
 			WriteBuffer& writeBuffer = data[dataHash];
-			size_t dataSize;
+			uint32_t dataSize;
 			se_read(readBuffer, dataSize);
-			for (size_t d = 0; d < dataSize; d++)
+			for (uint32_t d = 0; d < dataSize; d++)
 			{
 				unsigned char byte;
 				se_read(readBuffer, byte);

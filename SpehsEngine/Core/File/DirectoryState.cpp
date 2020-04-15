@@ -112,7 +112,7 @@ namespace se
 		return nullptr;
 	}
 
-	void getDirectoryStateImpl(DirectoryState& directoryState, const std::string& fullDirectoryPath, const std::string& relativeDirectoryPath, const DirectoryState::Flag::Type flags, const size_t fileHashSeed)
+	void getDirectoryStateImpl(DirectoryState& directoryState, const std::string& fullDirectoryPath, const std::string& relativeDirectoryPath, const DirectoryState::Flag::Type flags, const uint32_t fileHashSeed)
 	{
 		directoryState.path = relativeDirectoryPath;
 		const std::vector<std::string> files = se::listFilesInDirectory(fullDirectoryPath);
@@ -153,7 +153,7 @@ namespace se
 		}
 	}
 
-	void getDirectoryState(DirectoryState& directoryState, const std::string& path, const DirectoryState::Flag::Type flags, const size_t fileHashSeed)
+	void getDirectoryState(DirectoryState& directoryState, const std::string& path, const DirectoryState::Flag::Type flags, const uint32_t fileHashSeed)
 	{
 		getDirectoryStateImpl(directoryState, path, "", flags, fileHashSeed);
 	}
@@ -174,7 +174,7 @@ namespace se
 		}
 	}
 
-	void compare(const DirectoryState& directoryState, const std::string& path, const size_t fileHashSeed, std::vector<std::string>& missingDirectories, std::vector<std::string>& missingFiles, std::vector<std::string>& unequalFiles)
+	void compare(const DirectoryState& directoryState, const std::string& path, const uint32_t fileHashSeed, std::vector<std::string>& missingDirectories, std::vector<std::string>& missingFiles, std::vector<std::string>& unequalFiles)
 	{
 		for (size_t i = 0; i < directoryState.files.size(); i++)
 		{

@@ -3,6 +3,7 @@
 #include "boost/signals2.hpp"
 #include "SpehsEngine/Net/Connection.h"
 #include <functional>
+#include <unordered_map>
 #include <mutex>
 
 
@@ -47,6 +48,7 @@ namespace se
 			void stopAccepting();
 			bool isAccepting() const;
 			void connectToIncomingConnectionSignal(boost::signals2::scoped_connection& scopedConnection, const std::function<void(std::shared_ptr<Connection>&)>& callback);
+			std::vector<std::shared_ptr<Connection>> getConnections();
 
 			//SocketUDP2 wrappers
 			bool open();
@@ -84,6 +86,7 @@ namespace se
 			std::vector<std::shared_ptr<Connection>> connections;
 			std::vector<ReceivedPacket> receivedPackets;
 			boost::signals2::signal<void(std::shared_ptr<Connection>&)> incomingConnectionSignal;
+			std::unordered_map<Connection*, boost::signals2::scoped_connection> incomingConnectionStatusChangedConnections;
 		};
 	}
 }

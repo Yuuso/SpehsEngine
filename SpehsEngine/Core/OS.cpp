@@ -1,13 +1,12 @@
 #include "stdafx.h"
 #include "SpehsEngine/Core/OS.h"
-#if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__)
+#if SE_PLATFORM == SE_PLATFORM_WINDOWS
 #include <Windows.h>
-#else
 #endif
 
 namespace
 {
-#if (defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__))
+#if SE_PLATFORM == SE_PLATFORM_WINDOWS
 	std::string getLastErrorMessage()
 	{
 		LPVOID lpMsgBuf;
@@ -30,7 +29,7 @@ namespace se
 {
 	bool copyToClipBoard(const void* data, size_t bytes)
 	{
-#if (defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__))
+#if SE_PLATFORM == SE_PLATFORM_WINDOWS
 
 		if (!OpenClipboard(0))
 			return false;
@@ -71,7 +70,7 @@ namespace se
 	}
 	std::string copyFromClipBoard()
 	{
-#if (defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__))
+#if SE_PLATFORM == SE_PLATFORM_WINDOWS
 		std::string data;
 
 		if (!OpenClipboard(0))
@@ -94,7 +93,7 @@ namespace se
 
 	bool createProcess(const std::string& filename, const std::string& commandLine)
 	{
-#if (defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__))
+#if SE_PLATFORM == SE_PLATFORM_WINDOWS
 		std::string commandLineCopy = commandLine;
 
 		// additional information

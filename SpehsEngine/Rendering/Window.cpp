@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "SpehsEngine/Rendering/Window.h"
+
 #include "SpehsEngine/Rendering/OpenGLError.h"
 #include "SpehsEngine/Core/Log.h"
 #include "SpehsEngine/Rendering/GLContext.h"
@@ -87,6 +88,7 @@ namespace se
 
 		void Window::renderBegin()
 		{
+			SE_SCOPE_PROFILER();
 			postProcessingBegin();
 			glDepthMask(GL_TRUE);
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -95,6 +97,7 @@ namespace se
 
 		void Window::renderEnd()
 		{
+			SE_SCOPE_PROFILER();
 			postProcessingEnd();
 			SDL_GL_SwapWindow(sdlWindow);
 			checkOpenGLErrors(__FILE__, __LINE__);
