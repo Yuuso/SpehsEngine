@@ -107,4 +107,7 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)WatchedValue.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)WriteBuffer.h" />
   </ItemGroup>
+  <ItemGroup>
+    <Natvis Include="$(MSBuildThisFileDirectory)ReadBuffer.natvis" />
+  </ItemGroup>
 </Project>
