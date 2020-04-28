@@ -108,5 +108,13 @@
     <Filter Include="File">
       <UniqueIdentifier>{ea955e6b-769d-476a-9b90-87d8ddde01a8}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Natvis">
+      <UniqueIdentifier>{24c20202-24e4-403c-bbf4-a15171f28125}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <Natvis Include="$(MSBuildThisFileDirectory)ReadBuffer.natvis">
+      <Filter>Natvis</Filter>
+    </Natvis>
   </ItemGroup>
 </Project>
