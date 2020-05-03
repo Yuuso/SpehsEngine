@@ -4,6 +4,7 @@
 #include "SpehsEngine/Core/WriteBuffer.h"
 #include "SpehsEngine/Core/ReadBuffer.h"
 
+
 namespace se
 {
 	void writeToBuffer(WriteBuffer& writeBuffer, const glm::vec2& vec)
