@@ -59,7 +59,7 @@ namespace se
 				string += "\nMaximum segment size: " + std::to_string(connection->getMaximumSegmentSize());
 				string += "\nSend quota per second: " + std::to_string(connection->getSendQuotaPerSecond());
 
-				const size_t sentBytes = connection->getSentBytes();
+				const uint64_t sentBytes = connection->getSentBytes();
 				if (sentBytes > 1024 * 1024)
 				{
 					string += "\nSent: " + std::to_string(sentBytes / (1024 * 1024)) + " MB";
@@ -73,7 +73,7 @@ namespace se
 					string += "\nSent: " + std::to_string(sentBytes) + " B";
 				}
 
-				const size_t receivedBytes = connection->getReceivedBytes();
+				const uint64_t receivedBytes = connection->getReceivedBytes();
 				if (receivedBytes > 1024 * 1024)
 				{
 					string += "\nReceived: " + std::to_string(receivedBytes / (1024 * 1024)) + " MB";
@@ -90,12 +90,12 @@ namespace se
 				string += "\nAverage reliable fragment send count: " + std::to_string(connection->getAverageReliableFragmentSendCount());
 				string += "\nReliable fragment resend counters: [send count]: % (number of occurences)\n";
 
-				const std::map<size_t, size_t> reliableFragmentSendCounters = connection->getReliableFragmentSendCounters();
+				const std::map<uint64_t, uint64_t> reliableFragmentSendCounters = connection->getReliableFragmentSendCounters();
 				if (!reliableFragmentSendCounters.empty())
 				{
-					size_t reliableFragmentSendCountersTotalCount = 0u;
-					size_t reliableFragmentSendCountersMax = 0u;
-					for (const std::pair<size_t, size_t>& pair : reliableFragmentSendCounters)
+					uint64_t reliableFragmentSendCountersTotalCount = 0u;
+					uint64_t reliableFragmentSendCountersMax = 0u;
+					for (const std::pair<uint64_t, uint64_t>& pair : reliableFragmentSendCounters)
 					{
 						reliableFragmentSendCountersTotalCount += pair.second;
 						if (pair.second > reliableFragmentSendCountersMax)
@@ -104,17 +104,17 @@ namespace se
 						}
 					}
 					se_assert(reliableFragmentSendCountersTotalCount > 0);
-					for (const std::pair<size_t, size_t>& pair : reliableFragmentSendCounters)
+					for (const std::pair<uint64_t, uint64_t>& pair : reliableFragmentSendCounters)
 					{
 						const float percentageOfTotal = float(pair.second) / float(reliableFragmentSendCountersTotalCount);
 						const float percentageOfMax = float(pair.second) / float(reliableFragmentSendCountersMax);
-						const size_t dashCount = size_t(std::ceil(10.0f * percentageOfMax));
-						string.reserve(string.length() + dashCount);
-						for (size_t d = 0; d < dashCount; d++)
+						const uint64_t dashCount = uint64_t(std::ceil(10.0f * percentageOfMax));
+						string.reserve(size_t(uint64_t(string.length()) + dashCount));
+						for (uint64_t d = 0; d < dashCount; d++)
 						{
 							string += "-";
 						}
-						string += " [" + std::to_string(pair.first) + "]: " + std::to_string(size_t(percentageOfTotal * 100.0f)) + "% (" + std::to_string(pair.second) + ")";
+						string += " [" + std::to_string(pair.first) + "]: " + std::to_string(uint64_t(percentageOfTotal * 100.0f)) + "% (" + std::to_string(pair.second) + ")";
 						string += "\n";
 					}
 				}

@@ -1,4 +1,5 @@
 #pragma once
+
 #include "boost/signals2.hpp"
 #include "SpehsEngine/Net/Endpoint.h"
 #include "SpehsEngine/Net/SocketUDP2.h"
@@ -7,6 +8,7 @@
 #include <functional>
 #include <map>
 #include <mutex>
+
 
 namespace se
 {
@@ -57,11 +59,11 @@ namespace se
 			time::Time getPing() const;
 			float getAverageReliableFragmentSendCount() const;
 			double getSendQuotaPerSecond() const;
-			size_t getSentBytes() const;
-			size_t getSentBytes(const bool reliable) const;
-			size_t getReceivedBytes() const;
-			size_t getReceivedBytes(const bool reliable) const;
-			std::map<size_t, size_t> getReliableFragmentSendCounters() const;
+			uint64_t getSentBytes() const;
+			uint64_t getSentBytes(const bool reliable) const;
+			uint64_t getReceivedBytes() const;
+			uint64_t getReceivedBytes(const bool reliable) const;
+			std::map<uint64_t, uint64_t> getReliableFragmentSendCounters() const;
 			void resetReliableFragmentSendCounters();
 			MutexTimes getAcquireMutexTimes() const;
 			MutexTimes getHoldMutexTimes() const;
@@ -95,28 +97,29 @@ namespace se
 				{
 					time::Time firstSendTime; // Set when sent the first time. Measurement of ping.
 					time::Time latestSendTime; // Set when sent the last time (unacknowledged packets get resent periodically).
-					size_t sendCount = 0u;
-					size_t offset = 0u; // Offset to the reliable stream
+					uint64_t sendCount = 0u;
+					uint64_t offset = 0u; // Offset to the reliable stream
 					uint16_t size = 0u;
 				};
 				struct AcknowledgedFragment
 				{
-					size_t offset = 0u;
+					uint64_t offset = 0u;
 					uint16_t size = 0u;
 				};
 
 				ReliablePacketOut() = default;
-				ReliablePacketOut(const bool _userData, const size_t _payloadOffset, const uint8_t* _payloadPtr, const size_t _payloadSize)
+				ReliablePacketOut(const bool _userData, const uint64_t _payloadOffset, const uint8_t* _payloadPtr, const uint64_t _payloadSize)
 					: userData(_userData)
 					, payloadOffset(_payloadOffset)
-					, payload(_payloadSize)
+					, payload(size_t(_payloadSize))
 				{
 					se_assert(_payloadSize > 0);
-					memcpy(payload.data(), _payloadPtr, _payloadSize);
+					se_assert(_payloadSize <= uint64_t(std::numeric_limits<size_t>::max()) && "Payload is too large to fit into std::vector.");
+					memcpy(payload.data(), _payloadPtr, size_t(_payloadSize));
 				}
 				bool userData = false;
 				bool delivered = false;
-				size_t payloadOffset = 0u; // payload's offset in the reliable stream
+				uint64_t payloadOffset = 0u; // payload's offset in the reliable stream
 				std::vector<uint8_t> payload;
 				std::vector<UnacknowledgedFragment> unacknowledgedFragments;
 				std::vector<AcknowledgedFragment> acknowledgedFragments;
@@ -126,13 +129,14 @@ namespace se
 
 			struct UnreliablePacketOut
 			{
-				UnreliablePacketOut(const uint8_t* _payloadPtr, const size_t _payloadSize, const bool _userData)
-					: payload(_payloadSize)
+				UnreliablePacketOut(const uint8_t* _payloadPtr, const uint64_t _payloadSize, const bool _userData)
+					: payload(size_t(_payloadSize))
 					, userData(_userData)
 					, createTime(time::now())
 				{
 					se_assert(_payloadSize > 0);
-					memcpy(payload.data(), _payloadPtr, _payloadSize);
+					se_assert(_payloadSize <= uint64_t(std::numeric_limits<size_t>::max()) && "Payload is too large to fit into std::vector.");
+					memcpy(payload.data(), _payloadPtr, size_t(_payloadSize));
 				}
 				std::vector<uint8_t> payload;
 				bool userData;
@@ -141,7 +145,7 @@ namespace se
 
 			struct ReceivedReliableFragment
 			{
-				size_t offset = 0u;
+				uint64_t offset = 0u;
 				bool userData = false;
 				bool endOfPayload = false;
 				std::vector<uint8_t> data;
@@ -158,11 +162,11 @@ namespace se
 			void update();
 			void receivePacket(std::vector<uint8_t>& data);
 			void sendPacketImpl(const std::vector<boost::asio::const_buffer>& buffers, const bool logReliable, const bool logUnreliable);
-			void sendPacketAcknowledgement(const size_t reliableStreamOffset, const uint16_t payloadSize);
+			void sendPacketAcknowledgement(const uint64_t reliableStreamOffset, const uint16_t payloadSize);
 			void setConnected(const bool value);
 			void processReceivedPackets();
-			void reliableFragmentReceiveHandler(const size_t reliableStreamOffset, const uint8_t* const dataPtr, const uint16_t dataSize, const bool userData, const bool endOfPayload, const size_t payloadTotalSize);
-			void acknowledgementReceiveHandler(const size_t reliableStreamOffset, const uint16_t payloadSize);
+			void reliableFragmentReceiveHandler(const uint64_t reliableStreamOffset, const uint8_t* const dataPtr, const uint16_t dataSize, const bool userData, const bool endOfPayload, const uint64_t payloadTotalSize);
+			void acknowledgementReceiveHandler(const uint64_t reliableStreamOffset, const uint16_t payloadSize);
 			void deliverReceivedPackets();
 			void deliverOutgoingPackets();
 			void spehsReceiveHandler(ReadBuffer& readBuffer);
@@ -170,7 +174,7 @@ namespace se
 			/* Declared and defined privately, used by ConnectionManager. */
 			bool hasPendingOperations() const;
 
-			void reliableFragmentTransmitted(const size_t sendCount, const uint16_t fragmentSize);
+			void reliableFragmentTransmitted(const uint64_t sendCount, const uint16_t fragmentSize);
 
 			mutable std::recursive_mutex mutex;
 			boost::shared_ptr<SocketUDP2> socket;
@@ -181,8 +185,8 @@ namespace se
 			time::Time lastSendTime;
 			time::Time lastSendTimeReliable;
 			time::Time lastQueueHeartbeatTime;
-			size_t reliableStreamOffsetSend = 0u; // bytes from past packets that have been delivered
-			size_t reliableStreamOffsetReceive = 0u; // bytes from past packets that have been received
+			uint64_t reliableStreamOffsetSend = 0u; // bytes from past packets that have been delivered
+			uint64_t reliableStreamOffsetReceive = 0u; // bytes from past packets that have been received
 			std::vector<ReceivedReliableFragment> receivedReliableFragments;
 			std::vector<ReceivedReliablePacket> receivedReliablePackets;
 			std::vector<std::vector<uint8_t>> receivedUnreliablePackets;
@@ -196,23 +200,23 @@ namespace se
 				// Track how many times a reliable fragment had to be sent in order to go through
 				struct ReliableFragmentSendCount
 				{
-					size_t sendCount = 0u;
+					uint64_t sendCount = 0u;
 					uint16_t size = 0u;
 				};
 				std::vector<ReliableFragmentSendCount> recentReliableFragmentSendCounts;
-				std::map<size_t, size_t> reliableFragmentSendCounters;
+				std::map<uint64_t, uint64_t> reliableFragmentSendCounters;
 				time::Time reEvaluationTimestamp;
 				time::Time reEvaluationInterval = time::fromSeconds(1.0f / 10.0f);
 				double prevSendQuotaGrowthFactor = 1.0;
-				size_t prevReliableStreamOffsetSend = 0u;
+				uint64_t prevReliableStreamOffsetSend = 0u;
 			};
 			CongestionAvoidanceState congestionAvoidanceState;
 			double sendQuotaPerSecond = 56600.0; // 56 kbps
 			bool moreSendQuotaRequested = false;
 			time::Time lastSendQuotaReplenishTimestamp = time::Time::zero;
 			uint16_t maximumSegmentSize = 1400u; // 508u;
-			size_t reliableSendQuota = 0u;
-			size_t unreliableSendQuota = 0u;
+			uint64_t reliableSendQuota = 0u;
+			uint64_t unreliableSendQuota = 0u;
 			float averageReliableFragmentSendCount = 0.0f;
 
 			// RTT
@@ -225,11 +229,11 @@ namespace se
 			mutable MutexTimes holdMutexTimes;
 
 			// Transmitted byte counts
-			size_t sentBytes = 0u;
-			size_t receivedBytes = 0u;
-			size_t sentBytesReliable = 0u;
-			size_t sentBytesUnreliable = 0u;
-			size_t receivedBytesUnreliable = 0u;
+			uint64_t sentBytes = 0u;
+			uint64_t receivedBytes = 0u;
+			uint64_t sentBytesReliable = 0u;
+			uint64_t sentBytesUnreliable = 0u;
+			uint64_t receivedBytesUnreliable = 0u;
 
 			int debugLogLevel = 0;
 			bool timeoutEnabled = true;

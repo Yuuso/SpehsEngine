@@ -43,7 +43,7 @@ namespace se
 		SE_STRONG_INT(uint32_t, ProtocolId, 0u);
 		ProtocolId spehsProtocolId(0x5E2070C0);
 
-		enum class PacketType { connect, disconnect, heartbeat, mtuDiscovery };
+		enum class PacketType : uint8_t { connect, disconnect, heartbeat, mtuDiscovery };
 
 		struct ConnectPacket
 		{
@@ -134,8 +134,8 @@ namespace se
 			}
 			ProtocolId protocolId;
 			uint8_t controlBits = 0u;
-			size_t streamOffset = 0u;
-			size_t payloadTotalSize = 0u;
+			uint64_t streamOffset = 0u; // TODO
+			uint64_t payloadTotalSize = 0u;
 			uint16_t receivedPayloadSize = 0u;
 		};
 
@@ -191,9 +191,9 @@ namespace se
 					else
 					{
 						float totalMilliseconds = 0.0f;
-						for (size_t i = 0; i < recentRoundTripTimes.size(); i++)
+						for (const time::Time& recentRoundTripTime : recentRoundTripTimes)
 						{
-							totalMilliseconds += recentRoundTripTimes[i].asMilliseconds();
+							totalMilliseconds += recentRoundTripTime.asMilliseconds();
 						}
 						estimatedRoundTripTime = time::fromMilliseconds(totalMilliseconds / float(recentRoundTripTimes.size()));
 					}
@@ -216,7 +216,7 @@ namespace se
 					se_write(writeBuffer, PacketType::heartbeat);
 					se_write(writeBuffer, heartbeatPacket);
 
-					const size_t payloadOffset = reliablePacketSendQueue.empty() ? reliableStreamOffsetSend : reliablePacketSendQueue.back().payloadOffset + reliablePacketSendQueue.back().payload.size();
+					const uint64_t payloadOffset = reliablePacketSendQueue.empty() ? reliableStreamOffsetSend : reliablePacketSendQueue.back().payloadOffset + reliablePacketSendQueue.back().payload.size();
 					reliablePacketSendQueue.emplace_back();
 					reliablePacketSendQueue.back().userData = false;
 					reliablePacketSendQueue.back().payloadOffset = payloadOffset;
@@ -238,11 +238,11 @@ namespace se
 		void Connection::processReceivedPackets()
 		{
 			SE_SCOPE_PROFILER(debugName);
-			//Process received raw packets
+			// Process received raw packets
 			LOCK_GUARD(lock, mutex, processReceivedPackets);
 			while (!receivedPackets.empty())
 			{
-				//Swap data and erase packet: receive handler might modify received packets vector!
+				// Swap data and erase packet: receive handler might modify received packets vector!
 				std::vector<uint8_t> data;
 				data.swap(receivedPackets.front());
 				receivedBytes += data.size();
@@ -300,7 +300,7 @@ namespace se
 			}
 		}
 
-		void Connection::reliableFragmentReceiveHandler(const size_t reliableStreamOffset, const uint8_t* const dataPtr, const uint16_t dataSize, const bool userData, const bool endOfPayload, const size_t payloadTotalSize)
+		void Connection::reliableFragmentReceiveHandler(const uint64_t reliableStreamOffset, const uint8_t* const dataPtr, const uint16_t dataSize, const bool userData, const bool endOfPayload, const uint64_t payloadTotalSize)
 		{
 			se_assert(dataSize > 0);
 			if (reliableStreamOffset >= reliableStreamOffsetReceive)
@@ -310,29 +310,29 @@ namespace se
 					auto checkMergeWithNext = [&](const size_t insertIndex)->bool
 					{
 						se_assert(insertIndex < receivedReliableFragments.size() - 1);
-						//Check if fragment is to be merged with the next fragment
+						// Check if fragment is to be merged with the next fragment
 						if (!receivedReliableFragments[insertIndex].endOfPayload && insertIndex + 1 < receivedReliableFragments.size())
 						{
-							const size_t endOffset = receivedReliableFragments[insertIndex].offset + receivedReliableFragments[insertIndex].data.size();
+							const uint64_t endOffset = receivedReliableFragments[insertIndex].offset + uint64_t(receivedReliableFragments[insertIndex].data.size());
 							if (endOffset >= receivedReliableFragments[insertIndex + 1].offset)
 							{
-								const size_t overlappingSize = endOffset - receivedReliableFragments[insertIndex + 1].offset;
+								const uint64_t overlappingSize = endOffset - receivedReliableFragments[insertIndex + 1].offset;
 
 #ifndef SE_FINAL_RELEASE // Check that overlapping data matches
-								for (size_t o = 0; o < overlappingSize; o++)
+								for (uint64_t o = 0; o < overlappingSize; o++)
 								{
-									se_assert(receivedReliableFragments[insertIndex].data[receivedReliableFragments[insertIndex].data.size() - overlappingSize + o] == receivedReliableFragments[insertIndex + 1].data[o]);
+									se_assert(receivedReliableFragments[insertIndex].data[size_t(uint64_t(receivedReliableFragments[insertIndex].data.size()) - overlappingSize + o)] == receivedReliableFragments[insertIndex + 1].data[size_t(o)]);
 								}
 #endif
 
-								//Copy next fragment's contents and erase it
+								// Copy next fragment's contents and erase it
 								const size_t prevSize = receivedReliableFragments[insertIndex].data.size();
-								const size_t mergedSize = prevSize + receivedReliableFragments[insertIndex + 1].data.size() - overlappingSize;
+								const size_t mergedSize = prevSize + receivedReliableFragments[insertIndex + 1].data.size() - size_t(overlappingSize);
 								receivedReliableFragments[insertIndex].data.resize(mergedSize);
 								memcpy(
 									&receivedReliableFragments[insertIndex].data[prevSize],
-									&receivedReliableFragments[insertIndex + 1].data[overlappingSize],
-									receivedReliableFragments[insertIndex + 1].data.size() - overlappingSize);
+									&receivedReliableFragments[insertIndex + 1].data[size_t(overlappingSize)],
+									size_t(uint64_t(receivedReliableFragments[insertIndex + 1].data.size()) - overlappingSize));
 								receivedReliableFragments[insertIndex].endOfPayload = receivedReliableFragments[insertIndex + 1].endOfPayload;
 								receivedReliableFragments.erase(receivedReliableFragments.begin() + insertIndex + 1);
 								return true;
@@ -359,12 +359,12 @@ namespace se
 					}
 				};
 
-				//Receive fragment
+				// Receive fragment
 				for (size_t f = 0; f < receivedReliableFragments.size(); f++)
 				{
 					if (reliableStreamOffset < receivedReliableFragments[f].offset)
 					{
-						//Insert before
+						// Insert before
 						ReceivedReliableFragment& receivedFragment = *receivedReliableFragments.insert(receivedReliableFragments.begin() + f, ReceivedReliableFragment());
 						receivedFragment.userData = userData;
 						receivedFragment.endOfPayload = endOfPayload;
@@ -376,15 +376,17 @@ namespace se
 					}
 					else if (reliableStreamOffset < receivedReliableFragments[f].offset + receivedReliableFragments[f].data.size())
 					{
-						//Received fragment overlaps with receivedReliableFragments[f]'s coverage
-						//Check if any new data was received
+						// Received fragment overlaps with receivedReliableFragments[f]'s coverage
+						// Check if any new data was received
 						if (reliableStreamOffset + dataSize > receivedReliableFragments[f].offset + receivedReliableFragments[f].data.size())
 						{
 							se_assert(!receivedReliableFragments[f].endOfPayload);
-							const size_t newBytes = reliableStreamOffset + dataSize - receivedReliableFragments[f].offset - receivedReliableFragments[f].data.size();
-							const size_t prevSize = receivedReliableFragments[f].data.size();
-							receivedReliableFragments[f].data.resize(prevSize + newBytes);
-							memcpy(&receivedReliableFragments[f].data[prevSize], dataPtr + (dataSize - newBytes), newBytes);
+							const uint64_t newBytes = reliableStreamOffset + dataSize - receivedReliableFragments[f].offset - receivedReliableFragments[f].data.size();
+							const uint64_t prevSize = receivedReliableFragments[f].data.size();
+							const uint64_t newSize = prevSize + newBytes;
+							se_assert(newSize <= std::numeric_limits<size_t>::max() && "New size is larger than max std::vector capacity.");
+							receivedReliableFragments[f].data.resize(size_t(newSize));
+							memcpy(&receivedReliableFragments[f].data[size_t(prevSize)], dataPtr + (dataSize - newBytes), size_t(newBytes));
 							receivedReliableFragments[f].endOfPayload = endOfPayload;
 							postInsert(f);
 						}
@@ -407,24 +409,24 @@ namespace se
 			//}
 		}
 
-		void Connection::acknowledgementReceiveHandler(const size_t reliableStreamOffset, const uint16_t payloadSize)
+		void Connection::acknowledgementReceiveHandler(const uint64_t reliableStreamOffset, const uint16_t payloadSize)
 		{
 			SE_SCOPE_PROFILER(debugName);
 			if (reliableStreamOffset >= reliableStreamOffsetSend)
 			{
-				size_t offset = reliableStreamOffsetSend;
+				uint64_t offset = reliableStreamOffsetSend;
 				for (size_t p = 0; p < reliablePacketSendQueue.size(); p++)
 				{
 					se_assert(reliableStreamOffset >= offset);
 					if (reliableStreamOffset < offset + reliablePacketSendQueue[p].payload.size())
 					{
-						//Acknowledgement belongs to this packet, check fragments
+						// Acknowledgement belongs to this packet, check fragments
 						for (size_t f = 0; f < reliablePacketSendQueue[p].unacknowledgedFragments.size(); f++)
 						{
 							if (reliablePacketSendQueue[p].unacknowledgedFragments[f].offset == reliableStreamOffset &&
 								reliablePacketSendQueue[p].unacknowledgedFragments[f].size == payloadSize)
 							{
-								//Calculate RTT
+								// Calculate RTT
 								recentRoundTripTimes.push_back(time::now() - reliablePacketSendQueue[p].unacknowledgedFragments[f].firstSendTime);
 								if (recentRoundTripTimes.size() > 40)
 								{
@@ -434,22 +436,22 @@ namespace se
 
 								reliableFragmentTransmitted(reliablePacketSendQueue[p].unacknowledgedFragments[f].sendCount, reliablePacketSendQueue[p].unacknowledgedFragments[f].size);
 
-								//Add to acknowledged fragments
+								// Add to acknowledged fragments
 								reliablePacketSendQueue[p].acknowledgedFragments.push_back(ReliablePacketOut::AcknowledgedFragment());
 								reliablePacketSendQueue[p].acknowledgedFragments.back().offset = reliableStreamOffset;
 								reliablePacketSendQueue[p].acknowledgedFragments.back().size = payloadSize;
 
-								//Remove from unacknowledged fragments
+								// Remove from unacknowledged fragments
 								if (reliablePacketSendQueue[p].unacknowledgedFragments[f].sendCount > 2 && getDebugLogLevel() >= 1)
 								{
 									se::log::info("Connection: reliable fragment with " + std::to_string(reliablePacketSendQueue[p].unacknowledgedFragments[f].size) + " bytes was sent " + std::to_string(reliablePacketSendQueue[p].unacknowledgedFragments[f].sendCount) + " times.", se::log::TextColor::YELLOW);
 								}
 								reliablePacketSendQueue[p].unacknowledgedFragments.erase(reliablePacketSendQueue[p].unacknowledgedFragments.begin() + f);
 
-								//Remove all unacknowledged fragments that have been delivered through other fragments
-								//TODO, only happens when MTU changes on the fly
+								// Remove all unacknowledged fragments that have been delivered through other fragments
+								// TODO, only happens when MTU changes on the fly
 
-								//Check if the complete payload has been delivered
+								// Check if the complete payload has been delivered
 								if (reliablePacketSendQueue[p].unacknowledgedFragments.empty())
 								{
 									reliablePacketSendQueue[p].delivered = true;
@@ -463,7 +465,7 @@ namespace se
 					}
 					else
 					{
-						//Not in this packet
+						// Not in this packet
 						se_assert(p + 1 < reliablePacketSendQueue.size()); // TODO?: asserted here once
 						offset += reliablePacketSendQueue[p].payload.size();
 					}
@@ -471,7 +473,7 @@ namespace se
 			}
 			else
 			{
-				//Old acknowledgement
+				// Old acknowledgement
 			}
 		}
 
@@ -481,14 +483,14 @@ namespace se
 			const time::Time now = time::now();
 			LOCK_GUARD(lock, mutex, deliverOutgoingPackets);
 
-			//Remove delivered reliable packets from the send queue
+			// Remove delivered reliable packets from the send queue
 			while (!reliablePacketSendQueue.empty() && reliablePacketSendQueue.front().delivered)
 			{
 				reliableStreamOffsetSend += reliablePacketSendQueue.front().payload.size();
 				reliablePacketSendQueue.erase(reliablePacketSendQueue.begin());
 			}
 
-			//Replenish send quotas
+			// Replenish send quotas
 			if (lastSendQuotaReplenishTimestamp == time::Time::zero)
 			{
 				lastSendQuotaReplenishTimestamp = now;
@@ -498,11 +500,11 @@ namespace se
 				static const time::Time maxTimeSinceReplenish = time::fromSeconds(0.1f);
 				const time::Time timeSinceReplenish(std::min((now - lastSendQuotaReplenishTimestamp).value, maxTimeSinceReplenish.value));
 				const double secondsSinceReplenish = double(timeSinceReplenish.asSeconds());
-				const size_t newSendQuota = size_t(std::ceil(sendQuotaPerSecond * secondsSinceReplenish));
+				const uint64_t newSendQuota = uint64_t(std::ceil(sendQuotaPerSecond * secondsSinceReplenish));
 				if (newSendQuota >= 10)
 				{
-					const size_t newReliableSendQuota = newSendQuota / 2;
-					const size_t newUnreliableSendQuota = newSendQuota - newReliableSendQuota;
+					const uint64_t newReliableSendQuota = newSendQuota / 2;
+					const uint64_t newUnreliableSendQuota = newSendQuota - newReliableSendQuota;
 					reliableSendQuota += newReliableSendQuota;
 					unreliableSendQuota += newUnreliableSendQuota;
 					lastSendQuotaReplenishTimestamp = now;
@@ -513,11 +515,11 @@ namespace se
 				}
 				else
 				{
-					//Program is running too fast... let's wait a while longer before replenishing
+					// Program is running too fast... let's wait a while longer before replenishing
 				}
 			}
 
-			//If reliable/unreliable is empty, dump quota to the other. If both are empty, release all so that quota does not stack over time.
+			// If reliable/unreliable is empty, dump quota to the other. If both are empty, release all so that quota does not stack over time.
 			if (reliablePacketSendQueue.empty() && unreliablePacketSendQueue.empty())
 			{
 				reliableSendQuota = 0u;
@@ -534,22 +536,20 @@ namespace se
 				unreliableSendQuota = 0u;
 			}
 
-			//By default do not request more send quota
+			// By default do not request more send quota
 			moreSendQuotaRequested = false;
 
-			//Reliable send queue
-			for (size_t q = 0; q < reliablePacketSendQueue.size(); q++)
+			// Reliable send queue
+			for (ReliablePacketOut& reliablePacketOut : reliablePacketSendQueue)
 			{
-				ReliablePacketOut& reliablePacketOut = reliablePacketSendQueue[q];
-
-				//Generate unacknowledged fragments
+				// Generate unacknowledged fragments
 				if (!reliablePacketOut.delivered && reliablePacketOut.unacknowledgedFragments.empty())
 				{
-					const size_t offsetEnd = reliablePacketOut.payloadOffset + reliablePacketOut.payload.size();
-					size_t remaining = reliablePacketOut.payload.size();
+					const uint64_t offsetEnd = reliablePacketOut.payloadOffset + reliablePacketOut.payload.size();
+					uint64_t remaining = reliablePacketOut.payload.size();
 					while (remaining > 0)
 					{
-						const uint16_t fragmentSize = uint16_t(std::min(remaining, size_t(maximumSegmentSize)));
+						const uint16_t fragmentSize = uint16_t(std::min(remaining, uint64_t(maximumSegmentSize)));
 						reliablePacketOut.unacknowledgedFragments.emplace_back();
 						reliablePacketOut.unacknowledgedFragments.back().offset = offsetEnd - remaining;
 						reliablePacketOut.unacknowledgedFragments.back().size = fragmentSize;
@@ -557,7 +557,7 @@ namespace se
 					}
 				}
 
-				//Keep (re)sending unacknowledged fragments
+				// Keep (re)sending unacknowledged fragments
 				const time::Time resendTime = estimatedRoundTripTime != time::Time::zero
 					? estimatedRoundTripTime.value + estimatedRoundTripTime.value / 6
 					: se::time::fromSeconds(1.0f / 10.0f);
@@ -568,7 +568,7 @@ namespace se
 					{
 						if (unacknowledgedFragment.size <= maximumSegmentSize)
 						{
-							//Packet is valid for (re)send
+							// Packet is valid for (re)send
 							PacketHeader packetHeader;
 							packetHeader.protocolId = spehsProtocolId;
 							packetHeader.streamOffset = unacknowledgedFragment.offset;
@@ -588,7 +588,7 @@ namespace se
 
 							if (writeBuffer.getSize() + unacknowledgedFragment.size <= reliableSendQuota)
 							{
-								const size_t internalPayloadOffset = unacknowledgedFragment.offset - reliablePacketOut.payloadOffset;
+								const uint64_t internalPayloadOffset = unacknowledgedFragment.offset - reliablePacketOut.payloadOffset;
 								const std::vector<boost::asio::const_buffer> sendBuffers
 								{
 									boost::asio::const_buffer(writeBuffer.getData(), writeBuffer.getSize()),
@@ -606,15 +606,15 @@ namespace se
 							}
 							else
 							{
-								//Not enough send quota. Break, we want to buffer up send quota to send this fragment asap.
+								// Not enough send quota. Break, we want to buffer up send quota to send this fragment asap.
 								moreSendQuotaRequested = true;
 								break;
 							}
 						}
 						else
 						{
-							//Packet is too big to fit the (changed?) mss -> split
-							const size_t originalOffset = unacknowledgedFragment.offset;
+							// Packet is too big to fit the (changed?) mss -> split
+							const uint64_t originalOffset = unacknowledgedFragment.offset;
 							const uint16_t size1 = unacknowledgedFragment.size / 2;
 							const uint16_t size2 = unacknowledgedFragment.size - size1;
 							ReliablePacketOut::UnacknowledgedFragment &unacknowledgedFragment2 =
@@ -630,7 +630,7 @@ namespace se
 				}
 			}
 
-			//Unreliable send queue
+			// Unreliable send queue
 			while (!unreliablePacketSendQueue.empty())
 			{
 				PacketHeader packetHeader;
@@ -659,7 +659,7 @@ namespace se
 				}
 			}
 
-			//Drop all unreliable packets that are getting stale
+			// Drop all unreliable packets that are getting stale
 			static const time::Time staleTimeLimit = se::time::fromSeconds(0.1f);
 			for (size_t i = 0; i < unreliablePacketSendQueue.size();)
 			{
@@ -677,7 +677,7 @@ namespace se
 		void Connection::deliverReceivedPackets()
 		{
 			SE_SCOPE_PROFILER(debugName);
-			//Check if all data for the next packet has been received
+			// Check if all data for the next packet has been received
 			{
 				LOCK_GUARD(lock, mutex, deliverReceivedPackets);
 				while (!receivedReliableFragments.empty() && receivedReliableFragments.front().endOfPayload && receivedReliableFragments.front().offset == reliableStreamOffsetReceive)
@@ -691,7 +691,7 @@ namespace se
 				}
 			}
 
-			//Deliver received reliable packets
+			// Deliver received reliable packets
 			while (true)
 			{
 				std::vector<uint8_t> data;
@@ -710,7 +710,7 @@ namespace se
 							}
 							else
 							{
-								//Must wait until a receive handler is specified
+								// Must wait until a receive handler is specified
 								if (receivedReliablePackets.size() > 1000)
 								{
 									log::warning(debugName + std::to_string(receivedReliablePackets.size()) + " received reliable packets awaiting.");
@@ -740,7 +740,7 @@ namespace se
 				}
 			}
 
-			//Deliver received unreliable packets
+			// Deliver received unreliable packets
 			while (true)
 			{
 				std::vector<uint8_t> data;
@@ -759,7 +759,7 @@ namespace se
 					}
 					else
 					{
-						//Copy contents to non-mutex protected memory
+						// Copy contents to non-mutex protected memory
 						data.swap(receivedUnreliablePackets.front());
 						handler = receiveHandler;
 						receivedUnreliablePackets.erase(receivedUnreliablePackets.begin());
@@ -829,7 +829,7 @@ namespace se
 			{
 				if (reliable)
 				{
-					const size_t payloadOffset = reliablePacketSendQueue.empty() ? reliableStreamOffsetSend : reliablePacketSendQueue.back().payloadOffset + reliablePacketSendQueue.back().payload.size();
+					const uint64_t payloadOffset = reliablePacketSendQueue.empty() ? reliableStreamOffsetSend : reliablePacketSendQueue.back().payloadOffset + uint64_t(reliablePacketSendQueue.back().payload.size());
 					reliablePacketSendQueue.push_back(ReliablePacketOut(true, payloadOffset, writeBuffer.getData(), writeBuffer.getSize()));
 				}
 				else
@@ -851,28 +851,28 @@ namespace se
 #ifndef SE_FINAL_RELEASE
 			if (simulatedPacketLossChanceOutgoing > 0.0f && rng::weightedCoin(simulatedPacketLossChanceOutgoing))
 			{
-				sentBytes += bufferSize;
+				sentBytes += uint64_t(bufferSize);
 				if (logReliable)
 				{
-					sentBytesReliable += bufferSize;
+					sentBytesReliable += uint64_t(bufferSize);
 				}
 				if (logUnreliable)
 				{
-					sentBytesUnreliable += bufferSize;
+					sentBytesUnreliable += uint64_t(bufferSize);
 				}
 				return;
 			}
 #endif
 			if (socket->sendPacket(buffers, endpoint))
 			{
-				sentBytes += bufferSize;
+				sentBytes += uint64_t(bufferSize);
 				if (logReliable)
 				{
-					sentBytesReliable += bufferSize;
+					sentBytesReliable += uint64_t(bufferSize);
 				}
 				if (logUnreliable)
 				{
-					sentBytesUnreliable += bufferSize;
+					sentBytesUnreliable += uint64_t(bufferSize);
 				}
 				lastSendTime = time::now();
 				if (logReliable)
@@ -882,7 +882,7 @@ namespace se
 			}
 		}
 
-		void Connection::sendPacketAcknowledgement(const size_t reliableStreamOffset, const uint16_t payloadSize)
+		void Connection::sendPacketAcknowledgement(const uint64_t reliableStreamOffset, const uint16_t payloadSize)
 		{
 			PacketHeader packetHeader;
 			packetHeader.protocolId = spehsProtocolId;
@@ -918,7 +918,7 @@ namespace se
 			if (connectionStatus == ConnectionStatus::connected)
 			{
 				connectionStatus = ConnectionStatus::disconnecting;
-				const size_t payloadOffset = reliablePacketSendQueue.empty() ? reliableStreamOffsetSend : reliablePacketSendQueue.back().payloadOffset + reliablePacketSendQueue.back().payload.size();
+				const uint64_t payloadOffset = reliablePacketSendQueue.empty() ? reliableStreamOffsetSend : reliablePacketSendQueue.back().payloadOffset + uint64_t(reliablePacketSendQueue.back().payload.size());
 				reliablePacketSendQueue.emplace_back();
 				reliablePacketSendQueue.back().userData = false;
 				reliablePacketSendQueue.back().payloadOffset = payloadOffset;
@@ -951,9 +951,9 @@ namespace se
 			}
 		}
 
-		void Connection::reliableFragmentTransmitted(const size_t sendCount, const uint16_t fragmentSize)
+		void Connection::reliableFragmentTransmitted(const uint64_t sendCount, const uint16_t fragmentSize)
 		{
-			//Add to recentReliableFragmentSendCounts
+			// Add to recentReliableFragmentSendCounts
 			congestionAvoidanceState.recentReliableFragmentSendCounts.push_back(CongestionAvoidanceState::ReliableFragmentSendCount());
 			congestionAvoidanceState.recentReliableFragmentSendCounts.back().sendCount = sendCount;
 			congestionAvoidanceState.recentReliableFragmentSendCounts.back().size = fragmentSize;
@@ -963,13 +963,13 @@ namespace se
 			}
 			averageReliableFragmentSendCount = 0.0f;
 			const float weigth = 1.0f / congestionAvoidanceState.recentReliableFragmentSendCounts.size();
-			for (size_t i = 0; i < congestionAvoidanceState.recentReliableFragmentSendCounts.size(); i++)
+			for (CongestionAvoidanceState::ReliableFragmentSendCount& recentReliableFragmentSendCount : congestionAvoidanceState.recentReliableFragmentSendCounts)
 			{
-				averageReliableFragmentSendCount += weigth * float(congestionAvoidanceState.recentReliableFragmentSendCounts[i].sendCount);
+				averageReliableFragmentSendCount += weigth * float(recentReliableFragmentSendCount.sendCount);
 			}
 
-			//Add to total reliable fragment send counts
-			const std::map<size_t, size_t>::iterator it = congestionAvoidanceState.reliableFragmentSendCounters.find(sendCount);
+			// Add to total reliable fragment send counts
+			const std::map<uint64_t, uint64_t>::iterator it = congestionAvoidanceState.reliableFragmentSendCounters.find(sendCount);
 			if (it != congestionAvoidanceState.reliableFragmentSendCounters.end())
 			{
 				(*it).second++;
@@ -983,15 +983,15 @@ namespace se
 			double sendQuotaGrowthFactor = 1.0;
 			if (sendCount > 1u)
 			{
-				//Resend count is high, send less
+				// Resend count is high, send less
 				sendQuotaGrowthFactor = 0.999f;
 			}
 			else
 			{
-				//No resends, raise send quota
+				// No resends, raise send quota
 				if (moreSendQuotaRequested)
 				{
-					sendQuotaGrowthFactor = 1.001;// 1.01;
+					sendQuotaGrowthFactor = 1.001; // 1.01;
 				}
 			}
 
@@ -1085,13 +1085,13 @@ namespace se
 			return sendQuotaPerSecond;
 		}
 
-		size_t Connection::getSentBytes() const
+		uint64_t Connection::getSentBytes() const
 		{
 			LOCK_GUARD(lock, mutex, other);
 			return sentBytes;
 		}
 
-		size_t Connection::getSentBytes(const bool reliable) const
+		uint64_t Connection::getSentBytes(const bool reliable) const
 		{
 			LOCK_GUARD(lock, mutex, other);
 			if (reliable)
@@ -1104,13 +1104,13 @@ namespace se
 			}
 		}
 
-		size_t Connection::getReceivedBytes() const
+		uint64_t Connection::getReceivedBytes() const
 		{
 			LOCK_GUARD(lock, mutex, other);
 			return receivedBytes;
 		}
 
-		size_t Connection::getReceivedBytes(const bool reliable) const
+		uint64_t Connection::getReceivedBytes(const bool reliable) const
 		{
 			LOCK_GUARD(lock, mutex, other);
 			if (reliable)
@@ -1123,7 +1123,7 @@ namespace se
 			}
 		}
 
-		std::map<size_t, size_t> Connection::getReliableFragmentSendCounters() const
+		std::map<uint64_t, uint64_t> Connection::getReliableFragmentSendCounters() const
 		{
 			LOCK_GUARD(lock, mutex, other);
 			return congestionAvoidanceState.reliableFragmentSendCounters;
