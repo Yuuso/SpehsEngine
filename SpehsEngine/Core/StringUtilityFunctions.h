@@ -8,31 +8,35 @@
 namespace se
 {
 	template<typename SizeType = uint32_t>
-	void writeToBuffer(WriteBuffer& buffer, const std::string& string)
+	void writeToBuffer(WriteBuffer& writeBuffer, const std::string& string)
 	{
 		static_assert(std::is_integral<SizeType>::value, "SizeType must be integral.");
 		se_assert(size_t(std::numeric_limits<SizeType>::max()) >= string.size() && "String size is larger than the maximum of SizeType.");
 		const SizeType size = SizeType(string.size());
-		buffer.write(size);
+		writeBuffer.write(size);
 		for (SizeType i = 0; i < size; i++)
 		{
-			buffer.write(string[size_t(i)]);
+			writeBuffer.write(string[size_t(i)]);
 		}
 	}
 
 	template<typename SizeType = uint32_t>
-	bool readFromBuffer(ReadBuffer& buffer, std::string& string)
+	bool readFromBuffer(ReadBuffer& readBuffer, std::string& string)
 	{
 		static_assert(std::is_integral<SizeType>::value, "SizeType must be integral.");
 		SizeType size = 0;
-		if (!buffer.read(size))
+		if (!readBuffer.read(size))
+		{
+			return false;
+		}
+		if (readBuffer.getBytesRemaining() < size)
 		{
 			return false;
 		}
 		string.resize(size_t(size));
 		for (SizeType i = 0; i < size; i++)
 		{
-			if (!buffer.read(string[size_t(i)]))
+			if (!readBuffer.read(string[size_t(i)]))
 			{
 				return false;
 			}
