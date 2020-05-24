@@ -41,7 +41,7 @@ namespace se
 
 			for (size_t i = 0; i < connections.size(); i++)
 			{
-				if (!connections[i]->isConnected() && !connections[i]->isConnecting())
+				if (connections[i]->getStatus() == net::Connection::Status::Disconnected)
 				{
 					connections.erase(connections.begin() + i);
 				}
@@ -126,7 +126,7 @@ namespace se
 #define ADD_MUTEX_TIME(p_value) map[mutexLockTimes.p_value].push_back(#p_value); do{} while(false)
 					ADD_MUTEX_TIME(heartbeat);
 					ADD_MUTEX_TIME(estimateRoundTripTime);
-					ADD_MUTEX_TIME(processReceivedPackets);
+					ADD_MUTEX_TIME(processReceivedRawPackets);
 					ADD_MUTEX_TIME(deliverOutgoingPackets);
 					ADD_MUTEX_TIME(deliverReceivedPackets);
 					ADD_MUTEX_TIME(spehsReceiveHandler);
@@ -151,7 +151,7 @@ namespace se
 #define ADD_MUTEX_TIME(p_value) map[mutexHoldTimes.p_value].push_back(#p_value); do{} while(false)
 					ADD_MUTEX_TIME(heartbeat);
 					ADD_MUTEX_TIME(estimateRoundTripTime);
-					ADD_MUTEX_TIME(processReceivedPackets);
+					ADD_MUTEX_TIME(processReceivedRawPackets);
 					ADD_MUTEX_TIME(deliverOutgoingPackets);
 					ADD_MUTEX_TIME(deliverReceivedPackets);
 					ADD_MUTEX_TIME(spehsReceiveHandler);

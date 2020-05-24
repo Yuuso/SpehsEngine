@@ -5,6 +5,7 @@
 #include "SpehsEngine/Net/SocketUDP2.h"
 #include "SpehsEngine/Core/SE_Time.h"
 #include "SpehsEngine/Core/StrongInt.h"
+#include "SpehsEngine/Net/ConnectionPackets.h"
 #include <functional>
 #include <map>
 #include <mutex>
@@ -25,15 +26,22 @@ namespace se
 
 			enum class EstablishmentType
 			{
-				outgoing,
-				incoming
+				Outgoing,
+				Incoming
+			};
+
+			enum class Status
+			{
+				Connecting,
+				Connected,
+				Disconnected
 			};
 
 			struct MutexTimes
 			{
 				time::Time estimateRoundTripTime;
 				time::Time heartbeat;
-				time::Time processReceivedPackets;
+				time::Time processReceivedRawPackets;
 				time::Time deliverOutgoingPackets;
 				time::Time deliverReceivedPackets;
 				time::Time spehsReceiveHandler;
@@ -48,9 +56,8 @@ namespace se
 			void setReceiveHandler(const std::function<void(ReadBuffer&, const boost::asio::ip::udp::endpoint&, const bool)> callback = std::function<void(ReadBuffer&, const boost::asio::ip::udp::endpoint&, const bool)>());
 			void sendPacket(const WriteBuffer& buffer, const bool reliable);
 
-			void stopConnecting();
 			void disconnect();
-			bool isConnecting() const;
+			Status getStatus() const;
 			bool isConnected() const;
 			boost::asio::ip::udp::endpoint getRemoteEndpoint() const;
 			Port getLocalPort() const;
@@ -69,27 +76,24 @@ namespace se
 			MutexTimes getHoldMutexTimes() const;
 			void resetMutexTimes();
 
-			void connectToConnectionStatusChangedSignal(boost::signals2::scoped_connection& scopedConnection, const std::function<void(const bool)>& callback);
+			void connectToStatusChangedSignal(boost::signals2::scoped_connection& scopedConnection, const std::function<void(const Status oldStatus, const Status newStatus)>& callback);
 
+			const std::string& getDebugName() const { return debugName; }
 			void setTimeoutEnabled(const bool value);
 			bool getTimeoutEnabled() const;
-			void setSimulatedPacketLoss(const float chanceToDropIncoming, const float chanceToDropOutgoing);
+			void setSimulatedPacketLoss(const float chanceToDropIncoming, const float chanceToDropOutgoing, const float chanceToReorderReceivedPacket);
 			void setDebugLogLevel(const int level);
 			int getDebugLogLevel() const;
 
 			const std::string debugName;
 			const std::string debugEndpoint;
 			const boost::asio::ip::udp::endpoint endpoint;
+			const ConnectionId connectionId;
 			const EstablishmentType establishmentType;
 
 		private:
 
 			friend class ConnectionManager;
-
-			enum class ConnectionStatus
-			{
-				connecting, connected, disconnecting, disconnected
-			};
 
 			struct ReliablePacketOut
 			{
@@ -156,20 +160,22 @@ namespace se
 				std::vector<uint8_t> data;
 			};
 
-			Connection(const boost::shared_ptr<SocketUDP2>& _socket, const boost::asio::ip::udp::endpoint& _endpoint,
-				const EstablishmentType _establishmentType, const std::string& _debugName = "Connection");
+			Connection(const boost::shared_ptr<SocketUDP2>& _socket, const boost::asio::ip::udp::endpoint& _endpoint, const ConnectionId _connectionId,
+				const EstablishmentType _establishmentType, const std::string_view _debugName);
 
-			void update();
-			void receivePacket(std::vector<uint8_t>& data);
+			void update(const time::Time timeoutDeltaTime);
+			void receiveRawPacket(std::vector<uint8_t>& data);
 			void sendPacketImpl(const std::vector<boost::asio::const_buffer>& buffers, const bool logReliable, const bool logUnreliable);
 			void sendPacketAcknowledgement(const uint64_t reliableStreamOffset, const uint16_t payloadSize);
-			void setConnected(const bool value);
-			void processReceivedPackets();
+			void processReceivedRawPackets();
 			void reliableFragmentReceiveHandler(const uint64_t reliableStreamOffset, const uint8_t* const dataPtr, const uint16_t dataSize, const bool userData, const bool endOfPayload, const uint64_t payloadTotalSize);
 			void acknowledgementReceiveHandler(const uint64_t reliableStreamOffset, const uint16_t payloadSize);
 			void deliverReceivedPackets();
 			void deliverOutgoingPackets();
 			void spehsReceiveHandler(ReadBuffer& readBuffer);
+			void attemptToProcessConnectPacket(ReadBuffer& readBuffer);
+			void disconnectImpl(const bool sendDisconnectPacket);
+			void setStatus(const Status newStatus);
 
 			/* Declared and defined privately, used by ConnectionManager. */
 			bool hasPendingOperations() const;
@@ -180,19 +186,22 @@ namespace se
 			boost::shared_ptr<SocketUDP2> socket;
 			std::vector<ReliablePacketOut> reliablePacketSendQueue;
 			std::vector<UnreliablePacketOut> unreliablePacketSendQueue;
-			std::vector<std::vector<uint8_t>> receivedPackets;
+			std::vector<std::vector<uint8_t>> receivedRawPackets;
+			time::Time connectionEstablishedTime;
 			time::Time lastReceiveTime;
 			time::Time lastSendTime;
 			time::Time lastSendTimeReliable;
 			time::Time lastQueueHeartbeatTime;
+			time::Time timeoutCountdown;
 			uint64_t reliableStreamOffsetSend = 0u; // bytes from past packets that have been delivered
 			uint64_t reliableStreamOffsetReceive = 0u; // bytes from past packets that have been received
 			std::vector<ReceivedReliableFragment> receivedReliableFragments;
 			std::vector<ReceivedReliablePacket> receivedReliablePackets;
 			std::vector<std::vector<uint8_t>> receivedUnreliablePackets;
 			std::function<void(ReadBuffer&, const boost::asio::ip::udp::endpoint&, const bool)> receiveHandler;
-			ConnectionStatus connectionStatus = ConnectionStatus::connecting; // Every connection begins in the connecting state
-			boost::signals2::signal<void(const bool)> connectionStatusChangedSignal;
+			Status status = Status::Connecting; // Every connection begins in the connecting state
+			ConnectionId remoteConnectionId;
+			boost::signals2::signal<void(const Status, const Status)> statusChangedSignal;
 
 			// Congestion avoidance
 			struct CongestionAvoidanceState
@@ -235,10 +244,13 @@ namespace se
 			uint64_t sentBytesUnreliable = 0u;
 			uint64_t receivedBytesUnreliable = 0u;
 
+			std::string remoteDebugName;
 			int debugLogLevel = 0;
 			bool timeoutEnabled = true;
 			float simulatedPacketLossChanceIncoming = 0.0f;
 			float simulatedPacketLossChanceOutgoing = 0.0f;
+			float simulatedPacketChanceReordering = 0.0f;
+			std::vector<std::string> debugSelfLog;
 		};
 	}
 }

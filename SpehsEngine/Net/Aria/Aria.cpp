@@ -14,7 +14,7 @@ namespace se
 		namespace aria
 		{
 			static const uint64_t ariaMagicHeader = 0xC0DEA21A1994A51A;
-			enum class PacketType : uint8_t
+			enum class AriaPacketType : uint8_t
 			{
 				enter,							//Sent by client upon connecting. Contains name, counterpart and local port if need to wait.
 				counterpartEndpointAccept,		//Sent to clients who have been paired with a counterpart. Expected action is to start accepting on the declared port.
@@ -50,7 +50,7 @@ namespace se
 					//Send enter packet
 					WriteBuffer buffer;
 					buffer.write(ariaMagicHeader);
-					buffer.write(PacketType::enter);
+					buffer.write(AriaPacketType::enter);
 					buffer.write(name);
 					buffer.write(counterpart);
 					buffer.write(localPortForWaiting);
@@ -68,7 +68,7 @@ namespace se
 					}
 					WriteBuffer pingBuffer;
 					pingBuffer.write(ariaMagicHeader);
-					pingBuffer.write(PacketType::ping);
+					pingBuffer.write(AriaPacketType::ping);
 					const se::time::Time pingTimeout = se::time::fromSeconds(10000.0f);
 
 					//Wait for server to find a counterpart
@@ -158,24 +158,24 @@ namespace se
 				buffer.read(headerVerification);
 				if (headerVerification == ariaMagicHeader)
 				{
-					PacketType packetType;
+					AriaPacketType packetType;
 					buffer.read(packetType);
 					switch (packetType)
 					{
-					case PacketType::enter: break;
-					case PacketType::counterpartEndpointAccept:
+					case AriaPacketType::enter: break;
+					case AriaPacketType::counterpartEndpointAccept:
 						enterResult = EnterResult::accept;
 						break;
-					case PacketType::counterpartEndpointConnect:
+					case AriaPacketType::counterpartEndpointConnect:
 						buffer.read(connectEndpoint.address);
 						buffer.read(connectEndpoint.port);
 						enterResult = EnterResult::connect;
 						break;
-					case PacketType::shutdown:
+					case AriaPacketType::shutdown:
 						log::info("Aria::Connector::enter: failed. The Aria server is shutting down...");
 						enterResult = EnterResult::fail;
 						break;
-					case PacketType::ping:
+					case AriaPacketType::ping:
 					{
 						std::lock_guard<std::mutex> lock(pingMutex);
 						lastPingReceiveTime = se::time::now();
@@ -219,7 +219,7 @@ namespace se
 					//Send name and counterpart query
 					WriteBuffer buffer;
 					buffer.write(ariaMagicHeader);
-					buffer.write(PacketType::enter);
+					buffer.write(AriaPacketType::enter);
 					_socket.sendPacket(buffer);
 
 					//Start receiving
@@ -233,12 +233,12 @@ namespace se
 				buffer.read(headerVerification);
 				if (headerVerification == ariaMagicHeader)
 				{
-					PacketType packetType;
+					AriaPacketType packetType;
 					buffer.read(packetType);
 					switch (packetType)
 					{
 					default: break;
-					case PacketType::enter:
+					case AriaPacketType::enter:
 					{//Received name, counterpart and wait port
 						std::lock_guard<std::mutex> lock(enterDetailsMutex);
 						enterDetailsChanged = true;
@@ -248,13 +248,13 @@ namespace se
 						log::info("Aria: client entered: '" + name + "', looking for counterpart: '" + counterpart + "'");
 					}
 					break;
-					case PacketType::ping:
+					case AriaPacketType::ping:
 					{//Send a response
 						static WriteBuffer pingBuffer;
 						if (pingBuffer.getOffset() == 0)
 						{
 							pingBuffer.write(ariaMagicHeader);
-							pingBuffer.write(PacketType::ping);
+							pingBuffer.write(AriaPacketType::ping);
 						}
 						socket.sendPacket(pingBuffer);
 					}
@@ -443,14 +443,14 @@ namespace se
 										//c1 will accept
 										WriteBuffer buffer1;
 										buffer1.write(ariaMagicHeader);
-										buffer1.write(PacketType::counterpartEndpointAccept);
+										buffer1.write(AriaPacketType::counterpartEndpointAccept);
 										clients[c1]->socket.sendPacket(buffer1);
 
 										//c2 will connect
 										const Address address1 = clients[c1]->socket.getRemoteAddress();
 										WriteBuffer buffer2;
 										buffer2.write(ariaMagicHeader);
-										buffer2.write(PacketType::counterpartEndpointConnect);
+										buffer2.write(AriaPacketType::counterpartEndpointConnect);
 										buffer2.write(address1);
 										buffer2.write(port1);
 										clients[c2]->socket.sendPacket(buffer2);

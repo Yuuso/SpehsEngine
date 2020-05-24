@@ -61,6 +61,7 @@ namespace se
 			size_t getReceivedBytes() const;
 			void setDebugLogLevel(const int level);
 			int getDebugLogLevel() const;
+			void setSimulatedPacketLoss(const float chanceToDropIncoming, const float chanceToDropOutgoing, const float chanceToReorderReceivedPacket);
 
 			const std::string debugName;
 
@@ -73,20 +74,28 @@ namespace se
 			};
 
 			void run();
-
 			void receiveHandler(std::vector<uint8_t>& data, const boost::asio::ip::udp::endpoint& senderEndpoint);
 			void processReceivedPackets();
 			void deliverOutgoingPackets();
+			ConnectionId generateNewConnectionId();
+			std::shared_ptr<Connection>& addConnectionImpl(const std::shared_ptr<Connection> &connection);
+			void removeConnectionImpl(const size_t index);
 
+			ConnectionId nextConnectionId = ConnectionId(1u);
 			boost::shared_ptr<SocketUDP2> socket;
 			mutable std::recursive_mutex mutex;
 			std::thread thread;
 			bool accepting = false;
 			bool destructorCalled = false;
+			time::Time lastUpdateTime;
 			std::vector<std::shared_ptr<Connection>> connections;
 			std::vector<ReceivedPacket> receivedPackets;
 			boost::signals2::signal<void(std::shared_ptr<Connection>&)> incomingConnectionSignal;
-			std::unordered_map<Connection*, boost::signals2::scoped_connection> incomingConnectionStatusChangedConnections;
+			std::unordered_map<Connection*, boost::signals2::scoped_connection> connectionStatusChangedConnections;
+
+			float simulatedPacketLossChanceIncoming = 0.0f;
+			float simulatedPacketLossChanceOutgoing = 0.0f;
+			float simulatedPacketChanceReordering = 0.0f;
 		};
 	}
 }

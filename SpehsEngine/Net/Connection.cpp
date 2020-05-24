@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "SpehsEngine/Net/Connection.h"
 
+#include "SpehsEngine/Core/BitwiseOperations.h"
 #include "SpehsEngine/Core/LockGuard.h"
 #include "SpehsEngine/Core/ReadBuffer.h"
 #include "SpehsEngine/Core/RNG.h"
@@ -8,10 +9,12 @@
 #include "SpehsEngine/Core/StringOperations.h"
 #include "SpehsEngine/Core/StringUtilityFunctions.h"
 #include "SpehsEngine/Core/WriteBuffer.h"
-
+#include "SpehsEngine/Core/PrecompiledInclude.h"
+#pragma optimize("", off) // nocommit
 #define DEBUG_LOG(level, message) if (getDebugLogLevel() >= level) \
 { \
 	se::log::info(debugName + "(" + getLocalPort().toString() + "): " + message); \
+	debugSelfLog.push_back(std::string(message)); \
 }
 
 
@@ -40,110 +43,24 @@ namespace se
 {
 	namespace net
 	{
-		SE_STRONG_INT(uint32_t, ProtocolId, 0u);
 		ProtocolId spehsProtocolId(0x5E2070C0);
+		const time::Time reliableHeartbeatInterval = time::fromSeconds(1.0f);
+		const time::Time timeoutTime = reliableHeartbeatInterval * 5;
 
-		enum class PacketType : uint8_t { connect, disconnect, heartbeat, mtuDiscovery };
-
-		struct ConnectPacket
+		enum class PacketType : uint8_t
 		{
-			void write(se::WriteBuffer& writeBuffer) const
-			{
-			}
-			bool read(se::ReadBuffer& readBuffer)
-			{
-				return true;
-			}
+			connect,
+			disconnect,
+			heartbeat,
+			mtuDiscovery,
 		};
 
-		struct DisconnectPacket
-		{
-			void write(se::WriteBuffer& writeBuffer) const
-			{
-			}
-			bool read(se::ReadBuffer& readBuffer)
-			{
-				return true;
-			}
-		};
-
-		struct HeartbeatPacket
-		{
-			void write(se::WriteBuffer& writeBuffer) const
-			{
-			}
-			bool read(se::ReadBuffer& readBuffer)
-			{
-				return true;
-			}
-		};
-
-		struct PathMTUDiscoveryPacket
-		{
-			void write(se::WriteBuffer& writeBuffer) const
-			{
-				se_write(writeBuffer, payload);
-			}
-			bool read(se::ReadBuffer& readBuffer)
-			{
-				se_read(readBuffer, payload);
-				return true;
-			}
-			std::vector<uint8_t> payload;
-		};
-
-		struct PacketHeader
-		{
-			enum ControlBit : uint8_t
-			{
-				userData = 1 << 0,
-				reliable = 1 << 1,
-				endOfPayload = 1 << 2,
-				acknowledgePacket = 1 << 3,
-			};
-			void write(se::WriteBuffer& writeBuffer) const
-			{
-				se_write(writeBuffer, protocolId);
-				se_write(writeBuffer, controlBits);
-				if (controlBits & ControlBit::reliable)
-				{
-					se_write(writeBuffer, streamOffset);
-					se_write(writeBuffer, payloadTotalSize);
-				}
-				if (controlBits & ControlBit::acknowledgePacket)
-				{
-					se_write(writeBuffer, streamOffset);
-					se_write(writeBuffer, receivedPayloadSize);
-				}
-			}
-			bool read(se::ReadBuffer& readBuffer)
-			{
-				se_read(readBuffer, protocolId);
-				se_read(readBuffer, controlBits);
-				if (controlBits & ControlBit::reliable)
-				{
-					se_read(readBuffer, streamOffset);
-					se_read(readBuffer, payloadTotalSize);
-				}
-				if (controlBits & ControlBit::acknowledgePacket)
-				{
-					se_read(readBuffer, streamOffset);
-					se_read(readBuffer, receivedPayloadSize);
-				}
-				return true;
-			}
-			ProtocolId protocolId;
-			uint8_t controlBits = 0u;
-			uint64_t streamOffset = 0u; // TODO
-			uint64_t payloadTotalSize = 0u;
-			uint16_t receivedPayloadSize = 0u;
-		};
-
-		Connection::Connection(const boost::shared_ptr<SocketUDP2>& _socket, const boost::asio::ip::udp::endpoint& _endpoint,
-			const EstablishmentType _establishmentType, const std::string& _debugName)
+		Connection::Connection(const boost::shared_ptr<SocketUDP2>& _socket, const boost::asio::ip::udp::endpoint& _endpoint, const ConnectionId _connectionId,
+			const EstablishmentType _establishmentType, const std::string_view _debugName)
 			: debugName(_debugName)
 			, debugEndpoint(toString(_endpoint))
 			, endpoint(_endpoint)
+			, connectionId(_connectionId)
 			, establishmentType(_establishmentType)
 			, socket(_socket)
 		{
@@ -151,12 +68,14 @@ namespace se
 			reliablePacketSendQueue.emplace_back();
 			reliablePacketSendQueue.back().userData = false;
 			ConnectPacket connectPacket;
+			connectPacket.connectionId = _connectionId;
+			connectPacket.debugName = _debugName;
 			WriteBuffer writeBuffer;
 			writeBuffer.write(PacketType::connect);
 			writeBuffer.write(connectPacket);
 			writeBuffer.swap(reliablePacketSendQueue.back().payload);
 
-#ifndef SE_FINAL_RELEASE // Disable timeouts in dev builds by default
+#if SE_CONFIGURATION != SE_CONFIGURATION_FINAL_RELEASE // Disable timeouts in dev builds by default
 			setTimeoutEnabled(false);
 #endif
 		}
@@ -164,19 +83,19 @@ namespace se
 		Connection::~Connection()
 		{
 			LOCK_GUARD(lock, mutex, other);
-			se_assert(reliablePacketSendQueue.empty() || isConnecting());
+			disconnect();
 		}
 
-		void Connection::update()
+		void Connection::update(const time::Time timeoutDeltaTime)
 		{
 			SE_SCOPE_PROFILER(debugName);
 			if (socket->isOpen())
 			{
 				deliverReceivedPackets();
 			}
-			else
+			else if (getStatus() != Status::Disconnected)
 			{
-				setConnected(false);
+				disconnectImpl(false);
 			}
 
 			{
@@ -200,12 +119,11 @@ namespace se
 				}
 			}
 
-			if (isConnected())
+			if (getStatus() == Status::Connected)
 			{
 				// Heartbeat
 				LOCK_GUARD(lock, mutex, heartbeat);
 				const se::time::Time now = time::now();
-				static const time::Time reliableHeartbeatInterval = time::fromSeconds(1.0f);
 				if (now - lastQueueHeartbeatTime >= reliableHeartbeatInterval &&
 					now - lastSendTimeReliable >= reliableHeartbeatInterval)
 				{
@@ -224,77 +142,123 @@ namespace se
 				}
 
 				// Timeout disconnection
-				if (timeoutEnabled)
+				timeoutCountdown -= timeoutDeltaTime;
+				if (timeoutEnabled && timeoutCountdown <= time::Time::zero)
 				{
-					const time::Time timeoutTime = reliableHeartbeatInterval * 5;
-					if (time::now() - lastReceiveTime >= timeoutTime)
-					{
-						setConnected(false);
-					}
+					disconnect();
 				}
 			}
 		}
 
-		void Connection::processReceivedPackets()
+		void Connection::processReceivedRawPackets()
 		{
 			SE_SCOPE_PROFILER(debugName);
+
 			// Process received raw packets
-			LOCK_GUARD(lock, mutex, processReceivedPackets);
-			while (!receivedPackets.empty())
+			LOCK_GUARD(lock, mutex, processReceivedRawPackets);
+
+			// Simulated raw packet reordering
+#if SE_CONFIGURATION != SE_CONFIGURATION_FINAL_RELEASE
+			if (simulatedPacketChanceReordering > 0.0f)
+			{
+				if (receivedRawPackets.size() < 2)
+				{
+					// We do not process received raw packets until 2+ have arrived so that we can give the arrived packet a chance to be reordered
+					return;
+				}
+				for (size_t i = 1; i < receivedRawPackets.size(); i++)
+				{
+					if (rng::weightedCoin(simulatedPacketChanceReordering))
+					{
+						// Swith to the previous packet
+						receivedRawPackets[i - 1].swap(receivedRawPackets[i]);
+					}
+				}
+			}
+#endif
+
+			while (!receivedRawPackets.empty())
 			{
 				// Swap data and erase packet: receive handler might modify received packets vector!
 				std::vector<uint8_t> data;
-				data.swap(receivedPackets.front());
+				data.swap(receivedRawPackets.front());
 				receivedBytes += data.size();
-				receivedPackets.erase(receivedPackets.begin());
+				receivedRawPackets.erase(receivedRawPackets.begin());
 				ReadBuffer readBuffer(data.data(), data.size());
 
 				PacketHeader packetHeader;
-				if (packetHeader.read(readBuffer))
+				if (packetHeader.read(readBuffer, debugName))
 				{
 					if (packetHeader.protocolId == spehsProtocolId)
 					{
-						if (packetHeader.controlBits & PacketHeader::reliable)
+						if (remoteConnectionId)
 						{
-							if (packetHeader.controlBits & PacketHeader::acknowledgePacket)
+							if (packetHeader.connectionId == remoteConnectionId)
 							{
-								acknowledgementReceiveHandler(packetHeader.streamOffset, packetHeader.receivedPayloadSize);
+								if (checkBit(packetHeader.controlBits, PacketHeader::ControlBit::Reliable))
+								{
+									if (checkBit(packetHeader.controlBits, PacketHeader::ControlBit::AcknowledgePacket))
+									{
+										acknowledgementReceiveHandler(packetHeader.streamOffset, packetHeader.receivedPayloadSize);
+									}
+									else
+									{
+										const bool userData = checkBit(packetHeader.controlBits, PacketHeader::ControlBit::UserData);
+										const bool endOfPayload = checkBit(packetHeader.controlBits, PacketHeader::ControlBit::EndOfPayload);
+										const uint16_t payloadSize = uint16_t(readBuffer.getBytesRemaining());
+										reliableFragmentReceiveHandler(packetHeader.streamOffset, readBuffer[readBuffer.getOffset()], payloadSize, userData, endOfPayload, packetHeader.payloadTotalSize);
+										sendPacketAcknowledgement(packetHeader.streamOffset, payloadSize);
+									}
+								}
+								else
+								{
+									if (readBuffer.getBytesRemaining())
+									{
+										if (checkBit(packetHeader.controlBits, PacketHeader::ControlBit::UserData))
+										{
+											receivedBytesUnreliable += readBuffer.getBytesRemaining();
+											receivedUnreliablePackets.emplace_back();
+											receivedUnreliablePackets.back().resize(readBuffer.getBytesRemaining());
+											memcpy(receivedUnreliablePackets.back().data(), readBuffer[readBuffer.getOffset()], readBuffer.getBytesRemaining());
+										}
+										else
+										{
+											ReadBuffer readBuffer2(readBuffer[readBuffer.getOffset()], readBuffer.getBytesRemaining());
+											spehsReceiveHandler(readBuffer2);
+										}
+									}
+									else
+									{
+										se::log::error("Received an empty unreliable packet.");
+									}
+								}
+							}
+							else if (time::now() - connectionEstablishedTime > time::fromSeconds(5.0f)
+								&& time::now() - lastReceiveTime > time::fromSeconds(5.0f))
+							{
+								DEBUG_LOG(1, "received packet header had unmatching connection id. Current connection isn't responsive. Terminating connection...");
+								disconnect();
 							}
 							else
 							{
-								const bool userData = packetHeader.controlBits & PacketHeader::ControlBit::userData;
-								const bool endOfPayload = packetHeader.controlBits & PacketHeader::ControlBit::endOfPayload;
-								const uint16_t payloadSize = uint16_t(readBuffer.getBytesRemaining());
-								reliableFragmentReceiveHandler(packetHeader.streamOffset, readBuffer[readBuffer.getOffset()], payloadSize, userData, endOfPayload, packetHeader.payloadTotalSize);
-								sendPacketAcknowledgement(packetHeader.streamOffset, payloadSize);
+								DEBUG_LOG(1, "received packet header had unmatching connection id. Ignoring...");
 							}
 						}
 						else
 						{
-							if (readBuffer.getBytesRemaining())
+							// We are currently expecting only the connect packet, everything else will be discarded.
+							// NOTE: Keep in mind that there might be packets from the previous (or even the next?) connection from this endpoint.
+							if (checkBit(packetHeader.controlBits, PacketHeader::ControlBit::Reliable) &&
+								!checkBit(packetHeader.controlBits, PacketHeader::ControlBit::UserData))
 							{
-								if (packetHeader.controlBits & PacketHeader::userData)
-								{
-									receivedBytesUnreliable += readBuffer.getBytesRemaining();
-									receivedUnreliablePackets.emplace_back();
-									receivedUnreliablePackets.back().resize(readBuffer.getBytesRemaining());
-									memcpy(receivedUnreliablePackets.back().data(), readBuffer[readBuffer.getOffset()], readBuffer.getBytesRemaining());
-								}
-								else
-								{
-									ReadBuffer readBuffer2(readBuffer[readBuffer.getOffset()], readBuffer.getBytesRemaining());
-									spehsReceiveHandler(readBuffer2);
-								}
-							}
-							else
-							{
-								se::log::error("Received an empty unreliable packet.");
+								ReadBuffer readBuffer2(readBuffer[readBuffer.getOffset()], readBuffer.getBytesRemaining());
+								attemptToProcessConnectPacket(readBuffer2);
 							}
 						}
 					}
 					else
 					{
-						DEBUG_LOG(1, "received packet header had unmatching protocol id.");
+						DEBUG_LOG(2, "received packet header had unmatching protocol id.");
 					}
 				}
 			}
@@ -318,7 +282,7 @@ namespace se
 							{
 								const uint64_t overlappingSize = endOffset - receivedReliableFragments[insertIndex + 1].offset;
 
-#ifndef SE_FINAL_RELEASE // Check that overlapping data matches
+#if SE_CONFIGURATION != SE_CONFIGURATION_FINAL_RELEASE // Check that overlapping data matches
 								for (uint64_t o = 0; o < overlappingSize; o++)
 								{
 									se_assert(receivedReliableFragments[insertIndex].data[size_t(uint64_t(receivedReliableFragments[insertIndex].data.size()) - overlappingSize + o)] == receivedReliableFragments[insertIndex + 1].data[size_t(o)]);
@@ -341,6 +305,7 @@ namespace se
 						return false;
 					};
 
+					// Try merging with the previous fragment
 					if (insertIndex > 0)
 					{
 						if (checkMergeWithNext(insertIndex - 1))
@@ -348,10 +313,13 @@ namespace se
 							insertIndex--;
 						}
 					}
+
+					// Try merging with the next fragment
 					if (insertIndex + 1 < receivedReliableFragments.size())
 					{
 						checkMergeWithNext(insertIndex);
 					}
+
 					if (reliableStreamOffset == reliableStreamOffsetReceive && receivedReliableFragments[insertIndex].endOfPayload)
 					{
 						se_assert(insertIndex == 0 && "reliableStreamOffsetReceive points to the begin, but insertion happened elsewhere?");
@@ -394,6 +362,9 @@ namespace se
 					}
 				}
 
+				const uint64_t backReliableStreamOffset = receivedReliableFragments.empty() ? 0u : receivedReliableFragments.back().offset + uint64_t(receivedReliableFragments.back().data.size());
+				se_assert(reliableStreamOffset >= backReliableStreamOffset);
+
 				receivedReliableFragments.emplace_back();
 				receivedReliableFragments.back().offset = reliableStreamOffset;
 				receivedReliableFragments.back().userData = userData;
@@ -402,11 +373,6 @@ namespace se
 				memcpy(receivedReliableFragments.back().data.data(), dataPtr, dataSize);
 				postInsert(receivedReliableFragments.size() - 1);
 			}
-			//else if (reliableStreamOffset == 0 && reliableStreamOffsetReceive > dataSize)
-			//{
-			//	//Connection was reset in between
-			//	setConnected(false);
-			//}
 		}
 
 		void Connection::acknowledgementReceiveHandler(const uint64_t reliableStreamOffset, const uint16_t payloadSize)
@@ -442,7 +408,7 @@ namespace se
 								reliablePacketSendQueue[p].acknowledgedFragments.back().size = payloadSize;
 
 								// Remove from unacknowledged fragments
-								if (reliablePacketSendQueue[p].unacknowledgedFragments[f].sendCount > 2 && getDebugLogLevel() >= 1)
+								if (reliablePacketSendQueue[p].unacknowledgedFragments[f].sendCount > 2 && getDebugLogLevel() >= 2)
 								{
 									se::log::info("Connection: reliable fragment with " + std::to_string(reliablePacketSendQueue[p].unacknowledgedFragments[f].size) + " bytes was sent " + std::to_string(reliablePacketSendQueue[p].unacknowledgedFragments[f].sendCount) + " times.", se::log::TextColor::YELLOW);
 								}
@@ -455,6 +421,16 @@ namespace se
 								if (reliablePacketSendQueue[p].unacknowledgedFragments.empty())
 								{
 									reliablePacketSendQueue[p].delivered = true;
+									if (reliablePacketSendQueue[p].payloadOffset == 0)
+									{
+										debugSelfLog.push_back("r0 delivered 1/2");
+										//if (debugName == "Server XanaduClient")
+										//{
+										//	time::Time nocommit = time::now();
+										//	if (nocommit == time::Time::zero)
+										//		log::info("nocommit");
+										//}
+									}
 								}
 
 								break;
@@ -473,7 +449,7 @@ namespace se
 			}
 			else
 			{
-				// Old acknowledgement
+				// Old acknowledgement, do nothing.
 			}
 		}
 
@@ -486,6 +462,10 @@ namespace se
 			// Remove delivered reliable packets from the send queue
 			while (!reliablePacketSendQueue.empty() && reliablePacketSendQueue.front().delivered)
 			{
+				if (reliablePacketSendQueue.front().payloadOffset == 0)
+				{
+					debugSelfLog.push_back("r0 delivered 2/2");
+				}
 				reliableStreamOffsetSend += reliablePacketSendQueue.front().payload.size();
 				reliablePacketSendQueue.erase(reliablePacketSendQueue.begin());
 			}
@@ -558,9 +538,11 @@ namespace se
 				}
 
 				// Keep (re)sending unacknowledged fragments
-				const time::Time resendTime = estimatedRoundTripTime != time::Time::zero
+				const time::Time capResendTime = se::time::fromSeconds(0.5f); // Do not wait longer than this to resend
+				const time::Time resendTime = std::min(capResendTime,
+					estimatedRoundTripTime != time::Time::zero
 					? estimatedRoundTripTime.value + estimatedRoundTripTime.value / 6
-					: se::time::fromSeconds(1.0f / 10.0f);
+					: se::time::fromSeconds(1.0f / 10.0f));
 				for (size_t f = 0; f < reliablePacketOut.unacknowledgedFragments.size(); f++)
 				{
 					ReliablePacketOut::UnacknowledgedFragment &unacknowledgedFragment = reliablePacketOut.unacknowledgedFragments[f];
@@ -571,20 +553,21 @@ namespace se
 							// Packet is valid for (re)send
 							PacketHeader packetHeader;
 							packetHeader.protocolId = spehsProtocolId;
+							packetHeader.connectionId = connectionId;
 							packetHeader.streamOffset = unacknowledgedFragment.offset;
 							packetHeader.payloadTotalSize = reliablePacketOut.payload.size();
-							packetHeader.controlBits |= PacketHeader::ControlBit::reliable;
+							enableBit(packetHeader.controlBits, PacketHeader::ControlBit::Reliable);
 							if (reliablePacketOut.userData)
 							{
-								packetHeader.controlBits |= PacketHeader::ControlBit::userData;
+								enableBit(packetHeader.controlBits, PacketHeader::ControlBit::UserData);
 							}
 							const bool endOfPayload = (unacknowledgedFragment.offset + unacknowledgedFragment.size) == (reliablePacketOut.payloadOffset + reliablePacketOut.payload.size());
 							if (endOfPayload)
 							{
-								packetHeader.controlBits |= PacketHeader::ControlBit::endOfPayload;
+								enableBit(packetHeader.controlBits, PacketHeader::ControlBit::EndOfPayload);
 							}
 							WriteBuffer writeBuffer;
-							writeBuffer.write(packetHeader);
+							packetHeader.write(writeBuffer, debugEndpoint);
 
 							if (writeBuffer.getSize() + unacknowledgedFragment.size <= reliableSendQuota)
 							{
@@ -635,12 +618,13 @@ namespace se
 			{
 				PacketHeader packetHeader;
 				packetHeader.protocolId = spehsProtocolId;
+				packetHeader.connectionId = connectionId;
 				if (unreliablePacketSendQueue.front().userData)
 				{
-					packetHeader.controlBits |= PacketHeader::ControlBit::userData;
+					enableBit(packetHeader.controlBits, PacketHeader::ControlBit::UserData);
 				}
 				WriteBuffer writeBuffer;
-				writeBuffer.write(packetHeader);
+				packetHeader.write(writeBuffer, debugEndpoint);
 				if (writeBuffer.getSize() + unreliablePacketSendQueue.front().payload.size() <= unreliableSendQuota)
 				{
 					const std::vector<boost::asio::const_buffer> sendBuffers
@@ -680,8 +664,11 @@ namespace se
 			// Check if all data for the next packet has been received
 			{
 				LOCK_GUARD(lock, mutex, deliverReceivedPackets);
+				// nocommit: reliableStreamOffsetReceive is 0 when it should be 4, received reliable packets don't get processed
 				while (!receivedReliableFragments.empty() && receivedReliableFragments.front().endOfPayload && receivedReliableFragments.front().offset == reliableStreamOffsetReceive)
 				{
+					if (reliableStreamOffsetReceive == 0)
+						debugSelfLog.push_back("r0 received 2/2");
 					se_assert(receivedReliableFragments.front().data.size() > 0);
 					reliableStreamOffsetReceive += receivedReliableFragments.front().data.size();
 					receivedReliablePackets.emplace_back();
@@ -784,16 +771,6 @@ namespace se
 			{
 				// Do nothing
 			}
-			else if (packetType == PacketType::connect)
-			{
-				ConnectPacket connectPacket;
-				if (!readBuffer.read(connectPacket))
-				{
-					log::warning("Connection::spehsReceiveHandler: received invalid data.");
-					return;
-				}
-				setConnected(true);
-			}
 			else if (packetType == PacketType::disconnect)
 			{
 				DisconnectPacket disconnectPacket;
@@ -802,13 +779,56 @@ namespace se
 					log::warning("Connection::spehsReceiveHandler: received invalid data.");
 					return;
 				}
-				setConnected(false);
+
+				if (getStatus() != Status::Disconnected)
+				{
+					// Disconnect without sending a packet in return
+					disconnectImpl(false);
+				}
+			}
+			else if (packetType == PacketType::connect)
+			{
+				// Ignore. The connect packet is only handled once when its expected (attemptToProcessConnectPacket).
 			}
 			else
 			{
 				log::error("Connection::spehsReceiveHandler: received invalid data.");
 				return;
 			}
+		}
+
+		void Connection::attemptToProcessConnectPacket(ReadBuffer& readBuffer)
+		{
+			se_assert(getStatus() == Status::Connecting);
+			LOCK_GUARD(lock, mutex, spehsReceiveHandler);
+			PacketType packetType;
+			if (!readBuffer.read(packetType))
+			{
+				return;
+			}
+
+			if (packetType != PacketType::connect)
+			{
+				return;
+			}
+
+			ConnectPacket connectPacket;
+			if (!readBuffer.read(connectPacket))
+			{
+				log::warning("Connection::attemptToProcessConnectPacket: packet type is connect but contents could not be read.");
+				return;
+			}
+
+			if (!connectPacket.connectionId)
+			{
+				log::warning("Connection::attemptToProcessConnectPacket: connect packet does not define connection id.");
+				return;
+			}
+
+			remoteConnectionId = connectPacket.connectionId;
+			remoteDebugName = connectPacket.debugName;
+			DEBUG_LOG(1, "connected.");
+			setStatus(Status::Connected);
 		}
 
 		void Connection::setReceiveHandler(const std::function<void(ReadBuffer&, const boost::asio::ip::udp::endpoint&, const bool)> callback)
@@ -825,7 +845,7 @@ namespace se
 				return;
 			}
 			LOCK_GUARD(lock, mutex, sendPacket);
-			if (connectionStatus == ConnectionStatus::connected)
+			if (status == Status::Connected)
 			{
 				if (reliable)
 				{
@@ -848,7 +868,7 @@ namespace se
 			const size_t bufferSize = boost::asio::buffer_size(buffers);
 
 			LOCK_GUARD(lock, mutex, sendPacketImpl);
-#ifndef SE_FINAL_RELEASE
+#if SE_CONFIGURATION != SE_CONFIGURATION_FINAL_RELEASE
 			if (simulatedPacketLossChanceOutgoing > 0.0f && rng::weightedCoin(simulatedPacketLossChanceOutgoing))
 			{
 				sentBytes += uint64_t(bufferSize);
@@ -886,58 +906,81 @@ namespace se
 		{
 			PacketHeader packetHeader;
 			packetHeader.protocolId = spehsProtocolId;
-			packetHeader.controlBits |= PacketHeader::reliable;
-			packetHeader.controlBits |= PacketHeader::acknowledgePacket;
+			packetHeader.connectionId = connectionId;
+			enableBit(packetHeader.controlBits, PacketHeader::ControlBit::Reliable);
+			enableBit(packetHeader.controlBits, PacketHeader::ControlBit::AcknowledgePacket);
 			packetHeader.streamOffset = reliableStreamOffset;
 			packetHeader.receivedPayloadSize = payloadSize;
 			WriteBuffer writeBuffer;
-			writeBuffer.write(packetHeader);
+			packetHeader.write(writeBuffer, debugEndpoint);
 			const std::vector<boost::asio::const_buffer> sendBuffers
 			{
 				boost::asio::const_buffer(writeBuffer.getData(), writeBuffer.getSize()),
 			};
 			sendPacketImpl(sendBuffers, false, false);
-		}
-
-		void Connection::stopConnecting()
-		{
-			LOCK_GUARD(lock, mutex, other);
-			if (connectionStatus == ConnectionStatus::connecting)
-			{
-				connectionStatus = ConnectionStatus::disconnected;
-			}
-			else
-			{
-				se_assert(false && "Connection status is not connecting.");
-			}
+			if (packetHeader.streamOffset == 0)
+				debugSelfLog.push_back("r0 received 1/2"); // NOTE: packetHeader.streamOffset==0 triggering earlier than this may be the ack packet
 		}
 
 		void Connection::disconnect()
 		{
-			LOCK_GUARD(lock, mutex, other);
-			if (connectionStatus == ConnectionStatus::connected)
-			{
-				connectionStatus = ConnectionStatus::disconnecting;
-				const uint64_t payloadOffset = reliablePacketSendQueue.empty() ? reliableStreamOffsetSend : reliablePacketSendQueue.back().payloadOffset + uint64_t(reliablePacketSendQueue.back().payload.size());
-				reliablePacketSendQueue.emplace_back();
-				reliablePacketSendQueue.back().userData = false;
-				reliablePacketSendQueue.back().payloadOffset = payloadOffset;
-				DisconnectPacket disconnectPacket;
-				WriteBuffer writeBuffer;
-				writeBuffer.write(PacketType::disconnect);
-				writeBuffer.write(disconnectPacket);
-				writeBuffer.swap(reliablePacketSendQueue.back().payload);
-			}
-			else
-			{
-				se_assert(false && "Connection status is not connecting.");
-			}
+			disconnectImpl(true);
 		}
 
-		void Connection::receivePacket(std::vector<uint8_t>& data)
+		void Connection::disconnectImpl(const bool sendDisconnectPacket)
+		{
+			LOCK_GUARD(lock, mutex, other);
+			if (status == Status::Disconnected)
+			{
+				return;
+			}
+
+			// nocommit
+			if (debugName == "XanaduServer: Incoming connection")
+			{
+				debugSelfLog.push_back("Xanadu client disconnected.");
+			}
+			else if (debugName == "Client XanaduClient")
+			{
+				debugSelfLog.push_back("Xanadu client disconnected.");
+			}
+
+			if (sendDisconnectPacket)
+			{
+				// Disconnect packet is sent immediately and unreliably. We do not want to wait for acks.
+				WriteBuffer writeBuffer;
+				PacketHeader packetHeader;
+				packetHeader.protocolId = spehsProtocolId;
+				packetHeader.connectionId = connectionId;
+				packetHeader.write(writeBuffer, debugEndpoint);
+				writeBuffer.write(PacketType::disconnect);
+				DisconnectPacket disconnectPacket;
+				writeBuffer.write(disconnectPacket);
+				const std::vector<boost::asio::const_buffer> sendBuffers
+				{
+					boost::asio::const_buffer(writeBuffer.getData(), writeBuffer.getSize())
+				};
+				sendPacketImpl(sendBuffers, false, true);
+			}
+
+			remoteConnectionId = ConnectionId();
+			reliableStreamOffsetSend = 0u;
+			reliableStreamOffsetReceive = 0u;
+			estimatedRoundTripTime = time::Time::zero;
+			reliablePacketSendQueue.clear();
+			unreliablePacketSendQueue.clear();
+			receivedRawPackets.clear();
+			receivedReliableFragments.clear();
+			receivedReliablePackets.clear();
+			receivedUnreliablePackets.clear();
+			DEBUG_LOG(1, "disconnected.");
+			setStatus(Status::Disconnected);
+		}
+
+		void Connection::receiveRawPacket(std::vector<uint8_t>& data)
 		{
 			LOCK_GUARD(lock, mutex, receivePacket);
-#ifndef SE_FINAL_RELEASE
+#if SE_CONFIGURATION != SE_CONFIGURATION_FINAL_RELEASE
 			if (simulatedPacketLossChanceIncoming > 0.0f && rng::weightedCoin(simulatedPacketLossChanceIncoming))
 			{
 				return;
@@ -946,8 +989,9 @@ namespace se
 			if (data.size() > 0)
 			{
 				lastReceiveTime = time::now();
-				receivedPackets.emplace_back();
-				receivedPackets.back().swap(data);
+				timeoutCountdown = timeoutTime;
+				receivedRawPackets.emplace_back();
+				receivedRawPackets.back().swap(data);
 			}
 		}
 
@@ -1009,45 +1053,16 @@ namespace se
 			congestionAvoidanceState.reEvaluationTimestamp = time::now();
 		}
 
-		void Connection::setConnected(const bool value)
+		Connection::Status Connection::getStatus() const
 		{
 			LOCK_GUARD(lock, mutex, other);
-			const bool connected = isConnected();
-			if (connected != value)
-			{
-				if (value)
-				{
-					connectionStatus = ConnectionStatus::connected;
-					DEBUG_LOG(1, " connected.");
-				}
-				else
-				{
-					connectionStatus = ConnectionStatus::disconnected;
-					reliableStreamOffsetSend = 0u;
-					reliableStreamOffsetReceive = 0u;
-					estimatedRoundTripTime = time::Time::zero;
-					reliablePacketSendQueue.clear();
-					unreliablePacketSendQueue.clear();
-					receivedPackets.clear();
-					receivedReliableFragments.clear();
-					receivedReliablePackets.clear();
-					receivedUnreliablePackets.clear();
-					DEBUG_LOG(1, " disconnected.");
-				}
-				connectionStatusChangedSignal(value);
-			}
-		}
-
-		bool Connection::isConnecting() const
-		{
-			LOCK_GUARD(lock, mutex, other);
-			return connectionStatus == ConnectionStatus::connecting;
+			return status;
 		}
 
 		bool Connection::isConnected() const
 		{
 			LOCK_GUARD(lock, mutex, other);
-			return connectionStatus == ConnectionStatus::connected;
+			return status == Status::Connected;
 		}
 
 		boost::asio::ip::udp::endpoint Connection::getRemoteEndpoint() const
@@ -1154,10 +1169,21 @@ namespace se
 			holdMutexTimes = MutexTimes();
 		}
 
-		void Connection::connectToConnectionStatusChangedSignal(boost::signals2::scoped_connection& scopedConnection, const std::function<void(const bool)>& callback)
+		void Connection::connectToStatusChangedSignal(boost::signals2::scoped_connection& scopedConnection, const std::function<void(const Status, const Status)>& callback)
 		{
 			LOCK_GUARD(lock, mutex, other);
-			scopedConnection = connectionStatusChangedSignal.connect(callback);
+			scopedConnection = statusChangedSignal.connect(callback);
+		}
+
+		void Connection::setStatus(const Status newStatus)
+		{
+			LOCK_GUARD(lock, mutex, other);
+			if (newStatus != status)
+			{
+				const Status oldStatus = status;
+				status = newStatus;
+				statusChangedSignal(oldStatus, status);
+			}
 		}
 
 		void Connection::setTimeoutEnabled(const bool value)
@@ -1172,11 +1198,12 @@ namespace se
 			return timeoutEnabled;
 		}
 
-		void Connection::setSimulatedPacketLoss(const float chanceToDropIncoming, const float chanceToDropOutgoing)
+		void Connection::setSimulatedPacketLoss(const float chanceToDropIncoming, const float chanceToDropOutgoing, const float chanceToReorderReceivedPacket)
 		{
 			LOCK_GUARD(lock, mutex, other);
 			simulatedPacketLossChanceIncoming = chanceToDropIncoming;
 			simulatedPacketLossChanceOutgoing = chanceToDropOutgoing;
+			simulatedPacketChanceReordering = chanceToReorderReceivedPacket;
 		}
 
 		void Connection::setDebugLogLevel(const int level)
