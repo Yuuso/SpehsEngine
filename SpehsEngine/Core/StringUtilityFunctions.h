@@ -80,4 +80,11 @@ namespace se
 		Presicion: how many digits to display.
 	*/
 	std::string toTimeLengthString(const time::Time& time, const size_t precision);
+
+	/*
+		Returns a nicely formated byte size string.
+		Cuts off some of the precision.
+		Adds a unit suffix (B/KB/MB/GB).
+	*/
+	std::string toByteString(const uint64_t bytes);
 }

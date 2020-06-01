@@ -69,4 +69,24 @@ namespace se
 			return toString(f, precision) + " ns";
 		}
 	}
+
+	std::string toByteString(const uint64_t bytes)
+	{
+		if (bytes >= 1024ull * 1024ull * 1024ull)
+		{
+			return se::toString(float(double(bytes) / double(1024ull * 1024ull * 1024ull)), 2) + " GB";
+		}
+		else if (bytes >= 1024ull * 1024ull)
+		{
+			return se::toString(float(double(bytes) / double(1024ull * 1024ull)), 2) + " MB";
+		}
+		else if (bytes >= 1024ull)
+		{
+			return se::toString(float(double(bytes) / double(1024ull)), 2) + " KB";
+		}
+		else
+		{
+			return std::to_string(bytes) + " B";
+		}
+	}
 }
