@@ -111,5 +111,6 @@
   </ItemGroup>
   <ItemGroup>
     <Natvis Include="$(MSBuildThisFileDirectory)ReadBuffer.natvis" />
+    <Natvis Include="$(MSBuildThisFileDirectory)Time.natvis" />
   </ItemGroup>
 </Project>

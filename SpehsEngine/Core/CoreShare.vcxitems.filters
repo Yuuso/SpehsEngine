@@ -118,5 +118,8 @@
     <Natvis Include="$(MSBuildThisFileDirectory)ReadBuffer.natvis">
       <Filter>Natvis</Filter>
     </Natvis>
+    <Natvis Include="$(MSBuildThisFileDirectory)Time.natvis">
+      <Filter>Natvis</Filter>
+    </Natvis>
   </ItemGroup>
 </Project>
