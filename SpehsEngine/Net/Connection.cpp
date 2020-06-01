@@ -43,17 +43,8 @@ namespace se
 {
 	namespace net
 	{
-		ProtocolId spehsProtocolId(0x5E2070C0);
 		const time::Time reliableHeartbeatInterval = time::fromSeconds(1.0f);
 		const time::Time timeoutTime = reliableHeartbeatInterval * 5;
-
-		enum class PacketType : uint8_t
-		{
-			connect,
-			disconnect,
-			heartbeat,
-			mtuDiscovery,
-		};
 
 		Connection::Connection(const boost::shared_ptr<SocketUDP2>& _socket, const boost::asio::ip::udp::endpoint& _endpoint, const ConnectionId _connectionId,
 			const EstablishmentType _establishmentType, const std::string_view _debugName)
@@ -65,15 +56,12 @@ namespace se
 			, socket(_socket)
 		{
 			LOCK_GUARD(lock, mutex, other);
-			reliablePacketSendQueue.emplace_back();
-			reliablePacketSendQueue.back().userData = false;
 			ConnectPacket connectPacket;
 			connectPacket.connectionId = _connectionId;
 			connectPacket.debugName = _debugName;
-			WriteBuffer writeBuffer;
-			writeBuffer.write(PacketType::connect);
-			writeBuffer.write(connectPacket);
-			writeBuffer.swap(reliablePacketSendQueue.back().payload);
+			reliablePacketSendQueue.push_back(ReliablePacketOut(PacketHeader::PacketType::Connect, 0u, connectPacket));
+
+			beginPathMaximumSegmentSizeDiscovery();
 
 #if SE_CONFIGURATION != SE_CONFIGURATION_FINAL_RELEASE // Disable timeouts in dev builds by default
 			setTimeoutEnabled(false);
@@ -123,7 +111,7 @@ namespace se
 			{
 				// Heartbeat
 				LOCK_GUARD(lock, mutex, heartbeat);
-				const se::time::Time now = time::now();
+				const time::Time now = time::now();
 				if (now - lastQueueHeartbeatTime >= reliableHeartbeatInterval &&
 					now - lastSendTimeReliable >= reliableHeartbeatInterval)
 				{
@@ -131,14 +119,29 @@ namespace se
 
 					HeartbeatPacket heartbeatPacket;
 					WriteBuffer writeBuffer;
-					se_write(writeBuffer, PacketType::heartbeat);
 					se_write(writeBuffer, heartbeatPacket);
 
 					const uint64_t payloadOffset = reliablePacketSendQueue.empty() ? reliableStreamOffsetSend : reliablePacketSendQueue.back().payloadOffset + reliablePacketSendQueue.back().payload.size();
-					reliablePacketSendQueue.emplace_back();
-					reliablePacketSendQueue.back().userData = false;
-					reliablePacketSendQueue.back().payloadOffset = payloadOffset;
-					writeBuffer.swap(reliablePacketSendQueue.back().payload);
+					reliablePacketSendQueue.emplace_back(ReliablePacketOut(PacketHeader::PacketType::Heartbeat, payloadOffset, writeBuffer));
+				}
+
+				// MSS discovery
+				if (pathMaximumSegmentSizeDiscovery)
+				{
+					const time::Time interval = std::max(time::fromMilliseconds(50.0f), getPing() * 2);
+					const time::Time timeSinceLastSend = now - pathMaximumSegmentSizeDiscovery->lastSendTime;
+					if (timeSinceLastSend >= interval)
+					{
+						sendNextPathMaximumSegmentSizeDiscoveryPacket();
+					}
+				}
+
+				// Process recent sent bytes
+				const time::Time timeSinceProcessRecentSentBytes = now - processRecentSentBytesTime;
+				if (timeSinceProcessRecentSentBytes > processRecentSentBytesInterval)
+				{
+					processRecentSentBytesTime = now;
+					processRecentSentBytes();
 				}
 
 				// Timeout disconnection
@@ -150,124 +153,11 @@ namespace se
 			}
 		}
 
-		void Connection::processReceivedRawPackets()
+		void Connection::reliableFragmentReceiveHandler(ReliableFragmentPacket& reliableFragmentPacket)
 		{
-			SE_SCOPE_PROFILER(debugName);
-
-			// Process received raw packets
-			LOCK_GUARD(lock, mutex, processReceivedRawPackets);
-
-			// Simulated raw packet reordering
-#if SE_CONFIGURATION != SE_CONFIGURATION_FINAL_RELEASE
-			if (simulatedPacketChanceReordering > 0.0f)
-			{
-				if (receivedRawPackets.size() < 2)
-				{
-					// We do not process received raw packets until 2+ have arrived so that we can give the arrived packet a chance to be reordered
-					return;
-				}
-				for (size_t i = 1; i < receivedRawPackets.size(); i++)
-				{
-					if (rng::weightedCoin(simulatedPacketChanceReordering))
-					{
-						// Swith to the previous packet
-						receivedRawPackets[i - 1].swap(receivedRawPackets[i]);
-					}
-				}
-			}
-#endif
-
-			while (!receivedRawPackets.empty())
-			{
-				// Swap data and erase packet: receive handler might modify received packets vector!
-				std::vector<uint8_t> data;
-				data.swap(receivedRawPackets.front());
-				receivedBytes += data.size();
-				receivedRawPackets.erase(receivedRawPackets.begin());
-				ReadBuffer readBuffer(data.data(), data.size());
-
-				PacketHeader packetHeader;
-				if (packetHeader.read(readBuffer, debugName))
-				{
-					if (packetHeader.protocolId == spehsProtocolId)
-					{
-						if (remoteConnectionId)
-						{
-							if (packetHeader.connectionId == remoteConnectionId)
-							{
-								if (checkBit(packetHeader.controlBits, PacketHeader::ControlBit::Reliable))
-								{
-									if (checkBit(packetHeader.controlBits, PacketHeader::ControlBit::AcknowledgePacket))
-									{
-										acknowledgementReceiveHandler(packetHeader.streamOffset, packetHeader.receivedPayloadSize);
-									}
-									else
-									{
-										const bool userData = checkBit(packetHeader.controlBits, PacketHeader::ControlBit::UserData);
-										const bool endOfPayload = checkBit(packetHeader.controlBits, PacketHeader::ControlBit::EndOfPayload);
-										const uint16_t payloadSize = uint16_t(readBuffer.getBytesRemaining());
-										reliableFragmentReceiveHandler(packetHeader.streamOffset, readBuffer[readBuffer.getOffset()], payloadSize, userData, endOfPayload, packetHeader.payloadTotalSize);
-										sendPacketAcknowledgement(packetHeader.streamOffset, payloadSize);
-									}
-								}
-								else
-								{
-									if (readBuffer.getBytesRemaining())
-									{
-										if (checkBit(packetHeader.controlBits, PacketHeader::ControlBit::UserData))
-										{
-											receivedBytesUnreliable += readBuffer.getBytesRemaining();
-											receivedUnreliablePackets.emplace_back();
-											receivedUnreliablePackets.back().resize(readBuffer.getBytesRemaining());
-											memcpy(receivedUnreliablePackets.back().data(), readBuffer[readBuffer.getOffset()], readBuffer.getBytesRemaining());
-										}
-										else
-										{
-											ReadBuffer readBuffer2(readBuffer[readBuffer.getOffset()], readBuffer.getBytesRemaining());
-											spehsReceiveHandler(readBuffer2);
-										}
-									}
-									else
-									{
-										se::log::error("Received an empty unreliable packet.");
-									}
-								}
-							}
-							else if (time::now() - connectionEstablishedTime > time::fromSeconds(5.0f)
-								&& time::now() - lastReceiveTime > time::fromSeconds(5.0f))
-							{
-								DEBUG_LOG(1, "received packet header had unmatching connection id. Current connection isn't responsive. Terminating connection...");
-								disconnect();
-							}
-							else
-							{
-								DEBUG_LOG(1, "received packet header had unmatching connection id. Ignoring...");
-							}
-						}
-						else
-						{
-							// We are currently expecting only the connect packet, everything else will be discarded.
-							// NOTE: Keep in mind that there might be packets from the previous (or even the next?) connection from this endpoint.
-							if (checkBit(packetHeader.controlBits, PacketHeader::ControlBit::Reliable) &&
-								!checkBit(packetHeader.controlBits, PacketHeader::ControlBit::UserData))
-							{
-								ReadBuffer readBuffer2(readBuffer[readBuffer.getOffset()], readBuffer.getBytesRemaining());
-								attemptToProcessConnectPacket(readBuffer2);
-							}
-						}
-					}
-					else
-					{
-						DEBUG_LOG(2, "received packet header had unmatching protocol id.");
-					}
-				}
-			}
-		}
-
-		void Connection::reliableFragmentReceiveHandler(const uint64_t reliableStreamOffset, const uint8_t* const dataPtr, const uint16_t dataSize, const bool userData, const bool endOfPayload, const uint64_t payloadTotalSize)
-		{
-			se_assert(dataSize > 0);
-			if (reliableStreamOffset >= reliableStreamOffsetReceive)
+			const uint16_t payloadSize = uint16_t(reliableFragmentPacket.payload.size());
+			LOCK_GUARD(lock, mutex, other);
+			if (reliableFragmentPacket.streamOffset >= reliableStreamOffsetReceive)
 			{
 				auto postInsert = [&](size_t insertIndex)
 				{
@@ -277,26 +167,26 @@ namespace se
 						// Check if fragment is to be merged with the next fragment
 						if (!receivedReliableFragments[insertIndex].endOfPayload && insertIndex + 1 < receivedReliableFragments.size())
 						{
-							const uint64_t endOffset = receivedReliableFragments[insertIndex].offset + uint64_t(receivedReliableFragments[insertIndex].data.size());
-							if (endOffset >= receivedReliableFragments[insertIndex + 1].offset)
+							const uint64_t endOffset = receivedReliableFragments[insertIndex].streamOffset + uint64_t(receivedReliableFragments[insertIndex].payload.size());
+							if (endOffset >= receivedReliableFragments[insertIndex + 1].streamOffset)
 							{
-								const uint64_t overlappingSize = endOffset - receivedReliableFragments[insertIndex + 1].offset;
+								const uint64_t overlappingSize = endOffset - receivedReliableFragments[insertIndex + 1].streamOffset;
 
 #if SE_CONFIGURATION != SE_CONFIGURATION_FINAL_RELEASE // Check that overlapping data matches
 								for (uint64_t o = 0; o < overlappingSize; o++)
 								{
-									se_assert(receivedReliableFragments[insertIndex].data[size_t(uint64_t(receivedReliableFragments[insertIndex].data.size()) - overlappingSize + o)] == receivedReliableFragments[insertIndex + 1].data[size_t(o)]);
+									se_assert(receivedReliableFragments[insertIndex].payload[size_t(uint64_t(receivedReliableFragments[insertIndex].payload.size()) - overlappingSize + o)] == receivedReliableFragments[insertIndex + 1].payload[size_t(o)]);
 								}
 #endif
 
 								// Copy next fragment's contents and erase it
-								const size_t prevSize = receivedReliableFragments[insertIndex].data.size();
-								const size_t mergedSize = prevSize + receivedReliableFragments[insertIndex + 1].data.size() - size_t(overlappingSize);
-								receivedReliableFragments[insertIndex].data.resize(mergedSize);
+								const size_t prevSize = receivedReliableFragments[insertIndex].payload.size();
+								const size_t mergedSize = prevSize + receivedReliableFragments[insertIndex + 1].payload.size() - size_t(overlappingSize);
+								receivedReliableFragments[insertIndex].payload.resize(mergedSize);
 								memcpy(
-									&receivedReliableFragments[insertIndex].data[prevSize],
-									&receivedReliableFragments[insertIndex + 1].data[size_t(overlappingSize)],
-									size_t(uint64_t(receivedReliableFragments[insertIndex + 1].data.size()) - overlappingSize));
+									&receivedReliableFragments[insertIndex].payload[prevSize],
+									&receivedReliableFragments[insertIndex + 1].payload[size_t(overlappingSize)],
+									size_t(uint64_t(receivedReliableFragments[insertIndex + 1].payload.size()) - overlappingSize));
 								receivedReliableFragments[insertIndex].endOfPayload = receivedReliableFragments[insertIndex + 1].endOfPayload;
 								receivedReliableFragments.erase(receivedReliableFragments.begin() + insertIndex + 1);
 								return true;
@@ -320,64 +210,81 @@ namespace se
 						checkMergeWithNext(insertIndex);
 					}
 
-					if (reliableStreamOffset == reliableStreamOffsetReceive && receivedReliableFragments[insertIndex].endOfPayload)
+					if (reliableFragmentPacket.streamOffset == reliableStreamOffsetReceive && receivedReliableFragments[insertIndex].endOfPayload)
 					{
 						se_assert(insertIndex == 0 && "reliableStreamOffsetReceive points to the begin, but insertion happened elsewhere?");
-						se_assert(receivedReliableFragments[insertIndex].data.size() == payloadTotalSize);
+						se_assert(receivedReliableFragments[insertIndex].payload.size() == reliableFragmentPacket.payloadTotalSize);
 					}
 				};
 
 				// Receive fragment
 				for (size_t f = 0; f < receivedReliableFragments.size(); f++)
 				{
-					if (reliableStreamOffset < receivedReliableFragments[f].offset)
+					if (reliableFragmentPacket.streamOffset < receivedReliableFragments[f].streamOffset)
 					{
 						// Insert before
-						ReceivedReliableFragment& receivedFragment = *receivedReliableFragments.insert(receivedReliableFragments.begin() + f, ReceivedReliableFragment());
-						receivedFragment.userData = userData;
-						receivedFragment.endOfPayload = endOfPayload;
-						receivedFragment.offset = reliableStreamOffset;
-						receivedFragment.data.resize(dataSize);
-						memcpy(receivedFragment.data.data(), dataPtr, dataSize);
+						receivedReliableFragments.insert(receivedReliableFragments.begin() + f, ReceivedReliableFragment(reliableFragmentPacket.streamOffset, reliableFragmentPacket.endOfPayload, reliableFragmentPacket.payload));
 						postInsert(f);
 						return;
 					}
-					else if (reliableStreamOffset < receivedReliableFragments[f].offset + receivedReliableFragments[f].data.size())
+					else if (reliableFragmentPacket.streamOffset < receivedReliableFragments[f].streamOffset + receivedReliableFragments[f].payload.size())
 					{
-						// Received fragment overlaps with receivedReliableFragments[f]'s coverage
+						// Received fragment's offset start overlaps with receivedReliableFragments[f]'s coverage
 						// Check if any new data was received
-						if (reliableStreamOffset + dataSize > receivedReliableFragments[f].offset + receivedReliableFragments[f].data.size())
+						if (reliableFragmentPacket.streamOffset + reliableFragmentPacket.payload.size() >
+							receivedReliableFragments[f].streamOffset + receivedReliableFragments[f].payload.size())
 						{
 							se_assert(!receivedReliableFragments[f].endOfPayload);
-							const uint64_t newBytes = reliableStreamOffset + dataSize - receivedReliableFragments[f].offset - receivedReliableFragments[f].data.size();
-							const uint64_t prevSize = receivedReliableFragments[f].data.size();
+							const uint64_t newBytes = reliableFragmentPacket.streamOffset + reliableFragmentPacket.payload.size() - receivedReliableFragments[f].streamOffset - receivedReliableFragments[f].payload.size();
+							const uint64_t prevSize = receivedReliableFragments[f].payload.size();
 							const uint64_t newSize = prevSize + newBytes;
 							se_assert(newSize <= std::numeric_limits<size_t>::max() && "New size is larger than max std::vector capacity.");
-							receivedReliableFragments[f].data.resize(size_t(newSize));
-							memcpy(&receivedReliableFragments[f].data[size_t(prevSize)], dataPtr + (dataSize - newBytes), size_t(newBytes));
-							receivedReliableFragments[f].endOfPayload = endOfPayload;
+							receivedReliableFragments[f].payload.resize(size_t(newSize));
+							memcpy(&receivedReliableFragments[f].payload[size_t(prevSize)], reliableFragmentPacket.payload.data() + (reliableFragmentPacket.payload.size() - newBytes), size_t(newBytes));
+							receivedReliableFragments[f].endOfPayload = reliableFragmentPacket.endOfPayload;
 							postInsert(f);
 						}
 						return;
 					}
 				}
 
-				const uint64_t backReliableStreamOffset = receivedReliableFragments.empty() ? 0u : receivedReliableFragments.back().offset + uint64_t(receivedReliableFragments.back().data.size());
-				se_assert(reliableStreamOffset >= backReliableStreamOffset);
+				const uint64_t backReliableStreamOffset = receivedReliableFragments.empty() ? 0u : receivedReliableFragments.back().streamOffset + uint64_t(receivedReliableFragments.back().payload.size());
+				se_assert(reliableFragmentPacket.streamOffset >= backReliableStreamOffset);
 
-				receivedReliableFragments.emplace_back();
-				receivedReliableFragments.back().offset = reliableStreamOffset;
-				receivedReliableFragments.back().userData = userData;
-				receivedReliableFragments.back().endOfPayload = endOfPayload;
-				receivedReliableFragments.back().data.resize(dataSize);
-				memcpy(receivedReliableFragments.back().data.data(), dataPtr, dataSize);
+				receivedReliableFragments.emplace_back(ReceivedReliableFragment(reliableFragmentPacket.streamOffset, reliableFragmentPacket.endOfPayload, reliableFragmentPacket.payload));
 				postInsert(receivedReliableFragments.size() - 1);
 			}
+
+			sendAcknowledgePacket(reliableFragmentPacket.streamOffset, payloadSize/*reliableFragmentPacket.payload has been swapped!*/);
+		}
+
+		void Connection::sendAcknowledgePacket(const uint64_t reliableStreamOffset, const uint16_t payloadSize)
+		{
+			LOCK_GUARD(lock, mutex, other);
+			PacketHeader packetHeader;
+			packetHeader.protocolId = PacketHeader::spehsProtocolId;
+			packetHeader.connectionId = connectionId;
+			packetHeader.packetType = PacketHeader::PacketType::Acknowledge;
+			AcknowledgePacket acknowledgePacket;
+			acknowledgePacket.streamOffset = reliableStreamOffset;
+			acknowledgePacket.payloadSize = payloadSize;
+			WriteBuffer writeBuffer;
+			writeBuffer.write(packetHeader);
+			writeBuffer.write(acknowledgePacket);
+			const std::vector<boost::asio::const_buffer> sendBuffers
+			{
+				boost::asio::const_buffer(writeBuffer.getData(), writeBuffer.getSize()),
+			};
+			sendPacketImpl(sendBuffers, LogSentBytesType::Acknowledgement);
+			if (reliableStreamOffset == 0)
+				debugSelfLog.push_back("r0 received 1/2"); // NOTE: reliableStreamOffset==0 triggering earlier than this may be the ack packet
 		}
 
 		void Connection::acknowledgementReceiveHandler(const uint64_t reliableStreamOffset, const uint16_t payloadSize)
 		{
 			SE_SCOPE_PROFILER(debugName);
+			LOCK_GUARD(lock, mutex, other);
+			sendQuotaEvaluation.recentAcknowledgedBytes += uint64_t(payloadSize);
 			if (reliableStreamOffset >= reliableStreamOffsetSend)
 			{
 				uint64_t offset = reliableStreamOffsetSend;
@@ -403,9 +310,7 @@ namespace se
 								reliableFragmentTransmitted(reliablePacketSendQueue[p].unacknowledgedFragments[f].sendCount, reliablePacketSendQueue[p].unacknowledgedFragments[f].size);
 
 								// Add to acknowledged fragments
-								reliablePacketSendQueue[p].acknowledgedFragments.push_back(ReliablePacketOut::AcknowledgedFragment());
-								reliablePacketSendQueue[p].acknowledgedFragments.back().offset = reliableStreamOffset;
-								reliablePacketSendQueue[p].acknowledgedFragments.back().size = payloadSize;
+								reliablePacketSendQueue[p].acknowledgedFragments.push_back(ReliablePacketOut::AcknowledgedFragment(reliableStreamOffset, payloadSize));
 
 								// Remove from unacknowledged fragments
 								if (reliablePacketSendQueue[p].unacknowledgedFragments[f].sendCount > 2 && getDebugLogLevel() >= 2)
@@ -439,11 +344,14 @@ namespace se
 
 						break;
 					}
-					else
+					else if (p + 1 < reliablePacketSendQueue.size())
 					{
 						// Not in this packet
-						se_assert(p + 1 < reliablePacketSendQueue.size()); // TODO?: asserted here once
 						offset += reliablePacketSendQueue[p].payload.size();
+					}
+					else
+					{
+						se_assert(false && "Acknowledgement refers to a future offset. Should not happen in dev builds but could happen with a hacked connection.");
 					}
 				}
 			}
@@ -530,56 +438,48 @@ namespace se
 					while (remaining > 0)
 					{
 						const uint16_t fragmentSize = uint16_t(std::min(remaining, uint64_t(maximumSegmentSize)));
-						reliablePacketOut.unacknowledgedFragments.emplace_back();
-						reliablePacketOut.unacknowledgedFragments.back().offset = offsetEnd - remaining;
-						reliablePacketOut.unacknowledgedFragments.back().size = fragmentSize;
+						reliablePacketOut.unacknowledgedFragments.push_back(ReliablePacketOut::UnacknowledgedFragment(offsetEnd - remaining, fragmentSize));
 						remaining -= fragmentSize;
 					}
 				}
 
 				// Keep (re)sending unacknowledged fragments
-				const time::Time capResendTime = se::time::fromSeconds(0.5f); // Do not wait longer than this to resend
-				const time::Time resendTime = std::min(capResendTime,
-					estimatedRoundTripTime != time::Time::zero
-					? estimatedRoundTripTime.value + estimatedRoundTripTime.value / 6
-					: se::time::fromSeconds(1.0f / 10.0f));
+				const time::Time capResendTime = se::time::fromSeconds(0.2f); // Do not wait longer than this to resend
+				const time::Time resendTime = estimatedRoundTripTime != time::Time::zero ? estimatedRoundTripTime.value + estimatedRoundTripTime.value / 6 : capResendTime;
 				for (size_t f = 0; f < reliablePacketOut.unacknowledgedFragments.size(); f++)
 				{
 					ReliablePacketOut::UnacknowledgedFragment &unacknowledgedFragment = reliablePacketOut.unacknowledgedFragments[f];
-					if (now - unacknowledgedFragment.latestSendTime >= resendTime)
+					const se::time::Time timeSinceSend = now - unacknowledgedFragment.latestSendTime;
+					if (timeSinceSend >= resendTime)
 					{
 						if (unacknowledgedFragment.size <= maximumSegmentSize)
 						{
 							// Packet is valid for (re)send
 							PacketHeader packetHeader;
-							packetHeader.protocolId = spehsProtocolId;
+							packetHeader.protocolId = PacketHeader::spehsProtocolId;
 							packetHeader.connectionId = connectionId;
-							packetHeader.streamOffset = unacknowledgedFragment.offset;
-							packetHeader.payloadTotalSize = reliablePacketOut.payload.size();
-							enableBit(packetHeader.controlBits, PacketHeader::ControlBit::Reliable);
-							if (reliablePacketOut.userData)
-							{
-								enableBit(packetHeader.controlBits, PacketHeader::ControlBit::UserData);
-							}
-							const bool endOfPayload = (unacknowledgedFragment.offset + unacknowledgedFragment.size) == (reliablePacketOut.payloadOffset + reliablePacketOut.payload.size());
-							if (endOfPayload)
-							{
-								enableBit(packetHeader.controlBits, PacketHeader::ControlBit::EndOfPayload);
-							}
+							packetHeader.packetType = PacketHeader::PacketType::ReliableFragment;
+							ReliableFragmentPacket reliableFragmentPacket;
+							reliableFragmentPacket.streamOffset = unacknowledgedFragment.offset;
+							reliableFragmentPacket.endOfPayload = (unacknowledgedFragment.offset + unacknowledgedFragment.size) == (reliablePacketOut.payloadOffset + reliablePacketOut.payload.size());
+							reliableFragmentPacket.payloadTotalSize = reliablePacketOut.payload.size();
+							reliableFragmentPacket.payload.resize(unacknowledgedFragment.size);
+							const size_t internalOffset = size_t(unacknowledgedFragment.offset - reliablePacketOut.payloadOffset);
+							memcpy(reliableFragmentPacket.payload.data(), reliablePacketOut.payload.data() + internalOffset, size_t(unacknowledgedFragment.size));
 							WriteBuffer writeBuffer;
-							packetHeader.write(writeBuffer, debugEndpoint);
+							writeBuffer.write(packetHeader);
+							writeBuffer.write(reliableFragmentPacket);
 
 							if (writeBuffer.getSize() + unacknowledgedFragment.size <= reliableSendQuota)
 							{
 								const uint64_t internalPayloadOffset = unacknowledgedFragment.offset - reliablePacketOut.payloadOffset;
 								const std::vector<boost::asio::const_buffer> sendBuffers
 								{
-									boost::asio::const_buffer(writeBuffer.getData(), writeBuffer.getSize()),
-									boost::asio::const_buffer(reliablePacketOut.payload.data() + internalPayloadOffset, unacknowledgedFragment.size)
+									boost::asio::const_buffer(writeBuffer.getData(), writeBuffer.getSize())
 								};
 
-								sendPacketImpl(sendBuffers, true, false);
-								reliableSendQuota -= writeBuffer.getSize();
+								sendPacketImpl(sendBuffers, unacknowledgedFragment.sendCount > 0 ? LogSentBytesType::ReliableResend : LogSentBytesType::Reliable);
+								reliableSendQuota -= boost::asio::buffer_size(sendBuffers);
 
 								if (unacknowledgedFragment.sendCount++ == 0)
 								{
@@ -600,13 +500,9 @@ namespace se
 							const uint64_t originalOffset = unacknowledgedFragment.offset;
 							const uint16_t size1 = unacknowledgedFragment.size / 2;
 							const uint16_t size2 = unacknowledgedFragment.size - size1;
-							ReliablePacketOut::UnacknowledgedFragment &unacknowledgedFragment2 =
-								(*reliablePacketOut.unacknowledgedFragments.insert(reliablePacketOut.unacknowledgedFragments.begin() + f + 1, ReliablePacketOut::UnacknowledgedFragment()));
-							unacknowledgedFragment = ReliablePacketOut::UnacknowledgedFragment();
-							unacknowledgedFragment.offset = originalOffset;
-							unacknowledgedFragment.size = size1;
-							unacknowledgedFragment2.offset = originalOffset + size1;
-							unacknowledgedFragment2.size = size2;
+							reliablePacketOut.unacknowledgedFragments.insert(reliablePacketOut.unacknowledgedFragments.begin() + f + 1,
+								ReliablePacketOut::UnacknowledgedFragment(originalOffset + size1, size2));
+							unacknowledgedFragment = ReliablePacketOut::UnacknowledgedFragment(originalOffset, size1);
 							f--; // Redo this iteration
 						}
 					}
@@ -617,14 +513,11 @@ namespace se
 			while (!unreliablePacketSendQueue.empty())
 			{
 				PacketHeader packetHeader;
-				packetHeader.protocolId = spehsProtocolId;
+				packetHeader.protocolId = PacketHeader::spehsProtocolId;
 				packetHeader.connectionId = connectionId;
-				if (unreliablePacketSendQueue.front().userData)
-				{
-					enableBit(packetHeader.controlBits, PacketHeader::ControlBit::UserData);
-				}
+				packetHeader.packetType = unreliablePacketSendQueue.front().packetType;
 				WriteBuffer writeBuffer;
-				packetHeader.write(writeBuffer, debugEndpoint);
+				writeBuffer.write(packetHeader);
 				if (writeBuffer.getSize() + unreliablePacketSendQueue.front().payload.size() <= unreliableSendQuota)
 				{
 					const std::vector<boost::asio::const_buffer> sendBuffers
@@ -632,8 +525,8 @@ namespace se
 						boost::asio::const_buffer(writeBuffer.getData(), writeBuffer.getSize()),
 						boost::asio::const_buffer(unreliablePacketSendQueue.front().payload.data(), unreliablePacketSendQueue.front().payload.size()),
 					};
-					sendPacketImpl(sendBuffers, false, true);
-					unreliableSendQuota -= writeBuffer.getSize() + unreliablePacketSendQueue.front().payload.size();
+					sendPacketImpl(sendBuffers, LogSentBytesType::Unreliable);
+					unreliableSendQuota -= boost::asio::buffer_size(sendBuffers);
 					unreliablePacketSendQueue.erase(unreliablePacketSendQueue.begin());
 				}
 				else
@@ -661,174 +554,283 @@ namespace se
 		void Connection::deliverReceivedPackets()
 		{
 			SE_SCOPE_PROFILER(debugName);
-			// Check if all data for the next packet has been received
+
+			// Simulated packet reordering
+#if SE_CONFIGURATION != SE_CONFIGURATION_FINAL_RELEASE
+			{
+				LOCK_GUARD(lock, mutex, debug);
+				if (simulationSettings.chanceToReorderReceivedPacket > 0.0f)
+				{
+					if (receivedPackets.size() < 2)
+					{
+						// We do not process received packets until 2+ have arrived so that we can give the arrived packet a chance to be reordered
+						return;
+					}
+					for (size_t i = 1; i < receivedPackets.size(); i++)
+					{
+						if (rng::weightedCoin(simulationSettings.chanceToReorderReceivedPacket))
+						{
+							// Swap with the previous packet
+							std::swap(receivedPackets[i - 1], receivedPackets[i]);
+						}
+					}
+				}
+			}
+#endif
+
+			// Lock mutex and process all currently received packets
+			{
+				LOCK_GUARD(lock, mutex, processReceivedPackets);
+				while (receivedPackets.size() > 0)
+				{
+					ReceivedPacket receivedPacket;
+					std::swap(receivedPacket, receivedPackets.front());
+					receivedPackets.erase(receivedPackets.begin());
+					processReceivedPacket(receivedPacket.packetHeader.packetType, receivedPacket.payload, false);
+				}
+			}
+
+			// Gather received reliable packets
 			{
 				LOCK_GUARD(lock, mutex, deliverReceivedPackets);
-				// nocommit: reliableStreamOffsetReceive is 0 when it should be 4, received reliable packets don't get processed
-				while (!receivedReliableFragments.empty() && receivedReliableFragments.front().endOfPayload && receivedReliableFragments.front().offset == reliableStreamOffsetReceive)
+				while (!receivedReliableFragments.empty() && receivedReliableFragments.front().endOfPayload && receivedReliableFragments.front().streamOffset == reliableStreamOffsetReceive)
 				{
 					if (reliableStreamOffsetReceive == 0)
 						debugSelfLog.push_back("r0 received 2/2");
-					se_assert(receivedReliableFragments.front().data.size() > 0);
-					reliableStreamOffsetReceive += receivedReliableFragments.front().data.size();
-					receivedReliablePackets.emplace_back();
-					receivedReliablePackets.back().data.swap(receivedReliableFragments.front().data);
-					receivedReliablePackets.back().userData = receivedReliableFragments.front().userData;
+					se_assert(receivedReliableFragments.front().payload.size() > 0);
+					reliableStreamOffsetReceive += receivedReliableFragments.front().payload.size();
+					ReadBuffer readBuffer(receivedReliableFragments.front().payload.data(), receivedReliableFragments.front().payload.size());
+					PacketHeader::PacketType packetType = PacketHeader::PacketType::None;
+					if (readBuffer.read(packetType))
+					{
+						receivedReliableFragments.front().payload.erase(receivedReliableFragments.front().payload.begin(), receivedReliableFragments.front().payload.begin() + sizeof(packetType));
+						receivedReliablePackets.emplace_back(ReceivedReliablePacket(packetType, receivedReliableFragments.front().payload));
+					}
+					else
+					{
+						se::log::error("Could not rerad the received reliable packet's packet type. Packet cannot be delivered.");
+					}
 					receivedReliableFragments.erase(receivedReliableFragments.begin());
 				}
 			}
 
-			// Deliver received reliable packets
+			deliverReceivedReliablePackets();
+		}
+
+		void Connection::deliverReceivedReliablePackets()
+		{
+			LOCK_GUARD(lock, mutex, deliverReceivedPackets);
 			while (true)
 			{
-				std::vector<uint8_t> data;
-				std::function<void(ReadBuffer&, const boost::asio::ip::udp::endpoint&, const bool)> handler;
+				if (receivedReliablePackets.empty())
 				{
-					LOCK_GUARD(lock, mutex, deliverReceivedPackets);
-					if (!receivedReliablePackets.empty())
-					{
-						if (receivedReliablePackets.front().userData)
-						{
-							if (receiveHandler)
-							{
-								handler = receiveHandler;
-								data.swap(receivedReliablePackets.front().data);
-								receivedReliablePackets.erase(receivedReliablePackets.begin());
-							}
-							else
-							{
-								// Must wait until a receive handler is specified
-								if (receivedReliablePackets.size() > 1000)
-								{
-									log::warning(debugName + std::to_string(receivedReliablePackets.size()) + " received reliable packets awaiting.");
-								}
-								break;
-							}
-						}
-						else
-						{
-							handler = std::bind(&Connection::spehsReceiveHandler, this, std::placeholders::_1);
-							data.swap(receivedReliablePackets.front().data);
-							receivedReliablePackets.erase(receivedReliablePackets.begin());
-						}
-					}
-				}
-				if (handler)
-				{
-					SE_SCOPE_PROFILER("handler");
-					se_assert(data.size() > 0);
-					ReadBuffer readBuffer(data.data(), data.size());
-					handler(readBuffer, endpoint, true);
+					return;
 				}
 				else
 				{
-					se_assert(data.empty());
-					break;
-				}
-			}
-
-			// Deliver received unreliable packets
-			while (true)
-			{
-				std::vector<uint8_t> data;
-				std::function<void(ReadBuffer&, const boost::asio::ip::udp::endpoint&, const bool)> handler;
-				{
-					LOCK_GUARD(lock, mutex, deliverReceivedPackets);
-					if (receivedUnreliablePackets.empty())
+					ReadBuffer readBuffer(receivedReliablePackets.front().payload.data(), receivedReliablePackets.front().payload.size());
+					if (processReceivedPacket(receivedReliablePackets.front().packetType, receivedReliablePackets.front().payload, true))
 					{
-						break;
-					}
-					else if (!receiveHandler)
-					{
-						DEBUG_LOG(1, std::to_string(receivedUnreliablePackets.size()) + " received unrealiable packets were discarded because no receive handler is set.");
-						receivedUnreliablePackets.clear();
-						break;
+						receivedReliablePackets.erase(receivedReliablePackets.begin());
 					}
 					else
 					{
-						// Copy contents to non-mutex protected memory
-						data.swap(receivedUnreliablePackets.front());
-						handler = receiveHandler;
-						receivedUnreliablePackets.erase(receivedUnreliablePackets.begin());
+						// Must wait until a receive handler is specified
+						if (!receiveHandler && receivedReliablePackets.size() > 1000)
+						{
+							log::warning(debugName + std::to_string(receivedReliablePackets.size()) + " received reliable packets awaiting to be deliver. Use se::net::Connection::setReceiveHandler() to set the receive handler.");
+						}
+						return;
 					}
 				}
-				ReadBuffer readBuffer(data.data(), data.size());
-				handler(readBuffer, endpoint, false);
 			}
 		}
 
-		void Connection::spehsReceiveHandler(ReadBuffer& readBuffer)
+		bool Connection::processReceivedPacket(const PacketHeader::PacketType packetType, std::vector<uint8_t>& payload, const bool reliable)
 		{
-			LOCK_GUARD(lock, mutex, spehsReceiveHandler);
-			PacketType packetType;
-			if (!readBuffer.read(packetType))
+			LOCK_GUARD(lock, mutex, processReceivedPackets);
+
+			ReadBuffer readBuffer(payload.data(), payload.size());
+
+			switch (packetType)
 			{
-				log::warning("Connection::spehsReceiveHandler: received invalid data.");
-				return;
+			case PacketHeader::PacketType::None:
+				return false;
+
+			case PacketHeader::PacketType::UserData:
+			{
+				UserDataPacket userDataPacket;
+				if (readBuffer.read(userDataPacket))
+				{
+					totalReceivedBytes.user += userDataPacket.payload.size();
+					if (receiveHandler)
+					{
+						ReadBuffer userReadBuffer(userDataPacket.payload.data(), userDataPacket.payload.size());
+						receiveHandler(userReadBuffer, endpoint, reliable);
+						return true;
+					}
+					else
+					{
+						return false;
+					}
+				}
+				else
+				{
+					se::log::warning("Failed to read user data packet.");
+					return false;
+				}
 			}
 
-			if (packetType == PacketType::heartbeat)
+			case PacketHeader::PacketType::ReliableFragment:
 			{
-				// Do nothing
+				ReliableFragmentPacket reliableFragmentPacket;
+				if (readBuffer.read(reliableFragmentPacket))
+				{
+					reliableFragmentReceiveHandler(reliableFragmentPacket);
+					return true;
+				}
+				else
+				{
+					se::log::warning("Failed to read reliable fragment packet.");
+					return false;
+				}
 			}
-			else if (packetType == PacketType::disconnect)
+
+			case PacketHeader::PacketType::Acknowledge:
+			{
+				AcknowledgePacket acknowledgePacket;
+				if (readBuffer.read(acknowledgePacket))
+				{
+					acknowledgementReceiveHandler(acknowledgePacket.streamOffset, acknowledgePacket.payloadSize);
+					return true;
+				}
+				else
+				{
+					se::log::warning("Failed to read acknowledge packet.");
+					return false;
+				}
+			}
+
+			case PacketHeader::PacketType::Heartbeat:
+			{
+				HeartbeatPacket heartbeatPacket;
+				if (readBuffer.read(heartbeatPacket))
+				{
+					// Do nothing
+					return true;
+				}
+				else
+				{
+					se::log::warning("Failed to read heartbeat packet.");
+					return false;
+				}
+			}
+
+			case PacketHeader::PacketType::Disconnect:
 			{
 				DisconnectPacket disconnectPacket;
-				if (!readBuffer.read(disconnectPacket))
-				{
-					log::warning("Connection::spehsReceiveHandler: received invalid data.");
-					return;
-				}
-
-				if (getStatus() != Status::Disconnected)
+				if (readBuffer.read(disconnectPacket))
 				{
 					// Disconnect without sending a packet in return
 					disconnectImpl(false);
+					return true;
+				}
+				else
+				{
+					se::log::warning("Failed to read disconnect packet.");
+					return false;
 				}
 			}
-			else if (packetType == PacketType::connect)
-			{
-				// Ignore. The connect packet is only handled once when its expected (attemptToProcessConnectPacket).
-			}
-			else
-			{
-				log::error("Connection::spehsReceiveHandler: received invalid data.");
-				return;
-			}
-		}
 
-		void Connection::attemptToProcessConnectPacket(ReadBuffer& readBuffer)
-		{
-			se_assert(getStatus() == Status::Connecting);
-			LOCK_GUARD(lock, mutex, spehsReceiveHandler);
-			PacketType packetType;
-			if (!readBuffer.read(packetType))
+			case PacketHeader::PacketType::Connect:
 			{
-				return;
-			}
-
-			if (packetType != PacketType::connect)
-			{
-				return;
-			}
-
-			ConnectPacket connectPacket;
-			if (!readBuffer.read(connectPacket))
-			{
-				log::warning("Connection::attemptToProcessConnectPacket: packet type is connect but contents could not be read.");
-				return;
+				ConnectPacket connectPacket;
+				if (readBuffer.read(connectPacket))
+				{
+					if (connectPacket.connectionId)
+					{
+						remoteConnectionId = connectPacket.connectionId;
+						remoteDebugName = connectPacket.debugName;
+						DEBUG_LOG(1, "connected.");
+						setStatus(Status::Connected);
+					}
+					else
+					{
+						log::warning("ConnectPacket packet does not define connection id.");
+					}
+					return true;
+				}
+				else
+				{
+					se::log::warning("Failed to read connect packet.");
+					return false;
+				}
 			}
 
-			if (!connectPacket.connectionId)
+			case PacketHeader::PacketType::PathMaximumSegmentSizeDiscovery:
 			{
-				log::warning("Connection::attemptToProcessConnectPacket: connect packet does not define connection id.");
-				return;
+				PathMaximumSegmentSizeDiscoveryPacket pathMaximumSegmentSizeDiscoveryPacket;
+				if (readBuffer.read(pathMaximumSegmentSizeDiscoveryPacket))
+				{
+					PacketHeader packetHeader;
+					packetHeader.protocolId = PacketHeader::spehsProtocolId;
+					packetHeader.connectionId = connectionId;
+					packetHeader.packetType = PacketHeader::PacketType::PathMaximumSegmentSizeAcknowledge;
+					WriteBuffer writeBuffer;
+					writeBuffer.write(packetHeader);
+
+					PathMaximumSegmentSizeAcknowledgePacket pathMaximumSegmentSizeAcknowledgePacket;
+					pathMaximumSegmentSizeAcknowledgePacket.size = pathMaximumSegmentSizeDiscoveryPacket.size;
+					writeBuffer.write(pathMaximumSegmentSizeAcknowledgePacket);
+
+					const std::vector<boost::asio::const_buffer> sendBuffers
+					{
+						boost::asio::const_buffer(writeBuffer.getData(), writeBuffer.getSize()),
+					};
+					sendPacketImpl(sendBuffers, LogSentBytesType::PathMaximumSegmentSizeDiscovery);
+					return true;
+				}
+				else
+				{
+					se::log::warning("Failed to read path maximum segment size discovery packet.");
+					return false;
+				}
 			}
 
-			remoteConnectionId = connectPacket.connectionId;
-			remoteDebugName = connectPacket.debugName;
-			DEBUG_LOG(1, "connected.");
-			setStatus(Status::Connected);
+			case PacketHeader::PacketType::PathMaximumSegmentSizeAcknowledge:
+			{
+				PathMaximumSegmentSizeAcknowledgePacket pathMaximumSegmentSizeAcknowledgePacket;
+				if (readBuffer.read(pathMaximumSegmentSizeAcknowledgePacket))
+				{
+					if (pathMaximumSegmentSizeAcknowledgePacket.size > maximumSegmentSize)
+					{
+						maximumSegmentSize = pathMaximumSegmentSizeAcknowledgePacket.size;
+						if (pathMaximumSegmentSizeDiscovery)
+						{
+							if (pathMaximumSegmentSizeDiscovery->maxAcknowledged)
+							{
+								pathMaximumSegmentSizeDiscovery->maxAcknowledged = std::max(*pathMaximumSegmentSizeDiscovery->maxAcknowledged, pathMaximumSegmentSizeAcknowledgePacket.size);
+							}
+							else
+							{
+								pathMaximumSegmentSizeDiscovery->maxAcknowledged = pathMaximumSegmentSizeAcknowledgePacket.size;
+							}
+						}
+						// nocommit debug level should be 2
+						DEBUG_LOG(0, "Maximum segment size updated: " + std::to_string(pathMaximumSegmentSizeAcknowledgePacket.size));
+					}
+					return true;
+				}
+				else
+				{
+					se::log::warning("Failed to read path maximum segment size discovery packet.");
+					return false;
+				}
+			}
+			}
+
+			se::log::warning("Connection::processReceivedPacket() Unknown PacketType: " + std::to_string(int(packetType)));
+			return false;
 		}
 
 		void Connection::setReceiveHandler(const std::function<void(ReadBuffer&, const boost::asio::ip::udp::endpoint&, const bool)> callback)
@@ -839,6 +841,7 @@ namespace se
 
 		void Connection::sendPacket(const WriteBuffer& writeBuffer, const bool reliable)
 		{
+			// NOTE: this function is used for user packets only
 			SE_SCOPE_PROFILER(debugName);
 			if (writeBuffer.isEmpty())
 			{
@@ -847,79 +850,74 @@ namespace se
 			LOCK_GUARD(lock, mutex, sendPacket);
 			if (status == Status::Connected)
 			{
+				WriteBuffer writeBufferCopy = writeBuffer;
+				UserDataPacket userDataPacket;
+				writeBufferCopy.swap(userDataPacket.payload);
+
 				if (reliable)
 				{
 					const uint64_t payloadOffset = reliablePacketSendQueue.empty() ? reliableStreamOffsetSend : reliablePacketSendQueue.back().payloadOffset + uint64_t(reliablePacketSendQueue.back().payload.size());
-					reliablePacketSendQueue.push_back(ReliablePacketOut(true, payloadOffset, writeBuffer.getData(), writeBuffer.getSize()));
+					reliablePacketSendQueue.push_back(ReliablePacketOut(PacketHeader::PacketType::UserData, payloadOffset, userDataPacket));
 				}
 				else
 				{
-					unreliablePacketSendQueue.push_back(UnreliablePacketOut(writeBuffer.getData(), writeBuffer.getSize(), true));
+					unreliablePacketSendQueue.push_back(UnreliablePacketOut(PacketHeader::PacketType::UserData, userDataPacket));
 				}
 			}
 			else
 			{
-				se_assert(false && "Connection is not in the connected state. Cannot send packet.");
+				se::log::error("Connection is not in the connected state. Cannot send packet.");
 			}
 		}
 
-		void Connection::sendPacketImpl(const std::vector<boost::asio::const_buffer>& buffers, const bool logReliable, const bool logUnreliable)
+		void Connection::sendPacketImpl(const std::vector<boost::asio::const_buffer>& buffers, const LogSentBytesType logSentBytesType)
 		{
-			const size_t bufferSize = boost::asio::buffer_size(buffers);
+			const uint64_t bufferSize = uint64_t(boost::asio::buffer_size(buffers));
 
 			LOCK_GUARD(lock, mutex, sendPacketImpl);
-#if SE_CONFIGURATION != SE_CONFIGURATION_FINAL_RELEASE
-			if (simulatedPacketLossChanceOutgoing > 0.0f && rng::weightedCoin(simulatedPacketLossChanceOutgoing))
+			lastSendTime = time::now();
+			if (logSentBytesType == LogSentBytesType::Reliable || logSentBytesType == LogSentBytesType::ReliableResend)
 			{
-				sentBytes += uint64_t(bufferSize);
-				if (logReliable)
-				{
-					sentBytesReliable += uint64_t(bufferSize);
-				}
-				if (logUnreliable)
-				{
-					sentBytesUnreliable += uint64_t(bufferSize);
-				}
+				lastSendTimeReliable = lastSendTime;
+			}
+#if SE_CONFIGURATION != SE_CONFIGURATION_FINAL_RELEASE
+			if ((simulationSettings.chanceToDropOutgoing > 0.0f && rng::weightedCoin(simulationSettings.chanceToDropOutgoing)) || bufferSize > simulationSettings.maximumSegmentSizeOutgoing)
+			{
+				logSentBytes(totalSentBytes, logSentBytesType, bufferSize);
+				logSentBytes(recentSentBytes, logSentBytesType, bufferSize);
 				return;
 			}
 #endif
 			if (socket->sendPacket(buffers, endpoint))
 			{
-				sentBytes += uint64_t(bufferSize);
-				if (logReliable)
-				{
-					sentBytesReliable += uint64_t(bufferSize);
-				}
-				if (logUnreliable)
-				{
-					sentBytesUnreliable += uint64_t(bufferSize);
-				}
-				lastSendTime = time::now();
-				if (logReliable)
-				{
-					lastSendTimeReliable = lastSendTime;
-				}
+				logSentBytes(totalSentBytes, logSentBytesType, bufferSize);
+				logSentBytes(recentSentBytes, logSentBytesType, bufferSize);
 			}
 		}
 
-		void Connection::sendPacketAcknowledgement(const uint64_t reliableStreamOffset, const uint16_t payloadSize)
+		void Connection::logSentBytes(SentBytes& sentBytes, const LogSentBytesType logSentBytesType, const uint64_t bytes)
 		{
-			PacketHeader packetHeader;
-			packetHeader.protocolId = spehsProtocolId;
-			packetHeader.connectionId = connectionId;
-			enableBit(packetHeader.controlBits, PacketHeader::ControlBit::Reliable);
-			enableBit(packetHeader.controlBits, PacketHeader::ControlBit::AcknowledgePacket);
-			packetHeader.streamOffset = reliableStreamOffset;
-			packetHeader.receivedPayloadSize = payloadSize;
-			WriteBuffer writeBuffer;
-			packetHeader.write(writeBuffer, debugEndpoint);
-			const std::vector<boost::asio::const_buffer> sendBuffers
+			sentBytes.raw += bytes;
+			switch (logSentBytesType)
 			{
-				boost::asio::const_buffer(writeBuffer.getData(), writeBuffer.getSize()),
-			};
-			sendPacketImpl(sendBuffers, false, false);
-			if (packetHeader.streamOffset == 0)
-				debugSelfLog.push_back("r0 received 1/2"); // NOTE: packetHeader.streamOffset==0 triggering earlier than this may be the ack packet
+			case LogSentBytesType::None:
+				break;
+			case LogSentBytesType::Acknowledgement:
+				sentBytes.acknowledgement += bytes;
+				break;
+			case LogSentBytesType::Unreliable:
+				sentBytes.unreliable += bytes;
+				break;
+			case LogSentBytesType::Reliable:
+				sentBytes.reliable += bytes;
+				break;
+			case LogSentBytesType::ReliableResend:
+				sentBytes.reliableResend += bytes;
+				break;
+			case LogSentBytesType::PathMaximumSegmentSizeDiscovery:
+				sentBytes.pathMaximumSegmentSizeDiscovery += bytes;
+				break;
+			}
 		}
 
 		void Connection::disconnect()
@@ -948,19 +946,19 @@ namespace se
 			if (sendDisconnectPacket)
 			{
 				// Disconnect packet is sent immediately and unreliably. We do not want to wait for acks.
-				WriteBuffer writeBuffer;
 				PacketHeader packetHeader;
-				packetHeader.protocolId = spehsProtocolId;
+				packetHeader.protocolId = PacketHeader::spehsProtocolId;
 				packetHeader.connectionId = connectionId;
-				packetHeader.write(writeBuffer, debugEndpoint);
-				writeBuffer.write(PacketType::disconnect);
+				packetHeader.packetType = PacketHeader::PacketType::Disconnect;
 				DisconnectPacket disconnectPacket;
+				WriteBuffer writeBuffer;
+				writeBuffer.write(packetHeader);
 				writeBuffer.write(disconnectPacket);
 				const std::vector<boost::asio::const_buffer> sendBuffers
 				{
 					boost::asio::const_buffer(writeBuffer.getData(), writeBuffer.getSize())
 				};
-				sendPacketImpl(sendBuffers, false, true);
+				sendPacketImpl(sendBuffers, LogSentBytesType::Unreliable);
 			}
 
 			remoteConnectionId = ConnectionId();
@@ -969,34 +967,37 @@ namespace se
 			estimatedRoundTripTime = time::Time::zero;
 			reliablePacketSendQueue.clear();
 			unreliablePacketSendQueue.clear();
-			receivedRawPackets.clear();
-			receivedReliableFragments.clear();
+			receivedPackets.clear();
 			receivedReliablePackets.clear();
+			receivedReliableFragments.clear();
 			receivedUnreliablePackets.clear();
 			DEBUG_LOG(1, "disconnected.");
 			setStatus(Status::Disconnected);
 		}
 
-		void Connection::receiveRawPacket(std::vector<uint8_t>& data)
+		void Connection::receivePacket(const PacketHeader& packetHeader, std::vector<uint8_t>& payload, const uint16_t rawPacketSize)
 		{
 			LOCK_GUARD(lock, mutex, receivePacket);
 #if SE_CONFIGURATION != SE_CONFIGURATION_FINAL_RELEASE
-			if (simulatedPacketLossChanceIncoming > 0.0f && rng::weightedCoin(simulatedPacketLossChanceIncoming))
+			if (simulationSettings.chanceToDropIncoming > 0.0f && rng::weightedCoin(simulationSettings.chanceToDropIncoming))
+			{
+				return;
+			}
+			if (rawPacketSize > simulationSettings.maximumSegmentSizeIncoming)
 			{
 				return;
 			}
 #endif
-			if (data.size() > 0)
-			{
-				lastReceiveTime = time::now();
-				timeoutCountdown = timeoutTime;
-				receivedRawPackets.emplace_back();
-				receivedRawPackets.back().swap(data);
-			}
+			lastReceiveTime = time::now();
+			timeoutCountdown = timeoutTime;
+			totalReceivedBytes.raw += rawPacketSize;
+			receivedPackets.push_back(ReceivedPacket(packetHeader, payload));
 		}
 
 		void Connection::reliableFragmentTransmitted(const uint64_t sendCount, const uint16_t fragmentSize)
 		{
+			LOCK_GUARD(lock, mutex, other);
+
 			// Add to recentReliableFragmentSendCounts
 			congestionAvoidanceState.recentReliableFragmentSendCounts.push_back(CongestionAvoidanceState::ReliableFragmentSendCount());
 			congestionAvoidanceState.recentReliableFragmentSendCounts.back().sendCount = sendCount;
@@ -1023,7 +1024,7 @@ namespace se
 				congestionAvoidanceState.reliableFragmentSendCounters[sendCount] = 1;
 			}
 
-			double sendQuotaGrowthIncrease = 0.0;
+			//double sendQuotaGrowthIncrease = 0.0;
 			double sendQuotaGrowthFactor = 1.0;
 			if (sendCount > 1u)
 			{
@@ -1042,8 +1043,8 @@ namespace se
 			if (sendQuotaGrowthFactor != 1.0)
 			{
 				se_assert(sendQuotaGrowthFactor != 0.0);
-				static const double minSendQuotaPerSecond = 1000.0;
-				sendQuotaPerSecond = std::max(sendQuotaGrowthFactor * sendQuotaPerSecond + sendQuotaGrowthIncrease, minSendQuotaPerSecond);
+				// TODO nocommit static const double minSendQuotaPerSecond = 1000.0;
+				// TODO nocommit sendQuotaPerSecond = std::max(sendQuotaGrowthFactor * sendQuotaPerSecond + sendQuotaGrowthIncrease, minSendQuotaPerSecond);
 				//if (rng::weightedCoin(0.02f))
 					//log::info(debugName + ": sendQuota " + (sendQuotaGrowthFactor > 1.0 ? "increased" : "decreased") + ": " + se::toString(float(sendQuotaPerSecond * 8.0 / 10000000), 6) + " Kb/s afsc: " + std::to_string(averageReliableFragmentSendCount));
 			}
@@ -1051,6 +1052,121 @@ namespace se
 			congestionAvoidanceState.prevSendQuotaGrowthFactor = sendQuotaGrowthFactor;
 			congestionAvoidanceState.prevReliableStreamOffsetSend = reliableStreamOffsetSend;
 			congestionAvoidanceState.reEvaluationTimestamp = time::now();
+		}
+
+		void Connection::processRecentSentBytes()
+		{
+			LOCK_GUARD(lock, mutex, other);
+
+			if (sendQuotaEvaluation.prevSentBytesReliable)
+			{
+				// Determine whether we should either increase or decrease the send quota
+				const double reliability = double(sendQuotaEvaluation.recentAcknowledgedBytes) / double(*sendQuotaEvaluation.prevSentBytesReliable);
+				const bool increase = reliability > 0.9f;
+
+				// Update modifySendQuotaCounter
+				if (increase)
+				{
+					if (sendQuotaEvaluation.modifySendQuotaCounter >= 0)
+					{
+						sendQuotaEvaluation.modifySendQuotaCounter++;
+					}
+					else
+					{
+						sendQuotaEvaluation.modifySendQuotaCounter = 1;
+					}
+				}
+				else
+				{
+					if (sendQuotaEvaluation.modifySendQuotaCounter <= 0)
+					{
+						sendQuotaEvaluation.modifySendQuotaCounter--;
+					}
+					else
+					{
+						sendQuotaEvaluation.modifySendQuotaCounter = -1;
+					}
+				}
+				se_assert(sendQuotaEvaluation.modifySendQuotaCounter != 0);
+				static const double minSendQuotaPerSecond = 1000.0;
+				const double multiplier = std::max(0.25, std::min(4.0, std::pow(1.05, double(sendQuotaEvaluation.modifySendQuotaCounter))));
+				sendQuotaPerSecond = std::max(minSendQuotaPerSecond, sendQuotaPerSecond * multiplier);
+			}
+
+			sendQuotaEvaluation.prevSentBytesReliable.emplace(recentSentBytes.reliable + recentSentBytes.reliableResend);
+			sendQuotaEvaluation.recentAcknowledgedBytes = 0ull;
+			recentSentBytes = SentBytes();
+		}
+
+		void Connection::beginPathMaximumSegmentSizeDiscovery()
+		{
+			LOCK_GUARD(lock, mutex, other);
+			maximumSegmentSize = defaultMaximumSegmentSize; // MSS must be reset
+			pathMaximumSegmentSizeDiscovery.emplace(PathMaximumSegmentSizeDiscovery());
+			sendNextPathMaximumSegmentSizeDiscoveryPacket();
+		}
+
+		void Connection::sendNextPathMaximumSegmentSizeDiscoveryPacket()
+		{
+			LOCK_GUARD(lock, mutex, other);
+			se_assert(pathMaximumSegmentSizeDiscovery);
+
+			if (pathMaximumSegmentSizeDiscovery->maxAcknowledged)
+			{
+				// End of iteration
+				static int maxIterations = 10;
+				if (pathMaximumSegmentSizeDiscovery->iterations++ < maxIterations)
+				{
+					// Re-iterate
+					const uint16_t maxAcknowledged = *pathMaximumSegmentSizeDiscovery->maxAcknowledged;
+					const int iterations = pathMaximumSegmentSizeDiscovery->iterations;
+					pathMaximumSegmentSizeDiscovery.emplace(PathMaximumSegmentSizeDiscovery());
+					pathMaximumSegmentSizeDiscovery->min = maxAcknowledged;
+					pathMaximumSegmentSizeDiscovery->iterations = iterations;
+					sendNextPathMaximumSegmentSizeDiscoveryPacket();
+					return;
+				}
+			}
+			else
+			{
+				// Determine the size of the next MSS discovery packet
+				uint16_t size = std::numeric_limits<uint16_t>::max();
+				if (pathMaximumSegmentSizeDiscovery->lastSentSize)
+				{
+					se_assert(*pathMaximumSegmentSizeDiscovery->lastSentSize >= pathMaximumSegmentSizeDiscovery->min);
+					const uint16_t spread = *pathMaximumSegmentSizeDiscovery->lastSentSize - pathMaximumSegmentSizeDiscovery->min;
+					size = (*pathMaximumSegmentSizeDiscovery->lastSentSize) - spread / 2;
+				}
+
+				if (!pathMaximumSegmentSizeDiscovery->lastSentSize || size != pathMaximumSegmentSizeDiscovery->lastSentSize)
+				{
+					PacketHeader packetHeader;
+					packetHeader.protocolId = PacketHeader::spehsProtocolId;
+					packetHeader.connectionId = connectionId;
+					packetHeader.packetType = PacketHeader::PacketType::PathMaximumSegmentSizeDiscovery;
+					WriteBuffer writeBuffer;
+					writeBuffer.write(packetHeader);
+
+					PathMaximumSegmentSizeDiscoveryPacket pathMaximumSegmentSizeDiscoveryPacket;
+					pathMaximumSegmentSizeDiscoveryPacket.size = size;
+					pathMaximumSegmentSizeDiscoveryPacket.extraPayload.resize(size - writeBuffer.getOffset() - sizeof(pathMaximumSegmentSizeDiscoveryPacket.size) - sizeof(uint32_t/*extraPayload size*/));
+					writeBuffer.write(pathMaximumSegmentSizeDiscoveryPacket);
+
+					const std::vector<boost::asio::const_buffer> sendBuffers
+					{
+						boost::asio::const_buffer(writeBuffer.getData(), writeBuffer.getSize()),
+					};
+					se_assert(boost::asio::buffer_size(sendBuffers) == pathMaximumSegmentSizeDiscoveryPacket.size);
+					sendPacketImpl(sendBuffers, LogSentBytesType::PathMaximumSegmentSizeDiscovery);
+					pathMaximumSegmentSizeDiscovery->lastSendTime = time::now();
+					pathMaximumSegmentSizeDiscovery->lastSentSize = size;
+					return;
+				}
+			}
+			
+			// End
+			pathMaximumSegmentSizeDiscovery.reset();
+			DEBUG_LOG(1, "Path maximum segment size discovery finished. MSS: " + std::to_string(maximumSegmentSize));
 		}
 
 		Connection::Status Connection::getStatus() const
@@ -1100,42 +1216,16 @@ namespace se
 			return sendQuotaPerSecond;
 		}
 
-		uint64_t Connection::getSentBytes() const
+		Connection::SentBytes Connection::getSentBytesTotal() const
 		{
 			LOCK_GUARD(lock, mutex, other);
-			return sentBytes;
+			return totalSentBytes;
 		}
 
-		uint64_t Connection::getSentBytes(const bool reliable) const
+		Connection::ReceivedBytes Connection::getReceivedBytesTotal() const
 		{
 			LOCK_GUARD(lock, mutex, other);
-			if (reliable)
-			{
-				return sentBytesReliable;
-			}
-			else
-			{
-				return sentBytesUnreliable;
-			}
-		}
-
-		uint64_t Connection::getReceivedBytes() const
-		{
-			LOCK_GUARD(lock, mutex, other);
-			return receivedBytes;
-		}
-
-		uint64_t Connection::getReceivedBytes(const bool reliable) const
-		{
-			LOCK_GUARD(lock, mutex, other);
-			if (reliable)
-			{
-				return reliableStreamOffsetReceive;
-			}
-			else
-			{
-				return receivedBytesUnreliable;
-			}
+			return totalReceivedBytes;
 		}
 
 		std::map<uint64_t, uint64_t> Connection::getReliableFragmentSendCounters() const
@@ -1198,12 +1288,10 @@ namespace se
 			return timeoutEnabled;
 		}
 
-		void Connection::setSimulatedPacketLoss(const float chanceToDropIncoming, const float chanceToDropOutgoing, const float chanceToReorderReceivedPacket)
+		void Connection::setSimulationSettings(const SimulationSettings& _simulationSettings)
 		{
 			LOCK_GUARD(lock, mutex, other);
-			simulatedPacketLossChanceIncoming = chanceToDropIncoming;
-			simulatedPacketLossChanceOutgoing = chanceToDropOutgoing;
-			simulatedPacketChanceReordering = chanceToReorderReceivedPacket;
+			simulationSettings = _simulationSettings;
 		}
 
 		void Connection::setDebugLogLevel(const int level)

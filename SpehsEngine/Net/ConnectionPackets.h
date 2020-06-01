@@ -17,29 +17,63 @@ namespace se
 
 		struct PacketHeader
 		{
-			enum class ControlBit : uint8_t
-			{
-				UserData = 1 << 0,
-				Reliable = 1 << 1,
-				EndOfPayload = 1 << 2,
-				AcknowledgePacket = 1 << 3,
+			static const ProtocolId spehsProtocolId;
+			//enum class ControlBit : uint8_t
+			//{
+			//	//ReliableFragment = 1 << 0,
+			//	//EndOfPayload = 1 << 1,
+			//	//AcknowledgePacket = 1 << 2,
 
-				// Automatically managed on read/write
-				EnableStreamOffset64Bit = 1 << 4,
-				EnablePayloadSizeBit1 = 1 << 5,
-				EnablePayloadSizeBit2 = 1 << 6,
-				EnableReceivedPayloadSize16Bit = 1 << 7,
+			//	// Automatically managed on read/write
+			//	EnableStreamOffset64Bit = 1 << 4,
+			//	EnablePayloadSizeBit1 = 1 << 5,
+			//	EnablePayloadSizeBit2 = 1 << 6,
+			//	EnableReceivedPayloadSize16Bit = 1 << 7,
+			//};
+
+			enum class PacketType : uint8_t
+			{
+				None,
+				ReliableFragment,
+				Acknowledge,
+				Connect,
+				Disconnect,
+				Heartbeat,
+				PathMaximumSegmentSizeDiscovery,
+				PathMaximumSegmentSizeAcknowledge,
+				UserData,
 			};
 
-			void write(se::WriteBuffer& writeBuffer, const std::string& debugName) const;
-			bool read(se::ReadBuffer& readBuffer, const std::string& debugName);
+			void write(se::WriteBuffer& writeBuffer) const;
+			bool read(se::ReadBuffer& readBuffer);
 
 			ProtocolId protocolId;
 			ConnectionId connectionId;
-			ControlBit controlBits = ControlBit(0);
+			//ControlBit controlBits = ControlBit(0);
+			PacketType packetType = PacketType::None;
+			//uint64_t streamOffset = 0u;
+			//uint64_t payloadTotalSize = 0u;
+			//uint16_t receivedPayloadSize = 0u;
+		};
+
+		struct ReliableFragmentPacket
+		{
+			void write(se::WriteBuffer& writeBuffer) const;
+			bool read(se::ReadBuffer& readBuffer);
+
+			std::vector<uint8_t> payload;
 			uint64_t streamOffset = 0u;
-			uint64_t payloadTotalSize = 0u;
-			uint16_t receivedPayloadSize = 0u;
+			uint64_t payloadTotalSize = 0u; // TODO is this even used?
+			bool endOfPayload = false;
+		};
+
+		struct AcknowledgePacket
+		{
+			void write(se::WriteBuffer& writeBuffer) const;
+			bool read(se::ReadBuffer& readBuffer);
+
+			uint64_t streamOffset = 0u;
+			uint16_t payloadSize = 0u;
 		};
 
 		struct ConnectPacket
@@ -63,12 +97,29 @@ namespace se
 			bool read(se::ReadBuffer& readBuffer);
 		};
 
-		struct PathMTUDiscoveryPacket
+		struct PathMaximumSegmentSizeDiscoveryPacket
 		{
 			void write(se::WriteBuffer& writeBuffer) const;
 			bool read(se::ReadBuffer& readBuffer);
 
-			std::vector<uint8_t> payload;
+			uint16_t size = 0;
+			std::vector<uint8_t> extraPayload;
+		};
+
+		struct PathMaximumSegmentSizeAcknowledgePacket
+		{
+			void write(se::WriteBuffer& writeBuffer) const;
+			bool read(se::ReadBuffer& readBuffer);
+
+			uint16_t size = 0;
+		};
+
+		struct UserDataPacket
+		{
+			void write(se::WriteBuffer& writeBuffer) const;
+			bool read(se::ReadBuffer& readBuffer);
+
+			std::vector<uint8_t> payload; // TODO: optimize? use non-owned memory instead?
 		};
 	}
 }

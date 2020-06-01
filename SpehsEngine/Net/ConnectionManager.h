@@ -61,7 +61,7 @@ namespace se
 			size_t getReceivedBytes() const;
 			void setDebugLogLevel(const int level);
 			int getDebugLogLevel() const;
-			void setSimulatedPacketLoss(const float chanceToDropIncoming, const float chanceToDropOutgoing, const float chanceToReorderReceivedPacket);
+			void setDefaultSimulationSettings(const Connection::SimulationSettings& _defaultSimulationSettings);
 
 			const std::string debugName;
 
@@ -93,9 +93,7 @@ namespace se
 			boost::signals2::signal<void(std::shared_ptr<Connection>&)> incomingConnectionSignal;
 			std::unordered_map<Connection*, boost::signals2::scoped_connection> connectionStatusChangedConnections;
 
-			float simulatedPacketLossChanceIncoming = 0.0f;
-			float simulatedPacketLossChanceOutgoing = 0.0f;
-			float simulatedPacketChanceReordering = 0.0f;
+			Connection::SimulationSettings defaultSimulationSettings;
 		};
 	}
 }

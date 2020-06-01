@@ -125,34 +125,50 @@ namespace se
 			std::lock_guard<std::recursive_mutex> lock1(mutex);
 			for (size_t p = 0; p < receivedPackets.size(); p++)
 			{
-				const std::vector<std::shared_ptr<Connection>>::iterator connectionIt = std::find_if(connections.begin(), connections.end(), [&](std::shared_ptr<Connection>& connection)->bool
+				ReadBuffer readBuffer(receivedPackets[p].data.data(), receivedPackets[p].data.size());
+				PacketHeader packetHeader;
+				if (packetHeader.read(readBuffer))
+				{
+					if (packetHeader.protocolId == PacketHeader::spehsProtocolId)
 					{
-						return connection->getRemoteEndpoint() == receivedPackets[p].senderEndpoint;
-					});
-				if (connectionIt != connections.end())
-				{
-					//Existing connection
-					//se::log::info("Endpoint match: " + se::net::toString(connectionIt->get()->getRemoteEndpoint()) + " == " + se::net::toString(receivedPackets[p].senderEndpoint) + ", size: " + std::to_string(receivedPackets[p].data.size()));
-					connectionIt->get()->receiveRawPacket(receivedPackets[p].data);
-				}
-				else if (accepting)
-				{
-					// New incoming connection
-					const std::shared_ptr<Connection> newConnection = addConnectionImpl(std::shared_ptr<Connection>(
-						new Connection(socket, receivedPackets[p].senderEndpoint, generateNewConnectionId(), Connection::EstablishmentType::Incoming, debugName + ": Incoming connection")));
-					DEBUG_LOG(1, "Incoming connection from: " + newConnection->debugEndpoint + " started connecting...");
-					connections.back()->receiveRawPacket(receivedPackets[p].data);
+						// Cut header data off from the packet contents
+						const uint16_t rawPacketSize = uint16_t(receivedPackets[p].data.size());
+						receivedPackets[p].data.erase(receivedPackets[p].data.begin(), receivedPackets[p].data.begin() + readBuffer.getOffset());
+
+						const std::vector<std::shared_ptr<Connection>>::iterator connectionIt = std::find_if(connections.begin(), connections.end(), [&](std::shared_ptr<Connection>& connection)->bool
+							{
+								return connection->getRemoteEndpoint() == receivedPackets[p].senderEndpoint;
+							});
+						if (connectionIt != connections.end())
+						{
+							//Existing connection
+							//se::log::info("Endpoint match: " + se::net::toString(connectionIt->get()->getRemoteEndpoint()) + " == " + se::net::toString(receivedPackets[p].senderEndpoint) + ", size: " + std::to_string(receivedPackets[p].data.size()));
+							connectionIt->get()->receivePacket(packetHeader, receivedPackets[p].data, rawPacketSize);
+						}
+						else if (accepting)
+						{
+							// New incoming connection
+							const std::shared_ptr<Connection> newConnection = addConnectionImpl(std::shared_ptr<Connection>(
+								new Connection(socket, receivedPackets[p].senderEndpoint, generateNewConnectionId(), Connection::EstablishmentType::Incoming, debugName + ": Incoming connection")));
+							DEBUG_LOG(1, "Incoming connection from: " + newConnection->debugEndpoint + " started connecting...");
+							connections.back()->receivePacket(packetHeader, receivedPackets[p].data, rawPacketSize);
+						}
+						else
+						{
+							DEBUG_LOG(1, "Received packet from an untracked endpoint: " + se::net::toString(receivedPackets[p].senderEndpoint));
+						}
+					}
+					else
+					{
+						DEBUG_LOG(1, "Received packet with unrecognized protocol id from: " + se::net::toString(receivedPackets[p].senderEndpoint));
+					}
 				}
 				else
 				{
-					DEBUG_LOG(1, "Received packet from an untracked endpoint: " + se::net::toString(receivedPackets[p].senderEndpoint));
+					DEBUG_LOG(1, "Received packet with unrecognized packet header format from: " + se::net::toString(receivedPackets[p].senderEndpoint));
 				}
 			}
 			receivedPackets.clear();
-			for (size_t i = 0; i < connections.size(); i++)
-			{
-				connections[i]->processReceivedRawPackets();
-			}
 		}
 
 		void ConnectionManager::deliverOutgoingPackets()
@@ -281,7 +297,7 @@ namespace se
 			Connection* const connectionPtr = connection.get();
 			connections.push_back(connection);
 			connections.back()->setDebugLogLevel(getDebugLogLevel());
-			connections.back()->setSimulatedPacketLoss(simulatedPacketLossChanceIncoming, simulatedPacketLossChanceOutgoing, simulatedPacketChanceReordering);
+			connections.back()->setSimulationSettings(defaultSimulationSettings);
 			connections.back()->connectToStatusChangedSignal(connectionStatusChangedConnections[connectionPtr], [this, connectionPtr](const Connection::Status oldStatus, const Connection::Status newStatus)
 				{
 					std::lock_guard<std::recursive_mutex> lock1(mutex);
@@ -368,12 +384,10 @@ namespace se
 			return connectionId;
 		}
 
-		void ConnectionManager::setSimulatedPacketLoss(const float chanceToDropIncoming, const float chanceToDropOutgoing, const float chanceToReorderReceivedPacket)
+		void ConnectionManager::setDefaultSimulationSettings(const Connection::SimulationSettings& _defaultSimulationSettings)
 		{
 			std::lock_guard<std::recursive_mutex> lock1(mutex);
-			simulatedPacketLossChanceIncoming = chanceToDropIncoming;
-			simulatedPacketLossChanceOutgoing = chanceToDropOutgoing;
-			simulatedPacketChanceReordering = chanceToReorderReceivedPacket;
+			defaultSimulationSettings = _defaultSimulationSettings;
 		}
 
 		bool ConnectionManager::open()

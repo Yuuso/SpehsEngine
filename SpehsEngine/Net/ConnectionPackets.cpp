@@ -14,17 +14,119 @@ namespace se
 {
 	namespace net
 	{
-		const time::Time reliableHeartbeatInterval = time::fromSeconds(1.0f);
-		const time::Time timeoutTime = reliableHeartbeatInterval * 5;
+		const ProtocolId PacketHeader::spehsProtocolId(1397770323);
 
-		void PacketHeader::write(se::WriteBuffer& writeBuffer, const std::string& debugName) const
+		void PacketHeader::write(se::WriteBuffer& writeBuffer) const
 		{
-			const bool reliable = checkBit<ControlBit>(controlBits, ControlBit::Reliable);
-			const bool acknowledgePacket = checkBit<ControlBit>(controlBits, ControlBit::AcknowledgePacket);
-			ControlBit trueControlBits = controlBits;
+			se_write(writeBuffer, protocolId);
+			se_write(writeBuffer, connectionId);
+			se_write(writeBuffer, packetType);
+		}
+		bool PacketHeader::read(se::ReadBuffer& readBuffer)
+		{
+			se_read(readBuffer, protocolId);
+			se_read(readBuffer, connectionId);
+			se_read(readBuffer, packetType);
+			return true;
+		}
+
+		void ReliableFragmentPacket::write(se::WriteBuffer& writeBuffer) const
+		{
+			se_assert(payload.size() <= size_t(std::numeric_limits<uint16_t>::max()) && "Payload is too big to fit a single fragment.");
+			writeToBuffer<uint8_t, uint16_t>(writeBuffer, payload);
+			se_write(writeBuffer, streamOffset);
+			se_write(writeBuffer, payloadTotalSize);
+			se_write(writeBuffer, endOfPayload);
+		}
+		bool ReliableFragmentPacket::read(se::ReadBuffer& readBuffer)
+		{
+			readFromBuffer<uint8_t, uint16_t>(readBuffer, payload);
+			se_read(readBuffer, streamOffset);
+			se_read(readBuffer, payloadTotalSize);
+			se_read(readBuffer, endOfPayload);
+			return true;
+		}
+
+		void AcknowledgePacket::write(se::WriteBuffer& writeBuffer) const
+		{
+			se_write(writeBuffer, streamOffset);
+			se_write(writeBuffer, payloadSize);
+		}
+		bool AcknowledgePacket::read(se::ReadBuffer& readBuffer)
+		{
+			se_read(readBuffer, streamOffset);
+			se_read(readBuffer, payloadSize);
+			return true;
+		}
+
+		void ConnectPacket::write(se::WriteBuffer& writeBuffer) const
+		{
+			se_write(writeBuffer, connectionId);
+			writeToBuffer<uint8_t>(writeBuffer, debugName);
+		}
+		bool ConnectPacket::read(se::ReadBuffer& readBuffer)
+		{
+			se_read(readBuffer, connectionId);
+			readFromBuffer<uint8_t>(readBuffer, debugName);
+			return true;
+		}
+
+		void DisconnectPacket::write(se::WriteBuffer& writeBuffer) const
+		{
+		}
+		bool DisconnectPacket::read(se::ReadBuffer& readBuffer)
+		{
+			return true;
+		}
+
+		void HeartbeatPacket::write(se::WriteBuffer& writeBuffer) const
+		{
+		}
+		bool HeartbeatPacket::read(se::ReadBuffer& readBuffer)
+		{
+			return true;
+		}
+
+		void PathMaximumSegmentSizeDiscoveryPacket::write(se::WriteBuffer& writeBuffer) const
+		{
+			se_write(writeBuffer, size);
+			se_write(writeBuffer, extraPayload);
+		}
+		bool PathMaximumSegmentSizeDiscoveryPacket::read(se::ReadBuffer& readBuffer)
+		{
+			se_read(readBuffer, size);
+			se_read(readBuffer, extraPayload);
+			return true;
+		}
+
+		void PathMaximumSegmentSizeAcknowledgePacket::write(se::WriteBuffer& writeBuffer) const
+		{
+			se_write(writeBuffer, size);
+		}
+		bool PathMaximumSegmentSizeAcknowledgePacket::read(se::ReadBuffer& readBuffer)
+		{
+			se_read(readBuffer, size);
+			return true;
+		}
+
+		void UserDataPacket::write(se::WriteBuffer& writeBuffer) const
+		{
+			se_write(writeBuffer, payload);
+		}
+		bool UserDataPacket::read(se::ReadBuffer& readBuffer)
+		{
+			se_read(readBuffer, payload);
+			return true;
+		}
+	}
+}
+
+/*
+
+Optimize packet size
 
 			// Stream offset
-			const bool enableStreamOffset32Bit = reliable || acknowledgePacket;
+			const bool enableStreamOffset32Bit = reliableFragment || acknowledgePacket;
 			const bool enableStreamOffset64Bit = enableStreamOffset32Bit && streamOffset > std::numeric_limits<uint32_t>::max();
 			if (enableStreamOffset64Bit)
 			{
@@ -36,7 +138,7 @@ namespace se
 			}
 
 			// Payload total size
-			const bool enablePayloadTotalSize8Bit = reliable;
+			const bool enablePayloadTotalSize8Bit = reliableFragment;
 			const bool enablePayloadTotalSize16Bit = enablePayloadTotalSize8Bit && payloadTotalSize > std::numeric_limits<uint8_t>::max();
 			const bool enablePayloadTotalSize32Bit = enablePayloadTotalSize16Bit && payloadTotalSize > std::numeric_limits<uint16_t>::max();
 			const bool enablePayloadTotalSize64Bit = enablePayloadTotalSize32Bit && payloadTotalSize > std::numeric_limits<uint32_t>::max();
@@ -73,61 +175,26 @@ namespace se
 				disableBit(trueControlBits, ControlBit::EnableReceivedPayloadSize16Bit);
 			}
 
-			se_write(writeBuffer, protocolId);
-			se_write(writeBuffer, connectionId);
-			se_write(writeBuffer, trueControlBits);
 
-			if (enableStreamOffset64Bit)
-			{
-				se_write(writeBuffer, streamOffset);
-			}
-			else if (enableStreamOffset32Bit)
-			{
-				const uint32_t streamOffset32 = uint32_t(streamOffset);
-				se_write(writeBuffer, streamOffset32);
-			}
 
-			if (enablePayloadTotalSize64Bit)
-			{
-				se_write(writeBuffer, payloadTotalSize);
-			}
-			else if (enablePayloadTotalSize32Bit)
-			{
-				const uint32_t payloadSize32 = uint32_t(payloadTotalSize);
-				se_write(writeBuffer, payloadSize32);
-			}
-			else if (enablePayloadTotalSize16Bit)
-			{
-				const uint16_t payloadSize16 = uint16_t(payloadTotalSize);
-				se_write(writeBuffer, payloadSize16);
-			}
-			else if (enablePayloadTotalSize8Bit)
-			{
-				const uint8_t payloadSize8 = uint8_t(payloadTotalSize);
-				se_write(writeBuffer, payloadSize8);
-			}
 
-			if (enableReceivedPayloadSize16Bit)
-			{
-				se_write(writeBuffer, receivedPayloadSize);
-			}
-			else if (enableReceivedPayloadSize8Bit)
-			{
-				const uint8_t receivedPayloadSize8 = uint8_t(receivedPayloadSize);
-				se_write(writeBuffer, receivedPayloadSize8);
-			}
-		}
 
-		bool PacketHeader::read(se::ReadBuffer& readBuffer, const std::string& debugName)
-		{
-			se_read(readBuffer, protocolId);
-			se_read(readBuffer, connectionId);
-			se_read(readBuffer, controlBits);
-			const bool reliable = checkBit<ControlBit>(controlBits, ControlBit::Reliable);
-			const bool acknowledgePacket = checkBit<ControlBit>(controlBits, ControlBit::AcknowledgePacket);
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 			// Stream offset
-			if (reliable || acknowledgePacket)
+			if (reliableFragment || acknowledgePacket)
 			{
 				if (checkBit<ControlBit>(controlBits, ControlBit::EnableStreamOffset64Bit))
 				{
@@ -192,48 +259,4 @@ namespace se
 				}
 			}
 
-			return true;
-		}
-
-		void ConnectPacket::write(se::WriteBuffer& writeBuffer) const
-		{
-			se_write(writeBuffer, connectionId);
-			se_write(writeBuffer, debugName);
-		}
-
-		bool ConnectPacket::read(se::ReadBuffer& readBuffer)
-		{
-			se_read(readBuffer, connectionId);
-			se_read(readBuffer, debugName);
-			return true;
-		}
-
-		void DisconnectPacket::write(se::WriteBuffer& writeBuffer) const
-		{
-		}
-
-		bool DisconnectPacket::read(se::ReadBuffer& readBuffer)
-		{
-			return true;
-		}
-
-		void HeartbeatPacket::write(se::WriteBuffer& writeBuffer) const
-		{
-		}
-
-		bool HeartbeatPacket::read(se::ReadBuffer& readBuffer)
-		{
-			return true;
-		}
-
-		void PathMTUDiscoveryPacket::write(se::WriteBuffer& writeBuffer) const
-		{
-			se_write(writeBuffer, payload);
-		}
-		bool PathMTUDiscoveryPacket::read(se::ReadBuffer& readBuffer)
-		{
-			se_read(readBuffer, payload);
-			return true;
-		}
-	}
-}
+*/
