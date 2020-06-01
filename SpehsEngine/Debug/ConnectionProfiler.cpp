@@ -2,6 +2,7 @@
 #include "SpehsEngine/Debug/ConnectionProfiler.h"
 
 #include "SpehsEngine/Core/StringOperations.h"
+#include "SpehsEngine/Core/StringUtilityFunctions.h"
 #include "SpehsEngine/Input/InputManager.h"
 #include "SpehsEngine/Net/ConnectionManager.h"
 #include "SpehsEngine/GUI/GUIContext.h"
@@ -57,36 +58,19 @@ namespace se
 			{
 				string += "\nPing: " + std::to_string(connection->getPing().asMilliseconds()) + " ms";
 				string += "\nMaximum segment size: " + std::to_string(connection->getMaximumSegmentSize());
-				string += "\nSend quota per second: " + std::to_string(connection->getSendQuotaPerSecond());
+				string += "\nSend quota per second: " + se::toByteString(uint64_t(connection->getSendQuotaPerSecond()));
 
-				const uint64_t sentBytes = connection->getSentBytes();
-				if (sentBytes > 1024 * 1024)
-				{
-					string += "\nSent: " + std::to_string(sentBytes / (1024 * 1024)) + " MB";
-				}
-				else if (sentBytes > 1024)
-				{
-					string += "\nSent: " + std::to_string(sentBytes / 1024) + " KB";
-				}
-				else
-				{
-					string += "\nSent: " + std::to_string(sentBytes) + " B";
-				}
+				const se::net::Connection::SentBytes sentBytesTotal = connection->getSentBytesTotal();
+				string += "\nSent (raw): " + se::toByteString(sentBytesTotal.raw);
+				string += "\nSent (reliable): " + se::toByteString(sentBytesTotal.reliable);
+				string += "\nSent (reliable resend): " + se::toByteString(sentBytesTotal.reliableResend);
+				string += "\nSent (unreliable): " + se::toByteString(sentBytesTotal.unreliable);
+				string += "\nSent (acknowledgement): " + se::toByteString(sentBytesTotal.acknowledgement);
+				string += "\nSent (path mss discovery): " + se::toByteString(sentBytesTotal.pathMaximumSegmentSizeDiscovery);
 
-				const uint64_t receivedBytes = connection->getReceivedBytes();
-				if (receivedBytes > 1024 * 1024)
-				{
-					string += "\nReceived: " + std::to_string(receivedBytes / (1024 * 1024)) + " MB";
-				}
-				else if (receivedBytes > 1024)
-				{
-					string += "\nReceived: " + std::to_string(receivedBytes / 1024) + " KB";
-				}
-				else
-				{
-					string += "\nReceived: " + std::to_string(receivedBytes) + " B";
-				}
-
+				const se::net::Connection::ReceivedBytes receivedBytesTotal = connection->getReceivedBytesTotal();
+				string += "\nReceived (raw): " + se::toByteString(receivedBytesTotal.raw);
+				string += "\nReceived (user): " + se::toByteString(receivedBytesTotal.user);
 				string += "\nAverage reliable fragment send count: " + std::to_string(connection->getAverageReliableFragmentSendCount());
 				string += "\nReliable fragment resend counters: [send count]: % (number of occurences)\n";
 
@@ -126,7 +110,7 @@ namespace se
 #define ADD_MUTEX_TIME(p_value) map[mutexLockTimes.p_value].push_back(#p_value); do{} while(false)
 					ADD_MUTEX_TIME(heartbeat);
 					ADD_MUTEX_TIME(estimateRoundTripTime);
-					ADD_MUTEX_TIME(processReceivedRawPackets);
+					ADD_MUTEX_TIME(processReceivedPackets);
 					ADD_MUTEX_TIME(deliverOutgoingPackets);
 					ADD_MUTEX_TIME(deliverReceivedPackets);
 					ADD_MUTEX_TIME(spehsReceiveHandler);
@@ -151,7 +135,7 @@ namespace se
 #define ADD_MUTEX_TIME(p_value) map[mutexHoldTimes.p_value].push_back(#p_value); do{} while(false)
 					ADD_MUTEX_TIME(heartbeat);
 					ADD_MUTEX_TIME(estimateRoundTripTime);
-					ADD_MUTEX_TIME(processReceivedRawPackets);
+					ADD_MUTEX_TIME(processReceivedPackets);
 					ADD_MUTEX_TIME(deliverOutgoingPackets);
 					ADD_MUTEX_TIME(deliverReceivedPackets);
 					ADD_MUTEX_TIME(spehsReceiveHandler);
