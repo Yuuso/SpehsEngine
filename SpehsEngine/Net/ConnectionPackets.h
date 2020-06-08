@@ -44,6 +44,8 @@ namespace se
 				UserData,
 			};
 
+			static uint16_t getSize();
+
 			void write(se::WriteBuffer& writeBuffer) const;
 			bool read(se::ReadBuffer& readBuffer);
 
@@ -58,10 +60,21 @@ namespace se
 
 		struct ReliableFragmentPacket
 		{
-			void write(se::WriteBuffer& writeBuffer) const;
-			bool read(se::ReadBuffer& readBuffer);
+			typedef uint16_t PayloadSizeType;
+			static uint16_t getHeaderSize();
 
-			std::vector<uint8_t> payload;
+			struct ReadPayload
+			{
+				std::vector<uint8_t> buffer;
+				size_t beginIndex = 0u;
+				PayloadSizeType payloadSize = 0u;
+			};
+
+			// Reliable fragments are sent in scatter & gather buffers where the header and the payload are separated
+			void writeHeader(se::WriteBuffer& writeBuffer) const;
+			bool readHeader(se::ReadBuffer& readBuffer);
+
+			ReadPayload readPayload; // Only used when reading, not part of the "header"
 			uint64_t streamOffset = 0u;
 			uint64_t payloadTotalSize = 0u; // TODO is this even used?
 			bool endOfPayload = false;
@@ -116,7 +129,8 @@ namespace se
 
 		struct UserDataPacket
 		{
-			void write(se::WriteBuffer& writeBuffer) const;
+			typedef uint32_t PayloadSizeType;
+			// NOTE: write() is never used for optimization reasons.
 			bool read(se::ReadBuffer& readBuffer);
 
 			std::vector<uint8_t> payload; // TODO: optimize? use non-owned memory instead?

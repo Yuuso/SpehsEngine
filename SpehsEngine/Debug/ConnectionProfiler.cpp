@@ -67,13 +67,17 @@ namespace se
 				string += "\nSent (unreliable): " + se::toByteString(sentBytesTotal.unreliable);
 				string += "\nSent (acknowledgement): " + se::toByteString(sentBytesTotal.acknowledgement);
 				string += "\nSent (path mss discovery): " + se::toByteString(sentBytesTotal.pathMaximumSegmentSizeDiscovery);
+				string += "\nReliable unack bytes in queue: " + se::toByteString(connection->getReliableUnacknowledgedBytesInQueue());
+				string += "\nReliable ack bytes in queue: " + se::toByteString(connection->getReliableAcknowledgedBytesInQueue());
+				string += "\nReliable stream offset send: " + std::to_string(connection->getReliableStreamOffsetSend());
+				string += "\nReliable stream offset receive: " + std::to_string(connection->getReliableStreamOffsetReceive());
 
 				const se::net::Connection::ReceivedBytes receivedBytesTotal = connection->getReceivedBytesTotal();
 				string += "\nReceived (raw): " + se::toByteString(receivedBytesTotal.raw);
 				string += "\nReceived (user): " + se::toByteString(receivedBytesTotal.user);
 				string += "\nAverage reliable fragment send count: " + std::to_string(connection->getAverageReliableFragmentSendCount());
-				string += "\nReliable fragment resend counters: [send count]: % (number of occurences)\n";
 
+				string += "\nReliable fragment resend counters: [send count]: % (number of occurences)\n";
 				const std::map<uint64_t, uint64_t> reliableFragmentSendCounters = connection->getReliableFragmentSendCounters();
 				if (!reliableFragmentSendCounters.empty())
 				{
@@ -102,56 +106,56 @@ namespace se
 						string += "\n";
 					}
 				}
+//
+//				{
+//					string += "\nTotal time spent locking a mutex:";
+//					const net::Connection::MutexTimes mutexLockTimes = connection->getAcquireMutexTimes();
+//					std::map<time::Time, std::vector<std::string>> map;
+//#define ADD_MUTEX_TIME(p_value) map[mutexLockTimes.p_value].push_back(#p_value); do{} while(false)
+//					ADD_MUTEX_TIME(heartbeat);
+//					ADD_MUTEX_TIME(estimateRoundTripTime);
+//					ADD_MUTEX_TIME(processReceivedPackets);
+//					ADD_MUTEX_TIME(deliverOutgoingPackets);
+//					ADD_MUTEX_TIME(deliverReceivedPackets);
+//					ADD_MUTEX_TIME(spehsReceiveHandler);
+//					ADD_MUTEX_TIME(sendPacket);
+//					ADD_MUTEX_TIME(sendPacketImpl);
+//					ADD_MUTEX_TIME(receivePacket);
+//					ADD_MUTEX_TIME(other);
+//					for (std::map<time::Time, std::vector<std::string>>::const_reverse_iterator it = map.rbegin(); it != map.rend(); it++)
+//					{
+//						for (const std::string& valueName : (*it).second)
+//						{
+//							string += "\n\t" + std::to_string((*it).first.asMilliseconds()) + " ms \t" + valueName;
+//						}
+//					}
+//#undef ADD_MUTEX_TIME
+//				}
 
-				{
-					string += "\nTotal time spent locking a mutex:";
-					const net::Connection::MutexTimes mutexLockTimes = connection->getAcquireMutexTimes();
-					std::map<time::Time, std::vector<std::string>> map;
-#define ADD_MUTEX_TIME(p_value) map[mutexLockTimes.p_value].push_back(#p_value); do{} while(false)
-					ADD_MUTEX_TIME(heartbeat);
-					ADD_MUTEX_TIME(estimateRoundTripTime);
-					ADD_MUTEX_TIME(processReceivedPackets);
-					ADD_MUTEX_TIME(deliverOutgoingPackets);
-					ADD_MUTEX_TIME(deliverReceivedPackets);
-					ADD_MUTEX_TIME(spehsReceiveHandler);
-					ADD_MUTEX_TIME(sendPacket);
-					ADD_MUTEX_TIME(sendPacketImpl);
-					ADD_MUTEX_TIME(receivePacket);
-					ADD_MUTEX_TIME(other);
-					for (std::map<time::Time, std::vector<std::string>>::const_reverse_iterator it = map.rbegin(); it != map.rend(); it++)
-					{
-						for (const std::string& valueName : (*it).second)
-						{
-							string += "\n\t" + std::to_string((*it).first.asMilliseconds()) + " ms \t" + valueName;
-						}
-					}
-#undef ADD_MUTEX_TIME
-				}
-
-				{
-					string += "\nTotal time spent holding a mutex:";
-					const net::Connection::MutexTimes mutexHoldTimes = connection->getHoldMutexTimes();
-					std::map<time::Time, std::vector<std::string>> map;
-#define ADD_MUTEX_TIME(p_value) map[mutexHoldTimes.p_value].push_back(#p_value); do{} while(false)
-					ADD_MUTEX_TIME(heartbeat);
-					ADD_MUTEX_TIME(estimateRoundTripTime);
-					ADD_MUTEX_TIME(processReceivedPackets);
-					ADD_MUTEX_TIME(deliverOutgoingPackets);
-					ADD_MUTEX_TIME(deliverReceivedPackets);
-					ADD_MUTEX_TIME(spehsReceiveHandler);
-					ADD_MUTEX_TIME(sendPacket);
-					ADD_MUTEX_TIME(sendPacketImpl);
-					ADD_MUTEX_TIME(receivePacket);
-					ADD_MUTEX_TIME(other);
-					for (std::map<time::Time, std::vector<std::string>>::const_reverse_iterator it = map.rbegin(); it != map.rend(); it++)
-					{
-						for (const std::string& valueName : (*it).second)
-						{
-							string += "\n\t" + std::to_string((*it).first.asMilliseconds()) + " ms \t" + valueName;
-						}
-					}
-#undef ADD_MUTEX_TIME
-				}
+//				{
+//					string += "\nTotal time spent holding a mutex:";
+//					const net::Connection::MutexTimes mutexHoldTimes = connection->getHoldMutexTimes();
+//					std::map<time::Time, std::vector<std::string>> map;
+//#define ADD_MUTEX_TIME(p_value) map[mutexHoldTimes.p_value].push_back(#p_value); do{} while(false)
+//					ADD_MUTEX_TIME(heartbeat);
+//					ADD_MUTEX_TIME(estimateRoundTripTime);
+//					ADD_MUTEX_TIME(processReceivedPackets);
+//					ADD_MUTEX_TIME(deliverOutgoingPackets);
+//					ADD_MUTEX_TIME(deliverReceivedPackets);
+//					ADD_MUTEX_TIME(spehsReceiveHandler);
+//					ADD_MUTEX_TIME(sendPacket);
+//					ADD_MUTEX_TIME(sendPacketImpl);
+//					ADD_MUTEX_TIME(receivePacket);
+//					ADD_MUTEX_TIME(other);
+//					for (std::map<time::Time, std::vector<std::string>>::const_reverse_iterator it = map.rbegin(); it != map.rend(); it++)
+//					{
+//						for (const std::string& valueName : (*it).second)
+//						{
+//							string += "\n\t" + std::to_string((*it).first.asMilliseconds()) + " ms \t" + valueName;
+//						}
+//					}
+//#undef ADD_MUTEX_TIME
+//				}
 			}
 
 			text.setString(string);

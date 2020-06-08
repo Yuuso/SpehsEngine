@@ -16,11 +16,17 @@ namespace se
 	{
 		const ProtocolId PacketHeader::spehsProtocolId(1397770323);
 
+		uint16_t PacketHeader::getSize()
+		{
+			return sizeof(PacketHeader::protocolId) + sizeof(PacketHeader::connectionId) + sizeof(PacketHeader::packetType);
+		}
+
 		void PacketHeader::write(se::WriteBuffer& writeBuffer) const
 		{
 			se_write(writeBuffer, protocolId);
 			se_write(writeBuffer, connectionId);
 			se_write(writeBuffer, packetType);
+			// NOTE: update ReliableFragmentPacket::getPacketPayloadHeaderSize()
 		}
 		bool PacketHeader::read(se::ReadBuffer& readBuffer)
 		{
@@ -30,17 +36,20 @@ namespace se
 			return true;
 		}
 
-		void ReliableFragmentPacket::write(se::WriteBuffer& writeBuffer) const
+		uint16_t ReliableFragmentPacket::getHeaderSize()
 		{
-			se_assert(payload.size() <= size_t(std::numeric_limits<uint16_t>::max()) && "Payload is too big to fit a single fragment.");
-			writeToBuffer<uint8_t, uint16_t>(writeBuffer, payload);
+			return sizeof(streamOffset) + sizeof(payloadTotalSize) + sizeof(endOfPayload);
+		}
+
+		void ReliableFragmentPacket::writeHeader(se::WriteBuffer& writeBuffer) const
+		{
 			se_write(writeBuffer, streamOffset);
 			se_write(writeBuffer, payloadTotalSize);
 			se_write(writeBuffer, endOfPayload);
+			// NOTE: remember to update getPacketPayloadHeaderSize()
 		}
-		bool ReliableFragmentPacket::read(se::ReadBuffer& readBuffer)
+		bool ReliableFragmentPacket::readHeader(se::ReadBuffer& readBuffer)
 		{
-			readFromBuffer<uint8_t, uint16_t>(readBuffer, payload);
 			se_read(readBuffer, streamOffset);
 			se_read(readBuffer, payloadTotalSize);
 			se_read(readBuffer, endOfPayload);
@@ -109,13 +118,9 @@ namespace se
 			return true;
 		}
 
-		void UserDataPacket::write(se::WriteBuffer& writeBuffer) const
-		{
-			se_write(writeBuffer, payload);
-		}
 		bool UserDataPacket::read(se::ReadBuffer& readBuffer)
 		{
-			se_read(readBuffer, payload);
+			readFromBuffer<uint8_t, PayloadSizeType>(readBuffer, payload);
 			return true;
 		}
 	}

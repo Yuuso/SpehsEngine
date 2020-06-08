@@ -57,11 +57,11 @@ namespace se
 			bool isOpen() const;
 			Port getLocalPort() const;
 			Endpoint getLocalEndpoint() const;
-			size_t getSentBytes() const;
-			size_t getReceivedBytes() const;
+			uint64_t getSentBytes() const;
+			uint64_t getReceivedBytes() const;
 			void setDebugLogLevel(const int level);
 			int getDebugLogLevel() const;
-			void setDefaultSimulationSettings(const Connection::SimulationSettings& _defaultSimulationSettings);
+			void setDefaultConnectionSimulationSettings(const ConnectionSimulationSettings& _defaultConnectionSimulationSettings);
 
 			const std::string debugName;
 
@@ -93,7 +93,7 @@ namespace se
 			boost::signals2::signal<void(std::shared_ptr<Connection>&)> incomingConnectionSignal;
 			std::unordered_map<Connection*, boost::signals2::scoped_connection> connectionStatusChangedConnections;
 
-			Connection::SimulationSettings defaultSimulationSettings;
+			ConnectionSimulationSettings defaultConnectionSimulationSettings;
 		};
 	}
 }

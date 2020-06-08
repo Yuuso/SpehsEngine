@@ -20,6 +20,15 @@ namespace se
 		class ConnectionManager;
 		class IOService;
 
+		struct ConnectionSimulationSettings
+		{
+			float chanceToDropIncoming = 0.0f;
+			float chanceToDropOutgoing = 0.0f;
+			float chanceToReorderReceivedPacket = 0.0f;
+			uint16_t maximumSegmentSizeIncoming = std::numeric_limits<uint16_t>::max();
+			uint16_t maximumSegmentSizeOutgoing = std::numeric_limits<uint16_t>::max();
+		};
+
 		class Connection
 		{
 		public:
@@ -56,7 +65,7 @@ namespace se
 			{
 				uint64_t raw = 0u;
 				uint64_t acknowledgement = 0u;
-				uint64_t reliable = 0u;
+				uint64_t reliable = 0u; // Does not account reliableResend bytes
 				uint64_t reliableResend = 0u;
 				uint64_t unreliable = 0u;
 				uint64_t pathMaximumSegmentSizeDiscovery = 0u;
@@ -68,18 +77,11 @@ namespace se
 				uint64_t user = 0u; // Total bytes from user packet contents
 			};
 
-			struct SimulationSettings
-			{
-				float chanceToDropIncoming = 0.0f;
-				float chanceToDropOutgoing = 0.0f;
-				float chanceToReorderReceivedPacket = 0.0f;
-				uint16_t maximumSegmentSizeIncoming = std::numeric_limits<uint16_t>::max();
-				uint16_t maximumSegmentSizeOutgoing = std::numeric_limits<uint16_t>::max();
-			};
-
 			~Connection();
 
 			void sendPacket(const WriteBuffer& writeBuffer, const bool reliable);
+			/* Acquires write buffer data and resets given write buffer */
+			void sendPacket(WriteBuffer& writeBuffer, const bool reliable);
 
 			void setReceiveHandler(const std::function<void(ReadBuffer&, const boost::asio::ip::udp::endpoint&, const bool)> callback = std::function<void(ReadBuffer&, const boost::asio::ip::udp::endpoint&, const bool)>());
 			
@@ -93,8 +95,14 @@ namespace se
 			time::Time getPing() const;
 			float getAverageReliableFragmentSendCount() const;
 			double getSendQuotaPerSecond() const;
+			uint64_t getReliableSendQuota() const;
+			uint64_t getUnreliableSendQuota() const;
 			SentBytes getSentBytesTotal() const;
 			ReceivedBytes getReceivedBytesTotal() const;
+			uint64_t getReliableUnacknowledgedBytesInQueue() const;
+			uint64_t getReliableAcknowledgedBytesInQueue() const;
+			uint64_t getReliableStreamOffsetSend() const;
+			uint64_t getReliableStreamOffsetReceive() const;
 			std::map<uint64_t, uint64_t> getReliableFragmentSendCounters() const;
 			void resetReliableFragmentSendCounters();
 			MutexTimes getAcquireMutexTimes() const;
@@ -106,7 +114,7 @@ namespace se
 			const std::string& getDebugName() const { return debugName; }
 			void setTimeoutEnabled(const bool value);
 			bool getTimeoutEnabled() const;
-			void setSimulationSettings(const SimulationSettings& _simulationSettings);
+			void setConnectionSimulationSettings(const ConnectionSimulationSettings& _simulationSettings);
 			void setDebugLogLevel(const int level);
 			int getDebugLogLevel() const;
 
@@ -147,22 +155,16 @@ namespace se
 				};
 
 				ReliablePacketOut() = default;
-				template<typename Packet>
-				ReliablePacketOut(const PacketHeader::PacketType _packetType, const uint64_t _payloadOffset, const Packet& packet)
+				ReliablePacketOut(const uint64_t _payloadOffset, WriteBuffer& writeBuffer)
 					: payloadOffset(_payloadOffset)
 				{
-					se_assert(_packetType != PacketHeader::PacketType::None);
-					WriteBuffer writeBuffer;
-					writeBuffer.write(_packetType);
-					writeBuffer.write(packet);
 					writeBuffer.swap(payload);
-
 				}
 
 				//PacketHeader::PacketType packetType = PacketHeader::PacketType::None;
 				bool delivered = false;
 				uint64_t payloadOffset = 0u; // payload's offset in the reliable stream
-				std::vector<uint8_t> payload;
+				std::vector<uint8_t> payload; // Contains packet type + packet data
 				std::vector<UnacknowledgedFragment> unacknowledgedFragments;
 				std::vector<AcknowledgedFragment> acknowledgedFragments;
 				//Type type = Type::none;
@@ -171,34 +173,48 @@ namespace se
 
 			struct UnreliablePacketOut
 			{
-				template<typename Packet>
-				UnreliablePacketOut(const PacketHeader::PacketType _packetType, const Packet& packet)
+				UnreliablePacketOut(const PacketHeader::PacketType _packetType, WriteBuffer &writeBuffer)
 					: packetType(_packetType)
 					, createTime(time::now())
 				{
-					WriteBuffer writeBuffer;
-					writeBuffer.write(packet);
 					writeBuffer.swap(payload);
 				}
 
 				PacketHeader::PacketType packetType = PacketHeader::PacketType::None;
+				std::vector<uint8_t> header;
 				std::vector<uint8_t> payload;
-				//bool userData = false;
 				time::Time createTime;
 			};
 
 			struct ReceivedReliableFragment
 			{
-				ReceivedReliableFragment(const uint64_t _streamOffset, const bool _endOfPayload, std::vector<uint8_t>& _payload)
+				/*
+					Contains some data along with some parts of the actual payload.
+					The payload data can be located using 'payloadIndex' and 'payloadSize'.
+					Optimization to avoid reallocating and copying incoming data multiple times.
+				*/
+				struct PayloadBuffer
+				{
+					std::vector<uint8_t> buffer;
+					size_t payloadIndex = 0u;
+					uint16_t payloadSize = 0u;
+				};
+
+				ReceivedReliableFragment(const uint64_t _streamOffset, const bool _endOfPayload, std::vector<uint8_t>& _buffer, const size_t _payloadIndex, const uint16_t _payloadSize)
 					: streamOffset(_streamOffset)
 					, endOfPayload(_endOfPayload)
+					, payloadTotalSize(uint64_t(_payloadSize))
 				{
-					payload.swap(_payload);
+					payloadBuffers.push_back(PayloadBuffer());
+					payloadBuffers.back().buffer.swap(_buffer);
+					payloadBuffers.back().payloadIndex = _payloadIndex;
+					payloadBuffers.back().payloadSize = _payloadSize;
 				}
 
-				std::vector<uint8_t> payload;
+				std::vector<PayloadBuffer> payloadBuffers;
 				uint64_t streamOffset = 0u;
 				bool endOfPayload = false;
+				uint64_t payloadTotalSize = 0u; // Tracks the combined size of all payload buffers
 			};
 
 			struct ReceivedReliablePacket
@@ -243,7 +259,6 @@ namespace se
 			void receivePacket(const PacketHeader &packetHeader, std::vector<uint8_t>& payload, const uint16_t rawPacketSize);
 			void sendPacketImpl(const std::vector<boost::asio::const_buffer>& buffers, const LogSentBytesType logSentBytesType);
 			void logSentBytes(SentBytes& sentBytes, const LogSentBytesType logSentBytesType, const uint64_t bytes);
-			void processReceivedPackets();
 			bool processReceivedPacket(const PacketHeader::PacketType packetType, std::vector<uint8_t>& payload, const bool reliable);
 			void reliableFragmentReceiveHandler(ReliableFragmentPacket& reliableFragmentPacket);
 			void sendAcknowledgePacket(const uint64_t reliableStreamOffset, const uint16_t payloadSize);
@@ -258,6 +273,8 @@ namespace se
 			bool hasPendingOperations() const;
 			void reliableFragmentTransmitted(const uint64_t sendCount, const uint16_t fragmentSize);
 			void processRecentSentBytes();
+			void increaseSendQuotaPerSecond();
+			void decreaseSendQuotaPerSecond();
 			void beginPathMaximumSegmentSizeDiscovery();
 			void sendNextPathMaximumSegmentSizeDiscoveryPacket();
 
@@ -334,7 +351,7 @@ namespace se
 			std::string remoteDebugName;
 			int debugLogLevel = 0;
 			bool timeoutEnabled = true;
-			SimulationSettings simulationSettings;
+			ConnectionSimulationSettings connectionSimulationSettings;
 			std::vector<std::string> debugSelfLog;
 		};
 	}

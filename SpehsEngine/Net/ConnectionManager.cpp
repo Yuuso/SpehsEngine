@@ -132,6 +132,7 @@ namespace se
 					if (packetHeader.protocolId == PacketHeader::spehsProtocolId)
 					{
 						// Cut header data off from the packet contents
+						// TODO: optimize
 						const uint16_t rawPacketSize = uint16_t(receivedPackets[p].data.size());
 						receivedPackets[p].data.erase(receivedPackets[p].data.begin(), receivedPackets[p].data.begin() + readBuffer.getOffset());
 
@@ -297,7 +298,7 @@ namespace se
 			Connection* const connectionPtr = connection.get();
 			connections.push_back(connection);
 			connections.back()->setDebugLogLevel(getDebugLogLevel());
-			connections.back()->setSimulationSettings(defaultSimulationSettings);
+			connections.back()->setConnectionSimulationSettings(defaultConnectionSimulationSettings);
 			connections.back()->connectToStatusChangedSignal(connectionStatusChangedConnections[connectionPtr], [this, connectionPtr](const Connection::Status oldStatus, const Connection::Status newStatus)
 				{
 					std::lock_guard<std::recursive_mutex> lock1(mutex);
@@ -384,10 +385,10 @@ namespace se
 			return connectionId;
 		}
 
-		void ConnectionManager::setDefaultSimulationSettings(const Connection::SimulationSettings& _defaultSimulationSettings)
+		void ConnectionManager::setDefaultConnectionSimulationSettings(const ConnectionSimulationSettings& _defaultConnectionSimulationSettings)
 		{
 			std::lock_guard<std::recursive_mutex> lock1(mutex);
-			defaultSimulationSettings = _defaultSimulationSettings;
+			defaultConnectionSimulationSettings = _defaultConnectionSimulationSettings;
 		}
 
 		bool ConnectionManager::open()
@@ -435,12 +436,12 @@ namespace se
 			return Endpoint(getLocalAddress(), getLocalPort());
 		}
 
-		size_t ConnectionManager::getSentBytes() const
+		uint64_t ConnectionManager::getSentBytes() const
 		{
 			return socket->getSentBytes();
 		}
 
-		size_t ConnectionManager::getReceivedBytes() const
+		uint64_t ConnectionManager::getReceivedBytes() const
 		{
 			return socket->getReceivedBytes();
 		}

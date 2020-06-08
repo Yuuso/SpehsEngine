@@ -68,8 +68,9 @@ namespace se
 			bool isReceiving() const;
 			Port getLocalPort() const;
 			boost::asio::ip::udp::endpoint resolveRemoteEndpoint(const Endpoint& endpoint) const;
-			size_t getSentBytes() const;
-			size_t getReceivedBytes() const;
+			uint64_t getSentBytes() const;
+			uint64_t getReceivedBytes() const;
+			uint16_t getMaxSendBufferSize() const;
 			void setDebugLogLevel(const int level);
 			int getDebugLogLevel() const;
 
@@ -88,8 +89,8 @@ namespace se
 			std::function<void(std::vector<uint8_t>&, const boost::asio::ip::udp::endpoint&)> receiveHandler;
 			time::Time lastReceiveTime;
 			time::Time lastSendTime;
-			size_t sentBytes = 0;
-			size_t receivedBytes = 0;
+			uint64_t sentBytes = 0;
+			uint64_t receivedBytes = 0;
 			std::recursive_mutex receivedPacketsMutex;
 			std::vector<std::unique_ptr<ReceivedPacket>> receivedPackets;
 			int debugLogLevel = 0;
