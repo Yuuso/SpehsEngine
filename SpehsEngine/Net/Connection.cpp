@@ -14,7 +14,6 @@
 #define DEBUG_LOG(level, message) if (getDebugLogLevel() >= level) \
 { \
 	se::log::info(debugName + "(" + getLocalPort().toString() + "): " + message); \
-	debugSelfLog.push_back(std::string(message)); \
 }
 
 
@@ -140,14 +139,6 @@ namespace se
 					}
 				}
 
-				// Process recent sent bytes
-				const time::Time timeSinceProcessRecentSentBytes = now - processRecentSentBytesTime;
-				if (timeSinceProcessRecentSentBytes > processRecentSentBytesInterval)
-				{
-					processRecentSentBytesTime = now;
-					processRecentSentBytes();
-				}
-
 				// Timeout disconnection
 				timeoutCountdown -= timeoutDeltaTime;
 				if (timeoutEnabled && timeoutCountdown <= time::Time::zero)
@@ -198,13 +189,6 @@ namespace se
 								}
 								receivedReliableFragments[insertIndex].endOfPayload = receivedReliableFragments[insertIndex + 1].endOfPayload;
 								receivedReliableFragments.erase(receivedReliableFragments.begin() + insertIndex + 1);
-								//receivedReliableFragments[insertIndex].payload.resize(mergedSize);
-								//memcpy(
-								//	&receivedReliableFragments[insertIndex].payload[prevSize],
-								//	&receivedReliableFragments[insertIndex + 1].payload[size_t(overlappingSize)],
-								//	size_t(uint64_t(receivedReliableFragments[insertIndex + 1].payload.size()) - overlappingSize));
-								//receivedReliableFragments[insertIndex].endOfPayload = receivedReliableFragments[insertIndex + 1].endOfPayload;
-								//receivedReliableFragments.erase(receivedReliableFragments.begin() + insertIndex + 1);
 								return true;
 							}
 						}
@@ -260,10 +244,6 @@ namespace se
 							receivedReliableFragments[f].payloadBuffers.back().buffer.swap(reliableFragmentPacket.readPayload.buffer);
 							receivedReliableFragments[f].payloadBuffers.back().payloadIndex = reliableFragmentPacket.readPayload.beginIndex + overlappingBytes;
 							receivedReliableFragments[f].payloadBuffers.back().payloadSize = uint16_t(newBytes);
-
-							//receivedReliableFragments[f].payload.resize(size_t(newSize));
-							//memcpy(&receivedReliableFragments[f].payload[size_t(prevSize)], reliableFragmentPacket.readPayload.buffer.data() + reliableFragmentPacket.readPayload.beginIndex + (payloadSize - newBytes), size_t(newBytes));
-							//receivedReliableFragments[f].endOfPayload = reliableFragmentPacket.endOfPayload;
 							postInsert(f);
 						}
 						return;
@@ -298,8 +278,6 @@ namespace se
 				boost::asio::const_buffer(writeBuffer.getData(), writeBuffer.getSize()),
 			};
 			sendPacketImpl(sendBuffers, LogSentBytesType::Acknowledgement);
-			if (reliableStreamOffset == 0)
-				debugSelfLog.push_back("r0 received 1/2"); // NOTE: reliableStreamOffset==0 triggering earlier than this may be the ack packet
 		}
 
 		void Connection::acknowledgementReceiveHandler(const uint64_t reliableStreamOffset, const uint16_t payloadSize)
@@ -307,7 +285,7 @@ namespace se
 			SE_SCOPE_PROFILER(debugName);
 			LOCK_GUARD(lock, mutex, other);
 			increaseSendQuotaPerSecond();
-			sendQuotaEvaluation.recentAcknowledgedBytes += uint64_t(payloadSize);
+
 			if (reliableStreamOffset >= reliableStreamOffsetSend)
 			{
 				uint64_t offset = reliableStreamOffsetSend;
@@ -349,16 +327,6 @@ namespace se
 								if (reliablePacketSendQueue[p].unacknowledgedFragments.empty())
 								{
 									reliablePacketSendQueue[p].delivered = true;
-									if (reliablePacketSendQueue[p].payloadOffset == 0)
-									{
-										debugSelfLog.push_back("r0 delivered 1/2");
-										//if (debugName == "Server XanaduClient")
-										//{
-										//	time::Time nocommit = time::now();
-										//	if (nocommit == time::Time::zero)
-										//		log::info("nocommit");
-										//}
-									}
 								}
 
 								break;
@@ -395,10 +363,6 @@ namespace se
 				SE_SCOPE_PROFILER("remove delivered from send queue");
 				while (!reliablePacketSendQueue.empty() && reliablePacketSendQueue.front().delivered)
 				{
-					if (reliablePacketSendQueue.front().payloadOffset == 0)
-					{
-						debugSelfLog.push_back("r0 delivered 2/2");
-					}
 					reliableStreamOffsetSend += reliablePacketSendQueue.front().payload.size();
 					reliablePacketSendQueue.erase(reliablePacketSendQueue.begin());
 				}
@@ -422,10 +386,6 @@ namespace se
 					reliableSendQuota += newReliableSendQuota;
 					unreliableSendQuota += newUnreliableSendQuota;
 					lastSendQuotaReplenishTimestamp = now;
-					//if (rng::weightedCoin(0.05f))
-					//{
-					//	log::info("(random sample) Send quota added: " + std::to_string(newSendQuota));
-					//}
 				}
 				else
 				{
@@ -653,8 +613,6 @@ namespace se
 				LOCK_GUARD(lock, mutex, deliverReceivedPackets);
 				while (!receivedReliableFragments.empty() && receivedReliableFragments.front().endOfPayload && receivedReliableFragments.front().streamOffset == reliableStreamOffsetReceive)
 				{
-					if (reliableStreamOffsetReceive == 0)
-						debugSelfLog.push_back("r0 received 2/2");
 					se_assert(receivedReliableFragments.front().payloadTotalSize > 0);
 					reliableStreamOffsetReceive += receivedReliableFragments.front().payloadTotalSize;
 
@@ -731,7 +689,7 @@ namespace se
 				UserDataPacket userDataPacket;
 				if (readBuffer.read(userDataPacket))
 				{
-					totalReceivedBytes.user += readBuffer.getSize();
+					receivedBytes.user += readBuffer.getSize();
 					if (receiveHandler)
 					{
 						SE_SCOPE_PROFILER("user data handler");
@@ -885,6 +843,8 @@ namespace se
 					if (pathMaximumSegmentSizeAcknowledgePacket.size > maximumSegmentSize)
 					{
 						maximumSegmentSize = pathMaximumSegmentSizeAcknowledgePacket.size;
+						DEBUG_LOG(2, "Maximum segment size updated: " + std::to_string(pathMaximumSegmentSizeAcknowledgePacket.size));
+
 						if (pathMaximumSegmentSizeDiscovery)
 						{
 							if (pathMaximumSegmentSizeDiscovery->maxAcknowledged)
@@ -896,8 +856,6 @@ namespace se
 								pathMaximumSegmentSizeDiscovery->maxAcknowledged = pathMaximumSegmentSizeAcknowledgePacket.size;
 							}
 						}
-						// nocommit debug level should be 2
-						DEBUG_LOG(0, "Maximum segment size updated: " + std::to_string(pathMaximumSegmentSizeAcknowledgePacket.size));
 					}
 					return true;
 				}
@@ -988,19 +946,17 @@ namespace se
 			if ((connectionSimulationSettings.chanceToDropOutgoing > 0.0f && rng::weightedCoin(connectionSimulationSettings.chanceToDropOutgoing))
 				|| (connectionSimulationSettings.maximumSegmentSizeOutgoing > 0 && bufferSize > connectionSimulationSettings.maximumSegmentSizeOutgoing))
 			{
-				logSentBytes(totalSentBytes, logSentBytesType, bufferSize);
-				logSentBytes(recentSentBytes, logSentBytesType, bufferSize);
+				logSentBytes(logSentBytesType, bufferSize);
 				return;
 			}
 #endif
 			if (socket->sendPacket(buffers, endpoint))
 			{
-				logSentBytes(totalSentBytes, logSentBytesType, bufferSize);
-				logSentBytes(recentSentBytes, logSentBytesType, bufferSize);
+				logSentBytes(logSentBytesType, bufferSize);
 			}
 		}
 
-		void Connection::logSentBytes(SentBytes& sentBytes, const LogSentBytesType logSentBytesType, const uint64_t bytes)
+		void Connection::logSentBytes(const LogSentBytesType logSentBytesType, const uint64_t bytes)
 		{
 			sentBytes.raw += bytes;
 			switch (logSentBytesType)
@@ -1036,16 +992,6 @@ namespace se
 			if (status == Status::Disconnected)
 			{
 				return;
-			}
-
-			// nocommit
-			if (debugName == "XanaduServer: Incoming connection")
-			{
-				debugSelfLog.push_back("Xanadu client disconnected.");
-			}
-			else if (debugName == "Client XanaduClient")
-			{
-				debugSelfLog.push_back("Xanadu client disconnected.");
 			}
 
 			if (sendDisconnectPacket)
@@ -1095,7 +1041,7 @@ namespace se
 #endif
 			lastReceiveTime = time::now();
 			timeoutCountdown = timeoutTime;
-			totalReceivedBytes.raw += buffer.size();
+			receivedBytes.raw += buffer.size();
 			receivedPackets.push_back(ReceivedPacket(packetHeader, buffer, payloadOffset));
 		}
 
@@ -1104,107 +1050,30 @@ namespace se
 			LOCK_GUARD(lock, mutex, other);
 
 			// Add to recentReliableFragmentSendCounts
-			congestionAvoidanceState.recentReliableFragmentSendCounts.push_back(CongestionAvoidanceState::ReliableFragmentSendCount());
-			congestionAvoidanceState.recentReliableFragmentSendCounts.back().sendCount = sendCount;
-			congestionAvoidanceState.recentReliableFragmentSendCounts.back().size = fragmentSize;
-			if (congestionAvoidanceState.recentReliableFragmentSendCounts.size() > 40)
+			recentReliableFragmentSendCounts.push_back(ReliableFragmentSendCount());
+			recentReliableFragmentSendCounts.back().sendCount = sendCount;
+			recentReliableFragmentSendCounts.back().size = fragmentSize;
+			if (recentReliableFragmentSendCounts.size() > 40)
 			{
-				congestionAvoidanceState.recentReliableFragmentSendCounts.erase(congestionAvoidanceState.recentReliableFragmentSendCounts.begin());
+				recentReliableFragmentSendCounts.erase(recentReliableFragmentSendCounts.begin());
 			}
 			averageReliableFragmentSendCount = 0.0f;
-			const float weigth = 1.0f / congestionAvoidanceState.recentReliableFragmentSendCounts.size();
-			for (CongestionAvoidanceState::ReliableFragmentSendCount& recentReliableFragmentSendCount : congestionAvoidanceState.recentReliableFragmentSendCounts)
+			const float weigth = 1.0f / recentReliableFragmentSendCounts.size();
+			for (ReliableFragmentSendCount& recentReliableFragmentSendCount : recentReliableFragmentSendCounts)
 			{
 				averageReliableFragmentSendCount += weigth * float(recentReliableFragmentSendCount.sendCount);
 			}
 
 			// Add to total reliable fragment send counts
-			const std::map<uint64_t, uint64_t>::iterator it = congestionAvoidanceState.reliableFragmentSendCounters.find(sendCount);
-			if (it != congestionAvoidanceState.reliableFragmentSendCounters.end())
+			const std::map<uint64_t, uint64_t>::iterator it = reliableFragmentSendCounters.find(sendCount);
+			if (it != reliableFragmentSendCounters.end())
 			{
 				(*it).second++;
 			}
 			else
 			{
-				congestionAvoidanceState.reliableFragmentSendCounters[sendCount] = 1;
+				reliableFragmentSendCounters[sendCount] = 1;
 			}
-
-			//double sendQuotaGrowthIncrease = 0.0;
-			double sendQuotaGrowthFactor = 1.0;
-			if (sendCount > 1u)
-			{
-				// Resend count is high, send less
-				sendQuotaGrowthFactor = 0.999f;
-			}
-			else
-			{
-				// No resends, raise send quota
-				if (moreSendQuotaRequested)
-				{
-					sendQuotaGrowthFactor = 1.001; // 1.01;
-				}
-			}
-
-			if (sendQuotaGrowthFactor != 1.0)
-			{
-				se_assert(sendQuotaGrowthFactor != 0.0);
-				// TODO nocommit static const double minSendQuotaPerSecond = 1000.0;
-				// TODO nocommit sendQuotaPerSecond = std::max(sendQuotaGrowthFactor * sendQuotaPerSecond + sendQuotaGrowthIncrease, minSendQuotaPerSecond);
-				//if (rng::weightedCoin(0.02f))
-					//log::info(debugName + ": sendQuota " + (sendQuotaGrowthFactor > 1.0 ? "increased" : "decreased") + ": " + se::toString(float(sendQuotaPerSecond * 8.0 / 10000000), 6) + " Kb/s afsc: " + std::to_string(averageReliableFragmentSendCount));
-			}
-
-			congestionAvoidanceState.prevSendQuotaGrowthFactor = sendQuotaGrowthFactor;
-			congestionAvoidanceState.prevReliableStreamOffsetSend = reliableStreamOffsetSend;
-			congestionAvoidanceState.reEvaluationTimestamp = time::now();
-		}
-
-		void Connection::processRecentSentBytes()
-		{
-			LOCK_GUARD(lock, mutex, other);
-
-			if (sendQuotaEvaluation.prevSentBytesReliable)
-			{
-				// Determine whether we should either increase or decrease the send quota
-				const double reliability = sendQuotaEvaluation.prevSentBytesReliable != 0 ? double(sendQuotaEvaluation.recentAcknowledgedBytes) / double(*sendQuotaEvaluation.prevSentBytesReliable) : 1.0;
-				const bool increase = reliability > 0.9f;
-
-				// Update modifySendQuotaCounter
-				if (increase)
-				{
-					if (sendQuotaEvaluation.modifySendQuotaCounter >= 0)
-					{
-						sendQuotaEvaluation.modifySendQuotaCounter++;
-					}
-					else
-					{
-						sendQuotaEvaluation.modifySendQuotaCounter = 1;
-					}
-				}
-				else
-				{
-					if (sendQuotaEvaluation.modifySendQuotaCounter <= 0)
-					{
-						sendQuotaEvaluation.modifySendQuotaCounter--;
-					}
-					else
-					{
-						sendQuotaEvaluation.modifySendQuotaCounter = -1;
-					}
-				}
-				se_assert(sendQuotaEvaluation.modifySendQuotaCounter != 0);
-				static const double minSendQuotaPerSecond = 1000.0;
-				const double multiplier = std::max(0.25, std::min(4.0, std::pow(1.05, double(sendQuotaEvaluation.modifySendQuotaCounter))));
-				if (multiplier < 1.0 || moreSendQuotaRequested)
-				{
-					//se::log::info("send quota multiplied: " + std::to_string(multiplier) + ", recent ack: " + std::to_string(sendQuotaEvaluation.recentAcknowledgedBytes) + ", prev sent rel: " + std::to_string(*sendQuotaEvaluation.prevSentBytesReliable));
-					//sendQuotaPerSecond = std::max(minSendQuotaPerSecond, sendQuotaPerSecond * multiplier);
-				}
-			}
-
-			sendQuotaEvaluation.prevSentBytesReliable.emplace(recentSentBytes.reliable + recentSentBytes.reliableResend);
-			sendQuotaEvaluation.recentAcknowledgedBytes = 0ull;
-			recentSentBytes = SentBytes();
 		}
 
 		void Connection::increaseSendQuotaPerSecond()
@@ -1353,16 +1222,16 @@ namespace se
 			return reliableSendQuota;
 		}
 
-		Connection::SentBytes Connection::getSentBytesTotal() const
+		Connection::SentBytes Connection::getSentBytes() const
 		{
 			LOCK_GUARD(lock, mutex, other);
-			return totalSentBytes;
+			return sentBytes;
 		}
 
-		Connection::ReceivedBytes Connection::getReceivedBytesTotal() const
+		Connection::ReceivedBytes Connection::getReceivedBytes() const
 		{
 			LOCK_GUARD(lock, mutex, other);
-			return totalReceivedBytes;
+			return receivedBytes;
 		}
 
 		uint64_t Connection::getReliableUnacknowledgedBytesInQueue() const
@@ -1415,13 +1284,13 @@ namespace se
 		std::map<uint64_t, uint64_t> Connection::getReliableFragmentSendCounters() const
 		{
 			LOCK_GUARD(lock, mutex, other);
-			return congestionAvoidanceState.reliableFragmentSendCounters;
+			return reliableFragmentSendCounters;
 		}
 
 		void Connection::resetReliableFragmentSendCounters()
 		{
 			LOCK_GUARD(lock, mutex, other);
-			congestionAvoidanceState.reliableFragmentSendCounters.clear();
+			reliableFragmentSendCounters.clear();
 		}
 
 		Connection::MutexTimes Connection::getAcquireMutexTimes() const

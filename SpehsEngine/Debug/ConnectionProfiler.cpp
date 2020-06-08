@@ -60,21 +60,21 @@ namespace se
 				string += "\nMaximum segment size: " + std::to_string(connection->getMaximumSegmentSize());
 				string += "\nSend quota per second: " + se::toByteString(uint64_t(connection->getSendQuotaPerSecond()));
 
-				const se::net::Connection::SentBytes sentBytesTotal = connection->getSentBytesTotal();
-				string += "\nSent (raw): " + se::toByteString(sentBytesTotal.raw);
-				string += "\nSent (reliable): " + se::toByteString(sentBytesTotal.reliable);
-				string += "\nSent (reliable resend): " + se::toByteString(sentBytesTotal.reliableResend);
-				string += "\nSent (unreliable): " + se::toByteString(sentBytesTotal.unreliable);
-				string += "\nSent (acknowledgement): " + se::toByteString(sentBytesTotal.acknowledgement);
-				string += "\nSent (path mss discovery): " + se::toByteString(sentBytesTotal.pathMaximumSegmentSizeDiscovery);
+				const se::net::Connection::SentBytes sentBytes = connection->getSentBytes();
+				string += "\nSent (raw): " + se::toByteString(sentBytes.raw);
+				string += "\nSent (reliable): " + se::toByteString(sentBytes.reliable);
+				string += "\nSent (reliable resend): " + se::toByteString(sentBytes.reliableResend);
+				string += "\nSent (unreliable): " + se::toByteString(sentBytes.unreliable);
+				string += "\nSent (acknowledgement): " + se::toByteString(sentBytes.acknowledgement);
+				string += "\nSent (path mss discovery): " + se::toByteString(sentBytes.pathMaximumSegmentSizeDiscovery);
 				string += "\nReliable unack bytes in queue: " + se::toByteString(connection->getReliableUnacknowledgedBytesInQueue());
 				string += "\nReliable ack bytes in queue: " + se::toByteString(connection->getReliableAcknowledgedBytesInQueue());
 				string += "\nReliable stream offset send: " + std::to_string(connection->getReliableStreamOffsetSend());
 				string += "\nReliable stream offset receive: " + std::to_string(connection->getReliableStreamOffsetReceive());
 
-				const se::net::Connection::ReceivedBytes receivedBytesTotal = connection->getReceivedBytesTotal();
-				string += "\nReceived (raw): " + se::toByteString(receivedBytesTotal.raw);
-				string += "\nReceived (user): " + se::toByteString(receivedBytesTotal.user);
+				const se::net::Connection::ReceivedBytes receivedBytes = connection->getReceivedBytes();
+				string += "\nReceived (raw): " + se::toByteString(receivedBytes.raw);
+				string += "\nReceived (user): " + se::toByteString(receivedBytes.user);
 				string += "\nAverage reliable fragment send count: " + std::to_string(connection->getAverageReliableFragmentSendCount());
 
 				string += "\nReliable fragment resend counters: [send count]: % (number of occurences)\n";

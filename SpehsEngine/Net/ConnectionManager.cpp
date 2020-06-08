@@ -15,7 +15,6 @@
 	se::log::info(debugName + "(" + getLocalPort().toString() + "): " + message); \
 }
 
-/**///#pragma optimize("", off)
 
 namespace se
 {
@@ -105,7 +104,7 @@ namespace se
 			std::lock_guard<std::recursive_mutex> lock1(mutex);
 			for (size_t i = 0; i < connections.size(); i++)
 			{
-				//Remove unreferenced connections that don't have pending operations
+				// Remove unreferenced connections that don't have pending operations
 				if (connections[i].use_count() == 1 && !connections[i]->hasPendingOperations() && connections[i]->getStatus() == Connection::Status::Connected)
 				{
 					DEBUG_LOG(1, "Dropping unused alive connection from: " + connections[i]->debugEndpoint + " (" + connections[i]->debugName + ")");
@@ -113,7 +112,6 @@ namespace se
 				}
 				else
 				{
-					//Call update
 					connections[i]->update(timeoutDeltaTime);
 				}
 			}

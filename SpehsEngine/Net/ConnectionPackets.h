@@ -18,18 +18,6 @@ namespace se
 		struct PacketHeader
 		{
 			static const ProtocolId spehsProtocolId;
-			//enum class ControlBit : uint8_t
-			//{
-			//	//ReliableFragment = 1 << 0,
-			//	//EndOfPayload = 1 << 1,
-			//	//AcknowledgePacket = 1 << 2,
-
-			//	// Automatically managed on read/write
-			//	EnableStreamOffset64Bit = 1 << 4,
-			//	EnablePayloadSizeBit1 = 1 << 5,
-			//	EnablePayloadSizeBit2 = 1 << 6,
-			//	EnableReceivedPayloadSize16Bit = 1 << 7,
-			//};
 
 			enum class PacketType : uint8_t
 			{
@@ -51,11 +39,7 @@ namespace se
 
 			ProtocolId protocolId;
 			ConnectionId connectionId;
-			//ControlBit controlBits = ControlBit(0);
 			PacketType packetType = PacketType::None;
-			//uint64_t streamOffset = 0u;
-			//uint64_t payloadTotalSize = 0u;
-			//uint16_t receivedPayloadSize = 0u;
 		};
 
 		struct ReliableFragmentPacket
