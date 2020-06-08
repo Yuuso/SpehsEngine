@@ -131,11 +131,6 @@ namespace se
 				{
 					if (packetHeader.protocolId == PacketHeader::spehsProtocolId)
 					{
-						// Cut header data off from the packet contents
-						// TODO: optimize
-						const uint16_t rawPacketSize = uint16_t(receivedPackets[p].data.size());
-						receivedPackets[p].data.erase(receivedPackets[p].data.begin(), receivedPackets[p].data.begin() + readBuffer.getOffset());
-
 						const std::vector<std::shared_ptr<Connection>>::iterator connectionIt = std::find_if(connections.begin(), connections.end(), [&](std::shared_ptr<Connection>& connection)->bool
 							{
 								return connection->getRemoteEndpoint() == receivedPackets[p].senderEndpoint;
@@ -144,7 +139,7 @@ namespace se
 						{
 							//Existing connection
 							//se::log::info("Endpoint match: " + se::net::toString(connectionIt->get()->getRemoteEndpoint()) + " == " + se::net::toString(receivedPackets[p].senderEndpoint) + ", size: " + std::to_string(receivedPackets[p].data.size()));
-							connectionIt->get()->receivePacket(packetHeader, receivedPackets[p].data, rawPacketSize);
+							connectionIt->get()->receivePacket(packetHeader, receivedPackets[p].data, readBuffer.getOffset());
 						}
 						else if (accepting)
 						{
@@ -152,7 +147,7 @@ namespace se
 							const std::shared_ptr<Connection> newConnection = addConnectionImpl(std::shared_ptr<Connection>(
 								new Connection(socket, receivedPackets[p].senderEndpoint, generateNewConnectionId(), Connection::EstablishmentType::Incoming, debugName + ": Incoming connection")));
 							DEBUG_LOG(1, "Incoming connection from: " + newConnection->debugEndpoint + " started connecting...");
-							connections.back()->receivePacket(packetHeader, receivedPackets[p].data, rawPacketSize);
+							connections.back()->receivePacket(packetHeader, receivedPackets[p].data, readBuffer.getOffset());
 						}
 						else
 						{

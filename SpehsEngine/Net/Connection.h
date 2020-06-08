@@ -232,14 +232,16 @@ namespace se
 			struct ReceivedPacket
 			{
 				ReceivedPacket() = default;
-				ReceivedPacket(const PacketHeader& _packetHeader, std::vector<uint8_t>& _payload)
+				ReceivedPacket(const PacketHeader& _packetHeader, std::vector<uint8_t>& _buffer, const size_t _payloadOffset)
 					: packetHeader(_packetHeader)
+					, payloadOffset(_payloadOffset)
 				{
-					std::swap(payload, _payload);
+					std::swap(buffer, _buffer);
 				}
 
 				PacketHeader packetHeader;
-				std::vector<uint8_t> payload;
+				std::vector<uint8_t> buffer;
+				size_t payloadOffset = 0u;
 			};
 
 			struct PathMaximumSegmentSizeDiscovery
@@ -256,10 +258,10 @@ namespace se
 				const EstablishmentType _establishmentType, const std::string_view _debugName);
 
 			void update(const time::Time timeoutDeltaTime);
-			void receivePacket(const PacketHeader &packetHeader, std::vector<uint8_t>& payload, const uint16_t rawPacketSize);
+			void receivePacket(const PacketHeader &packetHeader, std::vector<uint8_t>& buffer, const size_t payloadOffset);
 			void sendPacketImpl(const std::vector<boost::asio::const_buffer>& buffers, const LogSentBytesType logSentBytesType);
 			void logSentBytes(SentBytes& sentBytes, const LogSentBytesType logSentBytesType, const uint64_t bytes);
-			bool processReceivedPacket(const PacketHeader::PacketType packetType, std::vector<uint8_t>& payload, const bool reliable);
+			bool processReceivedPacket(const PacketHeader::PacketType packetType, std::vector<uint8_t>& buffer, const size_t payloadIndex, const bool reliable);
 			void reliableFragmentReceiveHandler(ReliableFragmentPacket& reliableFragmentPacket);
 			void sendAcknowledgePacket(const uint64_t reliableStreamOffset, const uint16_t payloadSize);
 			void acknowledgementReceiveHandler(const uint64_t reliableStreamOffset, const uint16_t payloadSize);

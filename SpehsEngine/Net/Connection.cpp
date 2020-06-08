@@ -643,7 +643,7 @@ namespace se
 					ReceivedPacket receivedPacket;
 					std::swap(receivedPacket, receivedPackets.front());
 					receivedPackets.erase(receivedPackets.begin());
-					processReceivedPacket(receivedPacket.packetHeader.packetType, receivedPacket.payload, false);
+					processReceivedPacket(receivedPacket.packetHeader.packetType, receivedPacket.buffer, receivedPacket.payloadOffset, false);
 				}
 			}
 
@@ -698,7 +698,7 @@ namespace se
 				else
 				{
 					ReadBuffer readBuffer(receivedReliablePackets.front().payload.data(), receivedReliablePackets.front().payload.size());
-					if (processReceivedPacket(receivedReliablePackets.front().packetType, receivedReliablePackets.front().payload, true))
+					if (processReceivedPacket(receivedReliablePackets.front().packetType, receivedReliablePackets.front().payload, 0u, true))
 					{
 						receivedReliablePackets.erase(receivedReliablePackets.begin());
 					}
@@ -715,11 +715,11 @@ namespace se
 			}
 		}
 
-		bool Connection::processReceivedPacket(const PacketHeader::PacketType packetType, std::vector<uint8_t>& payload, const bool reliable)
+		bool Connection::processReceivedPacket(const PacketHeader::PacketType packetType, std::vector<uint8_t>& buffer, const size_t payloadIndex, const bool reliable)
 		{
 			LOCK_GUARD(lock, mutex, processReceivedPackets);
 
-			ReadBuffer readBuffer(payload.data(), payload.size());
+			ReadBuffer readBuffer(buffer.data() + payloadIndex, buffer.size() - payloadIndex);
 
 			switch (packetType)
 			{
@@ -731,7 +731,7 @@ namespace se
 				UserDataPacket userDataPacket;
 				if (readBuffer.read(userDataPacket))
 				{
-					totalReceivedBytes.user += userDataPacket.payload.size();
+					totalReceivedBytes.user += readBuffer.getSize();
 					if (receiveHandler)
 					{
 						SE_SCOPE_PROFILER("user data handler");
@@ -758,8 +758,8 @@ namespace se
 				{
 					if (readBuffer.read(reliableFragmentPacket.readPayload.payloadSize))
 					{
-						reliableFragmentPacket.readPayload.beginIndex = readBuffer.getOffset();
-						reliableFragmentPacket.readPayload.buffer.swap(payload);
+						reliableFragmentPacket.readPayload.beginIndex = payloadIndex + readBuffer.getOffset();
+						reliableFragmentPacket.readPayload.buffer.swap(buffer);
 						reliableFragmentReceiveHandler(reliableFragmentPacket);
 						return true;
 					}
@@ -1080,7 +1080,7 @@ namespace se
 			setStatus(Status::Disconnected);
 		}
 
-		void Connection::receivePacket(const PacketHeader& packetHeader, std::vector<uint8_t>& payload, const uint16_t rawPacketSize)
+		void Connection::receivePacket(const PacketHeader& packetHeader, std::vector<uint8_t>& buffer, const size_t payloadOffset)
 		{
 			LOCK_GUARD(lock, mutex, receivePacket);
 #if SE_CONFIGURATION != SE_CONFIGURATION_FINAL_RELEASE
@@ -1088,16 +1088,15 @@ namespace se
 			{
 				return;
 			}
-			if (connectionSimulationSettings.maximumSegmentSizeOutgoing > 0
-				&& rawPacketSize > connectionSimulationSettings.maximumSegmentSizeIncoming)
+			if (connectionSimulationSettings.maximumSegmentSizeOutgoing > 0 && buffer.size() > connectionSimulationSettings.maximumSegmentSizeIncoming)
 			{
 				return;
 			}
 #endif
 			lastReceiveTime = time::now();
 			timeoutCountdown = timeoutTime;
-			totalReceivedBytes.raw += rawPacketSize;
-			receivedPackets.push_back(ReceivedPacket(packetHeader, payload));
+			totalReceivedBytes.raw += buffer.size();
+			receivedPackets.push_back(ReceivedPacket(packetHeader, buffer, payloadOffset));
 		}
 
 		void Connection::reliableFragmentTransmitted(const uint64_t sendCount, const uint16_t fragmentSize)

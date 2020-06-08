@@ -7,14 +7,13 @@
 #include "SpehsEngine/Core/StringOperations.h"
 #include "SpehsEngine/Core/StringUtilityFunctions.h"
 #include "SpehsEngine/Core/WriteBuffer.h"
-#pragma optimize("", off) // nocommit
 
 
 namespace se
 {
 	namespace net
 	{
-		const ProtocolId PacketHeader::spehsProtocolId(1397770323);
+		const ProtocolId PacketHeader::spehsProtocolId(0x53485053);
 
 		uint16_t PacketHeader::getSize()
 		{
