@@ -1124,7 +1124,12 @@ namespace se
 			else
 			{
 				// Determine the size of the next MSS discovery packet
-				uint16_t size = std::numeric_limits<uint16_t>::max();
+				/*
+					The maximum size of the spehs-level payload is uint16 max (65536) minus the IP header size.
+					According to some person in the internet, the IP header is 28+ bytes for IPv4, and 48+ bytes for IPv6.
+					When I tested this I got a boost asio error on send when trying anything above 65507 when using IPv4 (which would suggest a 29 byte IP header in my case).
+				*/
+				uint16_t size = 65507;
 				if (pathMaximumSegmentSizeDiscovery->lastSentSize)
 				{
 					se_assert(*pathMaximumSegmentSizeDiscovery->lastSentSize >= pathMaximumSegmentSizeDiscovery->min);
