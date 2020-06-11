@@ -99,6 +99,8 @@ namespace se
 			uint64_t getUnreliableSendQuota() const;
 			SentBytes getSentBytes() const;
 			ReceivedBytes getReceivedBytes() const;
+			/* Returns true if there are at least minBytes in the unacknowledged send queue. */
+			bool hasReliableUnacknowledgedBytesInQueue(const uint64_t minBytes) const;
 			uint64_t getReliableUnacknowledgedBytesInQueue() const;
 			uint64_t getReliableAcknowledgedBytesInQueue() const;
 			uint64_t getReliableStreamOffsetSend() const;

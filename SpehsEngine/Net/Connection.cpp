@@ -1234,6 +1234,32 @@ namespace se
 			return receivedBytes;
 		}
 
+		bool Connection::hasReliableUnacknowledgedBytesInQueue(const uint64_t minBytes) const
+		{
+			LOCK_GUARD(lock, mutex, other);
+			uint64_t bytes = 0ull;
+			for (const ReliablePacketOut& reliablePacketOut : reliablePacketSendQueue)
+			{
+				if (!reliablePacketOut.delivered && reliablePacketOut.unacknowledgedFragments.empty())
+				{
+					bytes += uint64_t(reliablePacketOut.payload.size());
+				}
+				else
+				{
+					for (const ReliablePacketOut::UnacknowledgedFragment& unacknowledgedFragment : reliablePacketOut.unacknowledgedFragments)
+					{
+						bytes += uint64_t(unacknowledgedFragment.size);
+					}
+				}
+
+				if (bytes >= minBytes)
+				{
+					return true;
+				}
+			}
+			return false;
+		}
+
 		uint64_t Connection::getReliableUnacknowledgedBytesInQueue() const
 		{
 			LOCK_GUARD(lock, mutex, other);
