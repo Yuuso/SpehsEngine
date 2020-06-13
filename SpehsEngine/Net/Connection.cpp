@@ -183,14 +183,14 @@ namespace se
 #endif
 
 								// Absorb the next fragment's contents and erase it
-								const size_t mergedSize = receivedReliableFragments[insertIndex].payloadTotalSize
-									+ receivedReliableFragments[insertIndex + 1].payloadTotalSize - size_t(overlappingSize);
+								const uint64_t mergedSize = receivedReliableFragments[insertIndex].payloadTotalSize
+									+ receivedReliableFragments[insertIndex + 1].payloadTotalSize - overlappingSize;
 								for (ReceivedReliableFragment::PayloadBuffer& payloadBuffer : receivedReliableFragments[insertIndex + 1].payloadBuffers)
 								{
 									receivedReliableFragments[insertIndex].payloadTotalSize = mergedSize;
 									receivedReliableFragments[insertIndex].payloadBuffers.push_back(ReceivedReliableFragment::PayloadBuffer());
 									std::swap(receivedReliableFragments[insertIndex].payloadBuffers.back().buffer, payloadBuffer.buffer);
-									receivedReliableFragments[insertIndex].payloadBuffers.back().payloadIndex = payloadBuffer.payloadIndex + overlappingSize;
+									receivedReliableFragments[insertIndex].payloadBuffers.back().payloadIndex = payloadBuffer.payloadIndex + size_t(overlappingSize);
 									receivedReliableFragments[insertIndex].payloadBuffers.back().payloadSize = payloadBuffer.payloadSize - uint16_t(overlappingSize);
 								}
 								receivedReliableFragments[insertIndex].endOfPayload = receivedReliableFragments[insertIndex + 1].endOfPayload;
@@ -248,7 +248,7 @@ namespace se
 							se_assert(newSize <= std::numeric_limits<size_t>::max() && "New size is larger than max std::vector capacity.");
 							receivedReliableFragments[f].payloadBuffers.push_back(ReceivedReliableFragment::PayloadBuffer());
 							receivedReliableFragments[f].payloadBuffers.back().buffer.swap(reliableFragmentPacket.readPayload.buffer);
-							receivedReliableFragments[f].payloadBuffers.back().payloadIndex = reliableFragmentPacket.readPayload.beginIndex + overlappingBytes;
+							receivedReliableFragments[f].payloadBuffers.back().payloadIndex = reliableFragmentPacket.readPayload.beginIndex + size_t(overlappingBytes);
 							receivedReliableFragments[f].payloadBuffers.back().payloadSize = uint16_t(newBytes);
 							postInsert(f);
 						}
