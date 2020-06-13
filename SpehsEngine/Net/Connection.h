@@ -5,6 +5,7 @@
 #include "SpehsEngine/Net/SocketUDP2.h"
 #include "SpehsEngine/Core/SE_Time.h"
 #include "SpehsEngine/Core/StrongInt.h"
+#include "SpehsEngine/Core/LockGuard.h"
 #include "SpehsEngine/Net/ConnectionPackets.h"
 #include <functional>
 #include <map>
@@ -85,7 +86,9 @@ namespace se
 
 			void setReceiveHandler(const std::function<void(ReadBuffer&, const boost::asio::ip::udp::endpoint&, const bool)> callback = std::function<void(ReadBuffer&, const boost::asio::ip::udp::endpoint&, const bool)>());
 			
-			void disconnect();
+			/* Disconnection cannot be immediately applied so it must be queued. Disconnection happens from the connection manager update. */
+			void queueDisconnect();
+			bool isDisconnectQueued() const;
 			Status getStatus() const;
 			bool isConnected() const;
 			boost::asio::ip::udp::endpoint getRemoteEndpoint() const;
@@ -253,7 +256,7 @@ namespace se
 				int iterations = 0;
 			};
 
-			Connection(const boost::shared_ptr<SocketUDP2>& _socket, const boost::asio::ip::udp::endpoint& _endpoint, const ConnectionId _connectionId,
+			Connection(const boost::shared_ptr<SocketUDP2>& _socket, const std::shared_ptr<std::recursive_mutex>& _upperMutex, const boost::asio::ip::udp::endpoint& _endpoint, const ConnectionId _connectionId,
 				const EstablishmentType _establishmentType, const std::string_view _debugName);
 
 			void update(const time::Time timeoutDeltaTime);
@@ -268,7 +271,8 @@ namespace se
 			void deliverReceivedReliablePackets();
 			void deliverOutgoingPackets();
 			void disconnectImpl(const bool sendDisconnectPacket);
-			void setStatus(const Status newStatus);
+			/* lock_guard parameters are here to enforce their locking prior to calling this method. */
+			void setStatus(const Status newStatus, const std::lock_guard<std::recursive_mutex> &upperLock, const LockGuard<std::recursive_mutex>& lock);
 			/* Declared and defined privately, used by ConnectionManager. */
 			bool hasPendingOperations() const;
 			void reliableFragmentTransmitted(const uint64_t sendCount, const uint16_t fragmentSize);
@@ -278,6 +282,7 @@ namespace se
 			void sendNextPathMaximumSegmentSizeDiscoveryPacket();
 
 			mutable std::recursive_mutex mutex;
+			mutable std::shared_ptr<std::recursive_mutex> upperMutex;
 			boost::shared_ptr<SocketUDP2> socket;
 			std::vector<ReliablePacketOut> reliablePacketSendQueue;
 			std::vector<UnreliablePacketOut> unreliablePacketSendQueue;
@@ -294,6 +299,7 @@ namespace se
 			std::vector<ReceivedReliablePacket> receivedReliablePackets;
 			std::vector<ReceivedPacket> receivedUnreliablePackets;
 			std::function<void(ReadBuffer&, const boost::asio::ip::udp::endpoint&, const bool)> receiveHandler;
+			bool disconnectionQueued = false;
 			Status status = Status::Connecting; // Every connection begins in the connecting state
 			ConnectionId remoteConnectionId;
 			boost::signals2::signal<void(const Status, const Status)> statusChangedSignal;

@@ -121,3 +121,6 @@ namespace se
 		};
 	}
 }
+
+SE_STRONG_INT_STD(se::net::ProtocolId);
+SE_STRONG_INT_STD(se::net::ConnectionId);

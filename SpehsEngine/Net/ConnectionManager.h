@@ -83,7 +83,7 @@ namespace se
 
 			ConnectionId nextConnectionId = ConnectionId(1u);
 			boost::shared_ptr<SocketUDP2> socket;
-			mutable std::recursive_mutex mutex;
+			mutable std::shared_ptr<std::recursive_mutex> mutex;
 			std::thread thread;
 			bool accepting = false;
 			bool destructorCalled = false;
@@ -91,7 +91,7 @@ namespace se
 			std::vector<std::shared_ptr<Connection>> connections;
 			std::vector<ReceivedPacket> receivedPackets;
 			boost::signals2::signal<void(std::shared_ptr<Connection>&)> incomingConnectionSignal;
-			std::unordered_map<Connection*, boost::signals2::scoped_connection> connectionStatusChangedConnections;
+			std::unordered_map<ConnectionId, boost::signals2::scoped_connection> connectionStatusChangedConnections;
 
 			ConnectionSimulationSettings defaultConnectionSimulationSettings;
 		};

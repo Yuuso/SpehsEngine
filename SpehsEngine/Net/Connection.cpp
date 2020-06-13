@@ -2,7 +2,6 @@
 #include "SpehsEngine/Net/Connection.h"
 
 #include "SpehsEngine/Core/BitwiseOperations.h"
-#include "SpehsEngine/Core/LockGuard.h"
 #include "SpehsEngine/Core/ReadBuffer.h"
 #include "SpehsEngine/Core/RNG.h"
 #include "SpehsEngine/Core/STLVectorUtilityFunctions.h"
@@ -45,13 +44,15 @@ namespace se
 		const time::Time reliableHeartbeatInterval = time::fromSeconds(1.0f);
 		const time::Time timeoutTime = reliableHeartbeatInterval * 5;
 
-		Connection::Connection(const boost::shared_ptr<SocketUDP2>& _socket, const boost::asio::ip::udp::endpoint& _endpoint, const ConnectionId _connectionId,
+		Connection::Connection(const boost::shared_ptr<SocketUDP2>& _socket, const std::shared_ptr<std::recursive_mutex>& _upperMutex,
+			const boost::asio::ip::udp::endpoint& _endpoint, const ConnectionId _connectionId,
 			const EstablishmentType _establishmentType, const std::string_view _debugName)
 			: debugName(_debugName)
 			, debugEndpoint(toString(_endpoint))
 			, endpoint(_endpoint)
 			, connectionId(_connectionId)
 			, establishmentType(_establishmentType)
+			, upperMutex(_upperMutex)
 			, socket(_socket)
 		{
 			LOCK_GUARD(lock, mutex, other);
@@ -73,12 +74,17 @@ namespace se
 		Connection::~Connection()
 		{
 			LOCK_GUARD(lock, mutex, other);
-			disconnect();
+			disconnectImpl(true);
 		}
 
 		void Connection::update(const time::Time timeoutDeltaTime)
 		{
 			SE_SCOPE_PROFILER(debugName);
+			if (isDisconnectQueued())
+			{
+				disconnectImpl(true);
+			}
+
 			if (socket->isOpen())
 			{
 				deliverReceivedPackets();
@@ -143,7 +149,7 @@ namespace se
 				timeoutCountdown -= timeoutDeltaTime;
 				if (timeoutEnabled && timeoutCountdown <= time::Time::zero)
 				{
-					disconnect();
+					disconnectImpl(true);
 				}
 			}
 		}
@@ -597,6 +603,7 @@ namespace se
 			// Lock mutex and process all currently received packets
 			{
 				SE_SCOPE_PROFILER("process received packets");
+				std::lock_guard<std::recursive_mutex> upperLock(*upperMutex);
 				LOCK_GUARD(lock, mutex, processReceivedPackets);
 				while (receivedPackets.size() > 0)
 				{
@@ -646,6 +653,7 @@ namespace se
 		void Connection::deliverReceivedReliablePackets()
 		{
 			SE_SCOPE_PROFILER();
+			std::lock_guard<std::recursive_mutex> upperLock(*upperMutex);
 			LOCK_GUARD(lock, mutex, deliverReceivedPackets);
 			while (true)
 			{
@@ -675,6 +683,7 @@ namespace se
 
 		bool Connection::processReceivedPacket(const PacketHeader::PacketType packetType, std::vector<uint8_t>& buffer, const size_t payloadIndex, const bool reliable)
 		{
+			std::lock_guard<std::recursive_mutex> upperLock(*upperMutex);
 			LOCK_GUARD(lock, mutex, processReceivedPackets);
 
 			ReadBuffer readBuffer(buffer.data() + payloadIndex, buffer.size() - payloadIndex);
@@ -790,7 +799,7 @@ namespace se
 						remoteConnectionId = connectPacket.connectionId;
 						remoteDebugName = connectPacket.debugName;
 						DEBUG_LOG(1, "connected.");
-						setStatus(Status::Connected);
+						setStatus(Status::Connected, upperLock, lock);
 					}
 					else
 					{
@@ -981,13 +990,15 @@ namespace se
 			}
 		}
 
-		void Connection::disconnect()
+		void Connection::queueDisconnect()
 		{
-			disconnectImpl(true);
+			LOCK_GUARD(lock, mutex, other);
+			disconnectionQueued = true;
 		}
 
 		void Connection::disconnectImpl(const bool sendDisconnectPacket)
 		{
+			std::lock_guard<std::recursive_mutex> upperLock(*upperMutex);
 			LOCK_GUARD(lock, mutex, other);
 			if (status == Status::Disconnected)
 			{
@@ -1023,7 +1034,7 @@ namespace se
 			receivedReliableFragments.clear();
 			receivedUnreliablePackets.clear();
 			DEBUG_LOG(1, "disconnected.");
-			setStatus(Status::Disconnected);
+			setStatus(Status::Disconnected, upperLock, lock);
 		}
 
 		void Connection::receivePacket(const PacketHeader& packetHeader, std::vector<uint8_t>& buffer, const size_t payloadOffset)
@@ -1172,6 +1183,12 @@ namespace se
 		{
 			LOCK_GUARD(lock, mutex, other);
 			return status;
+		}
+
+		bool Connection::isDisconnectQueued() const
+		{
+			LOCK_GUARD(lock, mutex, other);
+			return disconnectionQueued;
 		}
 
 		bool Connection::isConnected() const
@@ -1349,9 +1366,15 @@ namespace se
 			scopedConnection = statusChangedSignal.connect(callback);
 		}
 
-		void Connection::setStatus(const Status newStatus)
+		void Connection::setStatus(const Status newStatus, const std::lock_guard<std::recursive_mutex>& upperLock, const LockGuard<std::recursive_mutex>& lock)
 		{
-			LOCK_GUARD(lock, mutex, other);
+			/*
+				Notes about deadlocks:
+				By firing a signal we pass the execution to... somewhere. If this somewhere leads to ConnectionManager (which we must assume to happen sometimes), then we might find ourselves in a mutex deadlock:
+				execution has stopped because some background thread is holding the ConnectionManager mutex. That background thread in turn is awaiting to acquire this connection's mutex.
+				Thus we must acquire the upper management level mutex before passing execution to the signal.				
+				When code reaches here, both upperMutex and mutex should be locked. To enforce this I've added the lock_guard parameters.
+			*/
 			if (newStatus != status)
 			{
 				const Status oldStatus = status;
