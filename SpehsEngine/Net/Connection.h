@@ -82,7 +82,7 @@ namespace se
 
 			void sendPacket(const WriteBuffer& writeBuffer, const bool reliable);
 			/* Acquires write buffer data and resets given write buffer */
-			void sendPacket(WriteBuffer& writeBuffer, const bool reliable);
+			void sendPacket(WriteBuffer&& acquireWriteBuffer, const bool reliable);
 
 			void setReceiveHandler(const std::function<void(ReadBuffer&, const boost::asio::ip::udp::endpoint&, const bool)> callback = std::function<void(ReadBuffer&, const boost::asio::ip::udp::endpoint&, const bool)>());
 			

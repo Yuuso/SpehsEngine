@@ -889,10 +889,10 @@ namespace se
 		void Connection::sendPacket(const WriteBuffer& writeBuffer, const bool reliable)
 		{
 			WriteBuffer writeBufferCopy = writeBuffer;
-			sendPacket(writeBufferCopy, reliable);
+			sendPacket(std::move(writeBufferCopy), reliable);
 		}
 
-		void Connection::sendPacket(WriteBuffer& writeBuffer, const bool reliable)
+		void Connection::sendPacket(WriteBuffer&& writeBuffer, const bool reliable)
 		{
 			// NOTE: this function is used for user packets only
 			SE_SCOPE_PROFILER(debugName);
