@@ -46,7 +46,7 @@ namespace se
 		}
 		return archive;
 	}
-	template<typename T, typename SizeType = uint32_t>
+	template<typename T>
 	bool readFromArchive(const Archive& archive, std::optional<T>& optional)
 	{
 		uint8_t hasValue = 0;
