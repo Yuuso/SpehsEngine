@@ -9,7 +9,7 @@
 #include "SpehsEngine/Core/StringUtilityFunctions.h"
 #include "SpehsEngine/Core/WriteBuffer.h"
 #include "SpehsEngine/Core/PrecompiledInclude.h"
-#pragma optimize("", off) // nocommit
+
 #define DEBUG_LOG(level, message) if (getDebugLogLevel() >= level) \
 { \
 	se::log::info(debugName + "(" + getLocalPort().toString() + "): " + message); \

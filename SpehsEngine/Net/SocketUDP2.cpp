@@ -161,20 +161,6 @@ namespace se
 				DEBUG_LOG(1, "binding successful.");
 				debugLocalPort = std::to_string(port.value);
 
-				// Set send/receive buffer size nocommit
-				boostSocket.set_option(boost::asio::socket_base::send_buffer_size(1024 * 1024 * 1024), error);
-				if (error)
-				{
-					se::log::error("Failed to set boost asio socket send buffer size. Error: " + error.message());
-					error = boost::system::error_code();
-				}
-				boostSocket.set_option(boost::asio::socket_base::receive_buffer_size(1024 * 1024 * 1024), error);
-				if (error)
-				{
-					se::log::error("Failed to set boost asio socket receive buffer size. Error: " + error.message());
-					error = boost::system::error_code();
-				}
-
 				return true;
 			}
 		}
