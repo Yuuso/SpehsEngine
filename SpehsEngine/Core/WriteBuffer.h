@@ -67,7 +67,7 @@ namespace se
 			}
 		}
 
-		void swap(std::vector<uint8_t>& other) { data.swap(other); }
+		void swap(std::vector<uint8_t>& other) { data.swap(other); offset = data.size(); }
 
 		bool isEmpty() const { return data.empty(); }
 		const uint8_t* getData() const { return data.data(); }

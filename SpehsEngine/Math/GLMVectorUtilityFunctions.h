@@ -1,8 +1,10 @@
 #pragma once
+
 #include <string>
 #include <glm/vec2.hpp>
 #include <glm/vec3.hpp>
 #include <glm/vec4.hpp>
+
 
 namespace se
 {
@@ -27,4 +29,48 @@ namespace se
 	std::string toString(const glm::ivec2& vec);
 	std::string toString(const glm::ivec3& vec);
 	std::string toString(const glm::ivec4& vec);
+}
+
+namespace std
+{
+	static_assert(sizeof(glm::ivec2) == sizeof(uint64_t));
+	static_assert(sizeof(glm::vec2) == sizeof(uint64_t));
+
+	template<> struct hash<glm::vec2>
+	{
+		size_t operator()(const glm::vec2& vec) const
+		{
+			const uint64_t value = (uint64_t&)vec;
+			return std::hash<uint64_t>()(value);
+		}
+	};
+
+	template<> struct hash<glm::ivec2>
+	{
+		size_t operator()(const glm::ivec2& vec) const
+		{
+			const uint64_t value = (uint64_t&)vec;
+			return std::hash<uint64_t>()(value);
+		}
+	};
+
+	template<> struct less<glm::vec2>
+	{
+		size_t operator()(const glm::vec2& a, const glm::vec2& b) const
+		{
+			const uint64_t value1 = (uint64_t&)a;
+			const uint64_t value2 = (uint64_t&)b;
+			return std::hash<uint64_t>()(value1) < std::hash<uint64_t>()(value2);
+		}
+	};
+
+	template<> struct less<glm::ivec2>
+	{
+		size_t operator()(const glm::ivec2& a, const glm::ivec2& b) const
+		{
+			const uint64_t value1 = (uint64_t&)a;
+			const uint64_t value2 = (uint64_t&)b;
+			return std::hash<uint64_t>()(value1) < std::hash<uint64_t>()(value2);
+		}
+	};
 }

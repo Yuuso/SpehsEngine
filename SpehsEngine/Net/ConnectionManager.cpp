@@ -2,6 +2,7 @@
 #include "SpehsEngine/Net/ConnectionManager.h"
 
 #include "SpehsEngine/Core/LockGuard.h"
+#include "SpehsEngine/Core/RNG.h"
 #include "SpehsEngine/Core/ReadBuffer.h"
 #include "SpehsEngine/Core/StringOperations.h"
 #include "SpehsEngine/Core/StringUtilityFunctions.h"
@@ -14,7 +15,6 @@
 	se::log::info(debugName + "(" + getLocalPort().toString() + "): " + message); \
 }
 
-/**///#pragma optimize("", off)
 
 namespace se
 {
@@ -23,6 +23,7 @@ namespace se
 		ConnectionManager::ConnectionManager(IOService& _ioService, const std::string& _debugName)
 			: debugName(_debugName)
 			, socket(new SocketUDP2(_ioService, _debugName))
+			, mutex(new std::recursive_mutex())
 			, thread(std::bind(&ConnectionManager::run, this))
 		{
 			socket->setReceiveHandler(std::bind(&ConnectionManager::receiveHandler, this, std::placeholders::_1, std::placeholders::_2));
@@ -32,14 +33,14 @@ namespace se
 		{
 			//Finish async running
 			{
-				std::lock_guard<std::recursive_mutex> lock1(mutex);
+				std::lock_guard<std::recursive_mutex> lock1(*mutex);
 				destructorCalled = true;
-				//Queue disconnections for all
+				// Disconnect all
 				for (size_t i = 0; i < connections.size(); i++)
 				{
-					if (connections[i]->isConnected())
+					if (connections[i]->getStatus() == Connection::Status::Connected)
 					{
-						connections[i]->disconnect();
+						connections[i]->disconnectImpl(true);
 					}
 				}
 			}
@@ -49,7 +50,7 @@ namespace se
 			socket->close();
 
 			//Log warnings if connections are still referenced somewhere (but will not receive any further network updates)
-			std::lock_guard<std::recursive_mutex> lock1(mutex);
+			std::lock_guard<std::recursive_mutex> lock1(*mutex);
 			for (size_t i = 0; i < connections.size(); i++)
 			{
 				if (connections[i].use_count() > 1)
@@ -74,7 +75,7 @@ namespace se
 				deliverOutgoingPackets();
 
 				{
-					std::lock_guard<std::recursive_mutex> lock1(mutex);
+					std::lock_guard<std::recursive_mutex> lock1(*mutex);
 					if (destructorCalled)
 					{
 						//Check if there are still pending operations
@@ -98,81 +99,76 @@ namespace se
 		void ConnectionManager::update()
 		{
 			SE_SCOPE_PROFILER();
-			LockGuard lock(mutex);
-			std::lock_guard<std::recursive_mutex> lock1(mutex);
+			LockGuard lock(*mutex);
+			const time::Time now = time::now();
+			const time::Time timeoutDeltaTime = std::min(now - lastUpdateTime, time::fromSeconds(0.5f));
+			std::lock_guard<std::recursive_mutex> lock1(*mutex);
 			for (size_t i = 0; i < connections.size(); i++)
 			{
-				//Remove unreferenced connections that don't have pending operations
-				if (connections[i].use_count() == 1 && !connections[i]->hasPendingOperations() && !connections[i]->isConnecting())
+				// Remove unreferenced connections that don't have pending operations
+				if (connections[i].use_count() == 1 && !connections[i]->hasPendingOperations() && connections[i]->getStatus() == Connection::Status::Connected)
 				{
-					connections.erase(connections.begin() + i);
-					i--;
+					DEBUG_LOG(1, "Dropping unused alive connection from: " + connections[i]->debugEndpoint + " (" + connections[i]->debugName + ")");
+					removeConnectionImpl(i--);
 				}
 				else
 				{
-					//Call update
-					connections[i]->update();
+					connections[i]->update(timeoutDeltaTime);
 				}
 			}
+			lastUpdateTime = now;
 		}
 
 		void ConnectionManager::processReceivedPackets()
 		{
-			std::lock_guard<std::recursive_mutex> lock1(mutex);
+			std::lock_guard<std::recursive_mutex> lock1(*mutex);
 			for (size_t p = 0; p < receivedPackets.size(); p++)
 			{
-				const std::vector<std::shared_ptr<Connection>>::iterator connectionIt = std::find_if(connections.begin(), connections.end(), [&](std::shared_ptr<Connection>& connection)->bool
+				ReadBuffer readBuffer(receivedPackets[p].data.data(), receivedPackets[p].data.size());
+				PacketHeader packetHeader;
+				if (packetHeader.read(readBuffer))
+				{
+					if (packetHeader.protocolId == PacketHeader::spehsProtocolId)
 					{
-						return connection->getRemoteEndpoint() == receivedPackets[p].senderEndpoint;
-					});
-				if (connectionIt != connections.end())
-				{
-					//Existing connection
-					//se::log::info("Endpoint match: " + se::net::toString(connectionIt->get()->getRemoteEndpoint()) + " == " + se::net::toString(receivedPackets[p].senderEndpoint) + ", size: " + std::to_string(receivedPackets[p].data.size()));
-					connectionIt->get()->receivePacket(receivedPackets[p].data);
-				}
-				else if (accepting)
-				{
-					// New incoming connection
-					connections.push_back(std::shared_ptr<Connection>(new Connection(socket, receivedPackets[p].senderEndpoint, Connection::EstablishmentType::incoming, "incomingConnection")));
-					connections.back()->setDebugLogLevel(getDebugLogLevel());
-
-					// The new connection starts in 'connecting' state, wait for it to connect before firing the incomingConnectionSignal
-					Connection* const connectionPtr = connections.back().get();
-					boost::signals2::scoped_connection& incomingConnectionStatusChangedConnection = incomingConnectionStatusChangedConnections[connectionPtr];
-					connections.back()->connectToConnectionStatusChangedSignal(incomingConnectionStatusChangedConnection, [connectionPtr, this](const bool connected)
+						const std::vector<std::shared_ptr<Connection>>::iterator connectionIt = std::find_if(connections.begin(), connections.end(), [&](std::shared_ptr<Connection>& connection)->bool
+							{
+								return connection->getRemoteEndpoint() == receivedPackets[p].senderEndpoint;
+							});
+						if (connectionIt != connections.end())
 						{
-							const std::unordered_map<Connection*, boost::signals2::scoped_connection>::iterator it = incomingConnectionStatusChangedConnections.find(connectionPtr);
-							se_assert(it != incomingConnectionStatusChangedConnections.end());
-							incomingConnectionStatusChangedConnections.erase(it);
-							if (connected)
-							{
-								DEBUG_LOG(1, "Incoming connection from: " + connectionPtr->debugEndpoint + " successfully connected.");
-								incomingConnectionSignal(connections.back());
-							}
-							else
-							{
-								DEBUG_LOG(1, "Incoming connection from: " + connectionPtr->debugEndpoint + " failed to connect.");
-							}
-						});
-
-					connections.back()->receivePacket(receivedPackets[p].data);
+							//Existing connection
+							//se::log::info("Endpoint match: " + se::net::toString(connectionIt->get()->getRemoteEndpoint()) + " == " + se::net::toString(receivedPackets[p].senderEndpoint) + ", size: " + std::to_string(receivedPackets[p].data.size()));
+							connectionIt->get()->receivePacket(packetHeader, receivedPackets[p].data, readBuffer.getOffset());
+						}
+						else if (accepting)
+						{
+							// New incoming connection
+							const std::shared_ptr<Connection> newConnection = addConnectionImpl(std::shared_ptr<Connection>(
+								new Connection(socket, mutex, receivedPackets[p].senderEndpoint, generateNewConnectionId(), Connection::EstablishmentType::Incoming, debugName + ": Incoming connection")));
+							DEBUG_LOG(1, "Incoming connection from: " + newConnection->debugEndpoint + " started connecting...");
+							connections.back()->receivePacket(packetHeader, receivedPackets[p].data, readBuffer.getOffset());
+						}
+						else
+						{
+							DEBUG_LOG(1, "Received packet from an untracked endpoint: " + se::net::toString(receivedPackets[p].senderEndpoint));
+						}
+					}
+					else
+					{
+						DEBUG_LOG(1, "Received packet with unrecognized protocol id from: " + se::net::toString(receivedPackets[p].senderEndpoint));
+					}
 				}
 				else
 				{
-					DEBUG_LOG(1, "Received packet from an untracked endpoint: " + se::net::toString(receivedPackets[p].senderEndpoint));
+					DEBUG_LOG(1, "Received packet with unrecognized packet header format from: " + se::net::toString(receivedPackets[p].senderEndpoint));
 				}
 			}
 			receivedPackets.clear();
-			for (size_t i = 0; i < connections.size(); i++)
-			{
-				connections[i]->processReceivedPackets();
-			}
 		}
 
 		void ConnectionManager::deliverOutgoingPackets()
 		{
-			std::lock_guard<std::recursive_mutex> lock1(mutex);
+			std::lock_guard<std::recursive_mutex> lock1(*mutex);
 			for (size_t i = 0; i < connections.size(); i++)
 			{
 				connections[i]->deliverOutgoingPackets();
@@ -205,20 +201,31 @@ namespace se
 			const boost::asio::ip::udp::endpoint asioEndpoint = socket->resolveRemoteEndpoint(remoteEndpoint);
 			if (asioEndpoint != boost::asio::ip::udp::endpoint())
 			{
-				std::lock_guard<std::recursive_mutex> lock1(mutex);
+				std::lock_guard<std::recursive_mutex> lock1(*mutex);
 
 				// Return an empty connection if connection was already established
 				for (const std::shared_ptr<Connection>& connection : connections)
 				{
 					if (connection->endpoint == asioEndpoint)
 					{
+						switch (connection->getStatus())
+						{
+						case Connection::Status::Connecting:
+							log::warning("Connection to " + remoteEndpoint.toString() + " is already being established.");
+							break;
+						case Connection::Status::Connected:
+							log::warning("Connection to " + remoteEndpoint.toString() + " has already been established.");
+							break;
+						case Connection::Status::Disconnected:
+							log::warning("An old connection to " + remoteEndpoint.toString() + " already exists. Wait for it to be removed first...");
+							break;
+						}
 						return std::shared_ptr<Connection>();
 					}
 				}
 
-				connections.push_back(std::shared_ptr<Connection>(new Connection(socket, asioEndpoint, Connection::EstablishmentType::outgoing, connectionDebugName)));
-				connections.back()->setDebugLogLevel(getDebugLogLevel());
-				return connections.back();
+				return addConnectionImpl(std::shared_ptr<Connection>(new Connection(
+					socket, mutex, asioEndpoint, generateNewConnectionId(), Connection::EstablishmentType::Outgoing, connectionDebugName)));
 			}
 			else
 			{
@@ -229,7 +236,7 @@ namespace se
 
 		bool ConnectionManager::startAccepting()
 		{
-			std::lock_guard<std::recursive_mutex> lock1(mutex);
+			std::lock_guard<std::recursive_mutex> lock1(*mutex);
 			if (socket->isBound())
 			{
 				if (isAccepting())
@@ -248,35 +255,134 @@ namespace se
 
 		void ConnectionManager::stopAccepting()
 		{
-			std::lock_guard<std::recursive_mutex> lock1(mutex);
+			std::lock_guard<std::recursive_mutex> lock1(*mutex);
 			se_assert(isAccepting());
 			accepting = false;
 		}
 
 		bool ConnectionManager::isAccepting() const
 		{
-			std::lock_guard<std::recursive_mutex> lock1(mutex);
+			std::lock_guard<std::recursive_mutex> lock1(*mutex);
 			return accepting;
 		}
 
 		void ConnectionManager::connectToIncomingConnectionSignal(boost::signals2::scoped_connection& scopedConnection, const std::function<void(std::shared_ptr<Connection>&)>& callback)
 		{
-			std::lock_guard<std::recursive_mutex> lock1(mutex);
+			std::lock_guard<std::recursive_mutex> lock1(*mutex);
 			scopedConnection = incomingConnectionSignal.connect(callback);
 		}
 
 		std::vector<std::shared_ptr<Connection>> ConnectionManager::getConnections()
 		{
-			std::lock_guard<std::recursive_mutex> lock1(mutex);
+			std::lock_guard<std::recursive_mutex> lock1(*mutex);
 			return connections;
 		}
 
 		void ConnectionManager::receiveHandler(std::vector<uint8_t>& data, const boost::asio::ip::udp::endpoint& senderEndpoint)
 		{
-			std::lock_guard<std::recursive_mutex> lock1(mutex);
+			std::lock_guard<std::recursive_mutex> lock1(*mutex);
 			receivedPackets.emplace_back();
 			receivedPackets.back().senderEndpoint = senderEndpoint;
 			receivedPackets.back().data.swap(data);
+		}
+
+		std::shared_ptr<Connection>& ConnectionManager::addConnectionImpl(const std::shared_ptr<Connection>& connection)
+		{
+			std::lock_guard<std::recursive_mutex> lock1(*mutex);
+			const ConnectionId connectionId = connection->connectionId;
+			connections.push_back(connection);
+			connections.back()->setDebugLogLevel(getDebugLogLevel());
+			connections.back()->setConnectionSimulationSettings(defaultConnectionSimulationSettings);
+			connections.back()->connectToStatusChangedSignal(connectionStatusChangedConnections[connectionId], [this, connectionId](const Connection::Status oldStatus, const Connection::Status newStatus)
+				{
+					std::lock_guard<std::recursive_mutex> lock1(*mutex);
+					size_t index = ~0u;
+					for (size_t i = 0u; i < connections.size(); i++)
+					{
+						if (connections[i]->connectionId == connectionId)
+						{
+							index = i;
+							break;
+						}
+					}
+					if (index >= connections.size())
+					{
+						se_assert(false && "Shared connection should exist.");
+						return;
+					}
+
+					switch (newStatus)
+					{
+					case Connection::Status::Connecting:
+						se_assert(false && "Unexpected status transition.");
+						break;
+
+					case Connection::Status::Connected:
+						if (connections[index]->establishmentType == Connection::EstablishmentType::Incoming)
+						{
+							DEBUG_LOG(1, "Incoming connection from: " + connections[index]->debugEndpoint + " successfully connected.");
+							incomingConnectionSignal(connections[index]);
+						}
+						break;
+
+					case Connection::Status::Disconnected:
+						if (connections[index]->establishmentType == Connection::EstablishmentType::Incoming)
+						{
+							if (oldStatus == Connection::Status::Connecting)
+							{
+								DEBUG_LOG(1, "Incoming connection from: " + connections[index]->debugEndpoint + " failed to connect.");
+							}
+						}
+						/*
+							Stop keeping this connection object alive.
+							Users of the shared pointer may hold on to it if they wish, but here we make room for another connection to the same endpoint.
+						*/
+						removeConnectionImpl(index);
+						break;
+					}
+				});
+			return connections.back();
+		}
+
+		void ConnectionManager::removeConnectionImpl(const size_t index)
+		{
+			if (index < connections.size())
+			{
+				const std::unordered_map<ConnectionId, boost::signals2::scoped_connection>::iterator connectionStatusChangedConnectionsIt = connectionStatusChangedConnections.find(connections[index]->connectionId);
+				se_assert(connectionStatusChangedConnectionsIt != connectionStatusChangedConnections.end());
+				connectionStatusChangedConnections.erase(connectionStatusChangedConnectionsIt);
+				connections.erase(connections.begin() + index);
+			}
+		}
+
+		ConnectionId ConnectionManager::generateNewConnectionId()
+		{
+			std::lock_guard<std::recursive_mutex> lock1(*mutex);
+			ConnectionId connectionId;
+			while (true)
+			{
+				connectionId.value = nextConnectionId.value++;
+				bool used = false;
+				for (std::shared_ptr<Connection>& connection : connections)
+				{
+					if (connection->connectionId == connectionId)
+					{
+						used = true;
+						break;
+					}
+				}
+				if (connectionId && !used)
+				{
+					break;
+				}
+			}
+			return connectionId;
+		}
+
+		void ConnectionManager::setDefaultConnectionSimulationSettings(const ConnectionSimulationSettings& _defaultConnectionSimulationSettings)
+		{
+			std::lock_guard<std::recursive_mutex> lock1(*mutex);
+			defaultConnectionSimulationSettings = _defaultConnectionSimulationSettings;
 		}
 
 		bool ConnectionManager::open()
@@ -324,12 +430,12 @@ namespace se
 			return Endpoint(getLocalAddress(), getLocalPort());
 		}
 
-		size_t ConnectionManager::getSentBytes() const
+		uint64_t ConnectionManager::getSentBytes() const
 		{
 			return socket->getSentBytes();
 		}
 
-		size_t ConnectionManager::getReceivedBytes() const
+		uint64_t ConnectionManager::getReceivedBytes() const
 		{
 			return socket->getReceivedBytes();
 		}

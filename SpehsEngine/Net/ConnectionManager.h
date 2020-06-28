@@ -57,10 +57,11 @@ namespace se
 			bool isOpen() const;
 			Port getLocalPort() const;
 			Endpoint getLocalEndpoint() const;
-			size_t getSentBytes() const;
-			size_t getReceivedBytes() const;
+			uint64_t getSentBytes() const;
+			uint64_t getReceivedBytes() const;
 			void setDebugLogLevel(const int level);
 			int getDebugLogLevel() const;
+			void setDefaultConnectionSimulationSettings(const ConnectionSimulationSettings& _defaultConnectionSimulationSettings);
 
 			const std::string debugName;
 
@@ -73,20 +74,26 @@ namespace se
 			};
 
 			void run();
-
 			void receiveHandler(std::vector<uint8_t>& data, const boost::asio::ip::udp::endpoint& senderEndpoint);
 			void processReceivedPackets();
 			void deliverOutgoingPackets();
+			ConnectionId generateNewConnectionId();
+			std::shared_ptr<Connection>& addConnectionImpl(const std::shared_ptr<Connection> &connection);
+			void removeConnectionImpl(const size_t index);
 
+			ConnectionId nextConnectionId = ConnectionId(1u);
 			boost::shared_ptr<SocketUDP2> socket;
-			mutable std::recursive_mutex mutex;
+			mutable std::shared_ptr<std::recursive_mutex> mutex;
 			std::thread thread;
 			bool accepting = false;
 			bool destructorCalled = false;
+			time::Time lastUpdateTime;
 			std::vector<std::shared_ptr<Connection>> connections;
 			std::vector<ReceivedPacket> receivedPackets;
 			boost::signals2::signal<void(std::shared_ptr<Connection>&)> incomingConnectionSignal;
-			std::unordered_map<Connection*, boost::signals2::scoped_connection> incomingConnectionStatusChangedConnections;
+			std::unordered_map<ConnectionId, boost::signals2::scoped_connection> connectionStatusChangedConnections;
+
+			ConnectionSimulationSettings defaultConnectionSimulationSettings;
 		};
 	}
 }

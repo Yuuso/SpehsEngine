@@ -8,13 +8,12 @@
 #include "boost/asio/placeholders.hpp"
 #include <string>
 
-
 #define DEBUG_LOG(level, message) if (getDebugLogLevel() >= level) \
 { \
 	se::log::info(debugName + "(" + getLocalPort().toString() + "): " + message); \
 }
 
-/**///#pragma optimize("", off)
+/**/#pragma optimize("", off)
 
 namespace
 {
@@ -161,6 +160,7 @@ namespace se
 			{
 				DEBUG_LOG(1, "binding successful.");
 				debugLocalPort = std::to_string(port.value);
+
 				return true;
 			}
 		}
@@ -187,7 +187,18 @@ namespace se
 			sentBytes += writtenBytes;
 			if (error)
 			{
-				DEBUG_LOG(1, "send failed. Failed to send data buffer. Boost error: " + error.message());
+				if (error.value() == 10040)
+				{
+					/*
+						"A message sent on a datagram socket was larger than the internal message buffer or some other network limit,
+						or the buffer used to receive a datagram into was smaller than the datagram itself"
+					*/
+					se::log::warning(error.message());
+				}
+				else
+				{
+					DEBUG_LOG(1, "send failed. Failed to send data buffer. Boost error: " + error.message());
+				}
 				return false;
 			}
 			if (writtenBytes != bufferSize)
@@ -343,16 +354,34 @@ namespace se
 			return localEndpoint.port();
 		}
 
-		size_t SocketUDP2::getSentBytes() const
+		uint64_t SocketUDP2::getSentBytes() const
 		{
 			std::lock_guard<std::recursive_mutex> lock(mutex);
 			return sentBytes;
 		}
 
-		size_t SocketUDP2::getReceivedBytes() const
+		uint64_t SocketUDP2::getReceivedBytes() const
 		{
 			std::lock_guard<std::recursive_mutex> lock(mutex);
 			return receivedBytes;
+		}
+
+		uint16_t SocketUDP2::getMaxSendBufferSize() const
+		{
+			std::lock_guard<std::recursive_mutex> lock(mutex);
+			boost::asio::socket_base::send_buffer_size option;
+			boost::system::error_code error;
+			boostSocket.get_option(option, error);
+			if (error)
+			{
+				se_assert(false && "SocketUDP2::getMaxSendBufferSize() failed");
+				return 0;
+			}
+			else
+			{
+				const uint16_t size = uint16_t(option.value());
+				return size;
+			}
 		}
 
 		void SocketUDP2::setDebugLogLevel(const int level)
