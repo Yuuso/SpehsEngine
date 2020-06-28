@@ -29,6 +29,13 @@ namespace se
 		{
 			return shader;
 		}
+		const std::shared_ptr<Texture> Primitive::findTexture(const std::string_view _uniformName) const
+		{
+			auto it = std::find_if(textures.begin(), textures.end(), [_uniformName](const std::unique_ptr<TextureInstance>& _tex) { return _tex->uniformName == _uniformName; });
+			if (it != textures.end())
+				return it->get()->texture;
+			return nullptr;
+		}
 		const VertexBuffer& Primitive::getVertices() const
 		{
 			return vertices;
@@ -97,6 +104,19 @@ namespace se
 			if (shader == _shader)
 				return;
 			shader = _shader;
+			enableBit(updateFlags, PrimitiveUpdateFlag::RenderInfoChanged);
+		}
+		void Primitive::setTexture(std::shared_ptr<Texture> _texture, const std::string_view _uniformName)
+		{
+			auto it = std::find_if(textures.begin(), textures.end(), [_uniformName](const std::unique_ptr<TextureInstance>& _tex) { return _tex->uniformName == _uniformName; });
+			if (it != textures.end())
+			{
+				it->get()->texture = _texture;
+			}
+			else
+			{
+				textures.emplace_back(std::make_unique<TextureInstance>(_uniformName, _texture));
+			}
 			enableBit(updateFlags, PrimitiveUpdateFlag::RenderInfoChanged);
 		}
 		void Primitive::setVertices(const VertexBuffer& _vertices)

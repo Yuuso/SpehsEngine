@@ -3,6 +3,8 @@
 #include "boost/signals2.hpp"
 #include "SpehsEngine/Graphics/Types.h"
 #include "SpehsEngine/Graphics/VertexBuffer.h"
+#include "SpehsEngine/Graphics/Shader.h"
+#include "SpehsEngine/Graphics/Texture.h"
 #include "glm/vec3.hpp"
 #include "glm/gtc/quaternion.hpp"
 #include <vector>
@@ -33,6 +35,7 @@ namespace se
 			virtual const std::string&				getName() const;
 			virtual const bool						getRenderState() const;
 			virtual const std::shared_ptr<Shader>	getShader() const;
+			virtual const std::shared_ptr<Texture>	findTexture(const std::string_view _uniformName) const;
 			virtual const VertexBuffer&				getVertices() const;
 			virtual const std::vector<IndexType>&	getIndices() const;
 
@@ -52,6 +55,7 @@ namespace se
 			virtual void							setRenderState(const bool _state);
 			virtual void							toggleRenderState();
 			virtual void							setShader(std::shared_ptr<Shader> _shader);
+			virtual void							setTexture(std::shared_ptr<Texture> _texture, const std::string_view _uniformName);
 			virtual void							setVertices(const VertexBuffer& _vertices);
 			virtual void							setIndices(const std::vector<uint16_t>& _indices);
 			virtual void							setColor(const Color& _color); // TODO: How to deal with colors?
@@ -79,6 +83,15 @@ namespace se
 			std::shared_ptr<Shader>					shader					= nullptr;
 			VertexBuffer							vertices;
 			std::vector<IndexType>					indices;
+
+			struct TextureInstance
+			{
+				TextureInstance(const std::string_view uniform, std::shared_ptr<Texture> tex)
+					: uniformName(uniform), texture(tex) {}
+				std::string uniformName;
+				std::shared_ptr<Texture> texture;
+			};
+			std::vector<std::unique_ptr<TextureInstance>> textures;
 
 			// Global space
 			glm::vec3								position				= glm::vec3(0.0f);

@@ -105,7 +105,7 @@
       <SubSystem>Console</SubSystem>
     </Link>
     <Lib>
-      <AdditionalDependencies>assimp-vc142-mtd.lib;bgfxDebug.lib;bxDebug.lib;bimgDebug.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>assimp-vc142-mtd.lib;bgfxDebug.lib;bxDebug.lib;bimgDebug.lib;bimg_decodeDebug.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(SPEHSENGINE_ROOT)Dependencies\lib\;$(SPEHSENGINE_ROOT)bin\$(Platform)\$(Configuration)\$(PlatformToolset);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Lib>
   </ItemDefinitionGroup>
@@ -117,7 +117,7 @@
       <SubSystem>Console</SubSystem>
     </Link>
     <Lib>
-      <AdditionalDependencies>assimp-vc142-mtd.lib;bgfxDebug.lib;bxDebug.lib;bimgDebug.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>assimp-vc142-mtd.lib;bgfxDebug.lib;bxDebug.lib;bimgDebug.lib;bimg_decodeDebug.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(SPEHSENGINE_ROOT)Dependencies\lib\;$(SPEHSENGINE_ROOT)bin\$(Platform)\$(Configuration)\$(PlatformToolset);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Lib>
   </ItemDefinitionGroup>
@@ -159,6 +159,8 @@
     <ClInclude Include="Internal\PrimitiveInstance.h" />
     <ClInclude Include="Renderer.h" />
     <ClInclude Include="ShaderPathFinder.h" />
+    <ClInclude Include="Texture.h" />
+    <ClInclude Include="TextureManager.h" />
     <ClInclude Include="Types.h" />
     <ClInclude Include="Scene.h" />
     <ClInclude Include="Shader.h" />
@@ -191,6 +193,8 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="Texture.cpp" />
+    <ClCompile Include="TextureManager.cpp" />
     <ClCompile Include="Uniform.cpp" />
     <ClCompile Include="VertexBuffer.cpp" />
     <ClCompile Include="View.cpp" />

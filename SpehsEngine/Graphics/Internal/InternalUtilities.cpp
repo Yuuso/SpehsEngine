@@ -78,5 +78,94 @@ namespace se
 			layout.end();
 			return layout;
 		}
+
+		uint64_t TextureModesToFlags(const TextureModes _textureModes)
+		{
+			uint64_t flags = BGFX_TEXTURE_NONE;
+			switch (_textureModes.sampleMag)
+			{
+				case TextureSamplingMode::Linear:
+					// default
+					break;
+				case TextureSamplingMode::Point:
+					flags |= BGFX_SAMPLER_MAG_POINT;
+					break;
+				case TextureSamplingMode::Anisotrophic:
+					flags |= BGFX_SAMPLER_MAG_ANISOTROPIC;
+					break;
+			}
+			switch (_textureModes.sampleMin)
+			{
+				case TextureSamplingMode::Linear:
+					// default
+					break;
+				case TextureSamplingMode::Point:
+					flags |= BGFX_SAMPLER_MIN_POINT;
+					break;
+				case TextureSamplingMode::Anisotrophic:
+					flags |= BGFX_SAMPLER_MIN_ANISOTROPIC;
+					break;
+			}
+			switch (_textureModes.sampleMip)
+			{
+				case TextureSamplingMode::Linear:
+					// default
+					break;
+				case TextureSamplingMode::Point:
+					flags |= BGFX_SAMPLER_MIP_POINT;
+					break;
+				case TextureSamplingMode::Anisotrophic:
+					se_assert_m(false, "Invalid TextureSamplingMode: anisotrophic not allowed for mip sampling!");
+					break;
+			}
+
+			switch (_textureModes.wrapU)
+			{
+				case se::graphics::TextureWrappingMode::Repeat:
+					// default
+					break;
+				case se::graphics::TextureWrappingMode::Mirror:
+					flags |= BGFX_SAMPLER_U_MIRROR;
+					break;
+				case se::graphics::TextureWrappingMode::Clamp:
+					flags |= BGFX_SAMPLER_U_CLAMP;
+					break;
+				case se::graphics::TextureWrappingMode::Border:
+					flags |= BGFX_SAMPLER_U_BORDER;
+					break;
+			}
+			switch (_textureModes.wrapV)
+			{
+				case se::graphics::TextureWrappingMode::Repeat:
+					// default
+					break;
+				case se::graphics::TextureWrappingMode::Mirror:
+					flags |= BGFX_SAMPLER_V_MIRROR;
+					break;
+				case se::graphics::TextureWrappingMode::Clamp:
+					flags |= BGFX_SAMPLER_V_CLAMP;
+					break;
+				case se::graphics::TextureWrappingMode::Border:
+					flags |= BGFX_SAMPLER_V_BORDER;
+					break;
+			}
+			switch (_textureModes.wrapW)
+			{
+				case se::graphics::TextureWrappingMode::Repeat:
+					// default
+					break;
+				case se::graphics::TextureWrappingMode::Mirror:
+					flags |= BGFX_SAMPLER_W_MIRROR;
+					break;
+				case se::graphics::TextureWrappingMode::Clamp:
+					flags |= BGFX_SAMPLER_W_CLAMP;
+					break;
+				case se::graphics::TextureWrappingMode::Border:
+					flags |= BGFX_SAMPLER_W_BORDER;
+					break;
+			}
+
+			return flags;
+		}
 	}
 }

@@ -153,5 +153,30 @@ namespace se
 			ClearDepth		= (1 << 1),
 			ClearStencil	= (1 << 2),
 		};
+
+		enum class TextureWrappingMode
+		{
+			Repeat,
+			Mirror,
+			Clamp,
+			Border
+		};
+
+		enum class TextureSamplingMode
+		{
+			Linear,
+			Point,
+			Anisotrophic
+		};
+
+		struct TextureModes
+		{
+			TextureWrappingMode wrapU = TextureWrappingMode::Repeat;
+			TextureWrappingMode wrapV = TextureWrappingMode::Repeat;
+			TextureWrappingMode wrapW = TextureWrappingMode::Repeat;
+			TextureSamplingMode sampleMin = TextureSamplingMode::Linear;
+			TextureSamplingMode sampleMag = TextureSamplingMode::Linear;
+			TextureSamplingMode sampleMip = TextureSamplingMode::Linear;
+		};
 	}
 }

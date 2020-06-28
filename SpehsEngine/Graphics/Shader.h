@@ -13,6 +13,7 @@ namespace se
 		{
 		public:
 
+			Shader(const std::string_view _name);
 			~Shader();
 
 			Shader(const Shader& _other) = delete;
@@ -25,8 +26,7 @@ namespace se
 			void reload();
 
 			const std::string& getName() const;
-
-			Shader(const std::string_view _name);
+			std::shared_ptr<Uniform> findUniform(const std::string_view _name);
 
 		private:
 

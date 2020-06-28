@@ -134,6 +134,16 @@ namespace se
 			bgfx::setTransform(reinterpret_cast<const void*>(&transformMatrix));
 			_renderContext.defaultUniforms->setNormalMatrix(normalMatrix);
 
+			uint8_t stage = 0;
+			for (auto&& texture : primitive->textures)
+			{
+				std::shared_ptr<Uniform> uniform = renderInfo.shader->findUniform(texture->uniformName);
+				if (uniform)
+				{
+					uniform->set(texture->texture.get(), stage++);
+				}
+			}
+
 			if (getRenderMode() == RenderMode::Transient)
 			{
 				// TODO: getAvailTransientVertexBuffer
@@ -167,7 +177,7 @@ namespace se
 				bgfx::setVertexBuffer(0, vertexBufferHandle);
 			}
 
-			applyRenderState(getRenderInfo(), _renderContext);
+			applyRenderState(renderInfo, _renderContext);
 			bgfx::submit(_renderContext.currentViewId, renderInfo.shader->programHandle);
 		}
 

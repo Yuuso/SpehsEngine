@@ -35,10 +35,13 @@ namespace se
 {
 	namespace graphics
 	{
+		class Texture;
+
 		class Uniform
 		{
 		public:
 
+			Uniform(const bgfx::UniformInfo& _uniformInfo, const bgfx::UniformHandle _uniformHandle);
 			~Uniform();
 
 			Uniform(const Uniform& _other) = delete;
@@ -58,9 +61,7 @@ namespace se
 			void set(const glm::mat3& _value, const uint16_t _numElements = 1);
 			void set(const glm::mat4& _value, const uint16_t _numElements = 1);
 			void set(const float*	  _value, const uint16_t _numElements);
-			// TODO: Sampler
-
-			Uniform(const bgfx::UniformInfo& _uniformInfo, const bgfx::UniformHandle _uniformHandle);
+			void set(const Texture* _value, const uint8_t _stage);
 
 		private:
 

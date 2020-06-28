@@ -2,6 +2,7 @@
 #include "SpehsEngine/Graphics/Shader.h"
 
 #include "SpehsEngine/Core/File/File.h"
+#include "SpehsEngine/Core/Log.h"
 
 
 namespace se
@@ -36,8 +37,16 @@ namespace se
 			}
 			File vertexShaderFile;
 			File fragmentShaderFile;
-			readFile(vertexShaderFile, vertexShaderPath);
-			readFile(fragmentShaderFile, fragmentShaderPath);
+			if (!readFile(vertexShaderFile, vertexShaderPath))
+			{
+				log::error("Cannot reload shader, file read failed! (" + vertexShaderPath + ")");
+				return;
+			}
+			if (!readFile(fragmentShaderFile, fragmentShaderPath))
+			{
+				log::error("Cannot reload shader, file read failed! (" + fragmentShaderPath + ")");
+				return;
+			}
 			const bgfx::Memory* vertexBuffer = bgfx::copy(vertexShaderFile.data.data(), uint32_t(vertexShaderFile.data.size()));
 			const bgfx::Memory* fragmentBuffer = bgfx::copy(fragmentShaderFile.data.data(), uint32_t(fragmentShaderFile.data.size()));
 			bgfx::ShaderHandle vertexShader = bgfx::createShader(vertexBuffer);
@@ -117,6 +126,17 @@ namespace se
 		const std::string& Shader::getName() const
 		{
 			return name;
+		}
+
+		std::shared_ptr<Uniform> Shader::findUniform(const std::string_view _name)
+		{
+			for (auto& uniform : uniforms)
+			{
+				if (uniform->getName() == _name)
+					return uniform;
+			}
+			se_assert_m(false, "Uniform '" + std::string(_name) + "' not found!");
+			return nullptr;
 		}
 	}
 }

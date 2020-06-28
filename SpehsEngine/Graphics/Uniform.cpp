@@ -1,6 +1,8 @@
 #include "stdafx.h"
 #include "SpehsEngine/Graphics/Uniform.h"
 
+#include "SpehsEngine/Graphics/Texture.h"
+
 
 namespace se
 {
@@ -107,7 +109,7 @@ namespace se
 			{
 				case se::graphics::UniformType::Sampler:
 				{
-					// TODO
+					se_assert_m(false, "UniformType::Sampler is not allowed here!");
 					break;
 				}
 				case se::graphics::UniformType::Vec4:
@@ -132,6 +134,11 @@ namespace se
 					break;
 				}
 			}
+		}
+		void Uniform::set(const Texture* _value, const uint8_t _stage)
+		{
+			se_assert(_value);
+			bgfx::setTexture(_stage, uniformHandle, _value->textureHandle);
 		}
 	}
 }
