@@ -167,5 +167,73 @@ namespace se
 
 			return flags;
 		}
+
+		uint32_t getResetParameters(const RendererFlagsType _rendererFlags)
+		{
+			uint32_t result = BGFX_RESET_NONE;
+			auto updateFlag =
+				[&result, _rendererFlags](const RendererFlag _flag, const uint32_t _param) -> void
+			{
+				if (checkBit(_rendererFlags, _flag))
+					result |= _param;
+			};
+
+			updateFlag(RendererFlag::VSync, BGFX_RESET_VSYNC);
+			updateFlag(RendererFlag::MSAA2, BGFX_RESET_MSAA_X2);
+			updateFlag(RendererFlag::MSAA4, BGFX_RESET_MSAA_X4);
+			updateFlag(RendererFlag::MSAA8, BGFX_RESET_MSAA_X8);
+			updateFlag(RendererFlag::MSAA16, BGFX_RESET_MSAA_X16);
+			//updateFlag(RendererFlag::?, BGFX_RESET_MAXANISOTROPY);
+			//updateFlag(RendererFlag::?, BGFX_RESET_FULLSCREEN);
+			//updateFlag(RendererFlag::?, BGFX_RESET_SRGB_BACKBUFFER);
+			//updateFlag(RendererFlag::?, BGFX_RESET_HDR10);
+			//updateFlag(RendererFlag::?, BGFX_RESET_HIDPI);
+			//updateFlag(RendererFlag::?, BGFX_RESET_DEPTH_CLAMP);
+			//updateFlag(RendererFlag::?, BGFX_RESET_SUSPEND);
+			//updateFlag(RendererFlag::?, BGFX_RESET_FLUSH_AFTER_RENDER);
+			//updateFlag(RendererFlag::?, BGFX_RESET_FLIP_AFTER_RENDER);
+
+			return result;
+		}
+
+		bgfx::RendererType::Enum getRendererType(const RendererBackend _rendererBackend)
+		{
+			switch (_rendererBackend)
+			{
+				case RendererBackend::Auto:			return bgfx::RendererType::Count;
+				case RendererBackend::Direct3D9:	return bgfx::RendererType::Direct3D9;
+				case RendererBackend::Direct3D11:	return bgfx::RendererType::Direct3D11;
+				case RendererBackend::Direct3D12:	return bgfx::RendererType::Direct3D12;
+				case RendererBackend::Gnm:			return bgfx::RendererType::Gnm;
+				case RendererBackend::Metal:		return bgfx::RendererType::Metal;
+				case RendererBackend::Nvn:			return bgfx::RendererType::Nvn;
+				case RendererBackend::OpenGLES:		return bgfx::RendererType::OpenGLES;
+				case RendererBackend::OpenGL:		return bgfx::RendererType::OpenGL;
+				case RendererBackend::Vulkan:		return bgfx::RendererType::Vulkan;
+			}
+			return bgfx::RendererType::Count;
+		}
+
+		RendererBackend getRendererBackend()
+		{
+			switch (bgfx::getRendererType())
+			{
+				case bgfx::RendererType::Count:
+				case bgfx::RendererType::Noop:
+				case bgfx::RendererType::WebGPU:		break;
+
+				case bgfx::RendererType::Direct3D9:		return RendererBackend::Direct3D9;
+				case bgfx::RendererType::Direct3D11:	return RendererBackend::Direct3D11;
+				case bgfx::RendererType::Direct3D12:	return RendererBackend::Direct3D12;
+				case bgfx::RendererType::Gnm:			return RendererBackend::Gnm;
+				case bgfx::RendererType::Metal:			return RendererBackend::Metal;
+				case bgfx::RendererType::Nvn:			return RendererBackend::Nvn;
+				case bgfx::RendererType::OpenGLES:		return RendererBackend::OpenGLES;
+				case bgfx::RendererType::OpenGL:		return RendererBackend::OpenGL;
+				case bgfx::RendererType::Vulkan:		return RendererBackend::Vulkan;
+			}
+			se_assert_m(false, "Renderer type not defined?");
+			return RendererBackend::Auto;
+		}
 	}
 }

@@ -148,12 +148,15 @@
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="DefaultMaterials.h" />
+    <ClInclude Include="DefaultShaderManager.h" />
     <ClInclude Include="Internal\Batch.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="GraphicsLib.h" />
     <ClInclude Include="Internal\DefaultUniforms.h" />
     <ClInclude Include="Internal\InternalTypes.h" />
     <ClInclude Include="Internal\InternalUtilities.h" />
+    <ClInclude Include="Material.h" />
     <ClInclude Include="PrecompiledInclude.h" />
     <ClInclude Include="Primitive.h" />
     <ClInclude Include="Internal\PrimitiveInstance.h" />
@@ -175,6 +178,8 @@
     <ClInclude Include="Internal\WindowInstance.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="DefaultMaterials.cpp" />
+    <ClCompile Include="DefaultShaderManager.cpp" />
     <ClCompile Include="Internal\Batch.cpp" />
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="GraphicsLib.cpp" />

@@ -5,13 +5,14 @@
 
 namespace se
 {
-	// HTML colors in 0xRRGGBBAA format with full opacity
 	enum HexColor : uint32_t
 	{
-		Clear					= 0,
-		Transparent				= 0,
+		Clear					= 0x0,
+		Transparent				= 0x0,
 
 		AlphaMask				= 0xffffff00,
+
+		// HTML colors in 0xRRGGBBAA format with full opacity
 
 		LightSalmon				= 0xffa07aff,
 		Salmon					= 0xfa8072ff,

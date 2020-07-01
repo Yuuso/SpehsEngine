@@ -1,11 +1,11 @@
 #pragma once
 
-#include "SpehsEngine/Graphics/Window.h"
-#include "SpehsEngine/Graphics/Internal/WindowInstance.h"
-#include "SpehsEngine/Graphics/Internal/DefaultUniforms.h"
 #include "glm/vec2.hpp"
-#include <vector>
+#include "SpehsEngine/Graphics/Internal/DefaultUniforms.h"
+#include "SpehsEngine/Graphics/Internal/WindowInstance.h"
+#include "SpehsEngine/Graphics/Window.h"
 #include <memory>
+#include <vector>
 
 
 namespace se
@@ -38,7 +38,7 @@ namespace se
 			void enableRendererFlag(const RendererFlag _rendererFlag);
 			void disableRendererFlag(const RendererFlag _rendererFlag);
 
-			static const RendererBackend getRendererBackend();
+			const RendererBackend getRendererBackend() const;
 
 			const glm::ivec2 getDisplaySize() const;
 			const int getDisplayRefreshRate() const;
@@ -51,6 +51,8 @@ namespace se
 		private:
 
 			void inputUpdate();
+
+			inline static bool initialized = false;
 
 			std::vector<std::unique_ptr<WindowInstance>> windows;
 			WindowInstance* defaultWindow = nullptr;

@@ -134,15 +134,7 @@ namespace se
 			bgfx::setTransform(reinterpret_cast<const void*>(&transformMatrix));
 			_renderContext.defaultUniforms->setNormalMatrix(normalMatrix);
 
-			uint8_t stage = 0;
-			for (auto&& texture : primitive->textures)
-			{
-				std::shared_ptr<Uniform> uniform = renderInfo.shader->findUniform(texture->uniformName);
-				if (uniform)
-				{
-					uniform->set(texture->texture.get(), stage++);
-				}
-			}
+			renderInfo.material->update();
 
 			if (getRenderMode() == RenderMode::Transient)
 			{
@@ -178,7 +170,7 @@ namespace se
 			}
 
 			applyRenderState(renderInfo, _renderContext);
-			bgfx::submit(_renderContext.currentViewId, renderInfo.shader->programHandle);
+			bgfx::submit(_renderContext.currentViewId, renderInfo.material->getShader()->programHandle);
 		}
 
 		void PrimitiveInstance::batch(Batch& _batch)
@@ -213,7 +205,7 @@ namespace se
 			RenderInfo result;
 			result.renderFlags = primitive->getRenderFlags();
 			result.primitiveType = primitive->getPrimitiveType();
-			result.shader = primitive->getShader();
+			result.material = primitive->getMaterial();
 			result.attributes = primitive->getVertices().getAttributes();
 			return result;
 		}

@@ -25,16 +25,9 @@ namespace se
 		{
 			return renderState;
 		}
-		const std::shared_ptr<Shader> Primitive::getShader() const
+		std::shared_ptr<Material> Primitive::getMaterial() const
 		{
-			return shader;
-		}
-		const std::shared_ptr<Texture> Primitive::findTexture(const std::string_view _uniformName) const
-		{
-			auto it = std::find_if(textures.begin(), textures.end(), [_uniformName](const std::unique_ptr<TextureInstance>& _tex) { return _tex->uniformName == _uniformName; });
-			if (it != textures.end())
-				return it->get()->texture;
-			return nullptr;
+			return material;
 		}
 		const VertexBuffer& Primitive::getVertices() const
 		{
@@ -99,24 +92,11 @@ namespace se
 		{
 			renderState = !renderState;
 		}
-		void Primitive::setShader(std::shared_ptr<Shader> _shader)
+		void Primitive::setMaterial(std::shared_ptr<Material> _material)
 		{
-			if (shader == _shader)
+			if (material == _material)
 				return;
-			shader = _shader;
-			enableBit(updateFlags, PrimitiveUpdateFlag::RenderInfoChanged);
-		}
-		void Primitive::setTexture(std::shared_ptr<Texture> _texture, const std::string_view _uniformName)
-		{
-			auto it = std::find_if(textures.begin(), textures.end(), [_uniformName](const std::unique_ptr<TextureInstance>& _tex) { return _tex->uniformName == _uniformName; });
-			if (it != textures.end())
-			{
-				it->get()->texture = _texture;
-			}
-			else
-			{
-				textures.emplace_back(std::make_unique<TextureInstance>(_uniformName, _texture));
-			}
+			material = _material;
 			enableBit(updateFlags, PrimitiveUpdateFlag::RenderInfoChanged);
 		}
 		void Primitive::setVertices(const VertexBuffer& _vertices)

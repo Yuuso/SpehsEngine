@@ -38,9 +38,7 @@ namespace se
 
 		bool Batch::check(const RenderInfo _renderInfo) const
 		{
-			return renderInfo.renderFlags == _renderInfo.renderFlags &&
-				   renderInfo.primitiveType == _renderInfo.primitiveType &&
-				   renderInfo.shader == _renderInfo.shader;
+			return renderInfo == _renderInfo;
 		}
 		bool Batch::check(const size_t numVertices, const size_t numIndices) const
 		{
@@ -222,11 +220,13 @@ namespace se
 			bgfx::setTransform(reinterpret_cast<const void*>(&identity));
 			_renderContext.defaultUniforms->setNormalMatrix(identity);
 
+			renderInfo.material->update();
+
 			bgfx::setIndexBuffer(indexBufferHandle, 0, (uint32_t)indices.size());
 			bgfx::setVertexBuffer(0, vertexBufferHandle);
 
 			applyRenderState(renderInfo, _renderContext);
-			bgfx::submit(_renderContext.currentViewId, renderInfo.shader->programHandle);
+			bgfx::submit(_renderContext.currentViewId, renderInfo.material->getShader()->programHandle);
 			return true;
 		}
 
