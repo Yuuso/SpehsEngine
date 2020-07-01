@@ -13,6 +13,7 @@ namespace se
 		{
 		public:
 
+			Shader() = delete;
 			Shader(const std::string_view _name);
 			~Shader();
 
@@ -33,6 +34,7 @@ namespace se
 			friend class PrimitiveInstance;
 			friend class Batch;
 			friend class ShaderManager;
+			friend class DefaultShaderManager;
 
 			void destroy();
 			void create(const std::string_view _vertexShaderPath, const std::string_view _fragmentShaderPath);

@@ -15,8 +15,8 @@ namespace se
 		{
 		public:
 
-			TextureManager();
-			~TextureManager();
+			TextureManager() = default;
+			~TextureManager() = default;
 
 			TextureManager(const TextureManager& _other) = delete;
 			TextureManager& operator=(const TextureManager& _other) = delete;

@@ -3,63 +3,18 @@
 
 #include "SpehsEngine/Core/Log.h"
 #include "SpehsEngine/Core/StringOperations.h"
-#include "SpehsEngine/Graphics/EmbeddedShaders/vs_color.h"
-#include "SpehsEngine/Graphics/EmbeddedShaders/fs_color.h"
-#include "SpehsEngine/Graphics/EmbeddedShaders/vs_phong.h"
-#include "SpehsEngine/Graphics/EmbeddedShaders/fs_phong.h"
+#include "SpehsEngine/Graphics/Internal/InternalUtilities.h"
 #include "SpehsEngine/Graphics/Renderer.h"
-#include "bgfx/embedded_shader.h"
-
 
 namespace se
 {
 	namespace graphics
 	{
-		static const bgfx::EmbeddedShader embeddedShaders[] =
-		{
-			BGFX_EMBEDDED_SHADER(vs_color),
-			BGFX_EMBEDDED_SHADER(fs_color),
-			BGFX_EMBEDDED_SHADER(vs_phong),
-			BGFX_EMBEDDED_SHADER(fs_phong),
-
-			BGFX_EMBEDDED_SHADER_END()
-		};
-
 		ShaderManager::ShaderManager()
 		{
 			shaderPathFinder = std::make_shared<ShaderPathFinder>();
-			createDefaultShaders();
-		}
-		ShaderManager::~ShaderManager()
-		{
-			shaders.clear();
-			uniforms.clear();
-			defaultShaders.clear();
 		}
 
-		void ShaderManager::createDefaultShaders()
-		{
-			const bgfx::RendererType::Enum type = bgfx::getRendererType();
-
-			auto createDefaultShader =
-				[&](const std::string_view _name)
-				{
-					std::string vertexShaderName = "vs_";
-					vertexShaderName += _name;
-					std::string fragmentShaderName = "fs_";
-					fragmentShaderName += _name;
-
-					bgfx::ShaderHandle vertexShader = bgfx::createEmbeddedShader(embeddedShaders, type, vertexShaderName.c_str());
-					bgfx::ShaderHandle fragmentShader = bgfx::createEmbeddedShader(embeddedShaders, type, fragmentShaderName.c_str());
-
-					std::shared_ptr<Shader>& shader = defaultShaders.emplace_back(std::make_shared<Shader>(_name));
-					shader->create(vertexShader, fragmentShader);
-					extractUniforms(shader);
-				};
-
-			createDefaultShader("color");
-			createDefaultShader("phong");
-		}
 		void ShaderManager::extractUniforms(std::shared_ptr<Shader>& _shader)
 		{
 			for (auto& shaderUniform : _shader->uniforms)
@@ -80,9 +35,9 @@ namespace se
 				shader->reload();
 			}
 		}
-		void ShaderManager::purgeUnusedShaders()
+		void ShaderManager::purgeUnusedShaders(const size_t _startIndex)
 		{
-			for (size_t i = 0; i < shaders.size(); /*i++*/)
+			for (size_t i = _startIndex; i < shaders.size(); /*i++*/)
 			{
 				if (shaders[i].use_count() == 1)
 				{
@@ -118,29 +73,18 @@ namespace se
 															const std::string_view _vertexShader,
 															const std::string_view _fragmentShader)
 		{
-			const std::string shaderPath = shaderPathFinder->getShaderPath(Renderer::getRendererBackend());
+			const std::string shaderPath = shaderPathFinder->getShaderPath(getRendererBackend());
 			const std::string vertexShaderPath = shaderPath + _vertexShader;
 			const std::string fragmentShaderPath = shaderPath + _fragmentShader;
 
-			std::shared_ptr<Shader> foundShader;
-			for (auto& shader : defaultShaders)
+			for (auto& shader : shaders)
 			{
 				if (shader->getName() == _name)
-					foundShader = shader;
-			}
-			if (!foundShader)
-			{
-				for (auto& shader : shaders)
 				{
-					if (shader->getName() == _name)
-						foundShader = shader;
+					log::warning("Cannot create shader '" + _name + "', shader with that name already exists!");
+					se_assert(shader->vertexShaderPath == vertexShaderPath && shader->fragmentShaderPath == fragmentShaderPath);
+					return shader;
 				}
-			}
-			if (foundShader)
-			{
-				log::warning("Cannot create shader '" + _name + "', shader with that name already exists!");
-				se_assert(foundShader->vertexShaderPath == vertexShaderPath && foundShader->fragmentShaderPath == fragmentShaderPath);
-				return foundShader;
 			}
 
 			std::shared_ptr<Shader>& shader = shaders.emplace_back(std::make_shared<Shader>(_name));
@@ -150,11 +94,6 @@ namespace se
 		}
 		std::shared_ptr<Shader> ShaderManager::findShader(const std::string_view _name) const
 		{
-			for (auto& shader : defaultShaders)
-			{
-				if (shader->getName() == _name)
-					return shader;
-			}
 			for (auto& shader : shaders)
 			{
 				if (shader->getName() == _name)

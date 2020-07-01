@@ -8,14 +8,6 @@ namespace se
 {
 	namespace graphics
 	{
-		TextureManager::TextureManager()
-		{
-		}
-		TextureManager::~TextureManager()
-		{
-		}
-
-
 		void TextureManager::reloadTextures()
 		{
 			se_assert(false);

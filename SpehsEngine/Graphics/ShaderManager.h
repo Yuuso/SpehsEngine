@@ -17,7 +17,7 @@ namespace se
 		public:
 
 			ShaderManager();
-			~ShaderManager();
+			virtual ~ShaderManager() = default;
 
 			ShaderManager(const ShaderManager& _other) = delete;
 			ShaderManager& operator=(const ShaderManager& _other) = delete;
@@ -26,8 +26,8 @@ namespace se
 			ShaderManager& operator=(ShaderManager&& _other) = delete;
 
 
-			void reloadShaders();
-			void purgeUnusedShaders();
+			virtual void reloadShaders();
+			virtual void purgeUnusedShaders(const size_t _startIndex = 0);
 
 			void setShaderPathFinder(std::shared_ptr<ShaderPathFinder> _shaderPathFinder);
 
@@ -38,14 +38,12 @@ namespace se
 
 			std::shared_ptr<Uniform> findUniform(const std::string_view _name) const;
 
-		private:
+		protected:
 
-			void createDefaultShaders();
 			void extractUniforms(std::shared_ptr<Shader>& _shader);
 
 			std::shared_ptr<ShaderPathFinder> shaderPathFinder;
 
-			std::vector<std::shared_ptr<Shader>> defaultShaders;
 			std::vector<std::shared_ptr<Shader>> shaders;
 			std::vector<std::shared_ptr<Uniform>> uniforms;
 		};
