@@ -20,6 +20,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="HexColor.h" />
+    <ClInclude Include="StringViewUtilityFunctions.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{CBB134B8-C9FE-4129-A6DD-58B94CBE1096}</ProjectGuid>

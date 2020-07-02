@@ -18,5 +18,8 @@
     <ClInclude Include="HexColor.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="StringViewUtilityFunctions.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

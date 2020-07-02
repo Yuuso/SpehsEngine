@@ -56,9 +56,4 @@ namespace se
 		Assigns the contents after the last dot character in the inString into the outString. If no dot character exists, returns false.
 	*/
 	bool getFileExtension(const std::string& inString, std::string& outString);
-
-	// string_view + operators
-	std::string operator+(const std::string& _string, const std::string_view _string_view);
-	std::string operator+(const std::string_view _string_view, const std::string& _string);
-	void operator+=(std::string& _string, const std::string_view _string_view);
 }
