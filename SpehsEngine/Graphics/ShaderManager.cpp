@@ -2,7 +2,7 @@
 #include "SpehsEngine/Graphics/ShaderManager.h"
 
 #include "SpehsEngine/Core/Log.h"
-#include "SpehsEngine/Core/StringOperations.h"
+#include "SpehsEngine/Core/StringViewUtilityFunctions.h"
 #include "SpehsEngine/Graphics/Internal/InternalUtilities.h"
 #include "SpehsEngine/Graphics/Renderer.h"
 
@@ -12,7 +12,7 @@ namespace se
 	{
 		ShaderManager::ShaderManager()
 		{
-			shaderPathFinder = std::make_shared<ShaderPathFinder>();
+			pathFinder = std::make_shared<ResourcePathFinder>();
 		}
 
 		void ShaderManager::extractUniforms(std::shared_ptr<Shader>& _shader)
@@ -64,18 +64,17 @@ namespace se
 			}
 		}
 
-		void ShaderManager::setShaderPathFinder(std::shared_ptr<ShaderPathFinder> _shaderPathFinder)
+		void ShaderManager::setResourcePathFinder(std::shared_ptr<ResourcePathFinder> _pathFinder)
 		{
-			shaderPathFinder = _shaderPathFinder;
+			pathFinder = _pathFinder;
 		}
 
 		std::shared_ptr<Shader> ShaderManager::createShader(const std::string_view _name,
 															const std::string_view _vertexShader,
 															const std::string_view _fragmentShader)
 		{
-			const std::string shaderPath = shaderPathFinder->getShaderPath(getRendererBackend());
-			const std::string vertexShaderPath = shaderPath + _vertexShader;
-			const std::string fragmentShaderPath = shaderPath + _fragmentShader;
+			const std::string vertexShaderPath = pathFinder->getPath(_vertexShader);
+			const std::string fragmentShaderPath = pathFinder->getPath(_fragmentShader);
 
 			for (auto& shader : shaders)
 			{

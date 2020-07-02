@@ -1,7 +1,7 @@
 #pragma once
 
 #include "SpehsEngine/Graphics/Shader.h"
-#include "SpehsEngine/Graphics/ShaderPathFinder.h"
+#include "SpehsEngine/Graphics/ResourcePathFinder.h"
 #include "SpehsEngine/Graphics/Uniform.h"
 #include <vector>
 #include <memory>
@@ -29,7 +29,7 @@ namespace se
 			virtual void reloadShaders();
 			virtual void purgeUnusedShaders(const size_t _startIndex = 0);
 
-			void setShaderPathFinder(std::shared_ptr<ShaderPathFinder> _shaderPathFinder);
+			void setResourcePathFinder(std::shared_ptr<ResourcePathFinder> _pathFinder);
 
 			std::shared_ptr<Shader> createShader(const std::string_view _name,
 												 const std::string_view _vertexShader,
@@ -42,7 +42,7 @@ namespace se
 
 			void extractUniforms(std::shared_ptr<Shader>& _shader);
 
-			std::shared_ptr<ShaderPathFinder> shaderPathFinder;
+			std::shared_ptr<ResourcePathFinder> pathFinder;
 
 			std::vector<std::shared_ptr<Shader>> shaders;
 			std::vector<std::shared_ptr<Uniform>> uniforms;

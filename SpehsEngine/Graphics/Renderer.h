@@ -38,7 +38,7 @@ namespace se
 			void enableRendererFlag(const RendererFlag _rendererFlag);
 			void disableRendererFlag(const RendererFlag _rendererFlag);
 
-			const RendererBackend getRendererBackend() const;
+			static const RendererBackend getRendererBackend();
 
 			const glm::ivec2 getDisplaySize() const;
 			const int getDisplayRefreshRate() const;

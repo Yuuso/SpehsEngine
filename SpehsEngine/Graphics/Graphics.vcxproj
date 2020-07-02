@@ -161,7 +161,7 @@
     <ClInclude Include="Primitive.h" />
     <ClInclude Include="Internal\PrimitiveInstance.h" />
     <ClInclude Include="Renderer.h" />
-    <ClInclude Include="ShaderPathFinder.h" />
+    <ClInclude Include="ResourcePathFinder.h" />
     <ClInclude Include="Texture.h" />
     <ClInclude Include="TextureManager.h" />
     <ClInclude Include="Types.h" />

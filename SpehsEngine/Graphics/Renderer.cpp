@@ -161,7 +161,7 @@ namespace se
 			rendererFlagsChanged = true;
 		}
 
-		const RendererBackend Renderer::getRendererBackend() const
+		const RendererBackend Renderer::getRendererBackend()
 		{
 			return graphics::getRendererBackend();
 		}
