@@ -2,7 +2,9 @@
 
 #include "SpehsEngine/Graphics/Internal/Batch.h"
 #include "SpehsEngine/Graphics/Internal/InternalTypes.h"
+#include "SpehsEngine/Graphics/Internal/LightBatch.h"
 #include "SpehsEngine/Graphics/Internal/PrimitiveInstance.h"
+#include "SpehsEngine/Graphics/Lights.h"
 #include "SpehsEngine/Graphics/Primitive.h"
 #include <memory>
 #include <vector>
@@ -29,18 +31,23 @@ namespace se
 			void add(Primitive& _primitive);
 			void remove(Primitive& _primitive);
 
-		protected:
+			void add(Light& _light);
+			void remove(Light& _light);
+
+			void clearPrimitives();
+			void clearLights();
+			void clear();
+
+		private:
 
 			friend class ViewInstance;
 
 			void render(RenderContext& _renderContext);
-
 			void batch(PrimitiveInstance& _primitive);
-
-		private:
 
 			std::vector<std::unique_ptr<Batch>> batches;
 			std::vector<std::unique_ptr<PrimitiveInstance>> primitives;
+			std::unique_ptr<LightBatch> lightBatch;
 		};
 	}
 }

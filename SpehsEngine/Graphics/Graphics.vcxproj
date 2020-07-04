@@ -156,6 +156,8 @@
     <ClInclude Include="Internal\DefaultUniforms.h" />
     <ClInclude Include="Internal\InternalTypes.h" />
     <ClInclude Include="Internal\InternalUtilities.h" />
+    <ClInclude Include="Internal\LightBatch.h" />
+    <ClInclude Include="Lights.h" />
     <ClInclude Include="Material.h" />
     <ClInclude Include="PrecompiledInclude.h" />
     <ClInclude Include="Primitive.h" />
@@ -185,6 +187,8 @@
     <ClCompile Include="GraphicsLib.cpp" />
     <ClCompile Include="Internal\DefaultUniforms.cpp" />
     <ClCompile Include="Internal\InternalUtilities.cpp" />
+    <ClCompile Include="Internal\LightBatch.cpp" />
+    <ClCompile Include="Lights.cpp" />
     <ClCompile Include="Primitive.cpp" />
     <ClCompile Include="Internal\PrimitiveInstance.cpp" />
     <ClCompile Include="Renderer.cpp" />

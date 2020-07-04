@@ -32,7 +32,7 @@ namespace se
 			shader = _shaderManager.findShader("color");
 		}
 
-		void FlatColorMaterial::update()
+		void FlatColorMaterial::bind()
 		{
 		}
 		std::shared_ptr<Shader> FlatColorMaterial::getShader()
@@ -51,7 +51,7 @@ namespace se
 			texture->uniform = shader->findUniform("s_texColor");
 		}
 
-		void FlatTextureMaterial::update()
+		void FlatTextureMaterial::bind()
 		{
 			Bind(texture);
 		}
@@ -86,7 +86,7 @@ namespace se
 			attributesUniform = shader->findUniform(PhongAttributesUniformName);
 		}
 
-		void PhongMaterial::update()
+		void PhongMaterial::bind()
 		{
 			Bind(textures);
 			Bind(attributes, attributesUniform);

@@ -220,7 +220,7 @@ namespace se
 			bgfx::setTransform(reinterpret_cast<const void*>(&identity));
 			_renderContext.defaultUniforms->setNormalMatrix(identity);
 
-			renderInfo.material->update();
+			renderInfo.material->bind();
 
 			bgfx::setIndexBuffer(indexBufferHandle, 0, (uint32_t)indices.size());
 			bgfx::setVertexBuffer(0, vertexBufferHandle);

@@ -85,7 +85,6 @@ namespace se
 			RenderContext renderContext;
 			renderContext.rendererFlags = rendererFlags;
 			renderContext.defaultUniforms = defaultUniforms.get();
-			defaultUniforms->setLightParams(); //
 			for (size_t i = 0; i < windows.size(); )
 			{
 				if (windows[i]->wasDestroyed())

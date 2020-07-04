@@ -48,7 +48,7 @@ namespace se
 
 			FlatColorMaterial(DefaultShaderManager& _shaderManager);
 
-			void update() override;
+			void bind() override;
 			std::shared_ptr<Shader> getShader() override;
 
 		private:
@@ -63,7 +63,7 @@ namespace se
 
 			FlatTextureMaterial(DefaultShaderManager& _shaderManager);
 
-			void update() override;
+			void bind() override;
 			std::shared_ptr<Shader> getShader() override;
 
 			void setTexture(std::shared_ptr<Texture> _texture);
@@ -82,7 +82,7 @@ namespace se
 
 			PhongMaterial(DefaultShaderManager& _shaderManager);
 
-			void update() override;
+			void bind() override;
 			std::shared_ptr<Shader> getShader() override;
 
 			void setTexture(const MaterialTextureType _type, std::shared_ptr<Texture> _texture);

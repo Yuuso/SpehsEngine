@@ -8,6 +8,7 @@ $input v_position, v_normal, v_color0, v_texcoord0
 SAMPLER2D(s_texColor, 0);
 SAMPLER2D(s_texNormal, 1);
 
+
 void main()
 {
 	vec3 position = v_position;
@@ -19,25 +20,58 @@ void main()
 	float specularStrength = u_phongShininess;
 	float shininess = u_phongSpecularStrength;
 
-	vec3 ambientColor = u_ambientLightColor * u_ambientLightIntensity;
-
+	vec3 ambientColor = vec3_splat(0.0);
 	vec3 diffuseColor = vec3_splat(0.0);
 	vec3 specularColor = vec3_splat(0.0);
-	for (int i = 0; i < u_pointLightCount; i++)
-	{
-		ASSERT(u_pointLightInnerRadius(i) < u_pointLightOuterRadius(i));
-		float distanceToLight = distance(u_pointLightPosition(i), position);
-		float distanceToInner = max(0.0, distanceToLight - u_pointLightInnerRadius(i));
-		float fadeZone = u_pointLightOuterRadius(i) - u_pointLightInnerRadius(i);
-		float distanceFactor = 1.0 - clamp(distanceToInner / fadeZone, 0.0, 1.0);
 
-		vec3 lightDirection = normalize(u_pointLightPosition(i) - position);
-		float diffuseFactor = max(0.0, dot(normal, lightDirection));
-		diffuseColor = diffuseColor + diffuseFactor * distanceFactor * u_pointLightColor(i);
-		
-		vec3 reflectDirection = reflect(-lightDirection, normal);
+	int lightCount = u_LightCount;
+	for (int i = 0; i < lightCount; i++)
+	{
+		vec3 surfaceToLight;
+		float attenuation = u_LightIntensity(i);
+
+		if (attenuation <= 0.0)
+			continue;
+
+		if (u_LightIsGlobal(i))
+		{
+			if (length(u_LightDirection(i)) == 0.0)
+			{
+				// Ambient light
+				ambientColor = ambientColor + u_LightColor(i) * attenuation;
+				continue;
+			}
+			
+			// Directional light
+			surfaceToLight = -normalize(u_LightDirection(i));
+		}
+		else
+		{
+			// Point light
+			surfaceToLight = normalize(u_LightPosition(i) - position);
+			attenuation = attenuation * getLinearDistanceAttenuation(i, position);
+
+			if (attenuation <= 0.0)
+				continue;
+
+			if (length(u_LightDirection(i)) > 0.0)
+			{
+				// Spot light
+				attenuation = attenuation * getLinearConeAttenuation(i, surfaceToLight);
+			}
+		}
+
+		if (attenuation <= 0.0)
+			continue;
+
+		// Diffuse
+		float diffuseFactor = max(0.0, dot(normal, surfaceToLight));
+		diffuseColor = diffuseColor + diffuseFactor * attenuation * u_LightColor(i);
+
+		// Specular
+		vec3 reflectDirection = reflect(-surfaceToLight, normal);
 		float specularFactor = pow(max(0.0, dot(viewDirection, reflectDirection)), shininess);
-		specularColor = specularColor + specularFactor * specularStrength * distanceFactor * u_pointLightColor(i);
+		specularColor = specularColor + specularFactor * specularStrength * attenuation * u_LightColor(i);
 	}
 
 	gl_FragColor = v_color0 * texture2D(s_texColor, v_texcoord0) * vec4(ambientColor + diffuseColor + specularColor, 1.0);

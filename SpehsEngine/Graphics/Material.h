@@ -15,7 +15,7 @@ namespace se
 			virtual ~Material() = default;
 
 			// All shader uniform values should be bound here
-			virtual void update() = 0;
+			virtual void bind() = 0;
 
 			// All materials contain a shader
 			virtual std::shared_ptr<Shader> getShader() = 0;

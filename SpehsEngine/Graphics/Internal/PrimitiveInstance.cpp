@@ -134,7 +134,7 @@ namespace se
 			bgfx::setTransform(reinterpret_cast<const void*>(&transformMatrix));
 			_renderContext.defaultUniforms->setNormalMatrix(normalMatrix);
 
-			renderInfo.material->update();
+			renderInfo.material->bind();
 
 			if (getRenderMode() == RenderMode::Transient)
 			{
