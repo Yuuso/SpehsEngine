@@ -69,9 +69,19 @@ void main()
 		diffuseColor = diffuseColor + diffuseFactor * attenuation * u_LightColor(i);
 
 		// Specular
-		vec3 reflectDirection = reflect(-surfaceToLight, normal);
-		float specularFactor = pow(max(0.0, dot(viewDirection, reflectDirection)), shininess);
-		specularColor = specularColor + specularFactor * specularStrength * attenuation * u_LightColor(i);
+		float specularFactor;
+		if (true)
+		{
+			// Blinn
+			vec3 halfwayDirection = normalize(surfaceToLight + viewDirection);
+			specularFactor = pow(max(0.0, dot(normal, halfwayDirection)), shininess);
+		}
+		else
+		{
+			vec3 reflectDirection = reflect(-surfaceToLight, normal);
+			specularFactor = pow(max(0.0, dot(viewDirection, reflectDirection)), shininess);
+		}
+		specularColor = specularColor + specularFactor * specularStrength * attenuation * u_LightColor(i);	
 	}
 
 	gl_FragColor = v_color0 * texture2D(s_texColor, v_texcoord0) * vec4(ambientColor + diffuseColor + specularColor, 1.0);

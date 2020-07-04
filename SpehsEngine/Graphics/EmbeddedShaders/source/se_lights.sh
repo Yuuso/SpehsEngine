@@ -6,7 +6,7 @@
 // --------------------
 // Lights
 
-#define MAX_LIGHTS 4
+#define MAX_LIGHTS 16
 
 uniform vec4 u_lightInfo;
 uniform vec4 u_lightData1[MAX_LIGHTS];

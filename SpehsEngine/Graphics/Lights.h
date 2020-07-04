@@ -8,7 +8,7 @@ namespace se
 {
 	namespace graphics
 	{
-		constexpr size_t MAX_LIGHTS = 4;
+		constexpr size_t MAX_LIGHTS = 16;
 
 		class Light
 		{
