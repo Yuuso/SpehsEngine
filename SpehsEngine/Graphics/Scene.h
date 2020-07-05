@@ -43,6 +43,7 @@ namespace se
 			friend class ViewInstance;
 
 			void render(RenderContext& _renderContext);
+			void postRender();
 			void batch(PrimitiveInstance& _primitive);
 
 			std::vector<std::unique_ptr<Batch>> batches;

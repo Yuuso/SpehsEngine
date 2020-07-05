@@ -33,6 +33,7 @@ namespace se
 
 			void destroyBuffers();
 			void render(RenderContext& _renderContext);
+			void postRender();
 
 			void batch(Batch& _batch);
 			void unbatch();
@@ -49,6 +50,7 @@ namespace se
 
 			const bool sizeInBatchChanged() const;
 			void updateTransformMatrix();
+			void createBuffers();
 
 			void primitiveDestroyed();
 

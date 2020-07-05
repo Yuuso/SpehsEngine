@@ -114,6 +114,11 @@ namespace se
 			_renderContext.currentViewId++;
 		}
 
+		void ViewInstance::postRender()
+		{
+			view->scene.postRender();
+		}
+
 		const bool ViewInstance::wasDestroyed() const
 		{
 			return view == nullptr;

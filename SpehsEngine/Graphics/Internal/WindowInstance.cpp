@@ -157,6 +157,14 @@ namespace se
 			}
 		}
 
+		void WindowInstance::postRender()
+		{
+			for (auto&& view : window->views)
+			{
+				view->postRender();
+			}
+		}
+
 		const bool WindowInstance::wasDestroyed() const
 		{
 			return window == nullptr;

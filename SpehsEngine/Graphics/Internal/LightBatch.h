@@ -26,6 +26,7 @@ namespace se
 
 
 			void bind();
+			void postRender();
 
 			void add(Light& _light);
 			void remove(Light& _light);

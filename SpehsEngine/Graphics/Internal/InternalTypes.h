@@ -24,6 +24,7 @@ namespace se
 			RenderInfoChanged	= (1 << 1),
 			VerticesChanged		= (1 << 2),
 			IndicesChanged		= (1 << 3),
+			EverythingChanged	= std::numeric_limits<PrimitiveUpdateFlagsType>::max()
 		};
 
 		enum WindowUpdateFlag : WindowUpdateFlagsType

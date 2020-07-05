@@ -86,11 +86,17 @@ namespace se
 		}
 		void Primitive::setRenderState(const bool _state)
 		{
+			if (renderState == _state)
+				return;
 			renderState = _state;
+
+			// Update everything when re-enabling rendering
+			if (renderState)
+				enableBit(updateFlags, PrimitiveUpdateFlag::EverythingChanged);
 		}
 		void Primitive::toggleRenderState()
 		{
-			renderState = !renderState;
+			setRenderState(!renderState);
 		}
 		void Primitive::setMaterial(std::shared_ptr<Material> _material)
 		{

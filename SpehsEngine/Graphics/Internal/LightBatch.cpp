@@ -67,6 +67,15 @@ namespace se
 			}
 		}
 
+		void LightBatch::postRender()
+		{
+			// Clear flags after all scenes have had the chance to update
+			for (auto&& light : lights)
+			{
+				light.get().dirty = false;
+			}
+		}
+
 		void LightBatch::add(Light& _light)
 		{
 			auto it = std::find_if(lights.begin(),
@@ -88,6 +97,8 @@ namespace se
 			}
 
 			lights.push_back(_light);
+
+			// Force update buffer
 			_light.dirty = true;
 		}
 		void LightBatch::remove(Light& _light)
@@ -107,6 +118,7 @@ namespace se
 			*it = lights.back().get();
 			lights.pop_back();
 
+			// Location in buffer changed
 			it->get().dirty = true;
 		}
 		void LightBatch::clear()
@@ -121,7 +133,6 @@ namespace se
 			memcpy(&data2[_index], &lights[_index].get().position, sizeof(glm::vec4));
 			memcpy(&data3[_index], &lights[_index].get().direction, sizeof(glm::vec4));
 			memcpy(&data4[_index], &lights[_index].get().innerRadius, sizeof(glm::vec4));
-			lights[_index].get().dirty = false;
 		}
 	}
 }

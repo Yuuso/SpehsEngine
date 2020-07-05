@@ -124,6 +124,15 @@ namespace se
 			}
 		}
 
+		void Scene::postRender()
+		{
+			for (auto&& primitive : primitives)
+			{
+				primitive->postRender();
+			}
+			lightBatch->postRender();
+		}
+
 		void Scene::batch(PrimitiveInstance& _primitive)
 		{
 			se_assert(!_primitive.wasDestroyed());

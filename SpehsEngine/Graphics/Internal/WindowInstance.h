@@ -30,6 +30,7 @@ namespace se
 
 
 			void render(RenderContext& _renderContext);
+			void postRender();
 
 			const bool wasDestroyed() const;
 
