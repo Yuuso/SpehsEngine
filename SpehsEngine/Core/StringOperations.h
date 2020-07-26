@@ -36,7 +36,7 @@ namespace se
 	std::string toHexString(const uint64_t integer);
 
 	/**Returns seconds expressed in 'stopwatch notation' string. Format: hh:mm:ss */
-	std::string secondsToStopwatchNotation(int seconds);
+	std::string secondsToStopwatchNotation(const int seconds);
 
 	/**Returns IPv4 address given in string format as an unsigned integer*/
 	unsigned getStringAsIPv4Address(const std::string& string);
