@@ -1,5 +1,6 @@
 #pragma once
 
+#include "SpehsEngine/Core/AsyncTaskManager.h"
 #include "SpehsEngine/Graphics/Types.h"
 #include "SpehsEngine/Graphics/Texture.h"
 #include "SpehsEngine/Graphics/ResourcePathFinder.h"
@@ -27,7 +28,9 @@ namespace se
 
 
 			void setResourcePathFinder(std::shared_ptr<ResourcePathFinder> _pathFinder);
+			void setResourceLoader(std::shared_ptr<AsyncTaskManager<ResourceHandle>> _resourceLoader);
 
+			void update();
 			void reloadTextures();
 			void purgeUnusedTextures();
 
@@ -37,6 +40,7 @@ namespace se
 		private:
 
 			std::shared_ptr<ResourcePathFinder> pathFinder;
+			std::shared_ptr<AsyncTaskManager<ResourceHandle>> resourceLoader;
 
 			std::vector<std::shared_ptr<Texture>> textures;
 		};

@@ -9,7 +9,7 @@ namespace se
 		void Bind(std::unique_ptr<MaterialTexture>& _tex, const uint8_t _stage)
 		{
 			if (_tex->texture)
-				_tex->uniform->set(_tex->texture.get(), _stage);
+				_tex->uniform->set(_tex->texture, _stage);
 		}
 		void Bind(std::vector<std::unique_ptr<MaterialTexture>>& _tex)
 		{
@@ -48,7 +48,7 @@ namespace se
 
 			texture = std::make_unique<MaterialTexture>();
 			texture->type = MaterialTextureType::Color;
-			texture->uniform = shader->findUniform("s_texColor");
+			texture->uniform = _shaderManager->findUniform("s_texColor");
 		}
 
 		void FlatTextureMaterial::bind()

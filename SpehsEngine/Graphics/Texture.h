@@ -1,6 +1,7 @@
 #pragma once
 
 #include "bgfx/bgfx.h" // ?!
+#include "SpehsEngine/Graphics/Internal/Resource.h"
 #include "SpehsEngine/Graphics/Types.h"
 #include <string>
 
@@ -9,7 +10,7 @@ namespace se
 {
 	namespace graphics
 	{
-		class Texture
+		class Texture final : public Resource
 		{
 		public:
 
@@ -23,7 +24,7 @@ namespace se
 			Texture& operator=(Texture&& _other) = delete;
 
 
-			void reload();
+			void reload(std::shared_ptr<AsyncTaskManager<ResourceHandle>> _resourceLoader);
 
 			const std::string& getName() const;
 
@@ -32,15 +33,17 @@ namespace se
 			friend class TextureManager;
 			friend class Uniform;
 
-			void create(const std::string_view _path, const TextureModes _textureModes);
+			static ResourceHandle createResource(const std::string _path, const TextureModes _textureModes);
+			void create(const std::string_view _path, const TextureModes _textureModes, std::shared_ptr<AsyncTaskManager<ResourceHandle>> _resourceLoader);
 			void destroy();
+
+			bgfx::TextureHandle getHandle() const;
 
 			const std::string name;
 			std::string path;
 
 			TextureModes textureModes;
-			bgfx::TextureInfo info;
-			bgfx::TextureHandle textureHandle;
+			//bgfx::TextureInfo info;
 		};
 	}
 }

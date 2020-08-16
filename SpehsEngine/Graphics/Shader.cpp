@@ -68,75 +68,11 @@ namespace se
 			}
 
 			programHandle = bgfx::createProgram(_vertexShader, _fragmentShader, true);
-
-			static constexpr size_t MAX_UNIFORMS = 256;
-			bgfx::UniformHandle temp[MAX_UNIFORMS];
-
-			const uint16_t numVertexUniforms = bgfx::getShaderUniforms(_vertexShader, temp, sizeof(temp));
-			se_assert(numVertexUniforms <= MAX_UNIFORMS);
-			for (size_t i = 0; i < (size_t)numVertexUniforms; i++)
-			{
-				bgfx::UniformInfo info;
-				bgfx::getUniformInfo(temp[i], info);
-
-				bool oldFound = false;
-				for (auto& uniform : uniforms)
-				{
-					if (uniform->getName() == info.name)
-					{
-						uniform->reset(info, temp[i]);
-						oldFound = true;
-						break;
-					}
-				}
-				if (oldFound)
-					continue;
-
-				uniforms.emplace_back(std::make_shared<Uniform>(info, temp[i]));
-			}
-
-			const uint16_t numFragmentUniforms = bgfx::getShaderUniforms(_fragmentShader, temp, sizeof(temp));
-			se_assert(numFragmentUniforms <= MAX_UNIFORMS);
-			for (size_t i = 0; i < (size_t)numFragmentUniforms; i++)
-			{
-				bgfx::UniformInfo info;
-				bgfx::getUniformInfo(temp[i], info);
-
-				// TODO: Skip duplicates from vertex shader
-				//bgfx::destroy(temp[i]);
-				//temp[i] = BGFX_INVALID_HANDLE;
-
-				bool oldFound = false;
-				for (auto& uniform : uniforms)
-				{
-					if (uniform->getName() == info.name)
-					{
-						uniform->reset(info, temp[i]);
-						oldFound = true;
-						break;
-					}
-				}
-				if (oldFound)
-					continue;
-
-				uniforms.emplace_back(std::make_shared<Uniform>(info, temp[i]));
-			}
 		}
 
 		const std::string& Shader::getName() const
 		{
 			return name;
-		}
-
-		std::shared_ptr<Uniform> Shader::findUniform(const std::string_view _name)
-		{
-			for (auto& uniform : uniforms)
-			{
-				if (uniform->getName() == _name)
-					return uniform;
-			}
-			se_assert_m(false, "Uniform '" + std::string(_name) + "' not found!");
-			return nullptr;
 		}
 	}
 }

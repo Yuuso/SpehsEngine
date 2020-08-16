@@ -40,8 +40,6 @@ namespace se
 
 		protected:
 
-			void extractUniforms(std::shared_ptr<Shader>& _shader);
-
 			std::shared_ptr<ResourcePathFinder> pathFinder;
 
 			std::vector<std::shared_ptr<Shader>> shaders;

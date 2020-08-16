@@ -5,6 +5,7 @@
 #include "glm/vec4.hpp"
 #include "glm/mat3x3.hpp"
 #include "glm/mat4x4.hpp"
+#include <memory>
 #include <stdint.h>
 #include <string>
 
@@ -28,6 +29,8 @@
 
 	-- Spehs Engine --------
 	- u_normal				mat4							Transpose of inverse of upper-left 3x3 part of model[0]
+
+	TODO: Update from lights and materials
 */
 
 
@@ -61,7 +64,7 @@ namespace se
 			void set(const glm::mat3& _value, const uint16_t _numElements = 1);
 			void set(const glm::mat4& _value, const uint16_t _numElements = 1);
 			void set(const float*	  _value, const uint16_t _numElements);
-			void set(const Texture* _value, const uint8_t _stage);
+			void set(const std::shared_ptr<Texture>& _value, const uint8_t _stage);
 
 		private:
 

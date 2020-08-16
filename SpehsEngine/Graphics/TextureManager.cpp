@@ -17,12 +17,28 @@ namespace se
 		{
 			pathFinder = _pathFinder;
 		}
+		void TextureManager::setResourceLoader(std::shared_ptr<AsyncTaskManager<ResourceHandle>> _resourceLoader)
+		{
+			resourceLoader = _resourceLoader;
+		}
+
+		void TextureManager::update()
+		{
+			for (auto&& texture : textures)
+			{
+				texture->update();
+			}
+		}
 
 		void TextureManager::reloadTextures()
 		{
-			se_assert(false);
-			// TODO
+			for (auto&& texture : textures)
+			{
+				if (!texture->path.empty())
+					texture->reload(resourceLoader);
+			}
 		}
+
 		void TextureManager::purgeUnusedTextures()
 		{
 			for (size_t i = 0; i < textures.size(); /*i++*/)
@@ -57,7 +73,7 @@ namespace se
 			}
 
 			std::shared_ptr<Texture>& texture = textures.emplace_back(std::make_shared<Texture>(_name));
-			texture->create(path, _textureModes);
+			texture->create(path, _textureModes, resourceLoader);
 			return texture;
 		}
 		std::shared_ptr<Texture> TextureManager::findTexture(const std::string_view _name) const

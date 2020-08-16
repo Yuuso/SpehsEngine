@@ -105,6 +105,9 @@
     <ClInclude Include="Internal\LightBatch.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Internal\Resource.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="GraphicsLib.cpp">

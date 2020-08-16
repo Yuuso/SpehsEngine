@@ -157,6 +157,7 @@
     <ClInclude Include="Internal\InternalTypes.h" />
     <ClInclude Include="Internal\InternalUtilities.h" />
     <ClInclude Include="Internal\LightBatch.h" />
+    <ClInclude Include="Internal\Resource.h" />
     <ClInclude Include="Lights.h" />
     <ClInclude Include="Material.h" />
     <ClInclude Include="PrecompiledInclude.h" />

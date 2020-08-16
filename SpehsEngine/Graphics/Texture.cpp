@@ -24,7 +24,7 @@ namespace se
 			destroy();
 		}
 
-		void Texture::reload()
+		void Texture::reload(std::shared_ptr<AsyncTaskManager<ResourceHandle>> _resourceLoader)
 		{
 			if (path.empty())
 			{
@@ -32,7 +32,7 @@ namespace se
 				return;
 			}
 			destroy();
-			create(path, textureModes);
+			create(path, textureModes, _resourceLoader);
 		}
 
 		const std::string& Texture::getName() const
@@ -40,42 +40,42 @@ namespace se
 			return name;
 		}
 
-		void Texture::create(const std::string_view _path, const TextureModes _textureModes)
+		ResourceHandle Texture::createResource(const std::string _path, const TextureModes _textureModes)
 		{
 			static bx::DefaultAllocator defaultAllocator;
-			path = _path;
-			std::ifstream input(path, std::ios::binary);
+			std::ifstream input(_path, std::ios::binary);
 			if (!input.is_open())
 			{
-				log::error("Failed to open texture: " + path);
-				return;
+				log::error("Failed to open texture: " + _path);
+				return bgfx::kInvalidHandle;
 			}
 
 			std::vector<uint8_t> data(std::istreambuf_iterator<char>(input), {});
 			if (data.empty())
 			{
-				log::error("Failed to read texture data: " + path);
-				return;
+				log::error("Failed to read texture data: " + _path);
+				return bgfx::kInvalidHandle;
 			}
 
 			bimg::ImageContainer* imageContainer = bimg::imageParse(&defaultAllocator, data.data(), static_cast<uint32_t>(data.size()));
 			if (imageContainer == nullptr)
 			{
-				log::error("Failed to parse texture: " + path);
-				return;
+				log::error("Failed to parse texture: " + _path);
+				return bgfx::kInvalidHandle;
 			}
 
 			// TODO: bimg::Orientation::Enum ; imageContainer->m_orientation;
 
 			auto imageReleaseCb = []([[maybe_unused]] void* _ptr, void* _userData)
-				{
-					bimg::ImageContainer* imageContainer = (bimg::ImageContainer*)_userData;
-					bimg::imageFree(imageContainer);
-				};
+			{
+				bimg::ImageContainer* imageContainer = (bimg::ImageContainer*)_userData;
+				bimg::imageFree(imageContainer);
+			};
 
 			const bgfx::Memory* mem = bgfx::makeRef(imageContainer->m_data, imageContainer->m_size, imageReleaseCb, imageContainer);
 			const uint64_t flags = TextureModesToFlags(_textureModes);
 
+			bgfx::TextureHandle textureHandle = BGFX_INVALID_HANDLE;
 			if (imageContainer->m_cubeMap)
 			{
 				textureHandle = bgfx::createTextureCube(
@@ -113,7 +113,7 @@ namespace se
 
 			if (bgfx::isValid(textureHandle))
 			{
-				bgfx::setName(textureHandle, path.c_str());
+				bgfx::setName(textureHandle, _path.c_str());
 			}
 
 			// TODO
@@ -130,9 +130,36 @@ namespace se
 			//		, bgfx::TextureFormat::Enum(imageContainer->m_format)
 			//	);
 			//}
+
+			input.close();
+			return textureHandle.idx;
 		}
+
+		void Texture::create(const std::string_view _path, const TextureModes _textureModes, std::shared_ptr<AsyncTaskManager<ResourceHandle>> _resourceLoader)
+		{
+			se_assert(resourceHandle == INVALID_RESOURCE_HANDLE);
+
+			path = _path;
+			if (_resourceLoader)
+			{
+				std::function<ResourceHandle()> func = std::bind(&Texture::createResource, path, _textureModes);
+				resourceFuture = _resourceLoader->push(func);
+				// TODO set temp texture handle
+			}
+			else
+			{
+				resourceHandle = createResource(path, _textureModes);
+			}
+		}
+
+		bgfx::TextureHandle Texture::getHandle() const
+		{
+			return { resourceHandle };
+		}
+
 		void Texture::destroy()
 		{
+			bgfx::TextureHandle textureHandle = getHandle();
 			if (bgfx::isValid(textureHandle))
 			{
 				bgfx::destroy(textureHandle);

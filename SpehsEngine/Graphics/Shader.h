@@ -27,7 +27,6 @@ namespace se
 			void reload();
 
 			const std::string& getName() const;
-			std::shared_ptr<Uniform> findUniform(const std::string_view _name);
 
 		private:
 
@@ -44,8 +43,6 @@ namespace se
 
 			std::string vertexShaderPath;
 			std::string fragmentShaderPath;
-
-			std::vector<std::shared_ptr<Uniform>> uniforms;
 
 			bgfx::ProgramHandle programHandle;
 		};
