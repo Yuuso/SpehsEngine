@@ -119,6 +119,45 @@ namespace se
 			lastUpdateTime = now;
 		}
 
+		bool ConnectionManager::updateUntilNoReliablePacketsInSendQueue(const se::time::Time timeout)
+		{
+			std::optional<time::Time> timeoutTime;
+			if (timeout != se::time::Time::zero)
+			{
+				timeoutTime.emplace(time::now() + timeout);
+			}
+
+			const time::Time frameTime = time::fromSeconds(1.0f / 60.0f);
+			while (true)
+			{
+				update();
+
+				const time::ScopedFrameLimiter frameLimiter(frameTime);
+				bool ready = true;
+				{
+					std::lock_guard<std::recursive_mutex> lock1(*mutex);
+					for (std::shared_ptr<Connection>& connection : connections)
+					{
+						if (connection->hasReliableUnacknowledgedBytesInQueue(1ull))
+						{
+							ready = false;
+							break;
+						}
+					}
+				}
+
+				if (ready)
+				{
+					return true;
+				}
+
+				if (timeoutTime && time::now() < *timeoutTime)
+				{
+					return false;
+				}
+			}			
+		}
+
 		void ConnectionManager::processReceivedPackets()
 		{
 			std::lock_guard<std::recursive_mutex> lock1(*mutex);

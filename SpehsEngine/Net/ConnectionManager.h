@@ -30,6 +30,12 @@ namespace se
 			void update();
 
 			/*
+				Runs update() on loop until no connection has reliable data in send queue or specified timeout time has elapsed.
+				Returns true on success. Returns false on timeout.
+			*/
+			bool updateUntilNoReliablePacketsInSendQueue(const se::time::Time timeout = se::time::Time::zero);
+
+			/*
 				Attempts to start a new outgoing connection.
 				May return an empty shared pointer if an error occurs.
 				Returns an empty connection if connection was already established.
