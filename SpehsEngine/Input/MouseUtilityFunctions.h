@@ -12,6 +12,7 @@ namespace se
 
 		bool isMouseButtonDown(const MouseButton mouseButton);
 
+		/* NOTE: this feature has prevented certain SDL input events from being generated (such as the middle mouse button release). */
 		bool setRelativeMouseMode(const bool enabled);
 		bool getRelativeMouseMode();
 
