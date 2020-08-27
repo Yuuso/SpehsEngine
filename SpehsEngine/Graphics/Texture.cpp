@@ -24,7 +24,7 @@ namespace se
 			destroy();
 		}
 
-		void Texture::reload(std::shared_ptr<AsyncTaskManager<ResourceHandle>> _resourceLoader)
+		void Texture::reload(ResourceLoader _resourceLoader)
 		{
 			if (path.empty())
 			{
@@ -135,7 +135,7 @@ namespace se
 			return textureHandle.idx;
 		}
 
-		void Texture::create(const std::string_view _path, const TextureModes _textureModes, std::shared_ptr<AsyncTaskManager<ResourceHandle>> _resourceLoader)
+		void Texture::create(const std::string_view _path, const TextureModes _textureModes, ResourceLoader _resourceLoader)
 		{
 			se_assert(resourceHandle == INVALID_RESOURCE_HANDLE);
 
@@ -163,7 +163,7 @@ namespace se
 			if (bgfx::isValid(textureHandle))
 			{
 				bgfx::destroy(textureHandle);
-				textureHandle = BGFX_INVALID_HANDLE;
+				resourceHandle = INVALID_RESOURCE_HANDLE;
 			}
 		}
 	}

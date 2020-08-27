@@ -1,8 +1,8 @@
 #pragma once
 
-#include "SpehsEngine/Core/AsyncTaskManager.h"
 #include "SpehsEngine/Core/Log.h"
 #include "SpehsEngine/Core/SE_Assert.h"
+#include "SpehsEngine/Graphics/Types.h"
 #include <chrono>
 #include <future>
 #include <memory>
@@ -19,7 +19,7 @@ namespace se
 			virtual ~Resource() = default;
 
 			inline bool isReady() const { return !resourceFuture.valid(); }
-			virtual void reload(std::shared_ptr<AsyncTaskManager<ResourceHandle>> _resourceLoader) = 0;
+			virtual void reload(ResourceLoader _resourceLoader) = 0;
 
 		protected:
 

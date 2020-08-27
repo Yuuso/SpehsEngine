@@ -75,6 +75,7 @@ namespace se
 
 			std::shared_ptr<Shader>& shader = shaders.emplace_back(std::make_shared<Shader>(_name));
 			shader->create(vertexShaderPath, fragmentShaderPath);
+			shader->extractUniforms(uniforms);
 			return shader;
 		}
 		std::shared_ptr<Shader> ShaderManager::findShader(const std::string_view _name) const
@@ -88,15 +89,13 @@ namespace se
 			return nullptr;
 		}
 
-		std::shared_ptr<Uniform> ShaderManager::findUniform(const std::string_view _name) const
+		std::shared_ptr<Uniform> ShaderManager::findUniform(const std::string_view _name)
 		{
 			for (auto& uniform : uniforms)
 			{
 				if (uniform->getName() == _name)
 					return uniform;
 			}
-
-
 
 			se_assert_m(false, "Uniform '" + std::string(_name) + "' not found!");
 			return nullptr;

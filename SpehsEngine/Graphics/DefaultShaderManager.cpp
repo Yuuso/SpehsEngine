@@ -42,21 +42,21 @@ namespace se
 
 			auto createDefaultShader =
 				[&](const std::string_view _name)
-			{
-				std::string vertexShaderName = "vs_";
-				vertexShaderName += _name;
-				std::string fragmentShaderName = "fs_";
-				fragmentShaderName += _name;
+				{
+					std::string vertexShaderName = "vs_";
+					vertexShaderName += _name;
+					std::string fragmentShaderName = "fs_";
+					fragmentShaderName += _name;
 
-				bgfx::ShaderHandle vertexShader = bgfx::createEmbeddedShader(embeddedShaders, type, vertexShaderName.c_str());
-				bgfx::ShaderHandle fragmentShader = bgfx::createEmbeddedShader(embeddedShaders, type, fragmentShaderName.c_str());
+					bgfx::ShaderHandle vertexShader = bgfx::createEmbeddedShader(embeddedShaders, type, vertexShaderName.c_str());
+					bgfx::ShaderHandle fragmentShader = bgfx::createEmbeddedShader(embeddedShaders, type, fragmentShaderName.c_str());
 
-				std::shared_ptr<Shader>& shader = shaders.emplace_back(std::make_shared<Shader>(_name));
-				shader->create(vertexShader, fragmentShader);
-				extractUniforms(shader);
+					std::shared_ptr<Shader>& shader = shaders.emplace_back(std::make_shared<Shader>(_name));
+					shader->create(vertexShader, fragmentShader);
+					shader->extractUniforms(uniforms);
 
-				numDefaultShaders++;
-			};
+					numDefaultShaders++;
+				};
 
 			createDefaultShader("color");
 			createDefaultShader("tex");

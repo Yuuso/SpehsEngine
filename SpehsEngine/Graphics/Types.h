@@ -1,6 +1,7 @@
 #pragma once
 
 #include "SpehsEngine/Core/Color.h"
+#include "SpehsEngine/Core/AsyncTaskManager.h"
 #include "bgfx/bgfx.h" // TODO: get rid of this
 #include "glm/vec2.hpp"
 #include "glm/vec3.hpp"
@@ -181,5 +182,6 @@ namespace se
 
 		typedef uint16_t ResourceHandle;
 		constexpr ResourceHandle INVALID_RESOURCE_HANDLE = bgfx::kInvalidHandle;
+		typedef std::shared_ptr<AsyncTaskManager<ResourceHandle>> ResourceLoader;
 	}
 }

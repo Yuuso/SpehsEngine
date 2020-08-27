@@ -24,7 +24,7 @@ namespace se
 			Texture& operator=(Texture&& _other) = delete;
 
 
-			void reload(std::shared_ptr<AsyncTaskManager<ResourceHandle>> _resourceLoader);
+			void reload(ResourceLoader _resourceLoader) override;
 
 			const std::string& getName() const;
 
@@ -34,7 +34,7 @@ namespace se
 			friend class Uniform;
 
 			static ResourceHandle createResource(const std::string _path, const TextureModes _textureModes);
-			void create(const std::string_view _path, const TextureModes _textureModes, std::shared_ptr<AsyncTaskManager<ResourceHandle>> _resourceLoader);
+			void create(const std::string_view _path, const TextureModes _textureModes, ResourceLoader _resourceLoader);
 			void destroy();
 
 			bgfx::TextureHandle getHandle() const;

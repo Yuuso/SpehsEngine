@@ -48,7 +48,7 @@ namespace se
 
 			texture = std::make_unique<MaterialTexture>();
 			texture->type = MaterialTextureType::Color;
-			texture->uniform = _shaderManager->findUniform("s_texColor");
+			texture->uniform = _shaderManager.findUniform("s_texColor");
 		}
 
 		void FlatTextureMaterial::bind()
@@ -78,12 +78,12 @@ namespace se
 			textures.resize(2);
 			textures[0] = std::make_unique<MaterialTexture>();
 			textures[0]->type = MaterialTextureType::Color;
-			textures[0]->uniform = shader->findUniform("s_texColor");
+			textures[0]->uniform = _shaderManager.findUniform("s_texColor");
 			textures[1] = std::make_unique<MaterialTexture>();
 			textures[1]->type = MaterialTextureType::Normal;
-			textures[1]->uniform = shader->findUniform("s_texNormal");
+			textures[1]->uniform = _shaderManager.findUniform("s_texNormal");
 
-			attributesUniform = shader->findUniform(PhongAttributesUniformName);
+			attributesUniform = _shaderManager.findUniform(PhongAttributesUniformName);
 		}
 
 		void PhongMaterial::bind()

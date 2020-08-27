@@ -28,7 +28,7 @@ namespace se
 
 
 			void setResourcePathFinder(std::shared_ptr<ResourcePathFinder> _pathFinder);
-			void setResourceLoader(std::shared_ptr<AsyncTaskManager<ResourceHandle>> _resourceLoader);
+			void setResourceLoader(ResourceLoader _resourceLoader);
 
 			void update();
 			void reloadTextures();
@@ -40,7 +40,7 @@ namespace se
 		private:
 
 			std::shared_ptr<ResourcePathFinder> pathFinder;
-			std::shared_ptr<AsyncTaskManager<ResourceHandle>> resourceLoader;
+			ResourceLoader resourceLoader;
 
 			std::vector<std::shared_ptr<Texture>> textures;
 		};

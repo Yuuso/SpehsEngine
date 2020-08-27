@@ -36,7 +36,7 @@ namespace se
 												 const std::string_view _fragmentShader);
 			std::shared_ptr<Shader> findShader(const std::string_view _name) const;
 
-			std::shared_ptr<Uniform> findUniform(const std::string_view _name) const;
+			std::shared_ptr<Uniform> findUniform(const std::string_view _name);
 
 		protected:
 

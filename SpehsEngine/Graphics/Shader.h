@@ -38,6 +38,7 @@ namespace se
 			void destroy();
 			void create(const std::string_view _vertexShaderPath, const std::string_view _fragmentShaderPath);
 			void create(bgfx::ShaderHandle _vertexShader, bgfx::ShaderHandle _fragmentShader);
+			void extractUniforms(std::vector<std::shared_ptr<Uniform>>& _uniforms);
 
 			const std::string name;
 
@@ -45,6 +46,8 @@ namespace se
 			std::string fragmentShaderPath;
 
 			bgfx::ProgramHandle programHandle;
+			bgfx::ShaderHandle vertexShaderHandle;
+			bgfx::ShaderHandle fragmentShaderHandle;
 		};
 	}
 }
