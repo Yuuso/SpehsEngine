@@ -26,7 +26,7 @@ namespace se
 			ShaderManager& operator=(ShaderManager&& _other) = delete;
 
 
-			virtual void reloadShaders();
+			virtual void reloadShaders(const size_t _startIndex = 0);
 			virtual void purgeUnusedShaders(const size_t _startIndex = 0);
 
 			void setResourcePathFinder(std::shared_ptr<ResourcePathFinder> _pathFinder);

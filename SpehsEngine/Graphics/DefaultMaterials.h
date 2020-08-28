@@ -14,6 +14,10 @@ namespace se
 {
 	namespace graphics
 	{
+		/*
+		* Material resources
+		*/
+
 		enum class MaterialTextureType
 		{
 			Unknown,
@@ -41,6 +45,10 @@ namespace se
 		void Bind(const PhongAttributes& _tex, std::shared_ptr<Uniform> uniform);
 
 
+
+		/*
+		* Default materials
+		*/
 
 		class FlatColorMaterial final : public Material
 		{

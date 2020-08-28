@@ -242,10 +242,5 @@ namespace se
 				log::error(error);
 			}
 		}
-
-		void Renderer::reloadDefaultUniforms()
-		{
-			defaultUniforms->reload();
-		}
 	}
 }

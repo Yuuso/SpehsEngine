@@ -98,11 +98,11 @@ namespace se
 				auto it = std::find_if(_uniforms.begin(), _uniforms.end(), [&](const std::shared_ptr<Uniform>& _uniform) { return _uniform->getName() == info.name; });
 				if (it != _uniforms.end())
 				{
-					bgfx::destroy(uniformHandles[i]);
 					continue;
 				}
 
-				_uniforms.emplace_back(std::make_shared<Uniform>(info, uniformHandles[i]));
+				bgfx::UniformHandle newHandle = bgfx::createUniform(info.name, info.type);
+				_uniforms.emplace_back(std::make_shared<Uniform>(info, newHandle));
 			}
 
 			const uint16_t numFragmentUniforms = bgfx::getShaderUniforms(fragmentShaderHandle, uniformHandles, MAX_UNIFORMS);
@@ -115,11 +115,11 @@ namespace se
 				auto it = std::find_if(_uniforms.begin(), _uniforms.end(), [&](const std::shared_ptr<Uniform>& _uniform) { return _uniform->getName() == info.name; });
 				if (it != _uniforms.end())
 				{
-					bgfx::destroy(uniformHandles[i]);
 					continue;
 				}
 
-				_uniforms.emplace_back(std::make_shared<Uniform>(info, uniformHandles[i]));
+				bgfx::UniformHandle newHandle = bgfx::createUniform(info.name, info.type);
+				_uniforms.emplace_back(std::make_shared<Uniform>(info, newHandle));
 			}
 		}
 

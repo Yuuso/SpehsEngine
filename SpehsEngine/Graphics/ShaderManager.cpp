@@ -15,11 +15,12 @@ namespace se
 			pathFinder = std::make_shared<ResourcePathFinder>();
 		}
 
-		void ShaderManager::reloadShaders()
+		void ShaderManager::reloadShaders(const size_t _startIndex)
 		{
-			for (auto&& shader : shaders)
+			for (size_t i = _startIndex; i < shaders.size(); i++)
 			{
-				shader->reload();
+				shaders[i]->reload();
+				shaders[i]->extractUniforms(uniforms);
 			}
 		}
 		void ShaderManager::purgeUnusedShaders(const size_t _startIndex)

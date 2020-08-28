@@ -46,8 +46,6 @@ namespace se
 
 			static void debugTextPrintf(const uint16_t _column, const uint16_t _line, const char* _format, ...);
 
-			void reloadDefaultUniforms(); // TODO: ?!!?!?!?
-
 		private:
 
 			void inputUpdate();

@@ -63,6 +63,10 @@ namespace se
 			createDefaultShader("phong");
 		}
 
+		void DefaultShaderManager::reloadShaders(const size_t _startIndex)
+		{
+			ShaderManager::reloadShaders(_startIndex + numDefaultShaders);
+		}
 		void DefaultShaderManager::purgeUnusedShaders(const size_t _startIndex)
 		{
 			ShaderManager::purgeUnusedShaders(_startIndex + numDefaultShaders);

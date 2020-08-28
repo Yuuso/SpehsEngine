@@ -15,7 +15,7 @@ namespace se
 		DefaultUniforms::DefaultUniforms()
 			: normal(BGFX_INVALID_HANDLE)
 		{
-			reload();
+			normal = bgfx::createUniform("u_normal", bgfx::UniformType::Mat4);
 		}
 		DefaultUniforms::~DefaultUniforms()
 		{
@@ -29,11 +29,6 @@ namespace se
 				bgfx::destroy(normal);
 				normal = BGFX_INVALID_HANDLE;
 			}
-		}
-		void DefaultUniforms::reload()
-		{
-			destroy();
-			normal = bgfx::createUniform("u_normal", bgfx::UniformType::Mat4);
 		}
 
 		void DefaultUniforms::setNormalMatrix(const glm::mat4& _normal)
