@@ -59,8 +59,8 @@ namespace se
 #endif
 
 			initializationTime = std::chrono::high_resolution_clock::now().time_since_epoch().count();
-			log::info("SpehsEngine time accuracy is " + std::to_string(conversionRate::second) + " ticks per second.");
 			initialized = true;
+			log::info("SpehsEngine time accuracy is " + std::to_string(conversionRate::second) + " ticks per second.");
 		}
 
 		Time now()
