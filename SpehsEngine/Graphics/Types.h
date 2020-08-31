@@ -179,9 +179,5 @@ namespace se
 			TextureSamplingMode sampleMag = TextureSamplingMode::Linear;
 			TextureSamplingMode sampleMip = TextureSamplingMode::Linear;
 		};
-
-		typedef uint16_t ResourceHandle;
-		constexpr ResourceHandle INVALID_RESOURCE_HANDLE = bgfx::kInvalidHandle;
-		typedef std::shared_ptr<AsyncTaskManager<ResourceHandle>> ResourceLoader;
 	}
 }

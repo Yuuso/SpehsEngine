@@ -17,7 +17,7 @@ namespace se
 		{
 			pathFinder = _pathFinder;
 		}
-		void TextureManager::setResourceLoader(std::shared_ptr<AsyncTaskManager<ResourceHandle>> _resourceLoader)
+		void TextureManager::setResourceLoader(ResourceLoader _resourceLoader)
 		{
 			resourceLoader = _resourceLoader;
 		}

@@ -2,6 +2,7 @@
 
 #include "bgfx/bgfx.h" // ?!
 #include "SpehsEngine/Graphics/Internal/Resource.h"
+#include "SpehsEngine/Graphics/ResourceData.h"
 #include "SpehsEngine/Graphics/Types.h"
 #include <string>
 
@@ -10,7 +11,12 @@ namespace se
 {
 	namespace graphics
 	{
-		class Texture final : public Resource
+		struct TextureData : ResourceData
+		{
+			bgfx::TextureInfo info;
+		};
+
+		class Texture final : public Resource<TextureData>
 		{
 		public:
 
@@ -24,7 +30,7 @@ namespace se
 			Texture& operator=(Texture&& _other) = delete;
 
 
-			void reload(ResourceLoader _resourceLoader) override;
+			void reload(ResourceLoader _resourceLoader = nullptr) override;
 
 			const std::string& getName() const;
 
@@ -33,7 +39,7 @@ namespace se
 			friend class TextureManager;
 			friend class Uniform;
 
-			static ResourceHandle createResource(const std::string _path, const TextureModes _textureModes);
+			static std::shared_ptr<ResourceData> createResource(const std::string _path, const TextureModes _textureModes);
 			void create(const std::string_view _path, const TextureModes _textureModes, ResourceLoader _resourceLoader);
 			void destroy();
 
@@ -43,7 +49,6 @@ namespace se
 			std::string path;
 
 			TextureModes textureModes;
-			//bgfx::TextureInfo info;
 		};
 	}
 }
