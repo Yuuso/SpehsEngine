@@ -20,7 +20,10 @@ namespace se
 			for (size_t i = _startIndex; i < shaders.size(); i++)
 			{
 				shaders[i]->reload();
-				shaders[i]->extractUniforms(uniforms);
+				if (!resourceLoader)
+				{
+					shaders[i]->extractUniforms(uniforms);
+				}
 			}
 		}
 		void ShaderManager::purgeUnusedShaders(const size_t _startIndex)
@@ -52,9 +55,24 @@ namespace se
 			}
 		}
 
+		void ShaderManager::update()
+		{
+			for (auto&& shader : shaders)
+			{
+				if (shader->update())
+				{
+					shader->extractUniforms(uniforms);
+				}
+			}
+		}
+
 		void ShaderManager::setResourcePathFinder(std::shared_ptr<ResourcePathFinder> _pathFinder)
 		{
 			pathFinder = _pathFinder;
+		}
+		void ShaderManager::setResourceLoader(ResourceLoader _resourceLoader)
+		{
+			resourceLoader = _resourceLoader;
 		}
 
 		std::shared_ptr<Shader> ShaderManager::createShader(const std::string_view _name,
@@ -75,8 +93,11 @@ namespace se
 			}
 
 			std::shared_ptr<Shader>& shader = shaders.emplace_back(std::make_shared<Shader>(_name));
-			shader->create(vertexShaderPath, fragmentShaderPath);
-			shader->extractUniforms(uniforms);
+			shader->create(vertexShaderPath, fragmentShaderPath, resourceLoader);
+			if (!resourceLoader)
+			{
+				shader->extractUniforms(uniforms);
+			}
 			return shader;
 		}
 		std::shared_ptr<Shader> ShaderManager::findShader(const std::string_view _name) const

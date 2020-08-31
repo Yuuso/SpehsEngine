@@ -2,6 +2,7 @@
 
 #include "SpehsEngine/Graphics/Shader.h"
 #include "SpehsEngine/Graphics/ResourcePathFinder.h"
+#include "SpehsEngine/Graphics/ResourceLoader.h"
 #include "SpehsEngine/Graphics/Uniform.h"
 #include <vector>
 #include <memory>
@@ -26,10 +27,12 @@ namespace se
 			ShaderManager& operator=(ShaderManager&& _other) = delete;
 
 
+			void setResourcePathFinder(std::shared_ptr<ResourcePathFinder> _pathFinder);
+			void setResourceLoader(ResourceLoader _resourceLoader);
+
+			void update();
 			virtual void reloadShaders(const size_t _startIndex = 0);
 			virtual void purgeUnusedShaders(const size_t _startIndex = 0);
-
-			void setResourcePathFinder(std::shared_ptr<ResourcePathFinder> _pathFinder);
 
 			std::shared_ptr<Shader> createShader(const std::string_view _name,
 												 const std::string_view _vertexShader,
@@ -41,6 +44,7 @@ namespace se
 		protected:
 
 			std::shared_ptr<ResourcePathFinder> pathFinder;
+			ResourceLoader resourceLoader;
 
 			std::vector<std::shared_ptr<Shader>> shaders;
 			std::vector<std::shared_ptr<Uniform>> uniforms;

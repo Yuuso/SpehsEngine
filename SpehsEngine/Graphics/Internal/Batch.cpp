@@ -209,9 +209,16 @@ namespace se
 
 		bool Batch::render(RenderContext& _renderContext)
 		{
+
 			if (vertices.size() == 0 && indices.size() == 0 && batchPositions.size() == 0)
 				return false;
 			se_assert(vertices.size() != 0 && indices.size() != 0 && batchPositions.size() != 0);
+
+			if (!renderInfo.material->getShader()->isReady())
+			{
+				log::warning("Shader not ready for rendering!");
+				return true;
+			}
 
 			updateBuffers();
 
@@ -226,7 +233,7 @@ namespace se
 			bgfx::setVertexBuffer(0, vertexBufferHandle);
 
 			applyRenderState(renderInfo, _renderContext);
-			bgfx::submit(_renderContext.currentViewId, renderInfo.material->getShader()->programHandle);
+			bgfx::submit(_renderContext.currentViewId, { renderInfo.material->getShader()->getHandle() });
 			return true;
 		}
 

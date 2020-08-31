@@ -138,7 +138,7 @@ namespace se
 		void Uniform::set(const std::shared_ptr<Texture>& _value, const uint8_t _stage)
 		{
 			se_assert(_value);
-			bgfx::setTexture(_stage, uniformHandle, _value->getHandle());
+			bgfx::setTexture(_stage, uniformHandle, { _value->getHandle() });
 		}
 	}
 }

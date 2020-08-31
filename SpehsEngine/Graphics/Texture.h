@@ -43,8 +43,6 @@ namespace se
 			void create(const std::string_view _path, const TextureModes _textureModes, ResourceLoader _resourceLoader);
 			void destroy();
 
-			bgfx::TextureHandle getHandle() const;
-
 			const std::string name;
 			std::string path;
 

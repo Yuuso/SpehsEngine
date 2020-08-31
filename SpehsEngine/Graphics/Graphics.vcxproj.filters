@@ -111,6 +111,12 @@
     <ClInclude Include="ResourceData.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="ResourceLoader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ResourceHandle.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="GraphicsLib.cpp">

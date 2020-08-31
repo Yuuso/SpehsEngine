@@ -149,23 +149,18 @@ namespace se
 			}
 		}
 
-		bgfx::TextureHandle Texture::getHandle() const
-		{
-			assert(resourceData);
-
-			return { resourceData->handle };
-		}
-
 		void Texture::destroy()
 		{
-			assert(resourceData);
+			if (!resourceData)
+				return;
 
-			bgfx::TextureHandle textureHandle = getHandle();
+			bgfx::TextureHandle textureHandle = { getHandle() };
 			if (bgfx::isValid(textureHandle))
 			{
 				bgfx::destroy(textureHandle);
-				resourceData.reset();
 			}
+
+			resourceData.reset();
 		}
 	}
 }

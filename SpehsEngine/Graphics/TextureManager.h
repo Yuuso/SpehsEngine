@@ -4,6 +4,7 @@
 #include "SpehsEngine/Graphics/Types.h"
 #include "SpehsEngine/Graphics/Texture.h"
 #include "SpehsEngine/Graphics/ResourcePathFinder.h"
+#include "SpehsEngine/Graphics/ResourceLoader.h"
 #include <memory>
 #include <string>
 #include <vector>

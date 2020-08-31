@@ -3,6 +3,7 @@
 #include "SpehsEngine/Core/Log.h"
 #include "SpehsEngine/Core/SE_Assert.h"
 #include "SpehsEngine/Graphics/ResourceData.h"
+#include "SpehsEngine/Graphics/ResourceLoader.h"
 #include "SpehsEngine/Graphics/Types.h"
 #include <chrono>
 #include <future>
@@ -27,7 +28,7 @@ namespace se
 
 		protected:
 
-			void update()
+			bool update()
 			{
 				if (resourceFuture.valid())
 				{
@@ -37,6 +38,7 @@ namespace se
 						if (status == std::future_status::ready)
 						{
 							resourceData = std::dynamic_pointer_cast<T>(resourceFuture.get());
+							return true;
 						}
 					}
 					catch (const std::future_error& error)
@@ -52,6 +54,14 @@ namespace se
 						}
 					}
 				}
+				return false;
+			}
+
+			ResourceHandle getHandle() const
+			{
+				se_assert(resourceData);
+
+				return resourceData->handle;
 			}
 
 			std::future<std::shared_ptr<ResourceData>> resourceFuture;

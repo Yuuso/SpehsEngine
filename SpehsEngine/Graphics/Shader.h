@@ -1,7 +1,8 @@
 #pragma once
 
-#include <bgfx/bgfx.h> // !
+#include "SpehsEngine/Graphics/Internal/Resource.h"
 #include "SpehsEngine/Graphics/Uniform.h"
+#include "SpehsEngine/Graphics/ResourceData.h"
 #include <string>
 
 
@@ -9,7 +10,13 @@ namespace se
 {
 	namespace graphics
 	{
-		class Shader
+		struct ShaderData : ResourceData
+		{
+			ResourceHandle vertexShaderHandle = INVALID_RESOURCE_HANDLE;
+			ResourceHandle fragmentShaderHandle = INVALID_RESOURCE_HANDLE;
+		};
+
+		class Shader : public Resource<ShaderData>
 		{
 		public:
 
@@ -24,7 +31,7 @@ namespace se
 			Shader& operator=(Shader&& _other) = delete;
 
 
-			void reload();
+			void reload(ResourceLoader _resourceLoader = nullptr) override;
 
 			const std::string& getName() const;
 
@@ -35,19 +42,17 @@ namespace se
 			friend class ShaderManager;
 			friend class DefaultShaderManager;
 
+			static std::shared_ptr<ResourceData> createResource(const std::string _vertexShaderPath, const std::string _fragmentShaderPath);
+			static std::shared_ptr<ResourceData> createResourceFromHandles(ResourceHandle _vertexShaderHandle, ResourceHandle _fragmentShaderHandle);
 			void destroy();
-			void create(const std::string_view _vertexShaderPath, const std::string_view _fragmentShaderPath);
-			void create(bgfx::ShaderHandle _vertexShader, bgfx::ShaderHandle _fragmentShader);
+			void create(const std::string_view _vertexShaderPath, const std::string_view _fragmentShaderPath, ResourceLoader _resourceLoader);
+			void create(ResourceHandle _vertexShaderHandle, ResourceHandle _fragmentShaderHandle);
 			void extractUniforms(std::vector<std::shared_ptr<Uniform>>& _uniforms);
 
 			const std::string name;
 
 			std::string vertexShaderPath;
 			std::string fragmentShaderPath;
-
-			bgfx::ProgramHandle programHandle;
-			bgfx::ShaderHandle vertexShaderHandle;
-			bgfx::ShaderHandle fragmentShaderHandle;
 		};
 	}
 }

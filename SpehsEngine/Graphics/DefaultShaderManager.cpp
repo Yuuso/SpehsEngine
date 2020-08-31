@@ -52,15 +52,19 @@ namespace se
 					bgfx::ShaderHandle fragmentShader = bgfx::createEmbeddedShader(embeddedShaders, type, fragmentShaderName.c_str());
 
 					std::shared_ptr<Shader>& shader = shaders.emplace_back(std::make_shared<Shader>(_name));
-					shader->create(vertexShader, fragmentShader);
+					shader->create(vertexShader.idx, fragmentShader.idx);
+					se_assert(shader->isReady());
 					shader->extractUniforms(uniforms);
 
 					numDefaultShaders++;
 				};
 
+			//const time::Time start = time::now();
 			createDefaultShader("color");
 			createDefaultShader("tex");
 			createDefaultShader("phong");
+			//const time::Time duration = time::now() - start;
+			//log::info("Default shaders created. (" + std::to_string(static_cast<int>(duration.asMilliseconds())) + "ms)");
 		}
 
 		void DefaultShaderManager::reloadShaders(const size_t _startIndex)

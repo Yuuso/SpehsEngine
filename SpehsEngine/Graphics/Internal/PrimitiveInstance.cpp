@@ -145,6 +145,12 @@ namespace se
 		{
 			const RenderInfo renderInfo = getRenderInfo();
 
+			if (!renderInfo.material->getShader()->isReady())
+			{
+				log::warning("Shader not ready for rendering!");
+				return;
+			}
+
 			bgfx::setTransform(reinterpret_cast<const void*>(&transformMatrix));
 			_renderContext.defaultUniforms->setNormalMatrix(normalMatrix);
 
@@ -179,7 +185,7 @@ namespace se
 			}
 
 			applyRenderState(renderInfo, _renderContext);
-			bgfx::submit(_renderContext.currentViewId, renderInfo.material->getShader()->programHandle);
+			bgfx::submit(_renderContext.currentViewId, { renderInfo.material->getShader()->getHandle() });
 		}
 
 		void PrimitiveInstance::postRender()
