@@ -117,6 +117,9 @@
     <ClInclude Include="ResourceHandle.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="TextureInput.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="GraphicsLib.cpp">

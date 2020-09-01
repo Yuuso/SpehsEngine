@@ -53,7 +53,7 @@ namespace se
 
 					std::shared_ptr<Shader>& shader = shaders.emplace_back(std::make_shared<Shader>(_name));
 					shader->create(vertexShader.idx, fragmentShader.idx);
-					se_assert(shader->isReady());
+					se_assert(shader->ready());
 					shader->extractUniforms(uniforms);
 
 					numDefaultShaders++;

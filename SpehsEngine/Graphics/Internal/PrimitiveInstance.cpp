@@ -145,7 +145,7 @@ namespace se
 		{
 			const RenderInfo renderInfo = getRenderInfo();
 
-			if (!renderInfo.material->getShader()->isReady())
+			if (!renderInfo.material->getShader()->ready())
 			{
 				log::warning("Shader not ready for rendering!");
 				return;

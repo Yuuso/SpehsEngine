@@ -55,6 +55,18 @@ namespace se
 			}
 		}
 
+		bool ShaderManager::allShadersReady() const
+		{
+			for (auto&& shader : shaders)
+			{
+				if (!shader->ready())
+				{
+					return false;
+				}
+			}
+			return true;
+		}
+
 		void ShaderManager::update()
 		{
 			for (auto&& shader : shaders)

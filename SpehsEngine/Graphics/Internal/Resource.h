@@ -23,7 +23,7 @@ namespace se
 
 			virtual ~Resource() = default;
 
-			inline bool isReady() const { return !resourceFuture.valid(); }
+			inline bool ready() const { return !resourceFuture.valid(); }
 			virtual void reload(ResourceLoader _resourceLoader) = 0;
 
 		protected:

@@ -3,6 +3,7 @@
 #include "SpehsEngine/Core/AsyncTaskManager.h"
 #include "SpehsEngine/Graphics/Types.h"
 #include "SpehsEngine/Graphics/Texture.h"
+#include "SpehsEngine/Graphics/TextureInput.h"
 #include "SpehsEngine/Graphics/ResourcePathFinder.h"
 #include "SpehsEngine/Graphics/ResourceLoader.h"
 #include <memory>
@@ -34,8 +35,10 @@ namespace se
 			void update();
 			void reloadTextures();
 			void purgeUnusedTextures();
+			bool allTexturesReady() const;
 
 			std::shared_ptr<Texture> createTexture(const std::string_view _name, const std::string_view _texture, const TextureModes _textureModes = TextureModes());
+			std::shared_ptr<Texture> createTexture(const std::string_view _name, const TextureInput& _input, const TextureModes _textureModes = TextureModes());
 			std::shared_ptr<Texture> findTexture(const std::string_view _name) const;
 
 		private:

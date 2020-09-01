@@ -33,6 +33,7 @@ namespace se
 			void update();
 			virtual void reloadShaders(const size_t _startIndex = 0);
 			virtual void purgeUnusedShaders(const size_t _startIndex = 0);
+			bool allShadersReady() const;
 
 			std::shared_ptr<Shader> createShader(const std::string_view _name,
 												 const std::string_view _vertexShader,

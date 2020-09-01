@@ -78,12 +78,13 @@ namespace se
 			if (imageContainer->m_cubeMap)
 			{
 				textureHandle = bgfx::createTextureCube(
-					uint16_t(imageContainer->m_width),
-					1 < imageContainer->m_numMips,
-					imageContainer->m_numLayers,
-					bgfx::TextureFormat::Enum(imageContainer->m_format),
-					flags,
-					mem);
+					uint16_t(imageContainer->m_width)
+					, 1 < imageContainer->m_numMips
+					, imageContainer->m_numLayers
+					, bgfx::TextureFormat::Enum(imageContainer->m_format)
+					, flags
+					, mem
+					);
 			}
 			else if (1 < imageContainer->m_depth)
 			{
@@ -95,7 +96,7 @@ namespace se
 					, bgfx::TextureFormat::Enum(imageContainer->m_format)
 					, flags
 					, mem
-				);
+					);
 			}
 			else if (bgfx::isTextureValid(0, false, imageContainer->m_numLayers, bgfx::TextureFormat::Enum(imageContainer->m_format), flags))
 			{
@@ -107,27 +108,31 @@ namespace se
 					, bgfx::TextureFormat::Enum(imageContainer->m_format)
 					, flags
 					, mem
-				);
-			}
-
-			if (bgfx::isValid(textureHandle))
-			{
-				bgfx::setName(textureHandle, _path.c_str());
+					);
 			}
 
 			std::shared_ptr<TextureData> result = std::make_shared<TextureData>();
 			result->handle = textureHandle.idx;
 
-			bgfx::calcTextureSize(
-				result->info
-				, uint16_t(imageContainer->m_width)
-				, uint16_t(imageContainer->m_height)
-				, uint16_t(imageContainer->m_depth)
-				, imageContainer->m_cubeMap
-				, 1 < imageContainer->m_numMips
-				, imageContainer->m_numLayers
-				, bgfx::TextureFormat::Enum(imageContainer->m_format)
-				);
+			if (bgfx::isValid(textureHandle))
+			{
+				bgfx::setName(textureHandle, _path.c_str());
+
+				bgfx::calcTextureSize(
+					result->info
+					, uint16_t(imageContainer->m_width)
+					, uint16_t(imageContainer->m_height)
+					, uint16_t(imageContainer->m_depth)
+					, imageContainer->m_cubeMap
+					, 1 < imageContainer->m_numMips
+					, imageContainer->m_numLayers
+					, bgfx::TextureFormat::Enum(imageContainer->m_format)
+					);
+			}
+			else
+			{
+				log::error("Failed to create texture '" + _path + "'!");
+			}
 
 			return result;
 		}
@@ -146,6 +151,55 @@ namespace se
 			else
 			{
 				resourceData = std::dynamic_pointer_cast<TextureData>(createResource(path, _textureModes));
+			}
+		}
+
+		void Texture::create(const TextureInput& _input, const TextureModes _textureModes)
+		{
+			se_assert(!resourceData);
+
+			se_assert(_input.format == TextureInput::Format::RGBA8); // Only one supported currently
+			se_assert(_input.width > 0 && _input.height > 0);
+			se_assert(_input.data.size() % 4 == 0);
+			se_assert((_input.data.size() / 4) == (_input.width * _input.height));
+
+			path.clear();
+
+			const uint64_t flags = TextureModesToFlags(_textureModes);
+			const bgfx::Memory* mem = bgfx::copy(_input.data.data(), uint32_t(_input.data.size()));
+
+			bgfx::TextureHandle textureHandle = BGFX_INVALID_HANDLE;
+			textureHandle = bgfx::createTexture2D(
+				_input.width
+				, _input.height
+				, false
+				, 1
+				, bgfx::TextureFormat::Enum::RGBA8
+				, flags
+				, mem
+				);
+
+			resourceData = std::make_shared<TextureData>();
+			resourceData->handle = textureHandle.idx;
+
+			if (bgfx::isValid(textureHandle))
+			{
+				bgfx::setName(textureHandle, name.c_str());
+
+				bgfx::calcTextureSize(
+					resourceData->info
+					, _input.width
+					, _input.height
+					, 1
+					, false
+					, 1
+					, 1
+					, bgfx::TextureFormat::Enum::RGBA8
+					);
+			}
+			else
+			{
+				log::error("Failed to create texture '" + name + "'!");
 			}
 		}
 

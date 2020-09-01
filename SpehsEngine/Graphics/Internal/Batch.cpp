@@ -209,12 +209,11 @@ namespace se
 
 		bool Batch::render(RenderContext& _renderContext)
 		{
-
 			if (vertices.size() == 0 && indices.size() == 0 && batchPositions.size() == 0)
 				return false;
 			se_assert(vertices.size() != 0 && indices.size() != 0 && batchPositions.size() != 0);
 
-			if (!renderInfo.material->getShader()->isReady())
+			if (!renderInfo.material->getShader()->ready())
 			{
 				log::warning("Shader not ready for rendering!");
 				return true;

@@ -55,6 +55,18 @@ namespace se
 			}
 		}
 
+		bool TextureManager::allTexturesReady() const
+		{
+			for (auto&& texture : textures)
+			{
+				if (!texture->ready())
+				{
+					return false;
+				}
+			}
+			return true;
+		}
+
 		std::shared_ptr<Texture> TextureManager::createTexture(const std::string_view _name, const std::string_view _texture, const TextureModes _textureModes)
 		{
 			const std::string path = pathFinder->getPath(_texture);
@@ -74,6 +86,24 @@ namespace se
 
 			std::shared_ptr<Texture>& texture = textures.emplace_back(std::make_shared<Texture>(_name));
 			texture->create(path, _textureModes, resourceLoader);
+			return texture;
+		}
+		std::shared_ptr<Texture> TextureManager::createTexture(const std::string_view _name, const TextureInput& _input, const TextureModes _textureModes)
+		{
+			std::shared_ptr<Texture> foundTexture;
+			for (auto& texture : textures)
+			{
+				if (texture->getName() == _name)
+					foundTexture = texture;
+			}
+			if (foundTexture)
+			{
+				log::warning("Cannot create texture '" + _name + "', texture with that name already exists!");
+				return foundTexture;
+			}
+
+			std::shared_ptr<Texture>& texture = textures.emplace_back(std::make_shared<Texture>(_name));
+			texture->create(_input, _textureModes);
 			return texture;
 		}
 		std::shared_ptr<Texture> TextureManager::findTexture(const std::string_view _name) const
