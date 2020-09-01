@@ -1,6 +1,7 @@
 #pragma once
 
 #include "SpehsEngine/Core/AsyncTaskManager.h"
+#include "SpehsEngine/Graphics/Internal/TextureFallbacks.h"
 #include "SpehsEngine/Graphics/Types.h"
 #include "SpehsEngine/Graphics/Texture.h"
 #include "SpehsEngine/Graphics/TextureInput.h"
@@ -20,7 +21,7 @@ namespace se
 		public:
 
 			TextureManager();
-			~TextureManager() = default;
+			~TextureManager();
 
 			TextureManager(const TextureManager& _other) = delete;
 			TextureManager& operator=(const TextureManager& _other) = delete;
@@ -47,6 +48,7 @@ namespace se
 			ResourceLoader resourceLoader;
 
 			std::vector<std::shared_ptr<Texture>> textures;
+			std::shared_ptr<TextureFallbacks> fallbacks;
 		};
 	}
 }

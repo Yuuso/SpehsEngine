@@ -169,6 +169,7 @@
     <ClInclude Include="ResourceLoader.h" />
     <ClInclude Include="ResourcePathFinder.h" />
     <ClInclude Include="Texture.h" />
+    <ClInclude Include="Internal\TextureFallbacks.h" />
     <ClInclude Include="TextureInput.h" />
     <ClInclude Include="TextureManager.h" />
     <ClInclude Include="Types.h" />

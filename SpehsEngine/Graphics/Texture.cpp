@@ -39,6 +39,28 @@ namespace se
 		{
 			return name;
 		}
+		const uint16_t Texture::getWidth() const
+		{
+			if (!resourceData)
+				return 0;
+			return resourceData->info.width;
+		}
+		const uint16_t Texture::getHeight() const
+		{
+			if (!resourceData)
+				return 0;
+			return resourceData->info.height;
+		}
+
+		bool Texture::update()
+		{
+			const bool result = Resource::update();
+			if (result)
+			{
+				setStatus(TextureStatus::Valid);
+			}
+			return result;
+		}
 
 		std::shared_ptr<ResourceData> Texture::createResource(const std::string _path, const TextureModes _textureModes)
 		{
@@ -137,33 +159,12 @@ namespace se
 			return result;
 		}
 
-		void Texture::create(const std::string_view _path, const TextureModes _textureModes, ResourceLoader _resourceLoader)
+		std::shared_ptr<ResourceData> Texture::createResourceFromInput(const TextureInput& _input, const TextureModes _textureModes)
 		{
-			se_assert(!resourceData);
-
-			path = _path;
-			if (_resourceLoader)
-			{
-				std::function<std::shared_ptr<ResourceData>()> func = std::bind(&Texture::createResource, path, _textureModes);
-				resourceFuture = _resourceLoader->push(func);
-				// TODO set temp texture handle
-			}
-			else
-			{
-				resourceData = std::dynamic_pointer_cast<TextureData>(createResource(path, _textureModes));
-			}
-		}
-
-		void Texture::create(const TextureInput& _input, const TextureModes _textureModes)
-		{
-			se_assert(!resourceData);
-
 			se_assert(_input.format == TextureInput::Format::RGBA8); // Only one supported currently
 			se_assert(_input.width > 0 && _input.height > 0);
 			se_assert(_input.data.size() % 4 == 0);
 			se_assert((_input.data.size() / 4) == (_input.width * _input.height));
-
-			path.clear();
 
 			const uint64_t flags = TextureModesToFlags(_textureModes);
 			const bgfx::Memory* mem = bgfx::copy(_input.data.data(), uint32_t(_input.data.size()));
@@ -179,15 +180,15 @@ namespace se
 				, mem
 				);
 
-			resourceData = std::make_shared<TextureData>();
-			resourceData->handle = textureHandle.idx;
+			std::shared_ptr<TextureData> result = std::make_shared<TextureData>();
+			result->handle = textureHandle.idx;
 
 			if (bgfx::isValid(textureHandle))
 			{
-				bgfx::setName(textureHandle, name.c_str());
+				//bgfx::setName(textureHandle, name.c_str());
 
 				bgfx::calcTextureSize(
-					resourceData->info
+					result->info
 					, _input.width
 					, _input.height
 					, 1
@@ -199,22 +200,83 @@ namespace se
 			}
 			else
 			{
-				log::error("Failed to create texture '" + name + "'!");
+				log::error("Failed to create texture from input!");
 			}
+
+			return result;
+		}
+
+		void Texture::create(const std::string_view _path, const TextureModes _textureModes, ResourceLoader _resourceLoader)
+		{
+			se_assert(status == TextureStatus::Init);
+
+			path = _path;
+			if (_resourceLoader)
+			{
+				std::function<std::shared_ptr<ResourceData>()> func = std::bind(&Texture::createResource, path, _textureModes);
+				resourceFuture = _resourceLoader->push(func);
+				setStatus(TextureStatus::Loading);
+			}
+			else
+			{
+				resourceData = std::dynamic_pointer_cast<TextureData>(createResource(path, _textureModes));
+				setStatus(TextureStatus::Valid);
+			}
+		}
+
+		void Texture::create(const TextureInput& _input, const TextureModes _textureModes)
+		{
+			se_assert(status == TextureStatus::Init);
+
+			path.clear();
+			resourceData = std::dynamic_pointer_cast<TextureData>(createResourceFromInput(_input, _textureModes));
+			setStatus(TextureStatus::Valid);
 		}
 
 		void Texture::destroy()
 		{
-			if (!resourceData)
+			if (status == TextureStatus::Valid)
+			{
+				safeDestroy<bgfx::TextureHandle>(getHandle());
+			}
+			resourceData.reset();
+			setStatus(TextureStatus::Init);
+		}
+
+		void Texture::setFallbacks(std::shared_ptr<TextureFallbacks> _fallbacks)
+		{
+			fallbacks = _fallbacks;
+			setStatus(status);
+		}
+
+		void Texture::setStatus(const TextureStatus _status)
+		{
+			status = _status;
+			if (!fallbacks)
 				return;
 
-			bgfx::TextureHandle textureHandle = { getHandle() };
-			if (bgfx::isValid(textureHandle))
+			switch (status)
 			{
-				bgfx::destroy(textureHandle);
+				case TextureStatus::Init:
+					resourceData = fallbacks->init;
+					break;
+				case TextureStatus::Loading:
+					resourceData = fallbacks->loading;
+					break;
+				case TextureStatus::Valid:
+					{
+						bgfx::TextureHandle textureHandle = { getHandle() };
+						if (!bgfx::isValid(textureHandle))
+						{
+							status = TextureStatus::Error;
+							resourceData = fallbacks->error;
+						}
+					}
+					break;
+				case TextureStatus::Error:
+					resourceData = fallbacks->error;
+					break;
 			}
-
-			resourceData.reset();
 		}
 	}
 }

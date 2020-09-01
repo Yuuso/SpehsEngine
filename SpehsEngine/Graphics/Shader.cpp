@@ -4,6 +4,7 @@
 #include <bgfx/bgfx.h>
 #include "SpehsEngine/Core/File/File.h"
 #include "SpehsEngine/Core/Log.h"
+#include "SpehsEngine/Graphics/Internal/InternalUtilities.h"
 
 
 namespace se
@@ -24,23 +25,9 @@ namespace se
 			if (!resourceData)
 				return;
 
-			bgfx::ProgramHandle programHandle = { resourceData->handle };
-			if (bgfx::isValid(programHandle))
-			{
-				bgfx::destroy(programHandle);
-			}
-
-			bgfx::ShaderHandle vertexShaderHandle = { resourceData->vertexShaderHandle };
-			if (bgfx::isValid(vertexShaderHandle))
-			{
-				bgfx::destroy(vertexShaderHandle);
-			}
-
-			bgfx::ShaderHandle fragmentShaderHandle = { resourceData->fragmentShaderHandle };
-			if (bgfx::isValid(fragmentShaderHandle))
-			{
-				bgfx::destroy(fragmentShaderHandle);
-			}
+			safeDestroy<bgfx::ProgramHandle>(resourceData->handle);
+			safeDestroy<bgfx::ShaderHandle>(resourceData->vertexShaderHandle);
+			safeDestroy<bgfx::ShaderHandle>(resourceData->fragmentShaderHandle);
 
 			resourceData.reset();
 		}

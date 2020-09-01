@@ -28,7 +28,7 @@ namespace se
 
 		protected:
 
-			bool update()
+			virtual bool update()
 			{
 				if (resourceFuture.valid())
 				{
@@ -59,8 +59,8 @@ namespace se
 
 			ResourceHandle getHandle() const
 			{
-				se_assert(resourceData);
-
+				if (!resourceData)
+					return INVALID_RESOURCE_HANDLE;
 				return resourceData->handle;
 			}
 

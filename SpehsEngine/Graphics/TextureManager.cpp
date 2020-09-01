@@ -2,6 +2,7 @@
 #include "SpehsEngine/Graphics/TextureManager.h"
 
 #include "SpehsEngine/Core/StringViewUtilityFunctions.h"
+#include "SpehsEngine/Graphics/Internal/InternalUtilities.h"
 
 
 namespace se
@@ -11,6 +12,70 @@ namespace se
 		TextureManager::TextureManager()
 		{
 			pathFinder = std::make_shared<ResourcePathFinder>();
+
+			fallbacks = std::make_shared<TextureFallbacks>();
+			{
+				TextureModes modes;
+				modes.sampleMin = se::graphics::TextureSamplingMode::Point;
+				modes.sampleMag = se::graphics::TextureSamplingMode::Point;
+				modes.sampleMip = se::graphics::TextureSamplingMode::Point;
+
+				TextureInput input;
+				input.width = 3;
+				input.height = 3;
+
+				input.data = {	255,	0,		255,	255,
+								255,	255,	255,	255,
+								255,	0,		255,	255,
+
+								255,	255,	255,	255,
+								255,	0,		255,	255,
+								255,	255,	255,	255,
+
+								255,	0,		255,	255,
+								255,	255,	255,	255,
+								255,	0,		255,	255		};
+				fallbacks->init = std::dynamic_pointer_cast<TextureData>(Texture::createResourceFromInput(input, modes));
+
+				input.data = {	255,	0,		255,	255,
+								0,		255,	0,		255,
+								255,	0,		255,	255,
+
+								0,		255,	0,		255,
+								255,	0,		255,	255,
+								0,		255,	0,		255,
+
+								255,	0,		255,	255,
+								0,		255,	0,		255,
+								255,	0,		255,	255		};
+				fallbacks->loading = std::dynamic_pointer_cast<TextureData>(Texture::createResourceFromInput(input, modes));
+
+				input.data = {	255,	0,		255,	255,
+								255,	0,		255,	255,
+								255,	0,		255,	255,
+
+								255,	0,		255,	255,
+								255,	0,		255,	255,
+								255,	0,		255,	255,
+
+								255,	0,		255,	255,
+								255,	0,		255,	255,
+								255,	0,		255,	255		};
+				fallbacks->error = std::dynamic_pointer_cast<TextureData>(Texture::createResourceFromInput(input, modes));
+			}
+		}
+
+		TextureManager::~TextureManager()
+		{
+			if (fallbacks)
+			{
+				if (fallbacks->init)
+					safeDestroy<bgfx::TextureHandle>(fallbacks->init->handle);
+				if (fallbacks->loading)
+					safeDestroy<bgfx::TextureHandle>(fallbacks->loading->handle);
+				if (fallbacks->error)
+					safeDestroy<bgfx::TextureHandle>(fallbacks->error->handle);
+			}
 		}
 
 		void TextureManager::setResourcePathFinder(std::shared_ptr<ResourcePathFinder> _pathFinder)
@@ -85,6 +150,7 @@ namespace se
 			}
 
 			std::shared_ptr<Texture>& texture = textures.emplace_back(std::make_shared<Texture>(_name));
+			texture->setFallbacks(fallbacks);
 			texture->create(path, _textureModes, resourceLoader);
 			return texture;
 		}
@@ -103,6 +169,7 @@ namespace se
 			}
 
 			std::shared_ptr<Texture>& texture = textures.emplace_back(std::make_shared<Texture>(_name));
+			texture->setFallbacks(fallbacks);
 			texture->create(_input, _textureModes);
 			return texture;
 		}

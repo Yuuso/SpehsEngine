@@ -1,7 +1,8 @@
 #pragma once
 
-#include "bgfx/bgfx.h" // ?!
 #include "SpehsEngine/Graphics/Internal/Resource.h"
+#include "SpehsEngine/Graphics/Internal/TextureFallbacks.h"
+#include "SpehsEngine/Graphics/Internal/InternalTypes.h"
 #include "SpehsEngine/Graphics/ResourceData.h"
 #include "SpehsEngine/Graphics/TextureInput.h"
 #include "SpehsEngine/Graphics/Types.h"
@@ -12,11 +13,6 @@ namespace se
 {
 	namespace graphics
 	{
-		struct TextureData : ResourceData
-		{
-			bgfx::TextureInfo info;
-		};
-
 		class Texture final : public Resource<TextureData>
 		{
 		public:
@@ -34,21 +30,30 @@ namespace se
 			void reload(ResourceLoader _resourceLoader = nullptr) override;
 
 			const std::string& getName() const;
+			const uint16_t getWidth() const;
+			const uint16_t getHeight() const;
 
 		private:
 
 			friend class TextureManager;
 			friend class Uniform;
 
+			bool update() override;
+
 			static std::shared_ptr<ResourceData> createResource(const std::string _path, const TextureModes _textureModes);
+			static std::shared_ptr<ResourceData> createResourceFromInput(const TextureInput& _input, const TextureModes _textureModes);
 			void create(const std::string_view _path, const TextureModes _textureModes, ResourceLoader _resourceLoader);
 			void create(const TextureInput& _input, const TextureModes _textureModes);
 			void destroy();
+			void setFallbacks(std::shared_ptr<TextureFallbacks> _fallbacks);
+			void setStatus(const TextureStatus _status);
 
 			const std::string name;
 			std::string path;
 
 			TextureModes textureModes;
+			TextureStatus status = TextureStatus::Init;
+			std::shared_ptr<TextureFallbacks> fallbacks;
 		};
 	}
 }

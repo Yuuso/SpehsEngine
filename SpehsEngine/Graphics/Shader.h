@@ -10,12 +10,6 @@ namespace se
 {
 	namespace graphics
 	{
-		struct ShaderData : ResourceData
-		{
-			ResourceHandle vertexShaderHandle = INVALID_RESOURCE_HANDLE;
-			ResourceHandle fragmentShaderHandle = INVALID_RESOURCE_HANDLE;
-		};
-
 		class Shader : public Resource<ShaderData>
 		{
 		public:

@@ -1,5 +1,6 @@
 #pragma once
 
+#include "bgfx/bgfx.h" // ?!
 #include <memory>
 #include <SpehsEngine/Graphics/ResourceHandle.h>
 
@@ -12,6 +13,17 @@ namespace se
 		{
 			virtual ~ResourceData() = default;
 			ResourceHandle handle = INVALID_RESOURCE_HANDLE;
+		};
+
+		struct ShaderData : ResourceData
+		{
+			ResourceHandle vertexShaderHandle = INVALID_RESOURCE_HANDLE;
+			ResourceHandle fragmentShaderHandle = INVALID_RESOURCE_HANDLE;
+		};
+
+		struct TextureData : ResourceData
+		{
+			bgfx::TextureInfo info;
 		};
 	}
 }

@@ -3,6 +3,7 @@
 #include "bgfx/bgfx.h"
 #include "SpehsEngine/Graphics/Internal/InternalTypes.h"
 #include "SpehsEngine/Graphics/Types.h"
+#include "SpehsEngine/Graphics/ResourceHandle.h"
 
 
 namespace se
@@ -15,5 +16,15 @@ namespace se
 		uint32_t getResetParameters(const RendererFlagsType _rendererFlags);
 		bgfx::RendererType::Enum getRendererType(const RendererBackend _rendererBackend);
 		RendererBackend getRendererBackend();
+
+		template <typename T>
+		void safeDestroy(ResourceHandle _resourceHandle)
+		{
+			T resourceHandle = { _resourceHandle };
+			if (bgfx::isValid(resourceHandle))
+			{
+				bgfx::destroy(resourceHandle);
+			}
+		}
 	}
 }

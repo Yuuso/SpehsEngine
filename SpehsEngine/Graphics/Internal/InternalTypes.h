@@ -66,5 +66,13 @@ namespace se
 			size_t indicesStart;
 			size_t indicesEnd;
 		};
+
+		enum class TextureStatus
+		{
+			Init,
+			Loading,
+			Valid,
+			Error,
+		};
 	}
 }
