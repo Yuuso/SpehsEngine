@@ -16,6 +16,7 @@ namespace se
 		uint32_t getResetParameters(const RendererFlagsType _rendererFlags);
 		bgfx::RendererType::Enum getRendererType(const RendererBackend _rendererBackend);
 		RendererBackend getRendererBackend();
+		bgfx::UniformType::Enum getUniformType(const UniformType _type);
 
 		template <typename T>
 		void safeDestroy(ResourceHandle _resourceHandle)

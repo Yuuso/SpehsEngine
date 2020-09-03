@@ -235,5 +235,19 @@ namespace se
 			se_assert_m(false, "Renderer type not defined?");
 			return RendererBackend::Auto;
 		}
+
+		bgfx::UniformType::Enum getUniformType(const UniformType _type)
+		{
+			switch (_type)
+			{
+				case UniformType::Invalid:		break;
+				case UniformType::Sampler:		return bgfx::UniformType::Sampler;
+				case UniformType::Vec4:			return bgfx::UniformType::Vec4;
+				case UniformType::Mat3:			return bgfx::UniformType::Mat3;
+				case UniformType::Mat4:			return bgfx::UniformType::Mat4;
+			}
+			se_assert_m(false, "Invalid UniformType!");
+			return bgfx::UniformType::Count;
+		}
 	}
 }

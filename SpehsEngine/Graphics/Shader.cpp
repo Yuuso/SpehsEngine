@@ -12,7 +12,7 @@ namespace se
 	namespace graphics
 	{
 		Shader::Shader(const std::string_view _name)
-			: name(_name)
+			: Resource(_name)
 		{
 		}
 		Shader::~Shader()
@@ -32,20 +32,20 @@ namespace se
 			resourceData.reset();
 		}
 
-		const std::string& Shader::getName() const
+		void Shader::reload(std::shared_ptr<ResourceLoader> _resourceLoader)
 		{
-			return name;
-		}
-
-		void Shader::reload(ResourceLoader _resourceLoader)
-		{
-			if (vertexShaderPath.empty() || fragmentShaderPath.empty())
+			if (!reloadable())
 			{
-				log::error("Cannot reload shader, path not defined!");
+				log::error("Cannot reload shader!");
 				return;
 			}
 			destroy();
 			create(vertexShaderPath, fragmentShaderPath, _resourceLoader);
+		}
+
+		bool Shader::reloadable() const
+		{
+			return !vertexShaderPath.empty() && !fragmentShaderPath.empty();
 		}
 
 		std::shared_ptr<ResourceData> Shader::createResource(const std::string _vertexShaderPath, const std::string _fragmentShaderPath)
@@ -90,7 +90,7 @@ namespace se
 			return shaderData;
 		}
 
-		void Shader::create(const std::string_view _vertexShaderPath, const std::string_view _fragmentShaderPath, ResourceLoader _resourceLoader)
+		void Shader::create(const std::string_view _vertexShaderPath, const std::string_view _fragmentShaderPath, std::shared_ptr<ResourceLoader> _resourceLoader)
 		{
 			se_assert(!resourceData);
 
@@ -111,50 +111,6 @@ namespace se
 		{
 			destroy();
 			resourceData = std::dynamic_pointer_cast<ShaderData>(createResourceFromHandles(_vertexShaderHandle, _fragmentShaderHandle));
-		}
-
-		void Shader::extractUniforms(std::vector<std::shared_ptr<Uniform>>& _uniforms)
-		{
-			se_assert(resourceData);
-
-			static constexpr size_t MAX_UNIFORMS = 256;
-			bgfx::UniformHandle uniformHandles[MAX_UNIFORMS];
-
-			bgfx::ShaderHandle vertexShaderHandle = { resourceData->vertexShaderHandle };
-			const uint16_t numVertexUniforms = bgfx::getShaderUniforms(vertexShaderHandle, uniformHandles, MAX_UNIFORMS);
-			se_assert(numVertexUniforms <= MAX_UNIFORMS);
-			for (size_t i = 0; i < (size_t)numVertexUniforms; i++)
-			{
-				bgfx::UniformInfo info;
-				bgfx::getUniformInfo(uniformHandles[i], info);
-
-				auto it = std::find_if(_uniforms.begin(), _uniforms.end(), [&](const std::shared_ptr<Uniform>& _uniform) { return _uniform->getName() == info.name; });
-				if (it != _uniforms.end())
-				{
-					continue;
-				}
-
-				bgfx::UniformHandle newHandle = bgfx::createUniform(info.name, info.type);
-				_uniforms.emplace_back(std::make_shared<Uniform>(info, newHandle));
-			}
-
-			bgfx::ShaderHandle fragmentShaderHandle = { resourceData->fragmentShaderHandle };
-			const uint16_t numFragmentUniforms = bgfx::getShaderUniforms(fragmentShaderHandle, uniformHandles, MAX_UNIFORMS);
-			se_assert(numFragmentUniforms <= MAX_UNIFORMS);
-			for (size_t i = 0; i < (size_t)numFragmentUniforms; i++)
-			{
-				bgfx::UniformInfo info;
-				bgfx::getUniformInfo(uniformHandles[i], info);
-
-				auto it = std::find_if(_uniforms.begin(), _uniforms.end(), [&](const std::shared_ptr<Uniform>& _uniform) { return _uniform->getName() == info.name; });
-				if (it != _uniforms.end())
-				{
-					continue;
-				}
-
-				bgfx::UniformHandle newHandle = bgfx::createUniform(info.name, info.type);
-				_uniforms.emplace_back(std::make_shared<Uniform>(info, newHandle));
-			}
 		}
 	}
 }

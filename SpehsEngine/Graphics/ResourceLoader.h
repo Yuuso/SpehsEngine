@@ -9,12 +9,11 @@ namespace se
 {
 	namespace graphics
 	{
-		typedef AsyncTaskManager<std::shared_ptr<ResourceData>> ResourceLoaderType;
-		typedef std::shared_ptr<ResourceLoaderType> ResourceLoader;
+		typedef AsyncTaskManager<std::shared_ptr<ResourceData>> ResourceLoader;
 
-		inline ResourceLoader makeResourceLoader(const size_t _numThreads = 1)
+		inline std::shared_ptr<ResourceLoader> makeResourceLoader(const size_t _numThreads = 1)
 		{
-			std::shared_ptr<ResourceLoaderType> result = std::make_shared<ResourceLoaderType>(_numThreads);
+			std::shared_ptr<ResourceLoader> result = std::make_shared<ResourceLoader>(_numThreads);
 			return result;
 		}
 	}

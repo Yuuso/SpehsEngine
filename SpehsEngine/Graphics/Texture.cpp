@@ -16,7 +16,7 @@ namespace se
 	namespace graphics
 	{
 		Texture::Texture(const std::string_view _name)
-			: name(_name)
+			: Resource(_name)
 		{
 		}
 		Texture::~Texture()
@@ -24,21 +24,21 @@ namespace se
 			destroy();
 		}
 
-		void Texture::reload(ResourceLoader _resourceLoader)
+		void Texture::reload(std::shared_ptr<ResourceLoader> _resourceLoader)
 		{
-			if (path.empty())
+			if (!reloadable())
 			{
-				log::error("Cannot reload texture, path is empty!");
+				log::error("Cannot reload texture!");
 				return;
 			}
 			destroy();
 			create(path, textureModes, _resourceLoader);
 		}
-
-		const std::string& Texture::getName() const
+		bool Texture::reloadable() const
 		{
-			return name;
+			return !path.empty();
 		}
+
 		const uint16_t Texture::getWidth() const
 		{
 			if (!resourceData)
@@ -206,7 +206,7 @@ namespace se
 			return result;
 		}
 
-		void Texture::create(const std::string_view _path, const TextureModes _textureModes, ResourceLoader _resourceLoader)
+		void Texture::create(const std::string_view _path, const TextureModes _textureModes, std::shared_ptr<ResourceLoader> _resourceLoader)
 		{
 			se_assert(status == TextureStatus::Init);
 

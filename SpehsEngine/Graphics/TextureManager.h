@@ -1,6 +1,7 @@
 #pragma once
 
 #include "SpehsEngine/Core/AsyncTaskManager.h"
+#include "SpehsEngine/Graphics/Internal/ResourceManager.h"
 #include "SpehsEngine/Graphics/Internal/TextureFallbacks.h"
 #include "SpehsEngine/Graphics/Types.h"
 #include "SpehsEngine/Graphics/Texture.h"
@@ -16,7 +17,7 @@ namespace se
 {
 	namespace graphics
 	{
-		class TextureManager
+		class TextureManager : public ResourceManager<Texture>
 		{
 		public:
 
@@ -30,24 +31,15 @@ namespace se
 			TextureManager& operator=(TextureManager&& _other) = delete;
 
 
-			void setResourcePathFinder(std::shared_ptr<ResourcePathFinder> _pathFinder);
-			void setResourceLoader(ResourceLoader _resourceLoader);
-
-			void update();
-			void reloadTextures();
-			void purgeUnusedTextures();
-			bool allTexturesReady() const;
-
-			std::shared_ptr<Texture> createTexture(const std::string_view _name, const std::string_view _texture, const TextureModes _textureModes = TextureModes());
-			std::shared_ptr<Texture> createTexture(const std::string_view _name, const TextureInput& _input, const TextureModes _textureModes = TextureModes());
-			std::shared_ptr<Texture> findTexture(const std::string_view _name) const;
+			std::shared_ptr<Texture> create(const std::string_view _name, const std::string_view _texture, const TextureModes _textureModes = TextureModes());
+			std::shared_ptr<Texture> create(const std::string_view _name, const TextureInput& _input, const TextureModes _textureModes = TextureModes());
+			std::shared_ptr<Texture> find(const std::string_view _name) const;
 
 		private:
 
-			std::shared_ptr<ResourcePathFinder> pathFinder;
-			ResourceLoader resourceLoader;
+			void initFallbacks();
+			void destroyFallbacks();
 
-			std::vector<std::shared_ptr<Texture>> textures;
 			std::shared_ptr<TextureFallbacks> fallbacks;
 		};
 	}

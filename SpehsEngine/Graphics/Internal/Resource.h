@@ -21,13 +21,14 @@ namespace se
 
 		public:
 
+			Resource(const std::string_view _name) : name(_name) {}
 			virtual ~Resource() = default;
 
+			inline const std::string& getName() { return name; }
 			inline bool ready() const { return !resourceFuture.valid(); }
-			virtual void reload(ResourceLoader _resourceLoader) = 0;
 
-		protected:
-
+			virtual void reload(std::shared_ptr<ResourceLoader> _resourceLoader) = 0;
+			virtual bool reloadable() const = 0;
 			virtual bool update()
 			{
 				if (resourceFuture.valid())
@@ -45,7 +46,7 @@ namespace se
 					{
 						if (error.code() == std::make_error_code(std::future_errc::broken_promise))
 						{
-							// broken_promise can happen if task manager was deleted before task was completed
+							// broken_promise can happen if resource loader was deleted before task was completed
 							log::warning("Resource loading failed!");
 						}
 						else
@@ -57,6 +58,8 @@ namespace se
 				return false;
 			}
 
+		protected:
+
 			ResourceHandle getHandle() const
 			{
 				if (!resourceData)
@@ -64,6 +67,7 @@ namespace se
 				return resourceData->handle;
 			}
 
+			const std::string name;
 			std::future<std::shared_ptr<ResourceData>> resourceFuture;
 			std::shared_ptr<T> resourceData;
 		};

@@ -27,9 +27,10 @@ namespace se
 			Texture& operator=(Texture&& _other) = delete;
 
 
-			void reload(ResourceLoader _resourceLoader = nullptr) override;
+			void reload(std::shared_ptr<ResourceLoader> _resourceLoader = nullptr) override;
+			bool reloadable() const;
+			bool update() override;
 
-			const std::string& getName() const;
 			const uint16_t getWidth() const;
 			const uint16_t getHeight() const;
 
@@ -38,17 +39,14 @@ namespace se
 			friend class TextureManager;
 			friend class Uniform;
 
-			bool update() override;
-
 			static std::shared_ptr<ResourceData> createResource(const std::string _path, const TextureModes _textureModes);
 			static std::shared_ptr<ResourceData> createResourceFromInput(const TextureInput& _input, const TextureModes _textureModes);
-			void create(const std::string_view _path, const TextureModes _textureModes, ResourceLoader _resourceLoader);
+			void create(const std::string_view _path, const TextureModes _textureModes, std::shared_ptr<ResourceLoader> _resourceLoader);
 			void create(const TextureInput& _input, const TextureModes _textureModes);
 			void destroy();
 			void setFallbacks(std::shared_ptr<TextureFallbacks> _fallbacks);
 			void setStatus(const TextureStatus _status);
 
-			const std::string name;
 			std::string path;
 
 			TextureModes textureModes;

@@ -31,18 +31,18 @@ namespace se
 			std::shared_ptr<Texture> texture = nullptr;
 			std::shared_ptr<Uniform> uniform = nullptr;
 		};
-		void Bind(std::unique_ptr<MaterialTexture>& _tex, const uint8_t _stage = 0);
-		void Bind(std::vector<std::unique_ptr<MaterialTexture>>& _tex);
+		void Bind(std::shared_ptr<MaterialTexture>& _texture, const uint8_t _stage = 0);
+		void Bind(std::vector<std::shared_ptr<MaterialTexture>>& _texture);
 
 
 		struct PhongAttributes
 		{
-			float shininess = 0.5f;
-			float specularStrength = 32.0f;
-			float __pad[2] = { 0.0f, 0.0f };
+			float& shininess() { return data.x; }
+			float& specularStrength() { return data.y; }
+			glm::vec4 data = { 0.5f, 32.0f, 0.0f, 0.0f };
 		};
-		constexpr std::string_view PhongAttributesUniformName = "u_phong_ShininessStrength";
-		void Bind(const PhongAttributes& _tex, std::shared_ptr<Uniform> uniform);
+		std::shared_ptr<Uniform> makePhongAttributesUniform();
+		void Bind(const PhongAttributes& _attributes, std::shared_ptr<Uniform> _uniform);
 
 
 
@@ -80,7 +80,7 @@ namespace se
 		private:
 
 			std::shared_ptr<Shader> shader;
-			std::unique_ptr<MaterialTexture> texture;
+			std::shared_ptr<MaterialTexture> texture;
 		};
 
 
@@ -102,7 +102,7 @@ namespace se
 		private:
 
 			std::shared_ptr<Shader> shader;
-			std::vector<std::unique_ptr<MaterialTexture>> textures;
+			std::vector<std::shared_ptr<MaterialTexture>> textures;
 			PhongAttributes attributes;
 			std::shared_ptr<Uniform> attributesUniform;
 		};

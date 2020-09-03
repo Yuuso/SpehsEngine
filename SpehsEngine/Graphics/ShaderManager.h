@@ -1,5 +1,6 @@
 #pragma once
 
+#include "SpehsEngine/Graphics/Internal/ResourceManager.h"
 #include "SpehsEngine/Graphics/Shader.h"
 #include "SpehsEngine/Graphics/ResourcePathFinder.h"
 #include "SpehsEngine/Graphics/ResourceLoader.h"
@@ -13,11 +14,11 @@ namespace se
 {
 	namespace graphics
 	{
-		class ShaderManager
+		class ShaderManager : public ResourceManager<Shader>
 		{
 		public:
 
-			ShaderManager();
+			ShaderManager() = default;
 			virtual ~ShaderManager() = default;
 
 			ShaderManager(const ShaderManager& _other) = delete;
@@ -27,28 +28,10 @@ namespace se
 			ShaderManager& operator=(ShaderManager&& _other) = delete;
 
 
-			void setResourcePathFinder(std::shared_ptr<ResourcePathFinder> _pathFinder);
-			void setResourceLoader(ResourceLoader _resourceLoader);
-
-			void update();
-			virtual void reloadShaders(const size_t _startIndex = 0);
-			virtual void purgeUnusedShaders(const size_t _startIndex = 0);
-			bool allShadersReady() const;
-
-			std::shared_ptr<Shader> createShader(const std::string_view _name,
-												 const std::string_view _vertexShader,
-												 const std::string_view _fragmentShader);
-			std::shared_ptr<Shader> findShader(const std::string_view _name) const;
-
-			std::shared_ptr<Uniform> findUniform(const std::string_view _name);
-
-		protected:
-
-			std::shared_ptr<ResourcePathFinder> pathFinder;
-			ResourceLoader resourceLoader;
-
-			std::vector<std::shared_ptr<Shader>> shaders;
-			std::vector<std::shared_ptr<Uniform>> uniforms;
+			std::shared_ptr<Shader> create(const std::string_view _name,
+										   const std::string_view _vertexShader,
+										   const std::string_view _fragmentShader);
+			std::shared_ptr<Shader> find(const std::string_view _name) const;
 		};
 	}
 }

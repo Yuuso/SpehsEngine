@@ -6,30 +6,34 @@ namespace se
 {
 	namespace graphics
 	{
-		void Bind(std::unique_ptr<MaterialTexture>& _tex, const uint8_t _stage)
+		void Bind(std::shared_ptr<MaterialTexture>& _texture, const uint8_t _stage)
 		{
-			if (_tex->texture)
-				_tex->uniform->set(_tex->texture, _stage);
+			if (_texture->texture)
+				_texture->uniform->set(_texture->texture, _stage);
 		}
-		void Bind(std::vector<std::unique_ptr<MaterialTexture>>& _tex)
+		void Bind(std::vector<std::shared_ptr<MaterialTexture>>& _texture)
 		{
 			uint8_t stage = 0;
-			for (size_t i = 0; i < _tex.size(); i++)
+			for (size_t i = 0; i < _texture.size(); i++)
 			{
-				Bind(_tex[i], stage++);
+				Bind(_texture[i], stage++);
 			}
 		}
-		void Bind(const PhongAttributes& _tex, std::shared_ptr<Uniform> uniform)
+		std::shared_ptr<Uniform> makePhongAttributesUniform()
+		{
+			return std::make_shared<Uniform>("u_phong_ShininessStrength", UniformType::Vec4);
+		}
+		void Bind(const PhongAttributes& _attributes, std::shared_ptr<Uniform> uniform)
 		{
 			static_assert(sizeof(PhongAttributes) == sizeof(glm::vec4), "Invalid PhongAttributes size!");
-			uniform->set(reinterpret_cast<const float*>(&_tex), 4);
+			uniform->set(&_attributes.data);
 		}
 
 
 
 		FlatColorMaterial::FlatColorMaterial(DefaultShaderManager& _shaderManager)
 		{
-			shader = _shaderManager.findShader("color");
+			shader = _shaderManager.find("color");
 		}
 
 		void FlatColorMaterial::bind()
@@ -44,11 +48,11 @@ namespace se
 
 		FlatTextureMaterial::FlatTextureMaterial(DefaultShaderManager& _shaderManager)
 		{
-			shader = _shaderManager.findShader("tex");
+			shader = _shaderManager.find("tex");
 
-			texture = std::make_unique<MaterialTexture>();
+			texture = std::make_shared<MaterialTexture>();
 			texture->type = MaterialTextureType::Color;
-			texture->uniform = _shaderManager.findUniform("s_texColor");
+			texture->uniform = std::make_shared<Uniform>("s_texColor", UniformType::Sampler);
 		}
 
 		void FlatTextureMaterial::bind()
@@ -73,17 +77,17 @@ namespace se
 
 		PhongMaterial::PhongMaterial(DefaultShaderManager& _shaderManager)
 		{
-			shader = _shaderManager.findShader("phong");
+			shader = _shaderManager.find("phong");
 
 			textures.resize(2);
-			textures[0] = std::make_unique<MaterialTexture>();
+			textures[0] = std::make_shared<MaterialTexture>();
 			textures[0]->type = MaterialTextureType::Color;
-			textures[0]->uniform = _shaderManager.findUniform("s_texColor");
-			textures[1] = std::make_unique<MaterialTexture>();
+			textures[0]->uniform = std::make_shared<Uniform>("s_texColor", UniformType::Sampler);
+			textures[1] = std::make_shared<MaterialTexture>();
 			textures[1]->type = MaterialTextureType::Normal;
-			textures[1]->uniform = _shaderManager.findUniform("s_texNormal");
+			textures[1]->uniform = std::make_shared<Uniform>("s_texNormal", UniformType::Sampler);
 
-			attributesUniform = _shaderManager.findUniform(PhongAttributesUniformName);
+			attributesUniform = makePhongAttributesUniform();
 		}
 
 		void PhongMaterial::bind()
@@ -98,7 +102,7 @@ namespace se
 
 		void PhongMaterial::setTexture(const MaterialTextureType _type, std::shared_ptr<Texture> _texture)
 		{
-			auto it = std::find_if(textures.begin(), textures.end(), [_type](const std::unique_ptr<MaterialTexture>& _tex) { return _tex->type == _type; });
+			auto it = std::find_if(textures.begin(), textures.end(), [_type](const std::shared_ptr<MaterialTexture>& _tex) { return _tex->type == _type; });
 			if (it != textures.end())
 			{
 				it->get()->texture = _texture;
@@ -108,7 +112,7 @@ namespace se
 		}
 		std::shared_ptr<Texture> PhongMaterial::getTexture(const MaterialTextureType _type)
 		{
-			auto it = std::find_if(textures.begin(), textures.end(), [_type](const std::unique_ptr<MaterialTexture>& _tex) { return _tex->type == _type; });
+			auto it = std::find_if(textures.begin(), textures.end(), [_type](const std::shared_ptr<MaterialTexture>& _tex) { return _tex->type == _type; });
 			if (it != textures.end())
 				return it->get()->texture;
 			log::error("Texture of type '" + std::to_string((int)_type) + "' not found in PhongMaterial!");

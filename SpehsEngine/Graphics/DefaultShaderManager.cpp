@@ -35,9 +35,6 @@ namespace se
 
 		void DefaultShaderManager::createDefaultShaders()
 		{
-			se_assert(shaders.size() == 0);
-			numDefaultShaders = 0;
-
 			const bgfx::RendererType::Enum type = bgfx::getRendererType();
 
 			auto createDefaultShader =
@@ -51,29 +48,13 @@ namespace se
 					bgfx::ShaderHandle vertexShader = bgfx::createEmbeddedShader(embeddedShaders, type, vertexShaderName.c_str());
 					bgfx::ShaderHandle fragmentShader = bgfx::createEmbeddedShader(embeddedShaders, type, fragmentShaderName.c_str());
 
-					std::shared_ptr<Shader>& shader = shaders.emplace_back(std::make_shared<Shader>(_name));
+					std::shared_ptr<Shader> shader = std::dynamic_pointer_cast<Shader>(resources.emplace_back(std::make_shared<Shader>(_name)));
 					shader->create(vertexShader.idx, fragmentShader.idx);
-					se_assert(shader->ready());
-					shader->extractUniforms(uniforms);
-
-					numDefaultShaders++;
 				};
 
-			//const time::Time start = time::now();
 			createDefaultShader("color");
 			createDefaultShader("tex");
 			createDefaultShader("phong");
-			//const time::Time duration = time::now() - start;
-			//log::info("Default shaders created. (" + std::to_string(static_cast<int>(duration.asMilliseconds())) + "ms)");
-		}
-
-		void DefaultShaderManager::reloadShaders(const size_t _startIndex)
-		{
-			ShaderManager::reloadShaders(_startIndex + numDefaultShaders);
-		}
-		void DefaultShaderManager::purgeUnusedShaders(const size_t _startIndex)
-		{
-			ShaderManager::purgeUnusedShaders(_startIndex + numDefaultShaders);
 		}
 	}
 }

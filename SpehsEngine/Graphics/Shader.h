@@ -25,9 +25,8 @@ namespace se
 			Shader& operator=(Shader&& _other) = delete;
 
 
-			void reload(ResourceLoader _resourceLoader = nullptr) override;
-
-			const std::string& getName() const;
+			void reload(std::shared_ptr<ResourceLoader> _resourceLoader = nullptr) override;
+			bool reloadable() const override;
 
 		private:
 
@@ -39,11 +38,8 @@ namespace se
 			static std::shared_ptr<ResourceData> createResource(const std::string _vertexShaderPath, const std::string _fragmentShaderPath);
 			static std::shared_ptr<ResourceData> createResourceFromHandles(ResourceHandle _vertexShaderHandle, ResourceHandle _fragmentShaderHandle);
 			void destroy();
-			void create(const std::string_view _vertexShaderPath, const std::string_view _fragmentShaderPath, ResourceLoader _resourceLoader);
+			void create(const std::string_view _vertexShaderPath, const std::string_view _fragmentShaderPath, std::shared_ptr<ResourceLoader> _resourceLoader);
 			void create(ResourceHandle _vertexShaderHandle, ResourceHandle _fragmentShaderHandle);
-			void extractUniforms(std::vector<std::shared_ptr<Uniform>>& _uniforms);
-
-			const std::string name;
 
 			std::string vertexShaderPath;
 			std::string fragmentShaderPath;

@@ -109,6 +109,7 @@ namespace se
 
 		enum class UniformType
 		{
+			Invalid,
 			Sampler,
 			Vec4,
 			Mat3,
