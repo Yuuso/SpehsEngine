@@ -4,15 +4,16 @@
 #include <fstream>
 #include "SpehsEngine/Core/File/FileSystem.h"
 
+
 namespace se
 {
-	bool readFile(File& file, const std::string& path)
+	bool readFile(File& file, const std::string_view path)
 	{
 		std::ifstream stream;
-		stream.open(path, std::ios::binary);
+		stream.open(path.data(), std::ios::binary);
 		if (stream.fail())
 		{
-			log::warning("Failed to load file at: " + path);
+			log::warning("Failed to load file at: " + std::string(path));
 			return false;
 		}
 		stream.seekg(0, std::ios::end);
@@ -20,14 +21,14 @@ namespace se
 		stream.seekg(0, std::ios::beg);
 		if (streamSize == 0)
 		{
-			log::warning("Failed to load file at: " + path + ". File size is 0.");
+			log::warning("Failed to load file at: " + std::string(path) + ". File size is 0.");
 			return false;
 		}
 		file.data.resize(streamSize);
 		stream.read((char*)file.data.data(), file.data.size());
 		if (stream.bad())
 		{
-			log::error("Failed to read file at: " + path + ". std::ifstream read failed.");
+			log::error("Failed to read file at: " + std::string(path) + ". std::ifstream read failed.");
 			return false;
 		}
 		return true;
