@@ -10,11 +10,11 @@
 #include "SpehsEngine/Core/WriteBuffer.h"
 #include "SpehsEngine/Core/PrecompiledInclude.h"
 
+
 #define DEBUG_LOG(level, message) if (getDebugLogLevel() >= level) \
 { \
 	se::log::info(debugName + "(" + getLocalPort().toString() + "): " + message); \
 }
-
 
 #define LOCK_GUARD(p_name, p_mutex, p_time) \
 LockGuard p_name(p_mutex, acquireMutexTimes.p_time, holdMutexTimes.p_time); \
@@ -851,18 +851,21 @@ namespace se
 				{
 					if (pathMaximumSegmentSizeAcknowledgePacket.size > maximumSegmentSize)
 					{
-						maximumSegmentSize = pathMaximumSegmentSizeAcknowledgePacket.size;
-						DEBUG_LOG(2, "Maximum segment size updated: " + std::to_string(pathMaximumSegmentSizeAcknowledgePacket.size));
-
-						if (pathMaximumSegmentSizeDiscovery)
+						if (connectionSimulationSettings.maximumSegmentSizeOutgoing == 0u || pathMaximumSegmentSizeAcknowledgePacket.size <= connectionSimulationSettings.maximumSegmentSizeOutgoing)
 						{
-							if (pathMaximumSegmentSizeDiscovery->maxAcknowledged)
+							maximumSegmentSize = pathMaximumSegmentSizeAcknowledgePacket.size;
+							DEBUG_LOG(2, "Maximum segment size updated: " + std::to_string(pathMaximumSegmentSizeAcknowledgePacket.size));
+
+							if (pathMaximumSegmentSizeDiscovery)
 							{
-								pathMaximumSegmentSizeDiscovery->maxAcknowledged = std::max(*pathMaximumSegmentSizeDiscovery->maxAcknowledged, pathMaximumSegmentSizeAcknowledgePacket.size);
-							}
-							else
-							{
-								pathMaximumSegmentSizeDiscovery->maxAcknowledged = pathMaximumSegmentSizeAcknowledgePacket.size;
+								if (pathMaximumSegmentSizeDiscovery->maxAcknowledged)
+								{
+									pathMaximumSegmentSizeDiscovery->maxAcknowledged = std::max(*pathMaximumSegmentSizeDiscovery->maxAcknowledged, pathMaximumSegmentSizeAcknowledgePacket.size);
+								}
+								else
+								{
+									pathMaximumSegmentSizeDiscovery->maxAcknowledged = pathMaximumSegmentSizeAcknowledgePacket.size;
+								}
 							}
 						}
 					}
@@ -1399,6 +1402,11 @@ namespace se
 		{
 			LOCK_GUARD(lock, mutex, other);
 			connectionSimulationSettings = _connectionSimulationSettings;
+			if (connectionSimulationSettings.maximumSegmentSizeOutgoing > 0)
+			{
+				connectionSimulationSettings.maximumSegmentSizeOutgoing = std::max(defaultMaximumSegmentSize, connectionSimulationSettings.maximumSegmentSizeOutgoing);
+				maximumSegmentSize = std::min(maximumSegmentSize, connectionSimulationSettings.maximumSegmentSizeOutgoing);
+			}
 		}
 
 		void Connection::setDebugLogLevel(const int level)
