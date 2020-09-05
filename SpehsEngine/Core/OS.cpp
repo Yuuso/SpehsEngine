@@ -2,6 +2,7 @@
 #include "SpehsEngine/Core/OS.h"
 #if SE_PLATFORM == SE_PLATFORM_WINDOWS
 #include <Windows.h>
+#include <tlhelp32.h>
 #endif
 
 namespace
@@ -131,5 +132,27 @@ namespace se
 		static_assert(false && "Create process implementation is missing.");
 		return false;
 #endif
+	}
+
+	bool forEachProcessName(const std::function<void(const std::string_view& processName)>& callback)
+	{
+#if SE_PLATFORM == SE_PLATFORM_WINDOWS
+		HANDLE hSnapProcess = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, NULL);
+
+		if (hSnapProcess != INVALID_HANDLE_VALUE)
+		{
+			PROCESSENTRY32 process;
+			process.dwSize = sizeof(PROCESSENTRY32);
+			Process32First(hSnapProcess, &process);
+			do
+			{
+				callback(process.szExeFile);
+			} while (Process32Next(hSnapProcess, &process));
+
+			CloseHandle(hSnapProcess);
+			return true;
+		}
+#endif
+		return false;
 	}
 }

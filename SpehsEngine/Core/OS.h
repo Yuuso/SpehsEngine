@@ -12,4 +12,7 @@ namespace se
 
 	/* Creates a new process by launching the specified file. */
 	bool createProcess(const std::string& filename, const std::string& commandLine);
+
+	/* Calls function for each running process name. */
+	bool forEachProcessName(const std::function<void(const std::string_view& processName)>& callback);
 }
