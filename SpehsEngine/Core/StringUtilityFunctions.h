@@ -72,8 +72,9 @@ namespace se
 		}
 	}
 
-	bool doesStartWith(const std::string& string, const std::string& searchParameter);
-	bool doesEndWith(const std::string& string, const std::string& searchParameter);
+	bool doesStartWith(const std::string_view string, const std::string_view searchParameter);
+	bool doesEndWith(const std::string_view string, const std::string_view searchParameter);
+	bool doesContain(const std::string_view string, const std::string_view searchParameter);
 
 	/*
 		Returns a nicely formated time length string.
