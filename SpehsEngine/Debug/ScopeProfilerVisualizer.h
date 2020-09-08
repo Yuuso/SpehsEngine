@@ -75,12 +75,14 @@ namespace se
 			rendering::Polygon& tooltipPolygon;
 			std::vector<rendering::Text*> sectionTexts;
 			std::vector<rendering::Polygon*> sectionPolygons;
-			boost::signals2::scoped_connection profilerFlushConnection;
 
 			std::recursive_mutex backgroundThreadDataMutex;
 			size_t maxThreadDataSectionCount = 0;
 			bool backgroundThreadDataUpdated = false;
 			std::unordered_map<std::thread::id, ScopeProfiler::ThreadData> backgroundThreadDatas;
+
+			// Signal binds: declare last to destruct first
+			boost::signals2::scoped_connection profilerFlushConnection;
 		};
 	}
 }
