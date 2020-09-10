@@ -6,7 +6,7 @@
 
 namespace se
 {
-	bool doesStartWith(const std::string& string, const std::string& searchParameter)
+	bool doesStartWith(const std::string_view string, const std::string_view searchParameter)
 	{
 		if (searchParameter.size() > string.size())
 		{
@@ -25,7 +25,7 @@ namespace se
 		}
 	}
 
-	bool doesEndWith(const std::string& string, const std::string& searchParameter)
+	bool doesEndWith(const std::string_view string, const std::string_view searchParameter)
 	{
 		if (searchParameter.size() > string.size())
 		{
@@ -43,6 +43,11 @@ namespace se
 			}
 			return true;
 		}
+	}
+
+	bool doesContain(const std::string_view string, const std::string_view searchParameter)
+	{
+		return string.find(searchParameter) != std::string::npos;
 	}
 
 	std::string toTimeLengthString(const time::Time& time, const size_t precision)

@@ -1,6 +1,8 @@
 #pragma once
+
 #include <string>
 #include <vector>
+
 
 namespace se
 {
@@ -11,7 +13,7 @@ namespace se
 	};
 
 	/* Opens file, retrieves file contents and closes file. Returns false on failure. */
-	bool readFile(File& file, const std::string& path);
+	bool readFile(File& file, const std::string_view path);
 
 	/* Opens file and truncates previous contents with the given data. */
 	bool writeFile(const File& file);

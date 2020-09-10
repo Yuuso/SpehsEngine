@@ -63,7 +63,8 @@ namespace se
 		void ConnectionManager::run()
 		{
 			setThreadName("ConnectionManager::run() " + debugName);
-			while (true)
+			bool keepRunning = true;
+			while (keepRunning)
 			{
 				se::time::ScopedFrameLimiter frameLimiter(se::time::fromSeconds(1.0f / 1000.0f));
 
@@ -78,19 +79,7 @@ namespace se
 					std::lock_guard<std::recursive_mutex> lock1(*mutex);
 					if (destructorCalled)
 					{
-						//Check if there are still pending operations
-						bool pendingOperations = false;
-						for (size_t i = 0; i < connections.size(); i++)
-						{
-							if (connections[i]->hasPendingOperations())
-							{
-								pendingOperations = true;
-							}
-						}
-						if (!pendingOperations)
-						{
-							break;
-						}
+						keepRunning = false;
 					}
 				}
 			}
@@ -457,6 +446,19 @@ namespace se
 		bool ConnectionManager::isOpen() const
 		{
 			return socket->isOpen();
+		}
+
+		bool ConnectionManager::hasPendingOperations() const
+		{
+			std::lock_guard<std::recursive_mutex> lock1(*mutex);
+			for (size_t i = 0; i < connections.size(); i++)
+			{
+				if (connections[i]->hasPendingOperations())
+				{
+					return true;
+				}
+			}
+			return false;
 		}
 
 		Port ConnectionManager::getLocalPort() const

@@ -61,6 +61,7 @@ namespace se
 			void close();
 			bool bind(const Port port = Port());
 			bool isOpen() const;
+			bool hasPendingOperations() const;
 			Port getLocalPort() const;
 			Endpoint getLocalEndpoint() const;
 			uint64_t getSentBytes() const;
