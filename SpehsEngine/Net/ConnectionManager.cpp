@@ -9,6 +9,7 @@
 #include "SpehsEngine/Core/Thread.h"
 #include "SpehsEngine/Core/WriteBuffer.h"
 #include "SpehsEngine/Net/AddressUtilityFunctions.h"
+#include <set>
 
 #define DEBUG_LOG(level, message) if (getDebugLogLevel() >= level) \
 { \
@@ -98,7 +99,8 @@ namespace se
 				if (connections[i].use_count() == 1 && !connections[i]->hasPendingOperations() && connections[i]->getStatus() == Connection::Status::Connected)
 				{
 					DEBUG_LOG(1, "Dropping unused alive connection from: " + connections[i]->debugEndpoint + " (" + connections[i]->debugName + ")");
-					removeConnectionImpl(i--);
+					removeConnectionImpl(connections.begin() + i);
+					i--;
 				}
 				else
 				{
@@ -158,27 +160,47 @@ namespace se
 				{
 					if (packetHeader.protocolId == PacketHeader::spehsProtocolId)
 					{
-						const std::vector<std::shared_ptr<Connection>>::iterator connectionIt = std::find_if(connections.begin(), connections.end(), [&](std::shared_ptr<Connection>& connection)->bool
+						std::vector<std::shared_ptr<Connection>>::iterator connectionIt = std::find_if(connections.begin(), connections.end(), [&](std::shared_ptr<Connection>& connection)->bool
 							{
 								return connection->getRemoteEndpoint() == receivedPackets[p].senderEndpoint;
 							});
+
+						bool isNewConnection = true;
 						if (connectionIt != connections.end())
 						{
-							//Existing connection
-							//se::log::info("Endpoint match: " + se::net::toString(connectionIt->get()->getRemoteEndpoint()) + " == " + se::net::toString(receivedPackets[p].senderEndpoint) + ", size: " + std::to_string(receivedPackets[p].data.size()));
-							connectionIt->get()->receivePacket(packetHeader, receivedPackets[p].data, readBuffer.getOffset());
+							// Existing connection
+							if (!connectionIt->get()->remoteConnectionId || connectionIt->get()->remoteConnectionId == packetHeader.connectionId)
+							{
+								connectionIt->get()->receivePacket(packetHeader, receivedPackets[p].data, readBuffer.getOffset());
+								isNewConnection = false;
+							}
+							else if (se::time::now() - connectionIt->get()->lastReceiveTime < se::time::fromSeconds(5.0f))
+							{
+								// Possibly a packet from an older/newer connection, ignore for now.
+								isNewConnection = false;
+							}
+							else
+							{
+								// The old connection died...?
+								DEBUG_LOG(1, "Received packet with mismatching connection id from: " + se::net::toString(receivedPackets[p].senderEndpoint) + ". Disconnecting the old connection.");
+								connectionIt->get()->disconnectImpl(false);
+							}
 						}
-						else if (accepting)
+						
+						if (isNewConnection)
 						{
-							// New incoming connection
-							const std::shared_ptr<Connection> newConnection = addConnectionImpl(std::shared_ptr<Connection>(
-								new Connection(socket, mutex, receivedPackets[p].senderEndpoint, generateNewConnectionId(), Connection::EstablishmentType::Incoming, debugName + ": Incoming connection")));
-							DEBUG_LOG(1, "Incoming connection from: " + newConnection->debugEndpoint + " started connecting...");
-							connections.back()->receivePacket(packetHeader, receivedPackets[p].data, readBuffer.getOffset());
-						}
-						else
-						{
-							DEBUG_LOG(1, "Received packet from an untracked endpoint: " + se::net::toString(receivedPackets[p].senderEndpoint));
+							if (accepting)
+							{
+								// New incoming connection
+								const std::shared_ptr<Connection> newConnection = addConnectionImpl(std::shared_ptr<Connection>(
+									new Connection(socket, mutex, receivedPackets[p].senderEndpoint, generateNewConnectionId(), Connection::EstablishmentType::Incoming, debugName + ": Incoming connection")));
+								DEBUG_LOG(1, "Incoming connection from: " + newConnection->debugEndpoint + " started connecting with connection id: " + std::to_string(packetHeader.connectionId.value));
+								connections.back()->receivePacket(packetHeader, receivedPackets[p].data, readBuffer.getOffset());
+							}
+							else
+							{
+								DEBUG_LOG(1, "Received packet from untracked endpoint: " + se::net::toString(receivedPackets[p].senderEndpoint) + ". ConnectionManager is not in accepting state, ignoring.");
+							}
 						}
 					}
 					else
@@ -365,45 +387,34 @@ namespace se
 							Stop keeping this connection object alive.
 							Users of the shared pointer may hold on to it if they wish, but here we make room for another connection to the same endpoint.
 						*/
-						removeConnectionImpl(index);
+						removeConnectionImpl(connections.begin() + index);
 						break;
 					}
 				});
 			return connections.back();
 		}
 
-		void ConnectionManager::removeConnectionImpl(const size_t index)
+		void ConnectionManager::removeConnectionImpl(const std::vector<std::shared_ptr<Connection>>::iterator it)
 		{
-			if (index < connections.size())
-			{
-				const std::unordered_map<ConnectionId, boost::signals2::scoped_connection>::iterator connectionStatusChangedConnectionsIt = connectionStatusChangedConnections.find(connections[index]->connectionId);
-				se_assert(connectionStatusChangedConnectionsIt != connectionStatusChangedConnections.end());
-				connectionStatusChangedConnections.erase(connectionStatusChangedConnectionsIt);
-				connections.erase(connections.begin() + index);
-			}
+			const std::unordered_map<ConnectionId, boost::signals2::scoped_connection>::iterator connectionStatusChangedConnectionsIt = connectionStatusChangedConnections.find(it->get()->connectionId);
+			se_assert(connectionStatusChangedConnectionsIt != connectionStatusChangedConnections.end());
+			connectionStatusChangedConnections.erase(connectionStatusChangedConnectionsIt);
+			connections.erase(it);
 		}
 
 		ConnectionId ConnectionManager::generateNewConnectionId()
 		{
-			std::lock_guard<std::recursive_mutex> lock1(*mutex);
+			// Keep a list of randomly generated connection ids during this program run to minimize clashes
+			static std::set<ConnectionId::ValueType> usedConnectionIds;
+			static std::mutex usedConnectionIdsMutex;
+
 			ConnectionId connectionId;
-			while (true)
+			while (!connectionId || usedConnectionIds.find(connectionId.value) != usedConnectionIds.end())
 			{
-				connectionId.value = nextConnectionId.value++;
-				bool used = false;
-				for (std::shared_ptr<Connection>& connection : connections)
-				{
-					if (connection->connectionId == connectionId)
-					{
-						used = true;
-						break;
-					}
-				}
-				if (connectionId && !used)
-				{
-					break;
-				}
+				connectionId.value = rng::random<ConnectionId::ValueType>();
 			}
+
+			usedConnectionIds.insert(connectionId.value);
 			return connectionId;
 		}
 

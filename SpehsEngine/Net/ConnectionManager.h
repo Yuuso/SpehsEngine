@@ -86,7 +86,7 @@ namespace se
 			void deliverOutgoingPackets();
 			ConnectionId generateNewConnectionId();
 			std::shared_ptr<Connection>& addConnectionImpl(const std::shared_ptr<Connection> &connection);
-			void removeConnectionImpl(const size_t index);
+			void removeConnectionImpl(const std::vector<std::shared_ptr<Connection>>::iterator it);
 
 			ConnectionId nextConnectionId = ConnectionId(1u);
 			boost::shared_ptr<SocketUDP2> socket;
