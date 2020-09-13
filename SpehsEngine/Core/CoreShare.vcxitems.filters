@@ -105,6 +105,7 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)LockGuard.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)ScopeProfiler.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)STLOptionalUtilityFunctions.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)DeepCopyUniquePtr.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="File">

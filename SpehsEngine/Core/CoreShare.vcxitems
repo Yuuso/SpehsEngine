@@ -60,6 +60,7 @@
   <ItemGroup>
     <ClInclude Include="$(MSBuildThisFileDirectory)Archive.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)ArchiveUtilityFunctions.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)DeepCopyUniquePtr.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)LockGuard.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)ScopedFrameLimiter.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Guid.h" />
