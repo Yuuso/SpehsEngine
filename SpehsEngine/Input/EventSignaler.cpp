@@ -45,7 +45,7 @@ namespace se
 			SE_SCOPE_PROFILER();
 			preUpdateSignal();
 
-			//Get events
+			// Get events
 			const std::vector<MouseHoverEvent>& mouseHoverEvents = eventCatcher.getMouseHoverEvents();
 			const std::vector<MouseMotionEvent>& mouseMotionEvents = eventCatcher.getMouseMotionEvents();
 			const std::vector<MouseWheelEvent>& mouseWheelEvents = eventCatcher.getMouseWheelEvents();
@@ -59,8 +59,8 @@ namespace se
 			//const std::vector<JoystickButtonDownEvent>& joystickButtonDownEvents = eventCatcher.get;
 			//const std::vector<JoystickButtonReleaseEvent>& joystickButtonReleaseEvents = eventCatcher.get;
 			//const std::vector<JoystickAxisEvent>& joystickAxisEvents = eventCatcher.get;
-			//const std::vector<QuitEvent>& quitEvents = eventCatcher.getQuitEvents();
-			//const std::vector<FileDropEvent>& fileDropEvents = eventCatcher.getFileDropEvents();
+			const std::vector<QuitEvent>& quitEvents = eventCatcher.getQuitEvents();
+			const std::vector<FileDropEvent>& fileDropEvents = eventCatcher.getFileDropEvents();
 
 			// Signal events
 			signalEventsImpl(mouseHoverEvents, mouseHoverSignals);
@@ -76,6 +76,8 @@ namespace se
 			//signalEventsImpl(joystickButtonDownEvents, joystickButtonDownSignals);
 			//signalEventsImpl(joystickButtonReleaseEvents, joystickButtonReleaseSignals);
 			//signalEventsImpl(joystickAxisEvents, joystickAxisSignals);
+			signalEventsImpl(quitEvents, quitSignals);
+			signalEventsImpl(fileDropEvents, fileDropSignals);
 
 			postUpdateSignal();
 		}
