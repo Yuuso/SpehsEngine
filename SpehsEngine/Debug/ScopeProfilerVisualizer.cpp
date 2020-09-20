@@ -43,6 +43,12 @@ namespace se
 
 		ScopeProfilerVisualizer::~ScopeProfilerVisualizer()
 		{
+			// Disconnect profiler flush connection, then acquire the background thread data mutex to make sure that no background thread is currently in the signal callback.
+			{
+				profilerFlushConnection.disconnect();
+				std::lock_guard<std::recursive_mutex> lock(backgroundThreadDataMutex);
+			}
+
 			tooltipText.destroy();
 			for (rendering::Polygon* const polygon : sectionPolygons)
 			{
