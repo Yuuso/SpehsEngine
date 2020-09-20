@@ -95,10 +95,22 @@ namespace se
 			std::lock_guard<std::recursive_mutex> lock1(*mutex);
 			for (size_t i = 0; i < connections.size(); i++)
 			{
+				const Connection::Status connectionStatus = connections[i]->getStatus();
 				// Remove unreferenced connections that don't have pending operations
-				if (connections[i].use_count() == 1 && !connections[i]->hasPendingOperations() && connections[i]->getStatus() == Connection::Status::Connected)
+				if (connectionStatus == Connection::Status::Connected && connections[i].use_count() == 1 && !connections[i]->hasPendingOperations())
 				{
 					DEBUG_LOG(1, "Dropping unused alive connection from: " + connections[i]->debugEndpoint + " (" + connections[i]->debugName + ")");
+					removeConnectionImpl(connections.begin() + i);
+					i--;
+				}
+				else if (connectionStatus == Connection::Status::Disconnected)
+				{
+					/*
+						Make room for a new connection from the same endpoint.
+						NOTE: do not handle this in the connection status changed callback,
+							as that callback may be called during internal operations,
+							in the middle of an update loop where the connections vector is being iterated.
+					*/
 					removeConnectionImpl(connections.begin() + i);
 					i--;
 				}
@@ -383,11 +395,6 @@ namespace se
 								DEBUG_LOG(1, "Incoming connection from: " + connections[index]->debugEndpoint + " failed to connect.");
 							}
 						}
-						/*
-							Stop keeping this connection object alive.
-							Users of the shared pointer may hold on to it if they wish, but here we make room for another connection to the same endpoint.
-						*/
-						removeConnectionImpl(connections.begin() + index);
 						break;
 					}
 				});

@@ -939,7 +939,8 @@ namespace se
 			}
 			else
 			{
-				se::log::error("Connection is not in the connected state. Cannot send packet.");
+				se_assert(false && "Connection is not in the connected state. Cannot send packet.");
+				se::log::warning("Connection is not in the connected state. Cannot send packet.");
 			}
 		}
 
