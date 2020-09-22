@@ -80,7 +80,7 @@ namespace se
 		void Connection::update(const time::Time timeoutDeltaTime)
 		{
 			SE_SCOPE_PROFILER(debugName);
-			if (isDisconnectQueued())
+			if (getStatus() == Status::Disconnecting)
 			{
 				disconnectImpl(true);
 			}
@@ -997,7 +997,10 @@ namespace se
 		void Connection::queueDisconnect()
 		{
 			LOCK_GUARD(lock, mutex, other);
-			disconnectionQueued = true;
+			if (!disconnectingState && status != Status::Disconnected)
+			{
+				disconnectingState.emplace();
+			}
 		}
 
 		void Connection::disconnectImpl(const bool sendDisconnectPacket)
@@ -1187,18 +1190,6 @@ namespace se
 		{
 			LOCK_GUARD(lock, mutex, other);
 			return status;
-		}
-
-		bool Connection::isDisconnectQueued() const
-		{
-			LOCK_GUARD(lock, mutex, other);
-			return disconnectionQueued;
-		}
-
-		bool Connection::isConnected() const
-		{
-			LOCK_GUARD(lock, mutex, other);
-			return status == Status::Connected;
 		}
 
 		boost::asio::ip::udp::endpoint Connection::getRemoteEndpoint() const

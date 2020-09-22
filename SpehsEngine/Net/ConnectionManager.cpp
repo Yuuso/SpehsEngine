@@ -278,6 +278,9 @@ namespace se
 						case Connection::Status::Connected:
 							log::warning("Connection to " + remoteEndpoint.toString() + " has already been established.");
 							break;
+						case Connection::Status::Disconnecting:
+							log::warning("An old connection to " + remoteEndpoint.toString() + " is currently disconnecting. Wait for it to be removed first...");
+							break;
 						case Connection::Status::Disconnected:
 							log::warning("An old connection to " + remoteEndpoint.toString() + " already exists. Wait for it to be removed first...");
 							break;
@@ -385,6 +388,9 @@ namespace se
 							DEBUG_LOG(1, "Incoming connection from: " + connections[index]->debugEndpoint + " successfully connected.");
 							incomingConnectionSignal(connections[index]);
 						}
+						break;
+
+					case Connection::Status::Disconnecting:
 						break;
 
 					case Connection::Status::Disconnected:

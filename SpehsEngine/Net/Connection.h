@@ -44,6 +44,7 @@ namespace se
 			{
 				Connecting,
 				Connected,
+				Disconnecting,
 				Disconnected
 			};
 
@@ -88,9 +89,12 @@ namespace se
 			
 			/* Disconnection cannot be immediately applied so it must be queued. Disconnection happens from the connection manager update. */
 			void queueDisconnect();
-			bool isDisconnectQueued() const;
+
 			Status getStatus() const;
-			bool isConnected() const;
+			inline bool isConnecting() const { return getStatus() == Status::Connecting; }
+			inline bool isConnected() const { return getStatus() == Status::Connected; }
+			inline bool isDisconnecting() const { return getStatus() == Status::Disconnecting; }
+			inline bool isDisconnected() const { return getStatus() == Status::Disconnected; }
 			boost::asio::ip::udp::endpoint getRemoteEndpoint() const;
 			Port getLocalPort() const;
 
@@ -256,6 +260,11 @@ namespace se
 				int iterations = 0;
 			};
 
+			struct DisconnectingState
+			{
+
+			};
+
 			Connection(const boost::shared_ptr<SocketUDP2>& _socket, const std::shared_ptr<std::recursive_mutex>& _upperMutex, const boost::asio::ip::udp::endpoint& _endpoint, const ConnectionId _connectionId,
 				const EstablishmentType _establishmentType, const std::string_view _debugName);
 
@@ -299,7 +308,7 @@ namespace se
 			std::vector<ReceivedReliablePacket> receivedReliablePackets;
 			std::vector<ReceivedPacket> receivedUnreliablePackets;
 			std::function<void(ReadBuffer&, const boost::asio::ip::udp::endpoint&, const bool)> receiveHandler;
-			bool disconnectionQueued = false;
+			std::optional<DisconnectingState> disconnectingState;
 			Status status = Status::Connecting; // Every connection begins in the connecting state
 			ConnectionId remoteConnectionId;
 			boost::signals2::signal<void(const Status, const Status)> statusChangedSignal;
