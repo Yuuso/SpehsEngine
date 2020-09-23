@@ -86,6 +86,8 @@ namespace se
 		{
 			void write(se::WriteBuffer& writeBuffer) const;
 			bool read(se::ReadBuffer& readBuffer);
+
+			bool expectingResponse = true;
 		};
 
 		struct HeartbeatPacket

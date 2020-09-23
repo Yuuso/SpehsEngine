@@ -262,7 +262,10 @@ namespace se
 
 			struct DisconnectingState
 			{
-
+				uint64_t disconnectPacketReliableSendOffset = 0ull;
+				bool remoteDisconnectPacketReceived = false;
+				bool remoteDisconnectPacketExpected = true;
+				time::Time countdown = time::fromSeconds(5.0f);
 			};
 
 			Connection(const boost::shared_ptr<SocketUDP2>& _socket, const std::shared_ptr<std::recursive_mutex>& _upperMutex, const boost::asio::ip::udp::endpoint& _endpoint, const ConnectionId _connectionId,
@@ -279,7 +282,8 @@ namespace se
 			void deliverReceivedPackets();
 			void deliverReceivedReliablePackets();
 			void deliverOutgoingPackets();
-			void disconnectImpl(const bool sendDisconnectPacket);
+			void beginDisconnecting(const std::lock_guard<std::recursive_mutex>& upperLock, const LockGuard<std::recursive_mutex>& lock);
+			void updateDisconnecting(const time::Time deltaTime);
 			/* lock_guard parameters are here to enforce their locking prior to calling this method. */
 			void setStatus(const Status newStatus, const std::lock_guard<std::recursive_mutex> &upperLock, const LockGuard<std::recursive_mutex>& lock);
 			/* Declared and defined privately, used by ConnectionManager. */

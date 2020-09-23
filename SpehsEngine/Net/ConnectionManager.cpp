@@ -36,14 +36,6 @@ namespace se
 			{
 				std::lock_guard<std::recursive_mutex> lock1(*mutex);
 				destructorCalled = true;
-				// Disconnect all
-				for (size_t i = 0; i < connections.size(); i++)
-				{
-					if (connections[i]->getStatus() == Connection::Status::Connected)
-					{
-						connections[i]->disconnectImpl(true);
-					}
-				}
 			}
 			thread.join();
 
@@ -195,7 +187,8 @@ namespace se
 							{
 								// The old connection died...?
 								DEBUG_LOG(1, "Received packet with mismatching connection id from: " + se::net::toString(receivedPackets[p].senderEndpoint) + ". Disconnecting the old connection.");
-								connectionIt->get()->disconnectImpl(false);
+								se::LockGuard lock2(connectionIt->get()->mutex);
+								connectionIt->get()->setStatus(Connection::Status::Disconnected, lock1, lock2);
 							}
 						}
 						

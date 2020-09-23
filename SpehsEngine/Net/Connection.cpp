@@ -73,26 +73,43 @@ namespace se
 
 		Connection::~Connection()
 		{
-			LOCK_GUARD(lock, mutex, other);
-			disconnectImpl(true);
+			if (getStatus() != Status::Disconnected)
+			{
+				// Disconnect packet is sent immediately and unreliably.
+				PacketHeader packetHeader;
+				packetHeader.protocolId = PacketHeader::spehsProtocolId;
+				packetHeader.connectionId = connectionId;
+				packetHeader.packetType = PacketHeader::PacketType::Disconnect;
+
+				DisconnectPacket disconnectPacket;
+				disconnectPacket.expectingResponse = false;
+
+				WriteBuffer writeBuffer;
+				writeBuffer.write(packetHeader);
+				writeBuffer.write(disconnectPacket);
+				const std::vector<boost::asio::const_buffer> sendBuffers
+				{
+					boost::asio::const_buffer(writeBuffer.getData(), writeBuffer.getSize())
+				};
+				sendPacketImpl(sendBuffers, LogSentBytesType::Unreliable);
+			}
 		}
 
 		void Connection::update(const time::Time timeoutDeltaTime)
 		{
 			SE_SCOPE_PROFILER(debugName);
-			if (getStatus() == Status::Disconnecting)
+
+			if (!socket->isOpen())
 			{
-				disconnectImpl(true);
+				queueDisconnect();
 			}
 
-			if (socket->isOpen())
+			if (getStatus() == Status::Disconnecting)
 			{
-				deliverReceivedPackets();
+				updateDisconnecting(timeoutDeltaTime);
 			}
-			else if (getStatus() != Status::Disconnected)
-			{
-				disconnectImpl(false);
-			}
+
+			deliverReceivedPackets();
 
 			{
 				LOCK_GUARD(lock, mutex, estimateRoundTripTime);
@@ -117,39 +134,47 @@ namespace se
 
 			if (getStatus() == Status::Connected)
 			{
-				// Heartbeat
-				LOCK_GUARD(lock, mutex, heartbeat);
-				const time::Time now = time::now();
-				if (now - lastQueueHeartbeatTime >= reliableHeartbeatInterval &&
-					now - lastSendTimeReliable >= reliableHeartbeatInterval)
+				bool timeoutTriggered = false;
 				{
-					lastQueueHeartbeatTime = now;
-
-					HeartbeatPacket heartbeatPacket;
-					WriteBuffer writeBuffer;
-					writeBuffer.write(PacketHeader::PacketType::Heartbeat);
-					writeBuffer.write(heartbeatPacket);
-
-					const uint64_t payloadOffset = reliablePacketSendQueue.empty() ? reliableStreamOffsetSend : reliablePacketSendQueue.back().payloadOffset + reliablePacketSendQueue.back().payload.size();
-					reliablePacketSendQueue.emplace_back(ReliablePacketOut(payloadOffset, writeBuffer));
-				}
-
-				// MSS discovery
-				if (pathMaximumSegmentSizeDiscovery)
-				{
-					const time::Time interval = std::max(time::fromMilliseconds(50.0f), getPing() * 2);
-					const time::Time timeSinceLastSend = now - pathMaximumSegmentSizeDiscovery->lastSendTime;
-					if (timeSinceLastSend >= interval)
+					// Heartbeat
+					LOCK_GUARD(lock, mutex, heartbeat);
+					const time::Time now = time::now();
+					if (now - lastQueueHeartbeatTime >= reliableHeartbeatInterval &&
+						now - lastSendTimeReliable >= reliableHeartbeatInterval)
 					{
-						sendNextPathMaximumSegmentSizeDiscoveryPacket();
+						lastQueueHeartbeatTime = now;
+
+						HeartbeatPacket heartbeatPacket;
+						WriteBuffer writeBuffer;
+						writeBuffer.write(PacketHeader::PacketType::Heartbeat);
+						writeBuffer.write(heartbeatPacket);
+
+						const uint64_t payloadOffset = reliablePacketSendQueue.empty() ? reliableStreamOffsetSend : reliablePacketSendQueue.back().payloadOffset + reliablePacketSendQueue.back().payload.size();
+						reliablePacketSendQueue.emplace_back(ReliablePacketOut(payloadOffset, writeBuffer));
+					}
+
+					// MSS discovery
+					if (pathMaximumSegmentSizeDiscovery)
+					{
+						const time::Time interval = std::max(time::fromMilliseconds(50.0f), getPing() * 2);
+						const time::Time timeSinceLastSend = now - pathMaximumSegmentSizeDiscovery->lastSendTime;
+						if (timeSinceLastSend >= interval)
+						{
+							sendNextPathMaximumSegmentSizeDiscoveryPacket();
+						}
+					}
+
+					// Timeout disconnection
+					timeoutCountdown -= timeoutDeltaTime;
+					if (timeoutEnabled && timeoutCountdown <= time::Time::zero)
+					{
+						timeoutTriggered = true;
 					}
 				}
 
-				// Timeout disconnection
-				timeoutCountdown -= timeoutDeltaTime;
-				if (timeoutEnabled && timeoutCountdown <= time::Time::zero)
+				if (timeoutTriggered)
 				{
-					disconnectImpl(true);
+					queueDisconnect();
 				}
 			}
 		}
@@ -778,8 +803,12 @@ namespace se
 				DisconnectPacket disconnectPacket;
 				if (readBuffer.read(disconnectPacket))
 				{
-					// Disconnect without sending a packet in return
-					disconnectImpl(false);
+					beginDisconnecting(upperLock, lock);
+					if (disconnectingState)
+					{
+						disconnectingState->remoteDisconnectPacketReceived = true;
+						disconnectingState->remoteDisconnectPacketExpected = disconnectPacket.expectingResponse;
+					}
 					return true;
 				}
 				else
@@ -963,10 +992,8 @@ namespace se
 				return;
 			}
 #endif
-			if (socket->sendPacket(buffers, endpoint))
-			{
-				logSentBytes(logSentBytesType, bufferSize);
-			}
+			socket->sendPacket(buffers, endpoint);
+			logSentBytes(logSentBytesType, bufferSize);
 		}
 
 		void Connection::logSentBytes(const LogSentBytesType logSentBytesType, const uint64_t bytes)
@@ -996,52 +1023,53 @@ namespace se
 
 		void Connection::queueDisconnect()
 		{
+			std::lock_guard<std::recursive_mutex> upperLock(*upperMutex);
 			LOCK_GUARD(lock, mutex, other);
 			if (!disconnectingState && status != Status::Disconnected)
 			{
-				disconnectingState.emplace();
+				beginDisconnecting(upperLock, lock);
 			}
 		}
 
-		void Connection::disconnectImpl(const bool sendDisconnectPacket)
+		void Connection::beginDisconnecting(const std::lock_guard<std::recursive_mutex>& upperLock, const LockGuard<std::recursive_mutex>& lock)
+		{
+			if (status != Status::Disconnected && status != Status::Disconnecting)
+			{
+				disconnectingState.emplace();
+				setStatus(Status::Disconnecting, upperLock, lock);
+				
+				// Place the disconnection packet onto the reliable send queue
+				const uint64_t reliableStreamOffset = reliablePacketSendQueue.empty() ? reliableStreamOffsetSend : reliablePacketSendQueue.back().payloadOffset + uint64_t(reliablePacketSendQueue.back().payload.size());
+				DisconnectPacket disconnectPacket;
+				WriteBuffer writeBuffer;
+				writeBuffer.write(PacketHeader::PacketType::Disconnect);
+				writeBuffer.write(disconnectPacket);
+				reliablePacketSendQueue.push_back(ReliablePacketOut(reliableStreamOffset, writeBuffer));
+
+				disconnectingState->disconnectPacketReliableSendOffset = reliableStreamOffset;
+			}
+		}
+
+		void Connection::updateDisconnecting(const time::Time deltaTime)
 		{
 			std::lock_guard<std::recursive_mutex> upperLock(*upperMutex);
 			LOCK_GUARD(lock, mutex, other);
-			if (status == Status::Disconnected)
+			if (status == Status::Disconnecting)
 			{
-				return;
-			}
-
-			if (sendDisconnectPacket)
-			{
-				// Disconnect packet is sent immediately and unreliably. We do not want to wait for acks.
-				PacketHeader packetHeader;
-				packetHeader.protocolId = PacketHeader::spehsProtocolId;
-				packetHeader.connectionId = connectionId;
-				packetHeader.packetType = PacketHeader::PacketType::Disconnect;
-				DisconnectPacket disconnectPacket;
-				WriteBuffer writeBuffer;
-				writeBuffer.write(packetHeader);
-				writeBuffer.write(disconnectPacket);
-				const std::vector<boost::asio::const_buffer> sendBuffers
+				se_assert(disconnectingState);
+				const bool disconnectPacketDeliveryFinished = reliableStreamOffsetSend > disconnectingState->disconnectPacketReliableSendOffset
+					|| !disconnectingState->remoteDisconnectPacketExpected;
+				if (disconnectPacketDeliveryFinished && disconnectingState->remoteDisconnectPacketReceived)
 				{
-					boost::asio::const_buffer(writeBuffer.getData(), writeBuffer.getSize())
-				};
-				sendPacketImpl(sendBuffers, LogSentBytesType::Unreliable);
+					disconnectingState->countdown -= deltaTime;
+					if (disconnectingState->countdown <= time::Time::zero)
+					{
+						DEBUG_LOG(1, "disconnected.");
+						disconnectingState.reset();
+						setStatus(Status::Disconnected, upperLock, lock);
+					}
+				}
 			}
-
-			remoteConnectionId = ConnectionId();
-			reliableStreamOffsetSend = 0u;
-			reliableStreamOffsetReceive = 0u;
-			estimatedRoundTripTime = time::Time::zero;
-			reliablePacketSendQueue.clear();
-			unreliablePacketSendQueue.clear();
-			receivedPackets.clear();
-			receivedReliablePackets.clear();
-			receivedReliableFragments.clear();
-			receivedUnreliablePackets.clear();
-			DEBUG_LOG(1, "disconnected.");
-			setStatus(Status::Disconnected, upperLock, lock);
 		}
 
 		void Connection::receivePacket(const PacketHeader& packetHeader, std::vector<uint8_t>& buffer, const size_t payloadOffset)

@@ -81,9 +81,11 @@ namespace se
 
 		void DisconnectPacket::write(se::WriteBuffer& writeBuffer) const
 		{
+			se_write(writeBuffer, expectingResponse);
 		}
 		bool DisconnectPacket::read(se::ReadBuffer& readBuffer)
 		{
+			se_read(readBuffer, expectingResponse);
 			return true;
 		}
 

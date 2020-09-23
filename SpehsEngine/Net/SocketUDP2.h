@@ -53,14 +53,14 @@ namespace se
 			bool bind(const Port port = Port());
 			bool startReceiving();
 			void setReceiveHandler(const std::function<void(std::vector<uint8_t>&, const boost::asio::ip::udp::endpoint&)>& _receiveHandler);
-			bool sendPacket(const WriteBuffer& buffer, const boost::asio::ip::udp::endpoint& endpoint);
-			bool sendPacket(const std::vector<boost::asio::const_buffer>& buffers, const boost::asio::ip::udp::endpoint& endpoint);
+			void sendPacket(const WriteBuffer& buffer, const boost::asio::ip::udp::endpoint& endpoint);
+			void sendPacket(const std::vector<boost::asio::const_buffer>& buffers, const boost::asio::ip::udp::endpoint& endpoint);
 			template<typename ... Buffers>
-			bool sendPacket(const Buffers&... writeBuffers, const boost::asio::ip::udp::endpoint& endpoint)
+			void sendPacket(const Buffers&... writeBuffers, const boost::asio::ip::udp::endpoint& endpoint)
 			{
 				std::vector<boost::asio::const_buffer> buffers;
 				pushToBuffers(buffers, writeBuffers...);
-				return sendPacket(buffers, endpoint);
+				sendPacket(buffers, endpoint);
 			}
 
 			bool isOpen() const;
@@ -78,6 +78,7 @@ namespace se
 
 		private:
 
+			void boostSendHandler(const boost::asio::ip::udp::endpoint endpoint, const boost::system::error_code& error, const std::size_t bytes);
 			void boostReceiveHandler(const boost::system::error_code& error, const std::size_t bytes);
 
 			mutable std::recursive_mutex mutex;
