@@ -47,6 +47,9 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)LockGuard.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)ScopeProfiler.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)STLOptionalUtilityFunctions.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)File\Timestamp.cpp">
+      <Filter>File</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="$(MSBuildThisFileDirectory)Archive.h" />
@@ -106,6 +109,9 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)ScopeProfiler.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)STLOptionalUtilityFunctions.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)DeepCopyUniquePtr.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)File\Timestamp.h">
+      <Filter>File</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="File">

@@ -16,6 +16,7 @@
   <ItemGroup>
     <ClCompile Include="$(MSBuildThisFileDirectory)Archive.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)ArchiveUtilityFunctions.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)File\Timestamp.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Guid.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)GuidObjectContainer.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)LockGuard.cpp" />
@@ -61,6 +62,7 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)Archive.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)ArchiveUtilityFunctions.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)DeepCopyUniquePtr.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)File\Timestamp.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)LockGuard.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)ScopedFrameLimiter.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Guid.h" />
