@@ -164,49 +164,7 @@ namespace se
 				{
 					if (packetHeader.protocolId == PacketHeader::spehsProtocolId)
 					{
-						std::vector<std::shared_ptr<Connection>>::iterator connectionIt = std::find_if(connections.begin(), connections.end(), [&](std::shared_ptr<Connection>& connection)->bool
-							{
-								return connection->getRemoteEndpoint() == receivedPackets[p].senderEndpoint;
-							});
-
-						bool isNewConnection = true;
-						if (connectionIt != connections.end())
-						{
-							// Existing connection
-							if (!connectionIt->get()->remoteConnectionId || connectionIt->get()->remoteConnectionId == packetHeader.connectionId)
-							{
-								connectionIt->get()->receivePacket(packetHeader, receivedPackets[p].data, readBuffer.getOffset());
-								isNewConnection = false;
-							}
-							else if (se::time::now() - connectionIt->get()->lastReceiveTime < se::time::fromSeconds(5.0f))
-							{
-								// Possibly a packet from an older/newer connection, ignore for now.
-								isNewConnection = false;
-							}
-							else
-							{
-								// The old connection died...?
-								DEBUG_LOG(1, "Received packet with mismatching connection id from: " + se::net::toString(receivedPackets[p].senderEndpoint) + ". Disconnecting the old connection.");
-								se::LockGuard lock2(connectionIt->get()->mutex);
-								connectionIt->get()->setStatus(Connection::Status::Disconnected, lock1, lock2);
-							}
-						}
-						
-						if (isNewConnection)
-						{
-							if (accepting)
-							{
-								// New incoming connection
-								const std::shared_ptr<Connection> newConnection = addConnectionImpl(std::shared_ptr<Connection>(
-									new Connection(socket, mutex, receivedPackets[p].senderEndpoint, generateNewConnectionId(), Connection::EstablishmentType::Incoming, debugName + ": Incoming connection")));
-								DEBUG_LOG(1, "Incoming connection from: " + newConnection->debugEndpoint + " started connecting with connection id: " + std::to_string(packetHeader.connectionId.value));
-								connections.back()->receivePacket(packetHeader, receivedPackets[p].data, readBuffer.getOffset());
-							}
-							else
-							{
-								DEBUG_LOG(1, "Received packet from untracked endpoint: " + se::net::toString(receivedPackets[p].senderEndpoint) + ". ConnectionManager is not in accepting state, ignoring.");
-							}
-						}
+						processReceivedPacket(lock1, packetHeader, receivedPackets[p], readBuffer);
 					}
 					else
 					{
@@ -219,6 +177,80 @@ namespace se
 				}
 			}
 			receivedPackets.clear();
+		}
+
+		void ConnectionManager::processReceivedPacket(std::lock_guard<std::recursive_mutex>& lock1,
+			const PacketHeader& packetHeader, ReceivedPacket& receivedPacket, ReadBuffer& readBuffer)
+		{
+			se_assert(packetHeader.connectionId);
+			Connection* connectionWithMatchingConnectionId = nullptr;
+			Connection* connectionWithMatchingEndpointAndConnectionIdless = nullptr;
+			for (const std::shared_ptr<Connection>& connection : connections)
+			{
+				if (connection->getRemoteEndpoint() == receivedPacket.senderEndpoint)
+				{
+					if (connection->remoteConnectionId)
+					{
+						if (connection->remoteConnectionId == packetHeader.connectionId)
+						{
+							connectionWithMatchingConnectionId = connection.get();
+						}
+					}
+					else
+					{
+						connectionWithMatchingEndpointAndConnectionIdless = connection.get();
+					}
+				}
+			}
+
+			Connection* connection = nullptr;
+			if (connectionWithMatchingConnectionId)
+			{
+				connection = connectionWithMatchingConnectionId;
+			}
+			else if (connectionWithMatchingEndpointAndConnectionIdless)
+			{
+				connection = connectionWithMatchingEndpointAndConnectionIdless;
+			}
+
+			bool isNewConnection = true;
+			if (connection)
+			{
+				// Existing connection
+				if (!connection->remoteConnectionId || connection->remoteConnectionId == packetHeader.connectionId)
+				{
+					connection->receivePacket(packetHeader, receivedPacket.data, readBuffer.getOffset());
+					isNewConnection = false;
+				}
+				else if (se::time::now() - connection->lastReceiveTime < se::time::fromSeconds(5.0f))
+				{
+					// Possibly a packet from an older/newer connection, ignore for now.
+					isNewConnection = false;
+				}
+				else
+				{
+					// The old connection died...?
+					DEBUG_LOG(1, "Received packet with mismatching connection id from: " + se::net::toString(receivedPacket.senderEndpoint) + ". Disconnecting the old connection.");
+					se::LockGuard lock2(connection->mutex);
+					connection->setStatus(Connection::Status::Disconnected, lock1, lock2);
+				}
+			}
+
+			if (isNewConnection)
+			{
+				if (accepting)
+				{
+					// New incoming connection
+					const std::shared_ptr<Connection> newConnection = addConnectionImpl(std::shared_ptr<Connection>(
+						new Connection(socket, mutex, receivedPacket.senderEndpoint, generateNewConnectionId(), Connection::EstablishmentType::Incoming, debugName + ": Incoming connection")));
+					DEBUG_LOG(1, "Incoming connection from: " + newConnection->debugEndpoint + " started connecting with connection id: " + std::to_string(packetHeader.connectionId.value));
+					connections.back()->receivePacket(packetHeader, receivedPacket.data, readBuffer.getOffset());
+				}
+				else
+				{
+					DEBUG_LOG(1, "Received packet from untracked endpoint: " + se::net::toString(receivedPacket.senderEndpoint) + ". ConnectionManager is not in accepting state, ignoring.");
+				}
+			}
 		}
 
 		void ConnectionManager::deliverOutgoingPackets()
@@ -258,26 +290,11 @@ namespace se
 			{
 				std::lock_guard<std::recursive_mutex> lock1(*mutex);
 
-				// Return an empty connection if connection was already established
+				// Return an empty connection if connection is currently being established
 				for (const std::shared_ptr<Connection>& connection : connections)
 				{
-					if (connection->endpoint == asioEndpoint)
+					if (connection->endpoint == asioEndpoint && connection->getStatus() == Connection::Status::Connecting)
 					{
-						switch (connection->getStatus())
-						{
-						case Connection::Status::Connecting:
-							log::warning("Connection to " + remoteEndpoint.toString() + " is already being established.");
-							break;
-						case Connection::Status::Connected:
-							log::warning("Connection to " + remoteEndpoint.toString() + " has already been established.");
-							break;
-						case Connection::Status::Disconnecting:
-							log::warning("An old connection to " + remoteEndpoint.toString() + " is currently disconnecting. Wait for it to be removed first...");
-							break;
-						case Connection::Status::Disconnected:
-							log::warning("An old connection to " + remoteEndpoint.toString() + " already exists. Wait for it to be removed first...");
-							break;
-						}
 						return std::shared_ptr<Connection>();
 					}
 				}

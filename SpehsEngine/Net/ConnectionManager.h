@@ -83,6 +83,7 @@ namespace se
 			void run();
 			void receiveHandler(std::vector<uint8_t>& data, const boost::asio::ip::udp::endpoint& senderEndpoint);
 			void processReceivedPackets();
+			void processReceivedPacket(std::lock_guard<std::recursive_mutex>& lock, const PacketHeader& packetHeader, ReceivedPacket& receivedPacket, ReadBuffer& readBuffer);
 			void deliverOutgoingPackets();
 			ConnectionId generateNewConnectionId();
 			std::shared_ptr<Connection>& addConnectionImpl(const std::shared_ptr<Connection> &connection);
