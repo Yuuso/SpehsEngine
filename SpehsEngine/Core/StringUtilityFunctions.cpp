@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "SpehsEngine/Core/StringUtilityFunctions.h"
 
+#include "boost/lexical_cast.hpp"
 #include "SpehsEngine/Core/StringOperations.h"
 
 
@@ -101,5 +102,70 @@ namespace se
 		{
 			return std::to_string(bytes) + " B";
 		}
+	}
+
+	template<typename T>
+	inline bool fromStringImpl(const std::string_view string, T& valueOut)
+	{
+		try
+		{
+			valueOut = boost::lexical_cast<T>(string);
+			return true;
+		}
+		catch (const std::exception&)
+		{
+			valueOut = 0;
+			return false;
+		}
+	}
+
+	bool fromString(const std::string_view string, int64_t& valueOut)
+	{
+		return fromStringImpl(string, valueOut);
+	}
+
+	bool fromString(const std::string_view string, int32_t& valueOut)
+	{
+		return fromStringImpl(string, valueOut);
+	}
+
+	bool fromString(const std::string_view string, int16_t& valueOut)
+	{
+		return fromStringImpl(string, valueOut);
+	}
+
+	bool fromString(const std::string_view string, int8_t& valueOut)
+	{
+		return fromStringImpl(string, valueOut);
+	}
+
+	bool fromString(const std::string_view string, uint64_t& valueOut)
+	{
+		return fromStringImpl(string, valueOut);
+	}
+
+	bool fromString(const std::string_view string, uint32_t& valueOut)
+	{
+		return fromStringImpl(string, valueOut);
+	}
+
+	bool fromString(const std::string_view string, uint16_t& valueOut)
+	{
+		return fromStringImpl(string, valueOut);
+	}
+
+	bool fromString(const std::string_view string, uint8_t& valueOut)
+	{
+		return fromStringImpl(string, valueOut);
+	}
+
+	bool fromString(const std::string_view string, float& valueOut)
+	{
+		return fromStringImpl(string, valueOut);
+	}
+
+	bool fromString(const std::string_view string, double& valueOut)
+	{
+		return fromStringImpl(string, valueOut);
 	}
 }

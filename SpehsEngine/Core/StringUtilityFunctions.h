@@ -88,4 +88,15 @@ namespace se
 		Adds a unit suffix (B/KB/MB/GB).
 	*/
 	std::string toByteString(const uint64_t bytes);
+
+	bool fromString(const std::string_view string, int64_t& valueOut);
+	bool fromString(const std::string_view string, int32_t& valueOut);
+	bool fromString(const std::string_view string, int16_t& valueOut);
+	bool fromString(const std::string_view string, int8_t& valueOut);
+	bool fromString(const std::string_view string, uint64_t& valueOut);
+	bool fromString(const std::string_view string, uint32_t& valueOut);
+	bool fromString(const std::string_view string, uint16_t& valueOut);
+	bool fromString(const std::string_view string, uint8_t& valueOut);
+	bool fromString(const std::string_view string, float& valueOut);
+	bool fromString(const std::string_view string, double& valueOut);
 }
