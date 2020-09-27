@@ -31,6 +31,7 @@ namespace se
 			log::error("Failed to read file at: " + std::string(path) + ". std::ifstream read failed.");
 			return false;
 		}
+		file.path = path;
 		return true;
 	}
 
