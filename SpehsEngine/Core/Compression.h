@@ -1,15 +1,18 @@
 #pragma once
+
+#include <optional>
+
+
 namespace se
 {
 	namespace compression
 	{
-		///// Returns the maximum compressed size for given byte count
-		//size_t getMaxCompressedSize(int bytes);
+		// Returns the maximum compressed size for given byte count
+		size_t getMaxCompressedSize(const size_t bytes);
 
-		///// Compresses data from source into destination. Returns byte size of the compressed data, -1 if uncompression fails.
-		//size_t compress(const void* source, int sourceBytes, void* destination, int destinationBytes);
+		std::optional<std::vector<uint8_t>> compress(const void* const data, const size_t size);
 
-		///// Uncompress source data (compressed with SpehsEngine) into destination. Returns byte size of the uncompressed data, -1 if uncompression fails.
-		//size_t uncompress(const void* source, int sourceBytes, void* destination, int destinationBytes);
+		/// Uncompress source data (compressed with SpehsEngine) into destination. Returns byte size of the uncompressed data, -1 if uncompression fails.
+		std::optional<std::vector<uint8_t>> uncompress(const void* const data, const size_t size);
 	}
 }
