@@ -89,7 +89,6 @@ namespace se
 			std::shared_ptr<Connection>& addConnectionImpl(const std::shared_ptr<Connection> &connection);
 			void removeConnectionImpl(const std::vector<std::shared_ptr<Connection>>::iterator it);
 
-			ConnectionId nextConnectionId = ConnectionId(1u);
 			boost::shared_ptr<SocketUDP2> socket;
 			mutable std::shared_ptr<std::recursive_mutex> mutex;
 			std::thread thread;

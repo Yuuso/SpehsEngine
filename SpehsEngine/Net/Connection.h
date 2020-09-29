@@ -268,8 +268,8 @@ namespace se
 				time::Time countdown = time::fromSeconds(5.0f);
 			};
 
-			Connection(const boost::shared_ptr<SocketUDP2>& _socket, const std::shared_ptr<std::recursive_mutex>& _upperMutex, const boost::asio::ip::udp::endpoint& _endpoint, const ConnectionId _connectionId,
-				const EstablishmentType _establishmentType, const std::string_view _debugName);
+			Connection(const boost::shared_ptr<SocketUDP2>& _socket, const std::shared_ptr<std::recursive_mutex>& _upperMutex, const boost::asio::ip::udp::endpoint& _endpoint,
+				const ConnectionId _connectionId, const ConnectionId _remoteConnectionId, const std::string_view _debugName);
 
 			void update(const time::Time timeoutDeltaTime);
 			void receivePacket(const PacketHeader &packetHeader, std::vector<uint8_t>& buffer, const size_t payloadOffset);

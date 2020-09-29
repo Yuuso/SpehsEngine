@@ -91,9 +91,8 @@ namespace se
 				// Remove unreferenced connections that don't have pending operations
 				if (connectionStatus == Connection::Status::Connected && connections[i].use_count() == 1 && !connections[i]->hasPendingOperations())
 				{
-					DEBUG_LOG(1, "Dropping unused alive connection from: " + connections[i]->debugEndpoint + " (" + connections[i]->debugName + ")");
-					removeConnectionImpl(connections.begin() + i);
-					i--;
+					DEBUG_LOG(1, "Disconnecting unused alive connection from: " + connections[i]->debugEndpoint + " (" + connections[i]->debugName + ")");
+					connections[i]->queueDisconnect();
 				}
 				else if (connectionStatus == Connection::Status::Disconnected)
 				{
@@ -105,11 +104,10 @@ namespace se
 					*/
 					removeConnectionImpl(connections.begin() + i);
 					i--;
+					continue;
 				}
-				else
-				{
-					connections[i]->update(timeoutDeltaTime);
-				}
+
+				connections[i]->update(timeoutDeltaTime);
 			}
 			lastUpdateTime = now;
 		}
@@ -242,9 +240,9 @@ namespace se
 				{
 					// New incoming connection
 					const std::shared_ptr<Connection> newConnection = addConnectionImpl(std::shared_ptr<Connection>(
-						new Connection(socket, mutex, receivedPacket.senderEndpoint, generateNewConnectionId(), Connection::EstablishmentType::Incoming, debugName + ": Incoming connection")));
+						new Connection(socket, mutex, receivedPacket.senderEndpoint, generateNewConnectionId(), packetHeader.connectionId, debugName + ": Incoming connection")));
 					DEBUG_LOG(1, "Incoming connection from: " + newConnection->debugEndpoint + " started connecting with connection id: " + std::to_string(packetHeader.connectionId.value));
-					connections.back()->receivePacket(packetHeader, receivedPacket.data, readBuffer.getOffset());
+					newConnection->receivePacket(packetHeader, receivedPacket.data, readBuffer.getOffset());
 				}
 				else
 				{
@@ -300,7 +298,7 @@ namespace se
 				}
 
 				return addConnectionImpl(std::shared_ptr<Connection>(new Connection(
-					socket, mutex, asioEndpoint, generateNewConnectionId(), Connection::EstablishmentType::Outgoing, connectionDebugName)));
+					socket, mutex, asioEndpoint, generateNewConnectionId(), ConnectionId(), connectionDebugName)));
 			}
 			else
 			{

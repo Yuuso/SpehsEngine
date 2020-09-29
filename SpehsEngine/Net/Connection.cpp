@@ -45,15 +45,16 @@ namespace se
 		const time::Time timeoutTime = reliableHeartbeatInterval * 5;
 
 		Connection::Connection(const boost::shared_ptr<SocketUDP2>& _socket, const std::shared_ptr<std::recursive_mutex>& _upperMutex,
-			const boost::asio::ip::udp::endpoint& _endpoint, const ConnectionId _connectionId,
-			const EstablishmentType _establishmentType, const std::string_view _debugName)
+			const boost::asio::ip::udp::endpoint& _endpoint, const ConnectionId _connectionId, ConnectionId _remoteConnectionId,
+			const std::string_view _debugName)
 			: debugName(_debugName)
 			, debugEndpoint(toString(_endpoint))
 			, endpoint(_endpoint)
 			, connectionId(_connectionId)
-			, establishmentType(_establishmentType)
+			, establishmentType(_remoteConnectionId ? EstablishmentType::Incoming : EstablishmentType::Outgoing)
 			, upperMutex(_upperMutex)
 			, socket(_socket)
+			, remoteConnectionId(_remoteConnectionId)
 		{
 			LOCK_GUARD(lock, mutex, other);
 			ConnectPacket connectPacket;
@@ -825,7 +826,15 @@ namespace se
 				{
 					if (connectPacket.connectionId)
 					{
-						remoteConnectionId = connectPacket.connectionId;
+						switch (establishmentType)
+						{
+						case EstablishmentType::Incoming:
+							se_assert(remoteConnectionId == connectPacket.connectionId);
+							break;
+						case EstablishmentType::Outgoing:
+							se_assert(!remoteConnectionId);
+							remoteConnectionId = connectPacket.connectionId;
+						}
 						remoteDebugName = connectPacket.debugName;
 						DEBUG_LOG(1, "connected.");
 						setStatus(Status::Connected, upperLock, lock);
