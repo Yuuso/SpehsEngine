@@ -19,6 +19,7 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)AddressUtilityFunctions.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Aria\Aria.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Connection.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)ConnectionPackets.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Endpoint.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)GameFileClient.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)GameFileServer.cpp" />
@@ -45,6 +46,7 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)AddressUtilityFunctions.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Aria\Aria.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Connection.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)ConnectionPackets.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Endpoint.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)GameFileClient.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)GameFileServer.h" />

@@ -1,7 +1,9 @@
 #include "stdafx.h"
 #include "SpehsEngine/Net/IOService.h"
+
 #include "SpehsEngine/Core/Log.h"
 #include "SpehsEngine/Core/Thread.h"
+#include "SpehsEngine/Core/ScopedFrameLimiter.h"
 #include <boost/bind.hpp>
 
 
@@ -10,7 +12,8 @@ namespace se
 	namespace net
 	{
 		IOService::IOService()
-			: io_service()
+			: ioService()
+			, ioServiceWork(ioService)
 			, thread(boost::bind(&IOService::run, this))
 		{
 
@@ -20,9 +23,8 @@ namespace se
 		{
 			try
 			{
-				std::lock_guard<std::recursive_mutex> lock(mutex);
-				io_service.stop();
-				stop = true;
+				ioServiceWork.reset(); // End work.
+				ioService.stop();
 			}
 			catch (std::exception& e)
 			{
@@ -33,26 +35,26 @@ namespace se
 
 		void IOService::run()
 		{
+			/*
+				NOTES:
+				The 'ioServiceWork' member attribute prevents the run() method from running out of work and effectively blocking until destructor is called.
+				Previously we used a while loop here and calling run_one() to execute ioService's handlers.
+					-However, the previous while loop approach results in the application's cpu usage rising to 'very high'.
+					-Limiting the loop's "frame time" by hand reduces network performance significantly.
+					-One downside with using 'work' seems occasional spikes in network performance.
+			*/
 			setThreadName("IOService::run()");
 			boost::system::error_code error;
-			while (true)
+			ioService.run(error);
+			if (error)
 			{
-				std::lock_guard<std::recursive_mutex> lock(mutex);
-				io_service.run_one(error);
-				if (stop)
-				{
-					break;
-				}
-				if (error)
-				{
-					se::log::info("IOService: failed to run_one(). Boost asio error: " + error.message());
-				}
+				se::log::info("IOService::run() error: " + error.message());
 			}
 		}
 
 		boost::asio::io_service& IOService::getImplementationRef()
 		{
-			return io_service;
+			return ioService;
 		}
 	}
 }

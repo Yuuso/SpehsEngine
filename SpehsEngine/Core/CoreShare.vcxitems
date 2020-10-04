@@ -16,6 +16,7 @@
   <ItemGroup>
     <ClCompile Include="$(MSBuildThisFileDirectory)Archive.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)ArchiveUtilityFunctions.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)File\Timestamp.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Guid.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)GuidObjectContainer.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)LockGuard.cpp" />
@@ -45,6 +46,7 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)stdafx.cpp">
       <PrecompiledHeader>Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)STLOptionalUtilityFunctions.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)STLUnorderedMapUtilityFunctions.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)STLVectorUtilityFunctions.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)StringOperations.cpp" />
@@ -59,6 +61,8 @@
   <ItemGroup>
     <ClInclude Include="$(MSBuildThisFileDirectory)Archive.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)ArchiveUtilityFunctions.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)DeepCopyUniquePtr.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)File\Timestamp.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)LockGuard.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)ScopedFrameLimiter.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Guid.h" />
@@ -94,6 +98,7 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)ScopeTimer.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Shapes.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)stdafx.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)STLOptionalUtilityFunctions.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)STLUnorderedMapUtilityFunctions.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)STLVectorUtilityFunctions.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)StringOperations.h" />
@@ -109,5 +114,6 @@
   </ItemGroup>
   <ItemGroup>
     <Natvis Include="$(MSBuildThisFileDirectory)ReadBuffer.natvis" />
+    <Natvis Include="$(MSBuildThisFileDirectory)Time.natvis" />
   </ItemGroup>
 </Project>

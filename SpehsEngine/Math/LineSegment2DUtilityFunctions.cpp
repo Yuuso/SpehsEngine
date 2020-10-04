@@ -106,4 +106,26 @@ namespace se
 
 		return false;
 	}
+
+	float getDistance(const LineSegment2D& lineSegment, const glm::vec2& point)
+	{
+		//const float a = lineSegment.begin.y - lineSegment.end.y;
+		//const float b = lineSegment.end.x - lineSegment.begin.x;
+		//const float c = lineSegment.begin.x * lineSegment.end.y - lineSegment.end.x * lineSegment.begin.y;
+		//return abs(a * point.x + b * point.y + c) / sqrt(a * a + b * b);
+
+		const glm::vec2 lineSegmentVec = lineSegment.end - lineSegment.begin;
+		const float l2 = lineSegmentVec.x * lineSegmentVec.x + lineSegmentVec.y * lineSegmentVec.y;
+		if (l2 == 0.0)
+		{
+			return glm::length(lineSegment.begin - point);
+		}
+		// Consider the line extending the segment, parameterized as v + t (w - v).
+		// We find projection of point p onto the line. 
+		// It falls where t = [(p-v) . (w-v)] / |w-v|^2
+		// We clamp t from [0,1] to handle points outside the segment vw.
+		const float t = std::max(0.0f, std::min(1.0f, glm::dot(point - lineSegment.begin, lineSegmentVec) / l2));
+		const glm::vec2 projection = lineSegment.begin + t * (lineSegment.end - lineSegment.begin);  // Projection falls on the segment
+		return glm::length(point - projection);
+	}
 }

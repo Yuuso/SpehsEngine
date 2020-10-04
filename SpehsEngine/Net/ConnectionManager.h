@@ -30,6 +30,12 @@ namespace se
 			void update();
 
 			/*
+				Runs update() on loop until no connection has reliable data in send queue or specified timeout time has elapsed.
+				Returns true on success. Returns false on timeout.
+			*/
+			bool updateUntilNoReliablePacketsInSendQueue(const se::time::Time timeout = se::time::Time::zero);
+
+			/*
 				Attempts to start a new outgoing connection.
 				May return an empty shared pointer if an error occurs.
 				Returns an empty connection if connection was already established.
@@ -55,12 +61,14 @@ namespace se
 			void close();
 			bool bind(const Port port = Port());
 			bool isOpen() const;
+			bool hasPendingOperations() const;
 			Port getLocalPort() const;
 			Endpoint getLocalEndpoint() const;
-			size_t getSentBytes() const;
-			size_t getReceivedBytes() const;
+			uint64_t getSentBytes() const;
+			uint64_t getReceivedBytes() const;
 			void setDebugLogLevel(const int level);
 			int getDebugLogLevel() const;
+			void setDefaultConnectionSimulationSettings(const ConnectionSimulationSettings& _defaultConnectionSimulationSettings);
 
 			const std::string debugName;
 
@@ -73,20 +81,26 @@ namespace se
 			};
 
 			void run();
-
 			void receiveHandler(std::vector<uint8_t>& data, const boost::asio::ip::udp::endpoint& senderEndpoint);
 			void processReceivedPackets();
+			void processReceivedPacket(std::lock_guard<std::recursive_mutex>& lock, const PacketHeader& packetHeader, ReceivedPacket& receivedPacket, ReadBuffer& readBuffer);
 			void deliverOutgoingPackets();
+			ConnectionId generateNewConnectionId();
+			std::shared_ptr<Connection>& addConnectionImpl(const std::shared_ptr<Connection> &connection);
+			void removeConnectionImpl(const std::vector<std::shared_ptr<Connection>>::iterator it);
 
 			boost::shared_ptr<SocketUDP2> socket;
-			mutable std::recursive_mutex mutex;
+			mutable std::shared_ptr<std::recursive_mutex> mutex;
 			std::thread thread;
 			bool accepting = false;
 			bool destructorCalled = false;
+			time::Time lastUpdateTime;
 			std::vector<std::shared_ptr<Connection>> connections;
 			std::vector<ReceivedPacket> receivedPackets;
 			boost::signals2::signal<void(std::shared_ptr<Connection>&)> incomingConnectionSignal;
-			std::unordered_map<Connection*, boost::signals2::scoped_connection> incomingConnectionStatusChangedConnections;
+			std::unordered_map<ConnectionId, boost::signals2::scoped_connection> connectionStatusChangedConnections;
+
+			ConnectionSimulationSettings defaultConnectionSimulationSettings;
 		};
 	}
 }

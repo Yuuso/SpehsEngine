@@ -4,6 +4,7 @@
 #include <mutex>
 #include <boost/filesystem.hpp>
 
+
 namespace
 {
 	static std::recursive_mutex filestreamMutex;
@@ -59,10 +60,31 @@ namespace se
 	bool renameFile(const std::string& oldPath, const std::string& newPath)
 	{
 		std::lock_guard<std::recursive_mutex> lock(filestreamMutex);
+
+		// Verify directory
+		size_t directoryCharSearchCount = 0;
+		for (std::string::const_reverse_iterator it = newPath.rbegin(); it != newPath.rend(); it++)
+		{
+			directoryCharSearchCount++;
+			if (*it == '/' || *it == '\\')
+			{
+				std::string directoryPath(newPath.data(), newPath.size() - directoryCharSearchCount);
+				if (verifyDirectory(directoryPath))
+				{
+					break;
+				}
+				else
+				{
+					return false;
+				}
+			}
+		}
+
 		boost::system::error_code error;
 		boost::filesystem::rename(oldPath, newPath, error);
 		if (error)
 		{
+			log::warning(error.message());
 			return false;
 		}
 		else
@@ -232,5 +254,19 @@ namespace se
 	std::string getCurrentPath()
 	{
 		return boost::filesystem::current_path().generic_string();
+	}
+
+	file::Timestamp getFileTimestamp(const std::string_view filepath)
+	{
+		const boost::filesystem::path path(filepath.data());
+		const time_t time = boost::filesystem::last_write_time(path);
+		return file::Timestamp(time);
+	}
+
+	void setFileTimestamp(const std::string_view filepath, const file::Timestamp timestamp)
+	{
+		const time_t time = timestamp.value;
+		const boost::filesystem::path path(filepath.data());
+		boost::filesystem::last_write_time(path, time);
 	}
 }

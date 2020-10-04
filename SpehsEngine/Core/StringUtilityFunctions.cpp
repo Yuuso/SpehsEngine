@@ -1,12 +1,13 @@
 #include "stdafx.h"
 #include "SpehsEngine/Core/StringUtilityFunctions.h"
 
+#include "boost/lexical_cast.hpp"
 #include "SpehsEngine/Core/StringOperations.h"
 
 
 namespace se
 {
-	bool doesStartWith(const std::string& string, const std::string& searchParameter)
+	bool doesStartWith(const std::string_view string, const std::string_view searchParameter)
 	{
 		if (searchParameter.size() > string.size())
 		{
@@ -25,7 +26,7 @@ namespace se
 		}
 	}
 
-	bool doesEndWith(const std::string& string, const std::string& searchParameter)
+	bool doesEndWith(const std::string_view string, const std::string_view searchParameter)
 	{
 		if (searchParameter.size() > string.size())
 		{
@@ -43,6 +44,11 @@ namespace se
 			}
 			return true;
 		}
+	}
+
+	bool doesContain(const std::string_view string, const std::string_view searchParameter)
+	{
+		return string.find(searchParameter) != std::string::npos;
 	}
 
 	std::string toTimeLengthString(const time::Time& time, const size_t precision)
@@ -68,5 +74,98 @@ namespace se
 			const float f = time.asNanoseconds();
 			return toString(f, precision) + " ns";
 		}
+	}
+
+	std::string toByteString(const uint64_t bytes)
+	{
+		if (bytes >= 1024ull * 1024ull * 1024ull * 1024ull * 1024ull)
+		{
+			return se::toString(float(double(bytes) / double(1024ull * 1024ull * 1024ull * 1024ull * 1024ull)), 2) + " PB";
+		}
+		else if (bytes >= 1024ull * 1024ull * 1024ull * 1024ull)
+		{
+			return se::toString(float(double(bytes) / double(1024ull * 1024ull * 1024ull * 1024ull)), 2) + " TB";
+		}
+		else if (bytes >= 1024ull * 1024ull * 1024ull)
+		{
+			return se::toString(float(double(bytes) / double(1024ull * 1024ull * 1024ull)), 2) + " GB";
+		}
+		else if (bytes >= 1024ull * 1024ull)
+		{
+			return se::toString(float(double(bytes) / double(1024ull * 1024ull)), 2) + " MB";
+		}
+		else if (bytes >= 1024ull)
+		{
+			return se::toString(float(double(bytes) / double(1024ull)), 2) + " KB";
+		}
+		else
+		{
+			return std::to_string(bytes) + " B";
+		}
+	}
+
+	template<typename T>
+	inline bool fromStringImpl(const std::string_view string, T& valueOut)
+	{
+		try
+		{
+			valueOut = boost::lexical_cast<T>(string);
+			return true;
+		}
+		catch (const std::exception&)
+		{
+			valueOut = 0;
+			return false;
+		}
+	}
+
+	bool fromString(const std::string_view string, int64_t& valueOut)
+	{
+		return fromStringImpl(string, valueOut);
+	}
+
+	bool fromString(const std::string_view string, int32_t& valueOut)
+	{
+		return fromStringImpl(string, valueOut);
+	}
+
+	bool fromString(const std::string_view string, int16_t& valueOut)
+	{
+		return fromStringImpl(string, valueOut);
+	}
+
+	bool fromString(const std::string_view string, int8_t& valueOut)
+	{
+		return fromStringImpl(string, valueOut);
+	}
+
+	bool fromString(const std::string_view string, uint64_t& valueOut)
+	{
+		return fromStringImpl(string, valueOut);
+	}
+
+	bool fromString(const std::string_view string, uint32_t& valueOut)
+	{
+		return fromStringImpl(string, valueOut);
+	}
+
+	bool fromString(const std::string_view string, uint16_t& valueOut)
+	{
+		return fromStringImpl(string, valueOut);
+	}
+
+	bool fromString(const std::string_view string, uint8_t& valueOut)
+	{
+		return fromStringImpl(string, valueOut);
+	}
+
+	bool fromString(const std::string_view string, float& valueOut)
+	{
+		return fromStringImpl(string, valueOut);
+	}
+
+	bool fromString(const std::string_view string, double& valueOut)
+	{
+		return fromStringImpl(string, valueOut);
 	}
 }

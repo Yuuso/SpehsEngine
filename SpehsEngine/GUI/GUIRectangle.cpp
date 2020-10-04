@@ -488,19 +488,21 @@ namespace se
 
 	void GUIRectangle::setDisplayTexture(const std::string& path, const se::rendering::TextureParameter& _parameters)
 	{
-		if (!displayTexture)
+		if (se::rendering::TextureData* texData = getBatchManager().textureManager.getTextureData(path, _parameters))
 		{
-			displayTexture.reset(new DisplayTexture());
+			if (!displayTexture)
+			{
+				displayTexture.reset(new DisplayTexture());
+			}
+			displayTexture->polygon = getBatchManager().createPolygon(4, 0, float(texData->width), float(texData->height));
+			displayTexture->polygon->setTexture(texData);
+			displayTexture->polygon->setCameraMatrixState(false);
+			displayTexture->polygon->setRenderState(polygon->getRenderState());
+			displayTexture->width = uint16_t(texData->width);
+			displayTexture->height = uint16_t(texData->height);
+			displayTexture->polygon->setPlaneDepth(getDepth() + 1);
+			disableStateRecursiveUpwards(GUIRECT_POSITION_UPDATED_BIT | GUIRECT_SCALE_UPDATED_BIT);
 		}
-		se::rendering::TextureData* texData = getBatchManager().textureManager.getTextureData(path, _parameters);
-		displayTexture->polygon = getBatchManager().createPolygon(4, 0, float(texData->width), float(texData->height));
-		displayTexture->polygon->setTexture(texData);
-		displayTexture->polygon->setCameraMatrixState(false);
-		displayTexture->polygon->setRenderState(polygon->getRenderState());
-		displayTexture->width = uint16_t(texData->width);
-		displayTexture->height = uint16_t(texData->height);
-		displayTexture->polygon->setPlaneDepth(getDepth() + 1);
-		disableStateRecursiveUpwards(GUIRECT_POSITION_UPDATED_BIT | GUIRECT_SCALE_UPDATED_BIT);
 	}
 
 	void GUIRectangle::setDisplayTexture(const std::string& path)

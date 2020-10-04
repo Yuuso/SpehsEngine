@@ -8,13 +8,12 @@
 #include "boost/asio/placeholders.hpp"
 #include <string>
 
-
 #define DEBUG_LOG(level, message) if (getDebugLogLevel() >= level) \
 { \
 	se::log::info(debugName + "(" + getLocalPort().toString() + "): " + message); \
 }
 
-/**///#pragma optimize("", off)
+/**/#pragma optimize("", off)
 
 namespace
 {
@@ -161,45 +160,59 @@ namespace se
 			{
 				DEBUG_LOG(1, "binding successful.");
 				debugLocalPort = std::to_string(port.value);
+
 				return true;
 			}
 		}
 
-		bool SocketUDP2::sendPacket(const WriteBuffer& writeBuffer, const boost::asio::ip::udp::endpoint& endpoint)
+		void SocketUDP2::sendPacket(const WriteBuffer& writeBuffer, const boost::asio::ip::udp::endpoint& endpoint)
 		{
 			const std::vector<boost::asio::const_buffer> buffers{ boost::asio::const_buffer(writeBuffer.getData(), writeBuffer.getSize()) };
 			return sendPacket(buffers, endpoint);
 		}
 
-		bool SocketUDP2::sendPacket(const std::vector<boost::asio::const_buffer>& buffers, const boost::asio::ip::udp::endpoint& endpoint)
+		void SocketUDP2::sendPacket(const std::vector<boost::asio::const_buffer>& buffers, const boost::asio::ip::udp::endpoint& endpoint)
 		{
 			const size_t bufferSize = boost::asio::buffer_size(buffers);
 			if (bufferSize == 0)
 			{
 				DEBUG_LOG(1, "empty buffer provided. Returning success.");
-				return true;
+				return;
 			}
 
 			std::lock_guard<std::recursive_mutex> lock(mutex);
-			boost::system::error_code error;
-			
-			const size_t writtenBytes = boostSocket.send_to(buffers, endpoint, 0, error);
-			sentBytes += writtenBytes;
+			boostSocket.async_send_to(buffers, endpoint,
+				boost::bind(&SocketUDP2::boostSendHandler, shared_from_this(), endpoint,
+					boost::asio::placeholders::error,
+					boost::asio::placeholders::bytes_transferred));
+		}
+
+		void SocketUDP2::boostSendHandler(const boost::asio::ip::udp::endpoint endpoint, const boost::system::error_code& error, const std::size_t bytes)
+		{
+			std::lock_guard<std::recursive_mutex> lock(mutex);
+
 			if (error)
 			{
-				DEBUG_LOG(1, "send failed. Failed to send data buffer. Boost error: " + error.message());
-				return false;
+				if (error.value() == 10040)
+				{
+					/*
+						"A message sent on a datagram socket was larger than the internal message buffer or some other network limit,
+						or the buffer used to receive a datagram into was smaller than the datagram itself"
+					*/
+					se::log::warning(error.message());
+				}
+				else
+				{
+					DEBUG_LOG(1, "send failed. Failed to send data buffer. Boost error: " + error.message());
+				}
+				return;
 			}
-			if (writtenBytes != bufferSize)
+			else
 			{
-				DEBUG_LOG(1, "send failed. Failed to send the whole packet.");
-				return false;
+				sentBytes += bytes;
+				lastSendTime = time::now();
+				DEBUG_LOG(2, "packet sent to: " + endpoint.address().to_string() + ":" + std::to_string(endpoint.port()) + ". Size: " + std::to_string(bytes));
 			}
-
-			DEBUG_LOG(2, "packet sent to: " + endpoint.address().to_string() + ":" + std::to_string(endpoint.port()) + ". Size: " + std::to_string(bufferSize));
-
-			lastSendTime = time::now();
-			return true;
 		}
 
 		void SocketUDP2::setReceiveHandler(const std::function<void(std::vector<uint8_t>&, const boost::asio::ip::udp::endpoint&)>& _receiveHandler)
@@ -252,19 +265,23 @@ namespace se
 			{
 				if (error == boost::asio::error::operation_aborted)
 				{
-					DEBUG_LOG(1, "failed to receive. Boost asio error: operation_aborted");
+					DEBUG_LOG(1, "error while receiving: operation_aborted");
 				}
 				else if (error == boost::asio::error::connection_refused)
 				{
-					DEBUG_LOG(1, "failed to receive. Boost asio error: connection_refused. Did you choose the wrong port?");
+					DEBUG_LOG(1, "error while receiving: connection_refused. Did you choose the wrong port? " + error.message());
 				}
 				else if (error == boost::asio::error::eof)
 				{
-					DEBUG_LOG(1, "remote socket closed connection.");
+					DEBUG_LOG(1, "error while receiving: eof. Remote socket closed connection.");
 				}
 				else if (error == boost::asio::error::connection_reset)
 				{
-					DEBUG_LOG(1, "remote socket closed connection.");
+					DEBUG_LOG(1, "error while receiving: connection_reset. Remote socket closed connection.");
+				}
+				else if (error == boost::asio::error::bad_descriptor)
+				{
+					DEBUG_LOG(1, "error while receiving: bad descriptor.");
 				}
 				else
 				{
@@ -343,16 +360,34 @@ namespace se
 			return localEndpoint.port();
 		}
 
-		size_t SocketUDP2::getSentBytes() const
+		uint64_t SocketUDP2::getSentBytes() const
 		{
 			std::lock_guard<std::recursive_mutex> lock(mutex);
 			return sentBytes;
 		}
 
-		size_t SocketUDP2::getReceivedBytes() const
+		uint64_t SocketUDP2::getReceivedBytes() const
 		{
 			std::lock_guard<std::recursive_mutex> lock(mutex);
 			return receivedBytes;
+		}
+
+		uint16_t SocketUDP2::getMaxSendBufferSize() const
+		{
+			std::lock_guard<std::recursive_mutex> lock(mutex);
+			boost::asio::socket_base::send_buffer_size option;
+			boost::system::error_code error;
+			boostSocket.get_option(option, error);
+			if (error)
+			{
+				se_assert(false && "SocketUDP2::getMaxSendBufferSize() failed");
+				return 0;
+			}
+			else
+			{
+				const uint16_t size = uint16_t(option.value());
+				return size;
+			}
 		}
 
 		void SocketUDP2::setDebugLogLevel(const int level)

@@ -13,4 +13,5 @@ namespace se
 
 	LineSegment2DOrientation getOrientation(const glm::vec2& begin, const glm::vec2& middle, const glm::vec2& end);
 
+	float getDistance(const LineSegment2D& lineSegment, const glm::vec2& point);
 }

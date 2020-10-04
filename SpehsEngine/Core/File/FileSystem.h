@@ -1,6 +1,9 @@
 #pragma once
+
+#include "SpehsEngine/Core/File/Timestamp.h"
 #include <string>
 #include <vector>
+
 
 namespace se
 {
@@ -34,4 +37,7 @@ namespace se
 		It may be changed unexpectedly by a third-party or system library functions, or by another thread.
 	*/
 	std::string getCurrentPath();
+
+	file::Timestamp getFileTimestamp(const std::string_view filepath);
+	void setFileTimestamp(const std::string_view filepath, const file::Timestamp timestamp);
 }
