@@ -2,7 +2,7 @@
 
 #include "bgfx/bgfx.h" // TODO
 #include "SpehsEngine/Graphics/Types.h"
-#include "SpehsEngine/Graphics/Shader.h"
+#include "SpehsEngine/Graphics/Material.h"
 
 
 namespace se
@@ -24,6 +24,7 @@ namespace se
 			RenderInfoChanged	= (1 << 1),
 			VerticesChanged		= (1 << 2),
 			IndicesChanged		= (1 << 3),
+			EverythingChanged	= std::numeric_limits<PrimitiveUpdateFlagsType>::max()
 		};
 
 		enum WindowUpdateFlag : WindowUpdateFlagsType
@@ -47,9 +48,16 @@ namespace se
 		{
 			RenderFlagsType renderFlags;
 			PrimitiveType primitiveType;
-			std::shared_ptr<Shader> shader;
+			std::shared_ptr<Material> material;
 			VertexAttributeFlagsType attributes;
 		};
+		inline bool operator==(const RenderInfo& _left, const RenderInfo& _right)
+		{
+			return _left.renderFlags == _right.renderFlags
+				&& _left.primitiveType == _right.primitiveType
+				&& _left.material == _right.material
+				&& _left.attributes == _right.attributes;
+		}
 
 		struct BatchPosition
 		{
@@ -57,6 +65,14 @@ namespace se
 			size_t verticesEnd;
 			size_t indicesStart;
 			size_t indicesEnd;
+		};
+
+		enum class TextureStatus
+		{
+			Init,
+			Loading,
+			Valid,
+			Error,
 		};
 	}
 }

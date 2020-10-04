@@ -1,10 +1,11 @@
 #pragma once
 
+#include "SpehsEngine/Graphics/ResourceHandle.h"
 #include "SpehsEngine/Graphics/Types.h"
-#include "bgfx/bgfx.h" // !
 #include "glm/vec4.hpp"
 #include "glm/mat3x3.hpp"
 #include "glm/mat4x4.hpp"
+#include <memory>
 #include <stdint.h>
 #include <string>
 
@@ -28,6 +29,8 @@
 
 	-- Spehs Engine --------
 	- u_normal				mat4							Transpose of inverse of upper-left 3x3 part of model[0]
+
+	TODO: Update from lights and materials
 */
 
 
@@ -35,10 +38,13 @@ namespace se
 {
 	namespace graphics
 	{
+		class Texture;
+
 		class Uniform
 		{
 		public:
 
+			Uniform(const std::string_view _name, const UniformType _type, const uint16_t _numElements = 1);
 			~Uniform();
 
 			Uniform(const Uniform& _other) = delete;
@@ -50,29 +56,22 @@ namespace se
 			bool operator==(const Uniform& _other) const;
 
 
+			const std::string& getName() const;
 			const UniformType getType() const;
 			const uint16_t getNumElements() const;
-			const std::string& getName() const;
 
-			void set(const glm::vec4& _value, const uint16_t _numElements = 1);
-			void set(const glm::mat3& _value, const uint16_t _numElements = 1);
-			void set(const glm::mat4& _value, const uint16_t _numElements = 1);
-			void set(const float*	  _value, const uint16_t _numElements);
-			// TODO: Sampler
-
-			Uniform(const bgfx::UniformInfo& _uniformInfo, const bgfx::UniformHandle _uniformHandle);
+			void set(const glm::vec4* _value, const uint16_t _numElements = 1);
+			void set(const glm::mat3* _value, const uint16_t _numElements = 1);
+			void set(const glm::mat4* _value, const uint16_t _numElements = 1);
+			void set(const std::shared_ptr<Texture>& _value, const uint8_t _stage);
 
 		private:
 
-			friend class Shader;
+			const std::string name;
+			const UniformType type;
+			const uint16_t numElements;
 
-			void reset(const bgfx::UniformInfo& _uniformInfo, const bgfx::UniformHandle _uniformHandle);
-
-			std::string name;
-			UniformType type;
-			uint16_t numElements;
-
-			bgfx::UniformHandle uniformHandle;
+			ResourceHandle uniformHandle = INVALID_RESOURCE_HANDLE;
 		};
 	}
 }

@@ -1,53 +1,88 @@
-$input v_position, v_normal, v_color0
+$input v_position, v_normal, v_color0, v_texcoord0
 
 #include "bgfx_shader.sh"
 #include "se_shader.sh"
+#include "se_lights.sh"
+#include "se_materials.sh"
 
-#define MAX_POINT_LIGHTS 16
+SAMPLER2D(s_texColor, 0);
+SAMPLER2D(s_texNormal, 1);
 
-uniform vec4 u_ambientLight_ColorIntensity;
-uniform vec4 u_pointLight_Count;
-uniform vec4 u_pointLight_PositionIRadius[MAX_POINT_LIGHTS];
-uniform vec4 u_pointLight_ColorORadius[MAX_POINT_LIGHTS];
-
-#define u_ambientLightColor 		u_ambientLight_ColorIntensity.xyz
-#define u_ambientLightIntensity 	u_ambientLight_ColorIntensity.w
-#define u_pointLightCount 			int(u_pointLight_Count.x)
-#define u_pointLightPosition(n)		u_pointLight_PositionIRadius[n].xyz
-#define u_pointLightInnerRadius(n)	u_pointLight_PositionIRadius[n].w
-#define u_pointLightOuterRadius(n)	u_pointLight_ColorORadius[n].w
-#define u_pointLightColor(n)		u_pointLight_ColorORadius[n].xyz
 
 void main()
 {
 	vec3 position = v_position;
-	vec3 normal = normalize(v_normal);
 	vec3 viewPosition = getViewPosition();
+	vec3 viewDirection = normalize(viewPosition - position);
+	vec3 normal = v_normal + texture2D(s_texNormal, v_texcoord0).rgb * viewDirection;
+	normal = normalize(normal);
 
-	float specularStrength = 0.5;
-	float shininess = 32.0;
+	float specularStrength = u_phongShininess;
+	float shininess = u_phongSpecularStrength;
 
-	vec3 ambientColor = u_ambientLightColor * u_ambientLightIntensity;
-
+	vec3 ambientColor = vec3_splat(0.0);
 	vec3 diffuseColor = vec3_splat(0.0);
 	vec3 specularColor = vec3_splat(0.0);
-	for (int i = 0; i < u_pointLightCount; i++)
-	{
-		ASSERT(u_pointLightInnerRadius(i) < u_pointLightOuterRadius(i));
-		float distanceToLight = distance(u_pointLightPosition(i), position);
-		float distanceToInner = max(0.0, distanceToLight - u_pointLightInnerRadius(i));
-		float fadeZone = u_pointLightOuterRadius(i) - u_pointLightInnerRadius(i);
-		float distanceFactor = 1.0 - clamp(distanceToInner / fadeZone, 0.0, 1.0);
 
-		vec3 lightDirection = normalize(u_pointLightPosition(i) - position);
-		float diffuseFactor = max(0.0, dot(normal, lightDirection));
-		diffuseColor = diffuseColor + diffuseFactor * distanceFactor * u_pointLightColor(i);
-		
-		vec3 viewDirection = normalize(viewPosition - position);
-		vec3 reflectDirection = reflect(-lightDirection, normal);
-		float specularFactor = pow(max(0.0, dot(viewDirection, reflectDirection)), shininess);
-		specularColor = specularColor + specularFactor * specularStrength * distanceFactor * u_pointLightColor(i);
+	int lightCount = u_LightCount;
+	for (int i = 0; i < lightCount; i++)
+	{
+		vec3 surfaceToLight;
+		float attenuation = u_LightIntensity(i);
+
+		if (attenuation <= 0.0)
+			continue;
+
+		if (u_LightIsGlobal(i))
+		{
+			if (length(u_LightDirection(i)) == 0.0)
+			{
+				// Ambient light
+				ambientColor = ambientColor + u_LightColor(i) * attenuation;
+				continue;
+			}
+			
+			// Directional light
+			surfaceToLight = -normalize(u_LightDirection(i));
+		}
+		else
+		{
+			// Point light
+			surfaceToLight = normalize(u_LightPosition(i) - position);
+			attenuation = attenuation * getLinearDistanceAttenuation(i, position);
+
+			if (attenuation <= 0.0)
+				continue;
+
+			if (length(u_LightDirection(i)) > 0.0)
+			{
+				// Spot light
+				attenuation = attenuation * getLinearConeAttenuation(i, surfaceToLight);
+			}
+		}
+
+		if (attenuation <= 0.0)
+			continue;
+
+		// Diffuse
+		float diffuseFactor = max(0.0, dot(normal, surfaceToLight));
+		diffuseColor = diffuseColor + diffuseFactor * attenuation * u_LightColor(i);
+
+		// Specular
+		float specularFactor;
+		if (true)
+		{
+			// Blinn
+			vec3 halfwayDirection = normalize(surfaceToLight + viewDirection);
+			specularFactor = pow(max(0.0, dot(normal, halfwayDirection)), shininess);
+		}
+		else
+		{
+			vec3 reflectDirection = reflect(-surfaceToLight, normal);
+			specularFactor = pow(max(0.0, dot(viewDirection, reflectDirection)), shininess);
+		}
+		specularColor = specularColor + specularFactor * specularStrength * attenuation * u_LightColor(i);	
 	}
 
-	gl_FragColor = v_color0 * vec4(ambientColor + diffuseColor + specularColor, 1.0);
+	gl_FragColor = v_color0 * texture2D(s_texColor, v_texcoord0) * vec4(ambientColor + diffuseColor + specularColor, 1.0);
 }

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "SpehsEngine/Core/Color.h"
+#include "SpehsEngine/Core/AsyncTaskManager.h"
 #include "bgfx/bgfx.h" // TODO: get rid of this
 #include "glm/vec2.hpp"
 #include "glm/vec3.hpp"
@@ -108,6 +109,7 @@ namespace se
 
 		enum class UniformType
 		{
+			Invalid,
 			Sampler,
 			Vec4,
 			Mat3,
@@ -152,6 +154,31 @@ namespace se
 			ClearColor		= (1 << 0),
 			ClearDepth		= (1 << 1),
 			ClearStencil	= (1 << 2),
+		};
+
+		enum class TextureWrappingMode
+		{
+			Repeat,
+			Mirror,
+			Clamp,
+			Border
+		};
+
+		enum class TextureSamplingMode
+		{
+			Linear,
+			Point,
+			Anisotrophic
+		};
+
+		struct TextureModes
+		{
+			TextureWrappingMode wrapU = TextureWrappingMode::Repeat;
+			TextureWrappingMode wrapV = TextureWrappingMode::Repeat;
+			TextureWrappingMode wrapW = TextureWrappingMode::Repeat;
+			TextureSamplingMode sampleMin = TextureSamplingMode::Linear;
+			TextureSamplingMode sampleMag = TextureSamplingMode::Linear;
+			TextureSamplingMode sampleMip = TextureSamplingMode::Linear;
 		};
 	}
 }

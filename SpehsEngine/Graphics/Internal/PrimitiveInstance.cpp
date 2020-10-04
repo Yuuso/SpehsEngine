@@ -105,7 +105,6 @@ namespace se
 					}
 				}
 			}
-			primitive->updateFlags = 0;
 		}
 
 		void PrimitiveInstance::destroyBuffers()
@@ -122,20 +121,48 @@ namespace se
 				indexBufferHandle = BGFX_INVALID_HANDLE;
 			}
 		}
-		void PrimitiveInstance::render(RenderContext& _renderContext)
+		void PrimitiveInstance::createBuffers()
 		{
 			const VertexBuffer& vertices = getVertices();
 			const std::vector<IndexType>& indices = getIndices();
 
 			se_assert(vertices.size() != 0 && indices.size() != 0);
 
+			if (!bgfx::isValid(vertexBufferHandle))
+			{
+				const bgfx::Memory* bufferMemory = bgfx::copy(vertices.data(), uint32_t(vertices.bytes()));
+				vertexBufferHandle = bgfx::createVertexBuffer(bufferMemory, findVertexLayout(vertices.getAttributes()));
+			}
+			if (!bgfx::isValid(indexBufferHandle))
+			{
+				const bgfx::Memory* bufferMemory = bgfx::copy(&indices[0], uint32_t(indices.size() * sizeof(indices[0])));
+				indexBufferHandle = bgfx::createIndexBuffer(bufferMemory);
+				static_assert(sizeof(IndexType) == 2);
+			}
+		}
+
+		void PrimitiveInstance::render(RenderContext& _renderContext)
+		{
 			const RenderInfo renderInfo = getRenderInfo();
+
+			if (!renderInfo.material->getShader()->ready())
+			{
+				log::warning("Shader not ready for rendering!");
+				return;
+			}
 
 			bgfx::setTransform(reinterpret_cast<const void*>(&transformMatrix));
 			_renderContext.defaultUniforms->setNormalMatrix(normalMatrix);
 
+			renderInfo.material->bind();
+
 			if (getRenderMode() == RenderMode::Transient)
 			{
+				const VertexBuffer& vertices = getVertices();
+				const std::vector<IndexType>& indices = getIndices();
+
+				se_assert(vertices.size() != 0 && indices.size() != 0);
+
 				// TODO: getAvailTransientVertexBuffer
 				bgfx::TransientIndexBuffer transientIndexBuffer;
 				bgfx::TransientVertexBuffer transientVertexBuffer;
@@ -151,24 +178,20 @@ namespace se
 			{
 				se_assert(primitive->getRenderMode() == RenderMode::Dynamic);
 
-				if (!bgfx::isValid(vertexBufferHandle))
-				{
-					const bgfx::Memory* bufferMemory = bgfx::copy(vertices.data(), uint32_t(vertices.bytes()));
-					vertexBufferHandle = bgfx::createVertexBuffer(bufferMemory, findVertexLayout(vertices.getAttributes()));
-				}
-				if (!bgfx::isValid(indexBufferHandle))
-				{
-					const bgfx::Memory* bufferMemory = bgfx::copy(&indices[0], uint32_t(indices.size() * sizeof(indices[0])));
-					indexBufferHandle = bgfx::createIndexBuffer(bufferMemory);
-					static_assert(sizeof(IndexType) == 2);
-				}
+				createBuffers();
 
 				bgfx::setIndexBuffer(indexBufferHandle);
 				bgfx::setVertexBuffer(0, vertexBufferHandle);
 			}
 
-			applyRenderState(getRenderInfo(), _renderContext);
-			bgfx::submit(_renderContext.currentViewId, renderInfo.shader->programHandle);
+			applyRenderState(renderInfo, _renderContext);
+			bgfx::submit(_renderContext.currentViewId, { renderInfo.material->getShader()->getHandle() });
+		}
+
+		void PrimitiveInstance::postRender()
+		{
+			// Clear flags after all scenes have had the chance to update
+			primitive->updateFlags = 0;
 		}
 
 		void PrimitiveInstance::batch(Batch& _batch)
@@ -203,7 +226,7 @@ namespace se
 			RenderInfo result;
 			result.renderFlags = primitive->getRenderFlags();
 			result.primitiveType = primitive->getPrimitiveType();
-			result.shader = primitive->getShader();
+			result.material = primitive->getMaterial();
 			result.attributes = primitive->getVertices().getAttributes();
 			return result;
 		}

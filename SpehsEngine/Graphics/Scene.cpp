@@ -12,6 +12,7 @@ namespace se
 	{
 		Scene::Scene()
 		{
+			lightBatch = std::make_unique<LightBatch>();
 		}
 		Scene::~Scene()
 		{
@@ -53,8 +54,34 @@ namespace se
 			primitives.pop_back();
 		}
 
+		void Scene::add(Light& _light)
+		{
+			lightBatch->add(_light);
+		}
+		void Scene::remove(Light& _light)
+		{
+			lightBatch->remove(_light);
+		}
+
+		void Scene::clearPrimitives()
+		{
+			primitives.clear();
+			batches.clear();
+		}
+		void Scene::clearLights()
+		{
+			lightBatch->clear();
+		}
+		void Scene::clear()
+		{
+			clearPrimitives();
+			clearLights();
+		}
+
 		void Scene::render(RenderContext& _renderContext)
 		{
+			lightBatch->bind();
+
 			// TODO: Optimize unbatching
 
 			for (size_t i = 0; i < primitives.size(); )
@@ -95,6 +122,15 @@ namespace se
 				}
 				i++;
 			}
+		}
+
+		void Scene::postRender()
+		{
+			for (auto&& primitive : primitives)
+			{
+				primitive->postRender();
+			}
+			lightBatch->postRender();
 		}
 
 		void Scene::batch(PrimitiveInstance& _primitive)

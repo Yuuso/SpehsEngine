@@ -105,7 +105,7 @@
       <SubSystem>Console</SubSystem>
     </Link>
     <Lib>
-      <AdditionalDependencies>assimp-vc142-mtd.lib;bgfxDebug.lib;bxDebug.lib;bimgDebug.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>assimp-vc142-mtd.lib;bgfxDebug.lib;bxDebug.lib;bimgDebug.lib;bimg_decodeDebug.lib;bimg_encodeDebug.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(SPEHSENGINE_ROOT)Dependencies\lib\;$(SPEHSENGINE_ROOT)bin\$(Platform)\$(Configuration)\$(PlatformToolset);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Lib>
   </ItemDefinitionGroup>
@@ -117,7 +117,7 @@
       <SubSystem>Console</SubSystem>
     </Link>
     <Lib>
-      <AdditionalDependencies>assimp-vc142-mtd.lib;bgfxDebug.lib;bxDebug.lib;bimgDebug.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>assimp-vc142-mtd.lib;bgfxDebug.lib;bxDebug.lib;bimgDebug.lib;bimg_decodeDebug.lib;bimg_encodeDebug.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(SPEHSENGINE_ROOT)Dependencies\lib\;$(SPEHSENGINE_ROOT)bin\$(Platform)\$(Configuration)\$(PlatformToolset);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Lib>
   </ItemDefinitionGroup>
@@ -131,7 +131,7 @@
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
     <Lib>
-      <AdditionalDependencies>assimp-vc142-mt.lib;bgfxRelease.lib;bxRelease.lib;bimgRelease.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>assimp-vc142-mt.lib;bgfxRelease.lib;bxRelease.lib;bimgRelease.lib;bimg_decodeRelease.lib;bimg_encodeRelease.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -144,21 +144,35 @@
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
     <Lib>
-      <AdditionalDependencies>assimp-vc142-mt.lib;bgfxRelease.lib;bxRelease.lib;bimgRelease.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>assimp-vc142-mt.lib;bgfxRelease.lib;bxRelease.lib;bimgRelease.lib;bimg_decodeRelease.lib;bimg_encodeRelease.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="DefaultMaterials.h" />
+    <ClInclude Include="DefaultShaderManager.h" />
     <ClInclude Include="Internal\Batch.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="GraphicsLib.h" />
     <ClInclude Include="Internal\DefaultUniforms.h" />
     <ClInclude Include="Internal\InternalTypes.h" />
     <ClInclude Include="Internal\InternalUtilities.h" />
+    <ClInclude Include="Internal\LightBatch.h" />
+    <ClInclude Include="Internal\Resource.h" />
+    <ClInclude Include="Lights.h" />
+    <ClInclude Include="Material.h" />
     <ClInclude Include="PrecompiledInclude.h" />
     <ClInclude Include="Primitive.h" />
     <ClInclude Include="Internal\PrimitiveInstance.h" />
     <ClInclude Include="Renderer.h" />
-    <ClInclude Include="ShaderPathFinder.h" />
+    <ClInclude Include="ResourceData.h" />
+    <ClInclude Include="ResourceHandle.h" />
+    <ClInclude Include="ResourceLoader.h" />
+    <ClInclude Include="Internal\ResourceManager.h" />
+    <ClInclude Include="ResourcePathFinder.h" />
+    <ClInclude Include="Texture.h" />
+    <ClInclude Include="Internal\TextureFallbacks.h" />
+    <ClInclude Include="TextureInput.h" />
+    <ClInclude Include="TextureManager.h" />
     <ClInclude Include="Types.h" />
     <ClInclude Include="Scene.h" />
     <ClInclude Include="Shader.h" />
@@ -173,11 +187,15 @@
     <ClInclude Include="Internal\WindowInstance.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="DefaultMaterials.cpp" />
+    <ClCompile Include="DefaultShaderManager.cpp" />
     <ClCompile Include="Internal\Batch.cpp" />
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="GraphicsLib.cpp" />
     <ClCompile Include="Internal\DefaultUniforms.cpp" />
     <ClCompile Include="Internal\InternalUtilities.cpp" />
+    <ClCompile Include="Internal\LightBatch.cpp" />
+    <ClCompile Include="Lights.cpp" />
     <ClCompile Include="Primitive.cpp" />
     <ClCompile Include="Internal\PrimitiveInstance.cpp" />
     <ClCompile Include="Renderer.cpp" />
@@ -191,6 +209,8 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="Texture.cpp" />
+    <ClCompile Include="TextureManager.cpp" />
     <ClCompile Include="Uniform.cpp" />
     <ClCompile Include="VertexBuffer.cpp" />
     <ClCompile Include="View.cpp" />

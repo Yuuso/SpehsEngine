@@ -27,23 +27,13 @@ namespace se
 			DefaultUniforms& operator=(DefaultUniforms&& _other) = delete;
 
 
-			void reload();
-
 			void setNormalMatrix(const glm::mat4& _normal);
-			void setLightParams();
 
 		private:
 
 			void destroy();
 
 			bgfx::UniformHandle normal;
-
-			// lighting temps
-			inline static constexpr size_t MAX_NUM_LIGHTS = 16;
-			bgfx::UniformHandle ambientLight_ColorIntensity;
-			bgfx::UniformHandle pointLight_Count;
-			bgfx::UniformHandle pointLight_PositionIRadius;
-			bgfx::UniformHandle pointLight_ColorORadius;
 		};
 	}
 }

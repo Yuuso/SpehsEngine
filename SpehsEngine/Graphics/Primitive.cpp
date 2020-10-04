@@ -25,9 +25,9 @@ namespace se
 		{
 			return renderState;
 		}
-		const std::shared_ptr<Shader> Primitive::getShader() const
+		std::shared_ptr<Material> Primitive::getMaterial() const
 		{
-			return shader;
+			return material;
 		}
 		const VertexBuffer& Primitive::getVertices() const
 		{
@@ -86,17 +86,23 @@ namespace se
 		}
 		void Primitive::setRenderState(const bool _state)
 		{
+			if (renderState == _state)
+				return;
 			renderState = _state;
+
+			// Update everything when re-enabling rendering
+			if (renderState)
+				enableBit(updateFlags, PrimitiveUpdateFlag::EverythingChanged);
 		}
 		void Primitive::toggleRenderState()
 		{
-			renderState = !renderState;
+			setRenderState(!renderState);
 		}
-		void Primitive::setShader(std::shared_ptr<Shader> _shader)
+		void Primitive::setMaterial(std::shared_ptr<Material> _material)
 		{
-			if (shader == _shader)
+			if (material == _material)
 				return;
-			shader = _shader;
+			material = _material;
 			enableBit(updateFlags, PrimitiveUpdateFlag::RenderInfoChanged);
 		}
 		void Primitive::setVertices(const VertexBuffer& _vertices)

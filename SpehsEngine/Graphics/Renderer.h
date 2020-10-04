@@ -1,11 +1,11 @@
 #pragma once
 
-#include "SpehsEngine/Graphics/Window.h"
-#include "SpehsEngine/Graphics/Internal/WindowInstance.h"
-#include "SpehsEngine/Graphics/Internal/DefaultUniforms.h"
 #include "glm/vec2.hpp"
-#include <vector>
+#include "SpehsEngine/Graphics/Internal/DefaultUniforms.h"
+#include "SpehsEngine/Graphics/Internal/WindowInstance.h"
+#include "SpehsEngine/Graphics/Window.h"
 #include <memory>
+#include <vector>
 
 
 namespace se
@@ -46,11 +46,11 @@ namespace se
 
 			static void debugTextPrintf(const uint16_t _column, const uint16_t _line, const char* _format, ...);
 
-			void reloadDefaultUniforms(); // TODO: ?!!?!?!?
-
 		private:
 
 			void inputUpdate();
+
+			inline static bool initialized = false;
 
 			std::vector<std::unique_ptr<WindowInstance>> windows;
 			WindowInstance* defaultWindow = nullptr;

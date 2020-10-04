@@ -3,6 +3,7 @@
 #include "boost/signals2.hpp"
 #include "SpehsEngine/Graphics/Types.h"
 #include "SpehsEngine/Graphics/VertexBuffer.h"
+#include "SpehsEngine/Graphics/Material.h"
 #include "glm/vec3.hpp"
 #include "glm/gtc/quaternion.hpp"
 #include <vector>
@@ -32,7 +33,7 @@ namespace se
 
 			virtual const std::string&				getName() const;
 			virtual const bool						getRenderState() const;
-			virtual const std::shared_ptr<Shader>	getShader() const;
+			virtual std::shared_ptr<Material>		getMaterial() const;
 			virtual const VertexBuffer&				getVertices() const;
 			virtual const std::vector<IndexType>&	getIndices() const;
 
@@ -51,7 +52,7 @@ namespace se
 			virtual void							setName(const std::string_view _name);
 			virtual void							setRenderState(const bool _state);
 			virtual void							toggleRenderState();
-			virtual void							setShader(std::shared_ptr<Shader> _shader);
+			virtual void							setMaterial(std::shared_ptr<Material> _material);
 			virtual void							setVertices(const VertexBuffer& _vertices);
 			virtual void							setIndices(const std::vector<uint16_t>& _indices);
 			virtual void							setColor(const Color& _color); // TODO: How to deal with colors?
@@ -76,7 +77,7 @@ namespace se
 			RenderFlagsType							renderFlags				= RenderFlag::DepthTest;
 			PrimitiveType							primitiveType			= PrimitiveType::Triangles;
 			RenderMode								renderMode				= RenderMode::Dynamic;
-			std::shared_ptr<Shader>					shader					= nullptr;
+			std::shared_ptr<Material>				material				= nullptr;
 			VertexBuffer							vertices;
 			std::vector<IndexType>					indices;
 

@@ -1,7 +1,10 @@
 #include "stdafx.h"
 #include "SpehsEngine/Graphics/Shader.h"
 
+#include <bgfx/bgfx.h>
 #include "SpehsEngine/Core/File/File.h"
+#include "SpehsEngine/Core/Log.h"
+#include "SpehsEngine/Graphics/Internal/InternalUtilities.h"
 
 
 namespace se
@@ -9,8 +12,7 @@ namespace se
 	namespace graphics
 	{
 		Shader::Shader(const std::string_view _name)
-			: name(_name)
-			, programHandle(BGFX_INVALID_HANDLE)
+			: Resource(_name)
 		{
 		}
 		Shader::~Shader()
@@ -20,103 +22,95 @@ namespace se
 
 		void Shader::destroy()
 		{
-			uniforms.clear();
-			if (bgfx::isValid(programHandle))
-			{
-				bgfx::destroy(programHandle);
-				programHandle = BGFX_INVALID_HANDLE;
-			}
+			if (!resourceData)
+				return;
+
+			safeDestroy<bgfx::ProgramHandle>(resourceData->handle);
+			safeDestroy<bgfx::ShaderHandle>(resourceData->vertexShaderHandle);
+			safeDestroy<bgfx::ShaderHandle>(resourceData->fragmentShaderHandle);
+
+			resourceData.reset();
 		}
-		void Shader::reload()
+
+		void Shader::reload(std::shared_ptr<ResourceLoader> _resourceLoader)
 		{
-			if (vertexShaderPath.empty() || fragmentShaderPath.empty())
+			if (!reloadable())
 			{
-				log::error("Cannot reload shader, path not defined!");
+				log::error("Cannot reload shader!");
 				return;
 			}
+			destroy();
+			create(vertexShaderPath, fragmentShaderPath, _resourceLoader);
+		}
+
+		bool Shader::reloadable() const
+		{
+			return !vertexShaderPath.empty() && !fragmentShaderPath.empty();
+		}
+
+		std::shared_ptr<ResourceData> Shader::createResource(const std::string _vertexShaderPath, const std::string _fragmentShaderPath)
+		{
 			File vertexShaderFile;
 			File fragmentShaderFile;
-			readFile(vertexShaderFile, vertexShaderPath);
-			readFile(fragmentShaderFile, fragmentShaderPath);
+			if (!readFile(vertexShaderFile, _vertexShaderPath))
+			{
+				log::error("Cannot reload shader, file read failed! (" + _vertexShaderPath + ")");
+				return nullptr;
+			}
+			if (!readFile(fragmentShaderFile, _fragmentShaderPath))
+			{
+				log::error("Cannot reload shader, file read failed! (" + _fragmentShaderPath + ")");
+				return nullptr;
+			}
 			const bgfx::Memory* vertexBuffer = bgfx::copy(vertexShaderFile.data.data(), uint32_t(vertexShaderFile.data.size()));
 			const bgfx::Memory* fragmentBuffer = bgfx::copy(fragmentShaderFile.data.data(), uint32_t(fragmentShaderFile.data.size()));
 			bgfx::ShaderHandle vertexShader = bgfx::createShader(vertexBuffer);
 			bgfx::ShaderHandle fragmentShader = bgfx::createShader(fragmentBuffer);
-			create(vertexShader, fragmentShader);
+			return createResourceFromHandles(vertexShader.idx, fragmentShader.idx);
 		}
-		void Shader::create(const std::string_view _vertexShaderPath, const std::string_view _fragmentShaderPath)
+		std::shared_ptr<ResourceData> Shader::createResourceFromHandles(ResourceHandle _vertexShaderHandle, ResourceHandle _fragmentShaderHandle)
 		{
+			bgfx::ShaderHandle vertexShaderHandle = { _vertexShaderHandle };
+			bgfx::ShaderHandle fragmentShaderHandle = { _fragmentShaderHandle };
+			bgfx::ProgramHandle programHandle = bgfx::createProgram(vertexShaderHandle, fragmentShaderHandle, false);
+			if (!bgfx::isValid(programHandle))
+			{
+				log::error("Failed to create shader program!");
+
+				bgfx::destroy(vertexShaderHandle);
+				bgfx::destroy(fragmentShaderHandle);
+
+				return nullptr;
+			}
+
+			std::shared_ptr<ShaderData> shaderData = std::make_shared<ShaderData>();
+			shaderData->vertexShaderHandle = _vertexShaderHandle;
+			shaderData->fragmentShaderHandle = _fragmentShaderHandle;
+			shaderData->handle = programHandle.idx;
+			return shaderData;
+		}
+
+		void Shader::create(const std::string_view _vertexShaderPath, const std::string_view _fragmentShaderPath, std::shared_ptr<ResourceLoader> _resourceLoader)
+		{
+			se_assert(!resourceData);
+
 			vertexShaderPath = _vertexShaderPath;
 			fragmentShaderPath = _fragmentShaderPath;
-			reload();
-		}
-		void Shader::create(bgfx::ShaderHandle _vertexShader, bgfx::ShaderHandle _fragmentShader)
-		{
-			if (bgfx::isValid(programHandle))
+
+			if (_resourceLoader)
 			{
-				bgfx::destroy(programHandle);
-				programHandle = BGFX_INVALID_HANDLE;
+				std::function<std::shared_ptr<ResourceData>()> func = std::bind(&Shader::createResource, vertexShaderPath, fragmentShaderPath);
+				resourceFuture = _resourceLoader->push(func);
 			}
-
-			programHandle = bgfx::createProgram(_vertexShader, _fragmentShader, true);
-
-			static constexpr size_t MAX_UNIFORMS = 256;
-			bgfx::UniformHandle temp[MAX_UNIFORMS];
-
-			const uint16_t numVertexUniforms = bgfx::getShaderUniforms(_vertexShader, temp, sizeof(temp));
-			se_assert(numVertexUniforms <= MAX_UNIFORMS);
-			for (size_t i = 0; i < (size_t)numVertexUniforms; i++)
+			else
 			{
-				bgfx::UniformInfo info;
-				bgfx::getUniformInfo(temp[i], info);
-
-				bool oldFound = false;
-				for (auto& uniform : uniforms)
-				{
-					if (uniform->getName() == info.name)
-					{
-						uniform->reset(info, temp[i]);
-						oldFound = true;
-						break;
-					}
-				}
-				if (oldFound)
-					continue;
-
-				uniforms.emplace_back(std::make_shared<Uniform>(info, temp[i]));
-			}
-
-			const uint16_t numFragmentUniforms = bgfx::getShaderUniforms(_fragmentShader, temp, sizeof(temp));
-			se_assert(numFragmentUniforms <= MAX_UNIFORMS);
-			for (size_t i = 0; i < (size_t)numFragmentUniforms; i++)
-			{
-				bgfx::UniformInfo info;
-				bgfx::getUniformInfo(temp[i], info);
-
-				// TODO: Skip duplicates from vertex shader
-				//bgfx::destroy(temp[i]);
-				//temp[i] = BGFX_INVALID_HANDLE;
-
-				bool oldFound = false;
-				for (auto& uniform : uniforms)
-				{
-					if (uniform->getName() == info.name)
-					{
-						uniform->reset(info, temp[i]);
-						oldFound = true;
-						break;
-					}
-				}
-				if (oldFound)
-					continue;
-
-				uniforms.emplace_back(std::make_shared<Uniform>(info, temp[i]));
+				resourceData = std::dynamic_pointer_cast<ShaderData>(createResource(vertexShaderPath, fragmentShaderPath));
 			}
 		}
-
-		const std::string& Shader::getName() const
+		void Shader::create(ResourceHandle _vertexShaderHandle, ResourceHandle _fragmentShaderHandle)
 		{
-			return name;
+			destroy();
+			resourceData = std::dynamic_pointer_cast<ShaderData>(createResourceFromHandles(_vertexShaderHandle, _fragmentShaderHandle));
 		}
 	}
 }

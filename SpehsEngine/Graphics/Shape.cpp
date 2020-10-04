@@ -59,29 +59,31 @@ namespace se
 					firstPosition = (se::TWO_PI<float> / float(_numVertices)) / 2.0f;
 				}
 
-				newVertices.get<Position>(0) = glm::vec3(cos(firstPosition), 0.0f, sin(firstPosition));
+				glm::vec3& firstPositionVertex = newVertices.get<Position>(0);
+				firstPositionVertex = glm::vec3(cos(firstPosition), 0.0f, sin(firstPosition));
 
-				float minX = newVertices.get<Position>(0).x;
-				float minZ = newVertices.get<Position>(0).z;
-				float maxX = newVertices.get<Position>(0).x;
-				float maxZ = newVertices.get<Position>(0).z;
+				float minX = firstPositionVertex.x;
+				float minZ = firstPositionVertex.z;
+				float maxX = firstPositionVertex.x;
+				float maxZ = firstPositionVertex.z;
 
 				for (unsigned i = 1; i < _numVertices; i++)
 				{
-					newVertices.get<Position>(i) = glm::vec3(cos(firstPosition + i * (se::TWO_PI<float> / _numVertices)), 0.0f, sin(firstPosition + i * (se::TWO_PI<float> / _numVertices)));
-
-					if		(newVertices.get<Position>(i).x > maxX)		maxX = newVertices.get<Position>(i).x;
-					else if (newVertices.get<Position>(i).x < minX)		minX = newVertices.get<Position>(i).x;
-					if		(newVertices.get<Position>(i).z > maxZ)		maxZ = newVertices.get<Position>(i).z;
-					else if (newVertices.get<Position>(i).z < minZ)		minZ = newVertices.get<Position>(i).z;
+					glm::vec3& positionVertex = newVertices.get<Position>(i);
+					positionVertex = glm::vec3(cos(firstPosition + i * (se::TWO_PI<float> / _numVertices)), 0.0f, sin(firstPosition + i * (se::TWO_PI<float> / _numVertices)));
+					maxX = glm::max(maxX, positionVertex.x);
+					minX = glm::min(minX, positionVertex.x);
+					maxZ = glm::max(maxZ, positionVertex.z);
+					minZ = glm::min(minZ, positionVertex.z);
 				}
 
 				const float width = abs(maxX) + abs(minX);
 				const float height = abs(maxZ) + abs(minZ);
 				for (unsigned i = 0; i < _numVertices; i++)
 				{
-					newVertices.get<Position>(i).x /= width;
-					newVertices.get<Position>(i).z /= height;
+					glm::vec3& positionVertex = newVertices.get<Position>(i);
+					positionVertex.x /= width;
+					positionVertex.z /= height;
 				}
 			}
 
@@ -97,8 +99,10 @@ namespace se
 			{
 				for (size_t i = 0; i < newVertices.size(); i++)
 				{
-					newVertices.get<TexCoord0>(i).x = (newVertices.get<TexCoord0>(i).x + 0.5f);
-					newVertices.get<TexCoord0>(i).y = (-newVertices.get<TexCoord0>(i).y + 0.5f);
+					glm::vec2& texCoord = newVertices.get<TexCoord0>(i);
+					const glm::vec3& positionVertex = newVertices.get<Position>(i);
+					texCoord.x = (positionVertex.x + 0.5f);
+					texCoord.y = (-positionVertex.z + 0.5f);
 				}
 			}
 
@@ -106,7 +110,9 @@ namespace se
 			{
 				const Color vertexColor = randomBrightColor();
 				for (size_t i = 0; i < newVertices.size(); i++)
+				{
 					newVertices.get<Color0>(i) = vertexColor;
+				}
 			}
 
 			Primitive::setVertices(newVertices);

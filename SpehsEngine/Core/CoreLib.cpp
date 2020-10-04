@@ -29,12 +29,6 @@ namespace se
 		instanceCount++;
 		if (!valid)
 		{
-			log::info("Current SpehsEngine core library version: " + getVersion());
-
-			log::info("Hardware threads: " + std::to_string(std::thread::hardware_concurrency()));
-			log::info("Size of size_t: " + std::to_string(sizeof(size_t)) + " bytes");
-			log::info("Size of void*: " + std::to_string(sizeof(void*)) + " bytes");
-
 			// INITIALIZATIONS
 			time::initialize();
 			rng::initialize();
@@ -44,6 +38,12 @@ namespace se
 			static_assert(sizeof(int16_t) == 2 && sizeof(uint16_t) == 2, "16 bit integer width not available!");
 			static_assert(sizeof(int32_t) == 4 && sizeof(uint32_t) == 4, "32 bit integer width not available!");
 			static_assert(sizeof(int64_t) == 8 && sizeof(uint64_t) == 8, "64 bit integer width not available!");
+
+			log::info("Current SpehsEngine core library version: " + getVersion());
+
+			log::info("Hardware threads: " + std::to_string(std::thread::hardware_concurrency()));
+			log::info("Size of size_t: " + std::to_string(sizeof(size_t)) + " bytes");
+			log::info("Size of void*: " + std::to_string(sizeof(void*)) + " bytes");
 
 			valid = true;
 		}
