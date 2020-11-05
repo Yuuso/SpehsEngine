@@ -60,7 +60,7 @@ namespace std
 		{
 			const uint64_t value1 = (uint64_t&)a;
 			const uint64_t value2 = (uint64_t&)b;
-			return std::hash<uint64_t>()(value1) < std::hash<uint64_t>()(value2);
+			return value1 < value2;
 		}
 	};
 
@@ -70,7 +70,7 @@ namespace std
 		{
 			const uint64_t value1 = (uint64_t&)a;
 			const uint64_t value2 = (uint64_t&)b;
-			return std::hash<uint64_t>()(value1) < std::hash<uint64_t>()(value2);
+			return value1 < value2;
 		}
 	};
 }
