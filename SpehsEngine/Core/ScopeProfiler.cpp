@@ -28,7 +28,7 @@ namespace
 	{
 		const se::time::Time now = se::time::now();
 		const se::time::Time automaticFlushInterval = se::time::fromSeconds(1.0f / 60.0f);
-		if (now - lastFlushTime > automaticFlushInterval)
+		if (now - lastFlushTime > automaticFlushInterval || threadData.sections.size() > 10000)
 		{
 			if (flushSignalMutex.try_lock())
 			{
