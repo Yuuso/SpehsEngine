@@ -47,6 +47,7 @@
       <PrecompiledHeader>Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="$(MSBuildThisFileDirectory)STLOptionalUtilityFunctions.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)STLPairUtilityFunctions.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)STLUnorderedMapUtilityFunctions.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)STLVectorUtilityFunctions.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)StringOperations.cpp" />
@@ -99,6 +100,7 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)Shapes.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)stdafx.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)STLOptionalUtilityFunctions.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)STLPairUtilityFunctions.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)STLUnorderedMapUtilityFunctions.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)STLVectorUtilityFunctions.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)StringOperations.h" />

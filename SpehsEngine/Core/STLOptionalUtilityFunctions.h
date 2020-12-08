@@ -33,7 +33,6 @@ namespace se
 		return true;
 	}
 
-	// Is class
 	template<typename T>
 	Archive writeToArchive(const std::optional<T>& optional)
 	{
@@ -46,6 +45,7 @@ namespace se
 		}
 		return archive;
 	}
+
 	template<typename T>
 	bool readFromArchive(const Archive& archive, std::optional<T>& optional)
 	{

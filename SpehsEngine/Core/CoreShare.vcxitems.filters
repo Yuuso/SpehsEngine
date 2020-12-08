@@ -50,6 +50,7 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)File\Timestamp.cpp">
       <Filter>File</Filter>
     </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)STLPairUtilityFunctions.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="$(MSBuildThisFileDirectory)Archive.h" />
@@ -112,6 +113,7 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)File\Timestamp.h">
       <Filter>File</Filter>
     </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)STLPairUtilityFunctions.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="File">
