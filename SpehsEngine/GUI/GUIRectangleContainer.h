@@ -41,7 +41,10 @@ namespace se
 
 		//Element management
 		virtual GUIRectangle* addElement(GUIRectangle* element);
+		virtual bool moveElement(GUIRectangle* element, const size_t targetIndexBeforeMove);
 		virtual bool removeElement(GUIRectangle* element);//Searches elements list and removes element. If element is not found, returns false
+		virtual void queueElementRemoval(GUIRectangle& element) { queuedElementRemovals.push_back(&element); }
+		virtual void processQueuedElementRemovals();
 		virtual GUIRectangle* back() const { return elements.back(); }
 		virtual GUIRectangle* front() const { return elements.front(); }
 		GUIRectangle* at(const size_t index) const { if (index >= elements.size()) return nullptr; return elements[index]; }
@@ -90,6 +93,7 @@ namespace se
 		void onDisableInput() override;
 
 		std::vector<GUIRectangle*> elements;
+		std::vector<GUIRectangle*> queuedElementRemovals;
 
 	};
 }
