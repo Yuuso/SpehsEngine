@@ -12,6 +12,8 @@ namespace se
 
 			Window& window;
 
+			void* getImpl() const { return glContext; }
+
 		private:
 			friend class Window;
 			GLContext(Window& window);
