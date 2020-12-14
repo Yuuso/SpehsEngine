@@ -59,7 +59,7 @@ namespace se
 		{
 			static EventType getEventTypeStatic() { return EventType::textInput; }
 			EventType getEventType() const { return getEventTypeStatic(); }
-			std::vector<char> buffer;
+			std::string buffer;
 		};
 
 		struct MouseButtonPressEvent

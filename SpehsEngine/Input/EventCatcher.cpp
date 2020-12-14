@@ -26,6 +26,7 @@ namespace se
 			keyboardDownEvents.clear();
 			keyboardReleaseEvents.clear();
 			mouseHoverEvents.clear();
+			textInputEvents.clear();
 			mouseButtonPressEvents.clear();
 			mouseButtonDownEvents.clear();
 			mouseButtonReleaseEvents.clear();

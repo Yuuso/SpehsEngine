@@ -169,7 +169,7 @@ namespace se
                     ImGuiIO& io = ImGui::GetIO();
                     if (io.WantCaptureKeyboard)
                     {
-                        io.AddInputCharactersUTF8(event.buffer.data());
+                        io.AddInputCharactersUTF8(event.buffer.c_str());
                         return false;
                     }
                     else

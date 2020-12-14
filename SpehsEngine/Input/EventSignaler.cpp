@@ -55,6 +55,7 @@ namespace se
 			const std::vector<KeyboardPressEvent>& keyboardPressEvents = eventCatcher.getKeyboardPressEvents();
 			const std::vector<KeyboardDownEvent>& keyboardDownEvents = eventCatcher.getKeyboardDownEvents();
 			const std::vector<KeyboardReleaseEvent>& keyboardReleaseEvents = eventCatcher.getKeyboardReleaseEvents();
+			const std::vector<TextInputEvent>& textInputEvents = eventCatcher.getTextInputEvents();
 			//const std::vector<JoystickButtonPressEvent>& joystickButtonPressEvents = eventCatcher.get;
 			//const std::vector<JoystickButtonDownEvent>& joystickButtonDownEvents = eventCatcher.get;
 			//const std::vector<JoystickButtonReleaseEvent>& joystickButtonReleaseEvents = eventCatcher.get;
@@ -72,6 +73,7 @@ namespace se
 			signalEventsImpl(keyboardPressEvents, keyboardPressSignals);
 			signalEventsImpl(keyboardDownEvents, keyboardDownSignals);
 			signalEventsImpl(keyboardReleaseEvents, keyboardReleaseSignals);
+			signalEventsImpl(textInputEvents, textInputSignals);
 			//signalEventsImpl(joystickButtonPressEvents, joystickButtonPressSignals);
 			//signalEventsImpl(joystickButtonDownEvents, joystickButtonDownSignals);
 			//signalEventsImpl(joystickButtonReleaseEvents, joystickButtonReleaseSignals);
