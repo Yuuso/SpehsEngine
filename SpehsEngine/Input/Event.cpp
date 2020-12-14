@@ -14,6 +14,7 @@ namespace se
 			case EventType::keyboardPress: return "keyboardPress";
 			case EventType::keyboardDown: return "keyboardDown";
 			case EventType::keyboardRelease: return "keyboardRelease";
+			case EventType::textInput: return "textInput";
 			case EventType::mouseButtonPress: return "mouseButtonPress";
 			case EventType::mouseButtonDown: return "mouseButtonDown";
 			case EventType::mouseButtonRelease: return "mouseButtonRelease";

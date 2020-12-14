@@ -17,6 +17,7 @@ namespace se
 			keyboardPress,
 			keyboardDown,
 			keyboardRelease,
+			textInput,
 			mouseButtonPress,
 			mouseButtonDown,
 			mouseButtonRelease,
@@ -38,6 +39,7 @@ namespace se
 			static EventType getEventTypeStatic() { return EventType::keyboardPress; }
 			EventType getEventType() const { return getEventTypeStatic(); }
 			Key key = Key::UNKNOWN;
+			int scancode = 0;
 		};
 		struct KeyboardDownEvent
 		{
@@ -50,6 +52,14 @@ namespace se
 			static EventType getEventTypeStatic() { return EventType::keyboardRelease; }
 			EventType getEventType() const { return getEventTypeStatic(); }
 			Key key = Key::UNKNOWN;
+			int scancode = 0;
+		};
+
+		struct TextInputEvent
+		{
+			static EventType getEventTypeStatic() { return EventType::textInput; }
+			EventType getEventType() const { return getEventTypeStatic(); }
+			std::vector<char> buffer;
 		};
 
 		struct MouseButtonPressEvent
@@ -82,7 +92,7 @@ namespace se
 		{
 			static EventType getEventTypeStatic() { return EventType::mouseWheel; }
 			EventType getEventType() const { return getEventTypeStatic(); }
-			int wheelDelta = 0;
+			glm::ivec2 delta;
 		};
 		struct MouseHoverEvent
 		{

@@ -127,6 +127,11 @@ namespace se
 			connectToEventSignal<KeyboardReleaseEvent>(scopedConnection, callback, priority, keyboardReleaseSignals);
 		}
 
+		void EventSignaler::connectToTextInputSignal(boost::signals2::scoped_connection& scopedConnection, const boost::function<bool(const TextInputEvent&)>& callback, const int priority)
+		{
+			connectToEventSignal<TextInputEvent>(scopedConnection, callback, priority, textInputSignals);
+		}
+
 		void EventSignaler::connectToQuitSignal(boost::signals2::scoped_connection& scopedConnection, const boost::function<bool(const QuitEvent&)>& callback, const int priority)
 		{
 			connectToEventSignal<QuitEvent>(scopedConnection, callback, priority, quitSignals);

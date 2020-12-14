@@ -52,6 +52,7 @@ namespace se
 					const Key key = Key(sdlEvent.key.keysym.sym);
 					keyboardPressEvents.push_back(KeyboardPressEvent());
 					keyboardPressEvents.back().key = key;
+					keyboardPressEvents.back().scancode = sdlEvent.key.keysym.scancode;
 					heldKeyboardKeys.emplace(key);
 				}
 					break;
@@ -65,9 +66,18 @@ namespace se
 						heldKeyboardKeys.erase(it);
 						keyboardReleaseEvents.push_back(KeyboardReleaseEvent());
 						keyboardReleaseEvents.back().key = key;
+						keyboardReleaseEvents.back().scancode = sdlEvent.key.keysym.scancode;
 					}
 				}
 					break;
+				case SDL_TEXTINPUT:
+				{
+					textInputEvents.push_back(TextInputEvent());
+					const size_t length = strlen(sdlEvent.text.text);
+					textInputEvents.back().buffer.resize(length);
+					memcpy(textInputEvents.back().buffer.data(), sdlEvent.text.text, length);
+				}
+				break;
 				case SDL_MOUSEBUTTONDOWN:
 				{
 					const MouseButton button = MouseButton(sdlEvent.button.button);
@@ -99,7 +109,8 @@ namespace se
 					break;
 				case SDL_MOUSEWHEEL:
 					mouseWheelEvents.push_back(MouseWheelEvent());
-					mouseWheelEvents.back().wheelDelta = int(sdlEvent.wheel.y);
+					mouseWheelEvents.back().delta.x = int(sdlEvent.wheel.x);
+					mouseWheelEvents.back().delta.y = int(sdlEvent.wheel.y);
 					break;
 				case SDL_QUIT:
 					quitEvents.push_back(QuitEvent());
