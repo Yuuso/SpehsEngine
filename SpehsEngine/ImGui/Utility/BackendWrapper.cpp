@@ -70,6 +70,14 @@ namespace se
 #endif
                     return false;
                 }, std::numeric_limits<int>::max());
+
+            // After event signaler has updated, begin a new frame with the freshly received input state
+            eventSignaler.connectToPostUpdateSignal(eventSignalerPostUpdateConnection, [this]()
+                {
+                    ImGui_ImplOpenGL3_NewFrame();
+                    ImGui_ImplSDL2_NewFrame(window.getSDLWindow());
+                    ImGui::NewFrame();
+                });
         }
 
         BackendWrapper::~BackendWrapper()
@@ -79,27 +87,8 @@ namespace se
             ImGui::DestroyContext();
         }
 
-        void BackendWrapper::beginNewFrame()
-        {
-            if (beginNewFrameCalled)
-            {
-                se::log::warning("beginNewFrame() already called. Forgot to call render()?");
-                return;
-            }
-            beginNewFrameCalled = true;
-            ImGui_ImplOpenGL3_NewFrame();
-            ImGui_ImplSDL2_NewFrame(window.getSDLWindow());
-            ImGui::NewFrame();
-        }
-
         void BackendWrapper::render()
         {
-            if (!beginNewFrameCalled)
-            {
-                se::log::warning("beginNewFrame() was not called before calling render().");
-                return;
-            }
-            beginNewFrameCalled = false;
             ImGui::Render();
             ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
         }

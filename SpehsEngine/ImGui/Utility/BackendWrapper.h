@@ -27,7 +27,6 @@ namespace se
 			BackendWrapper(rendering::Window& window, input::EventSignaler& eventSignaler, const int inputPriority);
 			~BackendWrapper();
 
-			void beginNewFrame();
 			void render();
 
 			void setInputPriority(const int inputPriority);
@@ -38,9 +37,9 @@ namespace se
 			rendering::Window& window;
 			input::EventSignaler& eventSignaler;
 
-			bool beginNewFrameCalled = false;
 			int inputPriority = 0;
 			bool mousePressedStates[3] = { false, false, false };
+            boost::signals2::scoped_connection eventSignalerPostUpdateConnection;
             boost::signals2::scoped_connection mouseHoverConnection;
             boost::signals2::scoped_connection mouseWheelConnection;
             boost::signals2::scoped_connection mouseButtonPressedConnection;
