@@ -32,6 +32,8 @@ namespace se
 			void setInputPriority(const int inputPriority);
 			int getInputPriority() const { return inputPriority; }
 
+			void setFont(const std::string_view filepath, const float fontSize);
+
 		private:
 
 			rendering::Window& window;

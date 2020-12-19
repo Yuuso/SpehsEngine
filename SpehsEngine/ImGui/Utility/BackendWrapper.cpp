@@ -183,5 +183,11 @@ namespace se
                     }
                 }, inputPriority);
 		}
+
+        void BackendWrapper::setFont(const std::string_view filepath, const float fontSize)
+        {
+            ImGuiIO& io = ::ImGui::GetIO();
+            io.Fonts->AddFontFromFileTTF(filepath.data(), fontSize);
+        }
 	}
 }
