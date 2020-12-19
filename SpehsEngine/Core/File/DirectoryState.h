@@ -40,7 +40,7 @@ namespace se
 		Returns directory state for given path recursively.
 		Returned DirectoryState paths will be relative to the given path.
 	*/
-	void getDirectoryState(DirectoryState& directoryState, const std::string& path, const DirectoryState::Flag::Type flags, const uint32_t fileHashSeed);
+	void getDirectoryState(DirectoryState& directoryState, const std::string_view path, const DirectoryState::Flag::Type flags, const uint32_t fileHashSeed);
 
 	void getDirectoriesAndFiles(const DirectoryState& directoryState, std::vector<std::string>& directories, std::vector<std::string>& files);
 	
@@ -49,5 +49,5 @@ namespace se
 		Detects missing directories, files and unequal (data hash comparison) files.
 		DirectoryState file hashes must be pre-calculated.
 	*/
-	void compare(const DirectoryState& directoryState, const std::string& path, const uint32_t fileHashSeed, std::vector<std::string>& missingDirectories, std::vector<std::string>& missingFiles, std::vector<std::string>& unequalFiles);
+	void compare(const DirectoryState& directoryState, const std::string_view path, const uint32_t fileHashSeed, std::vector<std::string>& missingDirectories, std::vector<std::string>& missingFiles, std::vector<std::string>& unequalFiles);
 }
