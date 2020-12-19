@@ -1,12 +1,26 @@
 #pragma once
-#include <string>
+
+#include "boost/format.hpp"
 #include "SpehsEngine/Core/Archive.h"
 #include "SpehsEngine/Core/SE_Assert.h"
 #include "SpehsEngine/Core/ReadBuffer.h"
 #include "SpehsEngine/Core/WriteBuffer.h"
+#include <string>
+
 
 namespace se
 {
+	template<typename A>
+	inline std::string formatString(const std::string_view format, const A& argument)
+	{
+		return (boost::format(format.data()) % argument).str();
+	}
+	template<typename A, typename ... Arguments>
+	inline void formatString(const std::string_view _format, const A& argument, const Arguments&... arguments)
+	{
+		return formatString(_format, argument, arguments...);
+	}
+
 	template<typename SizeType = uint32_t>
 	void writeToBuffer(WriteBuffer& writeBuffer, const std::string& string)
 	{
