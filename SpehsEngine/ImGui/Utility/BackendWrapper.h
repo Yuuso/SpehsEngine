@@ -41,6 +41,7 @@ namespace se
 
 			int inputPriority = 0;
 			bool mousePressedStates[3] = { false, false, false };
+			std::optional<std::pair<std::string, float>> queuedFont;
             boost::signals2::scoped_connection eventSignalerPostUpdateConnection;
             boost::signals2::scoped_connection mouseHoverConnection;
             boost::signals2::scoped_connection mouseWheelConnection;

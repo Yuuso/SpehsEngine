@@ -29,13 +29,15 @@ namespace ImGui
     bool fileSelector(const std::string_view label, std::string& filepath, const std::string_view directory);
     bool textureSelector(const std::string_view label, std::string& filepath, const std::string_view directory);
 
-    std::optional<bool> confirmationDialog(const std::string_view label);
+    std::optional<bool> confirmationDialog(const std::string_view header, const std::string_view message);
     template<typename A, typename ... Arguments>
-    inline std::optional<bool> confirmationDialogV(const std::string_view format, const A& argument, const Arguments&... arguments)
+    inline std::optional<bool> confirmationDialogV(const std::string_view header, const std::string_view formatMessage, const A& argument, const Arguments&... arguments)
     {
-        const std::string formatedString = se::formatString(format, argument, arguments...);
-        return confirmationDialog(std::string_view(formatedString));
+        const std::string formatedMessage = se::formatString(formatMessage, argument, arguments...);
+        return confirmationDialog(header, std::string_view(formatedMessage));
     }
+
+    std::optional<bool> stringDialog(const std::string_view header, const std::string_view message, std::string& output);
 
     inline bool InputT(const std::string_view label, bool& value)
     {

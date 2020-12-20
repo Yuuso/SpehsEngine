@@ -53,17 +53,46 @@ namespace ImGui
 		return fileSelector(label, filepath, directory);
 	}
 
-	std::optional<bool> confirmationDialog(const std::string_view label)
+	std::optional<bool> confirmationDialog(const std::string_view header, const std::string_view message)
 	{
 		std::optional<bool> result;
 
-		ImGui::OpenPopup(label.data());
+		ImGui::OpenPopup(header.data());
 
 		ImVec2 center(ImGui::GetIO().DisplaySize.x * 0.5f, ImGui::GetIO().DisplaySize.y * 0.5f);
 		ImGui::SetNextWindowPos(center, ImGuiCond_Appearing, ImVec2(0.5f, 0.5f));
-		if (ImGui::BeginPopupModal(label.data(), NULL, ImGuiWindowFlags_AlwaysAutoResize))
+		if (ImGui::BeginPopupModal(header.data(), NULL, ImGuiWindowFlags_AlwaysAutoResize))
 		{
-			ImGui::Text(label.data());
+			ImGui::Text(message.data());
+			if (ImGui::Button("OK", ImVec2(120, 0)))
+			{
+				result.emplace(true);
+				ImGui::CloseCurrentPopup();
+			}
+			ImGui::SetItemDefaultFocus();
+			ImGui::SameLine();
+			if (ImGui::Button("Cancel", ImVec2(120, 0)))
+			{
+				result.emplace(false);
+				ImGui::CloseCurrentPopup();
+			}
+			ImGui::EndPopup();
+		}
+		return result;
+	}
+
+	std::optional<bool> stringDialog(const std::string_view header, const std::string_view message, std::string& output)
+	{
+		std::optional<bool> result;
+
+		ImGui::OpenPopup(header.data());
+
+		ImVec2 center(ImGui::GetIO().DisplaySize.x * 0.5f, ImGui::GetIO().DisplaySize.y * 0.5f);
+		ImGui::SetNextWindowPos(center, ImGuiCond_Appearing, ImVec2(0.5f, 0.5f));
+		if (ImGui::BeginPopupModal(header.data(), NULL, ImGuiWindowFlags_AlwaysAutoResize))
+		{
+			ImGui::Text(message.data());
+			ImGui::InputT("", output);
 			if (ImGui::Button("OK", ImVec2(120, 0)))
 			{
 				result.emplace(true);

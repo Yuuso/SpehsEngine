@@ -74,6 +74,14 @@ namespace se
             // After event signaler has updated, begin a new frame with the freshly received input state
             eventSignaler.connectToPostUpdateSignal(eventSignalerPostUpdateConnection, [this]()
                 {
+                    if (queuedFont)
+                    {
+                        ImGuiIO& io = ::ImGui::GetIO();
+                        io.Fonts->Clear();
+                        io.Fonts->AddFontFromFileTTF(queuedFont->first.data(), queuedFont->second);
+                        ImGui_ImplOpenGL3_CreateFontsTexture();
+                        queuedFont.reset();
+                    }
                     ImGui_ImplOpenGL3_NewFrame();
                     ImGui_ImplSDL2_NewFrame(window.getSDLWindow());
                     ImGui::NewFrame();
@@ -186,8 +194,7 @@ namespace se
 
         void BackendWrapper::setFont(const std::string_view filepath, const float fontSize)
         {
-            ImGuiIO& io = ::ImGui::GetIO();
-            io.Fonts->AddFontFromFileTTF(filepath.data(), fontSize);
+            queuedFont.emplace(std::make_pair(filepath, fontSize));
         }
 	}
 }
