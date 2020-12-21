@@ -10,15 +10,20 @@
 
 namespace se
 {
-	template<typename A>
-	inline std::string formatString(const std::string_view format, const A& argument)
+	inline std::string formatStringImpl(boost::format& f)
 	{
-		return (boost::format(format.data()) % argument).str();
+		return boost::str(f);
 	}
-	template<typename A, typename ... Arguments>
-	inline void formatString(const std::string_view _format, const A& argument, const Arguments&... arguments)
+	template<typename T, typename... Args>
+	inline std::string formatStringImpl(boost::format& f, T&& t, Args&&... args)
 	{
-		return formatString(_format, argument, arguments...);
+		return formatStringImpl(f % std::forward<T>(t), std::forward<Args>(args)...);
+	}
+	template<typename... Arguments>
+	inline std::string formatString(const std::string_view format, Arguments&&... args)
+	{
+		boost::format boostFormat(format.data());
+		return formatStringImpl(boostFormat, std::forward<Arguments>(args)...);
 	}
 
 	template<typename SizeType = uint32_t>
