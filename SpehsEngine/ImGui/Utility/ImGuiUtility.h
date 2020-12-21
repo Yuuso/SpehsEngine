@@ -1,5 +1,6 @@
 #pragma once
 
+#include "SpehsEngine/Core/SE_Time.h"
 #include "SpehsEngine/Core/Color.h"
 #include "SpehsEngine/Core/StringUtilityFunctions.h"
 #include "SpehsEngine/ImGui/imgui.h"
@@ -114,6 +115,17 @@ namespace ImGui
     inline bool InputT(const std::string_view label, se::Color& value, ImGuiInputTextFlags flags = 0)
     {
         return ColorEdit4(label.data(), &(value)[0], flags);
+    }
+    inline bool InputT(const std::string_view label, se::time::Time& value,
+        const se::time::Time step = se::time::Time(1),
+        const se::time::Time stepFast = se::time::Time(1000), ImGuiInputTextFlags flags = 0)
+    {
+        const bool result = InputT(label.data(), value.value, step.value, stepFast.value, flags);
+        if (ImGui::IsItemHovered())
+        {
+            ImGui::SetTooltip(se::toTimeLengthString(value, 2).c_str());
+        }
+        return result;
     }
 
     template<typename T>
