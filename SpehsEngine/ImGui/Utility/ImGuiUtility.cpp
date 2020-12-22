@@ -2,6 +2,7 @@
 #include "SpehsEngine/ImGui/Utility/ImGuiUtility.h"
 
 #include "SpehsEngine/Core/File/DirectoryState.h"
+#include "SpehsEngine/Input/EventSignaler.h"
 
 
 namespace ImGui
@@ -108,5 +109,25 @@ namespace ImGui
 			ImGui::EndPopup();
 		}
 		return result;
+	}
+
+	void keyBindButton(const std::string_view label, se::input::Key& key, se::input::EventSignaler& eventSignaler, boost::signals2::scoped_connection& scopedConnection)
+	{
+		ImGui::Text(label.data());
+		ImGui::SameLine();
+		if (ImGui::Button(scopedConnection.connected() ? "press any key" : se::input::toString(key)))
+		{
+			eventSignaler.connectToKeyboardPressSignal(
+				scopedConnection,
+				[&](const se::input::KeyboardPressEvent& event) -> bool
+				{
+					if (event.key != se::input::Key(se::input::Key::ESCAPE))
+					{
+						key = event.key;
+					}
+					scopedConnection.disconnect();
+					return true;
+				}, INT_MAX);
+		}
 	}
 }

@@ -8,6 +8,16 @@
 #include "glm/vec4.hpp"
 #include <stdint.h>
 
+namespace se
+{
+	namespace input
+	{
+		class EventSignaler;
+		enum class Key;
+	}
+}
+
+
 // Used to implement a dropdown selector for an enum. p_RangeStart value is inclusive, but p_RangeEnd is exclusive.
 #define SE_IMGUI_INPUT_T_ENUM_RANGE_DROPDOWN(p_EnumType, p_RangeStart, p_RangeEnd, p_ToStringFunction) \
 	inline bool InputT(const std::string_view label, p_EnumType& p_value) \
@@ -266,4 +276,7 @@ namespace ImGui
 			}
 		}
 	}
+
+	// NOTE: 'key' value must be valid in the scope of 'scopedConnection'
+	void keyBindButton(const std::string_view label, se::input::Key& key, se::input::EventSignaler& eventSignaler, boost::signals2::scoped_connection& scopedConnection);
 }
