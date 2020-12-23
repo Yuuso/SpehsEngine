@@ -28,13 +28,13 @@ namespace ImGui
 
 	bool fileSelector(const std::string_view label, std::string& filepath, const std::string_view directory)
 	{
-		se::DirectoryState directoryState;
-		se::getDirectoryState(directoryState, directory, se::DirectoryState::Flag::none, 0);
 		bool changed = false;
 		ImGui::Button("Browse");
 		const std::string browseContextMenuId = std::string(label) + filepath + std::string(directory);
 		if (ImGui::BeginPopupContextItem(browseContextMenuId.c_str(), ImGuiPopupFlags_MouseButtonLeft))
 		{
+			se::DirectoryState directoryState;
+			se::getDirectoryState(directoryState, directory, se::DirectoryState::Flag::none, 0);
 			if (renderDirectoryStateRecursive(directoryState, filepath))
 			{
 				changed = true;
