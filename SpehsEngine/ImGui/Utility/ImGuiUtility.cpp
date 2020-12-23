@@ -5,6 +5,7 @@
 #include "SpehsEngine/Input/EventSignaler.h"
 
 
+#pragma optimize("", off) // nocommit
 namespace ImGui
 {
 	bool renderDirectoryStateRecursive(const se::DirectoryState& directoryState, std::string& filepath)
@@ -92,8 +93,32 @@ namespace ImGui
 		ImGui::SetNextWindowPos(center, ImGuiCond_Appearing, ImVec2(0.5f, 0.5f));
 		if (ImGui::BeginPopupModal(header.data(), NULL, ImGuiWindowFlags_AlwaysAutoResize))
 		{
-			ImGui::Text(message.data());
-			ImGui::InputT("", output);
+			if (!message.empty())
+			{
+				ImGui::Text(message.data());
+			}
+			/*
+			TODO: finish dialog if the user presses 'enter', below is some previous research on the subject
+			struct Callback
+			{
+				static int callback(ImGuiInputTextCallbackData* const data)
+				{
+					if (data->EventKey == ImGuiKey_Enter)
+					{
+
+					}
+					return 0;
+				}
+			};
+			ImGui::InputT("", output, inputTextFlags, &Callback::callback);
+			const bool inputDeactivatedAfterEdit = ImGui::IsItemDeactivatedAfterEdit(); // Returns true also on 'esc' and on clicking away
+			*/
+			ImGuiInputTextFlags inputTextFlags = ImGuiInputTextFlags_EnterReturnsTrue; // Works otherwise than pressing 'esc' which clears the buffer
+			if (ImGui::InputT("", output, inputTextFlags))
+			{
+				result.emplace(true);
+				ImGui::CloseCurrentPopup();
+			}
 			if (ImGui::Button("OK", ImVec2(120, 0)))
 			{
 				result.emplace(true);

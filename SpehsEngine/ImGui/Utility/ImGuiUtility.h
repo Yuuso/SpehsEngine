@@ -224,6 +224,15 @@ namespace ImGui
 		return changed;
 	}
 
+	template<typename T>
+	inline bool InputT(const std::string_view label, std::optional<T>& optional)
+	{
+		return ImGui::InputT<T>(label, optional, [&](T& t)
+			{
+				return ImGui::InputT(label, t);
+			});
+	}
+
 	/* Vector overload for vectors with parameterless InputT() implemented for their element type. */
 	template<typename T>
 	inline bool InputT(const std::string_view label, std::vector<T>& vector)
