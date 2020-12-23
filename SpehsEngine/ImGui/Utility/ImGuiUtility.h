@@ -6,6 +6,7 @@
 #include "SpehsEngine/ImGui/imgui.h"
 #include "SpehsEngine/ImGui/imgui_stdlib.h"
 #include "glm/vec4.hpp"
+#include "glm/ext/quaternion_float.hpp"
 #include <stdint.h>
 
 namespace se
@@ -24,7 +25,7 @@ namespace se
 	{ \
 		struct Callback { static bool callback(void* data, int n, const char** out_str) { *out_str = p_ToStringFunction(p_EnumType(n + int(p_RangeStart))); return true; } }; \
 		int p_current = int(p_value) - int(p_RangeStart); \
-		if (ImGui::Combo(#p_EnumType, &p_current, &Callback::callback, nullptr, int(p_RangeEnd) - int(p_RangeStart))) \
+		if (ImGui::Combo(label.data(), &p_current, &Callback::callback, nullptr, int(p_RangeEnd) - int(p_RangeStart))) \
 		{ \
 			p_value = p_EnumType(p_current + int(p_RangeStart)); \
 			return true; \
@@ -119,6 +120,10 @@ namespace ImGui
 		return InputFloat3(label.data(), &value.x, format, flags);
 	}
 	inline bool InputT(const std::string_view label, glm::vec4& value, const char* format = "%.3f", ImGuiInputTextFlags flags = 0)
+	{
+		return InputFloat4(label.data(), &value.x, format, flags);
+	}
+	inline bool InputT(const std::string_view label, glm::quat& value, const char* format = "%.3f", ImGuiInputTextFlags flags = 0)
 	{
 		return InputFloat4(label.data(), &value.x, format, flags);
 	}
