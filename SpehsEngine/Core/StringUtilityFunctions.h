@@ -96,6 +96,12 @@ namespace se
 	bool doesContain(const std::string_view string, const std::string_view searchParameter);
 
 	/*
+		Adds 'indentation' at the start of the string and after each new line character in the string, with the following expection:
+			-if the last character of the string is a new line character, no indentation is added after it.
+	*/
+	void indent(std::string& string, const std::string_view indentation);
+
+	/*
 		Returns a nicely formated time length string.
 		Presicion: how many digits to display.
 	*/

@@ -50,6 +50,25 @@ namespace se
 	{
 		return string.find(searchParameter) != std::string::npos;
 	}
+	
+	void indent(std::string& string, const std::string_view indentation)
+	{
+		if (string.empty())
+		{
+			return;
+		}
+
+		string.insert(string.begin(), indentation.begin(), indentation.end());
+
+		for (size_t i = indentation.size(); i < string.size() - 1; i++)
+		{
+			if (string[i] == '\n')
+			{
+				string.insert(string.begin() + i + 1, indentation.begin(), indentation.end());
+				i += indentation.size();
+			}
+		}
+	}
 
 	std::string toTimeLengthString(const time::Time& time, const size_t precision)
 	{
