@@ -123,6 +123,12 @@ namespace se
 		}
 	}
 
+	std::string toMultiplierPercentageString(const float multiplier, const size_t precision)
+	{
+		se_assert(multiplier >= 0.0f);
+		return toSignedString((multiplier - 1.0f) * 100.0f, precision) + " %";
+	}
+
 	template<typename T>
 	inline bool fromStringImpl(const std::string_view string, T& valueOut)
 	{

@@ -114,6 +114,14 @@ namespace se
 	*/
 	std::string toByteString(const uint64_t bytes);
 
+	/*
+		Multiplier is expected to be greater or equal to 0.
+		0.9f -> "-10 %"
+		1.0f -> "+0 %"
+		1.1f -> "+10 %"
+	*/
+	std::string toMultiplierPercentageString(const float multiplier, const size_t precision);
+
 	bool fromString(const std::string_view string, int64_t& valueOut);
 	bool fromString(const std::string_view string, int32_t& valueOut);
 	bool fromString(const std::string_view string, int16_t& valueOut);
