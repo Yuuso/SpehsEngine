@@ -79,7 +79,7 @@ namespace se
 		void disable(const Flag _flag) { flags = flags & ~uint16_t(_flag); }
 		void toggle(const Flag _flag) { flags = flags ^ uint16_t(_flag); }
 		/* Returns true if ALL given flags are enabled. */
-		bool check(const Flag _flags) const { return (flags && uint16_t(_flags)) == uint16_t(_flags); }
+		bool check(const Flag _flags) const { return (flags & uint16_t(_flags)) == uint16_t(_flags); }
 
 		void setMetadata(const uint16_t _metadata) { metadata = _metadata; }
 		uint16_t getMetadata() const { return metadata; }
