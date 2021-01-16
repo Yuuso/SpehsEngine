@@ -291,6 +291,17 @@ namespace ImGui
 		}
 	}
 
+	// Splits shown string into two parts, id part and mutable part. Useful when the contents of the header edit the shown header string.
+	inline bool CollapsingHeader2(const std::string_view idLabel, const std::string_view mutableLabel, const ImGuiTreeNodeFlags flags = 0)
+	{
+		const bool result = ImGui::CollapsingHeader(idLabel.data(), flags);
+		ImGui::SameLine();
+		ImGui::Text("");
+		ImGui::SameLine();
+		ImGui::Text(mutableLabel.data());
+		return result;
+	}
+
 	// NOTE: 'key' value must be valid in the scope of 'scopedConnection'
 	void keyBindButton(const std::string_view label, se::input::Key& key, se::input::EventSignaler& eventSignaler, boost::signals2::scoped_connection& scopedConnection);
 }
