@@ -193,4 +193,24 @@ namespace se
 	{
 		return fromStringImpl(string, valueOut);
 	}
+
+	std::string toLowerCase(const std::string_view string)
+	{
+		std::string s(string);
+		for (char& c : s)
+		{
+			c = char(std::tolower(int(c)));
+		}
+		return s;
+	}
+
+	std::string toUpperCase(const std::string_view string)
+	{
+		std::string s(string);
+		for (char& c : s)
+		{
+			c = char(std::toupper(int(c)));
+		}
+		return s;
+	}
 }

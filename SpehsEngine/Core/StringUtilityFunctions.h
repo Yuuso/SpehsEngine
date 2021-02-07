@@ -132,4 +132,7 @@ namespace se
 	bool fromString(const std::string_view string, uint8_t& valueOut);
 	bool fromString(const std::string_view string, float& valueOut);
 	bool fromString(const std::string_view string, double& valueOut);
+
+	std::string toLowerCase(const std::string_view string);
+	std::string toUpperCase(const std::string_view string);
 }
