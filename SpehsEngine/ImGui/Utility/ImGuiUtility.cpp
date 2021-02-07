@@ -38,6 +38,10 @@ namespace ImGui
 			se::getDirectoryState(directoryState, directory, se::DirectoryState::Flag::none, 0);
 			if (renderDirectoryStateRecursive(directoryState, filepath))
 			{
+				if (!directory.empty())
+				{
+					filepath.insert(filepath.begin(), directory.begin(), directory.end());
+				}
 				changed = true;
 			}
 			ImGui::EndPopup();
