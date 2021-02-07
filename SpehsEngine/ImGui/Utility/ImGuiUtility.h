@@ -38,6 +38,16 @@ namespace se
 
 namespace ImGui
 {
+	inline void Text(const std::string_view label)
+	{
+		Text(label.data());
+	}
+
+	inline void TextColored(const se::Color& color, const std::string_view label)
+	{
+		TextColored((ImVec4&)color, label.data());
+	}
+
 	bool fileSelector(const std::string_view label, std::string& filepath, const std::string_view directory);
 	bool textureSelector(const std::string_view label, std::string& filepath, const std::string_view directory);
 
