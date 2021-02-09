@@ -38,11 +38,10 @@ namespace se
 			void enableRendererFlag(const RendererFlag _rendererFlag);
 			void disableRendererFlag(const RendererFlag _rendererFlag);
 
+
 			static const RendererBackend getRendererBackend();
-
-			const glm::ivec2 getDisplaySize() const;
-			const int getDisplayRefreshRate() const;
-
+			static const glm::ivec2 getDisplaySize();
+			static const int getDisplayRefreshRate();
 
 			static void debugTextPrintf(const uint16_t _column, const uint16_t _line, const char* _format, ...);
 

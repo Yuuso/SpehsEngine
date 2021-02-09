@@ -162,11 +162,13 @@ namespace se
 
 		const RendererBackend Renderer::getRendererBackend()
 		{
+			se_assert(initialized);
 			return graphics::getRendererBackend();
 		}
 
-		const glm::ivec2 Renderer::getDisplaySize() const
+		const glm::ivec2 Renderer::getDisplaySize()
 		{
+			se_assert(initialized);
 			SDL_DisplayMode displayMode;
 			if (SDL_GetDesktopDisplayMode(0, &displayMode) != 0)
 			{
@@ -177,8 +179,10 @@ namespace se
 			}
 			return glm::ivec2(displayMode.w, displayMode.h);
 		}
-		const int Renderer::getDisplayRefreshRate() const
+
+		const int Renderer::getDisplayRefreshRate()
 		{
+			se_assert(initialized);
 			SDL_DisplayMode displayMode;
 			if (SDL_GetDesktopDisplayMode(0, &displayMode) != 0)
 			{
