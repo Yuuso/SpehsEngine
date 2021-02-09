@@ -1,14 +1,12 @@
 #pragma once
 
-#include "SpehsEngine/Core/Color.h"
-#include "SpehsEngine/Core/AsyncTaskManager.h"
+// NOTE: No SpehsEngine includes allowed
+
 #include "bgfx/bgfx.h" // TODO: get rid of this
 #include "glm/vec2.hpp"
 #include "glm/vec3.hpp"
 #include <stdint.h>
 #include <numeric>
-
-// TODO: Separate all or at least separate internal
 
 
 namespace se
@@ -101,12 +99,6 @@ namespace se
 			Orthographic
 		};
 
-		enum class ViewSizeType
-		{
-			Pixels,
-			Relative
-		};
-
 		enum class UniformType
 		{
 			Invalid,
@@ -114,6 +106,12 @@ namespace se
 			Vec4,
 			Mat3,
 			Mat4,
+		};
+
+		enum class ViewSizeType
+		{
+			Pixels,
+			Relative
 		};
 
 		struct ViewSize
@@ -179,6 +177,23 @@ namespace se
 			TextureSamplingMode sampleMin = TextureSamplingMode::Linear;
 			TextureSamplingMode sampleMag = TextureSamplingMode::Linear;
 			TextureSamplingMode sampleMip = TextureSamplingMode::Linear;
+		};
+
+		enum class FontSizeType
+		{
+			Point,
+			Pixel
+		};
+
+		struct FontSize
+		{
+			FontSize()
+				: size(12) {}
+			FontSize(const uint32_t _size, const FontSizeType _type = FontSizeType::Point)
+				: size(_size), type(_type) {}
+
+			FontSizeType type;
+			uint32_t size;
 		};
 	}
 }

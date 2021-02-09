@@ -54,12 +54,12 @@ namespace se
 			File fragmentShaderFile;
 			if (!readFile(vertexShaderFile, _vertexShaderPath))
 			{
-				log::error("Cannot reload shader, file read failed! (" + _vertexShaderPath + ")");
+				log::error("Cannot create shader, file read failed! (" + _vertexShaderPath + ")");
 				return nullptr;
 			}
 			if (!readFile(fragmentShaderFile, _fragmentShaderPath))
 			{
-				log::error("Cannot reload shader, file read failed! (" + _fragmentShaderPath + ")");
+				log::error("Cannot create shader, file read failed! (" + _fragmentShaderPath + ")");
 				return nullptr;
 			}
 			const bgfx::Memory* vertexBuffer = bgfx::copy(vertexShaderFile.data.data(), uint32_t(vertexShaderFile.data.size()));

@@ -1,8 +1,9 @@
 #pragma once
 
+// NOTE: No SpehsEngine includes allowed (other than Types.h)
+
 #include "bgfx/bgfx.h" // TODO
 #include "SpehsEngine/Graphics/Types.h"
-#include "SpehsEngine/Graphics/Material.h"
 
 
 namespace se
@@ -43,21 +44,6 @@ namespace se
 			ShownChanged			= (1 << 11),
 			OpacityChanged			= (1 << 12),
 		};
-
-		struct RenderInfo
-		{
-			RenderFlagsType renderFlags;
-			PrimitiveType primitiveType;
-			std::shared_ptr<Material> material;
-			VertexAttributeFlagsType attributes;
-		};
-		inline bool operator==(const RenderInfo& _left, const RenderInfo& _right)
-		{
-			return _left.renderFlags == _right.renderFlags
-				&& _left.primitiveType == _right.primitiveType
-				&& _left.material == _right.material
-				&& _left.attributes == _right.attributes;
-		}
 
 		struct BatchPosition
 		{

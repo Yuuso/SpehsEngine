@@ -33,7 +33,7 @@ namespace se
 			input.width = 3;
 			input.height = 3;
 
-			input.data = { 255,	0,		255,	255,
+			input.data = {	255,	0,		255,	255,
 							255,	255,	255,	255,
 							255,	0,		255,	255,
 
@@ -46,7 +46,7 @@ namespace se
 							255,	0,		255,	255 };
 			fallbacks->init = std::dynamic_pointer_cast<TextureData>(Texture::createResourceFromInput(input, modes));
 
-			input.data = { 255,	0,		255,	255,
+			input.data = {	255,	0,		255,	255,
 							0,		255,	0,		255,
 							255,	0,		255,	255,
 
@@ -59,7 +59,7 @@ namespace se
 							255,	0,		255,	255 };
 			fallbacks->loading = std::dynamic_pointer_cast<TextureData>(Texture::createResourceFromInput(input, modes));
 
-			input.data = { 255,	0,		255,	255,
+			input.data = {	255,	0,		255,	255,
 							255,	0,		255,	255,
 							255,	0,		255,	255,
 
@@ -89,17 +89,14 @@ namespace se
 		{
 			const std::string path = pathFinder->getPath(_texture);
 
-			std::shared_ptr<Texture> foundTexture;
 			for (auto& texture : resources)
 			{
 				if (texture->getName() == _name)
-					foundTexture = texture;
-			}
-			if (foundTexture)
-			{
-				log::warning("Cannot create texture '" + _name + "', texture with that name already exists!");
-				se_assert(foundTexture->path == path);
-				return foundTexture;
+				{
+					log::warning("Cannot create texture '" + _name + "', texture with that name already exists!");
+					se_assert(texture->path == path);
+					return texture;
+				}
 			}
 
 			std::shared_ptr<Texture>& texture = resources.emplace_back(std::make_shared<Texture>(_name));
@@ -109,16 +106,13 @@ namespace se
 		}
 		std::shared_ptr<Texture> TextureManager::create(const std::string_view _name, const TextureInput& _input, const TextureModes _textureModes)
 		{
-			std::shared_ptr<Texture> foundTexture;
 			for (auto& texture : resources)
 			{
 				if (texture->getName() == _name)
-					foundTexture = texture;
-			}
-			if (foundTexture)
-			{
-				log::warning("Cannot create texture '" + _name + "', texture with that name already exists!");
-				return foundTexture;
+				{
+					log::warning("Cannot create texture '" + _name + "', texture with that name already exists!");
+					return texture;
+				}
 			}
 
 			std::shared_ptr<Texture>& texture = resources.emplace_back(std::make_shared<Texture>(_name));

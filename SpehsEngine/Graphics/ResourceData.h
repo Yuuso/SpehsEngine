@@ -1,8 +1,8 @@
 #pragma once
 
 #include "bgfx/bgfx.h" // ?!
-#include <memory>
-#include <SpehsEngine/Graphics/ResourceHandle.h>
+#include "SpehsEngine/Graphics/Internal/FontMetrics.h"
+#include "SpehsEngine/Graphics/ResourceHandle.h"
 
 
 namespace se
@@ -15,6 +15,7 @@ namespace se
 			ResourceHandle handle = INVALID_RESOURCE_HANDLE;
 		};
 
+
 		struct ShaderData : ResourceData
 		{
 			ResourceHandle vertexShaderHandle = INVALID_RESOURCE_HANDLE;
@@ -24,6 +25,12 @@ namespace se
 		struct TextureData : ResourceData
 		{
 			bgfx::TextureInfo info;
+		};
+
+		struct FontData : ResourceData
+		{
+			GlyphMap glyphMap;
+			FontMetrics fontMetrics;
 		};
 	}
 }

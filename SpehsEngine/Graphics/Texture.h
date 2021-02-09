@@ -38,6 +38,7 @@ namespace se
 
 			friend class TextureManager;
 			friend class Uniform;
+			friend class Font;
 
 			static std::shared_ptr<ResourceData> createResource(const std::string _path, const TextureModes _textureModes);
 			static std::shared_ptr<ResourceData> createResourceFromInput(const TextureInput& _input, const TextureModes _textureModes);

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "SpehsEngine/Graphics/Internal/InternalTypes.h"
+#include "SpehsEngine/Graphics/Internal/RenderInfo.h"
 #include "SpehsEngine/Graphics/Shader.h"
 #include "SpehsEngine/Graphics/Types.h"
 #include "SpehsEngine/Graphics/VertexBuffer.h"

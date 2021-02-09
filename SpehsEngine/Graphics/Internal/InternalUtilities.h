@@ -2,6 +2,7 @@
 
 #include "bgfx/bgfx.h"
 #include "SpehsEngine/Graphics/Internal/InternalTypes.h"
+#include "SpehsEngine/Graphics/Internal/RenderInfo.h"
 #include "SpehsEngine/Graphics/Types.h"
 #include "SpehsEngine/Graphics/ResourceHandle.h"
 
