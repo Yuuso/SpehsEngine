@@ -8,6 +8,9 @@
 #include <string>
 
 
+typedef struct FT_LibraryRec_* FT_Library;
+typedef struct FT_FaceRec_* FT_Face;
+
 namespace se
 {
 	namespace graphics
@@ -28,16 +31,17 @@ namespace se
 			FontLibrary& operator=(FontLibrary&& _other) = delete;
 
 
-			bool loadFace(FontFace& _face, const std::string& _path);
+			FontFace loadFace(const std::string& _path);
 			bool destroyFace(FontFace& _face);
 
 		private:
 
-			void* library = nullptr;
+			FT_Library* library = nullptr;
 			std::mutex mutex;
 		};
 
-		class FontFace // TODO no need for this?
+
+		class FontFace
 		{
 		public:
 
@@ -47,20 +51,23 @@ namespace se
 			FontFace(const FontFace& _other) = delete;
 			FontFace& operator=(const FontFace& _other) = delete;
 
-			FontFace(FontFace&& _other) = delete;
+			FontFace(FontFace&& _other);
 			FontFace& operator=(FontFace&& _other) = delete;
 
 
 			void setSize(const FontSize _size);
 			const uint16_t getAtlasSizeEstimate(const size_t numGlyphs) const;
-			void* loadGlyph(const CharacterCode _charCode);
+			bool loadGlyph(const CharacterCode _charCode);
+			int getTextureFormat() const; // bgfx::TextureFormat::Enum
+			const struct bgfx::Memory* createGlyphMemoryBuffer() const;
+			GlyphMetrics getGlyphMetrics() const;
 			FontMetrics getFontMetrics() const;
 
 		private:
 
 			friend class FontLibrary;
 
-			void* face = nullptr;
+			FT_Face* face = nullptr;
 			bool loaded = false;
 		};
 	}

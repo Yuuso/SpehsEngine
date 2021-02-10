@@ -1,14 +1,12 @@
 #include "stdafx.h"
 #include "SpehsEngine/Graphics/Font.h"
 
+#include "bgfx/bgfx.h"
 #include "SpehsEngine/Core/File/File.h"
-#include "SpehsEngine/Graphics/Internal/InternalUtilities.h"
-#include "SpehsEngine/Graphics/Internal/InternalTypes.h"
 #include "SpehsEngine/Graphics/Internal/FontMetrics.h"
+#include "SpehsEngine/Graphics/Internal/InternalTypes.h"
+#include "SpehsEngine/Graphics/Internal/InternalUtilities.h"
 #include "SpehsEngine/Math/RectanglePacker.h"
-
-#include <ft2build.h>
-#include FT_FREETYPE_H
 
 
 namespace se
@@ -53,8 +51,7 @@ namespace se
 			if (std::find(_charMap.begin(), _charMap.end(), replacementCharacter) == _charMap.end())
 				_charMap.push_back(replacementCharacter);
 
-			FontFace fontFace;
-			_fontLibrary->loadFace(fontFace, _path);
+			FontFace fontFace = _fontLibrary->loadFace(_path);
 			fontFace.setSize(_size);
 
 			const uint16_t estimatedAtlasSize = fontFace.getAtlasSizeEstimate(_charMap.size());
@@ -62,9 +59,6 @@ namespace se
 			bgfx::TextureHandle textureHandle = BGFX_INVALID_HANDLE;
 
 			std::shared_ptr<FontData> result = std::make_shared<FontData>();
-
-			uint32_t bytesPerPixel = 0;
-			bgfx::TextureFormat::Enum textureFormat = bgfx::TextureFormat::Enum::Unknown;
 
 			for (auto&& charCode : _charMap)
 			{
@@ -78,38 +72,16 @@ namespace se
 				if (charCode == U' ')
 					continue; // Skip space
 
-				const FT_GlyphSlot glyphSlot = (FT_GlyphSlot)fontFace.loadGlyph(charCode);
-				if (glyphSlot == nullptr)
+				const bool glyphLoaded = fontFace.loadGlyph(charCode);
+				if (!glyphLoaded)
 				{
 					log::warning("Glyph '" + charCodeToString(charCode) + "' not found in font '" + _path + "'.");
 					continue;
 				}
-				se_assert(glyphSlot->bitmap.buffer != nullptr);
 
 				if (!bgfx::isValid(textureHandle))
 				{
-					switch (glyphSlot->bitmap.pixel_mode)
-					{
-						case FT_PIXEL_MODE_NONE:
-						case FT_PIXEL_MODE_MAX:
-						case FT_PIXEL_MODE_LCD:
-						case FT_PIXEL_MODE_LCD_V:
-						case FT_PIXEL_MODE_GRAY2:
-						case FT_PIXEL_MODE_GRAY4:
-						case FT_PIXEL_MODE_MONO:
-							log::error("Invalid texture format '" + std::to_string(glyphSlot->bitmap.pixel_mode) + "'!");
-							break;
-
-						case FT_PIXEL_MODE_GRAY:
-							textureFormat = bgfx::TextureFormat::Enum::R8;
-							bytesPerPixel = 1;
-							break;
-						case FT_PIXEL_MODE_BGRA:
-							textureFormat = bgfx::TextureFormat::Enum::BGRA8;
-							bytesPerPixel = 4;
-							break;
-					}
-
+					const bgfx::TextureFormat::Enum textureFormat = (bgfx::TextureFormat::Enum)fontFace.getTextureFormat();
 					se_assert(textureFormat != bgfx::TextureFormat::Enum::Unknown);
 					textureHandle = bgfx::createTexture2D(
 						  uint16_t(estimatedAtlasSize)
@@ -132,22 +104,17 @@ namespace se
 					}
 				}
 
-				Rectangle glyphRect((uint16_t)glyphSlot->bitmap.width, (uint16_t)glyphSlot->bitmap.rows);
-				if (!rectanglePacker.addRectangle(glyphRect))
+				GlyphMetrics glyphMetrics = fontFace.getGlyphMetrics();
+				if (!rectanglePacker.addRectangle(glyphMetrics.rectangle))
 				{
 					log::error("Failed to add font '" + _path + "' glyph '" + charCodeToString(charCode) + "' to rectangle packer! (size: " + std::to_string(estimatedAtlasSize) + ")");
 					continue;
 				}
 
-				se_assert(bytesPerPixel > 0);
-				const bgfx::Memory* memoryBuffer = bgfx::copy(glyphSlot->bitmap.buffer, glyphSlot->bitmap.width * glyphSlot->bitmap.rows * bytesPerPixel);
-				bgfx::updateTexture2D(textureHandle, 0, 0, glyphRect.x, glyphRect.y, glyphRect.width, glyphRect.height, memoryBuffer);
+				const bgfx::Memory* memoryBuffer = fontFace.createGlyphMemoryBuffer();
+				bgfx::updateTexture2D(textureHandle, 0, 0, glyphMetrics.rectangle.x, glyphMetrics.rectangle.y, glyphMetrics.rectangle.width, glyphMetrics.rectangle.height, memoryBuffer);
 
-				GlyphMetrics& glyphMetrics = result->glyphMap[charCode];
-				glyphMetrics.rectangle = glyphRect;
-				glyphMetrics.advanceX = glyphSlot->advance.x >> 6;
-				glyphMetrics.bearingX = glyphSlot->bitmap_left;
-				glyphMetrics.bearingY = glyphSlot->bitmap_top;
+				result->glyphMap[charCode] = glyphMetrics;
 			}
 
 			result->fontMetrics = fontFace.getFontMetrics();
