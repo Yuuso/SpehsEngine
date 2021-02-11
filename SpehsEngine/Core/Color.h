@@ -14,10 +14,12 @@ namespace se
 		float& operator[](const int index);
 		const float& operator[](const int index) const;
 		void operator*=(const float componentMultiplier);
+		void operator*=(const Color& other);
 		void operator/=(const float componentDivider);
 		void operator+=(const Color& other);
 		void operator-=(const Color& other);
 		Color operator*(const float componentMultiplier) const;
+		Color operator*(const Color& other) const;
 		Color operator/(const float componentDivider) const;
 		Color operator+(const Color& other) const;
 		Color operator-(const Color& other) const;
