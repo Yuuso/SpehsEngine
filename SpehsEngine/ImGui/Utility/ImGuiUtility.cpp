@@ -40,7 +40,7 @@ namespace ImGui
 			{
 				if (!directory.empty())
 				{
-					filepath.insert(filepath.begin(), directory.begin(), directory.end());
+					filepath = std::string(directory) + "/" + filepath;
 				}
 				changed = true;
 			}
