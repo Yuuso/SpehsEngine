@@ -70,7 +70,7 @@ namespace se
 		WriteBuffer writeBuffer;
 		writeToBuffer<SizeType>(writeBuffer, string);
 		Archive archive;
-		se_write_to_archive(archive, writeBuffer);
+		archive.write("writeBuffer", writeBuffer);
 		return archive;
 	}
 
@@ -79,7 +79,7 @@ namespace se
 	{
 		static_assert(std::is_integral<SizeType>::value, "SizeType must be integral.");
 		WriteBuffer writeBuffer;
-		se_read_from_archive(archive, writeBuffer);
+		archive.read("writeBuffer", writeBuffer);
 		if (writeBuffer.getSize() > 0)
 		{
 			ReadBuffer readBuffer(writeBuffer[0], writeBuffer.getSize());

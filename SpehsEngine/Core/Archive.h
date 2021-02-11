@@ -153,7 +153,7 @@ namespace se
 			WriteBuffer writeBuffer;
 			if (!read(valueName, writeBuffer))
 			{
-				return false;
+				return true;
 			}
 			if (writeBuffer.getSize() > 0)
 			{
@@ -173,7 +173,7 @@ namespace se
 			WriteBuffer writeBuffer;
 			if (!read(valueName, writeBuffer))
 			{
-				return false;
+				return true;
 			}
 			if (writeBuffer.getSize() > 0)
 			{

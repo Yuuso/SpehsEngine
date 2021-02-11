@@ -47,7 +47,7 @@ namespace se
 		se_assert(vector.size() <= size_t(std::numeric_limits<SizeType>::max()));
 		Archive archive;
 		const SizeType size = SizeType(vector.size());
-		se_write_to_archive(archive, size);
+		archive.write("size", size);
 		for (size_t i = 0; i < vector.size(); i++)
 		{
 			archive.write(std::to_string(i), vector[i]);
@@ -59,7 +59,10 @@ namespace se
 		readFromArchive(const Archive& archive, std::vector<T>& vector)
 	{
 		SizeType size = 0;
-		se_read_from_archive(archive, size);
+		if (!archive.read("size", size))
+		{
+			return true;
+		}
 		vector.resize(size_t(size));
 		for (size_t i = 0; i < vector.size(); i++)
 		{
@@ -80,7 +83,7 @@ namespace se
 		WriteBuffer writeBuffer;
 		writeToBuffer<T, SizeType>(writeBuffer, vector);
 		Archive archive;
-		se_write_to_archive(archive, writeBuffer);
+		archive.write("writeBuffer", writeBuffer);
 		return archive;
 	}
 	template<typename T, typename SizeType = uint32_t>
@@ -89,7 +92,10 @@ namespace se
 	{
 		static_assert(std::is_integral<SizeType>::value, "SizeType must be integral.");
 		WriteBuffer writeBuffer;
-		se_read_from_archive(archive, writeBuffer);
+		if (!archive.read("writeBuffer", writeBuffer))
+		{
+			return true;
+		}
 		ReadBuffer readBuffer(writeBuffer[0], writeBuffer.getSize());
 		return readFromBuffer<T, SizeType>(readBuffer, vector);
 	}
