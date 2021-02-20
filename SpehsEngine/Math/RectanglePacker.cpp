@@ -67,7 +67,21 @@ namespace se
 	}
 	bool RectanglePacker::addRectangle(Rectangle& _rectangle)
 	{
-		return rootNode.insert(_rectangle);
+		_rectangle.width += margin * 2;
+		_rectangle.height += margin * 2;
+		const bool result = rootNode.insert(_rectangle);
+		_rectangle.width -= margin * 2;
+		_rectangle.height -= margin * 2;
+		if (result)
+		{
+			_rectangle.x += margin;
+			_rectangle.y += margin;
+		}
+		return result;
+	}
+	void RectanglePacker::setMargin(const uint16_t _margin)
+	{
+		margin = _margin;
 	}
 	uint16_t RectanglePacker::getWidth() const
 	{
