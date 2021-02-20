@@ -37,8 +37,13 @@ namespace se
 		{
 			buffer.resize(_size * vertexBytes);
 		}
+		void VertexBuffer::grow(const size_t _amount)
+		{
+			buffer.resize(buffer.size() + _amount * vertexBytes);
+		}
 		void VertexBuffer::pushBack(const VertexBuffer& _vertices)
 		{
+			se_assert(getAttributes() == _vertices.getAttributes());
 			buffer.insert(buffer.end(), _vertices.buffer.begin(), _vertices.buffer.end());
 		}
 		void VertexBuffer::erase(const size_t _begin, const size_t _end)
@@ -57,23 +62,30 @@ namespace se
 		void VertexBuffer::calculateVertexSize()
 		{
 			vertexBytes = 0;
-			if(checkBit(attributes, Position))	{ vertexBytes += sizeof(glm::vec3); }
-			if(checkBit(attributes, Normal))	{ vertexBytes += sizeof(glm::vec3); }
-			if(checkBit(attributes, Tangent))	{ vertexBytes += sizeof(glm::vec3); }
-			if(checkBit(attributes, Bitangent))	{ vertexBytes += sizeof(glm::vec3); }
-			if(checkBit(attributes, Color0))	{ vertexBytes += sizeof(Color)	 ; }
-			if(checkBit(attributes, Color1))	{ vertexBytes += sizeof(Color)	 ; }
-			if(checkBit(attributes, Color2))	{ vertexBytes += sizeof(Color)	 ; }
-			if(checkBit(attributes, Color3))	{ vertexBytes += sizeof(Color)	 ; }
-			if(checkBit(attributes, Weight))	{ vertexBytes += sizeof(float)	 ; }
-			if(checkBit(attributes, TexCoord0))	{ vertexBytes += sizeof(glm::vec2); }
-			if(checkBit(attributes, TexCoord1))	{ vertexBytes += sizeof(glm::vec2); }
-			if(checkBit(attributes, TexCoord2))	{ vertexBytes += sizeof(glm::vec2); }
-			if(checkBit(attributes, TexCoord3))	{ vertexBytes += sizeof(glm::vec2); }
-			if(checkBit(attributes, TexCoord4))	{ vertexBytes += sizeof(glm::vec2); }
-			if(checkBit(attributes, TexCoord5))	{ vertexBytes += sizeof(glm::vec2); }
-			if(checkBit(attributes, TexCoord6))	{ vertexBytes += sizeof(glm::vec2); }
-			if(checkBit(attributes, TexCoord7))	{ vertexBytes += sizeof(glm::vec2); }
+
+			#define check_attribute_bytes(__attribute) \
+				if(checkBit(attributes, VertexAttribute::VertexAttributeFlag::__attribute)) { vertexBytes += sizeof(VertexAttribute::##__attribute##Type); }
+
+			check_attribute_bytes(Position)
+			check_attribute_bytes(Normal)
+			check_attribute_bytes(Tangent)
+			check_attribute_bytes(Bitangent)
+			check_attribute_bytes(Color0)
+			check_attribute_bytes(Color1)
+			check_attribute_bytes(Color2)
+			check_attribute_bytes(Color3)
+			check_attribute_bytes(Weight)
+			check_attribute_bytes(Indices)
+			check_attribute_bytes(TexCoord0)
+			check_attribute_bytes(TexCoord1)
+			check_attribute_bytes(TexCoord2)
+			check_attribute_bytes(Data0)
+			check_attribute_bytes(Data1)
+			check_attribute_bytes(Data2)
+			check_attribute_bytes(Data3)
+			check_attribute_bytes(Data4)
+
+			#undef check_attribute_bytes
 		}
 	}
 }

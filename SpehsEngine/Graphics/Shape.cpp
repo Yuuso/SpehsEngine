@@ -25,10 +25,11 @@ namespace se
 
 			se_assert(_numVertices >= 3);
 			VertexBuffer newVertices;
-			newVertices.setAttributes(VertexAttributeFlag::Position
-									| VertexAttributeFlag::Normal
-									| VertexAttributeFlag::Color0
-									| VertexAttributeFlag::TexCoord0);
+			using namespace VertexAttribute;
+			newVertices.setAttributes(Position
+									| Normal
+									| Color0
+									| TexCoord0);
 
 			switch (_numVertices)
 			{
@@ -130,11 +131,11 @@ namespace se
 		}
 		void Shape::setVertices(const VertexBuffer& _vertices)
 		{
-			log::error("setVertices should not be used with shapes!");
+			se_assert_m(false, "Cannot set vertices for Shape primitive!");
 		}
-		void Shape::setIndices(const std::vector<uint16_t>& _indices)
+		void Shape::setIndices(const std::vector<IndexType>& _indices)
 		{
-			log::error("setIndices should not be used with shapes!");
+			se_assert_m(false, "Cannot set indices for Shape primitive!");
 		}
 
 		void Shape::generateIndices()

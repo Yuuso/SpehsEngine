@@ -2,6 +2,7 @@
 
 #include "SpehsEngine/Graphics/Material.h"
 #include "SpehsEngine/Graphics/Types.h"
+#include "SpehsEngine/Graphics/VertexAttribute.h"
 #include <memory>
 
 

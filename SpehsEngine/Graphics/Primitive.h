@@ -54,8 +54,8 @@ namespace se
 			virtual void							toggleRenderState();
 			virtual void							setMaterial(std::shared_ptr<Material> _material);
 			virtual void							setVertices(const VertexBuffer& _vertices);
-			virtual void							setIndices(const std::vector<uint16_t>& _indices);
-			virtual void							setColor(const Color& _color); // TODO: How to deal with colors?
+			virtual void							setIndices(const std::vector<IndexType>& _indices);
+			virtual void							setColor(const Color& _color, const size_t _colorIndex = 0);
 
 			virtual void							setRenderFlags(const RenderFlagsType _renderFlags);
 			virtual void							enableRenderFlag(const RenderFlag _renderFlag);
@@ -71,6 +71,8 @@ namespace se
 			virtual void							setLocalRotation(const glm::quat& _rotation);
 
 		private:
+
+			void									invalidatePrimitiveColors();
 
 			std::string								name					= "primitive";
 			bool									renderState				= true;
@@ -94,7 +96,9 @@ namespace se
 			friend class PrimitiveInstance;
 			boost::signals2::signal<void(void)>		destroyedSignal;
 			PrimitiveUpdateFlagsType				updateFlags				= 0;
-			Color									primitiveColor			= { -1.0f, -1.0f, -1.0f, -1.0f };
+
+			static constexpr size_t					MAX_PRIMITIVE_COLORS	= 4;
+			Color									primitiveColor[MAX_PRIMITIVE_COLORS];
 		};
 	}
 }

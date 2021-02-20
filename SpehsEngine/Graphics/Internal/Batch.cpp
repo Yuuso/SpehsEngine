@@ -119,82 +119,87 @@ namespace se
 			se_assert(_vertices.size() == (_positionInBatch.verticesEnd - _positionInBatch.verticesStart));
 			se_assert(vertices.getAttributes() == _vertices.getAttributes());
 			glm::vec4 newVertex;
+			using namespace VertexAttribute;
 			for (size_t i = 0; i < _vertices.size(); i++)
 			{
-				if (checkBit(renderInfo.attributes, VertexAttributeFlag::Position))
+				if (checkBit(renderInfo.attributes, Position))
 				{
 					newVertex = _transformMatrix * glm::vec4(_vertices.get<Position>(i), 1.0f);
 					vertices.get<Position>(i + _positionInBatch.verticesStart) = newVertex;
 				}
-				if (checkBit(renderInfo.attributes, VertexAttributeFlag::Normal))
+				if (checkBit(renderInfo.attributes, Normal))
 				{
 					newVertex = _normalMatrix * glm::vec4(_vertices.get<Normal>(i), 1.0f);
 					newVertex = glm::normalize(newVertex);
 					vertices.get<Normal>(i + _positionInBatch.verticesStart) = newVertex;
 				}
-				if (checkBit(renderInfo.attributes, VertexAttributeFlag::Tangent))
+				if (checkBit(renderInfo.attributes, Tangent))
 				{
 					newVertex = _normalMatrix * glm::vec4(_vertices.get<Tangent>(i), 1.0f);
 					newVertex = glm::normalize(newVertex);
 					vertices.get<Tangent>(i + _positionInBatch.verticesStart) = newVertex;
 				}
-				if (checkBit(renderInfo.attributes, VertexAttributeFlag::Bitangent))
+				if (checkBit(renderInfo.attributes, Bitangent))
 				{
 					newVertex = _normalMatrix * glm::vec4(_vertices.get<Bitangent>(i), 1.0f);
 					newVertex = glm::normalize(newVertex);
 					vertices.get<Bitangent>(i + _positionInBatch.verticesStart) = newVertex;
 				}
-				if (checkBit(renderInfo.attributes, VertexAttributeFlag::Color0))
+				if (checkBit(renderInfo.attributes, Color0))
 				{
 					vertices.get<Color0>(i + _positionInBatch.verticesStart) = _vertices.get<Color0>(i);
 				}
-				if (checkBit(renderInfo.attributes, VertexAttributeFlag::Color1))
+				if (checkBit(renderInfo.attributes, Color1))
 				{
 					vertices.get<Color1>(i + _positionInBatch.verticesStart) = _vertices.get<Color1>(i);
 				}
-				if (checkBit(renderInfo.attributes, VertexAttributeFlag::Color2))
+				if (checkBit(renderInfo.attributes, Color2))
 				{
 					vertices.get<Color2>(i + _positionInBatch.verticesStart) = _vertices.get<Color2>(i);
 				}
-				if (checkBit(renderInfo.attributes, VertexAttributeFlag::Color3))
+				if (checkBit(renderInfo.attributes, Color3))
 				{
 					vertices.get<Color3>(i + _positionInBatch.verticesStart) = _vertices.get<Color3>(i);
 				}
-				if (checkBit(renderInfo.attributes, VertexAttributeFlag::Weight))
+				if (checkBit(renderInfo.attributes, Weight))
 				{
 					vertices.get<Weight>(i + _positionInBatch.verticesStart) = _vertices.get<Weight>(i);
 				}
-				if (checkBit(renderInfo.attributes, VertexAttributeFlag::TexCoord0))
+				if (checkBit(renderInfo.attributes, Indices))
+				{
+					vertices.get<Indices>(i + _positionInBatch.verticesStart) = _vertices.get<Indices>(i);
+				}
+				if (checkBit(renderInfo.attributes, TexCoord0))
 				{
 					vertices.get<TexCoord0>(i + _positionInBatch.verticesStart) = _vertices.get<TexCoord0>(i);
 				}
-				if (checkBit(renderInfo.attributes, VertexAttributeFlag::TexCoord1))
+				if (checkBit(renderInfo.attributes, TexCoord1))
 				{
 					vertices.get<TexCoord1>(i + _positionInBatch.verticesStart) = _vertices.get<TexCoord1>(i);
 				}
-				if (checkBit(renderInfo.attributes, VertexAttributeFlag::TexCoord2))
+				if (checkBit(renderInfo.attributes, TexCoord2))
 				{
 					vertices.get<TexCoord2>(i + _positionInBatch.verticesStart) = _vertices.get<TexCoord2>(i);
 				}
-				if (checkBit(renderInfo.attributes, VertexAttributeFlag::TexCoord3))
+				if (checkBit(renderInfo.attributes, Data0))
 				{
-					vertices.get<TexCoord3>(i + _positionInBatch.verticesStart) = _vertices.get<TexCoord3>(i);
+					vertices.get<Data0>(i + _positionInBatch.verticesStart) = _vertices.get<Data0>(i);
 				}
-				if (checkBit(renderInfo.attributes, VertexAttributeFlag::TexCoord4))
+				if (checkBit(renderInfo.attributes, Data1))
 				{
-					vertices.get<TexCoord4>(i + _positionInBatch.verticesStart) = _vertices.get<TexCoord4>(i);
+					vertices.get<Data1>(i + _positionInBatch.verticesStart) = _vertices.get<Data1>(i);
 				}
-				if (checkBit(renderInfo.attributes, VertexAttributeFlag::TexCoord5))
+				if (checkBit(renderInfo.attributes, Data2))
 				{
-					vertices.get<TexCoord5>(i + _positionInBatch.verticesStart) = _vertices.get<TexCoord5>(i);
+					vertices.get<Data2>(i + _positionInBatch.verticesStart) = _vertices.get<Data2>(i);
 				}
-				if (checkBit(renderInfo.attributes, VertexAttributeFlag::TexCoord6))
+				if (checkBit(renderInfo.attributes, Data3))
 				{
-					vertices.get<TexCoord6>(i + _positionInBatch.verticesStart) = _vertices.get<TexCoord6>(i);
+					vertices.get<Data3>(i + _positionInBatch.verticesStart) = _vertices.get<Data3>(i);
 				}
-				if (checkBit(renderInfo.attributes, VertexAttributeFlag::TexCoord7))
+				if (checkBit(renderInfo.attributes, Data4))
 				{
-					vertices.get<TexCoord7>(i + _positionInBatch.verticesStart) = _vertices.get<TexCoord7>(i);
+					vertices.get<Data4>(i + _positionInBatch.verticesStart) = _vertices.get<Data4>(i);
 				}
 			}
 			needsVertexBufferUpdate = true;

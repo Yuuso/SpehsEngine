@@ -11,10 +11,18 @@ namespace se
 	{
 		Primitive::Primitive()
 		{
+			invalidatePrimitiveColors();
 		}
 		Primitive::~Primitive()
 		{
 			destroyedSignal();
+		}
+		void Primitive::invalidatePrimitiveColors()
+		{
+			for (size_t i = 0; i < MAX_PRIMITIVE_COLORS; i++)
+			{
+				primitiveColor[i] = se::Color(-1.0f, -1.0f, -1.0f, -1.0f);
+			}
 		}
 
 		const std::string& Primitive::getName() const
@@ -108,25 +116,40 @@ namespace se
 		void Primitive::setVertices(const VertexBuffer& _vertices)
 		{
 			vertices = _vertices;
+			invalidatePrimitiveColors();
 			enableBit(updateFlags, PrimitiveUpdateFlag::VerticesChanged);
 		}
-		void Primitive::setIndices(const std::vector<uint16_t>& _indices)
+		void Primitive::setIndices(const std::vector<IndexType>& _indices)
 		{
 			indices = _indices;
 			enableBit(updateFlags, PrimitiveUpdateFlag::IndicesChanged);
 		}
-		void Primitive::setColor(const Color& _color)
+		void Primitive::setColor(const Color& _color, const size_t _colorIndex)
 		{
-			if (_color == primitiveColor)
-				return;
-			primitiveColor = _color;
-			if (!checkBit(vertices.getAttributes(), VertexAttributeFlag::Color0))
+			if (_colorIndex >= MAX_PRIMITIVE_COLORS)
 			{
-				log::warning("Cannot set primitive color, no color attribute in vertices!");
+				log::warning("Invalid primitive color index: " + std::to_string(_colorIndex));
 				return;
 			}
+			if (_color == primitiveColor[_colorIndex])
+				return;
+
+			VertexAttributeFlagsType attribute = 0;
+			switch (_colorIndex)
+			{
+				case 0: enableBit(attribute, VertexAttribute::Color0); break;
+				case 1: enableBit(attribute, VertexAttribute::Color1); break;
+				case 2: enableBit(attribute, VertexAttribute::Color2); break;
+				case 3: enableBit(attribute, VertexAttribute::Color3); break;
+			}
+			if (!checkBit(vertices.getAttributes(), attribute))
+			{
+				log::warning("Cannot set primitive color, no color " + std::to_string(_colorIndex) + " attribute in vertex buffer!");
+				return;
+			}
+			primitiveColor[_colorIndex] = _color;
 			for (size_t i = 0; i < vertices.size(); i++)
-				vertices.get<VertexAttributeFlag::Color0>(i) = _color;
+				vertices.get<VertexAttribute::Color0>(i) = _color;
 			enableBit(updateFlags, PrimitiveUpdateFlag::VerticesChanged);
 		}
 
