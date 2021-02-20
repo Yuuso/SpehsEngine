@@ -8,6 +8,8 @@
 #include "SpehsEngine/Graphics/EmbeddedShaders/fs_tex.h"
 #include "SpehsEngine/Graphics/EmbeddedShaders/vs_phong.h"
 #include "SpehsEngine/Graphics/EmbeddedShaders/fs_phong.h"
+#include "SpehsEngine/Graphics/EmbeddedShaders/vs_text.h"
+#include "SpehsEngine/Graphics/EmbeddedShaders/fs_text.h"
 
 
 namespace se
@@ -22,6 +24,8 @@ namespace se
 			BGFX_EMBEDDED_SHADER(fs_tex),
 			BGFX_EMBEDDED_SHADER(vs_phong),
 			BGFX_EMBEDDED_SHADER(fs_phong),
+			BGFX_EMBEDDED_SHADER(vs_text),
+			BGFX_EMBEDDED_SHADER(fs_text),
 
 			BGFX_EMBEDDED_SHADER_END()
 		};
@@ -55,6 +59,7 @@ namespace se
 			createDefaultShader("color");
 			createDefaultShader("tex");
 			createDefaultShader("phong");
+			createDefaultShader("text");
 		}
 	}
 }

@@ -13,7 +13,7 @@ namespace se
 			fontLibrary = std::make_shared<FontLibrary>();
 		}
 
-		std::shared_ptr<Font> FontManager::create(const std::string_view _name, const std::string_view _font, const FontSize _size, const CharacterMap& _charMap)
+		std::shared_ptr<Font> FontManager::create(const std::string_view _name, const std::string_view _font, const FontSize _size, const CharacterSet& _charMap)
 		{
 			const std::string fontPath = pathFinder->getPath(_font);
 

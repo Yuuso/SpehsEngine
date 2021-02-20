@@ -147,6 +147,10 @@ namespace se
 			}
 			return true;
 		}
+		bool FontFace::glyphIsEmpty() const
+		{
+			return (*face)->glyph->bitmap.buffer == nullptr;
+		}
 		int FontFace::getTextureFormat() const
 		{
 			switch ((*face)->glyph->bitmap.pixel_mode)
@@ -158,7 +162,7 @@ namespace se
 				case FT_PIXEL_MODE_GRAY2:
 				case FT_PIXEL_MODE_GRAY4:
 				case FT_PIXEL_MODE_MONO:
-					log::error("Invalid texture format '" + std::to_string((*face)->glyph->bitmap.pixel_mode) + "'!");
+					log::error("Invalid font pixel mode '" + std::to_string((*face)->glyph->bitmap.pixel_mode) + "'!");
 					break;
 
 				case FT_PIXEL_MODE_GRAY:
@@ -170,10 +174,8 @@ namespace se
 			}
 			return bgfx::TextureFormat::Enum::Unknown;
 		}
-		const struct bgfx::Memory* FontFace::createGlyphMemoryBuffer() const
+		uint32_t FontFace::getBytesPerPixel() const
 		{
-			se_assert((*face)->glyph->bitmap.buffer != nullptr);
-			uint32_t bytesPerPixel = 0;
 			switch ((*face)->glyph->bitmap.pixel_mode)
 			{
 				case FT_PIXEL_MODE_NONE:
@@ -183,22 +185,29 @@ namespace se
 				case FT_PIXEL_MODE_GRAY2:
 				case FT_PIXEL_MODE_GRAY4:
 				case FT_PIXEL_MODE_MONO:
+					log::error("Invalid font pixel mode '" + std::to_string((*face)->glyph->bitmap.pixel_mode) + "'!");
 					break;
 
 				case FT_PIXEL_MODE_GRAY:
-					bytesPerPixel = 1;
+					return 1;
 					break;
 				case FT_PIXEL_MODE_BGRA:
-					bytesPerPixel = 4;
+					return 4;
 					break;
 			}
+			return 0;
+		}
+		const struct bgfx::Memory* FontFace::createGlyphMemoryBuffer() const
+		{
+			se_assert((*face)->glyph->bitmap.buffer != nullptr);
+			const uint32_t bytesPerPixel = getBytesPerPixel();
 			se_assert(bytesPerPixel > 0);
 			return bgfx::copy((*face)->glyph->bitmap.buffer, (*face)->glyph->bitmap.width * (*face)->glyph->bitmap.rows * bytesPerPixel);
 		}
 		GlyphMetrics FontFace::getGlyphMetrics() const
 		{
 			GlyphMetrics result;
-			result.rectangle = Rectangle((uint16_t)(*face)->glyph->bitmap.width, (uint16_t)(*face)->glyph->bitmap.rows);
+			result.rectangle = glyphIsEmpty() ? Rectangle() : Rectangle((uint16_t)(*face)->glyph->bitmap.width, (uint16_t)(*face)->glyph->bitmap.rows);
 			result.advanceX = (*face)->glyph->advance.x >> 6;
 			result.bearingX = (*face)->glyph->bitmap_left;
 			result.bearingY = (*face)->glyph->bitmap_top;

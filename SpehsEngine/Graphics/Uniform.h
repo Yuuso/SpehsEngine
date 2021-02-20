@@ -38,6 +38,7 @@ namespace se
 {
 	namespace graphics
 	{
+		class Font;
 		class Texture;
 
 		class Uniform
@@ -64,6 +65,7 @@ namespace se
 			void set(const glm::mat3* _value, const uint16_t _numElements = 1);
 			void set(const glm::mat4* _value, const uint16_t _numElements = 1);
 			void set(const std::shared_ptr<Texture>& _value, const uint8_t _stage);
+			void set(const std::shared_ptr<Font>& _value, const uint8_t _stage);
 
 		private:
 

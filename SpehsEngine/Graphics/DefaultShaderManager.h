@@ -9,6 +9,7 @@
 	- color
 	- tex
 	- phong
+	- text
 */
 
 

@@ -43,19 +43,20 @@ namespace se
 				return;
 			resourceData.reset();
 		}
-		std::shared_ptr<ResourceData> Font::createResource(const std::string _path, const FontSize _size, CharacterMap _charMap, std::shared_ptr<FontLibrary> _fontLibrary)
+		std::shared_ptr<ResourceData> Font::createResource(const std::string _path, const FontSize _size, CharacterSet _charMap, std::shared_ptr<FontLibrary> _fontLibrary)
 		{
 			se_assert(!_charMap.empty());
 
 			// Always include replacement character
 			if (std::find(_charMap.begin(), _charMap.end(), replacementCharacter) == _charMap.end())
-				_charMap.push_back(replacementCharacter);
+				_charMap.insert(replacementCharacter);
 
 			FontFace fontFace = _fontLibrary->loadFace(_path);
 			fontFace.setSize(_size);
 
-			const uint16_t estimatedAtlasSize = fontFace.getAtlasSizeEstimate(_charMap.size());
-			RectanglePacker rectanglePacker(estimatedAtlasSize, estimatedAtlasSize);
+			const uint16_t atlasSize = fontFace.getAtlasSizeEstimate(_charMap.size());
+			RectanglePacker rectanglePacker(atlasSize, atlasSize);
+			rectanglePacker.setMargin(2);
 			bgfx::TextureHandle textureHandle = BGFX_INVALID_HANDLE;
 
 			std::shared_ptr<FontData> result = std::make_shared<FontData>();
@@ -69,9 +70,6 @@ namespace se
 					return std::to_string(charCode);
 				};
 
-				if (charCode == U' ')
-					continue; // Skip space
-
 				const bool glyphLoaded = fontFace.loadGlyph(charCode);
 				if (!glyphLoaded)
 				{
@@ -79,51 +77,76 @@ namespace se
 					continue;
 				}
 
-				if (!bgfx::isValid(textureHandle))
+				GlyphMetrics glyphMetrics = fontFace.getGlyphMetrics();
+
+				if (!fontFace.glyphIsEmpty())
 				{
-					const bgfx::TextureFormat::Enum textureFormat = (bgfx::TextureFormat::Enum)fontFace.getTextureFormat();
-					se_assert(textureFormat != bgfx::TextureFormat::Enum::Unknown);
-					textureHandle = bgfx::createTexture2D(
-						  uint16_t(estimatedAtlasSize)
-						, uint16_t(estimatedAtlasSize)
-						, false
-						, 1
-						, textureFormat
-						, TextureModesToFlags(TextureModes())
-						, nullptr
+					if (!bgfx::isValid(textureHandle))
+					{
+						const bgfx::TextureFormat::Enum textureFormat = (bgfx::TextureFormat::Enum)fontFace.getTextureFormat();
+						se_assert(textureFormat != bgfx::TextureFormat::Enum::Unknown);
+						textureHandle = bgfx::createTexture2D(
+							uint16_t(atlasSize)
+							, uint16_t(atlasSize)
+							, false
+							, 1
+							, textureFormat
+							, TextureModesToFlags(TextureModes())
+							, nullptr
 						);
 
-					if (bgfx::isValid(textureHandle))
-					{
-						result->handle = textureHandle.idx;
+						if (bgfx::isValid(textureHandle))
+						{
+							result->handle = textureHandle.idx;
+						}
+						else
+						{
+							log::error("Failed to create font '" + _path + "' texture!");
+							continue;
+						}
 					}
-					else
+
+					if (!rectanglePacker.addRectangle(glyphMetrics.rectangle))
 					{
-						log::error("Failed to create font '" + _path + "' texture!");
+						log::error("Failed to add font '" + _path + "' glyph '" + charCodeToString(charCode) + "' to rectangle packer! (size: " + std::to_string(atlasSize) + ")");
 						continue;
 					}
-				}
 
-				GlyphMetrics glyphMetrics = fontFace.getGlyphMetrics();
-				if (!rectanglePacker.addRectangle(glyphMetrics.rectangle))
-				{
-					log::error("Failed to add font '" + _path + "' glyph '" + charCodeToString(charCode) + "' to rectangle packer! (size: " + std::to_string(estimatedAtlasSize) + ")");
-					continue;
+					const bgfx::Memory* memoryBuffer = fontFace.createGlyphMemoryBuffer();
+					bgfx::updateTexture2D(textureHandle, 0, 0, glyphMetrics.rectangle.x, glyphMetrics.rectangle.y, glyphMetrics.rectangle.width, glyphMetrics.rectangle.height, memoryBuffer);
 				}
-
-				const bgfx::Memory* memoryBuffer = fontFace.createGlyphMemoryBuffer();
-				bgfx::updateTexture2D(textureHandle, 0, 0, glyphMetrics.rectangle.x, glyphMetrics.rectangle.y, glyphMetrics.rectangle.width, glyphMetrics.rectangle.height, memoryBuffer);
 
 				result->glyphMap[charCode] = glyphMetrics;
 			}
 
+			constexpr uint32_t fillerGlyphSize = 3;
+			result->fillerGlyph.height = (uint16_t)fillerGlyphSize;
+			result->fillerGlyph.width = (uint16_t)fillerGlyphSize;
+			if (rectanglePacker.addRectangle(result->fillerGlyph))
+			{
+				constexpr uint32_t maxBytesPerPixel = 4;
+				constexpr uint32_t maxFillerBufferSize = fillerGlyphSize * fillerGlyphSize * maxBytesPerPixel;
+				uint8_t fillerBuffer[maxFillerBufferSize];
+				memset(&fillerBuffer[0], 255, (size_t)maxFillerBufferSize);
+
+				const uint32_t bytesPerPixel = fontFace.getBytesPerPixel();
+				const uint32_t actualBufferSize = fillerGlyphSize * fillerGlyphSize * bytesPerPixel;
+				se_assert(actualBufferSize <= maxFillerBufferSize);
+				const bgfx::Memory* memoryBuffer = bgfx::copy(&fillerBuffer[0], actualBufferSize);
+				bgfx::updateTexture2D(textureHandle, 0, 0, result->fillerGlyph.x, result->fillerGlyph.y, result->fillerGlyph.width, result->fillerGlyph.height, memoryBuffer);
+			}
+			else
+			{
+				log::error("Failed to add filler glyph for font '" + _path + "' to rectangle packer! (size: " + std::to_string(atlasSize) + ")");
+				result->fillerGlyph = Rectangle();
+			}
+
 			result->fontMetrics = fontFace.getFontMetrics();
-
+			result->fontMetrics.textureSize = atlasSize;
 			_fontLibrary->destroyFace(fontFace);
-
 			return result;
 		}
-		void Font::create(const std::string_view _path, const FontSize _size, const CharacterMap& _charMap, std::shared_ptr<FontLibrary> _fontLibrary, std::shared_ptr<ResourceLoader> _resourceLoader)
+		void Font::create(const std::string_view _path, const FontSize _size, const CharacterSet& _charMap, std::shared_ptr<FontLibrary> _fontLibrary, std::shared_ptr<ResourceLoader> _resourceLoader)
 		{
 			se_assert(!resourceData);
 			se_assert(_fontLibrary);

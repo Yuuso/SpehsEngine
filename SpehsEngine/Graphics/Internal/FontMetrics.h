@@ -1,6 +1,6 @@
 #pragma once
 
-#include "SpehsEngine/Graphics/CharacterMap.h"
+#include "SpehsEngine/Graphics/CharacterSet.h"
 #include "SpehsEngine/Math/RectanglePacker.h"
 #include <unordered_map>
 
@@ -20,6 +20,7 @@ namespace se
 
 		struct FontMetrics
 		{
+			uint16_t textureSize = 0;
 			int height = 0;
 			int ascent = 0;
 			int descent = 0;

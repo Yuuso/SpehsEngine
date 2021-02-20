@@ -2,7 +2,7 @@
 
 #include "SpehsEngine/Graphics/Internal/InternalTypes.h"
 #include "SpehsEngine/Graphics/Internal/FontMetrics.h"
-#include "SpehsEngine/Graphics/CharacterMap.h"
+#include "SpehsEngine/Graphics/CharacterSet.h"
 #include "SpehsEngine/Graphics/Types.h"
 #include <mutex>
 #include <string>
@@ -58,7 +58,9 @@ namespace se
 			void setSize(const FontSize _size);
 			const uint16_t getAtlasSizeEstimate(const size_t numGlyphs) const;
 			bool loadGlyph(const CharacterCode _charCode);
+			bool glyphIsEmpty() const;
 			int getTextureFormat() const; // bgfx::TextureFormat::Enum
+			uint32_t getBytesPerPixel() const;
 			const struct bgfx::Memory* createGlyphMemoryBuffer() const;
 			GlyphMetrics getGlyphMetrics() const;
 			FontMetrics getFontMetrics() const;

@@ -30,6 +30,7 @@ namespace se
 		struct FontData : ResourceData
 		{
 			GlyphMap glyphMap;
+			Rectangle fillerGlyph;
 			FontMetrics fontMetrics;
 		};
 	}

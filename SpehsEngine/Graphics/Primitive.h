@@ -70,6 +70,10 @@ namespace se
 			virtual void							setRotation(const glm::quat& _rotation);
 			virtual void							setLocalRotation(const glm::quat& _rotation);
 
+		protected:
+
+			virtual void							update() {};
+
 		private:
 
 			void									invalidatePrimitiveColors();

@@ -2,7 +2,7 @@
 
 #include "SpehsEngine/Graphics/Internal/FontLibrary.h"
 #include "SpehsEngine/Graphics/Internal/ResourceManager.h"
-#include "SpehsEngine/Graphics/CharacterMap.h"
+#include "SpehsEngine/Graphics/CharacterSet.h"
 #include "SpehsEngine/Graphics/Font.h"
 #include "SpehsEngine/Graphics/ResourceLoader.h"
 #include "SpehsEngine/Graphics/ResourcePathFinder.h"
@@ -28,7 +28,7 @@ namespace se
 			FontManager& operator=(FontManager&& _other) = delete;
 
 
-			std::shared_ptr<Font> create(const std::string_view _name, const std::string_view _font, const FontSize _size, const CharacterMap& _charMap = defaultCharacterMap);
+			std::shared_ptr<Font> create(const std::string_view _name, const std::string_view _font, const FontSize _size, const CharacterSet& _charMap = defaultCharacterSet);
 			std::shared_ptr<Font> find(const std::string_view _name) const;
 
 		private:

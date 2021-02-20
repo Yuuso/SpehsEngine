@@ -2,6 +2,7 @@
 #include "SpehsEngine/Graphics/Uniform.h"
 
 #include "bgfx/bgfx.h"
+#include "SpehsEngine/Graphics/Font.h"
 #include "SpehsEngine/Graphics/Texture.h"
 #include "SpehsEngine/Graphics/Internal/InternalUtilities.h"
 
@@ -62,6 +63,11 @@ namespace se
 			bgfx::setUniform({ uniformHandle }, reinterpret_cast<const void*>(_value), _numElements);
 		}
 		void Uniform::set(const std::shared_ptr<Texture>& _value, const uint8_t _stage)
+		{
+			se_assert(_value);
+			bgfx::setTexture(_stage, { uniformHandle }, { _value->getHandle() });
+		}
+		void Uniform::set(const std::shared_ptr<Font>& _value, const uint8_t _stage)
 		{
 			se_assert(_value);
 			bgfx::setTexture(_stage, { uniformHandle }, { _value->getHandle() });

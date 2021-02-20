@@ -45,6 +45,8 @@ namespace se
 
 		void PrimitiveInstance::update()
 		{
+			primitive->update();
+
 			if (!getRenderState())
 			{
 				destroyBuffers();
