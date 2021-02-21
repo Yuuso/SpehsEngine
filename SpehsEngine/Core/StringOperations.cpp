@@ -121,7 +121,14 @@ namespace se
 		{
 			if (str[i] == '.')
 			{
-				str.resize(i + 1 + precision);
+				if (precision == 0)
+				{
+					str.resize(i);
+				}
+				else
+				{
+					str.resize(i + 1 + precision);
+				}
 				return str;
 			}
 		}
