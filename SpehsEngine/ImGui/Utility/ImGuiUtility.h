@@ -158,9 +158,12 @@ namespace ImGui
 	{
 		se_assert(renderElement);
 		bool changed = false;
-		if (ImGui::CollapsingHeader(label.data()))
+		if (label.empty() || ImGui::CollapsingHeader(label.data()))
 		{
-			ImGui::Indent();
+			if (!label.empty())
+			{
+				ImGui::Indent();
+			}
 			ImGui::PushID(&vector);
 			for (size_t i = 0; i < vector.size(); i++)
 			{
@@ -208,7 +211,10 @@ namespace ImGui
 				changed = true;
 			}
 			ImGui::PopID();
-			ImGui::Unindent();
+			if (!label.empty())
+			{
+				ImGui::Unindent();
+			}
 		}
 		return changed;
 	}
