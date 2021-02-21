@@ -4,6 +4,7 @@
 #include "SpehsEngine/Graphics/Internal/FontMetrics.h"
 #include "SpehsEngine/Graphics/Primitive.h"
 #include "SpehsEngine/Graphics/TextStyle.h"
+#include "SpehsEngine/Graphics/Types.h"
 #include <memory>
 #include <string>
 #include <vector>
@@ -38,6 +39,7 @@ namespace se
 			void					setPrimitiveType(const PrimitiveType _primitiveType) override;
 			void					setVertices(const VertexBuffer& _vertices) override;
 			void					setIndices(const std::vector<IndexType>& _indices) override;
+			void					setMaterial(std::shared_ptr<Material> _material) override;
 
 
 			const size_t			length() const;
@@ -45,7 +47,7 @@ namespace se
 			const TextStyle&		getStyle() const;
 			const size_t			getPenPosition() const;
 			const float				getLineSpacing() const;
-			const glm::vec2&		getDimensions() const;
+			const TextDimensions&	getDimensions();
 
 		protected:
 
@@ -53,7 +55,9 @@ namespace se
 
 		private:
 
+			void					textChanged();
 			void					generateBuffers();
+			void					updateDimensions();
 
 			StyledString styledString;
 
@@ -65,7 +69,9 @@ namespace se
 			};
 			PenPosition penPosition;
 
+			TextDimensions dimensions;
 			float lineSpacing = 1.0f;
+			bool needDimensionsUpdate = false;
 			bool needBufferUpdate = false;
 		};
 	}

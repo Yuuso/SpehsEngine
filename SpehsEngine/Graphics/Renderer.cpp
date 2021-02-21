@@ -180,6 +180,20 @@ namespace se
 			return glm::ivec2(displayMode.w, displayMode.h);
 		}
 
+		const glm::vec2 Renderer::getDisplayDPI()
+		{
+			se_assert(initialized);
+			glm::vec2 result;
+			float unused = 0.0f;
+			if (SDL_GetDisplayDPI(0, &unused, &result.x, &result.y) != 0)
+			{
+				std::string error = "Renderer: Failed to get display dpi! ";
+				error += SDL_GetError();
+				log::error(error);
+			}
+			return result;
+		}
+
 		const int Renderer::getDisplayRefreshRate()
 		{
 			se_assert(initialized);

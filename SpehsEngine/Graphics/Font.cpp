@@ -56,7 +56,7 @@ namespace se
 
 			const uint16_t atlasSize = fontFace.getAtlasSizeEstimate(_charMap.size());
 			RectanglePacker rectanglePacker(atlasSize, atlasSize);
-			rectanglePacker.setMargin(2);
+			rectanglePacker.setMargin(2); // Margin to prevent bleeding
 			bgfx::TextureHandle textureHandle = BGFX_INVALID_HANDLE;
 
 			std::shared_ptr<FontData> result = std::make_shared<FontData>();
@@ -119,7 +119,8 @@ namespace se
 				result->glyphMap[charCode] = glyphMetrics;
 			}
 
-			constexpr uint32_t fillerGlyphSize = 3;
+			constexpr uint16_t fillerGlyphOffset = 2;
+			constexpr uint32_t fillerGlyphSize = 2 + fillerGlyphOffset * 2;
 			result->fillerGlyph.height = (uint16_t)fillerGlyphSize;
 			result->fillerGlyph.width = (uint16_t)fillerGlyphSize;
 			if (rectanglePacker.addRectangle(result->fillerGlyph))
@@ -134,6 +135,12 @@ namespace se
 				se_assert(actualBufferSize <= maxFillerBufferSize);
 				const bgfx::Memory* memoryBuffer = bgfx::copy(&fillerBuffer[0], actualBufferSize);
 				bgfx::updateTexture2D(textureHandle, 0, 0, result->fillerGlyph.x, result->fillerGlyph.y, result->fillerGlyph.width, result->fillerGlyph.height, memoryBuffer);
+
+				// Offset to prevent bleeding
+				result->fillerGlyph.x += fillerGlyphOffset;
+				result->fillerGlyph.y += fillerGlyphOffset;
+				result->fillerGlyph.height -= fillerGlyphOffset * 2;
+				result->fillerGlyph.width -= fillerGlyphOffset * 2;
 			}
 			else
 			{

@@ -105,14 +105,17 @@ namespace se
 
 		void FontFace::setSize(const FontSize _size)
 		{
+			constexpr uint32_t minSize = 4u;
+			se_assert_m(_size.size >= minSize, "Font size smaller than " + std::to_string(minSize) + " is not allowed!");
+			const uint32_t size = std::max(minSize, _size.size);
 			if (_size.type == FontSizeType::Point)
 			{
-				const glm::ivec2 displaySize = Renderer::getDisplaySize();
-				FT_Set_Char_Size(*face, 0, _size.size * 64, displaySize.x, displaySize.y);
+				const glm::vec2 displayDPI = Renderer::getDisplayDPI();
+				FT_Set_Char_Size(*face, 0, size << 6, (FT_UInt)displayDPI.x, (FT_UInt)displayDPI.y);
 			}
 			else if (_size.type == FontSizeType::Pixel)
 			{
-				FT_Set_Pixel_Sizes(*face, 0, _size.size);
+				FT_Set_Pixel_Sizes(*face, 0, size);
 			}
 			else
 			{

@@ -27,6 +27,8 @@ namespace se
 
 		const size_t VertexBuffer::size() const
 		{
+			if (vertexBytes == 0)
+				return 0;
 			return buffer.size() / vertexBytes;
 		}
 		const size_t VertexBuffer::bytes() const

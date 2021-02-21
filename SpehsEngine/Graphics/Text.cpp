@@ -15,6 +15,7 @@ namespace se
 		{
 			enableRenderFlag(RenderFlag::Blending);
 			enableRenderFlag(RenderFlag::CullBackFace);
+			disableRenderFlag(RenderFlag::DepthTest);
 		}
 		Text::~Text()
 		{
@@ -24,8 +25,15 @@ namespace se
 		{
 			if (needBufferUpdate)
 			{
-				generateBuffers();
-				needBufferUpdate = false;
+				if (getMaterial()->getFont()->ready())
+				{
+					generateBuffers();
+				}
+				else
+				{
+					// Clear vertex buffer to disable rendering while font is loading
+					Primitive::setVertices(VertexBuffer());
+				}
 			}
 			Primitive::update();
 		}
@@ -33,7 +41,7 @@ namespace se
 		void Text::setLineSpacing(const float _amount)
 		{
 			lineSpacing = _amount;
-			needBufferUpdate = true;
+			textChanged();
 		}
 		void Text::setStyle(const TextStyle& _style)
 		{
@@ -119,16 +127,14 @@ namespace se
 
 				penPosition.positionInSegment = _text.length();
 			}
-
-			needBufferUpdate = true;
+			textChanged();
 		}
 		void Text::clear()
 		{
 			styledString.clear();
 			penPosition.segmentIndex = 0;
 			penPosition.positionInSegment = 0;
-
-			needBufferUpdate = true;
+			textChanged();
 		}
 		void Text::setPrimitiveType(const PrimitiveType _primitiveType)
 		{
@@ -141,6 +147,11 @@ namespace se
 		void Text::setIndices(const std::vector<IndexType>& _indices)
 		{
 			se_assert_m(false, "Cannot set indices for Text primitive!");
+		}
+		void Text::setMaterial(std::shared_ptr<Material> _material)
+		{
+			Primitive::setMaterial(_material);
+			textChanged();
 		}
 
 		std::string Text::getPlainText() const
@@ -180,13 +191,22 @@ namespace se
 		{
 			return lineSpacing;
 		}
-		const glm::vec2& Text::getDimensions() const
+		const TextDimensions& Text::getDimensions()
 		{
-			// TODO
-			static const glm::vec2 temp;
-			return temp;
+			if (needDimensionsUpdate)
+			{
+				updateDimensions();
+			}
+			return dimensions;
 		}
 
+		void Text::textChanged()
+		{
+			needBufferUpdate = true;
+			needDimensionsUpdate = true;
+		}
+
+		// TODO: Combine generateBuffers and updateDimensions structures
 		void Text::generateBuffers()
 		{
 			std::shared_ptr<Material> primitiveMaterial = getMaterial();
@@ -208,10 +228,49 @@ namespace se
 			glm::vec2 cursor;
 			size_t vertexIndex = 0;
 
+			const float atlasSize = (float)font->resourceData->fontMetrics.textureSize;
+
+			auto addQuad = [&](const glm::vec2& _offset, const glm::vec2& _size, const Rectangle& _coord, const Color& _color)
+				{
+					newVertices.grow(4);
+
+					newVertices.get<Position>(vertexIndex) = glm::vec3(cursor.x + _offset.x, 0.0f, cursor.y + _offset.y);
+					newVertices.get<TexCoord0>(vertexIndex) = glm::vec2((float)_coord.x / atlasSize, (float)_coord.y / atlasSize);
+					newVertices.get<Color0>(vertexIndex) = _color;
+					vertexIndex++;
+
+					newVertices.get<Position>(vertexIndex) = glm::vec3(cursor.x + _offset.x + _size.x, 0.0f, cursor.y + _offset.y);
+					newVertices.get<TexCoord0>(vertexIndex) = glm::vec2((float)(_coord.x + _coord.width) / atlasSize, (float)_coord.y / atlasSize);
+					newVertices.get<Color0>(vertexIndex) = _color;
+					vertexIndex++;
+
+					newVertices.get<Position>(vertexIndex) = glm::vec3(cursor.x + _offset.x + _size.x, 0.0f, cursor.y + _offset.y + _size.y);
+					newVertices.get<TexCoord0>(vertexIndex) = glm::vec2((float)(_coord.x + _coord.width) / atlasSize, (float)(_coord.y + _coord.height) / atlasSize);
+					newVertices.get<Color0>(vertexIndex) = _color;
+					vertexIndex++;
+
+					newVertices.get<Position>(vertexIndex) = glm::vec3(cursor.x + _offset.x, 0.0f, cursor.y + _offset.y + _size.y);
+					newVertices.get<TexCoord0>(vertexIndex) = glm::vec2((float)_coord.x / atlasSize, (float)(_coord.y + _coord.height) / atlasSize);
+					newVertices.get<Color0>(vertexIndex) = _color;
+					vertexIndex++;
+				};
+
+			//// Debug origin
+			//{
+			//	Rectangle& fillerRect = font->resourceData->fillerGlyph;
+			//	addQuad(glm::vec2(-3.0f, 0.0f), glm::vec2(7.0f, 1.0f), fillerRect, Color(1.0f, 0.0f, 0.0f));
+			//	addQuad(glm::vec2(0.0f, -3.0f), glm::vec2(1.0f, 7.0f), fillerRect, Color(1.0f, 0.0f, 0.0f));
+			//}
+			//// Debug dimensions
+			//{
+			//	const TextDimensions textDimensions = getDimensions();
+			//	Rectangle& fillerRect = font->resourceData->fillerGlyph;
+			//	addQuad(textDimensions.offsetFromOrigin, textDimensions.dimensions, fillerRect, Color(1.0f, 1.0f, 1.0f, 0.2f));
+			//}
+
 			for (auto&& segment : styledString)
 			{
 				TextStyle& style = segment->style;
-				const float atlasSize = (float)font->resourceData->fontMetrics.textureSize;
 
 				for (size_t i = 0; i < segment->text.size(); i++)
 				{
@@ -233,7 +292,7 @@ namespace se
 					if (charCode == U'\n')
 					{
 						cursor.x = 0.0f;
-						cursor.y += (font->resourceData->fontMetrics.ascent - font->resourceData->fontMetrics.descent) * lineSpacing;
+						cursor.y += font->resourceData->fontMetrics.height * lineSpacing;
 						continue;
 					}
 					if (charCode == U'\t')
@@ -253,28 +312,7 @@ namespace se
 					static constexpr Rectangle emptyRect;
 					if (glyph.rectangle != emptyRect)
 					{
-						newVertices.grow(4);
-
-						for (size_t j = 0; j < 4; j++)
-						{
-							newVertices.get<Color0>(vertexIndex + j) = style.color;
-						}
-
-						newVertices.get<Position>(vertexIndex)	= glm::vec3(cursor.x + glyph.bearingX,							0.0f,			cursor.y + glyph.bearingY);
-						newVertices.get<TexCoord0>(vertexIndex) = glm::vec2((float)glyph.rectangle.x / atlasSize,								(float)glyph.rectangle.y / atlasSize);
-						vertexIndex++;
-
-						newVertices.get<Position>(vertexIndex)	= glm::vec3(cursor.x + glyph.bearingX + glyph.rectangle.width,	0.0f,			cursor.y + glyph.bearingY);
-						newVertices.get<TexCoord0>(vertexIndex) = glm::vec2((float)(glyph.rectangle.x + glyph.rectangle.width) / atlasSize,		(float)glyph.rectangle.y / atlasSize);
-						vertexIndex++;
-
-						newVertices.get<Position>(vertexIndex)	= glm::vec3(cursor.x + glyph.bearingX + glyph.rectangle.width,	0.0f,			cursor.y + glyph.bearingY + glyph.rectangle.height);
-						newVertices.get<TexCoord0>(vertexIndex) = glm::vec2((float)(glyph.rectangle.x + glyph.rectangle.width) / atlasSize,		(float)(glyph.rectangle.y + glyph.rectangle.height) / atlasSize);
-						vertexIndex++;
-
-						newVertices.get<Position>(vertexIndex)	= glm::vec3(cursor.x + glyph.bearingX,							0.0f,			cursor.y + glyph.bearingY + glyph.rectangle.height);
-						newVertices.get<TexCoord0>(vertexIndex) = glm::vec2((float)glyph.rectangle.x / atlasSize,								(float)(glyph.rectangle.y + glyph.rectangle.height) / atlasSize);
-						vertexIndex++;
+						addQuad(glm::vec2(glyph.bearingX, -glyph.bearingY), glm::vec2(glyph.rectangle.width, glyph.rectangle.height), glyph.rectangle, style.color);
 					}
 
 					cursor.x += glyph.advanceX * advanceMultiplier;
@@ -283,23 +321,101 @@ namespace se
 			Primitive::setVertices(newVertices);
 
 			std::vector<IndexType> newIndices;
-			const size_t numVertices = newVertices.size();
-			se_assert(numVertices % 4 == 0);
-			const size_t numQuads = numVertices / 4;
-			newIndices.resize((numVertices - 2) * 3);
-			size_t currentIndex = 0;
-			for (size_t i = 0; i < numQuads; i++)
 			{
-				const IndexType currentVertex = (IndexType)i * 4;
-				IndexType index = 1;
-				newIndices[currentIndex++] = currentVertex;
-				newIndices[currentIndex++] = currentVertex + index;
-				newIndices[currentIndex++] = currentVertex + (++index);
-				newIndices[currentIndex++] = currentVertex;
-				newIndices[currentIndex++] = currentVertex + index;
-				newIndices[currentIndex++] = currentVertex + (++index);
+				const size_t numVertices = newVertices.size();
+				se_assert(numVertices % 4 == 0);
+				const size_t numQuads = numVertices / 4;
+				newIndices.resize((numVertices - 2) * 3);
+				size_t currentIndex = 0;
+				for (size_t i = 0; i < numQuads; i++)
+				{
+					const IndexType currentVertex = (IndexType)i * 4;
+					IndexType index = 1;
+					newIndices[currentIndex++] = currentVertex;
+					newIndices[currentIndex++] = currentVertex + index;
+					newIndices[currentIndex++] = currentVertex + (++index);
+					newIndices[currentIndex++] = currentVertex;
+					newIndices[currentIndex++] = currentVertex + index;
+					newIndices[currentIndex++] = currentVertex + (++index);
+				}
 			}
 			Primitive::setIndices(newIndices);
+
+			needBufferUpdate = false;
+		}
+		void Text::updateDimensions()
+		{
+			std::shared_ptr<Material> primitiveMaterial = getMaterial();
+			se_assert(primitiveMaterial);
+			if (!primitiveMaterial)
+				return;
+
+			std::shared_ptr<Font> font = primitiveMaterial->getFont(0);
+			se_assert(font && font->ready());
+			if (!font || !font->ready())
+				return;
+
+			dimensions = TextDimensions();
+
+			glm::vec2 cursor;
+
+			for (auto&& segment : styledString)
+			{
+				//TextStyle& style = segment->style;
+
+				for (size_t i = 0; i < segment->text.size(); i++)
+				{
+					CharacterCode charCode = segment->text[i];
+					float advanceMultiplier = 1.0f;
+
+					if (charCode == U'\r')
+					{
+						// \r\n should be just a single newline, otherwise assume \r == \n
+						if ((i + 1) < segment->text.size() && segment->text[i + 1] == '\n')
+						{
+							continue;
+						}
+						else
+						{
+							charCode = U'\n';
+						}
+					}
+					if (charCode == U'\n')
+					{
+						if (cursor.x == 0.0f && cursor.y == 0.0f)
+						{
+							// Empty first line
+							dimensions.offsetFromOrigin.y = std::min(dimensions.offsetFromOrigin.y, cursor.y - font->resourceData->fontMetrics.ascent);
+						}
+						cursor.x = 0.0f;
+						cursor.y += font->resourceData->fontMetrics.height * lineSpacing;
+						continue;
+					}
+					if (charCode == U'\t')
+					{
+						// Tab counts as 4 spaces
+						charCode = U' ';
+						advanceMultiplier = 4.0f;
+					}
+
+					auto it = font->resourceData->glyphMap.find(charCode);
+					if (it == font->resourceData->glyphMap.end())
+						charCode = replacementCharacter;
+
+					GlyphMetrics& glyph = font->resourceData->glyphMap[charCode];
+
+					dimensions.offsetFromOrigin.x = std::min(dimensions.offsetFromOrigin.x, cursor.x + glyph.bearingX);
+					dimensions.offsetFromOrigin.y = std::min(dimensions.offsetFromOrigin.y, cursor.y - glyph.bearingY);
+
+					cursor.x += glyph.advanceX * advanceMultiplier;
+
+					dimensions.dimensions.x = std::max(dimensions.dimensions.x, cursor.x);
+					dimensions.dimensions.y = std::max(dimensions.dimensions.y, cursor.y - glyph.bearingY + glyph.rectangle.height);
+				}
+			}
+			dimensions.dimensions.x -= dimensions.offsetFromOrigin.x;
+			dimensions.dimensions.y -= dimensions.offsetFromOrigin.y;
+			needDimensionsUpdate = false;
 		}
 	}
 }

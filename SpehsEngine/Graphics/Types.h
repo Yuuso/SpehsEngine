@@ -2,6 +2,7 @@
 
 // NOTE: No SpehsEngine includes allowed
 
+#include "glm/vec2.hpp"
 #include <stdint.h>
 #include <numeric>
 
@@ -170,6 +171,12 @@ namespace se
 
 			FontSizeType type;
 			uint32_t size;
+		};
+
+		struct TextDimensions
+		{
+			glm::vec2 offsetFromOrigin;
+			glm::vec2 dimensions;
 		};
 	}
 }
