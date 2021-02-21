@@ -18,6 +18,7 @@ namespace se
 			CullFrontFace		= (1 << 0),
 			CullBackFace		= (1 << 1),
 			DepthTest			= (1 << 2),
+			Blending			= (1 << 3),
 		};
 
 		typedef uint32_t RendererFlagsType;

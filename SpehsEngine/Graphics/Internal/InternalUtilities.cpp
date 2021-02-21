@@ -19,15 +19,22 @@ namespace se
 			if (_renderContext.enableMSAA)
 				state |= BGFX_STATE_MSAA;
 
-			if (checkBit(_renderInfo.renderFlags, RenderFlag::DepthTest))
-				state |= BGFX_STATE_DEPTH_TEST_LESS; // TODO
+			if (checkBit(_renderInfo.renderFlags, RenderFlag::DepthTest)) // TODO
+				state |= BGFX_STATE_DEPTH_TEST_LESS;
 
-			if (checkBit(_renderContext.rendererFlags, RendererFlag::CWFrontFace))
+			if (checkBit(_renderInfo.renderFlags, RenderFlag::Blending)) // TODO
+				state |= BGFX_STATE_BLEND_FUNC(BGFX_STATE_BLEND_SRC_ALPHA, BGFX_STATE_BLEND_INV_SRC_ALPHA);
+
+			if (!checkBit(_renderContext.rendererFlags, RendererFlag::CWFrontFace))
 				state |= BGFX_STATE_FRONT_CCW;
-			se_assert(!(checkBit(_renderInfo.renderFlags, RenderFlag::CullBackFace) && checkBit(_renderInfo.renderFlags, RenderFlag::CullFrontFace)));
-			if (checkBit(_renderInfo.renderFlags, RenderFlag::CullBackFace))
+
+			const bool cullBackface = checkBit(_renderInfo.renderFlags, RenderFlag::CullBackFace);
+			const bool cullFrontface = checkBit(_renderInfo.renderFlags, RenderFlag::CullFrontFace);
+			se_assert_m(!(cullBackface && cullFrontface), "Both frontface and backface culling are enabled!?");
+
+			if (cullBackface)
 				state |= checkBit(_renderContext.rendererFlags, RendererFlag::CWFrontFace) ? BGFX_STATE_CULL_CCW : BGFX_STATE_CULL_CW;
-			else if (checkBit(_renderInfo.renderFlags, RenderFlag::CullFrontFace))
+			else if (cullFrontface)
 				state |= checkBit(_renderContext.rendererFlags, RendererFlag::CWFrontFace) ? BGFX_STATE_CULL_CW : BGFX_STATE_CULL_CCW;
 
 			switch (_renderInfo.primitiveType)
@@ -46,7 +53,6 @@ namespace se
 					break;
 			}
 
-			// TODO: BGFX_STATE_BLEND*
 			// TODO: BGFX_STATE_POINT_SIZE
 			// TODO: BGFX_STATE_LINEAA
 			// TODO: BGFX_STATE_CONSERVATIVE_RASTER
