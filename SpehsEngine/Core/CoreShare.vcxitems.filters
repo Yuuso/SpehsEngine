@@ -51,6 +51,7 @@
       <Filter>File</Filter>
     </ClCompile>
     <ClCompile Include="$(MSBuildThisFileDirectory)STLPairUtilityFunctions.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)StaticRingBuffer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="$(MSBuildThisFileDirectory)Archive.h" />
@@ -114,6 +115,7 @@
       <Filter>File</Filter>
     </ClInclude>
     <ClInclude Include="$(MSBuildThisFileDirectory)STLPairUtilityFunctions.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)StaticRingBuffer.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="File">
