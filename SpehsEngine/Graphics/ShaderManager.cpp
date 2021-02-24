@@ -27,7 +27,8 @@ namespace se
 				}
 			}
 
-			std::shared_ptr<Shader>& shader = resources.emplace_back(std::make_shared<Shader>(_name));
+			resources.push_back(std::make_shared<Shader>(_name));
+			std::shared_ptr<Shader>& shader = resources.back();
 			shader->create(vertexShaderPath, fragmentShaderPath, resourceLoader);
 			return shader;
 		}

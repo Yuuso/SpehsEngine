@@ -3,9 +3,10 @@
 
 #include "SpehsEngine/Core/BitwiseOperations.h"
 #include "SpehsEngine/Core/SE_Assert.h"
-#include "SpehsEngine/Graphics/Types.h"
-#include "SpehsEngine/Graphics/Internal/InternalUtilities.h"
 #include "SpehsEngine/Graphics/Internal/DefaultUniforms.h"
+#include "SpehsEngine/Graphics/Internal/InternalUtilities.h"
+#include "SpehsEngine/Graphics/Internal/LightBatch.h"
+#include "SpehsEngine/Graphics/Types.h"
 
 #define GLM_ENABLE_EXPERIMENTAL
 #include "glm/gtc/matrix_transform.hpp"
@@ -155,7 +156,7 @@ namespace se
 
 			bgfx::setTransform(reinterpret_cast<const void*>(&transformMatrix));
 			_renderContext.defaultUniforms->setNormalMatrix(normalMatrix);
-
+			_renderContext.lightBatch->bind();
 			renderInfo.material->bind();
 
 			if (getRenderMode() == RenderMode::Transient)
@@ -168,7 +169,7 @@ namespace se
 				// TODO: getAvailTransientVertexBuffer
 				bgfx::TransientIndexBuffer transientIndexBuffer;
 				bgfx::TransientVertexBuffer transientVertexBuffer;
-				bgfx::allocTransientIndexBuffer(&transientIndexBuffer, uint32_t(indices.size()));
+				bgfx::allocTransientIndexBuffer(&transientIndexBuffer, uint32_t(indices.size()), false);
 				bgfx::allocTransientVertexBuffer(&transientVertexBuffer, uint32_t(vertices.size()), findVertexLayout(vertices.getAttributes()));
 				memcpy(transientIndexBuffer.data, &indices[0], indices.size() * sizeof(indices[0]));
 				memcpy(transientVertexBuffer.data, vertices.data(), vertices.bytes());

@@ -164,7 +164,7 @@ namespace se
 			se_assert(_input.format == TextureInput::Format::RGBA8); // Only one supported currently
 			se_assert(_input.width > 0 && _input.height > 0);
 			se_assert(_input.data.size() % 4 == 0);
-			se_assert((_input.data.size() / 4) == (_input.width * _input.height));
+			se_assert((_input.data.size() / 4) == (size_t)(_input.width * _input.height));
 
 			const uint64_t flags = TextureModesToFlags(_textureModes);
 			const bgfx::Memory* mem = bgfx::copy(_input.data.data(), uint32_t(_input.data.size()));

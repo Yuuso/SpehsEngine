@@ -25,6 +25,7 @@ namespace se
 			LightBatch& operator=(LightBatch&& _other) = delete;
 
 
+			void update();
 			void bind();
 			void postRender();
 
@@ -36,11 +37,13 @@ namespace se
 
 			void update(const size_t _index);
 
+			std::vector<std::reference_wrapper<Light>> lights;
+
+			glm::vec4 lightInfo;
 			glm::vec4 data1[MAX_LIGHTS];
 			glm::vec4 data2[MAX_LIGHTS];
 			glm::vec4 data3[MAX_LIGHTS];
 			glm::vec4 data4[MAX_LIGHTS];
-			std::vector<std::reference_wrapper<Light>> lights;
 
 			bgfx::UniformHandle lightInfoUniform;
 			bgfx::UniformHandle lightData1Uniform;

@@ -27,7 +27,8 @@ namespace se
 				}
 			}
 
-			std::shared_ptr<Font>& font = resources.emplace_back(std::make_shared<Font>(_name));
+			resources.push_back(std::make_shared<Font>(_name));
+			std::shared_ptr<Font>& font = resources.back();
 			font->create(fontPath, _size, _charMap, fontLibrary, resourceLoader);
 			return font;
 		}

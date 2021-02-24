@@ -32,7 +32,7 @@ namespace se
 				se::log::error("View already found in window!");
 				return;
 			}
-			views.emplace_back(std::make_unique<ViewInstance>(_view));
+			views.push_back(std::make_unique<ViewInstance>(_view));
 		}
 		void Window::remove(View& _view)
 		{

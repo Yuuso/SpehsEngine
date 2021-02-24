@@ -43,10 +43,9 @@ namespace se
 			}
 		}
 
-		void LightBatch::bind()
+		void LightBatch::update()
 		{
 			const size_t numLights = lights.size();
-
 			for (size_t i = 0; i < numLights; i++)
 			{
 				if (lights[i].get().dirty)
@@ -54,9 +53,11 @@ namespace se
 					update(i);
 				}
 			}
-
-			const glm::vec4 lightInfo = { numLights, 0.0f, 0.0f, 0.0f };
-
+			lightInfo = { numLights, 0.0f, 0.0f, 0.0f };
+		}
+		void LightBatch::bind()
+		{
+			const size_t numLights = lights.size();
 			bgfx::setUniform(lightInfoUniform, reinterpret_cast<const void*>(&lightInfo));
 			if (numLights > 0)
 			{

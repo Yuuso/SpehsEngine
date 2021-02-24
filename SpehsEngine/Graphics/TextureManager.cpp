@@ -99,7 +99,8 @@ namespace se
 				}
 			}
 
-			std::shared_ptr<Texture>& texture = resources.emplace_back(std::make_shared<Texture>(_name));
+			resources.push_back(std::make_shared<Texture>(_name));
+			std::shared_ptr<Texture>& texture = resources.back();
 			texture->setFallbacks(fallbacks);
 			texture->create(path, _textureModes, resourceLoader);
 			return texture;
@@ -115,7 +116,8 @@ namespace se
 				}
 			}
 
-			std::shared_ptr<Texture>& texture = resources.emplace_back(std::make_shared<Texture>(_name));
+			resources.push_back(std::make_shared<Texture>(_name));
+			std::shared_ptr<Texture>& texture = resources.back();
 			texture->setFallbacks(fallbacks);
 			texture->create(_input, _textureModes);
 			return texture;

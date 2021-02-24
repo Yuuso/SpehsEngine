@@ -52,8 +52,8 @@ namespace se
 					bgfx::ShaderHandle vertexShader = bgfx::createEmbeddedShader(embeddedShaders, type, vertexShaderName.c_str());
 					bgfx::ShaderHandle fragmentShader = bgfx::createEmbeddedShader(embeddedShaders, type, fragmentShaderName.c_str());
 
-					std::shared_ptr<Shader> shader = std::dynamic_pointer_cast<Shader>(resources.emplace_back(std::make_shared<Shader>(_name)));
-					shader->create(vertexShader.idx, fragmentShader.idx);
+					resources.push_back(std::make_shared<Shader>(_name));
+					resources.back()->create(vertexShader.idx, fragmentShader.idx);
 				};
 
 			createDefaultShader("color");

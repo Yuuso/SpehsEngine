@@ -1,10 +1,11 @@
 #include "stdafx.h"
 #include "SpehsEngine/Graphics/Internal/Batch.h"
 
+#include "SpehsEngine/Graphics/Internal/LightBatch.h"
 #include "SpehsEngine/Core/BitwiseOperations.h"
 #include "SpehsEngine/Core/SE_Assert.h"
-#include "SpehsEngine/Graphics/Internal/InternalUtilities.h"
 #include "SpehsEngine/Graphics/Internal/DefaultUniforms.h"
+#include "SpehsEngine/Graphics/Internal/InternalUtilities.h"
 
 
 namespace se
@@ -50,7 +51,9 @@ namespace se
 
 		[[nodiscard]] const BatchPosition& Batch::add(const VertexBuffer& _vertices, const std::vector<IndexType>& _indices)
 		{
-			batchPositions.emplace_back(std::make_unique<BatchPosition>());
+			se_assert(_vertices.getAttributes() == renderInfo.attributes);
+
+			batchPositions.push_back(std::make_unique<BatchPosition>());
 			batchPositions.back()->verticesStart = vertices.size();
 			batchPositions.back()->verticesEnd = vertices.size() + _vertices.size();
 			batchPositions.back()->indicesStart = indices.size();
@@ -230,7 +233,7 @@ namespace se
 			static const glm::mat4 identity = glm::mat4(1.0f);
 			bgfx::setTransform(reinterpret_cast<const void*>(&identity));
 			_renderContext.defaultUniforms->setNormalMatrix(identity);
-
+			_renderContext.lightBatch->bind();
 			renderInfo.material->bind();
 
 			bgfx::setIndexBuffer(indexBufferHandle, 0, (uint32_t)indices.size());

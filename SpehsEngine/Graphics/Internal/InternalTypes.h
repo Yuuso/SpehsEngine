@@ -14,6 +14,7 @@ namespace se
 		{
 			const class WindowInstance* currentWindow	= nullptr;
 			class DefaultUniforms* defaultUniforms		= nullptr;
+			class LightBatch* lightBatch				= nullptr;
 			bgfx::ViewId currentViewId					= 0;
 			RendererFlagsType rendererFlags				= 0;
 			bool enableMSAA								= true;

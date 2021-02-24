@@ -31,7 +31,7 @@ namespace se
 				se::log::error("Primitive already found in scene!");
 				return;
 			}
-			primitives.emplace_back(std::make_unique<PrimitiveInstance>(_primitive));
+			primitives.push_back(std::make_unique<PrimitiveInstance>(_primitive));
 		}
 		void Scene::remove(Primitive& _primitive)
 		{
@@ -80,9 +80,10 @@ namespace se
 
 		void Scene::render(RenderContext& _renderContext)
 		{
-			lightBatch->bind();
+			lightBatch->update();
+			_renderContext.lightBatch = lightBatch.get();
 
-			// TODO: Optimize unbatching
+			// TODO: Optimize unbatching?
 
 			for (size_t i = 0; i < primitives.size(); )
 			{
@@ -149,7 +150,7 @@ namespace se
 			}
 			if (!found)
 			{
-				batches.emplace_back(std::make_unique<Batch>(_primitive.getRenderInfo()));
+				batches.push_back(std::make_unique<Batch>(_primitive.getRenderInfo()));
 				_primitive.batch(*batches.back());
 			}
 		}

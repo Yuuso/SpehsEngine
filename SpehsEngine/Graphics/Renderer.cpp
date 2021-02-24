@@ -26,7 +26,7 @@ namespace se
 			}
 			initialized = true;
 
-			windows.emplace_back(std::make_unique<WindowInstance>(_window, true));
+			windows.push_back(std::make_unique<WindowInstance>(_window, true));
 			defaultWindow = windows.back().get();
 
 			{
@@ -38,7 +38,7 @@ namespace se
 				//init.callback
 				bgfx::init(init);
 
-				bgfx::setDebug(BGFX_DEBUG_TEXT);
+				bgfx::setDebug(BGFX_DEBUG_TEXT /*| BGFX_DEBUG_STATS*/);
 				// TODO: BGFX_DEBUG_STATS
 
 				bgfx::setViewClear(0, BGFX_CLEAR_COLOR | BGFX_CLEAR_DEPTH, 0x101010ff, 1.0f, 0);
@@ -59,6 +59,7 @@ namespace se
 		{
 			se_assert(initialized);
 			windows.clear();
+			defaultUniforms.reset();
 			bgfx::shutdown();
 			while (bgfx::renderFrame() != bgfx::RenderFrame::NoContext) {}
 			initialized = false;
@@ -114,7 +115,7 @@ namespace se
 				se::log::error("Window already found in renderer!");
 				return;
 			}
-			windows.emplace_back(std::make_unique<WindowInstance>(_window, false));
+			windows.push_back(std::make_unique<WindowInstance>(_window, false));
 		}
 		void Renderer::remove(Window& _window)
 		{

@@ -3,7 +3,7 @@
 SETLOCAL
 CD /D %~dp0
 
-SET SHADERC="..\..\..\..\Dependencies\tools\shaderc.exe"
+SET SHADERC="..\..\..\..\Dependencies\tools\bgfx\shadercRelease.exe"
 SET SHADER_TEMP=shader.temp
 
 
