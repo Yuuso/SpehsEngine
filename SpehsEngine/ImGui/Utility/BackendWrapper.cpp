@@ -97,6 +97,7 @@ namespace se
 
         void BackendWrapper::render()
         {
+            preRenderSignal();
             ImGui::Render();
             ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
         }

@@ -34,6 +34,8 @@ namespace se
 
 			void setFont(const std::string_view filepath, const float fontSize);
 
+			void connectToPreRenderSignal(boost::signals2::scoped_connection& scopedConnection, const std::function<void()>& callback) { scopedConnection = preRenderSignal.connect(callback); }
+
 		private:
 
 			rendering::Window& window;
@@ -50,6 +52,7 @@ namespace se
             boost::signals2::scoped_connection keyboardKeyPressedConnection;
 			boost::signals2::scoped_connection keyboardKeyPressedConnection0; // Max priority non-consuming
 			boost::signals2::scoped_connection keyboardKeyReleasedConnection0; // Max priority non-consuming
+			boost::signals2::signal<void()> preRenderSignal;
 		};
 	}
 }
