@@ -150,8 +150,10 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="ConnectionManagerVisualizer.cpp" />
     <ClCompile Include="ConnectionProfiler.cpp" />
     <ClCompile Include="DebugLib.cpp" />
+    <ClCompile Include="FPSHistoryVisualizer.cpp" />
     <ClCompile Include="ScopeProfilerVisualizer.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
@@ -161,8 +163,10 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="ConnectionManagerVisualizer.h" />
     <ClInclude Include="ConnectionProfiler.h" />
     <ClInclude Include="DebugLib.h" />
+    <ClInclude Include="FPSHistoryVisualizer.h" />
     <ClInclude Include="PrecompiledInclude.h" />
     <ClInclude Include="ScopeProfilerVisualizer.h" />
     <ClInclude Include="stdafx.h" />
