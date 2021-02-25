@@ -165,6 +165,7 @@
     <ClInclude Include="Internal\RenderInfo.h" />
     <ClInclude Include="Internal\Resource.h" />
     <ClInclude Include="Lights.h" />
+    <ClInclude Include="Line.h" />
     <ClInclude Include="Material.h" />
     <ClInclude Include="PrecompiledInclude.h" />
     <ClInclude Include="Primitive.h" />
@@ -209,6 +210,7 @@
     <ClCompile Include="Internal\InternalUtilities.cpp" />
     <ClCompile Include="Internal\LightBatch.cpp" />
     <ClCompile Include="Lights.cpp" />
+    <ClCompile Include="Line.cpp" />
     <ClCompile Include="Primitive.cpp" />
     <ClCompile Include="Internal\PrimitiveInstance.cpp" />
     <ClCompile Include="Renderer.cpp" />

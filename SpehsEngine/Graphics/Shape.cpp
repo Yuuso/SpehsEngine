@@ -198,7 +198,7 @@ namespace se
 				currentVertex++;
 
 				// Y- face
-				newVertices.get<Position>	(currentVertex)	= glm::vec3(0.5f, -0.5f, 0.5f);
+				newVertices.get<Position>	(currentVertex)	= glm::vec3(-0.5f, -0.5f, -0.5f);
 				newVertices.get<Normal>		(currentVertex)	= glm::vec3(0.0f, -1.0f, 0.0f);
 				newVertices.get<TexCoord0>	(currentVertex)	= glm::vec2(0.0f, 0.0f);
 				newVertices.get<Color0>		(currentVertex)	= Color();
@@ -210,7 +210,7 @@ namespace se
 				newVertices.get<Color0>		(currentVertex)	= Color();
 				currentVertex++;
 
-				newVertices.get<Position>	(currentVertex)	= glm::vec3(-0.5f, -0.5f, -0.5f);
+				newVertices.get<Position>	(currentVertex)	= glm::vec3(0.5f, -0.5f, 0.5f);
 				newVertices.get<Normal>		(currentVertex)	= glm::vec3(0.0f, -1.0f, 0.0f);
 				newVertices.get<TexCoord0>	(currentVertex)	= glm::vec2(1.0f, 1.0f);
 				newVertices.get<Color0>		(currentVertex)	= Color();
@@ -431,11 +431,11 @@ namespace se
 							for (IndexType vertex = 0; vertex < lastVertex; vertex++)
 							{
 								newIndices[currentIndex++] = vertex;
-								newIndices[currentIndex++] = vertex + res;
 								newIndices[currentIndex++] = vertex + 1;
 								newIndices[currentIndex++] = vertex + res;
+								newIndices[currentIndex++] = vertex + res;
+								newIndices[currentIndex++] = vertex + 1;
 								newIndices[currentIndex++] = vertex + res + 1;
-								newIndices[currentIndex++] = vertex + 1;
 							}
 						}
 						else
