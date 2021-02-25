@@ -7,11 +7,30 @@ namespace se
 {
 	namespace graphics
 	{
+		enum class ShapeType
+		{
+			Unknown,
+
+			Triangle = 3,
+			Square,
+			Pentagon,
+			Hexagon,
+			Heptagon,
+			Octagon,
+			Nonegon,
+			Decagon,
+			Circle,
+
+			Cube,
+			Ball,
+		};
+
 		class Shape : public Primitive
 		{
 		public:
 
-			Shape(const unsigned _numVertices = 4);
+			Shape(const unsigned int _numVertices);
+			Shape(const ShapeType _type, const unsigned int _resolution = 0);
 			~Shape();
 
 			Shape(const Shape& _other) = delete;
@@ -21,7 +40,8 @@ namespace se
 			Shape& operator=(Shape&& _other) = delete;
 
 
-			void generate(const unsigned _numVertices);
+			void generate(const unsigned int _numVertices);
+			void generate(const ShapeType _type, const unsigned int _resolution = 0);
 
 			void setPrimitiveType(const PrimitiveType _primitiveType) override;
 			void setVertices(const VertexBuffer& _vertices) override;
@@ -30,6 +50,8 @@ namespace se
 		private:
 
 			void generateIndices();
+
+			ShapeType type = ShapeType::Unknown;
 		};
 	}
 }
