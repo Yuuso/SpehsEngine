@@ -6,8 +6,11 @@ CD /D %~dp0
 SET SOURCE_LOC=%~1
 SET SHADER_NAME=%~2
 SET TARGET_LOC=%~3
-
-SET SHADERC="..\Dependencies\tools\shaderc.exe"
+IF "%~4" EQU "DEBUG" (
+	SET SHADERC="..\Dependencies\tools\bgfx\shadercDebug.exe"
+) ELSE (
+	SET SHADERC="..\Dependencies\tools\bgfx\shadercRelease.exe"
+)
 
 
 ECHO Vertex shaders
