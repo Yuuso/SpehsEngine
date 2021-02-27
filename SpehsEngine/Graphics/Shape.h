@@ -22,7 +22,10 @@ namespace se
 			Circle,
 
 			Cube,
-			Ball,
+			Sphere,
+			// Capsule
+			// Cylinder
+			// Cone
 		};
 
 		class Shape : public Primitive

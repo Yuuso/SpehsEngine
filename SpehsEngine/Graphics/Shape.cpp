@@ -19,7 +19,7 @@ namespace se
 			: Primitive()
 		{
 			generate(_type, _resolution);
-			if (_type == ShapeType::Cube || _type == ShapeType::Ball)
+			if (_type == ShapeType::Cube || _type == ShapeType::Sphere)
 				enableRenderFlag(RenderFlag::CullBackFace);
 		}
 		Shape::~Shape()
@@ -142,7 +142,7 @@ namespace se
 				{
 					numVertices = _resolution;
 				}
-				else
+				else if (_resolution > 0)
 				{
 					if (type != ShapeType::Circle)
 					{
@@ -325,9 +325,9 @@ namespace se
 				Primitive::setVertices(newVertices);
 				generateIndices();
 			}
-			else if (type == ShapeType::Ball)
+			else if (type == ShapeType::Sphere)
 			{
-				setName("ball");
+				setName("sphere");
 
 				VertexBuffer newVertices;
 				using namespace VertexAttribute;
@@ -337,8 +337,8 @@ namespace se
 										  | TexCoord0);
 
 				constexpr unsigned int minRes = 8;
-				if (_resolution < minRes)
-					log::warning("Shape: Minimum ball resolution is " + std::to_string(minRes) + "!");
+				if (_resolution > 0 && _resolution < minRes)
+					log::warning("Shape: Minimum sphere resolution is " + std::to_string(minRes) + "!");
 				const size_t resolution = _resolution >= minRes ? _resolution : 28;
 				const size_t numVertices = resolution * resolution;
 				newVertices.resize(numVertices);
@@ -422,7 +422,7 @@ namespace se
 								newIndices[currentIndex++] = currentVertex + (++index);
 							}
 						}
-						else if (type == ShapeType::Ball)
+						else if (type == ShapeType::Sphere)
 						{
 							const IndexType res = static_cast<IndexType>(sqrt(numVertices));
 							size_t currentIndex = 0;
