@@ -20,7 +20,7 @@ namespace se
 {
 	namespace log
 	{
-		std::mutex mutex;
+		static std::mutex mutex;
 		static void writeConsole(const std::string_view message, [[maybe_unused]] const TextColor color)
 		{
 #if defined(_WIN32)
@@ -74,21 +74,21 @@ namespace se
 
 		void info([[maybe_unused]] const std::string_view message, [[maybe_unused]] const TextColor color)
 		{
-#if !defined(SE_FINAL_RELEASE)
+#if (SE_CONFIGURATION != SE_CONFIGURATION_FINAL_RELEASE)
 			std::lock_guard<std::mutex> lock(mutex);
 			writeConsole(message, color);
 #endif
 		}
 		void info([[maybe_unused]] const std::string_view message)
 		{
-#if !defined(SE_FINAL_RELEASE)
+#if (SE_CONFIGURATION != SE_CONFIGURATION_FINAL_RELEASE)
 			std::lock_guard<std::mutex> lock(mutex);
 			writeConsole(message, NONE);
 #endif
 		}
 		void warning([[maybe_unused]] const std::string_view message)
 		{
-#if !defined(SE_FINAL_RELEASE)
+#if (SE_CONFIGURATION != SE_CONFIGURATION_FINAL_RELEASE)
 			std::lock_guard<std::mutex> lock(mutex);
 			std::string warningMessage("Warning: ");
 			warningMessage += message;
@@ -97,7 +97,7 @@ namespace se
 		}
 		void error(const std::string_view message)
 		{
-#if !defined(SE_FINAL_RELEASE)
+#if (SE_CONFIGURATION != SE_CONFIGURATION_FINAL_RELEASE)
 			std::lock_guard<std::mutex> lock(mutex);
 			std::string errorMessage("Error: ");
 			errorMessage += message;
@@ -109,6 +109,12 @@ namespace se
 			const std::string fatalError(message);
 			SystemMessageBox("Fatal Error!", fatalError, BUTTONS_OK | ICON_ERROR);
 			exit(1);
+#endif
+		}
+		void debug([[maybe_unused]] const std::string& _message)
+		{
+#if (SE_CONFIGURATION != SE_CONFIGURATION_FINAL_RELEASE)
+			OutputDebugString(_message.c_str());
 #endif
 		}
 	}
