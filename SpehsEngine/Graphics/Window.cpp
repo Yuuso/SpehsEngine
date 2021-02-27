@@ -51,6 +51,13 @@ namespace se
 		}
 
 
+		void Window::requestScreenShot(const std::string& _fileName)
+		{
+			se_assert(!_fileName.empty());
+			screenShotFileName = _fileName;
+		}
+
+
 		const std::string& Window::getName() const
 		{
 			return name;

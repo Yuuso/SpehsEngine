@@ -30,6 +30,8 @@ namespace se
 			void					add(View& _view);
 			void					remove(View& _view);
 
+			void					requestScreenShot(const std::string& _fileName);
+
 			const std::string&		getName() const;
 			const int				getX() const;
 			const int				getY() const;
@@ -89,6 +91,7 @@ namespace se
 			bool					keyboardFocus		= false;
 			bool					confinedInput		= false;
 
+			std::string				screenShotFileName;
 
 			friend class WindowInstance;
 			boost::signals2::signal<void(void)> destroyedSignal;

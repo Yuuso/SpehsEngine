@@ -138,7 +138,18 @@ namespace se
 					}
 					i++;
 				}
+				if (!window->screenShotFileName.empty())
+				{
+					log::warning("Cannot take screenshot, window not visible!");
+					window->screenShotFileName.clear();
+				}
 				return;
+			}
+
+			if (!window->screenShotFileName.empty())
+			{
+				bgfx::requestScreenShot(frameBufferHandle, window->screenShotFileName.c_str());
+				window->screenShotFileName.clear();
 			}
 
 			_renderContext.currentWindow = this;
