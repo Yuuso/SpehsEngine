@@ -148,6 +148,11 @@ namespace se
 		{
 			const RenderInfo renderInfo = getRenderInfo();
 
+			if (!renderInfo.material)
+			{
+				log::warning("Material missing!");
+				return;
+			}
 			if (!renderInfo.material->getShader()->ready())
 			{
 				log::warning("Shader not ready for rendering!");
@@ -235,7 +240,7 @@ namespace se
 		}
 		const bool PrimitiveInstance::getRenderState() const
 		{
-			return primitive->getRenderState() && getVertices().size() > 0 && getIndices().size() > 0;
+			return primitive->getRenderState() && getVertices().size() > 0 && getIndices().size() > 0 && primitive->material != nullptr;
 		}
 		const RenderMode PrimitiveInstance::getRenderMode() const
 		{

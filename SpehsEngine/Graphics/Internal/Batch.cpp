@@ -22,6 +22,7 @@ namespace se
 			indexBufferHandle = bgfx::createDynamicIndexBuffer(MAX_BUFFER_SIZE);
 			vertices.setAttributes(renderInfo.attributes);
 			static_assert(sizeof(IndexType) == 2);
+			se_assert(renderInfo.material);
 		}
 		Batch::~Batch()
 		{
