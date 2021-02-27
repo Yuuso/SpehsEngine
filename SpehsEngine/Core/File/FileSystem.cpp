@@ -45,6 +45,20 @@ namespace se
 		}
 	}
 
+	size_t fileSize(const std::string& _path)
+	{
+		std::lock_guard<std::recursive_mutex> lock(filestreamMutex);
+		try
+		{
+			return static_cast<size_t>(boost::filesystem::file_size(_path));
+		}
+		catch (boost::filesystem::filesystem_error& /*error*/)
+		{
+			log::warning("Error when trying to get file size of '" + _path + "'");
+			return 0u;
+		}
+	}
+
 	bool removeFile(const std::string& path)
 	{
 		std::lock_guard<std::recursive_mutex> lock(filestreamMutex);
@@ -52,7 +66,7 @@ namespace se
 		const bool result = boost::filesystem::remove(path, error);
 		if (error)
 		{
-			log::info("Error when trying to remove the file '" + path + "' : " + error.message());
+			log::warning("Error when trying to remove the file '" + path + "' : " + error.message());
 		}
 		return result;
 	}
@@ -129,7 +143,7 @@ namespace se
 		}
 		return boost::filesystem::create_directory(fullPath);
 	}
-	
+
 	bool verifyDirectory(const std::string& path)
 	{
 		if (fileExists(path))
@@ -148,7 +162,7 @@ namespace se
 			return createDirectory(path);
 		}
 	}
-	
+
 	std::vector<std::string> listFilesInDirectory(const std::string& directoryPath, std::string fileType)
 	{
 		std::lock_guard<std::recursive_mutex> lock(filestreamMutex);
@@ -235,7 +249,7 @@ namespace se
 				return subDirectories;
 			}
 		}
-		
+
 		boost::filesystem::directory_iterator it(path);
 		boost::filesystem::directory_iterator end;
 		while (it != end)

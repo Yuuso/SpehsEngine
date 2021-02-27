@@ -11,6 +11,9 @@ namespace se
 	bool fileExists(const std::string& path);
 	bool isDirectory(const std::string& path);
 
+	// Get size of file or directory, returns 0 if path doesn't exist
+	size_t fileSize(const std::string& path);
+
 	/* Returns true if file exists and is removed succesfully. */
 	bool removeFile(const std::string& path);
 
@@ -22,7 +25,7 @@ namespace se
 
 	/* Returns false if directory did not exist and couldn't create one. */
 	bool verifyDirectory(const std::string& path);
-		
+
 	/**Returns a vector of strings, each string representing a file found in the given directory.
 	Directory path is not included in the file string. If file type is specified, the file type will not be included in the file string.
 	If file type is specified, only files of that type are returned.*/
