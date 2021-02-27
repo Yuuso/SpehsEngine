@@ -4,6 +4,7 @@
 #include "SpehsEngine/Core/ColorUtilityFunctions.h"
 #include "SpehsEngine/Core/Constants.h"
 #include "SpehsEngine/Core/SE_Assert.h"
+#include "SpehsEngine/Math/Mathematics.h"
 
 
 namespace se
@@ -29,8 +30,10 @@ namespace se
 				return;
 
 			color.a = _intensity;
-
 			dirty = true;
+
+			if (debugPrimitive)
+				debugPrimitive->setRenderState(getIntensity() > 0.0f);
 		}
 		void Light::setPosition(const glm::vec3& _position)
 		{
@@ -38,8 +41,10 @@ namespace se
 				return;
 
 			position = _position;
-
 			dirty = true;
+
+			if (debugPrimitive)
+				debugPrimitive->setPosition(getPosition());
 		}
 		void Light::setGlobal(const bool _global)
 		{
@@ -47,7 +52,6 @@ namespace se
 				return;
 
 			global = _global ? 1.0f : 0.0f;
-
 			dirty = true;
 		}
 		void Light::setDirection(const glm::vec3& _direction)
@@ -55,9 +59,15 @@ namespace se
 			if (direction == _direction)
 				return;
 
-			direction = _direction;
-
+			direction = glm::normalize(_direction);
 			dirty = true;
+
+			if (debugPrimitive)
+			{
+				constexpr glm::vec3 upVec = glm::vec3(0.0f, 1.0f, 0.0f);
+				constexpr glm::vec3 altVec = glm::vec3(0.0f, 0.0f, 1.0f);
+				debugPrimitive->setRotation(glm::quatLookAt(getDirection(), getDirection() == upVec ? altVec : upVec));
+			}
 		}
 		void Light::setRadius(const float _inner, const float _outer)
 		{
@@ -66,8 +76,10 @@ namespace se
 
 			innerRadius = _inner;
 			outerRadius = _outer;
-
 			dirty = true;
+
+			if (debugPrimitive)
+				debugPrimitive->setScale(glm::vec3(getOuterRadius()));
 		}
 		void Light::setCone(const float _inner, const float _outer)
 		{
@@ -78,8 +90,10 @@ namespace se
 			se_assert(_outer >= 0.0f && _outer <= TWO_PI<float>);
 			innerCone = _inner;
 			outerCone = _outer;
-
 			dirty = true;
+
+			if (debugPrimitive)
+				generateDebugPrimitive();
 		}
 
 		const Color& Light::getColor() const
@@ -90,7 +104,7 @@ namespace se
 		{
 			return color.a;
 		}
-		const glm::vec3& Light::setPosition() const
+		const glm::vec3& Light::getPosition() const
 		{
 			return position;
 		}
@@ -98,7 +112,7 @@ namespace se
 		{
 			return global > 0.0f;
 		}
-		const glm::vec3& Light::setDirection() const
+		const glm::vec3& Light::getDirection() const
 		{
 			return direction;
 		}
@@ -117,6 +131,13 @@ namespace se
 		const float Light::getOuterCone() const
 		{
 			return outerCone;
+		}
+
+		std::shared_ptr<Primitive> Light::getDebugPrimitive()
+		{
+			if (!debugPrimitive)
+				generateDebugPrimitive();
+			return debugPrimitive;
 		}
 
 
@@ -176,6 +197,75 @@ namespace se
 			innerCone = TWO_PI<float>;
 			outerCone = TWO_PI<float>;
 		}
+		void PointLight::generateDebugPrimitive()
+		{
+			if (!debugPrimitive)
+			{
+				debugPrimitive = std::make_shared<Primitive>();
+				debugPrimitive->setPrimitiveType(PrimitiveType::Lines);
+				debugPrimitive->enableRenderFlag(RenderFlag::Blending);
+				//debugPrimitive->disableRenderFlag(RenderFlag::DepthTest);
+				debugPrimitive->setPosition(getPosition());
+				debugPrimitive->setScale(glm::vec3(getOuterRadius()));
+				debugPrimitive->setRenderState(getIntensity() > 0.0f);
+			}
+
+			VertexBuffer newVertices;
+			std::vector<IndexType> newIndices;
+			using namespace VertexAttribute;
+			newVertices.setAttributes(Position
+									  | Color0);
+
+			const size_t resolution = 64;
+			newVertices.resize(resolution * 3);
+			newIndices.resize(resolution * 6);
+
+			size_t currentIndex = 0;
+			size_t currentVertex = 0;
+
+			for (size_t i = 0; i < 2; i++)
+			{
+				const float lat = static_cast<float>(i) * HALF_PI<float>;
+				for (size_t j = 0; j < resolution; j++)
+				{
+					const float lon = se::lerp(0.0f, TWO_PI<float>, static_cast<float>(j) / static_cast<float>(resolution));
+					newVertices.get<Position>(currentVertex) = glm::vec3(sinf(lon) * cosf(lat), cosf(lon), sinf(lon) * sinf(lat));
+					newVertices.get<Color0>(currentVertex) = Color(1.0f, 1.0f, 1.0f, 0.5f);
+
+					if (j > 0)
+					{
+						newIndices[currentIndex++] = static_cast<IndexType>(currentVertex - 1);
+						newIndices[currentIndex++] = static_cast<IndexType>(currentVertex);
+					}
+
+					currentVertex++;
+				}
+
+				newIndices[currentIndex++] = static_cast<IndexType>(currentVertex - 1);
+				newIndices[currentIndex++] = static_cast<IndexType>(i * resolution);
+			}
+			{
+				const float lon = HALF_PI<float>;
+				for (size_t j = 0; j < resolution; j++)
+				{
+					const float lat = se::lerp(0.0f, TWO_PI<float>, static_cast<float>(j) / static_cast<float>(resolution));
+					newVertices.get<Position>(currentVertex) = glm::vec3(sinf(lon) * cosf(lat), cosf(lon), sinf(lon) * sinf(lat));
+					newVertices.get<Color0>(currentVertex) = Color(1.0f, 1.0f, 1.0f, 0.5f);
+
+					if (j > 0)
+					{
+						newIndices[currentIndex++] = static_cast<IndexType>(currentVertex - 1);
+						newIndices[currentIndex++] = static_cast<IndexType>(currentVertex);
+					}
+
+					currentVertex++;
+				}
+				newIndices[currentIndex++] = static_cast<IndexType>(currentVertex - 1);
+				newIndices[currentIndex++] = static_cast<IndexType>(2 * resolution);
+			}
+			debugPrimitive->setVertices(newVertices);
+			debugPrimitive->setIndices(newIndices);
+		}
 
 
 		SpotLight::SpotLight()
@@ -195,6 +285,75 @@ namespace se
 			outerCone = _outerCone;
 
 			global = 0.0f;
+		}
+		void SpotLight::generateDebugPrimitive()
+		{
+			if (!debugPrimitive)
+			{
+				debugPrimitive = std::make_shared<Primitive>();
+				debugPrimitive->setPrimitiveType(PrimitiveType::Lines);
+				debugPrimitive->enableRenderFlag(RenderFlag::Blending);
+				//debugPrimitive->disableRenderFlag(RenderFlag::DepthTest);
+				debugPrimitive->setPosition(getPosition());
+				debugPrimitive->setScale(glm::vec3(getOuterRadius()));
+				debugPrimitive->setRotation(glm::quatLookAt(getDirection(), glm::vec3(0.0f, 1.0f, 0.0f)));
+				debugPrimitive->setRenderState(getIntensity() > 0.0f);
+			}
+
+			VertexBuffer newVertices;
+			std::vector<IndexType> newIndices;
+			using namespace VertexAttribute;
+			newVertices.setAttributes(Position
+									  | Color0);
+
+			if (getOuterCone() <= 0.0f)
+			{
+				debugPrimitive->setVertices(newVertices);
+				debugPrimitive->setIndices(newIndices);
+				return;
+			}
+
+			const size_t resolution = se::lerp(8, 64, getOuterCone() / TWO_PI<float>);
+			newVertices.resize(resolution * 2 + 1);
+			newIndices.resize(resolution * 4 + 4);
+
+			size_t currentIndex = 0;
+			size_t currentVertex = 0;
+
+			newVertices.get<Position>(currentVertex) = glm::vec3(0.0f);
+			newVertices.get<Color0>(currentVertex) = Color(1.0f, 1.0f, 1.0f, 0.5f);
+			currentVertex++;
+
+			for (size_t i = 0; i < 2; i++)
+			{
+				const float lat = static_cast<float>(i) * HALF_PI<float>;
+				for (size_t j = 0; j < resolution; j++)
+				{
+					const float lon = se::lerp(-getOuterCone() * 0.5f, getOuterCone() * 0.5f, static_cast<float>(j) / static_cast<float>(resolution - 1));
+					newVertices.get<Position>(currentVertex) = glm::normalize(glm::vec3(sinf(lon) * cosf(lat), sinf(lon) * sinf(lat), -cosf(lon)));
+					newVertices.get<Color0>(currentVertex) = Color(1.0f, 1.0f, 1.0f, 0.5f);
+
+					if (j == 0)
+					{
+						newIndices[currentIndex++] = static_cast<IndexType>(0);
+						newIndices[currentIndex++] = static_cast<IndexType>(currentVertex);
+					}
+					else
+					{
+						newIndices[currentIndex++] = static_cast<IndexType>(currentVertex - 1);
+						newIndices[currentIndex++] = static_cast<IndexType>(currentVertex);
+					}
+
+					currentVertex++;
+				}
+
+				newIndices[currentIndex++] = static_cast<IndexType>(currentVertex - 1);
+				newIndices[currentIndex++] = static_cast<IndexType>(0);
+			}
+			se_assert(currentVertex == newVertices.size());
+			se_assert(currentIndex == newIndices.size());
+			debugPrimitive->setVertices(newVertices);
+			debugPrimitive->setIndices(newIndices);
 		}
 	}
 }

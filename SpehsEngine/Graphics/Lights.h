@@ -1,6 +1,7 @@
 #pragma once
 
 #include "SpehsEngine/Core/Color.h"
+#include "SpehsEngine/Graphics/Primitive.h"
 #include "glm/vec3.hpp"
 
 
@@ -14,23 +15,25 @@ namespace se
 		{
 		public:
 
-			void				setColor(const Color& _color);
-			void				setIntensity(const float _intensity);
-			void				setPosition(const glm::vec3& _position);
-			void				setGlobal(const bool _global);
-			void				setDirection(const glm::vec3& _direction);
-			void				setRadius(const float _inner, const float _outer);
-			void				setCone(const float _inner, const float _outer);
+			void								setColor(const Color& _color);
+			void								setIntensity(const float _intensity);
+			void								setPosition(const glm::vec3& _position);
+			void								setGlobal(const bool _global);
+			void								setDirection(const glm::vec3& _direction);
+			void								setRadius(const float _inner, const float _outer);
+			void								setCone(const float _inner, const float _outer);
 
-			const Color&		getColor() const;
-			const float&		getIntensity() const;
-			const glm::vec3&	setPosition() const;
-			const bool			getGlobal() const;
-			const glm::vec3&	setDirection() const;
-			const float			getInnerRadius() const;
-			const float			getOuterRadius() const;
-			const float			getInnerCone() const;
-			const float			getOuterCone() const;
+			const Color&						getColor() const;
+			const float&						getIntensity() const;
+			const glm::vec3&					getPosition() const;
+			const bool							getGlobal() const;
+			const glm::vec3&					getDirection() const;
+			const float							getInnerRadius() const;
+			const float							getOuterRadius() const;
+			const float							getInnerCone() const;
+			const float							getOuterCone() const;
+
+			virtual std::shared_ptr<Primitive>	getDebugPrimitive();
 
 		protected:
 
@@ -55,6 +58,8 @@ namespace se
 
 			// extra
 			bool dirty = true;
+			std::shared_ptr<Primitive> debugPrimitive;
+			virtual void generateDebugPrimitive() {}
 		};
 
 
@@ -83,6 +88,10 @@ namespace se
 			PointLight();
 			PointLight(const Color& _color, const float _intensity, const glm::vec3& _position,
 					   const float _innerRadius, const float _outerRadius);
+
+		private:
+
+			void generateDebugPrimitive() override;
 		};
 
 
@@ -93,6 +102,10 @@ namespace se
 			SpotLight();
 			SpotLight(const Color& _color, const float _intensity, const glm::vec3& _position, const glm::vec3& _direction,
 					  const float _innerRadius, const float _outerRadius, const float _innerCone, const float _outerCone);
+
+		private:
+
+			void generateDebugPrimitive() override;
 		};
 	}
 }

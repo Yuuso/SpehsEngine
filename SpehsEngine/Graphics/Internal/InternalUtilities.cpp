@@ -23,7 +23,7 @@ namespace se
 				state |= BGFX_STATE_DEPTH_TEST_LESS;
 
 			if (checkBit(_renderInfo.renderFlags, RenderFlag::Blending)) // TODO
-				state |= BGFX_STATE_BLEND_FUNC(BGFX_STATE_BLEND_SRC_ALPHA, BGFX_STATE_BLEND_INV_SRC_ALPHA);
+				state |= BGFX_STATE_BLEND_ALPHA;
 
 			if (!checkBit(_renderContext.rendererFlags, RendererFlag::CWFrontFace))
 				state |= BGFX_STATE_FRONT_CCW;

@@ -14,11 +14,11 @@ uniform vec4 u_lightData2[MAX_LIGHTS];
 uniform vec4 u_lightData3[MAX_LIGHTS];
 uniform vec4 u_lightData4[MAX_LIGHTS];
 
-#define u_LightCount 			        int(u_lightInfo.x)
-#define u_LightColor(n)		            u_lightData1[n].xyz
-#define u_LightIntensity(n)	            u_lightData1[n].w
-#define u_LightPosition(n)	            u_lightData2[n].xyz
-#define u_LightIsGlobal(n)	            bool(u_lightData2[n].w > 0.0)
+#define u_LightCount                    int(u_lightInfo.x)
+#define u_LightColor(n)                 u_lightData1[n].xyz
+#define u_LightIntensity(n)             u_lightData1[n].w
+#define u_LightPosition(n)              u_lightData2[n].xyz
+#define u_LightIsGlobal(n)              bool(u_lightData2[n].w > 0.0)
 #define u_LightDirection(n)             u_lightData3[n].xyz
 #define u_LightInnerRadius(n)           u_lightData4[n].x
 #define u_LightOuterRadius(n)           u_lightData4[n].y
