@@ -10,6 +10,7 @@
 #include "SpehsEngine/Core/SE_Time.h"
 #include "SpehsEngine/Graphics/Internal/InternalTypes.h"
 #include "SpehsEngine/Graphics/Internal/InternalUtilities.h"
+#include "SpehsEngine/Graphics/Internal/RendererCallbackHandler.h"
 
 
 namespace se
@@ -30,23 +31,24 @@ namespace se
 			defaultWindow = windows.back().get();
 
 			{
+				callbackHandler = new RendererCallbackHandler;
+
 				bgfx::Init init;
 				init.type = getRendererType(_rendererBackend);
 				init.resolution.width = (uint32_t)_window.getWidth();
 				init.resolution.height = (uint32_t)_window.getHeight();
 				init.resolution.reset = getResetParameters(rendererFlags);
-				//init.callback
+				init.callback = callbackHandler;
 				bgfx::init(init);
 
 				bgfx::setDebug(BGFX_DEBUG_TEXT /*| BGFX_DEBUG_STATS*/);
-				// TODO: BGFX_DEBUG_STATS
 
 				bgfx::setViewClear(0, BGFX_CLEAR_COLOR | BGFX_CLEAR_DEPTH, 0x101010ff, 1.0f, 0);
 			}
 
 			{
 				//const bgfx::Caps* caps = bgfx::getCaps();
-				// TODO: Print infos...
+				// TODO
 			}
 
 			defaultUniforms = std::make_unique<DefaultUniforms>();
@@ -62,6 +64,8 @@ namespace se
 			defaultUniforms.reset();
 			bgfx::shutdown();
 			while (bgfx::renderFrame() != bgfx::RenderFrame::NoContext) {}
+			if (callbackHandler)
+				delete callbackHandler;
 			initialized = false;
 		}
 

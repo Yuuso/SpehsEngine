@@ -162,6 +162,7 @@
     <ClInclude Include="Internal\InternalTypes.h" />
     <ClInclude Include="Internal\InternalUtilities.h" />
     <ClInclude Include="Internal\LightBatch.h" />
+    <ClInclude Include="Internal\RendererCallbackHandler.h" />
     <ClInclude Include="Internal\RenderInfo.h" />
     <ClInclude Include="Internal\Resource.h" />
     <ClInclude Include="Lights.h" />
@@ -209,6 +210,7 @@
     <ClCompile Include="Internal\FontLibrary.cpp" />
     <ClCompile Include="Internal\InternalUtilities.cpp" />
     <ClCompile Include="Internal\LightBatch.cpp" />
+    <ClCompile Include="Internal\RendererCallbackHandler.cpp" />
     <ClCompile Include="Lights.cpp" />
     <ClCompile Include="Line.cpp" />
     <ClCompile Include="Primitive.cpp" />

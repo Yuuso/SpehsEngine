@@ -59,6 +59,8 @@ namespace se
 			bool rendererFlagsChanged = false;
 
 			std::unique_ptr<DefaultUniforms> defaultUniforms;
+
+			class RendererCallbackHandler* callbackHandler = nullptr;
 		};
 	}
 }
