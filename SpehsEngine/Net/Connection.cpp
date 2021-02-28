@@ -442,6 +442,9 @@ namespace se
 				unreliableSendQuota = 0u;
 			}
 
+			reliableSendQuota = std::min(reliableSendQuota, uint64_t(sendQuotaPerSecond));
+			unreliableSendQuota = std::min(unreliableSendQuota, uint64_t(sendQuotaPerSecond));
+
 			// By default do not request more send quota
 			moreSendQuotaRequested = false;
 
