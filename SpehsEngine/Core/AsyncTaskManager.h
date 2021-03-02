@@ -28,6 +28,7 @@ namespace se
 
 
 		std::future<T> push(std::function<T()> _fn);
+		size_t numTasksLeft() const;
 
 	private:
 
@@ -36,6 +37,7 @@ namespace se
 		std::mutex mutex;
 		std::condition_variable cvar;
 		bool shutdown = false;
+		size_t numWorking = 0;
 		std::queue<std::packaged_task<T()>> taskQueue;
 	};
 
@@ -59,9 +61,11 @@ namespace se
 				std::packaged_task<T()> task = std::move(taskQueue.front());
 				taskQueue.pop();
 
+				numWorking++;
 				lock.unlock();
 				task();
 				lock.lock();
+				numWorking--;
 			}
 		};
 
@@ -95,5 +99,12 @@ namespace se
 		taskQueue.emplace(_fn);
 		cvar.notify_one();
 		return taskQueue.back().get_future();
+	}
+
+	template <typename T>
+	size_t AsyncTaskManager<T>::numTasksLeft() const
+	{
+		std::lock_guard<std::mutex> lock(mutex);
+		return taskQueue.size() + numWorking;
 	}
 }
