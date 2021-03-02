@@ -54,7 +54,7 @@ namespace se
 			virtual void							toggleRenderState();
 			virtual void							setMaterial(std::shared_ptr<Material> _material);
 			virtual void							setVertices(const VertexBuffer& _vertices);
-			virtual void							setIndices(const std::vector<IndexType>& _indices);
+			virtual void							setIndices(const IndexBuffer& _indices);
 			virtual void							setColor(const Color& _color, const size_t _colorIndex = 0);
 
 			virtual void							setRenderFlags(const RenderFlagsType _renderFlags);
@@ -85,7 +85,7 @@ namespace se
 			RenderMode								renderMode				= RenderMode::Dynamic;
 			std::shared_ptr<Material>				material				= nullptr;
 			VertexBuffer							vertices;
-			std::vector<IndexType>					indices;
+			IndexBuffer								indices;
 
 			// Global space
 			glm::vec3								position				= glm::vec3(0.0f);

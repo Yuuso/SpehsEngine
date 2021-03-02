@@ -5,6 +5,7 @@
 #include "glm/vec2.hpp"
 #include <stdint.h>
 #include <numeric>
+#include <vector>
 
 
 namespace se
@@ -12,6 +13,7 @@ namespace se
 	namespace graphics
 	{
 		typedef uint16_t IndexType;
+		typedef std::vector<IndexType> IndexBuffer;
 
 		typedef uint32_t RenderFlagsType;
 		enum RenderFlag : RenderFlagsType
@@ -44,7 +46,8 @@ namespace se
 			Nvn,
 			OpenGLES,
 			OpenGL,
-			Vulkan
+			Vulkan,
+			WebGPU
 		};
 
 		typedef uint32_t PrimitiveUpdateFlagsType;

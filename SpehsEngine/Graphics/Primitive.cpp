@@ -119,7 +119,7 @@ namespace se
 			invalidatePrimitiveColors();
 			enableBit(updateFlags, PrimitiveUpdateFlag::VerticesChanged);
 		}
-		void Primitive::setIndices(const std::vector<IndexType>& _indices)
+		void Primitive::setIndices(const IndexBuffer& _indices)
 		{
 			indices = _indices;
 			enableBit(updateFlags, PrimitiveUpdateFlag::IndicesChanged);

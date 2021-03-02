@@ -37,10 +37,12 @@ namespace se
 		}
 		void VertexBuffer::resize(const size_t _size)
 		{
+			se_assert(_size == 0 || vertexBytes > 0);
 			buffer.resize(_size * vertexBytes);
 		}
 		void VertexBuffer::grow(const size_t _amount)
 		{
+			se_assert(_amount == 0 || vertexBytes > 0);
 			buffer.resize(buffer.size() + _amount * vertexBytes);
 		}
 		void VertexBuffer::pushBack(const VertexBuffer& _vertices)

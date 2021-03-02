@@ -218,6 +218,7 @@ namespace se
 				case RendererBackend::OpenGLES:		return bgfx::RendererType::OpenGLES;
 				case RendererBackend::OpenGL:		return bgfx::RendererType::OpenGL;
 				case RendererBackend::Vulkan:		return bgfx::RendererType::Vulkan;
+				case RendererBackend::WebGPU:		return bgfx::RendererType::WebGPU;
 			}
 			return bgfx::RendererType::Count;
 		}
@@ -228,7 +229,6 @@ namespace se
 			{
 				case bgfx::RendererType::Count:
 				case bgfx::RendererType::Noop:
-				case bgfx::RendererType::WebGPU:		break;
 
 				case bgfx::RendererType::Direct3D9:		return RendererBackend::Direct3D9;
 				case bgfx::RendererType::Direct3D11:	return RendererBackend::Direct3D11;
@@ -239,6 +239,7 @@ namespace se
 				case bgfx::RendererType::OpenGLES:		return RendererBackend::OpenGLES;
 				case bgfx::RendererType::OpenGL:		return RendererBackend::OpenGL;
 				case bgfx::RendererType::Vulkan:		return RendererBackend::Vulkan;
+				case bgfx::RendererType::WebGPU:		return RendererBackend::WebGPU;
 			}
 			se_assert_m(false, "Renderer type not defined?");
 			return RendererBackend::Auto;

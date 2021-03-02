@@ -168,6 +168,8 @@
     <ClInclude Include="Lights.h" />
     <ClInclude Include="Line.h" />
     <ClInclude Include="Material.h" />
+    <ClInclude Include="ModelData.h" />
+    <ClInclude Include="ModelDataManager.h" />
     <ClInclude Include="PrecompiledInclude.h" />
     <ClInclude Include="Primitive.h" />
     <ClInclude Include="Internal\PrimitiveInstance.h" />
@@ -213,6 +215,8 @@
     <ClCompile Include="Internal\RendererCallbackHandler.cpp" />
     <ClCompile Include="Lights.cpp" />
     <ClCompile Include="Line.cpp" />
+    <ClCompile Include="ModelData.cpp" />
+    <ClCompile Include="ModelDataManager.cpp" />
     <ClCompile Include="Primitive.cpp" />
     <ClCompile Include="Internal\PrimitiveInstance.cpp" />
     <ClCompile Include="Renderer.cpp" />

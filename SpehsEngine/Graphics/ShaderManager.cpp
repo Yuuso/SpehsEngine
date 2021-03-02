@@ -3,8 +3,6 @@
 
 #include "SpehsEngine/Core/Log.h"
 #include "SpehsEngine/Core/StringViewUtilityFunctions.h"
-#include "SpehsEngine/Graphics/Internal/InternalUtilities.h"
-#include "SpehsEngine/Graphics/Renderer.h"
 
 namespace se
 {
