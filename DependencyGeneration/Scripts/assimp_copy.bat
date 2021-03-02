@@ -11,6 +11,7 @@ SET OPTIONS=/NJH /NJS /NDL /NP /NS /NC
 IF EXIST "%DEPS_DIR%/include/assimp" RMDIR "%DEPS_DIR%/include/assimp" /S /Q
 MKDIR "%DEPS_DIR%/include/assimp"
 ROBOCOPY "%ASSIMP_DIR%/include/assimp"          "%DEPS_DIR%/include/assimp"             *.*                         /S %OPTIONS%
+ROBOCOPY "%ASSIMP_DIR%/build/x64/include/assimp" "%DEPS_DIR%/include/assimp"            *.*                         /S %OPTIONS%
 
 IF NOT EXIST "%DEPS_DIR%/lib/Win32/Debug" MKDIR "%DEPS_DIR%/lib/Win32/Debug"
 IF NOT EXIST "%DEPS_DIR%/lib/Win32/Release" MKDIR "%DEPS_DIR%/lib/Win32/Release"

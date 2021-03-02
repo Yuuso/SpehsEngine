@@ -1,6 +1,6 @@
 @ECHO OFF
 
-REM CALL Scripts/assimp_gen.bat
+CALL Scripts/assimp_gen.bat
 IF %ERRORLEVEL% NEQ 0 GOTO :FAILED
 CALL Scripts/assimp_copy.bat
 IF %ERRORLEVEL% NEQ 0 GOTO :FAILED
