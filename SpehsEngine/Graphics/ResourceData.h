@@ -2,9 +2,10 @@
 
 #include "bgfx/bgfx.h" // ?!
 #include "SpehsEngine/Graphics/Internal/FontMetrics.h"
-#include "SpehsEngine/Graphics/ResourceHandle.h"
+#include "SpehsEngine/Graphics/Internal/ResourceHandle.h"
 #include "SpehsEngine/Graphics/Types.h"
 #include "SpehsEngine/Graphics/VertexBuffer.h"
+#include "SpehsEngine/Graphics/IndexBuffer.h"
 #include "glm/mat4x4.hpp"
 #include <vector>
 #include <memory>
@@ -41,14 +42,14 @@ namespace se
 
 		struct MeshData : ResourceData
 		{
-			struct ModelNode
+			struct MeshDataNode
 			{
 				std::string name;
 				glm::mat4 transform;
 				std::vector<size_t> meshIndices;
-				std::vector<std::unique_ptr<ModelNode>> children;
+				std::vector<std::unique_ptr<MeshDataNode>> children;
 			};
-			ModelNode rootNode;
+			MeshDataNode rootNode;
 
 			struct MeshInfo
 			{

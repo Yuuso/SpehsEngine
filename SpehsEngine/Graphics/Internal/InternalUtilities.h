@@ -3,9 +3,9 @@
 #include "bgfx/bgfx.h"
 #include "SpehsEngine/Graphics/Internal/InternalTypes.h"
 #include "SpehsEngine/Graphics/Internal/RenderInfo.h"
+#include "SpehsEngine/Graphics/Internal/ResourceHandle.h"
 #include "SpehsEngine/Graphics/Types.h"
 #include "SpehsEngine/Graphics/VertexAttribute.h"
-#include "SpehsEngine/Graphics/ResourceHandle.h"
 
 
 namespace se
@@ -21,13 +21,14 @@ namespace se
 		bgfx::UniformType::Enum getUniformType(const UniformType _type);
 
 		template <typename T>
-		void safeDestroy(ResourceHandle _resourceHandle)
+		void safeDestroy(ResourceHandle& _resourceHandle)
 		{
 			T resourceHandle = { _resourceHandle };
 			if (bgfx::isValid(resourceHandle))
 			{
 				bgfx::destroy(resourceHandle);
 			}
+			_resourceHandle = INVALID_RESOURCE_HANDLE;
 		}
 	}
 }

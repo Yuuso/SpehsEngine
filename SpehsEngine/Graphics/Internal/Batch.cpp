@@ -17,25 +17,16 @@ namespace se
 		Batch::Batch(const RenderInfo _renderInfo)
 			: renderInfo(_renderInfo)
 		{
-			// TODO: Test BGFX_BUFFER_ALLOW_RESIZE?
-			vertexBufferHandle = bgfx::createDynamicVertexBuffer(MAX_BUFFER_SIZE, findVertexLayout(renderInfo.attributes));
-			indexBufferHandle = bgfx::createDynamicIndexBuffer(MAX_BUFFER_SIZE);
+			vertices.registerAsRenderer(reinterpret_cast<uintptr_t>(this));
+			indices.registerAsRenderer(reinterpret_cast<uintptr_t>(this));
 			vertices.setAttributes(renderInfo.attributes);
 			static_assert(sizeof(IndexType) == 2);
 			se_assert(renderInfo.material);
 		}
 		Batch::~Batch()
 		{
-			if (bgfx::isValid(vertexBufferHandle))
-			{
-				bgfx::destroy(vertexBufferHandle);
-				vertexBufferHandle = BGFX_INVALID_HANDLE;
-			}
-			if (bgfx::isValid(indexBufferHandle))
-			{
-				bgfx::destroy(indexBufferHandle);
-				indexBufferHandle = BGFX_INVALID_HANDLE;
-			}
+			vertices.unregisterAsRenderer(reinterpret_cast<uintptr_t>(this));
+			indices.unregisterAsRenderer(reinterpret_cast<uintptr_t>(this));
 		}
 
 		bool Batch::check(const RenderInfo _renderInfo) const
@@ -50,7 +41,7 @@ namespace se
 				   (MAX_BUFFER_SIZE - indices.size()) >= numIndices;
 		}
 
-		[[nodiscard]] const BatchPosition& Batch::add(const VertexBuffer& _vertices, const std::vector<IndexType>& _indices)
+		[[nodiscard]] const BatchPosition& Batch::add(const VertexBuffer& _vertices, const IndexBuffer& _indices)
 		{
 			se_assert(_vertices.getAttributes() == renderInfo.attributes);
 
@@ -63,7 +54,7 @@ namespace se
 			const size_t firstIndex = vertices.size();
 			const size_t indicesOldSize = indices.size();
 
-			indices.insert(indices.end(), _indices.begin(), _indices.end());
+			indices.pushBack(_indices);
 			if (firstIndex != 0)
 			{
 				for (size_t i = indicesOldSize; i < indices.size(); i++)
@@ -86,7 +77,7 @@ namespace se
 			se_assert(numRemovedIndices > 0 && numRemovedVertices > 0);
 
 			vertices.erase(_positionInBatch.verticesStart, _positionInBatch.verticesEnd);
-			indices.erase(indices.begin() + _positionInBatch.indicesStart, indices.begin() + _positionInBatch.indicesEnd);
+			indices.erase(_positionInBatch.indicesStart, _positionInBatch.indicesEnd);
 
 			for (size_t i = _positionInBatch.indicesStart; i < indices.size(); i++)
 				indices[i] -= (IndexType)numRemovedVertices;
@@ -208,7 +199,7 @@ namespace se
 			}
 			needsVertexBufferUpdate = true;
 		}
-		void Batch::updateIndices(const BatchPosition& _positionInBatch, const std::vector<IndexType>& _indices)
+		void Batch::updateIndices(const BatchPosition& _positionInBatch, const IndexBuffer& _indices)
 		{
 			se_assert(_indices.size() == (_positionInBatch.indicesEnd - _positionInBatch.indicesStart));
 			for (size_t i = 0; i < _indices.size(); i++)
@@ -230,18 +221,21 @@ namespace se
 
 			updateBuffers();
 
-			// TODO: Optimize?
 			static const glm::mat4 identity = glm::mat4(1.0f);
 			bgfx::setTransform(reinterpret_cast<const void*>(&identity));
 			_renderContext.defaultUniforms->setNormalMatrix(identity);
 			_renderContext.lightBatch->bind();
 			renderInfo.material->bind();
 
-			bgfx::setIndexBuffer(indexBufferHandle, 0, (uint32_t)indices.size());
-			bgfx::setVertexBuffer(0, vertexBufferHandle);
+			bgfx::IndexBufferHandle ibh = { indices.bufferObject };
+			bgfx::VertexBufferHandle vbh = { vertices.bufferObject };
+			bgfx::setIndexBuffer(ibh, 0, static_cast<uint32_t>(indices.size()));
+			bgfx::setVertexBuffer(0, vbh);
 
 			applyRenderState(renderInfo, _renderContext);
-			bgfx::submit(_renderContext.currentViewId, { renderInfo.material->getShader()->getHandle() });
+
+			bgfx::ProgramHandle programHandle = { renderInfo.material->getShader()->getHandle() };
+			bgfx::submit(_renderContext.currentViewId, programHandle);
 			return true;
 		}
 
@@ -251,18 +245,14 @@ namespace se
 				return;
 			se_assert(indices.size() > 0);
 
-			const bgfx::Memory* bufferMemory;
-			// TODO: Can I do a partial update?
 			if (needsIndexBufferUpdate)
 			{
-				bufferMemory = bgfx::copy(&indices[0], uint32_t(indices.size() * sizeof(indices[0])));
-				bgfx::update(indexBufferHandle, 0, bufferMemory);
+				indices.updateBuffer();
 				needsIndexBufferUpdate = false;
 			}
 			if (needsVertexBufferUpdate)
 			{
-				bufferMemory = bgfx::copy(vertices.data(), uint32_t(vertices.bytes()));
-				bgfx::update(vertexBufferHandle, 0, bufferMemory);
+				vertices.updateBuffer();
 				needsVertexBufferUpdate = false;
 			}
 		}

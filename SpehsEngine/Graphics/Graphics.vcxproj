@@ -153,9 +153,11 @@
     <ClInclude Include="Font.h" />
     <ClInclude Include="CharacterSet.h" />
     <ClInclude Include="FontManager.h" />
+    <ClInclude Include="IndexBuffer.h" />
     <ClInclude Include="Internal\Batch.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="GraphicsLib.h" />
+    <ClInclude Include="Internal\BufferObject.h" />
     <ClInclude Include="Internal\DefaultUniforms.h" />
     <ClInclude Include="Internal\FontLibrary.h" />
     <ClInclude Include="Internal\FontMetrics.h" />
@@ -175,7 +177,7 @@
     <ClInclude Include="Internal\PrimitiveInstance.h" />
     <ClInclude Include="Renderer.h" />
     <ClInclude Include="ResourceData.h" />
-    <ClInclude Include="ResourceHandle.h" />
+    <ClInclude Include="Internal\ResourceHandle.h" />
     <ClInclude Include="ResourceLoader.h" />
     <ClInclude Include="Internal\ResourceManager.h" />
     <ClInclude Include="ResourcePathFinder.h" />
@@ -205,9 +207,11 @@
     <ClCompile Include="DefaultShaderManager.cpp" />
     <ClCompile Include="Font.cpp" />
     <ClCompile Include="FontManager.cpp" />
+    <ClCompile Include="IndexBuffer.cpp" />
     <ClCompile Include="Internal\Batch.cpp" />
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="GraphicsLib.cpp" />
+    <ClCompile Include="Internal\BatchObject.cpp" />
     <ClCompile Include="Internal\DefaultUniforms.cpp" />
     <ClCompile Include="Internal\FontLibrary.cpp" />
     <ClCompile Include="Internal\InternalUtilities.cpp" />

@@ -125,55 +125,65 @@ namespace se
 
 		void WindowInstance::render(RenderContext& _renderContext)
 		{
-			se_assert(window);
-			if (window->getMinimized() || !window->isShown())
-			{
-				for (size_t i = 0; i < window->views.size(); )
-				{
-					if (window->views[i]->wasDestroyed())
-					{
-						window->views[i].reset(window->views.back().release());
-						window->views.pop_back();
-						continue;
-					}
-					i++;
-				}
-				if (!window->screenShotFileName.empty())
-				{
-					log::warning("Cannot take screenshot, window not visible!");
-					window->screenShotFileName.clear();
-				}
-				return;
-			}
-
 			if (!window->screenShotFileName.empty())
 			{
-				bgfx::requestScreenShot(frameBufferHandle, window->screenShotFileName.c_str());
+				if (renderState())
+				{
+					bgfx::requestScreenShot(frameBufferHandle, window->screenShotFileName.c_str());
+				}
+				else
+				{
+					log::warning("Cannot take screenshot, window not visible!");
+				}
 				window->screenShotFileName.clear();
 			}
+
+			if (!renderState())
+				return;
 
 			_renderContext.currentWindow = this;
 			for (size_t i = 0; i < window->views.size(); )
 			{
 				if (bgfx::isValid(frameBufferHandle))
 					bgfx::setViewFrameBuffer(_renderContext.currentViewId, frameBufferHandle);
+				se_assert(!window->views[i]->wasDestroyed());
+				window->views[i]->render(_renderContext);
+				i++;
+			}
+		}
+
+		void WindowInstance::preRender()
+		{
+			se_assert(window);
+			for (size_t i = 0; i < window->views.size(); )
+			{
 				if (window->views[i]->wasDestroyed())
 				{
 					window->views[i].reset(window->views.back().release());
 					window->views.pop_back();
 					continue;
 				}
-				window->views[i]->render(_renderContext);
 				i++;
 			}
+			// NOTE: preRender is called even if window renderState is false
+			for (auto&& view : window->views)
+			{
+				view->preRender();
+			}
 		}
-
 		void WindowInstance::postRender()
 		{
+			if (!renderState())
+				return;
 			for (auto&& view : window->views)
 			{
 				view->postRender();
 			}
+		}
+
+		bool WindowInstance::renderState() const
+		{
+			return !window->getMinimized() && window->isShown();
 		}
 
 		const bool WindowInstance::wasDestroyed() const

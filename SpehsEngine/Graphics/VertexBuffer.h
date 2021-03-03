@@ -2,6 +2,7 @@
 
 #include "SpehsEngine/Core/BitwiseOperations.h"
 #include "SpehsEngine/Core/Color.h"
+#include "SpehsEngine/Graphics/Internal/BufferObject.h"
 #include "SpehsEngine/Graphics/VertexAttribute.h"
 #include <stdint.h>
 #include <vector>
@@ -11,13 +12,22 @@ namespace se
 {
 	namespace graphics
 	{
-		class VertexBuffer
+		class VertexBuffer : public BufferObject
 		{
 		public:
 
 			VertexBuffer();
 			VertexBuffer(const VertexAttributeFlagsType _vertexAttributes);
+			~VertexBuffer();
 
+			VertexBuffer(const VertexBuffer& _other);
+			VertexBuffer& operator=(const VertexBuffer& _other);
+
+			VertexBuffer(VertexBuffer&& _other);
+			VertexBuffer& operator=(VertexBuffer&& _other);
+
+
+			void updateBuffer() const override;
 
 			const VertexAttributeFlagsType getAttributes() const;
 			void setAttributes(const VertexAttributeFlagsType _vertexAttributes);

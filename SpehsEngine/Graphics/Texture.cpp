@@ -237,7 +237,8 @@ namespace se
 		{
 			if (status == TextureStatus::Valid)
 			{
-				safeDestroy<bgfx::TextureHandle>(getHandle());
+				ResourceHandle temp = getHandle();
+				safeDestroy<bgfx::TextureHandle>(temp);
 			}
 			resourceData.reset();
 			setStatus(TextureStatus::Init);

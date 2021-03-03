@@ -80,37 +80,25 @@ namespace se
 
 		void Scene::render(RenderContext& _renderContext)
 		{
-			lightBatch->update();
 			_renderContext.lightBatch = lightBatch.get();
 
 			// TODO: Optimize unbatching?
 
-			for (size_t i = 0; i < primitives.size(); )
+			for (auto&& primitive : primitives)
 			{
-				if (primitives[i]->wasDestroyed())
+				primitive->update();
+				if (primitive->getRenderState())
 				{
-					if (primitives[i]->isBatched())
-						primitives[i]->unbatch();
-					primitives[i].reset(primitives.back().release());
-					primitives.pop_back();
-					continue;
-				}
-
-				primitives[i]->update();
-				if (primitives[i]->getRenderState())
-				{
-					if (primitives[i]->getRenderMode() == RenderMode::Static)
+					if (primitive->getRenderMode() == RenderMode::Static)
 					{
-						if (!primitives[i]->isBatched())
-							batch(*primitives[i].get());
+						if (!primitive->isBatched())
+							batch(*primitive.get());
 					}
 					else
 					{
-						primitives[i]->render(_renderContext);
+						primitive->render(_renderContext);
 					}
 				}
-
-				i++;
 			}
 
 			for (size_t i = 0; i < batches.size(); )
@@ -125,6 +113,26 @@ namespace se
 			}
 		}
 
+		void Scene::preRender()
+		{
+			for (size_t i = 0; i < primitives.size(); )
+			{
+				if (primitives[i]->wasDestroyed())
+				{
+					if (primitives[i]->isBatched())
+						primitives[i]->unbatch();
+					primitives[i].reset(primitives.back().release());
+					primitives.pop_back();
+					continue;
+				}
+				i++;
+			}
+			for (auto&& primitive : primitives)
+			{
+				primitive->preRender();
+			}
+			lightBatch->preRender();
+		}
 		void Scene::postRender()
 		{
 			for (auto&& primitive : primitives)

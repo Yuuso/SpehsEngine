@@ -6,6 +6,7 @@
 #include "SpehsEngine/Graphics/Internal/Batch.h"
 #include "SpehsEngine/Graphics/Internal/InternalTypes.h"
 #include "SpehsEngine/Graphics/Primitive.h"
+#include "SpehsEngine/Graphics/IndexBuffer.h"
 #include "SpehsEngine/Graphics/VertexBuffer.h"
 #include <vector>
 
@@ -31,8 +32,8 @@ namespace se
 
 			void update();
 
-			void destroyBuffers();
 			void render(RenderContext& _renderContext);
+			void preRender();
 			void postRender();
 
 			void batch(Batch& _batch);
@@ -44,29 +45,22 @@ namespace se
 			const bool getRenderState() const;
 			const RenderMode getRenderMode() const;
 			const VertexBuffer& getVertices() const;
-			const std::vector<IndexType>& getIndices() const;
+			const IndexBuffer& getIndices() const;
 
 		private:
 
 			const bool sizeInBatchChanged() const;
-			void updateTransformMatrix();
-			void createBuffers();
-
+			void registerAsBufferObjectRenderer();
+			void unregisterAsBufferObjectRenderer();
 			void primitiveDestroyed();
 
 			boost::signals2::scoped_connection primitiveDestroyedConnection;
 
-			Primitive* primitive;
+			Primitive* primitive = nullptr;
+			PrimitiveUpdateFlagsType cachedPrimitiveUpdateFlags = 0;
 			// TODO: weak_ptr?
-			Batch* batch_ = nullptr;
+			Batch* primitiveBatch = nullptr;
 			const BatchPosition* batchPosition = nullptr;
-
-			glm::mat4 transformMatrix;
-			glm::mat4 normalMatrix;
-
-			// TODO: Test dynamic buffers?
-			bgfx::VertexBufferHandle vertexBufferHandle = BGFX_INVALID_HANDLE;
-			bgfx::IndexBufferHandle indexBufferHandle = BGFX_INVALID_HANDLE;
 		};
 	}
 }

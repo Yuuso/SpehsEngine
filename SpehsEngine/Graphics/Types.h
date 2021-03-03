@@ -13,7 +13,6 @@ namespace se
 	namespace graphics
 	{
 		typedef uint16_t IndexType;
-		typedef std::vector<IndexType> IndexBuffer;
 
 		typedef uint32_t RenderFlagsType;
 		enum RenderFlag : RenderFlagsType
@@ -69,7 +68,7 @@ namespace se
 			*/
 			Static,
 			Dynamic,
-			Transient
+			//Transient
 			// TODO: Split Dynamic into 'DynamicDynamic' and 'StaticDynamic'?
 		};
 

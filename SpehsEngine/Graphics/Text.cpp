@@ -144,7 +144,7 @@ namespace se
 		{
 			se_assert_m(false, "Cannot set vertices for Text primitive!");
 		}
-		void Text::setIndices(const std::vector<IndexType>& _indices)
+		void Text::setIndices(const IndexBuffer& _indices)
 		{
 			se_assert_m(false, "Cannot set indices for Text primitive!");
 		}
@@ -320,7 +320,7 @@ namespace se
 			}
 			Primitive::setVertices(newVertices);
 
-			std::vector<IndexType> newIndices;
+			IndexBuffer newIndices;
 			{
 				const size_t numVertices = newVertices.size();
 				se_assert(numVertices % 4 == 0);

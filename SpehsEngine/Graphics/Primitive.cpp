@@ -4,6 +4,13 @@
 #include "SpehsEngine/Core/BitwiseOperations.h"
 #include "SpehsEngine/Graphics/Internal/InternalTypes.h"
 
+#define GLM_ENABLE_EXPERIMENTAL
+#include "glm/gtc/matrix_transform.hpp"
+#include "glm/gtc/quaternion.hpp"
+#include "glm/gtx/quaternion.hpp"
+#include "glm/gtx/rotate_vector.hpp"
+#include "glm/gtx/transform.hpp"
+
 
 namespace se
 {
@@ -25,6 +32,37 @@ namespace se
 			}
 		}
 
+		void Primitive::update()
+		{
+			if (checkBit(updateFlags, PrimitiveUpdateFlag::TransformChanged))
+			{
+				updateMatrices();
+			}
+			if (checkBit(updateFlags, PrimitiveUpdateFlag::VerticesChanged))
+			{
+				vertices.updateBuffer();
+			}
+			if (checkBit(updateFlags, PrimitiveUpdateFlag::IndicesChanged))
+			{
+				indices.updateBuffer();
+			}
+			// RenderInfoChanged changes only impact PrimitiveInstance
+			updateFlags = 0;
+		}
+		const glm::mat4& Primitive::getTransformMatrix() const
+		{
+			return transformMatrix;
+		}
+		const glm::mat4& Primitive::getNormalMatrix() const
+		{
+			return normalMatrix;
+		}
+		void Primitive::updateMatrices()
+		{
+			transformMatrix = glm::translate(getPosition()) * glm::mat4_cast(getRotation()) * glm::scale(getScale());
+			normalMatrix = glm::mat4(glm::inverse(glm::transpose(glm::mat3(transformMatrix))));
+		}
+
 		const std::string& Primitive::getName() const
 		{
 			return name;
@@ -41,7 +79,7 @@ namespace se
 		{
 			return vertices;
 		}
-		const std::vector<IndexType>& Primitive::getIndices() const
+		const IndexBuffer& Primitive::getIndices() const
 		{
 			return indices;
 		}
@@ -67,25 +105,13 @@ namespace se
 		{
 			return position;
 		}
-		const glm::vec3& Primitive::getLocalPosition() const
-		{
-			return localPosition;
-		}
 		const glm::vec3& Primitive::getScale() const
 		{
 			return scale;
 		}
-		const glm::vec3& Primitive::getLocalScale() const
-		{
-			return localScale;
-		}
 		const glm::quat& Primitive::getRotation() const
 		{
 			return rotation;
-		}
-		const glm::quat& Primitive::getLocalRotation() const
-		{
-			return localRotation;
 		}
 
 		void Primitive::setName(const std::string_view _name)
@@ -196,13 +222,6 @@ namespace se
 			position = _position;
 			enableBit(updateFlags, PrimitiveUpdateFlag::TransformChanged);
 		}
-		void Primitive::setLocalPosition(const glm::vec3& _position)
-		{
-			if (localPosition == _position)
-				return;
-			localPosition = _position;
-			enableBit(updateFlags, PrimitiveUpdateFlag::TransformChanged);
-		}
 		void Primitive::setScale(const glm::vec3& _scale)
 		{
 			if (scale == _scale)
@@ -210,25 +229,11 @@ namespace se
 			scale = _scale;
 			enableBit(updateFlags, PrimitiveUpdateFlag::TransformChanged);
 		}
-		void Primitive::setLocalScale(const glm::vec3& _scale)
-		{
-			if (localScale == _scale)
-				return;
-			localScale = _scale;
-			enableBit(updateFlags, PrimitiveUpdateFlag::TransformChanged);
-		}
 		void Primitive::setRotation(const glm::quat& _rotation)
 		{
 			if (rotation == _rotation)
 				return;
 			rotation = _rotation;
-			enableBit(updateFlags, PrimitiveUpdateFlag::TransformChanged);
-		}
-		void Primitive::setLocalRotation(const glm::quat& _rotation)
-		{
-			if (localRotation == _rotation)
-				return;
-			localRotation = _rotation;
 			enableBit(updateFlags, PrimitiveUpdateFlag::TransformChanged);
 		}
 	}

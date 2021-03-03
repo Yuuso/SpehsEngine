@@ -23,7 +23,7 @@ namespace se
 		{
 			se_assert_m(false, "Cannot set vertices for Line primitive!");
 		}
-		void Line::setIndices(const std::vector<IndexType>& _indices)
+		void Line::setIndices(const IndexBuffer& _indices)
 		{
 			se_assert_m(false, "Cannot set indices for Line primitive!");
 		}
@@ -34,7 +34,7 @@ namespace se
 			emptyBuffer.setAttributes(Position
 									  | Color0);
 			Primitive::setVertices(emptyBuffer);
-			Primitive::setIndices(std::vector<IndexType>());
+			Primitive::setIndices(IndexBuffer());
 		}
 		void Line::addPoint(const glm::vec3& _point, const Color& _color)
 		{
@@ -47,9 +47,9 @@ namespace se
 
 			if (newVertices.size() > 1)
 			{
-				std::vector<IndexType> newIndices = getIndices();
-				newIndices.push_back(static_cast<IndexType>(newVertices.size() - 2));
-				newIndices.push_back(static_cast<IndexType>(newVertices.size() - 1));
+				IndexBuffer newIndices = getIndices();
+				newIndices.pushBack(static_cast<IndexType>(newVertices.size() - 2));
+				newIndices.pushBack(static_cast<IndexType>(newVertices.size() - 1));
 				Primitive::setIndices(newIndices);
 			}
 		}

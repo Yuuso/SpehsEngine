@@ -114,6 +114,10 @@ namespace se
 			_renderContext.currentViewId++;
 		}
 
+		void ViewInstance::preRender()
+		{
+			view->scene.preRender();
+		}
 		void ViewInstance::postRender()
 		{
 			view->scene.postRender();

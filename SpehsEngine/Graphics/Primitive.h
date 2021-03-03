@@ -1,9 +1,11 @@
 #pragma once
 
 #include "boost/signals2.hpp"
+#include "SpehsEngine/Graphics/IndexBuffer.h"
 #include "SpehsEngine/Graphics/Types.h"
 #include "SpehsEngine/Graphics/VertexBuffer.h"
 #include "SpehsEngine/Graphics/Material.h"
+#include "glm/mat4x4.hpp"
 #include "glm/vec3.hpp"
 #include "glm/gtc/quaternion.hpp"
 #include <vector>
@@ -35,7 +37,7 @@ namespace se
 			virtual const bool						getRenderState() const;
 			virtual std::shared_ptr<Material>		getMaterial() const;
 			virtual const VertexBuffer&				getVertices() const;
-			virtual const std::vector<IndexType>&	getIndices() const;
+			virtual const IndexBuffer&				getIndices() const;
 
 			virtual const RenderFlagsType			getRenderFlags() const;
 			virtual const bool						checkRenderFlag(const RenderFlag _renderFlag) const;
@@ -43,11 +45,8 @@ namespace se
 			virtual const RenderMode				getRenderMode() const;
 
 			virtual const glm::vec3&				getPosition() const;
-			virtual const glm::vec3&				getLocalPosition() const;
 			virtual const glm::vec3&				getScale() const;
-			virtual const glm::vec3&				getLocalScale() const;
 			virtual const glm::quat&				getRotation() const;
-			virtual const glm::quat&				getLocalRotation() const;
 
 			virtual void							setName(const std::string_view _name);
 			virtual void							setRenderState(const bool _state);
@@ -64,19 +63,19 @@ namespace se
 			virtual void							setRenderMode(const RenderMode _renderMode);
 
 			virtual void							setPosition(const glm::vec3& _position);
-			virtual void							setLocalPosition(const glm::vec3& _position);
 			virtual void							setScale(const glm::vec3& _scale);
-			virtual void							setLocalScale(const glm::vec3& _scale);
 			virtual void							setRotation(const glm::quat& _rotation);
-			virtual void							setLocalRotation(const glm::quat& _rotation);
 
 		protected:
 
-			virtual void							update() {};
+			virtual void							update();
+			virtual const glm::mat4&				getTransformMatrix() const;
+			virtual const glm::mat4&				getNormalMatrix() const;
 
 		private:
 
 			void									invalidatePrimitiveColors();
+			void									updateMatrices();
 
 			std::string								name					= "primitive";
 			bool									renderState				= true;
@@ -87,15 +86,11 @@ namespace se
 			VertexBuffer							vertices;
 			IndexBuffer								indices;
 
-			// Global space
 			glm::vec3								position				= glm::vec3(0.0f);
 			glm::vec3								scale					= glm::vec3(1.0f);
 			glm::quat								rotation				= glm::vec3(0.0f);
-
-			// Local space
-			glm::vec3								localPosition			= glm::vec3(0.0f);
-			glm::vec3								localScale				= glm::vec3(1.0f);
-			glm::quat								localRotation			= glm::vec3(0.0f);
+			glm::mat4								transformMatrix;
+			glm::mat4								normalMatrix;
 
 			friend class PrimitiveInstance;
 			boost::signals2::signal<void(void)>		destroyedSignal;

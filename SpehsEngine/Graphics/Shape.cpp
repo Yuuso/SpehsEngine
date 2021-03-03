@@ -383,7 +383,7 @@ namespace se
 		{
 			se_assert_m(false, "Cannot set vertices for Shape primitive!");
 		}
-		void Shape::setIndices(const std::vector<IndexType>& _indices)
+		void Shape::setIndices(const IndexBuffer& _indices)
 		{
 			se_assert_m(false, "Cannot set indices for Shape primitive!");
 		}
@@ -391,7 +391,7 @@ namespace se
 		void Shape::generateIndices()
 		{
 			const size_t numVertices = getVertices().size();
-			std::vector<IndexType> newIndices;
+			IndexBuffer newIndices;
 
 			// NOTE: Assuming CCW front face
 

@@ -43,7 +43,7 @@ namespace se
 			}
 		}
 
-		void LightBatch::update()
+		void LightBatch::preRender()
 		{
 			const size_t numLights = lights.size();
 			for (size_t i = 0; i < numLights; i++)

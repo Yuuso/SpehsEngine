@@ -41,7 +41,7 @@ namespace se
 			return !path.empty();
 		}
 
-		static bool processNode(MeshData::ModelNode& _modelNode, const aiNode& _node)
+		static bool processNode(MeshData::MeshDataNode& _modelNode, const aiNode& _node)
 		{
 			_modelNode.name = _node.mName.C_Str();
 			_modelNode.meshIndices.resize(_node.mNumMeshes);
@@ -56,7 +56,7 @@ namespace se
 			_modelNode.children.resize(_node.mNumChildren);
 			for (unsigned int i = 0; i < _node.mNumChildren; i++)
 			{
-				_modelNode.children[i] = std::make_unique<MeshData::ModelNode>();
+				_modelNode.children[i] = std::make_unique<MeshData::MeshDataNode>();
 				if (!processNode(*_modelNode.children[i].get(), *_node.mChildren[i]))
 					return false;
 			}
@@ -182,7 +182,7 @@ namespace se
 					{
 						const unsigned int index = face.mIndices[indexIndex];
 						se_assert(index < std::numeric_limits<IndexType>::max());
-						mesh.indexBuffer->at(faceIndex + indexIndex) = static_cast<IndexType>(index);
+						mesh.indexBuffer->operator[](faceIndex + indexIndex) = static_cast<IndexType>(index);
 					}
 				}
 			}

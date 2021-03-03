@@ -87,9 +87,6 @@ namespace se
 				rendererFlagsChanged = false;
 			}
 
-			RenderContext renderContext;
-			renderContext.rendererFlags = rendererFlags;
-			renderContext.defaultUniforms = defaultUniforms.get();
 			for (size_t i = 0; i < windows.size(); )
 			{
 				if (windows[i]->wasDestroyed())
@@ -98,12 +95,27 @@ namespace se
 					windows.pop_back();
 					continue;
 				}
-				windows[i]->update();
-				windows[i]->render(renderContext);
 				i++;
+			}
+
+			for (auto&& window : windows)
+			{
+				window->update();
+				window->preRender();
+			}
+			RenderContext renderContext;
+			renderContext.rendererFlags = rendererFlags;
+			renderContext.defaultUniforms = defaultUniforms.get();
+			for (auto&& window : windows)
+			{
+				window->render(renderContext);
 			}
 			bgfx::frame();
 			bgfx::dbgTextClear();
+			for (auto&& window : windows)
+			{
+				window->postRender();
+			}
 		}
 
 		void Renderer::add(Window& _window)

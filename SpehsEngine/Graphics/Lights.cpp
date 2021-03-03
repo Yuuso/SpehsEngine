@@ -211,7 +211,7 @@ namespace se
 			}
 
 			VertexBuffer newVertices;
-			std::vector<IndexType> newIndices;
+			IndexBuffer newIndices;
 			using namespace VertexAttribute;
 			newVertices.setAttributes(Position
 									  | Color0);
@@ -301,7 +301,7 @@ namespace se
 			}
 
 			VertexBuffer newVertices;
-			std::vector<IndexType> newIndices;
+			IndexBuffer newIndices;
 			using namespace VertexAttribute;
 			newVertices.setAttributes(Position
 									  | Color0);

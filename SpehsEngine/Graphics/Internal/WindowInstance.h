@@ -30,6 +30,7 @@ namespace se
 
 
 			void render(RenderContext& _renderContext);
+			void preRender();
 			void postRender();
 
 			const bool wasDestroyed() const;
@@ -47,6 +48,7 @@ namespace se
 		private:
 
 			void windowDestroyed();
+			bool renderState() const;
 
 			boost::signals2::scoped_connection windowDestroyedConnection;
 

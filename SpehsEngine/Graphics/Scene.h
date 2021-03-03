@@ -43,6 +43,7 @@ namespace se
 			friend class ViewInstance;
 
 			void render(RenderContext& _renderContext);
+			void preRender();
 			void postRender();
 			void batch(PrimitiveInstance& _primitive);
 

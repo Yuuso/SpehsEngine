@@ -38,7 +38,7 @@ namespace se
 
 			void					setPrimitiveType(const PrimitiveType _primitiveType) override;
 			void					setVertices(const VertexBuffer& _vertices) override;
-			void					setIndices(const std::vector<IndexType>& _indices) override;
+			void					setIndices(const IndexBuffer& _indices) override;
 			void					setMaterial(std::shared_ptr<Material> _material) override;
 
 

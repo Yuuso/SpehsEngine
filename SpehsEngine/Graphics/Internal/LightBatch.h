@@ -25,7 +25,7 @@ namespace se
 			LightBatch& operator=(LightBatch&& _other) = delete;
 
 
-			void update();
+			void preRender();
 			void bind();
 			void postRender();
 

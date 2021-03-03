@@ -1,6 +1,9 @@
 #include "stdafx.h"
 #include "SpehsEngine/Graphics/VertexBuffer.h"
 
+#include "bgfx/bgfx.h"
+#include "SpehsEngine/Graphics/Internal/InternalUtilities.h"
+
 
 namespace se
 {
@@ -12,6 +15,42 @@ namespace se
 		VertexBuffer::VertexBuffer(const VertexAttributeFlagsType _vertexAttributes)
 		{
 			setAttributes(_vertexAttributes);
+		}
+		VertexBuffer::~VertexBuffer()
+		{
+			safeDestroy<bgfx::VertexBufferHandle>(bufferObject);
+		}
+
+		VertexBuffer::VertexBuffer(const VertexBuffer& _other)
+			: BufferObject(_other)
+			, buffer(_other.buffer)
+			, attributes(_other.attributes)
+			, vertexBytes(_other.vertexBytes)
+		{
+		}
+		VertexBuffer& VertexBuffer::operator=(const VertexBuffer& _other)
+		{
+			BufferObject::operator=(_other);
+			buffer = _other.buffer;
+			attributes = _other.attributes;
+			vertexBytes = _other.vertexBytes;
+			return *this;
+		}
+
+		VertexBuffer::VertexBuffer(VertexBuffer&& _other)
+			: BufferObject(std::move(_other))
+			, buffer(std::move(_other.buffer))
+			, attributes(_other.attributes)
+			, vertexBytes(_other.vertexBytes)
+		{
+		}
+		VertexBuffer& VertexBuffer::operator=(VertexBuffer&& _other)
+		{
+			BufferObject::operator=(std::move(_other));
+			buffer = std::move(_other.buffer);
+			attributes = _other.attributes;
+			vertexBytes = _other.vertexBytes;
+			return *this;
 		}
 
 		const VertexAttributeFlagsType VertexBuffer::getAttributes() const
@@ -60,7 +99,7 @@ namespace se
 		}
 		const void* VertexBuffer::data() const
 		{
-			return (const void*)buffer.data();
+			return reinterpret_cast<const void*>(buffer.data());
 		}
 
 		void VertexBuffer::calculateVertexSize()
@@ -90,6 +129,16 @@ namespace se
 			check_attribute_bytes(Data4)
 
 			#undef check_attribute_bytes
+		}
+
+		void VertexBuffer::updateBuffer() const
+		{
+			safeDestroy<bgfx::VertexBufferHandle>(bufferObject);
+			if (renderers.size() > 0 && size() > 0)
+			{
+				const bgfx::Memory* bufferMemory = bgfx::copy(data(), uint32_t(bytes()));
+				bufferObject = bgfx::createVertexBuffer(bufferMemory, findVertexLayout(getAttributes())).idx;
+			}
 		}
 	}
 }

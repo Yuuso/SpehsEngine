@@ -26,6 +26,7 @@ namespace se
 
 
 			void render(RenderContext& _renderContext);
+			void preRender();
 			void postRender();
 
 			const bool wasDestroyed() const;
