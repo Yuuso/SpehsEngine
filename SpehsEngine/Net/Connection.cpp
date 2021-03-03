@@ -1138,7 +1138,7 @@ namespace se
 		{
 			LOCK_GUARD(lock, mutex, other);
 			const double maxSendQuotaPerSecond = 1024.0 * 1024.0 * 1024.0 * 1024.0;
-			const double multiplier = 1.05;
+			const double multiplier = 1.01;
 			sendQuotaPerSecond = std::min(maxSendQuotaPerSecond, sendQuotaPerSecond * multiplier);
 		}
 
@@ -1338,7 +1338,7 @@ namespace se
 			return bytes;
 		}
 
-		uint64_t Connection::getReliableAcknowledgedBytesInQueue() const
+		uint64_t Connection::getReliableSentAcknowledgedBytesInQueue() const
 		{
 			LOCK_GUARD(lock, mutex, other);
 			uint64_t bytes = 0ull;
@@ -1347,6 +1347,20 @@ namespace se
 				for (const ReliablePacketOut::AcknowledgedFragment& acknowledgedFragment : reliablePacketOut.acknowledgedFragments)
 				{
 					bytes += uint64_t(acknowledgedFragment.size);
+				}
+			}
+			return bytes;
+		}
+
+		uint64_t Connection::getReliableReceivedBytesInQueue() const
+		{
+			LOCK_GUARD(lock, mutex, other);
+			uint64_t bytes = 0ull;
+			for (const ReceivedReliableFragment& receivedReliableFragment : receivedReliableFragments)
+			{
+				for (const ReceivedReliableFragment::PayloadBuffer& payloadBuffer : receivedReliableFragment.payloadBuffers)
+				{
+					bytes += uint64_t(payloadBuffer.buffer.size());
 				}
 			}
 			return bytes;
