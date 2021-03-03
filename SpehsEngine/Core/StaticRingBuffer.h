@@ -113,11 +113,17 @@ namespace se
 		inline T& operator[](const size_t index) { return at(index); }
 		inline const T& operator[](const size_t index) const { return at(index); }
 
+		inline T& getFront() { return at(beginOffset); }
+		inline const T& getFront() const { return at(beginOffset); }
+		inline T& getBack() { return at(endOffset); }
+		inline const T& getBack() const { return at(endOffset); }
+
 		inline const T* getBuffer() const { return buffer; }
 		inline size_t getMaxSize() const { return MaxSize; }
 		inline size_t getSize() const { return size; }
 		inline size_t getBeginOffset() const { return beginOffset; }
 		inline size_t getEndOffset() const { return endOffset; }
+		inline bool isEmpty() const { return size == 0; }
 		inline bool isFull() const { return size == MaxSize; }
 
 	private:
