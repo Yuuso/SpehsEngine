@@ -20,13 +20,7 @@ namespace se
 
 		void Scene::add(Primitive& _primitive)
 		{
-			auto it = std::find_if(primitives.begin(),
-								   primitives.end(),
-								   [&_primitive](const std::unique_ptr<PrimitiveInstance>& primitive)
-								   {
-									   return *primitive.get() == _primitive;
-								   });
-			if (it != primitives.end())
+			if (find(_primitive))
 			{
 				se::log::error("Primitive already found in scene!");
 				return;
@@ -35,15 +29,14 @@ namespace se
 		}
 		void Scene::remove(Primitive& _primitive)
 		{
-			auto it = std::find_if(primitives.begin(),
-								   primitives.end(),
+			auto it = std::find_if(primitives.begin(), primitives.end(),
 								   [&_primitive](const std::unique_ptr<PrimitiveInstance>& primitive)
 								   {
 									   return *primitive.get() == _primitive;
 								   });
 			if (it == primitives.end())
 			{
-				se::log::error("Primitive not found!");
+				se::log::error("Primitive not found in scene!");
 				return;
 			}
 
@@ -53,14 +46,47 @@ namespace se
 			it->reset(primitives.back().release());
 			primitives.pop_back();
 		}
+		bool Scene::find(const Primitive& _primitive) const
+		{
+			auto it = std::find_if(primitives.begin(), primitives.end(),
+								   [&_primitive](const std::unique_ptr<PrimitiveInstance>& primitive)
+								   {
+									   return *primitive.get() == _primitive;
+								   });
+			return it != primitives.end();
+		}
 
 		void Scene::add(Model& _model)
 		{
-			_model.foreachPrimitive([this](Primitive& _primitive) { this->add(_primitive); });
+			auto it = std::find_if(models.begin(), models.end(),
+								   [&_model](const std::unique_ptr<ModelInstance>& model)
+								   {
+									   return *model.get() == _model;
+								   });
+			if (it != models.end())
+			{
+				se::log::error("Model already found in scene!");
+				return;
+			}
+			models.push_back(std::make_unique<ModelInstance>(_model));
+			// NOTE: Model primitives will be added in first preRender
 		}
 		void Scene::remove(Model& _model)
 		{
-			_model.foreachPrimitive([this](Primitive& _primitive) { this->remove(_primitive); });
+			auto it = std::find_if(models.begin(), models.end(),
+								   [&_model](const std::unique_ptr<ModelInstance>& model)
+								   {
+									   return *model.get() == _model;
+								   });
+			if (it == models.end())
+			{
+				se::log::error("Model not found in scene!");
+				return;
+			}
+
+			it->get()->foreachPrimitive([this](Primitive& _primitive) { this->remove(_primitive); });
+			it->reset(models.back().release());
+			models.pop_back();
 		}
 
 		void Scene::add(Light& _light)
@@ -72,19 +98,12 @@ namespace se
 			lightBatch->remove(_light);
 		}
 
-		void Scene::clearPrimitives()
-		{
-			primitives.clear();
-			batches.clear();
-		}
-		void Scene::clearLights()
-		{
-			lightBatch->clear();
-		}
 		void Scene::clear()
 		{
-			clearPrimitives();
-			clearLights();
+			models.clear();
+			primitives.clear();
+			batches.clear();
+			lightBatch->clear();
 		}
 
 		void Scene::render(RenderContext& _renderContext)
@@ -122,8 +141,37 @@ namespace se
 			}
 		}
 
-		void Scene::preRender()
+		void Scene::preRender(const bool /*_renderState*/, const bool _forceAllUpdates)
 		{
+			if (readyToRender)
+				return;
+			readyToRender = true;
+
+			for (size_t i = 0; i < models.size(); )
+			{
+				if (models[i]->wasDestroyed())
+				{
+					models[i].reset(models.back().release());
+					models.pop_back();
+					continue;
+				}
+
+				if (models[i]->wasReloaded())
+				{
+					models[i]->foreachPrimitive([this](Primitive& _primitive){ this->add(_primitive); });
+				}
+				else if (_forceAllUpdates)
+				{
+					models[i]->foreachPrimitive(
+						[this](Primitive& _primitive)
+						{
+							if (!this->find(_primitive))
+								this->add(_primitive);
+						});
+				}
+				i++;
+			}
+
 			for (size_t i = 0; i < primitives.size(); )
 			{
 				if (primitives[i]->wasDestroyed())
@@ -134,19 +182,28 @@ namespace se
 					primitives.pop_back();
 					continue;
 				}
+
+				primitives[i]->preRender(_forceAllUpdates);
 				i++;
 			}
-			for (auto&& primitive : primitives)
-			{
-				primitive->preRender();
-			}
-			lightBatch->preRender();
+			lightBatch->preRender(_forceAllUpdates);
 		}
-		void Scene::postRender()
+		void Scene::postRender(const bool _renderState)
 		{
-			for (auto&& primitive : primitives)
+			if (!readyToRender)
+				return;
+			readyToRender = false;
+
+			for (auto&& model : models)
 			{
-				primitive->postRender();
+				model->postRender();
+			}
+			if (_renderState)
+			{
+				for (auto&& primitive : primitives)
+				{
+					primitive->postRender();
+				}
 			}
 			lightBatch->postRender();
 		}

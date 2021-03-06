@@ -26,8 +26,8 @@ namespace se
 
 
 			void render(RenderContext& _renderContext);
-			void preRender();
-			void postRender();
+			void preRender(const bool _renderState, const bool _forceAllUpdates);
+			void postRender(const bool _renderState);
 
 			const bool wasDestroyed() const;
 
@@ -38,6 +38,7 @@ namespace se
 			boost::signals2::scoped_connection viewDestroyedConnection;
 
 			View* view;
+			bool wasAdded = true;
 		};
 	}
 }

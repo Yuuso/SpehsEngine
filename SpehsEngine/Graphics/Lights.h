@@ -15,6 +15,15 @@ namespace se
 		{
 		public:
 
+												Light() = default;
+			virtual 							~Light();
+
+												Light(const Light& _other) = delete;
+			Light&								operator=(const Light& _other) = delete;
+
+												Light(Light&& _other) = delete;
+			Light&								operator=(Light&& _other) = delete;
+
 			void								setColor(const Color& _color);
 			void								setIntensity(const float _intensity);
 			void								setPosition(const glm::vec3& _position);
@@ -38,6 +47,7 @@ namespace se
 		protected:
 
 			friend class LightBatch;
+			friend class LightInstance;
 
 			// mat4[0]
 			Color color;				// Color, alpha is intensity
@@ -60,6 +70,8 @@ namespace se
 			bool dirty = true;
 			std::shared_ptr<Primitive> debugPrimitive;
 			virtual void generateDebugPrimitive() {}
+
+			boost::signals2::signal<void(void)> destroyedSignal;
 		};
 
 

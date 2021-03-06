@@ -165,20 +165,18 @@ namespace se
 				}
 				i++;
 			}
-			// NOTE: preRender is called even if window renderState is false
 			for (auto&& view : window->views)
 			{
-				view->preRender();
+				view->preRender(renderState(), wasAdded);
 			}
 		}
 		void WindowInstance::postRender()
 		{
-			if (!renderState())
-				return;
 			for (auto&& view : window->views)
 			{
-				view->postRender();
+				view->postRender(renderState());
 			}
+			wasAdded = false;
 		}
 
 		bool WindowInstance::renderState() const

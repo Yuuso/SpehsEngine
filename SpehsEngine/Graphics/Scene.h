@@ -4,6 +4,7 @@
 #include "SpehsEngine/Graphics/Internal/InternalTypes.h"
 #include "SpehsEngine/Graphics/Internal/LightBatch.h"
 #include "SpehsEngine/Graphics/Internal/PrimitiveInstance.h"
+#include "SpehsEngine/Graphics/Internal/ModelInstance.h"
 #include "SpehsEngine/Graphics/Lights.h"
 #include "SpehsEngine/Graphics/Primitive.h"
 #include "SpehsEngine/Graphics/Model.h"
@@ -31,6 +32,7 @@ namespace se
 
 			void add(Primitive& _primitive);
 			void remove(Primitive& _primitive);
+			bool find(const Primitive& _primitive) const;
 
 			void add(Model& _model);
 			void remove(Model& _model);
@@ -38,8 +40,6 @@ namespace se
 			void add(Light& _light);
 			void remove(Light& _light);
 
-			void clearPrimitives();
-			void clearLights();
 			void clear();
 
 		private:
@@ -47,13 +47,16 @@ namespace se
 			friend class ViewInstance;
 
 			void render(RenderContext& _renderContext);
-			void preRender();
-			void postRender();
+			void preRender(const bool _renderState, const bool _forceAllUpdates);
+			void postRender(const bool _renderState);
 			void batch(PrimitiveInstance& _primitive);
 
 			std::vector<std::unique_ptr<Batch>> batches;
 			std::vector<std::unique_ptr<PrimitiveInstance>> primitives;
+			std::vector<std::unique_ptr<ModelInstance>> models;
 			std::unique_ptr<LightBatch> lightBatch;
+
+			bool readyToRender = false;
 		};
 	}
 }

@@ -2,8 +2,9 @@
 
 #include "bgfx/bgfx.h" // !
 #include "glm/vec4.hpp"
+#include "SpehsEngine/Graphics/Internal/LightInstance.h"
 #include "SpehsEngine/Graphics/Lights.h"
-#include <functional>
+#include <memory>
 #include <vector>
 
 
@@ -25,7 +26,7 @@ namespace se
 			LightBatch& operator=(LightBatch&& _other) = delete;
 
 
-			void preRender();
+			void preRender(const bool _forceAllUpdates);
 			void bind();
 			void postRender();
 
@@ -37,7 +38,7 @@ namespace se
 
 			void update(const size_t _index);
 
-			std::vector<std::reference_wrapper<Light>> lights;
+			std::vector<std::unique_ptr<LightInstance>> lights;
 
 			glm::vec4 lightInfo;
 			glm::vec4 data1[MAX_LIGHTS];

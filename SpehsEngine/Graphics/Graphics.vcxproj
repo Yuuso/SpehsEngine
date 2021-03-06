@@ -164,7 +164,9 @@
     <ClInclude Include="Internal\InternalTypes.h" />
     <ClInclude Include="Internal\InternalUtilities.h" />
     <ClInclude Include="Internal\LightBatch.h" />
+    <ClInclude Include="Internal\LightInstance.h" />
     <ClInclude Include="Internal\Mesh.h" />
+    <ClInclude Include="Internal\ModelInstance.h" />
     <ClInclude Include="Internal\ModelNode.h" />
     <ClInclude Include="Internal\RendererCallbackHandler.h" />
     <ClInclude Include="Internal\RenderInfo.h" />
@@ -219,7 +221,9 @@
     <ClCompile Include="Internal\FontLibrary.cpp" />
     <ClCompile Include="Internal\InternalUtilities.cpp" />
     <ClCompile Include="Internal\LightBatch.cpp" />
+    <ClCompile Include="Internal\LightInstance.cpp" />
     <ClCompile Include="Internal\Mesh.cpp" />
+    <ClCompile Include="Internal\ModelInstance.cpp" />
     <ClCompile Include="Internal\ModelNode.cpp" />
     <ClCompile Include="Internal\RendererCallbackHandler.cpp" />
     <ClCompile Include="Lights.cpp" />

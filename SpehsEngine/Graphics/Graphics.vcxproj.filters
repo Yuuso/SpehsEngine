@@ -180,6 +180,12 @@
     <ClInclude Include="Internal\ModelNode.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Internal\ModelInstance.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Internal\LightInstance.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="GraphicsLib.cpp">
@@ -297,6 +303,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Internal\BufferObject.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Internal\LightInstance.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Internal\ModelInstance.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

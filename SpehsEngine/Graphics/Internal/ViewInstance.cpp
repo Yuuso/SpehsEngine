@@ -114,13 +114,14 @@ namespace se
 			_renderContext.currentViewId++;
 		}
 
-		void ViewInstance::preRender()
+		void ViewInstance::preRender(const bool _renderState, const bool _forceAllUpdates)
 		{
-			view->scene.preRender();
+			view->scene.preRender(_renderState, _forceAllUpdates || wasAdded);
 		}
-		void ViewInstance::postRender()
+		void ViewInstance::postRender(const bool _renderState)
 		{
-			view->scene.postRender();
+			view->scene.postRender(_renderState);
+			wasAdded = false;
 		}
 
 		const bool ViewInstance::wasDestroyed() const

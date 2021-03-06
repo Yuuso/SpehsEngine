@@ -1,5 +1,6 @@
 #pragma once
 
+#include "boost/signals2.hpp"
 #include "glm/gtc/quaternion.hpp"
 #include "glm/vec3.hpp"
 #include "SpehsEngine/Core/Color.h"
@@ -22,7 +23,7 @@ namespace se
 		public:
 
 											Model();
-											~Model() = default;
+											~Model();
 
 											Model(const Model& _other) = delete;
 			Model&							operator=(const Model& _other) = delete;
@@ -34,6 +35,7 @@ namespace se
 			void							loadModelData(std::shared_ptr<ModelData> _modelData);
 			void							reloadModeData();
 
+			void							foreachPrimitive(std::function<void(Primitive&)> _fn);
 			const Primitive*				getPrimitive(const std::string_view _meshName) const;
 			const Primitive*				getPrimitive(const size_t _index) const;
 			Primitive*						getPrimitive(const std::string_view _meshName);
@@ -67,14 +69,14 @@ namespace se
 
 		private:
 
-			friend class Scene; // TODO
-
-			void							foreachPrimitive(std::function<void(Primitive&)> _fn);
+			friend class ModelInstance;
 
 			ModelNode						rootNode;
 
 			std::string						name;
 			bool							renderState = true;
+			bool							reloaded = false;
+			size_t							numMaterialSlots = 0;
 
 			glm::vec3						position = glm::vec3(0.0f);
 			glm::vec3						scale = glm::vec3(1.0f);
@@ -82,6 +84,9 @@ namespace se
 
 			std::shared_ptr<ModelData>		modelData;
 			std::vector<std::shared_ptr<Material>> materials;
+
+			boost::signals2::signal<void(void)> destroyedSignal;
+			boost::signals2::scoped_connection modelDataLoadedConnection;
 		};
 	}
 }

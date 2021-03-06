@@ -43,18 +43,26 @@ namespace se
 			}
 		}
 
-		void LightBatch::preRender()
+		void LightBatch::preRender(const bool _forceAllUpdates)
 		{
-			const size_t numLights = lights.size();
-			for (size_t i = 0; i < numLights; i++)
+			for (size_t i = 0; i < lights.size(); )
 			{
-				if (lights[i].get().dirty)
+				if (lights[i]->wasDestroyed())
+				{
+					lights[i].reset(lights.back().release());
+					lights.pop_back();
+					continue;
+				}
+
+				if (lights[i]->getLight().dirty || _forceAllUpdates)
 				{
 					update(i);
 				}
+				i++;
 			}
-			lightInfo = { numLights, 0.0f, 0.0f, 0.0f };
+			lightInfo = { lights.size(), 0.0f, 0.0f, 0.0f };
 		}
+
 		void LightBatch::bind()
 		{
 			const size_t numLights = lights.size();
@@ -73,7 +81,7 @@ namespace se
 			// Clear flags after all scenes have had the chance to update
 			for (auto&& light : lights)
 			{
-				light.get().dirty = false;
+				light->getLight().dirty = false;
 			}
 		}
 
@@ -81,9 +89,9 @@ namespace se
 		{
 			auto it = std::find_if(lights.begin(),
 								   lights.end(),
-								   [&_light](const std::reference_wrapper<Light>& light)
+								   [&_light](const std::unique_ptr<LightInstance>& light)
 								   {
-									   return &light.get() == &_light;
+									   return *light.get() == _light;
 								   });
 			if (it != lights.end())
 			{
@@ -97,18 +105,19 @@ namespace se
 				return;
 			}
 
-			lights.push_back(_light);
+			lights.push_back(std::make_unique<LightInstance>(_light));
 
 			// Force update buffer
 			_light.dirty = true;
 		}
+
 		void LightBatch::remove(Light& _light)
 		{
 			auto it = std::find_if(lights.begin(),
 								   lights.end(),
-								   [&_light](const std::reference_wrapper<Light>& light)
+								   [&_light](const std::unique_ptr<LightInstance>& light)
 								   {
-									   return &light.get() == &_light;
+									   return *light.get() == _light;
 								   });
 			if (it == lights.end())
 			{
@@ -116,12 +125,13 @@ namespace se
 				return;
 			}
 
-			*it = lights.back().get();
+			it->reset(lights.back().release());
 			lights.pop_back();
 
 			// Location in buffer changed
-			it->get().dirty = true;
+			it->get()->getLight().dirty = true;
 		}
+
 		void LightBatch::clear()
 		{
 			lights.clear();
@@ -130,10 +140,10 @@ namespace se
 		void LightBatch::update(const size_t _index)
 		{
 			static_assert(sizeof(Light) >= sizeof(glm::vec4) * 4, "Invalid Light size!");
-			memcpy(&data1[_index], &lights[_index].get().color, sizeof(glm::vec4));
-			memcpy(&data2[_index], &lights[_index].get().position, sizeof(glm::vec4));
-			memcpy(&data3[_index], &lights[_index].get().direction, sizeof(glm::vec4));
-			memcpy(&data4[_index], &lights[_index].get().innerRadius, sizeof(glm::vec4));
+			memcpy(&data1[_index], &lights[_index]->getLight().color, sizeof(glm::vec4));
+			memcpy(&data2[_index], &lights[_index]->getLight().position, sizeof(glm::vec4));
+			memcpy(&data3[_index], &lights[_index]->getLight().direction, sizeof(glm::vec4));
+			memcpy(&data4[_index], &lights[_index]->getLight().innerRadius, sizeof(glm::vec4));
 		}
 	}
 }

@@ -11,6 +11,10 @@ namespace se
 {
 	namespace graphics
 	{
+		Light::~Light()
+		{
+			destroyedSignal();
+		}
 		void Light::setColor(const Color& _color)
 		{
 			if (color.r == _color.r &&
@@ -147,6 +151,7 @@ namespace se
 		{
 		}
 		AmbientLight::AmbientLight(const Color& _color, const float _intensity)
+			: Light()
 		{
 			color = _color;
 			color.a = _intensity;
@@ -166,6 +171,7 @@ namespace se
 		{
 		}
 		DirectionalLight::DirectionalLight(const Color& _color, const float _intensity, const glm::vec3& _direction)
+			: Light()
 		{
 			color = _color;
 			color.a = _intensity;
@@ -186,6 +192,7 @@ namespace se
 		}
 		PointLight::PointLight(const Color& _color, const float _intensity, const glm::vec3& _position,
 							   const float _innerRadius, const float _outerRadius)
+			: Light()
 		{
 			color = _color;
 			color.a = _intensity;
@@ -276,6 +283,7 @@ namespace se
 		}
 		SpotLight::SpotLight(const Color& _color, const float _intensity, const glm::vec3& _position, const glm::vec3& _direction,
 							 const float _innerRadius, const float _outerRadius, const float _innerCone, const float _outerCone)
+			: Light()
 		{
 			color = _color;
 			color.a = _intensity;

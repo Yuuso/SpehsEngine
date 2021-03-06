@@ -138,11 +138,20 @@ namespace se
 			bgfx::submit(_renderContext.currentViewId, programHandle);
 		}
 
-		void PrimitiveInstance::preRender()
+		void PrimitiveInstance::preRender(const bool _forceAllUpdates)
 		{
-			enableBit(cachedPrimitiveUpdateFlags, primitive->updateFlags);
-			verticesChanged = verticesChanged || primitive->getVerticesChanged();
-			indicesChanged = indicesChanged || primitive->getIndicesChanged();
+			if (_forceAllUpdates)
+			{
+				enableBit(cachedPrimitiveUpdateFlags, PrimitiveUpdateFlag::EverythingChanged);
+				verticesChanged = true;
+				indicesChanged = true;
+			}
+			else
+			{
+				enableBit(cachedPrimitiveUpdateFlags, primitive->updateFlags);
+				verticesChanged = verticesChanged || primitive->getVerticesChanged();
+				indicesChanged = indicesChanged || primitive->getIndicesChanged();
+			}
 		}
 		void PrimitiveInstance::postRender()
 		{

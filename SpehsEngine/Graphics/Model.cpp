@@ -12,6 +12,10 @@ namespace se
 			: rootNode(*this, nullptr)
 		{
 		}
+		Model::~Model()
+		{
+			destroyedSignal();
+		}
 
 		static void processNode(const Model& _model, const MeshData& _meshData, const MeshData::MeshDataNode& _meshDataNode, ModelNode& _modelNode, size_t& _numMaterials)
 		{
@@ -34,8 +38,9 @@ namespace se
 
 		void Model::loadModelData(std::shared_ptr<ModelData> _modelData)
 		{
-			se_assert(_modelData && _modelData->ready());
+			se_assert(_modelData);
 			modelData = _modelData;
+			modelDataLoadedConnection = modelData->resourceLoadedSignal.connect(boost::bind(&Model::reloadModeData, this));
 			reloadModeData();
 		}
 		void Model::reloadModeData()
@@ -47,13 +52,17 @@ namespace se
 			}
 
 			rootNode.reset();
+			numMaterialSlots = 0;
+
+			if (!modelData->ready())
+				return;
 
 			const MeshData& meshData = *modelData->resourceData.get();
-			size_t numMaterials = 0;
-			processNode(*this, meshData, meshData.rootNode, rootNode, numMaterials);
-			se_assert(numMaterials > 0);
-			materials.resize(numMaterials);
+			processNode(*this, meshData, meshData.rootNode, rootNode, numMaterialSlots);
+			se_assert(numMaterialSlots > 0);
+			se_assert(materials.size() <= numMaterialSlots);
 			foreachPrimitive([](Primitive& _primitive) { enableBit(_primitive.updateFlags, PrimitiveUpdateFlag::TransformChanged); }); // Force transform update
+			reloaded = true;
 		}
 
 		void Model::foreachPrimitive(std::function<void(Primitive&)> _fn)
@@ -92,7 +101,7 @@ namespace se
 		}
 		std::shared_ptr<Material> Model::getMaterial(const size_t _slot) const
 		{
-			se_assert(_slot < materials.size());
+			se_assert(_slot < numMaterialSlots);
 			if (_slot >= materials.size() || !materials[_slot])
 				return materials[0];
 			return materials[_slot];
@@ -129,9 +138,9 @@ namespace se
 		}
 		void Model::setMaterial(std::shared_ptr<Material> _material, const size_t _slot)
 		{
-			se_assert(_slot < materials.size());
+			se_assert(numMaterialSlots == 0 || _slot < numMaterialSlots);
 			if (_slot >= materials.size())
-				return;
+				materials.resize(_slot + 1);
 			materials[_slot] = _material;
 		}
 		void Model::setColor(const Color& _color, const size_t _colorIndex)

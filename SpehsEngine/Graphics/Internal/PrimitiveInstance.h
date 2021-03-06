@@ -33,7 +33,7 @@ namespace se
 			void update();
 
 			void render(RenderContext& _renderContext);
-			void preRender();
+			void preRender(const bool _forceAllUpdates);
 			void postRender();
 
 			void batch(Batch& _batch);

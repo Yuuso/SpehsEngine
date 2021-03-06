@@ -57,6 +57,7 @@ namespace se
 			SDL_Window* sdlWindow = nullptr;
 			bgfx::FrameBufferHandle frameBufferHandle = BGFX_INVALID_HANDLE;
 			bool resetBackBuffer = false;
+			bool wasAdded = true;
 		};
 	}
 }

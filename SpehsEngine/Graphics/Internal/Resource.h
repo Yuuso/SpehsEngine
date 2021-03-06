@@ -1,5 +1,6 @@
 #pragma once
 
+#include "boost/signals2.hpp"
 #include "SpehsEngine/Core/Log.h"
 #include "SpehsEngine/Core/SE_Assert.h"
 #include "SpehsEngine/Graphics/ResourceData.h"
@@ -39,6 +40,7 @@ namespace se
 						if (status == std::future_status::ready)
 						{
 							resourceData = std::dynamic_pointer_cast<T>(resourceFuture.get());
+							resourceLoadedSignal();
 							return true;
 						}
 					}
@@ -70,6 +72,8 @@ namespace se
 			const std::string name;
 			std::future<std::shared_ptr<ResourceData>> resourceFuture;
 			std::shared_ptr<T> resourceData;
+
+			boost::signals2::signal<void(void)> resourceLoadedSignal;
 		};
 	}
 }
