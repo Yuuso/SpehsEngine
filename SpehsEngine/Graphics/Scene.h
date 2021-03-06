@@ -6,6 +6,7 @@
 #include "SpehsEngine/Graphics/Internal/PrimitiveInstance.h"
 #include "SpehsEngine/Graphics/Lights.h"
 #include "SpehsEngine/Graphics/Primitive.h"
+#include "SpehsEngine/Graphics/Model.h"
 #include <memory>
 #include <vector>
 
@@ -30,6 +31,9 @@ namespace se
 
 			void add(Primitive& _primitive);
 			void remove(Primitive& _primitive);
+
+			void add(Model& _model);
+			void remove(Model& _model);
 
 			void add(Light& _light);
 			void remove(Light& _light);

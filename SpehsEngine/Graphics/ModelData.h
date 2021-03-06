@@ -31,6 +31,7 @@ namespace se
 		private:
 
 			friend class ModelDataManager;
+			friend class Model;
 
 			static std::shared_ptr<ResourceData> createResource(const std::string _path);
 			void destroy();

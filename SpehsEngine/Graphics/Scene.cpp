@@ -54,6 +54,15 @@ namespace se
 			primitives.pop_back();
 		}
 
+		void Scene::add(Model& _model)
+		{
+			_model.foreachPrimitive([this](Primitive& _primitive) { this->add(_primitive); });
+		}
+		void Scene::remove(Model& _model)
+		{
+			_model.foreachPrimitive([this](Primitive& _primitive) { this->remove(_primitive); });
+		}
+
 		void Scene::add(Light& _light)
 		{
 			lightBatch->add(_light);

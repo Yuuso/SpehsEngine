@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <Filter Include="Source Files">
@@ -162,6 +162,9 @@
     <ClInclude Include="ModelDataManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Model.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="IndexBuffer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -169,6 +172,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Internal\BufferObject.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Internal\Mesh.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Internal\ModelNode.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -275,10 +284,19 @@
     <ClCompile Include="ModelDataManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Model.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="IndexBuffer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Internal\BatchObject.cpp">
+    <ClCompile Include="Internal\Mesh.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Internal\ModelNode.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Internal\BufferObject.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
