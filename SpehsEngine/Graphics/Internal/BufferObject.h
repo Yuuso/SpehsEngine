@@ -23,16 +23,21 @@ namespace se
 			BufferObject& operator=(BufferObject&& _other);
 
 
-			virtual void updateBuffer() const = 0;
+			virtual void updateBuffer() = 0;
 
 		protected:
 
 			friend class PrimitiveInstance;
+			friend class Primitive;
 			friend class Batch;
-			void registerAsRenderer(const uintptr_t _value) const;
-			void unregisterAsRenderer(const uintptr_t _value) const;
-			mutable ResourceHandle bufferObject = INVALID_RESOURCE_HANDLE;
-			mutable std::set<uintptr_t> renderers;
+
+			void registerAsRenderer(const uintptr_t _value);
+			void unregisterAsRenderer(const uintptr_t _value);
+			bool getBufferChanged() const { return bufferChanged; }
+
+			ResourceHandle bufferObject = INVALID_RESOURCE_HANDLE;
+			std::set<uintptr_t> renderers;
+			bool bufferChanged = false;
 		};
 	}
 }

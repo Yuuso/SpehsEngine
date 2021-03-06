@@ -29,11 +29,6 @@ namespace se
 				{
 					generateBuffers();
 				}
-				else
-				{
-					// Clear vertex buffer to disable rendering while font is loading
-					Primitive::setVertices(VertexBuffer());
-				}
 			}
 			Primitive::update();
 		}
@@ -140,11 +135,11 @@ namespace se
 		{
 			se_assert_m(false, "Cannot change primitive type of Text primitive!");
 		}
-		void Text::setVertices(const VertexBuffer& _vertices)
+		void Text::setVertices(std::shared_ptr<VertexBuffer> _vertices)
 		{
 			se_assert_m(false, "Cannot set vertices for Text primitive!");
 		}
-		void Text::setIndices(const IndexBuffer& _indices)
+		void Text::setIndices(std::shared_ptr<IndexBuffer> _indices)
 		{
 			se_assert_m(false, "Cannot set indices for Text primitive!");
 		}
@@ -204,9 +199,14 @@ namespace se
 		{
 			needBufferUpdate = true;
 			needDimensionsUpdate = true;
+
+			// Set null buffers
+			// - to disable rendering while font might be loading
+			// - to trigger primitive buffer change logic (because text buffers are generated after preRender)
+			Primitive::setVertices(nullptr);
+			Primitive::setIndices(nullptr);
 		}
 
-		// TODO: Combine generateBuffers and updateDimensions structures
 		void Text::generateBuffers()
 		{
 			std::shared_ptr<Material> primitiveMaterial = getMaterial();
@@ -219,7 +219,8 @@ namespace se
 			if (!font || !font->ready())
 				return;
 
-			VertexBuffer newVertices;
+			std::shared_ptr<VertexBuffer> newVertexBuffer = std::make_shared<VertexBuffer>();
+			VertexBuffer& newVertices = *newVertexBuffer.get();
 			using namespace VertexAttribute;
 			newVertices.setAttributes(Position
 									  | Color0
@@ -318,9 +319,10 @@ namespace se
 					cursor.x += glyph.advanceX * advanceMultiplier;
 				}
 			}
-			Primitive::setVertices(newVertices);
+			Primitive::setVertices(newVertexBuffer);
 
-			IndexBuffer newIndices;
+			std::shared_ptr<IndexBuffer> newIndexBuffer = std::make_shared<IndexBuffer>();
+			IndexBuffer& newIndices = *newIndexBuffer.get();
 			{
 				const size_t numVertices = newVertices.size();
 				se_assert(numVertices % 4 == 0);
@@ -339,7 +341,7 @@ namespace se
 					newIndices[currentIndex++] = currentVertex + (++index);
 				}
 			}
-			Primitive::setIndices(newIndices);
+			Primitive::setIndices(newIndexBuffer);
 
 			needBufferUpdate = false;
 		}

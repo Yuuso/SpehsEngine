@@ -41,7 +41,7 @@ namespace se
 			return *this;
 		}
 
-		void IndexBuffer::updateBuffer() const
+		void IndexBuffer::updateBuffer()
 		{
 			safeDestroy<bgfx::IndexBufferHandle>(bufferObject);
 			if (renderers.size() > 0 && size() > 0)
@@ -50,6 +50,7 @@ namespace se
 				const bgfx::Memory* bufferMemory = bgfx::copy(data(), uint32_t(bytes()));
 				bufferObject = bgfx::createIndexBuffer(bufferMemory).idx;
 			}
+			bufferChanged = false;
 		}
 	}
 }

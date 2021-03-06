@@ -30,7 +30,8 @@ namespace se
 		{
 			// Generate an equilateral convex polygon with the given amount of vertices
 
-			VertexBuffer newVertices;
+			std::shared_ptr<VertexBuffer> newVertexBuffer = std::make_shared<VertexBuffer>();
+			VertexBuffer& newVertices = *newVertexBuffer.get();
 			using namespace VertexAttribute;
 			newVertices.setAttributes(Position
 									  | Normal
@@ -124,7 +125,7 @@ namespace se
 				}
 			}
 
-			Primitive::setVertices(newVertices);
+			Primitive::setVertices(newVertexBuffer);
 
 			// Indices
 			{
@@ -161,7 +162,8 @@ namespace se
 				if (_resolution > 0)
 					log::warning("Shape: Cube doesn't have a resolution!");
 
-				VertexBuffer newVertices;
+				std::shared_ptr<VertexBuffer> newVertexBuffer = std::make_shared<VertexBuffer>();
+				VertexBuffer& newVertices = *newVertexBuffer.get();
 				using namespace VertexAttribute;
 				newVertices.setAttributes(Position
 										  | Normal
@@ -322,14 +324,15 @@ namespace se
 				newVertices.get<Color0>		(currentVertex)	= Color();
 				currentVertex++;
 
-				Primitive::setVertices(newVertices);
+				Primitive::setVertices(newVertexBuffer);
 				generateIndices();
 			}
 			else if (type == ShapeType::Sphere)
 			{
 				setName("sphere");
 
-				VertexBuffer newVertices;
+				std::shared_ptr<VertexBuffer> newVertexBuffer = std::make_shared<VertexBuffer>();
+				VertexBuffer& newVertices = *newVertexBuffer.get();
 				using namespace VertexAttribute;
 				newVertices.setAttributes(Position
 										  | Normal
@@ -365,7 +368,7 @@ namespace se
 					}
 				}
 
-				Primitive::setVertices(newVertices);
+				Primitive::setVertices(newVertexBuffer);
 				generateIndices();
 			}
 			else
@@ -379,19 +382,23 @@ namespace se
 			Primitive::setPrimitiveType(_primitiveType);
 			generateIndices();
 		}
-		void Shape::setVertices(const VertexBuffer& _vertices)
+		void Shape::setVertices(std::shared_ptr<VertexBuffer> _vertices)
 		{
 			se_assert_m(false, "Cannot set vertices for Shape primitive!");
 		}
-		void Shape::setIndices(const IndexBuffer& _indices)
+		void Shape::setIndices(std::shared_ptr<IndexBuffer>)
 		{
 			se_assert_m(false, "Cannot set indices for Shape primitive!");
 		}
 
 		void Shape::generateIndices()
 		{
-			const size_t numVertices = getVertices().size();
-			IndexBuffer newIndices;
+			if (!getVertices())
+				return;
+
+			const size_t numVertices = getVertices()->size();
+			std::shared_ptr<IndexBuffer> newIndexBuffer = std::make_shared<IndexBuffer>();
+			IndexBuffer& newIndices = *newIndexBuffer.get();
 
 			// NOTE: Assuming CCW front face
 
@@ -471,7 +478,7 @@ namespace se
 					}
 				}
 			}
-			Primitive::setIndices(newIndices);
+			Primitive::setIndices(newIndexBuffer);
 		}
 	}
 }

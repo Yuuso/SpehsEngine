@@ -211,7 +211,7 @@
     <ClCompile Include="Internal\Batch.cpp" />
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="GraphicsLib.cpp" />
-    <ClCompile Include="Internal\BatchObject.cpp" />
+    <ClCompile Include="Internal\BufferObject.cpp" />
     <ClCompile Include="Internal\DefaultUniforms.cpp" />
     <ClCompile Include="Internal\FontLibrary.cpp" />
     <ClCompile Include="Internal\InternalUtilities.cpp" />

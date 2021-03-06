@@ -19,38 +19,44 @@ namespace se
 		{
 			se_assert_m(false, "Cannot change primitive type of Line primitive!");
 		}
-		void Line::setVertices(const VertexBuffer& _vertices)
+		void Line::setVertices(std::shared_ptr<VertexBuffer> _vertices)
 		{
 			se_assert_m(false, "Cannot set vertices for Line primitive!");
 		}
-		void Line::setIndices(const IndexBuffer& _indices)
+		void Line::setIndices(std::shared_ptr<IndexBuffer> _vertices)
 		{
 			se_assert_m(false, "Cannot set indices for Line primitive!");
 		}
 
 		void Line::clear()
 		{
-			VertexBuffer emptyBuffer;
-			emptyBuffer.setAttributes(Position
-									  | Color0);
-			Primitive::setVertices(emptyBuffer);
-			Primitive::setIndices(IndexBuffer());
+			Primitive::setVertices(nullptr);
+			Primitive::setIndices(nullptr);
 		}
 		void Line::addPoint(const glm::vec3& _point, const Color& _color)
 		{
-			// Optimize!?
-			VertexBuffer newVertices = getVertices();
-			newVertices.grow(1);
-			newVertices.get<Position>(newVertices.size() - 1) = _point;
-			newVertices.get<Color0>(newVertices.size() - 1) = _color;
-			Primitive::setVertices(newVertices);
-
-			if (newVertices.size() > 1)
+			std::shared_ptr<VertexBuffer> vertexBuffer = Primitive::getVertices();
+			if (!vertexBuffer)
 			{
-				IndexBuffer newIndices = getIndices();
-				newIndices.pushBack(static_cast<IndexType>(newVertices.size() - 2));
-				newIndices.pushBack(static_cast<IndexType>(newVertices.size() - 1));
-				Primitive::setIndices(newIndices);
+				vertexBuffer = std::make_shared<VertexBuffer>();
+				vertexBuffer->setAttributes(Position | Color0);
+				Primitive::setVertices(vertexBuffer);
+			}
+			vertexBuffer->grow(1);
+			const size_t newVertexIndex = vertexBuffer->size() - 1;
+			vertexBuffer->get<Position>(newVertexIndex) = _point;
+			vertexBuffer->get<Color0>(newVertexIndex) = _color;
+
+			if (newVertexIndex)
+			{
+				std::shared_ptr<IndexBuffer> indexBuffer = Primitive::getIndices();
+				if (!indexBuffer)
+				{
+					indexBuffer = std::make_shared<IndexBuffer>();
+					Primitive::setIndices(indexBuffer);
+				}
+				indexBuffer->pushBack(static_cast<IndexType>(newVertexIndex - 1));
+				indexBuffer->pushBack(static_cast<IndexType>(newVertexIndex));
 			}
 		}
 	}

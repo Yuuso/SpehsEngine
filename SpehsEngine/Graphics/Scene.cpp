@@ -149,7 +149,7 @@ namespace se
 			for (auto&& batch : batches)
 			{
 				if (batch->check(_primitive.getRenderInfo()) &&
-					batch->check(_primitive.getVertices().size(), _primitive.getIndices().size()))
+					batch->check(_primitive.getVertices()->size(), _primitive.getIndices()->size()))
 				{
 					_primitive.batch(*batch.get());
 					found = true;

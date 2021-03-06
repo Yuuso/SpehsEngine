@@ -44,8 +44,8 @@ namespace se
 			const RenderInfo getRenderInfo() const;
 			const bool getRenderState() const;
 			const RenderMode getRenderMode() const;
-			const VertexBuffer& getVertices() const;
-			const IndexBuffer& getIndices() const;
+			const VertexBuffer* getVertices() const;
+			const IndexBuffer* getIndices() const;
 
 		private:
 
@@ -58,6 +58,9 @@ namespace se
 
 			Primitive* primitive = nullptr;
 			PrimitiveUpdateFlagsType cachedPrimitiveUpdateFlags = 0;
+			bool verticesChanged = false;
+			bool indicesChanged = false;
+
 			// TODO: weak_ptr?
 			Batch* primitiveBatch = nullptr;
 			const BatchPosition* batchPosition = nullptr;

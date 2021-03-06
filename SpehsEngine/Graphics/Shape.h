@@ -47,8 +47,8 @@ namespace se
 			void generate(const ShapeType _type, const unsigned int _resolution = 0);
 
 			void setPrimitiveType(const PrimitiveType _primitiveType) override;
-			void setVertices(const VertexBuffer& _vertices) override;
-			void setIndices(const IndexBuffer& _indices) override;
+			void setVertices(std::shared_ptr<VertexBuffer> _vertices) override;
+			void setIndices(std::shared_ptr<IndexBuffer> _indices) override;
 
 		private:
 

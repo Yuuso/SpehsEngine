@@ -210,8 +210,10 @@ namespace se
 				debugPrimitive->setRenderState(getIntensity() > 0.0f);
 			}
 
-			VertexBuffer newVertices;
-			IndexBuffer newIndices;
+			std::shared_ptr<VertexBuffer> newVertexBuffer = std::make_shared<VertexBuffer>();
+			VertexBuffer& newVertices = *newVertexBuffer.get();
+			std::shared_ptr<IndexBuffer> newIndexBuffer = std::make_shared<IndexBuffer>();
+			IndexBuffer& newIndices = *newIndexBuffer.get();
 			using namespace VertexAttribute;
 			newVertices.setAttributes(Position
 									  | Color0);
@@ -263,8 +265,8 @@ namespace se
 				newIndices[currentIndex++] = static_cast<IndexType>(currentVertex - 1);
 				newIndices[currentIndex++] = static_cast<IndexType>(2 * resolution);
 			}
-			debugPrimitive->setVertices(newVertices);
-			debugPrimitive->setIndices(newIndices);
+			debugPrimitive->setVertices(newVertexBuffer);
+			debugPrimitive->setIndices(newIndexBuffer);
 		}
 
 
@@ -300,18 +302,20 @@ namespace se
 				debugPrimitive->setRenderState(getIntensity() > 0.0f);
 			}
 
-			VertexBuffer newVertices;
-			IndexBuffer newIndices;
+			if (getOuterCone() <= 0.0f)
+			{
+				debugPrimitive->setVertices(nullptr);
+				debugPrimitive->setIndices(nullptr);
+				return;
+			}
+
+			std::shared_ptr<VertexBuffer> newVertexBuffer = std::make_shared<VertexBuffer>();
+			VertexBuffer& newVertices = *newVertexBuffer.get();
+			std::shared_ptr<IndexBuffer> newIndexBuffer = std::make_shared<IndexBuffer>();
+			IndexBuffer& newIndices = *newIndexBuffer.get();
 			using namespace VertexAttribute;
 			newVertices.setAttributes(Position
 									  | Color0);
-
-			if (getOuterCone() <= 0.0f)
-			{
-				debugPrimitive->setVertices(newVertices);
-				debugPrimitive->setIndices(newIndices);
-				return;
-			}
 
 			const size_t resolution = se::lerp(8, 64, getOuterCone() / TWO_PI<float>);
 			newVertices.resize(resolution * 2 + 1);
@@ -352,8 +356,8 @@ namespace se
 			}
 			se_assert(currentVertex == newVertices.size());
 			se_assert(currentIndex == newIndices.size());
-			debugPrimitive->setVertices(newVertices);
-			debugPrimitive->setIndices(newIndices);
+			debugPrimitive->setVertices(newVertexBuffer);
+			debugPrimitive->setIndices(newIndexBuffer);
 		}
 	}
 }

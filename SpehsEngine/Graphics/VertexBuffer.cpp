@@ -78,24 +78,29 @@ namespace se
 		{
 			se_assert(_size == 0 || vertexBytes > 0);
 			buffer.resize(_size * vertexBytes);
+			bufferChanged = true;
 		}
 		void VertexBuffer::grow(const size_t _amount)
 		{
 			se_assert(_amount == 0 || vertexBytes > 0);
 			buffer.resize(buffer.size() + _amount * vertexBytes);
+			bufferChanged = true;
 		}
 		void VertexBuffer::pushBack(const VertexBuffer& _vertices)
 		{
 			se_assert(getAttributes() == _vertices.getAttributes());
 			buffer.insert(buffer.end(), _vertices.buffer.begin(), _vertices.buffer.end());
+			bufferChanged = true;
 		}
 		void VertexBuffer::erase(const size_t _begin, const size_t _end)
 		{
 			buffer.erase(buffer.begin() + _begin * vertexBytes, buffer.begin() + _end * vertexBytes);
+			bufferChanged = true;
 		}
 		void VertexBuffer::clear()
 		{
 			buffer.clear();
+			bufferChanged = true;
 		}
 		const void* VertexBuffer::data() const
 		{
@@ -131,7 +136,7 @@ namespace se
 			#undef check_attribute_bytes
 		}
 
-		void VertexBuffer::updateBuffer() const
+		void VertexBuffer::updateBuffer()
 		{
 			safeDestroy<bgfx::VertexBufferHandle>(bufferObject);
 			if (renderers.size() > 0 && size() > 0)
@@ -139,6 +144,7 @@ namespace se
 				const bgfx::Memory* bufferMemory = bgfx::copy(data(), uint32_t(bytes()));
 				bufferObject = bgfx::createVertexBuffer(bufferMemory, findVertexLayout(getAttributes())).idx;
 			}
+			bufferChanged = false;
 		}
 	}
 }

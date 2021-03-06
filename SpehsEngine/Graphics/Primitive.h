@@ -36,8 +36,8 @@ namespace se
 			virtual const std::string&				getName() const;
 			virtual const bool						getRenderState() const;
 			virtual std::shared_ptr<Material>		getMaterial() const;
-			virtual const VertexBuffer&				getVertices() const;
-			virtual const IndexBuffer&				getIndices() const;
+			virtual std::shared_ptr<VertexBuffer>	getVertices() const;
+			virtual std::shared_ptr<IndexBuffer>	getIndices() const;
 
 			virtual const RenderFlagsType			getRenderFlags() const;
 			virtual const bool						checkRenderFlag(const RenderFlag _renderFlag) const;
@@ -52,8 +52,8 @@ namespace se
 			virtual void							setRenderState(const bool _state);
 			virtual void							toggleRenderState();
 			virtual void							setMaterial(std::shared_ptr<Material> _material);
-			virtual void							setVertices(const VertexBuffer& _vertices);
-			virtual void							setIndices(const IndexBuffer& _indices);
+			virtual void							setVertices(std::shared_ptr<VertexBuffer> _vertices);
+			virtual void							setIndices(std::shared_ptr<IndexBuffer> _indices);
 			virtual void							setColor(const Color& _color, const size_t _colorIndex = 0);
 
 			virtual void							setRenderFlags(const RenderFlagsType _renderFlags);
@@ -68,14 +68,23 @@ namespace se
 
 		protected:
 
+			friend class PrimitiveInstance;
+			friend class Model;
+
 			virtual void							update();
-			virtual const glm::mat4&				getTransformMatrix() const;
+			virtual const glm::mat4&				getTransformMatrix() const; // ? needed, expose only either getters or values
 			virtual const glm::mat4&				getNormalMatrix() const;
+			virtual void							updateMatrices();
+
+			PrimitiveUpdateFlagsType				updateFlags = 0;
+			glm::mat4								transformMatrix;
+			glm::mat4								normalMatrix;
 
 		private:
 
 			void									invalidatePrimitiveColors();
-			void									updateMatrices();
+			bool									getVerticesChanged();
+			bool									getIndicesChanged();
 
 			std::string								name					= "primitive";
 			bool									renderState				= true;
@@ -83,18 +92,14 @@ namespace se
 			PrimitiveType							primitiveType			= PrimitiveType::Triangles;
 			RenderMode								renderMode				= RenderMode::Dynamic;
 			std::shared_ptr<Material>				material				= nullptr;
-			VertexBuffer							vertices;
-			IndexBuffer								indices;
+			std::shared_ptr<VertexBuffer>			vertices;
+			std::shared_ptr<IndexBuffer>			indices;
 
 			glm::vec3								position				= glm::vec3(0.0f);
 			glm::vec3								scale					= glm::vec3(1.0f);
 			glm::quat								rotation				= glm::vec3(0.0f);
-			glm::mat4								transformMatrix;
-			glm::mat4								normalMatrix;
 
-			friend class PrimitiveInstance;
 			boost::signals2::signal<void(void)>		destroyedSignal;
-			PrimitiveUpdateFlagsType				updateFlags				= 0;
 
 			static constexpr size_t					MAX_PRIMITIVE_COLORS	= 4;
 			Color									primitiveColor[MAX_PRIMITIVE_COLORS];

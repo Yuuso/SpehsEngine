@@ -41,16 +41,24 @@ namespace se
 		{
 			if (primitive)
 			{
-				getVertices().registerAsRenderer(reinterpret_cast<uintptr_t>(this));
-				getIndices().registerAsRenderer(reinterpret_cast<uintptr_t>(this));
+				std::shared_ptr<VertexBuffer> vertices = primitive->getVertices();
+				if (vertices)
+					vertices->registerAsRenderer(reinterpret_cast<uintptr_t>(this));
+				std::shared_ptr<IndexBuffer> indices = primitive->getIndices();
+				if (indices)
+					indices->registerAsRenderer(reinterpret_cast<uintptr_t>(this));
 			}
 		}
 		void PrimitiveInstance::unregisterAsBufferObjectRenderer()
 		{
 			if (primitive)
 			{
-				getVertices().unregisterAsRenderer(reinterpret_cast<uintptr_t>(this));
-				getIndices().unregisterAsRenderer(reinterpret_cast<uintptr_t>(this));
+				std::shared_ptr<VertexBuffer> vertices = primitive->getVertices();
+				if (vertices)
+					vertices->unregisterAsRenderer(reinterpret_cast<uintptr_t>(this));
+				std::shared_ptr<IndexBuffer> indices = primitive->getIndices();
+				if (indices)
+					indices->unregisterAsRenderer(reinterpret_cast<uintptr_t>(this));
 			}
 		}
 
@@ -78,18 +86,14 @@ namespace se
 					}
 					else
 					{
-						if (checkBit(cachedPrimitiveUpdateFlags, PrimitiveUpdateFlag::TransformChanged))
+						if (checkBit(cachedPrimitiveUpdateFlags, PrimitiveUpdateFlag::TransformChanged) || verticesChanged)
 						{
-							primitiveBatch->updateVertices(*batchPosition, getVertices(), primitive->getTransformMatrix(), primitive->getNormalMatrix());
-						}
-						else if (checkBit(primitive->updateFlags, PrimitiveUpdateFlag::VerticesChanged))
-						{
-							primitiveBatch->updateVertices(*batchPosition, getVertices(), primitive->getTransformMatrix(), primitive->getNormalMatrix());
+							primitiveBatch->updateVertices(*batchPosition, *getVertices(), primitive->getTransformMatrix(), primitive->getNormalMatrix());
 						}
 
-						if (checkBit(primitive->updateFlags, PrimitiveUpdateFlag::IndicesChanged))
+						if (indicesChanged)
 						{
-							primitiveBatch->updateIndices(*batchPosition, getIndices());
+							primitiveBatch->updateIndices(*batchPosition, *getIndices());
 						}
 					}
 				}
@@ -123,8 +127,8 @@ namespace se
 			_renderContext.lightBatch->bind();
 			renderInfo.material->bind();
 
-			bgfx::IndexBufferHandle ibh = { getIndices().bufferObject };
-			bgfx::VertexBufferHandle vbh = { getVertices().bufferObject };
+			bgfx::IndexBufferHandle ibh = { getIndices()->bufferObject };
+			bgfx::VertexBufferHandle vbh = { getVertices()->bufferObject };
 			bgfx::setIndexBuffer(ibh);
 			bgfx::setVertexBuffer(0, vbh);
 
@@ -137,6 +141,8 @@ namespace se
 		void PrimitiveInstance::preRender()
 		{
 			enableBit(cachedPrimitiveUpdateFlags, primitive->updateFlags);
+			verticesChanged = verticesChanged || primitive->getVerticesChanged();
+			indicesChanged = indicesChanged || primitive->getIndicesChanged();
 		}
 		void PrimitiveInstance::postRender()
 		{
@@ -144,15 +150,20 @@ namespace se
 			{
 				cachedPrimitiveUpdateFlags = 0;
 				se_assert(primitive->updateFlags == 0);
+				verticesChanged = false;
+				indicesChanged = false;
+				se_assert(!primitive->getVerticesChanged());
+				se_assert(!primitive->getIndicesChanged());
 			}
 		}
 
 		void PrimitiveInstance::batch(Batch& _batch)
 		{
 			se_assert(!isBatched());
-			batchPosition = &_batch.add(getVertices(), getIndices());
+			batchPosition = &_batch.add(*getVertices(), *getIndices());
 			primitiveBatch = &_batch;
-			primitiveBatch->updateVertices(*batchPosition, getVertices(), primitive->getTransformMatrix(), primitive->getNormalMatrix());
+			if (primitive->getTransformMatrix() != glm::mat4(1.0f)) // No need to update with identity matrix
+				primitiveBatch->updateVertices(*batchPosition, *getVertices(), primitive->getTransformMatrix(), primitive->getNormalMatrix());
 		}
 		void PrimitiveInstance::unbatch()
 		{
@@ -176,34 +187,40 @@ namespace se
 			result.renderFlags = primitive->getRenderFlags();
 			result.primitiveType = primitive->getPrimitiveType();
 			result.material = primitive->getMaterial();
-			result.attributes = primitive->getVertices().getAttributes();
+			result.attributes = primitive->getVertices()->getAttributes();
 			return result;
 		}
 		const bool PrimitiveInstance::getRenderState() const
 		{
-			return primitive->getRenderState() && getVertices().size() > 0 && getIndices().size() > 0 && primitive->material != nullptr;
+			return primitive->getRenderState()
+				&& getVertices()
+				&& getVertices()->size() > 0
+				&& getIndices()
+				&& getIndices()->size() > 0
+				&& primitive->getMaterial();
 		}
 		const RenderMode PrimitiveInstance::getRenderMode() const
 		{
 			return primitive->getRenderMode();
 		}
-		const VertexBuffer& PrimitiveInstance::getVertices() const
+		const VertexBuffer* PrimitiveInstance::getVertices() const
 		{
-			return primitive->getVertices();
+			// const, to prevent bufferChanged modification internally
+			return primitive->getVertices().get();
 		}
-		const IndexBuffer& PrimitiveInstance::getIndices() const
+		const IndexBuffer* PrimitiveInstance::getIndices() const
 		{
-			return primitive->getIndices();
+			// const, to prevent bufferChanged modification internally
+			return primitive->getIndices().get();
 		}
 
 		const bool PrimitiveInstance::sizeInBatchChanged() const
 		{
 			se_assert(isBatched());
-			if (checkBit(primitive->updateFlags, PrimitiveUpdateFlag::VerticesChanged) ||
-				checkBit(primitive->updateFlags, PrimitiveUpdateFlag::IndicesChanged))
+			if (verticesChanged || indicesChanged)
 			{
-				return (primitive->getVertices().size() == (batchPosition->verticesEnd - batchPosition->verticesStart)) &&
-					   (primitive->getIndices().size() == (batchPosition->indicesEnd - batchPosition->indicesStart));
+				return (primitive->getVertices()->size() != (batchPosition->verticesEnd - batchPosition->verticesStart)) ||
+					   (primitive->getIndices()->size() != (batchPosition->indicesEnd - batchPosition->indicesStart));
 			}
 			return false;
 		}

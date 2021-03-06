@@ -38,13 +38,13 @@ namespace se
 			{
 				updateMatrices();
 			}
-			if (checkBit(updateFlags, PrimitiveUpdateFlag::VerticesChanged))
+			if (vertices && vertices->getBufferChanged())
 			{
-				vertices.updateBuffer();
+				vertices->updateBuffer();
 			}
-			if (checkBit(updateFlags, PrimitiveUpdateFlag::IndicesChanged))
+			if (indices && indices->getBufferChanged())
 			{
-				indices.updateBuffer();
+				indices->updateBuffer();
 			}
 			// RenderInfoChanged changes only impact PrimitiveInstance
 			updateFlags = 0;
@@ -62,6 +62,14 @@ namespace se
 			transformMatrix = glm::translate(getPosition()) * glm::mat4_cast(getRotation()) * glm::scale(getScale());
 			normalMatrix = glm::mat4(glm::inverse(glm::transpose(glm::mat3(transformMatrix))));
 		}
+		bool Primitive::getVerticesChanged()
+		{
+			return checkBit(updateFlags, PrimitiveUpdateFlag::VerticesChanged) || (vertices ? vertices->getBufferChanged() : false);
+		}
+		bool Primitive::getIndicesChanged()
+		{
+			return checkBit(updateFlags, PrimitiveUpdateFlag::IndicesChanged) || (indices ? indices->getBufferChanged() : false);
+		}
 
 		const std::string& Primitive::getName() const
 		{
@@ -75,11 +83,11 @@ namespace se
 		{
 			return material;
 		}
-		const VertexBuffer& Primitive::getVertices() const
+		std::shared_ptr<VertexBuffer> Primitive::getVertices() const
 		{
 			return vertices;
 		}
-		const IndexBuffer& Primitive::getIndices() const
+		std::shared_ptr<IndexBuffer> Primitive::getIndices() const
 		{
 			return indices;
 		}
@@ -139,19 +147,29 @@ namespace se
 			material = _material;
 			enableBit(updateFlags, PrimitiveUpdateFlag::RenderInfoChanged);
 		}
-		void Primitive::setVertices(const VertexBuffer& _vertices)
+		void Primitive::setVertices(std::shared_ptr<VertexBuffer> _vertices)
 		{
 			vertices = _vertices;
-			invalidatePrimitiveColors();
 			enableBit(updateFlags, PrimitiveUpdateFlag::VerticesChanged);
+			invalidatePrimitiveColors();
 		}
-		void Primitive::setIndices(const IndexBuffer& _indices)
+		void Primitive::setIndices(std::shared_ptr<IndexBuffer> _indices)
 		{
 			indices = _indices;
 			enableBit(updateFlags, PrimitiveUpdateFlag::IndicesChanged);
 		}
 		void Primitive::setColor(const Color& _color, const size_t _colorIndex)
 		{
+			if (!vertices)
+			{
+				log::warning("Cannot set primitive color, no vertices!");
+				return;
+			}
+			if (vertices.use_count() > 1)
+			{
+				log::warning("Cannot set primitive color, primitive doesn't own the vertex buffer!");
+				return;
+			}
 			if (_colorIndex >= MAX_PRIMITIVE_COLORS)
 			{
 				log::warning("Invalid primitive color index: " + std::to_string(_colorIndex));
@@ -160,23 +178,15 @@ namespace se
 			if (_color == primitiveColor[_colorIndex])
 				return;
 
-			VertexAttributeFlagsType attribute = 0;
-			switch (_colorIndex)
-			{
-				case 0: enableBit(attribute, VertexAttribute::Color0); break;
-				case 1: enableBit(attribute, VertexAttribute::Color1); break;
-				case 2: enableBit(attribute, VertexAttribute::Color2); break;
-				case 3: enableBit(attribute, VertexAttribute::Color3); break;
-			}
-			if (!checkBit(vertices.getAttributes(), attribute))
+			VertexAttributeFlagsType attribute = VertexAttribute::Color0 << _colorIndex;
+			if (!checkBit(vertices->getAttributes(), attribute))
 			{
 				log::warning("Cannot set primitive color, no color " + std::to_string(_colorIndex) + " attribute in vertex buffer!");
 				return;
 			}
 			primitiveColor[_colorIndex] = _color;
-			for (size_t i = 0; i < vertices.size(); i++)
-				vertices.get<VertexAttribute::Color0>(i) = _color;
-			enableBit(updateFlags, PrimitiveUpdateFlag::VerticesChanged);
+			for (size_t i = 0; i < vertices->size(); i++)
+				vertices->get<VertexAttribute::Color0>(i) = _color;
 		}
 
 		void Primitive::setRenderFlags(const RenderFlagsType _renderFlags)

@@ -27,7 +27,7 @@ namespace se
 			VertexBuffer& operator=(VertexBuffer&& _other);
 
 
-			void updateBuffer() const override;
+			void updateBuffer() override;
 
 			const VertexAttributeFlagsType getAttributes() const;
 			void setAttributes(const VertexAttributeFlagsType _vertexAttributes);
@@ -48,6 +48,7 @@ namespace se
 				get(const size_t _at) \
 				{ \
 					se_assert(checkBit(attributes, _attribute)); \
+					bufferChanged = true; \
 					return *(VertexAttribute::##__attribute##Type*)&buffer[_at * vertexBytes + offset<_attribute>()]; \
 				} \
 				template <VertexAttribute::VertexAttributeFlag _attribute> \
