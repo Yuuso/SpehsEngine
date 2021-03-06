@@ -114,7 +114,12 @@ namespace se
 		void debug([[maybe_unused]] const std::string& _message)
 		{
 #if (SE_CONFIGURATION != SE_CONFIGURATION_FINAL_RELEASE)
-			OutputDebugString(_message.c_str());
+			if (!_message.empty())
+			{
+				OutputDebugString(_message.c_str());
+				if (_message.back() != '\n')
+					OutputDebugString("\n");
+			}
 #endif
 		}
 	}
