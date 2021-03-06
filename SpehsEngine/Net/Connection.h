@@ -90,6 +90,8 @@ namespace se
 			/* Disconnection cannot be immediately applied so it must be queued. Disconnection happens from the connection manager update. */
 			void queueDisconnect();
 
+			void beginPathMaximumSegmentSizeDiscovery();
+
 			Status getStatus() const;
 			inline bool isConnecting() const { return getStatus() == Status::Connecting; }
 			inline bool isConnected() const { return getStatus() == Status::Connected; }
@@ -102,8 +104,8 @@ namespace se
 			time::Time getPing() const;
 			float getAverageReliableFragmentSendCount() const;
 			double getSendQuotaPerSecond() const;
-			uint64_t getReliableSendQuota() const;
-			uint64_t getUnreliableSendQuota() const;
+			double getReliableSendQuota() const;
+			double getUnreliableSendQuota() const;
 			SentBytes getSentBytes() const;
 			ReceivedBytes getReceivedBytes() const;
 			/* Returns true if there are at least minBytes in the unacknowledged send queue. */
@@ -113,6 +115,7 @@ namespace se
 			uint64_t getReliableReceivedBytesInQueue() const;
 			uint64_t getReliableStreamOffsetSend() const;
 			uint64_t getReliableStreamOffsetReceive() const;
+			uint64_t getSocketSendPacketCallCount() const;
 			std::map<uint64_t, uint64_t> getReliableFragmentSendCounters() const;
 			void resetReliableFragmentSendCounters();
 			MutexTimes getAcquireMutexTimes() const;
@@ -125,6 +128,7 @@ namespace se
 			void setTimeoutEnabled(const bool value);
 			bool getTimeoutEnabled() const;
 			void setConnectionSimulationSettings(const ConnectionSimulationSettings& _simulationSettings);
+			ConnectionSimulationSettings getConnectionSimulationSettings() const;
 			void setDebugLogLevel(const int level);
 			int getDebugLogLevel() const;
 
@@ -292,7 +296,6 @@ namespace se
 			void reliableFragmentTransmitted(const uint64_t sendCount, const uint16_t fragmentSize);
 			void increaseSendQuotaPerSecond();
 			void decreaseSendQuotaPerSecond();
-			void beginPathMaximumSegmentSizeDiscovery();
 			void sendNextPathMaximumSegmentSizeDiscoveryPacket();
 
 			mutable std::recursive_mutex mutex;
@@ -308,6 +311,7 @@ namespace se
 			time::Time timeoutCountdown;
 			uint64_t reliableStreamOffsetSend = 0u; // bytes from past packets that have been delivered
 			uint64_t reliableStreamOffsetReceive = 0u; // bytes from past packets that have been received
+			uint64_t socketSendPacketCallCount = 0u;
 			std::vector<ReceivedReliableFragment> receivedReliableFragments;
 			std::vector<ReceivedPacket> receivedPackets;
 			std::vector<ReceivedReliablePacket> receivedReliablePackets;
@@ -327,12 +331,11 @@ namespace se
 			std::vector<ReliableFragmentSendCount> recentReliableFragmentSendCounts;
 			std::map<uint64_t, uint64_t> reliableFragmentSendCounters;
 			double sendQuotaPerSecond = 56600.0; // 56 kbps (expected common minimum, according to some shallow research)
-			bool moreSendQuotaRequested = false;
 			time::Time lastSendQuotaReplenishTimestamp = time::Time::zero;
 			uint16_t maximumSegmentSize = defaultMaximumSegmentSize; // (For outgoing packets only)
 			std::optional<PathMaximumSegmentSizeDiscovery> pathMaximumSegmentSizeDiscovery = std::optional<PathMaximumSegmentSizeDiscovery>(PathMaximumSegmentSizeDiscovery());
-			uint64_t reliableSendQuota = 0u;
-			uint64_t unreliableSendQuota = 0u;
+			double reliableSendQuota = 0.0;
+			double unreliableSendQuota = 0.0;
 			float averageReliableFragmentSendCount = 0.0f;
 
 			// RTT

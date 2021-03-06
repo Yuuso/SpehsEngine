@@ -184,6 +184,7 @@ namespace se
 		{
 			const uint16_t payloadSize = reliableFragmentPacket.readPayload.payloadSize;
 			LOCK_GUARD(lock, mutex, other);
+			sendAcknowledgePacket(reliableFragmentPacket.streamOffset, payloadSize);
 			if (reliableFragmentPacket.streamOffset >= reliableStreamOffsetReceive)
 			{
 				auto postInsert = [&](size_t insertIndex)
@@ -288,8 +289,6 @@ namespace se
 				receivedReliableFragments.emplace_back(ReceivedReliableFragment(reliableFragmentPacket.streamOffset, reliableFragmentPacket.endOfPayload, reliableFragmentPacket.readPayload.buffer, reliableFragmentPacket.readPayload.beginIndex, reliableFragmentPacket.readPayload.payloadSize));
 				postInsert(receivedReliableFragments.size() - 1);
 			}
-
-			sendAcknowledgePacket(reliableFragmentPacket.streamOffset, payloadSize/*reliableFragmentPacket.payload has been swapped!*/);
 		}
 
 		void Connection::sendAcknowledgePacket(const uint64_t reliableStreamOffset, const uint16_t payloadSize)
@@ -316,7 +315,6 @@ namespace se
 		{
 			SE_SCOPE_PROFILER(debugName);
 			LOCK_GUARD(lock, mutex, other);
-			increaseSendQuotaPerSecond();
 
 			if (reliableStreamOffset >= reliableStreamOffsetSend)
 			{
@@ -410,43 +408,32 @@ namespace se
 				static const time::Time maxTimeSinceReplenish = time::fromSeconds(0.1f);
 				const time::Time timeSinceReplenish(std::min((now - lastSendQuotaReplenishTimestamp).value, maxTimeSinceReplenish.value));
 				const double secondsSinceReplenish = double(timeSinceReplenish.asSeconds());
-				const uint64_t newSendQuota = uint64_t(std::ceil(sendQuotaPerSecond * secondsSinceReplenish));
-				if (newSendQuota >= 10)
-				{
-					const uint64_t newReliableSendQuota = newSendQuota / 2;
-					const uint64_t newUnreliableSendQuota = newSendQuota - newReliableSendQuota;
-					reliableSendQuota += newReliableSendQuota;
-					unreliableSendQuota += newUnreliableSendQuota;
-					lastSendQuotaReplenishTimestamp = now;
-				}
-				else
-				{
-					// Program is running too fast... let's wait a while longer before replenishing
-				}
+				const double newSendQuota = std::ceil(sendQuotaPerSecond * secondsSinceReplenish);
+				const double newSendQuotaHalf = newSendQuota * 0.5;
+				reliableSendQuota += newSendQuotaHalf;
+				unreliableSendQuota += newSendQuotaHalf;
+				lastSendQuotaReplenishTimestamp = now;
 			}
 
 			// If reliable/unreliable is empty, dump quota to the other. If both are empty, release all so that quota does not stack over time.
 			if (reliablePacketSendQueue.empty() && unreliablePacketSendQueue.empty())
 			{
-				reliableSendQuota = 0u;
-				unreliableSendQuota = 0u;
+				reliableSendQuota = 0.0;
+				unreliableSendQuota = 0.0;
 			}
 			else if (reliablePacketSendQueue.empty())
 			{
 				unreliableSendQuota += reliableSendQuota;
-				reliableSendQuota = 0u;
+				reliableSendQuota = 0.0;
 			}
 			else if (unreliablePacketSendQueue.empty())
 			{
 				reliableSendQuota += unreliableSendQuota;
-				unreliableSendQuota = 0u;
+				unreliableSendQuota = 0.0;
 			}
 
-			reliableSendQuota = std::min(reliableSendQuota, uint64_t(sendQuotaPerSecond));
-			unreliableSendQuota = std::min(unreliableSendQuota, uint64_t(sendQuotaPerSecond));
-
-			// By default do not request more send quota
-			moreSendQuotaRequested = false;
+			reliableSendQuota = std::min(reliableSendQuota, double(maximumSegmentSize * 10));
+			unreliableSendQuota = std::min(unreliableSendQuota, double(maximumSegmentSize * 10));
 
 			// Reliable send queue
 			{
@@ -475,7 +462,10 @@ namespace se
 					// Keep (re)sending unacknowledged fragments
 					bool awaitForMoreSendQuota = false;
 					const time::Time capResendTime = se::time::fromSeconds(0.2f); // Do not wait longer than this to resend
-					const time::Time resendTime = estimatedRoundTripTime != time::Time::zero ? estimatedRoundTripTime.value + estimatedRoundTripTime.value / 6 : capResendTime;
+					const time::Time resendTime = estimatedRoundTripTime != time::Time::zero
+						? std::min(time::Time(estimatedRoundTripTime.value + estimatedRoundTripTime.value / 6), capResendTime)
+						: capResendTime;
+					//const time::Time resendTime = estimatedRoundTripTime != time::Time::zero ? estimatedRoundTripTime.value + estimatedRoundTripTime.value / 6 : capResendTime;
 					for (size_t f = 0; f < reliablePacketOut.unacknowledgedFragments.size(); f++)
 					{
 						ReliablePacketOut::UnacknowledgedFragment& unacknowledgedFragment = reliablePacketOut.unacknowledgedFragments[f];
@@ -501,17 +491,18 @@ namespace se
 								ReliableFragmentPacket::PayloadSizeType payloadSize = unacknowledgedFragment.size;
 								writeBuffer.write(payloadSize);
 
-								if (writeBuffer.getSize() < reliableSendQuota)
+								const size_t internalOffset = size_t(unacknowledgedFragment.offset - reliablePacketOut.payloadOffset);
+								const std::vector<boost::asio::const_buffer> sendBuffers
 								{
-									const size_t internalOffset = size_t(unacknowledgedFragment.offset - reliablePacketOut.payloadOffset);
-									const std::vector<boost::asio::const_buffer> sendBuffers
-									{
-										boost::asio::const_buffer(writeBuffer.getData(), writeBuffer.getSize()),
-										boost::asio::const_buffer(reliablePacketOut.payload.data() + internalOffset, size_t(unacknowledgedFragment.size))
-									};
+									boost::asio::const_buffer(writeBuffer.getData(), writeBuffer.getSize()),
+									boost::asio::const_buffer(reliablePacketOut.payload.data() + internalOffset, size_t(unacknowledgedFragment.size))
+								};
+								const size_t sendBuffersSize = boost::asio::buffer_size(sendBuffers);
 
+								if (double(sendBuffersSize) < reliableSendQuota)
+								{
 									sendPacketImpl(sendBuffers, unacknowledgedFragment.sendCount > 0 ? LogSentBytesType::ReliableResend : LogSentBytesType::Reliable);
-									reliableSendQuota -= boost::asio::buffer_size(sendBuffers);
+									reliableSendQuota -= double(sendBuffersSize);
 
 									if (unacknowledgedFragment.sendCount++ == 0)
 									{
@@ -519,14 +510,14 @@ namespace se
 									}
 									else
 									{
-										decreaseSendQuotaPerSecond();
+										//decreaseSendQuotaPerSecond();
 									}
+									decreaseSendQuotaPerSecond();
 									unacknowledgedFragment.latestSendTime = time::now();
 								}
 								else
 								{
 									// Not enough send quota. Break, we want to buffer up send quota to send this fragment asap.
-									moreSendQuotaRequested = true;
 									awaitForMoreSendQuota = true;
 									break;
 								}
@@ -563,7 +554,7 @@ namespace se
 					packetHeader.packetType = unreliablePacketSendQueue.front().packetType;
 					WriteBuffer writeBuffer;
 					writeBuffer.write(packetHeader);
-					if (writeBuffer.getSize() + unreliablePacketSendQueue.front().payload.size() <= unreliableSendQuota)
+					if (writeBuffer.getSize() + unreliablePacketSendQueue.front().payload.size() <= uint64_t(unreliableSendQuota))
 					{
 						const std::vector<boost::asio::const_buffer> sendBuffers
 						{
@@ -572,12 +563,11 @@ namespace se
 							boost::asio::const_buffer(unreliablePacketSendQueue.front().payload.data(), unreliablePacketSendQueue.front().payload.size()),
 						};
 						sendPacketImpl(sendBuffers, LogSentBytesType::Unreliable);
-						unreliableSendQuota -= boost::asio::buffer_size(sendBuffers);
+						unreliableSendQuota -= double(boost::asio::buffer_size(sendBuffers));
 						unreliablePacketSendQueue.erase(unreliablePacketSendQueue.begin());
 					}
 					else
 					{
-						moreSendQuotaRequested = true;
 						break;
 					}
 				}
@@ -1005,6 +995,7 @@ namespace se
 			}
 #endif
 			socket->sendPacket(buffers, endpoint);
+			socketSendPacketCallCount++;
 			logSentBytes(logSentBytesType, bufferSize);
 		}
 
@@ -1107,6 +1098,8 @@ namespace se
 		{
 			LOCK_GUARD(lock, mutex, other);
 
+			increaseSendQuotaPerSecond();
+
 			// Add to recentReliableFragmentSendCounts
 			recentReliableFragmentSendCounts.push_back(ReliableFragmentSendCount());
 			recentReliableFragmentSendCounts.back().sendCount = sendCount;
@@ -1138,7 +1131,7 @@ namespace se
 		{
 			LOCK_GUARD(lock, mutex, other);
 			const double maxSendQuotaPerSecond = 1024.0 * 1024.0 * 1024.0 * 1024.0;
-			const double multiplier = 1.01;
+			const double multiplier = 1.02;
 			sendQuotaPerSecond = std::min(maxSendQuotaPerSecond, sendQuotaPerSecond * multiplier);
 		}
 
@@ -1146,7 +1139,7 @@ namespace se
 		{
 			LOCK_GUARD(lock, mutex, other);
 			const double minSendQuotaPerSecond = 1000.0;
-			const double multiplier = 0.9;
+			const double multiplier = 0.99;
 			sendQuotaPerSecond = std::max(minSendQuotaPerSecond, sendQuotaPerSecond * multiplier);
 		}
 
@@ -1267,13 +1260,13 @@ namespace se
 			return sendQuotaPerSecond;
 		}
 
-		uint64_t Connection::getReliableSendQuota() const
+		double Connection::getReliableSendQuota() const
 		{
 			LOCK_GUARD(lock, mutex, other);
 			return reliableSendQuota;
 		}
 
-		uint64_t Connection::getUnreliableSendQuota() const
+		double Connection::getUnreliableSendQuota() const
 		{
 			LOCK_GUARD(lock, mutex, other);
 			return reliableSendQuota;
@@ -1378,6 +1371,12 @@ namespace se
 			return reliableStreamOffsetReceive;
 		}
 
+		uint64_t Connection::getSocketSendPacketCallCount() const
+		{
+			LOCK_GUARD(lock, mutex, other);
+			return socketSendPacketCallCount;
+		}
+
 		std::map<uint64_t, uint64_t> Connection::getReliableFragmentSendCounters() const
 		{
 			LOCK_GUARD(lock, mutex, other);
@@ -1453,6 +1452,12 @@ namespace se
 				connectionSimulationSettings.maximumSegmentSizeOutgoing = std::max(defaultMaximumSegmentSize, connectionSimulationSettings.maximumSegmentSizeOutgoing);
 				maximumSegmentSize = std::min(maximumSegmentSize, connectionSimulationSettings.maximumSegmentSizeOutgoing);
 			}
+		}
+
+		ConnectionSimulationSettings Connection::getConnectionSimulationSettings() const
+		{
+			LOCK_GUARD(lock, mutex, other);
+			return connectionSimulationSettings;
 		}
 
 		void Connection::setDebugLogLevel(const int level)
