@@ -25,7 +25,7 @@ namespace se
 			ModelDataManager& operator=(ModelDataManager&& _other) = delete;
 
 
-			std::shared_ptr<ModelData> create(const std::string_view _name);
+			std::shared_ptr<ModelData> create(const std::string_view _name, const std::string_view _model);
 			std::shared_ptr<ModelData> find(const std::string_view _name) const;
 		};
 	}

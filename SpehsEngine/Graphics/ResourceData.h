@@ -1,5 +1,7 @@
 #pragma once
 
+// TODO: Internal
+
 #include "bgfx/bgfx.h" // ?!
 #include "SpehsEngine/Graphics/Internal/FontMetrics.h"
 #include "SpehsEngine/Graphics/Internal/ResourceHandle.h"
@@ -53,6 +55,7 @@ namespace se
 
 			struct MeshInfo
 			{
+				std::string name;
 				PrimitiveType type;
 				size_t materialIndex;
 				std::shared_ptr<VertexBuffer> vertexBuffer;

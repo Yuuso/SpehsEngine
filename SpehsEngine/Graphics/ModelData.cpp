@@ -69,21 +69,24 @@ namespace se
 			constexpr int maxIndices = UINT16_MAX;
 			importer.SetPropertyInteger(AI_CONFIG_PP_SLM_VERTEX_LIMIT, maxVertices);
 			importer.SetPropertyInteger(AI_CONFIG_PP_SLM_TRIANGLE_LIMIT, maxIndices / 3);
-			const aiScene* scene = importer.ReadFile(_path, aiProcess_CalcTangentSpace
-														  | aiProcess_JoinIdenticalVertices
-														  | aiProcess_Triangulate
-														  | aiProcess_GenSmoothNormals
-														  | aiProcess_SplitLargeMeshes
-														  | aiProcess_LimitBoneWeights
-														  | aiProcess_ValidateDataStructure
-														  | aiProcess_PopulateArmatureData
-														  | aiProcess_SortByPType
-														  | aiProcess_FindDegenerates
-														  | aiProcess_FindInvalidData
-														  | aiProcess_GenUVCoords
-														  | aiProcess_OptimizeMeshes
-														  | aiProcess_OptimizeGraph
-														  | aiProcess_SplitByBoneCount);
+			const aiScene* scene = importer.ReadFile(_path,
+				  aiProcess_CalcTangentSpace
+				| aiProcess_JoinIdenticalVertices
+				| aiProcess_Triangulate
+				| aiProcess_GenSmoothNormals
+				| aiProcess_SplitLargeMeshes
+				| aiProcess_LimitBoneWeights
+				| aiProcess_ValidateDataStructure
+				| aiProcess_PopulateArmatureData
+				| aiProcess_SortByPType
+				| aiProcess_FindDegenerates
+				| aiProcess_FindInvalidData
+				| aiProcess_GenUVCoords
+				//| aiProcess_OptimizeMeshes
+				//| aiProcess_OptimizeGraph
+				| aiProcess_SplitByBoneCount
+				| aiProcess_GlobalScale
+				);
 			if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
 			{
 				log::error("Error loading model: " + _path + " | Assimp error: " + importer.GetErrorString());
@@ -102,8 +105,12 @@ namespace se
 			resource->meshes.resize(scene->mNumMeshes);
 			for (size_t meshIndex = 0; meshIndex < scene->mNumMeshes; meshIndex++)
 			{
+				resource->meshes[meshIndex] = std::make_unique<MeshData::MeshInfo>();
+
 				const aiMesh& sceneMesh = *scene->mMeshes[meshIndex];
 				MeshData::MeshInfo& mesh = *resource->meshes[meshIndex].get();
+
+				mesh.name = sceneMesh.mName.C_Str();
 
 				switch (sceneMesh.mPrimitiveTypes)
 				{
@@ -125,7 +132,7 @@ namespace se
 					enableBit(attributes, Normal);
 				if (sceneMesh.HasTangentsAndBitangents())
 					enableBit(attributes, Tangent | Bitangent);
-				if (sceneMesh.HasVertexColors(0))
+				if (sceneMesh.HasVertexColors(0) || true) // NOTE: Always Color0 for now
 					enableBit(attributes, Color0);
 				if (sceneMesh.HasVertexColors(1))
 					enableBit(attributes, Color1);
@@ -160,7 +167,7 @@ namespace se
 					if (checkBit(attributes, Bitangent))
 						mesh.vertexBuffer->get<Bitangent>(vertexIndex) = glm::vec3(sceneMesh.mBitangents[vertexIndex].x, sceneMesh.mBitangents[vertexIndex].y, sceneMesh.mBitangents[vertexIndex].z);
 					if (checkBit(attributes, Color0))
-						mesh.vertexBuffer->get<Color0>(vertexIndex) = Color(sceneMesh.mColors[0][vertexIndex].r, sceneMesh.mColors[0][vertexIndex].g, sceneMesh.mColors[0][vertexIndex].b, sceneMesh.mColors[0][vertexIndex].a);
+						mesh.vertexBuffer->get<Color0>(vertexIndex) = sceneMesh.HasVertexColors(0) ? Color(sceneMesh.mColors[0][vertexIndex].r, sceneMesh.mColors[0][vertexIndex].g, sceneMesh.mColors[0][vertexIndex].b, sceneMesh.mColors[0][vertexIndex].a) : Color();
 					if (checkBit(attributes, Color1))
 						mesh.vertexBuffer->get<Color1>(vertexIndex) = Color(sceneMesh.mColors[1][vertexIndex].r, sceneMesh.mColors[1][vertexIndex].g, sceneMesh.mColors[1][vertexIndex].b, sceneMesh.mColors[1][vertexIndex].a);
 					if (checkBit(attributes, Color2))
@@ -175,14 +182,15 @@ namespace se
 						mesh.vertexBuffer->get<TexCoord2>(vertexIndex) = glm::vec2(sceneMesh.mTextureCoords[2][vertexIndex].x, sceneMesh.mTextureCoords[2][vertexIndex].y);
 					// TODO: bone weights and bone indices
 				}
+				size_t index = 0;
 				for (size_t faceIndex = 0; faceIndex < sceneMesh.mNumFaces; faceIndex++)
 				{
 					const aiFace& face = sceneMesh.mFaces[faceIndex];
 					for (unsigned int indexIndex = 0; indexIndex < face.mNumIndices; indexIndex++)
 					{
-						const unsigned int index = face.mIndices[indexIndex];
-						se_assert(index < std::numeric_limits<IndexType>::max());
-						mesh.indexBuffer->operator[](faceIndex + indexIndex) = static_cast<IndexType>(index);
+						const unsigned int faceindex = face.mIndices[indexIndex];
+						se_assert(faceindex < std::numeric_limits<IndexType>::max());
+						mesh.indexBuffer->operator[](index++) = static_cast<IndexType>(faceindex);
 					}
 				}
 			}

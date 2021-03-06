@@ -8,9 +8,9 @@ namespace se
 {
 	namespace graphics
 	{
-		std::shared_ptr<ModelData> ModelDataManager::create(const std::string_view _name)
+		std::shared_ptr<ModelData> ModelDataManager::create(const std::string_view _name, const std::string_view _model)
 		{
-			const std::string path = pathFinder->getPath(_name);
+			const std::string path = pathFinder->getPath(_model);
 
 			for (auto& modelData : resources)
 			{
@@ -34,7 +34,7 @@ namespace se
 				if (modelData->getName() == _name)
 					return modelData;
 			}
-			se_assert_m(false, "ModelData '" + std::string(_name) + "' not found!");
+			se_assert_m(false, "ModelData '" + _name + "' not found!");
 			return nullptr;
 		}
 	}
