@@ -42,6 +42,11 @@ namespace se
 				ImGui::Text("Local endpoint: " + connectionManager.getLocalEndpoint().toString());
 				ImGui::Text("Sent bytes: " + std::to_string(connectionManager.getSentBytes()));
 				ImGui::Text("Received bytes: " + std::to_string(connectionManager.getReceivedBytes()));
+				int debugLogLevel = connectionManager.getDebugLogLevel();
+				if (ImGui::InputT("Debug log level", debugLogLevel))
+				{
+					connectionManager.setDebugLogLevel(debugLogLevel);
+				}
 
 				const std::vector<std::shared_ptr<net::Connection>> connections = connectionManager.getConnections();
 				for (const std::shared_ptr<net::Connection>& connection : connections)
@@ -51,6 +56,19 @@ namespace se
 						const se::time::Time now = se::time::now();
 						const se::time::Time historyRecordInterval = se::time::fromSeconds(0.1f);
 						ConnectionState& connectionState = connectionStates[connection->connectionId];
+
+						net::ConnectionSimulationSettings connectionSimulationSettings = connection->getConnectionSimulationSettings();
+						bool connectionSimulationSettingsChanged = false;
+						connectionSimulationSettingsChanged = ImGui::DragScalar1("Chance to re-order received packet", &connectionSimulationSettings.chanceToReorderReceivedPacket, 0.001f, 0.0f, 1.0f) || connectionSimulationSettingsChanged;
+						connectionSimulationSettingsChanged = ImGui::DragScalar1("Chance to drop incoming", &connectionSimulationSettings.chanceToDropIncoming, 0.001f, 0.0f, 1.0f) || connectionSimulationSettingsChanged;
+						connectionSimulationSettingsChanged = ImGui::DragScalar1("Chance to drop outgoing", &connectionSimulationSettings.chanceToDropOutgoing, 0.001f, 0.0f, 1.0f) || connectionSimulationSettingsChanged;
+						connectionSimulationSettingsChanged = ImGui::DragScalar1("MSS incoming", &connectionSimulationSettings.maximumSegmentSizeIncoming, 1.0f, 0, 65535) || connectionSimulationSettingsChanged;
+						connectionSimulationSettingsChanged = ImGui::DragScalar1("MSS outgoing", &connectionSimulationSettings.maximumSegmentSizeOutgoing, 1.0f, 0, 65535) || connectionSimulationSettingsChanged;
+						if (connectionSimulationSettingsChanged)
+						{
+							connection->setConnectionSimulationSettings(connectionSimulationSettings);
+						}
+
 						ImGui::Text("Remote endpoint: " + connection->getRemoteEndpoint().address().to_string() + ":" + std::to_string(connection->getRemoteEndpoint().port()));
 						ImGui::Text("Connection id: " + std::to_string(connection->connectionId.value));
 						switch (connection->establishmentType)
@@ -67,9 +85,13 @@ namespace se
 						}
 						ImGui::Text("Timeout enabled: " + std::string(connection->getTimeoutEnabled() ? "true" : "false"));
 						ImGui::Text("Maximum segment size: " + std::to_string(connection->getMaximumSegmentSize()));
+						if (ImGui::Button("Run path MSS discovery"))
+						{
+							connection->beginPathMaximumSegmentSizeDiscovery();
+						}
 						ImGui::Text("Ping: " + std::to_string(connection->getPing().asMilliseconds()) + " ms");
 						ImGui::Text("Average reliable fragment send count: " + std::to_string(connection->getAverageReliableFragmentSendCount()));
-
+						ImGui::Text("Socket send packet call count: " + std::to_string(connection->getSocketSendPacketCallCount()));
 						const net::Connection::SentBytes sentBytes = connection->getSentBytes();
 						ImGui::Text("Sent bytes (raw): " + std::to_string(sentBytes.raw));
 						ImGui::Text("Sent bytes (unreliable): " + std::to_string(sentBytes.unreliable));
