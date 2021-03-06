@@ -320,4 +320,28 @@ namespace ImGui
 
 	// NOTE: 'key' value must be valid in the scope of 'scopedConnection'
 	void keyBindButton(const std::string_view label, se::input::Key& key, se::input::EventSignaler& eventSignaler, boost::signals2::scoped_connection& scopedConnection);
+
+	// Drag scalars
+#define SE_IMGUI_DRAG_SCALAR(p_IntegerType, p_ImGuiDataType, p_Components, p_DefaultFormat) \
+	inline bool DragScalar##p_Components(const std::string_view label, p_IntegerType* const i, float speed, p_IntegerType min, p_IntegerType max, const char* format = p_DefaultFormat, ImGuiSliderFlags flags = 0) \
+	{ \
+		return DragScalarN(label.data(), p_ImGuiDataType, i, p_Components, speed, &min, &max, format, flags); \
+	}
+#define SE_IMGUI_DRAG_SCALAR_ONE_TO_FOUR_COMPONENTS(p_IntegerType, p_ImGuiDataType, p_DefaultFormat) \
+	SE_IMGUI_DRAG_SCALAR(p_IntegerType, p_ImGuiDataType, 1, p_DefaultFormat) \
+	SE_IMGUI_DRAG_SCALAR(p_IntegerType, p_ImGuiDataType, 2, p_DefaultFormat) \
+	SE_IMGUI_DRAG_SCALAR(p_IntegerType, p_ImGuiDataType, 3, p_DefaultFormat) \
+	SE_IMGUI_DRAG_SCALAR(p_IntegerType, p_ImGuiDataType, 4, p_DefaultFormat)
+	SE_IMGUI_DRAG_SCALAR_ONE_TO_FOUR_COMPONENTS(uint8_t, ImGuiDataType_U8, "%d")
+		SE_IMGUI_DRAG_SCALAR_ONE_TO_FOUR_COMPONENTS(uint16_t, ImGuiDataType_U16, "%d")
+		SE_IMGUI_DRAG_SCALAR_ONE_TO_FOUR_COMPONENTS(uint32_t, ImGuiDataType_U32, "%d")
+		SE_IMGUI_DRAG_SCALAR_ONE_TO_FOUR_COMPONENTS(uint64_t, ImGuiDataType_U64, "%d")
+		SE_IMGUI_DRAG_SCALAR_ONE_TO_FOUR_COMPONENTS(int8_t, ImGuiDataType_S8, "%d")
+		SE_IMGUI_DRAG_SCALAR_ONE_TO_FOUR_COMPONENTS(int16_t, ImGuiDataType_S16, "%d")
+		SE_IMGUI_DRAG_SCALAR_ONE_TO_FOUR_COMPONENTS(int32_t, ImGuiDataType_S32, "%d")
+		SE_IMGUI_DRAG_SCALAR_ONE_TO_FOUR_COMPONENTS(int64_t, ImGuiDataType_S64, "%d")
+		SE_IMGUI_DRAG_SCALAR_ONE_TO_FOUR_COMPONENTS(float, ImGuiDataType_Float, "%f")
+		SE_IMGUI_DRAG_SCALAR_ONE_TO_FOUR_COMPONENTS(double, ImGuiDataType_Double, "%f")
+#undef SE_IMGUI_DRAG_SCALAR_ONE_TO_FOUR_COMPONENTS
+#undef SE_IMGUI_DRAG_SCALAR
 }
