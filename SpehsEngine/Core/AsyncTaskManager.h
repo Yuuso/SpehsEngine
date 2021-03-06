@@ -34,7 +34,7 @@ namespace se
 
 		std::vector<std::thread> threadPool;
 
-		std::mutex mutex;
+		mutable std::mutex mutex;
 		std::condition_variable cvar;
 		bool shutdown = false;
 		size_t numWorking = 0;
