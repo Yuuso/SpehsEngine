@@ -1,9 +1,11 @@
 #pragma once
 
+#include "glm/vec2.hpp"
+#include "glm/vec3.hpp"
+#include "glm/vec4.hpp"
+#include "SpehsEngine/Core/WriteBuffer.h"
+#include "SpehsEngine/Core/ReadBuffer.h"
 #include <string>
-#include <glm/vec2.hpp>
-#include <glm/vec3.hpp>
-#include <glm/vec4.hpp>
 
 
 namespace se
@@ -11,12 +13,18 @@ namespace se
 	class WriteBuffer;
 	class ReadBuffer;
 
+	void writeToBuffer(WriteBuffer& writeBuffer, const glm::u16vec2& vec);
+	void writeToBuffer(WriteBuffer& writeBuffer, const glm::u16vec3& vec);
+	void writeToBuffer(WriteBuffer& writeBuffer, const glm::u16vec4& vec);
 	void writeToBuffer(WriteBuffer& writeBuffer, const glm::vec2& vec);
 	void writeToBuffer(WriteBuffer& writeBuffer, const glm::vec3& vec);
 	void writeToBuffer(WriteBuffer& writeBuffer, const glm::vec4& vec);
 	void writeToBuffer(WriteBuffer& writeBuffer, const glm::ivec2& vec);
 	void writeToBuffer(WriteBuffer& writeBuffer, const glm::ivec3& vec);
 	void writeToBuffer(WriteBuffer& writeBuffer, const glm::ivec4& vec);
+	bool readFromBuffer(ReadBuffer& readBuffer, glm::u16vec2& vec);
+	bool readFromBuffer(ReadBuffer& readBuffer, glm::u16vec3& vec);
+	bool readFromBuffer(ReadBuffer& readBuffer, glm::u16vec4& vec);
 	bool readFromBuffer(ReadBuffer& readBuffer, glm::vec2& vec);
 	bool readFromBuffer(ReadBuffer& readBuffer, glm::vec3& vec);
 	bool readFromBuffer(ReadBuffer& readBuffer, glm::vec4& vec);
@@ -60,7 +68,7 @@ namespace std
 		{
 			const uint64_t value1 = (uint64_t&)a;
 			const uint64_t value2 = (uint64_t&)b;
-			return std::hash<uint64_t>()(value1) < std::hash<uint64_t>()(value2);
+			return value1 < value2;
 		}
 	};
 
@@ -70,7 +78,7 @@ namespace std
 		{
 			const uint64_t value1 = (uint64_t&)a;
 			const uint64_t value2 = (uint64_t&)b;
-			return std::hash<uint64_t>()(value1) < std::hash<uint64_t>()(value2);
+			return value1 < value2;
 		}
 	};
 }

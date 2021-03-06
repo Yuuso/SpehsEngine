@@ -1,12 +1,31 @@
 #pragma once
-#include <string>
+
+#include "boost/format.hpp"
 #include "SpehsEngine/Core/Archive.h"
 #include "SpehsEngine/Core/SE_Assert.h"
 #include "SpehsEngine/Core/ReadBuffer.h"
 #include "SpehsEngine/Core/WriteBuffer.h"
+#include <string>
+
 
 namespace se
 {
+	inline std::string formatStringImpl(boost::format& f)
+	{
+		return boost::str(f);
+	}
+	template<typename T, typename... Args>
+	inline std::string formatStringImpl(boost::format& f, T&& t, Args&&... args)
+	{
+		return formatStringImpl(f % std::forward<T>(t), std::forward<Args>(args)...);
+	}
+	template<typename... Arguments>
+	inline std::string formatString(const std::string_view format, Arguments&&... args)
+	{
+		boost::format boostFormat(format.data());
+		return formatStringImpl(boostFormat, std::forward<Arguments>(args)...);
+	}
+
 	template<typename SizeType = uint32_t>
 	void writeToBuffer(WriteBuffer& writeBuffer, const std::string& string)
 	{
@@ -51,7 +70,7 @@ namespace se
 		WriteBuffer writeBuffer;
 		writeToBuffer<SizeType>(writeBuffer, string);
 		Archive archive;
-		se_write_to_archive(archive, writeBuffer);
+		archive.write("writeBuffer", writeBuffer);
 		return archive;
 	}
 
@@ -60,7 +79,7 @@ namespace se
 	{
 		static_assert(std::is_integral<SizeType>::value, "SizeType must be integral.");
 		WriteBuffer writeBuffer;
-		se_read_from_archive(archive, writeBuffer);
+		archive.read("writeBuffer", writeBuffer);
 		if (writeBuffer.getSize() > 0)
 		{
 			ReadBuffer readBuffer(writeBuffer[0], writeBuffer.getSize());
@@ -77,6 +96,12 @@ namespace se
 	bool doesContain(const std::string_view string, const std::string_view searchParameter);
 
 	/*
+		Adds 'indentation' at the start of the string and after each new line character in the string, with the following expection:
+			-if the last character of the string is a new line character, no indentation is added after it.
+	*/
+	void indent(std::string& string, const std::string_view indentation);
+
+	/*
 		Returns a nicely formated time length string.
 		Presicion: how many digits to display.
 	*/
@@ -89,6 +114,14 @@ namespace se
 	*/
 	std::string toByteString(const uint64_t bytes);
 
+	/*
+		Multiplier is expected to be greater or equal to 0.
+		0.9f -> "-10 %"
+		1.0f -> "+0 %"
+		1.1f -> "+10 %"
+	*/
+	std::string toMultiplierPercentageString(const float multiplier, const size_t precision);
+
 	bool fromString(const std::string_view string, int64_t& valueOut);
 	bool fromString(const std::string_view string, int32_t& valueOut);
 	bool fromString(const std::string_view string, int16_t& valueOut);
@@ -99,4 +132,7 @@ namespace se
 	bool fromString(const std::string_view string, uint8_t& valueOut);
 	bool fromString(const std::string_view string, float& valueOut);
 	bool fromString(const std::string_view string, double& valueOut);
+
+	std::string toLowerCase(const std::string_view string);
+	std::string toUpperCase(const std::string_view string);
 }

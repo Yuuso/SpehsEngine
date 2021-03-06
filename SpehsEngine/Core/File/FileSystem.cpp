@@ -12,10 +12,10 @@ namespace
 
 namespace se
 {
-	bool fileExists(const std::string& path)
+	bool fileExists(const std::string_view path)
 	{
 		std::lock_guard<std::recursive_mutex> lock(filestreamMutex);
-		if (boost::filesystem::exists(path))
+		if (boost::filesystem::exists(path.data()))
 		{
 			return true;
 		}
@@ -25,12 +25,12 @@ namespace se
 		}
 	}
 
-	bool isDirectory(const std::string& path)
+	bool isDirectory(const std::string_view path)
 	{
 		std::lock_guard<std::recursive_mutex> lock(filestreamMutex);
-		if (boost::filesystem::exists(path))
+		if (boost::filesystem::exists(path.data()))
 		{
-			if (boost::filesystem::is_regular_file(path))
+			if (boost::filesystem::is_regular_file(path.data()))
 			{
 				return false;
 			}
@@ -63,7 +63,7 @@ namespace se
 	{
 		std::lock_guard<std::recursive_mutex> lock(filestreamMutex);
 		boost::system::error_code error;
-		const bool result = boost::filesystem::remove(path, error);
+		const bool result = boost::filesystem::remove(path.data(), error);
 		if (error)
 		{
 			log::warning("Error when trying to remove the file '" + path + "' : " + error.message());
@@ -71,13 +71,13 @@ namespace se
 		return result;
 	}
 
-	bool renameFile(const std::string& oldPath, const std::string& newPath)
+	bool renameFile(const std::string_view oldPath, const std::string_view newPath)
 	{
 		std::lock_guard<std::recursive_mutex> lock(filestreamMutex);
 
 		// Verify directory
 		size_t directoryCharSearchCount = 0;
-		for (std::string::const_reverse_iterator it = newPath.rbegin(); it != newPath.rend(); it++)
+		for (std::string_view::const_reverse_iterator it = newPath.rbegin(); it != newPath.rend(); it++)
 		{
 			directoryCharSearchCount++;
 			if (*it == '/' || *it == '\\')
@@ -95,7 +95,7 @@ namespace se
 		}
 
 		boost::system::error_code error;
-		boost::filesystem::rename(oldPath, newPath, error);
+		boost::filesystem::rename(oldPath.data(), newPath.data(), error);
 		if (error)
 		{
 			log::warning(error.message());
@@ -107,11 +107,11 @@ namespace se
 		}
 	}
 
-	bool createDirectory(const std::string& fullPath)
+	bool createDirectory(const std::string_view fullPath)
 	{
 		std::lock_guard<std::recursive_mutex> lock(filestreamMutex);
 		// NOTE: seems that boost isn't able to create multiple directories at a time if more than one new directories are required
-		auto verifyPath = [](const std::string& path)
+		auto verifyPath = [](const std::string_view path)
 		{
 			if (fileExists(path))
 			{
@@ -126,7 +126,7 @@ namespace se
 			}
 			else
 			{
-				return boost::filesystem::create_directory(path);
+				return boost::filesystem::create_directory(path.data());
 			}
 		};
 		for (size_t i = 0; i < fullPath.size(); i++)
@@ -141,7 +141,7 @@ namespace se
 				}
 			}
 		}
-		return boost::filesystem::create_directory(fullPath);
+		return boost::filesystem::create_directory(fullPath.data());
 	}
 
 	bool verifyDirectory(const std::string& path)
@@ -167,21 +167,22 @@ namespace se
 	{
 		std::lock_guard<std::recursive_mutex> lock(filestreamMutex);
 		std::vector<std::string> files;
-		const boost::filesystem::path path(directoryPath.empty() ? getCurrentPath() : directoryPath);
+		const boost::filesystem::path path((directoryPath.empty() ? getCurrentPath() : directoryPath).data());
 		if (directoryPath.size() > 0)
 		{
 			if (!boost::filesystem::exists(path))
 			{
-				log::warning("listFilesInDirectory failed: directory does not exist! : " + directoryPath);
+				log::warning("listFilesInDirectory failed: directory does not exist! : " + std::string(directoryPath));
 				return files;
 			}
 			if (!boost::filesystem::is_directory(path))
 			{
-				log::warning("listFilesInDirectory failed: directory path leads to a non-directory file! : " + directoryPath);
+				log::warning("listFilesInDirectory failed: directory path leads to a non-directory file! : " + std::string(directoryPath));
 				return files;
 			}
 		}
 
+		std::string fileType(_fileType);
 		if (fileType.size() > 0 && fileType[0] == '.')
 		{
 			fileType.erase(fileType.begin());
@@ -223,8 +224,9 @@ namespace se
 		return files;
 	}
 
-	std::vector<std::string> listSubDirectoriesInDirectory(std::string directoryPath)
+	std::vector<std::string> listSubDirectoriesInDirectory(const std::string_view _directoryPath)
 	{
+		std::string directoryPath(_directoryPath);
 		std::lock_guard<std::recursive_mutex> lock(filestreamMutex);
 		std::vector<std::string> subDirectories;
 		if (directoryPath.empty())
@@ -235,7 +237,7 @@ namespace se
 		{
 			directoryPath += '/';
 		}
-		const boost::filesystem::path path(directoryPath);
+		const boost::filesystem::path path(directoryPath.data());
 		if (directoryPath.size() > 0)
 		{
 			if (!boost::filesystem::exists(path))

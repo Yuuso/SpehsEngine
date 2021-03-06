@@ -81,7 +81,7 @@ namespace se
 			}
 			for (size_t i = 0; i < mouseWheelEvents.size(); i++)
 			{
-				mouseWheelDelta = mouseWheelEvents[i].wheelDelta;
+				mouseWheelDelta = mouseWheelEvents[i].delta.y;
 			}
 			for (size_t i = 0; i < quitEvents.size(); i++)
 			{

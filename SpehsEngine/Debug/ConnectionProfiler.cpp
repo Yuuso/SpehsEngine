@@ -68,7 +68,7 @@ namespace se
 				string += "\nSent (acknowledgement): " + se::toByteString(sentBytes.acknowledgement);
 				string += "\nSent (path mss discovery): " + se::toByteString(sentBytes.pathMaximumSegmentSizeDiscovery);
 				string += "\nReliable unack bytes in queue: " + se::toByteString(connection->getReliableUnacknowledgedBytesInQueue());
-				string += "\nReliable ack bytes in queue: " + se::toByteString(connection->getReliableAcknowledgedBytesInQueue());
+				string += "\nReliable ack bytes in queue: " + se::toByteString(connection->getReliableSentAcknowledgedBytesInQueue());
 				string += "\nReliable stream offset send: " + std::to_string(connection->getReliableStreamOffsetSend());
 				string += "\nReliable stream offset receive: " + std::to_string(connection->getReliableStreamOffsetReceive());
 

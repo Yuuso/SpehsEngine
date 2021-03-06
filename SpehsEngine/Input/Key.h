@@ -1,5 +1,5 @@
 #pragma once
-#include <string>
+
 
 namespace se
 {
@@ -262,6 +262,6 @@ namespace se
 			SLEEP = 0x4000011A
 		};
 
-		std::string toString(const Key key);
+		const char* toString(const Key key);
 	}
 }

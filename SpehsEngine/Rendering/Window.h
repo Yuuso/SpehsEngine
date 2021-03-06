@@ -39,6 +39,8 @@ namespace se
 			FontManager* getFontManager();
 			const FontManager* getFontManager() const;
 			bool getInputGrab() const;
+			SDL_Window* getSDLWindow() const { return sdlWindow; }
+			GLContext* getGLContext() const { return glContext; }
 
 			/* Returns window pixel width. */
 			int getWidth() const;

@@ -120,7 +120,7 @@ namespace se
 			const size_t recommendedMaxVertices((usage == GL_STATIC_DRAW) ? RECOMMENDED_STATIC_MAX_VERTICES : RECOMMENDED_MAX_VERTICES);
 			const size_t recommendedMaxIndices((usage == GL_STATIC_DRAW) ? RECOMMENDED_STATIC_MAX_INDICES : RECOMMENDED_MAX_INDICES);
 			const bool verticesOk = (vertices.size() + _numVertices) <= ((_numVertices > recommendedMaxVertices) ? ABSOLUTE_MAX_VERTICES : recommendedMaxVertices);
-			const bool indicesOk = (indices.size() + _numIndices) <= ((_numVertices > recommendedMaxIndices) ? ABSOLUTE_MAX_INDICES : recommendedMaxIndices);
+			const bool indicesOk = (indices.size() + _numIndices) <= ((_numIndices > recommendedMaxIndices) ? ABSOLUTE_MAX_INDICES : recommendedMaxIndices);
 			return (verticesOk && indicesOk);
 		}
 

@@ -128,6 +128,8 @@ namespace se
 
 	void GUIRectangleScrollList::inputUpdate()
 	{
+		processQueuedElementRemovals();
+
 		if (getInputEnabled() && checkState(GUIRECT_OPEN_BIT))
 		{
 			scrollUp->inputUpdate();
@@ -389,6 +391,24 @@ namespace se
 			incrementUpdateElementCount(1);
 		elements.back()->setRenderState(getRenderState() && checkState(GUIRECT_OPEN_BIT) && (beginElementIndex + updateElementCount == elements.size()/*is updated*/));
 		return element;
+	}
+
+	bool GUIRectangleScrollList::moveElement(GUIRectangle* element, const size_t targetIndexBeforeMove)
+	{
+		if (GUIRectangleContainer::moveElement(element, targetIndexBeforeMove))
+		{
+			const bool baseRenderState = getRenderState() && checkState(GUIRECT_OPEN_BIT);
+			const size_t endElementIndex = beginElementIndex + updateElementCount;
+			for (size_t i = 0; i < elements.size(); i++)
+			{
+				elements[i]->setRenderState(baseRenderState && (i >= beginElementIndex && i < endElementIndex));
+			}
+			return true;
+		}
+		else
+		{
+			return false;
+		}
 	}
 
 	void GUIRectangleScrollList::setDepth(const int16_t depth)

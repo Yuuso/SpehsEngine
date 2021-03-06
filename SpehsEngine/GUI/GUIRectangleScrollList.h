@@ -32,6 +32,7 @@ namespace se
 		void updatePosition() override;
 		void setDepth(const int16_t depth) override;
 		GUIRectangle* addElement(GUIRectangle* e) override;
+		bool moveElement(GUIRectangle* element, const size_t targetIndexBeforeMove) override;
 		void clear() override;
 		bool open() override;
 		bool close() override;

@@ -5,11 +5,10 @@ namespace se
 {
 	namespace input
 	{
-		std::string toString(const Key key)
+		const char* toString(const Key key)
 		{
 			switch (key)
 			{
-			default: se_assert(false && "invalid key"); return "error";
 			case Key::UNKNOWN: return "Unknown";
 			case Key::RETURN: return"Return";
 			case Key::ESCAPE: return"Escape";
@@ -247,6 +246,7 @@ namespace se
 			case Key::EJECT: return "Eject";
 			case Key::SLEEP: return "Sleep";
 			}
+			return "Error";
 		}
 	}
 }

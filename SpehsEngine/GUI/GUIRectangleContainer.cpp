@@ -21,6 +21,8 @@ namespace se
 
 	void GUIRectangleContainer::inputUpdate()
 	{
+		processQueuedElementRemovals();
+
 		disableState(GUIRECT_MOUSE_HOVER_CONTAINER_BIT);
 
 		//Updating elements
@@ -103,8 +105,9 @@ namespace se
 	GUIRectangle* GUIRectangleContainer::addElement(GUIRectangle* element)
 	{
 		elements.push_back(element);
-		elements.back()->setParent(this);
-		elements.back()->setDepth(getDepth() + 10);
+
+		element->setParent(this);
+		element->setDepth(getDepth() + 10);
 
 		//Render state
 		element->setRenderState(getRenderState() && checkState(GUIRECT_OPEN_BIT));
@@ -116,6 +119,22 @@ namespace se
 		disableStateRecursiveUpwards(GUIRECT_MIN_SIZE_UPDATED_BIT | GUIRECT_SCALE_UPDATED_BIT | GUIRECT_POSITION_UPDATED_BIT);
 
 		return element;
+	}
+
+	bool GUIRectangleContainer::moveElement(GUIRectangle* element, const size_t targetIndexBeforeMove)
+	{
+		for (size_t i = 0; i < elements.size(); i++)
+		{
+			if (elements[i] == element)
+			{
+				const size_t targetIndex = i < targetIndexBeforeMove ? (targetIndexBeforeMove - 1) : targetIndexBeforeMove;
+				elements.erase(elements.begin() + i);
+				elements.insert(elements.begin() + targetIndex, element);
+				disableStateRecursiveUpwards(GUIRECT_MIN_SIZE_UPDATED_BIT | GUIRECT_SCALE_UPDATED_BIT | GUIRECT_POSITION_UPDATED_BIT);
+				return true;
+			}
+		}
+		return false;
 	}
 
 	bool GUIRectangleContainer::removeElement(GUIRectangle* element)
@@ -215,5 +234,15 @@ namespace se
 			}
 		}
 		return false;
+	}
+
+	void GUIRectangleContainer::processQueuedElementRemovals()
+	{
+		std::vector<GUIRectangle*> temp;
+		std::swap(temp, queuedElementRemovals);
+		for (GUIRectangle* const element : temp)
+		{
+			removeElement(element);
+		}
 	}
 }

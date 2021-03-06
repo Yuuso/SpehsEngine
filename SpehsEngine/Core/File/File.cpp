@@ -4,7 +4,7 @@
 #include <fstream>
 #include "SpehsEngine/Core/File/FileSystem.h"
 
-
+#pragma optimize("", off) // nocommit
 namespace se
 {
 	bool readFile(File& _file)
@@ -77,8 +77,40 @@ namespace se
 		stream.open(_path, std::ios::binary);
 		if (stream.fail())
 		{
-			se::log::warning("Failed to write file at: " + _path + ". Failed to open file.");
-			return false;
+			// Attempt to create the directory
+			bool directoryVerified = false;
+			for (size_t i = file.path.size(); i-- > 0;)
+			{
+				if ((file.path[i] == '/' || file.path[i] == '\\' && i > 0))
+				{
+					const std::string directoryPath(file.path.data(), i);
+					//const std::string directoryPath(file.path.rend(), it);
+					if (!directoryPath.empty())
+					{
+						if (verifyDirectory(directoryPath))
+						{
+							directoryVerified = true;
+						}
+						else
+						{
+							return false;
+						}
+					}
+					break;
+				}
+			}
+
+			if (!directoryVerified)
+			{
+				return false;
+			}
+
+			stream.open(file.path, std::ios::binary);
+			if (stream.fail())
+			{
+				se::log::warning("Failed to write file at: " + file.path + ". Failed to open file.");
+				return false;
+			}
 		}
 
 		stream.write(reinterpret_cast<const char*>(_data), _dataSize);

@@ -47,6 +47,7 @@ namespace se
 			void connectToKeyboardPressSignal(boost::signals2::scoped_connection& scopedConnection, const boost::function<bool(const KeyboardPressEvent&)>& callback, const int priority);
 			void connectToKeyboardDownSignal(boost::signals2::scoped_connection& scopedConnection, const boost::function<bool(const KeyboardDownEvent&)>& callback, const int priority);
 			void connectToKeyboardReleaseSignal(boost::signals2::scoped_connection& scopedConnection, const boost::function<bool(const KeyboardReleaseEvent&)>& callback, const int priority);
+			void connectToTextInputSignal(boost::signals2::scoped_connection& scopedConnection, const boost::function<bool(const TextInputEvent&)>& callback, const int priority);
 			//TODO: joysticks...
 			void connectToQuitSignal(boost::signals2::scoped_connection& scopedConnection, const boost::function<bool(const QuitEvent&)>& callback, const int priority);
 			void connectToFileDropSignal(boost::signals2::scoped_connection& scopedConnection, const boost::function<bool(const FileDropEvent&)>& callback, const int priority);
@@ -107,6 +108,7 @@ namespace se
 			std::vector<std::unique_ptr<PrioritizedEventSignal<KeyboardPressEvent>>> keyboardPressSignals;
 			std::vector<std::unique_ptr<PrioritizedEventSignal<KeyboardDownEvent>>> keyboardDownSignals;
 			std::vector<std::unique_ptr<PrioritizedEventSignal<KeyboardReleaseEvent>>> keyboardReleaseSignals;
+			std::vector<std::unique_ptr<PrioritizedEventSignal<TextInputEvent>>> textInputSignals;
 			//std::vector<std::unique_ptr<PrioritizedEventSignal<JoystickButtonPressEvent>>> joystickButtonPressSignals;
 			//std::vector<std::unique_ptr<PrioritizedEventSignal<JoystickButtonDownEvent>>> joystickButtonDownSignals;
 			//std::vector<std::unique_ptr<PrioritizedEventSignal<JoystickButtonReleaseEvent>>> joystickButtonReleaseSignals;
@@ -136,6 +138,7 @@ namespace se
 	bool keyboardPressCallback(const se::input::KeyboardPressEvent& event);
 	bool keyboardDownCallback(const se::input::KeyboardDownEvent& event);
 	bool keyboardReleaseCallback(const se::input::KeyboardReleaseEvent& event);
+	bool textInputCallback(const se::input::TextInputEvent& event);
 
 	boost::signals2::scoped_connection eventSignalerPreUpdateConnection;
 	boost::signals2::scoped_connection eventSignalerPostUpdateConnection;
@@ -148,6 +151,7 @@ namespace se
 	boost::signals2::scoped_connection keyboardPressConnection;
 	boost::signals2::scoped_connection keyboardDownConnection;
 	boost::signals2::scoped_connection keyboardReleaseConnection;
+	boost::signals2::scoped_connection textInputConnection;
 
 	//.cpp
 	#include "boost/bind.hpp"
@@ -164,6 +168,7 @@ namespace se
 	eventSignaler.connectToKeyboardPressSignal(keyboardPressConnection, boost::bind(&MyClass::keyboardPressCallback, this, boost::placeholders::_1), inputPriority);
 	eventSignaler.connectToKeyboardDownSignal(keyboardDownConnection, boost::bind(&MyClass::keyboardDownCallback, this, boost::placeholders::_1), inputPriority);
 	eventSignaler.connectToKeyboardReleaseSignal(keyboardReleaseConnection, boost::bind(&MyClass::keyboardReleaseCallback, this, boost::placeholders::_1), inputPriority);
+	eventSignaler.connectToTextInputSignal(textInputConnection, boost::bind(&MyClass::textInputCallback, this, boost::placeholders::_1), inputPriority);
 
 	void MyClass::eventSignalerPreUpdateCallback()
 	{
@@ -216,6 +221,11 @@ namespace se
 	}
 
 	bool MyClass::keyboardReleaseCallback(const se::input::KeyboardReleaseEvent& event)
+	{
+		return false;
+	}
+
+	bool MyClass::textInputCallback(const se::input::TextInputEvent& event)
 	{
 		return false;
 	}

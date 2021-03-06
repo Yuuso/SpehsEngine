@@ -3,9 +3,10 @@
 
 #include "SpehsEngine/Core/File/File.h"
 
+
 namespace se
 {
-	bool writeToFile(const se::Archive& archive, const std::string& filepath)
+	bool writeToFile(const std::string_view filepath, const se::Archive& archive)
 	{
 		se::WriteBuffer writeBuffer;
 		writeBuffer.write(archive);
@@ -15,7 +16,7 @@ namespace se
 		return writeFile(file);
 	}
 
-	bool readFromFile(se::Archive& archive, const std::string& filepath)
+	bool readFromFile(const std::string_view filepath, se::Archive& archive)
 	{
 		se::File file;
 		if (se::readFile(file, filepath))

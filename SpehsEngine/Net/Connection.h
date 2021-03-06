@@ -109,7 +109,8 @@ namespace se
 			/* Returns true if there are at least minBytes in the unacknowledged send queue. */
 			bool hasReliableUnacknowledgedBytesInQueue(const uint64_t minBytes) const;
 			uint64_t getReliableUnacknowledgedBytesInQueue() const;
-			uint64_t getReliableAcknowledgedBytesInQueue() const;
+			uint64_t getReliableSentAcknowledgedBytesInQueue() const;
+			uint64_t getReliableReceivedBytesInQueue() const;
 			uint64_t getReliableStreamOffsetSend() const;
 			uint64_t getReliableStreamOffsetReceive() const;
 			std::map<uint64_t, uint64_t> getReliableFragmentSendCounters() const;

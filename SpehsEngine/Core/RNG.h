@@ -310,6 +310,21 @@ namespace se
 			std::lock_guard<std::mutex> rnglock(rngmutex);
 			return defaultRandom.angle<FloatingPointType>();
 		}
+
+		template<typename FloatingPointType = float>
+		glm::vec<2, FloatingPointType, glm::defaultp> direction2D()
+		{
+			const FloatingPointType a = angle();
+			return glm::vec<2, FloatingPointType, glm::defaultp>(cos(a), sin(a));
+		}
+		template<typename FloatingPointType = float>
+		glm::vec<3, FloatingPointType, glm::defaultp> direction3D()
+		{
+			const glm::vec<3, FloatingPointType, glm::defaultp> eulerAngles(angle(), angle(), angle());
+			glm::qua<FloatingPointType, glm::defaultp> quat(eulerAngles);
+			return quat * glm::vec<3, FloatingPointType, glm::defaultp>(0.0f, 0.0f, 1.0f);
+		}
+
 		bool coin();
 		bool weightedCoin(const double _trueProbability = 0.5);
 		unsigned dice(const unsigned _sides);

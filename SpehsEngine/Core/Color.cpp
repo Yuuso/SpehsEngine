@@ -39,6 +39,13 @@ namespace se
 		b *= componentMultiplier;
 		a *= componentMultiplier;
 	}
+	void Color::operator*=(const Color& other)
+	{
+		r *= other.r;
+		g *= other.g;
+		b *= other.b;
+		a *= other.a;
+	}
 
 	void Color::operator/=(const float componentDivider)
 	{
@@ -71,6 +78,14 @@ namespace se
 			g * componentMultiplier,
 			b * componentMultiplier,
 			a * componentMultiplier);
+	}
+	Color Color::operator*(const Color& other) const
+	{
+		return Color(
+			r * other.r,
+			g * other.g,
+			b * other.b,
+			a * other.a);
 	}
 
 	Color Color::operator/(const float componentDivider) const

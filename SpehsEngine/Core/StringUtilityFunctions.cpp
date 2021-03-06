@@ -50,6 +50,25 @@ namespace se
 	{
 		return string.find(searchParameter) != std::string::npos;
 	}
+	
+	void indent(std::string& string, const std::string_view indentation)
+	{
+		if (string.empty())
+		{
+			return;
+		}
+
+		string.insert(string.begin(), indentation.begin(), indentation.end());
+
+		for (size_t i = indentation.size(); i < string.size() - 1; i++)
+		{
+			if (string[i] == '\n')
+			{
+				string.insert(string.begin() + i + 1, indentation.begin(), indentation.end());
+				i += indentation.size();
+			}
+		}
+	}
 
 	std::string toTimeLengthString(const time::Time& time, const size_t precision)
 	{
@@ -102,6 +121,12 @@ namespace se
 		{
 			return std::to_string(bytes) + " B";
 		}
+	}
+
+	std::string toMultiplierPercentageString(const float multiplier, const size_t precision)
+	{
+		se_assert(multiplier >= 0.0f);
+		return toSignedString((multiplier - 1.0f) * 100.0f, precision) + " %";
 	}
 
 	template<typename T>
@@ -167,5 +192,25 @@ namespace se
 	bool fromString(const std::string_view string, double& valueOut)
 	{
 		return fromStringImpl(string, valueOut);
+	}
+
+	std::string toLowerCase(const std::string_view string)
+	{
+		std::string s(string);
+		for (char& c : s)
+		{
+			c = char(std::tolower(int(c)));
+		}
+		return s;
+	}
+
+	std::string toUpperCase(const std::string_view string)
+	{
+		std::string s(string);
+		for (char& c : s)
+		{
+			c = char(std::toupper(int(c)));
+		}
+		return s;
 	}
 }

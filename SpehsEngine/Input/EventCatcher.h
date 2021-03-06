@@ -22,6 +22,7 @@ namespace se
 			const std::vector<KeyboardPressEvent>& getKeyboardPressEvents() const { return keyboardPressEvents; }
 			const std::vector<KeyboardDownEvent>& getKeyboardDownEvents() const { return keyboardDownEvents; }
 			const std::vector<KeyboardReleaseEvent>& getKeyboardReleaseEvents() const { return keyboardReleaseEvents; }
+			const std::vector<TextInputEvent>& getTextInputEvents() const { return textInputEvents; }
 			const std::vector<MouseHoverEvent>& getMouseHoverEvents() const { return mouseHoverEvents; }
 			const std::vector<MouseButtonPressEvent>& getMouseButtonPressEvents() const { return mouseButtonPressEvents; }
 			const std::vector<MouseButtonDownEvent>& getMouseButtonDownEvents() const { return mouseButtonDownEvents; }
@@ -40,6 +41,7 @@ namespace se
 			std::vector<KeyboardPressEvent> keyboardPressEvents;
 			std::vector<KeyboardDownEvent> keyboardDownEvents;
 			std::vector<KeyboardReleaseEvent> keyboardReleaseEvents;
+			std::vector<TextInputEvent> textInputEvents;
 			std::vector<MouseHoverEvent> mouseHoverEvents;
 			std::vector<MouseButtonPressEvent> mouseButtonPressEvents;
 			std::vector<MouseButtonDownEvent> mouseButtonDownEvents;

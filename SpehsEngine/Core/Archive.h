@@ -49,6 +49,13 @@ namespace se
 		void write(const std::string& valueName, const se::WriteBuffer& writeBuffer);
 		/* Reads (assigns) a write buffer from the archive. */
 		bool read(const std::string& valueName, se::WriteBuffer& writeBuffer) const;
+
+		template<typename T>
+		bool contains(const std::string& valueName)
+		{
+			const uint32_t hash = getDataHash(typeid(T).name(), valueName);
+			return data.find(hash) != data.end();
+		}
 		
 		/* Writes a non-class value into the archive. */
 		template<typename T>
@@ -146,7 +153,7 @@ namespace se
 			WriteBuffer writeBuffer;
 			if (!read(valueName, writeBuffer))
 			{
-				return false;
+				return true;
 			}
 			if (writeBuffer.getSize() > 0)
 			{
@@ -166,7 +173,7 @@ namespace se
 			WriteBuffer writeBuffer;
 			if (!read(valueName, writeBuffer))
 			{
-				return false;
+				return true;
 			}
 			if (writeBuffer.getSize() > 0)
 			{
