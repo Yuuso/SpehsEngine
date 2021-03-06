@@ -79,12 +79,12 @@ namespace se
 		{
 			// Attempt to create the directory
 			bool directoryVerified = false;
-			for (size_t i = file.path.size(); i-- > 0;)
+			for (size_t i = _path.size(); i-- > 0;)
 			{
-				if ((file.path[i] == '/' || file.path[i] == '\\' && i > 0))
+				if ((_path[i] == '/' || _path[i] == '\\' && i > 0))
 				{
-					const std::string directoryPath(file.path.data(), i);
-					//const std::string directoryPath(file.path.rend(), it);
+					const std::string directoryPath(_path.data(), i);
+					//const std::string directoryPath(_path.rend(), it);
 					if (!directoryPath.empty())
 					{
 						if (verifyDirectory(directoryPath))
@@ -105,10 +105,10 @@ namespace se
 				return false;
 			}
 
-			stream.open(file.path, std::ios::binary);
+			stream.open(_path, std::ios::binary);
 			if (stream.fail())
 			{
-				se::log::warning("Failed to write file at: " + file.path + ". Failed to open file.");
+				se::log::warning("Failed to write file at: " + _path + ". Failed to open file.");
 				return false;
 			}
 		}

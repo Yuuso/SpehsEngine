@@ -12,10 +12,10 @@ namespace
 
 namespace se
 {
-	bool fileExists(const std::string_view path)
+	bool fileExists(const std::string& _path)
 	{
 		std::lock_guard<std::recursive_mutex> lock(filestreamMutex);
-		if (boost::filesystem::exists(path.data()))
+		if (boost::filesystem::exists(_path))
 		{
 			return true;
 		}
@@ -25,12 +25,12 @@ namespace se
 		}
 	}
 
-	bool isDirectory(const std::string_view path)
+	bool isDirectory(const std::string& _path)
 	{
 		std::lock_guard<std::recursive_mutex> lock(filestreamMutex);
-		if (boost::filesystem::exists(path.data()))
+		if (boost::filesystem::exists(_path))
 		{
-			if (boost::filesystem::is_regular_file(path.data()))
+			if (boost::filesystem::is_regular_file(_path))
 			{
 				return false;
 			}
@@ -59,30 +59,30 @@ namespace se
 		}
 	}
 
-	bool removeFile(const std::string& path)
+	bool removeFile(const std::string& _path)
 	{
 		std::lock_guard<std::recursive_mutex> lock(filestreamMutex);
 		boost::system::error_code error;
-		const bool result = boost::filesystem::remove(path.data(), error);
+		const bool result = boost::filesystem::remove(_path, error);
 		if (error)
 		{
-			log::warning("Error when trying to remove the file '" + path + "' : " + error.message());
+			log::warning("Error when trying to remove the file '" + _path + "' : " + error.message());
 		}
 		return result;
 	}
 
-	bool renameFile(const std::string_view oldPath, const std::string_view newPath)
+	bool renameFile(const std::string& _oldPath, const std::string& _newPath)
 	{
 		std::lock_guard<std::recursive_mutex> lock(filestreamMutex);
 
 		// Verify directory
 		size_t directoryCharSearchCount = 0;
-		for (std::string_view::const_reverse_iterator it = newPath.rbegin(); it != newPath.rend(); it++)
+		for (std::string::const_reverse_iterator it = _newPath.rbegin(); it != _newPath.rend(); it++)
 		{
 			directoryCharSearchCount++;
 			if (*it == '/' || *it == '\\')
 			{
-				std::string directoryPath(newPath.data(), newPath.size() - directoryCharSearchCount);
+				std::string directoryPath(_newPath, _newPath.size() - directoryCharSearchCount);
 				if (verifyDirectory(directoryPath))
 				{
 					break;
@@ -95,7 +95,7 @@ namespace se
 		}
 
 		boost::system::error_code error;
-		boost::filesystem::rename(oldPath.data(), newPath.data(), error);
+		boost::filesystem::rename(_oldPath, _newPath, error);
 		if (error)
 		{
 			log::warning(error.message());
@@ -107,15 +107,15 @@ namespace se
 		}
 	}
 
-	bool createDirectory(const std::string_view fullPath)
+	bool createDirectory(const std::string& _fullPath)
 	{
 		std::lock_guard<std::recursive_mutex> lock(filestreamMutex);
 		// NOTE: seems that boost isn't able to create multiple directories at a time if more than one new directories are required
-		auto verifyPath = [](const std::string_view path)
+		auto verifyPath = [](const std::string& _path)
 		{
-			if (fileExists(path))
+			if (fileExists(_path))
 			{
-				if (isDirectory(path))
+				if (isDirectory(_path))
 				{
 					return true;
 				}
@@ -126,29 +126,29 @@ namespace se
 			}
 			else
 			{
-				return boost::filesystem::create_directory(path.data());
+				return boost::filesystem::create_directory(_path);
 			}
 		};
-		for (size_t i = 0; i < fullPath.size(); i++)
+		for (size_t i = 0; i < _fullPath.size(); i++)
 		{
-			if (fullPath[i] == '/' || fullPath[i] == '\\' && i != fullPath.size() - 1)
+			if (_fullPath[i] == '/' || _fullPath[i] == '\\' && i != _fullPath.size() - 1)
 			{
 				std::string partialPath;
-				partialPath.insert(partialPath.begin(), fullPath.begin(), fullPath.begin() + i);
+				partialPath.insert(partialPath.begin(), _fullPath.begin(), _fullPath.begin() + i);
 				if (!verifyPath(partialPath))
 				{
 					return false;
 				}
 			}
 		}
-		return boost::filesystem::create_directory(fullPath.data());
+		return boost::filesystem::create_directory(_fullPath);
 	}
 
-	bool verifyDirectory(const std::string& path)
+	bool verifyDirectory(const std::string& _path)
 	{
-		if (fileExists(path))
+		if (fileExists(_path))
 		{
-			if (isDirectory(path))
+			if (isDirectory(_path))
 			{
 				return true;
 			}
@@ -159,33 +159,32 @@ namespace se
 		}
 		else
 		{
-			return createDirectory(path);
+			return createDirectory(_path);
 		}
 	}
 
-	std::vector<std::string> listFilesInDirectory(const std::string& directoryPath, std::string fileType)
+	std::vector<std::string> listFilesInDirectory(const std::string& _directoryPath, std::string _fileType)
 	{
 		std::lock_guard<std::recursive_mutex> lock(filestreamMutex);
 		std::vector<std::string> files;
-		const boost::filesystem::path path((directoryPath.empty() ? getCurrentPath() : directoryPath).data());
-		if (directoryPath.size() > 0)
+		const boost::filesystem::path path((_directoryPath.empty() ? getCurrentPath() : _directoryPath));
+		if (_directoryPath.size() > 0)
 		{
 			if (!boost::filesystem::exists(path))
 			{
-				log::warning("listFilesInDirectory failed: directory does not exist! : " + std::string(directoryPath));
+				log::warning("listFilesInDirectory failed: directory does not exist! : " + _directoryPath);
 				return files;
 			}
 			if (!boost::filesystem::is_directory(path))
 			{
-				log::warning("listFilesInDirectory failed: directory path leads to a non-directory file! : " + std::string(directoryPath));
+				log::warning("listFilesInDirectory failed: directory path leads to a non-directory file! : " + _directoryPath);
 				return files;
 			}
 		}
 
-		std::string fileType(_fileType);
-		if (fileType.size() > 0 && fileType[0] == '.')
+		if (_fileType.size() > 0 && _fileType[0] == '.')
 		{
-			fileType.erase(fileType.begin());
+			_fileType.erase(_fileType.begin());
 		}
 
 		boost::filesystem::directory_iterator it(path);
@@ -193,7 +192,7 @@ namespace se
 		while (it != end)
 		{
 			std::string fileName(it->path().filename().generic_string());
-			if (fileType.size() > 0)
+			if (_fileType.size() > 0)
 			{
 				//Looking for specific file type
 				std::string type;
@@ -203,7 +202,7 @@ namespace se
 					{
 						type.resize(fileName.size() - i - 1);
 						memcpy(&type[0], &fileName[i + 1], sizeof(char)* (fileName.size() - i - 1));
-						if (type == fileType)
+						if (type == _fileType)
 						{
 							//Copy file name without the file type into type
 							type.resize(i);
@@ -224,30 +223,29 @@ namespace se
 		return files;
 	}
 
-	std::vector<std::string> listSubDirectoriesInDirectory(const std::string_view _directoryPath)
+	std::vector<std::string> listSubDirectoriesInDirectory(std::string _directoryPath)
 	{
-		std::string directoryPath(_directoryPath);
 		std::lock_guard<std::recursive_mutex> lock(filestreamMutex);
 		std::vector<std::string> subDirectories;
-		if (directoryPath.empty())
+		if (_directoryPath.empty())
 		{
-			directoryPath = getCurrentPath();
+			_directoryPath = getCurrentPath();
 		}
-		if (directoryPath.size() > 0 && directoryPath.back() != '/' && directoryPath.back() != '\\')
+		if (_directoryPath.size() > 0 && _directoryPath.back() != '/' && _directoryPath.back() != '\\')
 		{
-			directoryPath += '/';
+			_directoryPath += '/';
 		}
-		const boost::filesystem::path path(directoryPath.data());
-		if (directoryPath.size() > 0)
+		const boost::filesystem::path path(_directoryPath);
+		if (_directoryPath.size() > 0)
 		{
 			if (!boost::filesystem::exists(path))
 			{
-				log::warning("listSubDirectoriesInDirectory failed: directory does not exist! : " + directoryPath);
+				log::warning("listSubDirectoriesInDirectory failed: directory does not exist! : " + _directoryPath);
 				return subDirectories;
 			}
 			if (!boost::filesystem::is_directory(path))
 			{
-				log::warning("listSubDirectoriesInDirectory failed: directory path leads to a non-directory file! : " + directoryPath);
+				log::warning("listSubDirectoriesInDirectory failed: directory path leads to a non-directory file! : " + _directoryPath);
 				return subDirectories;
 			}
 		}
@@ -257,7 +255,7 @@ namespace se
 		while (it != end)
 		{
 			std::string fileName(it->path().filename().generic_string());
-			if (boost::filesystem::is_directory(directoryPath + fileName))
+			if (boost::filesystem::is_directory(_directoryPath + fileName))
 			{
 				subDirectories.push_back(fileName);
 			}
@@ -272,17 +270,17 @@ namespace se
 		return boost::filesystem::current_path().generic_string();
 	}
 
-	file::Timestamp getFileTimestamp(const std::string_view filepath)
+	file::Timestamp getFileTimestamp(const std::string& _filepath)
 	{
-		const boost::filesystem::path path(filepath.data());
+		const boost::filesystem::path path(_filepath);
 		const time_t time = boost::filesystem::last_write_time(path);
 		return file::Timestamp(time);
 	}
 
-	void setFileTimestamp(const std::string_view filepath, const file::Timestamp timestamp)
+	void setFileTimestamp(const std::string& filepath, const file::Timestamp timestamp)
 	{
 		const time_t time = timestamp.value;
-		const boost::filesystem::path path(filepath.data());
+		const boost::filesystem::path path(filepath);
 		boost::filesystem::last_write_time(path, time);
 	}
 }
