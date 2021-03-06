@@ -1130,8 +1130,8 @@ namespace se
 		void Connection::increaseSendQuotaPerSecond()
 		{
 			LOCK_GUARD(lock, mutex, other);
-			const double maxSendQuotaPerSecond = 1024.0 * 1024.0 * 1024.0 * 1024.0;
-			const double multiplier = 1.02;
+			const double maxSendQuotaPerSecond = 1024.0 * 1024.0 * 1024.0;
+			const double multiplier = 1.05;
 			sendQuotaPerSecond = std::min(maxSendQuotaPerSecond, sendQuotaPerSecond * multiplier);
 		}
 
