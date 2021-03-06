@@ -115,7 +115,7 @@ namespace se
 	void getDirectoryStateImpl(DirectoryState& directoryState, const std::string_view fullDirectoryPath, const std::string_view relativeDirectoryPath, const DirectoryState::Flag::Type flags, const uint32_t fileHashSeed)
 	{
 		directoryState.path = relativeDirectoryPath;
-		const std::vector<std::string> files = se::listFilesInDirectory(fullDirectoryPath);
+		const std::vector<std::string> files = se::listFilesInDirectory(std::string(fullDirectoryPath));
 		directoryState.files.clear();
 		directoryState.directories.clear();
 		for (size_t i = 0; i < files.size(); i++)

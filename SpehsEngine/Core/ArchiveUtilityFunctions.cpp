@@ -19,7 +19,8 @@ namespace se
 	bool readFromFile(const std::string_view filepath, se::Archive& archive)
 	{
 		se::File file;
-		if (se::readFile(file, filepath))
+		file.path = filepath;
+		if (se::readFile(file))
 		{
 			se::ReadBuffer readBuffer(file.data.data(), uint32_t(file.data.size()));
 			return archive.read(readBuffer);
