@@ -55,7 +55,7 @@ namespace se
 			void							setRenderState(const bool _state);
 			void							toggleRenderState();
 			void							setMaterial(std::shared_ptr<Material> _material, const size_t _slot = 0);
-			void							setColor(const Color& _color, const size_t _colorIndex = 0);
+			void							setColor(const Color& _color);
 
 			void							setRenderFlags(const RenderFlagsType _renderFlags);
 			void							enableRenderFlag(const RenderFlag _renderFlag);

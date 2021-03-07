@@ -38,6 +38,7 @@ namespace se
 			virtual std::shared_ptr<Material>		getMaterial() const;
 			virtual std::shared_ptr<VertexBuffer>	getVertices() const;
 			virtual std::shared_ptr<IndexBuffer>	getIndices() const;
+			virtual const Color&					getColor() const;
 
 			virtual const RenderFlagsType			getRenderFlags() const;
 			virtual const bool						checkRenderFlag(const RenderFlag _renderFlag) const;
@@ -54,7 +55,7 @@ namespace se
 			virtual void							setMaterial(std::shared_ptr<Material> _material);
 			virtual void							setVertices(std::shared_ptr<VertexBuffer> _vertices);
 			virtual void							setIndices(std::shared_ptr<IndexBuffer> _indices);
-			virtual void							setColor(const Color& _color, const size_t _colorIndex = 0);
+			virtual void							setColor(const Color& _color);
 
 			virtual void							setRenderFlags(const RenderFlagsType _renderFlags);
 			virtual void							enableRenderFlag(const RenderFlag _renderFlag);
@@ -82,7 +83,6 @@ namespace se
 
 		private:
 
-			void									invalidatePrimitiveColors();
 			bool									getVerticesChanged();
 			bool									getIndicesChanged();
 
@@ -94,15 +94,12 @@ namespace se
 			std::shared_ptr<Material>				material				= nullptr;
 			std::shared_ptr<VertexBuffer>			vertices;
 			std::shared_ptr<IndexBuffer>			indices;
-
 			glm::vec3								position				= glm::vec3(0.0f);
 			glm::vec3								scale					= glm::vec3(1.0f);
 			glm::quat								rotation				= glm::vec3(0.0f);
+			Color									primitiveColor;
 
 			boost::signals2::signal<void(void)>		destroyedSignal;
-
-			static constexpr size_t					MAX_PRIMITIVE_COLORS	= 4;
-			Color									primitiveColor[MAX_PRIMITIVE_COLORS];
 		};
 	}
 }

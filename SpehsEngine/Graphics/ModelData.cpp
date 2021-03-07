@@ -132,7 +132,7 @@ namespace se
 					enableBit(attributes, Normal);
 				if (sceneMesh.HasTangentsAndBitangents())
 					enableBit(attributes, Tangent | Bitangent);
-				if (sceneMesh.HasVertexColors(0) || true) // NOTE: Always Color0 for now
+				if (sceneMesh.HasVertexColors(0))
 					enableBit(attributes, Color0);
 				if (sceneMesh.HasVertexColors(1))
 					enableBit(attributes, Color1);
@@ -167,7 +167,7 @@ namespace se
 					if (checkBit(attributes, Bitangent))
 						mesh.vertexBuffer->get<Bitangent>(vertexIndex) = glm::vec3(sceneMesh.mBitangents[vertexIndex].x, sceneMesh.mBitangents[vertexIndex].y, sceneMesh.mBitangents[vertexIndex].z);
 					if (checkBit(attributes, Color0))
-						mesh.vertexBuffer->get<Color0>(vertexIndex) = sceneMesh.HasVertexColors(0) ? Color(sceneMesh.mColors[0][vertexIndex].r, sceneMesh.mColors[0][vertexIndex].g, sceneMesh.mColors[0][vertexIndex].b, sceneMesh.mColors[0][vertexIndex].a) : Color();
+						mesh.vertexBuffer->get<Color0>(vertexIndex) = Color(sceneMesh.mColors[0][vertexIndex].r, sceneMesh.mColors[0][vertexIndex].g, sceneMesh.mColors[0][vertexIndex].b, sceneMesh.mColors[0][vertexIndex].a);
 					if (checkBit(attributes, Color1))
 						mesh.vertexBuffer->get<Color1>(vertexIndex) = Color(sceneMesh.mColors[1][vertexIndex].r, sceneMesh.mColors[1][vertexIndex].g, sceneMesh.mColors[1][vertexIndex].b, sceneMesh.mColors[1][vertexIndex].a);
 					if (checkBit(attributes, Color2))

@@ -2,6 +2,7 @@
 
 #include <bgfx/bgfx.h>
 #include <glm/mat4x4.hpp>
+#include "SpehsEngine/Core/Color.h"
 
 
 /*
@@ -28,12 +29,14 @@ namespace se
 
 
 			void setNormalMatrix(const glm::mat4& _normal);
+			void setPrimitiveColor(const Color& _color);
 
 		private:
 
 			void destroy();
 
 			bgfx::UniformHandle normal;
+			bgfx::UniformHandle primitiveColor;
 		};
 	}
 }

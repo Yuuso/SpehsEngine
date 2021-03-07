@@ -16,6 +16,7 @@ namespace se
 			: normal(BGFX_INVALID_HANDLE)
 		{
 			normal = bgfx::createUniform("u_normal", bgfx::UniformType::Mat4);
+			primitiveColor = bgfx::createUniform("u_primitiveColor", bgfx::UniformType::Vec4);
 		}
 		DefaultUniforms::~DefaultUniforms()
 		{
@@ -29,11 +30,22 @@ namespace se
 				bgfx::destroy(normal);
 				normal = BGFX_INVALID_HANDLE;
 			}
+			if (bgfx::isValid(primitiveColor))
+			{
+				bgfx::destroy(primitiveColor);
+				primitiveColor = BGFX_INVALID_HANDLE;
+			}
 		}
 
 		void DefaultUniforms::setNormalMatrix(const glm::mat4& _normal)
 		{
 			bgfx::setUniform(normal, reinterpret_cast<const void*>(&_normal));
+		}
+
+		void DefaultUniforms::setPrimitiveColor(const Color& _color)
+		{
+			static_assert(sizeof(Color) == sizeof(glm::vec4));
+			bgfx::setUniform(primitiveColor, reinterpret_cast<const void*>(&_color));
 		}
 	}
 }

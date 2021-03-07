@@ -33,19 +33,18 @@ namespace se
 			Primitive::setVertices(nullptr);
 			Primitive::setIndices(nullptr);
 		}
-		void Line::addPoint(const glm::vec3& _point, const Color& _color)
+		void Line::addPoint(const glm::vec3& _point)
 		{
 			std::shared_ptr<VertexBuffer> vertexBuffer = Primitive::getVertices();
 			if (!vertexBuffer)
 			{
 				vertexBuffer = std::make_shared<VertexBuffer>();
-				vertexBuffer->setAttributes(Position | Color0);
+				vertexBuffer->setAttributes(Position);
 				Primitive::setVertices(vertexBuffer);
 			}
 			vertexBuffer->grow(1);
 			const size_t newVertexIndex = vertexBuffer->size() - 1;
 			vertexBuffer->get<Position>(newVertexIndex) = _point;
-			vertexBuffer->get<Color0>(newVertexIndex) = _color;
 
 			if (newVertexIndex)
 			{

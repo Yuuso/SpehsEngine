@@ -222,8 +222,7 @@ namespace se
 			std::shared_ptr<IndexBuffer> newIndexBuffer = std::make_shared<IndexBuffer>();
 			IndexBuffer& newIndices = *newIndexBuffer.get();
 			using namespace VertexAttribute;
-			newVertices.setAttributes(Position
-									  | Color0);
+			newVertices.setAttributes(Position);
 
 			const size_t resolution = 64;
 			newVertices.resize(resolution * 3);
@@ -239,7 +238,6 @@ namespace se
 				{
 					const float lon = se::lerp(0.0f, TWO_PI<float>, static_cast<float>(j) / static_cast<float>(resolution));
 					newVertices.get<Position>(currentVertex) = glm::vec3(sinf(lon) * cosf(lat), cosf(lon), sinf(lon) * sinf(lat));
-					newVertices.get<Color0>(currentVertex) = Color(1.0f, 1.0f, 1.0f, 0.5f);
 
 					if (j > 0)
 					{
@@ -259,7 +257,6 @@ namespace se
 				{
 					const float lat = se::lerp(0.0f, TWO_PI<float>, static_cast<float>(j) / static_cast<float>(resolution));
 					newVertices.get<Position>(currentVertex) = glm::vec3(sinf(lon) * cosf(lat), cosf(lon), sinf(lon) * sinf(lat));
-					newVertices.get<Color0>(currentVertex) = Color(1.0f, 1.0f, 1.0f, 0.5f);
 
 					if (j > 0)
 					{
@@ -322,8 +319,7 @@ namespace se
 			std::shared_ptr<IndexBuffer> newIndexBuffer = std::make_shared<IndexBuffer>();
 			IndexBuffer& newIndices = *newIndexBuffer.get();
 			using namespace VertexAttribute;
-			newVertices.setAttributes(Position
-									  | Color0);
+			newVertices.setAttributes(Position);
 
 			const size_t resolution = se::lerp(8, 64, getOuterCone() / TWO_PI<float>);
 			newVertices.resize(resolution * 2 + 1);
@@ -333,7 +329,6 @@ namespace se
 			size_t currentVertex = 0;
 
 			newVertices.get<Position>(currentVertex) = glm::vec3(0.0f);
-			newVertices.get<Color0>(currentVertex) = Color(1.0f, 1.0f, 1.0f, 0.5f);
 			currentVertex++;
 
 			for (size_t i = 0; i < 2; i++)
@@ -343,7 +338,6 @@ namespace se
 				{
 					const float lon = se::lerp(-getOuterCone() * 0.5f, getOuterCone() * 0.5f, static_cast<float>(j) / static_cast<float>(resolution - 1));
 					newVertices.get<Position>(currentVertex) = glm::normalize(glm::vec3(sinf(lon) * cosf(lat), sinf(lon) * sinf(lat), -cosf(lon)));
-					newVertices.get<Color0>(currentVertex) = Color(1.0f, 1.0f, 1.0f, 0.5f);
 
 					if (j == 0)
 					{

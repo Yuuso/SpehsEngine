@@ -35,7 +35,6 @@ namespace se
 			using namespace VertexAttribute;
 			newVertices.setAttributes(Position
 									  | Normal
-									  | Color0
 									  | TexCoord0);
 
 			se_assert(_numVertices >= 3);
@@ -116,15 +115,6 @@ namespace se
 				}
 			}
 
-			// Color
-			{
-				const Color vertexColor;
-				for (size_t i = 0; i < newVertices.size(); i++)
-				{
-					newVertices.get<Color0>(i) = vertexColor;
-				}
-			}
-
 			Primitive::setVertices(newVertexBuffer);
 
 			// Indices
@@ -167,7 +157,6 @@ namespace se
 				using namespace VertexAttribute;
 				newVertices.setAttributes(Position
 										  | Normal
-										  | Color0
 										  | TexCoord0);
 
 				const size_t numVertices = 24;
@@ -178,150 +167,126 @@ namespace se
 				newVertices.get<Position>	(currentVertex)	= glm::vec3(-0.5f, 0.5f, -0.5f);
 				newVertices.get<Normal>		(currentVertex)	= glm::vec3(0.0f, 1.0f, 0.0f);
 				newVertices.get<TexCoord0>	(currentVertex)	= glm::vec2(0.0f, 0.0f);
-				newVertices.get<Color0>		(currentVertex)	= Color();
 				currentVertex++;
 
 				newVertices.get<Position>	(currentVertex)	= glm::vec3(0.5f, 0.5f, -0.5f);
 				newVertices.get<Normal>		(currentVertex)	= glm::vec3(0.0f, 1.0f, 0.0f);
 				newVertices.get<TexCoord0>	(currentVertex)	= glm::vec2(1.0f, 0.0f);
-				newVertices.get<Color0>		(currentVertex)	= Color();
 				currentVertex++;
 
 				newVertices.get<Position>	(currentVertex)	= glm::vec3(0.5f, 0.5f, 0.5f);
 				newVertices.get<Normal>		(currentVertex)	= glm::vec3(0.0f, 1.0f, 0.0f);
 				newVertices.get<TexCoord0>	(currentVertex)	= glm::vec2(1.0f, 1.0f);
-				newVertices.get<Color0>		(currentVertex)	= Color();
 				currentVertex++;
 
 				newVertices.get<Position>	(currentVertex)	= glm::vec3(-0.5f, 0.5f, 0.5f);
 				newVertices.get<Normal>		(currentVertex)	= glm::vec3(0.0f, 1.0f, 0.0f);
 				newVertices.get<TexCoord0>	(currentVertex)	= glm::vec2(0.0f, 1.0f);
-				newVertices.get<Color0>		(currentVertex)	= Color();
 				currentVertex++;
 
 				// Y- face
 				newVertices.get<Position>	(currentVertex)	= glm::vec3(-0.5f, -0.5f, -0.5f);
 				newVertices.get<Normal>		(currentVertex)	= glm::vec3(0.0f, -1.0f, 0.0f);
 				newVertices.get<TexCoord0>	(currentVertex)	= glm::vec2(0.0f, 0.0f);
-				newVertices.get<Color0>		(currentVertex)	= Color();
 				currentVertex++;
 
 				newVertices.get<Position>	(currentVertex)	= glm::vec3(-0.5f, -0.5f, 0.5f);
 				newVertices.get<Normal>		(currentVertex)	= glm::vec3(0.0f, -1.0f, 0.0f);
 				newVertices.get<TexCoord0>	(currentVertex)	= glm::vec2(1.0f, 0.0f);
-				newVertices.get<Color0>		(currentVertex)	= Color();
 				currentVertex++;
 
 				newVertices.get<Position>	(currentVertex)	= glm::vec3(0.5f, -0.5f, 0.5f);
 				newVertices.get<Normal>		(currentVertex)	= glm::vec3(0.0f, -1.0f, 0.0f);
 				newVertices.get<TexCoord0>	(currentVertex)	= glm::vec2(1.0f, 1.0f);
-				newVertices.get<Color0>		(currentVertex)	= Color();
 				currentVertex++;
 
 				newVertices.get<Position>	(currentVertex)	= glm::vec3(0.5f, -0.5f, -0.5f);
 				newVertices.get<Normal>		(currentVertex)	= glm::vec3(0.0f, -1.0f, 0.0f);
 				newVertices.get<TexCoord0>	(currentVertex)	= glm::vec2(0.0f, 1.0f);
-				newVertices.get<Color0>		(currentVertex)	= Color();
 				currentVertex++;
 
 				// X+ face
 				newVertices.get<Position>	(currentVertex)	= glm::vec3(0.5f, -0.5f, -0.5f);
 				newVertices.get<Normal>		(currentVertex)	= glm::vec3(1.0f, 0.0f, 0.0f);
 				newVertices.get<TexCoord0>	(currentVertex)	= glm::vec2(0.0f, 0.0f);
-				newVertices.get<Color0>		(currentVertex)	= Color();
 				currentVertex++;
 
 				newVertices.get<Position>	(currentVertex)	= glm::vec3(0.5f, -0.5f, 0.5f);
 				newVertices.get<Normal>		(currentVertex)	= glm::vec3(1.0f, 0.0f, 0.0f);
 				newVertices.get<TexCoord0>	(currentVertex)	= glm::vec2(1.0f, 0.0f);
-				newVertices.get<Color0>		(currentVertex)	= Color();
 				currentVertex++;
 
 				newVertices.get<Position>	(currentVertex)	= glm::vec3(0.5f, 0.5f, 0.5f);
 				newVertices.get<Normal>		(currentVertex)	= glm::vec3(1.0f, 0.0f, 0.0f);
 				newVertices.get<TexCoord0>	(currentVertex)	= glm::vec2(1.0f, 1.0f);
-				newVertices.get<Color0>		(currentVertex)	= Color();
 				currentVertex++;
 
 				newVertices.get<Position>	(currentVertex)	= glm::vec3(0.5f, 0.5f, -0.5f);
 				newVertices.get<Normal>		(currentVertex)	= glm::vec3(1.0f, 0.0f, 0.0f);
 				newVertices.get<TexCoord0>	(currentVertex)	= glm::vec2(0.0f, 1.0f);
-				newVertices.get<Color0>		(currentVertex)	= Color();
 				currentVertex++;
 
 				// X- face
 				newVertices.get<Position>	(currentVertex)	= glm::vec3(-0.5f, -0.5f, 0.5f);
 				newVertices.get<Normal>		(currentVertex)	= glm::vec3(-1.0f, 0.0f, 0.0f);
 				newVertices.get<TexCoord0>	(currentVertex)	= glm::vec2(0.0f, 0.0f);
-				newVertices.get<Color0>		(currentVertex)	= Color();
 				currentVertex++;
 
 				newVertices.get<Position>	(currentVertex)	= glm::vec3(-0.5f, -0.5f, -0.5f);
 				newVertices.get<Normal>		(currentVertex)	= glm::vec3(-1.0f, 0.0f, 0.0f);
 				newVertices.get<TexCoord0>	(currentVertex)	= glm::vec2(1.0f, 0.0f);
-				newVertices.get<Color0>		(currentVertex)	= Color();
 				currentVertex++;
 
 				newVertices.get<Position>	(currentVertex)	= glm::vec3(-0.5f, 0.5f, -0.5f);
 				newVertices.get<Normal>		(currentVertex)	= glm::vec3(-1.0f, 0.0f, 0.0f);
 				newVertices.get<TexCoord0>	(currentVertex)	= glm::vec2(1.0f, 1.0f);
-				newVertices.get<Color0>		(currentVertex)	= Color();
 				currentVertex++;
 
 				newVertices.get<Position>	(currentVertex)	= glm::vec3(-0.5f, 0.5f, 0.5f);
 				newVertices.get<Normal>		(currentVertex)	= glm::vec3(-1.0f, 0.0f, 0.0f);
 				newVertices.get<TexCoord0>	(currentVertex)	= glm::vec2(0.0f, 1.0f);
-				newVertices.get<Color0>		(currentVertex)	= Color();
 				currentVertex++;
 
 				// Z+ face
 				newVertices.get<Position>	(currentVertex)	= glm::vec3(0.5f, -0.5f, 0.5f);
 				newVertices.get<Normal>		(currentVertex)	= glm::vec3(0.0f, 0.0f, 1.0f);
 				newVertices.get<TexCoord0>	(currentVertex)	= glm::vec2(0.0f, 0.0f);
-				newVertices.get<Color0>		(currentVertex)	= Color();
 				currentVertex++;
 
 				newVertices.get<Position>	(currentVertex)	= glm::vec3(-0.5f, -0.5f, 0.5f);
 				newVertices.get<Normal>		(currentVertex)	= glm::vec3(0.0f, 0.0f, 1.0f);
 				newVertices.get<TexCoord0>	(currentVertex)	= glm::vec2(1.0f, 0.0f);
-				newVertices.get<Color0>		(currentVertex)	= Color();
 				currentVertex++;
 
 				newVertices.get<Position>	(currentVertex)	= glm::vec3(-0.5f, 0.5f, 0.5f);
 				newVertices.get<Normal>		(currentVertex)	= glm::vec3(0.0f, 0.0f, 1.0f);
 				newVertices.get<TexCoord0>	(currentVertex)	= glm::vec2(1.0f, 1.0f);
-				newVertices.get<Color0>		(currentVertex)	= Color();
 				currentVertex++;
 
 				newVertices.get<Position>	(currentVertex)	= glm::vec3(0.5f, 0.5f, 0.5f);
 				newVertices.get<Normal>		(currentVertex)	= glm::vec3(0.0f, 0.0f, 1.0f);
 				newVertices.get<TexCoord0>	(currentVertex)	= glm::vec2(0.0f, 1.0f);
-				newVertices.get<Color0>		(currentVertex)	= Color();
 				currentVertex++;
 
 				// Z- face
 				newVertices.get<Position>	(currentVertex)	= glm::vec3(-0.5f, -0.5f, -0.5f);
 				newVertices.get<Normal>		(currentVertex)	= glm::vec3(0.0f, 0.0f, -1.0f);
 				newVertices.get<TexCoord0>	(currentVertex)	= glm::vec2(0.0f, 0.0f);
-				newVertices.get<Color0>		(currentVertex)	= Color();
 				currentVertex++;
 
 				newVertices.get<Position>	(currentVertex)	= glm::vec3(0.5f, -0.5f, -0.5f);
 				newVertices.get<Normal>		(currentVertex)	= glm::vec3(0.0f, 0.0f, -1.0f);
 				newVertices.get<TexCoord0>	(currentVertex)	= glm::vec2(1.0f, 0.0f);
-				newVertices.get<Color0>		(currentVertex)	= Color();
 				currentVertex++;
 
 				newVertices.get<Position>	(currentVertex)	= glm::vec3(0.5f, 0.5f, -0.5f);
 				newVertices.get<Normal>		(currentVertex)	= glm::vec3(0.0f, 0.0f, -1.0f);
 				newVertices.get<TexCoord0>	(currentVertex)	= glm::vec2(1.0f, 1.0f);
-				newVertices.get<Color0>		(currentVertex)	= Color();
 				currentVertex++;
 
 				newVertices.get<Position>	(currentVertex)	= glm::vec3(-0.5f, 0.5f, -0.5f);
 				newVertices.get<Normal>		(currentVertex)	= glm::vec3(0.0f, 0.0f, -1.0f);
 				newVertices.get<TexCoord0>	(currentVertex)	= glm::vec2(0.0f, 1.0f);
-				newVertices.get<Color0>		(currentVertex)	= Color();
 				currentVertex++;
 
 				Primitive::setVertices(newVertexBuffer);
@@ -336,7 +301,6 @@ namespace se
 				using namespace VertexAttribute;
 				newVertices.setAttributes(Position
 										  | Normal
-										  | Color0
 										  | TexCoord0);
 
 				constexpr unsigned int minRes = 8;
@@ -363,7 +327,6 @@ namespace se
 						newVertices.get<Position>	(currentVertex)	= glm::vec3(radius * sinf(lon) * cosf(lat), radius * cosf(lon), radius * sinf(lon) * sinf(lat));
 						newVertices.get<Normal>		(currentVertex)	= glm::normalize(newVertices.get<Position>(currentVertex));
 						newVertices.get<TexCoord0>	(currentVertex)	= glm::vec2(i / resolution, j / resolution);
-						newVertices.get<Color0>		(currentVertex)	= Color();
 						currentVertex++;
 					}
 				}

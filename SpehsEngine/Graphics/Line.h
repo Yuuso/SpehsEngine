@@ -26,7 +26,7 @@ namespace se
 			void setIndices(std::shared_ptr<IndexBuffer> _indices) override;
 
 			void clear();
-			void addPoint(const glm::vec3& _point, const Color& _color = Color());
+			void addPoint(const glm::vec3& _point);
 		};
 	}
 }

@@ -29,6 +29,7 @@
 
 	-- Spehs Engine --------
 	- u_normal				mat4							Transpose of inverse of upper-left 3x3 part of model[0]
+	- u_primitiveColor		vec4							Primitive color
 
 	TODO: Update from lights and materials
 */

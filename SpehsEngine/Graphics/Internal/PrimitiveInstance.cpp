@@ -124,6 +124,7 @@ namespace se
 
 			bgfx::setTransform(reinterpret_cast<const void*>(&primitive->getTransformMatrix()));
 			_renderContext.defaultUniforms->setNormalMatrix(primitive->getNormalMatrix());
+			_renderContext.defaultUniforms->setPrimitiveColor(renderInfo.primitiveColor);
 			_renderContext.lightBatch->bind();
 			renderInfo.material->bind();
 
@@ -197,6 +198,7 @@ namespace se
 			result.primitiveType = primitive->getPrimitiveType();
 			result.material = primitive->getMaterial();
 			result.attributes = primitive->getVertices()->getAttributes();
+			result.primitiveColor = primitive->getColor();
 			return result;
 		}
 		const bool PrimitiveInstance::getRenderState() const

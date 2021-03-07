@@ -143,9 +143,9 @@ namespace se
 				materials.resize(_slot + 1);
 			materials[_slot] = _material;
 		}
-		void Model::setColor(const Color& _color, const size_t _colorIndex)
+		void Model::setColor(const Color& _color)
 		{
-			foreachPrimitive([&](Primitive& _primitive) { _primitive.setColor(_color, _colorIndex); });
+			foreachPrimitive([&](Primitive& _primitive) { _primitive.setColor(_color); });
 		}
 
 		void Model::setRenderFlags(const RenderFlagsType _renderFlags)

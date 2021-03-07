@@ -140,6 +140,7 @@ namespace se
 		void LightBatch::update(const size_t _index)
 		{
 			static_assert(sizeof(Light) >= sizeof(glm::vec4) * 4, "Invalid Light size!");
+			static_assert(sizeof(Color) == sizeof(glm::vec4));
 			memcpy(&data1[_index], &lights[_index]->getLight().color, sizeof(glm::vec4));
 			memcpy(&data2[_index], &lights[_index]->getLight().position, sizeof(glm::vec4));
 			memcpy(&data3[_index], &lights[_index]->getLight().direction, sizeof(glm::vec4));

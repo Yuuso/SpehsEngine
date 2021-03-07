@@ -18,18 +18,10 @@ namespace se
 	{
 		Primitive::Primitive()
 		{
-			invalidatePrimitiveColors();
 		}
 		Primitive::~Primitive()
 		{
 			destroyedSignal();
-		}
-		void Primitive::invalidatePrimitiveColors()
-		{
-			for (size_t i = 0; i < MAX_PRIMITIVE_COLORS; i++)
-			{
-				primitiveColor[i] = se::Color(-1.0f, -1.0f, -1.0f, -1.0f);
-			}
 		}
 
 		void Primitive::update()
@@ -91,6 +83,10 @@ namespace se
 		{
 			return indices;
 		}
+		const Color& Primitive::getColor() const
+		{
+			return primitiveColor;
+		}
 
 		const RenderFlagsType Primitive::getRenderFlags() const
 		{
@@ -151,42 +147,16 @@ namespace se
 		{
 			vertices = _vertices;
 			enableBit(updateFlags, PrimitiveUpdateFlag::VerticesChanged);
-			invalidatePrimitiveColors();
 		}
 		void Primitive::setIndices(std::shared_ptr<IndexBuffer> _indices)
 		{
 			indices = _indices;
 			enableBit(updateFlags, PrimitiveUpdateFlag::IndicesChanged);
 		}
-		void Primitive::setColor(const Color& _color, const size_t _colorIndex)
+		void Primitive::setColor(const Color& _color)
 		{
-			if (!vertices)
-			{
-				log::warning("Cannot set primitive color, no vertices!");
-				return;
-			}
-			if (vertices.use_count() > 1)
-			{
-				log::warning("Cannot set primitive color, primitive doesn't own the vertex buffer!");
-				return;
-			}
-			if (_colorIndex >= MAX_PRIMITIVE_COLORS)
-			{
-				log::warning("Invalid primitive color index: " + std::to_string(_colorIndex));
-				return;
-			}
-			if (_color == primitiveColor[_colorIndex])
-				return;
-
-			VertexAttributeFlagsType attribute = VertexAttribute::Color0 << _colorIndex;
-			if (!checkBit(vertices->getAttributes(), attribute))
-			{
-				log::warning("Cannot set primitive color, no color " + std::to_string(_colorIndex) + " attribute in vertex buffer!");
-				return;
-			}
-			primitiveColor[_colorIndex] = _color;
-			for (size_t i = 0; i < vertices->size(); i++)
-				vertices->get<VertexAttribute::Color0>(i) = _color;
+			primitiveColor = _color;
+			enableBit(updateFlags, PrimitiveUpdateFlag::RenderInfoChanged);
 		}
 
 		void Primitive::setRenderFlags(const RenderFlagsType _renderFlags)
