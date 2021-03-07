@@ -27,6 +27,9 @@ namespace se
 
 			void clear();
 			void addPoint(const glm::vec3& _point);
+			const glm::vec3& getPoint(const size_t _index) const;
+			glm::vec3& getPoint(const size_t _index);
+			const size_t numPoints() const;
 		};
 	}
 }

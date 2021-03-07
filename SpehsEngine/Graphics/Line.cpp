@@ -12,7 +12,7 @@ namespace se
 			: Primitive()
 		{
 			Primitive::setPrimitiveType(PrimitiveType::Lines);
-			clear();
+			setName("line");
 		}
 
 		void Line::setPrimitiveType(const PrimitiveType _primitiveType)
@@ -35,7 +35,7 @@ namespace se
 		}
 		void Line::addPoint(const glm::vec3& _point)
 		{
-			std::shared_ptr<VertexBuffer> vertexBuffer = Primitive::getVertices();
+			std::shared_ptr<VertexBuffer> vertexBuffer = getVertices();
 			if (!vertexBuffer)
 			{
 				vertexBuffer = std::make_shared<VertexBuffer>();
@@ -48,7 +48,7 @@ namespace se
 
 			if (newVertexIndex)
 			{
-				std::shared_ptr<IndexBuffer> indexBuffer = Primitive::getIndices();
+				std::shared_ptr<IndexBuffer> indexBuffer = getIndices();
 				if (!indexBuffer)
 				{
 					indexBuffer = std::make_shared<IndexBuffer>();
@@ -57,6 +57,24 @@ namespace se
 				indexBuffer->pushBack(static_cast<IndexType>(newVertexIndex - 1));
 				indexBuffer->pushBack(static_cast<IndexType>(newVertexIndex));
 			}
+		}
+		const glm::vec3& Line::getPoint(const size_t _index) const
+		{
+			std::shared_ptr<VertexBuffer> vertexBuffer = getVertices();
+			se_assert(vertexBuffer && vertexBuffer->size() > _index);
+			const VertexBuffer* constVertexBuffer = vertexBuffer.get();
+			return constVertexBuffer->get<Position>(_index);
+		}
+		glm::vec3& Line::getPoint(const size_t _index)
+		{
+			std::shared_ptr<VertexBuffer> vertexBuffer = getVertices();
+			se_assert(vertexBuffer && vertexBuffer->size() > _index);
+			return vertexBuffer->get<Position>(_index);
+		}
+		const size_t Line::numPoints() const
+		{
+			std::shared_ptr<VertexBuffer> vertexBuffer = getVertices();
+			return vertexBuffer ? vertexBuffer->size() : 0;
 		}
 	}
 }
