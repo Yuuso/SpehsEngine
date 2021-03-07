@@ -321,6 +321,11 @@ namespace ImGui
 	// NOTE: 'key' value must be valid in the scope of 'scopedConnection'
 	void keyBindButton(const std::string_view label, se::input::Key& key, se::input::EventSignaler& eventSignaler, boost::signals2::scoped_connection& scopedConnection);
 
+	inline void SetTooltip(const std::string_view tooltip)
+	{
+		ImGui::SetTooltip(tooltip.data());
+	}
+
 	// Drag scalars
 #define SE_IMGUI_DRAG_SCALAR(p_IntegerType, p_ImGuiDataType, p_Components, p_DefaultFormat) \
 	inline bool DragScalar##p_Components(const std::string_view label, p_IntegerType* const i, float speed, p_IntegerType min, p_IntegerType max, const char* format = p_DefaultFormat, ImGuiSliderFlags flags = 0) \
