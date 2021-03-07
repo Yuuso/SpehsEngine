@@ -229,6 +229,7 @@
     <ClCompile Include="Internal\RendererCallbackHandler.cpp" />
     <ClCompile Include="Lights.cpp" />
     <ClCompile Include="Line.cpp" />
+    <ClCompile Include="Material.cpp" />
     <ClCompile Include="Model.cpp" />
     <ClCompile Include="ModelData.cpp" />
     <ClCompile Include="ModelDataManager.cpp" />

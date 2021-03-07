@@ -62,15 +62,13 @@ namespace se
 			se_assert(_numElements <= numElements);
 			bgfx::setUniform({ uniformHandle }, reinterpret_cast<const void*>(_value), _numElements);
 		}
-		void Uniform::set(const std::shared_ptr<Texture>& _value, const uint8_t _stage)
+		void Uniform::set(const Texture& _value, const uint8_t _stage)
 		{
-			se_assert(_value);
-			bgfx::setTexture(_stage, { uniformHandle }, { _value->getHandle() });
+			bgfx::setTexture(_stage, { uniformHandle }, { _value.getHandle() });
 		}
-		void Uniform::set(const std::shared_ptr<Font>& _value, const uint8_t _stage)
+		void Uniform::set(const Font& _value, const uint8_t _stage)
 		{
-			se_assert(_value);
-			bgfx::setTexture(_stage, { uniformHandle }, { _value->getHandle() });
+			bgfx::setTexture(_stage, { uniformHandle }, { _value.getHandle() });
 		}
 	}
 }

@@ -19,26 +19,6 @@ namespace se
 		* Material resources
 		*/
 
-		enum class MaterialTextureType
-		{
-			Unknown,
-			Color,
-			Normal,
-		};
-
-		struct MaterialTexture
-		{
-			MaterialTextureType type = MaterialTextureType::Unknown;
-			std::shared_ptr<Texture> texture = nullptr;
-			std::shared_ptr<Uniform> uniform = nullptr;
-		};
-
-		struct MaterialFont
-		{
-			std::shared_ptr<Font> font = nullptr;
-			std::shared_ptr<Uniform> uniform = nullptr;
-		};
-
 		struct PhongAttributes
 		{
 			float& shininess()
@@ -51,14 +31,11 @@ namespace se
 			}
 			glm::vec4 data = { 0.5f, 32.0f, 0.0f, 0.0f };
 		};
-		std::shared_ptr<Uniform> makePhongAttributesUniform();
-
-
-		void bind(std::shared_ptr<MaterialTexture>& _texture, const uint8_t _stage = 0);
-		void bind(std::vector<std::shared_ptr<MaterialTexture>>& _texture);
-		void bind(const PhongAttributes& _attributes, std::shared_ptr<Uniform> _uniform);
-		void bind(std::shared_ptr<MaterialFont>& _font, const uint8_t _stage = 0);
-		void bind(std::vector<std::shared_ptr<MaterialFont>>& _fonts);
+		enum class PhongTextureType
+		{
+			Color,
+			Normal
+		};
 
 
 
@@ -66,81 +43,63 @@ namespace se
 		* Default materials
 		*/
 
-		class FlatColorMaterial final : public Material
+		class FlatColorMaterial : public Material
 		{
 		public:
 
 			FlatColorMaterial(DefaultShaderManager& _shaderManager);
 
-			void bind() override;
-			std::shared_ptr<Shader> getShader() override;
+		protected:
 
-		private:
-
-			std::shared_ptr<Shader> shader;
+			void internalBind(uint8_t stage) override;
 		};
 
 
-		class FlatTextureMaterial final : public Material
+		class FlatTextureMaterial : public Material
 		{
 		public:
 
 			FlatTextureMaterial(DefaultShaderManager& _shaderManager);
 
-			void bind() override;
-			std::shared_ptr<Shader> getShader() override;
-			std::shared_ptr<Texture> getTexture(const size_t _index = 0) override;
-
 			void setTexture(std::shared_ptr<Texture> _texture);
+			std::shared_ptr<Texture> getTexture() const;
 
-		private:
+		protected:
 
-			std::shared_ptr<Shader> shader;
-			std::shared_ptr<MaterialTexture> texture;
+			void internalBind(uint8_t stage) override;
 		};
 
 
-		class PhongMaterial final : public Material
-		{
-		public:
-
-			PhongMaterial(DefaultShaderManager& _shaderManager);
-
-			void bind() override;
-			std::shared_ptr<Shader> getShader() override;
-			std::shared_ptr<Texture> getTexture(const size_t _index = 0) override;
-
-			void setTexture(const MaterialTextureType _type, std::shared_ptr<Texture> _texture);
-			std::shared_ptr<Texture> getTexture(const MaterialTextureType _type);
-
-			void setAttributes(const PhongAttributes& _attributes);
-			PhongAttributes& getAttributes();
-
-		private:
-
-			std::shared_ptr<Shader> shader;
-			std::vector<std::shared_ptr<MaterialTexture>> textures;
-			PhongAttributes attributes;
-			std::shared_ptr<Uniform> attributesUniform;
-		};
-
-
-		class TextMaterial final : public Material
+		class TextMaterial : public Material
 		{
 		public:
 
 			TextMaterial(DefaultShaderManager& _shaderManager);
 
-			void bind() override;
-			std::shared_ptr<Shader> getShader() override;
-			std::shared_ptr<Font> getFont(const size_t _index = 0) override;
+		protected:
 
-			void setFont(std::shared_ptr<Font> _font, const size_t _index = 0);
+			virtual void internalBind(uint8_t stage) override;
+		};
 
-		private:
 
-			std::shared_ptr<Shader> shader;
-			std::shared_ptr<MaterialFont> font;
+		class PhongMaterial : public Material
+		{
+		public:
+
+			PhongMaterial(DefaultShaderManager& _shaderManager);
+
+			void setTexture(const PhongTextureType _type, std::shared_ptr<Texture> _texture);
+			std::shared_ptr<Texture> getTexture(const PhongTextureType _type) const;
+
+			void setAttributes(const PhongAttributes& _attributes);
+			PhongAttributes& getAttributes();
+
+		protected:
+
+			virtual void internalBind(uint8_t stage) override;
+
+			std::unique_ptr<Uniform> attributesUniform;
+			PhongAttributes attributes;
 		};
 	}
 }

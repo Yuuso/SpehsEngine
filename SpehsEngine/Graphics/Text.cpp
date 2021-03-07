@@ -16,20 +16,13 @@ namespace se
 			enableRenderFlag(RenderFlag::Blending);
 			enableRenderFlag(RenderFlag::CullBackFace);
 			disableRenderFlag(RenderFlag::DepthTest);
-		}
-		Text::~Text()
-		{
+			setName("text");
 		}
 
 		void Text::update()
 		{
 			if (needBufferUpdate)
-			{
-				if (getMaterial()->getFont()->ready())
-				{
-					generateBuffers();
-				}
-			}
+				generateBuffers();
 			Primitive::update();
 		}
 
@@ -147,6 +140,7 @@ namespace se
 		{
 			Primitive::setMaterial(_material);
 			textChanged();
+			_material->connectToFontChangedSignal(fontChangedConnection, boost::bind(&Text::textChanged, this));
 		}
 
 		std::string Text::getPlainText() const
@@ -214,9 +208,16 @@ namespace se
 			if (!primitiveMaterial)
 				return;
 
-			std::shared_ptr<Font> font = primitiveMaterial->getFont(0);
-			se_assert(font && font->ready());
-			if (!font || !font->ready())
+			std::shared_ptr<Font> font = primitiveMaterial->getFont();
+			se_assert(font);
+			if (!font)
+				return;
+
+			needBufferUpdate = false;
+
+			if (!fontLoadedConnection.connected())
+				fontLoadedConnection = font->resourceLoadedSignal.connect(boost::bind(&Text::textChanged, this));
+			if (!font->ready())
 				return;
 
 			std::shared_ptr<VertexBuffer> newVertexBuffer = std::make_shared<VertexBuffer>();
@@ -342,8 +343,6 @@ namespace se
 				}
 			}
 			Primitive::setIndices(newIndexBuffer);
-
-			needBufferUpdate = false;
 		}
 		void Text::updateDimensions()
 		{
@@ -352,7 +351,7 @@ namespace se
 			if (!primitiveMaterial)
 				return;
 
-			std::shared_ptr<Font> font = primitiveMaterial->getFont(0);
+			std::shared_ptr<Font> font = primitiveMaterial->getFont();
 			se_assert(font && font->ready());
 			if (!font || !font->ready())
 				return;

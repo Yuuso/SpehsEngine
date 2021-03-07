@@ -1,5 +1,6 @@
 #pragma once
 
+#include "boost/signals2.hpp"
 #include "SpehsEngine/Graphics/CharacterSet.h"
 #include "SpehsEngine/Graphics/Internal/FontMetrics.h"
 #include "SpehsEngine/Graphics/Primitive.h"
@@ -19,7 +20,7 @@ namespace se
 		public:
 
 									Text();
-									~Text();
+									~Text() = default;
 
 									Text(const Text& _other) = delete;
 			Text&					operator=(const Text& _other) = delete;
@@ -73,6 +74,9 @@ namespace se
 			float lineSpacing = 1.0f;
 			bool needDimensionsUpdate = false;
 			bool needBufferUpdate = false;
+
+			boost::signals2::scoped_connection fontLoadedConnection;
+			boost::signals2::scoped_connection fontChangedConnection;
 		};
 	}
 }
