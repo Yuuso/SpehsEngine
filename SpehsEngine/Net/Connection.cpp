@@ -131,6 +131,17 @@ namespace se
 						estimatedRoundTripTime = time::fromMilliseconds(totalMilliseconds / float(recentRoundTripTimes.size()));
 					}
 				}
+
+				if (!reliablePacketSendQueue.empty() && !pathMaximumSegmentSizeDiscovery.has_value())
+				{
+					static const time::Time reliableStreamOffsetSendStuckTime = se::time::fromSeconds(5.0f);
+					const time::Time timeSinceUpdate = se::time::now() - lastReceiveAcknowledgementTime;
+					if (timeSinceUpdate >= reliableStreamOffsetSendStuckTime)
+					{
+						DEBUG_LOG(1, "Reliable stream seems to be stuck, initiating path MTU discovery.");
+						beginPathMaximumSegmentSizeDiscovery();
+					}
+				}
 			}
 
 			if (getStatus() == Status::Connected)
@@ -306,6 +317,7 @@ namespace se
 
 			if (reliableStreamOffset >= reliableStreamOffsetSend)
 			{
+				lastReceiveAcknowledgementTime = time::now();
 				uint64_t offset = reliableStreamOffsetSend;
 				for (size_t p = 0; p < reliablePacketSendQueue.size(); p++)
 				{
@@ -569,14 +581,11 @@ namespace se
 
 									if (unacknowledgedFragment.sendCount++ == 0)
 									{
-										unacknowledgedFragment.firstSendTime = time::now();
+										unacknowledgedFragment.firstSendTime = now;
 									}
-									else
-									{
-										//decreaseSendQuotaPerSecond();
-									}
+
 									decreaseSendQuotaPerSecond();
-									unacknowledgedFragment.latestSendTime = time::now();
+									unacknowledgedFragment.latestSendTime = now;
 								}
 								else
 								{
