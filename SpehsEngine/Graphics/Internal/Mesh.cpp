@@ -16,6 +16,7 @@ namespace se
 		{
 			setVertices(_vertexBuffer);
 			setIndices(_indexBuffer);
+			enableRenderFlag(RenderFlag::CullBackFace);
 		}
 
 		void Mesh::update()
