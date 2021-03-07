@@ -48,15 +48,17 @@ namespace se
 				get(const size_t _at) \
 				{ \
 					se_assert(checkBit(attributes, _attribute)); \
+					se_assert(size() > _at); \
 					bufferChanged = true; \
-					return *(VertexAttribute::##__attribute##Type*)&buffer[_at * vertexBytes + offset<_attribute>()]; \
+					return *reinterpret_cast<VertexAttribute::##__attribute##Type*>(&buffer[_at * vertexBytes + offset<_attribute>()]); \
 				} \
 				template <VertexAttribute::VertexAttributeFlag _attribute> \
 				typename std::enable_if<_attribute == VertexAttribute::VertexAttributeFlag::__attribute, const VertexAttribute::##__attribute##Type&>::type \
 				get(const size_t _at) const \
 				{ \
 					se_assert(checkBit(attributes, _attribute)); \
-					return *(const VertexAttribute::##__attribute##Type*)&buffer[_at * vertexBytes + offset<_attribute>()]; \
+					se_assert(size() > _at); \
+					return *reinterpret_cast<const VertexAttribute::##__attribute##Type*>(&buffer[_at * vertexBytes + offset<_attribute>()]); \
 				} \
 
 			get_decl(Position)
