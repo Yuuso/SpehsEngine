@@ -56,6 +56,7 @@ namespace se
 
 		private:
 
+			void					fontChanged();
 			void					textChanged();
 			void					generateBuffers();
 			void					updateDimensions();

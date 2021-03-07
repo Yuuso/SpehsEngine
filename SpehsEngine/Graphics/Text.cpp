@@ -140,7 +140,7 @@ namespace se
 		{
 			Primitive::setMaterial(_material);
 			textChanged();
-			_material->connectToFontChangedSignal(fontChangedConnection, boost::bind(&Text::textChanged, this));
+			_material->connectToFontChangedSignal(fontChangedConnection, boost::bind(&Text::fontChanged, this));
 		}
 
 		std::string Text::getPlainText() const
@@ -189,6 +189,11 @@ namespace se
 			return dimensions;
 		}
 
+		void Text::fontChanged()
+		{
+			fontLoadedConnection.disconnect();
+			textChanged();
+		}
 		void Text::textChanged()
 		{
 			needBufferUpdate = true;
