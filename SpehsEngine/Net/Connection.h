@@ -153,7 +153,7 @@ namespace se
 			{
 				struct UnacknowledgedFragment
 				{
-					UnacknowledgedFragment(const uint64_t _offset, const uint16_t _size) : offset(_offset), size(_size) {}
+					UnacknowledgedFragment(const uint64_t _offset, const uint16_t _size) : offset(_offset), size(_size) { se_assert(_size > 0); }
 					time::Time firstSendTime; // Set when sent the first time. Measurement of ping.
 					time::Time latestSendTime; // Set when sent the last time (unacknowledged packets get resent periodically).
 					uint64_t sendCount = 0u;
@@ -198,46 +198,22 @@ namespace se
 				time::Time createTime;
 			};
 
-			struct ReceivedReliableFragment
+			struct ReceivingReliablePacket
 			{
-				/*
-					Contains some data along with some parts of the actual payload.
-					The payload data can be located using 'payloadIndex' and 'payloadSize'.
-					Optimization to avoid reallocating and copying incoming data multiple times.
-				*/
-				struct PayloadBuffer
-				{
-					std::vector<uint8_t> buffer;
-					size_t payloadIndex = 0u;
-					uint16_t payloadSize = 0u;
-				};
-
-				ReceivedReliableFragment(const uint64_t _streamOffset, const bool _endOfPayload, std::vector<uint8_t>& _buffer, const size_t _payloadIndex, const uint16_t _payloadSize)
-					: streamOffset(_streamOffset)
-					, endOfPayload(_endOfPayload)
-					, payloadTotalSize(uint64_t(_payloadSize))
-				{
-					payloadBuffers.push_back(PayloadBuffer());
-					payloadBuffers.back().buffer.swap(_buffer);
-					payloadBuffers.back().payloadIndex = _payloadIndex;
-					payloadBuffers.back().payloadSize = _payloadSize;
-				}
-
-				std::vector<PayloadBuffer> payloadBuffers;
+				std::vector<uint8_t> payload;
 				uint64_t streamOffset = 0u;
 				bool endOfPayload = false;
-				uint64_t payloadTotalSize = 0u; // Tracks the combined size of all payload buffers
 			};
 
 			struct ReceivedReliablePacket
 			{
-				ReceivedReliablePacket(PacketHeader::PacketType _packetType, std::vector<uint8_t>& _payload)
+				ReceivedReliablePacket(PacketHeader::PacketType _packetType, std::vector<uint8_t>& _payloadWithPacketType)
 					: packetType(_packetType)
 				{
-					std::swap(payload, _payload);
+					std::swap(payloadWithPacketType, _payloadWithPacketType);
 				}
 
-				std::vector<uint8_t> payload;
+				std::vector<uint8_t> payloadWithPacketType;
 				PacketHeader::PacketType packetType = PacketHeader::PacketType::None;
 			};
 
@@ -312,7 +288,7 @@ namespace se
 			uint64_t reliableStreamOffsetSend = 0u; // bytes from past packets that have been delivered
 			uint64_t reliableStreamOffsetReceive = 0u; // bytes from past packets that have been received
 			uint64_t socketSendPacketCallCount = 0u;
-			std::vector<ReceivedReliableFragment> receivedReliableFragments;
+			std::vector<ReceivingReliablePacket> receivingReliablePackets;
 			std::vector<ReceivedPacket> receivedPackets;
 			std::vector<ReceivedReliablePacket> receivedReliablePackets;
 			std::vector<ReceivedPacket> receivedUnreliablePackets;

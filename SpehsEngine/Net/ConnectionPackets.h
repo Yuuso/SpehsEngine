@@ -60,7 +60,6 @@ namespace se
 
 			ReadPayload readPayload; // Only used when reading, not part of the "header"
 			uint64_t streamOffset = 0u;
-			uint64_t payloadTotalSize = 0u; // TODO is this even used?
 			bool endOfPayload = false;
 		};
 
