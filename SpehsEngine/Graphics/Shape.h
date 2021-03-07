@@ -1,39 +1,19 @@
 #pragma once
 
 #include "SpehsEngine/Graphics/Primitive.h"
+#include "SpehsEngine/Graphics/ShapeGenerator.h"
+#include "SpehsEngine/Graphics/Types.h"
 
 
 namespace se
 {
 	namespace graphics
 	{
-		enum class ShapeType
-		{
-			Unknown,
-
-			Triangle = 3,
-			Square,
-			Pentagon,
-			Hexagon,
-			Heptagon,
-			Octagon,
-			Nonegon,
-			Decagon,
-			Circle,
-
-			Cube,
-			Sphere,
-			// Capsule
-			// Cylinder
-			// Cone
-		};
-
 		class Shape : public Primitive
 		{
 		public:
 
-			Shape(const unsigned int _numVertices);
-			Shape(const ShapeType _type, const unsigned int _resolution = 0);
+			Shape();
 			~Shape();
 
 			Shape(const Shape& _other) = delete;
@@ -43,16 +23,17 @@ namespace se
 			Shape& operator=(Shape&& _other) = delete;
 
 
-			void generate(const unsigned int _numVertices);
-			void generate(const ShapeType _type, const unsigned int _resolution = 0);
+			void generate(const unsigned int _numVertices, ShapeGenerator* _generator = nullptr);
+			void generate(const ShapeType _type, const unsigned int _resolution = 0, ShapeGenerator* _generator = nullptr);
 
 			void setPrimitiveType(const PrimitiveType _primitiveType) override;
+			void setPrimitiveType(const PrimitiveType _primitiveType, ShapeGenerator& _generator);
 			void setVertices(std::shared_ptr<VertexBuffer> _vertices) override;
 			void setIndices(std::shared_ptr<IndexBuffer> _indices) override;
 
 		private:
 
-			void generateIndices();
+			void generateIndices(ShapeGenerator& _generator);
 
 			ShapeType type = ShapeType::Unknown;
 		};

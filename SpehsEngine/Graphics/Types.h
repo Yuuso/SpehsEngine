@@ -180,5 +180,26 @@ namespace se
 			glm::vec2 offsetFromOrigin;
 			glm::vec2 dimensions;
 		};
+
+		enum class ShapeType
+		{
+			Unknown,
+
+			Triangle = 3,
+			Square,
+			Pentagon,
+			Hexagon,
+			Heptagon,
+			Octagon,
+			Nonegon,
+			Decagon,
+			Circle,
+
+			Cube,
+			Sphere,
+			// Capsule
+			// Cylinder
+			// Cone
+		};
 	}
 }
