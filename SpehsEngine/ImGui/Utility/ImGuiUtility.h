@@ -38,6 +38,11 @@ namespace se
 
 namespace ImGui
 {
+	inline bool Button(const std::string_view label, const ImVec2& size = ImVec2(0, 0))
+	{
+		return Button(label.data(), size);
+	}
+
 	inline void Text(const std::string_view label)
 	{
 		Text(label.data());
