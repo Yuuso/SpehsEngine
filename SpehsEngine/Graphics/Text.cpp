@@ -15,7 +15,7 @@ namespace se
 		{
 			enableRenderFlag(RenderFlag::Blending);
 			enableRenderFlag(RenderFlag::CullBackFace);
-			disableRenderFlag(RenderFlag::DepthTest);
+			disableRenderFlag(RenderFlag::DepthTestLess);
 			setName("text");
 		}
 

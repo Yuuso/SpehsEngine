@@ -180,6 +180,7 @@
     <ClInclude Include="PrecompiledInclude.h" />
     <ClInclude Include="Primitive.h" />
     <ClInclude Include="Internal\PrimitiveInstance.h" />
+    <ClInclude Include="RenderCopy.h" />
     <ClInclude Include="Renderer.h" />
     <ClInclude Include="ResourceData.h" />
     <ClInclude Include="Internal\ResourceHandle.h" />

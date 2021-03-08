@@ -109,14 +109,18 @@ namespace se
 
 		void PrimitiveInstance::render(RenderContext& _renderContext)
 		{
-			const RenderInfo renderInfo = getRenderInfo();
-
-			if (!renderInfo.material)
+			render(_renderContext, getRenderInfo());
+			if (primitive->getRenderCopy())
+				render(_renderContext, getCopyRenderInfo());
+		}
+		void PrimitiveInstance::render(RenderContext& _renderContext, const RenderInfo& _renderInfo)
+		{
+			if (!_renderInfo.material)
 			{
 				log::warning("Material missing!");
 				return;
 			}
-			if (!renderInfo.material->getShader()->ready())
+			if (!_renderInfo.material->getShader()->ready())
 			{
 				log::warning("Shader not ready for rendering!");
 				return;
@@ -124,18 +128,18 @@ namespace se
 
 			bgfx::setTransform(reinterpret_cast<const void*>(&primitive->getTransformMatrix()));
 			_renderContext.defaultUniforms->setNormalMatrix(primitive->getNormalMatrix());
-			_renderContext.defaultUniforms->setPrimitiveColor(renderInfo.primitiveColor);
+			_renderContext.defaultUniforms->setPrimitiveColor(_renderInfo.primitiveColor);
 			_renderContext.lightBatch->bind();
-			renderInfo.material->bind();
+			_renderInfo.material->bind();
 
 			bgfx::IndexBufferHandle ibh = { getIndices()->bufferObject };
 			bgfx::VertexBufferHandle vbh = { getVertices()->bufferObject };
 			bgfx::setIndexBuffer(ibh);
 			bgfx::setVertexBuffer(0, vbh);
 
-			applyRenderState(renderInfo, _renderContext);
+			applyRenderState(_renderInfo, _renderContext);
 
-			bgfx::ProgramHandle programHandle = { renderInfo.material->getShader()->getHandle() };
+			bgfx::ProgramHandle programHandle = { _renderInfo.material->getShader()->getHandle() };
 			bgfx::submit(_renderContext.currentViewId, programHandle);
 		}
 
@@ -199,6 +203,22 @@ namespace se
 			result.material = primitive->getMaterial();
 			result.attributes = primitive->getVertices()->getAttributes();
 			result.primitiveColor = primitive->getColor();
+			return result;
+		}
+		const RenderInfo PrimitiveInstance::getCopyRenderInfo() const
+		{
+			const RenderCopy* renderCopy = primitive->getRenderCopy();
+			if (!renderCopy)
+			{
+				log::error("Render copy not set!");
+				return getRenderInfo();
+			}
+			RenderInfo result;
+			result.renderFlags = renderCopy->renderFlags;
+			result.primitiveType = renderCopy->primitiveType;
+			result.material = primitive->getMaterial();
+			result.attributes = primitive->getVertices()->getAttributes();
+			result.primitiveColor = renderCopy->primitiveColor;
 			return result;
 		}
 		const bool PrimitiveInstance::getRenderState() const

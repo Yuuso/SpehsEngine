@@ -104,6 +104,10 @@ namespace se
 		{
 			return renderMode;
 		}
+		const RenderCopy* Primitive::getRenderCopy() const
+		{
+			return renderCopy.get();
+		}
 
 		const glm::vec3& Primitive::getPosition() const
 		{
@@ -193,6 +197,14 @@ namespace se
 				return;
 			renderMode = _renderMode;
 			enableBit(updateFlags, PrimitiveUpdateFlag::RenderInfoChanged);
+		}
+		void Primitive::setRenderCopy(const RenderCopy& _renderCopy)
+		{
+			renderCopy = std::make_unique<RenderCopy>(_renderCopy);
+		}
+		void Primitive::removeRenderCopy()
+		{
+			renderCopy.reset();
 		}
 
 		void Primitive::setPosition(const glm::vec3& _position)

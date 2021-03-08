@@ -42,12 +42,15 @@ namespace se
 			const bool isBatched() const;
 			const bool wasDestroyed() const;
 			const RenderInfo getRenderInfo() const;
+			const RenderInfo getCopyRenderInfo() const;
 			const bool getRenderState() const;
 			const RenderMode getRenderMode() const;
 			const VertexBuffer* getVertices() const;
 			const IndexBuffer* getIndices() const;
 
 		private:
+
+			void render(RenderContext& _renderContext, const RenderInfo& _renderInfo);
 
 			const bool sizeInBatchChanged() const;
 			void registerAsBufferObjectRenderer();

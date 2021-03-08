@@ -211,10 +211,16 @@ namespace se
 				debugPrimitive = std::make_shared<Primitive>();
 				debugPrimitive->setPrimitiveType(PrimitiveType::Lines);
 				debugPrimitive->enableRenderFlag(RenderFlag::Blending);
-				//debugPrimitive->disableRenderFlag(RenderFlag::DepthTest);
 				debugPrimitive->setPosition(getPosition());
 				debugPrimitive->setScale(glm::vec3(getOuterRadius()));
 				debugPrimitive->setRenderState(getIntensity() > 0.0f);
+				debugPrimitive->setColor(Color(1.0f, 1.0f, 1.0f, 0.75f));
+
+				RenderCopy copy;
+				copy.primitiveColor = Color(1.0f, 1.0f, 1.0f, 0.15f);
+				copy.primitiveType = PrimitiveType::Lines;
+				enableBit(copy.renderFlags, RenderFlag::Blending | RenderFlag::DepthTestGreater);
+				debugPrimitive->setRenderCopy(copy);
 			}
 
 			std::shared_ptr<VertexBuffer> newVertexBuffer = std::make_shared<VertexBuffer>();
@@ -300,11 +306,17 @@ namespace se
 				debugPrimitive = std::make_shared<Primitive>();
 				debugPrimitive->setPrimitiveType(PrimitiveType::Lines);
 				debugPrimitive->enableRenderFlag(RenderFlag::Blending);
-				//debugPrimitive->disableRenderFlag(RenderFlag::DepthTest);
 				debugPrimitive->setPosition(getPosition());
 				debugPrimitive->setScale(glm::vec3(getOuterRadius()));
 				debugPrimitive->setRotation(glm::quatLookAt(getDirection(), glm::vec3(0.0f, 1.0f, 0.0f)));
 				debugPrimitive->setRenderState(getIntensity() > 0.0f);
+				debugPrimitive->setColor(Color(1.0f, 1.0f, 1.0f, 0.75f));
+
+				RenderCopy copy;
+				copy.primitiveColor = Color(1.0f, 1.0f, 1.0f, 0.15f);
+				copy.primitiveType = PrimitiveType::Lines;
+				enableBit(copy.renderFlags, RenderFlag::Blending | RenderFlag::DepthTestGreater);
+				debugPrimitive->setRenderCopy(copy);
 			}
 
 			if (getOuterCone() <= 0.0f)

@@ -189,6 +189,9 @@
     <ClInclude Include="ShapeGenerator.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="RenderCopy.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="GraphicsLib.cpp">

@@ -2,6 +2,7 @@
 
 #include "boost/signals2.hpp"
 #include "SpehsEngine/Graphics/IndexBuffer.h"
+#include "SpehsEngine/Graphics/RenderCopy.h"
 #include "SpehsEngine/Graphics/Types.h"
 #include "SpehsEngine/Graphics/VertexBuffer.h"
 #include "SpehsEngine/Graphics/Material.h"
@@ -44,6 +45,7 @@ namespace se
 			virtual const bool						checkRenderFlag(const RenderFlag _renderFlag) const;
 			virtual const PrimitiveType				getPrimitiveType() const;
 			virtual const RenderMode				getRenderMode() const;
+			virtual const RenderCopy*				getRenderCopy() const;
 
 			virtual const glm::vec3&				getPosition() const;
 			virtual const glm::vec3&				getScale() const;
@@ -62,6 +64,8 @@ namespace se
 			virtual void							disableRenderFlag(const RenderFlag _renderFlag);
 			virtual void							setPrimitiveType(const PrimitiveType _primitiveType);
 			virtual void							setRenderMode(const RenderMode _renderMode);
+			virtual void							setRenderCopy(const RenderCopy& _renderCopy);
+			virtual void							removeRenderCopy();
 
 			virtual void							setPosition(const glm::vec3& _position);
 			virtual void							setScale(const glm::vec3& _scale);
@@ -88,9 +92,10 @@ namespace se
 
 			std::string								name					= "primitive";
 			bool									renderState				= true;
-			RenderFlagsType							renderFlags				= RenderFlag::DepthTest;
+			RenderFlagsType							renderFlags				= RenderFlag::DepthTestLess;
 			PrimitiveType							primitiveType			= PrimitiveType::Triangles;
 			RenderMode								renderMode				= RenderMode::Dynamic;
+			std::unique_ptr<RenderCopy>				renderCopy;
 			std::shared_ptr<Material>				material				= nullptr;
 			std::shared_ptr<VertexBuffer>			vertices;
 			std::shared_ptr<IndexBuffer>			indices;
