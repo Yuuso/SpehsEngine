@@ -8,25 +8,27 @@ namespace se
 	{
 		void Material::bind()
 		{
-			uint8_t stage = 0;
-			if (font)
-				fontUniform->set(*font.get(), stage++);
+			for (auto&& font : fonts)
+				font.second->uniform->set(*font.second->font.get(), font.first);
 			for (auto&& texture : textures)
-				texture.second->uniform->set(*texture.second->texture.get(), stage++);
-			internalBind(stage);
+				texture.second->uniform->set(*texture.second->texture.get(), texture.first);
+			internalBind();
 		}
 
 		std::shared_ptr<Shader> Material::getShader() const
 		{
 			return shader;
 		}
-		std::shared_ptr<Font> Material::getFont() const
+		std::shared_ptr<Font> Material::getFont(const uint8_t _slot) const
 		{
-			return font;
+			auto it = fonts.find(_slot);
+			if (it == fonts.end())
+				return nullptr;
+			return it->second->font;
 		}
-		std::shared_ptr<Texture> Material::getTexture(const std::string& _name) const
+		std::shared_ptr<Texture> Material::getTexture(const uint8_t _slot) const
 		{
-			auto it = textures.find(_name);
+			auto it = textures.find(_slot);
 			if (it == textures.end())
 				return nullptr;
 			return it->second->texture;
@@ -41,27 +43,45 @@ namespace se
 		{
 			shader = _shader;
 		}
-		void Material::setTexture(std::shared_ptr<Texture> _texture, const std::string& _name)
+		void Material::setTexture(std::shared_ptr<Texture> _texture, const std::string_view _uniformName, const uint8_t _slot)
 		{
-			if (_name.empty())
+			if (_uniformName.empty())
 			{
-				log::error("Empty material texture name!");
+				log::error("Empty material texture uniform name!");
 				return;
 			}
-			std::unique_ptr<MaterialTexture>& materialTexture = textures[_name];
+			std::unique_ptr<MaterialTexture>& materialTexture = textures[_slot];
 			if (!materialTexture)
 			{
 				materialTexture = std::make_unique<MaterialTexture>();
-				materialTexture->uniform = std::make_unique<Uniform>(_name, UniformType::Sampler);
+				materialTexture->uniform = std::make_unique<Uniform>(_uniformName, UniformType::Sampler);
 			}
 			materialTexture->texture = _texture;
 		}
-		void Material::setFont(std::shared_ptr<Font> _font)
+		void Material::setFont(std::shared_ptr<Font> _font, const std::string_view _uniformName, const uint8_t _slot)
 		{
-			if (!fontUniform)
-				fontUniform = std::make_unique<Uniform>("s_fontTex", UniformType::Sampler);
-			font = _font;
+			if (_uniformName.empty())
+			{
+				log::error("Empty material font uniform name!");
+				return;
+			}
+			std::unique_ptr<MaterialFont>& materialFont = fonts[_slot];
+			if (!materialFont)
+			{
+				materialFont = std::make_unique<MaterialFont>();
+				materialFont->uniform = std::make_unique<Uniform>(_uniformName, UniformType::Sampler);
+			}
+			materialFont->font = _font;
 			fontChangedSignal();
+		}
+
+		void Material::setLit(const bool _value)
+		{
+			lit = _value;
+		}
+		const bool Material::getLit() const
+		{
+			return lit;
 		}
 	}
 }

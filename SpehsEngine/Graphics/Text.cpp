@@ -213,7 +213,7 @@ namespace se
 			if (!primitiveMaterial)
 				return;
 
-			std::shared_ptr<Font> font = primitiveMaterial->getFont();
+			std::shared_ptr<Font> font = primitiveMaterial->getFont(0);
 			se_assert(font);
 			if (!font)
 				return;
@@ -356,7 +356,7 @@ namespace se
 			if (!primitiveMaterial)
 				return;
 
-			std::shared_ptr<Font> font = primitiveMaterial->getFont();
+			std::shared_ptr<Font> font = primitiveMaterial->getFont(0);
 			se_assert(font && font->ready());
 			if (!font || !font->ready())
 				return;

@@ -129,7 +129,8 @@ namespace se
 			bgfx::setTransform(reinterpret_cast<const void*>(&primitive->getTransformMatrix()));
 			_renderContext.defaultUniforms->setNormalMatrix(primitive->getNormalMatrix());
 			_renderContext.defaultUniforms->setPrimitiveColor(_renderInfo.primitiveColor);
-			_renderContext.lightBatch->bind();
+			if (_renderInfo.material->getLit())
+				_renderContext.lightBatch->bind();
 			_renderInfo.material->bind();
 
 			bgfx::IndexBufferHandle ibh = { getIndices()->bufferObject };

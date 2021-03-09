@@ -29,9 +29,9 @@ namespace se
 			{
 				return data.y;
 			}
-			glm::vec4 data = { 0.5f, 32.0f, 0.0f, 0.0f };
+			glm::vec4 data = { 32.0f, 0.6f, 0.0f, 0.0f };
 		};
-		enum class PhongTextureType
+		enum class PhongTextureType : uint8_t
 		{
 			Color,
 			Normal
@@ -51,7 +51,7 @@ namespace se
 
 		protected:
 
-			void internalBind(uint8_t stage) override;
+			void internalBind() override;
 		};
 
 
@@ -66,7 +66,7 @@ namespace se
 
 		protected:
 
-			void internalBind(uint8_t stage) override;
+			void internalBind() override;
 		};
 
 
@@ -76,9 +76,12 @@ namespace se
 
 			TextMaterial(DefaultShaderManager& _shaderManager);
 
+			void setFont(std::shared_ptr<Font> _font);
+			std::shared_ptr<Font> getFont() const;
+
 		protected:
 
-			virtual void internalBind(uint8_t stage) override;
+			virtual void internalBind() override;
 		};
 
 
@@ -96,7 +99,7 @@ namespace se
 
 		protected:
 
-			virtual void internalBind(uint8_t stage) override;
+			virtual void internalBind() override;
 
 			std::unique_ptr<Uniform> attributesUniform;
 			PhongAttributes attributes;
