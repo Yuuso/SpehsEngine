@@ -23,19 +23,18 @@ namespace se
 			Shape& operator=(Shape&& _other) = delete;
 
 
-			void generate(const unsigned int _numVertices, ShapeGenerator* _generator = nullptr);
-			void generate(const ShapeType _type, const unsigned int _resolution = 0, ShapeGenerator* _generator = nullptr);
+			void generate(const ShapeType _shapeType, const ShapeParameters _shapeParams = ShapeParameters(), ShapeGenerator* _generator = nullptr);
 
 			void setPrimitiveType(const PrimitiveType _primitiveType) override;
 			void setPrimitiveType(const PrimitiveType _primitiveType, ShapeGenerator& _generator);
-			void setVertices(std::shared_ptr<VertexBuffer> _vertices) override;
-			void setIndices(std::shared_ptr<IndexBuffer> _indices) override;
+			void setVertices(std::shared_ptr<VertexBuffer>) override;
+			void setIndices(std::shared_ptr<IndexBuffer>) override;
 
 		private:
 
 			void generateIndices(ShapeGenerator& _generator);
 
-			ShapeType type = ShapeType::Unknown;
+			ShapeType shapeType = ShapeType::Unknown;
 		};
 	}
 }

@@ -14,29 +14,14 @@ namespace se
 		{
 		}
 
-		void Shape::generate(const unsigned int _numVertices, ShapeGenerator* _generator)
+		void Shape::generate(const ShapeType _shapeType, const ShapeParameters _shapeParams, ShapeGenerator* _generator)
 		{
-			se_assert(_numVertices >= 3);
-			const unsigned int numVertices = std::max(3u, _numVertices);
-
-			ShapeType shapeType = (ShapeType)numVertices;
-			unsigned int resolution = 0;
-			if (numVertices >= (unsigned int)ShapeType::Circle)
-			{
-				shapeType = ShapeType::Circle;
-				resolution = numVertices;
-			}
-
-			generate(shapeType, resolution, _generator);
-		}
-		void Shape::generate(const ShapeType _type, const unsigned int _resolution, ShapeGenerator* _generator)
-		{
-			type = _type;
-			switch (type)
+			shapeType = _shapeType;
+			switch (shapeType)
 			{
 				case se::graphics::ShapeType::Unknown:
 				default:
-					se_assert_m(false, "Unknown shape type!");
+					log::error("Unknown shape type!");
 					return;
 
 				case se::graphics::ShapeType::Triangle:
@@ -79,13 +64,13 @@ namespace se
 
 			if (_generator)
 			{
-				Primitive::setVertices(_generator->getVertexBuffer(_type, _resolution));
+				Primitive::setVertices(_generator->getVertexBuffer(shapeType, _shapeParams));
 				generateIndices(*_generator);
 			}
 			else
 			{
 				ShapeGenerator localShapeGen;
-				Primitive::setVertices(localShapeGen.getVertexBuffer(_type, _resolution));
+				Primitive::setVertices(localShapeGen.getVertexBuffer(shapeType, _shapeParams));
 				generateIndices(localShapeGen);
 			}
 		}
@@ -100,13 +85,13 @@ namespace se
 			Primitive::setPrimitiveType(_primitiveType);
 			generateIndices(_generator);
 		}
-		void Shape::setVertices(std::shared_ptr<VertexBuffer> _vertices)
+		void Shape::setVertices(std::shared_ptr<VertexBuffer>)
 		{
-			se_assert_m(false, "Cannot set vertices for Shape primitive!");
+			se_assert_m(false, "Cannot directly set vertices for Shape primitive!");
 		}
 		void Shape::setIndices(std::shared_ptr<IndexBuffer>)
 		{
-			se_assert_m(false, "Cannot set indices for Shape primitive!");
+			se_assert_m(false, "Cannot directly set indices for Shape primitive!");
 		}
 
 		void Shape::generateIndices(ShapeGenerator& _generator)
@@ -114,7 +99,7 @@ namespace se
 			if (!getVertices() || getVertices()->size() == 0)
 				return;
 
-			Primitive::setIndices(_generator.getIndexBuffer(getVertices()->size(), type, getPrimitiveType()));
+			Primitive::setIndices(_generator.getIndexBuffer(getVertices()->size(), shapeType, getPrimitiveType()));
 		}
 	}
 }

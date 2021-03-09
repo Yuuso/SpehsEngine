@@ -14,118 +14,17 @@ namespace se
 			indexBufferCaches.clear();
 		}
 
-		std::shared_ptr<VertexBuffer> ShapeGenerator::getVertexBuffer(const size_t _numVertices)
-		{
-			if (_numVertices < 3)
-			{
-				log::error("Cannot generate a shape vertex buffer with less than 3 vertices!");
-				return nullptr;
-			}
-
-			ShapeType shapeType = static_cast<ShapeType>(_numVertices);
-			unsigned int resolution = 0;
-			if (_numVertices >= static_cast<size_t>(ShapeType::Circle))
-			{
-				shapeType = ShapeType::Circle;
-				resolution = static_cast<unsigned int>(_numVertices);
-			}
-
-			auto it = std::find_if(vertexBufferCaches.begin(), vertexBufferCaches.end(),
-								   [&](const std::unique_ptr<VertexBufferCache>& _vbc)
-								   {
-									   return _vbc->type == shapeType && _vbc->resolution == resolution;
-								   });
-			if (it != vertexBufferCaches.end())
-				return it->get()->buffer;
-
-
-			// Generate an equilateral convex polygon with the given amount of vertices
-
-			std::shared_ptr<VertexBuffer> newVertexBuffer = std::make_shared<VertexBuffer>();
-			VertexBuffer& newVertices = *newVertexBuffer.get();
-			using namespace VertexAttribute;
-			newVertices.setAttributes(Position
-									  | Normal
-									  | TexCoord0);
-
-			newVertices.resize(_numVertices);
-
-			// Position
-			{
-				// Initial rotation is set so that the "lowest" (bottom) line is horizontal
-				// firstPosition adjusts initial the rotation for even numbered polygons
-				float firstPosition;
-				if (_numVertices % 2)
-				{
-					firstPosition = 0;
-				}
-				else
-				{
-					firstPosition = (se::TWO_PI<float> / static_cast<float>(_numVertices)) / 2.0f;
-				}
-
-				glm::vec3& firstPositionVertex = newVertices.get<Position>(0);
-				firstPositionVertex = glm::vec3(cos(firstPosition), 0.0f, sin(firstPosition));
-
-				float minX = firstPositionVertex.x;
-				float minZ = firstPositionVertex.z;
-				float maxX = firstPositionVertex.x;
-				float maxZ = firstPositionVertex.z;
-
-				for (size_t i = 1; i < _numVertices; i++)
-				{
-					glm::vec3& positionVertex = newVertices.get<Position>(i);
-					positionVertex = glm::vec3(cos(firstPosition + i * (se::TWO_PI<float> / static_cast<float>(_numVertices))),
-											   0.0f,
-											   sin(firstPosition + i * (se::TWO_PI<float> / static_cast<float>(_numVertices))));
-					maxX = glm::max(maxX, positionVertex.x);
-					minX = glm::min(minX, positionVertex.x);
-					maxZ = glm::max(maxZ, positionVertex.z);
-					minZ = glm::min(minZ, positionVertex.z);
-				}
-
-				const float width = abs(maxX) + abs(minX);
-				const float height = abs(maxZ) + abs(minZ);
-				for (size_t i = 0; i < _numVertices; i++)
-				{
-					glm::vec3& positionVertex = newVertices.get<Position>(i);
-					positionVertex.x /= width;
-					positionVertex.z /= height;
-				}
-			}
-
-			// Normal
-			{
-				for (size_t i = 0; i < newVertices.size(); i++)
-				{
-					newVertices.get<Normal>(i) = glm::vec3(0.0f, 1.0f, 0.0f);
-				}
-			}
-
-			// UV
-			{
-				for (size_t i = 0; i < newVertices.size(); i++)
-				{
-					glm::vec2& texCoord = newVertices.get<TexCoord0>(i);
-					const glm::vec3& positionVertex = newVertices.get<Position>(i);
-					texCoord.x = (positionVertex.x + 0.5f);
-					texCoord.y = (-positionVertex.z + 0.5f);
-				}
-			}
-
-			vertexBufferCaches.push_back(std::make_unique<VertexBufferCache>(shapeType, resolution, newVertexBuffer));
-			return newVertexBuffer;
-		}
-		std::shared_ptr<VertexBuffer> ShapeGenerator::getVertexBuffer(const ShapeType _shapeType, const unsigned int _resolution)
+		std::shared_ptr<VertexBuffer> ShapeGenerator::getVertexBuffer(const ShapeType _shapeType, const ShapeParameters _shapeParams)
 		{
 			if (_shapeType >= ShapeType::Triangle && _shapeType <= ShapeType::Circle)
 			{
 				size_t numVertices = static_cast<size_t>(_shapeType);
-				if (_shapeType == ShapeType::Circle && _resolution >= static_cast<unsigned int>(numVertices))
+				unsigned int resolution = _shapeParams.resolution;
+				if (_shapeType == ShapeType::Circle && resolution >= static_cast<unsigned int>(numVertices))
 				{
-					numVertices = static_cast<size_t>(_resolution);
+					numVertices = static_cast<size_t>(resolution);
 				}
-				else if (_resolution > 0)
+				else if (resolution > 0)
 				{
 					if (_shapeType != ShapeType::Circle)
 					{
@@ -135,19 +34,132 @@ namespace se
 					{
 						log::warning("Shape: Minimum circle resolution is " + std::to_string(numVertices) + "!");
 					}
+					resolution = 0;
 				}
-				return getVertexBuffer(numVertices);
+
+				if (numVertices < 3)
+				{
+					log::error("Cannot generate a shape vertex buffer with less than 3 vertices!");
+					return nullptr;
+				}
+
+				ShapeType shapeType = static_cast<ShapeType>(numVertices);
+				if (numVertices >= static_cast<size_t>(ShapeType::Circle))
+				{
+					shapeType = ShapeType::Circle;
+					resolution = static_cast<unsigned int>(numVertices);
+				}
+
+				auto it = std::find_if(vertexBufferCaches.begin(), vertexBufferCaches.end(),
+									   [&](const std::unique_ptr<VertexBufferCache>& _vbc)
+									   {
+										   return _vbc->type == shapeType && _vbc->params == _shapeParams;
+									   });
+				if (it != vertexBufferCaches.end())
+					return it->get()->buffer;
+
+
+				// Generate an equilateral convex polygon with the given amount of vertices
+
+				std::shared_ptr<VertexBuffer> newVertexBuffer = std::make_shared<VertexBuffer>();
+				VertexBuffer& newVertices = *newVertexBuffer.get();
+				using namespace VertexAttribute;
+				VertexAttributeFlagsType attributes = Position | TexCoord0;
+				if (_shapeParams.generateNormals)
+					enableBit(attributes, Normal);
+				if (_shapeParams.generateTangents)
+				{
+					enableBit(attributes, Tangent);
+					enableBit(attributes, Bitangent);
+				}
+				newVertices.setAttributes(attributes);
+
+				newVertices.resize(numVertices);
+
+				// Position
+				{
+					// Initial rotation is set so that the "lowest" (bottom) line is horizontal
+					// firstPosition adjusts initial the rotation for even numbered polygons
+					float firstPosition;
+					if (numVertices % 2)
+					{
+						firstPosition = 0;
+					}
+					else
+					{
+						firstPosition = (se::TWO_PI<float> / static_cast<float>(numVertices)) / 2.0f;
+					}
+
+					glm::vec3& firstPositionVertex = newVertices.get<Position>(0);
+					firstPositionVertex = glm::vec3(cos(firstPosition), 0.0f, sin(firstPosition));
+
+					float minX = firstPositionVertex.x;
+					float minZ = firstPositionVertex.z;
+					float maxX = firstPositionVertex.x;
+					float maxZ = firstPositionVertex.z;
+
+					for (size_t i = 1; i < numVertices; i++)
+					{
+						glm::vec3& positionVertex = newVertices.get<Position>(i);
+						positionVertex = glm::vec3(cos(firstPosition + i * (se::TWO_PI<float> / static_cast<float>(numVertices))),
+												   0.0f,
+												   sin(firstPosition + i * (se::TWO_PI<float> / static_cast<float>(numVertices))));
+						maxX = glm::max(maxX, positionVertex.x);
+						minX = glm::min(minX, positionVertex.x);
+						maxZ = glm::max(maxZ, positionVertex.z);
+						minZ = glm::min(minZ, positionVertex.z);
+					}
+
+					const float width = abs(maxX) + abs(minX);
+					const float height = abs(maxZ) + abs(minZ);
+					for (size_t i = 0; i < numVertices; i++)
+					{
+						glm::vec3& positionVertex = newVertices.get<Position>(i);
+						positionVertex.x /= width;
+						positionVertex.z /= height;
+					}
+				}
+
+				// UV
+				{
+					for (size_t i = 0; i < newVertices.size(); i++)
+					{
+						glm::vec2& texCoord = newVertices.get<TexCoord0>(i);
+						const glm::vec3& positionVertex = newVertices.get<Position>(i);
+						texCoord.x = (positionVertex.x + 0.5f);
+						texCoord.y = (-positionVertex.z + 0.5f);
+					}
+				}
+
+				// Normal
+				if (_shapeParams.generateNormals)
+				{
+					for (size_t i = 0; i < newVertices.size(); i++)
+					{
+						newVertices.get<Normal>(i) = glm::vec3(0.0f, _shapeParams.invertNormals ? -1.0f : 1.0f, 0.0f);
+
+						// Tangents
+						if (_shapeParams.generateTangents)
+						{
+							newVertices.get<Tangent>(i) = glm::vec3(1.0f, 0.0f, 0.0f);
+							newVertices.get<Bitangent>(i) = glm::cross(newVertices.get<Normal>(i), newVertices.get<Tangent>(i));
+						}
+					}
+				}
+
+				vertexBufferCaches.push_back(std::make_unique<VertexBufferCache>(shapeType, _shapeParams, newVertexBuffer));
+				return newVertexBuffer;
 			}
 			else if (_shapeType == ShapeType::Cube)
 			{
 				constexpr unsigned int cubeResolution = 0;
-				if (_resolution != cubeResolution)
+				if (_shapeParams.resolution != cubeResolution)
 					log::warning("Shape: Cube doesn't have a resolution!");
 
 				auto it = std::find_if(vertexBufferCaches.begin(), vertexBufferCaches.end(),
 									   [&](const std::unique_ptr<VertexBufferCache>& _vbc)
 									   {
-										   return _vbc->type == _shapeType && _vbc->resolution == cubeResolution;
+										   return _vbc->type == _shapeType && _vbc->params == _shapeParams;
 									   });
 				if (it != vertexBufferCaches.end())
 					return it->get()->buffer;
@@ -156,9 +168,15 @@ namespace se
 				std::shared_ptr<VertexBuffer> newVertexBuffer = std::make_shared<VertexBuffer>();
 				VertexBuffer& newVertices = *newVertexBuffer.get();
 				using namespace VertexAttribute;
-				newVertices.setAttributes(Position
-										  | Normal
-										  | TexCoord0);
+				VertexAttributeFlagsType attributes = Position | TexCoord0;
+				if (_shapeParams.generateNormals)
+					enableBit(attributes, Normal);
+				if (_shapeParams.generateTangents)
+				{
+					enableBit(attributes, Tangent);
+					enableBit(attributes, Bitangent);
+				}
+				newVertices.setAttributes(attributes);
 
 				const size_t numVertices = 24;
 				newVertices.resize(numVertices);
@@ -167,145 +185,199 @@ namespace se
 #pragma region cube_vertices
 				// Y+ face
 				newVertices.get<Position>(currentVertex) = glm::vec3(-0.5f, 0.5f, -0.5f);
-				newVertices.get<Normal>(currentVertex) = glm::vec3(0.0f, 1.0f, 0.0f);
 				newVertices.get<TexCoord0>(currentVertex) = glm::vec2(0.0f, 0.0f);
 				currentVertex++;
 
 				newVertices.get<Position>(currentVertex) = glm::vec3(0.5f, 0.5f, -0.5f);
-				newVertices.get<Normal>(currentVertex) = glm::vec3(0.0f, 1.0f, 0.0f);
 				newVertices.get<TexCoord0>(currentVertex) = glm::vec2(1.0f, 0.0f);
 				currentVertex++;
 
 				newVertices.get<Position>(currentVertex) = glm::vec3(0.5f, 0.5f, 0.5f);
-				newVertices.get<Normal>(currentVertex) = glm::vec3(0.0f, 1.0f, 0.0f);
 				newVertices.get<TexCoord0>(currentVertex) = glm::vec2(1.0f, 1.0f);
 				currentVertex++;
 
 				newVertices.get<Position>(currentVertex) = glm::vec3(-0.5f, 0.5f, 0.5f);
-				newVertices.get<Normal>(currentVertex) = glm::vec3(0.0f, 1.0f, 0.0f);
 				newVertices.get<TexCoord0>(currentVertex) = glm::vec2(0.0f, 1.0f);
 				currentVertex++;
+
+				for (size_t vertex = currentVertex - 4; vertex < currentVertex; vertex++)
+				{
+					if (_shapeParams.generateNormals)
+					{
+						newVertices.get<Normal>(vertex) = glm::vec3(0.0f, _shapeParams.invertNormals ? -1.0f : 1.0f, 0.0f);
+						if (_shapeParams.generateTangents)
+						{
+							newVertices.get<Tangent>(vertex) = glm::vec3(1.0f, 0.0f, 0.0f);
+							newVertices.get<Bitangent>(vertex) = glm::cross(newVertices.get<Normal>(vertex), newVertices.get<Tangent>(vertex));
+						}
+					}
+				}
 
 				// Y- face
 				newVertices.get<Position>(currentVertex) = glm::vec3(-0.5f, -0.5f, -0.5f);
-				newVertices.get<Normal>(currentVertex) = glm::vec3(0.0f, -1.0f, 0.0f);
 				newVertices.get<TexCoord0>(currentVertex) = glm::vec2(0.0f, 0.0f);
 				currentVertex++;
 
 				newVertices.get<Position>(currentVertex) = glm::vec3(-0.5f, -0.5f, 0.5f);
-				newVertices.get<Normal>(currentVertex) = glm::vec3(0.0f, -1.0f, 0.0f);
 				newVertices.get<TexCoord0>(currentVertex) = glm::vec2(1.0f, 0.0f);
 				currentVertex++;
 
 				newVertices.get<Position>(currentVertex) = glm::vec3(0.5f, -0.5f, 0.5f);
-				newVertices.get<Normal>(currentVertex) = glm::vec3(0.0f, -1.0f, 0.0f);
 				newVertices.get<TexCoord0>(currentVertex) = glm::vec2(1.0f, 1.0f);
 				currentVertex++;
 
 				newVertices.get<Position>(currentVertex) = glm::vec3(0.5f, -0.5f, -0.5f);
-				newVertices.get<Normal>(currentVertex) = glm::vec3(0.0f, -1.0f, 0.0f);
 				newVertices.get<TexCoord0>(currentVertex) = glm::vec2(0.0f, 1.0f);
 				currentVertex++;
+
+				for (size_t vertex = currentVertex - 4; vertex < currentVertex; vertex++)
+				{
+					if (_shapeParams.generateNormals)
+					{
+						newVertices.get<Normal>(vertex) = glm::vec3(0.0f, _shapeParams.invertNormals ? 1.0f : -1.0f, 0.0f);
+						if (_shapeParams.generateTangents)
+						{
+							newVertices.get<Tangent>(vertex) = glm::vec3(0.0f, 0.0f, 1.0f);
+							newVertices.get<Bitangent>(vertex) = glm::cross(newVertices.get<Normal>(vertex), newVertices.get<Tangent>(vertex));
+						}
+					}
+				}
 
 				// X+ face
 				newVertices.get<Position>(currentVertex) = glm::vec3(0.5f, -0.5f, -0.5f);
-				newVertices.get<Normal>(currentVertex) = glm::vec3(1.0f, 0.0f, 0.0f);
 				newVertices.get<TexCoord0>(currentVertex) = glm::vec2(0.0f, 0.0f);
 				currentVertex++;
 
 				newVertices.get<Position>(currentVertex) = glm::vec3(0.5f, -0.5f, 0.5f);
-				newVertices.get<Normal>(currentVertex) = glm::vec3(1.0f, 0.0f, 0.0f);
 				newVertices.get<TexCoord0>(currentVertex) = glm::vec2(1.0f, 0.0f);
 				currentVertex++;
 
 				newVertices.get<Position>(currentVertex) = glm::vec3(0.5f, 0.5f, 0.5f);
-				newVertices.get<Normal>(currentVertex) = glm::vec3(1.0f, 0.0f, 0.0f);
 				newVertices.get<TexCoord0>(currentVertex) = glm::vec2(1.0f, 1.0f);
 				currentVertex++;
 
 				newVertices.get<Position>(currentVertex) = glm::vec3(0.5f, 0.5f, -0.5f);
-				newVertices.get<Normal>(currentVertex) = glm::vec3(1.0f, 0.0f, 0.0f);
 				newVertices.get<TexCoord0>(currentVertex) = glm::vec2(0.0f, 1.0f);
 				currentVertex++;
 
+				for (size_t vertex = currentVertex - 4; vertex < currentVertex; vertex++)
+				{
+					if (_shapeParams.generateNormals)
+					{
+						newVertices.get<Normal>(vertex) = glm::vec3(_shapeParams.invertNormals ? -1.0f : 1.0f, 0.0f, 0.0f);
+						if (_shapeParams.generateTangents)
+						{
+							newVertices.get<Tangent>(vertex) = glm::vec3(0.0f, 0.0f, 1.0f);
+							newVertices.get<Bitangent>(vertex) = glm::cross(newVertices.get<Normal>(vertex), newVertices.get<Tangent>(vertex));
+						}
+					}
+				}
+
 				// X- face
 				newVertices.get<Position>(currentVertex) = glm::vec3(-0.5f, -0.5f, 0.5f);
-				newVertices.get<Normal>(currentVertex) = glm::vec3(-1.0f, 0.0f, 0.0f);
 				newVertices.get<TexCoord0>(currentVertex) = glm::vec2(0.0f, 0.0f);
 				currentVertex++;
 
 				newVertices.get<Position>(currentVertex) = glm::vec3(-0.5f, -0.5f, -0.5f);
-				newVertices.get<Normal>(currentVertex) = glm::vec3(-1.0f, 0.0f, 0.0f);
 				newVertices.get<TexCoord0>(currentVertex) = glm::vec2(1.0f, 0.0f);
 				currentVertex++;
 
 				newVertices.get<Position>(currentVertex) = glm::vec3(-0.5f, 0.5f, -0.5f);
-				newVertices.get<Normal>(currentVertex) = glm::vec3(-1.0f, 0.0f, 0.0f);
 				newVertices.get<TexCoord0>(currentVertex) = glm::vec2(1.0f, 1.0f);
 				currentVertex++;
 
 				newVertices.get<Position>(currentVertex) = glm::vec3(-0.5f, 0.5f, 0.5f);
-				newVertices.get<Normal>(currentVertex) = glm::vec3(-1.0f, 0.0f, 0.0f);
 				newVertices.get<TexCoord0>(currentVertex) = glm::vec2(0.0f, 1.0f);
 				currentVertex++;
 
+				for (size_t vertex = currentVertex - 4; vertex < currentVertex; vertex++)
+				{
+					if (_shapeParams.generateNormals)
+					{
+						newVertices.get<Normal>(vertex) = glm::vec3(_shapeParams.invertNormals ? 1.0f : -1.0f, 0.0f, 0.0f);
+						if (_shapeParams.generateTangents)
+						{
+							newVertices.get<Tangent>(vertex) = glm::vec3(0.0f, 0.0f, -1.0f);
+							newVertices.get<Bitangent>(vertex) = glm::cross(newVertices.get<Normal>(vertex), newVertices.get<Tangent>(vertex));
+						}
+					}
+				}
+
 				// Z+ face
 				newVertices.get<Position>(currentVertex) = glm::vec3(0.5f, -0.5f, 0.5f);
-				newVertices.get<Normal>(currentVertex) = glm::vec3(0.0f, 0.0f, 1.0f);
 				newVertices.get<TexCoord0>(currentVertex) = glm::vec2(0.0f, 0.0f);
 				currentVertex++;
 
 				newVertices.get<Position>(currentVertex) = glm::vec3(-0.5f, -0.5f, 0.5f);
-				newVertices.get<Normal>(currentVertex) = glm::vec3(0.0f, 0.0f, 1.0f);
 				newVertices.get<TexCoord0>(currentVertex) = glm::vec2(1.0f, 0.0f);
 				currentVertex++;
 
 				newVertices.get<Position>(currentVertex) = glm::vec3(-0.5f, 0.5f, 0.5f);
-				newVertices.get<Normal>(currentVertex) = glm::vec3(0.0f, 0.0f, 1.0f);
 				newVertices.get<TexCoord0>(currentVertex) = glm::vec2(1.0f, 1.0f);
 				currentVertex++;
 
 				newVertices.get<Position>(currentVertex) = glm::vec3(0.5f, 0.5f, 0.5f);
-				newVertices.get<Normal>(currentVertex) = glm::vec3(0.0f, 0.0f, 1.0f);
 				newVertices.get<TexCoord0>(currentVertex) = glm::vec2(0.0f, 1.0f);
 				currentVertex++;
 
+				for (size_t vertex = currentVertex - 4; vertex < currentVertex; vertex++)
+				{
+					if (_shapeParams.generateNormals)
+					{
+						newVertices.get<Normal>(vertex) = glm::vec3(0.0f, 0.0f, _shapeParams.invertNormals ? -1.0f : 1.0f);
+						if (_shapeParams.generateTangents)
+						{
+							newVertices.get<Tangent>(vertex) = glm::vec3(-1.0f, 0.0f, 0.0f);
+							newVertices.get<Bitangent>(vertex) = glm::cross(newVertices.get<Normal>(vertex), newVertices.get<Tangent>(vertex));
+						}
+					}
+				}
+
 				// Z- face
 				newVertices.get<Position>(currentVertex) = glm::vec3(-0.5f, -0.5f, -0.5f);
-				newVertices.get<Normal>(currentVertex) = glm::vec3(0.0f, 0.0f, -1.0f);
 				newVertices.get<TexCoord0>(currentVertex) = glm::vec2(0.0f, 0.0f);
 				currentVertex++;
 
 				newVertices.get<Position>(currentVertex) = glm::vec3(0.5f, -0.5f, -0.5f);
-				newVertices.get<Normal>(currentVertex) = glm::vec3(0.0f, 0.0f, -1.0f);
 				newVertices.get<TexCoord0>(currentVertex) = glm::vec2(1.0f, 0.0f);
 				currentVertex++;
 
 				newVertices.get<Position>(currentVertex) = glm::vec3(0.5f, 0.5f, -0.5f);
-				newVertices.get<Normal>(currentVertex) = glm::vec3(0.0f, 0.0f, -1.0f);
 				newVertices.get<TexCoord0>(currentVertex) = glm::vec2(1.0f, 1.0f);
 				currentVertex++;
 
 				newVertices.get<Position>(currentVertex) = glm::vec3(-0.5f, 0.5f, -0.5f);
-				newVertices.get<Normal>(currentVertex) = glm::vec3(0.0f, 0.0f, -1.0f);
 				newVertices.get<TexCoord0>(currentVertex) = glm::vec2(0.0f, 1.0f);
 				currentVertex++;
+
+				for (size_t vertex = currentVertex - 4; vertex < currentVertex; vertex++)
+				{
+					if (_shapeParams.generateNormals)
+					{
+						newVertices.get<Normal>(vertex) = glm::vec3(0.0f, 0.0f, _shapeParams.invertNormals ? 1.0f : -1.0f);
+						if (_shapeParams.generateTangents)
+						{
+							newVertices.get<Tangent>(vertex) = glm::vec3(1.0f, 0.0f, 0.0f);
+							newVertices.get<Bitangent>(vertex) = glm::cross(newVertices.get<Normal>(vertex), newVertices.get<Tangent>(vertex));
+						}
+					}
+				}
 #pragma endregion
 
-				vertexBufferCaches.push_back(std::make_unique<VertexBufferCache>(_shapeType, cubeResolution, newVertexBuffer));
+				vertexBufferCaches.push_back(std::make_unique<VertexBufferCache>(_shapeType, _shapeParams, newVertexBuffer));
 				return newVertexBuffer;
 			}
 			else if (_shapeType == ShapeType::Sphere)
 			{
 				constexpr unsigned int minRes = 8;
-				if (_resolution > 0 && _resolution < minRes)
+				if (_shapeParams.resolution > 0 && _shapeParams.resolution < minRes)
 					log::warning("Shape: Minimum sphere resolution is " + std::to_string(minRes) + "!");
-				const unsigned int resolution = _resolution >= minRes ? _resolution : 28;
+				const unsigned int resolution = _shapeParams.resolution >= minRes ? _shapeParams.resolution : 28;
 
 				auto it = std::find_if(vertexBufferCaches.begin(), vertexBufferCaches.end(),
 									   [&](const std::unique_ptr<VertexBufferCache>& _vbc)
 									   {
-										   return _vbc->type == _shapeType && _vbc->resolution == resolution;
+										   return _vbc->type == _shapeType && _vbc->params == _shapeParams;
 									   });
 				if (it != vertexBufferCaches.end())
 					return it->get()->buffer;
@@ -314,9 +386,15 @@ namespace se
 				std::shared_ptr<VertexBuffer> newVertexBuffer = std::make_shared<VertexBuffer>();
 				VertexBuffer& newVertices = *newVertexBuffer.get();
 				using namespace VertexAttribute;
-				newVertices.setAttributes(Position
-										  | Normal
-										  | TexCoord0);
+				VertexAttributeFlagsType attributes = Position | TexCoord0;
+				if (_shapeParams.generateNormals)
+					enableBit(attributes, Normal);
+				if (_shapeParams.generateTangents)
+				{
+					enableBit(attributes, Tangent);
+					enableBit(attributes, Bitangent);
+				}
+				newVertices.setAttributes(attributes);
 
 				const size_t numVertices = resolution * resolution;
 				newVertices.resize(numVertices);
@@ -330,19 +408,32 @@ namespace se
 				const float res = static_cast<float>(resolution - 1);
 				for (float i = 0.0f; i <= res; i += 1.0f)
 				{
-					const float lat = se::lerp(0.0f, TWO_PI<float>, i / res);
+					const float phi = se::lerp(0.0f, TWO_PI<float>, i / res);
 					for (float j = 0.0f; j <= res; j += 1.0f)
 					{
-						const float lon = se::lerp(0.0f, PI<float>, j / res);
+						const float theta = se::lerp(0.0f, PI<float>, j / res);
 
-						newVertices.get<Position>(currentVertex) = glm::vec3(radius * sinf(lon) * cosf(lat), radius * cosf(lon), radius * sinf(lon) * sinf(lat));
-						newVertices.get<Normal>(currentVertex) = glm::normalize(newVertices.get<Position>(currentVertex));
+						newVertices.get<Position>(currentVertex) = glm::vec3(radius * sinf(theta) * cosf(phi),
+																			 radius * cosf(theta),
+																			 radius * sinf(theta) * sinf(phi));
 						newVertices.get<TexCoord0>(currentVertex) = glm::vec2(i / resolution, j / resolution);
+						if (_shapeParams.generateNormals)
+						{
+							newVertices.get<Normal>(currentVertex) = glm::normalize(newVertices.get<Position>(currentVertex)) * (_shapeParams.invertNormals ? -1.0f : 1.0f);
+							if (_shapeParams.generateTangents)
+							{
+								if (theta == 0.0f || theta == PI<float>)
+									newVertices.get<Tangent>(currentVertex) = glm::vec3(1.0f, 0.0f, 0.0f);
+								else
+									newVertices.get<Tangent>(currentVertex) = glm::vec3(-sinf(phi), 0, cosf(phi));
+								newVertices.get<Bitangent>(currentVertex) = glm::cross(newVertices.get<Normal>(currentVertex), newVertices.get<Tangent>(currentVertex));
+							}
+						}
 						currentVertex++;
 					}
 				}
 
-				vertexBufferCaches.push_back(std::make_unique<VertexBufferCache>(_shapeType, resolution, newVertexBuffer));
+				vertexBufferCaches.push_back(std::make_unique<VertexBufferCache>(_shapeType, _shapeParams, newVertexBuffer));
 				return newVertexBuffer;
 			}
 			else

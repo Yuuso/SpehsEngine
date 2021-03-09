@@ -178,8 +178,8 @@ namespace se
 
 		struct TextDimensions
 		{
-			glm::vec2 offsetFromOrigin;
-			glm::vec2 dimensions;
+			glm::vec2 offsetFromOrigin; // Offset to top left from pen origin
+			glm::vec2 dimensions;		// Total width and height
 		};
 
 		enum class ShapeType
@@ -201,6 +201,22 @@ namespace se
 			// Capsule
 			// Cylinder
 			// Cone
+		};
+
+		struct ShapeParameters
+		{
+			bool operator==(const ShapeParameters& _other) const
+			{
+				return resolution == _other.resolution
+					&& generateNormals == _other.generateNormals
+					&& invertNormals == _other.invertNormals
+					&& generateTangents == _other.generateTangents;
+			}
+
+			unsigned int resolution = 0;
+			bool generateNormals = false;
+			bool invertNormals = false;
+			bool generateTangents = false;
 		};
 	}
 }

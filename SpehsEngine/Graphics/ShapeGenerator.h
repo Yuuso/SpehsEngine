@@ -27,8 +27,7 @@ namespace se
 
 			void clear();
 
-			std::shared_ptr<VertexBuffer> getVertexBuffer(const size_t _numVertices);
-			std::shared_ptr<VertexBuffer> getVertexBuffer(const ShapeType _type, const unsigned int _resolution);
+			std::shared_ptr<VertexBuffer> getVertexBuffer(const ShapeType _shapeType, const ShapeParameters _shapeParams);
 			std::shared_ptr<IndexBuffer> getIndexBuffer(const size_t _numVertices, const ShapeType _shapeType, const PrimitiveType _primitiveType);
 
 		private:
@@ -36,8 +35,8 @@ namespace se
 			struct VertexBufferCache
 			{
 				VertexBufferCache() = delete;
-				VertexBufferCache(const ShapeType _type, const unsigned int _resolution, std::shared_ptr<VertexBuffer> _buffer)
-					: type(_type), resolution(_resolution), buffer(_buffer) {}
+				VertexBufferCache(const ShapeType _shapeType, const ShapeParameters _params, std::shared_ptr<VertexBuffer> _buffer)
+					: type(_shapeType), params(_params), buffer(_buffer) {}
 				~VertexBufferCache() = default;
 				VertexBufferCache(const VertexBufferCache& _other) = delete;
 				VertexBufferCache& operator=(const VertexBufferCache& _other) = delete;
@@ -45,7 +44,7 @@ namespace se
 				VertexBufferCache& operator=(VertexBufferCache&& _other) = delete;
 
 				const ShapeType type;
-				const unsigned int resolution;
+				const ShapeParameters params;
 				std::shared_ptr<VertexBuffer> buffer;
 			};
 			struct IndexBufferCache
