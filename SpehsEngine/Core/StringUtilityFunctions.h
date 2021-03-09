@@ -20,9 +20,15 @@ namespace se
 		return formatStringImpl(f % std::forward<T>(t), std::forward<Args>(args)...);
 	}
 	template<typename... Arguments>
-	inline std::string formatString(const std::string_view format, Arguments&&... args)
+	inline std::string formatString(const std::string& format, Arguments&&... args)
 	{
-		boost::format boostFormat(format.data());
+		boost::format boostFormat(format.c_str());
+		return formatStringImpl(boostFormat, std::forward<Arguments>(args)...);
+	}
+	template<typename... Arguments>
+	inline std::string formatString(const char* const format, Arguments&&... args)
+	{
+		boost::format boostFormat(format);
 		return formatStringImpl(boostFormat, std::forward<Arguments>(args)...);
 	}
 
