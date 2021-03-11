@@ -30,6 +30,11 @@ namespace se
 		{
 			model->foreachPrimitive(_fn);
 		}
+		void ModelInstance::preRender()
+		{
+			if (model->activeAnimation)
+				model->updateAnimation();
+		}
 		void ModelInstance::postRender()
 		{
 			model->reloaded = false;

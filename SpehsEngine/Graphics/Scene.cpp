@@ -169,6 +169,7 @@ namespace se
 								this->add(_primitive);
 						});
 				}
+				models[i]->preRender();
 				i++;
 			}
 

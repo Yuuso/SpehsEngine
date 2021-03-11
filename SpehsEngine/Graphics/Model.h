@@ -4,6 +4,7 @@
 #include "glm/gtc/quaternion.hpp"
 #include "glm/vec3.hpp"
 #include "SpehsEngine/Core/Color.h"
+#include "SpehsEngine/Graphics/Internal/Animation.h"
 #include "SpehsEngine/Graphics/Internal/Mesh.h"
 #include "SpehsEngine/Graphics/Internal/ModelNode.h"
 #include "SpehsEngine/Graphics/Material.h"
@@ -34,6 +35,9 @@ namespace se
 
 			void							loadModelData(std::shared_ptr<ModelData> _modelData);
 			void							reloadModeData();
+
+			void							startAnimation(const std::string_view _name);
+			void							stopAnimation();
 
 			void							foreachPrimitive(std::function<void(Primitive&)> _fn);
 			const Primitive*				getPrimitive(const std::string_view _meshName) const;
@@ -70,6 +74,9 @@ namespace se
 		private:
 
 			friend class ModelInstance;
+			friend class ModelNode;
+
+			void							updateAnimation();
 
 			ModelNode						rootNode;
 
@@ -78,12 +85,16 @@ namespace se
 			bool							reloaded = false;
 			size_t							numMaterialSlots = 0;
 
+			std::string						activeAnimationName;
+			const Animation*				activeAnimation = nullptr;
+
 			glm::vec3						position = glm::vec3(0.0f);
 			glm::vec3						scale = glm::vec3(1.0f);
 			glm::quat						rotation = glm::vec3(0.0f);
 
 			std::shared_ptr<ModelData>		modelData;
 			std::vector<std::shared_ptr<Material>> materials;
+			std::shared_ptr<std::vector<Animation>> animations;
 
 			boost::signals2::signal<void(void)> destroyedSignal;
 			boost::signals2::scoped_connection modelDataLoadedConnection;

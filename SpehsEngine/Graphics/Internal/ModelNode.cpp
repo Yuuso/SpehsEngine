@@ -32,8 +32,27 @@ namespace se
 		glm::mat4 ModelNode::getTransform() const
 		{
 			if (parent)
-				return parent->getTransform() * transform;
-			return glm::translate(model.getPosition()) * glm::mat4_cast(model.getRotation()) * glm::scale(model.getScale()) * transform;
+				return parent->getTransform() * getLocalTransform();
+			return glm::translate(model.getPosition()) * glm::mat4_cast(model.getRotation()) * glm::scale(model.getScale()) * getLocalTransform();
+		}
+
+		glm::mat4 ModelNode::getLocalTransform() const
+		{
+			if (model.activeAnimation)
+			{
+				auto it = model.activeAnimation->channels.find(name);
+				if (it == model.activeAnimation->channels.end())
+					return transform;
+
+				const float timeInSeconds = time::getRunTime().asSeconds();
+				const float timeInFrames = timeInSeconds * model.activeAnimation->framesPerSeconds;
+				const float animTime = static_cast<float>(fmod(timeInFrames, model.activeAnimation->numFrames));
+				return makeTransform(it->second, animTime);
+			}
+			else
+			{
+				return transform;
+			}
 		}
 
 		void ModelNode::foreachMesh(std::function<void(Primitive&)> _fn)

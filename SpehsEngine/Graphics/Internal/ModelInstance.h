@@ -26,6 +26,7 @@ namespace se
 			const bool wasReloaded() const;
 			const bool wasDestroyed() const;
 			void foreachPrimitive(std::function<void(Primitive&)> _fn);
+			void preRender();
 			void postRender();
 
 		private:

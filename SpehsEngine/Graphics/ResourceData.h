@@ -3,6 +3,7 @@
 // TODO: Internal
 
 #include "bgfx/bgfx.h" // ?!
+#include "SpehsEngine/Graphics/Internal/Animation.h"
 #include "SpehsEngine/Graphics/Internal/FontMetrics.h"
 #include "SpehsEngine/Graphics/Internal/ResourceHandle.h"
 #include "SpehsEngine/Graphics/Types.h"
@@ -62,6 +63,8 @@ namespace se
 				std::shared_ptr<IndexBuffer> indexBuffer;
 			};
 			std::vector<std::unique_ptr<MeshInfo>> meshes;
+
+			std::shared_ptr<std::vector<Animation>> animations;
 		};
 	}
 }

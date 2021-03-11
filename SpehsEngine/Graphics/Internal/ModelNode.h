@@ -30,6 +30,8 @@ namespace se
 
 		private:
 
+			glm::mat4 getLocalTransform() const;
+
 			const Model& model;
 			const ModelNode* parent;
 		};

@@ -1,16 +1,17 @@
 #include "stdafx.h"
 #include "SpehsEngine/Graphics/ModelData.h"
 
-#include <assimp/config.h>
-#include <assimp/matrix4x4.h>
-#include <assimp/Importer.hpp>
-#include <assimp/scene.h>
-#include <assimp/postprocess.h>
+#include "assimp/config.h"
+#include "assimp/matrix4x4.h"
+#include "assimp/Importer.hpp"
+#include "assimp/scene.h"
+#include "assimp/postprocess.h"
 
 #define GLM_ENABLE_EXPERIMENTAL
-#include <glm/mat4x4.hpp>
-#include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtx/transform.hpp>
+#include "glm/mat4x4.hpp"
+#include "glm/gtc/matrix_transform.hpp"
+#include "glm/gtx/transform.hpp"
+#include "glm/gtc/type_ptr.hpp"
 
 
 namespace se
@@ -48,10 +49,7 @@ namespace se
 			for (size_t i = 0; i < _node.mNumMeshes; i++)
 				_modelNode.meshIndices[i] = _node.mMeshes[i];
 
-			_modelNode.transform[0][0] = _node.mTransformation.a1; _modelNode.transform[0][1] = _node.mTransformation.b1;  _modelNode.transform[0][2] = _node.mTransformation.c1; _modelNode.transform[0][3] = _node.mTransformation.d1;
-			_modelNode.transform[1][0] = _node.mTransformation.a2; _modelNode.transform[1][1] = _node.mTransformation.b2;  _modelNode.transform[1][2] = _node.mTransformation.c2; _modelNode.transform[1][3] = _node.mTransformation.d2;
-			_modelNode.transform[2][0] = _node.mTransformation.a3; _modelNode.transform[2][1] = _node.mTransformation.b3;  _modelNode.transform[2][2] = _node.mTransformation.c3; _modelNode.transform[2][3] = _node.mTransformation.d3;
-			_modelNode.transform[3][0] = _node.mTransformation.a4; _modelNode.transform[3][1] = _node.mTransformation.b4;  _modelNode.transform[3][2] = _node.mTransformation.c4; _modelNode.transform[3][3] = _node.mTransformation.d4;
+			_modelNode.transform = glm::transpose(glm::make_mat4(&_node.mTransformation.a1));
 
 			_modelNode.children.resize(_node.mNumChildren);
 			for (unsigned int i = 0; i < _node.mNumChildren; i++)
@@ -67,8 +65,11 @@ namespace se
 			Assimp::Importer importer;
 			constexpr int maxVertices = UINT16_MAX;
 			constexpr int maxIndices = UINT16_MAX;
+			constexpr int maxWeights = 4;
+			constexpr int maxBones = 32;
 			importer.SetPropertyInteger(AI_CONFIG_PP_SLM_VERTEX_LIMIT, maxVertices);
 			importer.SetPropertyInteger(AI_CONFIG_PP_SLM_TRIANGLE_LIMIT, maxIndices / 3);
+			importer.SetPropertyInteger(AI_CONFIG_PP_LBW_MAX_WEIGHTS, maxWeights);
 			const aiScene* scene = importer.ReadFile(_path,
 				  aiProcess_CalcTangentSpace
 				| aiProcess_JoinIdenticalVertices
@@ -77,6 +78,7 @@ namespace se
 				| aiProcess_SplitLargeMeshes
 				| aiProcess_LimitBoneWeights
 				| aiProcess_ValidateDataStructure
+				//| aiProcess_FixInfacingNormals
 				| aiProcess_PopulateArmatureData
 				| aiProcess_SortByPType
 				| aiProcess_FindDegenerates
@@ -84,6 +86,8 @@ namespace se
 				| aiProcess_GenUVCoords
 				//| aiProcess_OptimizeMeshes
 				//| aiProcess_OptimizeGraph
+				//| aiProcess_FlipUVs
+				| aiProcess_FlipWindingOrder		// No idea why this is needed, SpehsEngine is CCW by default
 				| aiProcess_SplitByBoneCount
 				| aiProcess_GlobalScale
 				);
@@ -191,6 +195,50 @@ namespace se
 						const unsigned int faceindex = face.mIndices[indexIndex];
 						se_assert(faceindex < std::numeric_limits<IndexType>::max());
 						mesh.indexBuffer->operator[](index++) = static_cast<IndexType>(faceindex);
+					}
+				}
+			}
+
+			if (scene->mNumAnimations > 0)
+			{
+				resource->animations = std::make_shared<std::vector<Animation>>();
+				resource->animations->resize(scene->mNumAnimations);
+			}
+			for (size_t animationIndex = 0; animationIndex < scene->mNumAnimations; animationIndex++)
+			{
+				const aiAnimation& sceneAnim = *scene->mAnimations[animationIndex];
+				Animation& animation = resource->animations->at(animationIndex);
+
+				animation.name = sceneAnim.mName.C_Str();
+				animation.numFrames = static_cast<int>(sceneAnim.mDuration);
+				animation.framesPerSeconds = sceneAnim.mTicksPerSecond != 0.0 ? static_cast<float>(sceneAnim.mTicksPerSecond) : 30.0f;
+
+				for (size_t channelIndex = 0; channelIndex < sceneAnim.mNumChannels; channelIndex++)
+				{
+					AnimationNode& animNode = animation.channels[sceneAnim.mChannels[channelIndex]->mNodeName.C_Str()];
+
+					animNode.positionKeys.resize(sceneAnim.mChannels[channelIndex]->mNumPositionKeys);
+					for (size_t posKey = 0; posKey < sceneAnim.mChannels[channelIndex]->mNumPositionKeys; posKey++)
+					{
+						animNode.positionKeys[posKey].first = static_cast<float>(sceneAnim.mChannels[channelIndex]->mPositionKeys[posKey].mTime);
+						animNode.positionKeys[posKey].second = glm::make_vec3(&sceneAnim.mChannels[channelIndex]->mPositionKeys[posKey].mValue.x);
+					}
+
+					animNode.rotationKeys.resize(sceneAnim.mChannels[channelIndex]->mNumRotationKeys);
+					for (size_t rotKey = 0; rotKey < sceneAnim.mChannels[channelIndex]->mNumRotationKeys; rotKey++)
+					{
+						animNode.rotationKeys[rotKey].first = static_cast<float>(sceneAnim.mChannels[channelIndex]->mRotationKeys[rotKey].mTime);
+						animNode.rotationKeys[rotKey].second = glm::quat(sceneAnim.mChannels[channelIndex]->mRotationKeys[rotKey].mValue.w,
+																		 sceneAnim.mChannels[channelIndex]->mRotationKeys[rotKey].mValue.x,
+																		 sceneAnim.mChannels[channelIndex]->mRotationKeys[rotKey].mValue.y,
+																		 sceneAnim.mChannels[channelIndex]->mRotationKeys[rotKey].mValue.z);
+					}
+
+					animNode.scalingKeys.resize(sceneAnim.mChannels[channelIndex]->mNumScalingKeys);
+					for (size_t scaleKey = 0; scaleKey < sceneAnim.mChannels[channelIndex]->mNumScalingKeys; scaleKey++)
+					{
+						animNode.scalingKeys[scaleKey].first = static_cast<float>(sceneAnim.mChannels[channelIndex]->mScalingKeys[scaleKey].mTime);
+						animNode.scalingKeys[scaleKey].second = glm::make_vec3(&sceneAnim.mChannels[channelIndex]->mScalingKeys[scaleKey].mValue.x);
 					}
 				}
 			}

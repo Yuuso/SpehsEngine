@@ -154,6 +154,7 @@
     <ClInclude Include="CharacterSet.h" />
     <ClInclude Include="FontManager.h" />
     <ClInclude Include="IndexBuffer.h" />
+    <ClInclude Include="Internal\Animation.h" />
     <ClInclude Include="Internal\Batch.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="GraphicsLib.h" />
@@ -215,6 +216,7 @@
     <ClCompile Include="Font.cpp" />
     <ClCompile Include="FontManager.cpp" />
     <ClCompile Include="IndexBuffer.cpp" />
+    <ClCompile Include="Internal\Animation.cpp" />
     <ClCompile Include="Internal\Batch.cpp" />
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="GraphicsLib.cpp" />

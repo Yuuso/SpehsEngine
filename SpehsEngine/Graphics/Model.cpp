@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "SpehsEngine/Graphics/Model.h"
 
+#include "SpehsEngine/Core/StringViewUtilityFunctions.h"
 #include "SpehsEngine/Graphics/ResourceData.h"
 
 
@@ -59,10 +60,41 @@ namespace se
 
 			const MeshData& meshData = *modelData->resourceData.get();
 			processNode(*this, meshData, meshData.rootNode, rootNode, numMaterialSlots);
+			animations = meshData.animations;
+			if (!activeAnimationName.empty())
+				startAnimation(activeAnimationName);
 			se_assert(numMaterialSlots > 0);
 			se_assert(materials.size() <= numMaterialSlots);
 			foreachPrimitive([](Primitive& _primitive) { enableBit(_primitive.updateFlags, PrimitiveUpdateFlag::TransformChanged); }); // Force transform update
 			reloaded = true;
+		}
+
+		void Model::startAnimation(const std::string_view _name)
+		{
+			activeAnimationName = _name;
+			if (!animations)
+				return;
+			for (size_t i = 0; i < animations->size(); i++)
+			{
+				if (animations->at(i).name == _name)
+				{
+					activeAnimation = &animations->at(i);
+					return;
+				}
+			}
+			log::warning("Animation " + _name + " not found in model " + name);
+		}
+		void Model::stopAnimation()
+		{
+			activeAnimation = nullptr;
+			activeAnimationName.clear();
+		}
+
+		void Model::updateAnimation()
+		{
+			se_assert(activeAnimation);
+			// Force update on all transforms
+			foreachPrimitive([](Primitive& _primitive) { enableBit(_primitive.updateFlags, PrimitiveUpdateFlag::TransformChanged); });
 		}
 
 		void Model::foreachPrimitive(std::function<void(Primitive&)> _fn)
