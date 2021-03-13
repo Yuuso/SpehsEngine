@@ -331,12 +331,13 @@ namespace ImGui
 			{
 				optional.reset();
 			}
+			changed = true;
 		}
 		if (optional)
 		{
 			ImGui::Indent();
 			ImGui::PushID(&optional);
-			render(*optional);
+			changed = render(*optional);
 			ImGui::PopID();
 			ImGui::Unindent();
 		}
