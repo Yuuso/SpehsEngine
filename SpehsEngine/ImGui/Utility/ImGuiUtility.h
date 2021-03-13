@@ -335,7 +335,9 @@ namespace ImGui
 		if (optional)
 		{
 			ImGui::Indent();
+			ImGui::PushID(&optional);
 			render(*optional);
+			ImGui::PopID();
 			ImGui::Unindent();
 		}
 		return changed;
