@@ -2,9 +2,9 @@
 #ifndef SE_SHADER_HEADER_GUARD
 #define SE_SHADER_HEADER_GUARD
 
-#define ASSERT(statement) if (!(statement)) { gl_FragColor = vec4(1.0, 0.0, 1.0, 1.0); return; }
+#include "bgfx_shader.sh"
 
-uniform mat4 u_normal;
+uniform mat4 u_normal[BGFX_CONFIG_MAX_BONES];
 uniform vec4 u_primitiveColor;
 
 vec3 getViewPosition()

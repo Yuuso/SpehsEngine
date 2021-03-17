@@ -1,5 +1,4 @@
 
-#include "bgfx_shader.sh"
 #include "se_shader.sh"
 
 void main()
