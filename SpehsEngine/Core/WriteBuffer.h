@@ -27,6 +27,7 @@ namespace se
 		bool read(se::ReadBuffer& readBuffer);
 
 		void translate(const int bytes);
+		void setOffset(const size_t offset);
 		void resize(const size_t size);
 		void reserve(const size_t capacity);
 
@@ -65,6 +66,16 @@ namespace se
 					data[offset++] = ((const uint8_t*)&t)[--endOffset];
 				}
 			}
+		}
+
+		// Writes at specified offset without moving the current offset
+		template<typename T>
+		void writeAt(const T& t, const size_t _offset)
+		{
+			const size_t restoreOffset = getOffset();
+			setOffset(_offset);
+			write(t);
+			setOffset(restoreOffset);
 		}
 
 		void swap(std::vector<uint8_t>& other) { data.swap(other); offset = data.size(); }

@@ -35,6 +35,11 @@ namespace se
 		}
 		offset += bytes;
 	}
+
+	void WriteBuffer::setOffset(const size_t _offset)
+	{
+		translate(int(_offset) - int(getOffset()));
+	}
 	
 	void WriteBuffer::resize(const size_t size)
 	{
