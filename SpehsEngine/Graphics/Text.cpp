@@ -246,8 +246,8 @@ namespace se
 					newVertices.get<Color0>(vertexIndex) = _color;
 					vertexIndex++;
 
-					newVertices.get<Position>(vertexIndex) = glm::vec3(cursor.x + _offset.x, 0.0f, cursor.y + _offset.y + _size.y);
-					newVertices.get<TexCoord0>(vertexIndex) = glm::vec2((float)_coord.x / atlasSize, (float)(_coord.y + _coord.height) / atlasSize);
+					newVertices.get<Position>(vertexIndex) = glm::vec3(cursor.x + _offset.x + _size.x, 0.0f, cursor.y + _offset.y);
+					newVertices.get<TexCoord0>(vertexIndex) = glm::vec2((float)(_coord.x + _coord.width) / atlasSize, (float)_coord.y / atlasSize);
 					newVertices.get<Color0>(vertexIndex) = _color;
 					vertexIndex++;
 
@@ -256,8 +256,8 @@ namespace se
 					newVertices.get<Color0>(vertexIndex) = _color;
 					vertexIndex++;
 
-					newVertices.get<Position>(vertexIndex) = glm::vec3(cursor.x + _offset.x + _size.x, 0.0f, cursor.y + _offset.y);
-					newVertices.get<TexCoord0>(vertexIndex) = glm::vec2((float)(_coord.x + _coord.width) / atlasSize, (float)_coord.y / atlasSize);
+					newVertices.get<Position>(vertexIndex) = glm::vec3(cursor.x + _offset.x, 0.0f, cursor.y + _offset.y + _size.y);
+					newVertices.get<TexCoord0>(vertexIndex) = glm::vec2((float)_coord.x / atlasSize, (float)(_coord.y + _coord.height) / atlasSize);
 					newVertices.get<Color0>(vertexIndex) = _color;
 					vertexIndex++;
 				};
