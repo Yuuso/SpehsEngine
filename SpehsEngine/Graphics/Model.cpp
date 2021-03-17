@@ -2,6 +2,7 @@
 #include "SpehsEngine/Graphics/Model.h"
 
 #include "SpehsEngine/Core/StringViewUtilityFunctions.h"
+#include "SpehsEngine/Core/StringUtilityFunctions.h"
 #include "SpehsEngine/Graphics/ResourceData.h"
 
 
@@ -24,10 +25,10 @@ namespace se
 			_modelNode.transform = _meshDataNode.transform;
 			for (auto&& meshIndex : _meshDataNode.meshIndices)
 			{
-				_modelNode.meshes.push_back(std::make_unique<Mesh>(_model, _modelNode, _meshData.meshes[meshIndex]->materialIndex, _meshData.meshes[meshIndex]->vertexBuffer, _meshData.meshes[meshIndex]->indexBuffer));
-				_modelNode.meshes.back()->setName(_meshData.meshes[meshIndex]->name);
-				_modelNode.meshes.back()->setPrimitiveType(_meshData.meshes[meshIndex]->type);
-				while (_numMaterials <= _meshData.meshes[meshIndex]->materialIndex)
+				_modelNode.meshes.push_back(std::make_unique<Mesh>(_model, _modelNode, _meshData.meshes[meshIndex].materialIndex, _meshData.meshes[meshIndex].vertexBuffer, _meshData.meshes[meshIndex].indexBuffer));
+				_modelNode.meshes.back()->setName(_meshData.meshes[meshIndex].name);
+				_modelNode.meshes.back()->setPrimitiveType(_meshData.meshes[meshIndex].type);
+				while (_numMaterials <= _meshData.meshes[meshIndex].materialIndex)
 					_numMaterials++;
 			}
 			for (auto&& child : _meshDataNode.children)
@@ -36,6 +37,39 @@ namespace se
 				processNode(_model, _meshData, *child.get(), *_modelNode.children.back().get(), _numMaterials);
 			}
 		};
+
+		static const ModelNode* getModelNode(ModelNode& _node, const std::string_view _name)
+		{
+			if (_node.name == _name)
+				return &_node;
+			for (auto&& child : _node.children)
+			{
+				const ModelNode* result = getModelNode(*child.get(), _name);
+				if (result)
+					return result;
+			}
+			return nullptr;
+		}
+
+		static void addBones(const MeshData& _meshData, ModelNode& _rootNode, ModelNode& _modelNode)
+		{
+			for (auto&& mesh : _modelNode.meshes)
+			{
+				for (auto&& meshData : _meshData.meshes)
+				{
+					if (meshData.name != mesh->getName())
+						continue;
+					for (auto&& bone : meshData.bones)
+					{
+						mesh->addBone(getModelNode(_rootNode, bone.boneNodeName), bone.offsetMatrix);
+					}
+				}
+			}
+			for (auto&& child : _modelNode.children)
+			{
+				addBones(_meshData, _rootNode, *child.get());
+			}
+		}
 
 		void Model::loadModelData(std::shared_ptr<ModelData> _modelData)
 		{
@@ -60,13 +94,25 @@ namespace se
 
 			const MeshData& meshData = *modelData->resourceData.get();
 			processNode(*this, meshData, meshData.rootNode, rootNode, numMaterialSlots);
+			addBones(meshData, rootNode, rootNode);
+			globalInverseTransform = meshData.globalInverseMatrix;
 			animations = meshData.animations;
+			activeAnimation = nullptr;
 			if (!activeAnimationName.empty())
 				startAnimation(activeAnimationName);
 			se_assert(numMaterialSlots > 0);
 			se_assert(materials.size() <= numMaterialSlots);
-			foreachPrimitive([](Primitive& _primitive) { enableBit(_primitive.updateFlags, PrimitiveUpdateFlag::TransformChanged); }); // Force transform update
+			postReload();
 			reloaded = true;
+		}
+		void Model::postReload()
+		{
+			setRenderState(renderState);
+			setRenderFlags(renderFlags);
+			setPrimitiveType(primitiveType);
+			setRenderMode(renderMode);
+			setColor(color);
+			foreachPrimitive([](Primitive& _primitive) { enableBit(_primitive.updateFlags, PrimitiveUpdateFlag::TransformChanged); }); // Force transform update
 		}
 
 		void Model::startAnimation(const std::string_view _name)
@@ -74,9 +120,19 @@ namespace se
 			activeAnimationName = _name;
 			if (!animations)
 				return;
+			// Find exact match
 			for (size_t i = 0; i < animations->size(); i++)
 			{
 				if (animations->at(i).name == _name)
+				{
+					activeAnimation = &animations->at(i);
+					return;
+				}
+			}
+			// Settle for partial match...
+			for (size_t i = 0; i < animations->size(); i++)
+			{
+				if (doesContain(animations->at(i).name, _name))
 				{
 					activeAnimation = &animations->at(i);
 					return;
@@ -162,11 +218,8 @@ namespace se
 		}
 		void Model::setRenderState(const bool _state)
 		{
+			renderState = _state;
 			foreachPrimitive([_state](Primitive& _primitive) { _primitive.setRenderState(_state); });
-		}
-		void Model::toggleRenderState()
-		{
-			foreachPrimitive([](Primitive& _primitive) { _primitive.toggleRenderState(); });
 		}
 		void Model::setMaterial(std::shared_ptr<Material> _material, const size_t _slot)
 		{
@@ -177,27 +230,37 @@ namespace se
 		}
 		void Model::setColor(const Color& _color)
 		{
+			color = _color;
 			foreachPrimitive([&](Primitive& _primitive) { _primitive.setColor(_color); });
 		}
 
 		void Model::setRenderFlags(const RenderFlagsType _renderFlags)
 		{
+			renderFlags = _renderFlags;
 			foreachPrimitive([_renderFlags](Primitive& _primitive) { _primitive.setRenderFlags(_renderFlags); });
 		}
-		void Model::enableRenderFlag(const RenderFlag _renderFlag)
+		void Model::enableRenderFlags(const RenderFlagsType _renderFlags)
 		{
-			foreachPrimitive([_renderFlag](Primitive& _primitive) { _primitive.enableRenderFlag(_renderFlag); });
+			enableBit(renderFlags, _renderFlags);
+			foreachPrimitive([_renderFlags](Primitive& _primitive) { _primitive.enableRenderFlags(_renderFlags); });
 		}
-		void Model::disableRenderFlag(const RenderFlag _renderFlag)
+		void Model::disableRenderFlags(const RenderFlagsType _renderFlags)
 		{
-			foreachPrimitive([_renderFlag](Primitive& _primitive) { _primitive.disableRenderFlag(_renderFlag); });
+			disableBit(renderFlags, _renderFlags);
+			foreachPrimitive([_renderFlags](Primitive& _primitive) { _primitive.disableRenderFlags(_renderFlags); });
 		}
 		void Model::setPrimitiveType(const PrimitiveType _primitiveType)
 		{
+			if (_primitiveType == PrimitiveType::Undefined)
+				return;
+			primitiveType = _primitiveType;
 			foreachPrimitive([_primitiveType](Primitive& _primitive) { _primitive.setPrimitiveType(_primitiveType); });
 		}
 		void Model::setRenderMode(const RenderMode _renderMode)
 		{
+			renderMode = _renderMode;
+			if (renderMode == RenderMode::Static && animations && !animations->empty())
+				log::warning("Should not use static RenderMode with animated models!");
 			foreachPrimitive([_renderMode](Primitive& _primitive) { _primitive.setRenderMode(_renderMode); });
 		}
 

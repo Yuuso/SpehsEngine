@@ -13,9 +13,8 @@ namespace se
 		Text::Text()
 			: Primitive()
 		{
-			enableRenderFlag(RenderFlag::Blending);
-			enableRenderFlag(RenderFlag::CullBackFace);
-			disableRenderFlag(RenderFlag::DepthTestLess);
+			enableRenderFlags(RenderFlag::Blending | RenderFlag::CullBackFace);
+			disableRenderFlags(RenderFlag::DepthTestLess);
 			setName("text");
 		}
 

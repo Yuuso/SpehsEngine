@@ -42,7 +42,7 @@ namespace se
 			virtual const Color&					getColor() const;
 
 			virtual const RenderFlagsType			getRenderFlags() const;
-			virtual const bool						checkRenderFlag(const RenderFlag _renderFlag) const;
+			virtual const bool						checkRenderFlags(const RenderFlagsType _renderFlags) const;
 			virtual const PrimitiveType				getPrimitiveType() const;
 			virtual const RenderMode				getRenderMode() const;
 			virtual const RenderCopy*				getRenderCopy() const;
@@ -60,8 +60,8 @@ namespace se
 			virtual void							setColor(const Color& _color);
 
 			virtual void							setRenderFlags(const RenderFlagsType _renderFlags);
-			virtual void							enableRenderFlag(const RenderFlag _renderFlag);
-			virtual void							disableRenderFlag(const RenderFlag _renderFlag);
+			virtual void							enableRenderFlags(const RenderFlagsType _renderFlags);
+			virtual void							disableRenderFlags(const RenderFlagsType _renderFlags);
 			virtual void							setPrimitiveType(const PrimitiveType _primitiveType);
 			virtual void							setRenderMode(const RenderMode _renderMode);
 			virtual void							setRenderCopy(const RenderCopy& _renderCopy);
@@ -77,24 +77,21 @@ namespace se
 			friend class Model;
 
 			virtual void							update();
-			virtual const glm::mat4&				getTransformMatrix() const; // ? needed, expose only either getters or values
-			virtual const glm::mat4&				getNormalMatrix() const;
+			virtual const UniformMatrices&			getTransformMatrices() const;
+			virtual const UniformMatrices&			getNormalMatrices() const;
 			virtual void							updateMatrices();
-
-			PrimitiveUpdateFlagsType				updateFlags = 0;
-			glm::mat4								transformMatrix;
-			glm::mat4								normalMatrix;
-
-		private:
-
 			bool									getVerticesChanged();
 			bool									getIndicesChanged();
 
+			PrimitiveUpdateFlagsType				updateFlags = 0;
+
+		private:
+
 			std::string								name					= "primitive";
 			bool									renderState				= true;
-			RenderFlagsType							renderFlags				= RenderFlag::DepthTestLess;
-			PrimitiveType							primitiveType			= PrimitiveType::Triangles;
-			RenderMode								renderMode				= RenderMode::Dynamic;
+			RenderFlagsType							renderFlags				= defaultRenderFlags;
+			PrimitiveType							primitiveType			= defaultPrimitiveType;
+			RenderMode								renderMode				= defaultRenderMode;
 			std::unique_ptr<RenderCopy>				renderCopy;
 			std::shared_ptr<Material>				material				= nullptr;
 			std::shared_ptr<VertexBuffer>			vertices;
@@ -103,6 +100,9 @@ namespace se
 			glm::vec3								scale					= glm::vec3(1.0f);
 			glm::quat								rotation				= glm::vec3(0.0f);
 			Color									primitiveColor;
+
+			UniformMatrices							transformMatrices;
+			UniformMatrices							normalMatrices;
 
 			boost::signals2::signal<void(void)>		destroyedSignal;
 		};

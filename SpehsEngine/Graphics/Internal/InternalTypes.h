@@ -3,7 +3,9 @@
 // NOTE: No SpehsEngine includes allowed (other than Types.h)
 
 #include "bgfx/bgfx.h" // TODO
+#include "glm/mat4x4.hpp"
 #include "SpehsEngine/Graphics/Types.h"
+#include <vector>
 
 
 namespace se
@@ -61,5 +63,7 @@ namespace se
 			Valid,
 			Error,
 		};
+
+		typedef std::vector<glm::mat4> UniformMatrices;
 	}
 }

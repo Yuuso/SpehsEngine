@@ -158,6 +158,7 @@
     <ClInclude Include="Internal\Batch.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="GraphicsLib.h" />
+    <ClInclude Include="Internal\Bone.h" />
     <ClInclude Include="Internal\BufferObject.h" />
     <ClInclude Include="Internal\DefaultUniforms.h" />
     <ClInclude Include="Internal\FontLibrary.h" />

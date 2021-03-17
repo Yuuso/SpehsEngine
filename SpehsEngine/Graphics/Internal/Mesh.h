@@ -1,5 +1,6 @@
 #pragma once
 
+#include "SpehsEngine/Graphics/Internal/Bone.h"
 #include "SpehsEngine/Graphics/Primitive.h"
 
 
@@ -19,18 +20,14 @@ namespace se
 
 			std::shared_ptr<Material> getMaterial() const override;
 
-			const glm::vec3& getPosition() const override;
-			const glm::vec3& getScale() const override;
-			const glm::quat& getRotation() const override;
-
-			void setPosition(const glm::vec3& _position) override;
-			void setScale(const glm::vec3& _scale) override;
-			void setRotation(const glm::quat& _rotation) override;
+			void addBone(const ModelNode* _boneNode, const glm::mat4& _offsetMatrix);
 
 		protected:
 
 			void update() override;
 			void updateMatrices() override;
+			const UniformMatrices& getTransformMatrices() const;
+			const UniformMatrices& getNormalMatrices() const;
 
 		private:
 
@@ -38,6 +35,10 @@ namespace se
 			const ModelNode& node;
 
 			const size_t materialIndex = 0;
+			std::vector<Bone> bones;
+
+			UniformMatrices combinedTransformMatrices;
+			UniformMatrices combinedNormalMatrices;
 		};
 	}
 }

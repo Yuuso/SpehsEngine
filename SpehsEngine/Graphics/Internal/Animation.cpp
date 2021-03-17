@@ -43,7 +43,7 @@ namespace se
 				{
 					const float delta = _node.rotationKeys[r + 1].first - _node.rotationKeys[r].first;
 					const float timeSinceFirstKey = _time - _node.rotationKeys[r].first;
-					return glm::mix(_node.rotationKeys[r].second, _node.rotationKeys[r + 1].second, timeSinceFirstKey / delta);
+					return glm::slerp(_node.rotationKeys[r].second, _node.rotationKeys[r + 1].second, timeSinceFirstKey / delta);
 				}
 			}
 

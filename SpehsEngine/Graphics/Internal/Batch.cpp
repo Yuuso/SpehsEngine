@@ -223,7 +223,9 @@ namespace se
 
 			static const glm::mat4 identity = glm::mat4(1.0f);
 			bgfx::setTransform(reinterpret_cast<const void*>(&identity));
-			_renderContext.defaultUniforms->setNormalMatrix(identity);
+			static const UniformMatrices identities = { identity };
+			_renderContext.defaultUniforms->setNormalMatrices(identities);
+
 			_renderContext.defaultUniforms->setPrimitiveColor(renderInfo.primitiveColor);
 			_renderContext.lightBatch->bind();
 			renderInfo.material->bind();

@@ -4,6 +4,7 @@
 #include "glm/vec2.hpp"
 #include "glm/vec3.hpp"
 #include "glm/vec4.hpp"
+#include "glm/gtc/type_precision.hpp"
 #include <stdint.h>
 
 
@@ -46,7 +47,7 @@ namespace se
 			typedef se::Color  Color2Type;
 			typedef se::Color  Color3Type;
 			typedef glm::vec4  WeightType;
-			typedef glm::ivec4 IndicesType;
+			typedef glm::i16vec4 IndicesType;
 			typedef glm::vec2  TexCoord0Type;
 			typedef glm::vec2  TexCoord1Type;
 			typedef glm::vec2  TexCoord2Type;

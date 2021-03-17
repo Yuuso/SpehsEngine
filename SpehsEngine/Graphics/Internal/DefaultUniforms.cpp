@@ -15,7 +15,7 @@ namespace se
 		DefaultUniforms::DefaultUniforms()
 			: normal(BGFX_INVALID_HANDLE)
 		{
-			normal = bgfx::createUniform("u_normal", bgfx::UniformType::Mat4);
+			normal = bgfx::createUniform("u_normal", bgfx::UniformType::Mat4, SE_MAX_BONES);
 			primitiveColor = bgfx::createUniform("u_primitiveColor", bgfx::UniformType::Vec4);
 		}
 		DefaultUniforms::~DefaultUniforms()
@@ -37,9 +37,9 @@ namespace se
 			}
 		}
 
-		void DefaultUniforms::setNormalMatrix(const glm::mat4& _normal)
+		void DefaultUniforms::setNormalMatrices(const UniformMatrices& _normal)
 		{
-			bgfx::setUniform(normal, reinterpret_cast<const void*>(&_normal));
+			bgfx::setUniform(normal, reinterpret_cast<const void*>(_normal.data()), static_cast<uint16_t>(_normal.size()));
 		}
 
 		void DefaultUniforms::setPrimitiveColor(const Color& _color)

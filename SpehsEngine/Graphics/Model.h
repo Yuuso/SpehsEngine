@@ -57,13 +57,12 @@ namespace se
 
 			void							setName(const std::string_view _name);
 			void							setRenderState(const bool _state);
-			void							toggleRenderState();
 			void							setMaterial(std::shared_ptr<Material> _material, const size_t _slot = 0);
 			void							setColor(const Color& _color);
 
 			void							setRenderFlags(const RenderFlagsType _renderFlags);
-			void							enableRenderFlag(const RenderFlag _renderFlag);
-			void							disableRenderFlag(const RenderFlag _renderFlag);
+			void							enableRenderFlags(const RenderFlagsType _renderFlags);
+			void							disableRenderFlags(const RenderFlagsType _renderFlags);
 			void							setPrimitiveType(const PrimitiveType _primitiveType);
 			void							setRenderMode(const RenderMode _renderMode);
 
@@ -75,15 +74,23 @@ namespace se
 
 			friend class ModelInstance;
 			friend class ModelNode;
+			friend class Mesh;
 
 			void							updateAnimation();
+			void							postReload();
 
 			ModelNode						rootNode;
+			glm::mat4						globalInverseTransform;
 
 			std::string						name;
-			bool							renderState = true;
 			bool							reloaded = false;
 			size_t							numMaterialSlots = 0;
+
+			bool							renderState = true;
+			RenderFlagsType					renderFlags = defaultRenderFlags | RenderFlag::CullBackFace;
+			PrimitiveType					primitiveType = PrimitiveType::Undefined; // Model loading might set primitive types
+			RenderMode						renderMode = defaultRenderMode;
+			Color							color;
 
 			std::string						activeAnimationName;
 			const Animation*				activeAnimation = nullptr;

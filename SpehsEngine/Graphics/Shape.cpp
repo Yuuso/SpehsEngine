@@ -54,11 +54,11 @@ namespace se
 
 				case se::graphics::ShapeType::Cube:
 					setName("cube");
-					enableRenderFlag(RenderFlag::CullBackFace);
+					enableRenderFlags(RenderFlag::CullBackFace);
 					break;
 				case se::graphics::ShapeType::Sphere:
 					setName("sphere");
-					enableRenderFlag(RenderFlag::CullBackFace);
+					enableRenderFlags(RenderFlag::CullBackFace);
 					break;
 			}
 

@@ -88,7 +88,7 @@ namespace se
 					{
 						if (checkBit(cachedPrimitiveUpdateFlags, PrimitiveUpdateFlag::TransformChanged) || verticesChanged)
 						{
-							primitiveBatch->updateVertices(*batchPosition, *getVertices(), primitive->getTransformMatrix(), primitive->getNormalMatrix());
+							primitiveBatch->updateVertices(*batchPosition, *getVertices(), primitive->getTransformMatrices()[0], primitive->getNormalMatrices()[0]);
 						}
 
 						if (indicesChanged)
@@ -126,8 +126,10 @@ namespace se
 				return;
 			}
 
-			bgfx::setTransform(reinterpret_cast<const void*>(&primitive->getTransformMatrix()));
-			_renderContext.defaultUniforms->setNormalMatrix(primitive->getNormalMatrix());
+			const UniformMatrices& transformMatrices = primitive->getTransformMatrices();
+			bgfx::setTransform(reinterpret_cast<const void*>(transformMatrices.data()), static_cast<uint16_t>(transformMatrices.size()));
+			_renderContext.defaultUniforms->setNormalMatrices(primitive->getNormalMatrices());
+
 			_renderContext.defaultUniforms->setPrimitiveColor(_renderInfo.primitiveColor);
 			if (_renderInfo.material->getLit())
 				_renderContext.lightBatch->bind();
@@ -177,8 +179,8 @@ namespace se
 			se_assert(!isBatched());
 			batchPosition = &_batch.add(*getVertices(), *getIndices());
 			primitiveBatch = &_batch;
-			if (primitive->getTransformMatrix() != glm::mat4(1.0f)) // No need to update with identity matrix
-				primitiveBatch->updateVertices(*batchPosition, *getVertices(), primitive->getTransformMatrix(), primitive->getNormalMatrix());
+			if (primitive->getTransformMatrices()[0] != glm::mat4(1.0f)) // No need to update with identity matrix
+				primitiveBatch->updateVertices(*batchPosition, *getVertices(), primitive->getTransformMatrices()[0], primitive->getNormalMatrices()[0]);
 		}
 		void PrimitiveInstance::unbatch()
 		{

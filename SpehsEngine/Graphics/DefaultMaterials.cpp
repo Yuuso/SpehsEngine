@@ -90,5 +90,12 @@ namespace se
 		{
 			attributesUniform->set(&attributes.data);
 		}
+
+
+		SkinnedPhongMaterial::SkinnedPhongMaterial(DefaultShaderManager& _shaderManager)
+			: PhongMaterial(_shaderManager)
+		{
+			setShader(_shaderManager.find("phong_skinned"));
+		}
 	}
 }

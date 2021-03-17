@@ -54,6 +54,13 @@ namespace se
 			};
 			MeshDataNode rootNode;
 
+			struct BoneData
+			{
+				std::string boneNodeName;
+				std::string armatureNodeName;
+				glm::mat4 offsetMatrix;
+			};
+
 			struct MeshInfo
 			{
 				std::string name;
@@ -61,8 +68,11 @@ namespace se
 				size_t materialIndex;
 				std::shared_ptr<VertexBuffer> vertexBuffer;
 				std::shared_ptr<IndexBuffer> indexBuffer;
+				std::vector<BoneData> bones;
 			};
-			std::vector<std::unique_ptr<MeshInfo>> meshes;
+			std::vector<MeshInfo> meshes;
+
+			glm::mat4 globalInverseMatrix;
 
 			std::shared_ptr<std::vector<Animation>> animations;
 		};

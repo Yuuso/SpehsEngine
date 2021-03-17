@@ -3,6 +3,7 @@
 #include <bgfx/bgfx.h>
 #include <glm/mat4x4.hpp>
 #include "SpehsEngine/Core/Color.h"
+#include "SpehsEngine/Graphics/Internal/InternalTypes.h"
 
 
 /*
@@ -28,7 +29,7 @@ namespace se
 			DefaultUniforms& operator=(DefaultUniforms&& _other) = delete;
 
 
-			void setNormalMatrix(const glm::mat4& _normal);
+			void setNormalMatrices(const UniformMatrices& _normal);
 			void setPrimitiveColor(const Color& _color);
 
 		private:

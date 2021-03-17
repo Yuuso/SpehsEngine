@@ -48,6 +48,7 @@ namespace se
 		public:
 
 			FlatColorMaterial(DefaultShaderManager& _shaderManager);
+			virtual ~FlatColorMaterial() = default;
 
 		protected:
 
@@ -60,6 +61,7 @@ namespace se
 		public:
 
 			FlatTextureMaterial(DefaultShaderManager& _shaderManager);
+			virtual ~FlatTextureMaterial() = default;
 
 			void setTexture(std::shared_ptr<Texture> _texture);
 			std::shared_ptr<Texture> getTexture() const;
@@ -75,6 +77,7 @@ namespace se
 		public:
 
 			TextMaterial(DefaultShaderManager& _shaderManager);
+			virtual ~TextMaterial() = default;
 
 			void setFont(std::shared_ptr<Font> _font);
 			std::shared_ptr<Font> getFont() const;
@@ -90,6 +93,7 @@ namespace se
 		public:
 
 			PhongMaterial(DefaultShaderManager& _shaderManager);
+			virtual ~PhongMaterial() = default;
 
 			void setTexture(const PhongTextureType _type, std::shared_ptr<Texture> _texture);
 			std::shared_ptr<Texture> getTexture(const PhongTextureType _type) const;
@@ -103,6 +107,14 @@ namespace se
 
 			std::unique_ptr<Uniform> attributesUniform;
 			PhongAttributes attributes;
+		};
+
+
+		class SkinnedPhongMaterial : public PhongMaterial
+		{
+		public:
+			SkinnedPhongMaterial(DefaultShaderManager& _shaderManager);
+			virtual ~SkinnedPhongMaterial() = default;
 		};
 	}
 }

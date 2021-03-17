@@ -18,6 +18,11 @@ namespace se
 {
 	namespace graphics
 	{
+		inline static glm::mat4 make_mat4(const aiMatrix4x4& _matrix)
+		{
+			return glm::transpose(glm::make_mat4(&_matrix.a1));
+		}
+
 		ModelData::ModelData(const std::string_view _name)
 			: Resource(_name)
 		{
@@ -49,7 +54,7 @@ namespace se
 			for (size_t i = 0; i < _node.mNumMeshes; i++)
 				_modelNode.meshIndices[i] = _node.mMeshes[i];
 
-			_modelNode.transform = glm::transpose(glm::make_mat4(&_node.mTransformation.a1));
+			_modelNode.transform = make_mat4(_node.mTransformation);
 
 			_modelNode.children.resize(_node.mNumChildren);
 			for (unsigned int i = 0; i < _node.mNumChildren; i++)
@@ -65,11 +70,12 @@ namespace se
 			Assimp::Importer importer;
 			constexpr int maxVertices = UINT16_MAX;
 			constexpr int maxIndices = UINT16_MAX;
-			constexpr int maxWeights = 4;
-			constexpr int maxBones = 32;
+			constexpr int maxBoneWeights = 4;
+			constexpr int maxBones = SE_MAX_BONES; // Max bones per mesh, also defined by the shaders, note: aiProcess_SplitByBoneCount
 			importer.SetPropertyInteger(AI_CONFIG_PP_SLM_VERTEX_LIMIT, maxVertices);
 			importer.SetPropertyInteger(AI_CONFIG_PP_SLM_TRIANGLE_LIMIT, maxIndices / 3);
-			importer.SetPropertyInteger(AI_CONFIG_PP_LBW_MAX_WEIGHTS, maxWeights);
+			importer.SetPropertyInteger(AI_CONFIG_PP_LBW_MAX_WEIGHTS, maxBoneWeights);
+			importer.SetPropertyInteger(AI_CONFIG_PP_SBBC_MAX_BONES, maxBones);
 			const aiScene* scene = importer.ReadFile(_path,
 				  aiProcess_CalcTangentSpace
 				| aiProcess_JoinIdenticalVertices
@@ -86,8 +92,8 @@ namespace se
 				| aiProcess_GenUVCoords
 				//| aiProcess_OptimizeMeshes
 				//| aiProcess_OptimizeGraph
-				//| aiProcess_FlipUVs
-				| aiProcess_FlipWindingOrder		// No idea why this is needed, SpehsEngine is CCW by default
+				| aiProcess_FlipUVs
+				| aiProcess_FlipWindingOrder		// No idea why this is needed, SpehsEngine should be CCW by default
 				| aiProcess_SplitByBoneCount
 				| aiProcess_GlobalScale
 				);
@@ -98,21 +104,65 @@ namespace se
 			}
 
 			if (scene->mNumTextures > 0)
-				log::error(_path + ": Embedded textures not supported!");
+				log::warning(_path + ": Embedded textures not supported!");
 			if (scene->mNumLights > 0)
-				log::error(_path + ": Scene lights not supported!");
+				log::warning(_path + ": Scene lights not supported!");
 			if (scene->mNumCameras > 0)
-				log::error(_path + ": Scene cameras not supported!");
+				log::warning(_path + ": Scene cameras not supported!");
+
+			if (false && scene->mMetaData) // Print metadata
+			{
+				for (size_t metaDataIndex = 0; metaDataIndex < scene->mMetaData->mNumProperties; metaDataIndex++)
+				{
+					switch (scene->mMetaData->mValues[metaDataIndex].mType)
+					{
+						case AI_BOOL:
+						{
+							const bool value = *reinterpret_cast<bool*>(scene->mMetaData->mValues[metaDataIndex].mData);
+							log::info(_path + ", metadata: " + scene->mMetaData->mKeys[metaDataIndex].C_Str() + " = " + (value ? "true" : "false"));
+						} break;
+						case AI_INT32:
+						{
+							const int32_t value = *reinterpret_cast<int32_t*>(scene->mMetaData->mValues[metaDataIndex].mData);
+							log::info(_path + ", metadata: " + scene->mMetaData->mKeys[metaDataIndex].C_Str() + " = " + std::to_string(value));
+						} break;
+						case AI_UINT64:
+						{
+							const uint64_t value = *reinterpret_cast<uint64_t*>(scene->mMetaData->mValues[metaDataIndex].mData);
+							log::info(_path + ", metadata: " + scene->mMetaData->mKeys[metaDataIndex].C_Str() + " = " + std::to_string(value));
+						} break;
+						case AI_FLOAT:
+						{
+							const float value = *reinterpret_cast<float*>(scene->mMetaData->mValues[metaDataIndex].mData);
+							log::info(_path + ", metadata: " + scene->mMetaData->mKeys[metaDataIndex].C_Str() + " = " + std::to_string(value));
+						} break;
+						case AI_DOUBLE:
+						{
+							const double value = *reinterpret_cast<double*>(scene->mMetaData->mValues[metaDataIndex].mData);
+							log::info(_path + ", metadata: " + scene->mMetaData->mKeys[metaDataIndex].C_Str() + " = " + std::to_string(value));
+						} break;
+						case AI_AISTRING:
+						{
+							const aiString value = *reinterpret_cast<aiString*>(scene->mMetaData->mValues[metaDataIndex].mData);
+							log::info(_path + ", metadata: " + scene->mMetaData->mKeys[metaDataIndex].C_Str() + " = " + value.C_Str());
+						} break;
+						case AI_AIVECTOR3D:
+						{
+							const aiVector3D value = *reinterpret_cast<aiVector3D*>(scene->mMetaData->mValues[metaDataIndex].mData);
+							log::info(_path + ", metadata: " + scene->mMetaData->mKeys[metaDataIndex].C_Str() + " = " + std::to_string(value.x) + ", " + std::to_string(value.y) + ", " + std::to_string(value.z));
+						} break;
+						default: break;
+					}
+				}
+			}
 
 			std::shared_ptr<MeshData> resource = std::make_shared<MeshData>();
 
 			resource->meshes.resize(scene->mNumMeshes);
 			for (size_t meshIndex = 0; meshIndex < scene->mNumMeshes; meshIndex++)
 			{
-				resource->meshes[meshIndex] = std::make_unique<MeshData::MeshInfo>();
-
 				const aiMesh& sceneMesh = *scene->mMeshes[meshIndex];
-				MeshData::MeshInfo& mesh = *resource->meshes[meshIndex].get();
+				MeshData::MeshInfo& mesh = resource->meshes[meshIndex];
 
 				mesh.name = sceneMesh.mName.C_Str();
 
@@ -154,6 +204,16 @@ namespace se
 				if (sceneMesh.HasBones())
 					enableBit(attributes, Weight | Indices);
 
+				se_assert(sceneMesh.mNumBones <= maxBones);
+				mesh.bones.resize(sceneMesh.mNumBones);
+				for (size_t boneIndex = 0; boneIndex < sceneMesh.mNumBones; boneIndex++)
+				{
+					se_assert(sceneMesh.mBones[boneIndex]->mName == sceneMesh.mBones[boneIndex]->mNode->mName);
+					mesh.bones[boneIndex].boneNodeName = sceneMesh.mBones[boneIndex]->mName.C_Str();
+					mesh.bones[boneIndex].armatureNodeName = sceneMesh.mBones[boneIndex]->mArmature->mName.C_Str();
+					mesh.bones[boneIndex].offsetMatrix = make_mat4(sceneMesh.mBones[boneIndex]->mOffsetMatrix);
+				}
+
 				mesh.vertexBuffer = std::make_shared<VertexBuffer>(attributes);
 				mesh.vertexBuffer->resize(sceneMesh.mNumVertices);
 				se_assert(mesh.vertexBuffer->size() <= maxVertices);
@@ -184,7 +244,34 @@ namespace se
 						mesh.vertexBuffer->get<TexCoord1>(vertexIndex) = glm::vec2(sceneMesh.mTextureCoords[1][vertexIndex].x, sceneMesh.mTextureCoords[1][vertexIndex].y);
 					if (checkBit(attributes, TexCoord2))
 						mesh.vertexBuffer->get<TexCoord2>(vertexIndex) = glm::vec2(sceneMesh.mTextureCoords[2][vertexIndex].x, sceneMesh.mTextureCoords[2][vertexIndex].y);
-					// TODO: bone weights and bone indices
+					if (checkBit(attributes, Weight))
+					{
+						se_assert(checkBit(attributes, Indices));
+						int weightIndex = 0;
+						for (size_t boneIndex = 0; boneIndex < sceneMesh.mNumBones; boneIndex++)
+						{
+							for (size_t boneWeightIndex = 0; boneWeightIndex < sceneMesh.mBones[boneIndex]->mNumWeights; boneWeightIndex++)
+							{
+								if (sceneMesh.mBones[boneIndex]->mWeights[boneWeightIndex].mVertexId == vertexIndex)
+								{
+									mesh.vertexBuffer->get<Indices>(vertexIndex)[weightIndex] = static_cast<int16_t>(boneIndex);
+									mesh.vertexBuffer->get<Weight>(vertexIndex)[weightIndex] = sceneMesh.mBones[boneIndex]->mWeights[boneWeightIndex].mWeight;
+									weightIndex++;
+									break;
+								}
+							}
+
+							se_assert(weightIndex <= maxBoneWeights);
+							if (weightIndex >= maxBoneWeights)
+								break;
+						}
+
+						for (; weightIndex < maxBoneWeights; weightIndex++)
+						{
+							mesh.vertexBuffer->get<Indices>(vertexIndex)[weightIndex] = 0;
+							mesh.vertexBuffer->get<Weight>(vertexIndex)[weightIndex] = 0.0f;
+						}
+					}
 				}
 				size_t index = 0;
 				for (size_t faceIndex = 0; faceIndex < sceneMesh.mNumFaces; faceIndex++)
@@ -242,6 +329,8 @@ namespace se
 					}
 				}
 			}
+
+			resource->globalInverseMatrix = glm::inverse(make_mat4(scene->mRootNode->mTransformation));
 
 			const bool result = processNode(resource->rootNode, *scene->mRootNode);
 			if (!result)

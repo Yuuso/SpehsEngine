@@ -210,14 +210,14 @@ namespace se
 			{
 				debugPrimitive = std::make_shared<Primitive>();
 				debugPrimitive->setPrimitiveType(PrimitiveType::Lines);
-				debugPrimitive->enableRenderFlag(RenderFlag::Blending);
+				debugPrimitive->enableRenderFlags(RenderFlag::Blending);
 				debugPrimitive->setPosition(getPosition());
 				debugPrimitive->setScale(glm::vec3(getOuterRadius()));
 				debugPrimitive->setRenderState(getIntensity() > 0.0f);
-				debugPrimitive->setColor(Color(1.0f, 1.0f, 1.0f, 0.75f));
+				debugPrimitive->setColor(Color(1.0f, 1.0f, 1.0f, 0.6f));
 
 				RenderCopy copy;
-				copy.primitiveColor = Color(1.0f, 1.0f, 1.0f, 0.15f);
+				copy.primitiveColor = Color(0.85f, 1.0f, 0.85f, 0.05f);
 				copy.primitiveType = PrimitiveType::Lines;
 				enableBit(copy.renderFlags, RenderFlag::Blending | RenderFlag::DepthTestGreater);
 				debugPrimitive->setRenderCopy(copy);
@@ -305,15 +305,15 @@ namespace se
 			{
 				debugPrimitive = std::make_shared<Primitive>();
 				debugPrimitive->setPrimitiveType(PrimitiveType::Lines);
-				debugPrimitive->enableRenderFlag(RenderFlag::Blending);
+				debugPrimitive->enableRenderFlags(RenderFlag::Blending);
 				debugPrimitive->setPosition(getPosition());
 				debugPrimitive->setScale(glm::vec3(getOuterRadius()));
 				debugPrimitive->setRotation(glm::quatLookAt(getDirection(), glm::vec3(0.0f, 1.0f, 0.0f)));
 				debugPrimitive->setRenderState(getIntensity() > 0.0f);
-				debugPrimitive->setColor(Color(1.0f, 1.0f, 1.0f, 0.75f));
+				debugPrimitive->setColor(Color(1.0f, 1.0f, 1.0f, 0.6f));
 
 				RenderCopy copy;
-				copy.primitiveColor = Color(1.0f, 1.0f, 1.0f, 0.15f);
+				copy.primitiveColor = Color(0.85f, 1.0f, 0.85f, 0.05f);
 				copy.primitiveType = PrimitiveType::Lines;
 				enableBit(copy.renderFlags, RenderFlag::Blending | RenderFlag::DepthTestGreater);
 				debugPrimitive->setRenderCopy(copy);

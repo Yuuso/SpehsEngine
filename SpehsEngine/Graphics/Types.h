@@ -23,6 +23,7 @@ namespace se
 			DepthTestGreater	= (1 << 3),
 			Blending			= (1 << 4),
 		};
+		constexpr RenderFlagsType defaultRenderFlags = RenderFlag::DepthTestLess;
 
 		typedef uint32_t RendererFlagsType;
 		enum RendererFlag : RendererFlagsType
@@ -55,10 +56,12 @@ namespace se
 
 		enum PrimitiveType
 		{
+			Undefined,
 			Triangles,
 			Lines,
 			Points
 		};
+		constexpr PrimitiveType defaultPrimitiveType = PrimitiveType::Triangles;
 
 		enum RenderMode
 		{
@@ -72,6 +75,7 @@ namespace se
 			//Transient
 			// TODO: Split Dynamic into 'DynamicDynamic' and 'StaticDynamic'?
 		};
+		constexpr RenderMode defaultRenderMode = RenderMode::Dynamic;
 
 		enum Projection
 		{

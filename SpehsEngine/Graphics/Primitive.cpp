@@ -18,6 +18,8 @@ namespace se
 	{
 		Primitive::Primitive()
 		{
+			transformMatrices.resize(1);
+			normalMatrices.resize(1);
 		}
 		Primitive::~Primitive()
 		{
@@ -41,18 +43,18 @@ namespace se
 			// RenderInfoChanged changes only impact PrimitiveInstance
 			updateFlags = 0;
 		}
-		const glm::mat4& Primitive::getTransformMatrix() const
+		const UniformMatrices& Primitive::getTransformMatrices() const
 		{
-			return transformMatrix;
+			return transformMatrices;
 		}
-		const glm::mat4& Primitive::getNormalMatrix() const
+		const UniformMatrices& Primitive::getNormalMatrices() const
 		{
-			return normalMatrix;
+			return normalMatrices;
 		}
 		void Primitive::updateMatrices()
 		{
-			transformMatrix = glm::translate(getPosition()) * glm::mat4_cast(getRotation()) * glm::scale(getScale());
-			normalMatrix = glm::mat4(glm::inverse(glm::transpose(glm::mat3(transformMatrix))));
+			transformMatrices[0] = glm::translate(getPosition()) * glm::mat4_cast(getRotation()) * glm::scale(getScale());
+			normalMatrices[0] = glm::mat4(glm::inverse(glm::transpose(glm::mat3(transformMatrices[0]))));
 		}
 		bool Primitive::getVerticesChanged()
 		{
@@ -92,9 +94,9 @@ namespace se
 		{
 			return renderFlags;
 		}
-		const bool Primitive::checkRenderFlag(const RenderFlag _renderFlag) const
+		const bool Primitive::checkRenderFlags(const RenderFlagsType _renderFlags) const
 		{
-			return checkBit(renderFlags, _renderFlag);
+			return checkBit(renderFlags, _renderFlags);
 		}
 		const PrimitiveType Primitive::getPrimitiveType() const
 		{
@@ -170,18 +172,18 @@ namespace se
 			renderFlags = _renderFlags;
 			enableBit(updateFlags, PrimitiveUpdateFlag::RenderInfoChanged);
 		}
-		void Primitive::enableRenderFlag(const RenderFlag _renderFlag)
+		void Primitive::enableRenderFlags(const RenderFlagsType _renderFlags)
 		{
-			if (checkBit(renderFlags, _renderFlag))
+			if (checkBit(renderFlags, _renderFlags))
 				return;
-			enableBit(renderFlags, _renderFlag);
+			enableBit(renderFlags, _renderFlags);
 			enableBit(updateFlags, PrimitiveUpdateFlag::RenderInfoChanged);
 		}
-		void Primitive::disableRenderFlag(const RenderFlag _renderFlag)
+		void Primitive::disableRenderFlags(const RenderFlagsType _renderFlags)
 		{
-			if (!checkBit(renderFlags, _renderFlag))
+			if (!checkBit(renderFlags, _renderFlags))
 				return;
-			disableBit(renderFlags, _renderFlag);
+			disableBit(renderFlags, _renderFlags);
 			enableBit(updateFlags, PrimitiveUpdateFlag::RenderInfoChanged);
 		}
 		void Primitive::setPrimitiveType(const PrimitiveType _primitiveType)
