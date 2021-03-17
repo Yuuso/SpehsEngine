@@ -27,6 +27,11 @@ namespace se
 
 			inline const std::string& getName() { return name; }
 			inline bool ready() const { return !resourceFuture.valid(); }
+			inline void waitUntilReady()
+			{
+				while (!ready())
+					update();
+			}
 
 			virtual void reload(std::shared_ptr<ResourceLoader> _resourceLoader) = 0;
 			virtual bool reloadable() const = 0;
