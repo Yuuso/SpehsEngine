@@ -52,6 +52,7 @@
     </ClCompile>
     <ClCompile Include="$(MSBuildThisFileDirectory)STLPairUtilityFunctions.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)StaticRingBuffer.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)BufferUtilityFunctions.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="$(MSBuildThisFileDirectory)Archive.h" />
@@ -116,6 +117,7 @@
     </ClInclude>
     <ClInclude Include="$(MSBuildThisFileDirectory)STLPairUtilityFunctions.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)StaticRingBuffer.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)BufferUtilityFunctions.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="File">
