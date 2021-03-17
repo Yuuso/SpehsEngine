@@ -20,7 +20,7 @@ ECHO 	glsl
 IF NOT EXIST %TARGET_LOC%\glsl MKDIR %TARGET_LOC%\glsl
 CALL %SHADERC% ^
 --type fragment ^
---platform linux ^
+--platform windows ^
 --profile 300_es ^
 --varyingdef %SOURCE_LOC%\varying.def.sc ^
 -f %SOURCE_LOC%\fs_%SHADER_NAME%.sc ^
@@ -30,7 +30,7 @@ ECHO 	spirv
 IF NOT EXIST %TARGET_LOC%\spirv MKDIR %TARGET_LOC%\spirv
 CALL %SHADERC% ^
 --type fragment ^
---platform linux ^
+--platform windows ^
 --profile spirv ^
 --varyingdef %SOURCE_LOC%\varying.def.sc ^
 -f %SOURCE_LOC%\fs_%SHADER_NAME%.sc ^

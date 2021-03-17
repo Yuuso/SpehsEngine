@@ -31,7 +31,7 @@ ECHO vs_%~1.sc
 ECHO 	glsl
 CALL %SHADERC% ^
 --type vertex ^
---platform linux ^
+--platform windows ^
 --profile 300_es ^
 --bin2c vs_%~1_glsl ^
 --varyingdef varying.def.sc ^
@@ -42,7 +42,7 @@ TYPE %SHADER_TEMP% > ..\vs_%~1.h
 ECHO 	spv
 CALL %SHADERC% ^
 --type vertex ^
---platform linux ^
+--platform windows ^
 --profile spirv ^
 --bin2c vs_%~1_spv ^
 --varyingdef varying.def.sc ^
@@ -96,7 +96,7 @@ ECHO fs_%~1.sc
 ECHO 	glsl
 CALL %SHADERC% ^
 --type fragment ^
---platform linux ^
+--platform windows ^
 --profile 300_es ^
 --bin2c fs_%~1_glsl ^
 --varyingdef varying.def.sc ^
@@ -107,7 +107,7 @@ TYPE %SHADER_TEMP% > ..\fs_%~1.h
 ECHO 	spv
 CALL %SHADERC% ^
 --type fragment ^
---platform linux ^
+--platform windows ^
 --profile spirv ^
 --bin2c fs_%~1_spv ^
 --varyingdef varying.def.sc ^
