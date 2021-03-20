@@ -14,8 +14,7 @@ ROBOCOPY "%BGFX_DIR%/include/bgfx"              "%DEPS_DIR%/include/bgfx"       
 
 IF EXIST "%DEPS_DIR%/tools/bgfx" RMDIR "%DEPS_DIR%/tools/bgfx" /S /Q
 MKDIR "%DEPS_DIR%/tools/bgfx"
-ROBOCOPY "%BGFX_DIR%/.build/win64_vs2019/bin"   "%DEPS_DIR%/tools/bgfx"                 shadercDebug.exe            %OPTIONS%
-ROBOCOPY "%BGFX_DIR%/.build/win64_vs2019/bin"   "%DEPS_DIR%/tools/bgfx"                 shadercRelease.exe          %OPTIONS%
+ROBOCOPY "%BGFX_DIR%/.build/win64_vs2019/bin"   "%DEPS_DIR%/tools/bgfx"                 *.exe                       %OPTIONS%
 
 MKDIR "%DEPS_DIR%/lib/Win32/Debug"
 MKDIR "%DEPS_DIR%/lib/Win32/Release"
