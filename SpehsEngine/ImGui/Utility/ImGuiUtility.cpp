@@ -168,4 +168,22 @@ namespace ImGui
 				}, INT_MAX);
 		}
 	}
+
+	std::string getImGuiFormatString(const std::string_view string)
+	{
+		std::string imGuiFormatString = std::string(string);
+
+		// NOTE: because imgui only accepts format strings in tooltips, we have to replace each "%" with "%%"
+		for (std::string::iterator it = imGuiFormatString.begin(); it != imGuiFormatString.end(); it++)
+		{
+			if (*it == '%')
+			{
+				std::string::iterator nextIt = it;
+				nextIt++;
+				it = imGuiFormatString.insert(nextIt, '%');
+			}
+		}
+
+		return imGuiFormatString;
+	}
 }

@@ -447,4 +447,6 @@ namespace ImGui
 	{
 		ImGui::SetTooltip(tooltip.c_str());
 	}
+
+	std::string getImGuiFormatString(const std::string_view string);
 }
