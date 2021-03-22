@@ -41,6 +41,8 @@ namespace se
 		}
 		void Animator::ActiveAnimation::fadeOut(const time::Time _fade)
 		{
+			if (fadingOut)
+				return;
 			fadingOut = true;
 			fadeOutTime = _fade;
 			fadeOutTimer = _fade;
