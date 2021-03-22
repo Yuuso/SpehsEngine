@@ -33,6 +33,7 @@ namespace se
 			void stop(const time::Time _fade);
 			void setSpeed(const float _value, const std::string_view _name);
 			void setSpeed(const float _value);
+			void setLooping(const bool _value, const std::string_view _name);
 			bool isActive(const std::string_view _name) const;
 
 			void update();
@@ -62,9 +63,14 @@ namespace se
 				bool fadingOut = false;
 				bool fadingIn = false;
 				bool paused = false;
+				bool loop = true;
 				float speed = 1.0f;
 				float weight = 1.0f;
 			};
+
+			ActiveAnimation* getActiveAnimation(const std::string_view _name);
+			const ActiveAnimation* getActiveAnimation(const std::string_view _name) const;
+			Animation* getAnimation(const std::string_view _name);
 
 			std::shared_ptr<std::vector<Animation>> animations;
 			std::vector<ActiveAnimation> activeAnimations;

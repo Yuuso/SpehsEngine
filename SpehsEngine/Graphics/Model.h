@@ -42,6 +42,7 @@ namespace se
 			void							stopAnimations(const time::Time _fade = time::Time::zero);
 			void							setAnimationSpeed(const float _value, const std::string_view _name);
 			void							setAnimationSpeed(const float _value);
+			void							setAnimationLooping(const bool _value, const std::string_view _name);
 			bool							isAnimationActive(const std::string_view _name) const;
 
 			void							foreachPrimitive(std::function<void(Primitive&)> _fn);

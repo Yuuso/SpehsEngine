@@ -2,6 +2,9 @@
 #include "SpehsEngine/Graphics/Internal/Animator.h"
 
 #include "SpehsEngine/Core/StringViewUtilityFunctions.h"
+#include "SpehsEngine/Core/SE_Time.h"
+#include "SpehsEngine/Core/SE_Assert.h"
+#include "SpehsEngine/Core/Log.h"
 
 #define GLM_ENABLE_EXPERIMENTAL
 #include "glm/gtc/matrix_transform.hpp"
@@ -77,6 +80,45 @@ namespace se
 		}
 
 
+
+		Animator::ActiveAnimation* Animator::getActiveAnimation(const std::string_view _name)
+		{
+			auto it = std::find_if(
+				activeAnimations.begin(), activeAnimations.end(),
+				[&](const ActiveAnimation& _animation)
+				{
+					return _animation.name == _name;
+				});
+			if (it == activeAnimations.end())
+				return nullptr;
+			return &*it;
+		}
+		const Animator::ActiveAnimation* Animator::getActiveAnimation(const std::string_view _name) const
+		{
+			auto it = std::find_if(
+				activeAnimations.begin(), activeAnimations.end(),
+				[&](const ActiveAnimation& _animation)
+				{
+					return _animation.name == _name;
+				});
+			if (it == activeAnimations.end())
+				return nullptr;
+			return &*it;
+		}
+		Animation* Animator::getAnimation(const std::string_view _name)
+		{
+			auto it = std::find_if(
+				animations->begin(), animations->end(),
+				[&](const Animation& _animation)
+				{
+					return _animation.name == _name;
+				});
+			if (it == animations->end())
+				return nullptr;
+			return &*it;
+		}
+
+
 		void Animator::setAnimations(std::shared_ptr<std::vector<Animation>> _animations)
 		{
 			animations = _animations;
@@ -85,22 +127,14 @@ namespace se
 
 			for (size_t i = 0; i < activeAnimations.size(); /*i++*/)
 			{
-				auto it = std::find_if(
-					animations->begin(), animations->end(),
-					[&](const Animation& _animation)
-					{
-						return _animation.name == activeAnimations[i].name;
-					});
-				if (it == animations->end())
+				activeAnimations[i].animation = getAnimation(activeAnimations[i].name);
+				if (!activeAnimations[i].animation)
 				{
 					log::warning("Animation " + activeAnimations[i].name + " not found");
 					activeAnimations.erase(activeAnimations.begin() + i);
+					continue;
 				}
-				else
-				{
-					activeAnimations[i].animation = &*it;
-					i++;
-				}
+				i++;
 			}
 		}
 		void Animator::start(const std::string_view _name, const time::Time _fade)
@@ -119,18 +153,12 @@ namespace se
 			// Start new animation
 			if (animations)
 			{
-				auto it = std::find_if(
-					animations->begin(), animations->end(),
-					[&_name](const Animation& _animation)
-					{
-						return _animation.name == _name;
-					});
-				if (it != animations->end())
+				if (Animation* anim = getAnimation(_name))
 				{
 					activeAnimations.push_back(ActiveAnimation());
 					ActiveAnimation& activeAnimation = activeAnimations.back();
 					activeAnimation.name = _name;
-					activeAnimation.animation = &*it;
+					activeAnimation.animation = anim;
 					activeAnimation.start();
 					activeAnimation.fadeIn(_fade);
 					return;
@@ -151,15 +179,10 @@ namespace se
 		}
 		void Animator::pause(const std::string_view _name)
 		{
-			auto it = std::find_if(
-				activeAnimations.begin(), activeAnimations.end(),
-				[&_name](const ActiveAnimation& _animation)
-				{
-					return _animation.name == _name;
-				});
-			if (it != activeAnimations.end())
+
+			if (ActiveAnimation* anim = getActiveAnimation(_name))
 			{
-				it->pause();
+				anim->pause();
 			}
 			else
 			{
@@ -186,15 +209,9 @@ namespace se
 		}
 		void Animator::setSpeed(const float _value, const std::string_view _name)
 		{
-			auto it = std::find_if(
-				activeAnimations.begin(), activeAnimations.end(),
-				[&_name](const ActiveAnimation& _animation)
-				{
-					return _animation.name == _name;
-				});
-			if (it != activeAnimations.end())
+			if (ActiveAnimation* anim = getActiveAnimation(_name))
 			{
-				it->speed = _value;
+				anim->speed = _value;
 			}
 			else
 			{
@@ -208,9 +225,20 @@ namespace se
 				activeAnimation.speed = _value;
 			}
 		}
+		void Animator::setLooping(const bool _value, const std::string_view _name)
+		{
+			if (ActiveAnimation* anim = getActiveAnimation(_name))
+			{
+				anim->loop = _value;
+			}
+			else
+			{
+				log::warning("Cannot set animation looping, '" + _name + "' not found!");
+			}
+		}
 		bool Animator::isActive(const std::string_view _name) const
 		{
-			return std::find_if(activeAnimations.begin(), activeAnimations.end(), [&_name](const ActiveAnimation& _anim) { return _name == _anim.name; }) != activeAnimations.end();
+			return getActiveAnimation(_name) != nullptr;
 		}
 
 
@@ -255,7 +283,7 @@ namespace se
 
 			for (size_t p = 0; p < _node.positionKeys.size() - 1; p++)
 			{
-				if (_time < _node.positionKeys[p + 1].first)
+				if (_time <= _node.positionKeys[p + 1].first)
 				{
 					const float delta = _node.positionKeys[p + 1].first - _node.positionKeys[p].first;
 					const float timeSinceFirstKey = _time - _node.positionKeys[p].first;
@@ -273,7 +301,7 @@ namespace se
 
 			for (size_t r = 0; r < _node.rotationKeys.size() - 1; r++)
 			{
-				if (_time < _node.rotationKeys[r + 1].first)
+				if (_time <= _node.rotationKeys[r + 1].first)
 				{
 					const float delta = _node.rotationKeys[r + 1].first - _node.rotationKeys[r].first;
 					const float timeSinceFirstKey = _time - _node.rotationKeys[r].first;
@@ -291,7 +319,7 @@ namespace se
 
 			for (size_t s = 0; s < _node.scalingKeys.size() - 1; s++)
 			{
-				if (_time < _node.scalingKeys[s + 1].first)
+				if (_time <= _node.scalingKeys[s + 1].first)
 				{
 					const float delta = _node.scalingKeys[s + 1].first - _node.scalingKeys[s].first;
 					const float timeSinceFirstKey = _time - _node.scalingKeys[s].first;
@@ -320,7 +348,9 @@ namespace se
 
 				const float timeInSeconds = activeAnimation.animTimer.asSeconds() * activeAnimation.speed;
 				const float timeInFrames = timeInSeconds * activeAnimation.animation->framesPerSeconds;
-				const float animTime = static_cast<float>(fmod(timeInFrames, activeAnimation.animation->numFrames));
+				const float animTime = activeAnimation.loop
+					? static_cast<float>(fmod(timeInFrames, activeAnimation.animation->numFrames))
+					: glm::clamp(timeInFrames, 0.0f, static_cast<float>(activeAnimation.animation->numFrames));
 
 				weight += activeAnimation.getWeight();
 				position = glm::mix(position, getPosition(it->second, animTime), activeAnimation.getWeight() / weight);

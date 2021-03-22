@@ -138,6 +138,10 @@ namespace se
 		{
 			animator.setSpeed(_value);
 		}
+		void Model::setAnimationLooping(const bool _value, const std::string_view _name)
+		{
+			animator.setLooping(_value, _name);
+		}
 		bool Model::isAnimationActive(const std::string_view _name) const
 		{
 			return animator.isActive(_name);
