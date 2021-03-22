@@ -30,7 +30,7 @@ namespace se
 
 		private:
 
-			friend class PrimitiveInstance;
+			friend class PrimitiveInternal;
 			friend class Batch;
 			friend class ShaderManager;
 			friend class DefaultShaderManager;

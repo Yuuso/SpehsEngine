@@ -3,7 +3,7 @@
 #include "boost/signals2.hpp"
 #include "SpehsEngine/Graphics/Types.h"
 #include "SpehsEngine/Graphics/View.h"
-#include "SpehsEngine/Graphics/Internal/ViewInstance.h"
+#include "SpehsEngine/Graphics/Internal/ViewInternal.h"
 #include <vector>
 #include <memory>
 
@@ -93,9 +93,9 @@ namespace se
 
 			std::string				screenShotFileName;
 
-			friend class WindowInstance;
+			friend class WindowInternal;
 			boost::signals2::signal<void(void)> destroyedSignal;
-			std::vector<std::unique_ptr<ViewInstance>> views;
+			std::vector<std::unique_ptr<ViewInternal>> views;
 			WindowUpdateFlagsType updateFlags = 0;
 		};
 	}

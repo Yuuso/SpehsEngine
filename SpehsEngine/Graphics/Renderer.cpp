@@ -27,7 +27,7 @@ namespace se
 			}
 			initialized = true;
 
-			windows.push_back(std::make_unique<WindowInstance>(_window, true));
+			windows.push_back(std::make_unique<WindowInternal>(_window, true));
 			defaultWindow = windows.back().get();
 
 			{
@@ -122,7 +122,7 @@ namespace se
 		{
 			auto it = std::find_if(windows.begin(),
 								   windows.end(),
-								   [&_window](const std::unique_ptr<WindowInstance>& window)
+								   [&_window](const std::unique_ptr<WindowInternal>& window)
 								   {
 									   return *window.get() == _window;
 								   });
@@ -131,13 +131,13 @@ namespace se
 				se::log::error("Window already found in renderer!");
 				return;
 			}
-			windows.push_back(std::make_unique<WindowInstance>(_window, false));
+			windows.push_back(std::make_unique<WindowInternal>(_window, false));
 		}
 		void Renderer::remove(Window& _window)
 		{
 			auto it = std::find_if(windows.begin(),
 								   windows.end(),
-								   [&_window](const std::unique_ptr<WindowInstance>& window)
+								   [&_window](const std::unique_ptr<WindowInternal>& window)
 								   {
 									   return *window.get() == _window;
 								   });
@@ -252,7 +252,7 @@ namespace se
 					case SDL_WINDOWEVENT:
 					{
 						auto it = std::find_if(windows.begin(), windows.end(),
-											   [sdlEvent](const std::unique_ptr<WindowInstance>& _window)
+											   [sdlEvent](const std::unique_ptr<WindowInternal>& _window)
 											   {
 												   return sdlEvent.window.windowID == _window->getID();
 											   });
@@ -261,7 +261,7 @@ namespace se
 							log::warning("Renderer: Window with ID " + std::to_string(sdlEvent.window.windowID) + " not found!");
 							break;
 						}
-						WindowInstance& window = *it->get();
+						WindowInternal& window = *it->get();
 						if (window.wasDestroyed())
 							break;
 						window.handleWindowEvent(sdlEvent.window);

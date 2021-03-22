@@ -1,6 +1,5 @@
 #pragma once
 
-#include "bgfx/bgfx.h" // TODO: try to get rid of this
 #include "boost/signals2/connection.hpp"
 #include "glm/mat4x4.hpp"
 #include "SpehsEngine/Graphics/Internal/Batch.h"
@@ -14,18 +13,18 @@ namespace se
 {
 	namespace graphics
 	{
-		class PrimitiveInstance
+		class PrimitiveInternal
 		{
 		public:
 
-			PrimitiveInstance(Primitive& _primitive);
-			~PrimitiveInstance();
+			PrimitiveInternal(Primitive& _primitive);
+			~PrimitiveInternal();
 
-			PrimitiveInstance(const PrimitiveInstance& _other) = delete;
-			PrimitiveInstance& operator=(const PrimitiveInstance& _other) = delete;
+			PrimitiveInternal(const PrimitiveInternal& _other) = delete;
+			PrimitiveInternal& operator=(const PrimitiveInternal& _other) = delete;
 
-			PrimitiveInstance(PrimitiveInstance&& _other) = delete;
-			PrimitiveInstance& operator=(PrimitiveInstance&& _other) = delete;
+			PrimitiveInternal(PrimitiveInternal&& _other) = delete;
+			PrimitiveInternal& operator=(PrimitiveInternal&& _other) = delete;
 
 			bool operator==(const Primitive& _other) const;
 
@@ -64,7 +63,6 @@ namespace se
 			bool verticesChanged = false;
 			bool indicesChanged = false;
 
-			// TODO: weak_ptr?
 			Batch* primitiveBatch = nullptr;
 			const BatchPosition* batchPosition = nullptr;
 		};

@@ -9,18 +9,18 @@ namespace se
 {
 	namespace graphics
 	{
-		class ViewInstance
+		class ViewInternal
 		{
 		public:
 
-			ViewInstance(View& _view);
-			~ViewInstance();
+			ViewInternal(View& _view);
+			~ViewInternal();
 
-			ViewInstance(const ViewInstance& _other) = delete;
-			ViewInstance& operator=(const ViewInstance& _other) = delete;
+			ViewInternal(const ViewInternal& _other) = delete;
+			ViewInternal& operator=(const ViewInternal& _other) = delete;
 
-			ViewInstance(ViewInstance&& _other) = delete;
-			ViewInstance& operator=(ViewInstance&& _other) = delete;
+			ViewInternal(ViewInternal&& _other) = delete;
+			ViewInternal& operator=(ViewInternal&& _other) = delete;
 
 			bool operator==(const View& _other) const;
 

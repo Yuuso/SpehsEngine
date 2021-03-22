@@ -1,9 +1,9 @@
 #include "stdafx.h"
-#include "SpehsEngine/Graphics/Internal/ViewInstance.h"
+#include "SpehsEngine/Graphics/Internal/ViewInternal.h"
 
 #include "SpehsEngine/Core/BitwiseOperations.h"
 #include "SpehsEngine/Core/SE_Assert.h"
-#include "SpehsEngine/Graphics/Internal/WindowInstance.h"
+#include "SpehsEngine/Graphics/Internal/WindowInternal.h"
 
 #pragma warning(disable : 4127)
 #define GLM_ENABLE_EXPERIMENTAL
@@ -14,26 +14,26 @@ namespace se
 {
 	namespace graphics
 	{
-		ViewInstance::ViewInstance(View& _view)
+		ViewInternal::ViewInternal(View& _view)
 			: view(&_view)
 		{
-			viewDestroyedConnection = view->destroyedSignal.connect(boost::bind(&ViewInstance::viewDestroyed, this));
+			viewDestroyedConnection = view->destroyedSignal.connect(boost::bind(&ViewInternal::viewDestroyed, this));
 		}
-		ViewInstance::~ViewInstance()
+		ViewInternal::~ViewInternal()
 		{
 		}
 
-		void ViewInstance::viewDestroyed()
+		void ViewInternal::viewDestroyed()
 		{
 			view = nullptr;
 		}
 
-		bool ViewInstance::operator==(const View& _other) const
+		bool ViewInternal::operator==(const View& _other) const
 		{
 			return view == &_other;
 		}
 
-		void ViewInstance::render(RenderContext& _renderContext)
+		void ViewInternal::render(RenderContext& _renderContext)
 		{
 			se_assert(view);
 
@@ -114,17 +114,17 @@ namespace se
 			_renderContext.currentViewId++;
 		}
 
-		void ViewInstance::preRender(const bool _renderState, const bool _forceAllUpdates)
+		void ViewInternal::preRender(const bool _renderState, const bool _forceAllUpdates)
 		{
 			view->scene.preRender(_renderState, _forceAllUpdates || wasAdded);
 		}
-		void ViewInstance::postRender(const bool _renderState)
+		void ViewInternal::postRender(const bool _renderState)
 		{
 			view->scene.postRender(_renderState);
 			wasAdded = false;
 		}
 
-		const bool ViewInstance::wasDestroyed() const
+		const bool ViewInternal::wasDestroyed() const
 		{
 			return view == nullptr;
 		}

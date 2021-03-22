@@ -40,7 +40,7 @@ namespace se
 			{
 				indices->updateBuffer();
 			}
-			// RenderInfoChanged changes only impact PrimitiveInstance
+			// RenderInfoChanged changes only impact PrimitiveInternal
 			updateFlags = 0;
 		}
 		const UniformMatrices& Primitive::getTransformMatrices() const

@@ -8,18 +8,18 @@ namespace se
 {
 	namespace graphics
 	{
-		class LightInstance
+		class LightInternal
 		{
 		public:
 
-			LightInstance(Light& _light);
-			~LightInstance() = default;
+			LightInternal(Light& _light);
+			~LightInternal() = default;
 
-			LightInstance(const LightInstance& _other) = delete;
-			LightInstance& operator=(const LightInstance& _other) = delete;
+			LightInternal(const LightInternal& _other) = delete;
+			LightInternal& operator=(const LightInternal& _other) = delete;
 
-			LightInstance(LightInstance&& _other) = delete;
-			LightInstance& operator=(LightInstance&& _other) = delete;
+			LightInternal(LightInternal&& _other) = delete;
+			LightInternal& operator=(LightInternal&& _other) = delete;
 
 			bool operator==(const Light& _other) const;
 

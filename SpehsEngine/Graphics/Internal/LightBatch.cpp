@@ -89,7 +89,7 @@ namespace se
 		{
 			auto it = std::find_if(lights.begin(),
 								   lights.end(),
-								   [&_light](const std::unique_ptr<LightInstance>& light)
+								   [&_light](const std::unique_ptr<LightInternal>& light)
 								   {
 									   return *light.get() == _light;
 								   });
@@ -105,7 +105,7 @@ namespace se
 				return;
 			}
 
-			lights.push_back(std::make_unique<LightInstance>(_light));
+			lights.push_back(std::make_unique<LightInternal>(_light));
 
 			// Force update buffer
 			_light.dirty = true;
@@ -115,7 +115,7 @@ namespace se
 		{
 			auto it = std::find_if(lights.begin(),
 								   lights.end(),
-								   [&_light](const std::unique_ptr<LightInstance>& light)
+								   [&_light](const std::unique_ptr<LightInternal>& light)
 								   {
 									   return *light.get() == _light;
 								   });

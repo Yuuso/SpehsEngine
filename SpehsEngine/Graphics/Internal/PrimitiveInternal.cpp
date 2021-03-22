@@ -1,5 +1,5 @@
 #include "stdafx.h"
-#include "SpehsEngine/Graphics/Internal/PrimitiveInstance.h"
+#include "SpehsEngine/Graphics/Internal/PrimitiveInternal.h"
 
 #include "SpehsEngine/Core/BitwiseOperations.h"
 #include "SpehsEngine/Core/SE_Assert.h"
@@ -13,12 +13,12 @@ namespace se
 {
 	namespace graphics
 	{
-		PrimitiveInstance::PrimitiveInstance(Primitive& _primitive)
+		PrimitiveInternal::PrimitiveInternal(Primitive& _primitive)
 			: primitive(&_primitive)
 		{
-			primitiveDestroyedConnection = primitive->destroyedSignal.connect(boost::bind(&PrimitiveInstance::primitiveDestroyed, this));
+			primitiveDestroyedConnection = primitive->destroyedSignal.connect(boost::bind(&PrimitiveInternal::primitiveDestroyed, this));
 		}
-		PrimitiveInstance::~PrimitiveInstance()
+		PrimitiveInternal::~PrimitiveInternal()
 		{
 			// TODO: These asserts can trigger when deleting scene
 			//se_assert(!primitiveBatch);
@@ -26,18 +26,18 @@ namespace se
 			unregisterAsBufferObjectRenderer();
 		}
 
-		void PrimitiveInstance::primitiveDestroyed()
+		void PrimitiveInternal::primitiveDestroyed()
 		{
 			unregisterAsBufferObjectRenderer();
 			primitive = nullptr;
 		}
 
-		bool PrimitiveInstance::operator==(const Primitive& _other) const
+		bool PrimitiveInternal::operator==(const Primitive& _other) const
 		{
 			return &_other == primitive;
 		}
 
-		void PrimitiveInstance::registerAsBufferObjectRenderer()
+		void PrimitiveInternal::registerAsBufferObjectRenderer()
 		{
 			if (primitive)
 			{
@@ -49,7 +49,7 @@ namespace se
 					indices->registerAsRenderer(reinterpret_cast<uintptr_t>(this));
 			}
 		}
-		void PrimitiveInstance::unregisterAsBufferObjectRenderer()
+		void PrimitiveInternal::unregisterAsBufferObjectRenderer()
 		{
 			if (primitive)
 			{
@@ -63,7 +63,7 @@ namespace se
 		}
 
 
-		void PrimitiveInstance::update()
+		void PrimitiveInternal::update()
 		{
 			primitive->update();
 
@@ -107,13 +107,13 @@ namespace se
 			}
 		}
 
-		void PrimitiveInstance::render(RenderContext& _renderContext)
+		void PrimitiveInternal::render(RenderContext& _renderContext)
 		{
 			render(_renderContext, getRenderInfo());
 			if (primitive->getRenderCopy())
 				render(_renderContext, getCopyRenderInfo());
 		}
-		void PrimitiveInstance::render(RenderContext& _renderContext, const RenderInfo& _renderInfo)
+		void PrimitiveInternal::render(RenderContext& _renderContext, const RenderInfo& _renderInfo)
 		{
 			if (!_renderInfo.material)
 			{
@@ -146,7 +146,7 @@ namespace se
 			bgfx::submit(_renderContext.currentViewId, programHandle);
 		}
 
-		void PrimitiveInstance::preRender(const bool _forceAllUpdates)
+		void PrimitiveInternal::preRender(const bool _forceAllUpdates)
 		{
 			if (_forceAllUpdates)
 			{
@@ -161,7 +161,7 @@ namespace se
 				indicesChanged = indicesChanged || primitive->getIndicesChanged();
 			}
 		}
-		void PrimitiveInstance::postRender()
+		void PrimitiveInternal::postRender()
 		{
 			if (getRenderState())
 			{
@@ -174,7 +174,7 @@ namespace se
 			}
 		}
 
-		void PrimitiveInstance::batch(Batch& _batch)
+		void PrimitiveInternal::batch(Batch& _batch)
 		{
 			se_assert(!isBatched());
 			batchPosition = &_batch.add(*getVertices(), *getIndices());
@@ -182,7 +182,7 @@ namespace se
 			if (primitive->getTransformMatrices()[0] != glm::mat4(1.0f)) // No need to update with identity matrix
 				primitiveBatch->updateVertices(*batchPosition, *getVertices(), primitive->getTransformMatrices()[0], primitive->getNormalMatrices()[0]);
 		}
-		void PrimitiveInstance::unbatch()
+		void PrimitiveInternal::unbatch()
 		{
 			se_assert(isBatched());
 			primitiveBatch->remove(*batchPosition);
@@ -190,15 +190,15 @@ namespace se
 			batchPosition = nullptr;
 		}
 
-		const bool PrimitiveInstance::isBatched() const
+		const bool PrimitiveInternal::isBatched() const
 		{
 			return primitiveBatch != nullptr;
 		}
-		const bool PrimitiveInstance::wasDestroyed() const
+		const bool PrimitiveInternal::wasDestroyed() const
 		{
 			return primitive == nullptr;
 		}
-		const RenderInfo PrimitiveInstance::getRenderInfo() const
+		const RenderInfo PrimitiveInternal::getRenderInfo() const
 		{
 			RenderInfo result;
 			result.renderFlags = primitive->getRenderFlags();
@@ -208,7 +208,7 @@ namespace se
 			result.primitiveColor = primitive->getColor();
 			return result;
 		}
-		const RenderInfo PrimitiveInstance::getCopyRenderInfo() const
+		const RenderInfo PrimitiveInternal::getCopyRenderInfo() const
 		{
 			const RenderCopy* renderCopy = primitive->getRenderCopy();
 			if (!renderCopy)
@@ -224,7 +224,7 @@ namespace se
 			result.primitiveColor = renderCopy->primitiveColor;
 			return result;
 		}
-		const bool PrimitiveInstance::getRenderState() const
+		const bool PrimitiveInternal::getRenderState() const
 		{
 			return primitive->getRenderState()
 				&& getVertices()
@@ -233,22 +233,22 @@ namespace se
 				&& getIndices()->size() > 0
 				&& primitive->getMaterial();
 		}
-		const RenderMode PrimitiveInstance::getRenderMode() const
+		const RenderMode PrimitiveInternal::getRenderMode() const
 		{
 			return primitive->getRenderMode();
 		}
-		const VertexBuffer* PrimitiveInstance::getVertices() const
+		const VertexBuffer* PrimitiveInternal::getVertices() const
 		{
 			// const, to prevent bufferChanged modification internally
 			return primitive->getVertices().get();
 		}
-		const IndexBuffer* PrimitiveInstance::getIndices() const
+		const IndexBuffer* PrimitiveInternal::getIndices() const
 		{
 			// const, to prevent bufferChanged modification internally
 			return primitive->getIndices().get();
 		}
 
-		const bool PrimitiveInstance::sizeInBatchChanged() const
+		const bool PrimitiveInternal::sizeInBatchChanged() const
 		{
 			se_assert(isBatched());
 			if (verticesChanged || indicesChanged)

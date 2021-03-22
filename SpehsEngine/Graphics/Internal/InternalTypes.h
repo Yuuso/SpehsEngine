@@ -14,7 +14,7 @@ namespace se
 	{
 		struct RenderContext
 		{
-			const class WindowInstance* currentWindow	= nullptr;
+			const class WindowInternal* currentWindow	= nullptr;
 			class DefaultUniforms* defaultUniforms		= nullptr;
 			class LightBatch* lightBatch				= nullptr;
 			bgfx::ViewId currentViewId					= 0;

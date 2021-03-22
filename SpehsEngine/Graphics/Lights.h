@@ -47,7 +47,7 @@ namespace se
 		protected:
 
 			friend class LightBatch;
-			friend class LightInstance;
+			friend class LightInternal;
 
 			// mat4[0]
 			Color color;				// Color, alpha is intensity

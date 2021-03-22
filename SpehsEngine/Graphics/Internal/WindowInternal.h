@@ -13,18 +13,18 @@ namespace se
 {
 	namespace graphics
 	{
-		class WindowInstance
+		class WindowInternal
 		{
 		public:
 
-			WindowInstance(Window& _window, const bool _isDefault);
-			~WindowInstance();
+			WindowInternal(Window& _window, const bool _isDefault);
+			~WindowInternal();
 
-			WindowInstance(const WindowInstance& _other) = delete;
-			WindowInstance& operator=(const WindowInstance& _other) = delete;
+			WindowInternal(const WindowInternal& _other) = delete;
+			WindowInternal& operator=(const WindowInternal& _other) = delete;
 
-			WindowInstance(WindowInstance&& _other) = delete;
-			WindowInstance& operator=(WindowInstance&& _other) = delete;
+			WindowInternal(WindowInternal&& _other) = delete;
+			WindowInternal& operator=(WindowInternal&& _other) = delete;
 
 			bool operator==(const Window& _other) const;
 

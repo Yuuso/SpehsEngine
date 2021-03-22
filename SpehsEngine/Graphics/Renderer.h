@@ -2,7 +2,7 @@
 
 #include "glm/vec2.hpp"
 #include "SpehsEngine/Graphics/Internal/DefaultUniforms.h"
-#include "SpehsEngine/Graphics/Internal/WindowInstance.h"
+#include "SpehsEngine/Graphics/Internal/WindowInternal.h"
 #include "SpehsEngine/Graphics/Window.h"
 #include <memory>
 #include <vector>
@@ -52,8 +52,8 @@ namespace se
 
 			inline static bool initialized = false;
 
-			std::vector<std::unique_ptr<WindowInstance>> windows;
-			WindowInstance* defaultWindow = nullptr;
+			std::vector<std::unique_ptr<WindowInternal>> windows;
+			WindowInternal* defaultWindow = nullptr;
 
 			RendererFlagsType rendererFlags;
 			bool rendererFlagsChanged = false;

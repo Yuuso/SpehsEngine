@@ -7,18 +7,18 @@ namespace se
 {
 	namespace graphics
 	{
-		class ModelInstance
+		class ModelInternal
 		{
 		public:
 
-			ModelInstance(Model& _model);
-			~ModelInstance() = default;
+			ModelInternal(Model& _model);
+			~ModelInternal() = default;
 
-			ModelInstance(const ModelInstance& _other) = delete;
-			ModelInstance& operator=(const ModelInstance& _other) = delete;
+			ModelInternal(const ModelInternal& _other) = delete;
+			ModelInternal& operator=(const ModelInternal& _other) = delete;
 
-			ModelInstance(ModelInstance&& _other) = delete;
-			ModelInstance& operator=(ModelInstance&& _other) = delete;
+			ModelInternal(ModelInternal&& _other) = delete;
+			ModelInternal& operator=(ModelInternal&& _other) = delete;
 
 			bool operator==(const Model& _other) const;
 

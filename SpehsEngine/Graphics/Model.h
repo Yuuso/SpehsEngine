@@ -78,7 +78,7 @@ namespace se
 
 		private:
 
-			friend class ModelInstance;
+			friend class ModelInternal;
 			friend class ModelNode;
 			friend class Mesh;
 

@@ -167,9 +167,9 @@
     <ClInclude Include="Internal\InternalTypes.h" />
     <ClInclude Include="Internal\InternalUtilities.h" />
     <ClInclude Include="Internal\LightBatch.h" />
-    <ClInclude Include="Internal\LightInstance.h" />
+    <ClInclude Include="Internal\LightInternal.h" />
     <ClInclude Include="Internal\Mesh.h" />
-    <ClInclude Include="Internal\ModelInstance.h" />
+    <ClInclude Include="Internal\ModelInternal.h" />
     <ClInclude Include="Internal\ModelNode.h" />
     <ClInclude Include="Internal\RendererCallbackHandler.h" />
     <ClInclude Include="Internal\RenderInfo.h" />
@@ -182,7 +182,7 @@
     <ClInclude Include="ModelDataManager.h" />
     <ClInclude Include="PrecompiledInclude.h" />
     <ClInclude Include="Primitive.h" />
-    <ClInclude Include="Internal\PrimitiveInstance.h" />
+    <ClInclude Include="Internal\PrimitiveInternal.h" />
     <ClInclude Include="RenderCopy.h" />
     <ClInclude Include="Renderer.h" />
     <ClInclude Include="ResourceData.h" />
@@ -207,9 +207,9 @@
     <ClInclude Include="VertexAttribute.h" />
     <ClInclude Include="VertexBuffer.h" />
     <ClInclude Include="View.h" />
-    <ClInclude Include="Internal\ViewInstance.h" />
+    <ClInclude Include="Internal\ViewInternal.h" />
     <ClInclude Include="Window.h" />
-    <ClInclude Include="Internal\WindowInstance.h" />
+    <ClInclude Include="Internal\WindowInternal.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="CharacterSet.cpp" />
@@ -228,9 +228,9 @@
     <ClCompile Include="Internal\FontLibrary.cpp" />
     <ClCompile Include="Internal\InternalUtilities.cpp" />
     <ClCompile Include="Internal\LightBatch.cpp" />
-    <ClCompile Include="Internal\LightInstance.cpp" />
+    <ClCompile Include="Internal\LightInternal.cpp" />
     <ClCompile Include="Internal\Mesh.cpp" />
-    <ClCompile Include="Internal\ModelInstance.cpp" />
+    <ClCompile Include="Internal\ModelInternal.cpp" />
     <ClCompile Include="Internal\ModelNode.cpp" />
     <ClCompile Include="Internal\RendererCallbackHandler.cpp" />
     <ClCompile Include="Lights.cpp" />
@@ -240,7 +240,7 @@
     <ClCompile Include="ModelData.cpp" />
     <ClCompile Include="ModelDataManager.cpp" />
     <ClCompile Include="Primitive.cpp" />
-    <ClCompile Include="Internal\PrimitiveInstance.cpp" />
+    <ClCompile Include="Internal\PrimitiveInternal.cpp" />
     <ClCompile Include="Renderer.cpp" />
     <ClCompile Include="Scene.cpp" />
     <ClCompile Include="Shader.cpp" />
@@ -259,9 +259,9 @@
     <ClCompile Include="Uniform.cpp" />
     <ClCompile Include="VertexBuffer.cpp" />
     <ClCompile Include="View.cpp" />
-    <ClCompile Include="Internal\ViewInstance.cpp" />
+    <ClCompile Include="Internal\ViewInternal.cpp" />
     <ClCompile Include="Window.cpp" />
-    <ClCompile Include="Internal\WindowInstance.cpp" />
+    <ClCompile Include="Internal\WindowInternal.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

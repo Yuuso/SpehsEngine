@@ -25,12 +25,12 @@ namespace se
 				se::log::error("Primitive already found in scene!");
 				return;
 			}
-			primitives.push_back(std::make_unique<PrimitiveInstance>(_primitive));
+			primitives.push_back(std::make_unique<PrimitiveInternal>(_primitive));
 		}
 		void Scene::remove(Primitive& _primitive)
 		{
 			auto it = std::find_if(primitives.begin(), primitives.end(),
-								   [&_primitive](const std::unique_ptr<PrimitiveInstance>& primitive)
+								   [&_primitive](const std::unique_ptr<PrimitiveInternal>& primitive)
 								   {
 									   return *primitive.get() == _primitive;
 								   });
@@ -49,7 +49,7 @@ namespace se
 		bool Scene::find(const Primitive& _primitive) const
 		{
 			auto it = std::find_if(primitives.begin(), primitives.end(),
-								   [&_primitive](const std::unique_ptr<PrimitiveInstance>& primitive)
+								   [&_primitive](const std::unique_ptr<PrimitiveInternal>& primitive)
 								   {
 									   return *primitive.get() == _primitive;
 								   });
@@ -59,7 +59,7 @@ namespace se
 		void Scene::add(Model& _model)
 		{
 			auto it = std::find_if(models.begin(), models.end(),
-								   [&_model](const std::unique_ptr<ModelInstance>& model)
+								   [&_model](const std::unique_ptr<ModelInternal>& model)
 								   {
 									   return *model.get() == _model;
 								   });
@@ -68,13 +68,13 @@ namespace se
 				se::log::error("Model already found in scene!");
 				return;
 			}
-			models.push_back(std::make_unique<ModelInstance>(_model));
+			models.push_back(std::make_unique<ModelInternal>(_model));
 			// NOTE: Model primitives will be added in first preRender
 		}
 		void Scene::remove(Model& _model)
 		{
 			auto it = std::find_if(models.begin(), models.end(),
-								   [&_model](const std::unique_ptr<ModelInstance>& model)
+								   [&_model](const std::unique_ptr<ModelInternal>& model)
 								   {
 									   return *model.get() == _model;
 								   });
@@ -209,7 +209,7 @@ namespace se
 			lightBatch->postRender();
 		}
 
-		void Scene::batch(PrimitiveInstance& _primitive)
+		void Scene::batch(PrimitiveInternal& _primitive)
 		{
 			se_assert(!_primitive.wasDestroyed());
 			bool found = false;

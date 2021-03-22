@@ -23,7 +23,7 @@ namespace se
 		{
 			auto it = std::find_if(views.begin(),
 								   views.end(),
-								   [&_view](const std::unique_ptr<ViewInstance>& view)
+								   [&_view](const std::unique_ptr<ViewInternal>& view)
 								   {
 									   return *view.get() == _view;
 								   });
@@ -32,13 +32,13 @@ namespace se
 				se::log::error("View already found in window!");
 				return;
 			}
-			views.push_back(std::make_unique<ViewInstance>(_view));
+			views.push_back(std::make_unique<ViewInternal>(_view));
 		}
 		void Window::remove(View& _view)
 		{
 			auto it = std::find_if(views.begin(),
 								   views.end(),
-								   [&_view](const std::unique_ptr<ViewInstance>& view)
+								   [&_view](const std::unique_ptr<ViewInternal>& view)
 								   {
 									   return *view.get() == _view;
 								   });

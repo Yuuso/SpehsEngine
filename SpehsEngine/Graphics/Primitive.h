@@ -73,7 +73,7 @@ namespace se
 
 		protected:
 
-			friend class PrimitiveInstance;
+			friend class PrimitiveInternal;
 			friend class Model;
 
 			virtual void							update();

@@ -2,7 +2,7 @@
 
 #include "bgfx/bgfx.h" // !
 #include "glm/vec4.hpp"
-#include "SpehsEngine/Graphics/Internal/LightInstance.h"
+#include "SpehsEngine/Graphics/Internal/LightInternal.h"
 #include "SpehsEngine/Graphics/Lights.h"
 #include <memory>
 #include <vector>
@@ -38,7 +38,7 @@ namespace se
 
 			void update(const size_t _index);
 
-			std::vector<std::unique_ptr<LightInstance>> lights;
+			std::vector<std::unique_ptr<LightInternal>> lights;
 
 			glm::vec4 lightInfo;
 			glm::vec4 data1[MAX_LIGHTS];

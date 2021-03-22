@@ -39,7 +39,7 @@ namespace se
 
 		private:
 
-			friend class ViewInstance;
+			friend class ViewInternal;
 
 			Scene& scene;
 			Camera& camera;

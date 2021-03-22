@@ -1,5 +1,5 @@
 #include "stdafx.h"
-#include "SpehsEngine/Graphics/Internal/WindowInstance.h"
+#include "SpehsEngine/Graphics/Internal/WindowInternal.h"
 
 #include "SpehsEngine/Core/BitwiseOperations.h"
 #include "SpehsEngine/Core/Log.h"
@@ -23,11 +23,11 @@ namespace se
 {
 	namespace graphics
 	{
-		WindowInstance::WindowInstance(Window& _window, const bool _isDefault)
+		WindowInternal::WindowInternal(Window& _window, const bool _isDefault)
 			: window(&_window)
 			, isDefault(_isDefault)
 		{
-			windowDestroyedConnection = window->destroyedSignal.connect(boost::bind(&WindowInstance::windowDestroyed, this));
+			windowDestroyedConnection = window->destroyedSignal.connect(boost::bind(&WindowInternal::windowDestroyed, this));
 
 			uint32_t windowFlags = 0;
 			if (!window->isShown())
@@ -103,7 +103,7 @@ namespace se
 				frameBufferHandle = bgfx::createFrameBuffer(wmi.info.win.window, window->getWidth(), window->getHeight());
 			}
 		}
-		WindowInstance::~WindowInstance()
+		WindowInternal::~WindowInternal()
 		{
 			if (bgfx::isValid(frameBufferHandle))
 			{
@@ -113,17 +113,17 @@ namespace se
 			SDL_DestroyWindow(sdlWindow);
 		}
 
-		void WindowInstance::windowDestroyed()
+		void WindowInternal::windowDestroyed()
 		{
 			window = nullptr;
 		}
 
-		bool WindowInstance::operator==(const Window& _other) const
+		bool WindowInternal::operator==(const Window& _other) const
 		{
 			return window == &_other;
 		}
 
-		void WindowInstance::render(RenderContext& _renderContext)
+		void WindowInternal::render(RenderContext& _renderContext)
 		{
 			if (!window->screenShotFileName.empty())
 			{
@@ -152,7 +152,7 @@ namespace se
 			}
 		}
 
-		void WindowInstance::preRender()
+		void WindowInternal::preRender()
 		{
 			se_assert(window);
 			for (size_t i = 0; i < window->views.size(); )
@@ -170,7 +170,7 @@ namespace se
 				view->preRender(renderState(), wasAdded);
 			}
 		}
-		void WindowInstance::postRender()
+		void WindowInternal::postRender()
 		{
 			for (auto&& view : window->views)
 			{
@@ -179,34 +179,34 @@ namespace se
 			wasAdded = false;
 		}
 
-		bool WindowInstance::renderState() const
+		bool WindowInternal::renderState() const
 		{
 			return !window->getMinimized() && window->isShown();
 		}
 
-		const bool WindowInstance::wasDestroyed() const
+		const bool WindowInternal::wasDestroyed() const
 		{
 			return window == nullptr;
 		}
 
-		const uint32_t WindowInstance::getID() const
+		const uint32_t WindowInternal::getID() const
 		{
 			if (!window)
 				return 0;
 			return SDL_GetWindowID(sdlWindow);
 		}
-		const float WindowInstance::getWidth() const
+		const float WindowInternal::getWidth() const
 		{
 			se_assert(window);
 			return (float)window->getWidth();
 		}
-		const float WindowInstance::getHeight() const
+		const float WindowInternal::getHeight() const
 		{
 			se_assert(window);
 			return (float)window->getHeight();
 		}
 
-		void WindowInstance::update()
+		void WindowInternal::update()
 		{
 			se_assert(window);
 			if (checkBit(window->updateFlags, WindowUpdateFlag::PositionChanged))
@@ -266,7 +266,7 @@ namespace se
 			}
 			window->updateFlags = 0;
 		}
-		void WindowInstance::handleWindowEvent(const SDL_WindowEvent& _event)
+		void WindowInternal::handleWindowEvent(const SDL_WindowEvent& _event)
 		{
 			se_assert(window);
 			switch (_event.event)
@@ -379,7 +379,7 @@ namespace se
 			}
 		}
 
-		const bool WindowInstance::getBackBufferReset()
+		const bool WindowInternal::getBackBufferReset()
 		{
 			if (resetBackBuffer)
 			{
