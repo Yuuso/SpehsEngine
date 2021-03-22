@@ -4,7 +4,7 @@
 #include "glm/gtc/quaternion.hpp"
 #include "glm/vec3.hpp"
 #include "SpehsEngine/Core/Color.h"
-#include "SpehsEngine/Graphics/Internal/Animation.h"
+#include "SpehsEngine/Graphics/Internal/Animator.h"
 #include "SpehsEngine/Graphics/Internal/Mesh.h"
 #include "SpehsEngine/Graphics/Internal/ModelNode.h"
 #include "SpehsEngine/Graphics/Material.h"
@@ -36,8 +36,13 @@ namespace se
 			void							loadModelData(std::shared_ptr<ModelData> _modelData);
 			void							reloadModeData();
 
-			void							startAnimation(const std::string_view _name);
-			void							stopAnimation();
+			void							startAnimation(const std::string_view _name, const time::Time _fade = time::Time::zero);
+			void							pauseAnimation(const std::string_view _name);
+			void							stopAnimation(const std::string_view _name, const time::Time _fade = time::Time::zero);
+			void							stopAnimations(const time::Time _fade = time::Time::zero);
+			void							setAnimationSpeed(const float _value, const std::string_view _name);
+			void							setAnimationSpeed(const float _value);
+			bool							isAnimationActive(const std::string_view _name) const;
 
 			void							foreachPrimitive(std::function<void(Primitive&)> _fn);
 			const Primitive*				getPrimitive(const std::string_view _meshName) const;
@@ -76,7 +81,7 @@ namespace se
 			friend class ModelNode;
 			friend class Mesh;
 
-			void							updateAnimation();
+			void							updateAnimations();
 			void							postReload();
 
 			ModelNode						rootNode;
@@ -92,8 +97,7 @@ namespace se
 			RenderMode						renderMode = defaultRenderMode;
 			Color							color;
 
-			std::string						activeAnimationName;
-			const Animation*				activeAnimation = nullptr;
+			Animator						animator;
 
 			glm::vec3						position = glm::vec3(0.0f);
 			glm::vec3						scale = glm::vec3(1.0f);
@@ -101,7 +105,6 @@ namespace se
 
 			std::shared_ptr<ModelData>		modelData;
 			std::vector<std::shared_ptr<Material>> materials;
-			std::shared_ptr<std::vector<Animation>> animations;
 
 			boost::signals2::signal<void(void)> destroyedSignal;
 			boost::signals2::scoped_connection modelDataLoadedConnection;

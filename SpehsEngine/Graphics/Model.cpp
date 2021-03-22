@@ -96,10 +96,9 @@ namespace se
 			processNode(*this, meshData, meshData.rootNode, rootNode, numMaterialSlots);
 			addBones(meshData, rootNode, rootNode);
 			globalInverseTransform = meshData.globalInverseMatrix;
-			animations = meshData.animations;
-			activeAnimation = nullptr;
-			if (!activeAnimationName.empty())
-				startAnimation(activeAnimationName);
+			animator.setAnimations(meshData.animations);
+			if (renderMode == RenderMode::Static && animator.hasAnimations())
+				log::warning("Should not use static RenderMode with animated models!");
 			se_assert(numMaterialSlots > 0);
 			se_assert(materials.size() <= numMaterialSlots);
 			postReload();
@@ -115,42 +114,43 @@ namespace se
 			foreachPrimitive([](Primitive& _primitive) { enableBit(_primitive.updateFlags, PrimitiveUpdateFlag::TransformChanged); }); // Force transform update
 		}
 
-		void Model::startAnimation(const std::string_view _name)
+		void Model::startAnimation(const std::string_view _name, const time::Time _fade)
 		{
-			activeAnimationName = _name;
-			if (!animations)
-				return;
-			// Find exact match
-			for (size_t i = 0; i < animations->size(); i++)
-			{
-				if (animations->at(i).name == _name)
-				{
-					activeAnimation = &animations->at(i);
-					return;
-				}
-			}
-			// Settle for partial match...
-			for (size_t i = 0; i < animations->size(); i++)
-			{
-				if (doesContain(animations->at(i).name, _name))
-				{
-					activeAnimation = &animations->at(i);
-					return;
-				}
-			}
-			log::warning("Animation " + _name + " not found in model " + name);
+			animator.start(_name, _fade);
 		}
-		void Model::stopAnimation()
+		void Model::pauseAnimation(const std::string_view _name)
 		{
-			activeAnimation = nullptr;
-			activeAnimationName.clear();
+			animator.pause(_name);
+		}
+		void Model::stopAnimation(const std::string_view _name, const time::Time _fade)
+		{
+			animator.stop(_name, _fade);
+		}
+		void Model::stopAnimations(const time::Time _fade)
+		{
+			animator.stop(_fade);
+		}
+		void Model::setAnimationSpeed(const float _value, const std::string_view _name)
+		{
+			animator.setSpeed(_value, _name);
+		}
+		void Model::setAnimationSpeed(const float _value)
+		{
+			animator.setSpeed(_value);
+		}
+		bool Model::isAnimationActive(const std::string_view _name) const
+		{
+			return animator.isActive(_name);
 		}
 
-		void Model::updateAnimation()
+		void Model::updateAnimations()
 		{
-			se_assert(activeAnimation);
-			// Force update on all transforms
-			foreachPrimitive([](Primitive& _primitive) { enableBit(_primitive.updateFlags, PrimitiveUpdateFlag::TransformChanged); });
+			animator.update();
+			if (animator.isActive())
+			{
+				// Force update on all transforms
+				foreachPrimitive([](Primitive& _primitive) { enableBit(_primitive.updateFlags, PrimitiveUpdateFlag::TransformChanged); });
+			}
 		}
 
 		void Model::foreachPrimitive(std::function<void(Primitive&)> _fn)
@@ -259,7 +259,7 @@ namespace se
 		void Model::setRenderMode(const RenderMode _renderMode)
 		{
 			renderMode = _renderMode;
-			if (renderMode == RenderMode::Static && animations && !animations->empty())
+			if (renderMode == RenderMode::Static && animator.hasAnimations())
 				log::warning("Should not use static RenderMode with animated models!");
 			foreachPrimitive([_renderMode](Primitive& _primitive) { _primitive.setRenderMode(_renderMode); });
 		}

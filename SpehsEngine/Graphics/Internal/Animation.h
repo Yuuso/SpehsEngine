@@ -28,7 +28,5 @@ namespace se
 
 			std::unordered_map<std::string, AnimationNode> channels;
 		};
-
-		glm::mat4 makeTransform(const AnimationNode& _node, const float _time);
 	}
 }

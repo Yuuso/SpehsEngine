@@ -32,8 +32,7 @@ namespace se
 		}
 		void ModelInstance::preRender()
 		{
-			if (model->activeAnimation)
-				model->updateAnimation();
+			model->updateAnimations();
 		}
 		void ModelInstance::postRender()
 		{

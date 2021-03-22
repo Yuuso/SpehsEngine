@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -155,6 +155,7 @@
     <ClInclude Include="FontManager.h" />
     <ClInclude Include="IndexBuffer.h" />
     <ClInclude Include="Internal\Animation.h" />
+    <ClInclude Include="Internal\Animator.h" />
     <ClInclude Include="Internal\Batch.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="GraphicsLib.h" />
@@ -218,6 +219,7 @@
     <ClCompile Include="FontManager.cpp" />
     <ClCompile Include="IndexBuffer.cpp" />
     <ClCompile Include="Internal\Animation.cpp" />
+    <ClCompile Include="Internal\Animator.cpp" />
     <ClCompile Include="Internal\Batch.cpp" />
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="GraphicsLib.cpp" />

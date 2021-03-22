@@ -38,21 +38,11 @@ namespace se
 
 		glm::mat4 ModelNode::getLocalTransform() const
 		{
-			if (model.activeAnimation)
+			if (model.animator.isActive(name))
 			{
-				auto it = model.activeAnimation->channels.find(name);
-				if (it == model.activeAnimation->channels.end())
-					return transform;
-
-				const float timeInSeconds = time::getRunTime().asSeconds();
-				const float timeInFrames = timeInSeconds * model.activeAnimation->framesPerSeconds;
-				const float animTime = static_cast<float>(fmod(timeInFrames, model.activeAnimation->numFrames));
-				return makeTransform(it->second, animTime);
+				return model.animator.getTransform(name);
 			}
-			else
-			{
-				return transform;
-			}
+			return transform;
 		}
 
 		void ModelNode::foreachMesh(std::function<void(Primitive&)> _fn)
