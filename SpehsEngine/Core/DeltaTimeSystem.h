@@ -12,8 +12,8 @@ namespace se
 			DeltaTimeSystem(const std::string& debugName = "unnamed");
 			virtual ~DeltaTimeSystem();
 
-			void deltaTimeSystemInitialize();
-			void deltaTimeSystemUpdate();
+			void init();
+			void update();
 
 			//Public attributes for maximum speed
 			float deltaSeconds = 0.0f;

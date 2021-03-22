@@ -127,7 +127,7 @@ namespace se
 			audioVar::listenerVelocity = glm::vec3(0.0f, 0.0f, 0.0f);
 			audioVar::listenerOrientation.up = glm::vec3(0.0f, 1.0f, 0.0f);
 			audioVar::listenerOrientation.fw = glm::vec3(0.0f, 0.0f, -1.0f);
-			audioVar::deltaTimeSystem.deltaTimeSystemInitialize();
+			audioVar::deltaTimeSystem.init();
 
 			audioVar::device = alcOpenDevice(NULL);
 			if (!audioVar::device)
@@ -163,7 +163,7 @@ namespace se
 		void AudioEngine::update()
 		{
 			//Delta time system
-			audioVar::deltaTimeSystem.deltaTimeSystemUpdate();
+			audioVar::deltaTimeSystem.update();
 			deltaSeconds = audioVar::deltaTimeSystem.deltaSeconds;
 
 			//Audio channel gain change detection

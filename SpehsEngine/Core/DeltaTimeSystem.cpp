@@ -8,7 +8,7 @@ namespace se
 		DeltaTimeSystem::DeltaTimeSystem(const std::string& debugName)
 			: name(debugName)
 		{
-			deltaTimeSystemInitialize();
+			init();
 		}
 
 		DeltaTimeSystem::~DeltaTimeSystem()
@@ -16,14 +16,14 @@ namespace se
 
 		}
 
-		void DeltaTimeSystem::deltaTimeSystemInitialize()
+		void DeltaTimeSystem::init()
 		{
 			deltaSeconds = 0.0f;
 			deltaTime.value = 0;
 			deltaTimestamp = now();
 		}
 
-		void DeltaTimeSystem::deltaTimeSystemUpdate()
+		void DeltaTimeSystem::update()
 		{
 			const se::time::Time now = se::time::now();
 			deltaTime = now - deltaTimestamp;
