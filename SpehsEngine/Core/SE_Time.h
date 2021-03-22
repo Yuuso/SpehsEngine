@@ -13,20 +13,21 @@ namespace se
 		typedef int64_t TimeValueType;
 		namespace conversionRate
 		{
-			extern const TimeValueType second;
-			extern const TimeValueType millisecond;
-			extern const TimeValueType microsecond;
-			extern const TimeValueType nanosecond;
+			constexpr TimeValueType second = 1000000000;
+			constexpr TimeValueType millisecond = second / 1000;
+			constexpr TimeValueType microsecond = millisecond / 1000;
+			constexpr TimeValueType nanosecond = microsecond / 1000;
 		}
 
 		class Time
 		{
 		public:
-			static const Time zero;
 
-			Time();
-			Time(const TimeValueType _value);
+			constexpr Time();
+			constexpr Time(const TimeValueType _value);
 			Time(const Time& other);
+
+			static const Time zero;
 
 			void operator*=(const double factor);
 			void operator*=(const float factor);
@@ -57,13 +58,18 @@ namespace se
 			bool operator>=(const Time& other) const;
 			bool operator<=(const Time& other) const;
 
-			template<typename T = float> inline T asSeconds() const		 { return (T)value / (T)conversionRate::second;		 }
-			template<typename T = float> inline T asMilliseconds() const { return (T)value / (T)conversionRate::millisecond; }
-			template<typename T = float> inline T asMicroseconds() const { return (T)value / (T)conversionRate::microsecond; }
-			template<typename T = float> inline T asNanoseconds() const	 { return (T)value / (T)conversionRate::nanosecond;	 }
+			template<typename T = float> inline constexpr T asSeconds() const		{ return (T)value / (T)conversionRate::second;		}
+			template<typename T = float> inline constexpr T asMilliseconds() const	{ return (T)value / (T)conversionRate::millisecond; }
+			template<typename T = float> inline constexpr T asMicroseconds() const	{ return (T)value / (T)conversionRate::microsecond; }
+			template<typename T = float> inline constexpr T asNanoseconds() const	{ return (T)value / (T)conversionRate::nanosecond;	}
 
 			TimeValueType value;
 		};
+
+		constexpr Time::Time()
+			: value(0) { }
+		constexpr Time::Time(const TimeValueType _value)
+			: value(_value) { }
 
 		Time operator*(const float multiplier, const Time time);
 		Time operator*(const int multiplier, const Time time);
@@ -73,10 +79,10 @@ namespace se
 		template<typename T = float> inline T asMicroseconds(const Time time)	{ return time.asMicroseconds<T>();	}
 		template<typename T = float> inline T asNanoseconds(const Time time)	{ return time.asNanoseconds<T>();	}
 
-		inline Time fromSeconds(const double seconds)			{ return TimeValueType(seconds * (double)conversionRate::second); }
-		inline Time fromMilliseconds(const double milliseconds)	{ return TimeValueType(milliseconds * (double)conversionRate::millisecond); }
-		inline Time fromMicroseconds(const double microseconds)	{ return TimeValueType(microseconds * (double)conversionRate::microsecond); }
-		inline Time fromNanoseconds(const double nanoseconds)	{ return TimeValueType(nanoseconds * (double)conversionRate::nanosecond); }
+		inline constexpr Time fromSeconds(const double seconds)				{ return TimeValueType(seconds * static_cast<double>(conversionRate::second)); }
+		inline constexpr Time fromMilliseconds(const double milliseconds)	{ return TimeValueType(milliseconds * static_cast<double>(conversionRate::millisecond)); }
+		inline constexpr Time fromMicroseconds(const double microseconds)	{ return TimeValueType(microseconds * static_cast<double>(conversionRate::microsecond)); }
+		inline constexpr Time fromNanoseconds(const double nanoseconds)		{ return TimeValueType(nanoseconds * static_cast<double>(conversionRate::nanosecond)); }
 
 		/* Initializes the time system. */
 		void initialize();

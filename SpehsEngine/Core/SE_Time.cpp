@@ -21,14 +21,7 @@ namespace se
 {
 	namespace time
 	{
-		namespace conversionRate
-		{
-			const TimeValueType second = std::chrono::high_resolution_clock::time_point::period::den;
-			const TimeValueType millisecond = second / 1000;
-			const TimeValueType microsecond = millisecond / 1000;
-			const TimeValueType nanosecond = microsecond / 1000;
-		}
-
+		static_assert(conversionRate::second == std::chrono::high_resolution_clock::time_point::period::den, "Incorrect clock resolution!");
 		namespace
 		{ // Local variables
 			bool initialized = false;
@@ -186,15 +179,7 @@ namespace se
 
 		//TIME STRUCT
 #pragma region TIME STRUCT
-		const Time Time::zero(0);
-		Time::Time()
-			: value(0)
-		{
-		}
-		Time::Time(const TimeValueType _value)
-			: value(_value)
-		{
-		}
+		const Time Time::zero = Time(0);
 		Time::Time(const Time& other)
 			: value(other.value)
 		{
