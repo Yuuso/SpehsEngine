@@ -97,5 +97,12 @@ namespace se
 		{
 			setShader(_shaderManager.find("phong_skinned"));
 		}
+
+
+		InstancedPhongMaterial::InstancedPhongMaterial(DefaultShaderManager& _shaderManager)
+			: PhongMaterial(_shaderManager)
+		{
+			setShader(_shaderManager.find("phong_instanced"));
+		}
 	}
 }

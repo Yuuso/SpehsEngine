@@ -85,6 +85,16 @@ namespace se
 		{
 			return indices;
 		}
+		const std::vector<PrimitiveInstance>& Primitive::getInstances() const
+		{
+			return instances;
+		}
+		std::vector<PrimitiveInstance>& Primitive::getInstances()
+		{
+			if (instances.size() > 0 && renderMode == RenderMode::Static)
+				log::warning("Should not use static RenderMode with instanced primitives!");
+			return instances;
+		}
 		const Color& Primitive::getColor() const
 		{
 			return primitiveColor;
@@ -159,6 +169,12 @@ namespace se
 			indices = _indices;
 			enableBit(updateFlags, PrimitiveUpdateFlag::IndicesChanged);
 		}
+		void Primitive::setInstances(const std::vector<PrimitiveInstance>& _instances)
+		{
+			instances = _instances;
+			if (instances.size() > 0 && renderMode == RenderMode::Static)
+				log::warning("Should not use static RenderMode with instanced primitives!");
+		}
 		void Primitive::setColor(const Color& _color)
 		{
 			primitiveColor = _color;
@@ -195,6 +211,8 @@ namespace se
 		}
 		void Primitive::setRenderMode(const RenderMode _renderMode)
 		{
+			if (instances.size() > 0 && renderMode == RenderMode::Static)
+				log::warning("Should not use static RenderMode with instanced primitives!");
 			if (renderMode == _renderMode)
 				return;
 			renderMode = _renderMode;

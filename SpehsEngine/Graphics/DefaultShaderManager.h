@@ -9,6 +9,8 @@
 	- color
 	- tex
 	- phong
+	- phong_skinned
+	- phong_instanced
 	- text
 */
 

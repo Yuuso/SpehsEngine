@@ -3,6 +3,8 @@
 // NOTE: No SpehsEngine includes allowed
 
 #include "glm/vec2.hpp"
+#include "glm/vec3.hpp"
+#include "glm/gtc/quaternion.hpp"
 #include <stdint.h>
 #include <numeric>
 #include <vector>
@@ -221,6 +223,13 @@ namespace se
 			bool generateNormals = false;
 			bool invertNormals = false;
 			bool generateTangents = false;
+		};
+
+		struct PrimitiveInstance
+		{
+			glm::vec3 position = glm::vec3(0.0f);
+			glm::quat rotation = glm::vec3(0.0f);
+			float scale = 1.0f; // Non-uniform scaling not allowed
 		};
 	}
 }

@@ -39,6 +39,8 @@ namespace se
 			virtual std::shared_ptr<Material>		getMaterial() const;
 			virtual std::shared_ptr<VertexBuffer>	getVertices() const;
 			virtual std::shared_ptr<IndexBuffer>	getIndices() const;
+			virtual const std::vector<PrimitiveInstance>& getInstances() const;
+			virtual std::vector<PrimitiveInstance>& getInstances();
 			virtual const Color&					getColor() const;
 
 			virtual const RenderFlagsType			getRenderFlags() const;
@@ -57,6 +59,7 @@ namespace se
 			virtual void							setMaterial(std::shared_ptr<Material> _material);
 			virtual void							setVertices(std::shared_ptr<VertexBuffer> _vertices);
 			virtual void							setIndices(std::shared_ptr<IndexBuffer> _indices);
+			virtual void							setInstances(const std::vector<PrimitiveInstance>& _instances);
 			virtual void							setColor(const Color& _color);
 
 			virtual void							setRenderFlags(const RenderFlagsType _renderFlags);
@@ -96,6 +99,7 @@ namespace se
 			std::shared_ptr<Material>				material				= nullptr;
 			std::shared_ptr<VertexBuffer>			vertices;
 			std::shared_ptr<IndexBuffer>			indices;
+			std::vector<PrimitiveInstance>			instances;
 			glm::vec3								position				= glm::vec3(0.0f);
 			glm::vec3								scale					= glm::vec3(1.0f);
 			glm::quat								rotation				= glm::vec3(0.0f);

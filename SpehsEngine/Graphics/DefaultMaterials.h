@@ -116,5 +116,13 @@ namespace se
 			SkinnedPhongMaterial(DefaultShaderManager& _shaderManager);
 			virtual ~SkinnedPhongMaterial() = default;
 		};
+
+
+		class InstancedPhongMaterial : public PhongMaterial
+		{
+		public:
+			InstancedPhongMaterial(DefaultShaderManager& _shaderManager);
+			virtual ~InstancedPhongMaterial() = default;
+		};
 	}
 }
