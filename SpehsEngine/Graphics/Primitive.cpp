@@ -3,13 +3,7 @@
 
 #include "SpehsEngine/Core/BitwiseOperations.h"
 #include "SpehsEngine/Graphics/Internal/InternalTypes.h"
-
-#define GLM_ENABLE_EXPERIMENTAL
-#include "glm/gtc/matrix_transform.hpp"
-#include "glm/gtc/quaternion.hpp"
-#include "glm/gtx/quaternion.hpp"
-#include "glm/gtx/rotate_vector.hpp"
-#include "glm/gtx/transform.hpp"
+#include "SpehsEngine/Math/GLMMatrixUtilityFunctions.h"
 
 
 namespace se
@@ -40,6 +34,10 @@ namespace se
 			{
 				indices->updateBuffer();
 			}
+			if (instances && instances->getBufferChanged())
+			{
+				instances->updateBuffer();
+			}
 			// RenderInfoChanged changes only impact PrimitiveInternal
 			updateFlags = 0;
 		}
@@ -53,8 +51,8 @@ namespace se
 		}
 		void Primitive::updateMatrices()
 		{
-			transformMatrices[0] = glm::translate(getPosition()) * glm::mat4_cast(getRotation()) * glm::scale(getScale());
-			normalMatrices[0] = glm::mat4(glm::inverse(glm::transpose(glm::mat3(transformMatrices[0]))));
+			transformMatrices[0] = constructTransformationMatrix(getPosition(), getRotation(), getScale());
+			normalMatrices[0] = constructNormalMatrix(transformMatrices[0]);
 		}
 		bool Primitive::getVerticesChanged()
 		{
@@ -85,14 +83,8 @@ namespace se
 		{
 			return indices;
 		}
-		const std::vector<PrimitiveInstance>& Primitive::getInstances() const
+		std::shared_ptr<InstanceBuffer> Primitive::getInstances() const
 		{
-			return instances;
-		}
-		std::vector<PrimitiveInstance>& Primitive::getInstances()
-		{
-			if (instances.size() > 0 && renderMode == RenderMode::Static)
-				log::warning("Should not use static RenderMode with instanced primitives!");
 			return instances;
 		}
 		const Color& Primitive::getColor() const
@@ -169,11 +161,11 @@ namespace se
 			indices = _indices;
 			enableBit(updateFlags, PrimitiveUpdateFlag::IndicesChanged);
 		}
-		void Primitive::setInstances(const std::vector<PrimitiveInstance>& _instances)
+		void Primitive::setInstances(std::shared_ptr<InstanceBuffer> _instances)
 		{
 			instances = _instances;
-			if (instances.size() > 0 && renderMode == RenderMode::Static)
-				log::warning("Should not use static RenderMode with instanced primitives!");
+			if (instances && instances->size() > 0 && renderMode == RenderMode::Static)
+				log::error("Should not use static RenderMode with instanced primitives!");
 		}
 		void Primitive::setColor(const Color& _color)
 		{
@@ -211,8 +203,8 @@ namespace se
 		}
 		void Primitive::setRenderMode(const RenderMode _renderMode)
 		{
-			if (instances.size() > 0 && renderMode == RenderMode::Static)
-				log::warning("Should not use static RenderMode with instanced primitives!");
+			if (instances && instances->size() > 0 && renderMode == RenderMode::Static)
+				log::error("Should not use static RenderMode with instanced primitives!");
 			if (renderMode == _renderMode)
 				return;
 			renderMode = _renderMode;

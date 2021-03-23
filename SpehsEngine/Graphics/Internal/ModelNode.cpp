@@ -2,13 +2,7 @@
 #include "SpehsEngine/Graphics/Internal/ModelNode.h"
 
 #include "SpehsEngine/Graphics/Model.h"
-
-#define GLM_ENABLE_EXPERIMENTAL
-#include "glm/gtc/matrix_transform.hpp"
-#include "glm/gtc/quaternion.hpp"
-#include "glm/gtx/quaternion.hpp"
-#include "glm/gtx/rotate_vector.hpp"
-#include "glm/gtx/transform.hpp"
+#include "SpehsEngine/Math/GLMMatrixUtilityFunctions.h"
 
 
 namespace se
@@ -33,7 +27,7 @@ namespace se
 		{
 			if (parent)
 				return parent->getTransform() * getLocalTransform();
-			return glm::translate(model.getPosition()) * glm::mat4_cast(model.getRotation()) * glm::scale(model.getScale()) * getLocalTransform();
+			return constructTransformationMatrix(model.getPosition(), model.getRotation(), model.getScale()) * getLocalTransform();
 		}
 
 		glm::mat4 ModelNode::getLocalTransform() const

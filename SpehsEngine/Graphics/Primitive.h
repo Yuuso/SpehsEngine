@@ -2,6 +2,7 @@
 
 #include "boost/signals2.hpp"
 #include "SpehsEngine/Graphics/IndexBuffer.h"
+#include "SpehsEngine/Graphics/InstanceBuffer.h"
 #include "SpehsEngine/Graphics/RenderCopy.h"
 #include "SpehsEngine/Graphics/Types.h"
 #include "SpehsEngine/Graphics/VertexBuffer.h"
@@ -39,8 +40,7 @@ namespace se
 			virtual std::shared_ptr<Material>		getMaterial() const;
 			virtual std::shared_ptr<VertexBuffer>	getVertices() const;
 			virtual std::shared_ptr<IndexBuffer>	getIndices() const;
-			virtual const std::vector<PrimitiveInstance>& getInstances() const;
-			virtual std::vector<PrimitiveInstance>& getInstances();
+			virtual std::shared_ptr<InstanceBuffer> getInstances() const;
 			virtual const Color&					getColor() const;
 
 			virtual const RenderFlagsType			getRenderFlags() const;
@@ -59,7 +59,7 @@ namespace se
 			virtual void							setMaterial(std::shared_ptr<Material> _material);
 			virtual void							setVertices(std::shared_ptr<VertexBuffer> _vertices);
 			virtual void							setIndices(std::shared_ptr<IndexBuffer> _indices);
-			virtual void							setInstances(const std::vector<PrimitiveInstance>& _instances);
+			virtual void							setInstances(std::shared_ptr<InstanceBuffer> _instances);
 			virtual void							setColor(const Color& _color);
 
 			virtual void							setRenderFlags(const RenderFlagsType _renderFlags);
@@ -99,7 +99,7 @@ namespace se
 			std::shared_ptr<Material>				material				= nullptr;
 			std::shared_ptr<VertexBuffer>			vertices;
 			std::shared_ptr<IndexBuffer>			indices;
-			std::vector<PrimitiveInstance>			instances;
+			std::shared_ptr<InstanceBuffer>			instances;
 			glm::vec3								position				= glm::vec3(0.0f);
 			glm::vec3								scale					= glm::vec3(1.0f);
 			glm::quat								rotation				= glm::vec3(0.0f);

@@ -8,11 +8,6 @@
 #include "SpehsEngine/Graphics/Internal/LightBatch.h"
 #include "SpehsEngine/Graphics/Types.h"
 
-#define GLM_ENABLE_EXPERIMENTAL
-#include "glm/gtc/matrix_transform.hpp"
-#include "glm/gtx/quaternion.hpp"
-#include "glm/gtx/transform.hpp"
-
 
 namespace se
 {
@@ -52,6 +47,9 @@ namespace se
 				std::shared_ptr<IndexBuffer> indices = primitive->getIndices();
 				if (indices)
 					indices->registerAsRenderer(reinterpret_cast<uintptr_t>(this));
+				std::shared_ptr<InstanceBuffer> instances = primitive->getInstances();
+				if (instances)
+					instances->registerAsRenderer(reinterpret_cast<uintptr_t>(this));
 			}
 		}
 		void PrimitiveInternal::unregisterAsBufferObjectRenderer()
@@ -64,6 +62,9 @@ namespace se
 				std::shared_ptr<IndexBuffer> indices = primitive->getIndices();
 				if (indices)
 					indices->unregisterAsRenderer(reinterpret_cast<uintptr_t>(this));
+				std::shared_ptr<InstanceBuffer> instances = primitive->getInstances();
+				if (instances)
+					instances->unregisterAsRenderer(reinterpret_cast<uintptr_t>(this));
 			}
 		}
 
@@ -145,30 +146,11 @@ namespace se
 			bgfx::setIndexBuffer(ibh);
 			bgfx::setVertexBuffer(0, vbh);
 
-			const std::vector<PrimitiveInstance>& instances = primitive->getInstances();
-			if (instances.size() > 0)
+			std::shared_ptr<InstanceBuffer> instances = primitive->getInstances();
+			if (instances && instances->size() > 0)
 			{
-				constexpr uint16_t dataStride = sizeof(glm::mat4);
-				const uint32_t numInstances = static_cast<uint32_t>(instances.size());
-				if (bgfx::getAvailInstanceDataBuffer(numInstances, dataStride) == numInstances)
-				{
-					bgfx::InstanceDataBuffer idb;
-					bgfx::allocInstanceDataBuffer(&idb, numInstances, dataStride);
-
-					uint8_t* data = idb.data;
-					for (auto&& instance : instances)
-					{
-						glm::mat4* transform = reinterpret_cast<glm::mat4*>(data);
-						*transform = glm::translate(instance.position) * glm::mat4_cast(instance.rotation) * glm::scale(glm::vec3(instance.scale));
-						data += dataStride;
-					}
-
-					bgfx::setInstanceDataBuffer(&idb);
-				}
-				else
-				{
-					log::error("No instance buffer slots available!");
-				}
+				bgfx::DynamicVertexBufferHandle dvbh = { instances->bufferObject };
+				bgfx::setInstanceDataBuffer(dvbh, 0, static_cast<uint32_t>(instances->size()));
 			}
 
 			applyRenderState(_renderInfo, _renderContext);
