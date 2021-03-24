@@ -2,6 +2,7 @@
 #pragma once
 
 #include "SpehsEngine/Core/SE_Assert.h"
+#include "glm/gtc/quaternion.hpp"
 #include "glm/vec2.hpp"
 #include "glm/vec3.hpp"
 
@@ -311,20 +312,6 @@ namespace se
 			return defaultRandom.angle<FloatingPointType>();
 		}
 
-		template<typename FloatingPointType = float>
-		glm::vec<2, FloatingPointType, glm::defaultp> direction2D()
-		{
-			const FloatingPointType a = angle();
-			return glm::vec<2, FloatingPointType, glm::defaultp>(cos(a), sin(a));
-		}
-		template<typename FloatingPointType = float>
-		glm::vec<3, FloatingPointType, glm::defaultp> direction3D()
-		{
-			const glm::vec<3, FloatingPointType, glm::defaultp> eulerAngles(angle(), angle(), angle());
-			glm::qua<FloatingPointType, glm::defaultp> quat(eulerAngles);
-			return quat * glm::vec<3, FloatingPointType, glm::defaultp>(0.0f, 0.0f, 1.0f);
-		}
-
 		bool coin();
 		bool weightedCoin(const double _trueProbability = 0.5);
 		unsigned dice(const unsigned _sides);
@@ -334,5 +321,8 @@ namespace se
 		glm::vec2 square(const glm::vec2& _min, const glm::vec2& _max);
 		glm::vec3 cube(const float _side = 1.0f);
 		glm::vec3 cube(const glm::vec3& _min, const glm::vec3& _max);
+		glm::quat rotation();
+		glm::vec2 direction2D();
+		glm::vec3 direction3D();
 	}
 }
