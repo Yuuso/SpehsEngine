@@ -42,13 +42,18 @@ namespace se
 			void pushBack(const InstanceData& _data);
 			void erase(const size_t _begin, const size_t _end);
 			void clear();
-			const void* data() const;
+			const void* data(const size_t _index = 0) const;
 
 			void set(const size_t _at, const InstanceData& _data);
 			const InstanceData get(const size_t _at) const;
 
 		private:
 
+			void setChangedAll();
+			void clearChanged();
+
+			size_t changedBegin = SIZE_MAX;
+			size_t changedEnd = 0;
 			std::vector<glm::mat4> buffer;
 		};
 	}
