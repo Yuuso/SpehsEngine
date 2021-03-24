@@ -92,6 +92,13 @@ namespace se
 		}
 
 
+		InstancedPhongMaterial::InstancedPhongMaterial(DefaultShaderManager& _shaderManager)
+			: PhongMaterial(_shaderManager)
+		{
+			setShader(_shaderManager.find("phong_instanced"));
+		}
+
+
 		SkinnedPhongMaterial::SkinnedPhongMaterial(DefaultShaderManager& _shaderManager)
 			: PhongMaterial(_shaderManager)
 		{
@@ -99,10 +106,10 @@ namespace se
 		}
 
 
-		InstancedPhongMaterial::InstancedPhongMaterial(DefaultShaderManager& _shaderManager)
+		SkinnedInstancedPhongMaterial::SkinnedInstancedPhongMaterial(DefaultShaderManager& _shaderManager)
 			: PhongMaterial(_shaderManager)
 		{
-			setShader(_shaderManager.find("phong_instanced"));
+			setShader(_shaderManager.find("phong_skinned_instanced"));
 		}
 	}
 }

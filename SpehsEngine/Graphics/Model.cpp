@@ -97,8 +97,7 @@ namespace se
 			addBones(meshData, rootNode, rootNode);
 			globalInverseTransform = meshData.globalInverseMatrix;
 			animator.setAnimations(meshData.animations);
-			if (renderMode == RenderMode::Static && animator.hasAnimations())
-				log::warning("Should not use static RenderMode with animated models!");
+
 			se_assert(numMaterialSlots > 0);
 			se_assert(materials.size() <= numMaterialSlots);
 			postReload();
@@ -106,11 +105,15 @@ namespace se
 		}
 		void Model::postReload()
 		{
+			if (renderMode == RenderMode::Static && animator.hasAnimations())
+				log::warning("Should not use static RenderMode with animated models!");
 			setRenderState(renderState);
 			setRenderFlags(renderFlags);
 			setPrimitiveType(primitiveType);
 			setRenderMode(renderMode);
 			setColor(color);
+			if (instances)
+				foreachPrimitive([this](Primitive& _primitive) { _primitive.setInstances(instances); });
 			foreachPrimitive([](Primitive& _primitive) { enableBit(_primitive.updateFlags, PrimitiveUpdateFlag::TransformChanged); }); // Force transform update
 		}
 
@@ -201,6 +204,16 @@ namespace se
 		const size_t Model::getNumMaterials() const
 		{
 			return materials.size();
+		}
+
+		std::shared_ptr<InstanceBuffer> Model::getInstances() const
+		{
+			return instances;
+		}
+		void Model::setInstances(std::shared_ptr<InstanceBuffer> _instances)
+		{
+			instances = _instances;
+			foreachPrimitive([_instances](Primitive& _primitive) { _primitive.setInstances(_instances); });
 		}
 
 		const glm::vec3& Model::getPosition() const
