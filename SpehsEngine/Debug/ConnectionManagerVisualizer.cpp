@@ -59,11 +59,11 @@ namespace se
 
 						net::ConnectionSimulationSettings connectionSimulationSettings = connection->getConnectionSimulationSettings();
 						bool connectionSimulationSettingsChanged = false;
-						connectionSimulationSettingsChanged = ImGui::DragScalar1("Chance to re-order received packet", &connectionSimulationSettings.chanceToReorderReceivedPacket, 0.001f, 0.0f, 1.0f) || connectionSimulationSettingsChanged;
-						connectionSimulationSettingsChanged = ImGui::DragScalar1("Chance to drop incoming", &connectionSimulationSettings.chanceToDropIncoming, 0.001f, 0.0f, 1.0f) || connectionSimulationSettingsChanged;
-						connectionSimulationSettingsChanged = ImGui::DragScalar1("Chance to drop outgoing", &connectionSimulationSettings.chanceToDropOutgoing, 0.001f, 0.0f, 1.0f) || connectionSimulationSettingsChanged;
-						connectionSimulationSettingsChanged = ImGui::DragScalar1("MSS incoming", &connectionSimulationSettings.maximumSegmentSizeIncoming, 1.0f, 0, 65535) || connectionSimulationSettingsChanged;
-						connectionSimulationSettingsChanged = ImGui::DragScalar1("MSS outgoing", &connectionSimulationSettings.maximumSegmentSizeOutgoing, 1.0f, 0, 65535) || connectionSimulationSettingsChanged;
+						connectionSimulationSettingsChanged = ImGui::DragScalar1("Chance to re-order received packet", connectionSimulationSettings.chanceToReorderReceivedPacket, 0.001f, 0.0f, 1.0f) || connectionSimulationSettingsChanged;
+						connectionSimulationSettingsChanged = ImGui::DragScalar1("Chance to drop incoming", connectionSimulationSettings.chanceToDropIncoming, 0.001f, 0.0f, 1.0f) || connectionSimulationSettingsChanged;
+						connectionSimulationSettingsChanged = ImGui::DragScalar1("Chance to drop outgoing", connectionSimulationSettings.chanceToDropOutgoing, 0.001f, 0.0f, 1.0f) || connectionSimulationSettingsChanged;
+						connectionSimulationSettingsChanged = ImGui::DragScalar1("MSS incoming", connectionSimulationSettings.maximumSegmentSizeIncoming, 1.0f, 0, 65535) || connectionSimulationSettingsChanged;
+						connectionSimulationSettingsChanged = ImGui::DragScalar1("MSS outgoing", connectionSimulationSettings.maximumSegmentSizeOutgoing, 1.0f, 0, 65535) || connectionSimulationSettingsChanged;
 						if (connectionSimulationSettingsChanged)
 						{
 							connection->setConnectionSimulationSettings(connectionSimulationSettings);

@@ -45,13 +45,13 @@ namespace ImGui
 
 	// Drag scalars
 #define SE_IMGUI_DRAG_SCALAR(p_ScalarType, p_ImGuiDataType, p_Components, p_DefaultFormat, p_DefaultImGuiSliderFlags) \
-	inline bool DragScalar##p_Components(const char* const label, p_ScalarType* const i, float speed, p_ScalarType min, p_ScalarType max, const char* format = p_DefaultFormat, ImGuiSliderFlags flags = p_DefaultImGuiSliderFlags) \
+	inline bool DragScalar##p_Components(const char* const label, p_ScalarType& i, float speed, p_ScalarType min, p_ScalarType max, const char* format = p_DefaultFormat, ImGuiSliderFlags flags = p_DefaultImGuiSliderFlags) \
 	{ \
-		return DragScalarN(label, p_ImGuiDataType, i, p_Components, speed, &min, &max, format, flags); \
+		return DragScalarN(label, p_ImGuiDataType, &i, p_Components, speed, &min, &max, format, flags); \
 	} \
-	inline bool DragScalar##p_Components(const std::string& label, p_ScalarType* const i, float speed, p_ScalarType min, p_ScalarType max, const char* format = p_DefaultFormat, ImGuiSliderFlags flags = p_DefaultImGuiSliderFlags) \
+	inline bool DragScalar##p_Components(const std::string& label, p_ScalarType& i, float speed, p_ScalarType min, p_ScalarType max, const char* format = p_DefaultFormat, ImGuiSliderFlags flags = p_DefaultImGuiSliderFlags) \
 	{ \
-		return DragScalarN(label.c_str(), p_ImGuiDataType, i, p_Components, speed, &min, &max, format, flags); \
+		return DragScalarN(label.c_str(), p_ImGuiDataType, &i, p_Components, speed, &min, &max, format, flags); \
 	}
 #define SE_IMGUI_DRAG_SCALAR_ONE_TO_FOUR_COMPONENTS(p_ScalarType, p_ImGuiDataType, p_DefaultFormat, p_DefaultImGuiSliderFlags) \
 	SE_IMGUI_DRAG_SCALAR(p_ScalarType, p_ImGuiDataType, 1, p_DefaultFormat, p_DefaultImGuiSliderFlags) \
