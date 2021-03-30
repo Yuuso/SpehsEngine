@@ -139,3 +139,34 @@ namespace se
 		return true;
 	}
 }
+
+/*
+	Unordered map equal comparison operator.
+	Note that this operator only compares the elements of each container, not how they are stored in memory.
+	This could result into some issues, for example "identical" containers may result in non-identical stream output.
+	If this becomes a concern then you are free to rename this function into something else.
+*/
+template<typename KeyType, typename T, typename Hasher = std::hash<KeyType>>
+bool operator==(const std::unordered_map<KeyType, T, Hasher>& a, const std::unordered_map<KeyType, T, Hasher>& b)
+{
+	if (a.size() != b.size())
+	{
+		return false;
+	}
+	for (std::unordered_map<KeyType, T, Hasher>::const_iterator aIt = a.begin(); aIt != a.end(); aIt++)
+	{
+		const std::unordered_map<KeyType, T, Hasher>::const_iterator bIt = b.find(aIt->first);
+		if (bIt != b.end())
+		{
+			if (!(aIt->second == bIt->second))
+			{
+				return false;
+			}
+		}
+		else
+		{
+			return false;
+		}
+	}
+	return true;
+}
