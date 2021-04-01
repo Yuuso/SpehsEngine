@@ -42,7 +42,6 @@ namespace se
 
 namespace ImGui
 {
-
 	// Drag scalars
 #define SE_IMGUI_DRAG_SCALAR(p_ScalarType, p_ImGuiDataType, p_Components, p_DefaultFormat, p_DefaultImGuiSliderFlags) \
 	inline bool DragScalar##p_Components(const char* const label, p_ScalarType& i, float speed, p_ScalarType min, p_ScalarType max, const char* format = p_DefaultFormat, ImGuiSliderFlags flags = p_DefaultImGuiSliderFlags) \
@@ -449,4 +448,48 @@ namespace ImGui
 	}
 
 	std::string getImGuiFormatString(const std::string_view string);
+
+	class ScopedStyleColor
+	{
+	public:
+		ScopedStyleColor() = default;
+		ScopedStyleColor(const ScopedStyleColor& copy) = delete;
+		ScopedStyleColor(ScopedStyleColor&& move)
+			: pop(move.pop)
+		{
+			move.pop = false;
+		}
+		ScopedStyleColor(const ImGuiCol_ imGuiCol_, const se::Color& color)
+			: pop(true)
+		{
+			PushStyleColor(imGuiCol_, ImVec4(color.r, color.g, color.b, color.a));
+		}
+		ScopedStyleColor(const ImGuiCol_ imGuiCol_, const ImVec4& _imVec4)
+			: pop(true)
+		{
+			PushStyleColor(imGuiCol_, _imVec4);
+		}
+		~ScopedStyleColor()
+		{
+			if (pop)
+			{
+				PopStyleColor();
+			}
+		}
+	private:
+		bool pop = false;
+	};
+}
+
+namespace se
+{
+	inline ImVec4 toImVec4(const Color& color)
+	{
+		return ImVec4(color.r, color.g, color.b, color.a);
+	}
+
+	inline Color fromImVec4(const ImVec4& imVec4)
+	{
+		return Color(&imVec4.x);
+	}
 }
