@@ -117,6 +117,12 @@ namespace ImGui
 		return fileSelector(label.c_str(), filepath, directory.c_str());
 	}
 
+	std::optional<bool> fileDialog(const char* const header, const char* const message, const char* const directory, std::string& output);
+	inline std::optional<bool> fileDialog(const std::string& header, const std::string& message, const std::string& directory, std::string& output)
+	{
+		return fileDialog(header.c_str(), message.c_str(), directory.c_str(), output);
+	}
+
 	bool textureSelector(const char* const label, std::string& filepath, const char* const directory);
 	inline bool textureSelector(const std::string& label, std::string& filepath, const std::string& directory)
 	{
