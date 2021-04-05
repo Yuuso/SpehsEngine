@@ -151,7 +151,6 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="ConnectionManagerVisualizer.cpp" />
-    <ClCompile Include="ConnectionProfiler.cpp" />
     <ClCompile Include="DebugLib.cpp" />
     <ClCompile Include="FPSHistoryVisualizer.cpp" />
     <ClCompile Include="ScopeProfilerVisualizer.cpp" />
@@ -164,7 +163,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ConnectionManagerVisualizer.h" />
-    <ClInclude Include="ConnectionProfiler.h" />
     <ClInclude Include="DebugLib.h" />
     <ClInclude Include="FPSHistoryVisualizer.h" />
     <ClInclude Include="PrecompiledInclude.h" />
