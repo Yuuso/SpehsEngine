@@ -127,6 +127,9 @@
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="CustomEventGenerator.h" />
+    <ClInclude Include="CustomEventParameters.h" />
+    <ClInclude Include="CustomEventParametersRecorder.h" />
     <ClInclude Include="Event.h" />
     <ClInclude Include="EventCatcher.h" />
     <ClInclude Include="EventSignaler.h" />
@@ -145,6 +148,8 @@
     <ClInclude Include="stdafx.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="CustomEventGenerator.cpp" />
+    <ClCompile Include="CustomEventParametersRecorder.cpp" />
     <ClCompile Include="Event.cpp" />
     <ClCompile Include="EventCatcher.cpp" />
     <ClCompile Include="EventSignaler.cpp" />

@@ -32,7 +32,6 @@ namespace se
 			static const int minPriority = std::numeric_limits<int>::min();
 			static const int maxPriority = std::numeric_limits<int>::max();
 		public:
-			EventSignaler();
 
 			void signalEvents(EventCatcher& eventCatcher);
 
@@ -52,29 +51,100 @@ namespace se
 			void connectToQuitSignal(boost::signals2::scoped_connection& scopedConnection, const boost::function<bool(const QuitEvent&)>& callback, const int priority);
 			void connectToFileDropSignal(boost::signals2::scoped_connection& scopedConnection, const boost::function<bool(const FileDropEvent&)>& callback, const int priority);
 
+			template<typename CustomEvent>
+			void connectToCustomEventSignal(
+				boost::signals2::scoped_connection& scopedConnection, const boost::function<bool(const CustomEvent&)>& callback, const int priority)
+			{
+				scopedConnection.disconnect();
+				std::vector<std::unique_ptr<CustomSignal>>& customSignals = customEventSignalContainers[typeid(CustomEvent).hash_code()];
+				const std::vector<std::unique_ptr<CustomSignal>>::iterator it = std::find_if(customSignals.begin(), customSignals.end(),
+					[priority](const std::unique_ptr<CustomSignal>& signal)->bool { return priority == signal->priority; });
+				if (it == customSignals.end())
+				{
+					customSignals.push_back(std::unique_ptr<CustomSignal>(new CustomSignal()));
+					customSignals.back()->priority = priority;
+					scopedConnection = customSignals.back()->signal.connect(
+						[callback](const void* const eventPtr)->bool
+						{
+							return callback(*((const CustomEvent*)eventPtr));
+						});
+					std::sort(customSignals.begin(), customSignals.end(), [](const std::unique_ptr<CustomSignal>& _a, const std::unique_ptr<CustomSignal>& _b) { return _a->priority > _b->priority; });
+				}
+				else
+				{
+					if (priority != maxPriority && priority != minPriority && (*it)->signal.num_slots() > 0)
+					{
+						log::warning("Another source has already connected to this signal with the same priority");
+					}
+					scopedConnection = (*it)->signal.connect(
+						[callback](const void* const eventPtr)->bool
+						{
+							return callback(*((const CustomEvent*)eventPtr));
+						});
+				}
+			}
+
+			// Custom signals are always generated from external sources
+			template<typename CustomEvent>
+			void signalCustomEvent(const CustomEvent& customEvent)
+			{
+				std::unordered_map<size_t, std::vector<std::unique_ptr<CustomSignal>>>::iterator it = customEventSignalContainers.find(typeid(CustomEvent).hash_code());
+				if (it != customEventSignalContainers.end())
+				{
+					for (size_t s = 0; s < it->second.size();)
+					{
+						if (it->second[s]->signal.empty())
+						{
+							it->second.erase(it->second.begin() + s);
+						}
+						else
+						{
+							if (it->second[s]->signal(&customEvent))
+							{
+								//A connected receiver used the event, do not call receivers with a lower priority.
+								break;
+							}
+							else
+							{
+								s++;
+							}
+						}
+					}
+				}
+			}
+
 		private:
+
+			struct Combiner
+			{
+				typedef bool result_type;
+				template<typename InputIterator>
+				bool operator()(InputIterator it, InputIterator end) const
+				{
+					if (it == end)
+						return false;
+					while (it != end)
+					{
+						if (*it++)
+							return true;
+					}
+					return false;
+				}
+			};
+
 			template<typename EventType>
 			struct PrioritizedEventSignal
 			{
-				struct Combiner
-				{
-					typedef bool result_type;
-					template<typename InputIterator>
-					bool operator()(InputIterator it, InputIterator end) const
-					{
-						if (it == end)
-							return false;
-						while (it != end)
-						{
-							if (*it++)
-								return true;
-						}
-						return false;
-					}
-				};
 				boost::signals2::signal<bool(const EventType&), Combiner> signal;
 				int priority = 0;
 			};
+
+			struct CustomSignal
+			{
+				boost::signals2::signal<bool(const void* const), Combiner> signal;
+				int priority = 0;
+			};
+
 			template<typename EventType>
 			void connectToEventSignal(boost::signals2::scoped_connection& scopedConnection, const boost::function<bool(const EventType&)>& callback, const int priority, std::vector<std::unique_ptr<PrioritizedEventSignal<EventType>>>& signals)
 			{
@@ -115,6 +185,7 @@ namespace se
 			//std::vector<std::unique_ptr<PrioritizedEventSignal<JoystickAxisEvent>>> joystickAxisSignals;
 			std::vector<std::unique_ptr<PrioritizedEventSignal<QuitEvent>>> quitSignals;
 			std::vector<std::unique_ptr<PrioritizedEventSignal<FileDropEvent>>> fileDropSignals;
+			std::unordered_map<size_t/*typeid hash code*/, std::vector<std::unique_ptr<CustomSignal>>> customEventSignalContainers;
 		};
 	}
 }

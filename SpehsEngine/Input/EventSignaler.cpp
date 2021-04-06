@@ -35,11 +35,6 @@ namespace se
 			}
 		}
 
-		EventSignaler::EventSignaler()
-		{
-
-		}
-
 		void EventSignaler::signalEvents(EventCatcher& eventCatcher)
 		{
 			SE_SCOPE_PROFILER();
