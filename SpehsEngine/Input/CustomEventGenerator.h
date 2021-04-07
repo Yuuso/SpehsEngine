@@ -9,6 +9,36 @@ namespace se
 	{
 		class EventSignaler;
 
+		class ScopedCustomEvent
+		{
+		public:
+			ScopedCustomEvent() = default;
+			ScopedCustomEvent(const ScopedCustomEvent&& move)
+				: registeredCustomEventId(move.registeredCustomEventId)
+			{
+
+			}
+			ScopedCustomEvent(const ScopedCustomEvent& copy)
+				: registeredCustomEventId(copy.registeredCustomEventId)
+			{
+
+			}
+			ScopedCustomEvent& operator=(const ScopedCustomEvent&& move)
+			{
+				registeredCustomEventId = move.registeredCustomEventId;
+			}
+			ScopedCustomEvent& operator=(const ScopedCustomEvent& copy)
+			{
+				registeredCustomEventId = copy.registeredCustomEventId;
+			}
+
+			operator bool() const { return bool(registeredCustomEventId); }
+
+		private:
+			friend class CustomEventGenerator;
+			std::shared_ptr<uint32_t> registeredCustomEventId;
+		};
+
 		// Turns a spehs engine input event into a custom event
 		class CustomEventGenerator
 		{
@@ -17,26 +47,40 @@ namespace se
 			CustomEventGenerator(EventSignaler& _eventSignaler);
 
 			template<typename CustomEvent>
-			void addCustomEvent(const CustomEventParameters& customEventParameters, const CustomEvent generatedCustomEvent, const int priority)
+			ScopedCustomEvent addCustomEvent(const CustomEventParameters& customEventParameters, const CustomEvent generatedCustomEvent, const int priority)
 			{
 				static_assert(std::is_copy_assignable<CustomEvent>::value);
 				boost::signals2::scoped_connection& scopedConnection = registeredCustomEvents.back().scopedConnection;
 #define SE_INPUT_EVENT_CASE(p_EventName, p_EventType) \
 				case EventType::p_EventType: \
-					registeredCustomEvents.push_back(RegisteredCustomEvent()); \
-					eventSignaler.connectTo##p_EventName##Signal(registeredCustomEvents.back().scopedConnection, [this, customEventParameters, generatedCustomEvent](const p_EventName##Event& event) \
+					const uint32_t registeredCustomEventId = nextRegisteredCustomEventId++; \
+					RegisteredCustomEvent& registeredCustomEvent = registeredCustomEvents[registeredCustomEventId] = RegisteredCustomEvent(); \
+					registeredCustomEvent.id.reset(new uint32_t(registeredCustomEventId)); \
+					ScopedCustomEvent scopedCustomEvent; \
+					scopedCustomEvent.registeredCustomEventId = registeredCustomEvent.id; \
+					eventSignaler.connectTo##p_EventName##Signal(registeredCustomEvent.scopedConnection, [this, customEventParameters, generatedCustomEvent, registeredCustomEventId](const p_EventName##Event& event) \
 						{ \
-							if (event == customEventParameters.p_EventType##Event) \
+							const std::unordered_map<uint32_t, RegisteredCustomEvent>::iterator it = registeredCustomEvents.find(registeredCustomEventId); \
+							se_assert(it != registeredCustomEvents.end()); \
+							if (it != registeredCustomEvents.end()) \
 							{ \
-								eventSignaler.signalCustomEvent(generatedCustomEvent); \
-								return true; \
-							} \
-							else \
-							{ \
-								return false; \
+								if (it->second.id.use_count() == 1) \
+								{ \
+									registeredCustomEvents.erase(it); \
+									return false; \
+								} \
+								else if (event == customEventParameters.p_EventType##Event) \
+								{ \
+									eventSignaler.signalCustomEvent(generatedCustomEvent); \
+									return true; \
+								} \
+								else \
+								{ \
+									return false; \
+								} \
 							} \
 						}, priority); \
-					break;
+					return scopedCustomEvent;
 				switch (customEventParameters.eventType)
 				{
 					SE_INPUT_EVENT_CASE(KeyboardPress, keyboardPress)
@@ -61,20 +105,23 @@ namespace se
 				case EventType::joystickAxis:
 				case EventType::none:
 					log::warning("CustomEventGenerator::addEvent() EventType not supported: " + std::to_string(int(customEventParameters.eventType)));
-					return;
+					break;
 				}
 #undef SE_INPUT_EVENT_CASE
+				return ScopedCustomEvent();
 			}
 
 		private:
 
 			struct RegisteredCustomEvent
 			{
+				std::shared_ptr<uint32_t> id;
 				boost::signals2::scoped_connection scopedConnection;
 			};
 
 			EventSignaler& eventSignaler;
-			std::vector<RegisteredCustomEvent> registeredCustomEvents;
+			uint32_t nextRegisteredCustomEventId = 1;
+			std::unordered_map<uint32_t, RegisteredCustomEvent> registeredCustomEvents;
 		};
 	}
 }
