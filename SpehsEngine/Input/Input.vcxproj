@@ -130,9 +130,11 @@
     <ClInclude Include="CustomEventGenerator.h" />
     <ClInclude Include="CustomEventParameters.h" />
     <ClInclude Include="CustomEventParametersRecorder.h" />
+    <ClInclude Include="CustomEventParametersUtilityFunctions.h" />
     <ClInclude Include="Event.h" />
     <ClInclude Include="EventCatcher.h" />
     <ClInclude Include="EventSignaler.h" />
+    <ClInclude Include="EventUtilityFunctions.h" />
     <ClInclude Include="GUID.h" />
     <ClInclude Include="InputLib.h" />
     <ClInclude Include="InputEnumerations.h" />
@@ -149,10 +151,13 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="CustomEventGenerator.cpp" />
+    <ClCompile Include="CustomEventParameters.cpp" />
     <ClCompile Include="CustomEventParametersRecorder.cpp" />
+    <ClCompile Include="CustomEventParametersUtilityFunctions.cpp" />
     <ClCompile Include="Event.cpp" />
     <ClCompile Include="EventCatcher.cpp" />
     <ClCompile Include="EventSignaler.cpp" />
+    <ClCompile Include="EventUtilityFunctions.cpp" />
     <ClCompile Include="GUID.cpp" />
     <ClCompile Include="InputLib.cpp" />
     <ClCompile Include="InputEnumerations.cpp" />

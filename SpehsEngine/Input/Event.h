@@ -124,7 +124,7 @@ namespace se
 			static EventType getEventTypeStatic() { return EventType::joystickButtonDown; }
 			EventType getEventType() const { return getEventTypeStatic(); }
 			bool operator==(const JoystickButtonDownEvent& other) const { return joystick == other.joystick && button == other.button; }
-			const Joystick* joystick = nullptr;
+			const Joystick* joystick = nullptr; // TODO: joystick pointer to joystick id
 			KeyboardKey button = KeyboardKey::KEYBOARD_UNKNOWN;
 		};
 		struct JoystickButtonReleaseEvent
@@ -132,7 +132,7 @@ namespace se
 			static EventType getEventTypeStatic() { return EventType::joystickButtonRelease; }
 			EventType getEventType() const { return getEventTypeStatic(); }
 			bool operator==(const JoystickButtonReleaseEvent& other) const { return joystick == other.joystick && button == other.button; }
-			const Joystick* joystick = nullptr;
+			const Joystick* joystick = nullptr; // TODO: joystick pointer to joystick id
 			KeyboardKey button = KeyboardKey::KEYBOARD_UNKNOWN;
 		};
 		struct JoystickAxisEvent
@@ -140,7 +140,7 @@ namespace se
 			static EventType getEventTypeStatic() { return EventType::joystickAxis; }
 			EventType getEventType() const { return getEventTypeStatic(); }
 			bool operator==(const JoystickAxisEvent& other) const { return joystick == other.joystick && axisIndex == other.axisIndex && axisMovement == other.axisMovement; }
-			const Joystick* joystick = nullptr;
+			const Joystick* joystick = nullptr; // TODO: joystick pointer to joystick id
 			int axisIndex = 0;
 			float axisMovement = 0;
 		};

@@ -9,6 +9,8 @@ namespace se
 	{
 		struct CustomEventParameters
 		{
+			bool operator==(const CustomEventParameters& other) const;
+
 			EventType eventType = EventType::none;
 			KeyboardPressEvent keyboardPressEvent;
 			KeyboardDownEvent keyboardDownEvent;
