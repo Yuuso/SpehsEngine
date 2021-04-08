@@ -11,6 +11,8 @@ namespace se
 		{
 			bool operator==(const CustomEventParameters& other) const;
 
+			std::string toString() const;
+
 			EventType eventType = EventType::none;
 			KeyboardPressEvent keyboardPressEvent;
 			KeyboardDownEvent keyboardDownEvent;

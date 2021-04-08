@@ -5,7 +5,7 @@ namespace se
 {
 	namespace input
 	{
-		std::string toString(const MouseButton mouseButton)
+		const char* toString(const MouseButton mouseButton)
 		{
 			switch (mouseButton)
 			{
@@ -16,6 +16,7 @@ namespace se
 			case MouseButton::x1: return "x1";
 			case MouseButton::x2: return "x2";
 			}
+			return "Error";
 		}
 	}
 }

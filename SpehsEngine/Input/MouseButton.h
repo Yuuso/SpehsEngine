@@ -14,5 +14,7 @@ namespace se
 			x1 = 4,
 			x2 = 5,
 		};
+
+		const char* toString(const MouseButton mouseButton);
 	}
 }
