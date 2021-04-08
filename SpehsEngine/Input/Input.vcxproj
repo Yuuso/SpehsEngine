@@ -147,6 +147,7 @@
     <ClInclude Include="MouseButton.h" />
     <ClInclude Include="MouseUtilityFunctions.h" />
     <ClInclude Include="PrecompiledInclude.h" />
+    <ClInclude Include="ScopedCustomEvent.h" />
     <ClInclude Include="stdafx.h" />
   </ItemGroup>
   <ItemGroup>
