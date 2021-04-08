@@ -1,44 +1,14 @@
 #pragma once
 
+#include "SpehsEngine/Input/EventSignaler.h"
 #include "SpehsEngine/Input/CustomEventParameters.h"
+#include "SpehsEngine/Input/ScopedCustomEvent.h"
 
 
 namespace se
 {
 	namespace input
 	{
-		class EventSignaler;
-
-		class ScopedCustomEvent
-		{
-		public:
-			ScopedCustomEvent() = default;
-			ScopedCustomEvent(const ScopedCustomEvent&& move)
-				: registeredCustomEventId(move.registeredCustomEventId)
-			{
-
-			}
-			ScopedCustomEvent(const ScopedCustomEvent& copy)
-				: registeredCustomEventId(copy.registeredCustomEventId)
-			{
-
-			}
-			ScopedCustomEvent& operator=(const ScopedCustomEvent&& move)
-			{
-				registeredCustomEventId = move.registeredCustomEventId;
-			}
-			ScopedCustomEvent& operator=(const ScopedCustomEvent& copy)
-			{
-				registeredCustomEventId = copy.registeredCustomEventId;
-			}
-
-			operator bool() const { return bool(registeredCustomEventId); }
-
-		private:
-			friend class CustomEventGenerator;
-			std::shared_ptr<uint32_t> registeredCustomEventId;
-		};
-
 		// Turns a spehs engine input event into a custom event
 		class CustomEventGenerator
 		{
@@ -50,9 +20,9 @@ namespace se
 			ScopedCustomEvent addCustomEvent(const CustomEventParameters& customEventParameters, const CustomEvent generatedCustomEvent, const int priority)
 			{
 				static_assert(std::is_copy_assignable<CustomEvent>::value);
-				boost::signals2::scoped_connection& scopedConnection = registeredCustomEvents.back().scopedConnection;
 #define SE_INPUT_EVENT_CASE(p_EventName, p_EventType) \
 				case EventType::p_EventType: \
+				{ \
 					const uint32_t registeredCustomEventId = nextRegisteredCustomEventId++; \
 					RegisteredCustomEvent& registeredCustomEvent = registeredCustomEvents[registeredCustomEventId] = RegisteredCustomEvent(); \
 					registeredCustomEvent.id.reset(new uint32_t(registeredCustomEventId)); \
@@ -79,8 +49,13 @@ namespace se
 									return false; \
 								} \
 							} \
+							else \
+							{ \
+								return false; \
+							} \
 						}, priority); \
-					return scopedCustomEvent;
+					return scopedCustomEvent; \
+				}
 				switch (customEventParameters.eventType)
 				{
 					SE_INPUT_EVENT_CASE(KeyboardPress, keyboardPress)
