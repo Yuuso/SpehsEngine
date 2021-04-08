@@ -146,16 +146,16 @@ namespace se
 	This could result into some issues, for example "identical" containers may result in non-identical stream output.
 	If this becomes a concern then you are free to rename this function into something else.
 */
-template<typename KeyType, typename T, typename Hasher = std::hash<KeyType>>
-bool operator==(const std::unordered_map<KeyType, T, Hasher>& a, const std::unordered_map<KeyType, T, Hasher>& b)
+template<typename KeyType, typename ValueType, typename Hasher = std::hash<KeyType>>
+bool operator==(const std::unordered_map<KeyType, ValueType, Hasher>& a, const std::unordered_map<KeyType, ValueType, Hasher>& b)
 {
 	if (a.size() != b.size())
 	{
 		return false;
 	}
-	for (std::unordered_map<KeyType, T, Hasher>::const_iterator aIt = a.begin(); aIt != a.end(); aIt++)
+	for (std::unordered_map<KeyType, ValueType, Hasher>::const_iterator aIt = a.begin(); aIt != a.end(); aIt++)
 	{
-		const std::unordered_map<KeyType, T, Hasher>::const_iterator bIt = b.find(aIt->first);
+		const std::unordered_map<KeyType, ValueType, Hasher>::const_iterator bIt = b.find(aIt->first);
 		if (bIt != b.end())
 		{
 			if (!(aIt->second == bIt->second))
@@ -169,4 +169,19 @@ bool operator==(const std::unordered_map<KeyType, T, Hasher>& a, const std::unor
 		}
 	}
 	return true;
+}
+
+template<typename KeyType, typename ValueType, typename Hasher = std::hash<KeyType>>
+inline bool findAndErase(std::unordered_map<KeyType, ValueType, Hasher>& unorderedMap, const KeyType& key)
+{
+	std::unordered_map<KeyType, ValueType, Hasher>::iterator it = unorderedMap.find(key);
+	if (it != unorderedMap.end())
+	{
+		unorderedMap.erase(it);
+		return true;
+	}
+	else
+	{
+		return false;
+	}
 }
