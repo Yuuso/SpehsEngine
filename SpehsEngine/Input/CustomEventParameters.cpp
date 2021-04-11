@@ -62,5 +62,31 @@ namespace se
 
 			return "Error";
 		}
+
+		std::string CustomEventParameters::toShortString() const
+		{
+			switch (eventType)
+			{
+			case se::input::EventType::none: return "";
+			case se::input::EventType::keyboardPress: return std::string(se::input::toShortString(keyboardPressEvent.key));
+			case se::input::EventType::keyboardDown: return std::string(se::input::toShortString(keyboardDownEvent.key));
+			case se::input::EventType::keyboardRelease: return std::string(se::input::toShortString(keyboardReleaseEvent.key));
+			case se::input::EventType::textInput: return "Txti";
+			case se::input::EventType::mouseButtonPress: return std::string(se::input::toShortString(mouseButtonPressEvent.button));
+			case se::input::EventType::mouseButtonDown: return std::string(se::input::toShortString(mouseButtonDownEvent.button));
+			case se::input::EventType::mouseButtonRelease: return std::string(se::input::toShortString(mouseButtonReleaseEvent.button));
+			case se::input::EventType::mouseMotion: return "Momo";
+			case se::input::EventType::mouseWheel: return "Mw" + std::to_string(int(mouseWheelEvent.delta.y));
+			case se::input::EventType::mouseHover: return "Moho";
+			case se::input::EventType::joystickButtonPress: return std::to_string(joystickButtonPressEvent.button);
+			case se::input::EventType::joystickButtonDown: return std::to_string(joystickButtonDownEvent.button);
+			case se::input::EventType::joystickButtonRelease: return std::to_string(joystickButtonReleaseEvent.button);
+			case se::input::EventType::joystickAxis: return std::to_string(joystickAxisEvent.axisIndex);
+			case se::input::EventType::quit: return "Quit";
+			case se::input::EventType::fileDrop: return "Fdrp";
+			}
+
+			return "Error";
+		}
 	}
 }

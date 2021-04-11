@@ -16,5 +16,6 @@ namespace se
 		};
 
 		const char* toString(const MouseButton mouseButton);
+		const char* toShortString(const MouseButton mouseButton);
 	}
 }

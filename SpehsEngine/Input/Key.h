@@ -263,5 +263,8 @@ namespace se
 		};
 
 		const char* toString(const Key key);
+
+		// Returns a short 1 to 4 character string, suitable for gui hotkey texts
+		const char* toShortString(const Key key);
 	}
 }

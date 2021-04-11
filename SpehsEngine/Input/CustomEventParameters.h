@@ -12,6 +12,8 @@ namespace se
 			bool operator==(const CustomEventParameters& other) const;
 
 			std::string toString() const;
+			// Returns a shorter string, better suited for texts in the UI
+			std::string toShortString() const;
 
 			EventType eventType = EventType::none;
 			KeyboardPressEvent keyboardPressEvent;
