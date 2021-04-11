@@ -118,6 +118,7 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)STLPairUtilityFunctions.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)StaticRingBuffer.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)BufferUtilityFunctions.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)STLUnorderedSetUtilityFunctions.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="File">

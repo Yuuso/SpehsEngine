@@ -106,6 +106,7 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)STLOptionalUtilityFunctions.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)STLPairUtilityFunctions.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)STLUnorderedMapUtilityFunctions.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)STLUnorderedSetUtilityFunctions.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)STLVectorUtilityFunctions.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)StringOperations.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)StringUtilityFunctions.h" />
