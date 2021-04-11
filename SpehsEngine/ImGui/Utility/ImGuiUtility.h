@@ -223,11 +223,11 @@ namespace ImGui
 	{
 		return InputFloat4(label.c_str(), &value.x, format, flags);
 	}
-	inline bool InputT(const char* const label, se::Color& value, ImGuiInputTextFlags flags = 0)
+	inline bool InputT(const char* const label, se::Color& value, ImGuiColorEditFlags flags = 0)
 	{
 		return ColorEdit4(label, &(value)[0], flags);
 	}
-	inline bool InputT(const std::string& label, se::Color& value, ImGuiInputTextFlags flags = 0)
+	inline bool InputT(const std::string& label, se::Color& value, ImGuiColorEditFlags flags = 0)
 	{
 		return ColorEdit4(label.c_str(), &(value)[0], flags);
 	}
