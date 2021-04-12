@@ -49,14 +49,12 @@ namespace se
 					break;
 				case PrimitiveType::Lines:
 					state |= BGFX_STATE_PT_LINES;
-					//state |= BGFX_STATE_LINEAA;
 					break;
 				case PrimitiveType::Points:
 					state |= BGFX_STATE_PT_POINTS;
 					break;
 			}
 
-			// TODO: BGFX_STATE_POINT_SIZE
 			// TODO: BGFX_STATE_CONSERVATIVE_RASTER
 
 			bgfx::setState(state);

@@ -17,6 +17,7 @@ namespace se
 		{
 			normal = bgfx::createUniform("u_normal", bgfx::UniformType::Mat4, SE_MAX_BONES);
 			primitiveColor = bgfx::createUniform("u_primitiveColor", bgfx::UniformType::Vec4);
+			billboardInfo = bgfx::createUniform("u_billboardInfo", bgfx::UniformType::Vec4);
 		}
 		DefaultUniforms::~DefaultUniforms()
 		{
@@ -46,6 +47,12 @@ namespace se
 		{
 			static_assert(sizeof(Color) == sizeof(glm::vec4));
 			bgfx::setUniform(primitiveColor, reinterpret_cast<const void*>(&_color));
+		}
+
+		void DefaultUniforms::setBillboardInfo(const glm::vec3& _position, const bool _cylindrical)
+		{
+			const glm::vec4 data = glm::vec4(_position.x, _position.y, _position.z, _cylindrical ? 1.0f : 0.0f);
+			bgfx::setUniform(billboardInfo, reinterpret_cast<const void*>(&data));
 		}
 	}
 }

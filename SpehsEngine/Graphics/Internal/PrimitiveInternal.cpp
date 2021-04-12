@@ -126,13 +126,28 @@ namespace se
 				log::warning("Material missing!");
 				return;
 			}
-			if (!_renderInfo.material->getShader()->ready())
+
+			const UniformMatrices& transformMatrices = primitive->getTransformMatrices();
+			std::shared_ptr<InstanceBuffer> instances = primitive->getInstances();
+			const bool isSkinned = transformMatrices.size() > 1;
+			const bool isInstanced = instances && instances->size() > 0;
+			const bool isBillboardSpherical = checkBit(_renderInfo.renderFlags, RenderFlag::BillboardSpherical);
+			const bool isBillboardCylindrical = checkBit(_renderInfo.renderFlags, RenderFlag::BillboardCylindrical);
+
+			const ShaderVariant shaderVariant = getShaderVariant(isInstanced, isSkinned, isBillboardSpherical || isBillboardCylindrical);
+			std::shared_ptr<Shader> shader = _renderInfo.material->getShader(shaderVariant);
+
+			if (!shader)
+			{
+				log::warning("Shader missing!");
+				return;
+			}
+			if (!shader->ready())
 			{
 				log::warning("Shader not ready for rendering!");
 				return;
 			}
 
-			const UniformMatrices& transformMatrices = primitive->getTransformMatrices();
 			bgfx::setTransform(reinterpret_cast<const void*>(transformMatrices.data()), static_cast<uint16_t>(transformMatrices.size()));
 			_renderContext.defaultUniforms->setNormalMatrices(primitive->getNormalMatrices());
 
@@ -141,13 +156,15 @@ namespace se
 				_renderContext.lightBatch->bind();
 			_renderInfo.material->bind();
 
+			if (isBillboardSpherical || isBillboardCylindrical)
+				_renderContext.defaultUniforms->setBillboardInfo(primitive->getPosition(), isBillboardCylindrical);
+
 			bgfx::IndexBufferHandle ibh = { getIndices()->bufferObject };
 			bgfx::VertexBufferHandle vbh = { getVertices()->bufferObject };
 			bgfx::setIndexBuffer(ibh);
 			bgfx::setVertexBuffer(0, vbh);
 
-			std::shared_ptr<InstanceBuffer> instances = primitive->getInstances();
-			if (instances && instances->size() > 0)
+			if (isInstanced)
 			{
 				bgfx::DynamicVertexBufferHandle dvbh = { instances->bufferObject };
 				bgfx::setInstanceDataBuffer(dvbh, 0, static_cast<uint32_t>(instances->size()));
@@ -155,7 +172,7 @@ namespace se
 
 			applyRenderState(_renderInfo, _renderContext);
 
-			bgfx::ProgramHandle programHandle = { _renderInfo.material->getShader()->getHandle() };
+			bgfx::ProgramHandle programHandle = { shader->getHandle() };
 			bgfx::submit(_renderContext.currentViewId, programHandle);
 		}
 

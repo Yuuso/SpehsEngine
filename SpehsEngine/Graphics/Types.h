@@ -17,11 +17,16 @@ namespace se
 		typedef uint32_t RenderFlagsType;
 		enum RenderFlag : RenderFlagsType
 		{
-			CullFrontFace		= (1 << 0),
-			CullBackFace		= (1 << 1),
-			DepthTestLess		= (1 << 2),
-			DepthTestGreater	= (1 << 3),
-			Blending			= (1 << 4),
+			CullFrontFace			= (1 << 0),
+			CullBackFace			= (1 << 1),
+
+			DepthTestLess			= (1 << 2),
+			DepthTestGreater		= (1 << 3),
+
+			Blending				= (1 << 4),
+
+			BillboardSpherical		= (1 << 5),
+			BillboardCylindrical	= (1 << 6),
 		};
 		constexpr RenderFlagsType defaultRenderFlags = RenderFlag::DepthTestLess;
 

@@ -1,7 +1,7 @@
 #pragma once
 
 #include <bgfx/bgfx.h>
-#include <glm/mat4x4.hpp>
+#include <glm/vec3.hpp>
 #include "SpehsEngine/Core/Color.h"
 #include "SpehsEngine/Graphics/Internal/InternalTypes.h"
 
@@ -31,6 +31,7 @@ namespace se
 
 			void setNormalMatrices(const UniformMatrices& _normal);
 			void setPrimitiveColor(const Color& _color);
+			void setBillboardInfo(const glm::vec3& _position, const bool _cylindrical);
 
 		private:
 
@@ -38,6 +39,7 @@ namespace se
 
 			bgfx::UniformHandle normal;
 			bgfx::UniformHandle primitiveColor;
+			bgfx::UniformHandle billboardInfo;
 		};
 	}
 }

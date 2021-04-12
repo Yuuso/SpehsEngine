@@ -1,7 +1,7 @@
 #pragma once
 
 #include "SpehsEngine/Graphics/Internal/ResourceHandle.h"
-#include <set>
+#include <unordered_set>
 #include <stdint.h>
 
 
@@ -36,7 +36,7 @@ namespace se
 			bool getBufferChanged() const { return bufferChanged; }
 
 			ResourceHandle bufferObject = INVALID_RESOURCE_HANDLE;
-			std::set<uintptr_t> renderers;
+			std::unordered_set<uintptr_t> renderers;
 			bool bufferChanged = false;
 		};
 	}

@@ -52,7 +52,7 @@ namespace se
 
 		protected:
 
-			void internalBind() override;
+			virtual void internalBind() override;
 		};
 
 
@@ -68,7 +68,7 @@ namespace se
 
 		protected:
 
-			void internalBind() override;
+			virtual void internalBind() override;
 		};
 
 
@@ -107,30 +107,6 @@ namespace se
 
 			std::unique_ptr<Uniform> attributesUniform;
 			PhongAttributes attributes;
-		};
-
-
-		class InstancedPhongMaterial : public PhongMaterial
-		{
-		public:
-			InstancedPhongMaterial(DefaultShaderManager& _shaderManager);
-			virtual ~InstancedPhongMaterial() = default;
-		};
-
-
-		class SkinnedPhongMaterial : public PhongMaterial
-		{
-		public:
-			SkinnedPhongMaterial(DefaultShaderManager& _shaderManager);
-			virtual ~SkinnedPhongMaterial() = default;
-		};
-
-
-		class SkinnedInstancedPhongMaterial : public PhongMaterial
-		{
-		public:
-			SkinnedInstancedPhongMaterial(DefaultShaderManager& _shaderManager);
-			virtual ~SkinnedInstancedPhongMaterial() = default;
 		};
 	}
 }

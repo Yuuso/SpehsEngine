@@ -5,6 +5,7 @@
 #include "SpehsEngine/Graphics/EmbeddedShaders/vs_color.h"
 #include "SpehsEngine/Graphics/EmbeddedShaders/fs_color.h"
 #include "SpehsEngine/Graphics/EmbeddedShaders/vs_tex.h"
+#include "SpehsEngine/Graphics/EmbeddedShaders/vs_tex_billboard.h"
 #include "SpehsEngine/Graphics/EmbeddedShaders/fs_tex.h"
 #include "SpehsEngine/Graphics/EmbeddedShaders/vs_phong.h"
 #include "SpehsEngine/Graphics/EmbeddedShaders/vs_phong_instanced.h"
@@ -24,6 +25,7 @@ namespace se
 			BGFX_EMBEDDED_SHADER(vs_color),
 			BGFX_EMBEDDED_SHADER(fs_color),
 			BGFX_EMBEDDED_SHADER(vs_tex),
+			BGFX_EMBEDDED_SHADER(vs_tex_billboard),
 			BGFX_EMBEDDED_SHADER(fs_tex),
 			BGFX_EMBEDDED_SHADER(vs_phong),
 			BGFX_EMBEDDED_SHADER(vs_phong_instanced),
@@ -64,6 +66,7 @@ namespace se
 
 			createDefaultShader("color",					"color",					"color");
 			createDefaultShader("tex",						"tex",						"tex");
+			createDefaultShader("tex_billboard",			"tex_billboard",			"tex");
 			createDefaultShader("phong",					"phong",					"phong");
 			createDefaultShader("phong_instanced",			"phong_instanced",			"phong");
 			createDefaultShader("phong_skinned",			"phong_skinned",			"phong");

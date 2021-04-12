@@ -18,7 +18,8 @@ namespace se
 
 		FlatTextureMaterial::FlatTextureMaterial(DefaultShaderManager& _shaderManager)
 		{
-			setShader(_shaderManager.find("tex"));
+			setShader(_shaderManager.find("tex"), ShaderVariant::Default);
+			setShader(_shaderManager.find("tex_billboard"), ShaderVariant::Billboard);
 		}
 		void FlatTextureMaterial::setTexture(std::shared_ptr<Texture> _texture)
 		{
@@ -66,7 +67,10 @@ namespace se
 
 		PhongMaterial::PhongMaterial(DefaultShaderManager& _shaderManager)
 		{
-			setShader(_shaderManager.find("phong"));
+			setShader(_shaderManager.find("phong"), ShaderVariant::Default);
+			setShader(_shaderManager.find("phong_instanced"), ShaderVariant::Instanced);
+			setShader(_shaderManager.find("phong_skinned"), ShaderVariant::Skinned);
+			setShader(_shaderManager.find("phong_skinned_instanced"), ShaderVariant::SkinnedInstanced);
 			setLit(true);
 			attributesUniform = std::make_unique<Uniform>("u_phong_ShininessStrength", UniformType::Vec4);
 		}
@@ -89,27 +93,6 @@ namespace se
 		void PhongMaterial::internalBind()
 		{
 			attributesUniform->set(&attributes.data);
-		}
-
-
-		InstancedPhongMaterial::InstancedPhongMaterial(DefaultShaderManager& _shaderManager)
-			: PhongMaterial(_shaderManager)
-		{
-			setShader(_shaderManager.find("phong_instanced"));
-		}
-
-
-		SkinnedPhongMaterial::SkinnedPhongMaterial(DefaultShaderManager& _shaderManager)
-			: PhongMaterial(_shaderManager)
-		{
-			setShader(_shaderManager.find("phong_skinned"));
-		}
-
-
-		SkinnedInstancedPhongMaterial::SkinnedInstancedPhongMaterial(DefaultShaderManager& _shaderManager)
-			: PhongMaterial(_shaderManager)
-		{
-			setShader(_shaderManager.find("phong_skinned_instanced"));
 		}
 	}
 }

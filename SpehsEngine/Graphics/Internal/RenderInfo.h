@@ -22,6 +22,8 @@ namespace se
 
 		inline bool operator==(const RenderInfo& _left, const RenderInfo& _right)
 		{
+			// NOTES:
+			// - Animations and Instancing are not considered here
 			return _left.renderFlags	== _right.renderFlags
 				&& _left.primitiveType	== _right.primitiveType
 				&& _left.material		== _right.material

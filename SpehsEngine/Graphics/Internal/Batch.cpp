@@ -213,7 +213,14 @@ namespace se
 				return false;
 			se_assert(vertices.size() != 0 && indices.size() != 0 && batchPositions.size() != 0);
 
-			if (!renderInfo.material->getShader()->ready())
+			std::shared_ptr<Shader> shader = renderInfo.material->getShader();
+
+			if (!shader)
+			{
+				log::warning("Shader missing!");
+				return true;
+			}
+			if (!shader->ready())
 			{
 				log::warning("Shader not ready for rendering!");
 				return true;
@@ -237,7 +244,7 @@ namespace se
 
 			applyRenderState(renderInfo, _renderContext);
 
-			bgfx::ProgramHandle programHandle = { renderInfo.material->getShader()->getHandle() };
+			bgfx::ProgramHandle programHandle = { shader->getHandle() };
 			bgfx::submit(_renderContext.currentViewId, programHandle);
 			return true;
 		}

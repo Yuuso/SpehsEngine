@@ -8,6 +8,7 @@
 
 	- color
 	- tex
+	- tex_billboard
 	- phong
 	- phong_skinned
 	- phong_instanced

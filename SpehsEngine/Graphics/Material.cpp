@@ -15,9 +15,19 @@ namespace se
 			internalBind();
 		}
 
-		std::shared_ptr<Shader> Material::getShader() const
+		std::shared_ptr<Shader> Material::getShader(const ShaderVariant variant) const
 		{
-			return shader;
+			auto it = shaders.find(variant);
+			if (it != shaders.end())
+				return it->second;
+
+			log::warning("Material is missing " + std::to_string(static_cast<int>(variant)) + " shader variant!");
+			it = shaders.find(ShaderVariant::Default);
+			if (it != shaders.end())
+				return it->second;
+
+			log::warning("Material is also missing the default variant!");
+			return nullptr;
 		}
 		std::shared_ptr<Font> Material::getFont(const uint8_t _slot) const
 		{
@@ -39,9 +49,9 @@ namespace se
 			scopedConnection = fontChangedSignal.connect(callback);
 		}
 
-		void Material::setShader(std::shared_ptr<Shader> _shader)
+		void Material::setShader(std::shared_ptr<Shader> _shader, const ShaderVariant variant)
 		{
-			shader = _shader;
+			shaders[variant] = _shader;
 		}
 		void Material::setTexture(std::shared_ptr<Texture> _texture, const std::string_view _uniformName, const uint8_t _slot)
 		{
