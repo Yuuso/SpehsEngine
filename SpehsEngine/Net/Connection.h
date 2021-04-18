@@ -307,7 +307,7 @@ namespace se
 			};
 			std::vector<ReliableFragmentSendCount> recentReliableFragmentSendCounts;
 			std::map<uint64_t, uint64_t> reliableFragmentSendCounters;
-			double sendQuotaPerSecond = 56600000.0;
+			double sendQuotaPerSecond = 56600.0;
 			time::Time lastSendQuotaReplenishTimestamp = time::Time::zero;
 			uint16_t maximumSegmentSize = defaultMaximumSegmentSize; // (For outgoing packets only)
 			std::optional<PathMaximumSegmentSizeDiscovery> pathMaximumSegmentSizeDiscovery = std::optional<PathMaximumSegmentSizeDiscovery>(PathMaximumSegmentSizeDiscovery());
