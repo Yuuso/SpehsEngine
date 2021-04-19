@@ -33,7 +33,8 @@ namespace se
 			: debugName(_debugName)
 			, ioService(_ioService)
 			, boostSocket(_ioService.getImplementationRef())
-			, receiveBuffer(65536)
+			, receiveBuffer1(65536)
+			, receiveBuffer2(65536)
 		{
 
 		}
@@ -229,7 +230,7 @@ namespace se
 			{
 				receiving = true;
 				boostSenderEndpoint = boost::asio::ip::udp::endpoint();
-				boostSocket.async_receive_from(boost::asio::buffer(receiveBuffer), boostSenderEndpoint,
+				boostSocket.async_receive_from(boost::asio::buffer(receiveBuffer1), boostSenderEndpoint,
 					boost::bind(&SocketUDP2::boostReceiveHandler, shared_from_this(),
 						boost::asio::placeholders::error,
 						boost::asio::placeholders::bytes_transferred));
@@ -246,18 +247,23 @@ namespace se
 		void SocketUDP2::boostReceiveHandler(const boost::system::error_code& error, const std::size_t bytes)
 		{
 			std::lock_guard<std::recursive_mutex> lock1(mutex);
+			se_assert(receiving);
+			receiving = false;
 
-			DEBUG_LOG(2, "received " + std::to_string(bytes) + " bytes from: " + boostSenderEndpoint.address().to_string() + ":" + std::to_string(boostSenderEndpoint.port()));
+			// Swap the receive buffers and start receiving asap
+			boost::asio::ip::udp::endpoint boostSenderEndpoint2 = boostSenderEndpoint;
+			receiveBuffer1.swap(receiveBuffer2);
+			startReceiving();
+
+			DEBUG_LOG(2, "received " + std::to_string(bytes) + " bytes from: " + boostSenderEndpoint2.address().to_string() + ":" + std::to_string(boostSenderEndpoint2.port()));
 			if (bytes > 0 && debugLogLevel >= 3)
 			{
 				for (size_t i = 0; i < bytes; i++)
 				{
-					log::info("    [" + std::to_string(i) + "] " + toHexString(receiveBuffer[i]));
+					log::info("    [" + std::to_string(i) + "] " + toHexString(receiveBuffer2[i]));
 				}
 			}
 
-			se_assert(receiving);
-			receiving = false;
 			lastReceiveTime = time::now();
 			receivedBytes += bytes;
 
@@ -293,12 +299,10 @@ namespace se
 			{
 				std::lock_guard<std::recursive_mutex> lock2(receivedPacketsMutex);
 				receivedPackets.push_back(std::make_unique<ReceivedPacket>());
-				receivedPackets.back()->senderEndpoint = boostSenderEndpoint;
+				receivedPackets.back()->senderEndpoint = boostSenderEndpoint2;
 				receivedPackets.back()->buffer.resize(bytes);
-				memcpy(receivedPackets.back()->buffer.data(), receiveBuffer.data(), bytes);
+				memcpy(receivedPackets.back()->buffer.data(), receiveBuffer2.data(), bytes);
 			}
-
-			startReceiving();
 		}
 
 		boost::asio::ip::udp::endpoint SocketUDP2::resolveRemoteEndpoint(const Endpoint& remoteEndpoint) const

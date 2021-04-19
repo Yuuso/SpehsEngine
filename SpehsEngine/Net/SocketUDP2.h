@@ -85,7 +85,8 @@ namespace se
 			IOService& ioService;
 			boost::asio::ip::udp::endpoint boostSenderEndpoint; // Used to receive the sender endpoint from boost during async receive.
 			boost::asio::ip::udp::socket boostSocket;
-			std::vector<unsigned char> receiveBuffer;
+			std::vector<unsigned char> receiveBuffer1;
+			std::vector<unsigned char> receiveBuffer2;
 			bool receiving = false;
 			std::function<void(std::vector<uint8_t>&, const boost::asio::ip::udp::endpoint&)> receiveHandler;
 			time::Time lastReceiveTime;
