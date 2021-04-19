@@ -313,6 +313,7 @@ namespace se
 			std::optional<PathMaximumSegmentSizeDiscovery> pathMaximumSegmentSizeDiscovery = std::optional<PathMaximumSegmentSizeDiscovery>(PathMaximumSegmentSizeDiscovery());
 			double reliableSendQuota = 0.0;
 			double unreliableSendQuota = 0.0;
+			int reliableSendQuotaPerSecondDirectionCounter = 0;
 			float averageReliableFragmentSendCount = 0.0f;
 
 			// RTT

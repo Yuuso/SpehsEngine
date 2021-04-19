@@ -583,8 +583,11 @@ namespace se
 									{
 										unacknowledgedFragment.firstSendTime = now;
 									}
+									else
+									{
+										decreaseSendQuotaPerSecond();
+									}
 
-									decreaseSendQuotaPerSecond();
 									unacknowledgedFragment.latestSendTime = now;
 								}
 								else
@@ -1159,7 +1162,10 @@ namespace se
 		{
 			LOCK_GUARD(lock, mutex, other);
 
-			increaseSendQuotaPerSecond();
+			if (sendCount == 1)
+			{
+				increaseSendQuotaPerSecond();
+			}
 
 			// Add to recentReliableFragmentSendCounts
 			recentReliableFragmentSendCounts.push_back(ReliableFragmentSendCount());
@@ -1191,16 +1197,26 @@ namespace se
 		void Connection::increaseSendQuotaPerSecond()
 		{
 			LOCK_GUARD(lock, mutex, other);
+			if (reliableSendQuotaPerSecondDirectionCounter < 0)
+			{
+				reliableSendQuotaPerSecondDirectionCounter = 0;
+			}
+			reliableSendQuotaPerSecondDirectionCounter++;
 			const double maxSendQuotaPerSecond = 1024.0 * 1024.0 * 1024.0;
-			const double multiplier = 1.05;
+			const double multiplier = 1.0 + 0.05 * std::min(reliableSendQuotaPerSecondDirectionCounter, 20);
 			sendQuotaPerSecond = std::min(maxSendQuotaPerSecond, sendQuotaPerSecond * multiplier);
 		}
 
 		void Connection::decreaseSendQuotaPerSecond()
 		{
 			LOCK_GUARD(lock, mutex, other);
+			if (reliableSendQuotaPerSecondDirectionCounter > 0)
+			{
+				reliableSendQuotaPerSecondDirectionCounter = 0;
+			}
+			reliableSendQuotaPerSecondDirectionCounter--;
 			const double minSendQuotaPerSecond = 1000.0;
-			const double multiplier = 0.99;
+			const double multiplier = 1.0 + 0.01 * std::max(reliableSendQuotaPerSecondDirectionCounter, -10);
 			sendQuotaPerSecond = std::max(minSendQuotaPerSecond, sendQuotaPerSecond * multiplier);
 		}
 
