@@ -135,7 +135,7 @@ namespace se
 				if (!reliablePacketSendQueue.empty() && !pathMaximumSegmentSizeDiscovery.has_value())
 				{
 					static const time::Time reliableStreamOffsetSendStuckTime = se::time::fromSeconds(5.0f);
-					const time::Time timeSinceUpdate = se::time::now() - lastReceiveAcknowledgementTime;
+					const time::Time timeSinceUpdate = se::time::now() - lastAdvanceReliableStreamOffsetSendTime;
 					if (timeSinceUpdate >= reliableStreamOffsetSendStuckTime)
 					{
 						DEBUG_LOG(1, "Reliable stream seems to be stuck, initiating path MTU discovery.");
@@ -317,7 +317,6 @@ namespace se
 
 			if (reliableStreamOffset >= reliableStreamOffsetSend)
 			{
-				lastReceiveAcknowledgementTime = time::now();
 				uint64_t offset = reliableStreamOffsetSend;
 				for (size_t p = 0; p < reliablePacketSendQueue.size(); p++)
 				{
@@ -393,6 +392,7 @@ namespace se
 				SE_SCOPE_PROFILER("remove delivered from send queue");
 				while (!reliablePacketSendQueue.empty() && reliablePacketSendQueue.front().delivered)
 				{
+					lastAdvanceReliableStreamOffsetSendTime = time::now();
 					reliableStreamOffsetSend += reliablePacketSendQueue.front().payload.size();
 					reliablePacketSendQueue.erase(reliablePacketSendQueue.begin());
 				}

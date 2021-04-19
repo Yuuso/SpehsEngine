@@ -285,7 +285,7 @@ namespace se
 			time::Time lastSendTimeReliable;
 			time::Time lastQueueHeartbeatTime;
 			time::Time timeoutCountdown;
-			time::Time lastReceiveAcknowledgementTime;
+			time::Time lastAdvanceReliableStreamOffsetSendTime;
 			uint64_t reliableStreamOffsetSend = 0u; // bytes from past packets that have been delivered
 			uint64_t reliableStreamOffsetReceive = 0u; // bytes from past packets that have been received
 			uint64_t socketSendPacketCallCount = 0u;
