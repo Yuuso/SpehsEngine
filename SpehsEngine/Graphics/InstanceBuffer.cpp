@@ -10,11 +10,14 @@ namespace se
 {
 	namespace graphics
 	{
-		static constexpr VertexAttributeFlagsType instanceDataAttributes =
+		static constexpr VertexAttributeFlagsType transformDataAttributes =
 			  VertexAttribute::Data0
 			| VertexAttribute::Data1
 			| VertexAttribute::Data2
 			| VertexAttribute::Data3;
+		static constexpr VertexAttributeFlagsType billboardDataAttributes =
+			  VertexAttribute::Data0
+			| VertexAttribute::Data1;
 
 		static_assert(
 			  sizeof(VertexAttribute::Data0Type)
@@ -22,8 +25,13 @@ namespace se
 			+ sizeof(VertexAttribute::Data2Type)
 			+ sizeof(VertexAttribute::Data3Type)
 			== sizeof(glm::mat4), "Invalid vertex attribute data types for instancing!");
+		static_assert(
+			  sizeof(VertexAttribute::Data0Type)
+			+ sizeof(VertexAttribute::Data1Type)
+			== sizeof(glm::vec4) * 2, "Invalid vertex attribute data types for instancing!");
 
-		InstanceBuffer::InstanceBuffer()
+		InstanceBuffer::InstanceBuffer(const InstanceBufferType _type)
+			: type(_type)
 		{
 		}
 		InstanceBuffer::~InstanceBuffer()
@@ -34,10 +42,12 @@ namespace se
 		InstanceBuffer::InstanceBuffer(const InstanceBuffer& _other)
 			: BufferObject(_other)
 			, buffer(_other.buffer)
+			, type(_other.type)
 		{
 		}
 		InstanceBuffer& InstanceBuffer::operator=(const InstanceBuffer& _other)
 		{
+			se_assert(type == _other.type);
 			BufferObject::operator=(_other);
 			buffer = _other.buffer;
 			return *this;
@@ -46,10 +56,12 @@ namespace se
 		InstanceBuffer::InstanceBuffer(InstanceBuffer&& _other)
 			: BufferObject(std::move(_other))
 			, buffer(std::move(_other.buffer))
+			, type(_other.type)
 		{
 		}
 		InstanceBuffer& InstanceBuffer::operator=(InstanceBuffer&& _other)
 		{
+			se_assert(type == _other.type);
 			BufferObject::operator=(std::move(_other));
 			buffer = std::move(_other.buffer);
 			return *this;
@@ -58,27 +70,33 @@ namespace se
 
 		const size_t InstanceBuffer::size() const
 		{
-			return buffer.size();
+			return buffer.size() / instanceBytes();
 		}
 		const size_t InstanceBuffer::bytes() const
 		{
-			return buffer.size() * sizeof(glm::mat4);
+			return buffer.size();
 		}
 		void InstanceBuffer::resize(const size_t _size)
 		{
-			buffer.resize(_size);
+			buffer.resize(_size * instanceBytes());
 			setChangedAll();
 			bufferChanged = true;
 		}
 		void InstanceBuffer::grow(const size_t _amount)
 		{
-			buffer.resize(buffer.size() + _amount);
+			resize(size() + _amount);
+		}
+		void InstanceBuffer::pushBack(const TransformInstanceData& _data)
+		{
+			const size_t index = size();
+			grow(1);
+			set(index, _data);
 			setChangedAll();
 			bufferChanged = true;
 		}
-		void InstanceBuffer::pushBack(const InstanceData& _data)
+		void InstanceBuffer::pushBack(const BillboardInstanceData& _data)
 		{
-			const size_t index = buffer.size();
+			const size_t index = size();
 			grow(1);
 			set(index, _data);
 			setChangedAll();
@@ -86,7 +104,7 @@ namespace se
 		}
 		void InstanceBuffer::erase(const size_t _begin, const size_t _end)
 		{
-			buffer.erase(buffer.begin() + _begin, buffer.begin() + _end);
+			buffer.erase(buffer.begin() + _begin * instanceBytes(), buffer.begin() + _end * instanceBytes());
 			setChangedAll();
 			bufferChanged = true;
 		}
@@ -101,52 +119,94 @@ namespace se
 			return reinterpret_cast<const void*>(&buffer[_index]);
 		}
 
-		void InstanceBuffer::set(const size_t _at, const InstanceData& _data)
+		void InstanceBuffer::set(const size_t _at, const TransformInstanceData& _data)
 		{
 			se_assert(_at < size());
-			buffer[_at] = constructTransformationMatrix(_data.position, _data.rotation, glm::vec3(_data.scale));
-			changedBegin = std::min(changedBegin, _at);
-			changedBegin = std::max(changedEnd, _at + 1);
+			const size_t atBytes = _at * instanceBytes();
+			const glm::mat4 temp = constructTransformationMatrix(_data.position, _data.rotation, glm::vec3(_data.scale));
+			memcpy(&buffer[atBytes], &temp, sizeof(temp));
+			changedBytesBegin = std::min(changedBytesBegin, atBytes);
+			changedBytesBegin = std::max(changedBytesEnd, atBytes + 1);
 			bufferChanged = true;
 		}
-		const InstanceData InstanceBuffer::get(const size_t _at) const
+		void InstanceBuffer::set(const size_t _at, const BillboardInstanceData& _data)
 		{
 			se_assert(_at < size());
-			InstanceData result;
+			const size_t atBytes = _at * instanceBytes();
+			memcpy(&buffer[atBytes], &_data, sizeof(_data));
+			changedBytesBegin = std::min(changedBytesBegin, atBytes);
+			changedBytesBegin = std::max(changedBytesEnd, atBytes + 1);
+			bufferChanged = true;
+		}
+		const TransformInstanceData InstanceBuffer::getTransformData(const size_t _at) const
+		{
+			se_assert(_at < size());
+			TransformInstanceData result;
 			glm::vec3 temp;
-			decomposeTransformationMatrix(buffer[_at], result.position, result.rotation, temp);
+			const glm::mat4* mtx = reinterpret_cast<const glm::mat4*>(&buffer[_at * instanceBytes()]);
+			decomposeTransformationMatrix(*mtx, result.position, result.rotation, temp);
 			se_assert((fabsf(temp.x - temp.y) < 0.00001f) && (fabsf(temp.z - temp.y) < 0.00001f));
 			result.scale = temp.x;
 			return result;
 		}
+		const BillboardInstanceData InstanceBuffer::getBillboardData(const size_t _at) const
+		{
+			se_assert(_at < size());
+			const BillboardInstanceData* result = reinterpret_cast<const BillboardInstanceData*>(&buffer[_at * instanceBytes()]);
+			return *result;
+		}
 
 		void InstanceBuffer::setChangedAll()
 		{
-			changedBegin = 0;
-			changedEnd = SIZE_MAX;
+			changedBytesBegin = 0;
+			changedBytesEnd = SIZE_MAX;
 		}
 		void InstanceBuffer::clearChanged()
 		{
-			changedBegin = SIZE_MAX;
-			changedEnd = 0;
+			changedBytesBegin = SIZE_MAX;
+			changedBytesEnd = 0;
+		}
+		size_t InstanceBuffer::instanceBytes() const
+		{
+			switch (type)
+			{
+				case InstanceBufferType::Transform:
+					return sizeof(glm::mat4);
+				case InstanceBufferType::Billboard:
+					return sizeof(glm::vec4) * 2;
+			}
+			se_assert_m(false, "InstanceBufferType not set!");
+			return 1;
+		}
+		static VertexAttributeFlagsType attributesType(const InstanceBufferType _type)
+		{
+			switch (_type)
+			{
+				case InstanceBufferType::Transform:
+					return transformDataAttributes;
+				case InstanceBufferType::Billboard:
+					return billboardDataAttributes;
+			}
+			se_assert_m(false, "Invalid InstanceBufferType!");
+			return 0;
 		}
 
 		void InstanceBuffer::updateBuffer()
 		{
 			if (renderers.size() > 0 && size() > 0)
 			{
-				if (bufferObject == INVALID_RESOURCE_HANDLE || changedBegin >= changedEnd || changedEnd > size())
+				if (bufferObject == INVALID_RESOURCE_HANDLE || changedBytesBegin >= changedBytesEnd || changedBytesEnd > size())
 				{
 					safeDestroy<bgfx::DynamicVertexBufferHandle>(bufferObject);
 					const bgfx::Memory* bufferMemory = bgfx::copy(data(), static_cast<uint32_t>(bytes()));
-					bufferObject = bgfx::createDynamicVertexBuffer(bufferMemory, findVertexLayout(instanceDataAttributes)).idx;
+					bufferObject = bgfx::createDynamicVertexBuffer(bufferMemory, findVertexLayout(attributesType(type))).idx;
 				}
 				else
 				{
-					const uint32_t changedSizeBytes = static_cast<uint32_t>((changedEnd - changedBegin) * sizeof(glm::mat4));
-					const bgfx::Memory* bufferMemory = bgfx::copy(data(changedBegin), changedSizeBytes);
+					const uint32_t changedSizeBytes = static_cast<uint32_t>((changedBytesEnd - changedBytesBegin) * sizeof(glm::mat4));
+					const bgfx::Memory* bufferMemory = bgfx::copy(data(changedBytesBegin), changedSizeBytes);
 					bgfx::DynamicVertexBufferHandle dvbh = { bufferObject };
-					bgfx::update(dvbh, static_cast<uint32_t>(changedBegin), bufferMemory);
+					bgfx::update(dvbh, static_cast<uint32_t>(changedBytesBegin), bufferMemory);
 				}
 			}
 			else

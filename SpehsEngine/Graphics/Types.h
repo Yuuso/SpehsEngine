@@ -20,15 +20,16 @@ namespace se
 			CullFrontFace			= (1 << 0),
 			CullBackFace			= (1 << 1),
 
-			DepthTestLess			= (1 << 2),
-			DepthTestGreater		= (1 << 3),
+			DepthWrite				= (1 << 2),
+			DepthTestLess			= (1 << 3),
+			DepthTestGreater		= (1 << 4),
 
-			Blending				= (1 << 4),
+			Blending				= (1 << 5),
 
-			BillboardSpherical		= (1 << 5),
-			BillboardCylindrical	= (1 << 6),
+			BillboardSpherical		= (1 << 6),
+			BillboardCylindrical	= (1 << 7),
 		};
-		constexpr RenderFlagsType defaultRenderFlags = RenderFlag::DepthTestLess;
+		constexpr RenderFlagsType defaultRenderFlags = RenderFlag::DepthWrite | RenderFlag::DepthTestLess;
 
 		typedef uint32_t RendererFlagsType;
 		enum RendererFlag : RendererFlagsType
@@ -197,6 +198,8 @@ namespace se
 
 			Triangle = 3,
 			Square,
+			Plane = Square,
+			Rectangle = Square,
 			Pentagon,
 			Hexagon,
 			Heptagon,
@@ -207,6 +210,7 @@ namespace se
 
 			Cube,
 			Sphere,
+			Ball = Sphere,
 			// Capsule
 			// Cylinder
 			// Cone
@@ -217,15 +221,23 @@ namespace se
 			bool operator==(const ShapeParameters& _other) const
 			{
 				return resolution == _other.resolution
+					&& uvScale == _other.uvScale
 					&& generateNormals == _other.generateNormals
 					&& invertNormals == _other.invertNormals
 					&& generateTangents == _other.generateTangents;
 			}
 
 			unsigned int resolution = 0;
+			float uvScale = 1.0f;
 			bool generateNormals = false;
 			bool invertNormals = false;
 			bool generateTangents = false;
+		};
+
+		enum class InstanceBufferType
+		{
+			Transform,
+			Billboard
 		};
 	}
 }

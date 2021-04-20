@@ -127,10 +127,16 @@ namespace se
 				return;
 			}
 
-			const UniformMatrices& transformMatrices = primitive->getTransformMatrices();
 			std::shared_ptr<InstanceBuffer> instances = primitive->getInstances();
+			const bool isInstanced = instances != nullptr;
+			if (isInstanced && instances->size() == 0)
+			{
+				// Instance buffer empty, no need to render
+				return;
+			}
+
+			const UniformMatrices& transformMatrices = primitive->getTransformMatrices();
 			const bool isSkinned = transformMatrices.size() > 1;
-			const bool isInstanced = instances && instances->size() > 0;
 			const bool isBillboardSpherical = checkBit(_renderInfo.renderFlags, RenderFlag::BillboardSpherical);
 			const bool isBillboardCylindrical = checkBit(_renderInfo.renderFlags, RenderFlag::BillboardCylindrical);
 

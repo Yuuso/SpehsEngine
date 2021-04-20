@@ -8,7 +8,7 @@ void main()
     bool cylindrical = u_billboardInfo.w != 0.0;
     vec3 globalUp = cylindrical ? vec3(0.0, 1.0, 0.0) : getViewUp();
     vec3 viewDir = normalize(u_billboardInfo.xyz - getViewPosition());
-    vec3 combinedRight = normalize(cross(viewDir, globalUp));    
+    vec3 combinedRight = normalize(cross(viewDir, globalUp));
 
     // NOTE: SpehsEngine planes are oriented on the xz-plane, so we consider the primitive's z-axis to be up!
     vec3 position = combinedRight * a_position.x + globalUp * a_position.z;

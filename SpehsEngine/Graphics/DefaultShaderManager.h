@@ -9,9 +9,11 @@
 	- color
 	- tex
 	- tex_billboard
+	- tex_billboard_instanced
 	- phong
-	- phong_skinned
 	- phong_instanced
+	- phong_skinned
+	- phong_skinned_instanced
 	- text
 */
 

@@ -20,6 +20,7 @@ namespace se
 		{
 			setShader(_shaderManager.find("tex"), ShaderVariant::Default);
 			setShader(_shaderManager.find("tex_billboard"), ShaderVariant::Billboard);
+			setShader(_shaderManager.find("tex_billboard_instanced"), ShaderVariant::BillboardInstanced);
 		}
 		void FlatTextureMaterial::setTexture(std::shared_ptr<Texture> _texture)
 		{

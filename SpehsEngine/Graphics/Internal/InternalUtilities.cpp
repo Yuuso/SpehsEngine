@@ -14,7 +14,9 @@ namespace se
 		{
 			uint64_t state = BGFX_STATE_NONE;
 
-			state |= BGFX_STATE_WRITE_MASK; // TODO
+			state |= BGFX_STATE_WRITE_RGB | BGFX_STATE_WRITE_A;
+			if (checkBit(_renderInfo.renderFlags, RenderFlag::DepthWrite))
+				state |= BGFX_STATE_WRITE_Z;
 
 			if (_renderContext.enableMSAA)
 				state |= BGFX_STATE_MSAA;

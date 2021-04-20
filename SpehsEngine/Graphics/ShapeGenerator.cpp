@@ -126,8 +126,8 @@ namespace se
 					{
 						glm::vec2& texCoord = newVertices.get<TexCoord0>(i);
 						const glm::vec3& positionVertex = newVertices.get<Position>(i);
-						texCoord.x = (positionVertex.x + 0.5f);
-						texCoord.y = (-positionVertex.z + 0.5f);
+						texCoord.x = (positionVertex.x + 0.5f) * _shapeParams.uvScale;
+						texCoord.y = (-positionVertex.z + 0.5f) * _shapeParams.uvScale;
 					}
 				}
 
@@ -185,19 +185,19 @@ namespace se
 #pragma region cube_vertices
 				// Y+ face
 				newVertices.get<Position>(currentVertex) = glm::vec3(-0.5f, 0.5f, -0.5f);
-				newVertices.get<TexCoord0>(currentVertex) = glm::vec2(0.0f, 0.0f);
+				newVertices.get<TexCoord0>(currentVertex) = glm::vec2(0.0f, 0.0f) * _shapeParams.uvScale;
 				currentVertex++;
 
 				newVertices.get<Position>(currentVertex) = glm::vec3(0.5f, 0.5f, -0.5f);
-				newVertices.get<TexCoord0>(currentVertex) = glm::vec2(1.0f, 0.0f);
+				newVertices.get<TexCoord0>(currentVertex) = glm::vec2(1.0f, 0.0f) * _shapeParams.uvScale;
 				currentVertex++;
 
 				newVertices.get<Position>(currentVertex) = glm::vec3(0.5f, 0.5f, 0.5f);
-				newVertices.get<TexCoord0>(currentVertex) = glm::vec2(1.0f, 1.0f);
+				newVertices.get<TexCoord0>(currentVertex) = glm::vec2(1.0f, 1.0f) * _shapeParams.uvScale;
 				currentVertex++;
 
 				newVertices.get<Position>(currentVertex) = glm::vec3(-0.5f, 0.5f, 0.5f);
-				newVertices.get<TexCoord0>(currentVertex) = glm::vec2(0.0f, 1.0f);
+				newVertices.get<TexCoord0>(currentVertex) = glm::vec2(0.0f, 1.0f) * _shapeParams.uvScale;
 				currentVertex++;
 
 				for (size_t vertex = currentVertex - 4; vertex < currentVertex; vertex++)
@@ -215,19 +215,19 @@ namespace se
 
 				// Y- face
 				newVertices.get<Position>(currentVertex) = glm::vec3(-0.5f, -0.5f, -0.5f);
-				newVertices.get<TexCoord0>(currentVertex) = glm::vec2(0.0f, 0.0f);
+				newVertices.get<TexCoord0>(currentVertex) = glm::vec2(0.0f, 0.0f) * _shapeParams.uvScale;
 				currentVertex++;
 
 				newVertices.get<Position>(currentVertex) = glm::vec3(-0.5f, -0.5f, 0.5f);
-				newVertices.get<TexCoord0>(currentVertex) = glm::vec2(1.0f, 0.0f);
+				newVertices.get<TexCoord0>(currentVertex) = glm::vec2(1.0f, 0.0f) * _shapeParams.uvScale;
 				currentVertex++;
 
 				newVertices.get<Position>(currentVertex) = glm::vec3(0.5f, -0.5f, 0.5f);
-				newVertices.get<TexCoord0>(currentVertex) = glm::vec2(1.0f, 1.0f);
+				newVertices.get<TexCoord0>(currentVertex) = glm::vec2(1.0f, 1.0f) * _shapeParams.uvScale;
 				currentVertex++;
 
 				newVertices.get<Position>(currentVertex) = glm::vec3(0.5f, -0.5f, -0.5f);
-				newVertices.get<TexCoord0>(currentVertex) = glm::vec2(0.0f, 1.0f);
+				newVertices.get<TexCoord0>(currentVertex) = glm::vec2(0.0f, 1.0f) * _shapeParams.uvScale;
 				currentVertex++;
 
 				for (size_t vertex = currentVertex - 4; vertex < currentVertex; vertex++)
@@ -245,19 +245,19 @@ namespace se
 
 				// X+ face
 				newVertices.get<Position>(currentVertex) = glm::vec3(0.5f, -0.5f, -0.5f);
-				newVertices.get<TexCoord0>(currentVertex) = glm::vec2(0.0f, 0.0f);
+				newVertices.get<TexCoord0>(currentVertex) = glm::vec2(0.0f, 0.0f) * _shapeParams.uvScale;
 				currentVertex++;
 
 				newVertices.get<Position>(currentVertex) = glm::vec3(0.5f, -0.5f, 0.5f);
-				newVertices.get<TexCoord0>(currentVertex) = glm::vec2(1.0f, 0.0f);
+				newVertices.get<TexCoord0>(currentVertex) = glm::vec2(1.0f, 0.0f) * _shapeParams.uvScale;
 				currentVertex++;
 
 				newVertices.get<Position>(currentVertex) = glm::vec3(0.5f, 0.5f, 0.5f);
-				newVertices.get<TexCoord0>(currentVertex) = glm::vec2(1.0f, 1.0f);
+				newVertices.get<TexCoord0>(currentVertex) = glm::vec2(1.0f, 1.0f) * _shapeParams.uvScale;
 				currentVertex++;
 
 				newVertices.get<Position>(currentVertex) = glm::vec3(0.5f, 0.5f, -0.5f);
-				newVertices.get<TexCoord0>(currentVertex) = glm::vec2(0.0f, 1.0f);
+				newVertices.get<TexCoord0>(currentVertex) = glm::vec2(0.0f, 1.0f) * _shapeParams.uvScale;
 				currentVertex++;
 
 				for (size_t vertex = currentVertex - 4; vertex < currentVertex; vertex++)
@@ -275,19 +275,19 @@ namespace se
 
 				// X- face
 				newVertices.get<Position>(currentVertex) = glm::vec3(-0.5f, -0.5f, 0.5f);
-				newVertices.get<TexCoord0>(currentVertex) = glm::vec2(0.0f, 0.0f);
+				newVertices.get<TexCoord0>(currentVertex) = glm::vec2(0.0f, 0.0f) * _shapeParams.uvScale;
 				currentVertex++;
 
 				newVertices.get<Position>(currentVertex) = glm::vec3(-0.5f, -0.5f, -0.5f);
-				newVertices.get<TexCoord0>(currentVertex) = glm::vec2(1.0f, 0.0f);
+				newVertices.get<TexCoord0>(currentVertex) = glm::vec2(1.0f, 0.0f) * _shapeParams.uvScale;
 				currentVertex++;
 
 				newVertices.get<Position>(currentVertex) = glm::vec3(-0.5f, 0.5f, -0.5f);
-				newVertices.get<TexCoord0>(currentVertex) = glm::vec2(1.0f, 1.0f);
+				newVertices.get<TexCoord0>(currentVertex) = glm::vec2(1.0f, 1.0f) * _shapeParams.uvScale;
 				currentVertex++;
 
 				newVertices.get<Position>(currentVertex) = glm::vec3(-0.5f, 0.5f, 0.5f);
-				newVertices.get<TexCoord0>(currentVertex) = glm::vec2(0.0f, 1.0f);
+				newVertices.get<TexCoord0>(currentVertex) = glm::vec2(0.0f, 1.0f) * _shapeParams.uvScale;
 				currentVertex++;
 
 				for (size_t vertex = currentVertex - 4; vertex < currentVertex; vertex++)
@@ -305,19 +305,19 @@ namespace se
 
 				// Z+ face
 				newVertices.get<Position>(currentVertex) = glm::vec3(0.5f, -0.5f, 0.5f);
-				newVertices.get<TexCoord0>(currentVertex) = glm::vec2(0.0f, 0.0f);
+				newVertices.get<TexCoord0>(currentVertex) = glm::vec2(0.0f, 0.0f) * _shapeParams.uvScale;
 				currentVertex++;
 
 				newVertices.get<Position>(currentVertex) = glm::vec3(-0.5f, -0.5f, 0.5f);
-				newVertices.get<TexCoord0>(currentVertex) = glm::vec2(1.0f, 0.0f);
+				newVertices.get<TexCoord0>(currentVertex) = glm::vec2(1.0f, 0.0f) * _shapeParams.uvScale;
 				currentVertex++;
 
 				newVertices.get<Position>(currentVertex) = glm::vec3(-0.5f, 0.5f, 0.5f);
-				newVertices.get<TexCoord0>(currentVertex) = glm::vec2(1.0f, 1.0f);
+				newVertices.get<TexCoord0>(currentVertex) = glm::vec2(1.0f, 1.0f) * _shapeParams.uvScale;
 				currentVertex++;
 
 				newVertices.get<Position>(currentVertex) = glm::vec3(0.5f, 0.5f, 0.5f);
-				newVertices.get<TexCoord0>(currentVertex) = glm::vec2(0.0f, 1.0f);
+				newVertices.get<TexCoord0>(currentVertex) = glm::vec2(0.0f, 1.0f) * _shapeParams.uvScale;
 				currentVertex++;
 
 				for (size_t vertex = currentVertex - 4; vertex < currentVertex; vertex++)
@@ -335,19 +335,19 @@ namespace se
 
 				// Z- face
 				newVertices.get<Position>(currentVertex) = glm::vec3(-0.5f, -0.5f, -0.5f);
-				newVertices.get<TexCoord0>(currentVertex) = glm::vec2(0.0f, 0.0f);
+				newVertices.get<TexCoord0>(currentVertex) = glm::vec2(0.0f, 0.0f) * _shapeParams.uvScale;
 				currentVertex++;
 
 				newVertices.get<Position>(currentVertex) = glm::vec3(0.5f, -0.5f, -0.5f);
-				newVertices.get<TexCoord0>(currentVertex) = glm::vec2(1.0f, 0.0f);
+				newVertices.get<TexCoord0>(currentVertex) = glm::vec2(1.0f, 0.0f) * _shapeParams.uvScale;
 				currentVertex++;
 
 				newVertices.get<Position>(currentVertex) = glm::vec3(0.5f, 0.5f, -0.5f);
-				newVertices.get<TexCoord0>(currentVertex) = glm::vec2(1.0f, 1.0f);
+				newVertices.get<TexCoord0>(currentVertex) = glm::vec2(1.0f, 1.0f) * _shapeParams.uvScale;
 				currentVertex++;
 
 				newVertices.get<Position>(currentVertex) = glm::vec3(-0.5f, 0.5f, -0.5f);
-				newVertices.get<TexCoord0>(currentVertex) = glm::vec2(0.0f, 1.0f);
+				newVertices.get<TexCoord0>(currentVertex) = glm::vec2(0.0f, 1.0f) * _shapeParams.uvScale;
 				currentVertex++;
 
 				for (size_t vertex = currentVertex - 4; vertex < currentVertex; vertex++)
@@ -416,7 +416,7 @@ namespace se
 						newVertices.get<Position>(currentVertex) = glm::vec3(radius * sinf(theta) * cosf(phi),
 																			 radius * cosf(theta),
 																			 radius * sinf(theta) * sinf(phi));
-						newVertices.get<TexCoord0>(currentVertex) = glm::vec2(i / resolution, j / resolution);
+						newVertices.get<TexCoord0>(currentVertex) = glm::vec2(i / resolution, j / resolution) * _shapeParams.uvScale;
 						if (_shapeParams.generateNormals)
 						{
 							newVertices.get<Normal>(currentVertex) = glm::normalize(newVertices.get<Position>(currentVertex)) * (_shapeParams.invertNormals ? -1.0f : 1.0f);
