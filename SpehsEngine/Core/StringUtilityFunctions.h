@@ -141,4 +141,7 @@ namespace se
 
 	std::string toLowerCase(const std::string_view string);
 	std::string toUpperCase(const std::string_view string);
+
+	std::wstring toWideString(const std::string& string);
+	std::string fromWideString(const std::wstring& wstring);
 }
