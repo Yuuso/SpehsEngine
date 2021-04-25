@@ -16,19 +16,42 @@ namespace se
 	{
 		return glm::translate(_pos) * glm::mat4_cast(_rot) * glm::scale(glm::vec3(_scale));
 	}
-	void decomposeTransformationMatrix(const glm::mat4& _transformationMatrix, glm::vec3& _pos, glm::quat& _rot, glm::vec3& _scale)
+	void decomposeTransformationMatrix(const glm::mat4& _transformationMatrix, glm::vec3* _pos, glm::quat* _rot, glm::vec3* _scale)
 	{
-		// TODO: Test properly
+		// TODO: Test properly, seems to at least have some floating point inaccuracies!
+
 		glm::mat4 m = _transformationMatrix;
-		_pos = glm::vec3(m[3][0], m[3][1], m[3][2]);
+
+		if (_pos)
+		{
+			*_pos = glm::vec3(m[3][0], m[3][1], m[3][2]);
+		}
 		m[3][0] = m[3][1] = m[3][2] = 0.0f;
-		_scale.x = glm::length(glm::vec3(m[0][0], m[0][1], m[0][2]));
-		_scale.y = glm::length(glm::vec3(m[1][0], m[1][1], m[1][2]));
-		_scale.z = glm::length(glm::vec3(m[2][0], m[2][1], m[2][2]));
-		m[0] /= _scale.x;
-		m[1] /= _scale.y;
-		m[2] /= _scale.z;
-		_rot = glm::quat_cast(m);
+
+		if (_scale)
+		{
+			(*_scale).x = glm::length(glm::vec3(m[0][0], m[0][1], m[0][2]));
+			(*_scale).y = glm::length(glm::vec3(m[1][0], m[1][1], m[1][2]));
+			(*_scale).z = glm::length(glm::vec3(m[2][0], m[2][1], m[2][2]));
+			m[0] /= (*_scale).x;
+			m[1] /= (*_scale).y;
+			m[2] /= (*_scale).z;
+		}
+		else
+		{
+			glm::vec3 dummy;
+			dummy.x = glm::length(glm::vec3(m[0][0], m[0][1], m[0][2]));
+			dummy.y = glm::length(glm::vec3(m[1][0], m[1][1], m[1][2]));
+			dummy.z = glm::length(glm::vec3(m[2][0], m[2][1], m[2][2]));
+			m[0] /= dummy.x;
+			m[1] /= dummy.y;
+			m[2] /= dummy.z;
+		}
+
+		if (_rot)
+		{
+			*_rot = glm::quat_cast(m);
+		}
 	}
 	glm::mat4 constructNormalMatrix(const glm::mat4& _transformationMatrix)
 	{
