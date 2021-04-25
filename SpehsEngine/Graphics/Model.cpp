@@ -206,11 +206,11 @@ namespace se
 			return materials.size();
 		}
 
-		std::shared_ptr<InstanceBuffer> Model::getInstances() const
+		std::shared_ptr<VertexBuffer> Model::getInstances() const
 		{
 			return instances;
 		}
-		void Model::setInstances(std::shared_ptr<InstanceBuffer> _instances)
+		void Model::setInstances(std::shared_ptr<VertexBuffer> _instances)
 		{
 			instances = _instances;
 			foreachPrimitive([_instances](Primitive& _primitive) { _primitive.setInstances(_instances); });

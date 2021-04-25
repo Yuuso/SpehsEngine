@@ -47,7 +47,7 @@ namespace se
 				std::shared_ptr<IndexBuffer> indices = primitive->getIndices();
 				if (indices)
 					indices->registerAsRenderer(reinterpret_cast<uintptr_t>(this));
-				std::shared_ptr<InstanceBuffer> instances = primitive->getInstances();
+				std::shared_ptr<VertexBuffer> instances = primitive->getInstances();
 				if (instances)
 					instances->registerAsRenderer(reinterpret_cast<uintptr_t>(this));
 			}
@@ -62,7 +62,7 @@ namespace se
 				std::shared_ptr<IndexBuffer> indices = primitive->getIndices();
 				if (indices)
 					indices->unregisterAsRenderer(reinterpret_cast<uintptr_t>(this));
-				std::shared_ptr<InstanceBuffer> instances = primitive->getInstances();
+				std::shared_ptr<VertexBuffer> instances = primitive->getInstances();
 				if (instances)
 					instances->unregisterAsRenderer(reinterpret_cast<uintptr_t>(this));
 			}
@@ -127,7 +127,7 @@ namespace se
 				return;
 			}
 
-			std::shared_ptr<InstanceBuffer> instances = primitive->getInstances();
+			std::shared_ptr<VertexBuffer> instances = primitive->getInstances();
 			const bool isInstanced = instances != nullptr;
 			if (isInstanced && instances->size() == 0)
 			{
@@ -172,7 +172,7 @@ namespace se
 
 			if (isInstanced)
 			{
-				bgfx::DynamicVertexBufferHandle dvbh = { instances->bufferObject };
+				bgfx::VertexBufferHandle dvbh = { instances->bufferObject };
 				bgfx::setInstanceDataBuffer(dvbh, 0, static_cast<uint32_t>(instances->size()));
 			}
 

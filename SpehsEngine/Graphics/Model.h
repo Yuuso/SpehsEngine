@@ -7,7 +7,6 @@
 #include "SpehsEngine/Graphics/Internal/Animator.h"
 #include "SpehsEngine/Graphics/Internal/Mesh.h"
 #include "SpehsEngine/Graphics/Internal/ModelNode.h"
-#include "SpehsEngine/Graphics/InstanceBuffer.h"
 #include "SpehsEngine/Graphics/Material.h"
 #include "SpehsEngine/Graphics/ModelData.h"
 #include "SpehsEngine/Graphics/Primitive.h"
@@ -58,8 +57,8 @@ namespace se
 			std::shared_ptr<Material>		getMaterial(const size_t _slot = 0) const;
 			const size_t					getNumMaterials() const;
 
-			std::shared_ptr<InstanceBuffer> getInstances() const;
-			void							setInstances(std::shared_ptr<InstanceBuffer> _instances);
+			std::shared_ptr<VertexBuffer>	getInstances() const;
+			void							setInstances(std::shared_ptr<VertexBuffer> _instances);
 
 			const glm::vec3&				getPosition() const;
 			const glm::quat&				getRotation() const;
@@ -110,7 +109,7 @@ namespace se
 
 			std::shared_ptr<ModelData>		modelData;
 			std::vector<std::shared_ptr<Material>> materials;
-			std::shared_ptr<InstanceBuffer>	instances;
+			std::shared_ptr<VertexBuffer>	instances;
 
 			boost::signals2::signal<void(void)> destroyedSignal;
 			boost::signals2::scoped_connection modelDataLoadedConnection;

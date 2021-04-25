@@ -83,7 +83,7 @@ namespace se
 		{
 			return indices;
 		}
-		std::shared_ptr<InstanceBuffer> Primitive::getInstances() const
+		std::shared_ptr<VertexBuffer> Primitive::getInstances() const
 		{
 			return instances;
 		}
@@ -161,10 +161,10 @@ namespace se
 			indices = _indices;
 			enableBit(updateFlags, PrimitiveUpdateFlag::IndicesChanged);
 		}
-		void Primitive::setInstances(std::shared_ptr<InstanceBuffer> _instances)
+		void Primitive::setInstances(std::shared_ptr<VertexBuffer> _instances)
 		{
 			instances = _instances;
-			if (instances && instances->size() > 0 && renderMode == RenderMode::Static)
+			if (instances && renderMode == RenderMode::Static)
 				log::error("Should not use static RenderMode with instanced primitives!");
 		}
 		void Primitive::setColor(const Color& _color)
