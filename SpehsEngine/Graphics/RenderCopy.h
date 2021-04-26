@@ -10,8 +10,8 @@ namespace se
 	{
 		struct RenderCopy
 		{
-			RenderFlagsType renderFlags;
-			PrimitiveType primitiveType;
+			RenderFlagsType renderFlags = 0;
+			PrimitiveType primitiveType = PrimitiveType::Undefined;
 			Color primitiveColor;
 		};
 	}
