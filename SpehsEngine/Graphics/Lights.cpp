@@ -209,6 +209,7 @@ namespace se
 			if (!debugPrimitive)
 			{
 				debugPrimitive = std::make_shared<Primitive>();
+				debugPrimitive->setName("point light debug");
 				debugPrimitive->setPrimitiveType(PrimitiveType::Lines);
 				debugPrimitive->enableRenderFlags(RenderFlag::Blending);
 				debugPrimitive->setPosition(getPosition());
@@ -304,6 +305,7 @@ namespace se
 			if (!debugPrimitive)
 			{
 				debugPrimitive = std::make_shared<Primitive>();
+				debugPrimitive->setName("spot light debug");
 				debugPrimitive->setPrimitiveType(PrimitiveType::Lines);
 				debugPrimitive->enableRenderFlags(RenderFlag::Blending);
 				debugPrimitive->setPosition(getPosition());
@@ -315,7 +317,8 @@ namespace se
 				RenderCopy copy;
 				copy.primitiveColor = Color(0.85f, 1.0f, 0.85f, 0.05f);
 				copy.primitiveType = PrimitiveType::Lines;
-				enableBit(copy.renderFlags, RenderFlag::Blending | RenderFlag::DepthTestGreater);
+				enableBit(copy.renderFlags, RenderFlag::Blending);
+				enableBit(copy.renderFlags, RenderFlag::DepthTestGreater);
 				debugPrimitive->setRenderCopy(copy);
 			}
 
