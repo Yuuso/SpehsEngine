@@ -5,6 +5,7 @@
 #include "SpehsEngine/Core/StringUtilityFunctions.h"
 #include "SpehsEngine/ImGui/imgui.h"
 #include "SpehsEngine/ImGui/imgui_stdlib.h"
+#include "SpehsEngine/Rendering/TextureData.h"
 #include "glm/vec4.hpp"
 #include "glm/ext/quaternion_float.hpp"
 #include <stdint.h>
@@ -39,6 +40,20 @@ namespace se
 	{ \
 		return InputT(p_label.c_str(), p_value); \
 	}
+
+namespace se
+{
+	inline ImVec4 toImVec4(const Color& color)
+	{
+		return ImVec4(color.r, color.g, color.b, color.a);
+	}
+
+	inline Color fromImVec4(const ImVec4& imVec4)
+	{
+		return Color(&imVec4.x);
+	}
+}
+
 
 namespace ImGui
 {
@@ -109,6 +124,22 @@ namespace ImGui
 	inline void TextColored(const se::Color& color, const std::string& label)
 	{
 		TextColored((ImVec4&)color, label.c_str());
+	}
+
+	inline void Image(const se::rendering::TextureData& textureData, const glm::vec2 scale = glm::vec2(1.0f, 1.0f),
+		const glm::vec2 uv0 = glm::vec2(0.0f, 0.0f), const glm::vec2 uv1 = glm::vec2(1.0f, 1.0f),
+		const se::Color tintColor = se::Color(1.0f, 1.0f, 1.0f, 1.0f), const se::Color borderColor = se::Color(1.0f, 1.0f, 1.0f, 1.0f))
+	{
+		ImGui::Image((void*)(intptr_t)textureData.textureDataID, ImVec2(float(textureData.width) * scale.x, float(textureData.height) * scale.y),
+			(const ImVec2&)uv0, (const ImVec2&)uv1, se::toImVec4(tintColor), se::toImVec4(borderColor));
+	}
+
+	inline bool ImageButton(const se::rendering::TextureData& textureData, const glm::vec2 scale = glm::vec2(1.0f, 1.0f),
+		const glm::vec2 uv0 = glm::vec2(0.0f, 0.0f), const glm::vec2 uv1 = glm::vec2(1.0f, 1.0f), const int framePadding = 1,
+		const se::Color tintColor = se::Color(1.0f, 1.0f, 1.0f, 1.0f), const se::Color backgroundColor = se::Color(0.0f, 0.0f, 0.0f, 0.0f))
+	{
+		return ImGui::ImageButton((void*)(intptr_t)textureData.textureDataID, ImVec2(float(textureData.width) * scale.x, float(textureData.height) * scale.y),
+			(const ImVec2&)uv0, (const ImVec2&)uv1, framePadding, se::toImVec4(backgroundColor), se::toImVec4(tintColor));
 	}
 
 	bool fileSelector(const char* const label, std::string& filepath, const char* const directory);
@@ -485,17 +516,4 @@ namespace ImGui
 	private:
 		bool pop = false;
 	};
-}
-
-namespace se
-{
-	inline ImVec4 toImVec4(const Color& color)
-	{
-		return ImVec4(color.r, color.g, color.b, color.a);
-	}
-
-	inline Color fromImVec4(const ImVec4& imVec4)
-	{
-		return Color(&imVec4.x);
-	}
 }
