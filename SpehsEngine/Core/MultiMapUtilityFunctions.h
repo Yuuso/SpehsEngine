@@ -60,58 +60,6 @@ namespace se
 		for (std::multimap<KeyType, T, Compare>::const_iterator it = multimap.begin(); it != multimap.end(); it++)
 		{
 			archive.write(std::to_string(index) + "k", it->first);
-			const bool allocated = it->second.get() != nullptr;
-			archive.write(std::to_string(index) + "va", allocated);
-			if (allocated)
-			{
-				archive.write(std::to_string(index) + "vv", *it->second.get());
-			}
-			index++;
-		}
-		return archive;
-	}
-
-	template<typename KeyType, typename T, typename Compare = std::less<KeyType>, typename SizeType = uint32_t>
-	bool readFromArchive(const Archive& archive, std::multimap<KeyType, T, Compare>& multimap)
-	{
-		static_assert(std::is_integral<SizeType>::value, "SizeType must be integral.");
-		SizeType size = 0;
-		se_read_from_archive(archive, size);
-		for (SizeType i = 0; i < size; i++)
-		{
-			KeyType key;
-			if (!archive.read(std::to_string(i) + "k", key))
-			{
-				return false;
-			}
-			bool allocated = false;
-			if (!archive.read(std::to_string(i) + "va", allocated))
-			{
-				return false;
-			}
-			if (allocated)
-			{
-				multimap[key].reset(new T::element_type());
-				if (!archive.read(std::to_string(i) + "vv", *multimap[key].get()))
-				{
-					return false;
-				}
-			}
-		}
-		return true;
-	}
-
-	template<typename KeyType, typename T, typename Compare = std::less<KeyType>, typename SizeType = uint32_t>
-	Archive writeToArchive(const std::multimap<KeyType, T, Compare>& multimap)
-	{
-		static_assert(std::is_integral<SizeType>::value, "SizeType must be integral.");
-		Archive archive;
-		const SizeType size = SizeType(multimap.size());
-		se_write_to_archive(archive, size);
-		size_t index = 0;
-		for (std::multimap<KeyType, T, Compare>::const_iterator it = multimap.begin(); it != multimap.end(); it++)
-		{
-			archive.write(std::to_string(index) + "k", it->first);
 			archive.write(std::to_string(index) + "v", it->second);
 			index++;
 		}
