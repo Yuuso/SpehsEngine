@@ -60,7 +60,7 @@ namespace se
 		typedef uint32_t PrimitiveUpdateFlagsType;
 		typedef uint32_t WindowUpdateFlagsType;
 
-		enum PrimitiveType
+		enum class PrimitiveType
 		{
 			Undefined,
 			Triangles,
@@ -69,7 +69,7 @@ namespace se
 		};
 		constexpr PrimitiveType defaultPrimitiveType = PrimitiveType::Triangles;
 
-		enum RenderMode
+		enum class RenderMode
 		{
 			/*
 			Static: Primitive is transformed and recreated rarely.
@@ -83,7 +83,7 @@ namespace se
 		};
 		constexpr RenderMode defaultRenderMode = RenderMode::Dynamic;
 
-		enum Projection
+		enum class Projection
 		{
 			Perspective,
 			Orthographic

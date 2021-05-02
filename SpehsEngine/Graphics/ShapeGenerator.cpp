@@ -469,7 +469,7 @@ namespace se
 				default:
 					log::error("Unknown primitive type!");
 					return nullptr;
-				case se::graphics::Triangles:
+				case PrimitiveType::Triangles:
 				{
 					if (_shapeType == ShapeType::Cube)
 					{
@@ -518,7 +518,7 @@ namespace se
 					}
 					break;
 				}
-				case se::graphics::Lines:
+				case PrimitiveType::Lines:
 				{
 					IndexType index = 0;
 					newIndices.resize(_numVertices * 2);
@@ -529,7 +529,7 @@ namespace se
 					}
 					break;
 				}
-				case se::graphics::Points:
+				case PrimitiveType::Points:
 				{
 					newIndices.resize(_numVertices);
 					for (size_t i = 0; i < newIndices.size(); i++)
