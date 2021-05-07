@@ -30,6 +30,19 @@ namespace se
 			}
 		}
 
+		DeepCopyUniquePtr<T, D>& operator=(const DeepCopyUniquePtr<T, D>& other)
+		{
+			if (other)
+			{
+				impl.reset(new T(*other));
+			}
+			else
+			{
+				impl.reset();
+			}
+			return *this;
+		}
+
 		operator bool() const
 		{
 			return bool(impl);
@@ -45,7 +58,17 @@ namespace se
 			return *impl;
 		}
 
-		void reset(T* const ptr)
+		T* get()
+		{
+			return impl.get();
+		}
+
+		const T* get() const
+		{
+			return impl.get();
+		}
+
+		void reset(T* const ptr = nullptr)
 		{
 			impl.reset(ptr);
 		}

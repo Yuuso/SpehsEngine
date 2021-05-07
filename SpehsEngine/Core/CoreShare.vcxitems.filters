@@ -121,6 +121,8 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)BufferUtilityFunctions.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)STLUnorderedSetUtilityFunctions.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)MultiMapUtilityFunctions.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)UniquePtrUtilityFunctions.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)DeepCopyUniquePtrUtilityFunctions.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="File">
