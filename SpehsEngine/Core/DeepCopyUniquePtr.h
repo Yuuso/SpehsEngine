@@ -22,6 +22,11 @@ namespace se
 
 		}
 
+		DeepCopyUniquePtr(DeepCopyUniquePtr<T, D>&& move)
+			: impl(std::move(move.impl))
+		{
+		}
+
 		DeepCopyUniquePtr(const DeepCopyUniquePtr<T, D>& other)
 		{
 			if (other)
@@ -40,6 +45,12 @@ namespace se
 			{
 				impl.reset();
 			}
+			return *this;
+		}
+		
+		DeepCopyUniquePtr<T, D>& operator=(DeepCopyUniquePtr<T, D>&& move)
+		{
+			impl = std::move(move);
 			return *this;
 		}
 
