@@ -65,14 +65,16 @@ namespace se
 		std::shared_ptr<ResourceData> Texture::createResource(const std::string _path, const TextureModes _textureModes)
 		{
 			static bx::DefaultAllocator defaultAllocator;
-			std::ifstream input(_path, std::ios::binary);
+			std::ifstream input(_path, std::ios::binary | std::ios::ate);
 			if (!input.is_open())
 			{
 				log::error("Failed to open texture: " + _path);
 				return nullptr;
 			}
 
-			std::vector<uint8_t> data(std::istreambuf_iterator<char>(input), {});
+			std::vector<char> data(input.tellg());
+			input.seekg(0, std::ios::beg);
+			input.read(data.data(), data.size());
 			if (data.empty())
 			{
 				log::error("Failed to read texture data: " + _path);
