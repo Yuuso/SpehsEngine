@@ -22,12 +22,13 @@ namespace se
 
 			DepthWrite				= (1 << 2),
 			DepthTestLess			= (1 << 3),
-			DepthTestGreater		= (1 << 4),
+			DepthTestLEqual			= (1 << 4),
+			DepthTestGreater		= (1 << 5),
 
-			Blending				= (1 << 5),
+			Blending				= (1 << 6),
 
-			BillboardSpherical		= (1 << 6),
-			BillboardCylindrical	= (1 << 7),
+			BillboardSpherical		= (1 << 7),
+			BillboardCylindrical	= (1 << 8),
 		};
 		constexpr RenderFlagsType defaultRenderFlags = RenderFlag::DepthWrite | RenderFlag::DepthTestLess;
 
@@ -209,6 +210,7 @@ namespace se
 			Circle,
 
 			Cube,
+			Box = Cube,
 			Sphere,
 			Ball = Sphere,
 			// Capsule

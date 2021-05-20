@@ -23,6 +23,8 @@ namespace se
 
 			if (checkBit(_renderInfo.renderFlags, RenderFlag::DepthTestLess))
 				state |= BGFX_STATE_DEPTH_TEST_LESS;
+			if (checkBit(_renderInfo.renderFlags, RenderFlag::DepthTestLEqual))
+				state |= BGFX_STATE_DEPTH_TEST_LEQUAL;
 			if (checkBit(_renderInfo.renderFlags, RenderFlag::DepthTestGreater))
 				state |= BGFX_STATE_DEPTH_TEST_GREATER;
 
