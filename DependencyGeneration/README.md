@@ -41,6 +41,11 @@
     repository: https://github.com/g-truc/glm
     script: TBD
     Math library.
+## KTX-SOFTWARE
+    repository: https://github.com/KhronosGroup/KTX-Software
+    script: TBD
+    Tools for creating ktx textures.
+    Not currently required for building any part of the engine. Only used by asset building scripts to create cubemaps.
 ## OGG
     repository: https://github.com/xiph/vorbis
     script: TBD
