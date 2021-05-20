@@ -36,6 +36,24 @@ namespace se
 
 
 
+		SkyboxMaterial::SkyboxMaterial(DefaultShaderManager& _shaderManager)
+		{
+			setShader(_shaderManager.find("skybox"), ShaderVariant::Default);
+		}
+		void SkyboxMaterial::setTexture(std::shared_ptr<Texture> _texture)
+		{
+			Material::setTexture(_texture, "s_texColor", 0);
+		}
+		std::shared_ptr<Texture> SkyboxMaterial::getTexture() const
+		{
+			return Material::getTexture(0);
+		}
+		void SkyboxMaterial::internalBind()
+		{
+		}
+
+
+
 		TextMaterial::TextMaterial(DefaultShaderManager& _shaderManager)
 		{
 			setShader(_shaderManager.find("text"));

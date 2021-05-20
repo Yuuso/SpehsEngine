@@ -72,6 +72,22 @@ namespace se
 		};
 
 
+		class SkyboxMaterial : public Material
+		{
+		public:
+
+			SkyboxMaterial(DefaultShaderManager& _shaderManager);
+			virtual ~SkyboxMaterial() = default;
+
+			void setTexture(std::shared_ptr<Texture> _texture);
+			std::shared_ptr<Texture> getTexture() const;
+
+		protected:
+
+			virtual void internalBind() override;
+		};
+
+
 		class TextMaterial : public Material
 		{
 		public:

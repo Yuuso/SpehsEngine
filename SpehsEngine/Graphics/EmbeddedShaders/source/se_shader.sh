@@ -26,4 +26,22 @@ vec3 getViewUp()
 #endif
 }
 
+mat3 mtx3FromMtx4(mat4 _mtx)
+{
+#if BGFX_SHADER_LANGUAGE_GLSL
+    return mtxFromCols3(_mtx[0].xyz, _mtx[1].xyz, _mtx[2].xyz);
+#else
+    return mtxFromRows3(_mtx[0].xyz, _mtx[1].xyz, _mtx[2].xyz);
+#endif
+}
+
+mat4 mtx4FromMtx3(mat3 _mtx)
+{
+#if BGFX_SHADER_LANGUAGE_GLSL
+    return mtxFromCols4(vec4(_mtx[0].xyz, 0.0), vec4(_mtx[1].xyz, 0.0), vec4(_mtx[2].xyz, 0.0), vec4(0.0, 0.0, 0.0, 1.0));
+#else
+    return mtxFromRows4(vec4(_mtx[0].xyz, 0.0), vec4(_mtx[1].xyz, 0.0), vec4(_mtx[2].xyz, 0.0), vec4(0.0, 0.0, 0.0, 1.0));
+#endif
+}
+
 #endif // SE_SHADER_HEADER_GUARD

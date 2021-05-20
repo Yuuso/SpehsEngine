@@ -15,6 +15,8 @@
 #include "SpehsEngine/Graphics/EmbeddedShaders/fs_phong.h"
 #include "SpehsEngine/Graphics/EmbeddedShaders/vs_text.h"
 #include "SpehsEngine/Graphics/EmbeddedShaders/fs_text.h"
+#include "SpehsEngine/Graphics/EmbeddedShaders/vs_skybox.h"
+#include "SpehsEngine/Graphics/EmbeddedShaders/fs_cubemap.h"
 
 
 namespace se
@@ -36,6 +38,8 @@ namespace se
 			BGFX_EMBEDDED_SHADER(fs_phong),
 			BGFX_EMBEDDED_SHADER(vs_text),
 			BGFX_EMBEDDED_SHADER(fs_text),
+			BGFX_EMBEDDED_SHADER(vs_skybox),
+			BGFX_EMBEDDED_SHADER(fs_cubemap),
 
 			BGFX_EMBEDDED_SHADER_END()
 		};
@@ -75,6 +79,7 @@ namespace se
 			createDefaultShader("phong_skinned",			"phong_skinned",			"phong");
 			createDefaultShader("phong_skinned_instanced",	"phong_skinned_instanced",	"phong");
 			createDefaultShader("text",						"text",						"text");
+			createDefaultShader("skybox",					"skybox",					"cubemap");
 		}
 	}
 }

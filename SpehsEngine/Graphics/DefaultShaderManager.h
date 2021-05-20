@@ -14,6 +14,7 @@
 	- phong_instanced
 	- phong_skinned
 	- phong_skinned_instanced
+	- skybox
 	- text
 */
 
