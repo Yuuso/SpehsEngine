@@ -149,7 +149,7 @@ namespace se
 		{
 			static EventType getEventTypeStatic() { return EventType::quit; }
 			EventType getEventType() const { return getEventTypeStatic(); }
-			bool operator==(const QuitEvent& other) const { return true; }
+			bool operator==(const QuitEvent& /*other*/) const { return true; }
 		};
 
 		struct FileDropEvent
