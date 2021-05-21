@@ -2,6 +2,7 @@
 #include "boost/bind.hpp"
 #include "boost/signals2.hpp"
 #include "SpehsEngine/Net/Connection.h"
+#include "SpehsEngine/Net/SocketUDP2.h"
 #include <functional>
 #include <unordered_map>
 #include <mutex>
@@ -73,17 +74,11 @@ namespace se
 			const std::string debugName;
 
 		private:
-
-			struct ReceivedPacket
-			{
-				std::vector<uint8_t> data;
-				boost::asio::ip::udp::endpoint senderEndpoint;
-			};
-
+			
 			void run();
-			void receiveHandler(std::vector<uint8_t>& data, const boost::asio::ip::udp::endpoint& senderEndpoint);
+			void receiveHandler(ReceivedPacketSocketUDP2& receivedPacket);
 			void processReceivedPackets();
-			void processReceivedPacket(std::lock_guard<std::recursive_mutex>& lock, const PacketHeader& packetHeader, ReceivedPacket& receivedPacket, ReadBuffer& readBuffer);
+			void processReceivedPacket(std::lock_guard<std::recursive_mutex>& lock, const PacketHeader& packetHeader, const boost::asio::ip::udp::endpoint &senderEndpoint, std::vector<uint8_t>& buffer, const size_t bufferOffset);
 			void deliverOutgoingPackets();
 			ConnectionId generateNewConnectionId();
 			std::shared_ptr<Connection>& addConnectionImpl(const std::shared_ptr<Connection> &connection);
@@ -96,7 +91,7 @@ namespace se
 			bool destructorCalled = false;
 			time::Time lastUpdateTime;
 			std::vector<std::shared_ptr<Connection>> connections;
-			std::vector<ReceivedPacket> receivedPackets;
+			std::vector<ReceivedPacketSocketUDP2> receivedPackets;
 			boost::signals2::signal<void(std::shared_ptr<Connection>&)> incomingConnectionSignal;
 			std::unordered_map<ConnectionId, boost::signals2::scoped_connection> connectionStatusChangedConnections;
 

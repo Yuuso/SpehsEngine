@@ -37,20 +37,18 @@ namespace se
 
 		uint16_t ReliableFragmentPacket::getHeaderSize()
 		{
-			return sizeof(streamOffset) + sizeof(payloadTotalSize) + sizeof(endOfPayload);
+			return sizeof(streamOffset) + sizeof(endOfPayload);
 		}
 
 		void ReliableFragmentPacket::writeHeader(se::WriteBuffer& writeBuffer) const
 		{
 			se_write(writeBuffer, streamOffset);
-			se_write(writeBuffer, payloadTotalSize);
 			se_write(writeBuffer, endOfPayload);
 			// NOTE: remember to update getPacketPayloadHeaderSize()
 		}
 		bool ReliableFragmentPacket::readHeader(se::ReadBuffer& readBuffer)
 		{
 			se_read(readBuffer, streamOffset);
-			se_read(readBuffer, payloadTotalSize);
 			se_read(readBuffer, endOfPayload);
 			return true;
 		}

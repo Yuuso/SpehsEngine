@@ -1,8 +1,10 @@
 #include "stdafx.h"
 #include "SpehsEngine/Core/OS.h"
+
 #if SE_PLATFORM == SE_PLATFORM_WINDOWS
 #include <Windows.h>
 #include <tlhelp32.h>
+#include <ShlObj_core.h>
 #endif
 
 namespace
@@ -154,5 +156,39 @@ namespace se
 		}
 #endif
 		return false;
+	}
+
+	std::wstring getUserDataDirectory()
+	{
+#if SE_PLATFORM == SE_PLATFORM_WINDOWS
+		std::wstring result;
+		DWORD dwFlags = 0;
+		HANDLE hToken = 0;
+		PWSTR ppszPath = NULL;
+		if (SHGetKnownFolderPath(FOLDERID_RoamingAppData, dwFlags, hToken, &ppszPath) == S_OK)
+		{
+			result = std::wstring((const wchar_t* const)ppszPath);
+		}
+		else
+		{
+			log::error("Failed to get user data directory");
+		}
+		CoTaskMemFree(ppszPath);
+
+		for (size_t i = 0; i < result.size(); i++)
+		{
+			if (result[i] == '\\')
+			{
+				result[i] = '/';
+			}
+		}
+
+		// NOTE: according to the documentation, no trailing backslash
+		result += L"/";
+		return result;
+#else
+		static_assert(false && "Create process implementation is missing.");
+		return "";
+#endif		
 	}
 }

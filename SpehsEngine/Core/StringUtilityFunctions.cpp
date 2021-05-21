@@ -2,8 +2,16 @@
 #include "SpehsEngine/Core/StringUtilityFunctions.h"
 
 #include "boost/lexical_cast.hpp"
+#include "boost/locale/utf8_codecvt.hpp"
+#include "boost/locale/conversion.hpp"
+#include "boost/locale.hpp"
 #include "SpehsEngine/Core/StringOperations.h"
+#include <locale>
 
+#if SE_PLATFORM == SE_PLATFORM_WINDOWS
+#include <Windows.h>
+#endif
+#pragma optimize("", off) // nocommit
 
 namespace se
 {
@@ -126,7 +134,7 @@ namespace se
 	std::string toMultiplierPercentageString(const float multiplier, const size_t precision)
 	{
 		se_assert(multiplier >= 0.0f);
-		return toSignedString((multiplier - 1.0f) * 100.0f, precision) + " %";
+		return toSignedString((multiplier - 1.0f) * 100.0f, precision) + "%";
 	}
 
 	template<typename T>
@@ -212,5 +220,40 @@ namespace se
 			c = char(std::toupper(int(c)));
 		}
 		return s;
+	}
+
+	std::wstring toWideString(const std::string& string)
+	{
+		std::wstring wstring;
+
+#if SE_PLATFORM == SE_PLATFORM_WINDOWS
+		if (!string.empty())
+		{
+			const size_t requiredLength = ::MultiByteToWideChar(CP_UTF8, 0, string.c_str(), (int)string.length(), 0, 0);
+			wstring = std::wstring(requiredLength, L'\0');
+			::MultiByteToWideChar(CP_UTF8, 0, string.c_str(), (int)string.length(), &wstring[0], (int)wstring.length());
+		}
+#else
+		static_assert(false, "toWideString() implementation missing");
+#endif
+		return wstring;
+	}
+
+	std::string fromWideString(const std::wstring& wstring)
+	{
+		std::string string;
+#if SE_PLATFORM == SE_PLATFORM_WINDOWS
+		if (!wstring.empty())
+		{
+			LPCCH defaultChar = NULL;
+			LPBOOL usedDefaultChar = NULL;
+			const size_t requiredLength = ::WideCharToMultiByte(CP_UTF8, 0, wstring.c_str(), (int)wstring.length(), 0, 0, defaultChar, usedDefaultChar);
+			string = std::string(requiredLength, '\0');
+			::WideCharToMultiByte(CP_UTF8, 0, wstring.c_str(), (int)wstring.length(), &string[0], (int)string.length(), defaultChar, usedDefaultChar);
+		}
+#else
+		static_assert(false, "toWideString() implementation missing");
+#endif
+		return string;
 	}
 }

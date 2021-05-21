@@ -4,7 +4,6 @@
     <ClInclude Include="DebugLib.h" />
     <ClInclude Include="PrecompiledInclude.h" />
     <ClInclude Include="stdafx.h" />
-    <ClInclude Include="ConnectionProfiler.h" />
     <ClInclude Include="ScopeProfilerVisualizer.h" />
     <ClInclude Include="ConnectionManagerVisualizer.h" />
     <ClInclude Include="FPSHistoryVisualizer.h" />
@@ -12,7 +11,6 @@
   <ItemGroup>
     <ClCompile Include="DebugLib.cpp" />
     <ClCompile Include="stdafx.cpp" />
-    <ClCompile Include="ConnectionProfiler.cpp" />
     <ClCompile Include="ScopeProfilerVisualizer.cpp" />
     <ClCompile Include="ConnectionManagerVisualizer.cpp" />
     <ClCompile Include="FPSHistoryVisualizer.cpp" />

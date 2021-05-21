@@ -90,6 +90,8 @@ namespace se
 			/* Disconnection cannot be immediately applied so it must be queued. Disconnection happens from the connection manager update. */
 			void queueDisconnect();
 
+			void beginPathMaximumSegmentSizeDiscovery();
+
 			Status getStatus() const;
 			inline bool isConnecting() const { return getStatus() == Status::Connecting; }
 			inline bool isConnected() const { return getStatus() == Status::Connected; }
@@ -102,8 +104,8 @@ namespace se
 			time::Time getPing() const;
 			float getAverageReliableFragmentSendCount() const;
 			double getSendQuotaPerSecond() const;
-			uint64_t getReliableSendQuota() const;
-			uint64_t getUnreliableSendQuota() const;
+			double getReliableSendQuota() const;
+			double getUnreliableSendQuota() const;
 			SentBytes getSentBytes() const;
 			ReceivedBytes getReceivedBytes() const;
 			/* Returns true if there are at least minBytes in the unacknowledged send queue. */
@@ -113,6 +115,7 @@ namespace se
 			uint64_t getReliableReceivedBytesInQueue() const;
 			uint64_t getReliableStreamOffsetSend() const;
 			uint64_t getReliableStreamOffsetReceive() const;
+			uint64_t getSocketSendPacketCallCount() const;
 			std::map<uint64_t, uint64_t> getReliableFragmentSendCounters() const;
 			void resetReliableFragmentSendCounters();
 			MutexTimes getAcquireMutexTimes() const;
@@ -125,6 +128,7 @@ namespace se
 			void setTimeoutEnabled(const bool value);
 			bool getTimeoutEnabled() const;
 			void setConnectionSimulationSettings(const ConnectionSimulationSettings& _simulationSettings);
+			ConnectionSimulationSettings getConnectionSimulationSettings() const;
 			void setDebugLogLevel(const int level);
 			int getDebugLogLevel() const;
 
@@ -149,7 +153,7 @@ namespace se
 			{
 				struct UnacknowledgedFragment
 				{
-					UnacknowledgedFragment(const uint64_t _offset, const uint16_t _size) : offset(_offset), size(_size) {}
+					UnacknowledgedFragment(const uint64_t _offset, const uint16_t _size) : offset(_offset), size(_size) { se_assert(_size > 0); }
 					time::Time firstSendTime; // Set when sent the first time. Measurement of ping.
 					time::Time latestSendTime; // Set when sent the last time (unacknowledged packets get resent periodically).
 					uint64_t sendCount = 0u;
@@ -194,46 +198,22 @@ namespace se
 				time::Time createTime;
 			};
 
-			struct ReceivedReliableFragment
+			struct ReceivingReliablePacket
 			{
-				/*
-					Contains some data along with some parts of the actual payload.
-					The payload data can be located using 'payloadIndex' and 'payloadSize'.
-					Optimization to avoid reallocating and copying incoming data multiple times.
-				*/
-				struct PayloadBuffer
-				{
-					std::vector<uint8_t> buffer;
-					size_t payloadIndex = 0u;
-					uint16_t payloadSize = 0u;
-				};
-
-				ReceivedReliableFragment(const uint64_t _streamOffset, const bool _endOfPayload, std::vector<uint8_t>& _buffer, const size_t _payloadIndex, const uint16_t _payloadSize)
-					: streamOffset(_streamOffset)
-					, endOfPayload(_endOfPayload)
-					, payloadTotalSize(uint64_t(_payloadSize))
-				{
-					payloadBuffers.push_back(PayloadBuffer());
-					payloadBuffers.back().buffer.swap(_buffer);
-					payloadBuffers.back().payloadIndex = _payloadIndex;
-					payloadBuffers.back().payloadSize = _payloadSize;
-				}
-
-				std::vector<PayloadBuffer> payloadBuffers;
+				std::vector<uint8_t> payload;
 				uint64_t streamOffset = 0u;
 				bool endOfPayload = false;
-				uint64_t payloadTotalSize = 0u; // Tracks the combined size of all payload buffers
 			};
 
 			struct ReceivedReliablePacket
 			{
-				ReceivedReliablePacket(PacketHeader::PacketType _packetType, std::vector<uint8_t>& _payload)
+				ReceivedReliablePacket(PacketHeader::PacketType _packetType, std::vector<uint8_t>& _payloadWithPacketType)
 					: packetType(_packetType)
 				{
-					std::swap(payload, _payload);
+					std::swap(payloadWithPacketType, _payloadWithPacketType);
 				}
 
-				std::vector<uint8_t> payload;
+				std::vector<uint8_t> payloadWithPacketType;
 				PacketHeader::PacketType packetType = PacketHeader::PacketType::None;
 			};
 
@@ -292,7 +272,6 @@ namespace se
 			void reliableFragmentTransmitted(const uint64_t sendCount, const uint16_t fragmentSize);
 			void increaseSendQuotaPerSecond();
 			void decreaseSendQuotaPerSecond();
-			void beginPathMaximumSegmentSizeDiscovery();
 			void sendNextPathMaximumSegmentSizeDiscoveryPacket();
 
 			mutable std::recursive_mutex mutex;
@@ -306,9 +285,11 @@ namespace se
 			time::Time lastSendTimeReliable;
 			time::Time lastQueueHeartbeatTime;
 			time::Time timeoutCountdown;
+			time::Time lastAdvanceReliableStreamOffsetSendTime;
 			uint64_t reliableStreamOffsetSend = 0u; // bytes from past packets that have been delivered
 			uint64_t reliableStreamOffsetReceive = 0u; // bytes from past packets that have been received
-			std::vector<ReceivedReliableFragment> receivedReliableFragments;
+			uint64_t socketSendPacketCallCount = 0u;
+			std::vector<ReceivingReliablePacket> receivingReliablePackets;
 			std::vector<ReceivedPacket> receivedPackets;
 			std::vector<ReceivedReliablePacket> receivedReliablePackets;
 			std::vector<ReceivedPacket> receivedUnreliablePackets;
@@ -326,13 +307,13 @@ namespace se
 			};
 			std::vector<ReliableFragmentSendCount> recentReliableFragmentSendCounts;
 			std::map<uint64_t, uint64_t> reliableFragmentSendCounters;
-			double sendQuotaPerSecond = 56600.0; // 56 kbps (expected common minimum, according to some shallow research)
-			bool moreSendQuotaRequested = false;
+			double sendQuotaPerSecond = 56600.0;
 			time::Time lastSendQuotaReplenishTimestamp = time::Time::zero;
 			uint16_t maximumSegmentSize = defaultMaximumSegmentSize; // (For outgoing packets only)
 			std::optional<PathMaximumSegmentSizeDiscovery> pathMaximumSegmentSizeDiscovery = std::optional<PathMaximumSegmentSizeDiscovery>(PathMaximumSegmentSizeDiscovery());
-			uint64_t reliableSendQuota = 0u;
-			uint64_t unreliableSendQuota = 0u;
+			double reliableSendQuota = 0.0;
+			double unreliableSendQuota = 0.0;
+			int reliableSendQuotaPerSecondDirectionCounter = 0;
 			float averageReliableFragmentSendCount = 0.0f;
 
 			// RTT

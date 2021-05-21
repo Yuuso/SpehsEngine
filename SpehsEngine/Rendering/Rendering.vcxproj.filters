@@ -120,6 +120,9 @@
     <ClInclude Include="RenderingLib.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="TextureData.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Arrow.cpp">

@@ -27,7 +27,7 @@ namespace se
 			, mutex(new std::recursive_mutex())
 			, thread(std::bind(&ConnectionManager::run, this))
 		{
-			socket->setReceiveHandler(std::bind(&ConnectionManager::receiveHandler, this, std::placeholders::_1, std::placeholders::_2));
+			socket->setReceiveHandler(std::bind(&ConnectionManager::receiveHandler, this, std::placeholders::_1));
 		}
 
 		ConnectionManager::~ConnectionManager()
@@ -154,38 +154,64 @@ namespace se
 		void ConnectionManager::processReceivedPackets()
 		{
 			std::lock_guard<std::recursive_mutex> lock1(*mutex);
-			for (size_t p = 0; p < receivedPackets.size(); p++)
+			for (ReceivedPacketSocketUDP2& receivedPacket : receivedPackets)
 			{
-				ReadBuffer readBuffer(receivedPackets[p].data.data(), receivedPackets[p].data.size());
-				PacketHeader packetHeader;
-				if (packetHeader.read(readBuffer))
+				if (receivedPacket.errorType == ReceivedPacketSocketUDP2::ErrorType::None)
 				{
-					if (packetHeader.protocolId == PacketHeader::spehsProtocolId)
+					ReadBuffer readBuffer(receivedPacket.buffer.data(), receivedPacket.buffer.size());
+					PacketHeader packetHeader;
+					if (packetHeader.read(readBuffer)) // TODO: buffer may be empty, check the connectionRefused bool
 					{
-						processReceivedPacket(lock1, packetHeader, receivedPackets[p], readBuffer);
+						if (packetHeader.protocolId == PacketHeader::spehsProtocolId)
+						{
+							processReceivedPacket(lock1, packetHeader, receivedPacket.senderEndpoint, receivedPacket.buffer, readBuffer.getOffset());
+						}
+						else
+						{
+							DEBUG_LOG(1, "Received packet with unrecognized protocol id from: " + se::net::toString(receivedPacket.senderEndpoint));
+						}
 					}
 					else
 					{
-						DEBUG_LOG(1, "Received packet with unrecognized protocol id from: " + se::net::toString(receivedPackets[p].senderEndpoint));
+						DEBUG_LOG(1, "Received packet with unrecognized packet header format from: " + se::net::toString(receivedPacket.senderEndpoint));
 					}
 				}
 				else
 				{
-					DEBUG_LOG(1, "Received packet with unrecognized packet header format from: " + se::net::toString(receivedPackets[p].senderEndpoint));
+					switch (receivedPacket.errorType)
+					{
+					case ReceivedPacketSocketUDP2::ErrorType::None:
+						break;
+					case ReceivedPacketSocketUDP2::ErrorType::ConnectionRefused:
+						// Disconnect
+						for (const std::shared_ptr<Connection>& connection : connections)
+						{
+							if (connection->getRemoteEndpoint() == receivedPacket.senderEndpoint)
+							{
+								se::LockGuard lock2(connection->mutex);
+								Connection::Status connectionStatus = connection->getStatus();
+								if (connectionStatus == Connection::Status::Connected || connectionStatus == Connection::Status::Disconnecting)
+								{
+									connection->setStatus(Connection::Status::Disconnected, lock1, lock2);
+								}
+							}
+						}
+						break;
+					}
 				}
 			}
 			receivedPackets.clear();
 		}
 
 		void ConnectionManager::processReceivedPacket(std::lock_guard<std::recursive_mutex>& lock1,
-			const PacketHeader& packetHeader, ReceivedPacket& receivedPacket, ReadBuffer& readBuffer)
+			const PacketHeader& packetHeader, const boost::asio::ip::udp::endpoint& senderEndpoint, std::vector<uint8_t>& buffer, const size_t bufferOffset)
 		{
 			se_assert(packetHeader.connectionId);
 			Connection* connectionWithMatchingConnectionId = nullptr;
 			Connection* connectionWithMatchingEndpointAndConnectionIdless = nullptr;
 			for (const std::shared_ptr<Connection>& connection : connections)
 			{
-				if (connection->getRemoteEndpoint() == receivedPacket.senderEndpoint)
+				if (connection->getRemoteEndpoint() == senderEndpoint)
 				{
 					if (connection->remoteConnectionId)
 					{
@@ -217,7 +243,7 @@ namespace se
 				// Existing connection
 				if (!connection->remoteConnectionId || connection->remoteConnectionId == packetHeader.connectionId)
 				{
-					connection->receivePacket(packetHeader, receivedPacket.data, readBuffer.getOffset());
+					connection->receivePacket(packetHeader, buffer, bufferOffset);
 					isNewConnection = false;
 				}
 				else if (se::time::now() - connection->lastReceiveTime < se::time::fromSeconds(5.0f))
@@ -228,7 +254,7 @@ namespace se
 				else
 				{
 					// The old connection died...?
-					DEBUG_LOG(1, "Received packet with mismatching connection id from: " + se::net::toString(receivedPacket.senderEndpoint) + ". Disconnecting the old connection.");
+					DEBUG_LOG(1, "Received packet with mismatching connection id from: " + se::net::toString(senderEndpoint) + ". Disconnecting the old connection.");
 					se::LockGuard lock2(connection->mutex);
 					connection->setStatus(Connection::Status::Disconnected, lock1, lock2);
 				}
@@ -240,13 +266,13 @@ namespace se
 				{
 					// New incoming connection
 					const std::shared_ptr<Connection> newConnection = addConnectionImpl(std::shared_ptr<Connection>(
-						new Connection(socket, mutex, receivedPacket.senderEndpoint, generateNewConnectionId(), packetHeader.connectionId, debugName + ": Incoming connection")));
+						new Connection(socket, mutex, senderEndpoint, generateNewConnectionId(), packetHeader.connectionId, debugName + ": Incoming connection")));
 					DEBUG_LOG(1, "Incoming connection from: " + newConnection->debugEndpoint + " started connecting with connection id: " + std::to_string(packetHeader.connectionId.value));
-					newConnection->receivePacket(packetHeader, receivedPacket.data, readBuffer.getOffset());
+					newConnection->receivePacket(packetHeader, buffer, bufferOffset);
 				}
 				else
 				{
-					DEBUG_LOG(1, "Received packet from untracked endpoint: " + se::net::toString(receivedPacket.senderEndpoint) + ". ConnectionManager is not in accepting state, ignoring.");
+					DEBUG_LOG(1, "Received packet from untracked endpoint: " + se::net::toString(senderEndpoint) + ". ConnectionManager is not in accepting state, ignoring.");
 				}
 			}
 		}
@@ -351,12 +377,11 @@ namespace se
 			return connections;
 		}
 
-		void ConnectionManager::receiveHandler(std::vector<uint8_t>& data, const boost::asio::ip::udp::endpoint& senderEndpoint)
+		void ConnectionManager::receiveHandler(ReceivedPacketSocketUDP2& receivedPacket)
 		{
 			std::lock_guard<std::recursive_mutex> lock1(*mutex);
 			receivedPackets.emplace_back();
-			receivedPackets.back().senderEndpoint = senderEndpoint;
-			receivedPackets.back().data.swap(data);
+			std::swap(receivedPackets.back(), receivedPacket);
 		}
 
 		std::shared_ptr<Connection>& ConnectionManager::addConnectionImpl(const std::shared_ptr<Connection>& connection)

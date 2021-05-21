@@ -17,6 +17,14 @@ namespace se
 	{
 		class IOService;
 
+		struct ReceivedPacketSocketUDP2
+		{
+			enum class ErrorType { None, ConnectionRefused };
+			std::vector<uint8_t> buffer;
+			boost::asio::ip::udp::endpoint senderEndpoint;
+			ErrorType errorType = ErrorType::None;
+		};
+
 		/*
 			Wraps minimal UDP socket usage.
 		*/
@@ -33,12 +41,6 @@ namespace se
 				pushToBuffers(buffers, writeBuffer, writeBuffers...);
 			}
 		public:
-			
-			struct ReceivedPacket
-			{
-				std::vector<uint8_t> buffer;
-				boost::asio::ip::udp::endpoint senderEndpoint;
-			};
 
 			SocketUDP2(IOService& ioService, const std::string& debugName = "SocketUDP2");
 
@@ -52,7 +54,7 @@ namespace se
 			void close();
 			bool bind(const Port port = Port());
 			bool startReceiving();
-			void setReceiveHandler(const std::function<void(std::vector<uint8_t>&, const boost::asio::ip::udp::endpoint&)>& _receiveHandler);
+			void setReceiveHandler(const std::function<void(ReceivedPacketSocketUDP2&)>& _receiveHandler);
 			void sendPacket(const WriteBuffer& buffer, const boost::asio::ip::udp::endpoint& endpoint);
 			void sendPacket(const std::vector<boost::asio::const_buffer>& buffers, const boost::asio::ip::udp::endpoint& endpoint);
 			template<typename ... Buffers>
@@ -85,15 +87,16 @@ namespace se
 			IOService& ioService;
 			boost::asio::ip::udp::endpoint boostSenderEndpoint; // Used to receive the sender endpoint from boost during async receive.
 			boost::asio::ip::udp::socket boostSocket;
-			std::vector<unsigned char> receiveBuffer;
+			std::vector<unsigned char> receiveBuffer1;
+			std::vector<unsigned char> receiveBuffer2;
 			bool receiving = false;
-			std::function<void(std::vector<uint8_t>&, const boost::asio::ip::udp::endpoint&)> receiveHandler;
+			std::function<void(ReceivedPacketSocketUDP2&)> receiveHandler;
 			time::Time lastReceiveTime;
 			time::Time lastSendTime;
 			uint64_t sentBytes = 0;
 			uint64_t receivedBytes = 0;
 			std::recursive_mutex receivedPacketsMutex;
-			std::vector<std::unique_ptr<ReceivedPacket>> receivedPackets;
+			std::vector<std::unique_ptr<ReceivedPacketSocketUDP2>> receivedPackets;
 			int debugLogLevel = 0;
 			std::string debugLocalPort; // Only set when bound to new port, never unset.
 		};

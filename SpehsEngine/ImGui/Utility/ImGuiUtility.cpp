@@ -8,27 +8,39 @@
 #pragma optimize("", off) // nocommit
 namespace ImGui
 {
-	bool renderDirectoryStateRecursive(const se::DirectoryState& directoryState, std::string& filepath)
+	namespace
 	{
-		bool changed = false;
-		ImGui::Button(directoryState.path.c_str());
-		for (const se::DirectoryState& child : directoryState.directories)
+		bool renderDirectoryStateRecursive(const se::DirectoryState& directoryState, std::string& filepath)
 		{
-			changed = renderDirectoryStateRecursive(child, filepath) || changed;
-		}
-		for (const se::DirectoryState::FileState& fileState : directoryState.files)
-		{
-			if (ImGui::Button(fileState.path.c_str()))
+			bool changed = false;
+			if (!directoryState.path.empty())
 			{
-				filepath = fileState.path;
-				changed = true;
+				ImGui::Button(directoryState.path.c_str());
+				ImGui::Indent();
 			}
+			for (const se::DirectoryState& child : directoryState.directories)
+			{
+				changed = renderDirectoryStateRecursive(child, filepath) || changed;
+			}
+			for (const se::DirectoryState::FileState& fileState : directoryState.files)
+			{
+				if (ImGui::Button(fileState.path.c_str()))
+				{
+					filepath = fileState.path;
+					changed = true;
+				}
+			}
+			if (!directoryState.path.empty())
+			{
+				ImGui::Unindent();
+			}
+			return changed;
 		}
-		return changed;
 	}
 
-	bool fileSelector(const std::string_view label, std::string& filepath, const std::string_view directory)
+	bool fileSelector(const char* const label, std::string& filepath, const char* const directoryPtr)
 	{
+		const std::string_view directory(directoryPtr);
 		bool changed = false;
 		ImGui::Button("Browse");
 		const std::string browseContextMenuId = std::string(label) + filepath + std::string(directory);
@@ -58,25 +70,66 @@ namespace ImGui
 		{
 			changed = true;
 		}
+
 		return changed;
 	}
 
-	bool textureSelector(const std::string_view label, std::string& filepath, const std::string_view directory)
+	std::optional<bool> fileDialog(const char* const label, const char* const message, const char* const _directory, std::string& output)
+	{
+		std::optional<bool> result;
+		const ImGuiWindowFlags windowFlags =
+			ImGuiWindowFlags_NoSavedSettings |
+			ImGuiWindowFlags_NoCollapse;
+		ImGui::PushID("se::fileSelector()");
+		if (strlen(message) > 0)
+		{
+			ImGui::Text(message);
+		}
+		if (ImGui::Begin(label, nullptr, windowFlags))
+		{
+			se::DirectoryState directoryState;
+			se::getDirectoryState(directoryState, _directory, se::DirectoryState::Flag::none, 0);
+			if (renderDirectoryStateRecursive(directoryState, output))
+			{
+				std::string_view directory(_directory);
+				if (!directory.empty())
+				{
+					if (directory.back() == '/')
+					{
+						output.insert(output.begin(), directory.begin(), directory.end());
+					}
+					else
+					{
+						output = std::string(directory) + "/" + output;
+					}
+				}
+				result = true;
+			}
+			if (ImGui::Button("Cancel"))
+			{
+				result = false;
+			}
+		}
+		ImGui::PopID();
+		return result;
+	}
+
+	bool textureSelector(const char* const label, std::string& filepath, const char* const directory)
 	{
 		return fileSelector(label, filepath, directory);
 	}
 
-	std::optional<bool> confirmationDialog(const std::string_view header, const std::string_view message)
+	std::optional<bool> confirmationDialog(const char* const header, const char* const message)
 	{
 		std::optional<bool> result;
 
-		ImGui::OpenPopup(header.data());
+		ImGui::OpenPopup(header);
 
 		ImVec2 center(ImGui::GetIO().DisplaySize.x * 0.5f, ImGui::GetIO().DisplaySize.y * 0.5f);
 		ImGui::SetNextWindowPos(center, ImGuiCond_Appearing, ImVec2(0.5f, 0.5f));
-		if (ImGui::BeginPopupModal(header.data(), NULL, ImGuiWindowFlags_AlwaysAutoResize))
+		if (ImGui::BeginPopupModal(header, NULL, ImGuiWindowFlags_AlwaysAutoResize))
 		{
-			ImGui::Text(message.data());
+			ImGui::Text(message);
 			if (ImGui::Button("OK", ImVec2(120, 0)))
 			{
 				result.emplace(true);
@@ -94,19 +147,20 @@ namespace ImGui
 		return result;
 	}
 
-	std::optional<bool> stringDialog(const std::string_view header, const std::string_view message, std::string& output)
+	std::optional<bool> stringDialog(const char* const header, const char* const message, std::string& output)
 	{
 		std::optional<bool> result;
 
-		ImGui::OpenPopup(header.data());
+		ImGui::OpenPopup(header);
 
 		ImVec2 center(ImGui::GetIO().DisplaySize.x * 0.5f, ImGui::GetIO().DisplaySize.y * 0.5f);
 		ImGui::SetNextWindowPos(center, ImGuiCond_Appearing, ImVec2(0.5f, 0.5f));
-		if (ImGui::BeginPopupModal(header.data(), NULL, ImGuiWindowFlags_AlwaysAutoResize))
+		if (ImGui::BeginPopupModal(header, NULL, ImGuiWindowFlags_AlwaysAutoResize))
 		{
-			if (!message.empty())
+			
+			if (!std::string_view(message).empty())
 			{
-				ImGui::Text(message.data());
+				ImGui::Text(message);
 			}
 			/*
 			TODO: finish dialog if the user presses 'enter', below is some previous research on the subject
@@ -147,9 +201,9 @@ namespace ImGui
 		return result;
 	}
 
-	void keyBindButton(const std::string_view label, se::input::Key& key, se::input::EventSignaler& eventSignaler, boost::signals2::scoped_connection& scopedConnection)
+	void keyBindButton(const char* const label, se::input::Key& key, se::input::EventSignaler& eventSignaler, boost::signals2::scoped_connection& scopedConnection)
 	{
-		ImGui::Text(label.data());
+		ImGui::Text(label);
 		ImGui::SameLine();
 		if (ImGui::Button(scopedConnection.connected() ? "press any key" : se::input::toString(key)))
 		{
@@ -165,5 +219,23 @@ namespace ImGui
 					return true;
 				}, INT_MAX);
 		}
+	}
+
+	std::string getImGuiFormatString(const std::string_view string)
+	{
+		std::string imGuiFormatString = std::string(string);
+
+		// NOTE: because imgui only accepts format strings in tooltips, we have to replace each "%" with "%%"
+		for (std::string::iterator it = imGuiFormatString.begin(); it != imGuiFormatString.end(); it++)
+		{
+			if (*it == '%')
+			{
+				std::string::iterator nextIt = it;
+				nextIt++;
+				it = imGuiFormatString.insert(nextIt, '%');
+			}
+		}
+
+		return imGuiFormatString;
 	}
 }

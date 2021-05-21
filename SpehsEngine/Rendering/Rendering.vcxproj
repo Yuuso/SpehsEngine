@@ -157,6 +157,7 @@
     <ClInclude Include="Skybox.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="Text.h" />
+    <ClInclude Include="TextureData.h" />
     <ClInclude Include="TextureManager.h" />
     <ClInclude Include="Vertex3D.h" />
     <ClInclude Include="Window.h" />

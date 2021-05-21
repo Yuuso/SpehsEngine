@@ -33,62 +33,40 @@ namespace se
 			: debugName(_debugName)
 			, ioService(_ioService)
 			, boostSocket(_ioService.getImplementationRef())
-			, receiveBuffer(65536)
+			, receiveBuffer1(65536)
+			, receiveBuffer2(65536)
 		{
 
 		}
 
 		void SocketUDP2::update()
 		{
-			// Set a limit to the number of packets processed during this update -> avoid staying in an infinite loop
-			size_t numberOfPacketsToProcess = 0u;
-			{
-				std::lock_guard<std::recursive_mutex> lock1(mutex);
-				std::lock_guard<std::recursive_mutex> lock2(receivedPacketsMutex);
-				numberOfPacketsToProcess = receivedPackets.size();
-				if (getDebugLogLevel() >= 1 && numberOfPacketsToProcess > 1000)
-				{
-					se::log::warning("SocketUDP2: processing " + std::to_string(numberOfPacketsToProcess) + " packets in a single update.");
-				}
-			}
-
 			/*
-				Receive handler calls are made outside the mutex protection:
+				Copy all currently received packets into local non-mutex protected memory.
 					-receiveHandler may change in-between packet processing
 					-new packets may arrive during processing
 			*/
-			size_t packetIndex = 0u;
-			std::vector<uint8_t> data;
-			boost::asio::ip::udp::endpoint senderEndpoint;
-			std::function<void(std::vector<uint8_t>&, const boost::asio::ip::udp::endpoint&)> handler;
-			while (true)
+			std::vector<std::unique_ptr<ReceivedPacketSocketUDP2>> receivedPacketsToProcess;
 			{
-				if (packetIndex < numberOfPacketsToProcess)
-				{
-					//Copy contents to non-mutex protected memory
-					std::lock_guard<std::recursive_mutex> lock1(mutex);
-					std::lock_guard<std::recursive_mutex> lock2(receivedPacketsMutex);
-					data.swap(receivedPackets[packetIndex]->buffer);
-					senderEndpoint = receivedPackets[packetIndex]->senderEndpoint;
-					handler = receiveHandler;
-					packetIndex++;
-				}
-				else
-				{
-					break;
-				}
-				handler(data, senderEndpoint);
+				std::lock_guard<std::recursive_mutex> lock1(mutex);
+				std::lock_guard<std::recursive_mutex> lock2(receivedPacketsMutex);
+				receivedPacketsToProcess.swap(receivedPackets);
+			}
+			if (getDebugLogLevel() >= 1 && receivedPacketsToProcess.size() > 1000)
+			{
+				se::log::warning("SocketUDP2: processing " + std::to_string(receivedPacketsToProcess.size()) + " packets in a single update.");
 			}
 
-			std::lock_guard<std::recursive_mutex> lock1(mutex);
-			std::lock_guard<std::recursive_mutex> lock2(receivedPacketsMutex);
-			if (receivedPackets.size() == numberOfPacketsToProcess)
+			size_t packetIndex = 0u;
+			std::function<void(ReceivedPacketSocketUDP2&)> handler;
+			while (packetIndex < receivedPacketsToProcess.size())
 			{
-				receivedPackets.clear();
-			}
-			else
-			{
-				receivedPackets.erase(receivedPackets.begin(), receivedPackets.begin() + numberOfPacketsToProcess);
+				// Update handler
+				{
+					std::lock_guard<std::recursive_mutex> lock1(mutex);
+					handler = receiveHandler;
+				}
+				handler(*receivedPacketsToProcess[packetIndex++]);
 			}
 		}
 
@@ -215,7 +193,7 @@ namespace se
 			}
 		}
 
-		void SocketUDP2::setReceiveHandler(const std::function<void(std::vector<uint8_t>&, const boost::asio::ip::udp::endpoint&)>& _receiveHandler)
+		void SocketUDP2::setReceiveHandler(const std::function<void(ReceivedPacketSocketUDP2&)>& _receiveHandler)
 		{
 			std::lock_guard<std::recursive_mutex> lock1(mutex);
 			receiveHandler = _receiveHandler;
@@ -229,7 +207,7 @@ namespace se
 			{
 				receiving = true;
 				boostSenderEndpoint = boost::asio::ip::udp::endpoint();
-				boostSocket.async_receive_from(boost::asio::buffer(receiveBuffer), boostSenderEndpoint,
+				boostSocket.async_receive_from(boost::asio::buffer(receiveBuffer1), boostSenderEndpoint,
 					boost::bind(&SocketUDP2::boostReceiveHandler, shared_from_this(),
 						boost::asio::placeholders::error,
 						boost::asio::placeholders::bytes_transferred));
@@ -246,21 +224,27 @@ namespace se
 		void SocketUDP2::boostReceiveHandler(const boost::system::error_code& error, const std::size_t bytes)
 		{
 			std::lock_guard<std::recursive_mutex> lock1(mutex);
+			se_assert(receiving);
+			receiving = false;
 
-			DEBUG_LOG(2, "received " + std::to_string(bytes) + " bytes from: " + boostSenderEndpoint.address().to_string() + ":" + std::to_string(boostSenderEndpoint.port()));
+			// Swap the receive buffers and start receiving asap
+			boost::asio::ip::udp::endpoint boostSenderEndpoint2 = boostSenderEndpoint;
+			receiveBuffer1.swap(receiveBuffer2);
+			startReceiving();
+
+			DEBUG_LOG(2, "received " + std::to_string(bytes) + " bytes from: " + boostSenderEndpoint2.address().to_string() + ":" + std::to_string(boostSenderEndpoint2.port()));
 			if (bytes > 0 && debugLogLevel >= 3)
 			{
 				for (size_t i = 0; i < bytes; i++)
 				{
-					log::info("    [" + std::to_string(i) + "] " + toHexString(receiveBuffer[i]));
+					log::info("    [" + std::to_string(i) + "] " + toHexString(receiveBuffer2[i]));
 				}
 			}
 
-			se_assert(receiving);
-			receiving = false;
 			lastReceiveTime = time::now();
 			receivedBytes += bytes;
 
+			ReceivedPacketSocketUDP2::ErrorType errorType = ReceivedPacketSocketUDP2::ErrorType::None;
 			if (error)
 			{
 				if (error == boost::asio::error::operation_aborted)
@@ -270,6 +254,7 @@ namespace se
 				else if (error == boost::asio::error::connection_refused)
 				{
 					DEBUG_LOG(1, "error while receiving: connection_refused. Did you choose the wrong port? " + error.message());
+					errorType = ReceivedPacketSocketUDP2::ErrorType::ConnectionRefused;
 				}
 				else if (error == boost::asio::error::eof)
 				{
@@ -289,16 +274,15 @@ namespace se
 				}
 			}
 
-			if (bytes > 0)
+			if (bytes > 0 || errorType != ReceivedPacketSocketUDP2::ErrorType::None)
 			{
 				std::lock_guard<std::recursive_mutex> lock2(receivedPacketsMutex);
-				receivedPackets.push_back(std::make_unique<ReceivedPacket>());
-				receivedPackets.back()->senderEndpoint = boostSenderEndpoint;
+				receivedPackets.push_back(std::make_unique<ReceivedPacketSocketUDP2>());
+				receivedPackets.back()->senderEndpoint = boostSenderEndpoint2;
 				receivedPackets.back()->buffer.resize(bytes);
-				memcpy(receivedPackets.back()->buffer.data(), receiveBuffer.data(), bytes);
+				receivedPackets.back()->errorType = errorType;
+				memcpy(receivedPackets.back()->buffer.data(), receiveBuffer2.data(), bytes);
 			}
-
-			startReceiving();
 		}
 
 		boost::asio::ip::udp::endpoint SocketUDP2::resolveRemoteEndpoint(const Endpoint& remoteEndpoint) const

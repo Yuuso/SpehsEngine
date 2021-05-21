@@ -22,12 +22,36 @@ namespace se
 
 		}
 
+		DeepCopyUniquePtr(DeepCopyUniquePtr<T, D>&& move)
+			: impl(std::move(move.impl))
+		{
+		}
+
 		DeepCopyUniquePtr(const DeepCopyUniquePtr<T, D>& other)
 		{
 			if (other)
 			{
 				impl.reset(new T(*other));
 			}
+		}
+
+		DeepCopyUniquePtr<T, D>& operator=(const DeepCopyUniquePtr<T, D>& other)
+		{
+			if (other)
+			{
+				impl.reset(new T(*other));
+			}
+			else
+			{
+				impl.reset();
+			}
+			return *this;
+		}
+		
+		DeepCopyUniquePtr<T, D>& operator=(DeepCopyUniquePtr<T, D>&& move)
+		{
+			impl = std::move(move);
+			return *this;
 		}
 
 		operator bool() const
@@ -45,7 +69,17 @@ namespace se
 			return *impl;
 		}
 
-		void reset(T* const ptr)
+		T* get()
+		{
+			return impl.get();
+		}
+
+		const T* get() const
+		{
+			return impl.get();
+		}
+
+		void reset(T* const ptr = nullptr)
 		{
 			impl.reset(ptr);
 		}

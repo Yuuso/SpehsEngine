@@ -9,5 +9,6 @@ namespace se
 		bool isCtrlDown();
 		bool isShiftDown();
 		bool isAltDown(); // or AltGr
+		int getScancode(const Key key);
 	}
 }

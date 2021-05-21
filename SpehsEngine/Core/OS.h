@@ -1,6 +1,7 @@
 #pragma once
+
 #include <string>
-#include <vector>
+
 
 namespace se
 {
@@ -15,4 +16,7 @@ namespace se
 
 	/* Calls function for each running process name. */
 	bool forEachProcessName(const std::function<void(const std::string_view& processName)>& callback);
+
+	/* Get the appdata directory for the current user. Contains a trailing backslash. */
+	std::wstring getUserDataDirectory();
 }
