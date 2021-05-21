@@ -63,6 +63,39 @@ namespace se
 		{
 		}
 
+#if defined(RUNTIME_SHADER_CACHE)
+		uint32_t RendererCallbackHandler::cacheReadSize(uint64_t _id)
+		{
+			auto it = cache.find(_id);
+			if (it != cache.end())
+				return static_cast<uint32_t>(it->second.size());
+			return 0u;
+		}
+		bool RendererCallbackHandler::cacheRead(uint64_t _id, void* _data, uint32_t _size)
+		{
+			auto it = cache.find(_id);
+			if (it == cache.end())
+				return false;
+			const errno_t result = memcpy_s(_data, _size, it->second.data(), std::min((size_t)_size, it->second.size()));
+			return result == 0;
+		}
+		void RendererCallbackHandler::cacheWrite(uint64_t _id, const void* _data, uint32_t _size)
+		{
+			std::vector<uint8_t>& cacheData = cache[_id];
+
+			cacheData.resize(_size);
+			if (cacheData.size() < _size)
+			{
+				cache.erase(_id);
+				log::warning("Unable to reserve shader cache data!");
+				return;
+			}
+
+			const errno_t result = memcpy_s(&cacheData[0], cacheData.size(), _data, _size);
+			if (result != 0)
+				log::warning("Failed to write shader cache data!");
+		}
+#else
 		static const std::string cacheDir = "cache";
 		uint32_t RendererCallbackHandler::cacheReadSize(uint64_t _id)
 		{
@@ -79,9 +112,17 @@ namespace se
 		void RendererCallbackHandler::cacheWrite(uint64_t _id, const void* _data, uint32_t _size)
 		{
 			const std::string filePath = cacheDir + "/" + std::to_string(_id);
-			if (verifyDirectory(cacheDir))
-				writeFile(filePath, reinterpret_cast<const uint8_t*>(_data), _size);
+			if (!verifyDirectory(cacheDir))
+			{
+				log::warning("Failed to verify shader cache directory!");
+				return;
+			}
+
+			const bool result = writeFile(filePath, reinterpret_cast<const uint8_t*>(_data), _size);
+			if (!result)
+				log::warning("Failed to write shader cache to file!");
 		}
+#endif
 
 		void RendererCallbackHandler::screenShot(const char* _filePath, uint32_t _width, uint32_t _height, uint32_t _pitch, const void* _data, uint32_t _size, bool _yflip)
 		{
