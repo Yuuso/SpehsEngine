@@ -338,7 +338,7 @@ namespace ImGui
 				changed = true;
 			}
 			ImGui::PopID();
-			if (!label)
+			if (label)
 			{
 				ImGui::Unindent();
 			}
