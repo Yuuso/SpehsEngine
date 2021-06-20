@@ -203,6 +203,7 @@ namespace ImGui
 
 	void keyBindButton(const char* const label, se::input::Key& key, se::input::EventSignaler& eventSignaler, boost::signals2::scoped_connection& scopedConnection)
 	{
+		ImGui::PushID(&scopedConnection);
 		ImGui::Text(label);
 		ImGui::SameLine();
 		if (ImGui::Button(scopedConnection.connected() ? "press any key" : se::input::toString(key)))
@@ -219,6 +220,7 @@ namespace ImGui
 					return true;
 				}, INT_MAX);
 		}
+		ImGui::PopID();
 	}
 
 	std::string getImGuiFormatString(const std::string_view string)
