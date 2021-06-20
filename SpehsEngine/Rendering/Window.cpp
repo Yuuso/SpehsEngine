@@ -66,7 +66,7 @@ namespace se
 			{
 				//Initial settings
 				setFullscreen(false);
-				setBorderless(true);
+				setBordered(true);
 
 				//Initialize managers
 				textureManager = new TextureManager(*this);
@@ -166,7 +166,7 @@ namespace se
 			SDL_SetWindowFullscreen(sdlWindow, (SDL_bool)enabled);
 		}
 
-		void Window::setBorderless(const bool enabled)
+		void Window::setBordered(const bool enabled)
 		{
 			SDL_SetWindowBordered(sdlWindow, (SDL_bool)enabled);
 		}
@@ -198,6 +198,11 @@ namespace se
 		bool Window::getInputGrab() const
 		{
 			return SDL_GetWindowGrab(sdlWindow) == SDL_TRUE;
+		}
+
+		int Window::getDisplayIndex() const
+		{
+			return SDL_GetWindowDisplayIndex(sdlWindow);
 		}
 
 		bool Window::isValid() const
