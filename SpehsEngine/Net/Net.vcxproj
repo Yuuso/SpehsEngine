@@ -96,15 +96,14 @@
     </ClCompile>
     <Lib />
     <Lib>
-      <AdditionalDependencies>SpehsCore.lib;</AdditionalDependencies>
+      <AdditionalDependencies>SpehsCore.lib;libprotobuf.lib;libcrypto.lib;GameNetworkingSockets_s.lib;libcrypto_static.lib</AdditionalDependencies>
     </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
     </ClCompile>
     <Lib>
-      <AdditionalDependencies>SpehsCore.lib;</AdditionalDependencies>
-      <AdditionalLibraryDirectories>$(SPEHSENGINE_ROOT)/Dependencies/lib/;$(SolutionDir)/Dependencies/lib/;$(SPEHSENGINE_ROOT)/bin/$(Platform)/$(Configuration)/$(PlatformToolset)/</AdditionalLibraryDirectories>
+      <AdditionalDependencies>SpehsCore.lib;libprotobuf.lib;libcrypto.lib;GameNetworkingSockets_s.lib;libcrypto_static.lib</AdditionalDependencies>
     </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -116,7 +115,7 @@
     </Link>
     <Lib />
     <Lib>
-      <AdditionalDependencies>SpehsCore.lib;</AdditionalDependencies>
+      <AdditionalDependencies>SpehsCore.lib;libprotobuf.lib;libcrypto.lib;GameNetworkingSockets_s.lib;libcrypto_static.lib</AdditionalDependencies>
     </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -125,8 +124,7 @@
     <Link>
     </Link>
     <Lib>
-      <AdditionalDependencies>SpehsCore.lib;</AdditionalDependencies>
-      <AdditionalLibraryDirectories>$(SPEHSENGINE_ROOT)/Dependencies/lib/;$(SolutionDir)/Dependencies/lib/;$(SPEHSENGINE_ROOT)/bin/$(Platform)/$(Configuration)/$(PlatformToolset)/</AdditionalLibraryDirectories>
+      <AdditionalDependencies>SpehsCore.lib;libprotobuf.lib;libcrypto.lib;GameNetworkingSockets_s.lib;libcrypto_static.lib</AdditionalDependencies>
     </Lib>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
