@@ -46,8 +46,10 @@ namespace se
 		se::net::Endpoint fromSteamNetworkingAddress(const SteamNetworkingIPAddr& steamNetworkingAddress)
 		{
 			se::net::Endpoint endpoint;
-			endpoint.address.value.resize(16);
+			endpoint.address.value.resize(64);
 			steamNetworkingAddress.ToString(endpoint.address.value.data(), endpoint.address.value.size(), false);
+			const size_t length = strlen(endpoint.address.value.data());
+			endpoint.address.value.resize(length);
 			endpoint.port = steamNetworkingAddress.m_port;
 			return endpoint;
 		}
