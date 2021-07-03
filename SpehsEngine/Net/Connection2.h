@@ -34,8 +34,21 @@ namespace se
 			{
 				Connecting,
 				Connected,
-				Disconnecting,
 				Disconnected
+			};
+
+			struct DetailedStatus // TODO renamings...
+			{
+				time::Time ping;
+				size_t reliableBytesInSendQueue = 0;
+				size_t unreliableBytesInSendQueue = 0;
+				size_t sentUnackedReliableBytes = 0;
+			};
+
+			struct Settings
+			{
+				size_t sendBufferSize = 524288;
+				time::Time timeout = time::fromSeconds(10.0f);
 			};
 
 			struct Statistics
@@ -46,6 +59,12 @@ namespace se
 				int64_t sentPacketsReliable = 0;
 				int64_t sentPacketsUnreliable = 0;
 				int64_t sentPacketsTotal = 0;
+				uint64_t receivedBytesReliable = 0;
+				uint64_t receivedBytesUnreliable = 0;
+				uint64_t receivedBytesTotal = 0;
+				uint64_t receivedPacketsReliable = 0;
+				uint64_t receivedPacketsUnreliable = 0;
+				uint64_t receivedPacketsTotal = 0;
 			};
 
 			~Connection2();
@@ -56,10 +75,9 @@ namespace se
 
 			void disconnect(const std::string& reason = "");
 
-			void setReceiveHandler(const std::function<void(ReadBuffer&, const bool)>& _receiveHandler)
-			{
-				receiveHandler = _receiveHandler;
-			}
+			void setSettings(const Settings& _settings);
+			void setReceiveHandler(const std::function<void(ReadBuffer&, const bool)>& _receiveHandler = std::function<void(ReadBuffer&, const bool)>()) { receiveHandler = _receiveHandler; }
+			void setEnableAssertOnSendFail(const bool enable) { enableAssertOnSendFail = enable; }
 
 			void connectToStatusChangedSignal(boost::signals2::scoped_connection& scopedConnection, const std::function<void(const Status oldStatus, const Status newStatus)>& callback)
 			{
@@ -67,14 +85,18 @@ namespace se
 			}
 
 			Status getStatus() const { return status; }
+			DetailedStatus getDetailedStatus() const;
+			const Settings& getSettings() const { return settings; }
 			const Statistics& getStatistics() const { return statistics; }
 			inline bool isConnecting() const { return getStatus() == Status::Connecting; }
 			inline bool isConnected() const { return getStatus() == Status::Connected; }
-			inline bool isDisconnecting() const { return getStatus() == Status::Disconnecting; }
 			inline bool isDisconnected() const { return getStatus() == Status::Disconnected; }
+			time::Time getPing() const;
+			uint16_t getMaximumSegmentSize() const;
 
-			const EstablishmentType establishmentType;
+			const std::string name;
 			const ConnectionId connectionId;
+			const EstablishmentType establishmentType;
 			const se::net::Endpoint remoteEndpoint;
 
 		private:
@@ -85,24 +107,42 @@ namespace se
 				bool reliable = false;
 			};
 
+			struct ConstructorParameters
+			{
+				ISteamNetworkingSockets* steamNetworkingSockets = nullptr;
+				std::string name;
+				se::net::Endpoint remoteEndpoint;
+				HSteamNetConnection steamNetConnection;
+				HSteamListenSocket steamListenSocket; // Connection may be bound to a listening socket
+				EstablishmentType establishmentType = EstablishmentType::Incoming;
+			};
+
+			static void closeConnectionImpl(const HSteamNetConnection _steamNetConnection, const std::string& reason, const bool enableLinger);
+
 			void steamNetConnectionStatusChangedCallback(SteamNetConnectionStatusChangedCallback_t& info);
 
 			friend class ConnectionManager2;
 
-			Connection2(ISteamNetworkingSockets& _steamNetworkingSockets, const ConnectionId _connectionId, const se::net::Endpoint& _remoteEndpoint,
-				const HSteamNetConnection _steamNetConnection, const EstablishmentType _establishmentType);
+			Connection2(const ConstructorParameters& constructorParameters);
 
 			void disconnectImpl(const std::string& reason, const bool enableLinger);
 			void setStatus(const Status _status);
+			void setSettingsImpl(const Settings& _settings, const bool forceUpdate);
 			void receivePacket(const void* data, const size_t size, const bool reliable);
 
 			ISteamNetworkingSockets& steamNetworkingSockets;
-			HSteamNetConnection steamNetConnection;
+			HSteamNetConnection steamNetConnection = k_HSteamNetConnection_Invalid;
+			HSteamNetConnection closedSteamNetConnection = k_HSteamNetConnection_Invalid;
+			HSteamNetConnection localRemoteSteamNetConnection = k_HSteamNetConnection_Invalid;
+			const HSteamListenSocket steamListenSocket;
+			std::shared_ptr<bool> localConnectionLifeline;
 			Status status = Status::Connecting; // Every connection begins in the connecting state
+			Settings settings;
 			Statistics statistics;
 			std::vector<ReceivedPacket> receivedPackets;
 			std::function<void(ReadBuffer&, const bool)> receiveHandler;
 			boost::signals2::signal<void(const Status, const Status)> statusChangedSignal;
+			bool enableAssertOnSendFail = true;
 		};
 	}
 }

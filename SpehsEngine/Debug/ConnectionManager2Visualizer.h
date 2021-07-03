@@ -1,0 +1,54 @@
+#pragma once
+
+#include "boost/signals2/connection.hpp"
+#include "SpehsEngine/Core/StaticRingBuffer.h"
+#include "SpehsEngine/Net/ConnectionPackets.h"
+
+namespace se
+{
+	namespace net
+	{
+		class ConnectionManager2;
+	}
+	namespace imgui
+	{
+		class BackendWrapper;
+	}
+}
+
+
+namespace se
+{
+	namespace debug
+	{
+		class ConnectionManager2Visualizer
+		{
+		public:
+
+			ConnectionManager2Visualizer(net::ConnectionManager2& connectionManager2, imgui::BackendWrapper& imGuiBackendWrapper, const bool enabled);
+
+			void setEnabled(const bool enabled);
+			bool getEnabled() const { return preRenderConnection.connected(); }
+
+		private:
+
+			struct ConnectionState
+			{
+				std::pair<se::time::Time, uint64_t> prevReliableBytesSent;
+				std::pair<se::time::Time, uint64_t> prevReliableBytesReceived;
+				se::time::Time prevSendQuotaPerSecondTime;
+				StaticRingBuffer<float, 64> reliableBytesSentHistory;
+				StaticRingBuffer<float, 64> reliableBytesReceivedHistory;
+				StaticRingBuffer<float, 64> sendQuotaPerSecondHistory;
+			};
+
+			void render();
+
+			net::ConnectionManager2& connectionManager2;
+			imgui::BackendWrapper& imGuiBackendWrapper;
+
+			std::unordered_map<se::net::ConnectionId, ConnectionState> connectionStates;
+			boost::signals2::scoped_connection preRenderConnection;
+		};
+	}
+}

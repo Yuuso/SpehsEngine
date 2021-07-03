@@ -18,13 +18,19 @@ namespace se
 	class ReadBuffer;
 	namespace net
 	{
-		class ConnectionManager;
+		class ConnectionManager2;
 		class IOService;
 
 		struct ConnectionSimulationSettings
 		{
 			float chanceToDropIncoming = 0.0f;
 			float chanceToDropOutgoing = 0.0f;
+			float chanceToReorderIncoming = 0.0f;
+			float chanceToReorderOutgoing = 0.0f;
+			time::Time delayIncoming;
+			time::Time delayOutgoing;
+
+			// TO BE REMOVED
 			float chanceToReorderReceivedPacket = 0.0f;
 			uint16_t maximumSegmentSizeIncoming = std::numeric_limits<uint16_t>::max();
 			uint16_t maximumSegmentSizeOutgoing = std::numeric_limits<uint16_t>::max();
