@@ -4,7 +4,6 @@
 #include <fstream>
 #include "SpehsEngine/Core/File/FileSystem.h"
 
-#pragma optimize("", off) // nocommit
 namespace se
 {
 	bool readFile(File& _file)
