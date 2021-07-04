@@ -41,6 +41,10 @@
     repository: https://github.com/g-truc/glm
     script: TBD
     Math library.
+## DEAR-IMGUI
+    repository: https://github.com/ocornut/imgui
+    script: TBD, NOTE: Some files may be modified!
+    GUI library
 ## KTX-SOFTWARE
     repository: https://github.com/KhronosGroup/KTX-Software
     script: TBD
@@ -70,6 +74,8 @@
 ## BCM2835
     ?
 ## IRRXML
+    ?
+## STEAM / GAME-NETWORKING-SOCKETS
     ?
     
 ## GLEW

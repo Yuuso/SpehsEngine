@@ -1,6 +1,9 @@
 #pragma once
 
+#include "boost/signals2.hpp"
 #include "boost/signals2/connection.hpp"
+#include "SpehsEngine/ImGui/ImGuiTypes.h"
+#include <optional>
 
 namespace se
 {
@@ -8,23 +11,25 @@ namespace se
 	{
 		class EventSignaler;
 	}
-
-	namespace rendering
+	namespace graphics
 	{
-		class Window;
+		class Renderer;
 	}
 }
+struct ImFont;
 
 
 namespace se
 {
 	namespace imgui
 	{
+		ImFont* getFont(const ImGuiFont _font);
+
 		class BackendWrapper
 		{
 		public:
 
-			BackendWrapper(rendering::Window& window, input::EventSignaler& eventSignaler, const int inputPriority);
+			BackendWrapper(input::EventSignaler& eventSignaler, const int inputPriority, graphics::Renderer& _renderer);
 			~BackendWrapper();
 
 			void render();
@@ -32,14 +37,12 @@ namespace se
 			void setInputPriority(const int inputPriority);
 			int getInputPriority() const { return inputPriority; }
 
-			void setFont(const std::string_view filepath, const float fontSize);
-
 			void connectToPreRenderSignal(boost::signals2::scoped_connection& scopedConnection, const std::function<void()>& callback) { scopedConnection = preRenderSignal.connect(callback); }
 
 		private:
 
-			rendering::Window& window;
 			input::EventSignaler& eventSignaler;
+			graphics::Renderer& renderer;
 
 			int inputPriority = 0;
 			bool mousePressedStates[3] = { false, false, false };
