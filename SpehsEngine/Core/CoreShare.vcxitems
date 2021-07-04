@@ -121,6 +121,7 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)UniquePtrUtilityFunctions.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Vertex.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)WatchedValue.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)WeightedRandomizer.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)WriteBuffer.h" />
   </ItemGroup>
   <ItemGroup>

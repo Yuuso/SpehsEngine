@@ -29,7 +29,7 @@ namespace se
 			void setMinSize(const int minPixelWidth, const int minPixelHeight);
 			void setMaxSize(const int maxPixelWidth, const int maxPixelHeight);
 			void setFullscreen(const bool enabled);
-			void setBorderless(const bool enabled);
+			void setBordered(const bool enabled);
 			void setInputGrab(const bool enabled);
 			void setMousePosition(const glm::ivec2& position);
 
@@ -39,6 +39,7 @@ namespace se
 			FontManager* getFontManager();
 			const FontManager* getFontManager() const;
 			bool getInputGrab() const;
+			int getDisplayIndex() const;
 			SDL_Window* getSDLWindow() const { return sdlWindow; }
 			GLContext* getGLContext() const { return glContext; }
 

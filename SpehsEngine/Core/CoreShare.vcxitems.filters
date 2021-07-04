@@ -123,6 +123,7 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)MultiMapUtilityFunctions.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)UniquePtrUtilityFunctions.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)DeepCopyUniquePtrUtilityFunctions.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)WeightedRandomizer.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="File">

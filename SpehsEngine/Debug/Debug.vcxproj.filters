@@ -7,6 +7,7 @@
     <ClInclude Include="ScopeProfilerVisualizer.h" />
     <ClInclude Include="ConnectionManagerVisualizer.h" />
     <ClInclude Include="FPSHistoryVisualizer.h" />
+    <ClInclude Include="ConnectionManager2Visualizer.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="DebugLib.cpp" />
@@ -14,5 +15,6 @@
     <ClCompile Include="ScopeProfilerVisualizer.cpp" />
     <ClCompile Include="ConnectionManagerVisualizer.cpp" />
     <ClCompile Include="FPSHistoryVisualizer.cpp" />
+    <ClCompile Include="ConnectionManager2Visualizer.cpp" />
   </ItemGroup>
 </Project>

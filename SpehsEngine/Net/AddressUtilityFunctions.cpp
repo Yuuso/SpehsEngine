@@ -33,5 +33,25 @@ namespace se
 			}
 			return Address();
 		}
+
+		SteamNetworkingIPAddr toSteamNetworkingAddress(const se::net::Endpoint& endpoint)
+		{
+			SteamNetworkingIPAddr steamNetworkingAddress;
+			steamNetworkingAddress.Clear();
+			steamNetworkingAddress.ParseString(endpoint.address.value.c_str());
+			steamNetworkingAddress.SetIPv4(steamNetworkingAddress.GetIPv4(), endpoint.port);
+			return steamNetworkingAddress;
+		}
+
+		se::net::Endpoint fromSteamNetworkingAddress(const SteamNetworkingIPAddr& steamNetworkingAddress)
+		{
+			se::net::Endpoint endpoint;
+			endpoint.address.value.resize(64);
+			steamNetworkingAddress.ToString(endpoint.address.value.data(), endpoint.address.value.size(), false);
+			const size_t length = strlen(endpoint.address.value.data());
+			endpoint.address.value.resize(length);
+			endpoint.port = steamNetworkingAddress.m_port;
+			return endpoint;
+		}
 	}
 }
