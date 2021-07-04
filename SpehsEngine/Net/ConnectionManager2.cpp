@@ -91,25 +91,34 @@ namespace se
 					callbackConnectionManager = nullptr;
 				}
 
-				if (steamNetPollGroup != k_HSteamNetPollGroup_Invalid)
+				const time::Time beginTime = time::now();
+				const time::Time maxTime = time::fromSeconds(1.0f / 120.0f);
+				while (steamNetPollGroup != k_HSteamNetPollGroup_Invalid && (time::now() - beginTime <= maxTime))
 				{
-					ISteamNetworkingMessage* steamNetworkingMessage = nullptr;
-					int messageCount = steamNetworkingSockets->ReceiveMessagesOnPollGroup(steamNetPollGroup, &steamNetworkingMessage, 1);
-					if (messageCount < 0)
+					ISteamNetworkingMessage* steamNetworkingMessages[16];
+					int messageCount = steamNetworkingSockets->ReceiveMessagesOnPollGroup(steamNetPollGroup, steamNetworkingMessages, 16);
+					if (messageCount == 0)
+					{
+						break;
+					}
+					else if (messageCount < 0)
 					{
 						se::log::error("Error checking for messages");
 					}
-					else if (messageCount > 0)
+					else
 					{
-						assert(messageCount == 1 && steamNetworkingMessage);
-						for (const std::shared_ptr<Connection2>& connection : connections)
+						for (int m = 0; m < messageCount; m++)
 						{
-							if (connection->steamNetConnection == steamNetworkingMessage->m_conn)
+							se_assert(steamNetworkingMessages[m]);
+							for (const std::shared_ptr<Connection2>& connection : connections)
 							{
-								const bool reliable = steamNetworkingMessage->m_nFlags == k_nSteamNetworkingSend_Reliable;
-								connection->receivePacket(steamNetworkingMessage->m_pData, size_t(steamNetworkingMessage->m_cbSize), reliable);
-								steamNetworkingMessage->Release();
+								if (connection->steamNetConnection == steamNetworkingMessages[m]->m_conn)
+								{
+									const bool reliable = steamNetworkingMessages[m]->m_nFlags == k_nSteamNetworkingSend_Reliable;
+									connection->receivePacket(steamNetworkingMessages[m]->m_pData, size_t(steamNetworkingMessages[m]->m_cbSize), reliable);
+								}
 							}
+							steamNetworkingMessages[m]->Release();
 						}
 					}
 				}
