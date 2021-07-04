@@ -1,25 +1,33 @@
 #pragma once
+
 #include "SpehsEngine/Core/ScopeProfiler.h"
+#include "SpehsEngine/Graphics/View.h"
+#include "SpehsEngine/Graphics/FontManager.h"
+#include "SpehsEngine/Input/InputManager.h"
+#include "SpehsEngine/Graphics/Shape.h"
+#include "SpehsEngine/Graphics/Text.h"
+#include "SpehsEngine/Graphics/DefaultMaterials.h"
+#include "SpehsEngine/Graphics/DefaultShaderManager.h"
 #include <memory>
 #include <mutex>
 
 
 namespace se
 {
-	namespace rendering
-	{
-		class Text;
-		class Polygon;
-	}
-	class GUIContext;
-
 	namespace debug
 	{
+
+
+		// --------------
+		// TODO: With ImGui or GUI
+		// --------------
+
+
 		class ScopeProfilerVisualizer
 		{
 		public:
 
-			ScopeProfilerVisualizer(GUIContext& guiContext);
+			ScopeProfilerVisualizer(graphics::View& _view, graphics::FontManager& _fontManager, graphics::DefaultShaderManager& _shaderManager, input::InputManager& _inputManager);
 			~ScopeProfilerVisualizer();
 
 			void update(const time::Time& deltaTime);
@@ -41,8 +49,8 @@ namespace se
 			struct SectionInfo
 			{
 				const ScopeProfiler::Section* section = nullptr;
-				rendering::Polygon* parent = nullptr;
-				rendering::Polygon* rootParent = nullptr;
+				const graphics::Shape* parent;
+				const graphics::Shape* rootParent;
 				time::Time beginTime;
 				size_t depth = 0;
 			};
@@ -50,13 +58,17 @@ namespace se
 			void profilerFlushCallback(const ScopeProfiler::ThreadData& threadData);
 			void updateSectionPolygons();
 			void updateSectionTextStrings();
+			float getWidth();
 
-			GUIContext& guiContext;
+			graphics::View& view;
+			input::InputManager& inputManager;
+
+			std::shared_ptr<graphics::TextMaterial> textMaterial;
+			std::shared_ptr<graphics::FlatColorMaterial> shapeMaterial;
 
 			// Visual settings
 			float beginX = 5.0f;
 			float beginY = 5.0f;
-			float width = 0.0f;
 			float sectionHeight = 32.0f;
 			float horizontalSpeed = 1.0f;
 			time::Time timeWindowBegin; // Timestamp where the time window begins
@@ -70,11 +82,11 @@ namespace se
 
 			std::thread::id activeThreadId;
 			std::unordered_map<std::thread::id, ScopeProfiler::ThreadData> threadDatas;
-			std::unordered_map<rendering::Polygon*, SectionInfo> polygonToSectionInfoLookup;
-			rendering::Text& tooltipText;
-			rendering::Polygon& tooltipPolygon;
-			std::vector<rendering::Text*> sectionTexts;
-			std::vector<rendering::Polygon*> sectionPolygons;
+			std::unordered_map<const graphics::Shape*, SectionInfo> polygonToSectionInfoLookup;
+			graphics::Text tooltipText;
+			graphics::Shape tooltipPolygon;
+			std::vector<std::unique_ptr<graphics::Text>> sectionTexts;
+			std::vector<std::unique_ptr<graphics::Shape>> sectionPolygons;
 			boost::signals2::scoped_connection profilerFlushConnection;
 
 			std::recursive_mutex backgroundThreadDataMutex;
