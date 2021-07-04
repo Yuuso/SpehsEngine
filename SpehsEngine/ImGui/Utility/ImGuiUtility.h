@@ -130,7 +130,7 @@ namespace ImGui
 	}
 
 	inline void Image(
-		  const se::graphics::Texture& _texture
+		  const std::shared_ptr<se::graphics::Texture>& _texture
 		, const glm::vec2 scale			= glm::vec2(1.0f, 1.0f)
 		, const glm::vec2 uv0			= glm::vec2(0.0f, 0.0f)
 		, const glm::vec2 uv1			= glm::vec2(1.0f, 1.0f)
@@ -139,10 +139,10 @@ namespace ImGui
 		)
 	{
 		se::imgui::ImGuiUserTextureData userTextureData;
-		userTextureData.resourceHandle = _texture.getHandle();
+		userTextureData.resourceHandle = _texture->getHandle();
 		ImGui::Image(
 			userTextureData.id
-			, ImVec2(float(_texture.getWidth()) * scale.x, float(_texture.getHeight()) * scale.y)
+			, ImVec2(float(_texture->getWidth()) * scale.x, float(_texture->getHeight()) * scale.y)
 			, (const ImVec2&)uv0
 			, (const ImVec2&)uv1
 			, se::toImVec4(tintColor)
@@ -151,7 +151,7 @@ namespace ImGui
 	}
 
 	inline bool ImageButton(
-		  const se::graphics::Texture& _texture
+		const std::shared_ptr<se::graphics::Texture>& _texture
 		, const glm::vec2 scale				= glm::vec2(1.0f, 1.0f)
 		, const glm::vec2 uv0				= glm::vec2(0.0f, 0.0f)
 		, const glm::vec2 uv1				= glm::vec2(1.0f, 1.0f)
@@ -161,10 +161,10 @@ namespace ImGui
 		)
 	{
 		se::imgui::ImGuiUserTextureData userTextureData;
-		userTextureData.resourceHandle = _texture.getHandle();
+		userTextureData.resourceHandle = _texture->getHandle();
 		return ImGui::ImageButton(
 			userTextureData.id
-			, ImVec2(float(_texture.getWidth()) * scale.x, float(_texture.getHeight()) * scale.y)
+			, ImVec2(float(_texture->getWidth()) * scale.x, float(_texture->getHeight()) * scale.y)
 			, (const ImVec2&)uv0
 			, (const ImVec2&)uv1
 			, framePadding
