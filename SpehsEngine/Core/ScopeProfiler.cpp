@@ -5,7 +5,6 @@
 #include <mutex>
 #include <thread>
 #include <stack>
-#pragma optimize("", off)
 
 
 namespace

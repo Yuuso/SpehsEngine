@@ -35,7 +35,6 @@ do{} while (false)
 //do{} while (false)
 
 
-//#pragma optimize("", off)
 
 namespace se
 {

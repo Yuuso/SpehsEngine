@@ -18,7 +18,6 @@
 	se::log::info("SocketTCP(" + getLocalPort().toString() + "): " + message); \
 }
 
-/**///#pragma optimize("", off)
 
 namespace
 {

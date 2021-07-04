@@ -13,7 +13,6 @@
 	se::log::info(debugName + "(" + getLocalPort().toString() + "): " + message); \
 }
 
-/**/#pragma optimize("", off)
 
 namespace
 {
