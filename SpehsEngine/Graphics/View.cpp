@@ -16,6 +16,14 @@ namespace se
 			destroyedSignal();
 		}
 
+		Scene& View::getScene()
+		{
+			return scene;
+		}
+		Camera& View::getCamera()
+		{
+			return camera;
+		}
 		const ViewSize& View::getSize() const
 		{
 			return size;

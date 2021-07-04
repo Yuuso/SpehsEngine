@@ -25,6 +25,8 @@ namespace se
 			View& operator=(View&& _other) = delete;
 
 
+			Scene& getScene();
+			Camera& getCamera();
 			const ViewSize& getSize() const;
 			const ViewSize& getOffset() const;
 			const bool getMSAAEnabled() const;
