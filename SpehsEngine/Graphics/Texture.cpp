@@ -72,7 +72,7 @@ namespace se
 				return nullptr;
 			}
 
-			std::vector<char> data(input.tellg());
+			std::vector<char> data(static_cast<size_t>(input.tellg()));
 			input.seekg(0, std::ios::beg);
 			input.read(data.data(), data.size());
 			if (data.empty())
