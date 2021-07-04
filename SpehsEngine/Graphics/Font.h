@@ -37,8 +37,10 @@ namespace se
 			friend class Text;
 
 			static std::shared_ptr<ResourceData> createResource(const std::string _path, const FontSize _size, CharacterSet _charMap, std::shared_ptr<FontLibrary> _fontLibrary);
+			static std::shared_ptr<ResourceData> createResourceFromData(const uint8_t* _data, const size_t _dataSize, const FontSize _size, CharacterSet _charMap, std::shared_ptr<FontLibrary> _fontLibrary);
 			void destroy();
 			void create(const std::string_view _path, const FontSize _size, const CharacterSet& _charMap, std::shared_ptr<FontLibrary> _fontLibrary, std::shared_ptr<ResourceLoader> _resourceLoader);
+			void create(const uint8_t* _data, const size_t _dataSize, const FontSize _size, const CharacterSet& _charMap, std::shared_ptr<FontLibrary> _fontLibrary, std::shared_ptr<ResourceLoader> _resourceLoader);
 
 			std::string path;
 			FontSize size;

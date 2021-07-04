@@ -60,11 +60,25 @@ namespace se
 		{
 			std::lock_guard lock(mutex);
 			FontFace face;
-			const FT_Error error = FT_New_Face(*(FT_Library*)library, _path.c_str(), 0, face.face);
+			const FT_Error error = FT_New_Face(*library, _path.c_str(), 0, face.face);
 			if (error)
 			{
 				const std::string errorString = freetypeErrorMessage(error);
 				log::error("Freetype FT_New_Face failed for '" + _path + "'! (" + errorString + ")");
+				return face;
+			}
+			face.loaded = true;
+			return face;
+		}
+		FontFace FontLibrary::loadFace(const uint8_t* _data, const size_t _dataSize)
+		{
+			std::lock_guard lock(mutex);
+			FontFace face;
+			const FT_Error error = FT_New_Memory_Face(*library, (const FT_Byte*)_data, (FT_Long)_dataSize, 0, face.face);
+			if (error)
+			{
+				const std::string errorString = freetypeErrorMessage(error);
+				log::error("Freetype FT_New_Memory_Face failed! (" + errorString + ")");
 				return face;
 			}
 			face.loaded = true;

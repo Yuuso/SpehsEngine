@@ -32,6 +32,7 @@ namespace se
 
 
 			FontFace loadFace(const std::string& _path);
+			FontFace loadFace(const uint8_t* _data, const size_t _dataSize);
 			bool destroyFace(FontFace& _face);
 
 		private:
