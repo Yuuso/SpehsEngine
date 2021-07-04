@@ -37,7 +37,6 @@ namespace se
 		private:
 
 			friend class TextureManager;
-			friend class Uniform;
 			friend class Font;
 
 			static std::shared_ptr<ResourceData> createResource(const std::string _path, const TextureModes _textureModes);

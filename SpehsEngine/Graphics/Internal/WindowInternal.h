@@ -45,6 +45,8 @@ namespace se
 			const bool isDefault;
 			const bool getBackBufferReset();
 
+			SDL_Window* getSDLWindow();
+
 		private:
 
 			void windowDestroyed();

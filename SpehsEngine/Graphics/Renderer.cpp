@@ -177,6 +177,13 @@ namespace se
 			rendererFlagsChanged = true;
 		}
 
+		SDL_Window* Renderer::getDefaultSDLWindow()
+		{
+			if (defaultWindow)
+				return defaultWindow->getSDLWindow();
+			return nullptr;
+		}
+
 		const RendererBackend Renderer::getRendererBackend()
 		{
 			se_assert(initialized);

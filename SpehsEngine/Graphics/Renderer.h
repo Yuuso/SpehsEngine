@@ -7,6 +7,8 @@
 #include <memory>
 #include <vector>
 
+struct SDL_Window;
+
 
 namespace se
 {
@@ -37,6 +39,8 @@ namespace se
 			void setRendererFlags(const RendererFlagsType _rendererFlags);
 			void enableRendererFlag(const RendererFlag _rendererFlag);
 			void disableRendererFlag(const RendererFlag _rendererFlag);
+
+			SDL_Window* getDefaultSDLWindow(); // Ugly, plz cleanup
 
 
 			static const RendererBackend getRendererBackend();

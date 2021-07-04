@@ -389,5 +389,10 @@ namespace se
 			}
 			return false;
 		}
+
+		SDL_Window* WindowInternal::getSDLWindow()
+		{
+			return sdlWindow;
+		}
 	}
 }

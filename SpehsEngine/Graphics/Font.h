@@ -35,7 +35,6 @@ namespace se
 
 			friend class FontManager;
 			friend class Text;
-			friend class Uniform;
 
 			static std::shared_ptr<ResourceData> createResource(const std::string _path, const FontSize _size, CharacterSet _charMap, std::shared_ptr<FontLibrary> _fontLibrary);
 			void destroy();

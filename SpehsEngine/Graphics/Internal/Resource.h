@@ -65,14 +65,14 @@ namespace se
 				return false;
 			}
 
-		protected:
-
 			ResourceHandle getHandle() const
 			{
 				if (!resourceData)
 					return INVALID_RESOURCE_HANDLE;
 				return resourceData->handle;
 			}
+
+		protected:
 
 			const std::string name;
 			std::future<std::shared_ptr<ResourceData>> resourceFuture;
