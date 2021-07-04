@@ -18,11 +18,11 @@ namespace se
 			{
 				const FontSize defaultFontSize(18, FontSizeType::Pixel);
 
-				resources.push_back(std::make_shared<Font>("OpenSans-Regular"));
-				resources.back()->create(font_openSansRegularTtf, sizeof(font_openSansRegularTtf), defaultFontSize, defaultCharacterSet, fontLibrary, resourceLoader);
-
 				resources.push_back(std::make_shared<Font>("AnonymousPro-Regular"));
 				resources.back()->create(font_anonymousProRegularTtf, sizeof(font_anonymousProRegularTtf), defaultFontSize, defaultCharacterSet, fontLibrary, resourceLoader);
+
+				resources.push_back(std::make_shared<Font>("OpenSans-Regular"));
+				resources.back()->create(font_openSansRegularTtf, sizeof(font_openSansRegularTtf), defaultFontSize, defaultCharacterSet, fontLibrary, resourceLoader);
 			}
 		}
 
@@ -54,6 +54,11 @@ namespace se
 			}
 			se_assert_m(false, "Font '" + std::string(_name) + "' not found!");
 			return nullptr;
+		}
+		std::shared_ptr<Font> FontManager::getDefaultFont() const
+		{
+			se_assert(resources.size() > 0);
+			return resources[0];
 		}
 	}
 }
