@@ -119,13 +119,13 @@ namespace se
 		{
 			const bool isLocalConnection = localRemoteSteamNetConnection != k_HSteamNetConnection_Invalid;
 			disconnectImpl(reason, !isLocalConnection);
+			setStatus(Status::Disconnected);
 		}
 
 		void Connection2::disconnectImpl(const std::string& reason, const bool enableLinger)
 		{
 			if (steamNetConnection != k_HSteamNetConnection_Invalid)
 			{
-				setStatus(Status::Disconnected);
 				closeConnectionImpl(steamNetConnection, reason, enableLinger);
 				closedSteamNetConnection = steamNetConnection; // Used later on by the ConnectionManager
 				steamNetConnection = k_HSteamNetConnection_Invalid;
@@ -181,7 +181,6 @@ namespace se
 				// and we cannot linger because it's already closed on the other end,
 				// so we just pass 0's.
 				disconnectImpl("ProblemDetectedLocally", false);
-
 				setStatus(Status::Disconnected);
 				break;
 			}
