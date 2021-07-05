@@ -99,7 +99,7 @@ namespace se
 			case k_ESteamNetworkingConnectionState_Connecting:
 			{
 				// HACK: how to check for application local connection?
-				if (doesContain(info->m_info.m_szConnectionDescription, "invalid@127.0.0.1"))
+				if (doesContain(info->m_info.m_szConnectionDescription, "invalid"))
 				{
 					return;
 				}
