@@ -23,7 +23,6 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)ReadBuffer.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)RNG.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)ScopeTimer.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)Shapes.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)stdafx.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)STLUnorderedMapUtilityFunctions.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)STLVectorUtilityFunctions.cpp" />
@@ -32,7 +31,6 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)StrongInt.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Thread.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)SE_Time.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)Vertex.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)WriteBuffer.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)File\File.cpp">
       <Filter>File</Filter>
@@ -85,7 +83,6 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)ReadBuffer.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)RNG.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)ScopeTimer.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)Shapes.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)stdafx.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)STLUnorderedMapUtilityFunctions.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)STLVectorUtilityFunctions.h" />
@@ -94,7 +91,6 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)StrongInt.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Thread.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)SE_Time.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)Vertex.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)WatchedValue.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)WriteBuffer.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)File\File.h">

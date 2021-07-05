@@ -1,13 +1,13 @@
 #pragma once
 
 #include "SpehsEngine/Core/ScopeProfiler.h"
-#include "SpehsEngine/Graphics/View.h"
+#include "SpehsEngine/Graphics/DefaultMaterials.h"
 #include "SpehsEngine/Graphics/FontManager.h"
-#include "SpehsEngine/Input/InputManager.h"
+#include "SpehsEngine/Graphics/ShaderManager.h"
 #include "SpehsEngine/Graphics/Shape.h"
 #include "SpehsEngine/Graphics/Text.h"
-#include "SpehsEngine/Graphics/DefaultMaterials.h"
-#include "SpehsEngine/Graphics/DefaultShaderManager.h"
+#include "SpehsEngine/Graphics/View.h"
+#include "SpehsEngine/Input/InputManager.h"
 #include <memory>
 #include <mutex>
 
@@ -27,7 +27,7 @@ namespace se
 		{
 		public:
 
-			ScopeProfilerVisualizer(graphics::View& _view, graphics::FontManager& _fontManager, graphics::DefaultShaderManager& _shaderManager, input::InputManager& _inputManager);
+			ScopeProfilerVisualizer(graphics::View& _view, graphics::FontManager& _fontManager, graphics::ShaderManager& _shaderManager, input::InputManager& _inputManager);
 			~ScopeProfilerVisualizer();
 
 			void update(const time::Time& deltaTime);

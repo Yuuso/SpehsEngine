@@ -3,10 +3,9 @@
 
 #include "SpehsEngine/Core/StringOperations.h"
 #include "SpehsEngine/Core/StringUtilityFunctions.h"
-#include "SpehsEngine/Core/Shapes.h"
 #include "SpehsEngine/Input/InputManager.h"
-#include "SpehsEngine/Input/MouseUtilityFunctions.h"
 #include "SpehsEngine/Input/Key.h"
+#include "SpehsEngine/Input/MouseUtilityFunctions.h"
 #include "SpehsEngine/Net/ConnectionManager.h"
 
 
@@ -14,7 +13,7 @@ namespace se
 {
 	namespace debug
 	{
-		ScopeProfilerVisualizer::ScopeProfilerVisualizer(graphics::View& _view, graphics::FontManager& _fontManager, graphics::DefaultShaderManager& _shaderManager, input::InputManager& _inputManager)
+		ScopeProfilerVisualizer::ScopeProfilerVisualizer(graphics::View& _view, graphics::FontManager& _fontManager, graphics::ShaderManager& _shaderManager, input::InputManager& _inputManager)
 			: view(_view)
 			, inputManager(_inputManager)
 			, activeThreadId(std::this_thread::get_id())
