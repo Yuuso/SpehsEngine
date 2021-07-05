@@ -4,7 +4,6 @@
 #include "SpehsEngine/Input/InputLib.h"
 #include "SpehsEngine/Input/EventCatcher.h"
 #include "SpehsEngine/Input/MouseUtilityFunctions.h"
-#include "SpehsEngine/Rendering/Window.h"
 #include <SDL/SDL.h>
 #include <SDL/SDL_joystick.h>
 #include <SDL/SDL_events.h>

@@ -3,7 +3,6 @@
 
 #include "SpehsEngine/Input/MouseUtilityFunctions.h"
 #include "SpehsEngine/Input/KeyUtilityFunctions.h"
-#include "SpehsEngine/Rendering/Window.h"
 #include "SDL/SDL.h"
 #include "SDL/SDL_joystick.h"
 #include "SDL/SDL_events.h"

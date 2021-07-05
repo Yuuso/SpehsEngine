@@ -5,9 +5,6 @@
 #include "SpehsEngine/Core/Log.h"
 #include "SpehsEngine/Core/SE_Time.h"
 #include "SpehsEngine/Input/InputManager.h"
-#include "SpehsEngine/Rendering/RenderingLib.h"
-#include "SpehsEngine/Rendering/OpenGLError.h"
-#include "SpehsEngine/Rendering/Window.h"
 
 #include <string>
 #include <thread>
