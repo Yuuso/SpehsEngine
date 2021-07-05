@@ -149,7 +149,6 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="DefaultMaterials.h" />
-    <ClInclude Include="DefaultShaderManager.h" />
     <ClInclude Include="Font.h" />
     <ClInclude Include="CharacterSet.h" />
     <ClInclude Include="FontManager.h" />
@@ -216,7 +215,6 @@
   <ItemGroup>
     <ClCompile Include="CharacterSet.cpp" />
     <ClCompile Include="DefaultMaterials.cpp" />
-    <ClCompile Include="DefaultShaderManager.cpp" />
     <ClCompile Include="Font.cpp" />
     <ClCompile Include="FontManager.cpp" />
     <ClCompile Include="IndexBuffer.cpp" />

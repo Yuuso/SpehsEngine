@@ -6,7 +6,7 @@ namespace se
 {
 	namespace graphics
 	{
-		FlatColorMaterial::FlatColorMaterial(DefaultShaderManager& _shaderManager)
+		FlatColorMaterial::FlatColorMaterial(ShaderManager& _shaderManager)
 		{
 			setShader(_shaderManager.find("color"));
 		}
@@ -16,7 +16,7 @@ namespace se
 
 
 
-		FlatTextureMaterial::FlatTextureMaterial(DefaultShaderManager& _shaderManager)
+		FlatTextureMaterial::FlatTextureMaterial(ShaderManager& _shaderManager)
 		{
 			setShader(_shaderManager.find("tex"), ShaderVariant::Default);
 			setShader(_shaderManager.find("tex_billboard"), ShaderVariant::Billboard);
@@ -36,7 +36,7 @@ namespace se
 
 
 
-		SkyboxMaterial::SkyboxMaterial(DefaultShaderManager& _shaderManager)
+		SkyboxMaterial::SkyboxMaterial(ShaderManager& _shaderManager)
 		{
 			setShader(_shaderManager.find("skybox"), ShaderVariant::Default);
 		}
@@ -54,7 +54,7 @@ namespace se
 
 
 
-		TextMaterial::TextMaterial(DefaultShaderManager& _shaderManager)
+		TextMaterial::TextMaterial(ShaderManager& _shaderManager)
 		{
 			setShader(_shaderManager.find("text"));
 		}
@@ -84,7 +84,7 @@ namespace se
 			return "";
 		}
 
-		PhongMaterial::PhongMaterial(DefaultShaderManager& _shaderManager)
+		PhongMaterial::PhongMaterial(ShaderManager& _shaderManager)
 		{
 			setShader(_shaderManager.find("phong"), ShaderVariant::Default);
 			setShader(_shaderManager.find("phong_instanced"), ShaderVariant::Instanced);

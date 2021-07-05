@@ -10,6 +10,14 @@
 #include <vector>
 
 
+/*
+	LIST OF DEFAULT FONTS
+
+	- AnonymousPro-Regular
+	- OpenSans-Regular
+*/
+
+
 namespace se
 {
 	namespace graphics
@@ -30,11 +38,14 @@ namespace se
 
 			std::shared_ptr<Font> create(const std::string_view _name, const std::string_view _font, const FontSize _size, const CharacterSet& _charMap = defaultCharacterSet);
 			std::shared_ptr<Font> find(const std::string_view _name) const;
+
+			void createDefaultFonts();
 			std::shared_ptr<Font> getDefaultFont() const;
 
 		private:
 
 			std::shared_ptr<FontLibrary> fontLibrary;
+			bool defaultFontsCreated = false;
 		};
 	}
 }

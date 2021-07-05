@@ -56,7 +56,7 @@ namespace se
 			{
 				for (size_t i = 0; i < resources.size(); /*i++*/)
 				{
-					if (resources[i].use_count() == 1)
+					if (resources[i]->reloadable() && resources[i].use_count() == 1)
 					{
 						resources[i].swap(resources.back());
 						resources.pop_back();

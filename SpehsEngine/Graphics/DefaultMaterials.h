@@ -1,6 +1,6 @@
 #pragma once
 
-#include "SpehsEngine/Graphics/DefaultShaderManager.h"
+#include "SpehsEngine/Graphics/ShaderManager.h"
 #include "SpehsEngine/Graphics/Font.h"
 #include "SpehsEngine/Graphics/Material.h"
 #include "SpehsEngine/Graphics/Shader.h"
@@ -47,7 +47,7 @@ namespace se
 		{
 		public:
 
-			FlatColorMaterial(DefaultShaderManager& _shaderManager);
+			FlatColorMaterial(ShaderManager& _shaderManager);
 			virtual ~FlatColorMaterial() = default;
 
 		protected:
@@ -60,7 +60,7 @@ namespace se
 		{
 		public:
 
-			FlatTextureMaterial(DefaultShaderManager& _shaderManager);
+			FlatTextureMaterial(ShaderManager& _shaderManager);
 			virtual ~FlatTextureMaterial() = default;
 
 			void setTexture(std::shared_ptr<Texture> _texture);
@@ -76,7 +76,7 @@ namespace se
 		{
 		public:
 
-			SkyboxMaterial(DefaultShaderManager& _shaderManager);
+			SkyboxMaterial(ShaderManager& _shaderManager);
 			virtual ~SkyboxMaterial() = default;
 
 			void setTexture(std::shared_ptr<Texture> _texture);
@@ -92,7 +92,7 @@ namespace se
 		{
 		public:
 
-			TextMaterial(DefaultShaderManager& _shaderManager);
+			TextMaterial(ShaderManager& _shaderManager);
 			virtual ~TextMaterial() = default;
 
 			void setFont(std::shared_ptr<Font> _font);
@@ -108,7 +108,7 @@ namespace se
 		{
 		public:
 
-			PhongMaterial(DefaultShaderManager& _shaderManager);
+			PhongMaterial(ShaderManager& _shaderManager);
 			virtual ~PhongMaterial() = default;
 
 			void setTexture(const PhongTextureType _type, std::shared_ptr<Texture> _texture);

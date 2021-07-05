@@ -10,6 +10,22 @@
 #include <string>
 
 
+/*
+	LIST OF DEFAULT SHADERS
+
+	- color
+	- tex
+	- tex_billboard
+	- tex_billboard_instanced
+	- phong
+	- phong_instanced
+	- phong_skinned
+	- phong_skinned_instanced
+	- skybox
+	- text
+*/
+
+
 namespace se
 {
 	namespace graphics
@@ -32,6 +48,12 @@ namespace se
 										   const std::string_view _vertexShader,
 										   const std::string_view _fragmentShader);
 			std::shared_ptr<Shader> find(const std::string_view _name) const;
+
+			void createDefaultShaders();
+
+		private:
+
+			bool defaultShadersCreated = false;
 		};
 	}
 }
