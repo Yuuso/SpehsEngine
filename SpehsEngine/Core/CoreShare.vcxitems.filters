@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <ClCompile Include="$(MSBuildThisFileDirectory)Archive.cpp" />
@@ -10,7 +10,6 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)Color.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)ColorUtilityFunctions.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Compression.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)Console.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)CoreLib.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)DeltaTimeSystem.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Endianness.cpp" />
@@ -64,8 +63,6 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)Color.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)ColorUtilityFunctions.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Compression.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)Console.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)ConsoleVariable.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Constants.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)CoreLib.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)DeltaTimeSystem.h" />
