@@ -2,10 +2,6 @@
 
 #include "SpehsEngine/Graphics/Internal/ResourceManager.h"
 #include "SpehsEngine/Graphics/Shader.h"
-#include "SpehsEngine/Graphics/ResourcePathFinder.h"
-#include "SpehsEngine/Graphics/ResourceLoader.h"
-#include "SpehsEngine/Graphics/Uniform.h"
-#include <vector>
 #include <memory>
 #include <string>
 

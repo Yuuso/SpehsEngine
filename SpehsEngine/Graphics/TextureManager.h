@@ -1,16 +1,12 @@
 #pragma once
 
-#include "SpehsEngine/Core/AsyncTaskManager.h"
 #include "SpehsEngine/Graphics/Internal/ResourceManager.h"
 #include "SpehsEngine/Graphics/Internal/TextureFallbacks.h"
 #include "SpehsEngine/Graphics/Types.h"
 #include "SpehsEngine/Graphics/Texture.h"
 #include "SpehsEngine/Graphics/TextureInput.h"
-#include "SpehsEngine/Graphics/ResourcePathFinder.h"
-#include "SpehsEngine/Graphics/ResourceLoader.h"
 #include <memory>
 #include <string>
-#include <vector>
 
 
 namespace se

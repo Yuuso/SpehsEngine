@@ -36,7 +36,7 @@ namespace se
 			void setSize(const ViewSize& _size);
 			void setOffset(const ViewSize& _offset);
 			void setMSAAEnabled(const bool _enabled);
-			void setClearColor(const uint32_t _color);
+			void setClearColor(const uint32_t _hexColor);
 			void setClearFlags(const ViewClearFlagsType _flags);
 
 		private:

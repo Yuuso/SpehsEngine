@@ -189,7 +189,6 @@
     <ClInclude Include="Internal\ResourceHandle.h" />
     <ClInclude Include="ResourceLoader.h" />
     <ClInclude Include="Internal\ResourceManager.h" />
-    <ClInclude Include="ResourcePathFinder.h" />
     <ClInclude Include="ShaderVariant.h" />
     <ClInclude Include="ShapeGenerator.h" />
     <ClInclude Include="Text.h" />

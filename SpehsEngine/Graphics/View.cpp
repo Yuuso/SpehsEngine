@@ -57,9 +57,9 @@ namespace se
 		{
 			enableMSAA = _enabled;
 		}
-		void View::setClearColor(const uint32_t _color)
+		void View::setClearColor(const uint32_t _hexColor)
 		{
-			clearColor = _color;
+			clearColor = _hexColor;
 		}
 		void View::setClearFlags(const ViewClearFlagsType _flags)
 		{

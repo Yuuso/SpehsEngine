@@ -3,7 +3,6 @@
 #include "SpehsEngine/Graphics/Internal/ResourceManager.h"
 #include "SpehsEngine/Graphics/ModelData.h"
 #include "SpehsEngine/Graphics/ResourceLoader.h"
-#include "SpehsEngine/Graphics/ResourcePathFinder.h"
 #include <memory>
 #include <string>
 

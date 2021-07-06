@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <ClCompile Include="$(MSBuildThisFileDirectory)Archive.cpp" />
@@ -117,6 +117,10 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)UniquePtrUtilityFunctions.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)DeepCopyUniquePtrUtilityFunctions.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)WeightedRandomizer.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)AsyncTaskManager.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)HexColor.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)ResourcePathFinder.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)StringViewUtilityFunctions.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="File">

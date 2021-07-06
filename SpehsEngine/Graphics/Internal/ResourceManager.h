@@ -1,7 +1,7 @@
 #pragma once
 
+#include "SpehsEngine/Core/ResourcePathFinder.h"
 #include "SpehsEngine/Graphics/Internal/Resource.h"
-#include "SpehsEngine/Graphics/ResourcePathFinder.h"
 #include "SpehsEngine/Graphics/ResourceLoader.h"
 #include <memory>
 

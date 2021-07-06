@@ -4,8 +4,6 @@
 #include "SpehsEngine/Graphics/Internal/ResourceManager.h"
 #include "SpehsEngine/Graphics/CharacterSet.h"
 #include "SpehsEngine/Graphics/Font.h"
-#include "SpehsEngine/Graphics/ResourceLoader.h"
-#include "SpehsEngine/Graphics/ResourcePathFinder.h"
 #include <memory>
 #include <vector>
 

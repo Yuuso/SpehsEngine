@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup Label="Globals">
     <MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
@@ -62,12 +62,15 @@
   <ItemGroup>
     <ClInclude Include="$(MSBuildThisFileDirectory)Archive.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)ArchiveUtilityFunctions.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)AsyncTaskManager.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)BufferUtilityFunctions.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)DeepCopyUniquePtr.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)DeepCopyUniquePtrUtilityFunctions.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)File\Timestamp.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)HexColor.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)LockGuard.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)MultiMapUtilityFunctions.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)ResourcePathFinder.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)StaticRingBuffer.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)ScopedFrameLimiter.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Guid.h" />
@@ -107,6 +110,7 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)STLVectorUtilityFunctions.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)StringOperations.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)StringUtilityFunctions.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)StringViewUtilityFunctions.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)StrongInt.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)SystemMessageBox.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Thread.h" />

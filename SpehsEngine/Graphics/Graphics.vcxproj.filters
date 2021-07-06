@@ -84,9 +84,6 @@
     <ClInclude Include="DefaultMaterials.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="ResourcePathFinder.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Lights.h">
       <Filter>Header Files</Filter>
     </ClInclude>
