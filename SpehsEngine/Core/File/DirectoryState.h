@@ -16,6 +16,7 @@ namespace se
 				none = 0,
 				read = 1 << 0,
 				hash = 1 << 1,
+				size = 1 << 2,
 			};
 		};
 		struct FileState
@@ -26,6 +27,7 @@ namespace se
 			std::vector<uint8_t> data;
 			/* The file hash is a hash value that is computed using the file's local (DirectoryState) path and file data contents. */
 			uint32_t fileHash = 0u;
+			uint64_t fileSize = 0;
 		};
 		void write(se::WriteBuffer& writeBuffer) const;
 		bool read(se::ReadBuffer& readBuffer);

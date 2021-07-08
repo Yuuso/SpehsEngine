@@ -40,4 +40,6 @@ namespace se
 
 	file::Timestamp getFileTimestamp(const std::string_view filepath);
 	void setFileTimestamp(const std::string_view filepath, const file::Timestamp timestamp);
+
+	uint64_t getFileSize(const std::string& path);
 }

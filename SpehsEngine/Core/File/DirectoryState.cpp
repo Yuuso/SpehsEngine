@@ -16,6 +16,7 @@ namespace se
 	{
 		writeToBuffer<uint32_t>(writeBuffer, path);
 		writeBuffer.write(fileHash);
+		writeBuffer.write(fileSize);
 	}
 
 	bool DirectoryState::FileState::read(se::ReadBuffer& readBuffer)
@@ -25,6 +26,7 @@ namespace se
 			return false;
 		}
 		se_read(readBuffer, fileHash);
+		se_read(readBuffer, fileSize);
 		return true;
 	}
 
@@ -136,6 +138,7 @@ namespace se
 					File file;
 					if (readFile(file, fullFilePath))
 					{
+						directoryState.files.back().fileSize = uint64_t(file.data.size());
 						if (flags & DirectoryState::Flag::hash)
 						{
 							std::vector<uint8_t> hashData(directoryState.files.back().path.size() + file.data.size());
@@ -148,6 +151,10 @@ namespace se
 							directoryState.files.back().data.swap(file.data);
 						}
 					}
+				}
+				else if (flags & DirectoryState::Flag::read)
+				{
+					directoryState.files.back().fileSize = getFileSize(fullFilePath);
 				}
 			}
 		}
