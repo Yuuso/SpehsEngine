@@ -100,3 +100,29 @@ namespace se
 		return readFromBuffer<T, SizeType>(readBuffer, vector);
 	}
 }
+
+
+template<typename T>
+T* tryFind(std::vector<T>& vector, const T& t)
+{
+	for (T& value : vector)
+	{
+		if (value == t)
+		{
+			return &value;
+		}
+	}
+	return nullptr;
+}
+template<typename T>
+const T* tryFind(const std::vector<T>& vector, const T& t)
+{
+	for (const T& value : vector)
+	{
+		if (value == t)
+		{
+			return &value;
+		}
+	}
+	return nullptr;
+}
