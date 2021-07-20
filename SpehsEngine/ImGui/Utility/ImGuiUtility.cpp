@@ -3,6 +3,7 @@
 
 #include "SpehsEngine/Core/File/DirectoryState.h"
 #include "SpehsEngine/Input/EventSignaler.h"
+#include "SpehsEngine/Input/CustomEventParametersRecorder.h"
 
 
 #pragma optimize("", off) // nocommit
@@ -221,6 +222,34 @@ namespace ImGui
 				}, INT_MAX);
 		}
 		ImGui::PopID();
+	}
+
+	bool bindCustomEventParameters(const char* const label, se::input::CustomEventParameters& customEventParameters,
+		se::input::EventSignaler& eventSignaler, StateWrapper& stateWrapper)
+	{
+		struct State : public IState
+		{
+			std::unique_ptr<se::input::CustomEventParametersRecorder> customEventParametersRecorder;
+		};
+		State& state = stateWrapper.get<State>();
+
+		bool changed = false;
+		if (state.customEventParametersRecorder)
+		{
+			ImGui::Text(se::formatString("%s: press any key...", label));
+			if (const std::optional<se::input::CustomEventParameters> result = state.customEventParametersRecorder->getCustomEventParameters())
+			{
+				customEventParameters = *result;
+				state.customEventParametersRecorder.reset();
+				changed = true;
+			}
+		}
+		else if (ImGui::Button(se::formatString("%s: %s", label, customEventParameters.toString().c_str())))
+		{
+			state.customEventParametersRecorder.reset(new se::input::CustomEventParametersRecorder(eventSignaler));
+		}
+
+		return changed;
 	}
 
 	std::string getImGuiFormatString(const std::string_view string)
