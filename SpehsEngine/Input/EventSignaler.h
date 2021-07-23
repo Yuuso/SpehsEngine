@@ -1,6 +1,7 @@
 #pragma once
 
 #include "SpehsEngine/Input/Event.h"
+#include "SpehsEngine/Input/CustomEventParameters.h"
 #include "boost/signals2.hpp"
 #include "glm/vec2.hpp"
 #include <vector>
@@ -53,6 +54,7 @@ namespace se
 			void connectToCustomEventSignal(
 				boost::signals2::scoped_connection& scopedConnection, const boost::function<bool(const CustomEvent&)>& callback, const int priority)
 			{
+				static_assert(std::is_base_of<ICustomEvent, CustomEvent>::value);
 				scopedConnection.disconnect();
 				std::vector<std::unique_ptr<CustomSignal>>& customSignals = customEventSignalContainers[typeid(CustomEvent).hash_code()];
 				const std::vector<std::unique_ptr<CustomSignal>>::iterator it = std::find_if(customSignals.begin(), customSignals.end(),
@@ -86,6 +88,7 @@ namespace se
 			template<typename CustomEvent>
 			void signalCustomEvent(const CustomEvent& customEvent)
 			{
+				static_assert(std::is_base_of<ICustomEvent, CustomEvent>::value);
 				std::unordered_map<size_t, std::vector<std::unique_ptr<CustomSignal>>>::iterator it = customEventSignalContainers.find(typeid(CustomEvent).hash_code());
 				if (it != customEventSignalContainers.end())
 				{
