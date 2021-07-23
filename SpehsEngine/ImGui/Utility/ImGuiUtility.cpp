@@ -209,16 +209,23 @@ namespace ImGui
 		ImGui::SameLine();
 		if (ImGui::Button(scopedConnection.connected() ? "press any key" : se::input::toString(key)))
 		{
-			eventSignaler.connectToKeyboardPressSignal(
+			eventSignaler.connectToKeyboardSignal(
 				scopedConnection,
-				[&](const se::input::KeyboardPressEvent& event) -> bool
+				[&](const se::input::KeyboardEvent& event) -> bool
 				{
-					if (event.key != se::input::Key(se::input::Key::ESCAPE))
+					if (event.type == se::input::KeyboardEvent::Type::Press)
 					{
-						key = event.key;
+						if (event.key != se::input::Key(se::input::Key::ESCAPE))
+						{
+							key = event.key;
+						}
+						scopedConnection.disconnect();
+						return true;
 					}
-					scopedConnection.disconnect();
-					return true;
+					else	
+					{
+						return false;
+					}
 				}, INT_MAX);
 		}
 		ImGui::PopID();

@@ -9,7 +9,7 @@ namespace se
 			Note: some enumerations have the 'KEY_' prefix because their 'default' value is invalid.
 			(enumerations can't start with a number (KEY_1), some of the values are common macros (KEY_DELETE))
 		*/
-		enum class Key
+		enum class Key : uint32_t
 		{
 			UNKNOWN = 0x00,
 

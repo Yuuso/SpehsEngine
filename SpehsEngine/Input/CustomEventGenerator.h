@@ -19,6 +19,7 @@ namespace se
 			template<typename CustomEvent>
 			ScopedCustomEvent addCustomEvent(const CustomEventParameters& customEventParameters, const CustomEvent generatedCustomEvent, const int priority)
 			{
+				static_assert(std::is_base_of<ICustomEvent, CustomEvent>::value);
 				static_assert(std::is_copy_assignable<CustomEvent>::value);
 #define SE_INPUT_EVENT_CASE(p_EventName, p_EventType) \
 				case EventType::p_EventType: \
@@ -39,9 +40,11 @@ namespace se
 									registeredCustomEvents.erase(it); \
 									return false; \
 								} \
-								else if (event == customEventParameters.p_EventType##Event) \
+								else if (customEventParameters.p_EventType##EventParameters.check(event)) \
 								{ \
-									eventSignaler.signalCustomEvent(generatedCustomEvent); \
+									CustomEvent generatedCustomEvent2 = generatedCustomEvent; \
+									customEventParameters.p_EventType##EventParameters.set(generatedCustomEvent2, event); \
+									eventSignaler.signalCustomEvent(generatedCustomEvent2); \
 									return true; \
 								} \
 								else \
@@ -58,26 +61,18 @@ namespace se
 				}
 				switch (customEventParameters.eventType)
 				{
-					SE_INPUT_EVENT_CASE(KeyboardPress, keyboardPress)
-					SE_INPUT_EVENT_CASE(KeyboardDown, keyboardDown)
-					SE_INPUT_EVENT_CASE(KeyboardRelease, keyboardRelease)
-					SE_INPUT_EVENT_CASE(MouseButtonPress, mouseButtonPress)
-					SE_INPUT_EVENT_CASE(MouseButtonDown, mouseButtonDown)
-					SE_INPUT_EVENT_CASE(MouseButtonRelease, mouseButtonRelease)
+					SE_INPUT_EVENT_CASE(Keyboard, keyboard)
+					SE_INPUT_EVENT_CASE(MouseButton, mouseButton)
 					SE_INPUT_EVENT_CASE(MouseMotion, mouseMotion)
 					SE_INPUT_EVENT_CASE(MouseWheel, mouseWheel)
 					SE_INPUT_EVENT_CASE(MouseHover, mouseHover)
-					//SE_INPUT_EVENT_CASE(JoystickButtonPress, joystickButtonPress)
-					//SE_INPUT_EVENT_CASE(JoystickButtonDown, joystickButtonDown)
-					//SE_INPUT_EVENT_CASE(JoystickButtonRelease, joystickButtonRelease)
+					//SE_INPUT_EVENT_CASE(JoystickButton, joystickButton)
 					//SE_INPUT_EVENT_CASE(JoystickAxis, joystickAxis)
-					SE_INPUT_EVENT_CASE(Quit, quit)
-					SE_INPUT_EVENT_CASE(TextInput, textInput)
-					SE_INPUT_EVENT_CASE(FileDrop, fileDrop)
-				case EventType::joystickButtonPress:
-				case EventType::joystickButtonDown:
-				case EventType::joystickButtonRelease:
+				case EventType::joystickButton:
 				case EventType::joystickAxis:
+				case EventType::quit:
+				case EventType::textInput:
+				case EventType::fileDrop:
 				case EventType::none:
 					log::warning("CustomEventGenerator::addEvent() EventType not supported: " + std::to_string(int(customEventParameters.eventType)));
 					break;

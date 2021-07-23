@@ -17,7 +17,7 @@ namespace se
 	{
 		class EventSignaler;
 		struct CustomEventParameters;
-		enum class Key;
+		enum class Key : uint32_t;
 	}
 }
 

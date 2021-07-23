@@ -22,19 +22,13 @@ namespace se
 		{
 			SE_SCOPE_PROFILER();
 			//Clear all previous events
-			keyboardPressEvents.clear();
-			keyboardDownEvents.clear();
-			keyboardReleaseEvents.clear();
+			keyboardEvents.clear();
 			mouseHoverEvents.clear();
 			textInputEvents.clear();
-			mouseButtonPressEvents.clear();
-			mouseButtonDownEvents.clear();
-			mouseButtonReleaseEvents.clear();
+			mouseButtonEvents.clear();
 			mouseMotionEvents.clear();
 			mouseWheelEvents.clear();
-			//joystickButtonPressEvents.clear();
-			//joystickButtonDownEvents.clear();
-			//joystickButtonReleaseEvents.clear();
+			//joystickButtonEvents.clear();
 			//joystickAxisEvents.clear();
 			quitEvents.clear();
 			fileDropEvents.clear();
@@ -51,9 +45,10 @@ namespace se
 				case SDL_KEYDOWN:
 				{
 					const Key key = Key(sdlEvent.key.keysym.sym);
-					keyboardPressEvents.push_back(KeyboardPressEvent());
-					keyboardPressEvents.back().key = key;
-					keyboardPressEvents.back().scancode = sdlEvent.key.keysym.scancode;
+					keyboardEvents.push_back(KeyboardEvent());
+					keyboardEvents.back().type = KeyboardEvent::Type::Press;
+					keyboardEvents.back().key = key;
+					keyboardEvents.back().scancode = sdlEvent.key.keysym.scancode;
 					heldKeyboardKeys.emplace(key);
 				}
 					break;
@@ -65,9 +60,10 @@ namespace se
 					if (it != heldKeyboardKeys.end())
 					{
 						heldKeyboardKeys.erase(it);
-						keyboardReleaseEvents.push_back(KeyboardReleaseEvent());
-						keyboardReleaseEvents.back().key = key;
-						keyboardReleaseEvents.back().scancode = sdlEvent.key.keysym.scancode;
+						keyboardEvents.push_back(KeyboardEvent());
+						keyboardEvents.back().type = KeyboardEvent::Type::Release;
+						keyboardEvents.back().key = key;
+						keyboardEvents.back().scancode = sdlEvent.key.keysym.scancode;
 					}
 				}
 					break;
@@ -82,8 +78,9 @@ namespace se
 				case SDL_MOUSEBUTTONDOWN:
 				{
 					const MouseButton button = MouseButton(sdlEvent.button.button);
-					mouseButtonPressEvents.push_back(MouseButtonPressEvent());
-					mouseButtonPressEvents.back().button = button;
+					mouseButtonEvents.push_back(MouseButtonEvent());
+					mouseButtonEvents.back().type = MouseButtonEvent::Type::Press;
+					mouseButtonEvents.back().button = button;
 					heldMouseButtons.emplace(button);
 				}
 					break;
@@ -95,8 +92,9 @@ namespace se
 					if (it != heldMouseButtons.end())
 					{
 						heldMouseButtons.erase(it);
-						mouseButtonReleaseEvents.push_back(MouseButtonReleaseEvent());
-						mouseButtonReleaseEvents.back().button = button;
+						mouseButtonEvents.push_back(MouseButtonEvent());
+						mouseButtonEvents.back().type = MouseButtonEvent::Type::Release;
+						mouseButtonEvents.back().button = button;
 					}
 				}
 					break;
@@ -142,8 +140,10 @@ namespace se
 			{
 				if (!isKeyDown(*it))
 				{
-					keyboardReleaseEvents.push_back(KeyboardReleaseEvent());
-					keyboardReleaseEvents.back().key = *it;
+					keyboardEvents.push_back(KeyboardEvent());
+					keyboardEvents.back().type = KeyboardEvent::Type::Release;
+					keyboardEvents.back().key = *it;
+					keyboardEvents.back().scancode = getScancode(*it);
 					heldKeyboardKeys.erase(it);
 					it = heldKeyboardKeys.begin(); // Erase invalidates iterators, need to restart
 				}
@@ -158,8 +158,9 @@ namespace se
 			{
 				if (!isMouseButtonDown(*it))
 				{
-					mouseButtonReleaseEvents.push_back(MouseButtonReleaseEvent());
-					mouseButtonReleaseEvents.back().button = *it;
+					mouseButtonEvents.push_back(MouseButtonEvent());
+					mouseButtonEvents.back().type = MouseButtonEvent::Type::Release;
+					mouseButtonEvents.back().button = *it;
 					heldMouseButtons.erase(it);
 					it = heldMouseButtons.begin(); // Erase invalidates iterators, need to restart
 				}
@@ -172,15 +173,18 @@ namespace se
 			//Held keyboard keys -> keyboard key down events
 			for (std::unordered_set<Key>::iterator it = heldKeyboardKeys.begin(); it != heldKeyboardKeys.end(); it++)
 			{
-				keyboardDownEvents.push_back(KeyboardDownEvent());
-				keyboardDownEvents.back().key = *it;
+				keyboardEvents.push_back(KeyboardEvent());
+				keyboardEvents.back().type = KeyboardEvent::Type::Hold;
+				keyboardEvents.back().key = *it;
+				keyboardEvents.back().scancode = getScancode(*it);
 			}
 
 			//Held mouse buttons -> mouse button down events
 			for (std::unordered_set<MouseButton>::iterator it = heldMouseButtons.begin(); it != heldMouseButtons.end(); it++)
 			{
-				mouseButtonDownEvents.push_back(MouseButtonDownEvent());
-				mouseButtonDownEvents.back().button = *it;
+				mouseButtonEvents.push_back(MouseButtonEvent());
+				mouseButtonEvents.back().type = MouseButtonEvent::Type::Hold;
+				mouseButtonEvents.back().button = *it;
 			}
 
 			//Auto-generate the mouse hover event

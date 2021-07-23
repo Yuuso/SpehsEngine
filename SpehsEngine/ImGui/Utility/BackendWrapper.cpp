@@ -40,34 +40,35 @@ namespace se
 
             setInputPriority(_inputPriority);
 
-            eventSignaler.connectToKeyboardPressSignal(keyboardKeyPressedConnection0, [](const input::KeyboardPressEvent& event)
+            eventSignaler.connectToKeyboardSignal(keyboardConnection0, [](const input::KeyboardEvent& event)
                 {
-                    ImGuiIO& io = ::ImGui::GetIO();
-                    io.KeyShift = ((SDL_GetModState() & KMOD_SHIFT) != 0);
-                    io.KeyCtrl = ((SDL_GetModState() & KMOD_CTRL) != 0);
-                    io.KeyAlt = ((SDL_GetModState() & KMOD_ALT) != 0);
+                    if (event.isPress())
+                    {
+                        ImGuiIO& io = ::ImGui::GetIO();
+                        io.KeyShift = ((SDL_GetModState() & KMOD_SHIFT) != 0);
+                        io.KeyCtrl = ((SDL_GetModState() & KMOD_CTRL) != 0);
+                        io.KeyAlt = ((SDL_GetModState() & KMOD_ALT) != 0);
 #ifdef _WIN32
-                    io.KeySuper = false;
+                        io.KeySuper = false;
 #else
-                    io.KeySuper = ((SDL_GetModState() & KMOD_GUI) != 0);
+                        io.KeySuper = ((SDL_GetModState() & KMOD_GUI) != 0);
 #endif
-                    return false;
-                }, std::numeric_limits<int>::max());
-
-            eventSignaler.connectToKeyboardReleaseSignal(keyboardKeyReleasedConnection0, [](const input::KeyboardReleaseEvent& event)
-                {
-                    ImGuiIO& io = ImGui::GetIO();
-                    const int key = event.scancode;
-                    IM_ASSERT(key >= 0 && key < IM_ARRAYSIZE(io.KeysDown));
-                    io.KeysDown[key] = false;
-                    io.KeyShift = ((SDL_GetModState() & KMOD_SHIFT) != 0);
-                    io.KeyCtrl = ((SDL_GetModState() & KMOD_CTRL) != 0);
-                    io.KeyAlt = ((SDL_GetModState() & KMOD_ALT) != 0);
+                    }
+                    else if (event.isRelease())
+                    {
+                        ImGuiIO& io = ImGui::GetIO();
+                        const int key = event.scancode;
+                        IM_ASSERT(key >= 0 && key < IM_ARRAYSIZE(io.KeysDown));
+                        io.KeysDown[key] = false;
+                        io.KeyShift = ((SDL_GetModState() & KMOD_SHIFT) != 0);
+                        io.KeyCtrl = ((SDL_GetModState() & KMOD_CTRL) != 0);
+                        io.KeyAlt = ((SDL_GetModState() & KMOD_ALT) != 0);
 #ifdef _WIN32
-                    io.KeySuper = false;
+                        io.KeySuper = false;
 #else
-                    io.KeySuper = ((SDL_GetModState() & KMOD_GUI) != 0);
+                        io.KeySuper = ((SDL_GetModState() & KMOD_GUI) != 0);
 #endif
+                    }
                     return false;
                 }, std::numeric_limits<int>::max());
 
@@ -128,38 +129,34 @@ namespace se
                     }
                 }, inputPriority);
 
-            eventSignaler.connectToMouseButtonPressSignal(mouseButtonPressedConnection, [this](const input::MouseButtonPressEvent& event)
+            eventSignaler.connectToMouseButtonSignal(mouseButtonConnection, [this](const input::MouseButtonEvent& event)
                 {
-                    ImGuiIO& io = ImGui::GetIO();
-                    if (io.WantCaptureKeyboard)
+                    if (event.isPress())
                     {
-                        if (int(event.button) == SDL_BUTTON_LEFT)
+                        ImGuiIO& io = ImGui::GetIO();
+                        if (io.WantCaptureKeyboard)
                         {
-                            mousePressedStates[0] = true;
-                            ImGui_ImplSDL2_UpdateMousePressedStates(mousePressedStates);
-                            return true;
-                        }
-                        else if (int(event.button) == SDL_BUTTON_RIGHT)
-                        {
-                            mousePressedStates[1] = true;
-                            ImGui_ImplSDL2_UpdateMousePressedStates(mousePressedStates);
-                            return true;
-                        }
-                        else if (int(event.button) == SDL_BUTTON_MIDDLE)
-                        {
-                            mousePressedStates[2] = true;
-                            ImGui_ImplSDL2_UpdateMousePressedStates(mousePressedStates);
-                            return true;
-                        }
-                        else
-                        {
-                            return false;
+                            if (int(event.button) == SDL_BUTTON_LEFT)
+                            {
+                                mousePressedStates[0] = true;
+                                ImGui_ImplSDL2_UpdateMousePressedStates(mousePressedStates);
+                                return true;
+                            }
+                            else if (int(event.button) == SDL_BUTTON_RIGHT)
+                            {
+                                mousePressedStates[1] = true;
+                                ImGui_ImplSDL2_UpdateMousePressedStates(mousePressedStates);
+                                return true;
+                            }
+                            else if (int(event.button) == SDL_BUTTON_MIDDLE)
+                            {
+                                mousePressedStates[2] = true;
+                                ImGui_ImplSDL2_UpdateMousePressedStates(mousePressedStates);
+                                return true;
+                            }
                         }
                     }
-                    else
-                    {
-                        return false;
-                    }
+                    return false;
                 }, inputPriority);
 
             eventSignaler.connectToTextInputSignal(textInputConnection, [](const input::TextInputEvent& event)
@@ -176,20 +173,20 @@ namespace se
                     }
                 }, inputPriority);
 
-            eventSignaler.connectToKeyboardPressSignal(keyboardKeyPressedConnection, [](const input::KeyboardPressEvent& event)
+            eventSignaler.connectToKeyboardSignal(keyboardConnection, [](const input::KeyboardEvent& event)
                 {
-                    ImGuiIO& io = ImGui::GetIO();
-                    if (io.WantCaptureKeyboard)
+                    if (event.isPress())
                     {
-                        int key = event.scancode;
-                        IM_ASSERT(key >= 0 && key < IM_ARRAYSIZE(io.KeysDown));
-                        io.KeysDown[key] = true;
-                        return true;
+                        ImGuiIO& io = ImGui::GetIO();
+                        if (io.WantCaptureKeyboard)
+                        {
+                            int key = event.scancode;
+                            IM_ASSERT(key >= 0 && key < IM_ARRAYSIZE(io.KeysDown));
+                            io.KeysDown[key] = true;
+                            return true;
+                        }
                     }
-                    else
-                    {
-                        return false;
-                    }
+                    return false;
                 }, inputPriority);
 		}
 

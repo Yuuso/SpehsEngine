@@ -6,6 +6,78 @@
 
 namespace se
 {
+	Archive writeToArchive(const input::KeyboardEventParameters& eventParameters)
+	{
+		Archive archive;
+		se_write_to_archive(archive, eventParameters.key);
+		return archive;
+	}
+	Archive writeToArchive(const input::MouseButtonEventParameters& eventParameters)
+	{
+		Archive archive;
+		se_write_to_archive(archive, eventParameters.mouseButton);
+		return archive;
+	}
+	Archive writeToArchive(const input::MouseMotionEventParameters& eventParameters)
+	{
+		Archive archive;
+		return archive;
+	}
+	Archive writeToArchive(const input::MouseWheelEventParameters& eventParameters)
+	{
+		Archive archive;
+		return archive;
+	}
+	Archive writeToArchive(const input::MouseHoverEventParameters& eventParameters)
+	{
+		Archive archive;
+		return archive;
+	}
+	Archive writeToArchive(const input::JoystickButtonEventParameters& eventParameters)
+	{
+		Archive archive;
+		se_write_to_archive(archive, eventParameters.button);
+		return archive;
+	}
+	Archive writeToArchive(const input::JoystickAxisEventParameters& eventParameters)
+	{
+		Archive archive;
+		return archive;
+	}
+
+	bool readFromArchive(const Archive& archive, input::KeyboardEventParameters& eventParameters)
+	{
+		se_read_from_archive(archive, eventParameters.key);
+		return true;
+	}
+	bool readFromArchive(const Archive& archive, input::MouseButtonEventParameters& eventParameters)
+	{
+		se_read_from_archive(archive, eventParameters.mouseButton);
+		return true;
+	}
+	bool readFromArchive(const Archive& archive, input::MouseMotionEventParameters& eventParameters)
+	{
+		return true;
+	}
+	bool readFromArchive(const Archive& archive, input::MouseWheelEventParameters& eventParameters)
+	{
+		return true;
+	}
+	bool readFromArchive(const Archive& archive, input::MouseHoverEventParameters& eventParameters)
+	{
+		return true;
+	}
+	bool readFromArchive(const Archive& archive, input::JoystickButtonEventParameters& eventParameters)
+	{
+		se_read_from_archive(archive, eventParameters.button);
+		return true;
+	}
+	bool readFromArchive(const Archive& archive, input::JoystickAxisEventParameters& eventParameters)
+	{
+		se_read_from_archive(archive, eventParameters.axisIndex);
+		return true;
+	}
+
 	Archive writeToArchive(const input::CustomEventParameters& customEventParameters)
 	{
 		Archive archive;
@@ -13,22 +85,16 @@ namespace se
 		switch (customEventParameters.eventType)
 		{
 		case input::EventType::none: break;
-		case input::EventType::keyboardPress: se_write_to_archive(archive, customEventParameters.keyboardPressEvent); break;
-		case input::EventType::keyboardDown: se_write_to_archive(archive, customEventParameters.keyboardDownEvent); break;
-		case input::EventType::keyboardRelease: se_write_to_archive(archive, customEventParameters.keyboardReleaseEvent); break;
-		case input::EventType::textInput: se_write_to_archive(archive, customEventParameters.textInputEvent); break;
-		case input::EventType::mouseButtonPress: se_write_to_archive(archive, customEventParameters.mouseButtonPressEvent); break;
-		case input::EventType::mouseButtonDown: se_write_to_archive(archive, customEventParameters.mouseButtonDownEvent); break;
-		case input::EventType::mouseButtonRelease: se_write_to_archive(archive, customEventParameters.mouseButtonReleaseEvent); break;
-		case input::EventType::mouseMotion: se_write_to_archive(archive, customEventParameters.mouseMotionEvent); break;
-		case input::EventType::mouseWheel: se_write_to_archive(archive, customEventParameters.mouseWheelEvent); break;
-		case input::EventType::mouseHover: se_write_to_archive(archive, customEventParameters.mouseHoverEvent); break;
-		case input::EventType::joystickButtonPress: se_write_to_archive(archive, customEventParameters.joystickButtonPressEvent); break;
-		case input::EventType::joystickButtonDown: se_write_to_archive(archive, customEventParameters.joystickButtonDownEvent); break;
-		case input::EventType::joystickButtonRelease: se_write_to_archive(archive, customEventParameters.joystickButtonReleaseEvent); break;
-		case input::EventType::joystickAxis: se_write_to_archive(archive, customEventParameters.joystickAxisEvent); break;
-		case input::EventType::quit: se_write_to_archive(archive, customEventParameters.quitEvent); break;
-		case input::EventType::fileDrop: se_write_to_archive(archive, customEventParameters.fileDropEvent); break;
+		case input::EventType::quit: break;
+		case input::EventType::textInput: break;
+		case input::EventType::fileDrop: break;
+		case input::EventType::keyboard: se_write_to_archive(archive, customEventParameters.keyboardEventParameters); break;
+		case input::EventType::mouseButton: se_write_to_archive(archive, customEventParameters.mouseButtonEventParameters); break;
+		case input::EventType::mouseMotion: se_write_to_archive(archive, customEventParameters.mouseMotionEventParameters); break;
+		case input::EventType::mouseWheel: se_write_to_archive(archive, customEventParameters.mouseWheelEventParameters); break;
+		case input::EventType::mouseHover: se_write_to_archive(archive, customEventParameters.mouseHoverEventParameters); break;
+		case input::EventType::joystickButton: se_write_to_archive(archive, customEventParameters.joystickButtonEventParameters); break;
+		case input::EventType::joystickAxis: se_write_to_archive(archive, customEventParameters.joystickAxisEventParameters); break;
 		}
 		return archive;
 	}
@@ -39,22 +105,16 @@ namespace se
 		switch (customEventParameters.eventType)
 		{
 		case input::EventType::none: break;
-		case input::EventType::keyboardPress: se_read_from_archive(archive, customEventParameters.keyboardPressEvent); break;
-		case input::EventType::keyboardDown: se_read_from_archive(archive, customEventParameters.keyboardDownEvent); break;
-		case input::EventType::keyboardRelease: se_read_from_archive(archive, customEventParameters.keyboardReleaseEvent); break;
-		case input::EventType::textInput: se_read_from_archive(archive, customEventParameters.textInputEvent); break;
-		case input::EventType::mouseButtonPress: se_read_from_archive(archive, customEventParameters.mouseButtonPressEvent); break;
-		case input::EventType::mouseButtonDown: se_read_from_archive(archive, customEventParameters.mouseButtonDownEvent); break;
-		case input::EventType::mouseButtonRelease: se_read_from_archive(archive, customEventParameters.mouseButtonReleaseEvent); break;
-		case input::EventType::mouseMotion: se_read_from_archive(archive, customEventParameters.mouseMotionEvent); break;
-		case input::EventType::mouseWheel: se_read_from_archive(archive, customEventParameters.mouseWheelEvent); break;
-		case input::EventType::mouseHover: se_read_from_archive(archive, customEventParameters.mouseHoverEvent); break;
-		case input::EventType::joystickButtonPress: se_read_from_archive(archive, customEventParameters.joystickButtonPressEvent); break;
-		case input::EventType::joystickButtonDown: se_read_from_archive(archive, customEventParameters.joystickButtonDownEvent); break;
-		case input::EventType::joystickButtonRelease: se_read_from_archive(archive, customEventParameters.joystickButtonReleaseEvent); break;
-		case input::EventType::joystickAxis: se_read_from_archive(archive, customEventParameters.joystickAxisEvent); break;
-		case input::EventType::quit: se_read_from_archive(archive, customEventParameters.quitEvent); break;
-		case input::EventType::fileDrop: se_read_from_archive(archive, customEventParameters.fileDropEvent); break;
+		case input::EventType::quit: break;
+		case input::EventType::textInput: break;
+		case input::EventType::fileDrop: break;
+		case input::EventType::keyboard: se_read_from_archive(archive, customEventParameters.keyboardEventParameters); break;
+		case input::EventType::mouseButton: se_read_from_archive(archive, customEventParameters.mouseButtonEventParameters); break;
+		case input::EventType::mouseMotion: se_read_from_archive(archive, customEventParameters.mouseMotionEventParameters); break;
+		case input::EventType::mouseWheel: se_read_from_archive(archive, customEventParameters.mouseWheelEventParameters); break;
+		case input::EventType::mouseHover: se_read_from_archive(archive, customEventParameters.mouseHoverEventParameters); break;
+		case input::EventType::joystickButton: se_read_from_archive(archive, customEventParameters.joystickButtonEventParameters); break;
+		case input::EventType::joystickAxis: se_read_from_archive(archive, customEventParameters.joystickAxisEventParameters); break;
 		}
 		return true;
 	}

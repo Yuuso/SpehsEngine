@@ -1,7 +1,9 @@
 #pragma once
+
 #include "SpehsEngine/Input/Event.h"
 #include <vector>
 #include <unordered_set>
+
 
 namespace se
 {
@@ -19,38 +21,26 @@ namespace se
 			/* Discards all previous events and polls for new ones. */
 			void pollEvents();
 			
-			const std::vector<KeyboardPressEvent>& getKeyboardPressEvents() const { return keyboardPressEvents; }
-			const std::vector<KeyboardDownEvent>& getKeyboardDownEvents() const { return keyboardDownEvents; }
-			const std::vector<KeyboardReleaseEvent>& getKeyboardReleaseEvents() const { return keyboardReleaseEvents; }
+			const std::vector<KeyboardEvent>& getKeyboardEvents() const { return keyboardEvents; }
 			const std::vector<TextInputEvent>& getTextInputEvents() const { return textInputEvents; }
 			const std::vector<MouseHoverEvent>& getMouseHoverEvents() const { return mouseHoverEvents; }
-			const std::vector<MouseButtonPressEvent>& getMouseButtonPressEvents() const { return mouseButtonPressEvents; }
-			const std::vector<MouseButtonDownEvent>& getMouseButtonDownEvents() const { return mouseButtonDownEvents; }
-			const std::vector<MouseButtonReleaseEvent>& getMouseButtonReleaseEvents() const { return mouseButtonReleaseEvents; }
+			const std::vector<MouseButtonEvent>& getMouseButtonEvents() const { return mouseButtonEvents; }
 			const std::vector<MouseMotionEvent>& getMouseMotionEvents() const { return mouseMotionEvents; }
 			const std::vector<MouseWheelEvent>& getMouseWheelEvents() const { return mouseWheelEvents; }
-			//const std::vector<JoystickButtonPressEvent>& getJoystickButtonPressEvents() const { return joystickButtonPressEvents; }
-			//const std::vector<JoystickButtonDownEvent>& getJoystickButtonDownEvents() const { return joystickButtonDownEvents; }
-			//const std::vector<JoystickButtonReleaseEvent>& getJoystickButtonReleaseEvents() const { return joystickButtonReleaseEvents; }
+			//const std::vector<JoystickButtonEvent>& getJoystickButtonPressEvents() const { return joystickButtonEvents; }
 			//const std::vector<JoystickAxisEvent>& getJoystickAxisEvents() const { return joystickAxisEvents; }
 			const std::vector<QuitEvent>& getQuitEvents() const { return quitEvents; }
 			const std::vector<FileDropEvent>& getFileDropEvents() const { return fileDropEvents; }
 
 		private:
 
-			std::vector<KeyboardPressEvent> keyboardPressEvents;
-			std::vector<KeyboardDownEvent> keyboardDownEvents;
-			std::vector<KeyboardReleaseEvent> keyboardReleaseEvents;
+			std::vector<KeyboardEvent> keyboardEvents;
 			std::vector<TextInputEvent> textInputEvents;
 			std::vector<MouseHoverEvent> mouseHoverEvents;
-			std::vector<MouseButtonPressEvent> mouseButtonPressEvents;
-			std::vector<MouseButtonDownEvent> mouseButtonDownEvents;
-			std::vector<MouseButtonReleaseEvent> mouseButtonReleaseEvents;
+			std::vector<MouseButtonEvent> mouseButtonEvents;
 			std::vector<MouseMotionEvent> mouseMotionEvents;
 			std::vector<MouseWheelEvent> mouseWheelEvents;
-			//std::vector<JoystickButtonPressEvent> joystickButtonPressEvents;
-			//std::vector<JoystickButtonDownEvent> joystickButtonDownEvents;
-			//std::vector<JoystickButtonReleaseEvent> joystickButtonReleaseEvents;
+			//std::vector<JoystickButtonEvent> joystickButtonEvents;
 			//std::vector<JoystickAxisEvent> joystickAxisEvents;
 			std::vector<QuitEvent> quitEvents;
 			std::vector<FileDropEvent> fileDropEvents;
