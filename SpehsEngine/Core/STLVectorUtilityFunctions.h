@@ -126,3 +126,33 @@ const T* tryFind(const std::vector<T>& vector, const T& t)
 	}
 	return nullptr;
 }
+
+template<typename T>
+bool findAndErase(std::vector<T>& vector, const T& t)
+{
+	for (size_t i = 0; i < vector.size(); i++)
+	{
+		if (vector[i] == t)
+		{
+			vector.erase(vector.begin() + i);
+			return true;
+		}
+	}
+	return false;
+}
+
+
+template<typename T>
+bool findAndSwapOut(std::vector<T>& vector, const T& t)
+{
+	for (size_t i = 0; i < vector.size(); i++)
+	{
+		if (vector[i] == t)
+		{
+			std::swap(vector[i], vector.back());
+			vector.pop_back();
+			return true;
+		}
+	}
+	return false;
+}
