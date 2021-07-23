@@ -142,7 +142,7 @@ bool findAndErase(std::vector<T>& vector, const T& t)
 }
 
 template<typename T>
-bool findAndEraseIndex(std::vector<T>& vector, const size_t index)
+bool eraseIndex(std::vector<T>& vector, const size_t index)
 {
 	if (index < vector.size())
 	{
@@ -168,7 +168,7 @@ bool findAndSwapOut(std::vector<T>& vector, const T& t)
 }
 
 template<typename T>
-bool findAndSwapOutIndex(std::vector<T>& vector, const size_t index)
+bool swapOutIndex(std::vector<T>& vector, const size_t index)
 {
 	if (index < vector.size())
 	{
