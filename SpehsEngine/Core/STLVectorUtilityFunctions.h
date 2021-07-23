@@ -141,6 +141,16 @@ bool findAndErase(std::vector<T>& vector, const T& t)
 	return false;
 }
 
+template<typename T>
+bool findAndEraseIndex(std::vector<T>& vector, const size_t index)
+{
+	if (index < vector.size())
+	{
+		vector.erase(vector.begin() + index);
+		return true;
+	}
+	return false;
+}
 
 template<typename T>
 bool findAndSwapOut(std::vector<T>& vector, const T& t)
@@ -153,6 +163,18 @@ bool findAndSwapOut(std::vector<T>& vector, const T& t)
 			vector.pop_back();
 			return true;
 		}
+	}
+	return false;
+}
+
+template<typename T>
+bool findAndSwapOutIndex(std::vector<T>& vector, const size_t index)
+{
+	if (index < vector.size())
+	{
+		std::swap(vector[index], vector.back());
+		vector.pop_back();
+		return true;
 	}
 	return false;
 }
