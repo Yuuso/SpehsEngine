@@ -1,6 +1,10 @@
 #include "stdafx.h"
 #include "SpehsEngine/Graphics/Camera.h"
 
+#pragma warning(disable : 4127)
+#define GLM_ENABLE_EXPERIMENTAL
+#include <glm/gtx/transform.hpp>
+
 
 namespace se
 {
@@ -96,6 +100,34 @@ namespace se
 		{
 			se_assert(_far > nearPlane);
 			farPlane = _far;
+		}
+
+		glm::mat4 Camera::getViewMatrix()
+		{
+			return glm::lookAt(getPosition(), getTarget(), getUp());
+		}
+		glm::mat4 Camera::getProjectionMatrix(const float _viewWidth, const float _viewHeight)
+		{
+			switch (getProjection())
+			{
+				case Projection::Perspective:
+				{
+					return glm::perspective(glm::radians(getFov()),
+											_viewWidth / _viewHeight,
+											getNear(), getFar());
+					break;
+				}
+				case Projection::Orthographic:
+				{
+					return glm::orthoRH_ZO(-(_viewWidth * 0.5f) * getZoom(), (_viewWidth * 0.5f) * getZoom(),
+										   -(_viewHeight * 0.5f) * getZoom(), (_viewHeight * 0.5f) * getZoom(),
+										   getNear(), getFar());
+					break;
+				}
+			}
+
+			se_assert(false);
+			return glm::mat4(1.0f);
 		}
 	}
 }

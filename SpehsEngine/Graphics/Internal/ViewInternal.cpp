@@ -5,10 +5,6 @@
 #include "SpehsEngine/Core/SE_Assert.h"
 #include "SpehsEngine/Graphics/Internal/WindowInternal.h"
 
-#pragma warning(disable : 4127)
-#define GLM_ENABLE_EXPERIMENTAL
-#include <glm/gtx/transform.hpp>
-
 
 namespace se
 {
@@ -72,31 +68,8 @@ namespace se
 
 			// Camera
 			{
-				glm::mat4 viewMatrix;
-				glm::mat4 projectionMatrix;
-
-				switch (view->camera.getProjection())
-				{
-					case Projection::Perspective:
-					{
-						projectionMatrix = glm::perspective(glm::radians(view->camera.getFov()),
-															viewWidthPixels / viewHeightPixels,
-															view->camera.getNear(), view->camera.getFar());
-						break;
-					}
-					case Projection::Orthographic:
-					{
-						projectionMatrix = glm::orthoRH_ZO(-(viewWidthPixels * 0.5f) * view->camera.getZoom(),  (viewWidthPixels * 0.5f) * view->camera.getZoom(),
-														   -(viewHeightPixels * 0.5f) * view->camera.getZoom(), (viewHeightPixels * 0.5f) * view->camera.getZoom(),
-														   view->camera.getNear(), view->camera.getFar());
-						break;
-					}
-					default:
-						se_assert(false);
-						break;
-				}
-
-				viewMatrix = glm::lookAt(view->camera.getPosition(), view->camera.getTarget(), view->camera.getUp());
+				const glm::mat4 viewMatrix = view->camera.getViewMatrix();
+				const glm::mat4 projectionMatrix = view->camera.getProjectionMatrix(viewWidthPixels, viewHeightPixels);
 
 				bgfx::setViewTransform(_renderContext.currentViewId, &viewMatrix, &projectionMatrix);
 				bgfx::setViewRect(_renderContext.currentViewId, (uint16_t)viewOffsetXPixels, (uint16_t)viewOffsetYPixels, (uint16_t)viewWidthPixels, (uint16_t)viewHeightPixels);

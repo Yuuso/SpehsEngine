@@ -1,5 +1,6 @@
 #pragma once
 
+#include "glm/mat4x4.hpp"
 #include "glm/vec3.hpp"
 #include "SpehsEngine/Graphics/Types.h"
 
@@ -35,6 +36,9 @@ namespace se
 			void				setFov(const float _fov);
 			void				setNear(const float _near);
 			void				setFar(const float _far);
+
+			glm::mat4			getViewMatrix();
+			glm::mat4			getProjectionMatrix(const float _viewWidth, const float _viewHeight);
 
 		private:
 
