@@ -131,9 +131,9 @@ namespace ImGui
 
 	inline void Image(
 		  const std::shared_ptr<se::graphics::Texture>& _texture
-		, const glm::vec2 scale			= glm::vec2(1.0f, 1.0f)
-		, const glm::vec2 uv0			= glm::vec2(0.0f, 0.0f)
-		, const glm::vec2 uv1			= glm::vec2(1.0f, 1.0f)
+		, const ImVec2 scale			= ImVec2(1.0f, 1.0f)
+		, const ImVec2 uv0				= ImVec2(0.0f, 0.0f)
+		, const ImVec2 uv1				= ImVec2(1.0f, 1.0f)
 		, const se::Color tintColor		= se::Color(1.0f, 1.0f, 1.0f, 1.0f)
 		, const se::Color borderColor	= se::Color(1.0f, 1.0f, 1.0f, 1.0f)
 		)
@@ -143,8 +143,8 @@ namespace ImGui
 		ImGui::Image(
 			userTextureData.id
 			, ImVec2(float(_texture->getWidth()) * scale.x, float(_texture->getHeight()) * scale.y)
-			, (const ImVec2&)uv0
-			, (const ImVec2&)uv1
+			, uv0
+			, uv1
 			, se::toImVec4(tintColor)
 			, se::toImVec4(borderColor)
 			);
@@ -152,9 +152,9 @@ namespace ImGui
 
 	inline bool ImageButton(
 		const std::shared_ptr<se::graphics::Texture>& _texture
-		, const glm::vec2 scale				= glm::vec2(1.0f, 1.0f)
-		, const glm::vec2 uv0				= glm::vec2(0.0f, 0.0f)
-		, const glm::vec2 uv1				= glm::vec2(1.0f, 1.0f)
+		, const ImVec2 scale				= ImVec2(1.0f, 1.0f)
+		, const ImVec2 uv0					= ImVec2(0.0f, 0.0f)
+		, const ImVec2 uv1					= ImVec2(1.0f, 1.0f)
 		, const int framePadding			= 1
 		, const se::Color tintColor			= se::Color(1.0f, 1.0f, 1.0f, 1.0f)
 		, const se::Color backgroundColor	= se::Color(0.0f, 0.0f, 0.0f, 0.0f)
@@ -165,8 +165,8 @@ namespace ImGui
 		return ImGui::ImageButton(
 			userTextureData.id
 			, ImVec2(float(_texture->getWidth()) * scale.x, float(_texture->getHeight()) * scale.y)
-			, (const ImVec2&)uv0
-			, (const ImVec2&)uv1
+			, uv0
+			, uv1
 			, framePadding
 			, se::toImVec4(backgroundColor)
 			, se::toImVec4(tintColor)
