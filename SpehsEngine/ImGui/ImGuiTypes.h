@@ -9,8 +9,8 @@ namespace se
 	{
 		enum ImGuiFont
 		{
-			Regular,
 			Mono,
+			Regular,
 			Count
 		};
 

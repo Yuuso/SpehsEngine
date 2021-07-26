@@ -89,8 +89,8 @@ namespace se
 
                     const ImWchar* ranges = io.Fonts->GetGlyphRangesDefault();
                     constexpr float fontSizePixels = 18.0f;
-                    impl::font[ImGuiFont::Regular] = io.Fonts->AddFontFromMemoryTTF((void*)font_openSansRegularTtf, sizeof(font_openSansRegularTtf), fontSizePixels, &config, ranges);
                     impl::font[ImGuiFont::Mono] = io.Fonts->AddFontFromMemoryTTF((void*)font_anonymousProRegularTtf, sizeof(font_anonymousProRegularTtf), fontSizePixels - 3.0f, &config, ranges);
+                    impl::font[ImGuiFont::Regular] = io.Fonts->AddFontFromMemoryTTF((void*)font_openSansRegularTtf, sizeof(font_openSansRegularTtf), fontSizePixels, &config, ranges);
                 }
 
                 io.Fonts->GetTexDataAsRGBA32(&data, &width, &height);
