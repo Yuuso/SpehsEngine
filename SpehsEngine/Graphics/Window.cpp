@@ -122,6 +122,10 @@ namespace se
 		{
 			return confinedInput;
 		}
+		const int Window::getDisplayIndex() const
+		{
+			return displayIndex;
+		}
 
 		void Window::setName(const std::string_view _name)
 		{

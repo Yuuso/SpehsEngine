@@ -48,6 +48,7 @@ namespace se
 			const bool				getMouseFocus() const;
 			const bool				getKeyboardFocus() const;
 			const bool				getConfinedInput() const;
+			const int				getDisplayIndex() const;
 
 			void					setName(const std::string_view _name);
 			void					setX(const int _x);
@@ -81,6 +82,7 @@ namespace se
 			bool					resizable			= true;
 			bool					borderless			= false;
 			float					opacity				= 1.0f;
+			int						displayIndex		= -1;
 
 			bool					shown				= true;
 			bool					minimized			= false;

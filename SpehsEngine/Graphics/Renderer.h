@@ -46,6 +46,7 @@ namespace se
 			static const RendererBackend getRendererBackend();
 			static const glm::ivec2 getDisplaySize();
 			static const glm::vec2 getDisplayDPI();
+			static const std::vector<DisplayMode> getDisplayModes(const int _displayIndex);
 			static const int getDisplayRefreshRate();
 
 			static void debugTextPrintf(const uint16_t _column, const uint16_t _line, const char* _format, ...);

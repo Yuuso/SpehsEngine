@@ -70,6 +70,7 @@ namespace se
 				SDL_SetWindowOpacity(sdlWindow, window->getOpacity());
 			}
 			window->updateFlags = 0;
+			window->displayIndex = SDL_GetWindowDisplayIndex(sdlWindow);
 
 			SDL_SysWMinfo wmi;
 			SDL_VERSION(&wmi.version);
@@ -285,6 +286,7 @@ namespace se
 				{
 					window->x = _event.data1;
 					window->y = _event.data2;
+					window->displayIndex = SDL_GetWindowDisplayIndex(sdlWindow);
 					break;
 				}
 				case SDL_WINDOWEVENT_SIZE_CHANGED:

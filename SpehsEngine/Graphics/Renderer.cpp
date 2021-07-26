@@ -218,6 +218,38 @@ namespace se
 			return result;
 		}
 
+		const std::vector<DisplayMode> Renderer::getDisplayModes(const int _displayIndex)
+		{
+			std::vector<DisplayMode> result;
+			const int displayModeCount = SDL_GetNumDisplayModes(_displayIndex);
+			for (int i = 0; i < displayModeCount; i++)
+			{
+				SDL_DisplayMode sdlDisplayMode;
+				if (SDL_GetDisplayMode(_displayIndex, i, &sdlDisplayMode) == 0)
+				{
+					bool duplicate = false;
+					for (const DisplayMode& displayMode : result)
+					{
+						if (sdlDisplayMode.w == displayMode.width &&
+							sdlDisplayMode.h == displayMode.height &&
+							sdlDisplayMode.refresh_rate == displayMode.refreshRate)
+						{
+							duplicate = true;
+							break;
+						}
+					}
+					if (duplicate)
+						continue;
+
+					result.push_back(DisplayMode());
+					result.back().width = sdlDisplayMode.w;
+					result.back().height = sdlDisplayMode.h;
+					result.back().refreshRate = sdlDisplayMode.refresh_rate;
+				}
+			}
+			return result;
+		}
+
 		const int Renderer::getDisplayRefreshRate()
 		{
 			se_assert(initialized);

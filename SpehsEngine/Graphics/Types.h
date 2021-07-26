@@ -58,6 +58,13 @@ namespace se
 			WebGPU
 		};
 
+		struct DisplayMode
+		{
+			int width;
+			int height;
+			int refreshRate;
+		};
+
 		typedef uint32_t PrimitiveUpdateFlagsType;
 		typedef uint32_t WindowUpdateFlagsType;
 
