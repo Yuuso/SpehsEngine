@@ -56,6 +56,8 @@ namespace se
 			const std::string&				getName() const;
 			std::shared_ptr<Material>		getMaterial(const size_t _slot = 0) const;
 			const size_t					getNumMaterials() const;
+			const Color&					getColor() const;
+			const RenderFlagsType			getRenderFlags() const;
 
 			std::shared_ptr<VertexBuffer>	getInstances() const;
 			void							setInstances(std::shared_ptr<VertexBuffer> _instances);

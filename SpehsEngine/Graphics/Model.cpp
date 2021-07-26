@@ -205,6 +205,14 @@ namespace se
 		{
 			return materials.size();
 		}
+		const Color& Model::getColor() const
+		{
+			return color;
+		}
+		const RenderFlagsType Model::getRenderFlags() const
+		{
+			return renderFlags;
+		}
 
 		std::shared_ptr<VertexBuffer> Model::getInstances() const
 		{
