@@ -137,6 +137,7 @@ namespace se
 		}
 		void Text::setMaterial(std::shared_ptr<Material> _material)
 		{
+			se_assert(_material);
 			Primitive::setMaterial(_material);
 			textChanged();
 			_material->connectToFontChangedSignal(fontChangedConnection, boost::bind(&Text::fontChanged, this));
@@ -328,8 +329,9 @@ namespace se
 
 			std::shared_ptr<IndexBuffer> newIndexBuffer = std::make_shared<IndexBuffer>();
 			IndexBuffer& newIndices = *newIndexBuffer.get();
+			const size_t numVertices = newVertices.size();
+			if (numVertices > 0)
 			{
-				const size_t numVertices = newVertices.size();
 				se_assert(numVertices % 4 == 0);
 				const size_t numQuads = numVertices / 4;
 				newIndices.resize((numVertices - 2) * 3);
