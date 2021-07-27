@@ -129,6 +129,11 @@ namespace ImGui
 		TextColored((ImVec4&)color, label.c_str());
 	}
 
+	inline ImVec2 SizeToScale(const std::shared_ptr<se::graphics::Texture>& _texture, const ImVec2 _size)
+	{
+		return ImVec2(_size.x / float(_texture->getWidth()), _size.y / float(_texture->getHeight()));
+	}
+
 	inline void Image(
 		  const std::shared_ptr<se::graphics::Texture>& _texture
 		, const ImVec2 scale			= ImVec2(1.0f, 1.0f)
