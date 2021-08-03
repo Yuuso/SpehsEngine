@@ -3,6 +3,9 @@
 #include "SpehsEngine/Input/InputEnumerations.h"
 #include "SpehsEngine/Input/Key.h"
 #include "SpehsEngine/Input/MouseButton.h"
+#include "SpehsEngine/Input/JoystickId.h"
+#include "SpehsEngine/Input/JoystickGuid.h"
+#include "SpehsEngine/Input/JoystickHatState.h"
 #include "glm/vec2.hpp"
 #include <string>
 
@@ -11,8 +14,6 @@ namespace se
 {
 	namespace input
 	{
-		class Joystick;
-
 		enum class EventType
 		{
 			none,
@@ -24,6 +25,7 @@ namespace se
 			mouseHover,
 			joystickButton,
 			joystickAxis,
+			joystickHat,
 			quit,
 			fileDrop,
 		};
@@ -93,19 +95,35 @@ namespace se
 			enum class Type : uint8_t { None, Press, Hold, Release };
 			static EventType getEventTypeStatic() { return EventType::joystickButton; }
 			EventType getEventType() const { return getEventTypeStatic(); }
-			bool operator==(const JoystickButtonEvent& other) const { return joystick == other.joystick && button == other.button && type == other.type; }
-			const Joystick* joystick = nullptr;
-			KeyboardKey button = KeyboardKey::KEYBOARD_UNKNOWN;
+			bool operator==(const JoystickButtonEvent& other) const { return joystickId == other.joystickId && buttonIndex == other.buttonIndex && type == other.type && joystickGuid == other.joystickGuid; }
+			bool isPress() const { return type == Type::Press; }
+			bool isHold() const { return type == Type::Hold; }
+			bool isRelease() const { return type == Type::Release; }
+
+			JoystickGuid joystickGuid;
+			JoystickId joystickId;
+			uint8_t buttonIndex = 0;
 			Type type = Type::None;
 		};
 		struct JoystickAxisEvent
 		{
 			static EventType getEventTypeStatic() { return EventType::joystickAxis; }
 			EventType getEventType() const { return getEventTypeStatic(); }
-			bool operator==(const JoystickAxisEvent& other) const { return joystick == other.joystick && axisIndex == other.axisIndex && axisMovement == other.axisMovement; }
-			const Joystick* joystick = nullptr; // TODO: joystick pointer to joystick id
-			int axisIndex = 0;
-			float axisMovement = 0.0;
+			bool operator==(const JoystickAxisEvent& other) const { return joystickId == other.joystickId && axisIndex == other.axisIndex && axisState == other.axisState && joystickGuid == other.joystickGuid; }
+			JoystickGuid joystickGuid;
+			JoystickId joystickId;
+			int32_t axisState = 0;
+			uint8_t axisIndex = 0;
+		};
+		struct JoystickHatEvent
+		{
+			static EventType getEventTypeStatic() { return EventType::joystickHat; }
+			EventType getEventType() const { return getEventTypeStatic(); }
+			bool operator==(const JoystickHatEvent& other) const { return joystickId == other.joystickId && hatIndex == other.hatIndex && joystickHatState == other.joystickHatState && joystickGuid == other.joystickGuid; }
+			JoystickGuid joystickGuid;
+			JoystickId joystickId;
+			uint8_t hatIndex = 0;
+			JoystickHatState joystickHatState = JoystickHatState::Center;
 		};
 
 		struct QuitEvent

@@ -2,6 +2,7 @@
 #include "SpehsEngine/Input/CustomEventParametersUtilityFunctions.h"
 
 #include "SpehsEngine/Input/EventUtilityFunctions.h"
+#include "SpehsEngine/Input/JoystickUtilityFunctions.h"
 
 
 namespace se
@@ -36,12 +37,22 @@ namespace se
 	Archive writeToArchive(const input::JoystickButtonEventParameters& eventParameters)
 	{
 		Archive archive;
-		se_write_to_archive(archive, eventParameters.button);
+		se_write_to_archive(archive, eventParameters.joystickGuid);
+		se_write_to_archive(archive, eventParameters.buttonIndex);
 		return archive;
 	}
 	Archive writeToArchive(const input::JoystickAxisEventParameters& eventParameters)
 	{
 		Archive archive;
+		se_write_to_archive(archive, eventParameters.joystickGuid);
+		se_write_to_archive(archive, eventParameters.axisIndex);
+		return archive;
+	}
+	Archive writeToArchive(const input::JoystickHatEventParameters& eventParameters)
+	{
+		Archive archive;
+		se_write_to_archive(archive, eventParameters.joystickGuid);
+		se_write_to_archive(archive, eventParameters.hatIndex);
 		return archive;
 	}
 
@@ -69,12 +80,20 @@ namespace se
 	}
 	bool readFromArchive(const Archive& archive, input::JoystickButtonEventParameters& eventParameters)
 	{
-		se_read_from_archive(archive, eventParameters.button);
+		se_read_from_archive(archive, eventParameters.joystickGuid);
+		se_read_from_archive(archive, eventParameters.buttonIndex);
 		return true;
 	}
 	bool readFromArchive(const Archive& archive, input::JoystickAxisEventParameters& eventParameters)
 	{
+		se_read_from_archive(archive, eventParameters.joystickGuid);
 		se_read_from_archive(archive, eventParameters.axisIndex);
+		return true;
+	}
+	bool readFromArchive(const Archive& archive, input::JoystickHatEventParameters& eventParameters)
+	{
+		se_read_from_archive(archive, eventParameters.joystickGuid);
+		se_read_from_archive(archive, eventParameters.hatIndex);
 		return true;
 	}
 
@@ -95,6 +114,7 @@ namespace se
 		case input::EventType::mouseHover: se_write_to_archive(archive, customEventParameters.mouseHoverEventParameters); break;
 		case input::EventType::joystickButton: se_write_to_archive(archive, customEventParameters.joystickButtonEventParameters); break;
 		case input::EventType::joystickAxis: se_write_to_archive(archive, customEventParameters.joystickAxisEventParameters); break;
+		case input::EventType::joystickHat: se_write_to_archive(archive, customEventParameters.joystickHatEventParameters); break;
 		}
 		return archive;
 	}
@@ -115,6 +135,7 @@ namespace se
 		case input::EventType::mouseHover: se_read_from_archive(archive, customEventParameters.mouseHoverEventParameters); break;
 		case input::EventType::joystickButton: se_read_from_archive(archive, customEventParameters.joystickButtonEventParameters); break;
 		case input::EventType::joystickAxis: se_read_from_archive(archive, customEventParameters.joystickAxisEventParameters); break;
+		case input::EventType::joystickHat: se_read_from_archive(archive, customEventParameters.joystickHatEventParameters); break;
 		}
 		return true;
 	}

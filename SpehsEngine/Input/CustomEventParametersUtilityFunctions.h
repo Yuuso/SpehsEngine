@@ -69,14 +69,21 @@ namespace std
 	{
 		size_t operator()(const se::input::JoystickButtonEventParameters& eventParameters) const
 		{
-			return size_t(eventParameters.button);
+			return size_t(se::murmurHash3_x86_32(&eventParameters.joystickGuid.data, 17, 0));
 		}
 	};
 	template<> struct hash<se::input::JoystickAxisEventParameters>
 	{
 		size_t operator()(const se::input::JoystickAxisEventParameters& eventParameters) const
 		{
-			return size_t(eventParameters.axisIndex);
+			return size_t(se::murmurHash3_x86_32(&eventParameters.joystickGuid.data, 17, 0));
+		}
+	};
+	template<> struct hash<se::input::JoystickHatEventParameters>
+	{
+		size_t operator()(const se::input::JoystickHatEventParameters& eventParameters) const
+		{
+			return size_t(se::murmurHash3_x86_32(&eventParameters.joystickGuid.data, 17, 0));
 		}
 	};
 
@@ -99,6 +106,7 @@ namespace std
 			case se::input::EventType::mouseHover: data[1] = std::hash<se::input::MouseHoverEventParameters>()(customEventParameters.mouseHoverEventParameters); break;
 			case se::input::EventType::joystickButton: data[1] = std::hash<se::input::JoystickButtonEventParameters>()(customEventParameters.joystickButtonEventParameters); break;
 			case se::input::EventType::joystickAxis: data[1] = std::hash<se::input::JoystickAxisEventParameters>()(customEventParameters.joystickAxisEventParameters); break;
+			case se::input::EventType::joystickHat: data[1] = std::hash<se::input::JoystickHatEventParameters>()(customEventParameters.joystickHatEventParameters); break;
 			}
 			return size_t(se::murmurHash3_x86_32(data, sizeof(size_t) * 2, 0));
 		}

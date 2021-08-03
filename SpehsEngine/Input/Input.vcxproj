@@ -141,6 +141,10 @@
     <ClInclude Include="InputManager.h" />
     <ClInclude Include="InputState.h" />
     <ClInclude Include="Joystick.h" />
+    <ClInclude Include="JoystickGuid.h" />
+    <ClInclude Include="JoystickHatState.h" />
+    <ClInclude Include="JoystickId.h" />
+    <ClInclude Include="JoystickUtilityFunctions.h" />
     <ClInclude Include="Key.h" />
     <ClInclude Include="KeyboardRecorder.h" />
     <ClInclude Include="KeyUtilityFunctions.h" />
@@ -165,6 +169,8 @@
     <ClCompile Include="InputManager.cpp" />
     <ClCompile Include="InputState.cpp" />
     <ClCompile Include="Joystick.cpp" />
+    <ClCompile Include="JoystickGuid.cpp" />
+    <ClCompile Include="JoystickUtilityFunctions.cpp" />
     <ClCompile Include="Key.cpp" />
     <ClCompile Include="KeyboardRecorder.cpp" />
     <ClCompile Include="KeyUtilityFunctions.cpp" />

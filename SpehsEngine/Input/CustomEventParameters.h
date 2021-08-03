@@ -1,6 +1,7 @@
 #pragma once
 
 #include "SpehsEngine/Input/Event.h"
+#include "SpehsEngine/Input/JoystickUtilityFunctions.h"
 
 
 namespace se
@@ -160,7 +161,7 @@ namespace se
 		{
 			bool check(const JoystickButtonEvent& event) const
 			{
-				return button == event.button;
+				return buttonIndex == event.buttonIndex && joystickGuid == getJoystickGuid(event.joystickId);
 			}
 			void set(ICustomEvent& customEvent, const JoystickButtonEvent& event) const
 			{
@@ -181,27 +182,48 @@ namespace se
 			}
 			bool operator==(const JoystickButtonEventParameters& other) const
 			{
-				return button == other.button;
+				return buttonIndex == other.buttonIndex && joystickGuid == other.joystickGuid;
 			}
-			KeyboardKey button = KeyboardKey::KEYBOARD_UNKNOWN;
+			JoystickGuid joystickGuid;
+			uint8_t buttonIndex = 0;
 		};
 
 		struct JoystickAxisEventParameters
 		{
 			bool check(const JoystickAxisEvent& event) const
 			{
-				return axisIndex == event.axisIndex;
+				return axisIndex == event.axisIndex && joystickGuid == getJoystickGuid(event.joystickId);
 			}
 			void set(ICustomEvent& customEvent, const JoystickAxisEvent& event) const
 			{
-				customEvent.type = ICustomEvent::Type::Float;
-				customEvent.value.f = event.axisMovement;
+				customEvent.type = ICustomEvent::Type::Int;
+				customEvent.value.i = event.axisState;
 			}
 			bool operator==(const JoystickAxisEventParameters& other) const
 			{
-				return axisIndex == other.axisIndex;
+				return axisIndex == other.axisIndex && joystickGuid == other.joystickGuid;
 			}
-			int axisIndex = 0;
+			JoystickGuid joystickGuid;
+			uint8_t axisIndex = 0;
+		};
+
+		struct JoystickHatEventParameters
+		{
+			bool check(const JoystickHatEvent& event) const
+			{
+				return hatIndex == event.hatIndex && joystickGuid == getJoystickGuid(event.joystickId);
+			}
+			void set(ICustomEvent& customEvent, const JoystickHatEvent& event) const
+			{
+				customEvent.type = ICustomEvent::Type::Int;
+				customEvent.value.i = int(event.joystickHatState);
+			}
+			bool operator==(const JoystickHatEventParameters& other) const
+			{
+				return hatIndex == other.hatIndex && joystickGuid == other.joystickGuid;
+			}
+			JoystickGuid joystickGuid;
+			uint8_t hatIndex = 0;
 		};
 
 		struct CustomEventParameters
@@ -220,6 +242,7 @@ namespace se
 			MouseHoverEventParameters mouseHoverEventParameters;
 			JoystickButtonEventParameters joystickButtonEventParameters;
 			JoystickAxisEventParameters joystickAxisEventParameters;
+			JoystickHatEventParameters joystickHatEventParameters;
 		};
 	}
 }

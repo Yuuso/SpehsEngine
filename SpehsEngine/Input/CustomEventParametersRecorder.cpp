@@ -2,6 +2,7 @@
 #include "SpehsEngine/Input/CustomEventParametersRecorder.h"
 
 #include "SpehsEngine/Input/EventSignaler.h"
+#include "SpehsEngine/Input/JoystickUtilityFunctions.h"
 
 
 namespace se
@@ -40,6 +41,23 @@ namespace se
 						customEventParameters.emplace();
 						customEventParameters->eventType = EventType::mouseButton;
 						customEventParameters->mouseButtonEventParameters.mouseButton = event.button;
+						scopedConnections.clear();
+						return true;
+					}
+					else
+					{
+						return false;
+					}
+				}, EventSignaler::maxPriority);
+			eventSignaler.connectToJoystickButtonSignal(addScopedConnection(),
+				[this](const JoystickButtonEvent& event)
+				{
+					if (event.isPress())
+					{
+						customEventParameters.emplace();
+						customEventParameters->eventType = EventType::joystickButton;
+						customEventParameters->joystickButtonEventParameters.joystickGuid = getJoystickGuid(event.joystickId);
+						customEventParameters->joystickButtonEventParameters.buttonIndex = event.buttonIndex;
 						scopedConnections.clear();
 						return true;
 					}

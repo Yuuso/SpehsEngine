@@ -79,18 +79,21 @@ namespace std
 	{
 		size_t operator()(const se::input::JoystickButtonEvent& event) const
 		{
-			return size_t(se::murmurHash3_x86_32(&event.button, 5, 0));
+			return size_t(se::murmurHash3_x86_32(&event.joystickId, 22, 0));
 		}
 	};
 	template<> struct hash<se::input::JoystickAxisEvent>
 	{
 		size_t operator()(const se::input::JoystickAxisEvent& event) const
 		{
-			se_assert(false && "TODO joystick pointer");
-			uint32_t data[2];
-			data[0] = event.axisIndex;
-			data[1] = uint32_t(event.axisMovement);
-			return size_t(se::murmurHash3_x86_32(data, 8, 0));
+			return size_t(se::murmurHash3_x86_32(&event.joystickId, 25, 0));
+		}
+	};
+	template<> struct hash<se::input::JoystickHatEvent>
+	{
+		size_t operator()(const se::input::JoystickHatEvent& event) const
+		{
+			return size_t(se::murmurHash3_x86_32(&event.joystickId, 22, 0));
 		}
 	};
 	template<> struct hash<se::input::QuitEvent>

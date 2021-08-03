@@ -26,6 +26,7 @@ namespace se
 			case se::input::EventType::mouseHover: if (!(mouseHoverEventParameters == other.mouseHoverEventParameters)) return false; break;
 			case se::input::EventType::joystickButton: if (!(joystickButtonEventParameters == other.joystickButtonEventParameters)) return false; break;
 			case se::input::EventType::joystickAxis: if (!(joystickAxisEventParameters == other.joystickAxisEventParameters)) return false; break;
+			case se::input::EventType::joystickHat: if (!(joystickHatEventParameters == other.joystickHatEventParameters)) return false; break;
 			}
 
 			return true;
@@ -44,8 +45,9 @@ namespace se
 			case se::input::EventType::mouseMotion: return "Mouse motion";
 			case se::input::EventType::mouseWheel: return "Mouse wheel";
 			case se::input::EventType::mouseHover: return "Mouse hover";
-			case se::input::EventType::joystickButton: return "Joystick button: " + std::to_string(joystickButtonEventParameters.button);
+			case se::input::EventType::joystickButton: return "Joystick button: " + std::to_string(joystickButtonEventParameters.buttonIndex);
 			case se::input::EventType::joystickAxis: return "Joystick axis: " + std::to_string(joystickAxisEventParameters.axisIndex);
+			case se::input::EventType::joystickHat: return "Joystick hat: " + std::to_string(joystickHatEventParameters.hatIndex);
 			}
 
 			return "Error";
@@ -64,8 +66,9 @@ namespace se
 			case se::input::EventType::mouseMotion: return "Momo";
 			case se::input::EventType::mouseWheel: return "Mowh";
 			case se::input::EventType::mouseHover: return "Moho";
-			case se::input::EventType::joystickButton: return "Jsb" + std::to_string(joystickButtonEventParameters.button);
+			case se::input::EventType::joystickButton: return "Jsb" + std::to_string(joystickButtonEventParameters.buttonIndex);
 			case se::input::EventType::joystickAxis: return "Jsa" + std::to_string(joystickAxisEventParameters.axisIndex);
+			case se::input::EventType::joystickHat: return "Jsa" + std::to_string(joystickHatEventParameters.hatIndex);
 			}
 
 			return "Error";

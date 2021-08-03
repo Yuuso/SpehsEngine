@@ -46,7 +46,9 @@ namespace se
 			void connectToMouseButtonSignal(boost::signals2::scoped_connection& scopedConnection, const boost::function<bool(const MouseButtonEvent&)>& callback, const int priority);
 			void connectToKeyboardSignal(boost::signals2::scoped_connection& scopedConnection, const boost::function<bool(const KeyboardEvent&)>& callback, const int priority);
 			void connectToTextInputSignal(boost::signals2::scoped_connection& scopedConnection, const boost::function<bool(const TextInputEvent&)>& callback, const int priority);
-			//TODO: joysticks...
+			void connectToJoystickButtonSignal(boost::signals2::scoped_connection& scopedConnection, const boost::function<bool(const JoystickButtonEvent&)>& callback, const int priority);
+			void connectToJoystickAxisSignal(boost::signals2::scoped_connection& scopedConnection, const boost::function<bool(const JoystickAxisEvent&)>& callback, const int priority);
+			void connectToJoystickHatSignal(boost::signals2::scoped_connection& scopedConnection, const boost::function<bool(const JoystickHatEvent&)>& callback, const int priority);
 			void connectToQuitSignal(boost::signals2::scoped_connection& scopedConnection, const boost::function<bool(const QuitEvent&)>& callback, const int priority);
 			void connectToFileDropSignal(boost::signals2::scoped_connection& scopedConnection, const boost::function<bool(const FileDropEvent&)>& callback, const int priority);
 
@@ -176,8 +178,9 @@ namespace se
 			std::vector<std::unique_ptr<PrioritizedEventSignal<MouseButtonEvent>>> mouseButtonSignals;
 			std::vector<std::unique_ptr<PrioritizedEventSignal<KeyboardEvent>>> keyboardSignals;
 			std::vector<std::unique_ptr<PrioritizedEventSignal<TextInputEvent>>> textInputSignals;
-			//std::vector<std::unique_ptr<PrioritizedEventSignal<JoystickButtonEvent>>> joystickButtonSignals;
-			//std::vector<std::unique_ptr<PrioritizedEventSignal<JoystickAxisEvent>>> joystickAxisSignals;
+			std::vector<std::unique_ptr<PrioritizedEventSignal<JoystickButtonEvent>>> joystickButtonSignals;
+			std::vector<std::unique_ptr<PrioritizedEventSignal<JoystickAxisEvent>>> joystickAxisSignals;
+			std::vector<std::unique_ptr<PrioritizedEventSignal<JoystickHatEvent>>> joystickHatSignals;
 			std::vector<std::unique_ptr<PrioritizedEventSignal<QuitEvent>>> quitSignals;
 			std::vector<std::unique_ptr<PrioritizedEventSignal<FileDropEvent>>> fileDropSignals;
 			std::unordered_map<size_t/*typeid hash code*/, std::vector<std::unique_ptr<CustomSignal>>> customEventSignalContainers;

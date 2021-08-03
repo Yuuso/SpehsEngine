@@ -2,6 +2,7 @@
 #include "SpehsEngine/Input/EventUtilityFunctions.h"
 
 #include "SpehsEngine/Core/StringUtilityFunctions.h"
+#include "SpehsEngine/Input/JoystickUtilityFunctions.h"
 #include "SpehsEngine/Math/GLMVectorUtilityFunctions.h"
 
 
@@ -57,8 +58,9 @@ namespace se
 	Archive writeToArchive(const input::JoystickButtonEvent& event)
 	{
 		Archive archive;
-		// TODO: joystick pointer to joystick id
-		se_write_to_archive(archive, event.button);
+		se_write_to_archive(archive, event.joystickId);
+		se_write_to_archive(archive, event.joystickGuid);
+		se_write_to_archive(archive, event.buttonIndex);
 		se_write_to_archive(archive, event.type);
 		return archive;
 	}
@@ -66,9 +68,20 @@ namespace se
 	Archive writeToArchive(const input::JoystickAxisEvent& event)
 	{
 		Archive archive;
-		// TODO: joystick pointer to joystick id
+		se_write_to_archive(archive, event.joystickId);
+		se_write_to_archive(archive, event.joystickGuid);
 		se_write_to_archive(archive, event.axisIndex);
-		se_write_to_archive(archive, event.axisMovement);
+		se_write_to_archive(archive, event.axisState);
+		return archive;
+	}
+
+	Archive writeToArchive(const input::JoystickHatEvent& event)
+	{
+		Archive archive;
+		se_write_to_archive(archive, event.joystickId);
+		se_write_to_archive(archive, event.joystickGuid);
+		se_write_to_archive(archive, event.hatIndex);
+		se_write_to_archive(archive, event.joystickHatState);
 		return archive;
 	}
 
@@ -129,17 +142,28 @@ namespace se
 
 	bool readFromArchive(const Archive& archive, input::JoystickButtonEvent& event)
 	{
-		// TODO: joystick pointer to joystick id
-		se_read_from_archive(archive, event.button);
+		se_read_from_archive(archive, event.joystickId);
+		se_read_from_archive(archive, event.joystickGuid);
+		se_read_from_archive(archive, event.buttonIndex);
 		se_read_from_archive(archive, event.type);
 		return true;
 	}
 
 	bool readFromArchive(const Archive& archive, input::JoystickAxisEvent& event)
 	{
-		// TODO: joystick pointer to joystick id
+		se_read_from_archive(archive, event.joystickId);
+		se_read_from_archive(archive, event.joystickGuid);
 		se_read_from_archive(archive, event.axisIndex);
-		se_read_from_archive(archive, event.axisMovement);
+		se_read_from_archive(archive, event.axisState);
+		return true;
+	}
+
+	bool readFromArchive(const Archive& archive, input::JoystickHatEvent& event)
+	{
+		se_read_from_archive(archive, event.joystickId);
+		se_read_from_archive(archive, event.joystickGuid);
+		se_read_from_archive(archive, event.hatIndex);
+		se_read_from_archive(archive, event.joystickHatState);
 		return true;
 	}
 

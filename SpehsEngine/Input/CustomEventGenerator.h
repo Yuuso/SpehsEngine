@@ -66,10 +66,9 @@ namespace se
 					SE_INPUT_EVENT_CASE(MouseMotion, mouseMotion)
 					SE_INPUT_EVENT_CASE(MouseWheel, mouseWheel)
 					SE_INPUT_EVENT_CASE(MouseHover, mouseHover)
-					//SE_INPUT_EVENT_CASE(JoystickButton, joystickButton)
-					//SE_INPUT_EVENT_CASE(JoystickAxis, joystickAxis)
-				case EventType::joystickButton:
-				case EventType::joystickAxis:
+					SE_INPUT_EVENT_CASE(JoystickButton, joystickButton)
+					SE_INPUT_EVENT_CASE(JoystickAxis, joystickAxis)
+					SE_INPUT_EVENT_CASE(JoystickHat, joystickHat)
 				case EventType::quit:
 				case EventType::textInput:
 				case EventType::fileDrop:
