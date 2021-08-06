@@ -86,8 +86,13 @@ namespace ImGui
 		{
 			ImGui::Text(message);
 		}
-		if (ImGui::Begin(label, nullptr, windowFlags))
+		bool open = true;
+		if (ImGui::Begin(label, &open, windowFlags))
 		{
+			if (!open)
+			{
+				result = false;
+			}
 			se::DirectoryState directoryState;
 			se::getDirectoryState(directoryState, _directory, se::DirectoryState::Flag::none, 0);
 			if (renderDirectoryStateRecursive(directoryState, output))
