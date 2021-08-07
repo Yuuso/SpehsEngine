@@ -88,7 +88,7 @@ namespace se
 
 			// Custom signals are always generated from external sources
 			template<typename CustomEvent>
-			void signalCustomEvent(const CustomEvent& customEvent)
+			bool signalCustomEvent(const CustomEvent& customEvent)
 			{
 				static_assert(std::is_base_of<ICustomEvent, CustomEvent>::value);
 				std::unordered_map<size_t, std::vector<std::unique_ptr<CustomSignal>>>::iterator it = customEventSignalContainers.find(typeid(CustomEvent).hash_code());
@@ -105,7 +105,7 @@ namespace se
 							if (it->second[s]->signal(&customEvent))
 							{
 								//A connected receiver used the event, do not call receivers with a lower priority.
-								break;
+								return true;
 							}
 							else
 							{
@@ -114,6 +114,7 @@ namespace se
 						}
 					}
 				}
+				return false;
 			}
 
 		private:

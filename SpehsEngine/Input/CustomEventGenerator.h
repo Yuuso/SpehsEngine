@@ -44,8 +44,7 @@ namespace se
 								{ \
 									CustomEvent generatedCustomEvent2 = generatedCustomEvent; \
 									customEventParameters.p_EventType##EventParameters.set(generatedCustomEvent2, event); \
-									eventSignaler.signalCustomEvent(generatedCustomEvent2); \
-									return true; \
+									return eventSignaler.signalCustomEvent(generatedCustomEvent2); \
 								} \
 								else \
 								{ \
