@@ -41,12 +41,14 @@ namespace se
 
 		const uint16_t Texture::getWidth() const
 		{
+			se_assert_m(resourceData, "Texture not loaded!");
 			if (!resourceData)
 				return 0;
 			return resourceData->info.width;
 		}
 		const uint16_t Texture::getHeight() const
 		{
+			se_assert_m(resourceData, "Texture not loaded!");
 			if (!resourceData)
 				return 0;
 			return resourceData->info.height;
