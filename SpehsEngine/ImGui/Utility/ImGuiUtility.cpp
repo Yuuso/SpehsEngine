@@ -4,6 +4,7 @@
 #include "SpehsEngine/ImGui/Utility/BackendWrapper.h"
 #include "SpehsEngine/Core/File/DirectoryState.h"
 #include "SpehsEngine/Input/EventSignaler.h"
+#include "SpehsEngine/Input/CustomEventParametersRecorder.h"
 
 
 namespace ImGui
@@ -85,8 +86,13 @@ namespace ImGui
 		{
 			ImGui::Text(message);
 		}
-		if (ImGui::Begin(label, nullptr, windowFlags))
+		bool open = true;
+		if (ImGui::Begin(label, &open, windowFlags))
 		{
+			if (!open)
+			{
+				result = false;
+			}
 			se::DirectoryState directoryState;
 			se::getDirectoryState(directoryState, _directory, se::DirectoryState::Flag::none, 0);
 			if (renderDirectoryStateRecursive(directoryState, output))
@@ -208,19 +214,54 @@ namespace ImGui
 		ImGui::SameLine();
 		if (ImGui::Button(scopedConnection.connected() ? "press any key" : se::input::toString(key)))
 		{
-			eventSignaler.connectToKeyboardPressSignal(
+			eventSignaler.connectToKeyboardSignal(
 				scopedConnection,
-				[&](const se::input::KeyboardPressEvent& event) -> bool
+				[&](const se::input::KeyboardEvent& event) -> bool
 				{
-					if (event.key != se::input::Key(se::input::Key::ESCAPE))
+					if (event.type == se::input::KeyboardEvent::Type::Press)
 					{
-						key = event.key;
+						if (event.key != se::input::Key(se::input::Key::ESCAPE))
+						{
+							key = event.key;
+						}
+						scopedConnection.disconnect();
+						return true;
 					}
-					scopedConnection.disconnect();
-					return true;
+					else	
+					{
+						return false;
+					}
 				}, INT_MAX);
 		}
 		ImGui::PopID();
+	}
+
+	bool bindCustomEventParameters(const char* const label, se::input::CustomEventParameters& customEventParameters,
+		se::input::EventSignaler& eventSignaler, StateWrapper& stateWrapper)
+	{
+		struct State : public IState
+		{
+			std::unique_ptr<se::input::CustomEventParametersRecorder> customEventParametersRecorder;
+		};
+		State& state = stateWrapper.get<State>();
+
+		bool changed = false;
+		if (state.customEventParametersRecorder)
+		{
+			ImGui::Text(se::formatString("%s: press any key...", label));
+			if (const std::optional<se::input::CustomEventParameters> result = state.customEventParametersRecorder->getCustomEventParameters())
+			{
+				customEventParameters = *result;
+				state.customEventParametersRecorder.reset();
+				changed = true;
+			}
+		}
+		else if (ImGui::Button(se::formatString("%s: %s", label, customEventParameters.toString().c_str())))
+		{
+			state.customEventParametersRecorder.reset(new se::input::CustomEventParametersRecorder(eventSignaler));
+		}
+
+		return changed;
 	}
 
 	std::string getImGuiFormatString(const std::string_view string)

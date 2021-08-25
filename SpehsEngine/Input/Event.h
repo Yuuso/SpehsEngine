@@ -1,61 +1,49 @@
 #pragma once
+
 #include "SpehsEngine/Input/InputEnumerations.h"
 #include "SpehsEngine/Input/Key.h"
 #include "SpehsEngine/Input/MouseButton.h"
+#include "SpehsEngine/Input/JoystickId.h"
+#include "SpehsEngine/Input/JoystickGuid.h"
+#include "SpehsEngine/Input/JoystickHatState.h"
 #include "glm/vec2.hpp"
 #include <string>
+
 
 namespace se
 {
 	namespace input
 	{
-		class Joystick;
-
 		enum class EventType
 		{
 			none,
-			keyboardPress,
-			keyboardDown,
-			keyboardRelease,
+			keyboard,
 			textInput,
-			mouseButtonPress,
-			mouseButtonDown,
-			mouseButtonRelease,
+			mouseButton,
 			mouseMotion,
 			mouseWheel,
 			mouseHover,
-			joystickButtonPress,
-			joystickButtonDown,
-			joystickButtonRelease,
+			joystickButton,
 			joystickAxis,
+			joystickHat,
 			quit,
 			fileDrop,
 		};
 
 		std::string toString(const EventType eventType);
 
-		struct KeyboardPressEvent
+		struct KeyboardEvent
 		{
-			static EventType getEventTypeStatic() { return EventType::keyboardPress; }
+			enum class Type : uint8_t { None, Press, Hold, Release };
+			static EventType getEventTypeStatic() { return EventType::keyboard; }
 			EventType getEventType() const { return getEventTypeStatic(); }
-			bool operator==(const KeyboardPressEvent& other) const { return key == other.key && scancode == other.scancode; }
+			bool operator==(const KeyboardEvent& other) const { return key == other.key && scancode == other.scancode && type == other.type; }
+			bool isPress() const { return type == Type::Press; }
+			bool isHold() const { return type == Type::Hold; }
+			bool isRelease() const { return type == Type::Release; }
 			Key key = Key::UNKNOWN;
 			int scancode = 0;
-		};
-		struct KeyboardDownEvent
-		{
-			static EventType getEventTypeStatic() { return EventType::keyboardDown; }
-			EventType getEventType() const { return getEventTypeStatic(); }
-			bool operator==(const KeyboardDownEvent& other) const { return key == other.key; }
-			Key key = Key::UNKNOWN;
-		};
-		struct KeyboardReleaseEvent
-		{
-			static EventType getEventTypeStatic() { return EventType::keyboardRelease; }
-			EventType getEventType() const { return getEventTypeStatic(); }
-			bool operator==(const KeyboardReleaseEvent& other) const { return key == other.key && scancode == other.scancode; }
-			Key key = Key::UNKNOWN;
-			int scancode = 0;
+			Type type = Type::None;
 		};
 
 		struct TextInputEvent
@@ -66,26 +54,17 @@ namespace se
 			std::string buffer;
 		};
 
-		struct MouseButtonPressEvent
+		struct MouseButtonEvent
 		{
-			static EventType getEventTypeStatic() { return EventType::mouseButtonPress; }
+			enum class Type : uint8_t { None, Press, Hold, Release };
+			static EventType getEventTypeStatic() { return EventType::mouseButton; }
 			EventType getEventType() const { return getEventTypeStatic(); }
-			bool operator==(const MouseButtonPressEvent& other) const { return button == other.button; }
+			bool operator==(const MouseButtonEvent& other) const { return button == other.button && type == other.type; }
+			bool isPress() const { return type == Type::Press; }
+			bool isHold() const { return type == Type::Hold; }
+			bool isRelease() const { return type == Type::Release; }
 			MouseButton button = MouseButton::none;
-		};
-		struct MouseButtonDownEvent
-		{
-			static EventType getEventTypeStatic() { return EventType::mouseButtonDown; }
-			EventType getEventType() const { return getEventTypeStatic(); }
-			bool operator==(const MouseButtonDownEvent& other) const { return button == other.button; }
-			MouseButton button = MouseButton::none;
-		};
-		struct MouseButtonReleaseEvent
-		{
-			static EventType getEventTypeStatic() { return EventType::mouseButtonRelease; }
-			EventType getEventType() const { return getEventTypeStatic(); }
-			bool operator==(const MouseButtonReleaseEvent& other) const { return button == other.button; }
-			MouseButton button = MouseButton::none;
+			Type type = Type::None;
 		};
 		struct MouseMotionEvent
 		{
@@ -111,38 +90,40 @@ namespace se
 			glm::vec2 position;
 		};
 
-		struct JoystickButtonPressEvent
+		struct JoystickButtonEvent
 		{
-			static EventType getEventTypeStatic() { return EventType::joystickButtonPress; }
+			enum class Type : uint8_t { None, Press, Hold, Release };
+			static EventType getEventTypeStatic() { return EventType::joystickButton; }
 			EventType getEventType() const { return getEventTypeStatic(); }
-			bool operator==(const JoystickButtonPressEvent& other) const { return joystick == other.joystick && button == other.button; }
-			const Joystick* joystick = nullptr;
-			KeyboardKey button = KeyboardKey::KEYBOARD_UNKNOWN;
-		};
-		struct JoystickButtonDownEvent
-		{
-			static EventType getEventTypeStatic() { return EventType::joystickButtonDown; }
-			EventType getEventType() const { return getEventTypeStatic(); }
-			bool operator==(const JoystickButtonDownEvent& other) const { return joystick == other.joystick && button == other.button; }
-			const Joystick* joystick = nullptr; // TODO: joystick pointer to joystick id
-			KeyboardKey button = KeyboardKey::KEYBOARD_UNKNOWN;
-		};
-		struct JoystickButtonReleaseEvent
-		{
-			static EventType getEventTypeStatic() { return EventType::joystickButtonRelease; }
-			EventType getEventType() const { return getEventTypeStatic(); }
-			bool operator==(const JoystickButtonReleaseEvent& other) const { return joystick == other.joystick && button == other.button; }
-			const Joystick* joystick = nullptr; // TODO: joystick pointer to joystick id
-			KeyboardKey button = KeyboardKey::KEYBOARD_UNKNOWN;
+			bool operator==(const JoystickButtonEvent& other) const { return joystickId == other.joystickId && buttonIndex == other.buttonIndex && type == other.type && joystickGuid == other.joystickGuid; }
+			bool isPress() const { return type == Type::Press; }
+			bool isHold() const { return type == Type::Hold; }
+			bool isRelease() const { return type == Type::Release; }
+
+			JoystickGuid joystickGuid;
+			JoystickId joystickId;
+			uint8_t buttonIndex = 0;
+			Type type = Type::None;
 		};
 		struct JoystickAxisEvent
 		{
 			static EventType getEventTypeStatic() { return EventType::joystickAxis; }
 			EventType getEventType() const { return getEventTypeStatic(); }
-			bool operator==(const JoystickAxisEvent& other) const { return joystick == other.joystick && axisIndex == other.axisIndex && axisMovement == other.axisMovement; }
-			const Joystick* joystick = nullptr; // TODO: joystick pointer to joystick id
-			int axisIndex = 0;
-			float axisMovement = 0;
+			bool operator==(const JoystickAxisEvent& other) const { return joystickId == other.joystickId && axisIndex == other.axisIndex && axisState == other.axisState && joystickGuid == other.joystickGuid; }
+			JoystickGuid joystickGuid;
+			JoystickId joystickId;
+			int32_t axisState = 0;
+			uint8_t axisIndex = 0;
+		};
+		struct JoystickHatEvent
+		{
+			static EventType getEventTypeStatic() { return EventType::joystickHat; }
+			EventType getEventType() const { return getEventTypeStatic(); }
+			bool operator==(const JoystickHatEvent& other) const { return joystickId == other.joystickId && hatIndex == other.hatIndex && joystickHatState == other.joystickHatState && joystickGuid == other.joystickGuid; }
+			JoystickGuid joystickGuid;
+			JoystickId joystickId;
+			uint8_t hatIndex = 0;
+			JoystickHatState joystickHatState = JoystickHatState::Center;
 		};
 
 		struct QuitEvent

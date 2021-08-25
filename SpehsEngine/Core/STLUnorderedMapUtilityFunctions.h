@@ -185,3 +185,31 @@ inline bool findAndErase(std::unordered_map<KeyType, ValueType, Hasher>& unorder
 		return false;
 	}
 }
+
+template<typename KeyType, typename ValueType, typename Hasher = std::hash<KeyType>>
+inline ValueType* tryFind(std::unordered_map<KeyType, ValueType, Hasher>& unorderedMap, const KeyType& key)
+{
+	std::unordered_map<KeyType, ValueType, Hasher>::iterator it = unorderedMap.find(key);
+	if (it != unorderedMap.end())
+	{
+		return &it->second;
+	}
+	else
+	{
+		return nullptr;
+	}
+}
+
+template<typename KeyType, typename ValueType, typename Hasher = std::hash<KeyType>>
+inline const ValueType* tryFind(const std::unordered_map<KeyType, ValueType, Hasher>& unorderedMap, const KeyType& key)
+{
+	std::unordered_map<KeyType, ValueType, Hasher>::const_iterator it = unorderedMap.find(key);
+	if (it != unorderedMap.end())
+	{
+		return &it->second;
+	}
+	else
+	{
+		return nullptr;
+	}
+}

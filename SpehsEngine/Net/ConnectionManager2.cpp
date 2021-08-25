@@ -20,14 +20,163 @@ namespace se
 	{
 		namespace
 		{
-			std::recursive_mutex callbackConnectionManagerMutex;
-			ConnectionManager2* callbackConnectionManager = nullptr;
+			std::optional<HSteamListenSocket> getSteamListenSocket(ISteamNetworkingSockets& steamNetworkingSockets, const HSteamNetConnection steamNetConnection)
+			{
+				SteamNetConnectionInfo_t steamNetConnectionInfo;
+				if (steamNetworkingSockets.GetConnectionInfo(steamNetConnection, &steamNetConnectionInfo))
+				{
+					return steamNetConnectionInfo.m_hListenSocket;
+				}
+				return std::nullopt;
+			}
 
-			// Super-hack for supporting multiple connection managers from the same application...
-			// GameNetworkingSockets doesn't support connecting and accepting connections from within the same application.
+			std::optional<Port> getLocalListeningPort(ISteamNetworkingSockets& steamNetworkingSockets, const HSteamNetConnection steamNetConnection)
+			{
+				if (std::optional<HSteamListenSocket> steamListenSocket = getSteamListenSocket(steamNetworkingSockets, steamNetConnection))
+				{
+					SteamNetworkingIPAddr steamNetworkingAddress;
+					while (!steamNetworkingSockets.GetListenSocketAddress(*steamListenSocket, &steamNetworkingAddress))
+					{
+						return Port(steamNetworkingAddress.m_port);
+					}
+				}
+				return std::nullopt;
+			}
+
 			std::mutex connectionManagersMutex;
 			std::vector<ConnectionManager2*> connectionManagers;
 		}
+
+		void ConnectionManager2::steamNetConnectionStatusChangedCallbackStatic(SteamNetConnectionStatusChangedCallback_t* const info)
+		{
+			switch (info->m_info.m_eState)
+			{
+			case k_ESteamNetworkingConnectionState_FindingRoute:
+			case k_ESteamNetworkingConnectionState_FinWait:
+			case k_ESteamNetworkingConnectionState_Linger:
+			case k_ESteamNetworkingConnectionState__Force32Bit:
+				break;
+			case k_ESteamNetworkingConnectionState_None:
+				// Called when a connection is being destroyed
+				break;
+			case k_ESteamNetworkingConnectionState_Dead:
+			case k_ESteamNetworkingConnectionState_ProblemDetectedLocally:
+			case k_ESteamNetworkingConnectionState_ClosedByPeer:
+			{
+				std::lock_guard<std::mutex> lock(connectionManagersMutex);
+				for (ConnectionManager2* const connectionManager : connectionManagers)
+				{
+					if (connectionManager->ownsConnection(info->m_hConn))
+					{
+						std::lock_guard<std::recursive_mutex> lock2(connectionManager->connectionStatusChangeQueueMutex);
+						connectionManager->connectionStatusChangeQueue.push_back(ConnectionStatusChange());
+						connectionManager->connectionStatusChangeQueue.back().steamNetConnection = info->m_hConn;
+						connectionManager->connectionStatusChangeQueue.back().status = Connection2::Status::Disconnected;
+						if (info->m_info.m_eState == k_ESteamNetworkingConnectionState_Dead)
+						{
+							connectionManager->connectionStatusChangeQueue.back().reason = "k_ESteamNetworkingConnectionState_Dead";
+						}
+						else if (info->m_info.m_eState == k_ESteamNetworkingConnectionState_ProblemDetectedLocally)
+						{
+							connectionManager->connectionStatusChangeQueue.back().reason = "k_ESteamNetworkingConnectionState_ProblemDetectedLocally";
+						}
+						else if (info->m_info.m_eState == k_ESteamNetworkingConnectionState_ClosedByPeer)
+						{
+							connectionManager->connectionStatusChangeQueue.back().reason = "k_ESteamNetworkingConnectionState_ClosedByPeer";
+						}
+						else
+						{
+							se::log::error("unhandled k_ESteamNetworkingConnectionState");
+						}
+						return;
+					}
+				}
+				log::error("No connection manager owns the connection: " + std::string(info->m_info.m_szConnectionDescription));
+				return;
+			}
+			case k_ESteamNetworkingConnectionState_Connecting:
+			{
+				// HACK: how to check for application local connection?
+				if (doesContain(info->m_info.m_szConnectionDescription, "invalid"))
+				{
+					return;
+				}
+
+				// Find an accepting connection manager
+				const std::optional<HSteamListenSocket> steamListenSocket = getSteamListenSocket(*SteamNetworkingSockets(), info->m_hConn);
+				if (!steamListenSocket)
+				{
+					Connection2::closeConnectionImpl(info->m_hConn, "", false);
+					se::log::error("Failed to accept incoming connection from: " + std::string(info->m_info.m_szConnectionDescription) + ". Could not get steam listen socket.");
+					return;
+				}
+
+				std::lock_guard<std::mutex> lock(connectionManagersMutex);
+				ConnectionManager2* connectionManager = nullptr;
+				for (ConnectionManager2* const connectionManager2 : connectionManagers)
+				{
+					std::lock_guard<std::recursive_mutex> lock2(connectionManager2->acceptingSteamListenSocketMutex);
+					if (connectionManager2->acceptingSteamListenSocket == steamListenSocket)
+					{
+						connectionManager = connectionManager2;
+						break;
+					}
+				}
+				if (!connectionManager)
+				{
+					log::error("No connection manager is currently accepting a new connection: " + std::string(info->m_info.m_szConnectionDescription));
+					return;
+				}
+
+				// A client is attempting to connect
+				// Try to accept the connection.
+				const EResult acceptConnectionResult = SteamNetworkingSockets()->AcceptConnection(info->m_hConn);
+				if (acceptConnectionResult != k_EResultOK)
+				{
+					Connection2::closeConnectionImpl(info->m_hConn, "", false);
+					se::log::error("Failed to accept incoming connection from: " + std::string(info->m_info.m_szConnectionDescription) + ". Error code: " + std::to_string(acceptConnectionResult));
+					return;
+				}
+
+				se::log::info("Accepted new connection: " + std::string(info->m_info.m_szConnectionDescription));
+				Connection2::ConstructorParameters connectionConstructorParameters;
+				connectionConstructorParameters.status = Connection2::Status::Connected;
+				connectionConstructorParameters.establishmentType = Connection2::EstablishmentType::Incoming;
+				connectionConstructorParameters.remoteEndpoint = fromSteamNetworkingAddress(info->m_info.m_addrRemote);
+				connectionConstructorParameters.steamNetConnection = info->m_hConn;
+				connectionConstructorParameters.steamNetworkingSockets = SteamNetworkingSockets();
+				connectionConstructorParameters.steamListenSocket = *steamListenSocket;
+
+				{
+					std::lock_guard<std::recursive_mutex> lock2(connectionManager->ownedSteamNetConnectionsMutex);
+					connectionManager->ownedSteamNetConnections.insert(info->m_hConn);
+				}
+				{
+					std::lock_guard<std::recursive_mutex> lock2(connectionManager->incomingConnectionQueueMutex);
+					connectionManager->incomingConnectionQueue.push_back(connectionConstructorParameters);
+				}
+				return;
+			}
+			case k_ESteamNetworkingConnectionState_Connected:
+				std::lock_guard<std::mutex> lock(connectionManagersMutex);
+				for (ConnectionManager2* const connectionManager : connectionManagers)
+				{
+					if (connectionManager->ownsConnection(info->m_hConn))
+					{
+						std::lock_guard<std::recursive_mutex> lock2(connectionManager->connectionStatusChangeQueueMutex);
+						connectionManager->connectionStatusChangeQueue.push_back(ConnectionStatusChange());
+						connectionManager->connectionStatusChangeQueue.back().steamNetConnection = info->m_hConn;
+						connectionManager->connectionStatusChangeQueue.back().status = Connection2::Status::Connected;
+						connectionManager->connectionStatusChangeQueue.back().reason = "k_ESteamNetworkingConnectionState_Connected";
+						return;
+					}
+				}
+				log::error("No connection manager owns the connection: " + std::string(info->m_info.m_szConnectionDescription));
+				return;
+			}
+		}
+
+		// ...
 
 		ConnectionManager2::ConnectionManager2(const std::string_view _name)
 			: name(_name)
@@ -50,11 +199,14 @@ namespace se
 		ConnectionManager2::~ConnectionManager2()
 		{
 			stopAccepting();
-			processLocalRemoteConnectionQueue();
+			processIncomingConnectionQueue();
+			processConnectionStatusChangeQueue();
+			closeUnusedSteamListenSockets();
 			for (std::shared_ptr<Connection2>& connection : connections)
 			{
 				connection->disconnect();
 			}
+			closeUnusedSteamListenSockets();
 			if (steamNetworkingSockets)
 			{
 				if (steamNetPollGroup != k_HSteamNetPollGroup_Invalid)
@@ -76,18 +228,14 @@ namespace se
 
 		void ConnectionManager2::update()
 		{
-			processLocalRemoteConnectionQueue();
-
 			if (steamNetworkingSockets)
 			{
-				// Run callbacks
-				{
-					std::lock_guard<std::recursive_mutex> lock(callbackConnectionManagerMutex);
-					se_assert(!callbackConnectionManager);
-					callbackConnectionManager = this;
-					steamNetworkingSockets->RunCallbacks();
-					callbackConnectionManager = nullptr;
-				}
+				// Run GLOBAL callbacks
+				// If multiple connection managers exist, this gets called more often but that probably doesn't matter.
+				steamNetworkingSockets->RunCallbacks();
+
+				processIncomingConnectionQueue();
+				processConnectionStatusChangeQueue();
 
 				const time::Time beginTime = time::now();
 				const time::Time maxTime = time::fromSeconds(1.0f / 120.0f);
@@ -156,37 +304,56 @@ namespace se
 			}
 		}
 
-		void ConnectionManager2::processLocalRemoteConnectionQueue()
+		void ConnectionManager2::processIncomingConnectionQueue()
 		{
-			std::lock_guard<std::mutex> lock(localRemoteConnectionQueueMutex);
-			for (const LocalRemoteConnection& localRemoteConnection : localRemoteConnectionQueue)
+			std::vector<Connection2::ConstructorParameters> temp;
 			{
-				for (std::shared_ptr<Connection2>& connection : connections)
+				std::lock_guard<std::recursive_mutex> lock(incomingConnectionQueueMutex);
+				std::swap(temp, incomingConnectionQueue);
+			}
+			for (const Connection2::ConstructorParameters& constructorParameters : temp)
+			{
 				{
-					if (connection->steamNetConnection == localRemoteConnection.fromSteamNetConnection)
+					std::lock_guard<std::recursive_mutex> lock(acceptingSteamListenSocketMutex);
+					if (acceptingSteamListenSocket == k_HSteamListenSocket_Invalid)
 					{
-						Connection2::closeConnectionImpl(connection->steamNetConnection, "processLocalRemoteConnectionQueue()", false);
-						{
-							std::lock_guard<std::recursive_mutex> lock2(ownedSteamNetConnectionsMutex);
-							const std::unordered_set<HSteamNetConnection>::iterator it = ownedSteamNetConnections.find(localRemoteConnection.fromSteamNetConnection);
-							se_assert(it != ownedSteamNetConnections.end());
-							ownedSteamNetConnections.erase(it);
-							ownedSteamNetConnections.insert(localRemoteConnection.toSteamNetConnection);
-						}
-						SteamNetworkingUtils()->SetConfigValue(k_ESteamNetworkingConfig_Callback_ConnectionStatusChanged, k_ESteamNetworkingConfig_Connection,
-							(intptr_t)&localRemoteConnection.toSteamNetConnection, k_ESteamNetworkingConfig_Ptr, (void*)steamNetConnectionStatusChangedCallbackStatic);
-						connection->steamNetConnection = localRemoteConnection.toSteamNetConnection;
-						connection->localRemoteSteamNetConnection = localRemoteConnection.localRemoteSteamNetConnection;
-						connection->localConnectionLifeline = localRemoteConnection.localConnectionLifeline;
-						se_assert(connection->status != Connection2::Status::Connected);
-						connection->setStatus(Connection2::Status::Connected);
-						initializeSteamNetConnection(*connection);
-						se::log::info("Local connection established (HACK)");
 						break;
 					}
 				}
+				std::shared_ptr<Connection2> connection(new Connection2(constructorParameters));
+				initializeSteamNetConnection(*connection);
+				connections.push_back(connection);
+				incomingConnectionSignal(connection);
 			}
-			localRemoteConnectionQueue.clear();
+		}
+
+		void ConnectionManager2::processConnectionStatusChangeQueue()
+		{
+			std::vector<ConnectionStatusChange> temp;
+			{
+				std::lock_guard<std::recursive_mutex> lock(connectionStatusChangeQueueMutex);
+				std::swap(temp, connectionStatusChangeQueue);
+			}
+			for (const ConnectionStatusChange& connectionStatusChange : temp)
+			{
+				for (size_t i = 0; i < connections.size(); i++)
+				{
+					if (connections[i]->steamNetConnection == connectionStatusChange.steamNetConnection)
+					{
+						connections[i]->setStatus(connectionStatusChange.status);
+						switch (connectionStatusChange.status)
+						{
+						case Connection2::Status::Connecting:
+							break;
+						case Connection2::Status::Connected:
+							break;
+						case Connection2::Status::Disconnected:
+							connections[i]->disconnectImpl(connectionStatusChange.reason, false);
+							break;
+						}
+					}
+				}
+			}
 		}
 
 		void ConnectionManager2::closeUnusedSteamListenSockets()
@@ -211,8 +378,15 @@ namespace se
 			}
 		}
 
+		bool ConnectionManager2::ownsConnection(const HSteamNetConnection steamNetConnection) const
+		{
+			std::lock_guard<std::recursive_mutex> lock(ownedSteamNetConnectionsMutex);
+			return ownedSteamNetConnections.find(steamNetConnection) != ownedSteamNetConnections.end();
+		}
+
 		bool ConnectionManager2::startAccepting(const std::optional<Port> port)
 		{
+			std::lock_guard<std::recursive_mutex> lock(acceptingSteamListenSocketMutex);
 			if (acceptingSteamListenSocket != k_HSteamListenSocket_Invalid)
 			{
 				if (const std::optional<Port> existingAcceptingPort = getAcceptingPort())
@@ -254,14 +428,17 @@ namespace se
 				std::vector<SteamNetworkingConfigValue_t> steamNetworkingConfigValues;
 				steamNetworkingConfigValues.push_back(SteamNetworkingConfigValue_t());
 				steamNetworkingConfigValues.back().SetPtr(k_ESteamNetworkingConfig_Callback_ConnectionStatusChanged, (void*)steamNetConnectionStatusChangedCallbackStatic);
-				acceptingSteamListenSocket = steamNetworkingSockets->CreateListenSocketIP(localSteamNetworkingAddress, int(steamNetworkingConfigValues.size()), steamNetworkingConfigValues.data());
-				if (acceptingSteamListenSocket == k_HSteamListenSocket_Invalid)
+				HSteamListenSocket steamListenSocket = steamNetworkingSockets->CreateListenSocketIP(localSteamNetworkingAddress, int(steamNetworkingConfigValues.size()), steamNetworkingConfigValues.data());
+				if (steamListenSocket != k_HSteamListenSocket_Invalid)
+				{
+					acceptingSteamListenSocket = steamListenSocket;
+					return true;
+				}
+				else
 				{
 					se::log::error("Failed to start listening on port: " + std::to_string(localSteamNetworkingAddress.m_port) + ". Failed to create listening socket.");
 					return false;
 				}
-
-				return true;
 			}
 			else
 			{
@@ -271,6 +448,7 @@ namespace se
 
 		void ConnectionManager2::stopAccepting()
 		{
+			std::lock_guard<std::recursive_mutex> lock(acceptingSteamListenSocketMutex);
 			if (acceptingSteamListenSocket != k_HSteamListenSocket_Invalid)
 			{
 				steamListenSockets.push_back(acceptingSteamListenSocket);
@@ -281,6 +459,7 @@ namespace se
 
 		std::optional<Port> ConnectionManager2::getAcceptingPort() const
 		{
+			std::lock_guard<std::recursive_mutex> lock(acceptingSteamListenSocketMutex);
 			if (acceptingSteamListenSocket != k_HSteamListenSocket_Invalid)
 			{
 				SteamNetworkingIPAddr steamNetworkingAddress;
@@ -307,9 +486,6 @@ namespace se
 		{
 			if (steamNetworkingSockets)
 			{
-				// Acquire this mutex here so that another local ConnectionManager cannot grab it before we get to set the owned connection
-				std::lock_guard<std::recursive_mutex> lock(ownedSteamNetConnectionsMutex);
-
 				std::vector<SteamNetworkingConfigValue_t> steamNetworkingConfigValues;
 				steamNetworkingConfigValues.push_back(SteamNetworkingConfigValue_t());
 				steamNetworkingConfigValues.back().SetPtr(k_ESteamNetworkingConfig_Callback_ConnectionStatusChanged, (void*)steamNetConnectionStatusChangedCallbackStatic);
@@ -321,7 +497,17 @@ namespace se
 					steamNetworkingConfigValues.back().SetInt32(k_ESteamNetworkingConfig_SymmetricConnect, 1);
 				}
 				const SteamNetworkingIPAddr steamNetworkingAddress = toSteamNetworkingAddress(_endpoint);
-				const HSteamNetConnection steamNetConnection = steamNetworkingSockets->ConnectByIPAddress(steamNetworkingAddress, int(steamNetworkingConfigValues.size()), steamNetworkingConfigValues.data());
+				HSteamNetConnection steamNetConnection = k_HSteamNetConnection_Invalid;
+
+				{
+					std::lock_guard<std::recursive_mutex> lock(ownedSteamNetConnectionsMutex);
+					steamNetConnection = steamNetworkingSockets->ConnectByIPAddress(steamNetworkingAddress, int(steamNetworkingConfigValues.size()), steamNetworkingConfigValues.data());
+					if (steamNetConnection != k_HSteamNetConnection_Invalid)
+					{
+						ownedSteamNetConnections.insert(steamNetConnection);
+					}
+				}
+
 				if (steamNetConnection == k_HSteamNetConnection_Invalid)
 				{
 					se::log::error("Failed to connect: " + _endpoint.toString());
@@ -335,6 +521,7 @@ namespace se
 					connectionConstructorParameters.remoteEndpoint = _endpoint;
 					connectionConstructorParameters.steamNetConnection = steamNetConnection;
 					connectionConstructorParameters.steamNetworkingSockets = steamNetworkingSockets;
+					connectionConstructorParameters.localListeningPort = getLocalListeningPort(*steamNetworkingSockets, steamNetConnection);
 					std::shared_ptr<Connection2> connection(new Connection2(connectionConstructorParameters));
 					initializeSteamNetConnection(*connection);
 					connections.push_back(connection);
@@ -344,150 +531,6 @@ namespace se
 			else
 			{
 				return std::shared_ptr<Connection2>();
-			}
-		}
-
-		void ConnectionManager2::steamNetConnectionStatusChangedCallback(SteamNetConnectionStatusChangedCallback_t& info)
-		{
-			// For existing connections, let the connection handle the status change
-			for (std::shared_ptr<Connection2>& connection : connections)
-			{
-				if (connection->steamNetConnection == info.m_hConn)
-				{
-					connection->steamNetConnectionStatusChangedCallback(info);
-					return;
-				}
-			}
-
-			switch (info.m_info.m_eState)
-			{
-			case k_ESteamNetworkingConnectionState_FindingRoute:
-			case k_ESteamNetworkingConnectionState_FinWait:
-			case k_ESteamNetworkingConnectionState_Linger:
-			case k_ESteamNetworkingConnectionState__Force32Bit:
-				break;
-			case k_ESteamNetworkingConnectionState_None:
-				// Called when a connection is being destroyed
-				break;
-			case k_ESteamNetworkingConnectionState_Connected:
-				se_assert(false && "Unexpected");
-				break;
-			case k_ESteamNetworkingConnectionState_Dead:
-				se::log::error("Failed to accept connection: dead.");
-				break;
-			case k_ESteamNetworkingConnectionState_ProblemDetectedLocally:
-				se::log::error("Failed to accept connection: problem detected locally.");
-				break;
-			case k_ESteamNetworkingConnectionState_ClosedByPeer:
-				se::log::error("Failed to accept connection: connection closed by peer.");
-				break;
-			case k_ESteamNetworkingConnectionState_Connecting:
-			{
-				// This must be a new connection
-				se_assert(steamNetworkingSockets);
-
-				// A client is attempting to connect
-				// Try to accept the connection.
-				const EResult acceptConnectionResult = steamNetworkingSockets->AcceptConnection(info.m_hConn);
-				if (acceptConnectionResult != k_EResultOK)
-				{
-					// ...Is local connection?
-					if (acceptConnectionResult == k_EResultInvalidParam)
-					{
-						HSteamNetConnection steamNetConnection1 = k_HSteamNetConnection_Invalid;
-						HSteamNetConnection steamNetConnection2 = k_HSteamNetConnection_Invalid;
-						if (steamNetworkingSockets->CreateSocketPair(&steamNetConnection1, &steamNetConnection2, true, nullptr, nullptr))
-						{
-							se_assert(steamNetConnection1 != k_HSteamNetConnection_Invalid);
-							se_assert(steamNetConnection2 != k_HSteamNetConnection_Invalid);
-							
-							//SteamNetworkingConfigValue_t steamNetworkingConfigValue;
-							//steamNetworkingConfigValue.SetPtr(k_ESteamNetworkingConfig_Callback_ConnectionStatusChanged, (void*)steamNetConnectionStatusChangedCallbackStatic);
-							// TODO: how to set callback for connections created using CreateSocketPair()?
-							SteamNetworkingUtils()->SetConfigValue(k_ESteamNetworkingConfig_Callback_ConnectionStatusChanged, k_ESteamNetworkingConfig_Connection,
-								(intptr_t)&steamNetConnection1, k_ESteamNetworkingConfig_Ptr, (void*)steamNetConnectionStatusChangedCallbackStatic);
-
-							std::shared_ptr<bool> localConnectionLifeline(new bool(true));
-							{
-								std::lock_guard<std::mutex> lock(connectionManagersMutex);
-								bool found = false;
-								for (ConnectionManager2 *const connectionManager : connectionManagers)
-								{
-									std::lock_guard<std::recursive_mutex> lock2(connectionManager->ownedSteamNetConnectionsMutex);
-									if (connectionManager->ownedSteamNetConnections.find(info.m_hConn) !=
-										connectionManager->ownedSteamNetConnections.end())
-									{
-										std::lock_guard<std::mutex> lock3(connectionManager->localRemoteConnectionQueueMutex);
-										connectionManager->localRemoteConnectionQueue.push_back(LocalRemoteConnection());
-										connectionManager->localRemoteConnectionQueue.back().fromSteamNetConnection = info.m_hConn;
-										connectionManager->localRemoteConnectionQueue.back().toSteamNetConnection = steamNetConnection2;
-										connectionManager->localRemoteConnectionQueue.back().localRemoteSteamNetConnection = steamNetConnection1;
-										connectionManager->localRemoteConnectionQueue.back().localConnectionLifeline = localConnectionLifeline;
-										found = true;
-										break;
-									}
-								}
-								se_assert(found);
-							}
-
-							Connection2::ConstructorParameters connectionConstructorParameters;
-							connectionConstructorParameters.establishmentType = Connection2::EstablishmentType::Incoming;
-							connectionConstructorParameters.remoteEndpoint = fromSteamNetworkingAddress(info.m_info.m_addrRemote);
-							connectionConstructorParameters.steamNetConnection = steamNetConnection1;
-							connectionConstructorParameters.steamNetworkingSockets = steamNetworkingSockets;
-							std::shared_ptr<Connection2> connection(new Connection2(connectionConstructorParameters));
-							initializeSteamNetConnection(*connection);
-							connection->status = Connection2::Status::Connected;
-							connection->localRemoteSteamNetConnection = steamNetConnection2;
-							connection->localConnectionLifeline = localConnectionLifeline;
-							connections.push_back(connection);
-							incomingConnectionSignal(connection);
-							return;
-						}
-						else
-						{
-							se::log::error("Failed to connect: failed to create socket pair.");
-						}
-					}
-					else
-					{
-						Connection2::closeConnectionImpl(info.m_hConn, "", false);
-						se::log::warning("Failed to accept incoming connection from: " + std::string(info.m_info.m_szConnectionDescription) + ". Error code: " + std::to_string(acceptConnectionResult));
-						break;
-					}
-				}
-
-				// Assign the poll group
-				if (!steamNetworkingSockets->SetConnectionPollGroup(info.m_hConn, steamNetPollGroup))
-				{
-					Connection2::closeConnectionImpl(info.m_hConn, "", false);
-					se::log::error("Failed to accept incoming connection from: " + std::string(info.m_info.m_szConnectionDescription) + ". Failed to set the steam net poll group.");
-				}
-
-				se::log::info("Accepted new connection: " + std::string(info.m_info.m_szConnectionDescription));
-
-				Connection2::ConstructorParameters connectionConstructorParameters;
-				connectionConstructorParameters.establishmentType = Connection2::EstablishmentType::Incoming;
-				connectionConstructorParameters.remoteEndpoint = fromSteamNetworkingAddress(info.m_info.m_addrRemote);
-				connectionConstructorParameters.steamNetConnection = info.m_hConn;
-				connectionConstructorParameters.steamNetworkingSockets = steamNetworkingSockets;
-				connectionConstructorParameters.steamListenSocket = acceptingSteamListenSocket;
-				std::shared_ptr<Connection2> connection(new Connection2(connectionConstructorParameters));
-				initializeSteamNetConnection(*connection);
-				connections.push_back(connection);
-				incomingConnectionSignal(connection);
-				return;
-			}
-			}
-		}
-
-		void ConnectionManager2::steamNetConnectionStatusChangedCallbackStatic(SteamNetConnectionStatusChangedCallback_t* info)
-		{
-			std::lock_guard<std::recursive_mutex> lock(callbackConnectionManagerMutex);
-			se_assert(callbackConnectionManager);
-			if (callbackConnectionManager)
-			{
-				callbackConnectionManager->steamNetConnectionStatusChangedCallback(*info);
 			}
 		}
 

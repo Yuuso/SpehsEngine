@@ -47,23 +47,22 @@ namespace se
 
 		private:
 
-			struct LocalRemoteConnection
+			struct ConnectionStatusChange
 			{
-				HSteamNetConnection fromSteamNetConnection;
-				HSteamNetConnection toSteamNetConnection;
-				HSteamNetConnection localRemoteSteamNetConnection;
-				std::shared_ptr<bool> localConnectionLifeline;
+				HSteamNetConnection steamNetConnection;
+				Connection2::Status status = Connection2::Status::Disconnected;
+				std::string reason;
 			};
 
-			void steamNetConnectionStatusChangedCallback(SteamNetConnectionStatusChangedCallback_t& info);
-			static void steamNetConnectionStatusChangedCallbackStatic(SteamNetConnectionStatusChangedCallback_t* info);
+			static void steamNetConnectionStatusChangedCallbackStatic(SteamNetConnectionStatusChangedCallback_t* const info);
 
 			void initializeSteamNetConnection(Connection2& connection);
-			void processLocalRemoteConnectionQueue();
+			void processIncomingConnectionQueue();
+			void processConnectionStatusChangeQueue();
 			void closeUnusedSteamListenSockets();
+			bool ownsConnection(const HSteamNetConnection steamNetConnection) const;
 
 			ISteamNetworkingSockets* steamNetworkingSockets = nullptr;
-			HSteamListenSocket acceptingSteamListenSocket = k_HSteamListenSocket_Invalid;
 			std::vector<HSteamListenSocket> steamListenSockets;
 			HSteamNetPollGroup steamNetPollGroup;
 			int debugLogLevel = 0;
@@ -71,10 +70,16 @@ namespace se
 			std::vector<std::shared_ptr<Connection2>> connections;
 			boost::signals2::signal<void(std::shared_ptr<Connection2>&)> incomingConnectionSignal;
 
-			std::mutex localRemoteConnectionQueueMutex;
-			std::vector<LocalRemoteConnection> localRemoteConnectionQueue;
+			mutable std::recursive_mutex acceptingSteamListenSocketMutex;
+			HSteamListenSocket acceptingSteamListenSocket = k_HSteamListenSocket_Invalid;
 
-			std::recursive_mutex ownedSteamNetConnectionsMutex;
+			mutable std::recursive_mutex incomingConnectionQueueMutex;
+			std::vector<Connection2::ConstructorParameters> incomingConnectionQueue;
+
+			mutable std::recursive_mutex connectionStatusChangeQueueMutex;
+			std::vector<ConnectionStatusChange> connectionStatusChangeQueue;
+
+			mutable std::recursive_mutex ownedSteamNetConnectionsMutex;
 			std::unordered_set<HSteamNetConnection> ownedSteamNetConnections;
 		};
 	}

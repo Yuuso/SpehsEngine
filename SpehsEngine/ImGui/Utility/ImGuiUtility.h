@@ -11,6 +11,9 @@
 #include "SpehsEngine/ImGui/ImGuiTypes.h"
 #include "SpehsEngine/Graphics/Texture.h"
 #include <optional>
+#include "SpehsEngine/ImGui/Utility/IState.h"
+#include "glm/ext/quaternion_float.hpp"
+#include "glm/vec4.hpp"
 #include <stdint.h>
 
 namespace se
@@ -18,7 +21,8 @@ namespace se
 	namespace input
 	{
 		class EventSignaler;
-		enum class Key;
+		struct CustomEventParameters;
+		enum class Key : uint32_t;
 	}
 }
 
@@ -514,6 +518,9 @@ namespace ImGui
 	{
 		keyBindButton(label.c_str(), key, eventSignaler, scopedConnection);
 	}
+
+	bool bindCustomEventParameters(const char* const label, se::input::CustomEventParameters& customEventParameters,
+		se::input::EventSignaler& eventSignaler, StateWrapper& stateWrapper);
 
 	inline void SetTooltip(const std::string& tooltip)
 	{

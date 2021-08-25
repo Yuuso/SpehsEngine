@@ -43,10 +43,8 @@ namespace se
 			else if (SDL_NumJoysticks() > joystickCount)
 				joystickConnected();
 
-			const std::vector<KeyboardPressEvent>& keyboardPressEvents = eventCatcher.getKeyboardPressEvents();
-			const std::vector<KeyboardReleaseEvent>& keyboardReleaseEvents = eventCatcher.getKeyboardReleaseEvents();
-			const std::vector<MouseButtonPressEvent>& mouseButtonPressEvents = eventCatcher.getMouseButtonPressEvents();
-			const std::vector<MouseButtonReleaseEvent>& mouseButtonReleaseEvents = eventCatcher.getMouseButtonReleaseEvents();
+			const std::vector<KeyboardEvent>& keyboardEvents = eventCatcher.getKeyboardEvents();
+			const std::vector<MouseButtonEvent>& mouseButtonEvents = eventCatcher.getMouseButtonEvents();
 			const std::vector<MouseMotionEvent>& mouseMotionEvents = eventCatcher.getMouseMotionEvents();
 			const std::vector<MouseWheelEvent>& mouseWheelEvents = eventCatcher.getMouseWheelEvents();
 			//const std::vector<MouseHoverEvent>& mouseHoverEvents = eventCatcher.getMouseHoverEvents();
@@ -56,22 +54,28 @@ namespace se
 			mouseAvailable = true;
 			mouseWheelDelta = 0;
 			mouseMovement = glm::ivec2();
-			for (size_t i = 0; i < keyboardPressEvents.size(); i++)
+			for (size_t i = 0; i < keyboardEvents.size(); i++)
 			{
-				pressKey(KeyboardKey(keyboardPressEvents[i].key));
-				latestKeyboardPress = KeyboardKey(keyboardPressEvents[i].key);
+				if (keyboardEvents[i].type == KeyboardEvent::Type::Press)
+				{
+					pressKey(KeyboardKey(keyboardEvents[i].key));
+					latestKeyboardPress = KeyboardKey(keyboardEvents[i].key);
+				}
+				else if (keyboardEvents[i].type == KeyboardEvent::Type::Release)
+				{
+					releaseKey(KeyboardKey(keyboardEvents[i].key));
+				}
 			}
-			for (size_t i = 0; i < keyboardReleaseEvents.size(); i++)
+			for (size_t i = 0; i < mouseButtonEvents.size(); i++)
 			{
-				releaseKey(KeyboardKey(keyboardReleaseEvents[i].key));
-			}
-			for (size_t i = 0; i < mouseButtonPressEvents.size(); i++)
-			{
-				pressKey(KeyboardKey(mouseButtonPressEvents[i].button));
-			}
-			for (size_t i = 0; i < mouseButtonReleaseEvents.size(); i++)
-			{
-				releaseKey(KeyboardKey(mouseButtonReleaseEvents[i].button));
+				if (mouseButtonEvents[i].isPress())
+				{
+					pressKey(KeyboardKey(mouseButtonEvents[i].button));
+				}
+				else if (mouseButtonEvents[i].isRelease())
+				{
+					releaseKey(KeyboardKey(mouseButtonEvents[i].button));
+				}
 			}
 			for (size_t i = 0; i < mouseMotionEvents.size(); i++)
 			{

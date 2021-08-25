@@ -44,17 +44,12 @@ namespace se
 			const std::vector<MouseHoverEvent>& mouseHoverEvents = eventCatcher.getMouseHoverEvents();
 			const std::vector<MouseMotionEvent>& mouseMotionEvents = eventCatcher.getMouseMotionEvents();
 			const std::vector<MouseWheelEvent>& mouseWheelEvents = eventCatcher.getMouseWheelEvents();
-			const std::vector<MouseButtonPressEvent>& mouseButtonPressEvents = eventCatcher.getMouseButtonPressEvents();
-			const std::vector<MouseButtonDownEvent>& mouseButtonDownEvents = eventCatcher.getMouseButtonDownEvents();
-			const std::vector<MouseButtonReleaseEvent>& mouseButtonReleaseEvents = eventCatcher.getMouseButtonReleaseEvents();
-			const std::vector<KeyboardPressEvent>& keyboardPressEvents = eventCatcher.getKeyboardPressEvents();
-			const std::vector<KeyboardDownEvent>& keyboardDownEvents = eventCatcher.getKeyboardDownEvents();
-			const std::vector<KeyboardReleaseEvent>& keyboardReleaseEvents = eventCatcher.getKeyboardReleaseEvents();
+			const std::vector<MouseButtonEvent>& mouseButtonEvents = eventCatcher.getMouseButtonEvents();
+			const std::vector<KeyboardEvent>& keyboardEvents = eventCatcher.getKeyboardEvents();
 			const std::vector<TextInputEvent>& textInputEvents = eventCatcher.getTextInputEvents();
-			//const std::vector<JoystickButtonPressEvent>& joystickButtonPressEvents = eventCatcher.get;
-			//const std::vector<JoystickButtonDownEvent>& joystickButtonDownEvents = eventCatcher.get;
-			//const std::vector<JoystickButtonReleaseEvent>& joystickButtonReleaseEvents = eventCatcher.get;
-			//const std::vector<JoystickAxisEvent>& joystickAxisEvents = eventCatcher.get;
+			const std::vector<JoystickButtonEvent>& joystickButtonEvents = eventCatcher.getJoystickButtonEvents();
+			const std::vector<JoystickAxisEvent>& joystickAxisEvents = eventCatcher.getJoystickAxisEvents();
+			const std::vector<JoystickHatEvent>& joystickHatEvents = eventCatcher.getJoystickHatEvents();
 			const std::vector<QuitEvent>& quitEvents = eventCatcher.getQuitEvents();
 			const std::vector<FileDropEvent>& fileDropEvents = eventCatcher.getFileDropEvents();
 
@@ -62,17 +57,12 @@ namespace se
 			signalEventsImpl(mouseHoverEvents, mouseHoverSignals);
 			signalEventsImpl(mouseMotionEvents, mouseMotionSignals);
 			signalEventsImpl(mouseWheelEvents, mouseWheelSignals);
-			signalEventsImpl(mouseButtonPressEvents, mouseButtonPressSignals);
-			signalEventsImpl(mouseButtonDownEvents, mouseButtonDownSignals);
-			signalEventsImpl(mouseButtonReleaseEvents, mouseButtonReleaseSignals);
-			signalEventsImpl(keyboardPressEvents, keyboardPressSignals);
-			signalEventsImpl(keyboardDownEvents, keyboardDownSignals);
-			signalEventsImpl(keyboardReleaseEvents, keyboardReleaseSignals);
+			signalEventsImpl(mouseButtonEvents, mouseButtonSignals);
+			signalEventsImpl(keyboardEvents, keyboardSignals);
 			signalEventsImpl(textInputEvents, textInputSignals);
-			//signalEventsImpl(joystickButtonPressEvents, joystickButtonPressSignals);
-			//signalEventsImpl(joystickButtonDownEvents, joystickButtonDownSignals);
-			//signalEventsImpl(joystickButtonReleaseEvents, joystickButtonReleaseSignals);
-			//signalEventsImpl(joystickAxisEvents, joystickAxisSignals);
+			signalEventsImpl(joystickButtonEvents, joystickButtonSignals);
+			signalEventsImpl(joystickAxisEvents, joystickAxisSignals);
+			signalEventsImpl(joystickHatEvents, joystickHatSignals);
 			signalEventsImpl(quitEvents, quitSignals);
 			signalEventsImpl(fileDropEvents, fileDropSignals);
 
@@ -94,39 +84,34 @@ namespace se
 			connectToEventSignal<MouseWheelEvent>(scopedConnection, callback, priority, mouseWheelSignals);
 		}
 
-		void EventSignaler::connectToMouseButtonPressSignal(boost::signals2::scoped_connection& scopedConnection, const boost::function<bool(const MouseButtonPressEvent&)>& callback, const int priority)
+		void EventSignaler::connectToMouseButtonSignal(boost::signals2::scoped_connection& scopedConnection, const boost::function<bool(const MouseButtonEvent&)>& callback, const int priority)
 		{
-			connectToEventSignal<MouseButtonPressEvent>(scopedConnection, callback, priority, mouseButtonPressSignals);
+			connectToEventSignal<MouseButtonEvent>(scopedConnection, callback, priority, mouseButtonSignals);
 		}
 
-		void EventSignaler::connectToMouseButtonDownSignal(boost::signals2::scoped_connection& scopedConnection, const boost::function<bool(const MouseButtonDownEvent&)>& callback, const int priority)
+		void EventSignaler::connectToKeyboardSignal(boost::signals2::scoped_connection& scopedConnection, const boost::function<bool(const KeyboardEvent&)>& callback, const int priority)
 		{
-			connectToEventSignal<MouseButtonDownEvent>(scopedConnection, callback, priority, mouseButtonDownSignals);
-		}
-
-		void EventSignaler::connectToMouseButtonReleaseSignal(boost::signals2::scoped_connection& scopedConnection, const boost::function<bool(const MouseButtonReleaseEvent&)>& callback, const int priority)
-		{
-			connectToEventSignal<MouseButtonReleaseEvent>(scopedConnection, callback, priority, mouseButtonReleaseSignals);
-		}
-
-		void EventSignaler::connectToKeyboardPressSignal(boost::signals2::scoped_connection& scopedConnection, const boost::function<bool(const KeyboardPressEvent&)>& callback, const int priority)
-		{
-			connectToEventSignal<KeyboardPressEvent>(scopedConnection, callback, priority, keyboardPressSignals);
-		}
-
-		void EventSignaler::connectToKeyboardDownSignal(boost::signals2::scoped_connection& scopedConnection, const boost::function<bool(const KeyboardDownEvent&)>& callback, const int priority)
-		{
-			connectToEventSignal<KeyboardDownEvent>(scopedConnection, callback, priority, keyboardDownSignals);
-		}
-
-		void EventSignaler::connectToKeyboardReleaseSignal(boost::signals2::scoped_connection& scopedConnection, const boost::function<bool(const KeyboardReleaseEvent&)>& callback, const int priority)
-		{
-			connectToEventSignal<KeyboardReleaseEvent>(scopedConnection, callback, priority, keyboardReleaseSignals);
+			connectToEventSignal<KeyboardEvent>(scopedConnection, callback, priority, keyboardSignals);
 		}
 
 		void EventSignaler::connectToTextInputSignal(boost::signals2::scoped_connection& scopedConnection, const boost::function<bool(const TextInputEvent&)>& callback, const int priority)
 		{
 			connectToEventSignal<TextInputEvent>(scopedConnection, callback, priority, textInputSignals);
+		}
+
+		void EventSignaler::connectToJoystickButtonSignal(boost::signals2::scoped_connection& scopedConnection, const boost::function<bool(const JoystickButtonEvent&)>& callback, const int priority)
+		{
+			connectToEventSignal<JoystickButtonEvent>(scopedConnection, callback, priority, joystickButtonSignals);
+		}
+
+		void EventSignaler::connectToJoystickAxisSignal(boost::signals2::scoped_connection& scopedConnection, const boost::function<bool(const JoystickAxisEvent&)>& callback, const int priority)
+		{
+			connectToEventSignal<JoystickAxisEvent>(scopedConnection, callback, priority, joystickAxisSignals);
+		}
+
+		void EventSignaler::connectToJoystickHatSignal(boost::signals2::scoped_connection& scopedConnection, const boost::function<bool(const JoystickHatEvent&)>& callback, const int priority)
+		{
+			connectToEventSignal<JoystickHatEvent>(scopedConnection, callback, priority, joystickHatSignals);
 		}
 
 		void EventSignaler::connectToQuitSignal(boost::signals2::scoped_connection& scopedConnection, const boost::function<bool(const QuitEvent&)>& callback, const int priority)

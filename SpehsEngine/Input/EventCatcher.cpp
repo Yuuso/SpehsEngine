@@ -1,13 +1,15 @@
 #include "stdafx.h"
 #include "SpehsEngine/Input/EventCatcher.h"
 
+#include "SpehsEngine/Core/STLUnorderedMapUtilityFunctions.h"
 #include "SpehsEngine/Input/MouseUtilityFunctions.h"
 #include "SpehsEngine/Input/KeyUtilityFunctions.h"
+#include "SpehsEngine/Input/JoystickUtilityFunctions.h"
 #include "SDL/SDL.h"
 #include "SDL/SDL_joystick.h"
 #include "SDL/SDL_events.h"
 
-
+#pragma optimize("", off) // nocommit
 namespace se
 {
 	namespace input
@@ -20,20 +22,19 @@ namespace se
 		{
 			SE_SCOPE_PROFILER();
 			// Clear all previous events
+			keyboardEvents.clear();
+			// Clear all previous events
 			keyboardPressEvents.clear();
 			keyboardDownEvents.clear();
 			keyboardReleaseEvents.clear();
 			mouseHoverEvents.clear();
 			textInputEvents.clear();
-			mouseButtonPressEvents.clear();
-			mouseButtonDownEvents.clear();
-			mouseButtonReleaseEvents.clear();
+			mouseButtonEvents.clear();
 			mouseMotionEvents.clear();
 			mouseWheelEvents.clear();
-			//joystickButtonPressEvents.clear();
-			//joystickButtonDownEvents.clear();
-			//joystickButtonReleaseEvents.clear();
-			//joystickAxisEvents.clear();
+			joystickButtonEvents.clear();
+			joystickAxisEvents.clear();
+			joystickHatEvents.clear();
 			quitEvents.clear();
 			fileDropEvents.clear();
 
@@ -175,7 +176,7 @@ namespace se
 				log::error(error);
 			}
 
-			//Handle mouse motion
+			// Handle mouse motion
 			if (mouseMotionCaught)
 			{
 				if (previousMousePositionSet)
@@ -189,53 +190,122 @@ namespace se
 				previousMousePosition = mousePosition;
 			}
 
-			//Detect quietly released held keys
+			// Detect quietly released held keys
 			for (std::unordered_set<Key>::iterator it = heldKeyboardKeys.begin(); it != heldKeyboardKeys.end();)
 			{
-				if (!isKeyDown(*it))
+				if (isKeyDown(*it))
 				{
-					keyboardReleaseEvents.push_back(KeyboardReleaseEvent());
-					keyboardReleaseEvents.back().key = *it;
+					it++;
+				}
+				else
+				{
+					keyboardEvents.push_back(KeyboardEvent());
+					keyboardEvents.back().type = KeyboardEvent::Type::Release;
+					keyboardEvents.back().key = *it;
+					keyboardEvents.back().scancode = getScancode(*it);
 					heldKeyboardKeys.erase(it);
 					it = heldKeyboardKeys.begin(); // Erase invalidates iterators, need to restart
 				}
-				else
+			}
+
+			// Detect quietly released held mouse buttons
+			for (std::unordered_set<MouseButton>::iterator it = heldMouseButtons.begin(); it != heldMouseButtons.end();)
+			{
+				if (isMouseButtonDown(*it))
 				{
 					it++;
 				}
-			}
-
-			//Detect quietly released held mouse buttons
-			for (std::unordered_set<MouseButton>::iterator it = heldMouseButtons.begin(); it != heldMouseButtons.end();)
-			{
-				if (!isMouseButtonDown(*it))
+				else
 				{
-					mouseButtonReleaseEvents.push_back(MouseButtonReleaseEvent());
-					mouseButtonReleaseEvents.back().button = *it;
+					mouseButtonEvents.push_back(MouseButtonEvent());
+					mouseButtonEvents.back().type = MouseButtonEvent::Type::Release;
+					mouseButtonEvents.back().button = *it;
 					heldMouseButtons.erase(it);
 					it = heldMouseButtons.begin(); // Erase invalidates iterators, need to restart
 				}
+			}
+
+			// Detect quietly released held joystick buttons
+			for (std::unordered_map<const JoystickId, JoystickState>::iterator it1 = joystickStates.begin(); it1 != joystickStates.end();)
+			{
+				if (getJoystickConnected(it1->first))
+				{
+					bool advanceIt1 = true;
+					for (std::unordered_set<uint8_t>::iterator it2 = it1->second.heldButtons.begin(); it2 != it1->second.heldButtons.end();)
+					{
+						if (getJoystickButtonState(it1->first, *it2))
+						{
+							it2++;
+						}
+						else
+						{
+							joystickButtonEvents.push_back(JoystickButtonEvent());
+							joystickButtonEvents.back().joystickId = it1->first;
+							joystickButtonEvents.back().joystickGuid = *it1->second.joystickGuid;
+							joystickButtonEvents.back().buttonIndex = *it2;
+							joystickButtonEvents.back().type = JoystickButtonEvent::Type::Release;
+							if (it1->second.heldButtons.empty())
+							{
+								it1 = joystickStates.erase(it1);
+								advanceIt1 = false;
+								break;
+							}
+							else
+							{
+								it2++;
+							}
+						}
+					}
+					if (advanceIt1)
+					{
+						it1++;
+					}
+				}
 				else
 				{
-					it++;
+					for (const uint8_t buttonIndex : it1->second.heldButtons)
+					{
+						joystickButtonEvents.push_back(JoystickButtonEvent());
+						joystickButtonEvents.back().joystickId = it1->first;
+						joystickButtonEvents.back().joystickGuid = *it1->second.joystickGuid;
+						joystickButtonEvents.back().buttonIndex = buttonIndex;
+						joystickButtonEvents.back().type = JoystickButtonEvent::Type::Release;
+					}
+					it1 = joystickStates.erase(it1);
 				}
 			}
 
-			//Held keyboard keys -> keyboard key down events
+			// Held keyboard keys -> keyboard key down events
 			for (std::unordered_set<Key>::iterator it = heldKeyboardKeys.begin(); it != heldKeyboardKeys.end(); it++)
 			{
-				keyboardDownEvents.push_back(KeyboardDownEvent());
-				keyboardDownEvents.back().key = *it;
+				keyboardEvents.push_back(KeyboardEvent());
+				keyboardEvents.back().type = KeyboardEvent::Type::Hold;
+				keyboardEvents.back().key = *it;
+				keyboardEvents.back().scancode = getScancode(*it);
 			}
 
-			//Held mouse buttons -> mouse button down events
+			// Held mouse buttons -> mouse button down events
 			for (std::unordered_set<MouseButton>::iterator it = heldMouseButtons.begin(); it != heldMouseButtons.end(); it++)
 			{
-				mouseButtonDownEvents.push_back(MouseButtonDownEvent());
-				mouseButtonDownEvents.back().button = *it;
+				mouseButtonEvents.push_back(MouseButtonEvent());
+				mouseButtonEvents.back().type = MouseButtonEvent::Type::Hold;
+				mouseButtonEvents.back().button = *it;
 			}
 
-			//Auto-generate the mouse hover event
+			// Held joystick buttons -> joystick button down events
+			for (std::unordered_map<JoystickId, JoystickState>::iterator it1 = joystickStates.begin(); it1 != joystickStates.end(); it1++)
+			{
+				for (std::unordered_set<uint8_t>::iterator it2 = it1->second.heldButtons.begin(); it2 != it1->second.heldButtons.end(); it2++)
+				{
+					joystickButtonEvents.push_back(JoystickButtonEvent());
+					joystickButtonEvents.back().joystickId = it1->first;
+					joystickButtonEvents.back().joystickGuid = *it1->second.joystickGuid;
+					joystickButtonEvents.back().buttonIndex = *it2;
+					joystickButtonEvents.back().type = JoystickButtonEvent::Type::Hold;
+				}
+			}
+
+			// Auto-generate the mouse hover event
 			mouseHoverEvents.push_back(MouseHoverEvent());
 			mouseHoverEvents.back().position = previousMousePosition;
 		}

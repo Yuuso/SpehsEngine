@@ -26,9 +26,11 @@ namespace se
 			, connectionId(nextConnectionId++)
 			, establishmentType(constructorParameters.establishmentType)
 			, remoteEndpoint(constructorParameters.remoteEndpoint)
+			, localListeningPort(constructorParameters.localListeningPort)
 			, steamNetworkingSockets(*constructorParameters.steamNetworkingSockets)
 			, steamNetConnection(constructorParameters.steamNetConnection)
 			, steamListenSocket(constructorParameters.steamListenSocket)
+			, status(constructorParameters.status)
 		{
 			setSettingsImpl(settings, true);
 			se_assert(steamNetConnection != k_HSteamNetConnection_Invalid);
@@ -70,16 +72,6 @@ namespace se
 					}
 				}
 			}
-
-			// Check local connection status
-			if (localConnectionLifeline)
-			{
-				if (localConnectionLifeline.use_count() == 1)
-				{
-					localConnectionLifeline.reset();
-					setStatus(Status::Disconnected);
-				}
-			}
 		}
 
 		bool Connection2::sendPacket(const WriteBuffer& writeBuffer, const bool reliable)
@@ -116,8 +108,7 @@ namespace se
 
 		void Connection2::disconnect(const std::string& reason)
 		{
-			const bool isLocalConnection = localRemoteSteamNetConnection != k_HSteamNetConnection_Invalid;
-			disconnectImpl(reason, !isLocalConnection);
+			disconnectImpl(reason, true);
 			setStatus(Status::Disconnected);
 		}
 
@@ -128,69 +119,6 @@ namespace se
 				closeConnectionImpl(steamNetConnection, reason, enableLinger);
 				closedSteamNetConnection = steamNetConnection; // Used later on by the ConnectionManager
 				steamNetConnection = k_HSteamNetConnection_Invalid;
-				if (localRemoteSteamNetConnection != k_HSteamNetConnection_Invalid)
-				{
-					// Connection status changed callback will not be received
-					localConnectionLifeline.reset();
-				}
-			}
-		}
-
-		void Connection2::steamNetConnectionStatusChangedCallback(SteamNetConnectionStatusChangedCallback_t& info)
-		{
-			switch (info.m_info.m_eState)
-			{
-			case k_ESteamNetworkingConnectionState_FindingRoute:
-			case k_ESteamNetworkingConnectionState_FinWait:
-			case k_ESteamNetworkingConnectionState_Linger:
-			case k_ESteamNetworkingConnectionState__Force32Bit:
-				break;
-			case k_ESteamNetworkingConnectionState_None:
-				// NOTE: We will get callbacks here when we destroy connections.  You can ignore these.
-				break;
-
-			case k_ESteamNetworkingConnectionState_ClosedByPeer:
-			case k_ESteamNetworkingConnectionState_Dead:
-				disconnectImpl("", true);
-				setStatus(Status::Disconnected);
-				break;
-			case k_ESteamNetworkingConnectionState_ProblemDetectedLocally:
-			{
-				const char* pszDebugLogAction;
-				if (info.m_info.m_eState == k_ESteamNetworkingConnectionState_ProblemDetectedLocally)
-				{
-					pszDebugLogAction = "problem detected locally";
-				}
-				else
-				{
-					// Note that here we could check the reason code to see if it was a "usual" connection or an "unusual" one.
-					pszDebugLogAction = "closed by peer";
-				}
-
-				se::log::info(se::formatString("Connection %s %s, reason %d: %s\n",
-					info.m_info.m_szConnectionDescription,
-					pszDebugLogAction,
-					info.m_info.m_eEndReason,
-					info.m_info.m_szEndDebug));
-
-				// Clean up the connection. This is important!
-				// The connection is "closed" in the network sense, but
-				// it has not been destroyed.  We must close it on our end, too
-				// to finish up.  The reason information do not matter in this case,
-				// and we cannot linger because it's already closed on the other end,
-				// so we just pass 0's.
-				disconnectImpl("ProblemDetectedLocally", false);
-				setStatus(Status::Disconnected);
-				break;
-			}
-
-			case k_ESteamNetworkingConnectionState_Connecting:
-				se_assert(getStatus() == Status::Connecting);
-				break;
-
-			case k_ESteamNetworkingConnectionState_Connected:
-				setStatus(Status::Connected);
-				break;
 			}
 		}
 

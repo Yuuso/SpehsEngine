@@ -97,7 +97,8 @@ namespace se
 			const std::string name;
 			const ConnectionId connectionId;
 			const EstablishmentType establishmentType;
-			const se::net::Endpoint remoteEndpoint;
+			const Endpoint remoteEndpoint;
+			const std::optional<Port> localListeningPort;
 
 		private:
 
@@ -111,15 +112,15 @@ namespace se
 			{
 				ISteamNetworkingSockets* steamNetworkingSockets = nullptr;
 				std::string name;
-				se::net::Endpoint remoteEndpoint;
+				Endpoint remoteEndpoint;
+				std::optional<Port> localListeningPort;
 				HSteamNetConnection steamNetConnection;
 				HSteamListenSocket steamListenSocket; // Connection may be bound to a listening socket
 				EstablishmentType establishmentType = EstablishmentType::Incoming;
+				Status status = Status::Connecting;
 			};
 
 			static void closeConnectionImpl(const HSteamNetConnection _steamNetConnection, const std::string& reason, const bool enableLinger);
-
-			void steamNetConnectionStatusChangedCallback(SteamNetConnectionStatusChangedCallback_t& info);
 
 			friend class ConnectionManager2;
 
@@ -133,9 +134,7 @@ namespace se
 			ISteamNetworkingSockets& steamNetworkingSockets;
 			HSteamNetConnection steamNetConnection = k_HSteamNetConnection_Invalid;
 			HSteamNetConnection closedSteamNetConnection = k_HSteamNetConnection_Invalid;
-			HSteamNetConnection localRemoteSteamNetConnection = k_HSteamNetConnection_Invalid;
 			const HSteamListenSocket steamListenSocket;
-			std::shared_ptr<bool> localConnectionLifeline;
 			Status status = Status::Connecting; // Every connection begins in the connecting state
 			Settings settings;
 			Statistics statistics;

@@ -283,4 +283,11 @@ namespace se
 		const boost::filesystem::path path(filepath);
 		boost::filesystem::last_write_time(path, time);
 	}
+
+	uint64_t getFileSize(const std::string& path)
+	{
+		const boost::filesystem::path boostPath(path.data());
+		std::lock_guard<std::recursive_mutex> lock(filestreamMutex);
+		return uint64_t(boost::filesystem::file_size(boostPath));
+	}
 }

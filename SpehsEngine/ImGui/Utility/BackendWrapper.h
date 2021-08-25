@@ -50,11 +50,10 @@ namespace se
             boost::signals2::scoped_connection eventSignalerPostUpdateConnection;
             boost::signals2::scoped_connection mouseHoverConnection;
             boost::signals2::scoped_connection mouseWheelConnection;
-            boost::signals2::scoped_connection mouseButtonPressedConnection;
+            boost::signals2::scoped_connection mouseButtonConnection;
             boost::signals2::scoped_connection textInputConnection;
-            boost::signals2::scoped_connection keyboardKeyPressedConnection;
-			boost::signals2::scoped_connection keyboardKeyPressedConnection0; // Max priority non-consuming
-			boost::signals2::scoped_connection keyboardKeyReleasedConnection0; // Max priority non-consuming
+            boost::signals2::scoped_connection keyboardConnection;
+			boost::signals2::scoped_connection keyboardConnection0; // Max priority non-consuming
 			boost::signals2::signal<void()> preRenderSignal;
 		};
 	}
