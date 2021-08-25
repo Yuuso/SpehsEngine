@@ -46,6 +46,7 @@ namespace se
 	template <typename T>
 	AsyncTaskManager<T>::AsyncTaskManager(const size_t _numThreads)
 	{
+		se_assert(_numThreads > 0);
 		threadPool.resize(_numThreads);
 
 		auto worker = [this]()
