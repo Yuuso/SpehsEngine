@@ -1,5 +1,6 @@
 #pragma once
 
+#include "SpehsEngine/Core/Archive.h"
 #include "SpehsEngine/Input/JoystickId.h"
 #include "SpehsEngine/Input/JoystickGuid.h"
 #include "SpehsEngine/Input/JoystickHatState.h"

@@ -6,14 +6,12 @@
 #include "SpehsEngine/Core/Color.h"
 #include "SpehsEngine/Core/SE_Time.h"
 #include "SpehsEngine/Core/StringUtilityFunctions.h"
+#include "SpehsEngine/Graphics/Texture.h"
 #include "SpehsEngine/ImGui/imgui.h"
 #include "SpehsEngine/ImGui/imgui_stdlib.h"
 #include "SpehsEngine/ImGui/ImGuiTypes.h"
-#include "SpehsEngine/Graphics/Texture.h"
-#include <optional>
 #include "SpehsEngine/ImGui/Utility/IState.h"
-#include "glm/ext/quaternion_float.hpp"
-#include "glm/vec4.hpp"
+#include <optional>
 #include <stdint.h>
 
 namespace se

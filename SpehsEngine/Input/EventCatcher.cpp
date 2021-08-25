@@ -9,7 +9,7 @@
 #include "SDL/SDL_joystick.h"
 #include "SDL/SDL_events.h"
 
-#pragma optimize("", off) // nocommit
+
 namespace se
 {
 	namespace input
@@ -23,10 +23,6 @@ namespace se
 			SE_SCOPE_PROFILER();
 			// Clear all previous events
 			keyboardEvents.clear();
-			// Clear all previous events
-			keyboardPressEvents.clear();
-			keyboardDownEvents.clear();
-			keyboardReleaseEvents.clear();
 			mouseHoverEvents.clear();
 			textInputEvents.clear();
 			mouseButtonEvents.clear();
@@ -85,12 +81,13 @@ namespace se
 						case SDL_KEYDOWN:
 						{
 							const Key key = Key(sdlEvent.key.keysym.sym);
-							keyboardPressEvents.push_back(KeyboardPressEvent());
-							keyboardPressEvents.back().key = key;
-							keyboardPressEvents.back().scancode = sdlEvent.key.keysym.scancode;
+							keyboardEvents.push_back(KeyboardEvent());
+							keyboardEvents.back().type = KeyboardEvent::Type::Press;
+							keyboardEvents.back().key = key;
+							keyboardEvents.back().scancode = sdlEvent.key.keysym.scancode;
 							heldKeyboardKeys.emplace(key);
-							break;
 						}
+						break;
 						case SDL_KEYUP:
 						{
 							/* Generate release event only if press event was generated! */
@@ -99,12 +96,13 @@ namespace se
 							if (it != heldKeyboardKeys.end())
 							{
 								heldKeyboardKeys.erase(it);
-								keyboardReleaseEvents.push_back(KeyboardReleaseEvent());
-								keyboardReleaseEvents.back().key = key;
-								keyboardReleaseEvents.back().scancode = sdlEvent.key.keysym.scancode;
+								keyboardEvents.push_back(KeyboardEvent());
+								keyboardEvents.back().type = KeyboardEvent::Type::Release;
+								keyboardEvents.back().key = key;
+								keyboardEvents.back().scancode = sdlEvent.key.keysym.scancode;
 							}
-							break;
 						}
+						break;
 						case SDL_TEXTINPUT:
 						{
 							textInputEvents.push_back(TextInputEvent());
@@ -125,16 +123,17 @@ namespace se
 							*/
 							mousePosition = getMousePosition();
 							mouseMotionCaught = true;
-							break;
 						}
+						break;
 						case SDL_MOUSEBUTTONDOWN:
 						{
 							const MouseButton button = MouseButton(sdlEvent.button.button);
-							mouseButtonPressEvents.push_back(MouseButtonPressEvent());
-							mouseButtonPressEvents.back().button = button;
+							mouseButtonEvents.push_back(MouseButtonEvent());
+							mouseButtonEvents.back().type = MouseButtonEvent::Type::Press;
+							mouseButtonEvents.back().button = button;
 							heldMouseButtons.emplace(button);
-							break;
 						}
+						break;
 						case SDL_MOUSEBUTTONUP:
 						{
 							/* Generate release event only if press event was generated! */
@@ -143,18 +142,78 @@ namespace se
 							if (it != heldMouseButtons.end())
 							{
 								heldMouseButtons.erase(it);
-								mouseButtonReleaseEvents.push_back(MouseButtonReleaseEvent());
-								mouseButtonReleaseEvents.back().button = button;
+								mouseButtonEvents.push_back(MouseButtonEvent());
+								mouseButtonEvents.back().type = MouseButtonEvent::Type::Release;
+								mouseButtonEvents.back().button = button;
 							}
-							break;
 						}
+						break;
 						case SDL_MOUSEWHEEL:
 						{
 							mouseWheelEvents.push_back(MouseWheelEvent());
 							mouseWheelEvents.back().delta.x = int(sdlEvent.wheel.x);
 							mouseWheelEvents.back().delta.y = int(sdlEvent.wheel.y);
-							break;
 						}
+						break;
+
+						// Joystick events
+						case SDL_JOYBUTTONDOWN:
+						{
+							const JoystickId joystickId(sdlEvent.jbutton.which);
+							JoystickState& joystickState = joystickStates[joystickId];
+							if (!joystickState.joystickGuid)
+							{
+								joystickState.joystickGuid = getJoystickGuid(joystickId);
+							}
+							joystickState.heldButtons.emplace(sdlEvent.jbutton.button);
+							joystickButtonEvents.push_back(JoystickButtonEvent());
+							joystickButtonEvents.back().joystickId = joystickId;
+							joystickButtonEvents.back().joystickGuid = *joystickState.joystickGuid;
+							joystickButtonEvents.back().type = JoystickButtonEvent::Type::Press;
+							joystickButtonEvents.back().buttonIndex = sdlEvent.jbutton.button;
+						}
+						break;
+						case SDL_JOYBUTTONUP:
+						{
+							/* Generate release event only if press event was generated! */
+							const JoystickId joystickId(sdlEvent.jbutton.which);
+							JoystickState& joystickState = joystickStates[joystickId];
+							if (!joystickState.joystickGuid)
+							{
+								joystickState.joystickGuid = getJoystickGuid(joystickId);
+							}
+							std::unordered_set<uint8_t>::iterator it = joystickState.heldButtons.find(sdlEvent.jbutton.button);
+							if (it != joystickState.heldButtons.end())
+							{
+								joystickState.heldButtons.erase(it);
+								joystickButtonEvents.push_back(JoystickButtonEvent());
+								joystickButtonEvents.back().type = JoystickButtonEvent::Type::Release;
+								joystickButtonEvents.back().joystickId = joystickId;
+								joystickButtonEvents.back().joystickGuid = *joystickState.joystickGuid;
+								joystickButtonEvents.back().buttonIndex = sdlEvent.jbutton.button;
+							}
+						}
+						break;
+						case SDL_JOYAXISMOTION:
+						{
+							const JoystickId joystickId(sdlEvent.jaxis.which);
+							joystickAxisEvents.push_back(JoystickAxisEvent());
+							joystickAxisEvents.back().joystickId = joystickId;
+							joystickAxisEvents.back().joystickGuid = getJoystickGuid(joystickId);
+							joystickAxisEvents.back().axisIndex = sdlEvent.jaxis.axis;
+							joystickAxisEvents.back().axisState = sdlEvent.jaxis.value;
+						}
+						break;
+						case SDL_JOYHATMOTION:
+						{
+							const JoystickId joystickId(sdlEvent.jhat.which);
+							joystickHatEvents.push_back(JoystickHatEvent());
+							joystickHatEvents.back().joystickId = joystickId;
+							joystickHatEvents.back().joystickGuid = getJoystickGuid(joystickId);
+							joystickHatEvents.back().hatIndex = sdlEvent.jhat.hat;
+							joystickHatEvents.back().joystickHatState = JoystickHatState(sdlEvent.jhat.value);
+						}
+						break;
 
 						// Clipboard events
 						//SDL_CLIPBOARDUPDATE
@@ -164,8 +223,8 @@ namespace se
 						{
 							fileDropEvents.push_back(FileDropEvent());
 							fileDropEvents.back().filepath = sdlEvent.drop.file;
-							break;
 						}
+						break;
 					}
 				}
 			}

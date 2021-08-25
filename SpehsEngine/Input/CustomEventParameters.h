@@ -108,7 +108,7 @@ namespace se
 
 		struct MouseMotionEventParameters
 		{
-			bool check(const MouseMotionEvent& event) const
+			bool check(const MouseMotionEvent&) const
 			{
 				return true;
 			}
@@ -117,7 +117,7 @@ namespace se
 				customEvent.type = ICustomEvent::Type::Vec2;
 				customEvent.value.vec2 = event.translation;
 			}
-			bool operator==(const MouseMotionEventParameters& other) const
+			bool operator==(const MouseMotionEventParameters&) const
 			{
 				return true;
 			}
@@ -125,7 +125,7 @@ namespace se
 
 		struct MouseWheelEventParameters
 		{
-			bool check(const MouseWheelEvent& event) const
+			bool check(const MouseWheelEvent&) const
 			{
 				return true;
 			}
@@ -134,7 +134,7 @@ namespace se
 				customEvent.type = ICustomEvent::Type::Ivec2;
 				customEvent.value.ivec2 = event.delta;
 			}
-			bool operator==(const MouseWheelEventParameters& other) const
+			bool operator==(const MouseWheelEventParameters&) const
 			{
 				return true;
 			}
@@ -142,7 +142,7 @@ namespace se
 
 		struct MouseHoverEventParameters
 		{
-			bool check(const MouseHoverEvent& event) const
+			bool check(const MouseHoverEvent&) const
 			{
 				return true;
 			}
@@ -151,7 +151,7 @@ namespace se
 				customEvent.type = ICustomEvent::Type::Vec2;
 				customEvent.value.vec2 = event.position;
 			}
-			bool operator==(const MouseHoverEventParameters& other) const
+			bool operator==(const MouseHoverEventParameters&) const
 			{
 				return true;
 			}
