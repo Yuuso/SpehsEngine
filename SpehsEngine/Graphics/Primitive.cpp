@@ -91,6 +91,10 @@ namespace se
 		{
 			return primitiveColor;
 		}
+		const Scissor& Primitive::getScissor() const
+		{
+			return scissor;
+		}
 
 		const RenderFlagsType Primitive::getRenderFlags() const
 		{
@@ -170,6 +174,14 @@ namespace se
 		void Primitive::setColor(const Color& _color)
 		{
 			primitiveColor = _color;
+			enableBit(updateFlags, PrimitiveUpdateFlag::RenderInfoChanged);
+		}
+		void Primitive::setScissor(const Scissor& _scissor)
+		{
+			if (scissor == _scissor)
+				return;
+			se_assert(!_scissor.enabled || renderMode != RenderMode::Static);
+			scissor = _scissor;
 			enableBit(updateFlags, PrimitiveUpdateFlag::RenderInfoChanged);
 		}
 

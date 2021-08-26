@@ -18,6 +18,7 @@ namespace se
 			std::shared_ptr<Material> material;
 			VertexAttributeFlagsType attributes;
 			Color primitiveColor;
+			Scissor scissor;
 		};
 
 		inline bool operator==(const RenderInfo& _left, const RenderInfo& _right)
@@ -28,7 +29,8 @@ namespace se
 				&& _left.primitiveType	== _right.primitiveType
 				&& _left.material		== _right.material
 				&& _left.attributes		== _right.attributes
-				&& _left.primitiveColor == _right.primitiveColor;
+				&& _left.primitiveColor == _right.primitiveColor
+				&& _left.scissor		== _right.scissor;
 		}
 	}
 }

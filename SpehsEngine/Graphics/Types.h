@@ -250,5 +250,30 @@ namespace se
 		};
 
 		typedef std::vector<glm::mat4> UniformMatrices;
+
+		struct Scissor
+		{
+			Scissor() = default;
+			Scissor(uint16_t _x, uint16_t _y, uint16_t _width, uint16_t _height)
+				: x(_x), y(_y), width(_width), height(_height), enabled(true) {}
+
+			bool operator==(const Scissor& _other) const
+			{
+				if (!enabled && !_other.enabled)
+					return true;
+				return enabled	== _other.enabled
+					&& x		== _other.x
+					&& y		== _other.y
+					&& width	== _other.width
+					&& height	== _other.height;
+			}
+
+			bool enabled = false;
+			// (0, 0) is top left
+			uint16_t x = 0;
+			uint16_t y = 0;
+			uint16_t width = 0;
+			uint16_t height = 0;
+		};
 	}
 }

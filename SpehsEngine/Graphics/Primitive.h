@@ -41,6 +41,7 @@ namespace se
 			virtual std::shared_ptr<IndexBuffer>	getIndices() const;
 			virtual std::shared_ptr<VertexBuffer>	getInstances() const;
 			virtual const Color&					getColor() const;
+			virtual const Scissor&					getScissor() const;
 
 			virtual const RenderFlagsType			getRenderFlags() const;
 			virtual const bool						checkRenderFlags(const RenderFlagsType _renderFlags) const;
@@ -62,6 +63,7 @@ namespace se
 			virtual void							setIndices(std::shared_ptr<IndexBuffer> _indices);
 			virtual void							setInstances(std::shared_ptr<VertexBuffer> _instances);
 			virtual void							setColor(const Color& _color);
+			virtual void							setScissor(const Scissor& _scissor);
 
 			virtual void							setRenderFlags(const RenderFlagsType _renderFlags);
 			virtual void							enableRenderFlags(const RenderFlagsType _renderFlags);
@@ -104,6 +106,7 @@ namespace se
 			glm::vec3								scale					= glm::vec3(1.0f);
 			glm::quat								rotation				= glm::vec3(0.0f);
 			Color									primitiveColor;
+			Scissor									scissor;
 
 			UniformMatrices							transformMatrices;
 			UniformMatrices							normalMatrices;

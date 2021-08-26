@@ -176,6 +176,9 @@ namespace se
 				bgfx::setInstanceDataBuffer(dvbh, 0, static_cast<uint32_t>(instances->size()));
 			}
 
+			if (_renderInfo.scissor.enabled)
+				bgfx::setScissor(_renderInfo.scissor.x, _renderInfo.scissor.y, _renderInfo.scissor.width, _renderInfo.scissor.height);
+
 			applyRenderState(_renderInfo, _renderContext);
 
 			bgfx::ProgramHandle programHandle = { shader->getHandle() };
@@ -242,6 +245,7 @@ namespace se
 			result.material = primitive->getMaterial();
 			result.attributes = primitive->getVertices()->getAttributes();
 			result.primitiveColor = primitive->getColor();
+			result.scissor = primitive->getScissor();
 			return result;
 		}
 		const RenderInfo PrimitiveInternal::getCopyRenderInfo() const
@@ -258,6 +262,7 @@ namespace se
 			result.material = primitive->getMaterial();
 			result.attributes = primitive->getVertices()->getAttributes();
 			result.primitiveColor = renderCopy->primitiveColor;
+			result.scissor = primitive->getScissor();
 			return result;
 		}
 		const bool PrimitiveInternal::getRenderState() const
