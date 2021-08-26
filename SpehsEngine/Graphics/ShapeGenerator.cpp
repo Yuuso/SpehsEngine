@@ -8,6 +8,8 @@ namespace se
 {
 	namespace graphics
 	{
+		constexpr unsigned int defaultCircleResolution = 28;
+
 		void ShapeGenerator::clear()
 		{
 			vertexBufferCaches.clear();
@@ -18,36 +20,40 @@ namespace se
 		{
 			if (_shapeType >= ShapeType::Triangle && _shapeType <= ShapeType::Circle)
 			{
-				size_t numVertices = static_cast<size_t>(_shapeType);
-				unsigned int resolution = _shapeParams.resolution;
-				if (_shapeType == ShapeType::Circle && resolution >= static_cast<unsigned int>(numVertices))
+				const ShapeType shapeType = _shapeType;
+				size_t numVertices = 0;
+
+				if (shapeType == ShapeType::Circle)
 				{
-					numVertices = static_cast<size_t>(resolution);
-				}
-				else if (resolution > 0)
-				{
-					if (_shapeType != ShapeType::Circle)
+					if (_shapeParams.resolution == 0)
 					{
-						log::warning("Shape: Non-circle 2d shapes don't have a resolution!");
+						numVertices = defaultCircleResolution;
 					}
 					else
 					{
-						log::warning("Shape: Minimum circle resolution is " + std::to_string(numVertices) + "!");
+						constexpr unsigned int minRes = static_cast<size_t>(ShapeType::Circle);
+						if (_shapeParams.resolution < minRes)
+						{
+							log::warning("Shape: Minimum circle resolution is " + std::to_string(minRes) + "!");
+							numVertices = minRes;
+						}
+						else
+						{
+							numVertices = _shapeParams.resolution;
+						}
 					}
-					resolution = 0;
+				}
+				else
+				{
+					if (_shapeParams.resolution > 0)
+						log::warning("Shape: Non-circle flat shapes don't have a resolution!");
+					numVertices = static_cast<size_t>(shapeType);
 				}
 
 				if (numVertices < 3)
 				{
 					log::error("Cannot generate a shape vertex buffer with less than 3 vertices!");
 					return nullptr;
-				}
-
-				ShapeType shapeType = static_cast<ShapeType>(numVertices);
-				if (numVertices >= static_cast<size_t>(ShapeType::Circle))
-				{
-					shapeType = ShapeType::Circle;
-					resolution = static_cast<unsigned int>(numVertices);
 				}
 
 				auto it = std::find_if(vertexBufferCaches.begin(), vertexBufferCaches.end(),
@@ -372,7 +378,7 @@ namespace se
 				constexpr unsigned int minRes = 8;
 				if (_shapeParams.resolution > 0 && _shapeParams.resolution < minRes)
 					log::warning("Shape: Minimum sphere resolution is " + std::to_string(minRes) + "!");
-				const unsigned int resolution = _shapeParams.resolution >= minRes ? _shapeParams.resolution : 28;
+				const unsigned int resolution = _shapeParams.resolution >= minRes ? _shapeParams.resolution : defaultCircleResolution;
 
 				auto it = std::find_if(vertexBufferCaches.begin(), vertexBufferCaches.end(),
 									   [&](const std::unique_ptr<VertexBufferCache>& _vbc)
