@@ -22,12 +22,13 @@ namespace se
 
 			void addBone(const ModelNode* _boneNode, const glm::mat4& _offsetMatrix);
 
+			void updateMatrices() override;
+			const UniformMatrices& getTransformMatrices() const override;
+			const UniformMatrices& getNormalMatrices() const override;
+
 		protected:
 
 			void update() override;
-			void updateMatrices() override;
-			const UniformMatrices& getTransformMatrices() const;
-			const UniformMatrices& getNormalMatrices() const;
 
 		private:
 

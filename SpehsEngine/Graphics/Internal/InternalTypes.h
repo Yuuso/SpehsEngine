@@ -63,7 +63,5 @@ namespace se
 			Valid,
 			Error,
 		};
-
-		typedef std::vector<glm::mat4> UniformMatrices;
 	}
 }

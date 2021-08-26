@@ -51,6 +51,8 @@ namespace se
 			virtual const glm::vec3&				getPosition() const;
 			virtual const glm::vec3&				getScale() const;
 			virtual const glm::quat&				getRotation() const;
+			virtual const UniformMatrices&			getTransformMatrices() const;
+			virtual const UniformMatrices&			getNormalMatrices() const;
 
 			virtual void							setName(const std::string_view _name);
 			virtual void							setRenderState(const bool _state);
@@ -73,15 +75,14 @@ namespace se
 			virtual void							setScale(const glm::vec3& _scale);
 			virtual void							setRotation(const glm::quat& _rotation);
 
+			virtual void							updateMatrices();
+
 		protected:
 
 			friend class PrimitiveInternal;
 			friend class Model;
 
 			virtual void							update();
-			virtual const UniformMatrices&			getTransformMatrices() const;
-			virtual const UniformMatrices&			getNormalMatrices() const;
-			virtual void							updateMatrices();
 			bool									getVerticesChanged();
 			bool									getIndicesChanged();
 

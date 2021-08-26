@@ -248,5 +248,7 @@ namespace se
 			Transform,
 			Billboard
 		};
+
+		typedef std::vector<glm::mat4> UniformMatrices;
 	}
 }
