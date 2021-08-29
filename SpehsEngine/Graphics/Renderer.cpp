@@ -106,6 +106,7 @@ namespace se
 			RenderContext renderContext;
 			renderContext.rendererFlags = rendererFlags;
 			renderContext.defaultUniforms = defaultUniforms.get();
+			defaultUniforms->updateEngineUtility();
 			for (auto&& window : windows)
 			{
 				window->render(renderContext);

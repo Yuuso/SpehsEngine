@@ -7,6 +7,9 @@
 uniform mat4 u_normal[BGFX_CONFIG_MAX_BONES];
 uniform vec4 u_primitiveColor;
 uniform vec4 u_billboardInfo;
+uniform vec4 u_engineUtility;
+
+#define u_gameTime u_engineUtility.x
 
 vec3 getViewPosition()
 {

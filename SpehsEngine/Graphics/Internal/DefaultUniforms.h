@@ -32,6 +32,7 @@ namespace se
 			void setNormalMatrices(const UniformMatrices& _normal);
 			void setPrimitiveColor(const Color& _color);
 			void setBillboardInfo(const glm::vec3& _position, const bool _cylindrical);
+			void updateEngineUtility();
 
 		private:
 
@@ -40,6 +41,7 @@ namespace se
 			bgfx::UniformHandle normal;
 			bgfx::UniformHandle primitiveColor;
 			bgfx::UniformHandle billboardInfo;
+			bgfx::UniformHandle engineUtility;
 		};
 	}
 }

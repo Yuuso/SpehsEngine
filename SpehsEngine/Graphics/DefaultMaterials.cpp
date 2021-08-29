@@ -6,6 +6,21 @@ namespace se
 {
 	namespace graphics
 	{
+		const std::string_view phongTextureUniformName(const PhongTextureType _type)
+		{
+			switch (_type)
+			{
+				case PhongTextureType::Color:
+					return "s_texColor";
+				case PhongTextureType::Normal:
+					return "s_texNormal";
+			}
+			se_assert(false);
+			return "";
+		}
+
+
+
 		FlatColorMaterial::FlatColorMaterial(ShaderManager& _shaderManager)
 		{
 			setShader(_shaderManager.find("color"));
@@ -71,19 +86,6 @@ namespace se
 		}
 
 
-		static const std::string_view phongTextureName(const PhongTextureType _type)
-		{
-			switch (_type)
-			{
-				case PhongTextureType::Color:
-					return "s_texColor";
-				case PhongTextureType::Normal:
-					return "s_texNormal";
-			}
-			se_assert(false);
-			return "";
-		}
-
 		PhongMaterial::PhongMaterial(ShaderManager& _shaderManager)
 		{
 			setShader(_shaderManager.find("phong"), ShaderVariant::Default);
@@ -95,7 +97,7 @@ namespace se
 		}
 		void PhongMaterial::setTexture(const PhongTextureType _type, std::shared_ptr<Texture> _texture)
 		{
-			Material::setTexture(_texture, phongTextureName(_type), static_cast<uint8_t>(_type));
+			Material::setTexture(_texture, phongTextureUniformName(_type), static_cast<uint8_t>(_type));
 		}
 		std::shared_ptr<Texture> PhongMaterial::getTexture(const PhongTextureType _type) const
 		{

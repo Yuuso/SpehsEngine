@@ -36,6 +36,7 @@ namespace se
 			Color,
 			Normal
 		};
+		const std::string_view phongTextureUniformName(const PhongTextureType _type);
 
 
 
