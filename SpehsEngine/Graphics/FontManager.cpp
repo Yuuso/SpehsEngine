@@ -54,7 +54,7 @@ namespace se
 			}
 			defaultFontsCreated = true;
 
-			const FontSize defaultFontSize(18, FontSizeType::Pixel);
+			const FontSize defaultFontSize(60, FontSizeType::Pixel);
 
 			resources.push_back(std::make_shared<Font>("AnonymousPro-Regular"));
 			resources.back()->create(font_anonymousProRegularTtf, sizeof(font_anonymousProRegularTtf), defaultFontSize, defaultCharacterSet, fontLibrary, resourceLoader);
