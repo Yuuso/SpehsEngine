@@ -37,6 +37,10 @@ namespace se
 		{
 			return !path.empty() && fontLibrary;
 		}
+		const FontSize& Font::getFontSize() const
+		{
+			return size;
+		}
 
 		void Font::destroy()
 		{

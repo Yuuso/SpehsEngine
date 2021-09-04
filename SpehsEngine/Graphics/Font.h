@@ -28,6 +28,7 @@ namespace se
 
 			void reload(std::shared_ptr<ResourceLoader> _resourceLoader = nullptr) override;
 			bool reloadable() const override;
+			const FontSize& getFontSize() const;
 
 			std::shared_ptr<Texture> getDebugTexture();
 
