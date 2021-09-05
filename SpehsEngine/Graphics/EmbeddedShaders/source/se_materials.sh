@@ -5,7 +5,8 @@
 #include "se_lights.sh"
 
 
-#define CALC_NORMAL normalize(mul(mtxFromCols(normalize(v_tangent), normalize(v_bitangent), normalize(v_normal)), texture2D(s_texNormal, v_texcoord0).rgb * 2.0 - 1.0));
+#define CALC_NORMAL_TEXTURE normalize(mul(mtxFromCols(normalize(v_tangent), normalize(v_bitangent), normalize(v_normal)), texture2D(s_texNormal, v_texcoord0).rgb * 2.0 - 1.0));
+#define CALC_NORMAL normalize(mul(mtxFromCols(normalize(v_tangent), normalize(v_bitangent), normalize(v_normal)), vec3(0.5, 0.5, 1.0) * 2.0 - 1.0));
 
 // --------------------
 // Phong
