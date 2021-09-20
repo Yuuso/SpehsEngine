@@ -16,7 +16,7 @@ namespace se
 		se_assert(size_t(std::numeric_limits<SizeType>::max()) >= unorderedMap.size() && "Unordered map size is larger than the maximum of SizeType.");
 		const SizeType size = SizeType(unorderedMap.size());
 		buffer.write(size);
-		for (std::unordered_map<KeyType, T, Hasher>::const_iterator it = unorderedMap.begin(); it != unorderedMap.end(); it++)
+		for (typename std::unordered_map<KeyType, T, Hasher>::const_iterator it = unorderedMap.begin(); it != unorderedMap.end(); it++)
 		{
 			buffer.write(it->first);
 			buffer.write(it->second);
@@ -50,66 +50,14 @@ namespace se
 	}
 
 	template<typename KeyType, typename T, typename Hasher = std::hash<KeyType>, typename SizeType = uint32_t>
-	typename std::enable_if<IsUniquePtr<T>::value, Archive>::type writeToArchive(const std::unordered_map<KeyType, T, Hasher>& unorderedMap)
+	Archive writeToArchive(const std::unordered_map<KeyType, T, Hasher>& unorderedMap)
 	{
 		static_assert(std::is_integral<SizeType>::value, "SizeType must be integral.");
 		Archive archive;
 		const SizeType size = SizeType(unorderedMap.size());
 		se_write_to_archive(archive, size);
 		size_t index = 0;
-		for (std::unordered_map<KeyType, T, Hasher>::const_iterator it = unorderedMap.begin(); it != unorderedMap.end(); it++)
-		{
-			archive.write(std::to_string(index) + "k", it->first);
-			const bool allocated = it->second.get() != nullptr;
-			archive.write(std::to_string(index) + "va", allocated);
-			if (allocated)
-			{
-				archive.write(std::to_string(index) + "vv", *it->second.get());
-			}
-			index++;
-		}
-		return archive;
-	}
-
-	template<typename KeyType, typename T, typename Hasher = std::hash<KeyType>, typename SizeType = uint32_t>
-	typename std::enable_if<IsUniquePtr<T>::value, bool>::type readFromArchive(const Archive& archive, std::unordered_map<KeyType, T, Hasher>& unorderedMap)
-	{
-		static_assert(std::is_integral<SizeType>::value, "SizeType must be integral.");
-		SizeType size = 0;
-		se_read_from_archive(archive, size);
-		for (SizeType i = 0; i < size; i++)
-		{
-			KeyType key;
-			if (!archive.read(std::to_string(i) + "k", key))
-			{
-				return false;
-			}
-			bool allocated = false;
-			if (!archive.read(std::to_string(i) + "va", allocated))
-			{
-				return false;
-			}
-			if (allocated)
-			{
-				unorderedMap[key].reset(new T::element_type());
-				if (!archive.read(std::to_string(i) + "vv", *unorderedMap[key].get()))
-				{
-					return false;
-				}
-			}
-		}
-		return true;
-	}
-
-	template<typename KeyType, typename T, typename Hasher = std::hash<KeyType>, typename SizeType = uint32_t>
-	typename std::enable_if<!IsUniquePtr<T>::value, Archive>::type writeToArchive(const std::unordered_map<KeyType, T, Hasher>& unorderedMap)
-	{
-		static_assert(std::is_integral<SizeType>::value, "SizeType must be integral.");
-		Archive archive;
-		const SizeType size = SizeType(unorderedMap.size());
-		se_write_to_archive(archive, size);
-		size_t index = 0;
-		for (std::unordered_map<KeyType, T, Hasher>::const_iterator it = unorderedMap.begin(); it != unorderedMap.end(); it++)
+		for (typename std::unordered_map<KeyType, T, Hasher>::const_iterator it = unorderedMap.begin(); it != unorderedMap.end(); it++)
 		{
 			archive.write(std::to_string(index) + "k", it->first);
 			archive.write(std::to_string(index) + "v", it->second);
@@ -119,7 +67,7 @@ namespace se
 	}
 
 	template<typename KeyType, typename T, typename Hasher = std::hash<KeyType>, typename SizeType = uint32_t>
-	typename std::enable_if<!IsUniquePtr<T>::value, bool>::type readFromArchive(const Archive& archive, std::unordered_map<KeyType, T, Hasher>& unorderedMap)
+	bool readFromArchive(const Archive& archive, std::unordered_map<KeyType, T, Hasher>& unorderedMap)
 	{
 		static_assert(std::is_integral<SizeType>::value, "SizeType must be integral.");
 		SizeType size = 0;
@@ -153,9 +101,9 @@ bool operator==(const std::unordered_map<KeyType, ValueType, Hasher>& a, const s
 	{
 		return false;
 	}
-	for (std::unordered_map<KeyType, ValueType, Hasher>::const_iterator aIt = a.begin(); aIt != a.end(); aIt++)
+	for (typename std::unordered_map<KeyType, ValueType, Hasher>::const_iterator aIt = a.begin(); aIt != a.end(); aIt++)
 	{
-		const std::unordered_map<KeyType, ValueType, Hasher>::const_iterator bIt = b.find(aIt->first);
+		const typename std::unordered_map<KeyType, ValueType, Hasher>::const_iterator bIt = b.find(aIt->first);
 		if (bIt != b.end())
 		{
 			if (!(aIt->second == bIt->second))
@@ -174,7 +122,7 @@ bool operator==(const std::unordered_map<KeyType, ValueType, Hasher>& a, const s
 template<typename KeyType, typename ValueType, typename Hasher = std::hash<KeyType>>
 inline bool findAndErase(std::unordered_map<KeyType, ValueType, Hasher>& unorderedMap, const KeyType& key)
 {
-	std::unordered_map<KeyType, ValueType, Hasher>::iterator it = unorderedMap.find(key);
+	typename std::unordered_map<KeyType, ValueType, Hasher>::iterator it = unorderedMap.find(key);
 	if (it != unorderedMap.end())
 	{
 		unorderedMap.erase(it);
@@ -189,7 +137,7 @@ inline bool findAndErase(std::unordered_map<KeyType, ValueType, Hasher>& unorder
 template<typename KeyType, typename ValueType, typename Hasher = std::hash<KeyType>>
 inline ValueType* tryFind(std::unordered_map<KeyType, ValueType, Hasher>& unorderedMap, const KeyType& key)
 {
-	std::unordered_map<KeyType, ValueType, Hasher>::iterator it = unorderedMap.find(key);
+	typename std::unordered_map<KeyType, ValueType, Hasher>::iterator it = unorderedMap.find(key);
 	if (it != unorderedMap.end())
 	{
 		return &it->second;
@@ -203,7 +151,7 @@ inline ValueType* tryFind(std::unordered_map<KeyType, ValueType, Hasher>& unorde
 template<typename KeyType, typename ValueType, typename Hasher = std::hash<KeyType>>
 inline const ValueType* tryFind(const std::unordered_map<KeyType, ValueType, Hasher>& unorderedMap, const KeyType& key)
 {
-	std::unordered_map<KeyType, ValueType, Hasher>::const_iterator it = unorderedMap.find(key);
+	typename std::unordered_map<KeyType, ValueType, Hasher>::const_iterator it = unorderedMap.find(key);
 	if (it != unorderedMap.end())
 	{
 		return &it->second;
