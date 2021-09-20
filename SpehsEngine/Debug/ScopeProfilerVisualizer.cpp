@@ -3,42 +3,40 @@
 
 #include "SpehsEngine/Core/StringOperations.h"
 #include "SpehsEngine/Core/StringUtilityFunctions.h"
-#include "SpehsEngine/Core/Shapes.h"
 #include "SpehsEngine/Input/InputManager.h"
-#include "SpehsEngine/Input/MouseUtilityFunctions.h"
 #include "SpehsEngine/Input/Key.h"
+#include "SpehsEngine/Input/MouseUtilityFunctions.h"
 #include "SpehsEngine/Net/ConnectionManager.h"
-#include "SpehsEngine/GUI/GUIContext.h"
-#include "SpehsEngine/Rendering/BatchManager.h"
-#include "SpehsEngine/Rendering/FontManager.h"
-#include "SpehsEngine/Rendering/Font.h"
-#include "SpehsEngine/Rendering/Polygon.h"
-#include "SpehsEngine/Rendering/Text.h"
-#include "SpehsEngine/Rendering/Window.h"
 
 
 namespace se
 {
 	namespace debug
 	{
-		ScopeProfilerVisualizer::ScopeProfilerVisualizer(GUIContext& _guiContext)
-			: guiContext(_guiContext)
-			, tooltipText(*_guiContext.getBatchManager().createText(20001))
-			, tooltipPolygon(*_guiContext.getBatchManager().createPolygon(Shape::BUTTON, 20000, 1.0f, 1.0f))
-			, width(float(guiContext.getWindow().getWidth()) - 10.0f)
+		ScopeProfilerVisualizer::ScopeProfilerVisualizer(graphics::View& _view, graphics::FontManager& _fontManager, graphics::ShaderManager& _shaderManager, input::InputManager& _inputManager)
+			: view(_view)
+			, inputManager(_inputManager)
 			, activeThreadId(std::this_thread::get_id())
 		{
 			setMaxThreadDataSectionCount(64);
 			ScopeProfiler::connectToFlushSignal(profilerFlushConnection, boost::bind(&ScopeProfilerVisualizer::profilerFlushCallback, this, boost::placeholders::_1));
 
-			if (rendering::Font* const font = guiContext.getBatchManager().fontManager.getFont("Fonts/Anonymous.ttf"/**/, 12))
-			{
-				tooltipText.setFont(font);
-				tooltipText.setCameraMatrixState(false);
-				tooltipText.setColor(Color(1.0f, 1.0f, 1.0f));
-			}
+			se_assert(_view.getCamera().getProjection() == graphics::Projection::Orthographic);
+
+			std::shared_ptr<graphics::Font> font = _fontManager.getDefaultFont();
+			textMaterial = std::make_shared<graphics::TextMaterial>(_shaderManager);
+			textMaterial->setFont(font);
+
+			shapeMaterial = std::make_shared<graphics::FlatColorMaterial>(_shaderManager);
+
+			tooltipPolygon.generate(graphics::ShapeType::Rectangle);
+			tooltipPolygon.setMaterial(shapeMaterial);
 			tooltipPolygon.setColor(Color(0.2f, 0.2f, 0.2f));
-			tooltipPolygon.setCameraMatrixState(false);
+			_view.getScene().add(tooltipPolygon);
+
+			tooltipText.setMaterial(textMaterial);
+			tooltipText.setColor(Color());
+			_view.getScene().add(tooltipText);
 		}
 
 		ScopeProfilerVisualizer::~ScopeProfilerVisualizer()
@@ -48,48 +46,47 @@ namespace se
 				profilerFlushConnection.disconnect();
 				std::lock_guard<std::recursive_mutex> lock(backgroundThreadDataMutex);
 			}
+		}
 
-			tooltipText.destroy();
-			for (rendering::Polygon* const polygon : sectionPolygons)
-			{
-				polygon->destroy();
-			}
+		float ScopeProfilerVisualizer::getWidth()
+		{
+			return view.getSize().width - 10.0f;
 		}
 
 		void ScopeProfilerVisualizer::update(const time::Time& deltaTime)
 		{
 			SE_SCOPE_PROFILER();
 
-			if (guiContext.getInputManager().isKeyPressed(unsigned(input::Key::KP_DIVIDE)))
+			if (inputManager.isKeyPressed(unsigned(input::Key::KP_DIVIDE)))
 			{
 				setRenderState(!getRenderState());
 			}
-			if (guiContext.getInputManager().isKeyPressed(unsigned(input::Key::KP_MULTIPLY)))
+			if (inputManager.isKeyPressed(unsigned(input::Key::KP_MULTIPLY)))
 			{
 				setEnableUpdate(!getEnableUpdate());
 			}
-			if (guiContext.getInputManager().isKeyPressed(unsigned(input::Key::KP_MINUS)))
+			if (inputManager.isKeyPressed(unsigned(input::Key::KP_MINUS)))
 			{
 				setTimeWindowWidth(std::max(1ll, timeWindowWidth.value << 1));
 			}
-			if (guiContext.getInputManager().isKeyPressed(unsigned(input::Key::KP_PLUS)))
+			if (inputManager.isKeyPressed(unsigned(input::Key::KP_PLUS)))
 			{
 				setTimeWindowWidth(std::max(1ll, timeWindowWidth.value >> 1));
 			}
-			if (guiContext.getInputManager().isKeyDown(unsigned(input::Key::KP_4)))
+			if (inputManager.isKeyDown(unsigned(input::Key::KP_4)))
 			{
 				translateTimeWindowBegin(-horizontalSpeed * deltaTime.asSeconds() * timeWindowWidth);
 			}
-			if (guiContext.getInputManager().isKeyDown(unsigned(input::Key::KP_6)))
+			if (inputManager.isKeyDown(unsigned(input::Key::KP_6)))
 			{
 				translateTimeWindowBegin(horizontalSpeed * deltaTime.asSeconds() * timeWindowWidth);
 			}
-			if (guiContext.getInputManager().isKeyPressed(unsigned(input::Key::KP_5)))
+			if (inputManager.isKeyPressed(unsigned(input::Key::KP_5)))
 			{
 				timeWindowBegin = enableUpdate ? time::getProfilerTimestamp() : disableUpdateTime;
 				translateTimeWindowBegin(-timeWindowWidth / 2);
 			}
-			if (guiContext.getInputManager().isKeyPressed(unsigned(input::Key::KP_0)))
+			if (inputManager.isKeyPressed(unsigned(input::Key::KP_0)))
 			{
 				if (!threadDatas.empty())
 				{
@@ -151,9 +148,9 @@ namespace se
 
 				tooltipText.setRenderState(false);
 				tooltipPolygon.setRenderState(false);
-				for (rendering::Polygon* const polygon : sectionPolygons)
+				for (auto&& sectionPolygon : sectionPolygons)
 				{
-					const std::unordered_map<rendering::Polygon*, SectionInfo>::const_iterator it = polygonToSectionInfoLookup.find(polygon);
+					auto it = polygonToSectionInfoLookup.find(sectionPolygon.get());
 					if (it == polygonToSectionInfoLookup.end())
 					{
 						log::error("Polygon key not found from the polygonToSectionInfoLookup.");
@@ -163,7 +160,7 @@ namespace se
 					const SectionInfo& sectionInfo = it->second;
 					if (sectionInfo.beginTime > endTime)
 					{
-						polygon->setRenderState(false);
+						sectionPolygon->setRenderState(false);
 						continue;
 					}
 
@@ -171,11 +168,11 @@ namespace se
 					const time::Time sectionEndTime = section.endTime ? *section.endTime : now;
 					if (sectionEndTime < beginTime)
 					{
-						polygon->setRenderState(false);
+						sectionPolygon->setRenderState(false);
 						continue;
 					}
 
-					const std::unordered_map<rendering::Polygon*, SectionInfo>::const_iterator parentIt = polygonToSectionInfoLookup.find(sectionInfo.parent);
+					auto parentIt = polygonToSectionInfoLookup.find(sectionInfo.parent);
 					const time::Time parentSectionBeginTime = parentIt != polygonToSectionInfoLookup.end()
 						? parentIt->second.beginTime
 						: time::Time::zero;
@@ -183,7 +180,7 @@ namespace se
 						? (parentIt->second.section->endTime ? *parentIt->second.section->endTime : now)
 						: time::Time::zero;
 					const time::Time parentSectionDuration = parentSectionEndTime - parentSectionBeginTime;
-					const std::unordered_map<rendering::Polygon*, SectionInfo>::const_iterator rootParentIt = polygonToSectionInfoLookup.find(sectionInfo.rootParent);
+					auto rootParentIt = polygonToSectionInfoLookup.find(sectionInfo.rootParent);
 					const time::Time rootParentSectionBeginTime = rootParentIt != polygonToSectionInfoLookup.end()
 						? rootParentIt->second.beginTime
 						: time::Time::zero;
@@ -201,15 +198,15 @@ namespace se
 					const float xStartPercentage = (displaySectionBeginTime - beginTime).asSeconds() / timeWindowWidth.asSeconds();
 					const float xEndPercentage = (displaySectionEndTime - beginTime).asSeconds() / timeWindowWidth.asSeconds();
 					const float timeWindowPercentage = xEndPercentage - xStartPercentage;
-					const glm::vec2 position(beginX + width * xStartPercentage, beginY + sectionInfo.depth * sectionHeight);
-					const glm::vec2 size(std::max(1.0f, timeWindowPercentage * width), sectionHeight);
+					const glm::vec2 position(beginX + getWidth() * xStartPercentage, beginY + sectionInfo.depth * sectionHeight);
+					const glm::vec2 size(std::max(1.0f, timeWindowPercentage * getWidth()), sectionHeight);
 					const float percentageOfParent = sectionInfo.parent ? (sectionDuration.asSeconds() / parentSectionDuration.asSeconds()) : 0.0f;
 					const float percentageOfVisualCompareSection = sectionDuration.asSeconds() / visualCompareSectionDuration.asSeconds();
 					const float positiveColorFactor = percentageOfVisualCompareSection * 0.25f;
-					polygon->setRenderState(true);
-					polygon->setPosition(position);
-					polygon->setScale(size);
-					polygon->setColor(Color(1.0f, 0.0f, 0.0f) * positiveColorFactor + Color(0.0f, 1.0f, 0.0f) * (1.0f - positiveColorFactor));
+					sectionPolygon->setRenderState(true);
+					sectionPolygon->setPosition({ position.x, 0.0f, position.y });
+					sectionPolygon->setScale({ size.x, 1.0f, size.y });
+					sectionPolygon->setColor(Color(1.0f, 0.0f, 0.0f) * positiveColorFactor + Color(0.0f, 1.0f, 0.0f) * (1.0f - positiveColorFactor));
 
 					// Tooltip hover?
 					if (mousePosition.x >= position.x && mousePosition.x <= (position.x + size.x) &&
@@ -231,17 +228,18 @@ namespace se
 							stringstream << threadData->threadId;
 							string += "\nThread id: " + std::string(stringstream.str());
 						}
-						tooltipText.setString(string);
+						tooltipText.clear();
+						tooltipText.insert(string);
 						tooltipText.setRenderState(true);
-						const float textWidth = tooltipText.getTextWidth();
+						const float textWidth = tooltipText.getDimensions().dimensions.x;
 						const float tooltipPolygonBorder = 2.0f;
 						const float tooltipWidth = textWidth + 2.0f * tooltipPolygonBorder;
-						const glm::vec2 tooltipPosition(std::min(mousePosition.x + tooltipWidth, float(guiContext.getWindow().getWidth())) - tooltipWidth, mousePosition.y);
-						tooltipText.setPosition(tooltipPosition + glm::vec2(tooltipPolygonBorder, tooltipPolygonBorder));
+						const glm::vec2 tooltipTextPosition = glm::vec2(std::min(mousePosition.x + tooltipWidth, view.getSize().width) - tooltipWidth, mousePosition.y);
+						const glm::vec2 tooltipPolygonPosition = tooltipTextPosition + glm::vec2(tooltipPolygonBorder, tooltipPolygonBorder);
+						tooltipText.setPosition({ tooltipTextPosition.x, 0.0f, tooltipTextPosition.y });
 						tooltipPolygon.setRenderState(true);
-						tooltipPolygon.setScaleX(tooltipWidth);
-						tooltipPolygon.setScaleY(tooltipText.getTextHeight() + 2.0f * tooltipPolygonBorder);
-						tooltipPolygon.setPosition(tooltipPosition);
+						tooltipPolygon.setScale({ tooltipWidth, 1.0f, tooltipText.getDimensions().dimensions.y + 2.0f * tooltipPolygonBorder });
+						tooltipPolygon.setPosition({ tooltipPolygonPosition.x, 0.0f, tooltipPolygonPosition.y });
 					}
 				}
 			}
@@ -262,18 +260,14 @@ namespace se
 				if (sectionPolygons.size() > sectionCount)
 				{
 					const size_t removeCount = sectionPolygons.size() - sectionCount;
-					for (size_t i = 0; i < removeCount; i++)
-					{
-						sectionPolygons[sectionPolygons.size() - i - 1]->destroy();
-					}
 					sectionPolygons.erase(sectionPolygons.end() - removeCount, sectionPolygons.end());
 				}
 				else
 				{
 					while (sectionPolygons.size() < sectionCount)
 					{
-						sectionPolygons.push_back(guiContext.getBatchManager().createPolygon(Shape::BUTTON, 0, 1.0f, 1.0f));
-						sectionPolygons.back()->setCameraMatrixState(false);
+						sectionPolygons.push_back(std::make_unique<graphics::Shape>());
+						sectionPolygons.back()->generate(graphics::ShapeType::Rectangle);
 						sectionPolygons.back()->setColor(Color(0.0f, 1.0f, 0.0f));
 					}
 				}
@@ -281,22 +275,22 @@ namespace se
 				if (!threadData.sections.empty())
 				{
 					size_t sectionIndex = 0u;
-					std::function<void(const time::Time, const ScopeProfiler::Section&, const size_t, rendering::Polygon* const, rendering::Polygon* const)> updatePolygon;
-					updatePolygon = [&updatePolygon, &sectionIndex, this]
-					(const time::Time sectionBeginTime, const ScopeProfiler::Section& section, const size_t depth, rendering::Polygon* const parent, rendering::Polygon* const rootParent)
-					{
-						rendering::Polygon& polygon = *sectionPolygons[sectionIndex++];
-						SectionInfo& sectionInfo = polygonToSectionInfoLookup[&polygon];
-						sectionInfo.section = &section;
-						sectionInfo.parent = parent;
-						sectionInfo.rootParent = rootParent;
-						sectionInfo.beginTime = sectionBeginTime;
-						sectionInfo.depth = depth;
-						for (const std::pair<const time::Time, ScopeProfiler::Section>& pair : section.children)
+					std::function<void(const time::Time, const ScopeProfiler::Section&, const size_t, const graphics::Shape* const, const graphics::Shape* const)> updatePolygon;
+					updatePolygon =
+						[&updatePolygon, &sectionIndex, this](const time::Time sectionBeginTime, const ScopeProfiler::Section& section, const size_t depth, const graphics::Shape* const parent, const graphics::Shape* const rootParent)
 						{
-							updatePolygon(pair.first, pair.second, depth + 1, &polygon, rootParent ? rootParent : &polygon);
-						}
-					};
+							const graphics::Shape* polygon = sectionPolygons[sectionIndex++].get();
+							SectionInfo& sectionInfo = polygonToSectionInfoLookup[polygon];
+							sectionInfo.section = &section;
+							sectionInfo.parent = parent;
+							sectionInfo.rootParent = rootParent;
+							sectionInfo.beginTime = sectionBeginTime;
+							sectionInfo.depth = depth;
+							for (const std::pair<const time::Time, ScopeProfiler::Section>& pair : section.children)
+							{
+								updatePolygon(pair.first, pair.second, depth + 1, polygon, rootParent ? rootParent : polygon);
+							}
+						};
 
 					size_t depth = 0;
 					for (const std::pair<const time::Time, ScopeProfiler::Section>& pair : threadData.sections)
@@ -311,10 +305,6 @@ namespace se
 			}
 			else
 			{
-				for (rendering::Polygon* const polygon : sectionPolygons)
-				{
-					polygon->destroy();
-				}
 				sectionPolygons.clear();
 			}
 		}
@@ -398,17 +388,17 @@ namespace se
 		{
 			renderState = visible;
 			tooltipText.setRenderState(visible);
-			for (rendering::Text* const text : sectionTexts)
+			for (auto&& sectionText : sectionTexts)
 			{
-				text->setRenderState(visible);
+				sectionText->setRenderState(visible);
 			}
 			if (!visible)
 			{
 				tooltipText.setRenderState(visible);
 				tooltipPolygon.setRenderState(visible);
-				for (rendering::Polygon* const polygon : sectionPolygons)
+				for (auto&& sectionPolygon : sectionPolygons)
 				{
-					polygon->setRenderState(visible);
+					sectionPolygon->setRenderState(visible);
 				}
 			}
 		}

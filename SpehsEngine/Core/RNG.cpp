@@ -77,10 +77,37 @@ namespace se
 			std::lock_guard<std::mutex> rnglock(rngmutex);
 			return defaultRandom.square(_side);
 		}
+		glm::vec2 square(const glm::vec2& _min, const glm::vec2& _max)
+		{
+			std::lock_guard<std::mutex> rnglock(rngmutex);
+			return defaultRandom.square(_min, _max);
+		}
 		glm::vec3 cube(const float _side)
 		{
 			std::lock_guard<std::mutex> rnglock(rngmutex);
 			return defaultRandom.cube(_side);
+		}
+		glm::vec3 cube(const glm::vec3& _min, const glm::vec3& _max)
+		{
+			std::lock_guard<std::mutex> rnglock(rngmutex);
+			return defaultRandom.cube(_min, _max);
+		}
+		glm::quat rotation()
+		{
+			const float u = unit(), v = unit(), w = unit();
+			return glm::quat(sqrtf(1.0f - u) * sinf(glm::two_pi<float>() * v),
+							 sqrtf(1.0f - u) * cosf(glm::two_pi<float>() * v),
+							 sqrtf(u) * sinf(glm::two_pi<float>() * w),
+							 sqrtf(u) * cosf(glm::two_pi<float>() * w));
+		}
+		glm::vec2 direction2D()
+		{
+			const float a = angle();
+			return glm::vec2(cos(a), sin(a));
+		}
+		glm::vec3 direction3D()
+		{
+			return rotation() * glm::vec3(0.0f, 0.0f, 1.0f);
 		}
 	}
 }

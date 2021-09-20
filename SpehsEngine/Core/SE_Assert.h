@@ -2,8 +2,9 @@
 #pragma once
 
 #if defined(FINAL_RELEASE)
-	//Generate no code!
+	// Generate no code!
 	#define se_assert(_file) ((void)0)
+	#define se_assert_m(__expression, __message) ((void)0)
 #else
 	#include <string>
 

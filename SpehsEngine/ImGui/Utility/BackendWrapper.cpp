@@ -1,42 +1,110 @@
 #include "stdafx.h"
 #include "SpehsEngine/ImGui/Utility/BackendWrapper.h"
 
+#include "bgfx/bgfx.h"
+#include "bgfx/embedded_shader.h"
 #include "SpehsEngine/ImGui/imgui.h"
-#include "SpehsEngine/ImGui/imgui_impl_opengl3.h"
 #include "SpehsEngine/ImGui/imgui_impl_sdl.h"
 #include "SpehsEngine/Input/EventSignaler.h"
-#include "SpehsEngine/Rendering/Window.h"
-#include "SpehsEngine/Rendering/GLContext.h"
+#include "SpehsEngine/Graphics/Renderer.h"
 #include "SDL/SDL_mouse.h"
 #include "SDL/SDL_keyboard.h"
 #include "SDL/SDL_keycode.h"
-#include "SpehsEngine/ImGui/imgui.h"
 
-#pragma optimize("", off) // nocommit
+#include "SpehsEngine/Graphics/EmbeddedShaders/vs_imgui.h"
+#include "SpehsEngine/Graphics/EmbeddedShaders/fs_imgui.h"
+#include "SpehsEngine/Graphics/EmbeddedFonts/AnonymousPro-Regular.ttf.h"
+#include "SpehsEngine/Graphics/EmbeddedFonts/OpenSans-Regular.ttf.h"
+
+
 namespace se
 {
 	namespace imgui
 	{
-        BackendWrapper::BackendWrapper(rendering::Window& _window, input::EventSignaler& _eventSignaler, const int _inputPriority)
-            : window(_window)
-            , eventSignaler(_eventSignaler)
+        // Graphics backend global state
+        namespace impl
+        {
+            const bgfx::ViewId  viewId = 234;
+            bgfx::VertexLayout  layout;
+            bgfx::ProgramHandle imguiProgram;
+            bgfx::TextureHandle fontTexture;
+            bgfx::UniformHandle texUniform;
+            ImFont*             font[ImGuiFont::Count];
+
+            static const bgfx::EmbeddedShader embeddedShaders[] =
+            {
+                BGFX_EMBEDDED_SHADER(vs_imgui),
+                BGFX_EMBEDDED_SHADER(fs_imgui),
+
+                BGFX_EMBEDDED_SHADER_END()
+            };
+        }
+
+        ImFont* getFont(const ImGuiFont _font)
+        {
+            return impl::font[_font];
+        }
+
+
+        BackendWrapper::BackendWrapper(input::EventSignaler& _eventSignaler, const int _inputPriority, graphics::Renderer& _renderer)
+            : eventSignaler(_eventSignaler)
             , inputPriority(_inputPriority)
+            , renderer(_renderer)
         {
             IMGUI_CHECKVERSION();
             ImGui::CreateContext();
-            ImGuiIO& io = ImGui::GetIO(); (void)io;
+            ImGuiIO& io = ImGui::GetIO();
             //io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
             //io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
+            ImGui::StyleColorsDark();
 
-            // Setup Dear ImGui style
-            ::ImGui::StyleColorsDark();
-            //ImGui::StyleColorsClassic();
+            SDL_Window* sdlWindow = renderer.getDefaultSDLWindow(); // NOTE: ImGui will only work in the default window!
+            ImGui_ImplSDL2_Init(sdlWindow);
 
-            // Setup Platform/Renderer backends
-            SDL_Window* sdlWindow = window.getSDLWindow();
-            ImGui_ImplSDL2_InitForOpenGL(sdlWindow, window.getGLContext()->getImpl());
-            const char* glsl_version = "#version 130";
-            ImGui_ImplOpenGL3_Init(glsl_version);
+            // Bgfx implementation
+            {
+                bgfx::RendererType::Enum type = bgfx::getRendererType();
+                impl::imguiProgram = bgfx::createProgram(
+                      bgfx::createEmbeddedShader(impl::embeddedShaders, type, "vs_imgui")
+                    , bgfx::createEmbeddedShader(impl::embeddedShaders, type, "fs_imgui")
+                    , true
+                    );
+                impl::texUniform = bgfx::createUniform("s_texColor", bgfx::UniformType::Sampler);
+
+                impl::layout
+                    .begin()
+                    .add(bgfx::Attrib::Position,    2, bgfx::AttribType::Float)
+                    .add(bgfx::Attrib::TexCoord0,   2, bgfx::AttribType::Float)
+                    .add(bgfx::Attrib::Color0,      4, bgfx::AttribType::Uint8, true)
+                    .end();
+
+                // Fonts
+                uint8_t* data;
+                int32_t width;
+                int32_t height;
+                {
+                    ImFontConfig config;
+                    config.FontDataOwnedByAtlas = false;
+                    config.MergeMode = false;
+
+                    const ImWchar* ranges = io.Fonts->GetGlyphRangesDefault();
+                    constexpr float fontSizePixels = 18.0f;
+                    impl::font[ImGuiFont::Mono] = io.Fonts->AddFontFromMemoryTTF((void*)font_anonymousProRegularTtf, sizeof(font_anonymousProRegularTtf), fontSizePixels - 3.0f, &config, ranges);
+                    impl::font[ImGuiFont::Regular] = io.Fonts->AddFontFromMemoryTTF((void*)font_openSansRegularTtf, sizeof(font_openSansRegularTtf), fontSizePixels, &config, ranges);
+                }
+
+                io.Fonts->GetTexDataAsRGBA32(&data, &width, &height);
+
+                impl::fontTexture = bgfx::createTexture2D(
+                      (uint16_t)width
+                    , (uint16_t)height
+                    , false
+                    , 1
+                    , bgfx::TextureFormat::BGRA8
+                    , 0
+                    , bgfx::copy(data, width * height * 4)
+                    );
+            }
 
             setInputPriority(_inputPriority);
 
@@ -75,32 +143,115 @@ namespace se
             // After event signaler has updated, begin a new frame with the freshly received input state
             eventSignaler.connectToPostUpdateSignal(eventSignalerPostUpdateConnection, [this]()
                 {
-                    if (queuedFont)
-                    {
-                        ImGuiIO& io = ::ImGui::GetIO();
-                        io.Fonts->Clear();
-                        io.Fonts->AddFontFromFileTTF(queuedFont->first.data(), queuedFont->second);
-                        ImGui_ImplOpenGL3_CreateFontsTexture();
-                        queuedFont.reset();
-                    }
-                    ImGui_ImplOpenGL3_NewFrame();
-                    ImGui_ImplSDL2_NewFrame(window.getSDLWindow());
+                    SDL_Window* sdlWindow = renderer.getDefaultSDLWindow();
+                    ImGui_ImplSDL2_NewFrame(sdlWindow);
                     ImGui::NewFrame();
                 });
         }
 
         BackendWrapper::~BackendWrapper()
         {
-            ImGui_ImplOpenGL3_Shutdown();
             ImGui_ImplSDL2_Shutdown();
+
             ImGui::DestroyContext();
+
+            bgfx::destroy(impl::fontTexture);
+            bgfx::destroy(impl::texUniform);
+            bgfx::destroy(impl::imguiProgram);
         }
 
         void BackendWrapper::render()
         {
             preRenderSignal();
             ImGui::Render();
-            ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+
+            // Bgfx implementation
+            {
+                bgfx::setViewFrameBuffer(impl::viewId, BGFX_INVALID_HANDLE); // Use default backbuffer, which should be the default window
+                ImDrawData* drawData = ImGui::GetDrawData();
+
+                const ImGuiIO& io = ImGui::GetIO();
+                const float viewWidth = io.DisplaySize.x;
+                const float viewHeight = io.DisplaySize.y;
+
+                bgfx::setViewName(impl::viewId, "ImGui");
+                bgfx::setViewMode(impl::viewId, bgfx::ViewMode::Sequential);
+
+                const glm::mat4 projectionMatrix = glm::orthoRH_ZO(0.0f, viewWidth, viewHeight, 0.0f, 0.05f, 1000.0f);
+                bgfx::setViewTransform(impl::viewId, NULL, &projectionMatrix);
+                bgfx::setViewRect(impl::viewId, 0, 0, uint16_t(viewWidth), uint16_t(viewHeight));
+
+                // Render command lists
+                for (int32_t ii = 0, num = drawData->CmdListsCount; ii < num; ++ii)
+                {
+                    bgfx::TransientVertexBuffer tvb;
+                    bgfx::TransientIndexBuffer tib;
+
+                    const ImDrawList* drawList = drawData->CmdLists[ii];
+                    const uint32_t numVertices = (uint32_t)drawList->VtxBuffer.size();
+                    const uint32_t numIndices = (uint32_t)drawList->IdxBuffer.size();
+
+                    if (bgfx::getAvailTransientVertexBuffer(numVertices, impl::layout) != numVertices ||
+                        bgfx::getAvailTransientIndexBuffer(numIndices) != numIndices)
+                    {
+                        const char* msg = "Imgui: Out of transient buffer memory!";
+                        log::warning(msg);
+                        se_assert_m(false, msg);
+                        break;
+                    }
+
+                    bgfx::allocTransientVertexBuffer(&tvb, numVertices, impl::layout);
+                    bgfx::allocTransientIndexBuffer(&tib, numIndices, sizeof(ImDrawIdx) == 4);
+
+                    ImDrawVert* verts = (ImDrawVert*)tvb.data;
+                    bx::memCopy(verts, drawList->VtxBuffer.begin(), numVertices * sizeof(ImDrawVert));
+
+                    ImDrawIdx* indices = (ImDrawIdx*)tib.data;
+                    bx::memCopy(indices, drawList->IdxBuffer.begin(), numIndices * sizeof(ImDrawIdx));
+
+                    uint32_t offset = 0;
+                    for (const ImDrawCmd* cmd = drawList->CmdBuffer.begin(), *cmdEnd = drawList->CmdBuffer.end(); cmd != cmdEnd; ++cmd)
+                    {
+                        if (cmd->UserCallback)
+                        {
+                            cmd->UserCallback(drawList, cmd);
+                        }
+                        else if (cmd->ElemCount != 0)
+                        {
+                            uint64_t state = 0
+                                | BGFX_STATE_WRITE_RGB
+                                | BGFX_STATE_WRITE_A
+                                | BGFX_STATE_MSAA
+                                | BGFX_STATE_BLEND_FUNC(BGFX_STATE_BLEND_SRC_ALPHA, BGFX_STATE_BLEND_INV_SRC_ALPHA)
+                                ;
+
+                            bgfx::TextureHandle textureHandle = impl::fontTexture;
+
+                            if (cmd->TextureId != nullptr)
+                            {
+                                se::imgui::ImGuiUserTextureData userTextureData;
+                                userTextureData.id = cmd->TextureId;
+                                textureHandle = { userTextureData.resourceHandle } ;
+                            }
+
+                            const uint16_t xx = uint16_t(bx::max(cmd->ClipRect.x, 0.0f));
+                            const uint16_t yy = uint16_t(bx::max(cmd->ClipRect.y, 0.0f));
+                            bgfx::setScissor(xx , yy
+                                , uint16_t(bx::min(cmd->ClipRect.z, 65535.0f) - xx)
+                                , uint16_t(bx::min(cmd->ClipRect.w, 65535.0f) - yy)
+                                );
+
+                            bgfx::setState(state);
+                            bgfx::setTexture(0, impl::texUniform, textureHandle);
+                            bgfx::setVertexBuffer(0, &tvb, 0, numVertices);
+                            bgfx::setIndexBuffer(&tib, offset, cmd->ElemCount);
+                            bgfx::submit(impl::viewId, impl::imguiProgram);
+                        }
+
+                        offset += cmd->ElemCount;
+                    }
+                }
+            }
         }
 
         void BackendWrapper::setInputPriority(const int _inputPriority)
@@ -131,32 +282,8 @@ namespace se
 
             eventSignaler.connectToMouseButtonSignal(mouseButtonConnection, [this](const input::MouseButtonEvent& event)
                 {
-                    if (event.isPress())
-                    {
-                        ImGuiIO& io = ImGui::GetIO();
-                        if (io.WantCaptureKeyboard)
-                        {
-                            if (int(event.button) == SDL_BUTTON_LEFT)
-                            {
-                                mousePressedStates[0] = true;
-                                ImGui_ImplSDL2_UpdateMousePressedStates(mousePressedStates);
-                                return true;
-                            }
-                            else if (int(event.button) == SDL_BUTTON_RIGHT)
-                            {
-                                mousePressedStates[1] = true;
-                                ImGui_ImplSDL2_UpdateMousePressedStates(mousePressedStates);
-                                return true;
-                            }
-                            else if (int(event.button) == SDL_BUTTON_MIDDLE)
-                            {
-                                mousePressedStates[2] = true;
-                                ImGui_ImplSDL2_UpdateMousePressedStates(mousePressedStates);
-                                return true;
-                            }
-                        }
-                    }
-                    return false;
+                    ImGuiIO& io = ImGui::GetIO();
+                    return io.WantCaptureMouse;
                 }, inputPriority);
 
             eventSignaler.connectToTextInputSignal(textInputConnection, [](const input::TextInputEvent& event)
@@ -189,10 +316,5 @@ namespace se
                     return false;
                 }, inputPriority);
 		}
-
-        void BackendWrapper::setFont(const std::string_view filepath, const float fontSize)
-        {
-            queuedFont.emplace(std::make_pair(filepath, fontSize));
-        }
 	}
 }

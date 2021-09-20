@@ -31,5 +31,6 @@ namespace se
 		void info(const std::string_view message);
 		void warning(const std::string_view message);
 		void error(const std::string_view message);
+		void debug(const std::string& _message);
 	}
 }

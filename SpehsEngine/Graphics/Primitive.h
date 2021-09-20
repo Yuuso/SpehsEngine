@@ -1,10 +1,17 @@
 #pragma once
 
+#include "boost/signals2.hpp"
+#include "SpehsEngine/Graphics/IndexBuffer.h"
+#include "SpehsEngine/Graphics/RenderCopy.h"
 #include "SpehsEngine/Graphics/Types.h"
+#include "SpehsEngine/Graphics/VertexBuffer.h"
+#include "SpehsEngine/Graphics/Material.h"
+#include "glm/mat4x4.hpp"
 #include "glm/vec3.hpp"
 #include "glm/gtc/quaternion.hpp"
 #include <vector>
 #include <string>
+#include <memory>
 
 
 namespace se
@@ -17,76 +24,94 @@ namespace se
 		{
 		public:
 
-											Primitive();
-											~Primitive();
+													Primitive();
+			virtual									~Primitive();
 
-											Primitive(const Primitive& _other) = delete;
-			Primitive&						operator=(const Primitive& _other) = delete;
+													Primitive(const Primitive& _other) = delete;
+			Primitive&								operator=(const Primitive& _other) = delete;
 
-											Primitive(Primitive&& _other) = delete;
-			Primitive&						operator=(Primitive&& _other) = delete;
+													Primitive(Primitive&& _other) = delete;
+			Primitive&								operator=(Primitive&& _other) = delete;
 
 
-			const std::string&				nameGet() const;
-			const bool						renderStateGet() const;
-			const Shader*					shaderGet() const;
-			const std::vector<Vertex>&		verticesGet() const;
-			const std::vector<IndexType>&	indicesGet() const;
+			virtual const std::string&				getName() const;
+			virtual const bool						getRenderState() const;
+			virtual std::shared_ptr<Material>		getMaterial() const;
+			virtual std::shared_ptr<VertexBuffer>	getVertices() const;
+			virtual std::shared_ptr<IndexBuffer>	getIndices() const;
+			virtual std::shared_ptr<VertexBuffer>	getInstances() const;
+			virtual const Color&					getColor() const;
+			virtual const Scissor&					getScissor() const;
 
-			const RenderFlagsType			renderFlagsGet() const;
-			const bool						renderFlagCheck(const RenderFlag _renderFlag) const;
-			const RenderStyle				renderStyleGet() const;
-			const RenderMode				renderModeGet() const;
+			virtual const RenderFlagsType			getRenderFlags() const;
+			virtual const bool						checkRenderFlags(const RenderFlagsType _renderFlags) const;
+			virtual const PrimitiveType				getPrimitiveType() const;
+			virtual const RenderMode				getRenderMode() const;
+			virtual const RenderCopy*				getRenderCopy() const;
 
-			const glm::vec3&				positionGet() const;
-			const glm::vec3&				localPositionGet() const;
-			const glm::vec3&				scaleGet() const;
-			const glm::quat&				rotationGet() const;
+			virtual const glm::vec3&				getPosition() const;
+			virtual const glm::vec3&				getScale() const;
+			virtual const glm::quat&				getRotation() const;
+			virtual const UniformMatrices&			getTransformMatrices() const;
+			virtual const UniformMatrices&			getNormalMatrices() const;
 
-			void							nameSet(const std::string_view _name);
-			void							renderStateSet(const bool _state);
-			void							shaderSet(const Shader* _shader);
-			void							verticesSet(const std::vector<Vertex>& _vertices);
-			void							indicesSet(const std::vector<uint16_t>& _indices);
+			virtual void							setName(const std::string_view _name);
+			virtual void							setRenderState(const bool _state);
+			virtual void							toggleRenderState();
+			virtual void							setMaterial(std::shared_ptr<Material> _material);
+			virtual void							setVertices(std::shared_ptr<VertexBuffer> _vertices);
+			virtual void							setIndices(std::shared_ptr<IndexBuffer> _indices);
+			virtual void							setInstances(std::shared_ptr<VertexBuffer> _instances);
+			virtual void							setColor(const Color& _color);
+			virtual void							setScissor(const Scissor& _scissor);
 
-			void							renderFlagsSet(const RenderFlagsType _renderFlags);
-			void							renderFlagEnable(const RenderFlag _renderFlag);
-			void							renderFlagDisable(const RenderFlag _renderFlag);
-			void							renderStyleSet(const RenderStyle _renderStyle);
-			void							renderModeSet(const RenderMode _renderMode);
+			virtual void							setRenderFlags(const RenderFlagsType _renderFlags);
+			virtual void							enableRenderFlags(const RenderFlagsType _renderFlags);
+			virtual void							disableRenderFlags(const RenderFlagsType _renderFlags);
+			virtual void							setPrimitiveType(const PrimitiveType _primitiveType);
+			virtual void							setRenderMode(const RenderMode _renderMode);
+			virtual void							setRenderCopy(const RenderCopy& _renderCopy);
+			virtual void							removeRenderCopy();
 
-			void							positionSet(const glm::vec3& _position);
-			void							localPositionSet(const glm::vec3& _position);
-			void							scaleSet(const glm::vec3& _scale);
-			void							rotationSet(const glm::quat& _rotation);
+			virtual void							setPosition(const glm::vec3& _position);
+			virtual void							setScale(const glm::vec3& _scale);
+			virtual void							setRotation(const glm::quat& _rotation);
+
+			virtual void							updateMatrices();
 
 		protected:
 
-			std::string						name					= "primitive";
-			bool							renderState				= true;
-			RenderFlagsType					renderFlags				= RenderFlag::BackFaceCulling
-																	| RenderFlag::DepthTest;
-			RenderStyle						renderStyle				= RenderStyle::Triangles;
-			RenderMode						renderMode				= RenderMode::Dynamic;
-			const Shader*					shader					= nullptr;
-			std::vector<Vertex>				vertices;
-			std::vector<IndexType>			indices;
+			friend class PrimitiveInternal;
+			friend class Model;
 
-			// Global space
-			glm::vec3						position				= glm::vec3(0.0f);
-			glm::vec3						scale					= glm::vec3(1.0f);
-			glm::quat						rotation				= glm::vec3(0.0f);
+			virtual void							update();
+			bool									getVerticesChanged();
+			bool									getIndicesChanged();
 
-			// Local space
-			glm::vec3						localPosition			= glm::vec3(0.0f);
+			PrimitiveUpdateFlagsType				updateFlags = 0;
 
-			friend class PrimitiveInstance;
+		private:
 
-			glm::vec3						initialLocalPosition	= glm::vec3(0.0f);
-			glm::vec3						initialLocalScale		= glm::vec3(1.0f);
-			glm::quat						initialLocalRotation	= glm::vec3(0.0f);
+			std::string								name					= "primitive";
+			bool									renderState				= true;
+			RenderFlagsType							renderFlags				= defaultRenderFlags;
+			PrimitiveType							primitiveType			= defaultPrimitiveType;
+			RenderMode								renderMode				= defaultRenderMode;
+			std::unique_ptr<RenderCopy>				renderCopy;
+			std::shared_ptr<Material>				material				= nullptr;
+			std::shared_ptr<VertexBuffer>			vertices;
+			std::shared_ptr<IndexBuffer>			indices;
+			std::shared_ptr<VertexBuffer>			instances;
+			glm::vec3								position				= glm::vec3(0.0f);
+			glm::vec3								scale					= glm::vec3(1.0f);
+			glm::quat								rotation				= glm::vec3(0.0f);
+			Color									primitiveColor;
+			Scissor									scissor;
 
-			UpdateFlagsType					updateFlags				= UpdateFlag::NothingChanged;
+			UniformMatrices							transformMatrices;
+			UniformMatrices							normalMatrices;
+
+			boost::signals2::signal<void(void)>		destroyedSignal;
 		};
 	}
 }

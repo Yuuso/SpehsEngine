@@ -4,7 +4,7 @@
 #include "SpehsEngine/Core/Archive.h"
 #include "SDL/SDL_joystick.h"
 
-#pragma optimize("", off) // nocommit
+
 namespace se
 {
 	namespace input

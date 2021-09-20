@@ -1,12 +1,12 @@
 #include "stdafx.h"
 #include "SpehsEngine/ImGui/Utility/ImGuiUtility.h"
 
+#include "SpehsEngine/ImGui/Utility/BackendWrapper.h"
 #include "SpehsEngine/Core/File/DirectoryState.h"
 #include "SpehsEngine/Input/EventSignaler.h"
 #include "SpehsEngine/Input/CustomEventParametersRecorder.h"
 
 
-#pragma optimize("", off) // nocommit
 namespace ImGui
 {
 	namespace
@@ -163,7 +163,7 @@ namespace ImGui
 		ImGui::SetNextWindowPos(center, ImGuiCond_Appearing, ImVec2(0.5f, 0.5f));
 		if (ImGui::BeginPopupModal(header, NULL, ImGuiWindowFlags_AlwaysAutoResize))
 		{
-			
+
 			if (!std::string_view(message).empty())
 			{
 				ImGui::Text(message);
@@ -280,5 +280,10 @@ namespace ImGui
 		}
 
 		return imGuiFormatString;
+	}
+
+	void PushFont(const se::imgui::ImGuiFont _font)
+	{
+		PushFont(getFont(_font));
 	}
 }

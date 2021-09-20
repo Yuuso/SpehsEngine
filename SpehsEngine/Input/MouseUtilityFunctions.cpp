@@ -26,18 +26,20 @@ namespace se
 
 		glm::vec2 getMousePositionf()
 		{
+			const glm::ivec2 pos = getMousePosition();
+			return glm::vec2(pos.x, pos.y);
+		}
+		void setMousePosition(const glm::ivec2& _pos)
+		{
 			if (SDL_Window* const focusedWindow = SDL_GetMouseFocus())
 			{
-				glm::ivec2 position;
-				SDL_GetMouseState(&position.x, &position.y);
 				int height = 0;
 				SDL_GetWindowSize(focusedWindow, nullptr, &height);
-				position.y = height - position.y;
-				return glm::vec2(position.x, position.y);
+				SDL_WarpMouseInWindow(nullptr, _pos.x, height - _pos.y);
 			}
 			else
 			{
-				return glm::vec2();
+				log::warning("Couldn't set mouse position, no window focus!");
 			}
 		}
 

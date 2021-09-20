@@ -6,24 +6,64 @@ namespace se
 {
 	namespace graphics
 	{
-		View::View(const Scene& _scene, const Camera& _camera)
-			: width(600)
-			, height(600)
-			, scene(_scene)
+		View::View(Scene& _scene, Camera& _camera)
+			: scene(_scene)
 			, camera(_camera)
 		{
 		}
 		View::~View()
 		{
+			destroyedSignal();
 		}
 
-		float View::widthGet() const
+		Scene& View::getScene()
 		{
-			return width;
+			return scene;
 		}
-		float View::heightGet() const
+		Camera& View::getCamera()
 		{
-			return height;
+			return camera;
+		}
+		const ViewSize& View::getSize() const
+		{
+			return size;
+		}
+		const ViewSize& View::getOffset() const
+		{
+			return offset;
+		}
+		const bool View::getMSAAEnabled() const
+		{
+			return enableMSAA;
+		}
+		const uint32_t View::getClearColor() const
+		{
+			return clearColor;
+		}
+		const ViewClearFlagsType View::getClearFlags() const
+		{
+			return clearFlags;
+		}
+
+		void View::setSize(const ViewSize& _size)
+		{
+			size = _size;
+		}
+		void View::setOffset(const ViewSize& _offset)
+		{
+			offset = _offset;
+		}
+		void View::setMSAAEnabled(const bool _enabled)
+		{
+			enableMSAA = _enabled;
+		}
+		void View::setClearColor(const uint32_t _hexColor)
+		{
+			clearColor = _hexColor;
+		}
+		void View::setClearFlags(const ViewClearFlagsType _flags)
+		{
+			clearFlags = _flags;
 		}
 	}
 }

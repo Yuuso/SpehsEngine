@@ -1,20 +1,19 @@
 #include "stdafx.h"
-#include "SpehsEngine/Input/InputLib.h"
 
+#include "SpehsEngine/Input/InputLib.h"
 #include "SpehsEngine/Core/CoreLib.h"
 #include "SpehsEngine/Core/Log.h"
 #include "SpehsEngine/Core/SE_Time.h"
 #include "SpehsEngine/Input/InputManager.h"
-#include "SpehsEngine/Rendering/OpenGLError.h"
-#include "SpehsEngine/Rendering/RenderingLib.h"
-#include "SpehsEngine/Rendering/Window.h"
-#include <boost/bind.hpp>
-#include <iostream>
-#include <SDL/SDL.h>
-#include <stdint.h>
+
 #include <string>
 #include <thread>
+#include <iostream>
+#include <stdint.h>
 
+#include <SDL/SDL.h>
+
+#include <boost/bind.hpp>
 
 namespace se
 {
@@ -25,20 +24,14 @@ namespace se
 		std::string version("0");
 	}
 
-	InputLib::InputLib(const se::rendering::RenderingLib& renderingLib)
+	InputLib::InputLib()
 	{
 		instanceCount++;
 		if (!valid)
 		{
-			if (!renderingLib.isValid())
-			{
-				log::error("Cannot initialize input library, rendering library is invalid.");
-				return;
-			}
-
 			log::info("Current SpehsEngine input library version: " + getVersion());
 
-			if (SDL_Init(0) != 0)
+			if (SDL_WasInit(0) == 0 && SDL_Init(0) != 0)
 			{
 				const std::string error("Unable to initialize SDL: %s", SDL_GetError());
 				log::error(error);
@@ -77,12 +70,6 @@ namespace se
 			SDL_Quit();
 			valid = false;
 		}
-	}
-
-	void InputLib::update()
-	{
-		SE_SCOPE_PROFILER();
-		SDL_PumpEvents();
 	}
 
 	bool InputLib::isValid()

@@ -11,7 +11,6 @@
 #if SE_PLATFORM == SE_PLATFORM_WINDOWS
 #include <Windows.h>
 #endif
-#pragma optimize("", off) // nocommit
 
 namespace se
 {
@@ -58,7 +57,7 @@ namespace se
 	{
 		return string.find(searchParameter) != std::string::npos;
 	}
-	
+
 	void indent(std::string& string, const std::string_view indentation)
 	{
 		if (string.empty())

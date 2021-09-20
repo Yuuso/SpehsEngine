@@ -21,16 +21,9 @@ namespace se
 {
 	namespace time
 	{
-		namespace conversionRate
-		{
-			const TimeValueType second = std::chrono::high_resolution_clock::time_point::period::den;
-			const TimeValueType millisecond = second / 1000;
-			const TimeValueType microsecond = millisecond / 1000;
-			const TimeValueType nanosecond = microsecond / 1000;
-		}
-
+		static_assert(conversionRate::second == std::chrono::high_resolution_clock::time_point::period::den, "Incorrect clock resolution!");
 		namespace
-		{
+		{ // Local variables
 			bool initialized = false;
 			std::chrono::high_resolution_clock::rep initializationTime;
 
@@ -59,10 +52,10 @@ namespace se
 #endif
 
 			initializationTime = std::chrono::high_resolution_clock::now().time_since_epoch().count();
-			log::info("SpehsEngine time accuracy is " + std::to_string(conversionRate::second) + " ticks per second.");
 			initialized = true;
+			log::info("SpehsEngine time accuracy is " + std::to_string(conversionRate::second) + " ticks per second.");
 		}
-		
+
 		Time now()
 		{
 			return std::chrono::high_resolution_clock::now().time_since_epoch().count();
@@ -114,6 +107,11 @@ namespace se
 				if (now - begin >= time)
 					return;
 			}
+		}
+
+		Time timeSince(const Time _time)
+		{
+			return now() - _time;
 		}
 
 		std::string date(const std::string& format)
@@ -181,15 +179,7 @@ namespace se
 
 		//TIME STRUCT
 #pragma region TIME STRUCT
-		const Time Time::zero(0);
-		Time::Time()
-			: value(0)
-		{
-		}
-		Time::Time(const TimeValueType _value)
-			: value(_value)
-		{
-		}
+		const Time Time::zero = Time(0);
 		Time::Time(const Time& other)
 			: value(other.value)
 		{

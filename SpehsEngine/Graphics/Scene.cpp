@@ -1,8 +1,8 @@
 #include "stdafx.h"
 #include "SpehsEngine/Graphics/Scene.h"
 
+#include "SpehsEngine/Core/BitwiseOperations.h"
 #include "SpehsEngine/Graphics/Shader.h"
-#include "SpehsEngine/Graphics/Internal/BatchPosition.h"
 #include "SpehsEngine/Graphics/Types.h"
 
 
@@ -12,120 +12,222 @@ namespace se
 	{
 		Scene::Scene()
 		{
+			lightBatch = std::make_unique<LightBatch>();
 		}
 		Scene::~Scene()
 		{
 		}
 
-		void Scene::add(const Primitive& _primitive)
+		void Scene::add(Primitive& _primitive)
 		{
-			auto it = std::find_if(primitives.begin(),
-								   primitives.end(),
-								   [&_primitive](const std::unique_ptr<PrimitiveInstance>& primitive)
-								   {
-									   return *primitive.get() == _primitive;
-								   });
-			if (it != primitives.end())
+			if (find(_primitive))
 			{
 				se::log::error("Primitive already found in scene!");
 				return;
 			}
-			primitives.emplace_back(std::make_unique<PrimitiveInstance>(_primitive));
+			primitives.push_back(std::make_unique<PrimitiveInternal>(_primitive));
 		}
-		void Scene::remove(const Primitive& _primitive)
+		void Scene::remove(Primitive& _primitive)
 		{
-			auto it = std::find_if(primitives.begin(),
-								   primitives.end(),
-								   [&_primitive](const std::unique_ptr<PrimitiveInstance>& primitive)
+			auto it = std::find_if(primitives.begin(), primitives.end(),
+								   [&_primitive](const std::unique_ptr<PrimitiveInternal>& primitive)
 								   {
 									   return *primitive.get() == _primitive;
 								   });
 			if (it == primitives.end())
 			{
-				se::log::error("Primitive not found!");
+				se::log::error("Primitive not found in scene!");
 				return;
 			}
 
-			if (it->get()->batch)
-			{
-				unbatch(*it->get());
-			}
+			if (it->get()->isBatched())
+				it->get()->unbatch();
 
-			primitives.erase(it);
+			it->reset(primitives.back().release());
+			primitives.pop_back();
+		}
+		bool Scene::find(const Primitive& _primitive) const
+		{
+			auto it = std::find_if(primitives.begin(), primitives.end(),
+								   [&_primitive](const std::unique_ptr<PrimitiveInternal>& primitive)
+								   {
+									   return *primitive.get() == _primitive;
+								   });
+			return it != primitives.end();
 		}
 
-		void Scene::update()
+		void Scene::add(Model& _model)
 		{
+			auto it = std::find_if(models.begin(), models.end(),
+								   [&_model](const std::unique_ptr<ModelInternal>& model)
+								   {
+									   return *model.get() == _model;
+								   });
+			if (it != models.end())
+			{
+				se::log::error("Model already found in scene!");
+				return;
+			}
+			models.push_back(std::make_unique<ModelInternal>(_model));
+			// NOTE: Model primitives will be added in first preRender
+		}
+		void Scene::remove(Model& _model)
+		{
+			auto it = std::find_if(models.begin(), models.end(),
+								   [&_model](const std::unique_ptr<ModelInternal>& model)
+								   {
+									   return *model.get() == _model;
+								   });
+			if (it == models.end())
+			{
+				se::log::error("Model not found in scene!");
+				return;
+			}
+
+			it->get()->foreachPrimitive([this](Primitive& _primitive) { this->remove(_primitive); });
+			it->reset(models.back().release());
+			models.pop_back();
+		}
+
+		void Scene::add(Light& _light)
+		{
+			lightBatch->add(_light);
+		}
+		void Scene::remove(Light& _light)
+		{
+			lightBatch->remove(_light);
+		}
+
+		void Scene::clear()
+		{
+			models.clear();
+			primitives.clear();
+			batches.clear();
+			lightBatch->clear();
+		}
+
+		void Scene::render(RenderContext& _renderContext)
+		{
+			_renderContext.lightBatch = lightBatch.get();
+
+			// TODO: Optimize unbatching?
+
 			for (auto&& primitive : primitives)
 			{
-				// TODO: Check update
-				if (primitive->primitive.renderStateGet())
+				primitive->update();
+				if (primitive->getRenderState())
 				{
-					if (primitive->primitive.renderModeGet() == RenderMode::Static)
+					if (primitive->getRenderMode() == RenderMode::Static)
 					{
-						if (primitive->batch == nullptr)
-						{
+						if (!primitive->isBatched())
 							batch(*primitive.get());
-						}
 					}
 					else
 					{
-						// TODO: A bunch of stuff, including Transient rendering
-						primitive->updateTransformMatrix();
+						primitive->render(_renderContext);
 					}
 				}
-				else
-				{
-					if (primitive->batch != nullptr)
-						unbatch(*primitive.get());
-					primitive->destroyBuffers();
-				}
 			}
-		}
 
-		void Scene::render(RenderContext& _renderContext) const
-		{
-			for (auto&& primitive : primitives)
+			for (size_t i = 0; i < batches.size(); )
 			{
-				if (primitive->primitive.renderStateGet()
-					&& primitive->batch == nullptr)
+				if (!batches[i]->render(_renderContext))
 				{
-					primitive->render(_renderContext);
+					batches[i].reset(batches.back().release());
+					batches.pop_back();
+					continue;
 				}
+				i++;
 			}
-
-			for (auto&& batch : batches)
-				batch->render(_renderContext);
 		}
 
-		void Scene::batch(PrimitiveInstance& _primitive)
+		void Scene::preRender(const bool /*_renderState*/, const bool _forceAllUpdates)
 		{
-			se_assert(!_primitive.batch);
+			if (readyToRender)
+				return;
+			readyToRender = true;
+
+			for (size_t i = 0; i < models.size(); )
+			{
+				if (models[i]->wasDestroyed())
+				{
+					models[i].reset(models.back().release());
+					models.pop_back();
+					continue;
+				}
+
+				if (models[i]->wasReloaded())
+				{
+					models[i]->foreachPrimitive([this](Primitive& _primitive){ this->add(_primitive); });
+				}
+				else if (_forceAllUpdates)
+				{
+					models[i]->foreachPrimitive(
+						[this](Primitive& _primitive)
+						{
+							if (!this->find(_primitive))
+								this->add(_primitive);
+						});
+				}
+				models[i]->preRender();
+				i++;
+			}
+
+			for (size_t i = 0; i < primitives.size(); )
+			{
+				if (primitives[i]->wasDestroyed())
+				{
+					if (primitives[i]->isBatched())
+						primitives[i]->unbatch();
+					primitives[i].reset(primitives.back().release());
+					primitives.pop_back();
+					continue;
+				}
+
+				primitives[i]->preRender(_forceAllUpdates);
+				i++;
+			}
+			lightBatch->preRender(_forceAllUpdates);
+		}
+		void Scene::postRender(const bool _renderState)
+		{
+			if (!readyToRender)
+				return;
+			readyToRender = false;
+
+			for (auto&& model : models)
+			{
+				model->postRender();
+			}
+			if (_renderState)
+			{
+				for (auto&& primitive : primitives)
+				{
+					primitive->postRender();
+				}
+			}
+			lightBatch->postRender();
+		}
+
+		void Scene::batch(PrimitiveInternal& _primitive)
+		{
+			se_assert(!_primitive.wasDestroyed());
 			bool found = false;
 			for (auto&& batch : batches)
 			{
-				if (batch->check(_primitive.primitive.renderFlagsGet()) ||
-					batch->check(_primitive.primitive.verticesGet().size(), _primitive.primitive.indicesGet().size()))
+				if (batch->check(_primitive.getRenderInfo()) &&
+					batch->check(_primitive.getVertices()->size(), _primitive.getIndices()->size()))
 				{
-					_primitive.batchPosition = batch->add(_primitive.primitive.verticesGet(), _primitive.primitive.indicesGet());
-					_primitive.batch = batch.get();
+					_primitive.batch(*batch.get());
 					found = true;
+					break;
 				}
 			}
 			if (!found)
 			{
-				se_assert(_primitive.primitive.shaderGet() != nullptr);
-				batches.emplace_back(std::make_unique<Batch>(_primitive.primitive.renderFlagsGet(), *_primitive.primitive.shaderGet()));
-				_primitive.batchPosition = batches.back()->add(_primitive.primitive.verticesGet(), _primitive.primitive.indicesGet());
-				_primitive.batch = batches.back().get();
+				batches.push_back(std::make_unique<Batch>(_primitive.getRenderInfo()));
+				_primitive.batch(*batches.back());
 			}
-
-		}
-		void Scene::unbatch(PrimitiveInstance& _primitive)
-		{
-			se_assert(_primitive.batch);
-			_primitive.batch->remove(_primitive.batchPosition);
-			_primitive.batch = nullptr;
 		}
 	}
 }

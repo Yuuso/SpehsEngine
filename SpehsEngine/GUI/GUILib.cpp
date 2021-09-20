@@ -2,7 +2,6 @@
 #include "SpehsEngine/GUI/GUILib.h"
 #include "SpehsEngine/Core/CoreLib.h"
 #include "SpehsEngine/Input/InputLib.h"
-#include "SpehsEngine/Rendering/RenderingLib.h"
 #include "SpehsEngine/Audio/AudioLib.h"
 #include "SpehsEngine/Core/Log.h"
 #include "SpehsEngine/Core/SE_Time.h"

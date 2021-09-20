@@ -9,7 +9,7 @@
   <ItemDefinitionGroup>
     <ClCompile>
       <AdditionalIncludeDirectories>$(SPEHSENGINE_ROOT)/;$(SPEHSENGINE_ROOT)/Dependencies/include/;$(SPEHSENGINE_ROOT)/Dependencies/include/$(Platform)/;$(ProjectDir)/</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>GLM_FORCE_RADIANS;GLM_FORCE_CTOR_INIT;GLM_FORCE_SILENT_WARNINGS;NOMINMAX;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>GLM_FORCE_RADIANS;GLM_FORCE_CTOR_INIT;GLM_FORCE_SILENT_WARNINGS;_SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING;NOMINMAX;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <TreatWarningAsError>true</TreatWarningAsError>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
