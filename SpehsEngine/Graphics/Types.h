@@ -47,6 +47,9 @@ namespace se
 		enum class RendererBackend
 		{
 			Auto,
+			Noop,
+
+			Agc,
 			Direct3D9,
 			Direct3D11,
 			Direct3D12,

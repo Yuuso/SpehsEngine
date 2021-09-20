@@ -8,6 +8,9 @@ SET BGFX_DIR=../../../bgfx
 SET OPTIONS=/NJH /NJS /NDL /NP /NS /NC
 
 
+ECHO.
+ECHO Copy to dependencies
+
 IF EXIST "%DEPS_DIR%/include/bgfx" RMDIR "%DEPS_DIR%/include/bgfx" /S /Q
 MKDIR "%DEPS_DIR%/include/bgfx"
 ROBOCOPY "%BGFX_DIR%/include/bgfx"              "%DEPS_DIR%/include/bgfx"               *.*                         /S %OPTIONS%

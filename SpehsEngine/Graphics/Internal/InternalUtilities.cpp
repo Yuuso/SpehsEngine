@@ -213,6 +213,9 @@ namespace se
 			switch (_rendererBackend)
 			{
 				case RendererBackend::Auto:			return bgfx::RendererType::Count;
+				case RendererBackend::Noop:			return bgfx::RendererType::Noop;
+
+				case RendererBackend::Agc:			return bgfx::RendererType::Agc;
 				case RendererBackend::Direct3D9:	return bgfx::RendererType::Direct3D9;
 				case RendererBackend::Direct3D11:	return bgfx::RendererType::Direct3D11;
 				case RendererBackend::Direct3D12:	return bgfx::RendererType::Direct3D12;
@@ -231,9 +234,10 @@ namespace se
 		{
 			switch (bgfx::getRendererType())
 			{
-				case bgfx::RendererType::Count:
-				case bgfx::RendererType::Noop:
+				case bgfx::RendererType::Count:			return RendererBackend::Auto;
+				case bgfx::RendererType::Noop:			return RendererBackend::Noop;
 
+				case bgfx::RendererType::Agc:			return RendererBackend::Agc;
 				case bgfx::RendererType::Direct3D9:		return RendererBackend::Direct3D9;
 				case bgfx::RendererType::Direct3D11:	return RendererBackend::Direct3D11;
 				case bgfx::RendererType::Direct3D12:	return RendererBackend::Direct3D12;

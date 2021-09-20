@@ -12,9 +12,10 @@ SET ASSIMP_DIR=../../../assimp
 IF NOT EXIST %ASSIMP_DIR% EXIT /B 1
 CD "%ASSIMP_DIR%"
 
+ECHO Checkout a specific version (master branch, 2021/09/15)
 CALL git reset --hard HEAD
 CALL git clean -d -x -f
-CALL git pull
+CALL git checkout 71a87b653cd4b5671104fe49e2e38cf5dd4d8675
 
 
 ECHO.

@@ -8,6 +8,9 @@ SET ASSIMP_DIR=../../../assimp
 SET OPTIONS=/NJH /NJS /NDL /NP /NS /NC
 
 
+ECHO.
+ECHO Copy to dependencies
+
 IF EXIST "%DEPS_DIR%/include/assimp" RMDIR "%DEPS_DIR%/include/assimp" /S /Q
 MKDIR "%DEPS_DIR%/include/assimp"
 ROBOCOPY "%ASSIMP_DIR%/include/assimp"          "%DEPS_DIR%/include/assimp"             *.*                         /S %OPTIONS%

@@ -49,6 +49,17 @@ CALL %SHADERC% ^
 -o %SHADER_TEMP%
 TYPE %SHADER_TEMP% > ..\vs_%~1.h
 
+ECHO 	essl
+CALL %SHADERC% ^
+--type vertex ^
+--platform windows ^
+--profile 300_es ^
+--bin2c vs_%~1_essl ^
+--varyingdef varying.def.sc ^
+-f vs_%~1.sc ^
+-o %SHADER_TEMP%
+TYPE %SHADER_TEMP% >> ..\vs_%~1.h
+
 ECHO 	spv
 CALL %SHADERC% ^
 --type vertex ^
@@ -113,6 +124,17 @@ CALL %SHADERC% ^
 -f fs_%~1.sc ^
 -o %SHADER_TEMP%
 TYPE %SHADER_TEMP% > ..\fs_%~1.h
+
+ECHO 	essl
+CALL %SHADERC% ^
+--type fragment ^
+--platform windows ^
+--profile 300_es ^
+--bin2c fs_%~1_essl ^
+--varyingdef varying.def.sc ^
+-f fs_%~1.sc ^
+-o %SHADER_TEMP%
+TYPE %SHADER_TEMP% >> ..\fs_%~1.h
 
 ECHO 	spv
 CALL %SHADERC% ^
