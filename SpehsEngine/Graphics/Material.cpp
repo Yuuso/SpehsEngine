@@ -9,10 +9,31 @@ namespace se
 		void Material::bind()
 		{
 			for (auto&& font : fonts)
-				font.second->uniform->set(*font.second->font.get(), font.first);
+			{
+				se_assert(font.second);
+				if (font.second)
+					font.second->uniform->set(*font.second->font.get(), font.first);
+			}
 			for (auto&& texture : textures)
-				texture.second->uniform->set(*texture.second->texture.get(), texture.first);
-			internalBind();
+			{
+				se_assert(texture.second);
+				if (texture.second)
+					texture.second->uniform->set(*texture.second->texture.get(), texture.first);
+			}
+			for (auto&& uniformContainer : uniformContainers)
+			{
+				se_assert(uniformContainer);
+				if (uniformContainer)
+					uniformContainer->bind();
+			}
+		}
+		void Material::addUniformContainer(std::shared_ptr<UniformContainer> _uniformContainer)
+		{
+			uniformContainers.push_back(_uniformContainer);
+		}
+		void Material::connectToFontChangedSignal(boost::signals2::scoped_connection& scopedConnection, const boost::function<void(void)>& callback)
+		{
+			scopedConnection = fontChangedSignal.connect(callback);
 		}
 
 		std::shared_ptr<Shader> Material::getShader(const ShaderVariant variant) const
@@ -43,10 +64,9 @@ namespace se
 				return nullptr;
 			return it->second->texture;
 		}
-
-		void Material::connectToFontChangedSignal(boost::signals2::scoped_connection& scopedConnection, const boost::function<void(void)>& callback)
+		bool Material::getLit() const
 		{
-			scopedConnection = fontChangedSignal.connect(callback);
+			return lightsEnabled;
 		}
 
 		void Material::setShader(std::shared_ptr<Shader> _shader, const ShaderVariant variant)
@@ -68,6 +88,16 @@ namespace se
 			}
 			materialTexture->texture = _texture;
 		}
+		void Material::setTexture(std::shared_ptr<Texture> _texture, const uint8_t _slot)
+		{
+			auto it = textures.find(_slot);
+			if (it == textures.end())
+			{
+				log::error("Texture in slot " + std::to_string(_slot) + " doesn't exist!");
+				return;
+			}
+			it->second->texture = _texture;
+		}
 		void Material::setFont(std::shared_ptr<Font> _font, const std::string_view _uniformName, const uint8_t _slot)
 		{
 			if (_uniformName.empty())
@@ -84,14 +114,19 @@ namespace se
 			materialFont->font = _font;
 			fontChangedSignal();
 		}
-
+		void Material::setFont(std::shared_ptr<Font> _font, const uint8_t _slot)
+		{
+			auto it = fonts.find(_slot);
+			if (it == fonts.end())
+			{
+				log::error("Font in slot " + std::to_string(_slot) + " doesn't exist!");
+				return;
+			}
+			it->second->font = _font;
+		}
 		void Material::setLit(const bool _value)
 		{
-			lit = _value;
-		}
-		const bool Material::getLit() const
-		{
-			return lit;
+			lightsEnabled = _value;
 		}
 	}
 }

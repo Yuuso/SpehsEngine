@@ -1,129 +1,58 @@
 #pragma once
 
 #include "SpehsEngine/Graphics/ShaderManager.h"
-#include "SpehsEngine/Graphics/Font.h"
 #include "SpehsEngine/Graphics/Material.h"
-#include "SpehsEngine/Graphics/Shader.h"
-#include "SpehsEngine/Graphics/Texture.h"
 #include "SpehsEngine/Graphics/Uniform.h"
 #include <memory>
-#include <string>
-#include <vector>
 
 
 namespace se
 {
 	namespace graphics
 	{
-		/*
-		* Material resources
-		*/
-
-		struct PhongAttributes
-		{
-			float& shininess()
-			{
-				return data.x;
-			}
-			float& specularStrength()
-			{
-				return data.y;
-			}
-			glm::vec4 data = { 32.0f, 0.6f, 0.0f, 0.0f };
-		};
-		enum class PhongTextureType : uint8_t
-		{
-			Color,
-			Normal
-		};
-		const std::string_view phongTextureUniformName(const PhongTextureType _type);
-
-
-
-		/*
-		* Default materials
-		*/
-
-		class FlatColorMaterial : public Material
+		class PhongAttributes final : public UniformContainer
 		{
 		public:
 
-			FlatColorMaterial(ShaderManager& _shaderManager);
-			virtual ~FlatColorMaterial() = default;
+			PhongAttributes();
+			~PhongAttributes() = default;
 
-		protected:
+			PhongAttributes(const PhongAttributes& _other) = delete;
+			PhongAttributes& operator=(const PhongAttributes& _other) = delete;
 
-			virtual void internalBind() override;
-		};
-
-
-		class FlatTextureMaterial : public Material
-		{
-		public:
-
-			FlatTextureMaterial(ShaderManager& _shaderManager);
-			virtual ~FlatTextureMaterial() = default;
-
-			void setTexture(std::shared_ptr<Texture> _texture);
-			std::shared_ptr<Texture> getTexture() const;
-
-		protected:
-
-			virtual void internalBind() override;
-		};
+			PhongAttributes(PhongAttributes&& _other) = delete;
+			PhongAttributes& operator=(PhongAttributes&& _other) = delete;
 
 
-		class SkyboxMaterial : public Material
-		{
-		public:
+			void bind() override;
+			float& shininess();
+			float& specularStrength();
 
-			SkyboxMaterial(ShaderManager& _shaderManager);
-			virtual ~SkyboxMaterial() = default;
-
-			void setTexture(std::shared_ptr<Texture> _texture);
-			std::shared_ptr<Texture> getTexture() const;
-
-		protected:
-
-			virtual void internalBind() override;
-		};
-
-
-		class TextMaterial : public Material
-		{
-		public:
-
-			TextMaterial(ShaderManager& _shaderManager);
-			virtual ~TextMaterial() = default;
-
-			void setFont(std::shared_ptr<Font> _font);
-			std::shared_ptr<Font> getFont() const;
-
-		protected:
-
-			virtual void internalBind() override;
-		};
-
-
-		class PhongMaterial : public Material
-		{
-		public:
-
-			PhongMaterial(ShaderManager& _shaderManager);
-			virtual ~PhongMaterial() = default;
-
-			void setTexture(const PhongTextureType _type, std::shared_ptr<Texture> _texture);
-			std::shared_ptr<Texture> getTexture(const PhongTextureType _type) const;
-
-			void setAttributes(const PhongAttributes& _attributes);
-			PhongAttributes& getAttributes();
-
-		protected:
-
-			virtual void internalBind() override;
+		private:
 
 			std::unique_ptr<Uniform> attributesUniform;
-			PhongAttributes attributes;
+			glm::vec4 data{ 32.0f, 0.6f, 0.0f, 0.0f };
 		};
+
+		namespace PhongTextureType
+		{
+			enum : uint8_t
+			{
+				Color	= 0,
+				Normal	= 1
+			};
+		}
+
+
+		enum class DefaultMaterialType
+		{
+			FlatColor,
+			FlatTexture,
+			Skybox,
+			Text,
+			Phong
+		};
+
+		std::shared_ptr<Material> createMaterial(const DefaultMaterialType _type, ShaderManager& _shaderManager);
 	}
 }
