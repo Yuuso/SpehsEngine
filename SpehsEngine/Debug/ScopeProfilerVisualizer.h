@@ -1,8 +1,8 @@
 #pragma once
 
 #include "SpehsEngine/Core/ScopeProfiler.h"
-#include "SpehsEngine/Graphics/DefaultMaterials.h"
 #include "SpehsEngine/Graphics/FontManager.h"
+#include "SpehsEngine/Graphics/Material.h"
 #include "SpehsEngine/Graphics/ShaderManager.h"
 #include "SpehsEngine/Graphics/Shape.h"
 #include "SpehsEngine/Graphics/Text.h"
@@ -63,8 +63,8 @@ namespace se
 			graphics::View& view;
 			input::InputManager& inputManager;
 
-			std::shared_ptr<graphics::TextMaterial> textMaterial;
-			std::shared_ptr<graphics::FlatColorMaterial> shapeMaterial;
+			std::shared_ptr<graphics::Material> textMaterial;
+			std::shared_ptr<graphics::Material> shapeMaterial;
 
 			// Visual settings
 			float beginX = 5.0f;

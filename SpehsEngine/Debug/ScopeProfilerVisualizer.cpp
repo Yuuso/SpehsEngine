@@ -3,6 +3,7 @@
 
 #include "SpehsEngine/Core/StringOperations.h"
 #include "SpehsEngine/Core/StringUtilityFunctions.h"
+#include "SpehsEngine/Graphics/DefaultMaterials.h"
 #include "SpehsEngine/Input/InputManager.h"
 #include "SpehsEngine/Input/Key.h"
 #include "SpehsEngine/Input/MouseUtilityFunctions.h"
@@ -23,11 +24,10 @@ namespace se
 
 			se_assert(_view.getCamera().getProjection() == graphics::Projection::Orthographic);
 
-			std::shared_ptr<graphics::Font> font = _fontManager.getDefaultFont();
-			textMaterial = std::make_shared<graphics::TextMaterial>(_shaderManager);
-			textMaterial->setFont(font);
+			textMaterial = graphics::createMaterial(graphics::DefaultMaterialType::Text, _shaderManager);
+			textMaterial->setFont(_fontManager.getDefaultFont());
 
-			shapeMaterial = std::make_shared<graphics::FlatColorMaterial>(_shaderManager);
+			shapeMaterial = graphics::createMaterial(graphics::DefaultMaterialType::FlatColor, _shaderManager);
 
 			tooltipPolygon.generate(graphics::ShapeType::Rectangle);
 			tooltipPolygon.setMaterial(shapeMaterial);
