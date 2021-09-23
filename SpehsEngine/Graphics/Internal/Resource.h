@@ -65,9 +65,13 @@ namespace se
 				return false;
 			}
 
+			bool resourceDataIsValid() const
+			{
+				return resourceData != nullptr;
+			}
 			ResourceHandle getHandle() const
 			{
-				if (!resourceData)
+				if (!resourceDataIsValid())
 					return INVALID_RESOURCE_HANDLE;
 				return resourceData->handle;
 			}
