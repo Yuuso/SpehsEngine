@@ -102,9 +102,9 @@ namespace se
 			std::string errorMessage("Error: ");
 			errorMessage += message;
 			writeConsole(errorMessage, RED);
-			writeConsole("Press enter to continue...", NONE);
 			SystemMessageBox("Fatal Error!", errorMessage, BUTTONS_OK | ICON_ERROR);
-			std::getchar();
+			//writeConsole("Press enter to continue...", NONE);
+			//std::getchar();
 #else
 			const std::string fatalError(message);
 			SystemMessageBox("Fatal Error!", fatalError, BUTTONS_OK | ICON_ERROR);
