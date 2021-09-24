@@ -89,7 +89,7 @@ namespace se
 			rootNode.reset();
 			numMaterialSlots = 0;
 
-			if (!modelData->ready())
+			if (!modelData->ready() || !modelData->resourceData)
 				return;
 
 			const MeshData& meshData = *modelData->resourceData.get();
