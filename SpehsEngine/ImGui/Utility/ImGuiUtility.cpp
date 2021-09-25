@@ -41,10 +41,10 @@ namespace ImGui
 
 	bool fileSelector(const char* const label, std::string& filepath, const char* const directoryPtr)
 	{
-		const std::string_view directory(directoryPtr);
+		const std::string directory(directoryPtr);
 		bool changed = false;
 		ImGui::Button("Browse");
-		const std::string browseContextMenuId = std::string(label) + filepath + std::string(directory);
+		const std::string browseContextMenuId = label + filepath + directory;
 		if (ImGui::BeginPopupContextItem(browseContextMenuId.c_str(), ImGuiPopupFlags_MouseButtonLeft))
 		{
 			se::DirectoryState directoryState;
