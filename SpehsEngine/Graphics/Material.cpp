@@ -10,14 +10,14 @@ namespace se
 		{
 			for (auto&& font : fonts)
 			{
-				se_assert(font.second);
-				if (font.second)
+				se_assert(font.second->font);
+				if (font.second->font)
 					font.second->uniform->set(*font.second->font.get(), font.first);
 			}
 			for (auto&& texture : textures)
 			{
-				se_assert(texture.second);
-				if (texture.second)
+				se_assert(texture.second->texture);
+				if (texture.second->texture)
 					texture.second->uniform->set(*texture.second->texture.get(), texture.first);
 			}
 			for (auto&& uniformContainer : uniformContainers)
