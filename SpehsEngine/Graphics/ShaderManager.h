@@ -1,21 +1,37 @@
 #pragma once
 
+#include "SpehsEngine/Graphics/Internal/ResourceManager.h"
 #include "SpehsEngine/Graphics/Shader.h"
-#include <vector>
 #include <memory>
 #include <string>
+
+
+/*
+	LIST OF DEFAULT SHADERS
+
+	- color
+	- tex
+	- tex_billboard
+	- tex_billboard_instanced
+	- phong
+	- phong_instanced
+	- phong_skinned
+	- phong_skinned_instanced
+	- skybox
+	- text
+*/
 
 
 namespace se
 {
 	namespace graphics
 	{
-		class ShaderManager
+		class ShaderManager : public ResourceManager<Shader>
 		{
 		public:
 
-			ShaderManager();
-			~ShaderManager();
+			ShaderManager() = default;
+			virtual ~ShaderManager() = default;
 
 			ShaderManager(const ShaderManager& _other) = delete;
 			ShaderManager& operator=(const ShaderManager& _other) = delete;
@@ -24,11 +40,16 @@ namespace se
 			ShaderManager& operator=(ShaderManager&& _other) = delete;
 
 
-			const Shader* find(const std::string_view _name);
+			std::shared_ptr<Shader> create(const std::string_view _name,
+										   const std::string_view _vertexShader,
+										   const std::string_view _fragmentShader);
+			std::shared_ptr<Shader> find(const std::string_view _name) const;
+
+			void createDefaultShaders();
 
 		private:
 
-			std::vector<std::unique_ptr<Shader>> shaders;
+			bool defaultShadersCreated = false;
 		};
 	}
 }

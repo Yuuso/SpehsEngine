@@ -29,7 +29,7 @@ namespace se
 		{
 			if (!syncLib.isValid())
 			{
-				log::error("Cannot initialize gpio library, rendering library is invalid.");
+				log::error("Cannot initialize gpio library, sync library is invalid.");
 				return;
 			}
 

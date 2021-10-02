@@ -9,6 +9,7 @@ namespace se
 		/* Mouse position is relative to the currently focused window. */
 		glm::ivec2 getMousePosition();
 		glm::vec2 getMousePositionf();
+		void setMousePosition(const glm::ivec2& _pos);
 
 		bool isMouseButtonDown(const MouseButton mouseButton);
 

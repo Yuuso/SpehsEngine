@@ -1,7 +1,6 @@
 #include "stdafx.h"
 
 #include "SpehsEngine/Math/Geometry.h"
-#include "SpehsEngine/Core/Vertex.h"
 #include "SpehsEngine/Core/Log.h"
 
 #include <math.h>
@@ -120,16 +119,6 @@ namespace se
 				max = glm::length(cusps[i]);
 		}
 		return max;
-	}
-
-	inline glm::vec2 getCenter(se::Vertex* cusps, const size_t numCusps)
-	{
-		glm::vec2 result(0.0f, 0.0f);
-		for (size_t i = 0; i < numCusps; i++)
-		{
-			result += glm::vec2(cusps[i].position.x, cusps[i].position.y);
-		}
-		return result / (float)numCusps;
 	}
 
 	inline glm::vec2 getCenter(glm::vec2* cusps, const size_t numCusps)

@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -105,7 +105,7 @@
       <SubSystem>Console</SubSystem>
     </Link>
     <Lib>
-      <AdditionalDependencies>assimp-vc140-mt.lib;bgfxDebug.lib;bxDebug.lib;bimgDebug.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>assimp-vc142-mtd.lib;bgfxDebug.lib;bxDebug.lib;bimgDebug.lib;bimg_decodeDebug.lib;bimg_encodeDebug.lib;freetyped.lib;SDL2.lib;SDL2main.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(SPEHSENGINE_ROOT)Dependencies\lib\;$(SPEHSENGINE_ROOT)bin\$(Platform)\$(Configuration)\$(PlatformToolset);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Lib>
   </ItemDefinitionGroup>
@@ -117,13 +117,13 @@
       <SubSystem>Console</SubSystem>
     </Link>
     <Lib>
-      <AdditionalDependencies>assimp-vc140-mt.lib;bgfxDebug.lib;bxDebug.lib;bimgDebug.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>assimp-vc142-mtd.lib;bgfxDebug.lib;bxDebug.lib;bimgDebug.lib;bimg_decodeDebug.lib;bimg_encodeDebug.lib;freetyped.lib;SDL2.lib;SDL2main.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(SPEHSENGINE_ROOT)Dependencies\lib\;$(SPEHSENGINE_ROOT)bin\$(Platform)\$(Configuration)\$(PlatformToolset);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
-      <AdditionalIncludeDirectories>$(SPEHSENGINE_ROOT);$(SPEHSENGINE_ROOT)Dependencies\include\;$(SPEHSENGINE_ROOT)Dependencies\include\bx\compat\msvc\</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SPEHSENGINE_ROOT)Dependencies\include\bx\compat\msvc\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -131,13 +131,12 @@
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
     <Lib>
-      <AdditionalDependencies>assimp-vc140-mt.lib;bgfxRelease.lib;bxRelease.lib;bimgRelease.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>$(SPEHSENGINE_ROOT)Dependencies\lib\;$(SPEHSENGINE_ROOT)bin\$(Platform)\$(Configuration)\$(PlatformToolset);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>assimp-vc142-mt.lib;bgfxRelease.lib;bxRelease.lib;bimgRelease.lib;bimg_decodeRelease.lib;bimg_encodeRelease.lib;freetype.lib;SDL2.lib;SDL2main.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
-      <AdditionalIncludeDirectories>$(SPEHSENGINE_ROOT);$(SPEHSENGINE_ROOT)Dependencies\include\;$(SPEHSENGINE_ROOT)Dependencies\include\bx\compat\msvc\</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SPEHSENGINE_ROOT)Dependencies\include\bx\compat\msvc\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -145,52 +144,124 @@
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
     <Lib>
-      <AdditionalDependencies>assimp-vc140-mt.lib;bgfxRelease.lib;bxRelease.lib;bimgRelease.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>$(SPEHSENGINE_ROOT)Dependencies\lib\;$(SPEHSENGINE_ROOT)bin\$(Platform)\$(Configuration)\$(PlatformToolset);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>assimp-vc142-mt.lib;bgfxRelease.lib;bxRelease.lib;bimgRelease.lib;bimg_decodeRelease.lib;bimg_encodeRelease.lib;freetype.lib;SDL2.lib;SDL2main.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="DefaultMaterials.h" />
+    <ClInclude Include="Font.h" />
+    <ClInclude Include="CharacterSet.h" />
+    <ClInclude Include="FontManager.h" />
+    <ClInclude Include="IndexBuffer.h" />
+    <ClInclude Include="InstanceBuffer.h" />
+    <ClInclude Include="Internal\Animation.h" />
+    <ClInclude Include="Internal\Animator.h" />
     <ClInclude Include="Internal\Batch.h" />
-    <ClInclude Include="Internal\BatchPosition.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="GraphicsLib.h" />
+    <ClInclude Include="Internal\Bone.h" />
+    <ClInclude Include="Internal\BufferObject.h" />
+    <ClInclude Include="Internal\DefaultUniforms.h" />
+    <ClInclude Include="Internal\FontLibrary.h" />
+    <ClInclude Include="Internal\FontMetrics.h" />
+    <ClInclude Include="Internal\InternalTypes.h" />
+    <ClInclude Include="Internal\InternalUtilities.h" />
+    <ClInclude Include="Internal\LightBatch.h" />
+    <ClInclude Include="Internal\LightInternal.h" />
+    <ClInclude Include="Internal\Mesh.h" />
+    <ClInclude Include="Internal\ModelInternal.h" />
+    <ClInclude Include="Internal\ModelNode.h" />
+    <ClInclude Include="Internal\RendererCallbackHandler.h" />
+    <ClInclude Include="Internal\RenderInfo.h" />
+    <ClInclude Include="Internal\Resource.h" />
+    <ClInclude Include="Lights.h" />
+    <ClInclude Include="Line.h" />
+    <ClInclude Include="Material.h" />
+    <ClInclude Include="Model.h" />
+    <ClInclude Include="ModelData.h" />
+    <ClInclude Include="ModelDataManager.h" />
     <ClInclude Include="PrecompiledInclude.h" />
     <ClInclude Include="Primitive.h" />
-    <ClInclude Include="Internal\PrimitiveInstance.h" />
-    <ClInclude Include="Internal\RenderContext.h" />
+    <ClInclude Include="Internal\PrimitiveInternal.h" />
+    <ClInclude Include="RenderCopy.h" />
     <ClInclude Include="Renderer.h" />
+    <ClInclude Include="ResourceData.h" />
+    <ClInclude Include="Internal\ResourceHandle.h" />
+    <ClInclude Include="ResourceLoader.h" />
+    <ClInclude Include="Internal\ResourceManager.h" />
+    <ClInclude Include="ShaderVariant.h" />
+    <ClInclude Include="ShapeGenerator.h" />
+    <ClInclude Include="Text.h" />
+    <ClInclude Include="TextStyle.h" />
+    <ClInclude Include="Texture.h" />
+    <ClInclude Include="Internal\TextureFallbacks.h" />
+    <ClInclude Include="TextureInput.h" />
+    <ClInclude Include="TextureManager.h" />
     <ClInclude Include="Types.h" />
     <ClInclude Include="Scene.h" />
     <ClInclude Include="Shader.h" />
     <ClInclude Include="ShaderManager.h" />
     <ClInclude Include="Shape.h" />
     <ClInclude Include="stdafx.h" />
+    <ClInclude Include="Uniform.h" />
+    <ClInclude Include="VertexAttribute.h" />
+    <ClInclude Include="VertexBuffer.h" />
     <ClInclude Include="View.h" />
-    <ClInclude Include="Internal\ViewInstance.h" />
+    <ClInclude Include="Internal\ViewInternal.h" />
     <ClInclude Include="Window.h" />
-    <ClInclude Include="Internal\WindowInstance.h" />
+    <ClInclude Include="Internal\WindowInternal.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="CharacterSet.cpp" />
+    <ClCompile Include="DefaultMaterials.cpp" />
+    <ClCompile Include="Font.cpp" />
+    <ClCompile Include="FontManager.cpp" />
+    <ClCompile Include="IndexBuffer.cpp" />
+    <ClCompile Include="InstanceBuffer.cpp" />
+    <ClCompile Include="Internal\Animation.cpp" />
+    <ClCompile Include="Internal\Animator.cpp" />
     <ClCompile Include="Internal\Batch.cpp" />
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="GraphicsLib.cpp" />
+    <ClCompile Include="Internal\BufferObject.cpp" />
+    <ClCompile Include="Internal\DefaultUniforms.cpp" />
+    <ClCompile Include="Internal\FontLibrary.cpp" />
+    <ClCompile Include="Internal\InternalUtilities.cpp" />
+    <ClCompile Include="Internal\LightBatch.cpp" />
+    <ClCompile Include="Internal\LightInternal.cpp" />
+    <ClCompile Include="Internal\Mesh.cpp" />
+    <ClCompile Include="Internal\ModelInternal.cpp" />
+    <ClCompile Include="Internal\ModelNode.cpp" />
+    <ClCompile Include="Internal\RendererCallbackHandler.cpp" />
+    <ClCompile Include="Lights.cpp" />
+    <ClCompile Include="Line.cpp" />
+    <ClCompile Include="Material.cpp" />
+    <ClCompile Include="Model.cpp" />
+    <ClCompile Include="ModelData.cpp" />
+    <ClCompile Include="ModelDataManager.cpp" />
     <ClCompile Include="Primitive.cpp" />
-    <ClCompile Include="Internal\PrimitiveInstance.cpp" />
+    <ClCompile Include="Internal\PrimitiveInternal.cpp" />
     <ClCompile Include="Renderer.cpp" />
     <ClCompile Include="Scene.cpp" />
     <ClCompile Include="Shader.cpp" />
     <ClCompile Include="ShaderManager.cpp" />
     <ClCompile Include="Shape.cpp" />
+    <ClCompile Include="ShapeGenerator.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="Text.cpp" />
+    <ClCompile Include="Texture.cpp" />
+    <ClCompile Include="TextureManager.cpp" />
+    <ClCompile Include="Uniform.cpp" />
+    <ClCompile Include="VertexBuffer.cpp" />
     <ClCompile Include="View.cpp" />
-    <ClCompile Include="Internal\ViewInstance.cpp" />
+    <ClCompile Include="Internal\ViewInternal.cpp" />
     <ClCompile Include="Window.cpp" />
-    <ClCompile Include="Internal\WindowInstance.cpp" />
+    <ClCompile Include="Internal\WindowInternal.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

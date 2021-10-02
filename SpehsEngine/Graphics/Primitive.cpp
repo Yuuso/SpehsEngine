@@ -2,6 +2,8 @@
 #include "SpehsEngine/Graphics/Primitive.h"
 
 #include "SpehsEngine/Core/BitwiseOperations.h"
+#include "SpehsEngine/Graphics/Internal/InternalTypes.h"
+#include "SpehsEngine/Math/GLMMatrixUtilityFunctions.h"
 
 
 namespace se
@@ -10,135 +12,245 @@ namespace se
 	{
 		Primitive::Primitive()
 		{
+			transformMatrices.resize(1);
+			normalMatrices.resize(1);
 		}
 		Primitive::~Primitive()
 		{
+			destroyedSignal();
 		}
 
-		const std::string& Primitive::nameGet() const
+		void Primitive::update()
+		{
+			if (checkBit(updateFlags, PrimitiveUpdateFlag::TransformChanged))
+			{
+				updateMatrices();
+			}
+			if (vertices && vertices->getBufferChanged())
+			{
+				vertices->updateBuffer();
+			}
+			if (indices && indices->getBufferChanged())
+			{
+				indices->updateBuffer();
+			}
+			if (instances && instances->getBufferChanged())
+			{
+				instances->updateBuffer();
+			}
+			// RenderInfoChanged changes only impact PrimitiveInternal
+			updateFlags = 0;
+		}
+		const UniformMatrices& Primitive::getTransformMatrices() const
+		{
+			return transformMatrices;
+		}
+		const UniformMatrices& Primitive::getNormalMatrices() const
+		{
+			return normalMatrices;
+		}
+		void Primitive::updateMatrices()
+		{
+			transformMatrices[0] = constructTransformationMatrix(getPosition(), getRotation(), getScale());
+			normalMatrices[0] = constructNormalMatrix(transformMatrices[0]);
+		}
+		bool Primitive::getVerticesChanged()
+		{
+			return checkBit(updateFlags, PrimitiveUpdateFlag::VerticesChanged) || (vertices ? vertices->getBufferChanged() : false);
+		}
+		bool Primitive::getIndicesChanged()
+		{
+			return checkBit(updateFlags, PrimitiveUpdateFlag::IndicesChanged) || (indices ? indices->getBufferChanged() : false);
+		}
+
+		const std::string& Primitive::getName() const
 		{
 			return name;
 		}
-		const bool Primitive::renderStateGet() const
+		const bool Primitive::getRenderState() const
 		{
 			return renderState;
 		}
-		const Shader* Primitive::shaderGet() const
+		std::shared_ptr<Material> Primitive::getMaterial() const
 		{
-			return shader;
+			return material;
 		}
-		const std::vector<Vertex>& Primitive::verticesGet() const
+		std::shared_ptr<VertexBuffer> Primitive::getVertices() const
 		{
 			return vertices;
 		}
-		const std::vector<IndexType>& Primitive::indicesGet() const
+		std::shared_ptr<IndexBuffer> Primitive::getIndices() const
 		{
 			return indices;
 		}
+		std::shared_ptr<VertexBuffer> Primitive::getInstances() const
+		{
+			return instances;
+		}
+		const Color& Primitive::getColor() const
+		{
+			return primitiveColor;
+		}
+		const Scissor& Primitive::getScissor() const
+		{
+			return scissor;
+		}
 
-		const RenderFlagsType Primitive::renderFlagsGet() const
+		const RenderFlagsType Primitive::getRenderFlags() const
 		{
 			return renderFlags;
 		}
-		const bool Primitive::renderFlagCheck(const RenderFlag _renderFlag) const
+		const bool Primitive::checkRenderFlags(const RenderFlagsType _renderFlags) const
 		{
-			return checkBit(renderFlags, _renderFlag);
+			return checkBit(renderFlags, _renderFlags);
 		}
-		const RenderStyle Primitive::renderStyleGet() const
+		const PrimitiveType Primitive::getPrimitiveType() const
 		{
-			return renderStyle;
+			return primitiveType;
 		}
-		const RenderMode Primitive::renderModeGet() const
+		const RenderMode Primitive::getRenderMode() const
 		{
 			return renderMode;
 		}
+		const RenderCopy* Primitive::getRenderCopy() const
+		{
+			return renderCopy.get();
+		}
 
-		const glm::vec3& Primitive::positionGet() const
+		const glm::vec3& Primitive::getPosition() const
 		{
 			return position;
 		}
-		const glm::vec3& Primitive::localPositionGet() const
-		{
-			return localPosition;
-		}
-		const glm::vec3& Primitive::scaleGet() const
+		const glm::vec3& Primitive::getScale() const
 		{
 			return scale;
 		}
-		const glm::quat& Primitive::rotationGet() const
+		const glm::quat& Primitive::getRotation() const
 		{
 			return rotation;
 		}
 
-		void Primitive::nameSet(const std::string_view _name)
+		void Primitive::setName(const std::string_view _name)
 		{
 			name = _name;
 		}
-		void Primitive::renderStateSet(const bool _state)
+		void Primitive::setRenderState(const bool _state)
 		{
+			if (renderState == _state)
+				return;
 			renderState = _state;
+
+			// Update everything when re-enabling rendering
+			if (renderState)
+				enableBit(updateFlags, PrimitiveUpdateFlag::EverythingChanged);
 		}
-		void Primitive::shaderSet(const Shader* _shader)
+		void Primitive::toggleRenderState()
 		{
-			shader = _shader;
-			enableBit(updateFlags, UpdateFlag::RenderInfoChanged);
+			setRenderState(!renderState);
 		}
-		void Primitive::verticesSet(const std::vector<Vertex>& _vertices)
+		void Primitive::setMaterial(std::shared_ptr<Material> _material)
+		{
+			if (material == _material)
+				return;
+			material = _material;
+			enableBit(updateFlags, PrimitiveUpdateFlag::RenderInfoChanged);
+		}
+		void Primitive::setVertices(std::shared_ptr<VertexBuffer> _vertices)
 		{
 			vertices = _vertices;
-			enableBit(updateFlags, UpdateFlag::VerticesChanged);
+			enableBit(updateFlags, PrimitiveUpdateFlag::VerticesChanged);
 		}
-		void Primitive::indicesSet(const std::vector<uint16_t>& _indices)
+		void Primitive::setIndices(std::shared_ptr<IndexBuffer> _indices)
 		{
 			indices = _indices;
-			enableBit(updateFlags, UpdateFlag::IndicesChanged);
+			enableBit(updateFlags, PrimitiveUpdateFlag::IndicesChanged);
+		}
+		void Primitive::setInstances(std::shared_ptr<VertexBuffer> _instances)
+		{
+			instances = _instances;
+			if (instances && renderMode == RenderMode::Static)
+				log::error("Should not use static RenderMode with instanced primitives!");
+		}
+		void Primitive::setColor(const Color& _color)
+		{
+			primitiveColor = _color;
+			enableBit(updateFlags, PrimitiveUpdateFlag::RenderInfoChanged);
+		}
+		void Primitive::setScissor(const Scissor& _scissor)
+		{
+			if (scissor == _scissor)
+				return;
+			se_assert(!_scissor.enabled || renderMode != RenderMode::Static);
+			scissor = _scissor;
+			enableBit(updateFlags, PrimitiveUpdateFlag::RenderInfoChanged);
 		}
 
-		void Primitive::renderFlagsSet(const RenderFlagsType _renderFlags)
+		void Primitive::setRenderFlags(const RenderFlagsType _renderFlags)
 		{
+			if (renderFlags == _renderFlags)
+				return;
 			renderFlags = _renderFlags;
-			enableBit(updateFlags, UpdateFlag::RenderInfoChanged);
+			enableBit(updateFlags, PrimitiveUpdateFlag::RenderInfoChanged);
 		}
-		void Primitive::renderFlagEnable(const RenderFlag _renderFlag)
+		void Primitive::enableRenderFlags(const RenderFlagsType _renderFlags)
 		{
-			enableBit(renderFlags, _renderFlag);
-			enableBit(updateFlags, UpdateFlag::RenderInfoChanged);
+			if (checkBit(renderFlags, _renderFlags))
+				return;
+			enableBit(renderFlags, _renderFlags);
+			enableBit(updateFlags, PrimitiveUpdateFlag::RenderInfoChanged);
 		}
-		void Primitive::renderFlagDisable(const RenderFlag _renderFlag)
+		void Primitive::disableRenderFlags(const RenderFlagsType _renderFlags)
 		{
-			disableBit(renderFlags, _renderFlag);
-			enableBit(updateFlags, UpdateFlag::RenderInfoChanged);
+			if (!checkBit(renderFlags, _renderFlags))
+				return;
+			disableBit(renderFlags, _renderFlags);
+			enableBit(updateFlags, PrimitiveUpdateFlag::RenderInfoChanged);
 		}
-		void Primitive::renderStyleSet(const RenderStyle _renderStyle)
+		void Primitive::setPrimitiveType(const PrimitiveType _primitiveType)
 		{
-			renderStyle = _renderStyle;
-			enableBit(updateFlags, UpdateFlag::RenderInfoChanged);
+			if (primitiveType == _primitiveType)
+				return;
+			primitiveType = _primitiveType;
+			enableBit(updateFlags, PrimitiveUpdateFlag::RenderInfoChanged);
 		}
-		void Primitive::renderModeSet(const RenderMode _renderMode)
+		void Primitive::setRenderMode(const RenderMode _renderMode)
 		{
+			if (instances && instances->size() > 0 && renderMode == RenderMode::Static)
+				log::error("Should not use static RenderMode with instanced primitives!");
+			if (renderMode == _renderMode)
+				return;
 			renderMode = _renderMode;
-			enableBit(updateFlags, UpdateFlag::RenderInfoChanged);
+			enableBit(updateFlags, PrimitiveUpdateFlag::RenderInfoChanged);
+		}
+		void Primitive::setRenderCopy(const RenderCopy& _renderCopy)
+		{
+			renderCopy = std::make_unique<RenderCopy>(_renderCopy);
+		}
+		void Primitive::removeRenderCopy()
+		{
+			renderCopy.reset();
 		}
 
-		void Primitive::positionSet(const glm::vec3& _position)
+		void Primitive::setPosition(const glm::vec3& _position)
 		{
+			if (position == _position)
+				return;
 			position = _position;
-			enableBit(updateFlags, UpdateFlag::TransformChanged);
+			enableBit(updateFlags, PrimitiveUpdateFlag::TransformChanged);
 		}
-		void Primitive::localPositionSet(const glm::vec3& _position)
+		void Primitive::setScale(const glm::vec3& _scale)
 		{
-			localPosition = _position;
-			enableBit(updateFlags, UpdateFlag::TransformChanged);
-		}
-		void Primitive::scaleSet(const glm::vec3& _scale)
-		{
+			if (scale == _scale)
+				return;
 			scale = _scale;
-			enableBit(updateFlags, UpdateFlag::TransformChanged);
+			enableBit(updateFlags, PrimitiveUpdateFlag::TransformChanged);
 		}
-		void Primitive::rotationSet(const glm::quat& _rotation)
+		void Primitive::setRotation(const glm::quat& _rotation)
 		{
+			if (rotation == _rotation)
+				return;
 			rotation = _rotation;
-			enableBit(updateFlags, UpdateFlag::TransformChanged);
+			enableBit(updateFlags, PrimitiveUpdateFlag::TransformChanged);
 		}
 	}
 }

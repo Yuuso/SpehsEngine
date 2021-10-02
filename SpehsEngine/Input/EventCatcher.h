@@ -1,8 +1,9 @@
 #pragma once
 
 #include "SpehsEngine/Input/Event.h"
-#include <vector>
+#include <optional>
 #include <unordered_set>
+#include <vector>
 
 
 namespace se
@@ -20,7 +21,7 @@ namespace se
 
 			/* Discards all previous events and polls for new ones. */
 			void pollEvents();
-			
+
 			const std::vector<KeyboardEvent>& getKeyboardEvents() const { return keyboardEvents; }
 			const std::vector<TextInputEvent>& getTextInputEvents() const { return textInputEvents; }
 			const std::vector<MouseHoverEvent>& getMouseHoverEvents() const { return mouseHoverEvents; }

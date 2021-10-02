@@ -1,7 +1,5 @@
 #pragma once
 
-#include "SpehsEngine/Core/Vertex.h"
-
 #include <vector>
 #include <limits>
 
@@ -68,27 +66,22 @@ namespace se
 	};
 
 	//Function for projecting polygon onto axis
-	Projection projectPolygon(const glm::vec2& _axis, Vertex* _vertexArray, const size_t _size);
 	Projection projectPolygon(const glm::vec2& _axis, glm::vec2* _vertexArray, const size_t _size);
 
 	//Function for projecting circle onto axis
 	Projection projectCircle(const glm::vec2& _axis, const glm::vec2& _vertex, const float _radius);
 
 	//Function for getting axis
-	glm::vec2 getAxis(Vertex* _vertexArray, const size_t _size, const size_t _i);
 	glm::vec2 getAxis(glm::vec2* _vertexArray, const size_t _size, const size_t _i);
 
 	//Get the axis for circle
-	glm::vec2 getCircleAxis(Vertex* _vertexArray, const size_t _size, const glm::vec2& _circleCenter);
 	glm::vec2 getCircleAxis(glm::vec2* _vertexArray, const size_t _size, const glm::vec2& _circleCenter);
 
 	//BOOL COLLISIONS
 	//Polygon x Polygon collision
-	bool SATCollision(Vertex* _vertexArray1, const size_t _size1, Vertex* _vertexArray2, const size_t _size2);
 	bool SATCollision(const glm::vec2* _vertexArray1, const size_t _size1, const glm::vec2* _vertexArray2, const size_t _size2);
 
 	//Polygon x Circle Collision
-	bool SATCollision(Vertex* _vertexArray, const size_t _size, const glm::vec2& _circleCenterPoint, const float _circleRadius);
 	bool SATCollision(glm::vec2* _vertexArray, const size_t _size, const glm::vec2& _circleCenterPoint, const float _circleRadius);
 
 	//Circle x Circle Collision
@@ -104,11 +97,9 @@ namespace se
 
 	//COLLISIONPOINT COLLISIONS
 	//Polygon x Polygon collision
-	bool SATMTVCollision(CollisionResults& deposit, Vertex* _vertexArray1, const size_t _size1, Vertex* _vertexArray2, const size_t _size2);
 	bool SATMTVCollision(CollisionResults& deposit, glm::vec2* _vertexArray1, const size_t _size1, glm::vec2* _vertexArray2, const size_t _size2);
 
 	//Polygon x Circle Collision
-	bool SATMTVCollision(CollisionResults& deposit, Vertex* _vertexArray, const size_t _size, const glm::vec2& _circleCenterPoint, const float _circleRadius);
 	bool SATMTVCollision(CollisionResults& deposit, glm::vec2* _vertexArray, const size_t _size, const glm::vec2& _circleCenterPoint, const float _circleRadius);
 
 	//Circle x Circle Collision

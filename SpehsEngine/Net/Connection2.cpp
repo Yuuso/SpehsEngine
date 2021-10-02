@@ -12,7 +12,6 @@
 #include "steam/isteamnetworkingutils.h"
 
 
-#pragma optimize("", off)
 namespace se
 {
 	namespace net

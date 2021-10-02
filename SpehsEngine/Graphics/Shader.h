@@ -1,16 +1,20 @@
 #pragma once
 
-#include "bgfx/bgfx.h" // TODO: No bgfx includes in headers!
+#include "SpehsEngine/Graphics/Internal/Resource.h"
+#include "SpehsEngine/Graphics/Uniform.h"
+#include "SpehsEngine/Graphics/ResourceData.h"
+#include <string>
 
 
 namespace se
 {
 	namespace graphics
 	{
-		class Shader
+		class Shader : public Resource<ShaderData>
 		{
 		public:
 
+			Shader() = delete;
 			Shader(const std::string_view _name);
 			~Shader();
 
@@ -21,14 +25,24 @@ namespace se
 			Shader& operator=(Shader&& _other) = delete;
 
 
-			bool load(const std::string_view _vertexShader, const std::string_view _fragmentShader);
-			bool load(const bgfx::ProgramHandle _programHandle);
+			void reload(std::shared_ptr<ResourceLoader> _resourceLoader = nullptr) override;
+			bool reloadable() const override;
 
-			const std::string& nameGet() const;
+		private:
 
-		//private:
-			bgfx::ProgramHandle programHandle;
-			const std::string name;
+			friend class PrimitiveInternal;
+			friend class Batch;
+			friend class ShaderManager;
+			friend class DefaultShaderManager;
+
+			static std::shared_ptr<ResourceData> createResource(const std::string _vertexShaderPath, const std::string _fragmentShaderPath);
+			static std::shared_ptr<ResourceData> createResourceFromHandles(ResourceHandle _vertexShaderHandle, ResourceHandle _fragmentShaderHandle);
+			void destroy();
+			void create(const std::string_view _vertexShaderPath, const std::string_view _fragmentShaderPath, std::shared_ptr<ResourceLoader> _resourceLoader);
+			void create(ResourceHandle _vertexShaderHandle, ResourceHandle _fragmentShaderHandle);
+
+			std::string vertexShaderPath;
+			std::string fragmentShaderPath;
 		};
 	}
 }

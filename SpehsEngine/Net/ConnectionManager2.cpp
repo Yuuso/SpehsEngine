@@ -14,8 +14,6 @@
 #include <set>
 
 
-#pragma optimize("", off)
-
 namespace se
 {
 	namespace net

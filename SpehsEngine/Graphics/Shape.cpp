@@ -6,117 +6,100 @@ namespace se
 {
 	namespace graphics
 	{
-
-		Shape::Shape(const unsigned _numVertices)
+		Shape::Shape()
 			: Primitive()
 		{
-			recreate(_numVertices);
 		}
 		Shape::~Shape()
 		{
 		}
 
-		void Shape::recreate(const unsigned _numVertices)
+		void Shape::generate(const ShapeType _shapeType, const ShapeParameters _shapeParams, ShapeGenerator* _generator)
 		{
-			// Generate an equilateral convex polygon with the given amount of vertices
-
-			se_assert(_numVertices >= 3);
-			vertices.clear();
-			indices.clear();
-
-			switch (_numVertices)
+			shapeType = _shapeType;
+			switch (shapeType)
 			{
-				case 3: name = "triangle"; break;
-				case 4: name = "square"; break;
-				case 5: name = "pentagon"; break;
-				case 6: name = "hexagon"; break;
-				case 7: name = "heptagon"; break;
-				case 8: name = "octagon"; break;
-				case 9: name = "nonegon"; break;
-				case 10: name = "decagon"; break;
-				default: name = "circle";  break;
+				case se::graphics::ShapeType::Unknown:
+				default:
+					log::error("Unknown shape type!");
+					return;
+
+				case se::graphics::ShapeType::Triangle:
+					setName("triangle");
+					break;
+				case se::graphics::ShapeType::Square:
+					setName("square");
+					break;
+				case se::graphics::ShapeType::Pentagon:
+					setName("pentagon");
+					break;
+				case se::graphics::ShapeType::Hexagon:
+					setName("hexagon");
+					break;
+				case se::graphics::ShapeType::Heptagon:
+					setName("heptagon");
+					break;
+				case se::graphics::ShapeType::Octagon:
+					setName("octagon");
+					break;
+				case se::graphics::ShapeType::Nonegon:
+					setName("nonegon");
+					break;
+				case se::graphics::ShapeType::Decagon:
+					setName("decagon");
+					break;
+				case se::graphics::ShapeType::Circle:
+					setName("circle");
+					break;
+
+				case se::graphics::ShapeType::Cube:
+					setName("cube");
+					enableRenderFlags(RenderFlag::CullBackFace);
+					break;
+				case se::graphics::ShapeType::Sphere:
+					setName("sphere");
+					enableRenderFlags(RenderFlag::CullBackFace);
+					break;
 			}
 
-			// Position
+			if (_generator)
 			{
-				vertices.resize(_numVertices);
-
-				// Initial rotation is set so that the "lowest" (bottom) line is horizontal
-				// firstPosition adjusts initial the rotation for even numbered polygons
-				float firstPosition;
-				if (_numVertices % 2)
-				{
-					firstPosition = 0;
-				}
-				else
-				{
-					firstPosition = (se::TWO_PI<float> / float(_numVertices)) / 2.0f;
-				}
-
-				vertices[0].position = glm::vec3(cos(firstPosition), 0.0f, sin(firstPosition));
-
-				float minX = vertices[0].position.x;
-				float minZ = vertices[0].position.z;
-				float maxX = vertices[0].position.x;
-				float maxZ = vertices[0].position.z;
-
-				for (unsigned i = 1; i < _numVertices; i++)
-				{
-					vertices[i].position = glm::vec3(cos(firstPosition + i * (se::TWO_PI<float> / _numVertices)), 0.0f, sin(firstPosition + i * (se::TWO_PI<float> / _numVertices)));
-
-					if		(vertices[i].position.x > maxX)		maxX = vertices[i].position.x;
-					else if (vertices[i].position.x < minX)		minX = vertices[i].position.x;
-					if		(vertices[i].position.z > maxZ)		maxZ = vertices[i].position.z;
-					else if (vertices[i].position.z < minZ)		minZ = vertices[i].position.z;
-				}
-
-				const float width = abs(maxX) + abs(minX);
-				const float height = abs(maxZ) + abs(minZ);
-				for (unsigned i = 0; i < _numVertices; i++)
-				{
-					vertices[i].position.x /= width;
-					vertices[i].position.z /= height;
-
-					vertices[i].position.x *= 10.0f;
-					vertices[i].position.z *= 10.0f;
-				}
+				Primitive::setVertices(_generator->getVertexBuffer(shapeType, _shapeParams));
+				generateIndices(*_generator);
 			}
-
-			// Normal
+			else
 			{
-				for (size_t i = 0; i < vertices.size(); i++)
-				{
-					vertices[i].normal = glm::vec3(0.0f, 1.0f, 0.0f);
-				}
+				ShapeGenerator localShapeGen;
+				Primitive::setVertices(localShapeGen.getVertexBuffer(shapeType, _shapeParams));
+				generateIndices(localShapeGen);
 			}
+		}
 
-			// UV
-			{
-				for (size_t i = 0; i < vertices.size(); i++)
-				{
-					vertices[i].uv.x = (vertices[i].position.x + 0.5f);
-					vertices[i].uv.y = (-vertices[i].position.y + 0.5f);
-				}
-			}
+		void Shape::setPrimitiveType(const PrimitiveType _primitiveType)
+		{
+			ShapeGenerator localShapeGen;
+			setPrimitiveType(_primitiveType, localShapeGen);
+		}
+		void Shape::setPrimitiveType(const PrimitiveType _primitiveType, ShapeGenerator& _generator)
+		{
+			Primitive::setPrimitiveType(_primitiveType);
+			generateIndices(_generator);
+		}
+		void Shape::setVertices(std::shared_ptr<VertexBuffer>)
+		{
+			se_assert_m(false, "Cannot directly set vertices for Shape primitive!");
+		}
+		void Shape::setIndices(std::shared_ptr<IndexBuffer>)
+		{
+			se_assert_m(false, "Cannot directly set indices for Shape primitive!");
+		}
 
-			// Indices
-			{
-				uint16_t currentIndex = 0;
-				size_t index = 0;
+		void Shape::generateIndices(ShapeGenerator& _generator)
+		{
+			if (!getVertices() || getVertices()->size() == 0)
+				return;
 
-				indices.resize((vertices.size() / 4) * 6);
-
-				while (index < indices.size())
-				{
-					for (uint16_t i = 1; i < 3; i++)
-					{
-						indices[index++] = currentIndex;
-						indices[index++] = currentIndex + i;
-						indices[index++] = currentIndex + i + 1;
-					}
-					currentIndex += 4;
-				}
-			}
+			Primitive::setIndices(_generator.getIndexBuffer(getVertices()->size(), shapeType, getPrimitiveType()));
 		}
 	}
 }

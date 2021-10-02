@@ -1,14 +1,17 @@
 #pragma once
 
-#include "SpehsEngine/Core/SE_Time.h"
+#include "boost/signals2/connection.hpp"
+#include "glm/ext/quaternion_float.hpp"
+#include "glm/vec4.hpp"
 #include "SpehsEngine/Core/Color.h"
+#include "SpehsEngine/Core/SE_Time.h"
 #include "SpehsEngine/Core/StringUtilityFunctions.h"
+#include "SpehsEngine/Graphics/Texture.h"
 #include "SpehsEngine/ImGui/imgui.h"
 #include "SpehsEngine/ImGui/imgui_stdlib.h"
+#include "SpehsEngine/ImGui/ImGuiTypes.h"
 #include "SpehsEngine/ImGui/Utility/IState.h"
-#include "SpehsEngine/Rendering/TextureData.h"
-#include "glm/vec4.hpp"
-#include "glm/ext/quaternion_float.hpp"
+#include <optional>
 #include <stdint.h>
 
 namespace se
@@ -128,20 +131,53 @@ namespace ImGui
 		TextColored((ImVec4&)color, label.c_str());
 	}
 
-	inline void Image(const se::rendering::TextureData& textureData, const glm::vec2 scale = glm::vec2(1.0f, 1.0f),
-		const glm::vec2 uv0 = glm::vec2(0.0f, 0.0f), const glm::vec2 uv1 = glm::vec2(1.0f, 1.0f),
-		const se::Color tintColor = se::Color(1.0f, 1.0f, 1.0f, 1.0f), const se::Color borderColor = se::Color(1.0f, 1.0f, 1.0f, 1.0f))
+	inline ImVec2 SizeToScale(const std::shared_ptr<se::graphics::Texture>& _texture, const ImVec2 _size)
 	{
-		ImGui::Image((void*)(intptr_t)textureData.textureDataID, ImVec2(float(textureData.width) * scale.x, float(textureData.height) * scale.y),
-			(const ImVec2&)uv0, (const ImVec2&)uv1, se::toImVec4(tintColor), se::toImVec4(borderColor));
+		return ImVec2(_size.x / float(_texture->getWidth()), _size.y / float(_texture->getHeight()));
 	}
 
-	inline bool ImageButton(const se::rendering::TextureData& textureData, const glm::vec2 scale = glm::vec2(1.0f, 1.0f),
-		const glm::vec2 uv0 = glm::vec2(0.0f, 0.0f), const glm::vec2 uv1 = glm::vec2(1.0f, 1.0f), const int framePadding = 1,
-		const se::Color tintColor = se::Color(1.0f, 1.0f, 1.0f, 1.0f), const se::Color backgroundColor = se::Color(0.0f, 0.0f, 0.0f, 0.0f))
+	inline void Image(
+		  const std::shared_ptr<se::graphics::Texture>& _texture
+		, const ImVec2 scale			= ImVec2(1.0f, 1.0f)
+		, const ImVec2 uv0				= ImVec2(0.0f, 0.0f)
+		, const ImVec2 uv1				= ImVec2(1.0f, 1.0f)
+		, const se::Color tintColor		= se::Color(1.0f, 1.0f, 1.0f, 1.0f)
+		, const se::Color borderColor	= se::Color(1.0f, 1.0f, 1.0f, 1.0f)
+		)
 	{
-		return ImGui::ImageButton((void*)(intptr_t)textureData.textureDataID, ImVec2(float(textureData.width) * scale.x, float(textureData.height) * scale.y),
-			(const ImVec2&)uv0, (const ImVec2&)uv1, framePadding, se::toImVec4(backgroundColor), se::toImVec4(tintColor));
+		se::imgui::ImGuiUserTextureData userTextureData;
+		userTextureData.resourceHandle = _texture->getHandle();
+		ImGui::Image(
+			userTextureData.id
+			, ImVec2(float(_texture->getWidth()) * scale.x, float(_texture->getHeight()) * scale.y)
+			, uv0
+			, uv1
+			, se::toImVec4(tintColor)
+			, se::toImVec4(borderColor)
+			);
+	}
+
+	inline bool ImageButton(
+		const std::shared_ptr<se::graphics::Texture>& _texture
+		, const ImVec2 scale				= ImVec2(1.0f, 1.0f)
+		, const ImVec2 uv0					= ImVec2(0.0f, 0.0f)
+		, const ImVec2 uv1					= ImVec2(1.0f, 1.0f)
+		, const int framePadding			= 1
+		, const se::Color tintColor			= se::Color(1.0f, 1.0f, 1.0f, 1.0f)
+		, const se::Color backgroundColor	= se::Color(0.0f, 0.0f, 0.0f, 0.0f)
+		)
+	{
+		se::imgui::ImGuiUserTextureData userTextureData;
+		userTextureData.resourceHandle = _texture->getHandle();
+		return ImGui::ImageButton(
+			userTextureData.id
+			, ImVec2(float(_texture->getWidth()) * scale.x, float(_texture->getHeight()) * scale.y)
+			, uv0
+			, uv1
+			, framePadding
+			, se::toImVec4(backgroundColor)
+			, se::toImVec4(tintColor)
+			);
 	}
 
 	bool fileSelector(const char* const label, std::string& filepath, const char* const directory);
@@ -517,6 +553,32 @@ namespace ImGui
 			{
 				PopStyleColor();
 			}
+		}
+	private:
+		bool pop = false;
+	};
+
+	void PushFont(const se::imgui::ImGuiFont _font);
+
+	class ScopedFont
+	{
+	public:
+		ScopedFont() = delete;
+		ScopedFont(const ScopedFont& copy) = delete;
+		ScopedFont(ScopedFont&& other)
+			: pop(other.pop)
+		{
+			other.pop = false;
+		}
+		ScopedFont(const se::imgui::ImGuiFont _font)
+			: pop(true)
+		{
+			PushFont(_font);
+		}
+		~ScopedFont()
+		{
+			if (pop)
+				PopFont();
 		}
 	private:
 		bool pop = false;

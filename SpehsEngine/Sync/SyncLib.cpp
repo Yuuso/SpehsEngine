@@ -27,7 +27,7 @@ namespace se
 		{
 			if (!netLib.isValid())
 			{
-				log::error("Cannot initialize sync library, rendering library is invalid.");
+				log::error("Cannot initialize sync library, net library is invalid.");
 				return;
 			}
 
@@ -49,7 +49,7 @@ namespace se
 	{
 		return valid;
 	}
-		
+
 	std::string SyncLib::getVersion()
 	{
 		return version;
