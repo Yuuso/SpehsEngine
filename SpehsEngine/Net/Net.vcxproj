@@ -96,14 +96,14 @@
     </ClCompile>
     <Lib />
     <Lib>
-      <AdditionalDependencies>SpehsCore.lib;libprotobuf.lib;libcrypto.lib;GameNetworkingSockets_s.lib;libcrypto_static.lib</AdditionalDependencies>
+      <AdditionalDependencies>SpehsCore.lib;libprotobufd.lib;libcrypto.lib;GameNetworkingSockets_s.lib;libcrypto_static.lib</AdditionalDependencies>
     </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
     </ClCompile>
     <Lib>
-      <AdditionalDependencies>SpehsCore.lib;libprotobuf.lib;libcrypto.lib;GameNetworkingSockets_s.lib;libcrypto_static.lib</AdditionalDependencies>
+      <AdditionalDependencies>SpehsCore.lib;libprotobufd.lib;libcrypto.lib;GameNetworkingSockets_s.lib;libcrypto_static.lib</AdditionalDependencies>
     </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
