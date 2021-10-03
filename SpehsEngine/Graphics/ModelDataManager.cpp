@@ -17,7 +17,8 @@ namespace se
 				if (modelData->getName() == _name)
 				{
 					log::warning("Cannot create ModelData '" + _name + "', ModelData with that name already exists!");
-					se_assert(modelData->path == path);
+					if (modelData->path != path)
+						log::error("Existing ModelData's '" + _name + "' resource path doesn't match!");
 					return modelData;
 				}
 			}

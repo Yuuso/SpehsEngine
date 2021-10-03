@@ -94,7 +94,8 @@ namespace se
 				if (texture->getName() == _name)
 				{
 					log::warning("Cannot create texture '" + _name + "', texture with that name already exists!");
-					se_assert(texture->path == path);
+					if (texture->path != path)
+						log::error("Existing texture's '" + _name + "' resource path doesn't match!");
 					return texture;
 				}
 			}

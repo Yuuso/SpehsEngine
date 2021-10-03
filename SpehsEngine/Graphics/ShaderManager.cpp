@@ -59,7 +59,8 @@ namespace se
 				if (shader->getName() == _name)
 				{
 					log::warning("Cannot create shader '" + _name + "', shader with that name already exists!");
-					se_assert(shader->vertexShaderPath == vertexShaderPath && shader->fragmentShaderPath == fragmentShaderPath);
+					if (shader->vertexShaderPath != vertexShaderPath || shader->fragmentShaderPath != fragmentShaderPath)
+						log::error("Existing shader's '" + _name + "' resource paths don't match!");
 					return shader;
 				}
 			}

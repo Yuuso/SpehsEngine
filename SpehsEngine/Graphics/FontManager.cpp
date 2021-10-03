@@ -24,7 +24,8 @@ namespace se
 				if (font->getName() == _name)
 				{
 					log::warning("Cannot create font '" + _name + "', font with that name already exists!");
-					se_assert(font->path == fontPath);
+					if (font->path != fontPath)
+						log::error("Existing font's '" + _name + "' resource path doesn't match!");
 					return font;
 				}
 			}
