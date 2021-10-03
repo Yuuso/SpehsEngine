@@ -57,7 +57,6 @@ namespace se
 			struct BoneData
 			{
 				std::string boneNodeName;
-				std::string armatureNodeName;
 				glm::mat4 offsetMatrix;
 			};
 

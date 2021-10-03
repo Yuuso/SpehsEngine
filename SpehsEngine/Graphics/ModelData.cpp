@@ -85,7 +85,7 @@ namespace se
 				| aiProcess_LimitBoneWeights
 				| aiProcess_ValidateDataStructure
 				//| aiProcess_FixInfacingNormals
-				| aiProcess_PopulateArmatureData
+				//| aiProcess_PopulateArmatureData
 				| aiProcess_SortByPType
 				| aiProcess_FindDegenerates
 				| aiProcess_FindInvalidData
@@ -208,9 +208,10 @@ namespace se
 				mesh.bones.resize(sceneMesh.mNumBones);
 				for (size_t boneIndex = 0; boneIndex < sceneMesh.mNumBones; boneIndex++)
 				{
-					se_assert(sceneMesh.mBones[boneIndex]->mName == sceneMesh.mBones[boneIndex]->mNode->mName);
+					// NOTE: aiProcess_PopulateArmatureData
+					//se_assert(sceneMesh.mBones[boneIndex]->mName == sceneMesh.mBones[boneIndex]->mNode->mName);
 					mesh.bones[boneIndex].boneNodeName = sceneMesh.mBones[boneIndex]->mName.C_Str();
-					mesh.bones[boneIndex].armatureNodeName = sceneMesh.mBones[boneIndex]->mArmature->mName.C_Str();
+					//mesh.bones[boneIndex].armatureNodeName = sceneMesh.mBones[boneIndex]->mArmature->mName.C_Str();
 					mesh.bones[boneIndex].offsetMatrix = make_mat4(sceneMesh.mBones[boneIndex]->mOffsetMatrix);
 				}
 
