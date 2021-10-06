@@ -82,7 +82,7 @@ namespace se
 			directoryCharSearchCount++;
 			if (*it == '/' || *it == '\\')
 			{
-				std::string directoryPath(_newPath, _newPath.size() - directoryCharSearchCount);
+				std::string directoryPath(_newPath.begin(), _newPath.begin() + (_newPath.size() - directoryCharSearchCount));
 				if (verifyDirectory(directoryPath))
 				{
 					break;
