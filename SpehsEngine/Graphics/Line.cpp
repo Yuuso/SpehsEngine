@@ -62,8 +62,7 @@ namespace se
 		{
 			std::shared_ptr<VertexBuffer> vertexBuffer = getVertices();
 			se_assert(vertexBuffer && vertexBuffer->size() > _index);
-			const VertexBuffer* constVertexBuffer = vertexBuffer.get();
-			return constVertexBuffer->get<Position>(_index);
+			return std::as_const(*vertexBuffer.get()).get<Position>(_index);
 		}
 		glm::vec3& Line::getPoint(const size_t _index)
 		{
