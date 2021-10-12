@@ -50,6 +50,17 @@ namespace se
 				child->foreachMesh(_fn);
 			}
 		}
+		void ModelNode::foreachMesh(std::function<void(Primitive&, std::string_view)> _fn)
+		{
+			for (auto&& mesh : meshes)
+			{
+				_fn(*mesh.get(), name);
+			}
+			for (auto&& child : children)
+			{
+				child->foreachMesh(_fn);
+			}
+		}
 		const Mesh* ModelNode::getMesh(const std::string_view _name) const
 		{
 			for (auto&& mesh : meshes)

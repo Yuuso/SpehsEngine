@@ -46,6 +46,7 @@ namespace se
 			bool							isAnimationActive(const std::string_view _name) const;
 
 			void							foreachPrimitive(std::function<void(Primitive&)> _fn);
+			void							foreachPrimitive(std::function<void(Primitive&, std::string_view)> _fn);
 			const Primitive*				getPrimitive(const std::string_view _meshName) const;
 			const Primitive*				getPrimitive(const size_t _index) const;
 			Primitive*						getPrimitive(const std::string_view _meshName);

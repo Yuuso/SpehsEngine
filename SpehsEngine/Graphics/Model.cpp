@@ -164,6 +164,10 @@ namespace se
 		{
 			rootNode.foreachMesh(_fn);
 		}
+		void Model::foreachPrimitive(std::function<void(Primitive&, std::string_view)> _fn)
+		{
+			rootNode.foreachMesh(_fn);
+		}
 		const Primitive* Model::getPrimitive(const std::string_view _meshName) const
 		{
 			return rootNode.getMesh(_meshName);

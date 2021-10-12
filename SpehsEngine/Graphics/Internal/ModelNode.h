@@ -17,6 +17,7 @@ namespace se
 
 			glm::mat4 getTransform() const;
 			void foreachMesh(std::function<void(Primitive&)> _fn);
+			void foreachMesh(std::function<void(Primitive&, std::string_view)> _fn);
 			const Mesh* getMesh(const std::string_view _name) const;
 			const Mesh* getMesh(size_t& _counter) const;
 			Mesh* getMesh(const std::string_view _name);
