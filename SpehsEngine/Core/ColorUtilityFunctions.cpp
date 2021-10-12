@@ -83,6 +83,11 @@ namespace se
 		);
 	}
 
+	Color oppositeColor(const Color& _color)
+	{
+		return Color{ 1.0f - _color.r, 1.0f - _color.g, 1.0f - _color.b, _color.a };
+	}
+
 	Color colorHSB(const float _hue, const float _saturation, const float _brightness)
 	{
 		se_assert(_hue >= 0.0f && _hue <= 360.0f &&

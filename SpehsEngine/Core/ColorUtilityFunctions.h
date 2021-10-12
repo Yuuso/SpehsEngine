@@ -25,6 +25,8 @@ namespace se
 
 	// Generate colors
 
+	Color oppositeColor(const Color& _color);
+
 	/*
 	hue: 0 - 360.0f
 	saturation: 0 - 1.0f
