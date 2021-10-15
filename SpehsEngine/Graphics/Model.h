@@ -4,7 +4,7 @@
 #include "glm/gtc/quaternion.hpp"
 #include "glm/vec3.hpp"
 #include "SpehsEngine/Core/Color.h"
-#include "SpehsEngine/Graphics/Internal/Animator.h"
+#include "SpehsEngine/Graphics/Internal/AnimatorInternal.h"
 #include "SpehsEngine/Graphics/Internal/Mesh.h"
 #include "SpehsEngine/Graphics/Internal/ModelNode.h"
 #include "SpehsEngine/Graphics/Material.h"
@@ -36,29 +36,23 @@ namespace se
 			void							loadModelData(std::shared_ptr<ModelData> _modelData);
 			void							reloadModeData();
 
-			void							startAnimation(const std::string_view _name, const time::Time _fade = time::Time::zero);
-			void							pauseAnimation(const std::string_view _name);
-			void							stopAnimation(const std::string_view _name, const time::Time _fade = time::Time::zero);
-			void							stopAnimations(const time::Time _fade = time::Time::zero);
-			void							setAnimationSpeed(const float _value, const std::string_view _name);
-			void							setAnimationSpeed(const float _value);
-			void							setAnimationLooping(const bool _value, const std::string_view _name);
-			bool							isAnimationActive(const std::string_view _name) const;
+			Animator&						getAnimator();
+			const Animator&					getAnimator() const;
 
 			void							foreachPrimitive(std::function<void(Primitive&)> _fn);
 			void							foreachPrimitive(std::function<void(Primitive&, std::string_view)> _fn);
-			const Primitive*				getPrimitive(const std::string_view _meshName) const;
-			const Primitive*				getPrimitive(const size_t _index) const;
-			Primitive*						getPrimitive(const std::string_view _meshName);
-			Primitive*						getPrimitive(const size_t _index);
-			const size_t					getNumPrimitives() const;
+			const Primitive*				getPrimitive(std::string_view _meshName) const;
+			const Primitive*				getPrimitive(size_t _index) const;
+			Primitive*						getPrimitive(std::string_view _meshName);
+			Primitive*						getPrimitive(size_t _index);
+			size_t							getNumPrimitives() const;
 
 
 			const std::string&				getName() const;
 			std::shared_ptr<Material>		getMaterial(const size_t _slot = 0) const;
-			const size_t					getNumMaterials() const;
+			size_t							getNumMaterials() const;
 			const Color&					getColor() const;
-			const RenderFlagsType			getRenderFlags() const;
+			RenderFlagsType					getRenderFlags() const;
 
 			std::shared_ptr<VertexBuffer>	getInstances() const;
 			void							setInstances(std::shared_ptr<VertexBuffer> _instances);
@@ -67,16 +61,16 @@ namespace se
 			const glm::quat&				getRotation() const;
 			const glm::vec3&				getScale() const;
 
-			void							setName(const std::string_view _name);
-			void							setRenderState(const bool _state);
-			void							setMaterial(std::shared_ptr<Material> _material, const size_t _slot = 0);
+			void							setName(std::string_view _name);
+			void							setRenderState(bool _state);
+			void							setMaterial(std::shared_ptr<Material> _material, size_t _slot = 0);
 			void							setColor(const Color& _color);
 
-			void							setRenderFlags(const RenderFlagsType _renderFlags);
-			void							enableRenderFlags(const RenderFlagsType _renderFlags);
-			void							disableRenderFlags(const RenderFlagsType _renderFlags);
-			void							setPrimitiveType(const PrimitiveType _primitiveType);
-			void							setRenderMode(const RenderMode _renderMode);
+			void							setRenderFlags(RenderFlagsType _renderFlags);
+			void							enableRenderFlags(RenderFlagsType _renderFlags);
+			void							disableRenderFlags(RenderFlagsType _renderFlags);
+			void							setPrimitiveType(PrimitiveType _primitiveType);
+			void							setRenderMode(RenderMode _renderMode);
 
 			void							setPosition(const glm::vec3& _position);
 			void							setRotation(const glm::quat& _rotation);
@@ -104,7 +98,7 @@ namespace se
 			RenderMode						renderMode = defaultRenderMode;
 			Color							color;
 
-			Animator						animator;
+			AnimatorInternal				animator;
 
 			glm::vec3						position = glm::vec3(0.0f);
 			glm::vec3						scale = glm::vec3(1.0f);

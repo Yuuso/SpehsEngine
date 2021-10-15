@@ -177,9 +177,6 @@
     <ClInclude Include="Internal\Bone.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Internal\Animator.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Internal\LightInternal.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -199,6 +196,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="ShaderVariant.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Animator.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Internal\AnimatorInternal.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -314,12 +317,6 @@
     <ClCompile Include="Material.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Internal\Animation.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Internal\Animator.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Internal\LightInternal.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -336,6 +333,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="InstanceBuffer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Internal\AnimatorInternal.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Animator.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

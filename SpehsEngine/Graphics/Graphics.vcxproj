@@ -148,6 +148,7 @@
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="Animator.h" />
     <ClInclude Include="DefaultMaterials.h" />
     <ClInclude Include="Font.h" />
     <ClInclude Include="CharacterSet.h" />
@@ -155,7 +156,7 @@
     <ClInclude Include="IndexBuffer.h" />
     <ClInclude Include="InstanceBuffer.h" />
     <ClInclude Include="Internal\Animation.h" />
-    <ClInclude Include="Internal\Animator.h" />
+    <ClInclude Include="Internal\AnimatorInternal.h" />
     <ClInclude Include="Internal\Batch.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="GraphicsLib.h" />
@@ -212,14 +213,14 @@
     <ClInclude Include="Internal\WindowInternal.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Animator.cpp" />
     <ClCompile Include="CharacterSet.cpp" />
     <ClCompile Include="DefaultMaterials.cpp" />
     <ClCompile Include="Font.cpp" />
     <ClCompile Include="FontManager.cpp" />
     <ClCompile Include="IndexBuffer.cpp" />
     <ClCompile Include="InstanceBuffer.cpp" />
-    <ClCompile Include="Internal\Animation.cpp" />
-    <ClCompile Include="Internal\Animator.cpp" />
+    <ClCompile Include="Internal\AnimatorInternal.cpp" />
     <ClCompile Include="Internal\Batch.cpp" />
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="GraphicsLib.cpp" />

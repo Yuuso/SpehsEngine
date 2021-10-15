@@ -117,43 +117,19 @@ namespace se
 			foreachPrimitive([](Primitive& _primitive) { enableBit(_primitive.updateFlags, PrimitiveUpdateFlag::TransformChanged); }); // Force transform update
 		}
 
-		void Model::startAnimation(const std::string_view _name, const time::Time _fade)
+		Animator& Model::getAnimator()
 		{
-			animator.start(_name, _fade);
+			return animator;
 		}
-		void Model::pauseAnimation(const std::string_view _name)
+		const Animator& Model::getAnimator() const
 		{
-			animator.pause(_name);
-		}
-		void Model::stopAnimation(const std::string_view _name, const time::Time _fade)
-		{
-			animator.stop(_name, _fade);
-		}
-		void Model::stopAnimations(const time::Time _fade)
-		{
-			animator.stop(_fade);
-		}
-		void Model::setAnimationSpeed(const float _value, const std::string_view _name)
-		{
-			animator.setSpeed(_value, _name);
-		}
-		void Model::setAnimationSpeed(const float _value)
-		{
-			animator.setSpeed(_value);
-		}
-		void Model::setAnimationLooping(const bool _value, const std::string_view _name)
-		{
-			animator.setLooping(_value, _name);
-		}
-		bool Model::isAnimationActive(const std::string_view _name) const
-		{
-			return animator.isActive(_name);
+			return animator;
 		}
 
 		void Model::updateAnimations()
 		{
 			animator.update();
-			if (animator.isActive())
+			if (animator.isPlaying())
 			{
 				// Force update on all transforms
 				foreachPrimitive([](Primitive& _primitive) { enableBit(_primitive.updateFlags, PrimitiveUpdateFlag::TransformChanged); });
@@ -168,25 +144,25 @@ namespace se
 		{
 			rootNode.foreachMesh(_fn);
 		}
-		const Primitive* Model::getPrimitive(const std::string_view _meshName) const
+		const Primitive* Model::getPrimitive(std::string_view _meshName) const
 		{
 			return rootNode.getMesh(_meshName);
 		}
-		const Primitive* Model::getPrimitive(const size_t _index) const
+		const Primitive* Model::getPrimitive(size_t _index) const
 		{
 			size_t counter = _index;
 			return rootNode.getMesh(counter);
 		}
-		Primitive* Model::getPrimitive(const std::string_view _meshName)
+		Primitive* Model::getPrimitive(std::string_view _meshName)
 		{
 			return rootNode.getMesh(_meshName);
 		}
-		Primitive* Model::getPrimitive(const size_t _index)
+		Primitive* Model::getPrimitive(size_t _index)
 		{
 			size_t counter = _index;
 			return rootNode.getMesh(counter);
 		}
-		const size_t Model::getNumPrimitives() const
+		size_t Model::getNumPrimitives() const
 		{
 			if (modelData)
 				return modelData->resourceData->meshes.size();
@@ -198,14 +174,14 @@ namespace se
 		{
 			return name;
 		}
-		std::shared_ptr<Material> Model::getMaterial(const size_t _slot) const
+		std::shared_ptr<Material> Model::getMaterial(size_t _slot) const
 		{
 			se_assert(_slot < numMaterialSlots);
 			if (_slot >= materials.size() || !materials[_slot])
 				return materials[0];
 			return materials[_slot];
 		}
-		const size_t Model::getNumMaterials() const
+		size_t Model::getNumMaterials() const
 		{
 			return materials.size();
 		}
@@ -213,7 +189,7 @@ namespace se
 		{
 			return color;
 		}
-		const RenderFlagsType Model::getRenderFlags() const
+		RenderFlagsType Model::getRenderFlags() const
 		{
 			return renderFlags;
 		}
@@ -241,16 +217,16 @@ namespace se
 			return scale;
 		}
 
-		void Model::setName(const std::string_view _name)
+		void Model::setName(std::string_view _name)
 		{
 			name = _name;
 		}
-		void Model::setRenderState(const bool _state)
+		void Model::setRenderState(bool _state)
 		{
 			renderState = _state;
 			foreachPrimitive([_state](Primitive& _primitive) { _primitive.setRenderState(_state); });
 		}
-		void Model::setMaterial(std::shared_ptr<Material> _material, const size_t _slot)
+		void Model::setMaterial(std::shared_ptr<Material> _material, size_t _slot)
 		{
 			se_assert(numMaterialSlots == 0 || _slot < numMaterialSlots);
 			if (_slot >= materials.size())
@@ -263,29 +239,29 @@ namespace se
 			foreachPrimitive([&](Primitive& _primitive) { _primitive.setColor(_color); });
 		}
 
-		void Model::setRenderFlags(const RenderFlagsType _renderFlags)
+		void Model::setRenderFlags(RenderFlagsType _renderFlags)
 		{
 			renderFlags = _renderFlags;
 			foreachPrimitive([_renderFlags](Primitive& _primitive) { _primitive.setRenderFlags(_renderFlags); });
 		}
-		void Model::enableRenderFlags(const RenderFlagsType _renderFlags)
+		void Model::enableRenderFlags(RenderFlagsType _renderFlags)
 		{
 			enableBit(renderFlags, _renderFlags);
 			foreachPrimitive([_renderFlags](Primitive& _primitive) { _primitive.enableRenderFlags(_renderFlags); });
 		}
-		void Model::disableRenderFlags(const RenderFlagsType _renderFlags)
+		void Model::disableRenderFlags(RenderFlagsType _renderFlags)
 		{
 			disableBit(renderFlags, _renderFlags);
 			foreachPrimitive([_renderFlags](Primitive& _primitive) { _primitive.disableRenderFlags(_renderFlags); });
 		}
-		void Model::setPrimitiveType(const PrimitiveType _primitiveType)
+		void Model::setPrimitiveType(PrimitiveType _primitiveType)
 		{
 			if (_primitiveType == PrimitiveType::Undefined)
 				return;
 			primitiveType = _primitiveType;
 			foreachPrimitive([_primitiveType](Primitive& _primitive) { _primitive.setPrimitiveType(_primitiveType); });
 		}
-		void Model::setRenderMode(const RenderMode _renderMode)
+		void Model::setRenderMode(RenderMode _renderMode)
 		{
 			renderMode = _renderMode;
 			if (renderMode == RenderMode::Static && animator.hasAnimations())

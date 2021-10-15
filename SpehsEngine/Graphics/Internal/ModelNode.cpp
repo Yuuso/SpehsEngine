@@ -32,7 +32,7 @@ namespace se
 
 		glm::mat4 ModelNode::getLocalTransform() const
 		{
-			if (model.animator.isActive(name))
+			if (model.animator.IsNodePlaying(name))
 			{
 				return model.animator.getTransform(name);
 			}
