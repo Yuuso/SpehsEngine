@@ -156,7 +156,7 @@ namespace se
 		flushSignal(threadDataCopy);
 	}
 
-	void ScopeProfiler::connectToFlushSignal(boost::signals2::scoped_connection& scopedConnection, const boost::function<void(const ThreadData&)>& callback)
+	void ScopeProfiler::connectToFlushSignal(boost::signals2::scoped_connection& scopedConnection, const std::function<void(const ThreadData&)>& callback)
 	{
 		std::lock_guard<std::recursive_mutex> lock(flushSignalMutex);
 		scopedConnection = flushSignal.connect(callback);

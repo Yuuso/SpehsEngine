@@ -1,14 +1,14 @@
 #include "stdafx.h"
 #include "SpehsEngine/Core/File/DirectoryState.h"
 
-#include "SpehsEngine/Core/File/FileSystem.h"
 #include "SpehsEngine/Core/File/File.h"
-#include "SpehsEngine/Core/WriteBuffer.h"
+#include "SpehsEngine/Core/File/FileSystem.h"
+#include "SpehsEngine/Core/Murmur3.h"
 #include "SpehsEngine/Core/ReadBuffer.h"
 #include "SpehsEngine/Core/STLVectorUtilityFunctions.h"
 #include "SpehsEngine/Core/StringUtilityFunctions.h"
-#include "SpehsEngine/Core/Murmur3.h"
-#include <boost/filesystem.hpp>
+#include "SpehsEngine/Core/WriteBuffer.h"
+
 
 namespace se
 {

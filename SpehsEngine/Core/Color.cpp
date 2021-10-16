@@ -1,12 +1,5 @@
 #include "stdafx.h"
-
 #include "SpehsEngine/Core/Color.h"
-#include "SpehsEngine/Core/StringOperations.h"
-
-#include <boost/algorithm/clamp.hpp>
-
-#include <cstring>
-
 
 
 namespace se

@@ -2,12 +2,9 @@
 
 #include "SpehsEngine/Core/RNG.h"
 #include "SpehsEngine/Core/Log.h"
-
-#include <boost/random/random_device.hpp>
-
 #include <algorithm>
-#include <string>
 #include <chrono>
+#include <string>
 
 
 namespace se
@@ -19,7 +16,7 @@ namespace se
 		void initialize()
 		{
 			// 'True' random source
-			boost::random_device source;
+			std::random_device source;
 			log::info("RNG: random source entropy: " + std::to_string(source.entropy()));
 
 #if defined (SE_RNG_USE_FULL_RANDOM_SEED)

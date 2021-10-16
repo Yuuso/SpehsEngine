@@ -45,7 +45,7 @@ namespace se
 			static const uint16_t endiannessCheckBytes = 0xACDC;
 		public:
 
-			bool Handshake::isValid() const
+			bool isValid() const
 			{
 				return valid;
 			}

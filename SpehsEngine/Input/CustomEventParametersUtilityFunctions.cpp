@@ -99,6 +99,8 @@ namespace se
 
 	Archive writeToArchive(const input::CustomEventParameters& customEventParameters)
 	{
+	#define why_does_se_write_to_archive_not_work(__archive, __params) __archive.write(#__params, writeToArchive(__params))
+
 		Archive archive;
 		se_write_to_archive(archive, customEventParameters.eventType);
 		switch (customEventParameters.eventType)
@@ -107,14 +109,14 @@ namespace se
 		case input::EventType::quit: break;
 		case input::EventType::textInput: break;
 		case input::EventType::fileDrop: break;
-		case input::EventType::keyboard: se_write_to_archive(archive, customEventParameters.keyboardEventParameters); break;
-		case input::EventType::mouseButton: se_write_to_archive(archive, customEventParameters.mouseButtonEventParameters); break;
-		case input::EventType::mouseMotion: se_write_to_archive(archive, customEventParameters.mouseMotionEventParameters); break;
-		case input::EventType::mouseWheel: se_write_to_archive(archive, customEventParameters.mouseWheelEventParameters); break;
-		case input::EventType::mouseHover: se_write_to_archive(archive, customEventParameters.mouseHoverEventParameters); break;
-		case input::EventType::joystickButton: se_write_to_archive(archive, customEventParameters.joystickButtonEventParameters); break;
-		case input::EventType::joystickAxis: se_write_to_archive(archive, customEventParameters.joystickAxisEventParameters); break;
-		case input::EventType::joystickHat: se_write_to_archive(archive, customEventParameters.joystickHatEventParameters); break;
+		case input::EventType::keyboard: why_does_se_write_to_archive_not_work(archive, customEventParameters.keyboardEventParameters); break;
+		case input::EventType::mouseButton: why_does_se_write_to_archive_not_work(archive, customEventParameters.mouseButtonEventParameters); break;
+		case input::EventType::mouseMotion: why_does_se_write_to_archive_not_work(archive, customEventParameters.mouseMotionEventParameters); break;
+		case input::EventType::mouseWheel: why_does_se_write_to_archive_not_work(archive, customEventParameters.mouseWheelEventParameters); break;
+		case input::EventType::mouseHover: why_does_se_write_to_archive_not_work(archive, customEventParameters.mouseHoverEventParameters); break;
+		case input::EventType::joystickButton: why_does_se_write_to_archive_not_work(archive, customEventParameters.joystickButtonEventParameters); break;
+		case input::EventType::joystickAxis: why_does_se_write_to_archive_not_work(archive, customEventParameters.joystickAxisEventParameters); break;
+		case input::EventType::joystickHat: why_does_se_write_to_archive_not_work(archive, customEventParameters.joystickHatEventParameters); break;
 		}
 		return archive;
 	}

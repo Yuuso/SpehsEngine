@@ -16,7 +16,7 @@ namespace se
 		se_assert(size_t(std::numeric_limits<SizeType>::max()) >= multimap.size() && "Multimap size is larger than the maximum of SizeType.");
 		const SizeType size = SizeType(multimap.size());
 		buffer.write(size);
-		for (std::multimap<KeyType, T, Compare>::const_iterator it = multimap.begin(); it != multimap.end(); it++)
+		for (auto it = multimap.begin(); it != multimap.end(); it++)
 		{
 			buffer.write(it->first);
 			buffer.write(it->second);
@@ -57,7 +57,7 @@ namespace se
 		const SizeType size = SizeType(multimap.size());
 		se_write_to_archive(archive, size);
 		size_t index = 0;
-		for (std::multimap<KeyType, T, Compare>::const_iterator it = multimap.begin(); it != multimap.end(); it++)
+		for (auto it = multimap.begin(); it != multimap.end(); it++)
 		{
 			archive.write(std::to_string(index) + "k", it->first);
 			archive.write(std::to_string(index) + "v", it->second);

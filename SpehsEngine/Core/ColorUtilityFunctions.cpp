@@ -1,12 +1,11 @@
 #include "stdafx.h"
 #include "SpehsEngine/Core/ColorUtilityFunctions.h"
 
+#include "glm/common.hpp"
+#include "SpehsEngine/Core/ReadBuffer.h"
 #include "SpehsEngine/Core/StringOperations.h"
 #include "SpehsEngine/Core/WriteBuffer.h"
-#include "SpehsEngine/Core/ReadBuffer.h"
-#include "boost/algorithm/clamp.hpp"
 
-#include <glm/common.hpp>
 
 namespace se
 {
@@ -30,10 +29,10 @@ namespace se
 	std::string toString(const Color& color)
 	{
 		return "[r:"
-			+ std::to_string((unsigned char)(boost::algorithm::clamp(color.r, 0.0f, 1.0f) * 255.0f)) + ", g:"
-			+ std::to_string((unsigned char)(boost::algorithm::clamp(color.g, 0.0f, 1.0f) * 255.0f)) + ", b:"
-			+ std::to_string((unsigned char)(boost::algorithm::clamp(color.b, 0.0f, 1.0f) * 255.0f)) + ", a:"
-			+ std::to_string((unsigned char)(boost::algorithm::clamp(color.a, 0.0f, 1.0f) * 255.0f)) + "]";
+			+ std::to_string((unsigned char)(glm::clamp(color.r, 0.0f, 1.0f) * 255.0f)) + ", g:"
+			+ std::to_string((unsigned char)(glm::clamp(color.g, 0.0f, 1.0f) * 255.0f)) + ", b:"
+			+ std::to_string((unsigned char)(glm::clamp(color.b, 0.0f, 1.0f) * 255.0f)) + ", a:"
+			+ std::to_string((unsigned char)(glm::clamp(color.a, 0.0f, 1.0f) * 255.0f)) + "]";
 	}
 
 	void brightnessAdd(Color& _color, const float _brightness, const bool _clamp)

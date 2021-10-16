@@ -2,11 +2,7 @@
 #include "SpehsEngine/Core/StringUtilityFunctions.h"
 
 #include "boost/lexical_cast.hpp"
-#include "boost/locale/utf8_codecvt.hpp"
-#include "boost/locale/conversion.hpp"
-#include "boost/locale.hpp"
 #include "SpehsEngine/Core/StringOperations.h"
-#include <locale>
 
 #if SE_PLATFORM == SE_PLATFORM_WINDOWS
 #include <Windows.h>

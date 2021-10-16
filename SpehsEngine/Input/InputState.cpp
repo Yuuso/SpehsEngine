@@ -80,15 +80,15 @@ namespace se
 
 	const InputState::Key& InputState::key(const KeyboardKey keyboardKey) const
 	{
-		static const Key default;
+		static const Key fallback;
 		const std::unordered_map<unsigned, Key>::const_iterator it = keys.find((unsigned)keyboardKey);
-		return it == keys.end() ? default: it->second;
+		return it == keys.end() ? fallback : it->second;
 	}
 
 	const InputState::Key& InputState::key(const MouseButton button) const
 	{
-		static const Key default;
+		static const Key fallback;
 		const std::unordered_map<unsigned, Key>::const_iterator it = keys.find((unsigned)button);
-		return it == keys.end() ? default: it->second;
+		return it == keys.end() ? fallback : it->second;
 	}
 }

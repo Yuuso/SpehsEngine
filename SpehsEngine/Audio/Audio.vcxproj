@@ -90,21 +90,27 @@
     <ClCompile>
     </ClCompile>
     <Lib>
-      <AdditionalDependencies>SpehsCore.lib;OpenAL32.lib;libogg.lib;libvorbis_static.lib;libvorbisfile_static.lib</AdditionalDependencies>
+      <AdditionalDependencies>SpehsCore.lib;OpenAL32.lib;libogg.lib;libvorbis.lib;libvorbisfile.lib</AdditionalDependencies>
     </Lib>
     <Link>
       <AdditionalDependencies>SpehsCore$(TargetExt);OpenAL32.lib;libogg_static.lib;libvorbis_static.lib;libvorbisfile_static.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
+    <ClCompile>
+      <LanguageStandard>stdcpp20</LanguageStandard>
+    </ClCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
     </ClCompile>
     <Lib>
-      <AdditionalDependencies>SpehsCore.lib;OpenAL32.lib;libogg.lib;libvorbis_static.lib;libvorbisfile_static.lib</AdditionalDependencies>
+      <AdditionalDependencies>SpehsCore.lib;OpenAL32.lib;libogg.lib;libvorbis.lib;libvorbisfile.lib</AdditionalDependencies>
     </Lib>
     <Link>
       <AdditionalDependencies>SpehsCore$(TargetExt);OpenAL32.lib;libogg_static.lib;libvorbis_static.lib;libvorbisfile_static.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
+    <ClCompile>
+      <LanguageStandard>stdcpp20</LanguageStandard>
+    </ClCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -113,8 +119,11 @@
       <AdditionalDependencies>SpehsCore$(TargetExt);OpenAL32.lib;libogg_static.lib;libvorbis_static.lib;libvorbisfile_static.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <Lib>
-      <AdditionalDependencies>SpehsCore.lib;OpenAL32.lib;libogg.lib;libvorbis_static.lib;libvorbisfile_static.lib</AdditionalDependencies>
+      <AdditionalDependencies>SpehsCore.lib;OpenAL32.lib;libogg.lib;libvorbis.lib;libvorbisfile.lib</AdditionalDependencies>
     </Lib>
+    <ClCompile>
+      <LanguageStandard>stdcpp20</LanguageStandard>
+    </ClCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -123,8 +132,11 @@
       <AdditionalDependencies>SpehsCore$(TargetExt);OpenAL32.lib;libogg_static.lib;libvorbis_static.lib;libvorbisfile_static.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <Lib>
-      <AdditionalDependencies>SpehsCore.lib;OpenAL32.lib;libogg.lib;libvorbis_static.lib;libvorbisfile_static.lib</AdditionalDependencies>
+      <AdditionalDependencies>SpehsCore.lib;OpenAL32.lib;libogg.lib;libvorbis.lib;libvorbisfile.lib</AdditionalDependencies>
     </Lib>
+    <ClCompile>
+      <LanguageStandard>stdcpp20</LanguageStandard>
+    </ClCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="AudioLib.cpp" />

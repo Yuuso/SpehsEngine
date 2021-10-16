@@ -2,9 +2,9 @@
 
 #include "SpehsEngine/Core/Color.h"
 #include "SpehsEngine/Core/RNG.h"
-
 #include <string>
 #include <stdint.h>
+
 
 namespace se
 {

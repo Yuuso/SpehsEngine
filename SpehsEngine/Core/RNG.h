@@ -1,16 +1,14 @@
-
 #pragma once
 
-#include "SpehsEngine/Core/SE_Assert.h"
 #include "glm/gtc/quaternion.hpp"
 #include "glm/vec2.hpp"
 #include "glm/vec3.hpp"
-
+#include "SpehsEngine/Core/SE_Assert.h"
+#include <assert.h>
+#include <mutex>
 #include <random>
 #include <stdint.h>
 #include <type_traits>
-#include <assert.h>
-#include <mutex>
 
 
 namespace se
