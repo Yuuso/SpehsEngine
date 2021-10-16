@@ -33,6 +33,10 @@
     repository: https://github.com/bkaradzic/bx
     script: bgfx.bat
     Base library required for BGFX.
+## BOOST
+    repository: https://github.com/boostorg/boost
+    script: boost.bat
+    General purpose libraries.
 ## FREETYPE
     repository: https://gitlab.freedesktop.org/freetype/freetype
     script: TBD
@@ -51,8 +55,8 @@
     Tools for creating ktx textures.
     Not currently required for building any part of the engine. Only used by asset building scripts to create cubemaps.
 ## OGG
-    repository: https://github.com/xiph/vorbis
-    script: TBD
+    repository: https://github.com/gcp/libogg
+    script: libogg.bat
     Audio loading. (Status TBD with Audio rework...)
 ## OPENAL
     repository: https://github.com/kcat/openal-soft
@@ -64,11 +68,9 @@
     Input and window management.
 ## VORBIS
     repository: https://github.com/xiph/vorbis
-    script: TBD
+    script: vorbis.bat
     Audio loading. (Status TBD with Audio rework...)
 
-## BOOST
-    ?
 ## ZLIB
     ?
 ## BCM2835

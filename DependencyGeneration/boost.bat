@@ -1,0 +1,13 @@
+@ECHO OFF
+
+CALL Scripts/boost_gen.bat
+IF %ERRORLEVEL% NEQ 0 GOTO :FAILED
+CALL Scripts/boost_copy.bat
+IF %ERRORLEVEL% NEQ 0 GOTO :FAILED
+
+PAUSE
+EXIT /B 0
+
+:FAILED
+ECHO Error!
+PAUSE
