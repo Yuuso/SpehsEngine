@@ -95,9 +95,7 @@
     <Lib>
       <AdditionalDependencies>SDL2.lib;SDL2main.lib;</AdditionalDependencies>
     </Lib>
-    <ClCompile>
-      <LanguageStandard>stdcpp20</LanguageStandard>
-    </ClCompile>
+    <ClCompile />
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -108,9 +106,7 @@
     <Lib>
       <AdditionalDependencies>SDL2.lib;SDL2main.lib;</AdditionalDependencies>
     </Lib>
-    <ClCompile>
-      <LanguageStandard>stdcpp20</LanguageStandard>
-    </ClCompile>
+    <ClCompile />
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -121,9 +117,7 @@
     <Lib>
       <AdditionalDependencies>SDL2.lib;SDL2main.lib;</AdditionalDependencies>
     </Lib>
-    <ClCompile>
-      <LanguageStandard>stdcpp20</LanguageStandard>
-    </ClCompile>
+    <ClCompile />
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -134,9 +128,7 @@
     <Lib>
       <AdditionalDependencies>SDL2.lib;SDL2main.lib;</AdditionalDependencies>
     </Lib>
-    <ClCompile>
-      <LanguageStandard>stdcpp20</LanguageStandard>
-    </ClCompile>
+    <ClCompile />
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="CustomEventGenerator.h" />

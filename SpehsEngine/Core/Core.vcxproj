@@ -90,8 +90,6 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <PrecompiledHeader>Use</PrecompiledHeader>
-      <SDLCheck>true</SDLCheck>
-      <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
       <AdditionalDependencies>
@@ -103,9 +101,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
-      <SDLCheck>true</SDLCheck>
       <PrecompiledHeader>Use</PrecompiledHeader>
-      <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
       <AdditionalDependencies>
@@ -125,9 +121,7 @@
     <Lib>
       <AdditionalDependencies>zlibstatic.lib</AdditionalDependencies>
     </Lib>
-    <ClCompile>
-      <LanguageStandard>stdcpp20</LanguageStandard>
-    </ClCompile>
+    <ClCompile />
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -139,9 +133,7 @@
     <Lib>
       <AdditionalDependencies>zlibstatic.lib</AdditionalDependencies>
     </Lib>
-    <ClCompile>
-      <LanguageStandard>stdcpp20</LanguageStandard>
-    </ClCompile>
+    <ClCompile />
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

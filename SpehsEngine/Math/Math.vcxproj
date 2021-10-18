@@ -91,8 +91,6 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <PrecompiledHeader>Use</PrecompiledHeader>
-      <SDLCheck>true</SDLCheck>
-      <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Lib>
       <AdditionalDependencies>SpehsCore.lib</AdditionalDependencies>
@@ -104,9 +102,7 @@
     <Lib>
       <AdditionalDependencies>SpehsCore.lib</AdditionalDependencies>
     </Lib>
-    <ClCompile>
-      <LanguageStandard>stdcpp20</LanguageStandard>
-    </ClCompile>
+    <ClCompile />
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -116,9 +112,7 @@
     <Lib>
       <AdditionalDependencies>SpehsCore.lib</AdditionalDependencies>
     </Lib>
-    <ClCompile>
-      <LanguageStandard>stdcpp20</LanguageStandard>
-    </ClCompile>
+    <ClCompile />
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -128,9 +122,7 @@
     <Lib>
       <AdditionalDependencies>SpehsCore.lib</AdditionalDependencies>
     </Lib>
-    <ClCompile>
-      <LanguageStandard>stdcpp20</LanguageStandard>
-    </ClCompile>
+    <ClCompile />
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="AimPrediction.cpp" />

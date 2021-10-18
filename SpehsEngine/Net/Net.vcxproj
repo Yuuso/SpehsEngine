@@ -90,10 +90,7 @@
     <TargetName>SpehsNet</TargetName>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <ClCompile>
-      <SDLCheck>true</SDLCheck>
-      <LanguageStandard>stdcpp20</LanguageStandard>
-    </ClCompile>
+    <ClCompile />
     <Lib />
     <Lib>
       <AdditionalDependencies>SpehsCore.lib;libprotobufd.lib;libcrypto.lib;GameNetworkingSockets_s.lib;libcrypto_static.lib</AdditionalDependencies>
@@ -105,9 +102,7 @@
     <Lib>
       <AdditionalDependencies>SpehsCore.lib;libprotobufd.lib;libcrypto.lib;GameNetworkingSockets_s.lib;libcrypto_static.lib</AdditionalDependencies>
     </Lib>
-    <ClCompile>
-      <LanguageStandard>stdcpp20</LanguageStandard>
-    </ClCompile>
+    <ClCompile />
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -120,9 +115,7 @@
     <Lib>
       <AdditionalDependencies>SpehsCore.lib;libprotobuf.lib;libcrypto.lib;GameNetworkingSockets_s.lib;libcrypto_static.lib</AdditionalDependencies>
     </Lib>
-    <ClCompile>
-      <LanguageStandard>stdcpp20</LanguageStandard>
-    </ClCompile>
+    <ClCompile />
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -132,9 +125,7 @@
     <Lib>
       <AdditionalDependencies>SpehsCore.lib;libprotobuf.lib;libcrypto.lib;GameNetworkingSockets_s.lib;libcrypto_static.lib</AdditionalDependencies>
     </Lib>
-    <ClCompile>
-      <LanguageStandard>stdcpp20</LanguageStandard>
-    </ClCompile>
+    <ClCompile />
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
