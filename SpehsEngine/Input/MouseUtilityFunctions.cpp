@@ -13,9 +13,6 @@ namespace se
 			{
 				glm::ivec2 position;
 				SDL_GetMouseState(&position.x, &position.y);
-				int height = 0;
-				SDL_GetWindowSize(focusedWindow, nullptr, &height);
-				position.y = height - position.y;
 				return position;
 			}
 			else
@@ -33,9 +30,7 @@ namespace se
 		{
 			if (SDL_Window* const focusedWindow = SDL_GetMouseFocus())
 			{
-				int height = 0;
-				SDL_GetWindowSize(focusedWindow, nullptr, &height);
-				SDL_WarpMouseInWindow(nullptr, _pos.x, height - _pos.y);
+				SDL_WarpMouseInWindow(nullptr, _pos.x, _pos.y);
 			}
 			else
 			{
