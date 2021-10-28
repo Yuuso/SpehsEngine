@@ -142,14 +142,14 @@ namespace ImGui
 		, const ImVec2 uv0				= ImVec2(0.0f, 0.0f)
 		, const ImVec2 uv1				= ImVec2(1.0f, 1.0f)
 		, const se::Color tintColor		= se::Color(1.0f, 1.0f, 1.0f, 1.0f)
-		, const se::Color borderColor	= se::Color(1.0f, 1.0f, 1.0f, 1.0f)
+		, const se::Color borderColor	= se::Color(0.0f, 0.0f, 0.0f, 0.0f)
 		)
 	{
 		se::imgui::ImGuiUserTextureData userTextureData;
 		userTextureData.resourceHandle = _texture->getHandle();
 		ImGui::Image(
 			userTextureData.id
-			, ImVec2(float(_texture->getWidth()) * scale.x, float(_texture->getHeight()) * scale.y)
+			, ImVec2(float(_texture->getWidth()), float(_texture->getHeight()))
 			, uv0
 			, uv1
 			, se::toImVec4(tintColor)
