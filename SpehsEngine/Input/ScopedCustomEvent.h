@@ -11,23 +11,28 @@ namespace se
 		{
 		public:
 			ScopedCustomEvent() = default;
-			ScopedCustomEvent(const ScopedCustomEvent&& move)
-				: registeredCustomEventId(move.registeredCustomEventId)
+			ScopedCustomEvent(ScopedCustomEvent&& move)
 			{
+				swap(move);
+			}
+			ScopedCustomEvent(const ScopedCustomEvent& copy) = delete;
+			~ScopedCustomEvent()
+			{
+				if (registeredCustomEventId && unregisterCustomEventFunction && *unregisterCustomEventFunction)
+				{
+					(*unregisterCustomEventFunction)(*registeredCustomEventId);
+				}
+			}
+			ScopedCustomEvent& operator=(ScopedCustomEvent&& move)
+			{
+				swap(move);
+			}
+			ScopedCustomEvent& operator=(const ScopedCustomEvent& copy) = delete;
 
-			}
-			ScopedCustomEvent(const ScopedCustomEvent& copy)
-				: registeredCustomEventId(copy.registeredCustomEventId)
+			void swap(ScopedCustomEvent& other)
 			{
-
-			}
-			ScopedCustomEvent& operator=(const ScopedCustomEvent&& move)
-			{
-				registeredCustomEventId = move.registeredCustomEventId;
-			}
-			ScopedCustomEvent& operator=(const ScopedCustomEvent& copy)
-			{
-				registeredCustomEventId = copy.registeredCustomEventId;
+				std::swap(registeredCustomEventId, other.registeredCustomEventId);
+				std::swap(unregisterCustomEventFunction, other.unregisterCustomEventFunction);
 			}
 
 			operator bool() const { return bool(registeredCustomEventId); }
@@ -35,6 +40,7 @@ namespace se
 		private:
 			friend class CustomEventGenerator;
 			std::shared_ptr<uint32_t> registeredCustomEventId;
+			std::shared_ptr<std::function<void(const uint32_t)>> unregisterCustomEventFunction;
 		};
 	}
 }

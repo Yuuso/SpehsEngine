@@ -15,6 +15,7 @@ namespace se
 		public:
 
 			CustomEventGenerator(EventSignaler& _eventSignaler);
+			~CustomEventGenerator();
 
 			template<typename CustomEvent>
 			ScopedCustomEvent addCustomEvent(const CustomEventParameters& customEventParameters, const CustomEvent generatedCustomEvent, const int priority)
@@ -29,6 +30,7 @@ namespace se
 					registeredCustomEvent.id.reset(new uint32_t(registeredCustomEventId)); \
 					ScopedCustomEvent scopedCustomEvent; \
 					scopedCustomEvent.registeredCustomEventId = registeredCustomEvent.id; \
+					scopedCustomEvent.unregisterCustomEventFunction = unregisterCustomEventFunction; \
 					eventSignaler.connectTo##p_EventName##Signal(registeredCustomEvent.scopedConnection, [this, customEventParameters, generatedCustomEvent, registeredCustomEventId](const p_EventName##Event& event) \
 						{ \
 							const std::unordered_map<uint32_t, RegisteredCustomEvent>::iterator it = registeredCustomEvents.find(registeredCustomEventId); \
@@ -90,6 +92,7 @@ namespace se
 			EventSignaler& eventSignaler;
 			uint32_t nextRegisteredCustomEventId = 1;
 			std::unordered_map<uint32_t, RegisteredCustomEvent> registeredCustomEvents;
+			std::shared_ptr<std::function<void(const uint32_t)>> unregisterCustomEventFunction;
 		};
 	}
 }
