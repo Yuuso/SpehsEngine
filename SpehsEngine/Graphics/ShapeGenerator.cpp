@@ -121,8 +121,22 @@ namespace se
 					for (size_t i = 0; i < numVertices; i++)
 					{
 						glm::vec3& positionVertex = newVertices.get<Position>(i);
-						positionVertex.x /= width;
-						positionVertex.z /= height;
+						switch (_shapeParams.orientation)
+						{
+							case se::graphics::ShapeOrientation::XZ_Plane:
+								positionVertex.x /= width;
+								positionVertex.y = 0.0f;
+								positionVertex.z /= height;
+								break;
+							case se::graphics::ShapeOrientation::XY_Plane:
+								positionVertex.x /= width;
+								positionVertex.y = positionVertex.z / height;
+								positionVertex.z = 0.0f;
+								break;
+							default:
+								se_assert_m(false, "Unknown ShapeOrientation!");
+								break;
+						}
 					}
 				}
 
@@ -132,8 +146,20 @@ namespace se
 					{
 						glm::vec2& texCoord = newVertices.get<TexCoord0>(i);
 						const glm::vec3& positionVertex = newVertices.get<Position>(i);
-						texCoord.x = (positionVertex.x + 0.5f) * _shapeParams.uvScale;
-						texCoord.y = (-positionVertex.z + 0.5f) * _shapeParams.uvScale;
+						switch (_shapeParams.orientation)
+						{
+							case se::graphics::ShapeOrientation::XZ_Plane:
+								texCoord.x = (positionVertex.x + 0.5f) * _shapeParams.uvScale;
+								texCoord.y = (-positionVertex.z + 0.5f) * _shapeParams.uvScale;
+								break;
+							case se::graphics::ShapeOrientation::XY_Plane:
+								texCoord.x = (positionVertex.x + 0.5f) * _shapeParams.uvScale;
+								texCoord.y = (-positionVertex.y + 0.5f) * _shapeParams.uvScale;
+								break;
+							default:
+								se_assert_m(false, "Unknown ShapeOrientation!");
+								break;
+						}
 					}
 				}
 

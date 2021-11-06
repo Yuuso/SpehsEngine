@@ -30,6 +30,8 @@ namespace se
 			void setVertices(std::shared_ptr<VertexBuffer>) override;
 			void setIndices(std::shared_ptr<IndexBuffer>) override;
 
+			ShapeType getShapeType() const;
+
 		private:
 
 			void generateIndices(ShapeGenerator& _generator);

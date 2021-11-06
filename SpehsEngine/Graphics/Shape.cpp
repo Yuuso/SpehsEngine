@@ -101,5 +101,10 @@ namespace se
 
 			Primitive::setIndices(_generator.getIndexBuffer(getVertices()->size(), shapeType, getPrimitiveType()));
 		}
+
+		ShapeType Shape::getShapeType() const
+		{
+			return shapeType;
+		}
 	}
 }

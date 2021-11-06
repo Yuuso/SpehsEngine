@@ -229,17 +229,26 @@ namespace se
 			// Cone
 		};
 
+		// Coordinate system orientation for 2D shapes
+		enum class ShapeOrientation
+		{
+			XZ_Plane,
+			XY_Plane,
+		};
+
 		struct ShapeParameters
 		{
 			bool operator==(const ShapeParameters& _other) const
 			{
-				return resolution == _other.resolution
+				return orientation == _other.orientation
+					&& resolution == _other.resolution
 					&& uvScale == _other.uvScale
 					&& generateNormals == _other.generateNormals
 					&& invertNormals == _other.invertNormals
 					&& generateTangents == _other.generateTangents;
 			}
 
+			ShapeOrientation orientation = ShapeOrientation::XZ_Plane;
 			unsigned int resolution = 0;
 			float uvScale = 1.0f;
 			bool generateNormals = false;
