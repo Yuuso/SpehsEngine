@@ -112,7 +112,10 @@
     <ClCompile />
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="GUIElement.cpp" />
     <ClCompile Include="GUILib.cpp" />
+    <ClCompile Include="GUIShape.cpp" />
+    <ClCompile Include="GUIView.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
@@ -121,9 +124,18 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="GUIElement.h" />
+    <ClInclude Include="GUIUtilities.h" />
     <ClInclude Include="GUILib.h" />
+    <ClInclude Include="GUIStack.h" />
+    <ClInclude Include="GUIText.h" />
+    <ClInclude Include="Internal\InternalTypes.h" />
     <ClInclude Include="PrecompiledInclude.h" />
+    <ClInclude Include="GUIView.h" />
+    <ClInclude Include="GUIShape.h" />
     <ClInclude Include="stdafx.h" />
+    <ClInclude Include="Types.h" />
+    <ClInclude Include="Units.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
