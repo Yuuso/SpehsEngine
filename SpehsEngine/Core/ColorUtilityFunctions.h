@@ -43,12 +43,4 @@ namespace se
 	PRNG random called 1 time.
 	*/
 	Color randomBrightColor(rng::PRNG<unsigned>& _prng = rng::defaultRandom);
-
-	constexpr Color hexColor(const uint32_t _rgbaValue)
-	{
-		return Color((float)((_rgbaValue & 0xff000000) >> 24) / 255.0f,
-					 (float)((_rgbaValue & 0x00ff0000) >> 16) / 255.0f,
-					 (float)((_rgbaValue & 0x0000ff00) >> 8)  / 255.0f,
-					 (float)((_rgbaValue & 0x000000ff) >> 0)  / 255.0f);
-	}
 }
