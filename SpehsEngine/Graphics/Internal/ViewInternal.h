@@ -34,11 +34,14 @@ namespace se
 		private:
 
 			void viewDestroyed();
+			void calculateRenderSize(RenderContext& _renderContext);
 
 			boost::signals2::scoped_connection viewDestroyedConnection;
 
 			View* view;
 			bool wasAdded = true;
+			glm::vec2 renderSize;
+			glm::vec2 renderOffset;
 		};
 	}
 }

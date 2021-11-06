@@ -33,46 +33,21 @@ namespace se
 		{
 			se_assert(view);
 
+			calculateRenderSize(_renderContext);
+			view->onRenderSignal(renderSize);
+
 			static_assert(ViewClearFlag::ClearColor == BGFX_CLEAR_COLOR
 						  && ViewClearFlag::ClearDepth == BGFX_CLEAR_DEPTH
 						  && ViewClearFlag::ClearStencil == BGFX_CLEAR_STENCIL, "ViewClearFlags don't match bgfx values!");
 			bgfx::setViewClear(_renderContext.currentViewId, view->getClearFlags(), view->getClearColor(), 1.0f, 0);
 
-			float viewWidthPixels;
-			float viewHeightPixels;
-			if (view->size.type == ViewSizeType::Relative)
-			{
-				viewWidthPixels = _renderContext.currentWindow->getWidth() * view->size.width;
-				viewHeightPixels = _renderContext.currentWindow->getHeight() * view->size.height;
-			}
-			else
-			{
-				se_assert(view->size.type == ViewSizeType::Pixels);
-				viewWidthPixels = view->size.width;
-				viewHeightPixels = view->size.height;
-			}
-
-			float viewOffsetXPixels;
-			float viewOffsetYPixels;
-			if (view->offset.type == ViewSizeType::Relative)
-			{
-				viewOffsetXPixels = _renderContext.currentWindow->getWidth() * view->offset.width;
-				viewOffsetYPixels = _renderContext.currentWindow->getHeight() * view->offset.height;
-			}
-			else
-			{
-				se_assert(view->offset.type == ViewSizeType::Pixels);
-				viewOffsetXPixels = view->offset.width;
-				viewOffsetYPixels = view->offset.height;
-			}
-
 			// Camera
 			{
 				const glm::mat4 viewMatrix = view->camera.getViewMatrix();
-				const glm::mat4 projectionMatrix = view->camera.getProjectionMatrix(viewWidthPixels, viewHeightPixels);
+				const glm::mat4 projectionMatrix = view->camera.getProjectionMatrix(renderSize.x, renderSize.y);
 
 				bgfx::setViewTransform(_renderContext.currentViewId, &viewMatrix, &projectionMatrix);
-				bgfx::setViewRect(_renderContext.currentViewId, (uint16_t)viewOffsetXPixels, (uint16_t)viewOffsetYPixels, (uint16_t)viewWidthPixels, (uint16_t)viewHeightPixels);
+				bgfx::setViewRect(_renderContext.currentViewId, (uint16_t)renderOffset.x, (uint16_t)renderOffset.y, (uint16_t)renderSize.x, (uint16_t)renderSize.y);
 			}
 
 			bgfx::touch(_renderContext.currentViewId);
@@ -100,6 +75,32 @@ namespace se
 		const bool ViewInternal::wasDestroyed() const
 		{
 			return view == nullptr;
+		}
+		void ViewInternal::calculateRenderSize(RenderContext& _renderContext)
+		{
+			if (view->size.type == ViewSizeType::Relative)
+			{
+				renderSize.x = _renderContext.currentWindow->getWidth() * view->size.width;
+				renderSize.y = _renderContext.currentWindow->getHeight() * view->size.height;
+			}
+			else
+			{
+				se_assert(view->size.type == ViewSizeType::Pixels);
+				renderSize.x = view->size.width;
+				renderSize.y = view->size.height;
+			}
+
+			if (view->offset.type == ViewSizeType::Relative)
+			{
+				renderOffset.x = _renderContext.currentWindow->getWidth() * view->offset.width;
+				renderOffset.y = _renderContext.currentWindow->getHeight() * view->offset.height;
+			}
+			else
+			{
+				se_assert(view->offset.type == ViewSizeType::Pixels);
+				renderOffset.x = view->offset.width;
+				renderOffset.y = view->offset.height;
+			}
 		}
 	}
 }
