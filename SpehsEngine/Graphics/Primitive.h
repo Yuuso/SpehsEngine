@@ -18,8 +18,6 @@ namespace se
 {
 	namespace graphics
 	{
-		class Shader;
-
 		class Primitive
 		{
 		public:
@@ -78,6 +76,7 @@ namespace se
 			virtual void							setRotation(const glm::quat& _rotation);
 
 			virtual void							updateMatrices();
+			virtual void							removeFromScenes();
 
 		protected:
 

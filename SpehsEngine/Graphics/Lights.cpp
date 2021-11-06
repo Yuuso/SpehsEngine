@@ -1,7 +1,6 @@
 #include "stdafx.h"
 #include "SpehsEngine/Graphics/Lights.h"
 
-#include "SpehsEngine/Core/ColorUtilityFunctions.h"
 #include "SpehsEngine/Core/Constants.h"
 #include "SpehsEngine/Core/SE_Assert.h"
 #include "SpehsEngine/Math/Mathematics.h"
@@ -167,7 +166,7 @@ namespace se
 
 
 		DirectionalLight::DirectionalLight()
-			: DirectionalLight(hexColor(0xfbfbd3ff), 0.5f, { 0.1f, -1.0f, 0.1f })
+			: DirectionalLight(Color(0xfbfbd3ff), 0.5f, { 0.1f, -1.0f, 0.1f })
 		{
 		}
 		DirectionalLight::DirectionalLight(const Color& _color, const float _intensity, const glm::vec3& _direction)

@@ -54,6 +54,10 @@ namespace se
 			transformMatrices[0] = constructTransformationMatrix(getPosition(), getRotation(), getScale());
 			normalMatrices[0] = constructNormalMatrix(transformMatrices[0]);
 		}
+		void Primitive::removeFromScenes()
+		{
+			destroyedSignal();
+		}
 		bool Primitive::getVerticesChanged()
 		{
 			return checkBit(updateFlags, PrimitiveUpdateFlag::VerticesChanged) || (vertices ? vertices->getBufferChanged() : false);

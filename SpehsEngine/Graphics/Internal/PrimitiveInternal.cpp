@@ -30,6 +30,7 @@ namespace se
 		{
 			unregisterAsBufferObjectRenderer();
 			primitive = nullptr;
+			primitiveDestroyedConnection.disconnect();
 		}
 
 		bool PrimitiveInternal::operator==(const Primitive& _other) const
