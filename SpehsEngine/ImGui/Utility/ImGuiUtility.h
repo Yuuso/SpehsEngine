@@ -131,13 +131,13 @@ namespace ImGui
 		TextColored((ImVec4&)color, label.c_str());
 	}
 
-	inline ImVec2 SizeToScale(const std::shared_ptr<se::graphics::Texture>& _texture, const ImVec2 _size)
+	inline ImVec2 SizeToScale(const se::graphics::Texture& _texture, const ImVec2 _size)
 	{
-		return ImVec2(_size.x / float(_texture->getWidth()), _size.y / float(_texture->getHeight()));
+		return ImVec2(_size.x / float(_texture.getWidth()), _size.y / float(_texture.getHeight()));
 	}
 
 	inline void Image(
-		  const std::shared_ptr<se::graphics::Texture>& _texture
+		  const se::graphics::Texture& _texture
 		, const ImVec2 scale			= ImVec2(1.0f, 1.0f)
 		, const ImVec2 uv0				= ImVec2(0.0f, 0.0f)
 		, const ImVec2 uv1				= ImVec2(1.0f, 1.0f)
@@ -146,10 +146,10 @@ namespace ImGui
 		)
 	{
 		se::imgui::ImGuiUserTextureData userTextureData;
-		userTextureData.resourceHandle = _texture->getHandle();
+		userTextureData.resourceHandle = _texture.getHandle();
 		ImGui::Image(
 			userTextureData.id
-			, ImVec2(float(_texture->getWidth()), float(_texture->getHeight()))
+			, ImVec2(float(_texture.getWidth()) * scale.x, float(_texture.getHeight()) * scale.y)
 			, uv0
 			, uv1
 			, se::toImVec4(tintColor)
@@ -158,7 +158,7 @@ namespace ImGui
 	}
 
 	inline bool ImageButton(
-		const std::shared_ptr<se::graphics::Texture>& _texture
+		const se::graphics::Texture& _texture
 		, const ImVec2 scale				= ImVec2(1.0f, 1.0f)
 		, const ImVec2 uv0					= ImVec2(0.0f, 0.0f)
 		, const ImVec2 uv1					= ImVec2(1.0f, 1.0f)
@@ -168,10 +168,10 @@ namespace ImGui
 		)
 	{
 		se::imgui::ImGuiUserTextureData userTextureData;
-		userTextureData.resourceHandle = _texture->getHandle();
+		userTextureData.resourceHandle = _texture.getHandle();
 		return ImGui::ImageButton(
 			userTextureData.id
-			, ImVec2(float(_texture->getWidth()) * scale.x, float(_texture->getHeight()) * scale.y)
+			, ImVec2(float(_texture.getWidth()) * scale.x, float(_texture.getHeight()) * scale.y)
 			, uv0
 			, uv1
 			, framePadding
