@@ -35,7 +35,6 @@ namespace se
 				if (modelData->getName() == _name)
 					return modelData;
 			}
-			se_assert_m(false, "ModelData '" + _name + "' not found!");
 			return nullptr;
 		}
 	}

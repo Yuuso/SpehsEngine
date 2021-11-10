@@ -130,7 +130,6 @@ namespace se
 				if (texture->getName() == _name)
 					return texture;
 			}
-			se_assert_m(false, "Texture '" + std::string(_name) + "' not found!");
 			return nullptr;
 		}
 	}

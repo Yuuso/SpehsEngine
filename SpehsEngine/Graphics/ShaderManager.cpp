@@ -77,7 +77,6 @@ namespace se
 				if (shader->getName() == _name)
 					return shader;
 			}
-			se_assert_m(false, "Shader '" + std::string(_name) + "' not found!");
 			return nullptr;
 		}
 

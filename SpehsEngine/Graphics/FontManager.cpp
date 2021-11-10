@@ -42,7 +42,6 @@ namespace se
 				if (font->getName() == _name)
 					return font;
 			}
-			se_assert_m(false, "Font '" + std::string(_name) + "' not found!");
 			return nullptr;
 		}
 
