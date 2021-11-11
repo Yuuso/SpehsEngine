@@ -32,6 +32,7 @@ namespace se
 			void					setLineSpacing(const float _amount);
 			void					setStyle(const TextStyle& _style);
 			void					movePen(const int _movement);
+			void					setOrientation(ShapeOrientation _orientation);
 
 			void					insert(const std::string& _text);			// utf-8
 			void					insert(const std::u32string_view _text);	// utf-32
@@ -49,6 +50,9 @@ namespace se
 			const size_t			getPenPosition() const;
 			const float				getLineSpacing() const;
 			const TextDimensions&	getDimensions();
+			ShapeOrientation		getOrientation() const;
+
+			void					setDebugRendering(bool _value);
 
 		protected:
 
@@ -75,6 +79,8 @@ namespace se
 			float lineSpacing = 1.0f;
 			bool needDimensionsUpdate = false;
 			bool needBufferUpdate = false;
+			bool drawDebug = false;
+			ShapeOrientation orientation = ShapeOrientation::XZ_Plane;
 
 			boost::signals2::scoped_connection fontLoadedConnection;
 			boost::signals2::scoped_connection fontChangedConnection;

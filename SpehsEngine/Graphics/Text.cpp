@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "SpehsEngine/Graphics/Text.h"
 
+#include "SpehsEngine/Core/ColorUtilityFunctions.h"
 #include "SpehsEngine/Graphics/Font.h"
 #include "SpehsEngine/Graphics/Material.h"
 #include <codecvt>
@@ -13,7 +14,7 @@ namespace se
 		Text::Text()
 			: Primitive()
 		{
-			enableRenderFlags(RenderFlag::Blending | RenderFlag::CullBackFace);
+			enableRenderFlags(RenderFlag::Blending);
 			disableRenderFlags(RenderFlag::DepthTestLess);
 			setName("text");
 		}
@@ -72,6 +73,11 @@ namespace se
 					penPosition.positionInSegment += styledString[penPosition.segmentIndex]->text.size();
 				}
 			}
+		}
+		void Text::setOrientation(ShapeOrientation _orientation)
+		{
+			orientation = _orientation;
+			needBufferUpdate = true;
 		}
 		void Text::insert(const std::string& _text)
 		{
@@ -188,6 +194,10 @@ namespace se
 			}
 			return dimensions;
 		}
+		ShapeOrientation Text::getOrientation() const
+		{
+			return orientation;
+		}
 
 		void Text::fontChanged()
 		{
@@ -204,6 +214,11 @@ namespace se
 			// - to trigger primitive buffer change logic (because text buffers are generated after preRender)
 			Primitive::setVertices(nullptr);
 			Primitive::setIndices(nullptr);
+		}
+
+		void Text::setDebugRendering(bool _value)
+		{
+			drawDebug = _value;
 		}
 
 		void Text::generateBuffers()
@@ -239,41 +254,64 @@ namespace se
 
 			auto addQuad = [&](const glm::vec2& _offset, const glm::vec2& _size, const Rectangle& _coord, const Color& _color)
 				{
+					auto orient = [&](float _x, float _y) -> glm::vec3
+						{
+							switch (orientation)
+							{
+								case se::graphics::ShapeOrientation::XZ_Plane:
+									return glm::vec3(-_x, 0.0f, _y); // TODO: negative X for what reason?
+								case se::graphics::ShapeOrientation::XY_Plane:
+									return glm::vec3(_x, _y, 0.0f);
+							}
+							se_assert(false);
+							return {};
+						};
+					auto coords = [&](uint16_t _x, uint16_t _y) -> glm::vec2
+						{
+							return glm::vec2(static_cast<float>(_x) / atlasSize, static_cast<float>(_y) / atlasSize);
+						};
+
 					newVertices.grow(4);
 
-					newVertices.get<Position>(vertexIndex) = glm::vec3(cursor.x + _offset.x, 0.0f, cursor.y + _offset.y);
-					newVertices.get<TexCoord0>(vertexIndex) = glm::vec2((float)_coord.x / atlasSize, (float)_coord.y / atlasSize);
+					// CCW frontface
+
+					// Top Left
+					newVertices.get<Position>(vertexIndex) = orient(cursor.x + _offset.x, cursor.y + _offset.y);
+					newVertices.get<TexCoord0>(vertexIndex) = coords(_coord.x, _coord.y);
 					newVertices.get<Color0>(vertexIndex) = _color;
 					vertexIndex++;
 
-					newVertices.get<Position>(vertexIndex) = glm::vec3(cursor.x + _offset.x + _size.x, 0.0f, cursor.y + _offset.y);
-					newVertices.get<TexCoord0>(vertexIndex) = glm::vec2((float)(_coord.x + _coord.width) / atlasSize, (float)_coord.y / atlasSize);
+					// Bottom Left
+					newVertices.get<Position>(vertexIndex) = orient(cursor.x + _offset.x, cursor.y + _offset.y - _size.y);
+					newVertices.get<TexCoord0>(vertexIndex) = coords(_coord.x, _coord.y + _coord.height);
 					newVertices.get<Color0>(vertexIndex) = _color;
 					vertexIndex++;
 
-					newVertices.get<Position>(vertexIndex) = glm::vec3(cursor.x + _offset.x + _size.x, 0.0f, cursor.y + _offset.y + _size.y);
-					newVertices.get<TexCoord0>(vertexIndex) = glm::vec2((float)(_coord.x + _coord.width) / atlasSize, (float)(_coord.y + _coord.height) / atlasSize);
+					// Bottom Right
+					newVertices.get<Position>(vertexIndex) = orient(cursor.x + _offset.x + _size.x, cursor.y + _offset.y - _size.y);
+					newVertices.get<TexCoord0>(vertexIndex) = coords(_coord.x + _coord.width, _coord.y + _coord.height);
 					newVertices.get<Color0>(vertexIndex) = _color;
 					vertexIndex++;
 
-					newVertices.get<Position>(vertexIndex) = glm::vec3(cursor.x + _offset.x, 0.0f, cursor.y + _offset.y + _size.y);
-					newVertices.get<TexCoord0>(vertexIndex) = glm::vec2((float)_coord.x / atlasSize, (float)(_coord.y + _coord.height) / atlasSize);
+					// Top Right
+					newVertices.get<Position>(vertexIndex) = orient(cursor.x + _offset.x + _size.x, cursor.y + _offset.y);
+					newVertices.get<TexCoord0>(vertexIndex) = coords(_coord.x + _coord.width, _coord.y);
 					newVertices.get<Color0>(vertexIndex) = _color;
 					vertexIndex++;
 				};
 
-			//// Debug origin
-			//{
-			//	Rectangle& fillerRect = font->resourceData->fillerGlyph;
-			//	addQuad(glm::vec2(-3.0f, 0.0f), glm::vec2(7.0f, 1.0f), fillerRect, Color(1.0f, 0.0f, 0.0f));
-			//	addQuad(glm::vec2(0.0f, -3.0f), glm::vec2(1.0f, 7.0f), fillerRect, Color(1.0f, 0.0f, 0.0f));
-			//}
-			//// Debug dimensions
-			//{
-			//	const TextDimensions textDimensions = getDimensions();
-			//	Rectangle& fillerRect = font->resourceData->fillerGlyph;
-			//	addQuad(textDimensions.offsetFromOrigin, textDimensions.dimensions, fillerRect, Color(1.0f, 1.0f, 1.0f, 0.2f));
-			//}
+			if (drawDebug)
+			{
+				Rectangle& fillerRect = font->resourceData->fillerGlyph;
+
+				// Debug origin
+				addQuad(glm::vec2(-3.0f, 0.0f), glm::vec2(7.0f, 1.0f), fillerRect, Color(1.0f, 0.0f, 0.0f));
+				addQuad(glm::vec2(0.0f, 3.0f), glm::vec2(1.0f, 7.0f), fillerRect, Color(1.0f, 0.0f, 0.0f));
+
+				// Debug dimensions
+				const TextDimensions textDimensions = getDimensions();
+				addQuad(textDimensions.offsetFromOrigin, textDimensions.dimensions, fillerRect, randomBrightColor().withAlpha(0.2f));
+			}
 
 			for (auto&& segment : styledString)
 			{
@@ -299,7 +337,7 @@ namespace se
 					if (charCode == U'\n')
 					{
 						cursor.x = 0.0f;
-						cursor.y += font->resourceData->fontMetrics.height * lineSpacing;
+						cursor.y -= font->resourceData->fontMetrics.height * lineSpacing;
 						continue;
 					}
 					if (charCode == U'\t')
@@ -319,7 +357,7 @@ namespace se
 					static constexpr Rectangle emptyRect;
 					if (glyph.rectangle != emptyRect)
 					{
-						addQuad(glm::vec2(glyph.bearingX, -glyph.bearingY), glm::vec2(glyph.rectangle.width, glyph.rectangle.height), glyph.rectangle, style.color);
+						addQuad(glm::vec2(glyph.bearingX, glyph.bearingY), glm::vec2(glyph.rectangle.width, glyph.rectangle.height), glyph.rectangle, style.color);
 					}
 
 					cursor.x += glyph.advanceX * advanceMultiplier;
@@ -350,6 +388,7 @@ namespace se
 			}
 			Primitive::setIndices(newIndexBuffer);
 		}
+
 		void Text::updateDimensions()
 		{
 			std::shared_ptr<Material> primitiveMaterial = getMaterial();
@@ -392,10 +431,10 @@ namespace se
 						if (cursor.x == 0.0f && cursor.y == 0.0f)
 						{
 							// Empty first line
-							dimensions.offsetFromOrigin.y = std::min(dimensions.offsetFromOrigin.y, cursor.y - font->resourceData->fontMetrics.ascent);
+							dimensions.offsetFromOrigin.y = static_cast<float>(font->resourceData->fontMetrics.ascent);
 						}
 						cursor.x = 0.0f;
-						cursor.y += font->resourceData->fontMetrics.height * lineSpacing;
+						cursor.y -= font->resourceData->fontMetrics.height * lineSpacing;
 						continue;
 					}
 					if (charCode == U'\t')
@@ -411,17 +450,20 @@ namespace se
 
 					GlyphMetrics& glyph = font->resourceData->glyphMap[charCode];
 
-					dimensions.offsetFromOrigin.x = std::min(dimensions.offsetFromOrigin.x, cursor.x + glyph.bearingX);
-					dimensions.offsetFromOrigin.y = std::min(dimensions.offsetFromOrigin.y, cursor.y - glyph.bearingY);
+					if (cursor.x == 0.0f && cursor.y == 0.0f)
+					{
+						dimensions.offsetFromOrigin.x = static_cast<float>(glyph.bearingX);
+						dimensions.offsetFromOrigin.y = static_cast<float>(glyph.bearingY);
+					}
 
 					cursor.x += glyph.advanceX * advanceMultiplier;
 
 					dimensions.dimensions.x = std::max(dimensions.dimensions.x, cursor.x);
-					dimensions.dimensions.y = std::max(dimensions.dimensions.y, cursor.y - glyph.bearingY + glyph.rectangle.height);
+					dimensions.dimensions.y = std::max(dimensions.dimensions.y, -((cursor.y + glyph.bearingY) - glyph.rectangle.height));
 				}
 			}
 			dimensions.dimensions.x -= dimensions.offsetFromOrigin.x;
-			dimensions.dimensions.y -= dimensions.offsetFromOrigin.y;
+			dimensions.dimensions.y += dimensions.offsetFromOrigin.y;
 			needDimensionsUpdate = false;
 		}
 	}
