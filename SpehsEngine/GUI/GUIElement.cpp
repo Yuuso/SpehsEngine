@@ -10,26 +10,30 @@ namespace se
 	{
 		glm::vec2 GUIElement::getAnchorPositionOffset()
 		{
-			// Assuming default is center!
 			// TODO: assuming self unitype
-			return {(getSize().x * 0.5f) - (getSize().x * getAnchor().x),
-					(getSize().y * 0.5f) - (getSize().y * getAnchor().y) };
+			return {getTransformOffset().x - (getSize().x * getAnchor().x),
+					getTransformOffset().y - (getSize().y * getAnchor().y) };
 		}
 		glm::vec2 GUIElement::getAlignmentPositionOffset()
 		{
 			// TODO: assuming parent unitype
 			if (parent)
 			{
-				// Assuming default is center middle!
-				return {(-parent->getSize().x * 0.5f) + (parent->getSize().x * getAlignment().x),
-						(-parent->getSize().y * 0.5f) + (parent->getSize().y * getAlignment().y) };
+				return {-parent->getTransformOffset().x + (parent->getSize().x * getAlignment().x),
+						-parent->getTransformOffset().y + (parent->getSize().y * getAlignment().y) };
 			}
-			else
+			// TODO
+			return {};
+		}
+		glm::vec2 GUIElement::getMarginPaddingPositionOffset()
+		{
+			// TODO: all kinds of stuff...
+			const glm::vec2 marginOffset = { margin.left, margin.top };
+			if (parent)
 			{
-				// Default is top left
-				// TODO
-				return {};
+				return marginOffset + glm::vec2(parent->padding.left, parent->padding.top);
 			}
+			return marginOffset;
 		}
 
 		void GUIElement::update(UpdateContext& _context)
@@ -43,16 +47,51 @@ namespace se
 
 				const glm::vec2 anchorOffset = getAnchorPositionOffset();
 				const glm::vec2 alignmentOffset = getAlignmentPositionOffset();
+				const glm::vec2 marginPaddingOffset = getMarginPaddingPositionOffset();
 
 				const glm::mat4 localTransform =
 					constructTransformationMatrix(
-						glm::vec3(getPosition().x + anchorOffset.x + alignmentOffset.x, -(getPosition().y + anchorOffset.y + alignmentOffset.y), zValue),
+						glm::vec3(getPosition().x + anchorOffset.x + alignmentOffset.x + marginPaddingOffset.x, -(getPosition().y + anchorOffset.y + alignmentOffset.y + marginPaddingOffset.y), zValue),
 						glm::rotate(glm::identity<glm::quat>(), getRotation(), glm::vec3(0.0f, 0.0f, 1.0f)),
 						glm::vec3(getScale().x, getScale().y, 1.0f));
 				if (parent)
 					globalTrasform = parent->globalTrasform * localTransform;
 				else
 					globalTrasform = localTransform;
+
+				globalVisible = getVisible() && (parent ? parent->globalVisible : true);
+
+				globalScissor.enabled = false;
+				if (clipping)
+				{
+					glm::vec3 globalPosition;
+					glm::vec3 globalScale;
+					decomposeTransformationMatrix(globalTrasform, &globalPosition, nullptr, &globalScale);
+
+					globalScissor.enabled = true;
+					globalScissor.x = static_cast<uint16_t>(globalPosition.x);
+					globalScissor.y = static_cast<uint16_t>(globalPosition.y);
+					globalScissor.width = static_cast<uint16_t>(getSize().x * globalScale.x);
+					globalScissor.height = static_cast<uint16_t>(getSize().y * globalScale.y);
+				}
+				if (parent && parent->globalScissor.enabled)
+				{
+					if (clipping)
+					{
+						glm::vec3 globalPosition;
+						glm::vec3 globalScale;
+						decomposeTransformationMatrix(parent->globalTrasform, &globalPosition, nullptr, &globalScale);
+
+						globalScissor.x = glm::max(globalScissor.x, static_cast<uint16_t>(globalPosition.x));
+						globalScissor.y = glm::max(globalScissor.y, static_cast<uint16_t>(globalPosition.y));
+						globalScissor.width = glm::min(globalScissor.width, static_cast<uint16_t>(getSize().x * globalScale.x));
+						globalScissor.height = glm::min(globalScissor.height, static_cast<uint16_t>(getSize().y * globalScale.y));
+					}
+					else
+					{
+						globalScissor = parent->globalScissor;
+					}
+				}
 			}
 
 			elementUpdate(_context);
@@ -111,6 +150,7 @@ namespace se
 
 		bool GUIElement::hitTest(const glm::vec2& _viewPoint)
 		{
+			se_assert(false);
 			return false;
 		}
 
@@ -155,6 +195,10 @@ namespace se
 		{
 			return alignment;
 		}
+		bool GUIElement::getVisible() const
+		{
+			return visible;
+		}
 
 
 		void GUIElement::setPosition(const GUIVec2& _position)
@@ -195,6 +239,11 @@ namespace se
 		void GUIElement::setPadding(const Padding& _padding)
 		{
 			padding = _padding;
+			enableBit(updateFlags, GUIElementUpdateFlag::TreeUpdateNeeded);
+		}
+		void GUIElement::setVisible(bool _value)
+		{
+			visible = _value;
 			enableBit(updateFlags, GUIElementUpdateFlag::TreeUpdateNeeded);
 		}
 

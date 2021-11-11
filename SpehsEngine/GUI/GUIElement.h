@@ -37,6 +37,7 @@ namespace se
 			const Padding&							getPadding() const;
 			const GUIVec2&							getAnchor() const;
 			const GUIVec2&							getAlignment() const;
+			bool									getVisible() const;
 
 
 			void									setPosition(const GUIVec2& _position);
@@ -47,6 +48,7 @@ namespace se
 			void									setClipping(bool _value);
 			void									setMargin(const Margin& _margin);
 			void									setPadding(const Padding& _padding);
+			void									setVisible(bool _value);
 
 			void									setAnchor(const GUIVec2& _anchor);
 			void									setAnchor(VerticalAlignment _vertical, HorizontalAlignment _horizontal);
@@ -67,9 +69,12 @@ namespace se
 			virtual void							onRemovedParent();
 			virtual void							onRemovedFromView() {}
 			virtual void							addToView() {}
+			virtual glm::vec2						getTransformOffset() { return {}; }
 
 			GUIElementUpdateFlagsType				updateFlags		= 0;
 			glm::mat4								globalTrasform	= glm::identity<glm::mat4>();
+			graphics::Scissor						globalScissor;
+			bool									globalVisible	= true;
 
 		private:
 
@@ -78,6 +83,7 @@ namespace se
 
 			glm::vec2								getAnchorPositionOffset();
 			glm::vec2								getAlignmentPositionOffset();
+			glm::vec2								getMarginPaddingPositionOffset();
 
 			GUIElement*								parent			= nullptr;
 			std::vector<GUIElement*>				children;
@@ -92,6 +98,7 @@ namespace se
 			Padding									padding			= Padding(0.0f);
 			GUIVec2									anchor			= GUIVec2({ 0.0f, 0.0f }, GUIUnitType::Self);
 			GUIVec2									alignment		= GUIVec2({ 0.0f, 0.0f }, GUIUnitType::Self);
+			bool									visible			= true;
 		};
 	}
 }

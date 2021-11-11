@@ -37,14 +37,20 @@ namespace se
 			}
 			if (checkBit(updateFlags, GUIElementUpdateFlag::TreeUpdateNeeded))
 			{
-				glm::vec3 globalPosition;
-				glm::quat globalRotation;
-				glm::vec3 globalScale;
-				decomposeTransformationMatrix(globalTrasform, &globalPosition, &globalRotation, &globalScale);
+				shape.setRenderState(globalVisible);
+				if (globalVisible)
+				{
+					glm::vec3 globalPosition;
+					glm::quat globalRotation;
+					glm::vec3 globalScale;
+					decomposeTransformationMatrix(globalTrasform, &globalPosition, &globalRotation, &globalScale);
 
-				shape.setPosition(globalPosition);
-				shape.setRotation(globalRotation);
-				shape.setScale(globalScale * glm::vec3(getSize().value(), 1.0f));
+					shape.setPosition(globalPosition);
+					shape.setRotation(globalRotation);
+					shape.setScale(globalScale * glm::vec3(getSize().value(), 1.0f));
+
+					shape.setScissor(globalScissor);
+				}
 			}
 		}
 		void GUIShape::onAddedParent()
@@ -67,10 +73,9 @@ namespace se
 			enableBit(updateFlags, GUIElementUpdateFlag::PrimitiveAddNeeded);
 			GUIElement::addToView();
 		}
-
-		bool GUIShape::hitTest(const glm::vec2& _viewPoint)
+		glm::vec2 GUIShape::getTransformOffset()
 		{
-			return false;
+			return { getSize().x * 0.5f, getSize().y * 0.5f };
 		}
 
 
@@ -86,10 +91,6 @@ namespace se
 		{
 			return shape.getMaterial();
 		}
-		bool GUIShape::getVisible() const
-		{
-			return shape.getRenderState();
-		}
 
 
 		void GUIShape::setShapeType(ShapeType _type)
@@ -104,10 +105,6 @@ namespace se
 		{
 			shape.setMaterial(_material);
 			disableBit(updateFlags, GUIElementUpdateFlag::MaterialUpdateNeeded);
-		}
-		void GUIShape::setVisible(bool _visible)
-		{
-			shape.setRenderState(_visible);
 		}
 	}
 }
