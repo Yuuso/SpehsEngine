@@ -33,7 +33,6 @@ namespace se
 			friend class PrimitiveInternal;
 			friend class Batch;
 			friend class ShaderManager;
-			friend class DefaultShaderManager;
 
 			static std::shared_ptr<ResourceData> createResource(const std::string _vertexShaderPath, const std::string _fragmentShaderPath);
 			static std::shared_ptr<ResourceData> createResourceFromHandles(ResourceHandle _vertexShaderHandle, ResourceHandle _fragmentShaderHandle);

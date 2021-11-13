@@ -392,14 +392,18 @@ namespace se
 		void Text::updateDimensions()
 		{
 			std::shared_ptr<Material> primitiveMaterial = getMaterial();
-			se_assert(primitiveMaterial);
 			if (!primitiveMaterial)
+			{
+				log::warning("Text::updateDimensions: Missing material!");
 				return;
+			}
 
 			std::shared_ptr<Font> font = primitiveMaterial->getFont(0);
-			se_assert(font && font->ready());
 			if (!font || !font->ready())
+			{
+				log::warning("Text::updateDimensions: Missing font!");
 				return;
+			}
 
 			dimensions = TextDimensions();
 
