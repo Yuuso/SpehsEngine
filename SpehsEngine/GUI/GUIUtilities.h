@@ -7,8 +7,7 @@ namespace se
 {
 	namespace gui
 	{
-		// TODO: Move away from here I think....
-		inline GUIUnit alignmentToUnit(VerticalAlignment _alignment)
+		inline GUIUnit anchorToUnit(VerticalAlignment _alignment)
 		{
 			switch (_alignment)
 			{
@@ -19,13 +18,36 @@ namespace se
 			se_assert(false);
 			return GUIUnit{};
 		}
-		inline GUIUnit alignmentToUnit(HorizontalAlignment _alignment)
+		inline GUIUnit anchorToUnit(HorizontalAlignment _alignment)
 		{
 			switch (_alignment)
 			{
 				case HorizontalAlignment::Left:		return GUIUnit(0.0f, GUIUnitType::Self);
 				case HorizontalAlignment::Center:	return GUIUnit(0.5f, GUIUnitType::Self);
 				case HorizontalAlignment::Right:	return GUIUnit(1.0f, GUIUnitType::Self);
+			}
+			se_assert(false);
+			return GUIUnit{};
+		}
+
+		inline GUIUnit alignmentToUnit(VerticalAlignment _alignment)
+		{
+			switch (_alignment)
+			{
+				case VerticalAlignment::Top:		return GUIUnit(0.0f, GUIUnitType::Parent);
+				case VerticalAlignment::Middle:		return GUIUnit(0.5f, GUIUnitType::Parent);
+				case VerticalAlignment::Bottom:		return GUIUnit(1.0f, GUIUnitType::Parent);
+			}
+			se_assert(false);
+			return GUIUnit{};
+		}
+		inline GUIUnit alignmentToUnit(HorizontalAlignment _alignment)
+		{
+			switch (_alignment)
+			{
+				case HorizontalAlignment::Left:		return GUIUnit(0.0f, GUIUnitType::Parent);
+				case HorizontalAlignment::Center:	return GUIUnit(0.5f, GUIUnitType::Parent);
+				case HorizontalAlignment::Right:	return GUIUnit(1.0f, GUIUnitType::Parent);
 			}
 			se_assert(false);
 			return GUIUnit{};

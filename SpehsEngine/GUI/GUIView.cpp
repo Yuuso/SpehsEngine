@@ -8,8 +8,9 @@ namespace se
 	{
 		static constexpr float cameraZPos = static_cast<float>(std::numeric_limits<ZIndex>::max()) + 1.0f;
 
-		GUIView::GUIView()
+		GUIView::GUIView(graphics::ShaderManager& _shaderManager, graphics::TextureManager& _textureManager, graphics::FontManager& _fontManager)
 			: view(scene, camera)
+			, materialManager(_shaderManager, _textureManager, _fontManager)
 		{
 			view.setClearFlags(se::graphics::ViewClearFlag::ClearDepth);
 			camera.setUp({ 0.0f, 1.0f, 0.0f });
@@ -28,12 +29,15 @@ namespace se
 		{
 			camera.setPosition(glm::vec3{ _renderSize.x * 0.5f, -_renderSize.y * 0.5, cameraZPos });
 
-			UpdateContext context(*this);
 			for (auto&& element : rootElements)
 			{
 				se_assert(!element->parent);
-				element->update(context);
+				element->preUpdate();
 			}
+
+			UpdateContext context{ view.getScene(), materialManager, _renderSize };
+			for (auto&& element : rootElements)
+				element->update(context);
 		}
 
 		void GUIView::add(GUIElement& _element)

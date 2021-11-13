@@ -64,12 +64,15 @@ namespace se
 
 			friend class GUIView;
 
+			virtual void							elementPreUpdate() {}
 			virtual void							elementUpdate(UpdateContext&) {}
 			virtual void							onAddedParent();
 			virtual void							onRemovedParent();
 			virtual void							onRemovedFromView() {}
 			virtual void							addToView() {}
-			virtual glm::vec2						getTransformOffset() { return {}; }
+			virtual GUIVec2							getTransformOffset() { return {}; }
+			float									unitToPixels(GUIUnit _unit, const glm::vec2& _viewSize);
+			glm::vec2								unitToPixels(const GUIVec2& _vec, const glm::vec2& _viewSize);
 
 			GUIElementUpdateFlagsType				updateFlags		= 0;
 			glm::mat4								globalTrasform	= glm::identity<glm::mat4>();
@@ -78,12 +81,13 @@ namespace se
 
 		private:
 
+			virtual void							preUpdate() final;
 			virtual void							update(UpdateContext& _context) final;
 			virtual void							removeFromView() final;
 
-			glm::vec2								getAnchorPositionOffset();
-			glm::vec2								getAlignmentPositionOffset();
-			glm::vec2								getMarginPaddingPositionOffset();
+			glm::vec2								getAnchorPositionOffset(const glm::vec2& _viewSize);
+			glm::vec2								getAlignmentPositionOffset(const glm::vec2& _viewSize);
+			glm::vec2								getMarginPaddingPositionOffset(const glm::vec2& _viewSize);
 
 			GUIElement*								parent			= nullptr;
 			std::vector<GUIElement*>				children;
@@ -97,7 +101,7 @@ namespace se
 			Margin									margin			= Margin(0.0f);
 			Padding									padding			= Padding(0.0f);
 			GUIVec2									anchor			= GUIVec2({ 0.0f, 0.0f }, GUIUnitType::Self);
-			GUIVec2									alignment		= GUIVec2({ 0.0f, 0.0f }, GUIUnitType::Self);
+			GUIVec2									alignment		= GUIVec2({ 0.0f, 0.0f }, GUIUnitType::Parent);
 			bool									visible			= true;
 		};
 	}

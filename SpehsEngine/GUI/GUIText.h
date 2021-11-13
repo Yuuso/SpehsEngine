@@ -21,7 +21,6 @@ namespace se
 
 
 			const Color&							getColor() const;
-			std::shared_ptr<graphics::Material>		getMaterial() const;
 
 			const size_t							length() const;
 			std::string								getPlainText() const;
@@ -30,7 +29,7 @@ namespace se
 
 
 			void									setColor(const Color& _color);
-			void									setMaterial(std::shared_ptr<graphics::Material> _material);
+			void									setFont(std::string_view _font);
 
 			void									setLineSpacing(const float _amount);
 			void									movePen(const int _movement);
@@ -40,18 +39,21 @@ namespace se
 
 		protected:
 
+			virtual void							elementPreUpdate() override;
 			virtual void							elementUpdate(UpdateContext& _context) override;
 			virtual void							onAddedParent() override;
 			virtual void							onRemovedParent() override;
 			virtual void							onRemovedFromView() override;
 			virtual void							addToView() override;
-			virtual glm::vec2						getTransformOffset() override;
+			virtual GUIVec2							getTransformOffset() override;
 
 		private:
 
 			void									updateDimensions();
 
 			graphics::Text text;
+			std::string fontName;
+			bool needUpdateDimensions = false;
 		};
 	}
 }

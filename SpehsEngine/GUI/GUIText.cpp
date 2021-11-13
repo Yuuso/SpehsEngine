@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "SpehsEngine/GUI/GUIText.h"
 
+#include "SpehsEngine/Graphics/Scene.h"
 #include "SpehsEngine/GUI/GUIView.h"
 #include "SpehsEngine/Math/GLMMatrixUtilityFunctions.h"
 
@@ -17,17 +18,20 @@ namespace se
 			enableBit(updateFlags, GUIElementUpdateFlag::MaterialUpdateNeeded);
 		}
 
-
+		void GUIText::elementPreUpdate()
+		{
+			if (needUpdateDimensions)
+				updateDimensions();
+		}
 		void GUIText::elementUpdate(UpdateContext& _context)
 		{
 			if (checkBit(updateFlags, GUIElementUpdateFlag::MaterialUpdateNeeded))
 			{
-				// TODO
-				se_assert(false);
+				text.setMaterial(_context.materialManager.createFontMaterial(fontName));
 			}
 			if (checkBit(updateFlags, GUIElementUpdateFlag::PrimitiveAddNeeded))
 			{
-				_context.view.getView().getScene().add(text);
+				_context.scene.add(text);
 			}
 			if (checkBit(updateFlags, GUIElementUpdateFlag::TreeUpdateNeeded))
 			{
@@ -48,14 +52,9 @@ namespace se
 			}
 		}
 
-
 		const Color& GUIText::getColor() const
 		{
 			return text.getColor();
-		}
-		std::shared_ptr<graphics::Material> GUIText::getMaterial() const
-		{
-			return text.getMaterial();
 		}
 
 		const size_t GUIText::length() const
@@ -80,10 +79,10 @@ namespace se
 		{
 			text.setColor(_color);
 		}
-		void GUIText::setMaterial(std::shared_ptr<graphics::Material> _material)
+		void GUIText::setFont(std::string_view _font)
 		{
-			text.setMaterial(_material);
-			disableBit(updateFlags, GUIElementUpdateFlag::MaterialUpdateNeeded);
+			fontName = _font;
+			enableBit(updateFlags, GUIElementUpdateFlag::MaterialUpdateNeeded);
 		}
 
 		void GUIText::setLineSpacing(const float _amount)
@@ -109,9 +108,15 @@ namespace se
 
 		void GUIText::updateDimensions()
 		{
-			// TODO: performance?
+			auto material = text.getMaterial();
+			if (!material || !material->getFont() || !material->getFont()->ready())
+			{
+				needUpdateDimensions = true;
+				return;
+			}
 			const TextDimensions& dims = text.getDimensions();
 			setSize(dims.dimensions);
+			needUpdateDimensions = false;
 		}
 
 		void GUIText::onAddedParent()
@@ -134,9 +139,9 @@ namespace se
 			enableBit(updateFlags, GUIElementUpdateFlag::PrimitiveAddNeeded);
 			GUIElement::addToView();
 		}
-		glm::vec2 GUIText::getTransformOffset()
+		GUIVec2 GUIText::getTransformOffset()
 		{
-			return { -text.getDimensions().offsetFromOrigin.x, text.getDimensions().offsetFromOrigin.y };
+			return GUIVec2(GUIUnit(text.getDimensions().offsetFromOrigin.x, GUIUnitType::Pixels), GUIUnit(text.getDimensions().offsetFromOrigin.y, GUIUnitType::Pixels));
 		}
 	}
 }

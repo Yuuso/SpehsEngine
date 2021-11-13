@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "SpehsEngine/GUI/GUIShape.h"
 
+#include "SpehsEngine/Graphics/Scene.h"
 #include "SpehsEngine/GUI/GUIView.h"
 #include "SpehsEngine/Math/GLMMatrixUtilityFunctions.h"
 
@@ -28,12 +29,18 @@ namespace se
 		{
 			if (checkBit(updateFlags, GUIElementUpdateFlag::MaterialUpdateNeeded))
 			{
-				// TODO
-				se_assert(false);
+				if (!textureName.empty())
+				{
+					shape.setMaterial(_context.materialManager.createTextureMaterial(textureName));
+				}
+				else
+				{
+					shape.setMaterial(_context.materialManager.createColorMaterial());
+				}
 			}
 			if (checkBit(updateFlags, GUIElementUpdateFlag::PrimitiveAddNeeded))
 			{
-				_context.view.getView().getScene().add(shape);
+				_context.scene.add(shape);
 			}
 			if (checkBit(updateFlags, GUIElementUpdateFlag::TreeUpdateNeeded))
 			{
@@ -47,7 +54,7 @@ namespace se
 
 					shape.setPosition(globalPosition);
 					shape.setRotation(globalRotation);
-					shape.setScale(globalScale * glm::vec3(getSize().value(), 1.0f));
+					shape.setScale(globalScale * glm::vec3(unitToPixels(getSize(), _context.viewSize), 1.0f));
 
 					shape.setScissor(globalScissor);
 				}
@@ -73,11 +80,10 @@ namespace se
 			enableBit(updateFlags, GUIElementUpdateFlag::PrimitiveAddNeeded);
 			GUIElement::addToView();
 		}
-		glm::vec2 GUIShape::getTransformOffset()
+		GUIVec2 GUIShape::getTransformOffset()
 		{
-			return { getSize().x * 0.5f, getSize().y * 0.5f };
+			return GUIVec2(GUIUnit(getSize().x.value * 0.5f, getSize().x.type), GUIUnit(getSize().y.value * 0.5f, getSize().y.type));
 		}
-
 
 		ShapeType GUIShape::getShapeType() const
 		{
@@ -87,11 +93,6 @@ namespace se
 		{
 			return shape.getColor();
 		}
-		std::shared_ptr<Material> GUIShape::getMaterial() const
-		{
-			return shape.getMaterial();
-		}
-
 
 		void GUIShape::setShapeType(ShapeType _type)
 		{
@@ -101,10 +102,10 @@ namespace se
 		{
 			shape.setColor(_color);
 		}
-		void GUIShape::setMaterial(std::shared_ptr<Material> _material)
+		void GUIShape::setTexture(std::string_view _name)
 		{
-			shape.setMaterial(_material);
-			disableBit(updateFlags, GUIElementUpdateFlag::MaterialUpdateNeeded);
+			textureName = _name;
+			enableBit(updateFlags, GUIElementUpdateFlag::MaterialUpdateNeeded);
 		}
 	}
 }

@@ -8,34 +8,138 @@ namespace se
 {
 	namespace gui
 	{
-		glm::vec2 GUIElement::getAnchorPositionOffset()
+		glm::vec2 GUIElement::getAnchorPositionOffset(const glm::vec2& _viewSize)
 		{
-			// TODO: assuming self unitype
-			return {getTransformOffset().x - (getSize().x * getAnchor().x),
-					getTransformOffset().y - (getSize().y * getAnchor().y) };
+			const glm::vec2 pixelOffset = unitToPixels(getTransformOffset(), _viewSize);
+			const glm::vec2 pixelAnchor = unitToPixels(getAnchor(), _viewSize);
+			return { pixelOffset.x - pixelAnchor.x, pixelOffset.y - pixelAnchor.y };
 		}
-		glm::vec2 GUIElement::getAlignmentPositionOffset()
+		glm::vec2 GUIElement::getAlignmentPositionOffset(const glm::vec2& _viewSize)
 		{
-			// TODO: assuming parent unitype
-			if (parent)
-			{
-				return {-parent->getTransformOffset().x + (parent->getSize().x * getAlignment().x),
-						-parent->getTransformOffset().y + (parent->getSize().y * getAlignment().y) };
-			}
-			// TODO
-			return {};
+			const glm::vec2 pixelOffset = parent ? -parent->unitToPixels(parent->getTransformOffset(), _viewSize) : glm::vec2();
+			const glm::vec2 pixelAlignment = unitToPixels(getAlignment(), _viewSize);
+			return { pixelOffset.x + pixelAlignment.x, pixelOffset.y + pixelAlignment.y };
 		}
-		glm::vec2 GUIElement::getMarginPaddingPositionOffset()
+		glm::vec2 GUIElement::getMarginPaddingPositionOffset(const glm::vec2& _viewSize)
 		{
 			// TODO: all kinds of stuff...
-			const glm::vec2 marginOffset = { margin.left, margin.top };
-			if (parent)
-			{
-				return marginOffset + glm::vec2(parent->padding.left, parent->padding.top);
-			}
-			return marginOffset;
+			return unitToPixels(GUIVec2(margin.left, margin.top), _viewSize) + (parent ? parent->unitToPixels(GUIVec2(parent->padding.left, parent->padding.top), _viewSize) : glm::vec2());
 		}
 
+		float GUIElement::unitToPixels(GUIUnit _unit, const glm::vec2& _viewSize)
+		{
+			GUIUnitType type = GUIUnitType::Undefined;
+			switch (_unit.type)
+			{
+				default:
+					type = _unit.type;
+					break;
+
+				case GUIUnitType::Undefined:
+					log::warning("Undefined GUIUnitType (assuming pixels)");
+					type = GUIUnitType::Pixels;
+					break;
+
+				case se::gui::GUIUnitType::Self:
+					se_assert_m(false, "GUIUnitType Self width/height not specified! (assuming width)");
+					type = GUIUnitType::SelfWidth;
+					break;
+
+				case se::gui::GUIUnitType::Parent:
+					se_assert_m(false, "GUIUnitType Parent width/height not specified! (assuming width)");
+					type = GUIUnitType::ParentWidth;
+					break;
+
+				case se::gui::GUIUnitType::View:
+					se_assert_m(false, "GUIUnitType View width/height not specified! (assuming width)");
+					type = GUIUnitType::ViewWidth;
+					break;
+			}
+
+			auto parentW = [&]
+			{
+				if (parent)
+				{
+					auto result = parent->unitToPixels(parent->getSize(), _viewSize);
+					return result.x;
+				}
+				return _viewSize.x;
+			};
+			auto parentH = [&]
+			{
+				if (parent)
+				{
+					auto result = parent->unitToPixels(parent->getSize(), _viewSize);
+					return result.y;
+				}
+				return _viewSize.y;
+			};
+
+			switch (type)
+			{
+				default:
+					se_assert_m(false, "Unknown unit type!");
+					return _unit.value;
+
+				case GUIUnitType::Pixels:					return _unit.value;
+
+				case se::gui::GUIUnitType::SelfWidth:		return unitToPixels(getSize(), _viewSize).x * _unit.value;
+				case se::gui::GUIUnitType::SelfHeight:		return unitToPixels(getSize(), _viewSize).y * _unit.value;
+				case se::gui::GUIUnitType::SelfMin:			return glm::min(unitToPixels(getSize(), _viewSize).x, unitToPixels(getSize(), _viewSize).y) * _unit.value;
+				case se::gui::GUIUnitType::SelfMax:			return glm::max(unitToPixels(getSize(), _viewSize).x, unitToPixels(getSize(), _viewSize).y) * _unit.value;
+
+				case se::gui::GUIUnitType::ParentWidth:		return parentW() * _unit.value;
+				case se::gui::GUIUnitType::ParentHeight:	return parentH() * _unit.value;
+				case se::gui::GUIUnitType::ParentMin:		return glm::min(parentW(), parentH()) * _unit.value;
+				case se::gui::GUIUnitType::ParentMax:		return glm::max(parentW(), parentH()) * _unit.value;
+
+				case se::gui::GUIUnitType::ViewWidth:		return _viewSize.x * _unit.value;
+				case se::gui::GUIUnitType::ViewHeight:		return _viewSize.y * _unit.value;
+				case se::gui::GUIUnitType::ViewMin:			return glm::min(_viewSize.x, _viewSize.y) * _unit.value;
+				case se::gui::GUIUnitType::ViewMax:			return glm::max(_viewSize.x, _viewSize.y) * _unit.value;
+			}
+		}
+		glm::vec2 GUIElement::unitToPixels(const GUIVec2& _vec, const glm::vec2& _viewSize)
+		{
+			GUIUnitType xType = _vec.x.type;
+			switch (xType)
+			{
+				default:
+					break;
+				case GUIUnitType::Self:
+					xType = GUIUnitType::SelfWidth;
+					break;
+				case GUIUnitType::Parent:
+					xType = GUIUnitType::ParentWidth;
+					break;
+				case GUIUnitType::View:
+					xType = GUIUnitType::ViewWidth;
+					break;
+			}
+			GUIUnitType yType = _vec.y.type;
+			switch (yType)
+			{
+				default:
+					break;
+				case GUIUnitType::Self:
+					yType = GUIUnitType::SelfHeight;
+					break;
+				case GUIUnitType::Parent:
+					yType = GUIUnitType::ParentHeight;
+					break;
+				case GUIUnitType::View:
+					yType = GUIUnitType::ViewHeight;
+					break;
+			}
+			return { unitToPixels(GUIUnit(_vec.x.value, xType), _viewSize), unitToPixels(GUIUnit(_vec.y.value, yType), _viewSize) };
+		}
+
+		void GUIElement::preUpdate()
+		{
+			elementPreUpdate();
+			for (auto&& child : children)
+				child->preUpdate();
+		}
 		void GUIElement::update(UpdateContext& _context)
 		{
 			if (parent && checkBit(parent->updateFlags, GUIElementUpdateFlag::TreeUpdateNeeded))
@@ -45,13 +149,15 @@ namespace se
 			{
 				const float zValue = static_cast<float>(1 + getZIndex());
 
-				const glm::vec2 anchorOffset = getAnchorPositionOffset();
-				const glm::vec2 alignmentOffset = getAlignmentPositionOffset();
-				const glm::vec2 marginPaddingOffset = getMarginPaddingPositionOffset();
+				const glm::vec2 anchorOffset = getAnchorPositionOffset(_context.viewSize);
+				const glm::vec2 alignmentOffset = getAlignmentPositionOffset(_context.viewSize);
+				const glm::vec2 marginPaddingOffset = getMarginPaddingPositionOffset(_context.viewSize);
+				const glm::vec2 pixelPosition = unitToPixels(getPosition(), _context.viewSize);
+				const glm::vec2 pixelSize = unitToPixels(getSize(), _context.viewSize);
 
 				const glm::mat4 localTransform =
 					constructTransformationMatrix(
-						glm::vec3(getPosition().x + anchorOffset.x + alignmentOffset.x + marginPaddingOffset.x, -(getPosition().y + anchorOffset.y + alignmentOffset.y + marginPaddingOffset.y), zValue),
+						glm::vec3(pixelPosition.x + anchorOffset.x + alignmentOffset.x + marginPaddingOffset.x, -(pixelPosition.y + anchorOffset.y + alignmentOffset.y + marginPaddingOffset.y), zValue),
 						glm::rotate(glm::identity<glm::quat>(), getRotation(), glm::vec3(0.0f, 0.0f, 1.0f)),
 						glm::vec3(getScale().x, getScale().y, 1.0f));
 				if (parent)
@@ -71,8 +177,8 @@ namespace se
 					globalScissor.enabled = true;
 					globalScissor.x = static_cast<uint16_t>(globalPosition.x);
 					globalScissor.y = static_cast<uint16_t>(globalPosition.y);
-					globalScissor.width = static_cast<uint16_t>(getSize().x * globalScale.x);
-					globalScissor.height = static_cast<uint16_t>(getSize().y * globalScale.y);
+					globalScissor.width = static_cast<uint16_t>(pixelSize.x * globalScale.x);
+					globalScissor.height = static_cast<uint16_t>(pixelSize.y * globalScale.y);
 				}
 				if (parent && parent->globalScissor.enabled)
 				{
@@ -82,10 +188,11 @@ namespace se
 						glm::vec3 globalScale;
 						decomposeTransformationMatrix(parent->globalTrasform, &globalPosition, nullptr, &globalScale);
 
+						globalScissor.enabled = true;
 						globalScissor.x = glm::max(globalScissor.x, static_cast<uint16_t>(globalPosition.x));
 						globalScissor.y = glm::max(globalScissor.y, static_cast<uint16_t>(globalPosition.y));
-						globalScissor.width = glm::min(globalScissor.width, static_cast<uint16_t>(getSize().x * globalScale.x));
-						globalScissor.height = glm::min(globalScissor.height, static_cast<uint16_t>(getSize().y * globalScale.y));
+						globalScissor.width = glm::min(globalScissor.width, static_cast<uint16_t>(pixelSize.x * globalScale.x));
+						globalScissor.height = glm::min(globalScissor.height, static_cast<uint16_t>(pixelSize.y * globalScale.y));
 					}
 					else
 					{
@@ -254,17 +361,17 @@ namespace se
 		}
 		void GUIElement::setAnchor(VerticalAlignment _vertical, HorizontalAlignment _horizontal)
 		{
-			anchor = GUIVec2(alignmentToUnit(_horizontal), alignmentToUnit(_vertical));
+			anchor = GUIVec2(anchorToUnit(_horizontal), anchorToUnit(_vertical));
 			enableBit(updateFlags, GUIElementUpdateFlag::TreeUpdateNeeded);
 		}
 		void GUIElement::setVerticalAnchor(VerticalAlignment _value)
 		{
-			anchor.y = alignmentToUnit(_value);
+			anchor.y = anchorToUnit(_value);
 			enableBit(updateFlags, GUIElementUpdateFlag::TreeUpdateNeeded);
 		}
 		void GUIElement::setHorizontalAnchor(HorizontalAlignment _value)
 		{
-			anchor.x = alignmentToUnit(_value);
+			anchor.x = anchorToUnit(_value);
 			enableBit(updateFlags, GUIElementUpdateFlag::TreeUpdateNeeded);
 		}
 

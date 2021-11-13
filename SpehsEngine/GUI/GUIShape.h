@@ -23,12 +23,11 @@ namespace se
 
 			graphics::ShapeType						getShapeType() const;
 			const Color&							getColor() const;
-			std::shared_ptr<graphics::Material>		getMaterial() const;
 
 
 			void									setShapeType(graphics::ShapeType _type);
 			void									setColor(const Color& _color);
-			void									setMaterial(std::shared_ptr<graphics::Material> _material);
+			void									setTexture(std::string_view _name);
 
 		protected:
 
@@ -37,11 +36,12 @@ namespace se
 			virtual void							onRemovedParent() override;
 			virtual void							onRemovedFromView() override;
 			virtual void							addToView() override;
-			virtual glm::vec2						getTransformOffset() override;
+			virtual GUIVec2							getTransformOffset() override;
 
 		private:
 
 			graphics::Shape shape;
+			std::string textureName;
 		};
 	}
 }

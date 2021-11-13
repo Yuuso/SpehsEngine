@@ -1,15 +1,21 @@
 #pragma once
 
 #include "glm/mat4x4.hpp"
+#include "glm/vec2.hpp"
 #include "SpehsEngine/GUI/Types.h"
 #include <numeric>
 
 
 namespace se
 {
+	namespace graphics
+	{
+		class Scene;
+	}
+
 	namespace gui
 	{
-		class GUIView;
+		class GUIMaterialManager;
 
 		enum GUIElementUpdateFlag : GUIElementUpdateFlagsType
 		{
@@ -21,10 +27,10 @@ namespace se
 
 		struct UpdateContext
 		{
-			UpdateContext(GUIView& _view)
-				: view(_view) {}
+			graphics::Scene& scene;
+			GUIMaterialManager& materialManager;
 
-			GUIView& view;
+			glm::vec2 viewSize;
 		};
 	}
 }
