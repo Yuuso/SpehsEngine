@@ -72,6 +72,7 @@ namespace se
 		static_assert(std::is_integral<SizeType>::value, "SizeType must be integral.");
 		SizeType size = 0;
 		se_read_from_archive(archive, size);
+		std::multimap<KeyType, T, Compare> localMultimap;
 		for (SizeType i = 0; i < size; i++)
 		{
 			KeyType key;
@@ -79,11 +80,17 @@ namespace se
 			{
 				return false;
 			}
-			if (!archive.read(std::to_string(i) + "v", multimap[key]))
+			const std::multimap<KeyType, T, Compare>::iterator emplaceIt = localMultimap.emplace(key, T());
+			if (emplaceIt == localMultimap.end())
+			{
+				return false;
+			}
+			if (!archive.read(std::to_string(i) + "v", emplaceIt->second))
 			{
 				return false;
 			}
 		}
+		std::swap(localMultimap, multimap);
 		return true;
 	}
 }
