@@ -76,7 +76,7 @@ namespace se
 				{
 					if (priority != maxPriority && priority != minPriority && (*it)->signal.num_slots() > 0)
 					{
-						log::warning("Another source has already connected to this signal with the same priority");
+						log::error("Another source has already connected to this signal with the same priority: " + std::to_string(priority));
 					}
 					scopedConnection = (*it)->signal.connect(
 						[callback](const void* const eventPtr)->bool
@@ -165,7 +165,7 @@ namespace se
 				{
 					if (priority != maxPriority && priority != minPriority && (*it)->signal.num_slots() > 0)
 					{
-						log::warning("Another source has already connected to this signal with the same priority");
+						log::error("Another source has already connected to this signal with the same priority: " + std::to_string(priority));
 					}
 					scopedConnection = (*it)->signal.connect(callback);
 				}
