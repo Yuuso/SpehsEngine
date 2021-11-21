@@ -13,27 +13,26 @@ namespace se
 		public:
 
 													GUIText();
-			virtual									~GUIText() = default;
-													GUIText(const GUIText& _other) = delete;
-			GUIText&								operator=(const GUIText& _other) = delete;
-													GUIText(GUIText&& _other) = delete;
-			GUIText&								operator=(GUIText&& _other) = delete;
+			virtual									~GUIText()							= default;
+													GUIText(const GUIText& _other);
+			GUIText&								operator=(const GUIText& _other)	= delete;
+													GUIText(GUIText&& _other)			= delete;
+			GUIText&								operator=(GUIText&& _other)			= delete;
+
+			[[nodiscard]]
+			virtual std::shared_ptr<GUIElement>		clone() override;
 
 
 			const Color&							getColor() const;
-
-			const size_t							length() const;
 			std::string								getPlainText() const;
 			const size_t							getPenPosition() const;
 			const float								getLineSpacing() const;
-
+			const size_t							getTextLength() const;
 
 			void									setColor(const Color& _color);
 			void									setFont(std::string_view _font);
-
 			void									setLineSpacing(const float _amount);
 			void									movePen(const int _movement);
-
 			void									insert(const std::string& _text); // utf-8
 			void									clear();
 
@@ -44,12 +43,14 @@ namespace se
 			virtual void							onAddedParent() override;
 			virtual void							onRemovedParent() override;
 			virtual void							onRemovedFromView() override;
-			virtual void							addToView() override;
+			virtual void							onAddedToView() override;
 			virtual GUIVec2							getTransformOffset() override;
 
 		private:
 
-			void									updateDimensions();
+			void									initText();
+			bool									updateDimensions();
+			glm::vec3								getRenderScale(const glm::vec2& _viewSize);
 
 			graphics::Text text;
 			std::string fontName;

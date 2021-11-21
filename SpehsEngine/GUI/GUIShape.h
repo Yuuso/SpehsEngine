@@ -14,16 +14,18 @@ namespace se
 		public:
 
 													GUIShape();
-			virtual									~GUIShape() = default;
-													GUIShape(const GUIShape& _other) = delete;
-			GUIShape&								operator=(const GUIShape& _other) = delete;
-													GUIShape(GUIShape&& _other) = delete;
-			GUIShape&								operator=(GUIShape&& _other) = delete;
+			virtual									~GUIShape()							= default;
+													GUIShape(const GUIShape& _other);
+													GUIShape(GUIShape&& _other)			= delete;
+			GUIShape&								operator=(const GUIShape& _other)	= delete;
+			GUIShape&								operator=(GUIShape&& _other)		= delete;
+
+			[[nodiscard]]
+			virtual std::shared_ptr<GUIElement>		clone() override;
 
 
 			graphics::ShapeType						getShapeType() const;
 			const Color&							getColor() const;
-
 
 			void									setShapeType(graphics::ShapeType _type);
 			void									setColor(const Color& _color);
@@ -35,10 +37,12 @@ namespace se
 			virtual void							onAddedParent() override;
 			virtual void							onRemovedParent() override;
 			virtual void							onRemovedFromView() override;
-			virtual void							addToView() override;
+			virtual void							onAddedToView() override;
 			virtual GUIVec2							getTransformOffset() override;
 
 		private:
+
+			void									initShape();
 
 			graphics::Shape shape;
 			std::string textureName;

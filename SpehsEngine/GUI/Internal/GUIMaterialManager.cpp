@@ -20,14 +20,18 @@ namespace se
 		std::shared_ptr<graphics::Material> GUIMaterialManager::createTextureMaterial(std::string_view _texture)
 		{
 			auto result = graphics::createMaterial(graphics::DefaultMaterialType::FlatTexture, shaderManager);
-			auto texture = textureManager.create(_texture, _texture);
+			auto texture = textureManager.find(_texture);
+			if (!texture)
+				texture = textureManager.create(_texture, _texture);
 			result->setTexture(texture);
 			return result;
 		}
 		std::shared_ptr<graphics::Material> GUIMaterialManager::createFontMaterial(std::string_view _font)
 		{
 			auto result = graphics::createMaterial(graphics::DefaultMaterialType::Text, shaderManager);
-			auto font = _font.empty() ? fontManager.getDefaultFont() : fontManager.create(_font, _font, graphics::FontSize());
+			auto font = _font.empty() ? fontManager.getDefaultFont() : fontManager.find(_font);
+			if (!font)
+				font = fontManager.create(_font, _font, graphics::FontSize());
 			font->waitUntilReady();
 			result->setFont(font);
 			return result;

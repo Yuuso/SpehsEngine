@@ -14,6 +14,27 @@ namespace se
 	{
 		GUIText::GUIText()
 		{
+			initText();
+			setSize(GUIVec2(GUIUnitType::Auto));
+		}
+		GUIText::GUIText(const GUIText& _other)
+			: GUIElement(_other)
+			, fontName(_other.fontName)
+			, needUpdateDimensions(_other.needUpdateDimensions)
+		{
+			initText();
+			setColor(_other.getColor());
+			setLineSpacing(_other.getLineSpacing());
+			text.insert(_other.text);
+		}
+
+		std::shared_ptr<GUIElement> GUIText::clone()
+		{
+			return std::make_shared<GUIText>(*this);
+		}
+
+		void GUIText::initText()
+		{
 			text.setOrientation(ShapeOrientation::XY_Plane);
 			enableBit(updateFlags, GUIElementUpdateFlag::MaterialUpdateNeeded);
 		}
@@ -21,7 +42,37 @@ namespace se
 		void GUIText::elementPreUpdate()
 		{
 			if (needUpdateDimensions)
-				updateDimensions();
+			{
+				if (updateDimensions())
+				{
+					enableBit(updateFlags, GUIElementUpdateFlag::TreeUpdateNeeded);
+					const TextDimensions& dims = text.getDimensions();
+					if (getSize().x.type == GUIUnitType::Auto)
+					{
+						if (getSize().y.type == GUIUnitType::Auto)
+						{
+							setWidth(GUIUnit(dims.dimensions.x, GUIUnitType::Auto));
+						}
+						else
+						{
+							const float factor = unitToPixels(getSize().y, lastViewSize) / dims.dimensions.y;
+							setWidth(GUIUnit(dims.dimensions.x * factor, GUIUnitType::Auto));
+						}
+					}
+					if (getSize().y.type == GUIUnitType::Auto)
+					{
+						if (getSize().x.type == GUIUnitType::Auto)
+						{
+							setHeight(GUIUnit(dims.dimensions.y, GUIUnitType::Auto));
+						}
+						else
+						{
+							const float factor = unitToPixels(getSize().x, lastViewSize) / dims.dimensions.x;
+							setHeight(GUIUnit(dims.dimensions.y * factor, GUIUnitType::Auto));
+						}
+					}
+				}
+			}
 		}
 		void GUIText::elementUpdate(UpdateContext& _context)
 		{
@@ -43,13 +94,23 @@ namespace se
 					glm::vec3 globalScale;
 					decomposeTransformationMatrix(globalTrasform, &globalPosition, &globalRotation, &globalScale);
 
+					const glm::vec3 renderScale = getRenderScale(_context.viewSize) * globalScale;
+
 					text.setPosition(globalPosition);
 					text.setRotation(globalRotation);
-					text.setScale(globalScale);
+					text.setScale(renderScale);
 
 					text.setScissor(globalScissor);
 				}
 			}
+		}
+
+		glm::vec3 GUIText::getRenderScale(const glm::vec2& _viewSize)
+		{
+			if (needUpdateDimensions)
+				return glm::vec3(1.0f);
+			const TextDimensions& dims = text.getDimensions();
+			return glm::vec3(unitToPixels(getSize(), _viewSize) / dims.dimensions, 1.0f);
 		}
 
 		const Color& GUIText::getColor() const
@@ -57,7 +118,7 @@ namespace se
 			return text.getColor();
 		}
 
-		const size_t GUIText::length() const
+		const size_t GUIText::getTextLength() const
 		{
 			return text.length();
 		}
@@ -88,7 +149,7 @@ namespace se
 		void GUIText::setLineSpacing(const float _amount)
 		{
 			text.setLineSpacing(_amount);
-			updateDimensions();
+			needUpdateDimensions = true;
 		}
 		void GUIText::movePen(const int _movement)
 		{
@@ -98,25 +159,24 @@ namespace se
 		void GUIText::insert(const std::string& _text)
 		{
 			text.insert(_text);
-			updateDimensions();
+			needUpdateDimensions = true;
 		}
 		void GUIText::clear()
 		{
 			text.clear();
-			updateDimensions();
+			needUpdateDimensions = true;
 		}
 
-		void GUIText::updateDimensions()
+		bool GUIText::updateDimensions()
 		{
 			auto material = text.getMaterial();
 			if (!material || !material->getFont() || !material->getFont()->ready())
 			{
 				needUpdateDimensions = true;
-				return;
+				return false;
 			}
-			const TextDimensions& dims = text.getDimensions();
-			setSize(dims.dimensions);
 			needUpdateDimensions = false;
+			return true;
 		}
 
 		void GUIText::onAddedParent()
@@ -134,14 +194,15 @@ namespace se
 			text.removeFromScenes();
 			GUIElement::onRemovedFromView();
 		}
-		void GUIText::addToView()
+		void GUIText::onAddedToView()
 		{
 			enableBit(updateFlags, GUIElementUpdateFlag::PrimitiveAddNeeded);
-			GUIElement::addToView();
+			GUIElement::onAddedToView();
 		}
 		GUIVec2 GUIText::getTransformOffset()
 		{
-			return GUIVec2(GUIUnit(text.getDimensions().offsetFromOrigin.x, GUIUnitType::Pixels), GUIUnit(text.getDimensions().offsetFromOrigin.y, GUIUnitType::Pixels));
+			const glm::vec3 renderScale = getRenderScale(lastViewSize);
+			return GUIVec2(GUIUnit(text.getDimensions().offsetFromOrigin.x * renderScale.x, GUIUnitType::Pixels), GUIUnit(text.getDimensions().offsetFromOrigin.y * renderScale.y, GUIUnitType::Pixels));
 		}
 	}
 }

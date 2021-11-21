@@ -12,6 +12,8 @@ namespace se
 		{
 			Undefined = -1,
 
+			Auto,
+
 			// Absolute
 			Pixels,
 
@@ -35,36 +37,69 @@ namespace se
 			ViewMax,
 		};
 
-		class GUIUnit
+		struct GUIUnit
 		{
-		public:
-
-			GUIUnit() = default;
-			GUIUnit(float _value)
-				: value(_value) {}
-			GUIUnit(float _value, GUIUnitType _type)
+			constexpr GUIUnit() = default;
+			constexpr GUIUnit(GUIUnitType _type)
+				: type(_type) {}
+			constexpr GUIUnit(float _value, GUIUnitType _type)
 				: value(_value), type(_type) {}
 
-			operator float() const { return value; }
+			bool operator==(const GUIUnit& _other) const				{ return _other.value == this->value && _other.type == this->type; }
+			bool operator!=(const GUIUnit& _other) const				{ return _other.value != this->value || _other.type != this->type; }
+			bool operator>(const GUIUnit& _other) const					{ se_assert(this->type == _other.type); return this->value > _other.value; }
+			bool operator>=(const GUIUnit& _other) const				{ se_assert(this->type == _other.type); return this->value >= _other.value; }
+			bool operator<(const GUIUnit& _other) const					{ se_assert(this->type == _other.type); return this->value < _other.value; }
+			bool operator<=(const GUIUnit& _other) const				{ se_assert(this->type == _other.type); return this->value <= _other.value; }
+
+			void operator+=(const GUIUnit& _other)						{ se_assert(this->type == _other.type || _other.type == GUIUnitType::Undefined); this->value += _other.value; }
+			void operator-=(const GUIUnit& _other)						{ se_assert(this->type == _other.type || _other.type == GUIUnitType::Undefined); this->value -= _other.value; }
+			void operator*=(const GUIUnit& _other)						{ se_assert(this->type == _other.type || _other.type == GUIUnitType::Undefined); this->value *= _other.value; }
+			void operator/=(const GUIUnit& _other)						{ se_assert(this->type == _other.type || _other.type == GUIUnitType::Undefined); this->value /= _other.value; }
+			void operator+=(float _value)								{ this->value += _value; }
+			void operator-=(float _value)								{ this->value -= _value; }
+			void operator*=(float _value)								{ this->value *= _value; }
+			void operator/=(float _value)								{ this->value /= _value; }
+			GUIUnit operator+(const GUIUnit& _other) const				{ se_assert(this->type == _other.type || _other.type == GUIUnitType::Undefined); return GUIUnit(this->value + _other.value, this->type); }
+			GUIUnit operator-(const GUIUnit& _other) const				{ se_assert(this->type == _other.type || _other.type == GUIUnitType::Undefined); return GUIUnit(this->value - _other.value, this->type); }
+			GUIUnit operator*(const GUIUnit& _other) const				{ se_assert(this->type == _other.type || _other.type == GUIUnitType::Undefined); return GUIUnit(this->value * _other.value, this->type); }
+			GUIUnit operator/(const GUIUnit& _other) const				{ se_assert(this->type == _other.type || _other.type == GUIUnitType::Undefined); return GUIUnit(this->value / _other.value, this->type); }
+			GUIUnit operator+(float _value) const						{ return GUIUnit(this->value + _value, this->type); }
+			GUIUnit operator-(float _value) const						{ return GUIUnit(this->value - _value, this->type); }
+			GUIUnit operator*(float _value) const						{ return GUIUnit(this->value * _value, this->type); }
+			GUIUnit operator/(float _value) const						{ return GUIUnit(this->value / _value, this->type); }
 
 			GUIUnitType type = GUIUnitType::Undefined;
 			float value = 0.0f;
 		};
 
-		class GUIVec2
+		struct GUIVec2
 		{
-		public:
-
-			GUIVec2() = default;
-			GUIVec2(const glm::vec2& _value)
-				: x(_value.x), y(_value.y) {}
-			GUIVec2(const glm::vec2& _value, GUIUnitType _type)
+			constexpr GUIVec2() = default;
+			constexpr GUIVec2(const glm::vec2& _value, GUIUnitType _type)
 				: x(_value.x, _type), y(_value.y, _type) {}
-			GUIVec2(GUIUnit _x, GUIUnit _y)
+			constexpr GUIVec2(GUIUnit _value)
+				: x(_value), y(_value) {}
+			constexpr GUIVec2(GUIUnit _x, GUIUnit _y)
 				: x(_x), y(_y) {}
+			constexpr GUIVec2(GUIUnitType _type)
+				: x(0.0f, _type), y(0.0f, _type) {}
 
-			inline operator glm::vec2() const { return glm::vec2(x, y); }
-			inline glm::vec2 value() const { return glm::vec2(x, y); }
+			bool operator==(const GUIVec2& _other) const				{ return _other.x == this->x && _other.y == this->y; }
+			bool operator!=(const GUIVec2& _other) const				{ return _other.x != this->x || _other.y != this->y; }
+
+			void operator+=(const GUIVec2& _other)						{ this->x += _other.x; this->y += _other.y; }
+			void operator-=(const GUIVec2& _other)						{ this->x -= _other.x; this->y -= _other.y; }
+			void operator*=(const GUIVec2& _other)						{ this->x *= _other.x; this->y *= _other.y; }
+			void operator/=(const GUIVec2& _other)						{ this->x /= _other.x; this->y /= _other.y; }
+			void operator*=(float _value)								{ this->x *= _value; this->y *= _value; }
+			void operator/=(float _value)								{ this->x /= _value; this->y /= _value; }
+			GUIVec2 operator+(const GUIVec2& _other) const				{ return GUIVec2(this->x + _other.x, this->y + _other.y); }
+			GUIVec2 operator-(const GUIVec2& _other) const				{ return GUIVec2(this->x - _other.x, this->y - _other.y); }
+			GUIVec2 operator*(const GUIVec2& _other) const				{ return GUIVec2(this->x * _other.x, this->y * _other.y); }
+			GUIVec2 operator/(const GUIVec2& _other) const				{ return GUIVec2(this->x / _other.x, this->y / _other.y); }
+			GUIVec2 operator*(float _value) const						{ return GUIVec2(this->x * _value, this->y * _value); }
+			GUIVec2 operator/(float _value) const						{ return GUIVec2(this->x / _value, this->y / _value); }
 
 			GUIUnit x;
 			GUIUnit y;
@@ -73,41 +108,41 @@ namespace se
 
 		namespace unit_literals
 		{
-			inline GUIUnit operator "" _px(long double _value)								{ return GUIUnit(static_cast<float>(_value), GUIUnitType::Pixels); }
-			inline GUIUnit operator "" _px(unsigned long long _value)						{ return GUIUnit(static_cast<float>(_value), GUIUnitType::Pixels); }
+			inline constexpr GUIUnit operator "" _px(long double _value)							{ return GUIUnit(static_cast<float>(_value), GUIUnitType::Pixels); }
+			inline constexpr GUIUnit operator "" _px(unsigned long long _value)						{ return GUIUnit(static_cast<float>(_value), GUIUnitType::Pixels); }
 
-			inline GUIUnit operator "" _self(long double _value)							{ return GUIUnit(static_cast<float>(_value), GUIUnitType::Self); }
-			inline GUIUnit operator "" _self(unsigned long long _value)						{ return GUIUnit(static_cast<float>(_value), GUIUnitType::Self); }
-			inline GUIUnit operator "" _sw(long double _value)								{ return GUIUnit(static_cast<float>(_value), GUIUnitType::SelfWidth); }
-			inline GUIUnit operator "" _sw(unsigned long long _value)						{ return GUIUnit(static_cast<float>(_value), GUIUnitType::SelfWidth); }
-			inline GUIUnit operator "" _sh(long double _value)								{ return GUIUnit(static_cast<float>(_value), GUIUnitType::SelfHeight); }
-			inline GUIUnit operator "" _sh(unsigned long long _value)						{ return GUIUnit(static_cast<float>(_value), GUIUnitType::SelfHeight); }
-			inline GUIUnit operator "" _smin(long double _value)							{ return GUIUnit(static_cast<float>(_value), GUIUnitType::SelfMin); }
-			inline GUIUnit operator "" _smin(unsigned long long _value)						{ return GUIUnit(static_cast<float>(_value), GUIUnitType::SelfMin); }
-			inline GUIUnit operator "" _smax(long double _value)							{ return GUIUnit(static_cast<float>(_value), GUIUnitType::SelfMax); }
-			inline GUIUnit operator "" _smax(unsigned long long _value)						{ return GUIUnit(static_cast<float>(_value), GUIUnitType::SelfMax); }
+			inline constexpr GUIUnit operator "" _self(long double _value)							{ return GUIUnit(static_cast<float>(_value), GUIUnitType::Self); }
+			inline constexpr GUIUnit operator "" _self(unsigned long long _value)					{ return GUIUnit(static_cast<float>(_value), GUIUnitType::Self); }
+			inline constexpr GUIUnit operator "" _sw(long double _value)							{ return GUIUnit(static_cast<float>(_value), GUIUnitType::SelfWidth); }
+			inline constexpr GUIUnit operator "" _sw(unsigned long long _value)						{ return GUIUnit(static_cast<float>(_value), GUIUnitType::SelfWidth); }
+			inline constexpr GUIUnit operator "" _sh(long double _value)							{ return GUIUnit(static_cast<float>(_value), GUIUnitType::SelfHeight); }
+			inline constexpr GUIUnit operator "" _sh(unsigned long long _value)						{ return GUIUnit(static_cast<float>(_value), GUIUnitType::SelfHeight); }
+			inline constexpr GUIUnit operator "" _smin(long double _value)							{ return GUIUnit(static_cast<float>(_value), GUIUnitType::SelfMin); }
+			inline constexpr GUIUnit operator "" _smin(unsigned long long _value)					{ return GUIUnit(static_cast<float>(_value), GUIUnitType::SelfMin); }
+			inline constexpr GUIUnit operator "" _smax(long double _value)							{ return GUIUnit(static_cast<float>(_value), GUIUnitType::SelfMax); }
+			inline constexpr GUIUnit operator "" _smax(unsigned long long _value)					{ return GUIUnit(static_cast<float>(_value), GUIUnitType::SelfMax); }
 
-			inline GUIUnit operator "" _parent(long double _value)							{ return GUIUnit(static_cast<float>(_value), GUIUnitType::Parent); }
-			inline GUIUnit operator "" _parent(unsigned long long _value)					{ return GUIUnit(static_cast<float>(_value), GUIUnitType::Parent); }
-			inline GUIUnit operator "" _pw(long double _value)								{ return GUIUnit(static_cast<float>(_value), GUIUnitType::ParentWidth); }
-			inline GUIUnit operator "" _pw(unsigned long long _value)						{ return GUIUnit(static_cast<float>(_value), GUIUnitType::ParentWidth); }
-			inline GUIUnit operator "" _ph(long double _value)								{ return GUIUnit(static_cast<float>(_value), GUIUnitType::ParentHeight); }
-			inline GUIUnit operator "" _ph(unsigned long long _value)						{ return GUIUnit(static_cast<float>(_value), GUIUnitType::ParentHeight); }
-			inline GUIUnit operator "" _pmin(long double _value)							{ return GUIUnit(static_cast<float>(_value), GUIUnitType::ParentMin); }
-			inline GUIUnit operator "" _pmin(unsigned long long _value)						{ return GUIUnit(static_cast<float>(_value), GUIUnitType::ParentMin); }
-			inline GUIUnit operator "" _pmax(long double _value)							{ return GUIUnit(static_cast<float>(_value), GUIUnitType::ParentMax); }
-			inline GUIUnit operator "" _pmax(unsigned long long _value)						{ return GUIUnit(static_cast<float>(_value), GUIUnitType::ParentMax); }
+			inline constexpr GUIUnit operator "" _parent(long double _value)						{ return GUIUnit(static_cast<float>(_value), GUIUnitType::Parent); }
+			inline constexpr GUIUnit operator "" _parent(unsigned long long _value)					{ return GUIUnit(static_cast<float>(_value), GUIUnitType::Parent); }
+			inline constexpr GUIUnit operator "" _pw(long double _value)							{ return GUIUnit(static_cast<float>(_value), GUIUnitType::ParentWidth); }
+			inline constexpr GUIUnit operator "" _pw(unsigned long long _value)						{ return GUIUnit(static_cast<float>(_value), GUIUnitType::ParentWidth); }
+			inline constexpr GUIUnit operator "" _ph(long double _value)							{ return GUIUnit(static_cast<float>(_value), GUIUnitType::ParentHeight); }
+			inline constexpr GUIUnit operator "" _ph(unsigned long long _value)						{ return GUIUnit(static_cast<float>(_value), GUIUnitType::ParentHeight); }
+			inline constexpr GUIUnit operator "" _pmin(long double _value)							{ return GUIUnit(static_cast<float>(_value), GUIUnitType::ParentMin); }
+			inline constexpr GUIUnit operator "" _pmin(unsigned long long _value)					{ return GUIUnit(static_cast<float>(_value), GUIUnitType::ParentMin); }
+			inline constexpr GUIUnit operator "" _pmax(long double _value)							{ return GUIUnit(static_cast<float>(_value), GUIUnitType::ParentMax); }
+			inline constexpr GUIUnit operator "" _pmax(unsigned long long _value)					{ return GUIUnit(static_cast<float>(_value), GUIUnitType::ParentMax); }
 
-			inline GUIUnit operator "" _view(long double _value)							{ return GUIUnit(static_cast<float>(_value), GUIUnitType::View); }
-			inline GUIUnit operator "" _view(unsigned long long _value)						{ return GUIUnit(static_cast<float>(_value), GUIUnitType::View); }
-			inline GUIUnit operator "" _vw(long double _value)								{ return GUIUnit(static_cast<float>(_value), GUIUnitType::ViewWidth); }
-			inline GUIUnit operator "" _vw(unsigned long long _value)						{ return GUIUnit(static_cast<float>(_value), GUIUnitType::ViewWidth); }
-			inline GUIUnit operator "" _vh(long double _value)								{ return GUIUnit(static_cast<float>(_value), GUIUnitType::ViewHeight); }
-			inline GUIUnit operator "" _vh(unsigned long long _value)						{ return GUIUnit(static_cast<float>(_value), GUIUnitType::ViewHeight); }
-			inline GUIUnit operator "" _vmin(long double _value)							{ return GUIUnit(static_cast<float>(_value), GUIUnitType::ViewMin); }
-			inline GUIUnit operator "" _vmin(unsigned long long _value)						{ return GUIUnit(static_cast<float>(_value), GUIUnitType::ViewMin); }
-			inline GUIUnit operator "" _vmax(long double _value)							{ return GUIUnit(static_cast<float>(_value), GUIUnitType::ViewMax); }
-			inline GUIUnit operator "" _vmax(unsigned long long _value)						{ return GUIUnit(static_cast<float>(_value), GUIUnitType::ViewMax); }
+			inline constexpr GUIUnit operator "" _view(long double _value)							{ return GUIUnit(static_cast<float>(_value), GUIUnitType::View); }
+			inline constexpr GUIUnit operator "" _view(unsigned long long _value)					{ return GUIUnit(static_cast<float>(_value), GUIUnitType::View); }
+			inline constexpr GUIUnit operator "" _vw(long double _value)							{ return GUIUnit(static_cast<float>(_value), GUIUnitType::ViewWidth); }
+			inline constexpr GUIUnit operator "" _vw(unsigned long long _value)						{ return GUIUnit(static_cast<float>(_value), GUIUnitType::ViewWidth); }
+			inline constexpr GUIUnit operator "" _vh(long double _value)							{ return GUIUnit(static_cast<float>(_value), GUIUnitType::ViewHeight); }
+			inline constexpr GUIUnit operator "" _vh(unsigned long long _value)						{ return GUIUnit(static_cast<float>(_value), GUIUnitType::ViewHeight); }
+			inline constexpr GUIUnit operator "" _vmin(long double _value)							{ return GUIUnit(static_cast<float>(_value), GUIUnitType::ViewMin); }
+			inline constexpr GUIUnit operator "" _vmin(unsigned long long _value)					{ return GUIUnit(static_cast<float>(_value), GUIUnitType::ViewMin); }
+			inline constexpr GUIUnit operator "" _vmax(long double _value)							{ return GUIUnit(static_cast<float>(_value), GUIUnitType::ViewMax); }
+			inline constexpr GUIUnit operator "" _vmax(unsigned long long _value)					{ return GUIUnit(static_cast<float>(_value), GUIUnitType::ViewMax); }
 		}
 	}
 }

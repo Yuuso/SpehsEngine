@@ -114,6 +114,8 @@
   <ItemGroup>
     <ClCompile Include="GUIElement.cpp" />
     <ClCompile Include="GUILib.cpp" />
+    <ClCompile Include="GUIStack.cpp" />
+    <ClCompile Include="GUIUtilities.cpp" />
     <ClCompile Include="Internal\GUIMaterialManager.cpp" />
     <ClCompile Include="GUIShape.cpp" />
     <ClCompile Include="GUIText.cpp" />

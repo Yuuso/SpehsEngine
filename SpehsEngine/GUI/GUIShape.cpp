@@ -14,15 +14,34 @@ namespace se
 	{
 		GUIShape::GUIShape()
 		{
+			initShape();
+
+			// Default non-zero size
+			setSize(GUIVec2({ 10.0f, 10.0f }, GUIUnitType::Pixels));
+		}
+		GUIShape::GUIShape(const GUIShape& _other)
+			: GUIElement(_other)
+			, textureName(_other.textureName)
+		{
+			initShape();
+			setColor(_other.getColor());
+			setShapeType(_other.getShapeType());
+		}
+
+		std::shared_ptr<GUIElement> GUIShape::clone()
+		{
+			return std::make_shared<GUIShape>(*this);
+		}
+
+
+		void GUIShape::initShape()
+		{
 			ShapeParameters params;
 			params.orientation = ShapeOrientation::XY_Plane;
 
 			shape.generate(ShapeType::Rectangle, params);
 			shape.setRenderFlags(RenderFlag::Blending | RenderFlag::DepthTestLess | RenderFlag::DepthWrite);
 			enableBit(updateFlags, GUIElementUpdateFlag::MaterialUpdateNeeded);
-
-			// Default non-zero size
-			setSize(GUIVec2({ 10.0f, 10.0f }, GUIUnitType::Pixels));
 		}
 
 		void GUIShape::elementUpdate(UpdateContext& _context)
@@ -75,10 +94,10 @@ namespace se
 			shape.removeFromScenes();
 			GUIElement::onRemovedFromView();
 		}
-		void GUIShape::addToView()
+		void GUIShape::onAddedToView()
 		{
 			enableBit(updateFlags, GUIElementUpdateFlag::PrimitiveAddNeeded);
-			GUIElement::addToView();
+			GUIElement::onAddedToView();
 		}
 		GUIVec2 GUIShape::getTransformOffset()
 		{
@@ -96,7 +115,11 @@ namespace se
 
 		void GUIShape::setShapeType(ShapeType _type)
 		{
-			shape.generate(_type);
+			if (shape.getShapeType() == _type)
+				return;
+			ShapeParameters params;
+			params.orientation = ShapeOrientation::XY_Plane;
+			shape.generate(_type, params);
 		}
 		void GUIShape::setColor(const Color& _color)
 		{

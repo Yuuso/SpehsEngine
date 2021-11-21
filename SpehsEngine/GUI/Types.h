@@ -12,21 +12,6 @@ namespace se
 
 		typedef uint16_t GUIElementUpdateFlagsType;
 
-		struct Margin
-		{
-			Margin() = default;
-			Margin(GUIUnit _value)
-				: left(_value), top(_value), right(_value), bottom(_value) {}
-			Margin(GUIUnit _left, GUIUnit _top, GUIUnit _right, GUIUnit _bottom)
-				: left(_left), top(_top), right(_right), bottom(_bottom) {}
-
-			GUIUnit left;
-			GUIUnit top;
-			GUIUnit right;
-			GUIUnit bottom;
-		};
-		typedef Margin Padding;
-
 		enum class VerticalAlignment
 		{
 			Top,
@@ -40,6 +25,15 @@ namespace se
 			Center,
 			Middle = Center,
 			Right
+		};
+
+		typedef VerticalAlignment VerticalAnchor;
+		typedef HorizontalAlignment HorizontalAnchor;
+
+		enum class StackOrientation
+		{
+			Vertical,
+			Horizontal
 		};
 	}
 }
