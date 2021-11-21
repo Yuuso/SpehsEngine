@@ -79,6 +79,18 @@ namespace se
 			orientation = _orientation;
 			needBufferUpdate = true;
 		}
+
+		void Text::insert(const Text& _text)
+		{
+			styledString.clear();
+			for (auto&& segment : _text.styledString)
+			{
+				styledString.push_back(std::make_unique<StyledStringSegment>());
+				styledString.back()->style = segment->style;
+				styledString.back()->text = segment->text;
+			}
+			penPosition = _text.penPosition;
+		}
 		void Text::insert(const std::string& _text)
 		{
 			std::wstring_convert<std::codecvt_utf8<char32_t>, char32_t> converter;

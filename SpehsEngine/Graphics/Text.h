@@ -34,6 +34,7 @@ namespace se
 			void					movePen(const int _movement);
 			void					setOrientation(ShapeOrientation _orientation);
 
+			void					insert(const Text& _text);					// copy
 			void					insert(const std::string& _text);			// utf-8
 			void					insert(const std::u32string_view _text);	// utf-32
 			void					clear();
