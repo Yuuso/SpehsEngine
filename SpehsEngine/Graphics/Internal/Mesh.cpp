@@ -43,6 +43,109 @@ namespace se
 			}
 		}
 
+		void Mesh::addBone(const ModelNode* _boneNode, const glm::mat4& _offsetMatrix)
+		{
+			se_assert(_boneNode);
+			bones.emplace_back(_boneNode, _offsetMatrix);
+			combinedTransformMatrices.resize(bones.size());
+			combinedNormalMatrices.resize(bones.size());
+		}
+
+		void Mesh::setRenderState(bool _state)
+		{
+			enableBit(overriddenModelAttributes, PrimitiveAttributeFlag::RenderState);
+			Primitive::setRenderState(_state);
+		}
+		void Mesh::toggleRenderState()
+		{
+			enableBit(overriddenModelAttributes, PrimitiveAttributeFlag::RenderState);
+			Primitive::toggleRenderState();
+		}
+		void Mesh::setMaterial(std::shared_ptr<Material> _material)
+		{
+			enableBit(overriddenModelAttributes, PrimitiveAttributeFlag::Material);
+			Primitive::setMaterial(_material);
+		}
+		void Mesh::setColor(const Color& _color)
+		{
+			enableBit(overriddenModelAttributes, PrimitiveAttributeFlag::Color);
+			Primitive::setColor(_color);
+		}
+		void Mesh::setRenderFlags(RenderFlagsType _renderFlags)
+		{
+			enableBit(overriddenModelAttributes, PrimitiveAttributeFlag::RenderFlags);
+			Primitive::setRenderFlags(_renderFlags);
+		}
+		void Mesh::enableRenderFlags(RenderFlagsType _renderFlags)
+		{
+			enableBit(overriddenModelAttributes, PrimitiveAttributeFlag::RenderFlags);
+			Primitive::enableRenderFlags(_renderFlags);
+		}
+		void Mesh::disableRenderFlags(RenderFlagsType _renderFlags)
+		{
+			enableBit(overriddenModelAttributes, PrimitiveAttributeFlag::RenderFlags);
+			Primitive::disableRenderFlags(_renderFlags);
+		}
+		void Mesh::setPrimitiveType(PrimitiveType _primitiveType)
+		{
+			enableBit(overriddenModelAttributes, PrimitiveAttributeFlag::PrimitiveType);
+			Primitive::setPrimitiveType(_primitiveType);
+		}
+		void Mesh::setRenderMode(RenderMode _renderMode)
+		{
+			enableBit(overriddenModelAttributes, PrimitiveAttributeFlag::RenderMode);
+			Primitive::setRenderMode(_renderMode);
+		}
+		void Mesh::setInstances(std::shared_ptr<VertexBuffer> _instances)
+		{
+			enableBit(overriddenModelAttributes, PrimitiveAttributeFlag::Instances);
+			Primitive::setInstances(_instances);
+		}
+
+		bool Mesh::getRenderState() const
+		{
+			if (checkBit(overriddenModelAttributes, PrimitiveAttributeFlag::RenderState))
+				return Primitive::getRenderState() && model.getRenderState(); // NOTE: Model value still stands when false
+			return model.getRenderState();
+		}
+		std::shared_ptr<Material> Mesh::getMaterial() const
+		{
+			if (checkBit(overriddenModelAttributes, PrimitiveAttributeFlag::Material))
+				return Primitive::getMaterial();
+			return model.getMaterial(materialIndex);
+		}
+		std::shared_ptr<VertexBuffer> Mesh::getInstances() const
+		{
+			if (checkBit(overriddenModelAttributes, PrimitiveAttributeFlag::Instances))
+				return Primitive::getInstances();
+			return model.getInstances();
+		}
+		const Color& Mesh::getColor() const
+		{
+			if (checkBit(overriddenModelAttributes, PrimitiveAttributeFlag::Color))
+				return Primitive::getColor();
+			return model.getColor();
+		}
+		RenderFlagsType Mesh::getRenderFlags() const
+		{
+			if (checkBit(overriddenModelAttributes, PrimitiveAttributeFlag::RenderFlags))
+				return Primitive::getRenderFlags();
+			return model.getRenderFlags();
+		}
+		PrimitiveType Mesh::getPrimitiveType() const
+		{
+			if (checkBit(overriddenModelAttributes, PrimitiveAttributeFlag::PrimitiveType) ||
+				model.getPrimitiveType() == PrimitiveType::Undefined)
+				return Primitive::getPrimitiveType();
+			return model.getPrimitiveType();
+		}
+		RenderMode Mesh::getRenderMode() const
+		{
+			if (checkBit(overriddenModelAttributes, PrimitiveAttributeFlag::RenderMode))
+				return Primitive::getRenderMode();
+			return model.getRenderMode();
+		}
+
 		const UniformMatrices& Mesh::getTransformMatrices() const
 		{
 			return combinedTransformMatrices;
@@ -50,19 +153,6 @@ namespace se
 		const UniformMatrices& Mesh::getNormalMatrices() const
 		{
 			return combinedNormalMatrices;
-		}
-
-		std::shared_ptr<Material> Mesh::getMaterial() const
-		{
-			return model.getMaterial(materialIndex);
-		}
-
-		void Mesh::addBone(const ModelNode* _boneNode, const glm::mat4& _offsetMatrix)
-		{
-			se_assert(_boneNode);
-			bones.emplace_back(_boneNode, _offsetMatrix);
-			combinedTransformMatrices.resize(bones.size());
-			combinedNormalMatrices.resize(bones.size());
 		}
 	}
 }

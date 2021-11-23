@@ -174,6 +174,10 @@ namespace se
 		{
 			return name;
 		}
+		bool Model::getRenderState() const
+		{
+			return renderState;
+		}
 		std::shared_ptr<Material> Model::getMaterial(size_t _slot) const
 		{
 			se_assert(_slot < numMaterialSlots);
@@ -198,10 +202,19 @@ namespace se
 		{
 			return instances;
 		}
+		PrimitiveType Model::getPrimitiveType() const
+		{
+			return primitiveType;
+		}
+		RenderMode Model::getRenderMode() const
+		{
+			return renderMode;
+		}
 		void Model::setInstances(std::shared_ptr<VertexBuffer> _instances)
 		{
 			instances = _instances;
-			foreachPrimitive([_instances](Primitive& _primitive) { _primitive.setInstances(_instances); });
+			if (instances && renderMode == RenderMode::Static)
+				log::error("Should not use static RenderMode with instanced primitives!");
 		}
 
 		const glm::vec3& Model::getPosition() const
@@ -224,7 +237,7 @@ namespace se
 		void Model::setRenderState(bool _state)
 		{
 			renderState = _state;
-			foreachPrimitive([_state](Primitive& _primitive) { _primitive.setRenderState(_state); });
+			foreachPrimitive([](Primitive& _primitive) { enableBit(_primitive.updateFlags, PrimitiveUpdateFlag::EverythingChanged); });
 		}
 		void Model::setMaterial(std::shared_ptr<Material> _material, size_t _slot)
 		{
@@ -236,37 +249,37 @@ namespace se
 		void Model::setColor(const Color& _color)
 		{
 			color = _color;
-			foreachPrimitive([&](Primitive& _primitive) { _primitive.setColor(_color); });
+			foreachPrimitive([](Primitive& _primitive) { enableBit(_primitive.updateFlags, PrimitiveUpdateFlag::RenderInfoChanged); });
 		}
 
 		void Model::setRenderFlags(RenderFlagsType _renderFlags)
 		{
 			renderFlags = _renderFlags;
-			foreachPrimitive([_renderFlags](Primitive& _primitive) { _primitive.setRenderFlags(_renderFlags); });
+			foreachPrimitive([](Primitive& _primitive) { enableBit(_primitive.updateFlags, PrimitiveUpdateFlag::RenderInfoChanged); });
 		}
 		void Model::enableRenderFlags(RenderFlagsType _renderFlags)
 		{
 			enableBit(renderFlags, _renderFlags);
-			foreachPrimitive([_renderFlags](Primitive& _primitive) { _primitive.enableRenderFlags(_renderFlags); });
+			foreachPrimitive([](Primitive& _primitive) { enableBit(_primitive.updateFlags, PrimitiveUpdateFlag::RenderInfoChanged); });
 		}
 		void Model::disableRenderFlags(RenderFlagsType _renderFlags)
 		{
 			disableBit(renderFlags, _renderFlags);
-			foreachPrimitive([_renderFlags](Primitive& _primitive) { _primitive.disableRenderFlags(_renderFlags); });
+			foreachPrimitive([](Primitive& _primitive) { enableBit(_primitive.updateFlags, PrimitiveUpdateFlag::RenderInfoChanged); });
 		}
 		void Model::setPrimitiveType(PrimitiveType _primitiveType)
 		{
 			if (_primitiveType == PrimitiveType::Undefined)
 				return;
 			primitiveType = _primitiveType;
-			foreachPrimitive([_primitiveType](Primitive& _primitive) { _primitive.setPrimitiveType(_primitiveType); });
+			foreachPrimitive([](Primitive& _primitive) { enableBit(_primitive.updateFlags, PrimitiveUpdateFlag::RenderInfoChanged); });
 		}
 		void Model::setRenderMode(RenderMode _renderMode)
 		{
 			renderMode = _renderMode;
 			if (renderMode == RenderMode::Static && animator.hasAnimations())
 				log::warning("Should not use static RenderMode with animated models!");
-			foreachPrimitive([_renderMode](Primitive& _primitive) { _primitive.setRenderMode(_renderMode); });
+			foreachPrimitive([](Primitive& _primitive) { enableBit(_primitive.updateFlags, PrimitiveUpdateFlag::RenderInfoChanged); });
 		}
 
 		void Model::setPosition(const glm::vec3& _position)

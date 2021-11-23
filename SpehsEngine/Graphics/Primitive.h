@@ -32,29 +32,30 @@ namespace se
 			Primitive&								operator=(Primitive&& _other) = delete;
 
 
+			virtual void							updateMatrices();
+			virtual void							removeFromScenes();
+
 			virtual const std::string&				getName() const;
-			virtual const bool						getRenderState() const;
+			virtual bool							getRenderState() const;
 			virtual std::shared_ptr<Material>		getMaterial() const;
 			virtual std::shared_ptr<VertexBuffer>	getVertices() const;
 			virtual std::shared_ptr<IndexBuffer>	getIndices() const;
 			virtual std::shared_ptr<VertexBuffer>	getInstances() const;
 			virtual const Color&					getColor() const;
 			virtual const Scissor&					getScissor() const;
-
-			virtual const RenderFlagsType			getRenderFlags() const;
-			virtual const bool						checkRenderFlags(const RenderFlagsType _renderFlags) const;
-			virtual const PrimitiveType				getPrimitiveType() const;
-			virtual const RenderMode				getRenderMode() const;
+			virtual RenderFlagsType					getRenderFlags() const;
+			virtual bool							checkRenderFlags(RenderFlagsType _renderFlags) const;
+			virtual PrimitiveType					getPrimitiveType() const;
+			virtual RenderMode						getRenderMode() const;
 			virtual const RenderCopy*				getRenderCopy() const;
-
 			virtual const glm::vec3&				getPosition() const;
 			virtual const glm::vec3&				getScale() const;
 			virtual const glm::quat&				getRotation() const;
 			virtual const UniformMatrices&			getTransformMatrices() const;
 			virtual const UniformMatrices&			getNormalMatrices() const;
 
-			virtual void							setName(const std::string_view _name);
-			virtual void							setRenderState(const bool _state);
+			virtual void							setName(std::string_view _name);
+			virtual void							setRenderState(bool _state);
 			virtual void							toggleRenderState();
 			virtual void							setMaterial(std::shared_ptr<Material> _material);
 			virtual void							setVertices(std::shared_ptr<VertexBuffer> _vertices);
@@ -62,26 +63,18 @@ namespace se
 			virtual void							setInstances(std::shared_ptr<VertexBuffer> _instances);
 			virtual void							setColor(const Color& _color);
 			virtual void							setScissor(const Scissor& _scissor);
-
-			virtual void							setRenderFlags(const RenderFlagsType _renderFlags);
-			virtual void							enableRenderFlags(const RenderFlagsType _renderFlags);
-			virtual void							disableRenderFlags(const RenderFlagsType _renderFlags);
-			virtual void							setPrimitiveType(const PrimitiveType _primitiveType);
-			virtual void							setRenderMode(const RenderMode _renderMode);
+			virtual void							setRenderFlags(RenderFlagsType _renderFlags);
+			virtual void							enableRenderFlags(RenderFlagsType _renderFlags);
+			virtual void							disableRenderFlags(RenderFlagsType _renderFlags);
+			virtual void							setPrimitiveType(PrimitiveType _primitiveType);
+			virtual void							setRenderMode(RenderMode _renderMode);
 			virtual void							setRenderCopy(const RenderCopy& _renderCopy);
 			virtual void							removeRenderCopy();
-
 			virtual void							setPosition(const glm::vec3& _position);
 			virtual void							setScale(const glm::vec3& _scale);
 			virtual void							setRotation(const glm::quat& _rotation);
 
-			virtual void							updateMatrices();
-			virtual void							removeFromScenes();
-
 		protected:
-
-			friend class PrimitiveInternal;
-			friend class Model;
 
 			virtual void							update();
 			bool									getVerticesChanged();
@@ -90,6 +83,9 @@ namespace se
 			PrimitiveUpdateFlagsType				updateFlags = 0;
 
 		private:
+
+			friend class PrimitiveInternal;
+			friend class Model;
 
 			std::string								name					= "primitive";
 			bool									renderState				= true;

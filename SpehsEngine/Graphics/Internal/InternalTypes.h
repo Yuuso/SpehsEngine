@@ -63,5 +63,17 @@ namespace se
 			Valid,
 			Error,
 		};
+
+		typedef uint32_t PrimitiveAttributeFlagsType;
+		enum class PrimitiveAttributeFlag: PrimitiveAttributeFlagsType
+		{
+			RenderState				= (1 << 0),
+			Material				= (1 << 1),
+			Instances				= (1 << 2),
+			Color					= (1 << 3),
+			RenderFlags				= (1 << 4),
+			PrimitiveType			= (1 << 5),
+			RenderMode				= (1 << 6),
+		};
 	}
 }

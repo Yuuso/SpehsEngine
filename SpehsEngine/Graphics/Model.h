@@ -49,14 +49,14 @@ namespace se
 
 
 			const std::string&				getName() const;
+			bool							getRenderState() const;
 			std::shared_ptr<Material>		getMaterial(const size_t _slot = 0) const;
 			size_t							getNumMaterials() const;
 			const Color&					getColor() const;
 			RenderFlagsType					getRenderFlags() const;
-
 			std::shared_ptr<VertexBuffer>	getInstances() const;
-			void							setInstances(std::shared_ptr<VertexBuffer> _instances);
-
+			PrimitiveType					getPrimitiveType() const;
+			RenderMode						getRenderMode() const;
 			const glm::vec3&				getPosition() const;
 			const glm::quat&				getRotation() const;
 			const glm::vec3&				getScale() const;
@@ -65,13 +65,12 @@ namespace se
 			void							setRenderState(bool _state);
 			void							setMaterial(std::shared_ptr<Material> _material, size_t _slot = 0);
 			void							setColor(const Color& _color);
-
 			void							setRenderFlags(RenderFlagsType _renderFlags);
 			void							enableRenderFlags(RenderFlagsType _renderFlags);
 			void							disableRenderFlags(RenderFlagsType _renderFlags);
 			void							setPrimitiveType(PrimitiveType _primitiveType);
 			void							setRenderMode(RenderMode _renderMode);
-
+			void							setInstances(std::shared_ptr<VertexBuffer> _instances);
 			void							setPosition(const glm::vec3& _position);
 			void							setRotation(const glm::quat& _rotation);
 			void							setScale(const glm::vec3& _scale);

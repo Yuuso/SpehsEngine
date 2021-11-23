@@ -71,7 +71,7 @@ namespace se
 		{
 			return name;
 		}
-		const bool Primitive::getRenderState() const
+		bool Primitive::getRenderState() const
 		{
 			return renderState;
 		}
@@ -100,19 +100,19 @@ namespace se
 			return scissor;
 		}
 
-		const RenderFlagsType Primitive::getRenderFlags() const
+		RenderFlagsType Primitive::getRenderFlags() const
 		{
 			return renderFlags;
 		}
-		const bool Primitive::checkRenderFlags(const RenderFlagsType _renderFlags) const
+		bool Primitive::checkRenderFlags(RenderFlagsType _renderFlags) const
 		{
-			return checkBit(renderFlags, _renderFlags);
+			return checkBit(getRenderFlags(), _renderFlags);
 		}
-		const PrimitiveType Primitive::getPrimitiveType() const
+		PrimitiveType Primitive::getPrimitiveType() const
 		{
 			return primitiveType;
 		}
-		const RenderMode Primitive::getRenderMode() const
+		RenderMode Primitive::getRenderMode() const
 		{
 			return renderMode;
 		}
@@ -134,11 +134,11 @@ namespace se
 			return rotation;
 		}
 
-		void Primitive::setName(const std::string_view _name)
+		void Primitive::setName(std::string_view _name)
 		{
 			name = _name;
 		}
-		void Primitive::setRenderState(const bool _state)
+		void Primitive::setRenderState(bool _state)
 		{
 			if (renderState == _state)
 				return;
@@ -189,35 +189,35 @@ namespace se
 			enableBit(updateFlags, PrimitiveUpdateFlag::RenderInfoChanged);
 		}
 
-		void Primitive::setRenderFlags(const RenderFlagsType _renderFlags)
+		void Primitive::setRenderFlags(RenderFlagsType _renderFlags)
 		{
 			if (renderFlags == _renderFlags)
 				return;
 			renderFlags = _renderFlags;
 			enableBit(updateFlags, PrimitiveUpdateFlag::RenderInfoChanged);
 		}
-		void Primitive::enableRenderFlags(const RenderFlagsType _renderFlags)
+		void Primitive::enableRenderFlags(RenderFlagsType _renderFlags)
 		{
 			if (checkBit(renderFlags, _renderFlags))
 				return;
 			enableBit(renderFlags, _renderFlags);
 			enableBit(updateFlags, PrimitiveUpdateFlag::RenderInfoChanged);
 		}
-		void Primitive::disableRenderFlags(const RenderFlagsType _renderFlags)
+		void Primitive::disableRenderFlags(RenderFlagsType _renderFlags)
 		{
 			if (!checkBit(renderFlags, _renderFlags))
 				return;
 			disableBit(renderFlags, _renderFlags);
 			enableBit(updateFlags, PrimitiveUpdateFlag::RenderInfoChanged);
 		}
-		void Primitive::setPrimitiveType(const PrimitiveType _primitiveType)
+		void Primitive::setPrimitiveType(PrimitiveType _primitiveType)
 		{
 			if (primitiveType == _primitiveType)
 				return;
 			primitiveType = _primitiveType;
 			enableBit(updateFlags, PrimitiveUpdateFlag::RenderInfoChanged);
 		}
-		void Primitive::setRenderMode(const RenderMode _renderMode)
+		void Primitive::setRenderMode(RenderMode _renderMode)
 		{
 			if (instances && instances->size() > 0 && renderMode == RenderMode::Static)
 				log::error("Should not use static RenderMode with instanced primitives!");
