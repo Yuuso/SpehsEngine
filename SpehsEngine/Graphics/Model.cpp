@@ -19,7 +19,7 @@ namespace se
 			destroyedSignal();
 		}
 
-		static void processNode(const Model& _model, const MeshData& _meshData, const MeshData::MeshDataNode& _meshDataNode, ModelNode& _modelNode, size_t& _numMaterials)
+		static void processNode(Model& _model, const MeshData& _meshData, const MeshData::MeshDataNode& _meshDataNode, ModelNode& _modelNode, size_t& _numMaterials)
 		{
 			_modelNode.name = _meshDataNode.name;
 			_modelNode.transform = _meshDataNode.transform;
@@ -178,11 +178,18 @@ namespace se
 		{
 			return renderState;
 		}
-		std::shared_ptr<Material> Model::getMaterial(size_t _slot) const
+		std::shared_ptr<const Material> Model::getMaterial(size_t _slot) const
 		{
 			se_assert(_slot < numMaterialSlots);
 			if (_slot >= materials.size() || !materials[_slot])
-				return materials[0];
+				return materials.empty() ? nullptr : materials[0];
+			return materials[_slot];
+		}
+		std::shared_ptr<Material> Model::getMaterial(size_t _slot)
+		{
+			se_assert(_slot < numMaterialSlots);
+			if (_slot >= materials.size() || !materials[_slot])
+				return materials.empty() ? nullptr : materials[0];
 			return materials[_slot];
 		}
 		size_t Model::getNumMaterials() const
@@ -198,7 +205,11 @@ namespace se
 			return renderFlags;
 		}
 
-		std::shared_ptr<VertexBuffer> Model::getInstances() const
+		std::shared_ptr<const VertexBuffer> Model::getInstances() const
+		{
+			return instances;
+		}
+		std::shared_ptr<VertexBuffer> Model::getInstances()
 		{
 			return instances;
 		}

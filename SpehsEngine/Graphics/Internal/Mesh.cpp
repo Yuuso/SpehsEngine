@@ -9,7 +9,7 @@ namespace se
 {
 	namespace graphics
 	{
-		Mesh::Mesh(const Model& _model, const ModelNode& _node, const size_t _materialIndex, std::shared_ptr<VertexBuffer> _vertexBuffer, std::shared_ptr<IndexBuffer> _indexBuffer)
+		Mesh::Mesh(Model& _model, const ModelNode& _node, const size_t _materialIndex, std::shared_ptr<VertexBuffer> _vertexBuffer, std::shared_ptr<IndexBuffer> _indexBuffer)
 			: model(_model)
 			, node(_node)
 			, materialIndex(_materialIndex)
@@ -108,13 +108,25 @@ namespace se
 				return Primitive::getRenderState() && model.getRenderState(); // NOTE: Model value still stands when false
 			return model.getRenderState();
 		}
-		std::shared_ptr<Material> Mesh::getMaterial() const
+		std::shared_ptr<const Material>	Mesh::getMaterial() const
 		{
 			if (checkBit(overriddenModelAttributes, PrimitiveAttributeFlag::Material))
 				return Primitive::getMaterial();
 			return model.getMaterial(materialIndex);
 		}
-		std::shared_ptr<VertexBuffer> Mesh::getInstances() const
+		std::shared_ptr<Material> Mesh::getMaterial()
+		{
+			if (checkBit(overriddenModelAttributes, PrimitiveAttributeFlag::Material))
+				return Primitive::getMaterial();
+			return model.getMaterial();
+		}
+		std::shared_ptr<const VertexBuffer> Mesh::getInstances() const
+		{
+			if (checkBit(overriddenModelAttributes, PrimitiveAttributeFlag::Instances))
+				return Primitive::getInstances();
+			return model.getInstances();
+		}
+		std::shared_ptr<VertexBuffer> Mesh::getInstances()
 		{
 			if (checkBit(overriddenModelAttributes, PrimitiveAttributeFlag::Instances))
 				return Primitive::getInstances();

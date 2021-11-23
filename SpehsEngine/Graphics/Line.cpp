@@ -60,7 +60,7 @@ namespace se
 		}
 		const glm::vec3& Line::getPoint(const size_t _index) const
 		{
-			std::shared_ptr<VertexBuffer> vertexBuffer = getVertices();
+			std::shared_ptr<const VertexBuffer> vertexBuffer = getVertices();
 			se_assert(vertexBuffer && vertexBuffer->size() > _index);
 			return std::as_const(*vertexBuffer.get()).get<Position>(_index);
 		}
@@ -72,7 +72,7 @@ namespace se
 		}
 		const size_t Line::numPoints() const
 		{
-			std::shared_ptr<VertexBuffer> vertexBuffer = getVertices();
+			std::shared_ptr<const VertexBuffer> vertexBuffer = getVertices();
 			return vertexBuffer ? vertexBuffer->size() : 0;
 		}
 	}

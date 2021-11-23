@@ -75,19 +75,35 @@ namespace se
 		{
 			return renderState;
 		}
-		std::shared_ptr<Material> Primitive::getMaterial() const
+		std::shared_ptr<const Material>	Primitive::getMaterial() const
 		{
 			return material;
 		}
-		std::shared_ptr<VertexBuffer> Primitive::getVertices() const
+		std::shared_ptr<Material> Primitive::getMaterial()
+		{
+			return material;
+		}
+		std::shared_ptr<const VertexBuffer>	Primitive::getVertices() const
 		{
 			return vertices;
 		}
-		std::shared_ptr<IndexBuffer> Primitive::getIndices() const
+		std::shared_ptr<VertexBuffer> Primitive::getVertices()
+		{
+			return vertices;
+		}
+		std::shared_ptr<const IndexBuffer> Primitive::getIndices() const
 		{
 			return indices;
 		}
-		std::shared_ptr<VertexBuffer> Primitive::getInstances() const
+		std::shared_ptr<IndexBuffer> Primitive::getIndices()
+		{
+			return indices;
+		}
+		std::shared_ptr<const VertexBuffer> Primitive::getInstances() const
+		{
+			return instances;
+		}
+		std::shared_ptr<VertexBuffer> Primitive::getInstances()
 		{
 			return instances;
 		}
