@@ -8,6 +8,7 @@
 #include "SpehsEngine/Core/BitwiseOperations.h"
 #include "SpehsEngine/Core/Log.h"
 #include "SpehsEngine/Core/SE_Time.h"
+#include "SpehsEngine/Graphics/GraphicsUtilities.h"
 #include "SpehsEngine/Graphics/Internal/InternalTypes.h"
 #include "SpehsEngine/Graphics/Internal/InternalUtilities.h"
 #include "SpehsEngine/Graphics/Internal/RendererCallbackHandler.h"
@@ -22,7 +23,7 @@ namespace se
 		{
 			if (initialized)
 			{
-				se::log::error("You can only have one Renderer!");
+				log::error("You can only have one Renderer!");
 				return;
 			}
 			initialized = true;
@@ -50,6 +51,8 @@ namespace se
 				//const bgfx::Caps* caps = bgfx::getCaps();
 				// TODO
 			}
+
+			log::info("Graphics Renderer initialized, " + toString(getRendererBackend()));
 
 			defaultUniforms = std::make_unique<DefaultUniforms>();
 		}

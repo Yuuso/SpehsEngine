@@ -153,6 +153,7 @@
     <ClInclude Include="Font.h" />
     <ClInclude Include="CharacterSet.h" />
     <ClInclude Include="FontManager.h" />
+    <ClInclude Include="GraphicsUtilities.h" />
     <ClInclude Include="IndexBuffer.h" />
     <ClInclude Include="InstanceBuffer.h" />
     <ClInclude Include="Internal\Animation.h" />
@@ -218,6 +219,7 @@
     <ClCompile Include="DefaultMaterials.cpp" />
     <ClCompile Include="Font.cpp" />
     <ClCompile Include="FontManager.cpp" />
+    <ClCompile Include="GraphicsUtilities.cpp" />
     <ClCompile Include="IndexBuffer.cpp" />
     <ClCompile Include="InstanceBuffer.cpp" />
     <ClCompile Include="Internal\AnimatorInternal.cpp" />
