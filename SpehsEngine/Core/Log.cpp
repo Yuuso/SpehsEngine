@@ -21,6 +21,7 @@ namespace se
 	namespace log
 	{
 		static std::mutex mutex;
+#if (SE_CONFIGURATION != SE_CONFIGURATION_FINAL_RELEASE)
 		static void writeConsole(const std::string_view message, [[maybe_unused]] const TextColor color)
 		{
 #if defined(_WIN32)
@@ -71,6 +72,7 @@ namespace se
 			}
 #endif
 		}
+#endif
 
 		void info([[maybe_unused]] const std::string_view message, [[maybe_unused]] const TextColor color)
 		{
