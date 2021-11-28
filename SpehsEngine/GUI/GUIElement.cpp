@@ -162,6 +162,8 @@ namespace se
 		{
 			if (parent && checkBit(parent->updateFlags, GUIElementUpdateFlag::TreeUpdateNeeded))
 				enableBit(updateFlags, GUIElementUpdateFlag::TreeUpdateNeeded);
+			if (lastViewSize != _context.viewSize) // TODO: Only really necessary if we're using view relative units
+				enableBit(updateFlags, GUIElementUpdateFlag::TreeUpdateNeeded);
 
 			if (checkBit(updateFlags, GUIElementUpdateFlag::TreeUpdateNeeded))
 			{
