@@ -27,10 +27,10 @@ namespace se
 			WHITE			/*= FOREGROUND_INTENSITY | FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE*/
 		};
 
-		void info(const std::string_view message, const TextColor color);
-		void info(const std::string_view message);
+		void debug(const std::string& _message);
+		void info(const std::string_view message, const TextColor color = TextColor::NONE);
 		void warning(const std::string_view message);
 		void error(const std::string_view message);
-		void debug(const std::string& _message);
+		void fatal(const std::string_view message);
 	}
 }

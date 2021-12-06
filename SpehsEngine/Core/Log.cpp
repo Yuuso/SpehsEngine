@@ -2,10 +2,8 @@
 #include "stdafx.h"
 #include "SpehsEngine/Core/Log.h"
 #include "SpehsEngine/Core/SE_Time.h"
-
-#if !defined(SE_FINAL_RELEASE)
+#include "SpehsEngine/Core/StringViewUtilityFunctions.h"
 #include "SpehsEngine/Core/SystemMessageBox.h"
-#endif
 
 #if defined(_WIN32)
 #include <Windows.h>
@@ -74,55 +72,54 @@ namespace se
 		}
 #endif
 
-		void info([[maybe_unused]] const std::string_view message, [[maybe_unused]] const TextColor color)
-		{
-#if (SE_CONFIGURATION != SE_CONFIGURATION_FINAL_RELEASE)
-			std::lock_guard<std::mutex> lock(mutex);
-			writeConsole(message, color);
-#endif
-		}
-		void info([[maybe_unused]] const std::string_view message)
-		{
-#if (SE_CONFIGURATION != SE_CONFIGURATION_FINAL_RELEASE)
-			std::lock_guard<std::mutex> lock(mutex);
-			writeConsole(message, NONE);
-#endif
-		}
-		void warning([[maybe_unused]] const std::string_view message)
-		{
-#if (SE_CONFIGURATION != SE_CONFIGURATION_FINAL_RELEASE)
-			std::lock_guard<std::mutex> lock(mutex);
-			std::string warningMessage("Warning: ");
-			warningMessage += message;
-			writeConsole(warningMessage, YELLOW);
-#endif
-		}
-		void error(const std::string_view message)
-		{
-#if (SE_CONFIGURATION != SE_CONFIGURATION_FINAL_RELEASE)
-			std::lock_guard<std::mutex> lock(mutex);
-			std::string errorMessage("Error: ");
-			errorMessage += message;
-			writeConsole(errorMessage, RED);
-			SystemMessageBox("Fatal Error!", errorMessage, BUTTONS_OK | ICON_ERROR);
-			//writeConsole("Press enter to continue...", NONE);
-			//std::getchar();
-#else
-			const std::string fatalError(message);
-			SystemMessageBox("Fatal Error!", fatalError, BUTTONS_OK | ICON_ERROR);
-			exit(1);
-#endif
-		}
 		void debug([[maybe_unused]] const std::string& _message)
 		{
-#if (SE_CONFIGURATION != SE_CONFIGURATION_FINAL_RELEASE)
+		#if (SE_CONFIGURATION != SE_CONFIGURATION_FINAL_RELEASE)
 			if (!_message.empty())
 			{
 				OutputDebugString(_message.c_str());
 				if (_message.back() != '\n')
 					OutputDebugString("\n");
 			}
-#endif
+		#endif
+		}
+
+		void info([[maybe_unused]] const std::string_view message, [[maybe_unused]] const TextColor color)
+		{
+		#if (SE_CONFIGURATION != SE_CONFIGURATION_FINAL_RELEASE)
+			std::lock_guard<std::mutex> lock(mutex);
+			writeConsole(message, color);
+		#endif
+		}
+
+		void warning([[maybe_unused]] const std::string_view message)
+		{
+		#if (SE_CONFIGURATION != SE_CONFIGURATION_FINAL_RELEASE)
+			std::lock_guard<std::mutex> lock(mutex);
+			const std::string warningMessage("Warning: " + message);
+			writeConsole(warningMessage, YELLOW);
+		#endif
+		}
+
+		void error(const std::string_view message)
+		{
+			std::lock_guard<std::mutex> lock(mutex);
+		#if (SE_CONFIGURATION != SE_CONFIGURATION_FINAL_RELEASE)
+			const std::string errorMessage("Error: " + message);
+			writeConsole(errorMessage, RED);
+		#endif
+			SystemMessageBox("Error!", std::string(message), BUTTONS_OK | ICON_ERROR);
+		}
+
+		void fatal(const std::string_view message)
+		{
+			std::lock_guard<std::mutex> lock(mutex);
+		#if (SE_CONFIGURATION != SE_CONFIGURATION_FINAL_RELEASE)
+			const std::string errorMessage("Fatal Error: " + message);
+			writeConsole(errorMessage, RED);
+		#endif
+			SystemMessageBox("Fatal Error!", std::string(message), BUTTONS_OK | ICON_ERROR);
+			exit(1);
 		}
 	}
 }
