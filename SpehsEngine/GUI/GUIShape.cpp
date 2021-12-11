@@ -40,7 +40,6 @@ namespace se
 			params.orientation = ShapeOrientation::XY_Plane;
 
 			shape.generate(ShapeType::Rectangle, params);
-			shape.setRenderFlags(RenderFlag::Blending | RenderFlag::DepthTestLess | RenderFlag::DepthWrite);
 			enableBit(updateFlags, GUIElementUpdateFlag::MaterialUpdateNeeded);
 		}
 
@@ -76,6 +75,11 @@ namespace se
 					shape.setScale(globalScale * glm::vec3(unitToPixels(getSize(), _context.viewSize), 1.0f));
 
 					shape.setScissor(globalScissor);
+
+					if (getColor().a < 1.0f || !textureName.empty())
+						shape.setRenderFlags(RenderFlag::BlendAlpha | RenderFlag::DepthTestLess);
+					else
+						shape.setRenderFlags(RenderFlag::WriteDepth | RenderFlag::WriteAlpha | RenderFlag::DepthTestLess);
 				}
 			}
 		}

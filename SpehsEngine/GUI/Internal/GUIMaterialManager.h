@@ -22,6 +22,8 @@ namespace se
 
 		private:
 
+			std::shared_ptr<graphics::Texture> colorTexture;
+
 			graphics::ShaderManager& shaderManager;
 			graphics::TextureManager& textureManager;
 			graphics::FontManager& fontManager;

@@ -11,11 +11,22 @@ namespace se
 			, textureManager(_textureManager)
 			, fontManager(_fontManager)
 		{
+			graphics::TextureInput textureInput;
+			textureInput.width = 1;
+			textureInput.height = 1;
+			textureInput.data = { 255, 255, 255, 255 };
+			colorTexture = textureManager.create("SE_GUI_WhiteColor", textureInput);
 		}
 
 		std::shared_ptr<graphics::Material> GUIMaterialManager::createColorMaterial()
 		{
-			return graphics::createMaterial(graphics::DefaultMaterialType::FlatColor, shaderManager);
+			auto result = graphics::createMaterial(graphics::DefaultMaterialType::FlatTexture, shaderManager);
+			result->setTexture(colorTexture);
+			return result;
+
+			// TODO: Figure out blending issues, we're using the same shader for all GUIShapes for now...
+			//			One possible fix would be to use Sequential view ordering only for GUI views.
+			//return graphics::createMaterial(graphics::DefaultMaterialType::FlatColor, shaderManager);
 		}
 		std::shared_ptr<graphics::Material> GUIMaterialManager::createTextureMaterial(std::string_view _texture)
 		{

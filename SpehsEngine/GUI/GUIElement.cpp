@@ -26,6 +26,7 @@ namespace se
 			, anchor(_other.anchor)
 			, alignment(_other.alignment)
 			, visible(_other.visible)
+			, padding(_other.padding)
 		{
 			parent = nullptr;
 			for (auto&& copyChild : _other.children)
@@ -109,7 +110,8 @@ namespace se
 			{
 				if (parent)
 				{
-					return parent->unitToPixels(resolveUnitType(parent->getSize().x, true), _viewSize);
+					return parent->unitToPixels(resolveUnitType(parent->getSize().x, true), _viewSize) -
+						   parent->unitToPixels(resolveUnitType(parent->getPadding(), true), _viewSize) * 2.0f;
 				}
 				return _viewSize.x;
 			};
@@ -117,7 +119,8 @@ namespace se
 			{
 				if (parent)
 				{
-					return parent->unitToPixels(resolveUnitType(parent->getSize().y, false), _viewSize);
+					return parent->unitToPixels(resolveUnitType(parent->getSize().y, false), _viewSize) -
+						   parent->unitToPixels(resolveUnitType(parent->getPadding(), false), _viewSize) * 2.0f;
 				}
 				return _viewSize.y;
 			};
@@ -167,16 +170,16 @@ namespace se
 
 			if (checkBit(updateFlags, GUIElementUpdateFlag::TreeUpdateNeeded))
 			{
-				const float zValue = static_cast<float>(1 + getZIndex());
-
+				const float zValue = static_cast<float>(getZValue());
 				const glm::vec2 anchorOffset = getAnchorPositionOffset(_context.viewSize);
 				const glm::vec2 alignmentOffset = getAlignmentPositionOffset(_context.viewSize);
 				const glm::vec2 pixelPosition = unitToPixels(getPosition(), _context.viewSize);
 				const glm::vec2 pixelSize = unitToPixels(getSize(), _context.viewSize);
+				const float paddingOffset = parent ? parent->unitToPixels(parent->getPadding(), _context.viewSize) : 0.0f;
 
 				const glm::mat4 localTransform =
 					constructTransformationMatrix(
-						glm::vec3(pixelPosition.x + anchorOffset.x + alignmentOffset.x, -(pixelPosition.y + anchorOffset.y + alignmentOffset.y), zValue),
+						glm::vec3(pixelPosition.x + anchorOffset.x + alignmentOffset.x + paddingOffset, -(pixelPosition.y + anchorOffset.y + alignmentOffset.y + paddingOffset), zValue),
 						glm::rotate(glm::identity<glm::quat>(), getRotation(), glm::vec3(0.0f, 0.0f, 1.0f)),
 						glm::vec3(getScale().x, getScale().y, 1.0f));
 				if (parent)
@@ -350,6 +353,11 @@ namespace se
 		{
 			return zindex;
 		}
+		ZIndex GUIElement::getZValue() const
+		{
+			const ZIndex parentZValue = parent ? parent->getZValue() : 0;
+			return parentZValue + 1 + getZIndex();
+		}
 		float GUIElement::getRotation() const
 		{
 			return rotation;
@@ -377,6 +385,10 @@ namespace se
 		bool GUIElement::getVisible() const
 		{
 			return visible;
+		}
+		GUIUnit GUIElement::getPadding() const
+		{
+			return padding;
 		}
 
 
@@ -479,6 +491,11 @@ namespace se
 		void GUIElement::setHorizontalAlignment(HorizontalAlignment _value)
 		{
 			alignment.x = alignmentToUnit(_value);
+			enableBit(updateFlags, GUIElementUpdateFlag::TreeUpdateNeeded);
+		}
+		void GUIElement::setPadding(GUIUnit _padding)
+		{
+			padding = _padding;
 			enableBit(updateFlags, GUIElementUpdateFlag::TreeUpdateNeeded);
 		}
 	}

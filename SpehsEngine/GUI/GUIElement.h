@@ -40,6 +40,7 @@ namespace se
 
 			const GUIVec2&							getPosition() const;
 			ZIndex									getZIndex() const;
+			ZIndex									getZValue() const;
 			float									getRotation() const;
 			const GUIVec2&							getSize() const;
 			const glm::vec2&						getScale() const;
@@ -47,6 +48,7 @@ namespace se
 			const GUIVec2&							getAnchor() const;
 			const GUIVec2&							getAlignment() const;
 			bool									getVisible() const;
+			GUIUnit									getPadding() const;
 
 			void									setPosition(const GUIVec2& _position);
 			void									setX(GUIUnit _x);
@@ -67,6 +69,7 @@ namespace se
 			void									setAlignment(VerticalAlignment _vertical, HorizontalAlignment _horizontal);
 			void									setVerticalAlignment(VerticalAlignment _value);
 			void									setHorizontalAlignment(HorizontalAlignment _value);
+			void									setPadding(GUIUnit _padding);
 
 		protected:
 
@@ -107,6 +110,7 @@ namespace se
 			bool									clipping		= false;
 			GUIVec2									anchor			= GUIVec2({ 0.0f, 0.0f }, GUIUnitType::Self);
 			GUIVec2									alignment		= GUIVec2({ 0.0f, 0.0f }, GUIUnitType::Parent);
+			GUIUnit									padding			= GUIUnit(0.0f, GUIUnitType::Pixels);
 			bool									visible			= true;
 			bool									isRootElement	= false;
 		};
