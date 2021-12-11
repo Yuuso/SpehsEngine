@@ -40,7 +40,9 @@ namespace se
 				init.resolution.height = (uint32_t)_window.getHeight();
 				init.resolution.reset = getResetParameters(rendererFlags);
 				init.callback = callbackHandler;
-				bgfx::init(init);
+				const bool success = bgfx::init(init);
+				if (!success)
+					log::fatal("Failed to initialize Renderer!");
 
 				bgfx::setDebug(BGFX_DEBUG_TEXT /*| BGFX_DEBUG_STATS*/);
 

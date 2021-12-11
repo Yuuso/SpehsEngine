@@ -36,9 +36,13 @@ namespace se
 			calculateRenderSize(_renderContext);
 			view->onRenderSignal(renderSize);
 
-			static_assert(ViewClearFlag::ClearColor == BGFX_CLEAR_COLOR
-						  && ViewClearFlag::ClearDepth == BGFX_CLEAR_DEPTH
-						  && ViewClearFlag::ClearStencil == BGFX_CLEAR_STENCIL, "ViewClearFlags don't match bgfx values!");
+			static_assert(ViewClearFlag::ClearColor == BGFX_CLEAR_COLOR &&
+						  ViewClearFlag::ClearDepth == BGFX_CLEAR_DEPTH &&
+						  ViewClearFlag::ClearStencil == BGFX_CLEAR_STENCIL,
+						  "ViewClearFlags don't match bgfx values!");
+
+			bgfx::resetView(_renderContext.currentViewId);
+			bgfx::setViewMode(_renderContext.currentViewId, bgfx::ViewMode::Default);
 			bgfx::setViewClear(_renderContext.currentViewId, view->getClearFlags(), view->getClearColor(), 1.0f, 0);
 
 			// Camera

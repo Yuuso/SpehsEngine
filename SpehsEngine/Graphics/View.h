@@ -52,8 +52,7 @@ namespace se
 			ViewSize offset = ViewSize(0.0f, 0.0f, ViewSizeType::Pixels);
 
 			bool enableMSAA = true; // TODO: Test if this works, move to window if not
-			ViewClearFlagsType clearFlags = ViewClearFlag::ClearColor
-										  | ViewClearFlag::ClearDepth;
+			ViewClearFlagsType clearFlags = ViewClearFlag::ClearColor | ViewClearFlag::ClearDepth | ViewClearFlag::ClearStencil;
 			uint32_t clearColor = 0x000000ff;
 
 			boost::signals2::signal<void(glm::vec2)> onRenderSignal; // param: view size in pixels

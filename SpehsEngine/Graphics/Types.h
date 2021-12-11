@@ -18,20 +18,33 @@ namespace se
 		typedef uint32_t RenderFlagsType;
 		enum RenderFlag : RenderFlagsType
 		{
-			CullFrontFace			= (1 << 0),
-			CullBackFace			= (1 << 1),
+			CullFrontFace				= (1 << 0),
+			CullBackFace				= (1 << 1),
 
-			DepthWrite				= (1 << 2),
-			DepthTestLess			= (1 << 3),
-			DepthTestLEqual			= (1 << 4),
-			DepthTestGreater		= (1 << 5),
+			WriteDepth					= (1 << 2),
+			DepthTestAlways				= (1 << 3),
+			DepthTestNever				= (1 << 4),
+			DepthTestEqual				= (1 << 5),
+			DepthTestNotEqual			= (1 << 6),
+			DepthTestLess				= (1 << 7),
+			DepthTestLessOrEqual		= (1 << 8),
+			DepthTestGreater			= (1 << 9),
+			DepthTestGreaterOrEqual		= (1 << 10),
 
-			Blending				= (1 << 6),
+			WriteAlpha					= (1 << 11),
+			BlendAlpha					= (1 << 12),
+			BlendAdd					= (1 << 13),
+			BlendDarken					= (1 << 14),
+			BlendLighten				= (1 << 15),
+			BlendMultiply				= (1 << 16),
+			BlendNormal					= (1 << 17),
+			BlendScreen					= (1 << 18),
+			BlendBurn					= (1 << 19),
 
-			BillboardSpherical		= (1 << 7),
-			BillboardCylindrical	= (1 << 8),
+			BillboardSpherical			= (1 << 20),
+			BillboardCylindrical		= (1 << 21),
 		};
-		constexpr RenderFlagsType defaultRenderFlags = RenderFlag::DepthWrite | RenderFlag::DepthTestLess;
+		constexpr RenderFlagsType defaultRenderFlags = RenderFlag::WriteDepth | RenderFlag::DepthTestLess;
 
 		typedef uint32_t RendererFlagsType;
 		enum RendererFlag : RendererFlagsType

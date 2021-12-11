@@ -14,22 +14,48 @@ namespace se
 		{
 			uint64_t state = BGFX_STATE_NONE;
 
-			state |= BGFX_STATE_WRITE_RGB | BGFX_STATE_WRITE_A;
-			if (checkBit(_renderInfo.renderFlags, RenderFlag::DepthWrite))
+			state |= BGFX_STATE_WRITE_RGB;
+			if (checkBit(_renderInfo.renderFlags, RenderFlag::WriteDepth))
 				state |= BGFX_STATE_WRITE_Z;
+			if (checkBit(_renderInfo.renderFlags, RenderFlag::WriteAlpha))
+				state |= BGFX_STATE_WRITE_A;
 
 			if (_renderContext.enableMSAA)
 				state |= BGFX_STATE_MSAA;
 
+			if (checkBit(_renderInfo.renderFlags, RenderFlag::DepthTestAlways))
+				state |= BGFX_STATE_DEPTH_TEST_ALWAYS;
+			if (checkBit(_renderInfo.renderFlags, RenderFlag::DepthTestNever))
+				state |= BGFX_STATE_DEPTH_TEST_NEVER;
+			if (checkBit(_renderInfo.renderFlags, RenderFlag::DepthTestEqual))
+				state |= BGFX_STATE_DEPTH_TEST_EQUAL;
+			if (checkBit(_renderInfo.renderFlags, RenderFlag::DepthTestNotEqual))
+				state |= BGFX_STATE_DEPTH_TEST_NOTEQUAL;
 			if (checkBit(_renderInfo.renderFlags, RenderFlag::DepthTestLess))
 				state |= BGFX_STATE_DEPTH_TEST_LESS;
-			if (checkBit(_renderInfo.renderFlags, RenderFlag::DepthTestLEqual))
+			if (checkBit(_renderInfo.renderFlags, RenderFlag::DepthTestLessOrEqual))
 				state |= BGFX_STATE_DEPTH_TEST_LEQUAL;
 			if (checkBit(_renderInfo.renderFlags, RenderFlag::DepthTestGreater))
 				state |= BGFX_STATE_DEPTH_TEST_GREATER;
+			if (checkBit(_renderInfo.renderFlags, RenderFlag::DepthTestGreaterOrEqual))
+				state |= BGFX_STATE_DEPTH_TEST_GEQUAL;
 
-			if (checkBit(_renderInfo.renderFlags, RenderFlag::Blending)) // TODO
-				state |= BGFX_STATE_BLEND_ALPHA;
+			if (checkBit(_renderInfo.renderFlags, RenderFlag::BlendAlpha))
+				state |= BGFX_STATE_BLEND_ALPHA | BGFX_STATE_WRITE_A;
+			if (checkBit(_renderInfo.renderFlags, RenderFlag::BlendAdd))
+				state |= BGFX_STATE_BLEND_ADD | BGFX_STATE_WRITE_A;
+			if (checkBit(_renderInfo.renderFlags, RenderFlag::BlendDarken))
+				state |= BGFX_STATE_BLEND_DARKEN | BGFX_STATE_WRITE_A;
+			if (checkBit(_renderInfo.renderFlags, RenderFlag::BlendLighten))
+				state |= BGFX_STATE_BLEND_LIGHTEN | BGFX_STATE_WRITE_A;
+			if (checkBit(_renderInfo.renderFlags, RenderFlag::BlendMultiply))
+				state |= BGFX_STATE_BLEND_MULTIPLY | BGFX_STATE_WRITE_A;
+			if (checkBit(_renderInfo.renderFlags, RenderFlag::BlendNormal))
+				state |= BGFX_STATE_BLEND_NORMAL | BGFX_STATE_WRITE_A;
+			if (checkBit(_renderInfo.renderFlags, RenderFlag::BlendScreen))
+				state |= BGFX_STATE_BLEND_SCREEN | BGFX_STATE_WRITE_A;
+			if (checkBit(_renderInfo.renderFlags, RenderFlag::BlendBurn))
+				state |= BGFX_STATE_BLEND_LINEAR_BURN | BGFX_STATE_WRITE_A;
 
 			if (!checkBit(_renderContext.rendererFlags, RendererFlag::CWFrontFace))
 				state |= BGFX_STATE_FRONT_CCW;

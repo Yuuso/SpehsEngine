@@ -210,7 +210,7 @@ namespace se
 				debugPrimitive = std::make_shared<Primitive>();
 				debugPrimitive->setName("point light debug");
 				debugPrimitive->setPrimitiveType(PrimitiveType::Lines);
-				debugPrimitive->enableRenderFlags(RenderFlag::Blending);
+				debugPrimitive->enableRenderFlags(RenderFlag::BlendAlpha);
 				debugPrimitive->setPosition(getPosition());
 				debugPrimitive->setScale(glm::vec3(getOuterRadius()));
 				debugPrimitive->setRenderState(getIntensity() > 0.0f);
@@ -219,7 +219,7 @@ namespace se
 				RenderCopy copy;
 				copy.primitiveColor = Color(0.85f, 1.0f, 0.85f, 0.05f);
 				copy.primitiveType = PrimitiveType::Lines;
-				enableBit(copy.renderFlags, RenderFlag::Blending | RenderFlag::DepthTestGreater);
+				enableBit(copy.renderFlags, RenderFlag::BlendAlpha | RenderFlag::DepthTestGreater);
 				debugPrimitive->setRenderCopy(copy);
 			}
 
@@ -306,7 +306,7 @@ namespace se
 				debugPrimitive = std::make_shared<Primitive>();
 				debugPrimitive->setName("spot light debug");
 				debugPrimitive->setPrimitiveType(PrimitiveType::Lines);
-				debugPrimitive->enableRenderFlags(RenderFlag::Blending);
+				debugPrimitive->enableRenderFlags(RenderFlag::BlendAlpha);
 				debugPrimitive->setPosition(getPosition());
 				debugPrimitive->setScale(glm::vec3(getOuterRadius()));
 				debugPrimitive->setRotation(glm::quatLookAt(getDirection(), glm::vec3(0.0f, 1.0f, 0.0f)));
@@ -316,7 +316,7 @@ namespace se
 				RenderCopy copy;
 				copy.primitiveColor = Color(0.85f, 1.0f, 0.85f, 0.05f);
 				copy.primitiveType = PrimitiveType::Lines;
-				enableBit(copy.renderFlags, RenderFlag::Blending);
+				enableBit(copy.renderFlags, RenderFlag::BlendAlpha);
 				enableBit(copy.renderFlags, RenderFlag::DepthTestGreater);
 				debugPrimitive->setRenderCopy(copy);
 			}

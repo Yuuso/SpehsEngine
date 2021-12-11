@@ -14,8 +14,7 @@ namespace se
 		Text::Text()
 			: Primitive()
 		{
-			enableRenderFlags(RenderFlag::Blending);
-			disableRenderFlags(RenderFlag::DepthTestLess);
+			setRenderFlags(RenderFlag::BlendAlpha);
 			setName("text");
 		}
 
