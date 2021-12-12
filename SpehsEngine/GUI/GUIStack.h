@@ -23,10 +23,8 @@ namespace se
 
 
 			StackOrientation						getOrientation() const;
-			GUIUnit									getPadding() const;
 
 			void									setOrientation(StackOrientation _orientation);
-			void									setPadding(GUIUnit _padding);
 
 		protected:
 
@@ -36,7 +34,6 @@ namespace se
 		private:
 
 			StackOrientation orientation = StackOrientation::Vertical;
-			GUIUnit padding = GUIUnit(0.0f, GUIUnitType::Pixels);
 		};
 	}
 }

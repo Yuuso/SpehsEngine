@@ -9,7 +9,6 @@ namespace se
 		GUIStack::GUIStack(const GUIStack & _other)
 			: GUIElement(_other)
 			, orientation(_other.orientation)
-			, padding(_other.padding)
 		{}
 
 		std::shared_ptr<GUIElement> GUIStack::clone()
@@ -22,19 +21,10 @@ namespace se
 		{
 			return orientation;
 		}
-		GUIUnit GUIStack::getPadding() const
-		{
-			return padding;
-		}
 
 		void GUIStack::setOrientation(StackOrientation _orientation)
 		{
 			orientation = _orientation;
-			enableBit(updateFlags, GUIElementUpdateFlag::TreeUpdateNeeded);
-		}
-		void GUIStack::setPadding(GUIUnit _padding)
-		{
-			padding = _padding;
 			enableBit(updateFlags, GUIElementUpdateFlag::TreeUpdateNeeded);
 		}
 
@@ -55,7 +45,7 @@ namespace se
 							{
 								const glm::vec2 childSize = child->unitToPixels(child->getSize(), lastViewSize);
 								childrenPixelSize.y += childSize.y;
-								childrenPixelSize.y += unitToPixels(padding, lastViewSize);
+								childrenPixelSize.y += unitToPixels(getPadding(), lastViewSize);
 								childrenPixelSize.x = glm::max(childrenPixelSize.x, childSize.x);
 							}
 							break;
@@ -64,7 +54,7 @@ namespace se
 							{
 								const glm::vec2 childSize = child->unitToPixels(child->getSize(), lastViewSize);
 								childrenPixelSize.x += childSize.x;
-								childrenPixelSize.x += unitToPixels(padding, lastViewSize);
+								childrenPixelSize.x += unitToPixels(getPadding(), lastViewSize);
 								childrenPixelSize.y = glm::max(childrenPixelSize.y, childSize.y);
 							}
 							break;
@@ -97,7 +87,7 @@ namespace se
 								const float childSize = child->unitToPixels(resolveUnitType(child->getSize().y, false), lastViewSize);
 								child->setY(GUIUnit(pixelPenPosition, GUIUnitType::Auto));
 								pixelPenPosition += childSize;
-								pixelPenPosition += unitToPixels(padding, _context.viewSize);
+								pixelPenPosition += unitToPixels(getPadding(), _context.viewSize);
 							}
 							break;
 						case StackOrientation::Horizontal:
@@ -106,7 +96,7 @@ namespace se
 								const float childSize = child->unitToPixels(resolveUnitType(child->getSize().x, true), lastViewSize);
 								child->setX(GUIUnit(pixelPenPosition, GUIUnitType::Auto));
 								pixelPenPosition += childSize;
-								pixelPenPosition += unitToPixels(padding, _context.viewSize);
+								pixelPenPosition += unitToPixels(getPadding(), _context.viewSize);
 							}
 							break;
 

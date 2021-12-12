@@ -55,7 +55,7 @@ namespace se
 						}
 						else
 						{
-							const float factor = unitToPixels(getSize().y, lastViewSize) / dims.dimensions.y;
+							const float factor = unitToPixels(resolveUnitType(getSize().y, false), lastViewSize) / dims.dimensions.y;
 							setWidth(GUIUnit(dims.dimensions.x * factor, GUIUnitType::Auto));
 						}
 					}
@@ -67,7 +67,7 @@ namespace se
 						}
 						else
 						{
-							const float factor = unitToPixels(getSize().x, lastViewSize) / dims.dimensions.x;
+							const float factor = unitToPixels(resolveUnitType(getSize().x, true), lastViewSize) / dims.dimensions.x;
 							setHeight(GUIUnit(dims.dimensions.y * factor, GUIUnitType::Auto));
 						}
 					}
