@@ -49,6 +49,8 @@ namespace se
 				static_assert(sizeof(IndexType) == 2);
 				const bgfx::Memory* bufferMemory = bgfx::copy(data(), uint32_t(bytes()));
 				bufferObject = bgfx::createIndexBuffer(bufferMemory).idx;
+				if (bufferObject == INVALID_RESOURCE_HANDLE)
+					log::fatal("Out of index buffer memory?");
 			}
 			bufferChanged = false;
 		}

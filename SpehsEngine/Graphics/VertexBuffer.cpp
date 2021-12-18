@@ -143,6 +143,8 @@ namespace se
 			{
 				const bgfx::Memory* bufferMemory = bgfx::copy(data(), uint32_t(bytes()));
 				bufferObject = bgfx::createVertexBuffer(bufferMemory, findVertexLayout(getAttributes())).idx;
+				if (bufferObject == INVALID_RESOURCE_HANDLE)
+					log::fatal("Out of vertex buffer memory?");
 			}
 			bufferChanged = false;
 		}
