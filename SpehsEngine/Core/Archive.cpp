@@ -16,6 +16,19 @@ namespace se
 		data.clear();
 	}
 
+	size_t Archive::getDataSize() const
+	{
+		size_t size = 0;
+		size += sizeof(uint32_t); // Data vector size
+		for (std::unordered_map<uint32_t, WriteBuffer>::const_iterator it = data.begin(); it != data.end(); it++)
+		{
+			size += sizeof(it->first); // Hash
+			size += sizeof(uint32_t); // WriteBuffer size
+			size += it->second.getSize(); // WriteBuffer contents
+		}
+		return size;
+	}
+
 	void Archive::write(WriteBuffer& writeBuffer) const
 	{
 		writeBuffer.write(uint32_t(data.size()));

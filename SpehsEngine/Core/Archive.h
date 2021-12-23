@@ -34,6 +34,9 @@ namespace se
 
 		void clear();
 
+		/* How many bytes are required when writing the archive into a write buffer */
+		size_t getDataSize() const;
+
 		/* Writes archive contents into a buffer. */
 		void write(WriteBuffer& writeBuffer) const;
 		/* Clears and reads archive contents from a buffer. */
@@ -187,7 +190,7 @@ namespace se
 				return true;
 			}
 		}
-		
+
 	private:
 
 		/* Returns a platform independent 64 bit hash from two given strings. */
