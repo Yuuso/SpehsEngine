@@ -1,5 +1,6 @@
 #pragma once
 
+#include "SpehsEngine/Core/HasMemberFunction.h"
 #include <memory>
 
 
@@ -11,8 +12,9 @@ namespace se
 	template<typename T, typename D = std::default_delete<T>>
 	class DeepCopyUniquePtr
 	{
-		static_assert(std::is_copy_constructible<T>::value, "Type T must be copy constructible.");
 	public:	
+
+		typedef T element_type;
 
 		DeepCopyUniquePtr() = default;
 
@@ -31,7 +33,7 @@ namespace se
 		{
 			if (other)
 			{
-				impl.reset(new T(*other));
+				impl.reset(copy(*other));
 			}
 		}
 
@@ -39,7 +41,7 @@ namespace se
 		{
 			if (other)
 			{
-				impl.reset(new T(*other));
+				impl.reset(copy(*other));
 			}
 			else
 			{
@@ -50,7 +52,7 @@ namespace se
 		
 		DeepCopyUniquePtr<T, D>& operator=(DeepCopyUniquePtr<T, D>&& move)
 		{
-			impl = std::move(move);
+			impl = std::move(move.impl);
 			return *this;
 		}
 
@@ -89,7 +91,24 @@ namespace se
 			return impl.release();
 		}
 
+		std::unique_ptr<T, D>& getImpl() { return impl; }
+		const std::unique_ptr<T, D>& getImpl() const { return impl; }
+
 	private:
+
+		SPEHS_HAS_MEMBER_FUNCTION(clone, has_clone);
+		template<typename V>
+		typename std::enable_if<has_clone<V, std::unique_ptr<V>(V::*)() const>::value, V*>::type copy(const V& v) const
+		{
+			return v.clone().release();
+		}
+		template<typename V>
+		typename std::enable_if<!has_clone<V, std::unique_ptr<V>(V::*)() const>::value, V*>::type copy(const V& v) const
+		{
+			static_assert(std::is_copy_constructible<V>::value, "Type must be copy constructible or have a clone method.");
+			return new V(v); // If you get a compile error here you need to make the type either copy constructible or add a 'std::unique_ptr<T> clone() const' method to it
+		}
+
 		std::unique_ptr<T, D> impl;
 	};
 }

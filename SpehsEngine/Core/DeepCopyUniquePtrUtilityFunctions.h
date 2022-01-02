@@ -2,6 +2,7 @@
 
 #include "SpehsEngine/Core/Archive.h"
 #include "SpehsEngine/Core/DeepCopyUniquePtr.h"
+#include "SpehsEngine/Core/UniquePtrUtilityFunctions.h"
 #include "SpehsEngine/Core/ReadBuffer.h"
 #include "SpehsEngine/Core/WriteBuffer.h"
 
@@ -9,64 +10,26 @@
 namespace se
 {
 	template<typename T>
-	void writeToBuffer(WriteBuffer& writeBuffer, const DeepCopyUniquePtr<T>& pointer)
+	inline void writeToBuffer(WriteBuffer& writeBuffer, const DeepCopyUniquePtr<T>& pointer)
 	{
-		const bool exists = pointer.get() != nullptr;
-		se_write(writeBuffer, exists);
-		if (exists)
-		{
-			const T& t = *pointer;
-			se_write(writeBuffer, t);
-		}
+		writeToBuffer(writeBuffer, pointer.getImpl());
 	}
 
 	template<typename T>
-	bool readFromBuffer(ReadBuffer& readBuffer, DeepCopyUniquePtr<T>& pointer)
+	inline bool readFromBuffer(ReadBuffer& readBuffer, DeepCopyUniquePtr<T>& pointer)
 	{
-		bool exists = false;
-		se_read(readBuffer, exists);
-		if (exists)
-		{
-			pointer.reset(new T());
-			T& t = *pointer;
-			se_read(readBuffer, t);
-		}
-		else
-		{
-			pointer.reset();
-		}
-		return true;
+		return readFromBuffer(readBuffer, pointer.getImpl());
 	}
 
 	template<typename T>
-	Archive writeToArchive(const DeepCopyUniquePtr<T>& pointer)
+	inline Archive writeToArchive(const DeepCopyUniquePtr<T>& pointer)
 	{
-		Archive archive;
-		const bool exists = pointer.get() != nullptr;
-		se_write_to_archive(archive, exists);
-		if (exists)
-		{
-			const T& t = *pointer;
-			se_write_to_archive(archive, t);
-		}
-		return archive;
+		return writeToArchive(pointer.getImpl());
 	}
 
 	template<typename T>
-	bool readFromArchive(const Archive& archive, DeepCopyUniquePtr<T>& pointer)
+	inline bool readFromArchive(const Archive& archive, DeepCopyUniquePtr<T>& pointer)
 	{
-		bool exists = false;
-		se_read_from_archive(archive, exists);
-		if (exists)
-		{
-			pointer.reset(new T());
-			T& t = *pointer;
-			se_read_from_archive(archive, t);
-		}
-		else
-		{
-			pointer.reset();
-		}
-		return true;
+		return readFromArchive(archive, pointer.getImpl());
 	}
 }
