@@ -146,6 +146,7 @@
     <ClCompile Include="ConnectionManager2Visualizer.cpp" />
     <ClCompile Include="DebugLib.cpp" />
     <ClCompile Include="FPSHistoryVisualizer.cpp" />
+    <ClCompile Include="ScopedDuration.cpp" />
     <ClCompile Include="ScopeProfilerVisualizer.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
@@ -160,6 +161,7 @@
     <ClInclude Include="DebugLib.h" />
     <ClInclude Include="FPSHistoryVisualizer.h" />
     <ClInclude Include="PrecompiledInclude.h" />
+    <ClInclude Include="ScopedDuration.h" />
     <ClInclude Include="ScopeProfilerVisualizer.h" />
     <ClInclude Include="stdafx.h" />
   </ItemGroup>

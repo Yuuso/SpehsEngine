@@ -38,7 +38,7 @@
 #define SE_CONFIGURATION SE_CONFIGURATION_DEBUG
 #else
 #define SE_CONFIGURATION SE_CONFIGURATION_RELEASE
-// TODO: setting the configuration to final release
+// TODO: setting the configuration to final release nocommit
 #endif
 
 // Scope profiler
