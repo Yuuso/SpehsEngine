@@ -1,6 +1,6 @@
 #include "stdafx.h"
-#include "ReadBuffer.h"
-#include "Log.h"
+#include "SpehsEngine/Core/ReadBuffer.h"
+
 
 namespace se
 {

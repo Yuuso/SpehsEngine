@@ -70,6 +70,7 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)HexColor.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)LockGuard.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)MultiMapUtilityFunctions.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)ReadAbstract.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)ResourcePathFinder.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)StaticRingBuffer.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)ScopedFrameLimiter.h" />
@@ -119,6 +120,7 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)UniquePtrUtilityFunctions.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)WatchedValue.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)WeightedRandomizer.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)WriteAbstract.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)WriteBuffer.h" />
   </ItemGroup>
   <ItemGroup>
