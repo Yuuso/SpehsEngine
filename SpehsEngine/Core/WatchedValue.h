@@ -15,11 +15,13 @@ namespace se
 		
 		void set(const T& _value)
 		{
+			T oldValue;
+			std::swap(value, oldValue);
 			value = _value;
-			changedSignal(value);
+			changedSignal(oldValue, value);
 			if (changedCallback)
 			{
-				changedCallback(value);
+				changedCallback(oldValue, value);
 			}
 		}
 
@@ -33,12 +35,12 @@ namespace se
 			return value;
 		}
 
-		void connectToChangedSignal(boost::signals2::scoped_connection& scopedConnection, const boost::function<void(const T&)>& callback)
+		void connectToChangedSignal(boost::signals2::scoped_connection& scopedConnection, const boost::function<void(const T&, const T&)>& callback)
 		{
 			scopedConnection = changedSignal.connect(callback);
 		}
 
-		void setValueChangedCallback(const std::function<void(const T&)>& callback)
+		void setValueChangedCallback(const std::function<void(const T&, const T&)>& callback)
 		{
 			if (changedCallback)
 			{
@@ -49,7 +51,7 @@ namespace se
 
 	private:
 		T value;
-		boost::signals2::signal<void(const T&)> changedSignal;
-		std::function<void(const T&)> changedCallback;
+		boost::signals2::signal<void(const T&, const T&)> changedSignal;
+		std::function<void(const T&, const T&)> changedCallback;
 	};
 }
