@@ -1,6 +1,7 @@
 #pragma once
 
 #include <functional>
+#include "boost/signals2/signal.hpp"
 
 
 namespace se
@@ -13,31 +14,31 @@ namespace se
 		public:
 
 			template<typename Packet>
-			void registerReceiveHandler(const PacketType packetType, const std::function<void(Packet&)>& receiveHandler)
+			void registerReceiveHandler(const PacketType packetType, boost::signals2::scoped_connection& scopedConnection, const std::function<void(Packet&)>& receiveHandler)
 			{
-				const bool exists = receiveHandlers.find(packetType) != receiveHandlers.end();
-				se_assert(!exists);
-				if (!exists)
+				boost::signals2::signal<void(se::ReadBuffer&)>& signal = receiveHandlerSignals[packetType];
+				se_assert(signal.empty() && "Multiple sources shouldn't connect as a receive handler to a single packet type at the same time.");
+				if (signal.empty())
 				{
-					receiveHandlers[packetType] = [this, receiveHandler](se::ReadBuffer& readBuffer)
-					{
-						Packet packet;
-						if (readBuffer.read(packet))
+					scopedConnection = signal.connect([this, receiveHandler](se::ReadBuffer& readBuffer)
 						{
-							receiveHandler(packet);
-						}
-						else
-						{
-							se::log::error("Failed to read packet contents");
-						}
-					};
+							Packet packet;
+							if (readBuffer.read(packet))
+							{
+								receiveHandler(packet);
+							}
+							else
+							{
+								se::log::error("Failed to read packet contents");
+							}
+						});
 				}
 			}
 
 			bool processPacket(const PacketType packetType, se::ReadBuffer& readBuffer)
 			{
-				std::unordered_map<PacketType, std::function<void(se::ReadBuffer&)>>::iterator it = receiveHandlers.find(packetType);
-				if (it != receiveHandlers.end())
+				std::unordered_map<PacketType, boost::signals2::signal<void(se::ReadBuffer&)>>::iterator it = receiveHandlerSignals.find(packetType);
+				if (it != receiveHandlerSignals.end() && !it->second.empty())
 				{
 					it->second(readBuffer);
 					return true;
@@ -49,7 +50,7 @@ namespace se
 			}
 
 		private:
-			std::unordered_map<PacketType, std::function<void(se::ReadBuffer&)>> receiveHandlers;
+			std::unordered_map<PacketType, boost::signals2::signal<void(se::ReadBuffer&)>> receiveHandlerSignals;
 		};
 	}
 }
