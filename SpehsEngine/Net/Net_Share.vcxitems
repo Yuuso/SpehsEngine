@@ -29,6 +29,7 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)HeaderIPv4.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)IOService.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Pinger.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)PacketManager.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)SocketUDP2.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)MultiConnectionAcceptorTCP.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NetLib.cpp" />
@@ -58,6 +59,7 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)HeaderIPv4.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)IOService.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Pinger.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)PacketManager.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)SocketUDP2.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)MultiConnectionAcceptorTCP.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NetLib.h" />
