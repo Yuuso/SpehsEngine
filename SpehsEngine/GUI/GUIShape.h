@@ -14,6 +14,7 @@ namespace se
 		public:
 
 													GUIShape();
+													GUIShape(graphics::ShapeType _shapeType);
 			virtual									~GUIShape()							= default;
 													GUIShape(const GUIShape& _other);
 													GUIShape(GUIShape&& _other)			= delete;
@@ -41,7 +42,7 @@ namespace se
 
 		private:
 
-			void									initShape();
+			void									initShape(graphics::ShapeType _shapeType);
 
 			graphics::Shape shape;
 		};

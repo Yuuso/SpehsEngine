@@ -13,8 +13,12 @@ namespace se
 	namespace gui
 	{
 		GUIShape::GUIShape()
+			: GUIShape(ShapeType::Rectangle)
 		{
-			initShape();
+		}
+		GUIShape::GUIShape(ShapeType _shapeType)
+		{
+			initShape(_shapeType);
 
 			// Default non-zero size
 			setSize(GUIVec2({ 10.0f, 10.0f }, GUIUnitType::Pixels));
@@ -22,7 +26,7 @@ namespace se
 		GUIShape::GUIShape(const GUIShape& _other)
 			: GUIElement(_other)
 		{
-			initShape();
+			initShape(_other.shape.getShapeType());
 			setColor(_other.getColor());
 		}
 
@@ -32,12 +36,12 @@ namespace se
 		}
 
 
-		void GUIShape::initShape()
+		void GUIShape::initShape(ShapeType _shapeType)
 		{
 			ShapeParameters params;
 			params.orientation = ShapeOrientation::XY_Plane;
 
-			shape.generate(ShapeType::Rectangle, params);
+			shape.generate(_shapeType, params);
 			enableBit(updateFlags, GUIElementUpdateFlag::MaterialUpdateNeeded);
 		}
 
