@@ -21,11 +21,9 @@ namespace se
 		}
 		GUIShape::GUIShape(const GUIShape& _other)
 			: GUIElement(_other)
-			, textureName(_other.textureName)
 		{
 			initShape();
 			setColor(_other.getColor());
-			setShapeType(_other.getShapeType());
 		}
 
 		std::shared_ptr<GUIElement> GUIShape::clone()
@@ -47,14 +45,7 @@ namespace se
 		{
 			if (checkBit(updateFlags, GUIElementUpdateFlag::MaterialUpdateNeeded))
 			{
-				if (!textureName.empty())
-				{
-					shape.setMaterial(_context.materialManager.createTextureMaterial(textureName));
-				}
-				else
-				{
-					shape.setMaterial(_context.materialManager.createColorMaterial());
-				}
+				shape.setMaterial(_context.materialManager.createShapeMaterial(getTexture()));
 			}
 			if (checkBit(updateFlags, GUIElementUpdateFlag::PrimitiveAddNeeded))
 			{
@@ -76,11 +67,16 @@ namespace se
 
 					shape.setScissor(globalScissor);
 
-					if (getColor().a < 1.0f || !textureName.empty())
+					if (getColor().a < 1.0f || !getTexture().empty())
 						shape.setRenderFlags(RenderFlag::BlendAlpha | RenderFlag::DepthTestLess);
 					else
 						shape.setRenderFlags(RenderFlag::WriteDepth | RenderFlag::WriteAlpha | RenderFlag::DepthTestLess);
 				}
+			}
+			if (checkBit(updateFlags, GUIElementUpdateFlag::VisualUpdateNeeded))
+			{
+				shape.setColor(getColor());
+				shape.getMaterial()->setTexture(_context.materialManager.getTexture(getTexture()));
 			}
 		}
 		void GUIShape::onAddedParent()
@@ -108,31 +104,32 @@ namespace se
 			return GUIVec2(GUIUnit(getSize().x.value * 0.5f, getSize().x.type), GUIUnit(getSize().y.value * 0.5f, getSize().y.type));
 		}
 
-		ShapeType GUIShape::getShapeType() const
-		{
-			return shape.getShapeType();
-		}
 		const Color& GUIShape::getColor() const
 		{
-			return shape.getColor();
+			return_property(color);
+		}
+		const std::string_view GUIShape::getTexture() const
+		{
+			return_property(texture);
 		}
 
-		void GUIShape::setShapeType(ShapeType _type)
-		{
-			if (shape.getShapeType() == _type)
-				return;
-			ShapeParameters params;
-			params.orientation = ShapeOrientation::XY_Plane;
-			shape.generate(_type, params);
-		}
 		void GUIShape::setColor(const Color& _color)
 		{
-			shape.setColor(_color);
+			normalProperties.color = _color;
+			enableBit(updateFlags, GUIElementUpdateFlag::VisualUpdateNeeded);
 		}
 		void GUIShape::setTexture(std::string_view _name)
 		{
-			textureName = _name;
-			enableBit(updateFlags, GUIElementUpdateFlag::MaterialUpdateNeeded);
+			normalProperties.texture = _name;
+
+			if (!shape.getMaterial())
+			{
+				enableBit(updateFlags, GUIElementUpdateFlag::MaterialUpdateNeeded);
+			}
+			else
+			{
+				enableBit(updateFlags, GUIElementUpdateFlag::VisualUpdateNeeded);
+			}
 		}
 	}
 }

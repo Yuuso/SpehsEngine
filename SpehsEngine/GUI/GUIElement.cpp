@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "SpehsEngine/GUI/GUIElement.h"
 
+#include "SpehsEngine/Input/MouseUtilityFunctions.h"
 #include "SpehsEngine/Math/GLMMatrixUtilityFunctions.h"
 #include "SpehsEngine/Math/Bounds2D.h"
 
@@ -17,18 +18,15 @@ namespace se
 			clearChildren();
 		}
 		GUIElement::GUIElement(const GUIElement& _other)
-			: position(_other.position)
-			, zindex(_other.zindex)
-			, rotation(_other.rotation)
-			, size(_other.size)
-			, scale(_other.scale)
-			, clipping(_other.clipping)
-			, anchor(_other.anchor)
-			, alignment(_other.alignment)
-			, visible(_other.visible)
-			, padding(_other.padding)
+			: normalProperties(_other.normalProperties)
+			, hoverProperties(_other.hoverProperties)
+			, pressedProperties(_other.pressedProperties)
 		{
 			parent = nullptr;
+			isRootElement = false;
+			clickCallback = nullptr;
+
+			children.clear();
 			for (auto&& copyChild : _other.children)
 				addChild(std::shared_ptr<GUIElement>(copyChild->clone()));
 		}
@@ -155,17 +153,53 @@ namespace se
 					 unitToPixels(resolveUnitType(_vec.y, false), _viewSize) };
 		}
 
-		void GUIElement::preUpdate()
+		void GUIElement::preUpdate(UpdateContext& _context)
 		{
-			elementPreUpdate();
+			// Hover input update (inputUpdate currently only is called on mouse button presses)
+			GUIElementInputStatus lastStatus = inputStatus;
+			const ZIndex zvalue = getZValue();
+			bool waitingToHoverUpdate = false;
+			{
+				const bool needInputUpdate =
+					clickCallback != nullptr ||
+					hoverProperties.has_value() ||
+					pressedProperties.has_value();
+				if (getVisible() && needInputUpdate)
+				{
+					if (_context.hoverHandledDepth <= zvalue && hitTest(se::input::getMousePositionf()))
+					{
+						_context.hoverHandledDepth = zvalue;
+						waitingToHoverUpdate = true;
+					}
+				}
+			}
+
+			elementPreUpdate(_context);
 			for (auto&& child : children)
-				child->preUpdate();
+				child->preUpdate(_context);
+
+			if (waitingToHoverUpdate && _context.hoverHandledDepth <= zvalue)
+			{
+				if (inputStatus != GUIElementInputStatus::Pressed)
+				{
+					inputStatus = GUIElementInputStatus::Hover;
+				}
+			}
+			else
+			{
+				inputStatus = GUIElementInputStatus::Normal;
+			}
+			if (lastStatus != inputStatus)
+			{
+				enableBit(updateFlags, GUIElementUpdateFlag::TreeUpdateNeeded);
+				enableBit(updateFlags, GUIElementUpdateFlag::VisualUpdateNeeded);
+			}
 		}
 		void GUIElement::update(UpdateContext& _context)
 		{
 			if (parent && checkBit(parent->updateFlags, GUIElementUpdateFlag::TreeUpdateNeeded))
 				enableBit(updateFlags, GUIElementUpdateFlag::TreeUpdateNeeded);
-			if (lastViewSize != _context.viewSize) // TODO: Only really necessary if we're using view relative units
+			if (lastViewSize != _context.viewSize)
 				enableBit(updateFlags, GUIElementUpdateFlag::TreeUpdateNeeded);
 
 			if (checkBit(updateFlags, GUIElementUpdateFlag::TreeUpdateNeeded))
@@ -190,7 +224,7 @@ namespace se
 				globalVisible = getVisible() && (parent ? parent->globalVisible : true);
 
 				globalScissor.enabled = false;
-				if (clipping)
+				if (getClipping())
 				{
 					glm::vec3 globalPosition;
 					glm::vec3 globalScale;
@@ -204,7 +238,7 @@ namespace se
 				}
 				if (parent && parent->globalScissor.enabled)
 				{
-					if (clipping)
+					if (getClipping())
 					{
 						glm::vec3 globalPosition;
 						glm::vec3 globalScale;
@@ -229,6 +263,65 @@ namespace se
 
 			updateFlags = 0;
 			lastViewSize = _context.viewSize;
+		}
+		bool GUIElement::inputUpdate(InputUpdateContext& _context)
+		{
+			GUIElementInputStatus lastStatus = inputStatus;
+			const ZIndex zvalue = getZValue();
+			bool waitingToUpdate = false;
+			bool inputHandled = false;
+
+			if (_context.mouseButtonEvent.button == input::MouseButton::left)
+			{
+				const bool needInputUpdate =
+					clickCallback != nullptr ||
+					hoverProperties.has_value() ||
+					pressedProperties.has_value();
+				if (getVisible() && needInputUpdate)
+				{
+					if (_context.handledDepth <= zvalue && hitTest(se::input::getMousePositionf()))
+					{
+						// Mark our depth, but wait for children to check before actually handling the event
+						_context.handledDepth = zvalue;
+						waitingToUpdate = true;
+					}
+				}
+			}
+
+			for (auto&& child : children)
+				inputHandled = child->inputUpdate(_context) || inputHandled;
+
+			if (waitingToUpdate && _context.handledDepth <= zvalue)
+			{
+				if (_context.mouseButtonEvent.isRelease() && clickCallback != nullptr)
+					clickCallback();
+
+				if (_context.mouseButtonEvent.isPress())
+				{
+					inputStatus = GUIElementInputStatus::Pressed;
+				}
+				else if (_context.mouseButtonEvent.isHold() && inputStatus == GUIElementInputStatus::Pressed)
+				{
+					inputStatus = GUIElementInputStatus::Pressed;
+				}
+				else
+				{
+					inputStatus = GUIElementInputStatus::Hover;
+				}
+				inputHandled = true;
+			}
+			else
+			{
+				inputStatus = GUIElementInputStatus::Normal;
+			}
+
+			if (lastStatus != inputStatus)
+			{
+				enableBit(updateFlags, GUIElementUpdateFlag::TreeUpdateNeeded);
+				enableBit(updateFlags, GUIElementUpdateFlag::VisualUpdateNeeded);
+			}
+
+			return inputHandled;
 		}
 		void GUIElement::onAddedToView()
 		{
@@ -343,15 +436,26 @@ namespace se
 			Bounds2D bounds(glm::vec2(globalPosition.x + globalSize.x * 0.5f + pixelOffset.x, -globalPosition.y + globalSize.y * 0.5f + pixelOffset.y), globalSize * 0.5f);
 			return bounds.contains(_viewPoint);
 		}
-
+		void GUIElement::onClick(std::function<void()> _callback)
+		{
+			clickCallback = _callback;
+		}
+		void GUIElement::setHoverProperties(const GUIElementProperties& _properties)
+		{
+			hoverProperties = _properties;
+		}
+		void GUIElement::setPressedProperties(const GUIElementProperties& _properties)
+		{
+			pressedProperties = _properties;
+		}
 
 		const GUIVec2& GUIElement::getPosition() const
 		{
-			return position;
+			return_property(position);
 		}
 		ZIndex GUIElement::getZIndex() const
 		{
-			return zindex;
+			return_property(zindex);
 		}
 		ZIndex GUIElement::getZValue() const
 		{
@@ -360,142 +464,142 @@ namespace se
 		}
 		float GUIElement::getRotation() const
 		{
-			return rotation;
+			return_property(rotation);
 		}
 		const GUIVec2& GUIElement::getSize() const
 		{
-			return size;
+			return_property(size);
 		}
 		const glm::vec2& GUIElement::getScale() const
 		{
-			return scale;
+			return_property(scale);
 		}
 		bool GUIElement::getClipping() const
 		{
-			return clipping;
+			return_property(clipping);
 		}
 		const GUIVec2& GUIElement::getAnchor() const
 		{
-			return anchor;
+			return_property(anchor);
 		}
 		const GUIVec2& GUIElement::getAlignment() const
 		{
-			return alignment;
+			return_property(alignment);
 		}
 		bool GUIElement::getVisible() const
 		{
-			return visible;
+			return_property(visible);
 		}
 		GUIUnit GUIElement::getPadding() const
 		{
-			return padding;
+			return_property(padding);
 		}
 
 
 		void GUIElement::setPosition(const GUIVec2& _position)
 		{
-			position = _position;
+			normalProperties.position = _position;
 			enableBit(updateFlags, GUIElementUpdateFlag::TreeUpdateNeeded);
 		}
 		void GUIElement::setX(GUIUnit _x)
 		{
-			position.x = _x;
+			normalProperties.position->x = _x;
 			enableBit(updateFlags, GUIElementUpdateFlag::TreeUpdateNeeded);
 		}
 		void GUIElement::setY(GUIUnit _y)
 		{
-			position.y = _y;
+			normalProperties.position->y = _y;
 			enableBit(updateFlags, GUIElementUpdateFlag::TreeUpdateNeeded);
 		}
 		void GUIElement::setZIndex(ZIndex _zindex)
 		{
-			zindex = _zindex;
+			normalProperties.zindex = _zindex;
 			enableBit(updateFlags, GUIElementUpdateFlag::TreeUpdateNeeded);
 		}
 		void GUIElement::setRotation(float _radians)
 		{
-			rotation = _radians;
+			normalProperties.rotation = _radians;
 			enableBit(updateFlags, GUIElementUpdateFlag::TreeUpdateNeeded);
 		}
 		void GUIElement::setSize(const GUIVec2& _size)
 		{
-			size = _size;
+			normalProperties.size = _size;
 			enableBit(updateFlags, GUIElementUpdateFlag::TreeUpdateNeeded);
 		}
 		void GUIElement::setWidth(GUIUnit _width)
 		{
-			size.x = _width;
+			normalProperties.size->x = _width;
 			enableBit(updateFlags, GUIElementUpdateFlag::TreeUpdateNeeded);
 		}
 		void GUIElement::setHeight(GUIUnit _height)
 		{
-			size.y = _height;
+			normalProperties.size->y = _height;
 			enableBit(updateFlags, GUIElementUpdateFlag::TreeUpdateNeeded);
 		}
 		void GUIElement::setScale(const glm::vec2& _scale)
 		{
-			scale = _scale;
+			normalProperties.scale = _scale;
 			enableBit(updateFlags, GUIElementUpdateFlag::TreeUpdateNeeded);
 		}
 		void GUIElement::setClipping(bool _value)
 		{
-			if (clipping == _value)
+			if (normalProperties.clipping == _value)
 				return;
-			clipping = _value;
+			normalProperties.clipping = _value;
 			enableBit(updateFlags, GUIElementUpdateFlag::TreeUpdateNeeded);
 		}
 		void GUIElement::setVisible(bool _value)
 		{
-			if (visible == _value)
+			if (normalProperties.visible == _value)
 				return;
-			visible = _value;
+			normalProperties.visible = _value;
 			enableBit(updateFlags, GUIElementUpdateFlag::TreeUpdateNeeded);
 		}
 
 		void GUIElement::setAnchor(const GUIVec2& _anchor)
 		{
-			anchor = _anchor;
+			normalProperties.anchor = _anchor;
 			enableBit(updateFlags, GUIElementUpdateFlag::TreeUpdateNeeded);
 		}
 		void GUIElement::setAnchor(VerticalAnchor _vertical, HorizontalAnchor _horizontal)
 		{
-			anchor = GUIVec2(anchorToUnit(_horizontal), anchorToUnit(_vertical));
+			normalProperties.anchor = GUIVec2(anchorToUnit(_horizontal), anchorToUnit(_vertical));
 			enableBit(updateFlags, GUIElementUpdateFlag::TreeUpdateNeeded);
 		}
 		void GUIElement::setVerticalAnchor(VerticalAnchor _value)
 		{
-			anchor.y = anchorToUnit(_value);
+			normalProperties.anchor->y = anchorToUnit(_value);
 			enableBit(updateFlags, GUIElementUpdateFlag::TreeUpdateNeeded);
 		}
 		void GUIElement::setHorizontalAnchor(HorizontalAnchor _value)
 		{
-			anchor.x = anchorToUnit(_value);
+			normalProperties.anchor->x = anchorToUnit(_value);
 			enableBit(updateFlags, GUIElementUpdateFlag::TreeUpdateNeeded);
 		}
 
 		void GUIElement::setAlignment(const GUIVec2& _alignment)
 		{
-			alignment = _alignment;
+			normalProperties.alignment = _alignment;
 			enableBit(updateFlags, GUIElementUpdateFlag::TreeUpdateNeeded);
 		}
 		void GUIElement::setAlignment(VerticalAlignment _vertical, HorizontalAlignment _horizontal)
 		{
-			alignment = GUIVec2(alignmentToUnit(_horizontal), alignmentToUnit(_vertical));
+			normalProperties.alignment = GUIVec2(alignmentToUnit(_horizontal), alignmentToUnit(_vertical));
 			enableBit(updateFlags, GUIElementUpdateFlag::TreeUpdateNeeded);
 		}
 		void GUIElement::setVerticalAlignment(VerticalAlignment _value)
 		{
-			alignment.y = alignmentToUnit(_value);
+			normalProperties.alignment->y = alignmentToUnit(_value);
 			enableBit(updateFlags, GUIElementUpdateFlag::TreeUpdateNeeded);
 		}
 		void GUIElement::setHorizontalAlignment(HorizontalAlignment _value)
 		{
-			alignment.x = alignmentToUnit(_value);
+			normalProperties.alignment->x = alignmentToUnit(_value);
 			enableBit(updateFlags, GUIElementUpdateFlag::TreeUpdateNeeded);
 		}
 		void GUIElement::setPadding(GUIUnit _padding)
 		{
-			padding = _padding;
+			normalProperties.padding = _padding;
 			enableBit(updateFlags, GUIElementUpdateFlag::TreeUpdateNeeded);
 		}
 	}

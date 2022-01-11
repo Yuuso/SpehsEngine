@@ -19,7 +19,6 @@ namespace se
 		}
 		GUIText::GUIText(const GUIText& _other)
 			: GUIElement(_other)
-			, fontName(_other.fontName)
 			, needUpdateDimensions(_other.needUpdateDimensions)
 		{
 			initText();
@@ -39,8 +38,13 @@ namespace se
 			enableBit(updateFlags, GUIElementUpdateFlag::MaterialUpdateNeeded);
 		}
 
-		void GUIText::elementPreUpdate()
+		void GUIText::elementPreUpdate(UpdateContext& _context)
 		{
+			if (checkBit(updateFlags, GUIElementUpdateFlag::MaterialUpdateNeeded))
+			{
+				// Material updated here, because it's needed for dimension update
+				text.setMaterial(_context.materialManager.createFontMaterial(getFont()));
+			}
 			if (needUpdateDimensions)
 			{
 				if (updateDimensions())
@@ -55,7 +59,7 @@ namespace se
 						}
 						else
 						{
-							const float factor = unitToPixels(resolveUnitType(getSize().y, false), lastViewSize) / dims.dimensions.y;
+							const float factor = unitToPixels(resolveUnitType(getSize().y, false), _context.viewSize) / dims.dimensions.y;
 							setWidth(GUIUnit(dims.dimensions.x * factor, GUIUnitType::Auto));
 						}
 					}
@@ -67,7 +71,7 @@ namespace se
 						}
 						else
 						{
-							const float factor = unitToPixels(resolveUnitType(getSize().x, true), lastViewSize) / dims.dimensions.x;
+							const float factor = unitToPixels(resolveUnitType(getSize().x, true), _context.viewSize) / dims.dimensions.x;
 							setHeight(GUIUnit(dims.dimensions.y * factor, GUIUnitType::Auto));
 						}
 					}
@@ -76,10 +80,7 @@ namespace se
 		}
 		void GUIText::elementUpdate(UpdateContext& _context)
 		{
-			if (checkBit(updateFlags, GUIElementUpdateFlag::MaterialUpdateNeeded))
-			{
-				text.setMaterial(_context.materialManager.createFontMaterial(fontName));
-			}
+			// NOTE: MaterialUpdateNeeded handled in elementPreUpdate
 			if (checkBit(updateFlags, GUIElementUpdateFlag::PrimitiveAddNeeded))
 			{
 				_context.scene.add(text);
@@ -103,6 +104,12 @@ namespace se
 					text.setScissor(globalScissor);
 				}
 			}
+			if (checkBit(updateFlags, GUIElementUpdateFlag::VisualUpdateNeeded))
+			{
+				text.setColor(getColor());
+				se_assert(text.getMaterial());
+				text.getMaterial()->setFont(_context.materialManager.getFont(getFont()));
+			}
 		}
 
 		glm::vec3 GUIText::getRenderScale(const glm::vec2& _viewSize)
@@ -115,7 +122,11 @@ namespace se
 
 		const Color& GUIText::getColor() const
 		{
-			return text.getColor();
+			return_property(color);
+		}
+		std::string_view GUIText::getFont() const
+		{
+			return_property(font);
 		}
 
 		const size_t GUIText::getTextLength() const
@@ -138,12 +149,20 @@ namespace se
 
 		void GUIText::setColor(const Color& _color)
 		{
-			text.setColor(_color);
+			normalProperties.color = _color;
+			enableBit(updateFlags, GUIElementUpdateFlag::VisualUpdateNeeded);
 		}
 		void GUIText::setFont(std::string_view _font)
 		{
-			fontName = _font;
-			enableBit(updateFlags, GUIElementUpdateFlag::MaterialUpdateNeeded);
+			normalProperties.font = _font;
+			if (!text.getMaterial())
+			{
+				enableBit(updateFlags, GUIElementUpdateFlag::MaterialUpdateNeeded);
+			}
+			else
+			{
+				enableBit(updateFlags, GUIElementUpdateFlag::VisualUpdateNeeded);
+			}
 		}
 
 		void GUIText::setLineSpacing(const float _amount)

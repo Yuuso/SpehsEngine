@@ -129,6 +129,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GUIElement.h" />
+    <ClInclude Include="GUIElementProperties.h" />
     <ClInclude Include="Internal\GUIMaterialManager.h" />
     <ClInclude Include="GUIUtilities.h" />
     <ClInclude Include="GUILib.h" />

@@ -24,6 +24,7 @@ namespace se
 
 
 			const Color&							getColor() const;
+			std::string_view						getFont() const;
 			std::string								getPlainText() const;
 			const size_t							getPenPosition() const;
 			const float								getLineSpacing() const;
@@ -38,7 +39,7 @@ namespace se
 
 		protected:
 
-			virtual void							elementPreUpdate() override;
+			virtual void							elementPreUpdate(UpdateContext& _context) override;
 			virtual void							elementUpdate(UpdateContext& _context) override;
 			virtual void							onAddedParent() override;
 			virtual void							onRemovedParent() override;
@@ -53,7 +54,6 @@ namespace se
 			glm::vec3								getRenderScale(const glm::vec2& _viewSize);
 
 			graphics::Text text;
-			std::string fontName;
 			bool needUpdateDimensions = false;
 		};
 	}

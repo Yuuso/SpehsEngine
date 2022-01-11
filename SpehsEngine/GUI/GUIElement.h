@@ -2,7 +2,10 @@
 
 #include "SpehsEngine/Graphics/Primitive.h"
 #include "SpehsEngine/GUI/Internal/InternalTypes.h"
+#include "SpehsEngine/GUI/GUIElementProperties.h"
 #include "SpehsEngine/GUI/Types.h"
+#include "SpehsEngine/Input/Event.h"
+#include <any>
 
 
 namespace se
@@ -33,6 +36,10 @@ namespace se
 			size_t									getNumChildren() const;
 
 			virtual bool							hitTest(const glm::vec2& _viewPoint);
+			void									onClick(std::function<void()> _callback);
+			void									setHoverProperties(const GUIElementProperties& _properties);
+			void									setPressedProperties(const GUIElementProperties& _properties);
+
 			static GUIUnit							resolveUnitType(GUIUnit _unit, bool _isWidth);
 			float									unitToPixels(GUIUnit _unit, const glm::vec2& _viewSize) const;
 			glm::vec2								unitToPixels(const GUIVec2& _vec, const glm::vec2& _viewSize) const;
@@ -40,7 +47,7 @@ namespace se
 
 			const GUIVec2&							getPosition() const;
 			ZIndex									getZIndex() const;
-			ZIndex									getZValue() const;
+			ZIndex									getZValue() const; // The actual global ZIndex value
 			float									getRotation() const;
 			const GUIVec2&							getSize() const;
 			const glm::vec2&						getScale() const;
@@ -71,9 +78,11 @@ namespace se
 			void									setHorizontalAlignment(HorizontalAlignment _value);
 			void									setPadding(GUIUnit _padding);
 
+			std::any								dataContext;
+
 		protected:
 
-			virtual void							elementPreUpdate()				{}
+			virtual void							elementPreUpdate(UpdateContext&){}
 			virtual void							elementUpdate(UpdateContext&)	{}
 			virtual void							onAddedParent()					{}
 			virtual void							onRemovedParent()				{}
@@ -81,38 +90,38 @@ namespace se
 			virtual void							onRemovedFromView();
 			virtual GUIVec2							getTransformOffset()			{ return GUIVec2({ 0.0f, 0.0f }, GUIUnitType::Pixels); }
 
-			GUIElementUpdateFlagsType				updateFlags		= 0;
-			glm::mat4								globalTrasform	= glm::identity<glm::mat4>();
+			// Frame update values
+			GUIElementUpdateFlagsType				updateFlags			= 0;
+			glm::mat4								globalTrasform		= glm::identity<glm::mat4>();
 			graphics::Scissor						globalScissor;
-			bool									globalVisible	= true;
+			bool									globalVisible		= true;
 			glm::vec2								lastViewSize;
+			GUIElementInputStatus					inputStatus			= GUIElementInputStatus::Normal;
 
-			GUIElement*								parent			= nullptr;
+			// Parent / children
+			GUIElement*								parent				= nullptr;
 			std::vector<std::shared_ptr<GUIElement>> children;
+
+			// Properties
+			GUIElementProperties					normalProperties	= defaultGUIElementProperties;
+			std::optional<GUIElementProperties>		hoverProperties;
+			std::optional<GUIElementProperties>		pressedProperties;
 
 		private:
 
 			friend class GUIView;
 
-			virtual void							preUpdate() final;
+			virtual void							preUpdate(UpdateContext& _context) final;
 			virtual void							update(UpdateContext& _context) final;
+			virtual bool							inputUpdate(InputUpdateContext& _context) final;
 			virtual void							removeFromView() final;
 			virtual void							addToView() final;
 
 			glm::vec2								getAnchorPositionOffset(const glm::vec2& _viewSize);
 			glm::vec2								getAlignmentPositionOffset(const glm::vec2& _viewSize);
 
-			GUIVec2									position		= GUIVec2({ 0.0f, 0.0f }, GUIUnitType::Auto);
-			ZIndex									zindex			= 0;
-			float									rotation		= 0.0f;
-			GUIVec2									size			= GUIVec2({ 0.0f, 0.0f }, GUIUnitType::Auto);
-			glm::vec2								scale			= glm::vec2{ 1.0f, 1.0f };
-			bool									clipping		= false;
-			GUIVec2									anchor			= GUIVec2({ 0.0f, 0.0f }, GUIUnitType::Self);
-			GUIVec2									alignment		= GUIVec2({ 0.0f, 0.0f }, GUIUnitType::Parent);
-			GUIUnit									padding			= GUIUnit(0.0f, GUIUnitType::Pixels);
-			bool									visible			= true;
-			bool									isRootElement	= false;
+			bool									isRootElement = false;
+			std::function<void()>					clickCallback;
 		};
 	}
 }

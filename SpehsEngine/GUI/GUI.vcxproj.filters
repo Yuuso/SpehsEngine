@@ -83,5 +83,8 @@
     <ClInclude Include="Internal\GUIMaterialManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="GUIElementProperties.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

@@ -6,6 +6,7 @@
 #include "SpehsEngine/Graphics/Window.h"
 #include "SpehsEngine/GUI/GUIElement.h"
 #include "SpehsEngine/GUI/Internal/GUIMaterialManager.h"
+#include "SpehsEngine/Input/EventSignaler.h"
 #include <memory>
 #include <vector>
 
@@ -18,7 +19,8 @@ namespace se
 		{
 		public:
 
-			GUIView(graphics::ShaderManager& _shaderManager, graphics::TextureManager& _textureManager, graphics::FontManager& _fontManager);
+			GUIView(graphics::ShaderManager& _shaderManager, graphics::TextureManager& _textureManager,
+					graphics::FontManager& _fontManager, input::EventSignaler& _eventSignaler, int _inputPriority);
 			~GUIView() = default;
 			GUIView(const GUIView& _other) = delete;
 			GUIView& operator=(const GUIView& _other) = delete;
@@ -27,6 +29,8 @@ namespace se
 
 
 			graphics::View& getView();
+			void setInputHandlingEnabled(bool _value);
+			bool getInputhandlingEnabled() const;
 
 			void add(GUIElement& _element);
 			void remove(GUIElement& _element);
@@ -35,14 +39,17 @@ namespace se
 		private:
 
 			void update(glm::vec2 _renderSize);
+			bool mouseButtonCallback(const input::MouseButtonEvent& _event);
 
 			graphics::Camera camera;
 			graphics::Scene scene;
+
+			boost::signals2::scoped_connection updateConnection;
+			boost::signals2::scoped_connection mouseButtonConnection;
 			graphics::View view;
 
 			GUIMaterialManager materialManager;
-
-			boost::signals2::scoped_connection updateConnection;
+			bool inputHandlingEnabled = true;
 
 			std::vector<GUIElement*> rootElements;
 		};

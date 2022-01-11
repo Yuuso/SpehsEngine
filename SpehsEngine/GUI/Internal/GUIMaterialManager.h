@@ -16,8 +16,10 @@ namespace se
 		public:
 			GUIMaterialManager(graphics::ShaderManager& _shaderManager, graphics::TextureManager& _textureManager, graphics::FontManager& _fontManager);
 
-			std::shared_ptr<graphics::Material> createColorMaterial();
-			std::shared_ptr<graphics::Material> createTextureMaterial(std::string_view _texture);
+			std::shared_ptr<graphics::Texture> getTexture(std::string_view _texture);
+			std::shared_ptr<graphics::Font> getFont(std::string_view _font);
+
+			std::shared_ptr<graphics::Material> createShapeMaterial(std::string_view _texture);
 			std::shared_ptr<graphics::Material> createFontMaterial(std::string_view _font);
 
 		private:

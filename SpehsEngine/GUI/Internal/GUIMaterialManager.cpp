@@ -18,33 +18,36 @@ namespace se
 			colorTexture = textureManager.create("SE_GUI_WhiteColor", textureInput);
 		}
 
-		std::shared_ptr<graphics::Material> GUIMaterialManager::createColorMaterial()
+		std::shared_ptr<graphics::Texture> GUIMaterialManager::getTexture(std::string_view _texture)
 		{
-			auto result = graphics::createMaterial(graphics::DefaultMaterialType::FlatTexture, shaderManager);
-			result->setTexture(colorTexture);
-			return result;
-
-			// TODO: Figure out blending issues, we're using the same shader for all GUIShapes for now...
-			//			One possible fix would be to use Sequential view ordering only for GUI views.
-			//return graphics::createMaterial(graphics::DefaultMaterialType::FlatColor, shaderManager);
-		}
-		std::shared_ptr<graphics::Material> GUIMaterialManager::createTextureMaterial(std::string_view _texture)
-		{
-			auto result = graphics::createMaterial(graphics::DefaultMaterialType::FlatTexture, shaderManager);
+			if (_texture.empty())
+				return colorTexture;
 			auto texture = textureManager.find(_texture);
 			if (!texture)
 				texture = textureManager.create(_texture, _texture);
-			result->setTexture(texture);
+			return texture;
+		}
+		std::shared_ptr<graphics::Font> GUIMaterialManager::getFont(std::string_view _font)
+		{
+			if (_font.empty())
+				return fontManager.getDefaultFont();
+			auto font = fontManager.find(_font);
+			if (!font)
+				font = fontManager.create(_font, _font, graphics::FontSize());
+			font->waitUntilReady();
+			return font;
+		}
+
+		std::shared_ptr<graphics::Material> GUIMaterialManager::createShapeMaterial(std::string_view _texture)
+		{
+			auto result = graphics::createMaterial(graphics::DefaultMaterialType::FlatTexture, shaderManager);
+			result->setTexture(getTexture(_texture));
 			return result;
 		}
 		std::shared_ptr<graphics::Material> GUIMaterialManager::createFontMaterial(std::string_view _font)
 		{
 			auto result = graphics::createMaterial(graphics::DefaultMaterialType::Text, shaderManager);
-			auto font = _font.empty() ? fontManager.getDefaultFont() : fontManager.find(_font);
-			if (!font)
-				font = fontManager.create(_font, _font, graphics::FontSize());
-			font->waitUntilReady();
-			result->setFont(font);
+			result->setFont(getFont(_font));
 			return result;
 		}
 	}

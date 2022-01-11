@@ -24,10 +24,9 @@ namespace se
 			virtual std::shared_ptr<GUIElement>		clone() override;
 
 
-			graphics::ShapeType						getShapeType() const;
 			const Color&							getColor() const;
+			const std::string_view					getTexture() const;
 
-			void									setShapeType(graphics::ShapeType _type);
 			void									setColor(const Color& _color);
 			void									setTexture(std::string_view _name);
 
@@ -45,7 +44,6 @@ namespace se
 			void									initShape();
 
 			graphics::Shape shape;
-			std::string textureName;
 		};
 	}
 }

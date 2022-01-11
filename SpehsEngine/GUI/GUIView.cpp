@@ -8,7 +8,8 @@ namespace se
 	{
 		static constexpr float cameraZPos = static_cast<float>(std::numeric_limits<ZIndex>::max()) + 1.0f;
 
-		GUIView::GUIView(graphics::ShaderManager& _shaderManager, graphics::TextureManager& _textureManager, graphics::FontManager& _fontManager)
+		GUIView::GUIView(graphics::ShaderManager& _shaderManager, graphics::TextureManager& _textureManager,
+						 graphics::FontManager& _fontManager, input::EventSignaler& _eventSignaler, int _inputPriority)
 			: view(scene, camera)
 			, materialManager(_shaderManager, _textureManager, _fontManager)
 		{
@@ -19,25 +20,53 @@ namespace se
 			camera.setProjection(se::graphics::Projection::Orthographic);
 
 			updateConnection = view.connectToOnRenderSignal([this](glm::vec2 _renderSize){ update(_renderSize); });
+			_eventSignaler.connectToMouseButtonSignal(mouseButtonConnection, [this](const input::MouseButtonEvent& _event){ return mouseButtonCallback(_event); }, _inputPriority);
 		}
 		graphics::View& GUIView::getView()
 		{
 			return view;
 		}
 
+		void GUIView::setInputHandlingEnabled(bool _value)
+		{
+			inputHandlingEnabled = _value;
+		}
+		bool GUIView::getInputhandlingEnabled() const
+		{
+			return inputHandlingEnabled;
+		}
+
 		void GUIView::update(glm::vec2 _renderSize)
 		{
 			camera.setPosition(glm::vec3{ _renderSize.x * 0.5f, -_renderSize.y * 0.5, cameraZPos });
 
+			UpdateContext context{ view.getScene(), materialManager, _renderSize };
 			for (auto&& element : rootElements)
 			{
 				se_assert(!element->parent);
-				element->preUpdate();
+				element->preUpdate(context);
+			}
+			for (auto&& element : rootElements)
+			{
+				se_assert(!element->parent);
+				element->update(context);
+			}
+		}
+
+		bool GUIView::mouseButtonCallback(const input::MouseButtonEvent& _event)
+		{
+			if (!inputHandlingEnabled)
+				return false;
+
+			bool handled = false;
+			for (auto&& element : rootElements)
+			{
+				InputUpdateContext context{ _event };
+				se_assert(!element->parent);
+				handled = element->inputUpdate(context) || handled;
 			}
 
-			UpdateContext context{ view.getScene(), materialManager, _renderSize };
-			for (auto&& element : rootElements)
-				element->update(context);
+			return handled;
 		}
 
 		void GUIView::add(GUIElement& _element)

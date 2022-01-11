@@ -28,7 +28,7 @@ namespace se
 			enableBit(updateFlags, GUIElementUpdateFlag::TreeUpdateNeeded);
 		}
 
-		void GUIStack::elementPreUpdate()
+		void GUIStack::elementPreUpdate(UpdateContext& /*_context*/)
 		{
 			// TODO: how to optimize this?
 			if (getSize().x.type == GUIUnitType::Auto || getSize().y.type == GUIUnitType::Auto)

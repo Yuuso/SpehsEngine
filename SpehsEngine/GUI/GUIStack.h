@@ -28,7 +28,7 @@ namespace se
 
 		protected:
 
-			virtual void							elementPreUpdate() override;
+			virtual void							elementPreUpdate(UpdateContext& _context) override;
 			virtual void							elementUpdate(UpdateContext& _context) override;
 
 		private:
