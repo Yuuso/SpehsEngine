@@ -39,7 +39,7 @@ namespace se
 			void setClearColor(const uint32_t _hexColor);
 			void setClearFlags(const ViewClearFlagsType _flags);
 
-			boost::signals2::scoped_connection connectToOnRenderSignal(std::function<void(glm::vec2)> _func);
+			boost::signals2::scoped_connection connectToPreRenderSignal(std::function<void(glm::vec2)> _func);
 
 		private:
 
@@ -55,7 +55,7 @@ namespace se
 			ViewClearFlagsType clearFlags = ViewClearFlag::ClearColor | ViewClearFlag::ClearDepth | ViewClearFlag::ClearStencil;
 			uint32_t clearColor = 0x000000ff;
 
-			boost::signals2::signal<void(glm::vec2)> onRenderSignal; // param: view size in pixels
+			boost::signals2::signal<void(glm::vec2)> onPreRenderSignal; // param: view size in pixels
 			boost::signals2::signal<void(void)> destroyedSignal;
 		};
 	}

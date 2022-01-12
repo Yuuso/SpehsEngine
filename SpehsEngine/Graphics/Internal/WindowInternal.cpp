@@ -168,7 +168,7 @@ namespace se
 			}
 			for (auto&& view : window->views)
 			{
-				view->preRender(renderState(), wasAdded);
+				view->preRender(this, renderState(), wasAdded);
 			}
 		}
 		void WindowInternal::postRender()

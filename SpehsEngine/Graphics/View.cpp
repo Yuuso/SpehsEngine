@@ -66,9 +66,9 @@ namespace se
 			clearFlags = _flags;
 		}
 
-		boost::signals2::scoped_connection View::connectToOnRenderSignal(std::function<void(glm::vec2)> _func)
+		boost::signals2::scoped_connection View::connectToPreRenderSignal(std::function<void(glm::vec2)> _func)
 		{
-			return onRenderSignal.connect(_func);
+			return onPreRenderSignal.connect(_func);
 		}
 	}
 }

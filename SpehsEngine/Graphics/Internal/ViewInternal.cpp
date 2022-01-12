@@ -33,8 +33,7 @@ namespace se
 		{
 			se_assert(view);
 
-			calculateRenderSize(_renderContext);
-			view->onRenderSignal(renderSize);
+			calculateRenderSize(_renderContext.currentWindow);
 
 			static_assert(ViewClearFlag::ClearColor == BGFX_CLEAR_COLOR &&
 						  ViewClearFlag::ClearDepth == BGFX_CLEAR_DEPTH &&
@@ -65,8 +64,10 @@ namespace se
 			_renderContext.currentViewId++;
 		}
 
-		void ViewInternal::preRender(const bool _renderState, const bool _forceAllUpdates)
+		void ViewInternal::preRender(const WindowInternal* _currentWindow, const bool _renderState, const bool _forceAllUpdates)
 		{
+			calculateRenderSize(_currentWindow);
+			view->onPreRenderSignal(renderSize);
 			view->scene.preRender(_renderState, _forceAllUpdates || wasAdded);
 		}
 		void ViewInternal::postRender(const bool _renderState)
@@ -79,12 +80,12 @@ namespace se
 		{
 			return view == nullptr;
 		}
-		void ViewInternal::calculateRenderSize(RenderContext& _renderContext)
+		void ViewInternal::calculateRenderSize(const WindowInternal* _currentWindow)
 		{
 			if (view->size.type == ViewSizeType::Relative)
 			{
-				renderSize.x = _renderContext.currentWindow->getWidth() * view->size.width;
-				renderSize.y = _renderContext.currentWindow->getHeight() * view->size.height;
+				renderSize.x = _currentWindow->getWidth() * view->size.width;
+				renderSize.y = _currentWindow->getHeight() * view->size.height;
 			}
 			else
 			{
@@ -95,8 +96,8 @@ namespace se
 
 			if (view->offset.type == ViewSizeType::Relative)
 			{
-				renderOffset.x = _renderContext.currentWindow->getWidth() * view->offset.width;
-				renderOffset.y = _renderContext.currentWindow->getHeight() * view->offset.height;
+				renderOffset.x = _currentWindow->getWidth() * view->offset.width;
+				renderOffset.y = _currentWindow->getHeight() * view->offset.height;
 			}
 			else
 			{

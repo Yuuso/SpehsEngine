@@ -9,6 +9,7 @@ namespace se
 {
 	namespace graphics
 	{
+		class WindowInternal;
 		class ViewInternal
 		{
 		public:
@@ -26,7 +27,7 @@ namespace se
 
 
 			void render(RenderContext& _renderContext);
-			void preRender(const bool _renderState, const bool _forceAllUpdates);
+			void preRender(const WindowInternal* _currentWindow, const bool _renderState, const bool _forceAllUpdates);
 			void postRender(const bool _renderState);
 
 			const bool wasDestroyed() const;
@@ -34,7 +35,7 @@ namespace se
 		private:
 
 			void viewDestroyed();
-			void calculateRenderSize(RenderContext& _renderContext);
+			void calculateRenderSize(const WindowInternal* _currentWindow);
 
 			boost::signals2::scoped_connection viewDestroyedConnection;
 
