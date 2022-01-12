@@ -19,7 +19,7 @@ namespace se
 			camera.setDirection({ 0.0f, 0.0f, -1.0f });
 			camera.setProjection(se::graphics::Projection::Orthographic);
 
-			updateConnection = view.connectToOnRenderSignal([this](glm::vec2 _renderSize){ update(_renderSize); });
+			updateConnection = view.connectToPreRenderSignal([this](glm::vec2 _renderSize){ update(_renderSize); });
 			_eventSignaler.connectToMouseButtonSignal(mouseButtonConnection, [this](const input::MouseButtonEvent& _event){ return mouseButtonCallback(_event); }, _inputPriority);
 		}
 		graphics::View& GUIView::getView()

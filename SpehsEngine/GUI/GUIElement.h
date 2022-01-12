@@ -33,10 +33,13 @@ namespace se
 			void									removeChild(std::shared_ptr<GUIElement> _element);
 			void									clearChildren();
 			std::shared_ptr<GUIElement>				getChild(size_t _index);
+			std::shared_ptr<GUIElement>				findChild(std::string_view _name, bool _recursive = true);
 			size_t									getNumChildren() const;
 
+			void									setUpdateCallback(std::function<void(GUIElement&)> _callback);
 			virtual bool							hitTest(const glm::vec2& _viewPoint);
-			void									onClick(std::function<void()> _callback);
+			void									onClick(std::function<void(GUIElement&)> _callback);
+			void									onHover(std::function<void(GUIElement&)> _callback);
 			void									setHoverProperties(const GUIElementProperties& _properties);
 			void									setPressedProperties(const GUIElementProperties& _properties);
 
@@ -45,6 +48,7 @@ namespace se
 			glm::vec2								unitToPixels(const GUIVec2& _vec, const glm::vec2& _viewSize) const;
 
 
+			std::string_view						getName() const;
 			const GUIVec2&							getPosition() const;
 			ZIndex									getZIndex() const;
 			ZIndex									getZValue() const; // The actual global ZIndex value
@@ -56,7 +60,9 @@ namespace se
 			const GUIVec2&							getAlignment() const;
 			bool									getVisible() const;
 			GUIUnit									getPadding() const;
+			bool									getConsumeInput() const;
 
+			void									setName(std::string_view _name);
 			void									setPosition(const GUIVec2& _position);
 			void									setX(GUIUnit _x);
 			void									setY(GUIUnit _y);
@@ -77,8 +83,10 @@ namespace se
 			void									setVerticalAlignment(VerticalAlignment _value);
 			void									setHorizontalAlignment(HorizontalAlignment _value);
 			void									setPadding(GUIUnit _padding);
+			void									setConsumeInput(bool _value);
 
-			std::any								dataContext;
+			void									setDataContext(std::any _context);
+			template<typename T> T*					getDataContext();
 
 		protected:
 
@@ -119,9 +127,32 @@ namespace se
 
 			glm::vec2								getAnchorPositionOffset(const glm::vec2& _viewSize);
 			glm::vec2								getAlignmentPositionOffset(const glm::vec2& _viewSize);
+			bool									needInputUpdate() const;
 
+			std::string								name;
 			bool									isRootElement = false;
-			std::function<void()>					clickCallback;
+			std::any								dataContext;
+			std::function<void(GUIElement&)>		preUpdateCallback;
+			std::function<void(GUIElement&)>		clickCallback;
+			std::function<void(GUIElement&)>		hoverCallback;
+			bool									consumeInput = true;
 		};
+
+		template<typename T> T* GUIElement::getDataContext()
+		{
+			if (!dataContext.has_value())
+			{
+				if (parent)
+					return parent->getDataContext<T>();
+				return nullptr;
+			}
+			try
+			{
+				return std::any_cast<T>(&dataContext);
+			}
+			catch (const std::bad_any_cast&)
+			{}
+			return nullptr;
+		}
 	}
 }

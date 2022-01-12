@@ -22,11 +22,6 @@ namespace se
 			, hoverProperties(_other.hoverProperties)
 			, pressedProperties(_other.pressedProperties)
 		{
-			parent = nullptr;
-			isRootElement = false;
-			clickCallback = nullptr;
-
-			children.clear();
 			for (auto&& copyChild : _other.children)
 				addChild(std::shared_ptr<GUIElement>(copyChild->clone()));
 		}
@@ -48,6 +43,13 @@ namespace se
 			const glm::vec2 pixelOffset = parent ? -parent->unitToPixels(parent->getTransformOffset(), _viewSize) : glm::vec2();
 			const glm::vec2 pixelAlignment = unitToPixels(getAlignment(), _viewSize);
 			return { pixelOffset.x + pixelAlignment.x, pixelOffset.y + pixelAlignment.y };
+		}
+		bool GUIElement::needInputUpdate() const
+		{
+			return hoverCallback
+				|| clickCallback
+				|| hoverProperties.has_value()
+				|| pressedProperties.has_value();
 		}
 
 		GUIUnit GUIElement::resolveUnitType(GUIUnit _unit, bool _isWidth)
@@ -155,20 +157,20 @@ namespace se
 
 		void GUIElement::preUpdate(UpdateContext& _context)
 		{
+			if (preUpdateCallback)
+				preUpdateCallback(*this);
+
 			// Hover input update (inputUpdate currently only is called on mouse button presses)
 			GUIElementInputStatus lastStatus = inputStatus;
 			const ZIndex zvalue = getZValue();
 			bool waitingToHoverUpdate = false;
 			{
-				const bool needInputUpdate =
-					clickCallback != nullptr ||
-					hoverProperties.has_value() ||
-					pressedProperties.has_value();
-				if (getVisible() && needInputUpdate)
+				if (getVisible() && needInputUpdate())
 				{
 					if (_context.hoverHandledDepth <= zvalue && hitTest(se::input::getMousePositionf()))
 					{
-						_context.hoverHandledDepth = zvalue;
+						if (consumeInput)
+							_context.hoverHandledDepth = zvalue;
 						waitingToHoverUpdate = true;
 					}
 				}
@@ -183,6 +185,8 @@ namespace se
 				if (inputStatus != GUIElementInputStatus::Pressed)
 				{
 					inputStatus = GUIElementInputStatus::Hover;
+					if (hoverCallback)
+						hoverCallback(*this);
 				}
 			}
 			else
@@ -273,16 +277,13 @@ namespace se
 
 			if (_context.mouseButtonEvent.button == input::MouseButton::left)
 			{
-				const bool needInputUpdate =
-					clickCallback != nullptr ||
-					hoverProperties.has_value() ||
-					pressedProperties.has_value();
-				if (getVisible() && needInputUpdate)
+				if (getVisible() && needInputUpdate())
 				{
 					if (_context.handledDepth <= zvalue && hitTest(se::input::getMousePositionf()))
 					{
 						// Mark our depth, but wait for children to check before actually handling the event
-						_context.handledDepth = zvalue;
+						if (consumeInput)
+							_context.handledDepth = zvalue;
 						waitingToUpdate = true;
 					}
 				}
@@ -293,9 +294,6 @@ namespace se
 
 			if (waitingToUpdate && _context.handledDepth <= zvalue)
 			{
-				if (_context.mouseButtonEvent.isRelease() && clickCallback != nullptr)
-					clickCallback();
-
 				if (_context.mouseButtonEvent.isPress())
 				{
 					inputStatus = GUIElementInputStatus::Pressed;
@@ -308,6 +306,11 @@ namespace se
 				{
 					inputStatus = GUIElementInputStatus::Hover;
 				}
+
+				if (_context.mouseButtonEvent.isRelease() && clickCallback)
+					clickCallback(*this);
+				if (hoverCallback)
+					hoverCallback(*this);
 				inputHandled = true;
 			}
 			else
@@ -418,11 +421,32 @@ namespace se
 				return children[_index];
 			return nullptr;
 		}
+		std::shared_ptr<GUIElement> GUIElement::findChild(std::string_view _name, bool _recursive)
+		{
+			for (auto&& child : children)
+			{
+				if (child->getName() == _name)
+					return child;
+			}
+			if (_recursive)
+			{
+				for (auto&& child : children)
+				{
+					if (auto result = child->findChild(_name, true))
+						return result;
+				}
+			}
+			return nullptr;
+		}
 		size_t GUIElement::getNumChildren() const
 		{
 			return children.size();
 		}
 
+		void GUIElement::setUpdateCallback(std::function<void(GUIElement&)> _callback)
+		{
+			preUpdateCallback = _callback;
+		}
 		bool GUIElement::hitTest(const glm::vec2& _viewPoint)
 		{
 			glm::vec3 globalPosition;
@@ -436,9 +460,13 @@ namespace se
 			Bounds2D bounds(glm::vec2(globalPosition.x + globalSize.x * 0.5f + pixelOffset.x, -globalPosition.y + globalSize.y * 0.5f + pixelOffset.y), globalSize * 0.5f);
 			return bounds.contains(_viewPoint);
 		}
-		void GUIElement::onClick(std::function<void()> _callback)
+		void GUIElement::onClick(std::function<void(GUIElement&)> _callback)
 		{
 			clickCallback = _callback;
+		}
+		void GUIElement::onHover(std::function<void(GUIElement&)> _callback)
+		{
+			hoverCallback = _callback;
 		}
 		void GUIElement::setHoverProperties(const GUIElementProperties& _properties)
 		{
@@ -449,6 +477,10 @@ namespace se
 			pressedProperties = _properties;
 		}
 
+		std::string_view GUIElement::getName() const
+		{
+			return name;
+		}
 		const GUIVec2& GUIElement::getPosition() const
 		{
 			return_property(position);
@@ -494,8 +526,16 @@ namespace se
 		{
 			return_property(padding);
 		}
+		bool GUIElement::getConsumeInput() const
+		{
+			return consumeInput;
+		}
 
 
+		void GUIElement::setName(std::string_view _name)
+		{
+			name = _name;
+		}
 		void GUIElement::setPosition(const GUIVec2& _position)
 		{
 			normalProperties.position = _position;
@@ -601,6 +641,15 @@ namespace se
 		{
 			normalProperties.padding = _padding;
 			enableBit(updateFlags, GUIElementUpdateFlag::TreeUpdateNeeded);
+		}
+		void GUIElement::setConsumeInput(bool _value)
+		{
+			consumeInput = _value;
+		}
+
+		void GUIElement::setDataContext(std::any _context)
+		{
+			dataContext = _context;
 		}
 	}
 }
