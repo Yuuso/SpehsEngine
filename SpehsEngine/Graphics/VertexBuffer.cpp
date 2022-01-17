@@ -94,12 +94,15 @@ namespace se
 		}
 		void VertexBuffer::erase(const size_t _begin, const size_t _end)
 		{
-			buffer.erase(buffer.begin() + _begin * vertexBytes, buffer.begin() + _end * vertexBytes);
+			se_assert(_begin <= _end);
+			se_assert(size() >= _end);
+			buffer.erase(buffer.begin() + _begin * vertexBytes, buffer.begin() + _end * vertexBytes + vertexBytes);
 			bufferChanged = true;
 		}
 		void VertexBuffer::clear()
 		{
 			buffer.clear();
+			se_assert(size() == 0);
 			bufferChanged = true;
 		}
 		const void* VertexBuffer::data() const

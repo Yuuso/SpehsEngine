@@ -52,10 +52,11 @@ namespace se
 		public:
 
 			InstanceBuffer();
+			InstanceBuffer(std::shared_ptr<VertexBuffer> _buffer);
 
 			const T& get(const size_t _index) const;
 			void set(const size_t _index, const T& _data);
-			void pushBack(const T& _data);
+			size_t pushBack(const T& _data);
 
 			const size_t size() const;
 			void resize(const size_t _size);
@@ -79,6 +80,13 @@ namespace se
 		{
 			buffer = std::make_shared<VertexBuffer>();
 			buffer->setAttributes(getAttributes());
+		}
+		template<typename T>
+		InstanceBuffer<T>::InstanceBuffer(std::shared_ptr<VertexBuffer> _buffer)
+		{
+			buffer = _buffer;
+			se_assert(buffer);
+			se_assert(getAttributes() == buffer->getAttributes());
 		}
 
 		template<typename T>
@@ -112,11 +120,12 @@ namespace se
 		}
 
 		template<typename T>
-		void InstanceBuffer<T>::pushBack(const T& _data)
+		size_t InstanceBuffer<T>::pushBack(const T& _data)
 		{
 			const size_t index = size();
 			grow(1);
 			set(index, _data);
+			return index;
 		}
 
 		template<typename T>

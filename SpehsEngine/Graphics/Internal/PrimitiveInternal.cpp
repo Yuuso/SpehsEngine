@@ -42,14 +42,11 @@ namespace se
 		{
 			if (primitive)
 			{
-				std::shared_ptr<VertexBuffer> vertices = primitive->getVertices();
-				if (vertices)
+				if (auto vertices = primitive->getVertices())
 					vertices->registerAsRenderer(reinterpret_cast<uintptr_t>(this));
-				std::shared_ptr<IndexBuffer> indices = primitive->getIndices();
-				if (indices)
+				if (auto indices = primitive->getIndices())
 					indices->registerAsRenderer(reinterpret_cast<uintptr_t>(this));
-				std::shared_ptr<VertexBuffer> instances = primitive->getInstances();
-				if (instances)
+				if (auto instances = primitive->getInstances())
 					instances->registerAsRenderer(reinterpret_cast<uintptr_t>(this));
 			}
 		}
@@ -57,14 +54,11 @@ namespace se
 		{
 			if (primitive)
 			{
-				std::shared_ptr<VertexBuffer> vertices = primitive->getVertices();
-				if (vertices)
+				if (auto vertices = primitive->getVertices())
 					vertices->unregisterAsRenderer(reinterpret_cast<uintptr_t>(this));
-				std::shared_ptr<IndexBuffer> indices = primitive->getIndices();
-				if (indices)
+				if (auto indices = primitive->getIndices())
 					indices->unregisterAsRenderer(reinterpret_cast<uintptr_t>(this));
-				std::shared_ptr<VertexBuffer> instances = primitive->getInstances();
-				if (instances)
+				if (auto instances = primitive->getInstances())
 					instances->unregisterAsRenderer(reinterpret_cast<uintptr_t>(this));
 			}
 		}

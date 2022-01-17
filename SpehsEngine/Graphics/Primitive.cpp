@@ -26,17 +26,20 @@ namespace se
 			{
 				updateMatrices();
 			}
-			if (vertices && vertices->getBufferChanged())
+			if (auto _vertices = getVertices())
 			{
-				vertices->updateBuffer();
+				if (_vertices->getBufferChanged())
+					vertices->updateBuffer();
 			}
-			if (indices && indices->getBufferChanged())
+			if (auto _indices = getIndices())
 			{
-				indices->updateBuffer();
+				if (_indices->getBufferChanged())
+					_indices->updateBuffer();
 			}
-			if (instances && instances->getBufferChanged())
+			if (auto _instances = getInstances())
 			{
-				instances->updateBuffer();
+				if (_instances->getBufferChanged())
+					_instances->updateBuffer();
 			}
 			// RenderInfoChanged changes only impact PrimitiveInternal
 			updateFlags = 0;
@@ -60,11 +63,11 @@ namespace se
 		}
 		bool Primitive::getVerticesChanged()
 		{
-			return checkBit(updateFlags, PrimitiveUpdateFlag::VerticesChanged) || (vertices ? vertices->getBufferChanged() : false);
+			return checkBit(updateFlags, PrimitiveUpdateFlag::VerticesChanged) || (getVertices() ? getVertices()->getBufferChanged() : false);
 		}
 		bool Primitive::getIndicesChanged()
 		{
-			return checkBit(updateFlags, PrimitiveUpdateFlag::IndicesChanged) || (indices ? indices->getBufferChanged() : false);
+			return checkBit(updateFlags, PrimitiveUpdateFlag::IndicesChanged) || (getIndices() ? getIndices()->getBufferChanged() : false);
 		}
 
 		const std::string& Primitive::getName() const
@@ -235,7 +238,7 @@ namespace se
 		}
 		void Primitive::setRenderMode(RenderMode _renderMode)
 		{
-			if (instances && instances->size() > 0 && renderMode == RenderMode::Static)
+			if (getIndices() && getIndices()->size() > 0 && renderMode == RenderMode::Static)
 				log::error("Should not use static RenderMode with instanced primitives!");
 			if (renderMode == _renderMode)
 				return;
