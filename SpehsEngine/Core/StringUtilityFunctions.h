@@ -144,4 +144,12 @@ namespace se
 
 	std::wstring toWideString(const std::string& string);
 	std::string fromWideString(const std::wstring& wstring);
+
+	/*
+		if (postSpaceToLowerCase)
+			CamelCase -> Camel case
+		else
+			CamelCase -> Camel Case
+	*/
+	std::string camelCaseToSpaced(const std::string string, const bool postSpaceToLowerCase);
 }

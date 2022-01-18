@@ -251,4 +251,24 @@ namespace se
 #endif
 		return string;
 	}
+
+	std::string camelCaseToSpaced(const std::string string, const bool postSpaceToLowerCase)
+	{
+		std::string result;
+		result.reserve(string.size() + 1);
+		for (size_t i = 0; i < string.size(); i++)
+		{
+			char c = string[i];
+			if (i > 0 && c >= 'A' && c <= 'Z')
+			{
+				result.push_back(' ');
+				if (postSpaceToLowerCase)
+				{
+					c = char(tolower(int(c)));
+				}
+			}
+			result.push_back(c);
+		}
+		return result;
+	}
 }
