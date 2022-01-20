@@ -34,6 +34,8 @@ namespace se
 			return nullptr;
 		}
 
+		size_t size() const { return values.size(); }
+
 	private:
 		float totalWeight = 0.0f;
 		std::vector<std::pair<float, T>> values;
