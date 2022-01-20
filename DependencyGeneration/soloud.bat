@@ -1,8 +1,8 @@
 @ECHO OFF
 
-CALL Scripts/vorbis_gen.bat
+CALL Scripts/soloud_gen.bat
 IF %ERRORLEVEL% NEQ 0 GOTO :FAILED
-CALL Scripts/vorbis_copy.bat
+CALL Scripts/soloud_copy.bat
 IF %ERRORLEVEL% NEQ 0 GOTO :FAILED
 
 PAUSE

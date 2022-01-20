@@ -54,22 +54,14 @@
     script: TBD
     Tools for creating ktx textures.
     Not currently required for building any part of the engine. Only used by asset building scripts to create cubemaps.
-## OGG
-    repository: https://github.com/gcp/libogg
-    script: libogg.bat
-    Audio loading. (Status TBD with Audio rework...)
-## OPENAL
-    repository: https://github.com/kcat/openal-soft
-    script: TBD
-    Audio playback. (Might be replaced in the future...)
 ## SDL2
     repository: https://github.com/libsdl-org/SDL
     script: TBD
     Input and window management.
-## VORBIS
-    repository: https://github.com/xiph/vorbis
-    script: vorbis.bat
-    Audio loading. (Status TBD with Audio rework...)
+## SOLOUD
+    repository: https://github.com/jarikomppa/soloud
+    script: soloud.bat
+    Audio engine.
 
 ## ZLIB
     ?
@@ -79,4 +71,3 @@
     ?
 ## STEAM / GAME-NETWORKING-SOCKETS
     ?
-    
