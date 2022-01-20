@@ -2,7 +2,7 @@
 
 namespace se
 {
-	// Contains individually weighted const pointers to values of type T. Allows retrieving one value by weighted random.
+	// Contains individually weighted values of type T. Allows retrieving one value by weighted random.
 	template<typename T>
 	class WeightedRandomizer
 	{
@@ -13,7 +13,7 @@ namespace se
 			if (weight > 0.0f)
 			{
 				totalWeight += weight;
-				values.push_back(std::make_pair(totalWeight, &t));
+				values.push_back(std::make_pair(totalWeight, t));
 			}
 		}
 
@@ -23,11 +23,11 @@ namespace se
 			if (!values.empty())
 			{
 				const float roll = rng.random<float>(0.0f, totalWeight);
-				for (const std::pair<float, const T*>& pair : values)
+				for (const std::pair<float, T>& pair : values)
 				{
 					if (roll <= pair.first)
 					{
-						return pair.second;
+						return &pair.second;
 					}
 				}
 			}
@@ -36,6 +36,6 @@ namespace se
 
 	private:
 		float totalWeight = 0.0f;
-		std::vector<std::pair<float, const T*>> values;
+		std::vector<std::pair<float, T>> values;
 	};
 }
