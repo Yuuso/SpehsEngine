@@ -18,12 +18,6 @@
     <ClCompile Include="AudioEngine.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="AudioManager.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="OpenALError.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="SoundSource.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -36,12 +30,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AudioEngine.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="AudioManager.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="OpenALError.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="SoundSource.h">
