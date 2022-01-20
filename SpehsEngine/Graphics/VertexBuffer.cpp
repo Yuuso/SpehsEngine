@@ -95,8 +95,15 @@ namespace se
 		void VertexBuffer::erase(const size_t _begin, const size_t _end)
 		{
 			se_assert(_begin <= _end);
-			se_assert(size() >= _end);
-			buffer.erase(buffer.begin() + _begin * vertexBytes, buffer.begin() + _end * vertexBytes + vertexBytes);
+			se_assert(_begin < size());
+			se_assert(_end <= size());
+
+			// NOTE:
+			// _end is index (not in bytes) and is not inclusive.
+			// Erasing from _begin to _begin would only erase 1 byte.
+			const size_t fixedEnd = glm::max(_end, _begin + 1);
+
+			buffer.erase(buffer.begin() + _begin * vertexBytes, buffer.begin() + fixedEnd * vertexBytes);
 			bufferChanged = true;
 		}
 		void VertexBuffer::clear()
