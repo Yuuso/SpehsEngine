@@ -4,7 +4,8 @@
 #include <functional>
 #include "SpehsEngine/Core/WriteBuffer.h"
 #include "SpehsEngine/Core/ReadBuffer.h"
-#include "SpehsEngine/Core/StringOperations.h"
+#include "SpehsEngine/Core/StringUtilityFunctions.h"
+
 
 namespace se
 {

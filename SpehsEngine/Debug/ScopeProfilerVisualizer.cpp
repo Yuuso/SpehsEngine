@@ -1,7 +1,6 @@
 #include "stdafx.h"
 #include "SpehsEngine/Debug/ScopeProfilerVisualizer.h"
 
-#include "SpehsEngine/Core/StringOperations.h"
 #include "SpehsEngine/Core/StringUtilityFunctions.h"
 #include "SpehsEngine/Graphics/DefaultMaterials.h"
 #include "SpehsEngine/Input/InputManager.h"

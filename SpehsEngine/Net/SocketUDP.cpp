@@ -12,7 +12,7 @@
 #include "SpehsEngine/Core/RNG.h"
 #include "SpehsEngine/Core/Log.h"
 #include "SpehsEngine/Core/SE_Time.h"
-#include "SpehsEngine/Core/StringOperations.h"
+#include "SpehsEngine/Core/StringUtilityFunctions.h"
 
 #define DEBUG_LOG(level, message) if (getDebugLogLevel() >= level) \
 { \

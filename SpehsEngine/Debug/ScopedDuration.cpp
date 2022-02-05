@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "SpehsEngine/Debug/ScopedDuration.h"
 
-#include "SpehsEngine/Core/StringOperations.h"
+#include "SpehsEngine/Core/StringUtilityFunctions.h"
 
 
 namespace se
