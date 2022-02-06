@@ -3,6 +3,7 @@ SpehsEngine/SpehsEngine.VS.db
 SpehsEngine/SpehsEngine.VC.db
 SpehsEngine/.vs/
 Dependencies/
+_Dependencies/
 bin/
 obj/
 *.TMP
