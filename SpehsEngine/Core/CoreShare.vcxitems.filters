@@ -25,7 +25,6 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)stdafx.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)STLUnorderedMapUtilityFunctions.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)STLVectorUtilityFunctions.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)StringOperations.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)StringUtilityFunctions.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)StrongInt.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Thread.cpp" />
@@ -83,7 +82,6 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)stdafx.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)STLUnorderedMapUtilityFunctions.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)STLVectorUtilityFunctions.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)StringOperations.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)StringUtilityFunctions.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)StrongInt.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Thread.h" />

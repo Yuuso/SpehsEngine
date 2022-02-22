@@ -3,7 +3,7 @@
 
 #include "SpehsEngine/Net/IOService.h"
 #include "SpehsEngine/Core/Log.h"
-#include "SpehsEngine/Core/StringOperations.h"
+#include "SpehsEngine/Core/StringUtilityFunctions.h"
 #include "boost/bind.hpp"
 #include "boost/asio/placeholders.hpp"
 #include <string>
