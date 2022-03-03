@@ -317,6 +317,16 @@ namespace ImGui
 	{
 		return InputT(label.c_str(), value, step, stepFast, flags);
 	}
+	inline bool InputAngle(const std::string& label, float &radians)
+	{
+		float degrees = (radians / se::PI<float>) * 180.0f;
+		const bool changed = InputT(label.c_str(), degrees);
+		if (changed)
+		{
+			radians = (degrees / 180.0f) * se::PI<float>;
+		}
+		return changed;
+	}
 
 	template<typename T>
 	bool InputT(const char* const label, std::vector<T>& vector, const std::function<bool(T&, const size_t)>& renderElement)
