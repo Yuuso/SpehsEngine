@@ -343,9 +343,10 @@ namespace ImGui
 			for (size_t i = 0; i < vector.size(); i++)
 			{
 				ImGui::PushID(&vector[i]);
+				bool remove = false;
 				if (ImGui::Button("Delete"))
 				{
-					vector.erase(vector.begin() + i--);
+					remove = true;
 					changed = true;
 				}
 				const bool canMoveUp = i > 0;
@@ -372,6 +373,10 @@ namespace ImGui
 					}
 				}
 				changed = renderElement(vector[i], i) || changed;
+				if (remove)
+				{
+					vector.erase(vector.begin() + i--);
+				}
 				ImGui::PopID();
 			}
 			if (ImGui::Button("New"))
