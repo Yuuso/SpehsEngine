@@ -10,19 +10,19 @@ namespace se
 		{
 			for (auto&& font : fonts)
 			{
-				se_assert(font.second->font);
+				se_assert_m(font.second->font, "Material '" + getName() + "' missing font in slot " + std::to_string(font.first));
 				if (font.second->font)
 					font.second->uniform->set(*font.second->font.get(), font.first);
 			}
 			for (auto&& texture : textures)
 			{
-				se_assert(texture.second->texture);
+				se_assert_m(texture.second->texture, "Material '" + getName() + "' missing texture in slot " + std::to_string(texture.first));
 				if (texture.second->texture)
 					texture.second->uniform->set(*texture.second->texture.get(), texture.first);
 			}
 			for (auto&& uniformContainer : uniformContainers)
 			{
-				se_assert(uniformContainer);
+				se_assert_m(uniformContainer, "Material '" + getName() + "' missing uniform container");
 				if (uniformContainer)
 					uniformContainer->bind();
 			}
@@ -36,7 +36,7 @@ namespace se
 			scopedConnection = fontChangedSignal.connect(callback);
 		}
 
-		std::shared_ptr<Shader> Material::getShader(const ShaderVariant variant) const
+		std::shared_ptr<Shader> Material::getShader(ShaderVariant variant) const
 		{
 			auto it = shaders.find(variant);
 			if (it != shaders.end())
@@ -50,14 +50,14 @@ namespace se
 			log::warning("Material is also missing the default variant!");
 			return nullptr;
 		}
-		std::shared_ptr<Font> Material::getFont(const uint8_t _slot) const
+		std::shared_ptr<Font> Material::getFont(uint8_t _slot) const
 		{
 			auto it = fonts.find(_slot);
 			if (it == fonts.end())
 				return nullptr;
 			return it->second->font;
 		}
-		std::shared_ptr<Texture> Material::getTexture(const uint8_t _slot) const
+		std::shared_ptr<Texture> Material::getTexture(uint8_t _slot) const
 		{
 			auto it = textures.find(_slot);
 			if (it == textures.end())
@@ -68,12 +68,16 @@ namespace se
 		{
 			return lightsEnabled;
 		}
+		const std::string& Material::getName() const
+		{
+			return name;
+		}
 
-		void Material::setShader(std::shared_ptr<Shader> _shader, const ShaderVariant variant)
+		void Material::setShader(std::shared_ptr<Shader> _shader, ShaderVariant variant)
 		{
 			shaders[variant] = _shader;
 		}
-		void Material::setTexture(std::shared_ptr<Texture> _texture, const std::string_view _uniformName, const uint8_t _slot)
+		void Material::setTexture(std::shared_ptr<Texture> _texture, std::string_view _uniformName, uint8_t _slot)
 		{
 			if (_uniformName.empty())
 			{
@@ -88,7 +92,7 @@ namespace se
 			}
 			materialTexture->texture = _texture;
 		}
-		void Material::setTexture(std::shared_ptr<Texture> _texture, const uint8_t _slot)
+		void Material::setTexture(std::shared_ptr<Texture> _texture, uint8_t _slot)
 		{
 			auto it = textures.find(_slot);
 			if (it == textures.end())
@@ -98,7 +102,7 @@ namespace se
 			}
 			it->second->texture = _texture;
 		}
-		void Material::setFont(std::shared_ptr<Font> _font, const std::string_view _uniformName, const uint8_t _slot)
+		void Material::setFont(std::shared_ptr<Font> _font, std::string_view _uniformName, uint8_t _slot)
 		{
 			if (_uniformName.empty())
 			{
@@ -114,7 +118,7 @@ namespace se
 			materialFont->font = _font;
 			fontChangedSignal();
 		}
-		void Material::setFont(std::shared_ptr<Font> _font, const uint8_t _slot)
+		void Material::setFont(std::shared_ptr<Font> _font, uint8_t _slot)
 		{
 			auto it = fonts.find(_slot);
 			if (it == fonts.end())
@@ -124,9 +128,13 @@ namespace se
 			}
 			it->second->font = _font;
 		}
-		void Material::setLit(const bool _value)
+		void Material::setLit(bool _value)
 		{
 			lightsEnabled = _value;
+		}
+		void Material::setName(std::string_view _name)
+		{
+			name = _name;
 		}
 	}
 }
