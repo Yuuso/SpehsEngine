@@ -67,7 +67,7 @@ namespace se
 					material->setTexture(nullptr, "s_texColor", PhongTextureType::Color);
 					material->setTexture(nullptr, "s_texNormal", PhongTextureType::Normal);
 					material->setLit(true);
-					material->addUniformContainer(std::make_shared<PhongAttributes>());
+					material->setUniformContainer(std::make_shared<PhongAttributes>(), "PhongAttributes");
 					return material;
 				}
 			}
