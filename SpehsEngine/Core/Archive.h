@@ -56,7 +56,7 @@ namespace se
 		bool read(const std::string& valueName, se::WriteBuffer& writeBuffer) const;
 
 		template<typename T>
-		bool contains(const std::string& valueName)
+		bool contains(const std::string& valueName) const
 		{
 			const uint32_t hash = getDataHash(typeid(T).name(), valueName);
 			return data.find(hash) != data.end();
