@@ -37,7 +37,7 @@ namespace se
 			m[1] /= (*_scale).y;
 			m[2] /= (*_scale).z;
 		}
-		else
+		else if (_rot)
 		{
 			glm::vec3 dummy;
 			dummy.x = glm::length(glm::vec3(m[0][0], m[0][1], m[0][2]));
