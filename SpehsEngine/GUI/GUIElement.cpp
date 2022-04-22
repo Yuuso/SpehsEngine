@@ -21,7 +21,10 @@ namespace se
 			: normalProperties(_other.normalProperties)
 			, hoverProperties(_other.hoverProperties)
 			, pressedProperties(_other.pressedProperties)
+			, consumeInput(_other.consumeInput)
+			, inheritInputStatus(_other.inheritInputStatus)
 		{
+			// NOTE: dataContext and callbacks are not copied currently!
 			for (auto&& copyChild : _other.children)
 				addChild(std::shared_ptr<GUIElement>(copyChild->clone()));
 		}
@@ -164,14 +167,21 @@ namespace se
 			GUIElementInputStatus lastStatus = inputStatus;
 			const ZIndex zvalue = getZValue();
 			bool waitingToHoverUpdate = false;
+			bool inheritStatus = inheritInputStatus && parent && parent->inputStatus == GUIElementInputStatus::Hover;
+
 			{
 				if (getVisible() && needInputUpdate())
 				{
-					if (_context.hoverHandledDepth <= zvalue && hitTest(se::input::getMousePositionf()))
+					const bool notConsumed = _context.hoverHandledDepth <= zvalue;
+					if ((notConsumed && hitTest(se::input::getMousePositionf())) || inheritStatus)
 					{
-						if (consumeInput)
+						if (notConsumed && consumeInput)
 							_context.hoverHandledDepth = zvalue;
 						waitingToHoverUpdate = true;
+						if (inputStatus == GUIElementInputStatus::Normal)
+						{
+							inputStatus = GUIElementInputStatus::Hover;
+						}
 					}
 				}
 			}
@@ -180,11 +190,10 @@ namespace se
 			for (auto&& child : children)
 				child->preUpdate(_context);
 
-			if (waitingToHoverUpdate && _context.hoverHandledDepth <= zvalue)
+			if (waitingToHoverUpdate && ((_context.hoverHandledDepth <= zvalue) || inheritStatus))
 			{
-				if (inputStatus != GUIElementInputStatus::Pressed)
+				if (inputStatus == GUIElementInputStatus::Hover)
 				{
-					inputStatus = GUIElementInputStatus::Hover;
 					if (hoverCallback)
 						hoverCallback(*this);
 				}
@@ -193,6 +202,7 @@ namespace se
 			{
 				inputStatus = GUIElementInputStatus::Normal;
 			}
+
 			if (lastStatus != inputStatus)
 			{
 				enableBit(updateFlags, GUIElementUpdateFlag::TreeUpdateNeeded);
@@ -274,17 +284,23 @@ namespace se
 			const ZIndex zvalue = getZValue();
 			bool waitingToUpdate = false;
 			bool inputHandled = false;
+			const bool inheritStatus = inheritInputStatus && parent && parent->inputStatus != GUIElementInputStatus::Normal;
 
 			if (_context.mouseButtonEvent.button == input::MouseButton::left)
 			{
 				if (getVisible() && needInputUpdate())
 				{
-					if (_context.handledDepth <= zvalue && hitTest(se::input::getMousePositionf()))
+					const bool notConsumed = _context.handledDepth <= zvalue;
+					if ((notConsumed && hitTest(se::input::getMousePositionf())) || inheritStatus)
 					{
 						// Mark our depth, but wait for children to check before actually handling the event
-						if (consumeInput)
+						if (notConsumed && consumeInput)
 							_context.handledDepth = zvalue;
 						waitingToUpdate = true;
+						if (inputStatus == GUIElementInputStatus::Normal)
+						{
+							inputStatus = GUIElementInputStatus::Hover;
+						}
 					}
 				}
 			}
@@ -292,7 +308,7 @@ namespace se
 			for (auto&& child : children)
 				inputHandled = child->inputUpdate(_context) || inputHandled;
 
-			if (waitingToUpdate && _context.handledDepth <= zvalue)
+			if (waitingToUpdate && ((_context.handledDepth <= zvalue) || inheritStatus))
 			{
 				if (_context.mouseButtonEvent.isPress())
 				{
@@ -475,6 +491,10 @@ namespace se
 		void GUIElement::setPressedProperties(const GUIElementProperties& _properties)
 		{
 			pressedProperties = _properties;
+		}
+		void GUIElement::setInheritInputStatus(bool _value)
+		{
+			inheritInputStatus = _value;
 		}
 
 		std::string_view GUIElement::getName() const
