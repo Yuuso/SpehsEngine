@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "SpehsEngine/Graphics/Window.h"
 
+#include "SDL/SDL_video.h"
 #include "SpehsEngine/Core/BitwiseOperations.h"
 #include "SpehsEngine/Graphics/Renderer.h"
 #include "SpehsEngine/Graphics/Internal/InternalTypes.h"
@@ -13,6 +14,14 @@ namespace se
 		Window::Window()
 			: aspectRatio(width, height)
 		{
+		}
+		Window::Window(bool _hide)
+			: Window()
+		{
+			if (_hide)
+			{
+				hide();
+			}
 		}
 		Window::~Window()
 		{
@@ -140,6 +149,16 @@ namespace se
 		void Window::setY(const int _y)
 		{
 			y = _y;
+			enableBit(updateFlags, WindowUpdateFlag::PositionChanged);
+		}
+		void Window::setCenteredX()
+		{
+			x = SDL_WINDOWPOS_CENTERED;
+			enableBit(updateFlags, WindowUpdateFlag::PositionChanged);
+		}
+		void Window::setCenteredY()
+		{
+			y = SDL_WINDOWPOS_CENTERED;
 			enableBit(updateFlags, WindowUpdateFlag::PositionChanged);
 		}
 		void Window::setWidth(const uint16_t _width)

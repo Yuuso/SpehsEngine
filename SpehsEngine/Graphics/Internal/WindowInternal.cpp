@@ -210,13 +210,13 @@ namespace se
 		void WindowInternal::update()
 		{
 			se_assert(window);
-			if (checkBit(window->updateFlags, WindowUpdateFlag::PositionChanged))
-			{
-				SDL_SetWindowPosition(sdlWindow, window->getX(), window->getY());
-			}
 			if (checkBit(window->updateFlags, WindowUpdateFlag::SizeChanged))
 			{
 				SDL_SetWindowSize(sdlWindow, window->getWidth(), window->getHeight());
+			}
+			if (checkBit(window->updateFlags, WindowUpdateFlag::PositionChanged))
+			{
+				SDL_SetWindowPosition(sdlWindow, window->getX(), window->getY());
 			}
 			if (checkBit(window->updateFlags, WindowUpdateFlag::ResizableChanged))
 			{
@@ -254,16 +254,16 @@ namespace se
 			{
 				SDL_SetWindowGrab(sdlWindow, (SDL_bool)!window->getConfinedInput());
 			}
+			if (checkBit(window->updateFlags, WindowUpdateFlag::OpacityChanged))
+			{
+				SDL_SetWindowOpacity(sdlWindow, window->getOpacity());
+			}
 			if (checkBit(window->updateFlags, WindowUpdateFlag::ShownChanged))
 			{
 				if (window->isShown())
 					SDL_ShowWindow(sdlWindow);
 				else
 					SDL_HideWindow(sdlWindow);
-			}
-			if (checkBit(window->updateFlags, WindowUpdateFlag::OpacityChanged))
-			{
-				SDL_SetWindowOpacity(sdlWindow, window->getOpacity());
 			}
 			window->updateFlags = 0;
 		}
@@ -274,18 +274,27 @@ namespace se
 			{
 				case SDL_WINDOWEVENT_SHOWN:
 				{
-					window->shown = true;
+					if (!checkBit(window->updateFlags, WindowUpdateFlag::ShownChanged))
+					{
+						window->shown = true;
+					}
 					break;
 				}
 				case SDL_WINDOWEVENT_HIDDEN:
 				{
-					window->shown = false;
+					if (!checkBit(window->updateFlags, WindowUpdateFlag::ShownChanged))
+					{
+						window->shown = false;
+					}
 					break;
 				}
 				case SDL_WINDOWEVENT_MOVED:
 				{
-					window->x = _event.data1;
-					window->y = _event.data2;
+					if (!checkBit(window->updateFlags, WindowUpdateFlag::PositionChanged))
+					{
+						window->x = _event.data1;
+						window->y = _event.data2;
+					}
 					window->displayIndex = SDL_GetWindowDisplayIndex(sdlWindow);
 					break;
 				}
@@ -306,8 +315,12 @@ namespace se
 					else
 					{
 						window->aspectRatio = newAspectRatio;
-						window->width = newWidth;
-						window->height = newHeight;
+
+						if (!checkBit(window->updateFlags, WindowUpdateFlag::SizeChanged))
+						{
+							window->width = newWidth;
+							window->height = newHeight;
+						}
 
 						if (isDefault)
 						{
@@ -334,17 +347,28 @@ namespace se
 				}
 				case SDL_WINDOWEVENT_MINIMIZED:
 				{
-					window->minimized = true;
+					if (!checkBit(window->updateFlags, WindowUpdateFlag::Minimized) &&
+						 checkBit(window->updateFlags, WindowUpdateFlag::Restored))
+					{
+						window->minimized = true;
+					}
 					break;
 				}
 				case SDL_WINDOWEVENT_MAXIMIZED:
 				{
-					window->maximized = true;
+					if (!checkBit(window->updateFlags, WindowUpdateFlag::Maximized))
+					{
+						window->maximized = true;
+					}
 					break;
 				}
 				case SDL_WINDOWEVENT_RESTORED:
 				{
-					window->minimized = false;
+					if (!checkBit(window->updateFlags, WindowUpdateFlag::Minimized) &&
+						checkBit(window->updateFlags, WindowUpdateFlag::Restored))
+					{
+						window->minimized = false;
+					}
 					break;
 				}
 				case SDL_WINDOWEVENT_ENTER:
@@ -370,12 +394,6 @@ namespace se
 				case SDL_WINDOWEVENT_CLOSE:
 				{
 					window->quitRequested = true;
-					if (isDefault)
-					{
-						SDL_Event quitEvent;
-						quitEvent.type = SDL_QUIT;
-						SDL_PushEvent(&quitEvent);
-					}
 					break;
 				}
 			}

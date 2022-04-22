@@ -18,6 +18,7 @@ namespace se
 		public:
 
 									Window();
+									Window(bool _hide);
 									~Window();
 
 									Window(const Window& _other) = delete;
@@ -53,6 +54,8 @@ namespace se
 			void					setName(const std::string_view _name);
 			void					setX(const int _x);
 			void					setY(const int _y);
+			void					setCenteredX();
+			void					setCenteredY();
 			void					setWidth(const uint16_t _width);
 			void					setHeight(const uint16_t _height);
 			void					forceKeepAspectRatio(const bool _value);
