@@ -68,6 +68,7 @@ namespace se
 			bool mouseCollision(const glm::vec2& minAABB, const glm::vec2& maxAABB) const;
 			bool mouseCollision(const float leftAABB, const float rightAABB, const float topAABB, const float bottomAABB) const;
 			bool isQuitRequested() const { return quitRequested; }
+			void ignoreQuitRequest() { quitRequested = false; }
 			bool fileDropped() const;
 			std::string getDroppedFilePath() { std::string path = droppedFilePath; droppedFilePath.clear();/*Reset dropped file path*/ return path; }
 
