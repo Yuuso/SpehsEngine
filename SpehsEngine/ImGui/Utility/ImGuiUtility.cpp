@@ -125,7 +125,7 @@ namespace ImGui
 		return fileSelector(label, filepath, directory);
 	}
 
-	std::optional<bool> confirmationDialog(const char* const header, const char* const message)
+	std::optional<bool> confirmationDialog(const char* const header, const char* const message, const std::function<void()>& customRender)
 	{
 		std::optional<bool> result;
 
@@ -136,6 +136,10 @@ namespace ImGui
 		if (ImGui::BeginPopupModal(header, NULL, ImGuiWindowFlags_AlwaysAutoResize))
 		{
 			ImGui::Text(message);
+			if (customRender)
+			{
+				customRender();
+			}
 			if (ImGui::Button("OK", ImVec2(120, 0)))
 			{
 				result.emplace(true);

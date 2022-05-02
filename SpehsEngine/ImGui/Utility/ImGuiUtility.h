@@ -198,20 +198,10 @@ namespace ImGui
 		return textureSelector(label.c_str(), filepath, directory.c_str());
 	}
 
-	std::optional<bool> confirmationDialog(const char* const header, const char* const message);
-	inline std::optional<bool> confirmationDialog(const std::string& header, const std::string& message)
+	std::optional<bool> confirmationDialog(const char* const header, const char* const message, const std::function<void()>& customRender = std::function<void()>());
+	inline std::optional<bool> confirmationDialog(const std::string& header, const std::string& message, const std::function<void()>& customRender = std::function<void()>())
 	{
-		return confirmationDialog(header.c_str(), message.c_str());
-	}
-	template<typename A, typename ... Arguments>
-	inline std::optional<bool> confirmationDialogV(const std::string& header, const std::string& formatMessage, const A& argument, const Arguments&... arguments)
-	{
-		return confirmationDialog(header.c_str(), formatMessage.c_str(), argument, arguments...);
-	}
-	template<typename A, typename ... Arguments>
-	inline std::optional<bool> confirmationDialogV(const char* const header, const char* const formatMessage, const A& argument, const Arguments&... arguments)
-	{
-		return confirmationDialog(header, se::formatString(formatMessage, argument, arguments...).c_str());
+		return confirmationDialog(header.c_str(), message.c_str(), customRender);
 	}
 
 	std::optional<bool> stringDialog(const char* const header, const char* const message, std::string& output);
