@@ -165,38 +165,56 @@ namespace se
 
 		std::shared_ptr<ResourceData> Texture::createResourceFromInput(const TextureInput& _input, const TextureModes _textureModes)
 		{
-			se_assert(_input.format == TextureInput::Format::RGBA8); // Only one supported currently
 			se_assert(_input.width > 0 && _input.height > 0);
-			se_assert(_input.data.size() % 4 == 0);
 
 			const uint64_t flags = TextureModesToFlags(_textureModes);
 			const bgfx::Memory* mem = bgfx::copy(_input.data.data(), uint32_t(_input.data.size()));
 			const bool hasMips = false;
 			const bool numLayers = 1;
 
+			bgfx::TextureFormat::Enum textureFormat;
+			size_t bytesPerPixel;
+			if (_input.format == TextureInput::Format::RGBA8)
+			{
+				textureFormat = bgfx::TextureFormat::Enum::RGBA8;
+				bytesPerPixel = 4;
+			}
+			else if (_input.format == TextureInput::Format::R8)
+			{
+				textureFormat = bgfx::TextureFormat::Enum::R8;
+				bytesPerPixel = 1;
+			}
+			else
+			{
+				se::log::error("Texture::createResourceFromInput: Invalid texture format!");
+				textureFormat = bgfx::TextureFormat::Enum::RGBA8;
+				bytesPerPixel = 4;
+			}
+			se_assert(_input.data.size() % bytesPerPixel == 0);
+
 			bgfx::TextureHandle textureHandle = BGFX_INVALID_HANDLE;
 			if (_input.isCubemap)
 			{
 				se_assert(_input.width == _input.height);
-				se_assert((_input.data.size() / 4) == (size_t)(_input.width * _input.height * 6));
+				se_assert((_input.data.size() / bytesPerPixel) == (size_t)(_input.width * _input.height * 6));
 				textureHandle = bgfx::createTextureCube(
 					  _input.width
 					, hasMips
 					, numLayers
-					, bgfx::TextureFormat::Enum::RGBA8
+					, textureFormat
 					, flags
 					, mem
 				);
 			}
 			else
 			{
-				se_assert((_input.data.size() / 4) == (size_t)(_input.width * _input.height));
+				se_assert((_input.data.size() / bytesPerPixel) == (size_t)(_input.width * _input.height));
 				textureHandle = bgfx::createTexture2D(
 					  _input.width
 					, _input.height
 					, hasMips
 					, numLayers
-					, bgfx::TextureFormat::Enum::RGBA8
+					, textureFormat
 					, flags
 					, mem
 				);
@@ -217,7 +235,7 @@ namespace se
 					, _input.isCubemap
 					, hasMips
 					, numLayers
-					, bgfx::TextureFormat::Enum::RGBA8
+					, textureFormat
 				);
 			}
 			else

@@ -13,6 +13,7 @@ namespace se
 			enum class Format
 			{
 				RGBA8,
+				R8,
 			};
 
 			bool isCubemap = false; // +x, -x, +y, -y, +z, -z
