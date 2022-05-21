@@ -132,5 +132,17 @@ namespace se
 			}
 			return nullptr;
 		}
+		void TextureManager::remove(std::string_view _name)
+		{
+			for (auto it = resources.begin(); it != resources.end(); it++)
+			{
+				if (it->get()->getName() == _name)
+				{
+					resources.erase(it);
+					return;
+				}
+			}
+			log::warning("Cannot remove texture '" + _name + "', texture with that name not found!");
+		}
 	}
 }
