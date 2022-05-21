@@ -213,8 +213,9 @@ namespace se
 
 		struct TextDimensions
 		{
-			glm::vec2 offsetFromOrigin; // Offset to top left from pen origin
-			glm::vec2 dimensions;		// Total width and height
+			glm::vec2 offsetFromOrigin;		// Offset to top left from pen origin
+			glm::vec2 dimensions;			// Total width and total height
+			glm::vec2 capsDimensions;		// Total width and cap height
 		};
 
 		enum class ShapeType

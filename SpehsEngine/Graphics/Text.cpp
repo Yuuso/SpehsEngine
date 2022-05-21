@@ -475,10 +475,13 @@ namespace se
 
 					dimensions.dimensions.x = std::max(dimensions.dimensions.x, cursor.x);
 					dimensions.dimensions.y = std::max(dimensions.dimensions.y, -((cursor.y + glyph.bearingY) - glyph.rectangle.height));
+					dimensions.capsDimensions.y = std::max(dimensions.capsDimensions.y, -cursor.y);
 				}
 			}
 			dimensions.dimensions.x -= dimensions.offsetFromOrigin.x;
 			dimensions.dimensions.y += dimensions.offsetFromOrigin.y;
+			dimensions.capsDimensions.x = dimensions.dimensions.x;
+			dimensions.capsDimensions.y += dimensions.offsetFromOrigin.y;
 			needDimensionsUpdate = false;
 		}
 	}
