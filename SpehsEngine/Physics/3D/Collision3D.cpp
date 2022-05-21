@@ -1,13 +1,13 @@
-
 #include "stdafx.h"
-
 #include "SpehsEngine/Physics/3D/Collision3D.h"
-#include "SpehsEngine/Physics/3D/AABBCollider3D.h"
-#include "SpehsEngine/Physics/3D/Ray3D.h"
-#include "SpehsEngine/Physics/3D/FrustumCollider3D.h"
 
+#include "SpehsEngine/Physics/3D/AABBCollider3D.h"
+#include "SpehsEngine/Physics/3D/FrustumCollider3D.h"
+#include "SpehsEngine/Physics/3D/Ray3D.h"
+#include "SpehsEngine/Physics/3D/SphereCollider3D.h"
 #include <algorithm>
 #include <limits>
+#include <glm/gtx/norm.hpp>
 
 
 namespace se
@@ -36,6 +36,32 @@ namespace se
 			if (collisionHit)
 			{
 				collisionPoint = _ray.origin + _ray.direction * tmin;
+			}
+		}
+
+		Collision3D::Collision3D(const Ray3D& _ray, const SphereCollider3D& _sphere)
+		{
+			const glm::vec3 directionToSphere = _sphere.center - _ray.origin;
+			const float rayDistanceToMiddle = glm::dot(directionToSphere, _ray.direction);
+			const float sqrLength = glm::length2(directionToSphere);
+			if ((_sphere.radius * _sphere.radius - sqrLength + rayDistanceToMiddle * rayDistanceToMiddle) < 0.0f)
+			{
+				collisionHit = false;
+			}
+			else
+			{
+				collisionHit = true;
+				const float sphereDistanceToMiddle = glm::sqrt(sqrLength - (rayDistanceToMiddle * rayDistanceToMiddle));
+				const float middleDistanceToHit = glm::sqrt((_sphere.radius * _sphere.radius) - (sphereDistanceToMiddle * sphereDistanceToMiddle));
+
+				if (sqrLength < (_sphere.radius * _sphere.radius))
+				{
+					collisionPoint = _ray.origin + _ray.direction * (rayDistanceToMiddle + middleDistanceToHit);
+				}
+				else
+				{
+					collisionPoint = _ray.origin + _ray.direction * (rayDistanceToMiddle - middleDistanceToHit);
+				}
 			}
 		}
 

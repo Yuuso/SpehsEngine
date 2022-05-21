@@ -36,6 +36,9 @@
     <ClCompile Include="PhysicsLib.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="3D\SphereCollider3D.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="SATCollision.h">
@@ -63,6 +66,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="PhysicsLib.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="3D\SphereCollider3D.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
