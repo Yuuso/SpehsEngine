@@ -16,6 +16,7 @@
 #include "SpehsEngine/Graphics/EmbeddedShaders/vs_phong_skinned.h"
 #include "SpehsEngine/Graphics/EmbeddedShaders/vs_phong_skinned_instanced.h"
 #include "SpehsEngine/Graphics/EmbeddedShaders/fs_phong.h"
+#include "SpehsEngine/Graphics/EmbeddedShaders/fs_phong_cubemap.h"
 #include "SpehsEngine/Graphics/EmbeddedShaders/vs_text.h"
 #include "SpehsEngine/Graphics/EmbeddedShaders/fs_text.h"
 #include "SpehsEngine/Graphics/EmbeddedShaders/vs_skybox.h"
@@ -39,6 +40,7 @@ namespace se
 			BGFX_EMBEDDED_SHADER(vs_phong_skinned),
 			BGFX_EMBEDDED_SHADER(vs_phong_skinned_instanced),
 			BGFX_EMBEDDED_SHADER(fs_phong),
+			BGFX_EMBEDDED_SHADER(fs_phong_cubemap),
 			BGFX_EMBEDDED_SHADER(vs_text),
 			BGFX_EMBEDDED_SHADER(fs_text),
 			BGFX_EMBEDDED_SHADER(vs_skybox),
@@ -111,6 +113,7 @@ namespace se
 			createDefaultShader("tex_billboard",			"tex_billboard",			"tex");
 			createDefaultShader("tex_billboard_instanced",	"tex_billboard_instanced",	"tex");
 			createDefaultShader("phong",					"phong",					"phong");
+			createDefaultShader("phong_cubemap",			"phong",					"phong_cubemap");
 			createDefaultShader("phong_instanced",			"phong_instanced",			"phong");
 			createDefaultShader("phong_skinned",			"phong_skinned",			"phong");
 			createDefaultShader("phong_skinned_instanced",	"phong_skinned_instanced",	"phong");

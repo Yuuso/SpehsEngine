@@ -70,6 +70,17 @@ namespace se
 					material->setUniformContainer(std::make_shared<PhongAttributes>(), "PhongAttributes");
 					return material;
 				}
+				case se::graphics::DefaultMaterialType::PhongCubemap:
+				{
+					std::shared_ptr<Material> material = std::make_shared<Material>();
+					material->setShader(_shaderManager.find("phong_cubemap"), ShaderVariant::Default);
+					material->setTexture(nullptr, "s_texColor", PhongTextureType::Color);
+					material->setTexture(nullptr, "s_texNormal", PhongTextureType::Normal);
+					material->setTexture(nullptr, "s_texRoughness", PhongTextureType::Roughness);
+					material->setLit(true);
+					material->setUniformContainer(std::make_shared<PhongAttributes>(), "PhongAttributes");
+					return material;
+				}
 			}
 
 			log::error("Invalid DefaultMaterialType! (" + std::to_string((int)_type) + ")");

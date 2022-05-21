@@ -9,6 +9,7 @@ SAMPLER2D(s_texNormal, 1);
 
 void main()
 {
-	vec3 normal = CALC_NORMAL;
-    gl_FragColor = u_primitiveColor * texture2D(s_texColor, v_texcoord0) * phong(v_position, normal);
+	vec3 normal = CALC_NORMAL_TEXTURE;
+    float specular = 1.0; // TODO: roughness map
+    gl_FragColor = u_primitiveColor * texture2D(s_texColor, v_texcoord0) * phong(v_position, normal, specular);
 }
