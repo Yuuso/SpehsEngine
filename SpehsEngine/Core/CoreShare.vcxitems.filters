@@ -50,6 +50,7 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)StaticRingBuffer.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)BufferUtilityFunctions.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)MultiMapUtilityFunctions.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Noise.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="$(MSBuildThisFileDirectory)Archive.h" />
@@ -122,6 +123,7 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)ReadAbstract.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)WriteAbstract.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)ScopedConnections.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Noise.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="File">
