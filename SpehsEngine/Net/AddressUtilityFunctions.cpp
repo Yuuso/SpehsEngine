@@ -4,6 +4,7 @@
 #include "boost/asio/ip/host_name.hpp"
 #include "boost/asio/io_service.hpp"
 #include "boost/asio/ip/tcp.hpp"
+#include "steam/isteamnetworkingutils.h"
 
 namespace se
 {
@@ -38,7 +39,10 @@ namespace se
 		{
 			SteamNetworkingIPAddr steamNetworkingAddress;
 			steamNetworkingAddress.Clear();
-			steamNetworkingAddress.ParseString(endpoint.address.value.c_str());
+			if (!SteamNetworkingUtils()->SteamNetworkingIPAddr_ParseString(&steamNetworkingAddress, endpoint.address.value.c_str()))
+			{
+				se::log::warning("Failed to parse endpoint address");
+			}
 			steamNetworkingAddress.SetIPv4(steamNetworkingAddress.GetIPv4(), endpoint.port);
 			return steamNetworkingAddress;
 		}
@@ -47,7 +51,7 @@ namespace se
 		{
 			se::net::Endpoint endpoint;
 			endpoint.address.value.resize(64);
-			steamNetworkingAddress.ToString(endpoint.address.value.data(), endpoint.address.value.size(), false);
+			SteamNetworkingUtils()->SteamNetworkingIPAddr_ToString(steamNetworkingAddress, endpoint.address.value.data(), endpoint.address.value.size(), false);
 			const size_t length = strlen(endpoint.address.value.data());
 			endpoint.address.value.resize(length);
 			endpoint.port = steamNetworkingAddress.m_port;

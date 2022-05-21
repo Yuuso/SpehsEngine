@@ -93,14 +93,14 @@
     <ClCompile />
     <Lib />
     <Lib>
-      <AdditionalDependencies>SpehsCore.lib;libprotobufd.lib;libcrypto.lib;GameNetworkingSockets_s.lib;libcrypto_static.lib</AdditionalDependencies>
+      <AdditionalDependencies>SpehsCore.lib;libprotobufd.lib;libcrypto.lib;GameNetworkingSockets.lib;GameNetworkingSockets_s.lib;libcrypto_static.lib</AdditionalDependencies>
     </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
     </ClCompile>
     <Lib>
-      <AdditionalDependencies>SpehsCore.lib;libprotobufd.lib;libcrypto.lib;GameNetworkingSockets_s.lib;libcrypto_static.lib</AdditionalDependencies>
+      <AdditionalDependencies>SpehsCore.lib;libprotobufd.lib;libcrypto.lib;GameNetworkingSockets.lib;GameNetworkingSockets_s.lib;libcrypto_static.lib</AdditionalDependencies>
     </Lib>
     <ClCompile />
   </ItemDefinitionGroup>
@@ -113,7 +113,7 @@
     </Link>
     <Lib />
     <Lib>
-      <AdditionalDependencies>SpehsCore.lib;libprotobuf.lib;libcrypto.lib;GameNetworkingSockets_s.lib;libcrypto_static.lib</AdditionalDependencies>
+      <AdditionalDependencies>SpehsCore.lib;libprotobuf.lib;libcrypto.lib;GameNetworkingSockets.lib;GameNetworkingSockets_s.lib;libcrypto_static.lib</AdditionalDependencies>
     </Lib>
     <ClCompile />
   </ItemDefinitionGroup>
@@ -123,7 +123,7 @@
     <Link>
     </Link>
     <Lib>
-      <AdditionalDependencies>SpehsCore.lib;libprotobuf.lib;libcrypto.lib;GameNetworkingSockets_s.lib;libcrypto_static.lib</AdditionalDependencies>
+      <AdditionalDependencies>SpehsCore.lib;libprotobuf.lib;libcrypto.lib;GameNetworkingSockets.lib;GameNetworkingSockets_s.lib;libcrypto_static.lib</AdditionalDependencies>
     </Lib>
     <ClCompile />
   </ItemDefinitionGroup>
