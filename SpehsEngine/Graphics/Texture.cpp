@@ -168,21 +168,39 @@ namespace se
 			se_assert(_input.format == TextureInput::Format::RGBA8); // Only one supported currently
 			se_assert(_input.width > 0 && _input.height > 0);
 			se_assert(_input.data.size() % 4 == 0);
-			se_assert((_input.data.size() / 4) == (size_t)(_input.width * _input.height));
 
 			const uint64_t flags = TextureModesToFlags(_textureModes);
 			const bgfx::Memory* mem = bgfx::copy(_input.data.data(), uint32_t(_input.data.size()));
+			const bool hasMips = false;
+			const bool numLayers = 1;
 
 			bgfx::TextureHandle textureHandle = BGFX_INVALID_HANDLE;
-			textureHandle = bgfx::createTexture2D(
-				_input.width
-				, _input.height
-				, false
-				, 1
-				, bgfx::TextureFormat::Enum::RGBA8
-				, flags
-				, mem
+			if (_input.isCubemap)
+			{
+				se_assert(_input.width == _input.height);
+				se_assert((_input.data.size() / 4) == (size_t)(_input.width * _input.height * 6));
+				textureHandle = bgfx::createTextureCube(
+					  _input.width
+					, hasMips
+					, numLayers
+					, bgfx::TextureFormat::Enum::RGBA8
+					, flags
+					, mem
 				);
+			}
+			else
+			{
+				se_assert((_input.data.size() / 4) == (size_t)(_input.width * _input.height));
+				textureHandle = bgfx::createTexture2D(
+					  _input.width
+					, _input.height
+					, hasMips
+					, numLayers
+					, bgfx::TextureFormat::Enum::RGBA8
+					, flags
+					, mem
+				);
+			}
 
 			std::shared_ptr<TextureData> result = std::make_shared<TextureData>();
 			result->handle = textureHandle.idx;
@@ -192,15 +210,15 @@ namespace se
 				//bgfx::setName(textureHandle, name.c_str());
 
 				bgfx::calcTextureSize(
-					result->info
+					  result->info
 					, _input.width
 					, _input.height
 					, 1
-					, false
-					, 1
-					, 1
+					, _input.isCubemap
+					, hasMips
+					, numLayers
 					, bgfx::TextureFormat::Enum::RGBA8
-					);
+				);
 			}
 			else
 			{
