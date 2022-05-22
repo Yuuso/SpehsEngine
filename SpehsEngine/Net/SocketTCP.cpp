@@ -567,6 +567,11 @@ namespace se
 
 		bool SocketTCP::SharedImpl::startAccepting(const Port& port, const std::function<void(SocketTCP&)> callbackFunction)
 		{
+			if (isOpen())
+			{
+				DEBUG_LOG(1, "Failed to start accepting! Socket is already open.");
+				return false;
+			}
 			std::lock_guard<std::recursive_mutex> lock(mutex);
 			if (acceptingState != AcceptingState::idle)
 			{

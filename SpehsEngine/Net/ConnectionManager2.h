@@ -4,6 +4,7 @@
 #include "boost/signals2.hpp"
 #include "SpehsEngine/Net/Connection2.h"
 #include "SpehsEngine/Net/Connection.h"
+#include "SpehsEngine/Net/IOService.h"
 #include "steam/steamnetworkingsockets.h"
 #include <functional>
 #include <unordered_map>
@@ -27,6 +28,7 @@ namespace se
 			void stopAccepting();
 			std::optional<Port> getAcceptingPort() const;
 			std::shared_ptr<Connection2> connect(const se::net::Endpoint& endpoint, const bool symmetric, const std::string_view name = "", const time::Time timeout = time::fromSeconds(10.0f));
+			std::shared_ptr<Connection2> connectP2P(const se::net::Endpoint& endpoint, const bool symmetric, const std::string_view name = "", const time::Time timeout = time::fromSeconds(10.0f));
 			void connectToIncomingConnectionSignal(boost::signals2::scoped_connection& scopedConnection, const std::function<void(std::shared_ptr<Connection2>&)>& callback)
 			{
 				scopedConnection = incomingConnectionSignal.connect(callback);
@@ -62,12 +64,15 @@ namespace se
 			void closeUnusedSteamListenSockets();
 			bool ownsConnection(const HSteamNetConnection steamNetConnection) const;
 
+			IOService ioService;
 			ISteamNetworkingSockets* steamNetworkingSockets = nullptr;
 			std::vector<HSteamListenSocket> steamListenSockets;
 			HSteamNetPollGroup steamNetPollGroup;
 			int debugLogLevel = 0;
 			bool removeUnreferencedConnections = false;
 			std::vector<std::shared_ptr<Connection2>> connections;
+			struct SignalingClientImpl;
+			std::vector<std::unique_ptr<SignalingClientImpl>> signalingClientImpls;
 			boost::signals2::signal<void(std::shared_ptr<Connection2>&)> incomingConnectionSignal;
 
 			mutable std::recursive_mutex acceptingSteamListenSocketMutex;

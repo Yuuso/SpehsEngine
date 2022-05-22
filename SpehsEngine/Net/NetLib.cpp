@@ -46,6 +46,18 @@ namespace se
 				return;
 			}
 			SteamNetworkingUtils()->SetDebugOutputFunction(k_ESteamNetworkingSocketsDebugOutputType_Msg, steamNetworkingDebug);
+			if (!SteamNetworkingUtils()->SetGlobalConfigValueString(k_ESteamNetworkingConfig_P2P_STUN_ServerList, "stun.l.google.com:19302"))
+			{
+				se::log::error("Failed to set k_ESteamNetworkingConfig_P2P_STUN_ServerList");
+			}
+			if (!SteamNetworkingUtils()->SetGlobalConfigValueInt32(k_ESteamNetworkingConfig_P2P_Transport_ICE_Enable, k_nSteamNetworkingConfig_P2P_Transport_ICE_Enable_All))
+			{
+				se::log::error("Failed to set k_ESteamNetworkingConfig_P2P_Transport_ICE_Enable");
+			}
+			//if (!SteamNetworkingUtils()->SetGlobalConfigValuePtr(k_ESteamNetworkingConfig_Callback_CreateConnectionSignaling, (void*)createSignalingForConnection))
+			//{
+			//	se::log::error("Failed to set k_ESteamNetworkingConfig_Callback_CreateConnectionSignaling");
+			//}
 
 			valid = true;
 		}

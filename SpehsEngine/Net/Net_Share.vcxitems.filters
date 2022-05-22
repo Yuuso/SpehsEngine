@@ -1,18 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <PropertyGroup Label="Globals">
-    <MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
-    <HasSharedItems>true</HasSharedItems>
-    <ItemsProjectGuid>{1E65A9FA-C973-42FE-AA97-CD08C94E9BB4}</ItemsProjectGuid>
-  </PropertyGroup>
-  <ItemDefinitionGroup>
-    <ClCompile>
-      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(MSBuildThisFileDirectory)</AdditionalIncludeDirectories>
-    </ClCompile>
-  </ItemDefinitionGroup>
-  <ItemGroup>
-    <ProjectCapability Include="SourceItemsFromImports" />
-  </ItemGroup>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <ClCompile Include="$(MSBuildThisFileDirectory)Acceptor.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Address.cpp" />
@@ -30,9 +17,6 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)IOService.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Pinger.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)PacketManager.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)Signaling\SignalingClient.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)Signaling\SignalingPackets.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)Signaling\SignalingServer.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)SocketUDP2.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)MultiConnectionAcceptorTCP.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NetLib.cpp" />
@@ -42,8 +26,15 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)SocketProfiler.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)SocketTCP.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)SocketUDP.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)stdafx.cpp">
-      <PrecompiledHeader>Create</PrecompiledHeader>
+    <ClCompile Include="$(MSBuildThisFileDirectory)stdafx.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Signaling\SignalingClient.cpp">
+      <Filter>Signaling</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)Signaling\SignalingServer.cpp">
+      <Filter>Signaling</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)Signaling\SignalingPackets.cpp">
+      <Filter>Signaling</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -63,9 +54,6 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)IOService.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Pinger.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)PacketManager.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)Signaling\SignalingClient.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)Signaling\SignalingPackets.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)Signaling\SignalingServer.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)SocketUDP2.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)MultiConnectionAcceptorTCP.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NetLib.h" />
@@ -78,5 +66,19 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)SocketTCP.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)SocketUDP.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)stdafx.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Signaling\SignalingClient.h">
+      <Filter>Signaling</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)Signaling\SignalingServer.h">
+      <Filter>Signaling</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)Signaling\SignalingPackets.h">
+      <Filter>Signaling</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Signaling">
+      <UniqueIdentifier>{efdd8041-b723-41c0-8282-e71899c4a09b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
 </Project>
