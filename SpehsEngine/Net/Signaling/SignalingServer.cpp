@@ -55,7 +55,7 @@ namespace se
 							[this, client](ReadBuffer& readBuffer)
 							{
 								SignalingDataPacket packet;
-								if (packet.read(readBuffer))
+								if (!packet.read(readBuffer))
 								{
 									se::log::error("Failed to read SignalingDataPacket");
 									return;

@@ -49,6 +49,9 @@ namespace se
 
 		private:
 
+			struct ConnectionSignaling;
+			struct SignalingReceivedContext;
+
 			struct ConnectionStatusChange
 			{
 				HSteamNetConnection steamNetConnection;
@@ -56,6 +59,7 @@ namespace se
 				std::string reason;
 			};
 
+			static ISteamNetworkingConnectionSignaling* createSignalingForConnectionStatic(const SteamNetworkingIdentity& steamNetworkingIdentity, SteamNetworkingErrMsg& error);
 			static void steamNetConnectionStatusChangedCallbackStatic(SteamNetConnectionStatusChangedCallback_t* const info);
 
 			void initializeSteamNetConnection(Connection2& connection);
@@ -64,15 +68,12 @@ namespace se
 			void closeUnusedSteamListenSockets();
 			bool ownsConnection(const HSteamNetConnection steamNetConnection) const;
 
-			IOService ioService;
 			ISteamNetworkingSockets* steamNetworkingSockets = nullptr;
 			std::vector<HSteamListenSocket> steamListenSockets;
 			HSteamNetPollGroup steamNetPollGroup;
 			int debugLogLevel = 0;
 			bool removeUnreferencedConnections = false;
 			std::vector<std::shared_ptr<Connection2>> connections;
-			struct SignalingClientImpl;
-			std::vector<std::unique_ptr<SignalingClientImpl>> signalingClientImpls;
 			boost::signals2::signal<void(std::shared_ptr<Connection2>&)> incomingConnectionSignal;
 
 			mutable std::recursive_mutex acceptingSteamListenSocketMutex;

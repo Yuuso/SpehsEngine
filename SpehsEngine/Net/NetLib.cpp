@@ -50,6 +50,10 @@ namespace se
 			{
 				se::log::error("Failed to set k_ESteamNetworkingConfig_P2P_STUN_ServerList");
 			}
+			if (!SteamNetworkingUtils()->SetGlobalConfigValueInt32(k_ESteamNetworkingConfig_LogLevel_P2PRendezvous, 99999))
+			{
+				se::log::error("Failed to set k_ESteamNetworkingConfig_LogLevel_P2PRendezvous");
+			}
 			if (!SteamNetworkingUtils()->SetGlobalConfigValueInt32(k_ESteamNetworkingConfig_P2P_Transport_ICE_Enable, k_nSteamNetworkingConfig_P2P_Transport_ICE_Enable_All))
 			{
 				se::log::error("Failed to set k_ESteamNetworkingConfig_P2P_Transport_ICE_Enable");

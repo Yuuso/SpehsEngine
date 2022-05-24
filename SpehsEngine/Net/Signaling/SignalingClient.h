@@ -3,7 +3,7 @@
 #include "SpehsEngine/Net/Endpoint.h"
 #include <memory>
 
-
+/*
 namespace se
 {
 	namespace net
@@ -26,3 +26,4 @@ namespace se
 		};
 	}
 }
+*/

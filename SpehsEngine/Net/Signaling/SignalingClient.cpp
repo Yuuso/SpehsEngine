@@ -9,6 +9,7 @@
 #include "steam/steamnetworkingsockets_flat.h"
 #pragma optimize("", off) // nocommit
 
+/*
 namespace se
 {
 	namespace net
@@ -170,3 +171,4 @@ namespace se
 		}
 	}
 }
+*/
