@@ -16,6 +16,8 @@ namespace se
 {
 	namespace net
 	{
+		class SocketTCP;
+
 		class ConnectionManager2
 		{
 		public:
@@ -24,7 +26,8 @@ namespace se
 			~ConnectionManager2();
 
 			void update();
-			bool startAccepting(const std::optional<Port> port = std::nullopt);
+			bool startAccepting(const std::optional<Port> port = std::nullopt, const std::optional<Endpoint> signalingServerEndpoint = std::nullopt);
+			bool startAcceptingP2P(const Endpoint& signalingServerEndpoint);
 			void stopAccepting();
 			std::optional<Port> getAcceptingPort() const;
 			std::shared_ptr<Connection2> connect(const se::net::Endpoint& endpoint, const bool symmetric, const std::string_view name = "", const time::Time timeout = time::fromSeconds(10.0f));
@@ -78,6 +81,8 @@ namespace se
 
 			mutable std::recursive_mutex acceptingSteamListenSocketMutex;
 			HSteamListenSocket acceptingSteamListenSocket = k_HSteamListenSocket_Invalid;
+			std::unique_ptr<IOService> acceptingSignalingIoService;
+			std::unique_ptr<SocketTCP> acceptingSignalingSocketTCP;
 
 			mutable std::recursive_mutex incomingConnectionQueueMutex;
 			std::vector<Connection2::ConstructorParameters> incomingConnectionQueue;

@@ -21,6 +21,12 @@ namespace se
 			se::log::info(message);
 		}
 
+		ISteamNetworkingConnectionSignaling* createSignalingForConnection(const SteamNetworkingIdentity& steamNetworkingIdentity, SteamNetworkingErrMsg& error)
+		{
+			se_assert(false);
+			return nullptr;
+		}
+
 		int instanceCount = 0;
 		bool valid = false;
 		std::string version("0");
@@ -58,10 +64,10 @@ namespace se
 			{
 				se::log::error("Failed to set k_ESteamNetworkingConfig_P2P_Transport_ICE_Enable");
 			}
-			//if (!SteamNetworkingUtils()->SetGlobalConfigValuePtr(k_ESteamNetworkingConfig_Callback_CreateConnectionSignaling, (void*)createSignalingForConnection))
-			//{
-			//	se::log::error("Failed to set k_ESteamNetworkingConfig_Callback_CreateConnectionSignaling");
-			//}
+			if (!SteamNetworkingUtils()->SetGlobalConfigValuePtr(k_ESteamNetworkingConfig_Callback_CreateConnectionSignaling, (void*)createSignalingForConnection))
+			{
+				se::log::error("Failed to set k_ESteamNetworkingConfig_Callback_CreateConnectionSignaling");
+			}
 
 			valid = true;
 		}

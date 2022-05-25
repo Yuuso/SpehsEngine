@@ -70,6 +70,7 @@ namespace se
 										client2->socket->sendPacket(writeBuffer);
 									}
 								}
+								se_assert(false && "nocommit");
 							});
 					});
 				startAccepting();
