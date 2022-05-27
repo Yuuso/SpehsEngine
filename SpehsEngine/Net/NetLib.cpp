@@ -5,12 +5,13 @@
 #include "SpehsEngine/Core/Log.h"
 #include "SpehsEngine/Core/SE_Time.h"
 #include "SpehsEngine/Core/StringUtilityFunctions.h"
-#include "steam/steamnetworkingsockets.h"
+#include "SpehsEngine/Net/NetIdentity.h"
 #include "steam/isteamnetworkingutils.h"
-#include <string>
-#include <thread>
+#include "steam/steamnetworkingsockets.h"
 #include <iostream>
 #include <stdint.h>
+#include <string>
+#include <thread>
 
 namespace se
 {
@@ -19,12 +20,6 @@ namespace se
 		void steamNetworkingDebug(ESteamNetworkingSocketsDebugOutputType debugOutputType, const char* message)
 		{
 			se::log::info(message);
-		}
-
-		ISteamNetworkingConnectionSignaling* createSignalingForConnection(const SteamNetworkingIdentity& steamNetworkingIdentity, SteamNetworkingErrMsg& error)
-		{
-			se_assert(false);
-			return nullptr;
 		}
 
 		int instanceCount = 0;
@@ -45,28 +40,31 @@ namespace se
 
 			log::info("Current SpehsEngine net library version: " + getVersion());
 
+			// Set my net identity
+			const net::NetIdentity myNetIdentity = net::getMyNetIdentity();
+			log::info("My net identity: " + myNetIdentity.toString());
+			SteamNetworkingIdentity selfSteamNetworkingIdentity;
+			selfSteamNetworkingIdentity.SetGenericString(myNetIdentity.toString().c_str());
 			SteamDatagramErrMsg errorMessage;
-			if (!GameNetworkingSockets_Init(nullptr, errorMessage))
+			if (!GameNetworkingSockets_Init(&selfSteamNetworkingIdentity, errorMessage))
 			{
 				se::log::error(se::formatString("GameNetworkingSockets_Init failed.  %s", errorMessage));
 				return;
 			}
+
 			SteamNetworkingUtils()->SetDebugOutputFunction(k_ESteamNetworkingSocketsDebugOutputType_Msg, steamNetworkingDebug);
 			if (!SteamNetworkingUtils()->SetGlobalConfigValueString(k_ESteamNetworkingConfig_P2P_STUN_ServerList, "stun.l.google.com:19302"))
 			{
 				se::log::error("Failed to set k_ESteamNetworkingConfig_P2P_STUN_ServerList");
 			}
-			if (!SteamNetworkingUtils()->SetGlobalConfigValueInt32(k_ESteamNetworkingConfig_LogLevel_P2PRendezvous, 99999))
-			{
-				se::log::error("Failed to set k_ESteamNetworkingConfig_LogLevel_P2PRendezvous");
-			}
-			if (!SteamNetworkingUtils()->SetGlobalConfigValueInt32(k_ESteamNetworkingConfig_P2P_Transport_ICE_Enable, k_nSteamNetworkingConfig_P2P_Transport_ICE_Enable_All))
+			//if (!SteamNetworkingUtils()->SetGlobalConfigValueInt32(k_ESteamNetworkingConfig_LogLevel_P2PRendezvous, k_ESteamNetworkingSocketsDebugOutputType_Msg))
+			//{
+			//	se::log::error("Failed to set k_ESteamNetworkingConfig_LogLevel_P2PRendezvous");
+			//}
+			if (!SteamNetworkingUtils()->SetGlobalConfigValueInt32(k_ESteamNetworkingConfig_P2P_Transport_ICE_Enable,
+				k_nSteamNetworkingConfig_P2P_Transport_ICE_Enable_Private | k_nSteamNetworkingConfig_P2P_Transport_ICE_Enable_Public))
 			{
 				se::log::error("Failed to set k_ESteamNetworkingConfig_P2P_Transport_ICE_Enable");
-			}
-			if (!SteamNetworkingUtils()->SetGlobalConfigValuePtr(k_ESteamNetworkingConfig_Callback_CreateConnectionSignaling, (void*)createSignalingForConnection))
-			{
-				se::log::error("Failed to set k_ESteamNetworkingConfig_Callback_CreateConnectionSignaling");
 			}
 
 			valid = true;

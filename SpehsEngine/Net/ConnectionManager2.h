@@ -17,6 +17,7 @@ namespace se
 	namespace net
 	{
 		class SocketTCP;
+		struct NetIdentity;
 
 		class ConnectionManager2
 		{
@@ -31,7 +32,7 @@ namespace se
 			void stopAccepting();
 			std::optional<Port> getAcceptingPort() const;
 			std::shared_ptr<Connection2> connect(const se::net::Endpoint& endpoint, const bool symmetric, const std::string_view name = "", const time::Time timeout = time::fromSeconds(10.0f));
-			std::shared_ptr<Connection2> connectP2P(const se::net::Endpoint& endpoint, const bool symmetric, const std::string_view name = "", const time::Time timeout = time::fromSeconds(10.0f));
+			std::shared_ptr<Connection2> connectP2P(const NetIdentity& peerNetIdentity, const se::net::Endpoint& signalingServerEndpoint, const std::string_view name = "", const time::Time timeout = time::fromSeconds(10.0f));
 			void connectToIncomingConnectionSignal(boost::signals2::scoped_connection& scopedConnection, const std::function<void(std::shared_ptr<Connection2>&)>& callback)
 			{
 				scopedConnection = incomingConnectionSignal.connect(callback);
@@ -52,8 +53,10 @@ namespace se
 
 		private:
 
-			struct ConnectionSignaling;
-			struct SignalingReceivedContext;
+			struct OutConnectionSignaling;
+			struct InConnectionSignaling;
+			struct OutSignalingReceivedContext;
+			struct InSignalingReceivedContext;
 
 			struct ConnectionStatusChange
 			{
@@ -62,7 +65,6 @@ namespace se
 				std::string reason;
 			};
 
-			static ISteamNetworkingConnectionSignaling* createSignalingForConnectionStatic(const SteamNetworkingIdentity& steamNetworkingIdentity, SteamNetworkingErrMsg& error);
 			static void steamNetConnectionStatusChangedCallbackStatic(SteamNetConnectionStatusChangedCallback_t* const info);
 
 			void initializeSteamNetConnection(Connection2& connection);

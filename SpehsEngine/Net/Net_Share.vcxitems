@@ -28,6 +28,7 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)HeaderICMP.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)HeaderIPv4.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)IOService.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)NetIdentity.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Pinger.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)PacketManager.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Signaling\SignalingClient.cpp" />
@@ -61,6 +62,7 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)HeaderICMP.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)HeaderIPv4.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)IOService.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)NetIdentity.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Pinger.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)PacketManager.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Signaling\SignalingClient.h" />

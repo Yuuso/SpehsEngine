@@ -1,6 +1,6 @@
 #pragma once
 
-#include <string>
+#include "SpehsEngine/Net/NetIdentity.h"
 #include <vector>
 
 
@@ -13,7 +13,7 @@ namespace se
 			void write(WriteBuffer& writeBuffer) const;
 			bool read(ReadBuffer& readBuffer);
 
-			std::string identity;
+			NetIdentity netIdentity;
 		};
 
 		struct SignalingDataPacket
@@ -21,7 +21,7 @@ namespace se
 			void write(WriteBuffer& writeBuffer) const;
 			bool read(ReadBuffer& readBuffer);
 
-			std::string identity;
+			NetIdentity netIdentity;
 			std::vector<uint8_t> data;
 		};
 	}

@@ -36,6 +36,7 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)Signaling\SignalingPackets.cpp">
       <Filter>Signaling</Filter>
     </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)NetIdentity.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="$(MSBuildThisFileDirectory)Acceptor.h" />
@@ -75,6 +76,7 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)Signaling\SignalingPackets.h">
       <Filter>Signaling</Filter>
     </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)NetIdentity.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Signaling">

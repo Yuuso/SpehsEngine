@@ -67,6 +67,7 @@ namespace se
 
 			/* Socket keeps receiving packets as long as connection is alive. Received packets must be processed with a specified receive handler. */
 			void setOnReceiveCallback(const std::function<void(ReadBuffer&)> onReceiveCallback = std::function<void(ReadBuffer&)>());
+			bool hasOnReceiveCallback() const;
 
 			/* Starts listening for a new incoming connection. Upon success, a connection is made. Non-blocking call. Callback is called even if no connection is made! */
 			bool startAccepting(const Port& port, const std::function<void(SocketTCP&)> onAcceptCallback);
@@ -157,6 +158,7 @@ namespace se
 				bool sendPacket(const WriteBuffer& buffer, const PacketType packetType);
 				bool resizeReceiveBuffer(const size_t newSize);
 				void setOnReceiveCallback(const std::function<void(ReadBuffer&)> callbackFunction);
+				bool hasOnReceiveCallback() const;
 				void update();
 				bool spehsReceiveHandler(ReadBuffer& buffer);
 				void setNoDelay(const bool enabled);

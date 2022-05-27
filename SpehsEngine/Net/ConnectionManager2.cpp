@@ -2,14 +2,15 @@
 #include "SpehsEngine/Net/ConnectionManager2.h"
 
 #include "SpehsEngine/Core/LockGuard.h"
-#include "SpehsEngine/Core/RNG.h"
 #include "SpehsEngine/Core/ReadBuffer.h"
+#include "SpehsEngine/Core/RNG.h"
 #include "SpehsEngine/Core/StringUtilityFunctions.h"
 #include "SpehsEngine/Core/Thread.h"
 #include "SpehsEngine/Core/WriteBuffer.h"
 #include "SpehsEngine/Net/AddressUtilityFunctions.h"
-#include "SpehsEngine/Net/SocketTCP.h"
+#include "SpehsEngine/Net/NetIdentity.h"
 #include "SpehsEngine/Net/Signaling/SignalingPackets.h"
+#include "SpehsEngine/Net/SocketTCP.h"
 #include "steam/isteamnetworkingutils.h"
 #include "steam/steamnetworkingcustomsignaling.h"
 #include <atomic>
@@ -50,39 +51,67 @@ namespace se
 			std::vector<ConnectionManager2*> connectionManagers;
 		}
 
-		//SignalingClient* signalingClientSingleton = nullptr; // HACK
-		//ISteamNetworkingConnectionSignaling* createSignalingForConnection(const SteamNetworkingIdentity& steamNetworkingIdentity, SteamNetworkingErrMsg& error);
-
-		struct ConnectionManager2::SignalingReceivedContext : public ISteamNetworkingSignalingRecvContext
+		struct ConnectionManager2::OutSignalingReceivedContext : public ISteamNetworkingSignalingRecvContext
 		{
-			ISteamNetworkingConnectionSignaling* OnConnectRequest(HSteamNetConnection hConn, const SteamNetworkingIdentity& identityPeer, int nLocalVirtualPort) final
+			OutSignalingReceivedContext(const se::net::Endpoint& _signalingServerEndpoint)
+				: signalingServerEndpoint(_signalingServerEndpoint)
 			{
-				SteamNetworkingErrMsg error;
-				return createSignalingForConnectionStatic(identityPeer, error);
 			}
-			void SendRejectionSignal(const SteamNetworkingIdentity& identityPeer, const void* pMsg, int cbMsg) final
+			void SendRejectionSignal(const SteamNetworkingIdentity& peerSteamNetworkingIdentity, const void* pMsg, int cbMsg) final
 			{
 				// We'll just silently ignore all failures. This is actually the more secure way to handle it in many cases.
+				SteamNetworkingIdentityRender peerSteamNetworkingIdentityRender(peerSteamNetworkingIdentity);
+				log::info("OutSignalingReceivedContext: silently rejecting: " + std::string(peerSteamNetworkingIdentityRender.c_str()));
 			}
+			ISteamNetworkingConnectionSignaling* OnConnectRequest(HSteamNetConnection hConn, const SteamNetworkingIdentity& peerSteamNetworkingIdentity, int nLocalVirtualPort) final;
+
+			const Endpoint signalingServerEndpoint;
 		};
 
-		struct ConnectionManager2::ConnectionSignaling : public ISteamNetworkingConnectionSignaling
+		struct ConnectionManager2::InSignalingReceivedContext : public ISteamNetworkingSignalingRecvContext
 		{
-			static IOService& getStaticIiService()
+			InSignalingReceivedContext(SocketTCP& _signalingServerConnectedSocket)
+				: socket(_signalingServerConnectedSocket)
+			{
+				se_assert(socket.isConnected());
+			}
+			void SendRejectionSignal(const SteamNetworkingIdentity& peerSteamNetworkingIdentity, const void* pMsg, int cbMsg) final
+			{
+				// We'll just silently ignore all failures. This is actually the more secure way to handle it in many cases.
+				SteamNetworkingIdentityRender peerSteamNetworkingIdentityRender(peerSteamNetworkingIdentity);
+				log::info("InSignalingReceivedContext: silently rejecting: " + std::string(peerSteamNetworkingIdentityRender.c_str()));
+			}
+			ISteamNetworkingConnectionSignaling* OnConnectRequest(HSteamNetConnection hConn, const SteamNetworkingIdentity& peerSteamNetworkingIdentity, int nLocalVirtualPort) final;
+
+			SocketTCP& socket;
+		};
+
+		struct ConnectionManager2::OutConnectionSignaling : public ISteamNetworkingConnectionSignaling
+		{
+			static SocketTCP& getStaticSocket(const Endpoint& _signalingServerEndpoint)
 			{
 				std::lock_guard<std::recursive_mutex> lock(staticMutex);
+				se_assert(!staticIoService);
 				if (!staticIoService)
 				{
 					staticIoService.reset(new IOService());
 				}
-				return *staticIoService;
+				std::unique_ptr<SocketTCP>& socket = staticSockets[_signalingServerEndpoint];
+				se_assert(!socket);
+				if (!socket)
+				{
+					socket.reset(new SocketTCP(*staticIoService));
+				}
+				return *socket;
 			}
 
-			ConnectionSignaling(const std::string_view _peerIdentity, const Endpoint &signalingServerEndpoint)
-				: peerIdentity(_peerIdentity)
-				, socket(getStaticIiService())
+			// Creates a static socket for this signaling server endpoint
+			OutConnectionSignaling(const NetIdentity _peerNetIdentity, const Endpoint& _signalingServerEndpoint)
+				: peerNetIdentity(_peerNetIdentity)
+				, staticSocketEndpoint(_signalingServerEndpoint)
+				, socket(getStaticSocket(_signalingServerEndpoint))
 			{
-				if (socket.connect(signalingServerEndpoint))
+				if (socket.connect(_signalingServerEndpoint))
 				{
 					SteamNetworkingIdentity selfSteamNetworkingIdentity;
 					selfSteamNetworkingIdentity.Clear();
@@ -90,81 +119,125 @@ namespace se
 					{
 						log::warning("SteamNetworkingSockets()->GetIdentity() failed");
 					}
-					//se_assert(!selfSteamNetworkingIdentity.IsInvalid());
-					//se_assert(!selfSteamNetworkingIdentity.IsLocalHost());
-					SteamNetworkingIdentityRender selfSteamNetworkingIdentityRender(selfSteamNetworkingIdentity);
+					se_assert(!selfSteamNetworkingIdentity.IsInvalid());
+					se_assert(!selfSteamNetworkingIdentity.IsLocalHost());
 					SignalingEntryPacket packet;
-					packet.identity = selfSteamNetworkingIdentityRender.c_str();
+					packet.netIdentity = fromSteamNetworkingIdentity(selfSteamNetworkingIdentity);
 					WriteBuffer writeBuffer;
 					writeBuffer.write(packet);
 					socket.sendPacket(writeBuffer);
 					socket.setOnReceiveCallback(
-						[](ReadBuffer& readBuffer)
+						[_signalingServerEndpoint](ReadBuffer& readBuffer)
 						{
-							SignalingReceivedContext signalingReceivedContext;
-							SteamNetworkingSockets()->ReceivedP2PCustomSignal(readBuffer[0], int(readBuffer.getSize()), &signalingReceivedContext);
+							SignalingDataPacket packet;
+							if (!packet.read(readBuffer))
+							{
+								se::log::warning("OutConnectionSignaling: failed to read SignalingDataPacket");
+								return;
+							}
+							OutSignalingReceivedContext outSignalingReceivedContext(_signalingServerEndpoint);
+							if (!SteamNetworkingSockets()->ReceivedP2PCustomSignal((const void*)packet.data.data(), (int)packet.data.size(), &outSignalingReceivedContext))
+							{
+								se::log::warning("ReceivedP2PCustomSignal failed for OutSignalingReceivedContext"); // TODO nocommit
+							}
 						});
-					std::lock_guard<std::recursive_mutex> lock(staticMutex);
-					staticContainer.push_back(this);
+				}
+				else
+				{
+					se::log::error("Failed to connect to the signaling server at: " + _signalingServerEndpoint.toString());
 				}
 			}
-			~ConnectionSignaling()
+
+			~OutConnectionSignaling()
 			{
-				std::lock_guard<std::recursive_mutex> lock(staticMutex);
-				bool found = false;
-				for (size_t i = 0; i < staticContainer.size(); i++)
+				if (staticSocketEndpoint)
 				{
-					if (staticContainer[i] == this)
-					{
-						staticContainer[i] = staticContainer.back();
-						staticContainer.pop_back();
-						found = true;
-						break;
-					}
-				}
-				se_assert(found);
-				if (staticContainer.empty())
-				{
+					std::lock_guard<std::recursive_mutex> lock(staticMutex);
+					staticSockets.erase(*staticSocketEndpoint);
 					staticIoService.reset();
 				}
+				else
+				{
+					socket.setOnReceiveCallback();
+				}
 			}
+
 			bool SendSignal(HSteamNetConnection hConn, const SteamNetConnectionInfo_t& info, const void* messageData, int messageSize) final
 			{
 				SignalingDataPacket packet;
-				packet.identity = peerIdentity;
+				packet.netIdentity = peerNetIdentity;
 				packet.data.resize(size_t(messageSize));
 				memcpy(packet.data.data(), messageData, messageSize);
 				WriteBuffer writeBuffer;
 				writeBuffer.write(packet);
 				return socket.sendPacket(writeBuffer);
 			}
+
 			void Release() final
 			{
 				delete this;
 			}
-			const std::string peerIdentity;
-			SocketTCP socket;
+
+			const NetIdentity peerNetIdentity;
+			const std::optional<Endpoint> staticSocketEndpoint; // Set when static socket is used
+			SocketTCP& socket;
 			static std::recursive_mutex staticMutex;
 			static std::unique_ptr<IOService> staticIoService;
-			static std::vector<ConnectionSignaling*> staticContainer;
+			static std::unordered_map<Endpoint, std::unique_ptr<SocketTCP>> staticSockets; // NOTE: we can only have one socket connected per endpoint
 		};
-		std::recursive_mutex ConnectionManager2::ConnectionSignaling::staticMutex;
-		std::unique_ptr<IOService> ConnectionManager2::ConnectionSignaling::staticIoService;
-		std::vector<ConnectionManager2::ConnectionSignaling*> ConnectionManager2::ConnectionSignaling::staticContainer;
 
-		ISteamNetworkingConnectionSignaling* ConnectionManager2::createSignalingForConnectionStatic(const SteamNetworkingIdentity& steamNetworkingIdentity, SteamNetworkingErrMsg& error)
+		struct ConnectionManager2::InConnectionSignaling : public ISteamNetworkingConnectionSignaling
 		{
-			const SteamNetworkingIdentityRender steamNetworkingIdentityRender(steamNetworkingIdentity);
-			ConnectionSignaling* const connectionSignaling = new ConnectionSignaling(steamNetworkingIdentityRender.c_str(), signalingServerEndpointHACK);
-			if (connectionSignaling->socket.isConnected())
+			// Reuse a socket that is already connected to a signaling server
+			InConnectionSignaling(const NetIdentity _peerNetIdentity, SocketTCP& _socket)
+				: peerNetIdentity(_peerNetIdentity)
+				, socket(_socket)
 			{
-				return connectionSignaling;
+				se_assert(socket.isConnected());
+				//socket.setOnReceiveCallback(std::bind(&ConnectionSignaling::socketReceiveHandler, this, std::placeholders::_1));
 			}
-			else
+
+			bool SendSignal(HSteamNetConnection hConn, const SteamNetConnectionInfo_t& info, const void* messageData, int messageSize) final
 			{
-				connectionSignaling->Release();
-				return nullptr;
+				SignalingDataPacket packet;
+				packet.netIdentity = peerNetIdentity;
+				packet.data.resize(size_t(messageSize));
+				memcpy(packet.data.data(), messageData, messageSize);
+				WriteBuffer writeBuffer;
+				writeBuffer.write(packet);
+				return socket.sendPacket(writeBuffer);
 			}
+
+			void Release() final
+			{
+				delete this;
+			}
+
+			const NetIdentity peerNetIdentity;
+			const std::optional<Endpoint> staticSocketEndpoint; // Set when static socket is used
+			SocketTCP& socket;
+			static std::recursive_mutex staticMutex;
+			static std::unique_ptr<IOService> staticIoService;
+			static std::unordered_map<Endpoint, std::unique_ptr<SocketTCP>> staticSockets; // NOTE: we can only have one socket connected per endpoint
+		};
+		std::recursive_mutex ConnectionManager2::OutConnectionSignaling::staticMutex;
+		std::unique_ptr<IOService> ConnectionManager2::OutConnectionSignaling::staticIoService;
+		std::unordered_map<Endpoint, std::unique_ptr<SocketTCP>> ConnectionManager2::OutConnectionSignaling::staticSockets;
+
+		// NOTE: these need to be implemented here because we need the ConnectionSignaling class declarations above
+		ISteamNetworkingConnectionSignaling* ConnectionManager2::OutSignalingReceivedContext::OnConnectRequest(HSteamNetConnection hConn, const SteamNetworkingIdentity& peerSteamNetworkingIdentity, int nLocalVirtualPort)
+		{
+			const NetIdentity peerNetIdentity = fromSteamNetworkingIdentity(peerSteamNetworkingIdentity); // TODO: this probably doesn't work. Edit: actually maybe it does.
+			se_assert(peerNetIdentity);
+			OutConnectionSignaling* const outConnectionSignaling = new OutConnectionSignaling(peerNetIdentity, signalingServerEndpoint);
+			return outConnectionSignaling;
+		}
+		ISteamNetworkingConnectionSignaling* ConnectionManager2::InSignalingReceivedContext::OnConnectRequest(HSteamNetConnection hConn, const SteamNetworkingIdentity& peerSteamNetworkingIdentity, int nLocalVirtualPort)
+		{
+			const NetIdentity peerNetIdentity = fromSteamNetworkingIdentity(peerSteamNetworkingIdentity); // TODO: this probably doesn't work. Edit: actually maybe it does.
+			se_assert(peerNetIdentity);
+			InConnectionSignaling* const inConnectionSignaling = new InConnectionSignaling(peerNetIdentity, socket);
+			return inConnectionSignaling;
 		}
 
 		void ConnectionManager2::steamNetConnectionStatusChangedCallbackStatic(SteamNetConnectionStatusChangedCallback_t* const info)
@@ -357,13 +430,44 @@ namespace se
 
 		void ConnectionManager2::update()
 		{
-			if (ConnectionSignaling::staticMutex.try_lock())
+			if (OutConnectionSignaling::staticMutex.try_lock())
 			{
-				for (size_t i = 0; i < ConnectionSignaling::staticContainer.size(); i++)
+				for (std::pair<const Endpoint, std::unique_ptr<SocketTCP>>& pair : OutConnectionSignaling::staticSockets)
 				{
-					ConnectionSignaling::staticContainer[i]->socket.update();
+					pair.second->update();
 				}
-				ConnectionSignaling::staticMutex.unlock();
+				OutConnectionSignaling::staticMutex.unlock();
+			}
+
+			{
+				std::lock_guard<std::recursive_mutex> lock(acceptingSteamListenSocketMutex);
+				if (acceptingSignalingSocketTCP)
+				{
+					if (!acceptingSignalingSocketTCP->hasOnReceiveCallback())
+					{
+						acceptingSignalingSocketTCP->setOnReceiveCallback(
+							[this](ReadBuffer& readBuffer)
+							{
+								SignalingDataPacket packet;
+								if (!packet.read(readBuffer))
+								{
+									se::log::info("ConnectionManager::acceptingSignalingSocketTCP: failed to read SignalingDataPacket");
+									return;
+								}
+								InSignalingReceivedContext inSignalingReceivedContext(*acceptingSignalingSocketTCP);
+								if (!SteamNetworkingSockets()->ReceivedP2PCustomSignal((const void*)packet.data.data(), (int)packet.data.size(), &inSignalingReceivedContext))
+								{
+									se::log::error("ReceivedP2PCustomSignal failed for InSignalingReceivedContext.");
+								}
+							});
+					}
+					acceptingSignalingSocketTCP->update();
+					if (!acceptingSignalingSocketTCP->isConnected())
+					{
+						acceptingSignalingSocketTCP.reset();
+						acceptingSignalingIoService.reset();
+					}
+				}
 			}
 
 			if (steamNetworkingSockets)
@@ -607,20 +711,11 @@ namespace se
 					SteamNetworkingSockets()->GetIdentity(&selfSteamNetworkingIdentity);
 					se_assert(!selfSteamNetworkingIdentity.IsInvalid());
 					se_assert(!selfSteamNetworkingIdentity.IsLocalHost());
-					SteamNetworkingIdentityRender selfSteamNetworkingIdentityRender(selfSteamNetworkingIdentity);
 					SignalingEntryPacket packet;
-					packet.identity = selfSteamNetworkingIdentityRender.c_str();
+					packet.netIdentity = fromSteamNetworkingIdentity(selfSteamNetworkingIdentity);
 					WriteBuffer writeBuffer;
 					packet.write(writeBuffer);
 					acceptingSignalingSocketTCP->sendPacket(writeBuffer);
-					acceptingSignalingSocketTCP->setOnReceiveCallback(
-						[](ReadBuffer& readBuffer)
-						{
-							SignalingDataPacket packet;
-							packet.read(readBuffer);
-							SignalingReceivedContext signalingReceivedContext;
-							SteamNetworkingSockets()->ReceivedP2PCustomSignal(&packet.data[0], int(packet.data.size()), &signalingReceivedContext);
-						});
 				}
 				else
 				{
@@ -738,8 +833,10 @@ namespace se
 			}
 		}
 
-		std::shared_ptr<Connection2> ConnectionManager2::connectP2P(const se::net::Endpoint& _endpoint, const bool _symmetric, const std::string_view _name, const time::Time _timeout)
+		std::shared_ptr<Connection2> ConnectionManager2::connectP2P(const NetIdentity& _peerNetIdentity, const se::net::Endpoint& _signalingServerEndpoint, const std::string_view _name, const time::Time _timeout)
 		{
+			se_assert(_peerNetIdentity);
+			se_assert(_signalingServerEndpoint);
 			if (steamNetworkingSockets)
 			{
 				std::vector<SteamNetworkingConfigValue_t> steamNetworkingConfigValues;
@@ -747,21 +844,13 @@ namespace se
 				steamNetworkingConfigValues.back().SetPtr(k_ESteamNetworkingConfig_Callback_ConnectionStatusChanged, (void*)steamNetConnectionStatusChangedCallbackStatic);
 				steamNetworkingConfigValues.push_back(SteamNetworkingConfigValue_t());
 				steamNetworkingConfigValues.back().SetInt32(k_ESteamNetworkingConfig_TimeoutInitial, int(_timeout.asMilliseconds()));
-				if (_symmetric)
-				{
-					steamNetworkingConfigValues.push_back(SteamNetworkingConfigValue_t());
-					steamNetworkingConfigValues.back().SetInt32(k_ESteamNetworkingConfig_SymmetricConnect, 1);
-				}
-				const SteamNetworkingIPAddr steamNetworkingAddress = toSteamNetworkingAddress(_endpoint);
 				HSteamNetConnection steamNetConnection = k_HSteamNetConnection_Invalid;
 
 				{
 					std::lock_guard<std::recursive_mutex> lock(ownedSteamNetConnectionsMutex);
-					SteamNetworkingIdentity peerSteamNetworkingIdentity;
-					peerSteamNetworkingIdentity.SetIPAddr(steamNetworkingAddress);
-					const SteamNetworkingIdentityRender peerSteamNetworkingIdentityRender(peerSteamNetworkingIdentity);
-					ConnectionSignaling* const connectionSignaling = new ConnectionSignaling(peerSteamNetworkingIdentityRender.c_str(), signalingServerEndpointHACK);
-					steamNetConnection = steamNetworkingSockets->ConnectP2PCustomSignaling(connectionSignaling, &peerSteamNetworkingIdentity, 0, int(steamNetworkingConfigValues.size()), steamNetworkingConfigValues.data());
+					OutConnectionSignaling* const outConnectionSignaling = new OutConnectionSignaling(_peerNetIdentity, _signalingServerEndpoint);
+					const SteamNetworkingIdentity peerSteamNetworkingIdentity = toSteamNetworkingIdentity(_peerNetIdentity);
+					steamNetConnection = steamNetworkingSockets->ConnectP2PCustomSignaling(outConnectionSignaling, &peerSteamNetworkingIdentity, 0, int(steamNetworkingConfigValues.size()), steamNetworkingConfigValues.data());
 					if (steamNetConnection != k_HSteamNetConnection_Invalid)
 					{
 						ownedSteamNetConnections.insert(steamNetConnection);
@@ -770,7 +859,7 @@ namespace se
 
 				if (steamNetConnection == k_HSteamNetConnection_Invalid)
 				{
-					se::log::error("Failed to connect: " + _endpoint.toString());
+					se::log::error("Failed to connect: " + _peerNetIdentity.toString());
 					return std::shared_ptr<Connection2>();
 				}
 				else
@@ -778,10 +867,18 @@ namespace se
 					Connection2::ConstructorParameters connectionConstructorParameters;
 					connectionConstructorParameters.establishmentType = Connection2::EstablishmentType::Outgoing;
 					connectionConstructorParameters.name = _name;
-					connectionConstructorParameters.remoteEndpoint = _endpoint;
 					connectionConstructorParameters.steamNetConnection = steamNetConnection;
 					connectionConstructorParameters.steamNetworkingSockets = steamNetworkingSockets;
 					connectionConstructorParameters.localListeningPort = getLocalListeningPort(*steamNetworkingSockets, steamNetConnection);
+					SteamNetConnectionInfo_t steamNetConnectionInfo;
+					if (steamNetworkingSockets->GetConnectionInfo(steamNetConnection, &steamNetConnectionInfo))
+					{
+						connectionConstructorParameters.remoteEndpoint = fromSteamNetworkingAddress(steamNetConnectionInfo.m_addrRemote);
+					}
+					else
+					{
+						se::log::error("Failed to get connection info from a new connection");
+					}
 					std::shared_ptr<Connection2> connection(new Connection2(connectionConstructorParameters));
 					initializeSteamNetConnection(*connection);
 					connections.push_back(connection);

@@ -14,7 +14,7 @@ namespace se
 			struct Client
 			{
 				std::unique_ptr<SocketTCP> socket;
-				std::string identity;
+				NetIdentity netIdentity;
 			};
 
 			Impl(IOService& _ioService, const Port& _port)
@@ -28,8 +28,6 @@ namespace se
 			{
 				se_assert(!acceptingSocket);
 				acceptingSocket.reset(new SocketTCP(ioService));
-				//acceptingSocket->open();
-				//acceptingSocket->bind(port);
 				acceptingSocket->startAccepting(port, std::bind(&SignalingServer::Impl::accept, this, std::placeholders::_1));
 			}
 
@@ -46,11 +44,38 @@ namespace se
 						if (!packet.read(readBuffer))
 						{
 							se::log::error("Failed to read SignalingEntryPacket");
+							client->socket->disconnect();
 							return;
 						}
-						// TODO: validate identity
+						if (!packet.netIdentity)
+						{
+							se::log::error("SignalingEntryPacket: invalid net identity");
+							client->socket->disconnect();
+							return;
+						}
+
+						// Check for a duplicate net identity
+						for (size_t d = 0; d < clients.size(); d++)
+						{
+							if (clients[d]->netIdentity == packet.netIdentity)
+							{
+								se::log::error("SignalingEntryPacket duplicate net identity found");
+								for (size_t r = 0; r < clients.size(); r++)
+								{
+									if (clients[r].get() == client)
+									{
+										clients[r]->socket->disconnect();
+										std::swap(clients[r], clients.back());
+										clients.pop_back();
+										break;
+									}
+								}
+								return;
+							}
+						}
+
 						// Start relaying signaling data packets
-						client->identity = packet.identity;
+						client->netIdentity = packet.netIdentity;
 						client->socket->setOnReceiveCallback(
 							[this, client](ReadBuffer& readBuffer)
 							{
@@ -58,16 +83,22 @@ namespace se
 								if (!packet.read(readBuffer))
 								{
 									se::log::error("Failed to read SignalingDataPacket");
+									client->socket->disconnect();
 									return;
 								}
 								for (std::unique_ptr<Client>& client2 : clients)
 								{
-									if (client2->identity == packet.identity)
+									if (client2->netIdentity == packet.netIdentity)
 									{
-										packet.identity = client->identity;
+										packet.netIdentity = client->netIdentity;
 										WriteBuffer writeBuffer;
 										writeBuffer.write(packet);
-										client2->socket->sendPacket(writeBuffer);
+										if (!client2->socket->sendPacket(writeBuffer))
+										{
+											se::log::error("Failed to redirect SignalingDataPacket");
+											client2->socket->disconnect();
+										}
+										return;
 									}
 								}
 								se_assert(false && "nocommit");
@@ -82,6 +113,9 @@ namespace se
 				for (size_t i = 0; i < clients.size(); i++)
 				{
 					clients[i]->socket->update();
+				}
+				for (size_t i = 0; i < clients.size(); i++)
+				{
 					if (!clients[i]->socket->isConnected())
 					{
 						std::swap(clients[i], clients.back());

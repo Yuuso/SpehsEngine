@@ -223,6 +223,11 @@ namespace se
 			sharedImpl->setOnReceiveCallback(callbackFunction);
 		}
 
+		bool SocketTCP::hasOnReceiveCallback() const
+		{
+			return sharedImpl->hasOnReceiveCallback();
+		}
+
 		void SocketTCP::startReceiving()
 		{
 			sharedImpl->startReceiving();
@@ -982,6 +987,12 @@ namespace se
 		{
 			std::lock_guard<std::recursive_mutex> lock(mutex);
 			onReceiveCallback = callbackFunction;
+		}
+
+		bool SocketTCP::SharedImpl::hasOnReceiveCallback() const
+		{
+			std::lock_guard<std::recursive_mutex> lock(mutex);
+			return bool(onReceiveCallback);
 		}
 
 		void SocketTCP::SharedImpl::update()
