@@ -3,7 +3,7 @@
 
 #include "SpehsEngine/Net/SocketTCP.h"
 #include "SpehsEngine/Net/Signaling/SignalingPackets.h"
-#pragma optimize("", off) // nocommit
+
 
 namespace se
 {
@@ -101,7 +101,7 @@ namespace se
 										return;
 									}
 								}
-								se_assert(false && "nocommit");
+								se::log::info("SignalingDataPacket received for unknown net identity: " + packet.netIdentity.toString());
 							});
 					});
 				startAccepting();

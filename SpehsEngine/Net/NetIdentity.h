@@ -16,6 +16,7 @@ namespace se
 			NetIdentity(const uint64_t _value) : value(_value) {}
 
 			bool operator==(const NetIdentity& other) const { return value == other.value; }
+			bool operator!=(const NetIdentity& other) const { return value != other.value; }
 			explicit operator bool() const { return value != 0; }
 			bool isValid() const { return value != 0; }
 			bool fromString(const std::string_view string);

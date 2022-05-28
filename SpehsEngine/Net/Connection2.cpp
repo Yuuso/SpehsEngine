@@ -29,6 +29,7 @@ namespace se
 			, steamNetworkingSockets(*constructorParameters.steamNetworkingSockets)
 			, steamNetConnection(constructorParameters.steamNetConnection)
 			, steamListenSocket(constructorParameters.steamListenSocket)
+			, p2p(constructorParameters.p2p)
 			, status(constructorParameters.status)
 		{
 			setSettingsImpl(settings, true);

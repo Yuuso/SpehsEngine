@@ -27,9 +27,6 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)SocketTCP.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)SocketUDP.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)stdafx.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)Signaling\SignalingClient.cpp">
-      <Filter>Signaling</Filter>
-    </ClCompile>
     <ClCompile Include="$(MSBuildThisFileDirectory)Signaling\SignalingServer.cpp">
       <Filter>Signaling</Filter>
     </ClCompile>
@@ -37,6 +34,9 @@
       <Filter>Signaling</Filter>
     </ClCompile>
     <ClCompile Include="$(MSBuildThisFileDirectory)NetIdentity.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Signaling\SignalingImpl.cpp">
+      <Filter>Signaling</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="$(MSBuildThisFileDirectory)Acceptor.h" />
@@ -67,9 +67,6 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)SocketTCP.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)SocketUDP.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)stdafx.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)Signaling\SignalingClient.h">
-      <Filter>Signaling</Filter>
-    </ClInclude>
     <ClInclude Include="$(MSBuildThisFileDirectory)Signaling\SignalingServer.h">
       <Filter>Signaling</Filter>
     </ClInclude>
@@ -77,6 +74,9 @@
       <Filter>Signaling</Filter>
     </ClInclude>
     <ClInclude Include="$(MSBuildThisFileDirectory)NetIdentity.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Signaling\SignalingImpl.h">
+      <Filter>Signaling</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Signaling">

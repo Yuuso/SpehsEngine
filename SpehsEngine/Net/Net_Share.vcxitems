@@ -31,7 +31,7 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)NetIdentity.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Pinger.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)PacketManager.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)Signaling\SignalingClient.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Signaling\SignalingImpl.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Signaling\SignalingPackets.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Signaling\SignalingServer.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)SocketUDP2.cpp" />
@@ -65,7 +65,7 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)NetIdentity.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Pinger.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)PacketManager.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)Signaling\SignalingClient.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Signaling\SignalingImpl.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Signaling\SignalingPackets.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Signaling\SignalingServer.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)SocketUDP2.h" />

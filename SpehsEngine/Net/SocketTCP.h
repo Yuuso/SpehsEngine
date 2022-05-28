@@ -60,7 +60,10 @@ namespace se
 			void disconnect();
 
 			/* Sends buffer to the connected endpoint. Spehs-level packet type specification is also possible (only for advanced use). */
-			bool sendPacket(const WriteBuffer& buffer, const PacketType packetType = PacketType::undefined);
+			bool sendPacket(const WriteBuffer& writeBuffer, const PacketType packetType = PacketType::undefined);
+
+			/* Try placing a packet into the receive queue to be processed as if it was received through the connection. Returns false if not connected. */
+			bool placeDataOnReceiveQueue(WriteBuffer& writeBuffer);
 
 			/* Returns false if the memory allocation fails, or the socket is currently receiving data. */
 			bool resizeReceiveBuffer(const size_t newSize);
@@ -156,6 +159,7 @@ namespace se
 				void disconnect();
 				void disconnect(const DisconnectType disconnectType);
 				bool sendPacket(const WriteBuffer& buffer, const PacketType packetType);
+				bool placeDataOnReceiveQueue(WriteBuffer& writeBuffer);
 				bool resizeReceiveBuffer(const size_t newSize);
 				void setOnReceiveCallback(const std::function<void(ReadBuffer&)> callbackFunction);
 				bool hasOnReceiveCallback() const;
@@ -208,6 +212,7 @@ namespace se
 				std::recursive_mutex receivedPacketsMutex;
 				struct ReceivedPacket
 				{
+					ReceivedPacket() = default;
 					ReceivedPacket(const size_t size) : data(size) {}
 					std::vector<uint8_t> data;
 				};
