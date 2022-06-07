@@ -1,6 +1,8 @@
 #include "stdafx.h"
 #include "SpehsEngine/Core/OS.h"
 
+#include "SpehsEngine/Core/StringUtilityFunctions.h"
+
 #if SE_PLATFORM == SE_PLATFORM_WINDOWS
 #include <Windows.h>
 #include <tlhelp32.h>
@@ -158,37 +160,76 @@ namespace se
 		return false;
 	}
 
-	std::wstring getUserDataDirectory()
+	const std::wstring& getCurrentDirectory()
 	{
 #if SE_PLATFORM == SE_PLATFORM_WINDOWS
-		std::wstring result;
-		DWORD dwFlags = 0;
-		HANDLE hToken = 0;
-		PWSTR ppszPath = NULL;
-		if (SHGetKnownFolderPath(FOLDERID_RoamingAppData, dwFlags, hToken, &ppszPath) == S_OK)
+		static std::wstring string;
+		if (string.empty())
 		{
-			result = std::wstring((const wchar_t* const)ppszPath);
+			wchar_t buffer[MAX_PATH + 1] = {};
+			GetCurrentDirectoryW(MAX_PATH + 1u, buffer);
+			string = std::wstring(buffer);
+			findAndReplaceAll(string, L"\\", L"/");
+			string += L"/";
 		}
-		else
-		{
-			log::error("Failed to get user data directory");
-		}
-		CoTaskMemFree(ppszPath);
-
-		for (size_t i = 0; i < result.size(); i++)
-		{
-			if (result[i] == '\\')
-			{
-				result[i] = '/';
-			}
-		}
-
-		// NOTE: according to the documentation, no trailing backslash
-		result += L"/";
-		return result;
+		return string;
 #else
-		static_assert(false && "Create process implementation is missing.");
-		return "";
-#endif		
+		static_assert(false && "getCurrentDirectory() implementation is missing.");
+		static std::wstring string;
+		return string;
+#endif
+	}
+
+	const std::wstring& getUserDataDirectory()
+	{
+#if SE_PLATFORM == SE_PLATFORM_WINDOWS
+		static std::wstring string;
+		if (string.empty())
+		{
+			DWORD dwFlags = 0;
+			HANDLE hToken = 0;
+			PWSTR ppszPath = NULL;
+			if (SHGetKnownFolderPath(FOLDERID_RoamingAppData, dwFlags, hToken, &ppszPath) == S_OK)
+			{
+				string = std::wstring((const wchar_t* const)ppszPath);
+			}
+			else
+			{
+				log::error("Failed to get user data directory");
+			}
+			CoTaskMemFree(ppszPath);
+			findAndReplaceAll(string, L"\\", L"/");
+			// NOTE: according to the documentation, no trailing backslash
+			string += L"/";
+		}
+		return string;
+#else
+		static_assert(false && "getUserDataDirectory() implementation is missing.");
+		static std::wstring string;
+		return string;
+#endif
+	}
+
+	const std::string& getTempDirectory()
+	{
+#ifdef _WIN32
+		static std::string string;
+		if (string.empty())
+		{
+			char buffer[1024] = { 0 };
+			GetTempPathA(sizeof(buffer), buffer);
+			const size_t length = strlen(buffer);
+			string.resize(length + 1);
+			memcpy(string.data(), buffer, length);
+			findAndReplaceAll(string, "\\", "/");
+		}
+		return string;
+#elif defined(__APPLE__)
+		static const std::string = "/private/var/tmp/";
+		return string;
+#else
+		static const std::string = "/var/tmp/";
+		return string;
+#endif
 	}
 }

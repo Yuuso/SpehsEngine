@@ -17,6 +17,12 @@ namespace se
 	/* Calls function for each running process name. */
 	bool forEachProcessName(const std::function<void(const std::string_view& processName)>& callback);
 
+	/* Get the current directory. Contains a trailing backslash. */
+	const std::wstring& getCurrentDirectory();
+
 	/* Get the appdata directory for the current user. Contains a trailing backslash. */
-	std::wstring getUserDataDirectory();
+	const std::wstring& getUserDataDirectory();
+
+	/* Get temporary cache directory. Contains a trailing backslash. */
+	const std::string& getTempDirectory();
 }
