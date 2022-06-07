@@ -93,16 +93,26 @@
     <ClCompile />
     <Lib />
     <Lib>
-      <AdditionalDependencies>SpehsCore.lib;libprotobufd.lib;libcrypto.lib;GameNetworkingSockets.lib;GameNetworkingSockets_s.lib;libcrypto_static.lib</AdditionalDependencies>
+      <AdditionalDependencies>SpehsCore.lib;libssl_static.lib;libcrypto_static.lib;libprotobuf.lib;GameNetworkingSockets_s.lib</AdditionalDependencies>
     </Lib>
+    <ClCompile />
+    <ClCompile>
+      <PreprocessorDefinitions>STEAMNETWORKINGSOCKETS_STATIC_LINK;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
     </ClCompile>
     <Lib>
-      <AdditionalDependencies>SpehsCore.lib;libprotobufd.lib;libcrypto.lib;GameNetworkingSockets.lib;GameNetworkingSockets_s.lib;libcrypto_static.lib</AdditionalDependencies>
+      <AdditionalDependencies>SpehsCore.lib;libssl_static.lib;libcrypto_static.lib;libprotobuf.lib;GameNetworkingSockets_s.lib</AdditionalDependencies>
     </Lib>
     <ClCompile />
+    <ClCompile />
+    <ClCompile />
+    <ClCompile />
+    <ClCompile>
+      <PreprocessorDefinitions>STEAMNETWORKINGSOCKETS_STATIC_LINK;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -113,9 +123,13 @@
     </Link>
     <Lib />
     <Lib>
-      <AdditionalDependencies>SpehsCore.lib;libprotobuf.lib;libcrypto.lib;GameNetworkingSockets.lib;GameNetworkingSockets_s.lib;libcrypto_static.lib</AdditionalDependencies>
+      <AdditionalDependencies>SpehsCore.lib;libssl_static.lib;libcrypto_static.lib;libprotobuf.lib;GameNetworkingSockets_s.lib</AdditionalDependencies>
     </Lib>
     <ClCompile />
+    <ClCompile />
+    <ClCompile>
+      <PreprocessorDefinitions>STEAMNETWORKINGSOCKETS_STATIC_LINK;NDEBUG;GLM_FORCE_INLINE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -123,9 +137,14 @@
     <Link>
     </Link>
     <Lib>
-      <AdditionalDependencies>SpehsCore.lib;libprotobuf.lib;libcrypto.lib;GameNetworkingSockets.lib;GameNetworkingSockets_s.lib;libcrypto_static.lib</AdditionalDependencies>
+      <AdditionalDependencies>SpehsCore.lib;libssl_static.lib;libcrypto_static.lib;libprotobuf.lib;GameNetworkingSockets_s.lib</AdditionalDependencies>
     </Lib>
     <ClCompile />
+    <ClCompile />
+    <ClCompile />
+    <ClCompile>
+      <PreprocessorDefinitions>STEAMNETWORKINGSOCKETS_STATIC_LINK;NDEBUG;GLM_FORCE_INLINE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
