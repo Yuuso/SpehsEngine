@@ -203,4 +203,8 @@ namespace se
 		Assigns the contents after the last dot character in the inString into the outString. If no dot character exists, returns false.
 	*/
 	bool getFileExtension(const std::string& inString, std::string& outString);
+
+	// Iterate string and replace all instances of 'v1' with 'v2'. Returns the number of replacements performed.
+	size_t findAndReplaceAll(std::string& string, const std::string_view v1, const std::string_view v2);
+	size_t findAndReplaceAll(std::wstring& string, const std::wstring_view v1, const std::wstring_view v2);
 }
