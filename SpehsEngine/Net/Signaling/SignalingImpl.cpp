@@ -25,7 +25,7 @@ namespace se
 		{
 			// We'll just silently ignore all failures. This is actually the more secure way to handle it in many cases.
 			SteamNetworkingIdentityRender peerSteamNetworkingIdentityRender(peerSteamNetworkingIdentity);
-			log::info("OutSignalingReceivedContext: silently rejecting: " + std::string(peerSteamNetworkingIdentityRender.c_str()));
+			log::info("OutSignalingReceivedContext: silently rejecting: " + std::string(peerSteamNetworkingIdentityRender.c_str()), se::log::TextColor::DARKBLUE);
 		}
 		ISteamNetworkingConnectionSignaling* OutSignalingReceivedContext::OnConnectRequest(HSteamNetConnection hConn, const SteamNetworkingIdentity& peerSteamNetworkingIdentity, int nLocalVirtualPort)
 		{
@@ -44,7 +44,7 @@ namespace se
 		{
 			// We'll just silently ignore all failures. This is actually the more secure way to handle it in many cases.
 			SteamNetworkingIdentityRender peerSteamNetworkingIdentityRender(peerSteamNetworkingIdentity);
-			log::info("InSignalingReceivedContext: silently rejecting: " + std::string(peerSteamNetworkingIdentityRender.c_str()));
+			log::info("InSignalingReceivedContext: silently rejecting: " + std::string(peerSteamNetworkingIdentityRender.c_str()), se::log::TextColor::DARKBLUE);
 		}
 		ISteamNetworkingConnectionSignaling* InSignalingReceivedContext::OnConnectRequest(HSteamNetConnection hConn, const SteamNetworkingIdentity& peerSteamNetworkingIdentity, int nLocalVirtualPort)
 		{
@@ -54,30 +54,33 @@ namespace se
 			return inConnectionSignaling;
 		}
 
-		SocketTCP& OutConnectionSignaling::getStaticSocket(const Endpoint& _signalingServerEndpoint)
+		SocketTCP* OutConnectionSignaling::getStaticSocket(const Endpoint& _signalingServerEndpoint)
 		{
 			std::lock_guard<std::recursive_mutex> lock(staticMutex);
-			se_assert(!staticIoService);
 			if (!staticIoService)
 			{
 				staticIoService.reset(new IOService());
 			}
 			std::unique_ptr<SocketTCP>& socket = staticSockets[_signalingServerEndpoint];
-			se_assert(!socket);
-			if (!socket)
+			if (socket)
+			{
+				// This endpoint is already being used by some other local source
+				return nullptr;
+			}
+			else
 			{
 				socket.reset(new SocketTCP(*staticIoService));
+				return socket.get();
 			}
-			return *socket;
 		}
 
 		// Creates a static socket for this signaling server endpoint
 		OutConnectionSignaling::OutConnectionSignaling(const NetIdentity _peerNetIdentity, const Endpoint& _signalingServerEndpoint)
 			: peerNetIdentity(_peerNetIdentity)
-			, staticSocketEndpoint(_signalingServerEndpoint)
+			, signalingServerEndpoint(_signalingServerEndpoint)
 			, socket(getStaticSocket(_signalingServerEndpoint))
 		{
-			if (socket.connect(_signalingServerEndpoint))
+			if (socket && socket->connect(_signalingServerEndpoint))
 			{
 				SteamNetworkingIdentity selfSteamNetworkingIdentity;
 				selfSteamNetworkingIdentity.Clear();
@@ -91,8 +94,8 @@ namespace se
 				packet.netIdentity = fromSteamNetworkingIdentity(selfSteamNetworkingIdentity);
 				WriteBuffer writeBuffer;
 				writeBuffer.write(packet);
-				socket.sendPacket(writeBuffer);
-				socket.setOnReceiveCallback(
+				socket->sendPacket(writeBuffer);
+				socket->setOnReceiveCallback(
 					[_signalingServerEndpoint](ReadBuffer& readBuffer)
 					{
 						SignalingDataPacket packet;
@@ -110,31 +113,34 @@ namespace se
 			}
 			else
 			{
-				se::log::error("Failed to connect to the signaling server at: " + _signalingServerEndpoint.toString());
+				se::log::warning("Failed to connect to the signaling server at: " + _signalingServerEndpoint.toString());
 			}
 		}
 		OutConnectionSignaling::~OutConnectionSignaling()
 		{
-			if (staticSocketEndpoint)
+			if (socket)
 			{
 				std::lock_guard<std::recursive_mutex> lock(staticMutex);
-				staticSockets.erase(*staticSocketEndpoint);
-				staticIoService.reset();
-			}
-			else
-			{
-				socket.setOnReceiveCallback();
+				staticSockets.erase(signalingServerEndpoint);
+				if (staticSockets.empty())
+				{
+					staticIoService.reset();
+				}
 			}
 		}
 		bool OutConnectionSignaling::SendSignal(HSteamNetConnection hConn, const SteamNetConnectionInfo_t& info, const void* messageData, int messageSize)
 		{
+			if (!socket)
+			{
+				return false;
+			}
 			SignalingDataPacket packet;
 			packet.netIdentity = peerNetIdentity;
 			packet.data.resize(size_t(messageSize));
 			memcpy(packet.data.data(), messageData, messageSize);
 			WriteBuffer writeBuffer;
 			writeBuffer.write(packet);
-			return socket.sendPacket(writeBuffer);
+			return socket->sendPacket(writeBuffer);
 		}
 		void OutConnectionSignaling::Release()
 		{
@@ -206,7 +212,7 @@ namespace se
 			SignalingDataPacket packet;
 			if (!packet.read(readBuffer))
 			{
-				se::log::info("AcceptorP2P: failed to read SignalingDataPacket");
+				se::log::warning("AcceptorP2P: failed to read SignalingDataPacket");
 				return;
 			}
 			InSignalingReceivedContext inSignalingReceivedContext(socket);

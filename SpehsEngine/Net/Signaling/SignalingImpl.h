@@ -32,7 +32,7 @@ namespace se
 		// Creates a static socket for this signaling server endpoint
 		struct OutConnectionSignaling : public ISteamNetworkingConnectionSignaling
 		{
-			static SocketTCP& getStaticSocket(const Endpoint& _signalingServerEndpoint);
+			static SocketTCP* getStaticSocket(const Endpoint& _signalingServerEndpoint);
 
 			OutConnectionSignaling(const NetIdentity _peerNetIdentity, const Endpoint& _signalingServerEndpoint);
 			~OutConnectionSignaling();
@@ -40,11 +40,12 @@ namespace se
 			void Release() final;
 
 			const NetIdentity peerNetIdentity;
-			const std::optional<Endpoint> staticSocketEndpoint; // Set when static socket is used
-			SocketTCP& socket;
+			const Endpoint signalingServerEndpoint;
+			SocketTCP* const socket;
+
 			static std::recursive_mutex staticMutex;
 			static std::unique_ptr<IOService> staticIoService;
-			static std::unordered_map<Endpoint, std::unique_ptr<SocketTCP>> staticSockets; // NOTE: we can only have one socket connected per endpoint
+			static std::unordered_map<Endpoint, std::unique_ptr<SocketTCP>> staticSockets; // NOTE: we can only have one socket connected per endpoint because of a single NetIdentity
 		};
 
 		// Re-uses a socket that is already connected to a signaling server
