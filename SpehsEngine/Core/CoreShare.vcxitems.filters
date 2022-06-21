@@ -122,6 +122,7 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)ReadAbstract.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)WriteAbstract.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)ScopedConnections.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)LogSignal.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="File">
