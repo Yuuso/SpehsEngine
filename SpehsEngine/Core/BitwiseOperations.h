@@ -6,6 +6,35 @@
 namespace se
 {
 	template<typename Integer>
+	inline typename std::enable_if<std::is_integral<Integer>::value, void>::type setBit(Integer& variable, const Integer bits, const bool enabled)
+	{
+		if (enabled)
+			enableBit(variable, bits);
+		else
+			disableBit(variable, bits);
+	}
+
+	template<typename Enum>
+	inline typename std::enable_if<std::is_enum<Enum>::value, void>::type setBit(Enum& variable, const Enum bits, const bool enabled)
+	{
+		if (enabled)
+			enableBit(variable, bits);
+		else
+			disableBit(variable, bits);
+	}
+
+	template<typename Integer, typename Enum>
+	inline typename std::enable_if<std::is_integral<Integer>::value && std::is_enum<Enum>::value && sizeof(Integer) == sizeof(Enum), void>::type
+		setBit(Integer& variable, const Enum bits, const bool enabled)
+	{
+		if (enabled)
+			enableBit(variable, bits);
+		else
+			disableBit(variable, bits);
+	}
+
+
+	template<typename Integer>
 	inline typename std::enable_if<std::is_integral<Integer>::value, void>::type enableBit(Integer& variable, const Integer bits)
 	{
 		variable |= bits;
