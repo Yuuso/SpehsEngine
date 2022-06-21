@@ -97,7 +97,7 @@ namespace se
 		{
 		public:
 			TextEntered(const std::string& _value, const bool _used = false);
-			operator bool() const;
+			explicit operator bool() const;
 		};
 
 		InputState();

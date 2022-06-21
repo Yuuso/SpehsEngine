@@ -14,7 +14,7 @@ namespace se
 			operator ValueType() const { return value; }
 			bool operator==(const Address& other) const { return value == other.value; }
 			bool operator!=(const Address& other) const { return value != other.value; }
-			operator bool() const { return *this != invalid; }
+			explicit operator bool() const { return *this != invalid; }
 			std::string toString() const { return value; }
 			ValueType value;
 		};

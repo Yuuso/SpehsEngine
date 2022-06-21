@@ -35,7 +35,7 @@ namespace se
 				std::swap(unregisterCustomEventFunction, other.unregisterCustomEventFunction);
 			}
 
-			operator bool() const { return bool(registeredCustomEventId); }
+			explicit operator bool() const { return bool(registeredCustomEventId); }
 
 		private:
 			friend class CustomEventGenerator;

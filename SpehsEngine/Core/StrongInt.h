@@ -33,7 +33,7 @@ struct p_TypeName \
 	void operator=(const p_TypeName& other) { value = other.value; }; \
 	void operator=(p_TypeName&& other) { value = other.value; } \
 	p_TypeName operator++(int) { return p_TypeName(value++); } \
-	operator bool() const { return value != p_InvalidValue; } \
+	explicit operator bool() const { return value != p_InvalidValue; } \
 	operator p_IntType() const { return value; } \
 	p_IntType value = p_InvalidValue; \
 };
