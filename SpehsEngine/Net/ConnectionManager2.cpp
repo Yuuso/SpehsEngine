@@ -192,7 +192,7 @@ namespace se
 						return;
 					}
 				}
-				log::error("No connection manager owns the connection: " + std::string(info->m_info.m_szConnectionDescription));
+				log::warning("No connection manager owns the connection: " + std::string(info->m_info.m_szConnectionDescription)); // TODO: fix
 				return;
 			}
 		}
@@ -385,6 +385,21 @@ namespace se
 				std::lock_guard<std::recursive_mutex> lock(connectionStatusChangeQueueMutex);
 				std::swap(temp, connectionStatusChangeQueue);
 			}
+
+			// If there are multiple changes for the same connection, erase all but the latest
+			for (size_t i1 = 0; i1 < temp.size(); i1++)
+			{
+				for (size_t i2 = i1 + 1; i2 < temp.size(); i2++)
+				{
+					if (temp[i1].steamNetConnection == temp[i2].steamNetConnection)
+					{
+						temp.erase(temp.begin() + i1);
+						i1--;
+						break;
+					}
+				}
+			}
+
 			for (const ConnectionStatusChange& connectionStatusChange : temp)
 			{
 				for (size_t i = 0; i < connections.size(); i++)
