@@ -515,6 +515,18 @@ namespace ImGui
 		return CollapsingHeader2(idLabel.c_str(), mutableLabel.c_str(), flags);
 	}
 
+	inline bool BeginCentered(const char* const label, bool* const open, const ImGuiWindowFlags flags = 0, const ImGuiCond centerCondition = ImGuiCond_Appearing)
+	{
+		const ImGuiIO& io = ImGui::GetIO();
+		const ImVec2 displayCenter(io.DisplaySize.x * 0.5f, io.DisplaySize.y * 0.5f);
+		ImGui::SetNextWindowPos(displayCenter, centerCondition, ImVec2(0.5f, 0.5f));
+		return ImGui::Begin(label, open, flags);
+	}
+	inline bool BeginCentered(const std::string& label, bool* const open, const ImGuiWindowFlags flags = 0, const ImGuiCond centerCondition = ImGuiCond_Appearing)
+	{
+		return BeginCentered(label.c_str(), open, flags, centerCondition);
+	}
+
 	// NOTE: 'key' value must be valid in the scope of 'scopedConnection'
 	void keyBindButton(const char* const label, se::input::Key& key, se::input::EventSignaler& eventSignaler, boost::signals2::scoped_connection& scopedConnection);
 	inline void keyBindButton(const std::string& label, se::input::Key& key, se::input::EventSignaler& eventSignaler, boost::signals2::scoped_connection& scopedConnection)
