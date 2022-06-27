@@ -77,3 +77,46 @@ namespace se
 		return true;
 	}
 }
+
+template<typename ValueType, typename Hasher = std::hash<ValueType>, typename SizeType = uint32_t>
+inline ValueType* tryFind(std::unordered_set<ValueType, Hasher>& unorderedSet, const ValueType &value)
+{
+	const std::unordered_set<ValueType, Hasher>::iterator it = unorderedSet.find(value);
+	if (it != unorderedSet.end())
+	{
+		return (ValueType*)&(*it);
+	}
+	else
+	{
+		return nullptr;
+	}
+}
+
+template<typename ValueType, typename Hasher = std::hash<ValueType>, typename SizeType = uint32_t>
+inline const ValueType* tryFind(const std::unordered_set<ValueType, Hasher>& unorderedSet, const ValueType &value)
+{
+	const std::unordered_set<ValueType, Hasher>::const_iterator it = unorderedSet.find(value);
+	if (it != unorderedSet.end())
+	{
+		return (const ValueType*)&(*it);
+	}
+	else
+	{
+		return nullptr;
+	}
+}
+
+template<typename ValueType, typename Hasher = std::hash<ValueType>, typename SizeType = uint32_t>
+inline bool findAndErase(std::unordered_set<ValueType, Hasher>& unorderedSet, const ValueType& value)
+{
+	const std::unordered_set<ValueType, Hasher>::iterator it = unorderedSet.find(value);
+	if (it != unorderedSet.end())
+	{
+		unorderedSet.erase(it);
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+}
