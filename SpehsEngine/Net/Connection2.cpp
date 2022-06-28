@@ -40,7 +40,7 @@ namespace se
 		{
 			if (steamNetConnection != k_HSteamNetConnection_Invalid)
 			{
-				disconnectImpl("~Connection2()", false);
+				disconnectImpl("~Connection2()", true);
 			}
 		}
 

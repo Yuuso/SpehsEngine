@@ -108,7 +108,7 @@ namespace se
 				const std::optional<HSteamListenSocket> steamListenSocket = getSteamListenSocket(*SteamNetworkingSockets(), info->m_hConn);
 				if (!steamListenSocket)
 				{
-					Connection2::closeConnectionImpl(info->m_hConn, "", false);
+					Connection2::closeConnectionImpl(info->m_hConn, "", true);
 					se::log::error("Failed to accept incoming connection from: " + std::string(info->m_info.m_szConnectionDescription) + ". Could not get steam listen socket.");
 					return;
 				}
@@ -149,7 +149,7 @@ namespace se
 				const EResult acceptConnectionResult = SteamNetworkingSockets()->AcceptConnection(info->m_hConn);
 				if (acceptConnectionResult != k_EResultOK)
 				{
-					Connection2::closeConnectionImpl(info->m_hConn, "", false);
+					Connection2::closeConnectionImpl(info->m_hConn, "", true);
 					se::log::error("Failed to accept incoming connection from: " + std::string(info->m_info.m_szConnectionDescription) + ". Error code: " + std::to_string(acceptConnectionResult));
 					return;
 				}
@@ -414,7 +414,7 @@ namespace se
 						case Connection2::Status::Connected:
 							break;
 						case Connection2::Status::Disconnected:
-							connections[i]->disconnectImpl(connectionStatusChange.reason, false);
+							connections[i]->disconnectImpl(connectionStatusChange.reason, true);
 							break;
 						}
 					}
