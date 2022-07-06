@@ -56,6 +56,8 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)SystemMessageBox.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Thread.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)SE_Time.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)TimeUtilityFunctions.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)UtcTime.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)WriteBuffer.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -116,8 +118,10 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)SystemMessageBox.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Thread.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)SE_Time.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)TimeUtilityFunctions.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)TypeTraits.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)UniquePtrUtilityFunctions.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)UtcTime.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)WatchedValue.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)WeightedRandomizer.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)WriteAbstract.h" />

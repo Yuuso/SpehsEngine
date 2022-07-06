@@ -102,6 +102,9 @@ namespace se
 		/* Returns the current time stamp, relative to 'some' context. See getRunTime() for an alternative. */
 		Time now();
 
+		/* Returns system time. System time is not as precise as now(). Note that the user is able to change system time. */
+		Time getSystemTime();
+
 		/* Returns current time since time was initialized. Less efficient than using now(). */
 		Time getRunTime();
 

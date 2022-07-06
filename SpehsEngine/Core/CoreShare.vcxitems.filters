@@ -50,6 +50,8 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)StaticRingBuffer.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)BufferUtilityFunctions.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)MultiMapUtilityFunctions.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)TimeUtilityFunctions.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)UtcTime.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="$(MSBuildThisFileDirectory)Archive.h" />
@@ -123,6 +125,8 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)WriteAbstract.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)ScopedConnections.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)LogSignal.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)TimeUtilityFunctions.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)UtcTime.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="File">
