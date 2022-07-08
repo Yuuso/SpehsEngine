@@ -5,6 +5,7 @@
 #include "glm/vec4.hpp"
 #include "SpehsEngine/Core/Color.h"
 #include "SpehsEngine/Core/SE_Time.h"
+#include "SpehsEngine/Core/TimeUtilityFunctions.h"
 #include "SpehsEngine/Core/StringUtilityFunctions.h"
 #include "SpehsEngine/Graphics/Texture.h"
 #include "SpehsEngine/ImGui/imgui.h"
@@ -498,6 +499,30 @@ namespace ImGui
 				}
 			}
 		}
+	}
+
+	inline bool InputT(const char* const label, se::time::TimeInfo& timeInfo)
+	{
+		bool changed = false;
+		if (ImGui::CollapsingHeader(label))
+		{
+			changed |= ImGui::InputT("Day", timeInfo.monthDay);
+			if (ImGui::IsItemHovered())
+			{
+				ImGui::SetTooltip("Day of the month");
+			}
+			changed |= ImGui::InputT("Month", timeInfo.month);
+			changed |= ImGui::InputT("Year", timeInfo.year);
+			changed |= ImGui::InputT("Hour", timeInfo.hour);
+			changed |= ImGui::InputT("Minute", timeInfo.minute);
+			changed |= ImGui::InputT("Second", timeInfo.second);
+			changed |= ImGui::InputT("Dayligt savings flag", timeInfo.dayligtSavingsFlag);
+		}
+		return changed;
+	}
+	inline bool InputT(const std::string& label, se::time::TimeInfo& timeInfo)
+	{
+		return InputT(label.c_str(), timeInfo);
 	}
 
 	// Splits shown string into two parts, id part and mutable part. Useful when the contents of the header edit the shown header string.
