@@ -14,11 +14,11 @@ namespace se
 		{
 			return Time(value - other.value);
 		}
-		UtcTime UtcTime::operator+(const UtcTime& other) const { return UtcTime(value + other.value); }
-		UtcTime UtcTime::operator-(const UtcTime& other) const { return UtcTime(value - other.value); }
+		UtcTime UtcTime::operator+(const Time& other) const { return UtcTime(value + other.value); }
+		UtcTime UtcTime::operator-(const Time& other) const { return UtcTime(value - other.value); }
 		void UtcTime::operator=(const UtcTime& other) { value = other.value; }
-		void UtcTime::operator+=(const UtcTime& other) { value += other.value; }
-		void UtcTime::operator-=(const UtcTime& other) { value -= other.value; }
+		void UtcTime::operator+=(const Time& other) { value += other.value; }
+		void UtcTime::operator-=(const Time& other) { value -= other.value; }
 		bool UtcTime::operator==(const UtcTime& other) const { return value == other.value; }
 		bool UtcTime::operator!=(const UtcTime& other) const { return value != other.value; }
 		bool UtcTime::operator>(const UtcTime& other) const { return value > other.value; }

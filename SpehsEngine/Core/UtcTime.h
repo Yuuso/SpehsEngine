@@ -15,14 +15,13 @@ namespace se
 			UtcTime() = default;
 			UtcTime(const TimeValueType _value) : value(_value) {}
 
-			Time getTime() const { return Time(value); }
 			Time timeSince(const UtcTime& other) const;
 
 			void operator=(const UtcTime& other);
-			void operator+=(const UtcTime& other);
-			void operator-=(const UtcTime& other);
-			UtcTime operator+(const UtcTime& other) const;
-			UtcTime operator-(const UtcTime& other) const;
+			void operator+=(const Time& other);
+			void operator-=(const Time& other);
+			UtcTime operator+(const Time& other) const;
+			UtcTime operator-(const Time& other) const;
 			bool operator==(const UtcTime& other) const;
 			bool operator!=(const UtcTime& other) const;
 			bool operator>(const UtcTime& other) const;

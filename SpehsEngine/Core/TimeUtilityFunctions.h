@@ -33,6 +33,10 @@ namespace se
 		std::optional<TimeInfo> getTimeInfo(const Time& time);
 		std::optional<TimeInfo> getTimeInfo(const UtcTime& time);
 
+		// Simplify dev code by omitting getTimeInfo()'s optional checking and instead printing something if the optional value is not set
+		std::string getTimeInfoDebugString(const Time& time);
+		std::string getTimeInfoDebugString(const UtcTime& time);
+
 		// Format: '(X days) (Y hours) (Z minutes) W seconds'
 		std::string getDurationDisplayString(const Time& time);
 

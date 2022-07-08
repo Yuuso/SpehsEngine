@@ -99,6 +99,30 @@ namespace se
 			}
 		}
 
+		std::string getTimeInfoDebugString(const Time& time)
+		{
+			if (const std::optional<TimeInfo> timeInfo = getTimeInfo(time))
+			{
+				return timeInfo->toString() + " [local]";
+			}
+			else
+			{
+				return getDurationDisplayString(time);
+			}
+		}
+
+		std::string getTimeInfoDebugString(const UtcTime& time)
+		{
+			if (const std::optional<TimeInfo> timeInfo = getTimeInfo(time))
+			{
+				return timeInfo->toString() + " [UTC]";
+			}
+			else
+			{
+				return getDurationDisplayString(Time(time.value));
+			}
+		}
+
 		tm getTm(const TimeInfo& timeInfo)
 		{
 			tm tmp;
