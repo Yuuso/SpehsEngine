@@ -1,4 +1,5 @@
 #pragma once
+
 #include "SpehsEngine/Core/HasMemberFunction.h"
 #include "SpehsEngine/Core/ReadBuffer.h"
 #include "SpehsEngine/Core/SE_Assert.h"
