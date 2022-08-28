@@ -31,7 +31,7 @@ namespace se
 	extern inline void rotateAroundAxis(glm::vec2& point, const float axisX, const float axisY, float rotation);
 
 	/**Rotates point around coordinate system origin*/
-	extern inline void rotateAroundOrigin(glm::vec2& point, float rotation);
+	extern inline glm::vec2 rotateAroundOrigin(const glm::vec2& point, float rotation);
 
 	/**Returns area of the shape formed by a number of cusps*/
 	extern inline float getArea(glm::vec2* cusps, const size_t numCusps);

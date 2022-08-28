@@ -86,12 +86,12 @@ namespace se
 		point.y = axisY + dx*sin(rotation) + dy*cos(rotation);
 	}
 
-	inline void rotateAroundOrigin(glm::vec2& point, float rotation)
-	{//Translates around origin
+	inline glm::vec2 rotateAroundOrigin(const glm::vec2& point, float rotation)
+	{
+		// Translates around origin
 		float dx = point.x;
 		float dy = point.y;
-		point.x = dx*cos(rotation) - dy*sin(rotation);
-		point.y = dx*sin(rotation) + dy*cos(rotation);
+		return glm::vec2(dx*cos(rotation) - dy*sin(rotation), dx*sin(rotation) + dy*cos(rotation));
 	}
 
 	inline float getArea(glm::vec2* cusps, const size_t numCusps)
