@@ -37,6 +37,7 @@ namespace se
 			}
 
 			setVoiceLimit(128u);
+			globalSoloud->setGlobalVolume(1.0f);
 
 			masterBus = std::make_unique<Bus>();
 			masterBus->makeMasterBus();
