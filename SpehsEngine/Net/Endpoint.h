@@ -12,12 +12,16 @@ namespace se
 		*/
 		struct Endpoint
 		{
+			struct HashFunctor
+			{
+				size_t operator()(const Endpoint& endpoint) const;
+			};
 			static const Endpoint invalid;
 			Endpoint() : address(invalid.address), port(invalid.port) {}
 			Endpoint(const Address& _address, const Port& _port) : address(_address), port(_port) {}
 			bool operator==(const Endpoint& other) const { return port == other.port && address == other.address; }
 			bool operator!=(const Endpoint& other) const { return port != other.port || address != other.address; }
-			operator bool() const { return (bool)port && (bool)address; }
+			explicit operator bool() const { return (bool)port && (bool)address; }
 			std::string toString() const { return address.toString() + ":" + port.toString(); }
 			Address address;
 			Port port;
@@ -30,4 +34,15 @@ namespace se
 	class ReadBuffer;
 	void writeToBuffer(WriteBuffer& writeBuffer, const net::Endpoint& endpoint);
 	bool readFromBuffer(ReadBuffer& readBuffer, net::Endpoint& endpoint);
+}
+
+namespace std
+{
+	template<> struct hash<se::net::Endpoint>
+	{
+		size_t operator()(const se::net::Endpoint& endpoint) const
+		{
+			return se::net::Endpoint::HashFunctor()(endpoint);
+		}
+	};
 }

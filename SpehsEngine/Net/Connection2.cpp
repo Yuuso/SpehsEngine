@@ -29,6 +29,7 @@ namespace se
 			, steamNetworkingSockets(*constructorParameters.steamNetworkingSockets)
 			, steamNetConnection(constructorParameters.steamNetConnection)
 			, steamListenSocket(constructorParameters.steamListenSocket)
+			, p2p(constructorParameters.p2p)
 			, status(constructorParameters.status)
 		{
 			setSettingsImpl(settings, true);
@@ -39,7 +40,7 @@ namespace se
 		{
 			if (steamNetConnection != k_HSteamNetConnection_Invalid)
 			{
-				disconnectImpl("~Connection2()", false);
+				disconnectImpl("~Connection2()", true);
 			}
 		}
 
@@ -189,10 +190,11 @@ namespace se
 
 		time::Time Connection2::getPing() const
 		{
-			SteamNetworkingQuickConnectionStatus steamNetworkingQuickConnectionStatus;
-			if (steamNetworkingSockets.GetQuickConnectionStatus(steamNetConnection, &steamNetworkingQuickConnectionStatus))
+			SteamNetConnectionRealTimeStatus_t steamNetConnectionRealTimeStatus;
+			SteamNetConnectionRealTimeLaneStatus_t steamNetConnectionRealTimeLaneStatus;
+			if (steamNetworkingSockets.GetConnectionRealTimeStatus(steamNetConnection, &steamNetConnectionRealTimeStatus, 0, &steamNetConnectionRealTimeLaneStatus))
 			{
-				return time::fromMilliseconds(float(steamNetworkingQuickConnectionStatus.m_nPing));
+				return time::fromMilliseconds(float(steamNetConnectionRealTimeStatus.m_nPing));
 			}
 			else
 			{
@@ -208,13 +210,14 @@ namespace se
 		Connection2::DetailedStatus Connection2::getDetailedStatus() const
 		{
 			DetailedStatus detailedStatus;
-			SteamNetworkingQuickConnectionStatus steamNetworkingQuickConnectionStatus;
-			if (steamNetworkingSockets.GetQuickConnectionStatus(steamNetConnection, &steamNetworkingQuickConnectionStatus))
+			SteamNetConnectionRealTimeStatus_t steamNetConnectionRealTimeStatus;
+			SteamNetConnectionRealTimeLaneStatus_t steamNetConnectionRealTimeLaneStatus;
+			if (steamNetworkingSockets.GetConnectionRealTimeStatus(steamNetConnection, &steamNetConnectionRealTimeStatus, 0, &steamNetConnectionRealTimeLaneStatus))
 			{
-				detailedStatus.reliableBytesInSendQueue = steamNetworkingQuickConnectionStatus.m_cbPendingReliable;
-				detailedStatus.unreliableBytesInSendQueue = steamNetworkingQuickConnectionStatus.m_cbPendingUnreliable;
-				detailedStatus.sentUnackedReliableBytes = steamNetworkingQuickConnectionStatus.m_cbSentUnackedReliable;
-				detailedStatus.ping = time::fromMilliseconds(float(steamNetworkingQuickConnectionStatus.m_nPing));
+				detailedStatus.reliableBytesInSendQueue = steamNetConnectionRealTimeStatus.m_cbPendingReliable;
+				detailedStatus.unreliableBytesInSendQueue = steamNetConnectionRealTimeStatus.m_cbPendingUnreliable;
+				detailedStatus.sentUnackedReliableBytes = steamNetConnectionRealTimeStatus.m_cbSentUnackedReliable;
+				detailedStatus.ping = time::fromMilliseconds(float(steamNetConnectionRealTimeStatus.m_nPing));
 			}
 			return detailedStatus;
 		}

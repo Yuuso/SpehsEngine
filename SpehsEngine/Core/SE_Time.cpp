@@ -5,6 +5,7 @@
 #include "SpehsEngine/Core/Log.h"
 #include "SpehsEngine/Core/ReadBuffer.h"
 #include "SpehsEngine/Core/WriteBuffer.h"
+#include "SpehsEngine/Core/TimeUtilityFunctions.h"
 
 #include <algorithm>
 #include <chrono>
@@ -21,9 +22,11 @@ namespace se
 {
 	namespace time
 	{
-		static_assert(conversionRate::second == std::chrono::high_resolution_clock::time_point::period::den, "Incorrect clock resolution!");
+		static_assert(conversionRate::second == std::chrono::high_resolution_clock::time_point::period::den, "TODO");
+		static_assert(conversionRate::second == std::chrono::system_clock::time_point::period::den * 100, "TODO");
+
 		namespace
-		{ // Local variables
+		{
 			bool initialized = false;
 			std::chrono::high_resolution_clock::rep initializationTime;
 
@@ -59,6 +62,12 @@ namespace se
 		Time now()
 		{
 			return std::chrono::high_resolution_clock::now().time_since_epoch().count();
+		}
+
+		Time getSystemTime()
+		{
+			static const int64_t multiplier = std::chrono::high_resolution_clock::time_point::period::den / std::chrono::system_clock::time_point::period::den;
+			return std::chrono::system_clock::now().time_since_epoch().count() * multiplier;
 		}
 
 		Time getRunTime()

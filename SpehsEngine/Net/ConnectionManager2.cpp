@@ -2,15 +2,19 @@
 #include "SpehsEngine/Net/ConnectionManager2.h"
 
 #include "SpehsEngine/Core/LockGuard.h"
-#include "SpehsEngine/Core/RNG.h"
 #include "SpehsEngine/Core/ReadBuffer.h"
+#include "SpehsEngine/Core/RNG.h"
+#include "SpehsEngine/Core/STLUnorderedMapUtilityFunctions.h"
 #include "SpehsEngine/Core/StringUtilityFunctions.h"
 #include "SpehsEngine/Core/Thread.h"
 #include "SpehsEngine/Core/WriteBuffer.h"
 #include "SpehsEngine/Net/AddressUtilityFunctions.h"
+#include "SpehsEngine/Net/NetIdentity.h"
+#include "SpehsEngine/Net/Signaling/SignalingImpl.h"
+#include "SpehsEngine/Net/SocketTCP.h"
 #include "steam/isteamnetworkingutils.h"
-#include <atomic>
 #include <set>
+#include <atomic>
 
 
 namespace se
@@ -50,7 +54,6 @@ namespace se
 		{
 			switch (info->m_info.m_eState)
 			{
-			case k_ESteamNetworkingConnectionState_FindingRoute:
 			case k_ESteamNetworkingConnectionState_FinWait:
 			case k_ESteamNetworkingConnectionState_Linger:
 			case k_ESteamNetworkingConnectionState__Force32Bit:
@@ -105,19 +108,33 @@ namespace se
 				const std::optional<HSteamListenSocket> steamListenSocket = getSteamListenSocket(*SteamNetworkingSockets(), info->m_hConn);
 				if (!steamListenSocket)
 				{
-					Connection2::closeConnectionImpl(info->m_hConn, "", false);
+					Connection2::closeConnectionImpl(info->m_hConn, "", true);
 					se::log::error("Failed to accept incoming connection from: " + std::string(info->m_info.m_szConnectionDescription) + ". Could not get steam listen socket.");
+					return;
+				}
+
+				// This is not necessarily an incoming connection. This callback gets made for outgoing connections as well.
+				if (!steamListenSocket.value())
+				{
 					return;
 				}
 
 				std::lock_guard<std::mutex> lock(connectionManagersMutex);
 				ConnectionManager2* connectionManager = nullptr;
+				bool isP2P = false;
 				for (ConnectionManager2* const connectionManager2 : connectionManagers)
 				{
 					std::lock_guard<std::recursive_mutex> lock2(connectionManager2->acceptingSteamListenSocketMutex);
-					if (connectionManager2->acceptingSteamListenSocket == steamListenSocket)
+					if (connectionManager2->acceptingSteamListenSocketIP == steamListenSocket)
 					{
 						connectionManager = connectionManager2;
+						isP2P = false;
+						break;
+					}
+					else if (connectionManager2->acceptingSteamListenSocketP2P == steamListenSocket)
+					{
+						connectionManager = connectionManager2;
+						isP2P = true;
 						break;
 					}
 				}
@@ -132,7 +149,7 @@ namespace se
 				const EResult acceptConnectionResult = SteamNetworkingSockets()->AcceptConnection(info->m_hConn);
 				if (acceptConnectionResult != k_EResultOK)
 				{
-					Connection2::closeConnectionImpl(info->m_hConn, "", false);
+					Connection2::closeConnectionImpl(info->m_hConn, "", true);
 					se::log::error("Failed to accept incoming connection from: " + std::string(info->m_info.m_szConnectionDescription) + ". Error code: " + std::to_string(acceptConnectionResult));
 					return;
 				}
@@ -142,6 +159,7 @@ namespace se
 				connectionConstructorParameters.status = Connection2::Status::Connected;
 				connectionConstructorParameters.establishmentType = Connection2::EstablishmentType::Incoming;
 				connectionConstructorParameters.remoteEndpoint = fromSteamNetworkingAddress(info->m_info.m_addrRemote);
+				connectionConstructorParameters.p2p = isP2P;
 				connectionConstructorParameters.steamNetConnection = info->m_hConn;
 				connectionConstructorParameters.steamNetworkingSockets = SteamNetworkingSockets();
 				connectionConstructorParameters.steamListenSocket = *steamListenSocket;
@@ -156,6 +174,10 @@ namespace se
 				}
 				return;
 			}
+			case k_ESteamNetworkingConnectionState_FindingRoute:
+				// P2P connections will spend a brief time here where they swap addresses and try to find a route
+				se::log::info("Finding route: " + std::string(info->m_info.m_szConnectionDescription));
+				break;
 			case k_ESteamNetworkingConnectionState_Connected:
 				std::lock_guard<std::mutex> lock(connectionManagersMutex);
 				for (ConnectionManager2* const connectionManager : connectionManagers)
@@ -170,7 +192,7 @@ namespace se
 						return;
 					}
 				}
-				log::error("No connection manager owns the connection: " + std::string(info->m_info.m_szConnectionDescription));
+				log::warning("No connection manager owns the connection: " + std::string(info->m_info.m_szConnectionDescription)); // TODO: fix
 				return;
 			}
 		}
@@ -197,7 +219,8 @@ namespace se
 
 		ConnectionManager2::~ConnectionManager2()
 		{
-			stopAccepting();
+			stopAcceptingIP();
+			stopAcceptingP2P();
 			processIncomingConnectionQueue();
 			processConnectionStatusChangeQueue();
 			closeUnusedSteamListenSockets();
@@ -227,6 +250,33 @@ namespace se
 
 		void ConnectionManager2::update()
 		{
+			if (OutConnectionSignaling::staticMutex.try_lock())
+			{
+				for (std::pair<const Endpoint, std::unique_ptr<SocketTCP>>& pair : OutConnectionSignaling::staticSockets)
+				{
+					pair.second->update();
+				}
+				OutConnectionSignaling::staticMutex.unlock();
+			}
+
+			if (AcceptorP2P::staticMutex.try_lock())
+			{
+				for(std::unordered_map<Endpoint, std::unique_ptr<AcceptorP2P>>::iterator it = AcceptorP2P::staticContainer.begin(); it != AcceptorP2P::staticContainer.end(); it++)
+				{
+					AcceptorP2P& acceptor = *it->second;
+					if (!acceptor.socket.hasOnReceiveCallback())
+					{
+						acceptor.socket.setOnReceiveCallback(std::bind(&AcceptorP2P::receiveHandler, &acceptor, std::placeholders::_1));
+					}
+					acceptor.socket.update();
+					if (!acceptor.socket.isConnected())
+					{
+						AcceptorP2P::eraseFromStaticContainer(it->first);
+					}
+				}
+				AcceptorP2P::staticMutex.unlock();
+			}
+
 			if (steamNetworkingSockets)
 			{
 				// Run GLOBAL callbacks
@@ -314,7 +364,9 @@ namespace se
 			{
 				{
 					std::lock_guard<std::recursive_mutex> lock(acceptingSteamListenSocketMutex);
-					if (acceptingSteamListenSocket == k_HSteamListenSocket_Invalid)
+					if (constructorParameters.p2p
+						? (acceptingSteamListenSocketP2P == k_HSteamListenSocket_Invalid)
+						: (acceptingSteamListenSocketIP == k_HSteamListenSocket_Invalid))
 					{
 						break;
 					}
@@ -333,6 +385,21 @@ namespace se
 				std::lock_guard<std::recursive_mutex> lock(connectionStatusChangeQueueMutex);
 				std::swap(temp, connectionStatusChangeQueue);
 			}
+
+			// If there are multiple changes for the same connection, erase all but the latest
+			for (size_t i1 = 0; i1 < temp.size(); i1++)
+			{
+				for (size_t i2 = i1 + 1; i2 < temp.size(); i2++)
+				{
+					if (temp[i1].steamNetConnection == temp[i2].steamNetConnection)
+					{
+						temp.erase(temp.begin() + i1);
+						i1--;
+						break;
+					}
+				}
+			}
+
 			for (const ConnectionStatusChange& connectionStatusChange : temp)
 			{
 				for (size_t i = 0; i < connections.size(); i++)
@@ -347,7 +414,7 @@ namespace se
 						case Connection2::Status::Connected:
 							break;
 						case Connection2::Status::Disconnected:
-							connections[i]->disconnectImpl(connectionStatusChange.reason, false);
+							connections[i]->disconnectImpl(connectionStatusChange.reason, true);
 							break;
 						}
 					}
@@ -357,24 +424,29 @@ namespace se
 
 		void ConnectionManager2::closeUnusedSteamListenSockets()
 		{
-			for (size_t i = 0; i < steamListenSockets.size(); i++)
+			auto impl = [this](std::vector<HSteamListenSocket>& steamListenSockets)
 			{
-				bool remove = true;
-				for (const std::shared_ptr<Connection2>& connection : connections)
+				for (size_t i = 0; i < steamListenSockets.size(); i++)
 				{
-					if (connection->steamListenSocket == steamListenSockets[i] && !connection->isDisconnected())
+					bool remove = true;
+					for (const std::shared_ptr<Connection2>& connection : connections)
 					{
-						remove = false;
-						break;
+						if (connection->steamListenSocket == steamListenSockets[i] && !connection->isDisconnected())
+						{
+							remove = false;
+							break;
+						}
+					}
+					if (remove)
+					{
+						steamNetworkingSockets->CloseListenSocket(steamListenSockets[i]);
+						steamListenSockets[i] = steamListenSockets.back();
+						steamListenSockets.pop_back();
 					}
 				}
-				if (remove)
-				{
-					steamNetworkingSockets->CloseListenSocket(steamListenSockets[i]);
-					steamListenSockets[i] = steamListenSockets.back();
-					steamListenSockets.pop_back();
-				}
-			}
+			};
+			impl(steamListenSocketsIP);
+			impl(steamListenSocketsP2P);
 		}
 
 		bool ConnectionManager2::ownsConnection(const HSteamNetConnection steamNetConnection) const
@@ -383,10 +455,10 @@ namespace se
 			return ownedSteamNetConnections.find(steamNetConnection) != ownedSteamNetConnections.end();
 		}
 
-		bool ConnectionManager2::startAccepting(const std::optional<Port> port)
+		bool ConnectionManager2::startAcceptingIP(const std::optional<Port> port, const std::optional<Endpoint> signalingServerEndpoint)
 		{
 			std::lock_guard<std::recursive_mutex> lock(acceptingSteamListenSocketMutex);
-			if (acceptingSteamListenSocket != k_HSteamListenSocket_Invalid)
+			if (acceptingSteamListenSocketIP != k_HSteamListenSocket_Invalid)
 			{
 				if (const std::optional<Port> existingAcceptingPort = getAcceptingPort())
 				{
@@ -401,15 +473,15 @@ namespace se
 				if (port)
 				{
 					SteamNetworkingIPAddr steamNetworkingAddress;
-					for (size_t i = 0; i < steamListenSockets.size(); i++)
+					for (size_t i = 0; i < steamListenSocketsIP.size(); i++)
 					{
-						if (steamNetworkingSockets->GetListenSocketAddress(steamListenSockets[i], &steamNetworkingAddress))
+						if (steamNetworkingSockets->GetListenSocketAddress(steamListenSocketsIP[i], &steamNetworkingAddress))
 						{
 							if (port->value == steamNetworkingAddress.m_port)
 							{
-								acceptingSteamListenSocket = steamListenSockets[i];
-								steamListenSockets[i] = steamListenSockets.back();
-								steamListenSockets.pop_back();
+								acceptingSteamListenSocketIP = steamListenSocketsIP[i];
+								steamListenSocketsIP[i] = steamListenSocketsIP.back();
+								steamListenSocketsIP.pop_back();
 								return true;
 							}
 						}
@@ -430,7 +502,7 @@ namespace se
 				HSteamListenSocket steamListenSocket = steamNetworkingSockets->CreateListenSocketIP(localSteamNetworkingAddress, int(steamNetworkingConfigValues.size()), steamNetworkingConfigValues.data());
 				if (steamListenSocket != k_HSteamListenSocket_Invalid)
 				{
-					acceptingSteamListenSocket = steamListenSocket;
+					acceptingSteamListenSocketIP = steamListenSocket;
 					return true;
 				}
 				else
@@ -445,24 +517,97 @@ namespace se
 			}
 		}
 
-		void ConnectionManager2::stopAccepting()
+		bool ConnectionManager2::startAcceptingP2P(const Endpoint& signalingServerEndpoint)
+		{
+			{
+				std::lock_guard<std::recursive_mutex> lock(acceptingSteamListenSocketMutex);
+				if (acceptingSteamListenSocketP2P != k_HSteamListenSocket_Invalid)
+				{
+					se::log::error("Already accepting P2P");
+					return false;
+				}
+			}
+
+			if (steamNetworkingSockets)
+			{
+				{
+					std::lock_guard<std::recursive_mutex> lock(AcceptorP2P::staticMutex);
+					std::unique_ptr<AcceptorP2P>& acceptor = AcceptorP2P::staticContainer[signalingServerEndpoint];
+					if (acceptor)
+					{
+						log::warning("ConnectionManager::startAcceptingP2P: failed to start accepting, another process local ConnectionManager is already accepting from this signaling server.");
+						return false;
+					}
+					acceptor.reset(new AcceptorP2P(signalingServerEndpoint));
+					if (!acceptor->socket.isConnected())
+					{
+						se::log::error("AcceptorP2P failed to connect to signaling server: " + signalingServerEndpoint.toString());
+						AcceptorP2P::eraseFromStaticContainer(signalingServerEndpoint);
+						return false;
+					}
+				}
+
+				std::vector<SteamNetworkingConfigValue_t> steamNetworkingConfigValues;
+				steamNetworkingConfigValues.push_back(SteamNetworkingConfigValue_t());
+				steamNetworkingConfigValues.back().SetPtr(k_ESteamNetworkingConfig_Callback_ConnectionStatusChanged, (void*)steamNetConnectionStatusChangedCallbackStatic);
+				HSteamListenSocket steamListenSocket = steamNetworkingSockets->CreateListenSocketP2P(0, int(steamNetworkingConfigValues.size()), steamNetworkingConfigValues.data());
+				if (steamListenSocket != k_HSteamListenSocket_Invalid)
+				{
+					std::lock_guard<std::recursive_mutex> lock(acceptingSteamListenSocketMutex);
+					acceptingSteamListenSocketP2P = steamListenSocket;
+					acceptingSignalingServerEndpoint = signalingServerEndpoint;
+					return true;
+				}
+				else
+				{
+					se::log::error("Failed to start listening P2P. Failed to create listening socket.");
+					return false;
+				}
+			}
+			else
+			{
+				return false;
+			}
+		}
+
+		void ConnectionManager2::stopAcceptingIP()
 		{
 			std::lock_guard<std::recursive_mutex> lock(acceptingSteamListenSocketMutex);
-			if (acceptingSteamListenSocket != k_HSteamListenSocket_Invalid)
+			if (acceptingSteamListenSocketIP != k_HSteamListenSocket_Invalid)
 			{
-				steamListenSockets.push_back(acceptingSteamListenSocket);
-				acceptingSteamListenSocket = k_HSteamListenSocket_Invalid;
+				steamListenSocketsIP.push_back(acceptingSteamListenSocketIP);
+				acceptingSteamListenSocketIP = k_HSteamListenSocket_Invalid;
 				closeUnusedSteamListenSockets();
+			}
+		}
+
+		void ConnectionManager2::stopAcceptingP2P()
+		{
+			Endpoint acceptingSignalingServerEndpoint2;
+			{
+				std::lock_guard<std::recursive_mutex> lock(acceptingSteamListenSocketMutex);
+				if (acceptingSteamListenSocketP2P != k_HSteamListenSocket_Invalid)
+				{
+					steamListenSocketsP2P.push_back(acceptingSteamListenSocketP2P);
+					acceptingSteamListenSocketP2P = k_HSteamListenSocket_Invalid;
+					acceptingSignalingServerEndpoint2 = acceptingSignalingServerEndpoint;
+					acceptingSignalingServerEndpoint = Endpoint();
+					closeUnusedSteamListenSockets();
+				}
+			}
+			if (acceptingSignalingServerEndpoint2)
+			{
+				AcceptorP2P::eraseFromStaticContainer(acceptingSignalingServerEndpoint2);
 			}
 		}
 
 		std::optional<Port> ConnectionManager2::getAcceptingPort() const
 		{
 			std::lock_guard<std::recursive_mutex> lock(acceptingSteamListenSocketMutex);
-			if (acceptingSteamListenSocket != k_HSteamListenSocket_Invalid)
+			if (acceptingSteamListenSocketIP != k_HSteamListenSocket_Invalid)
 			{
 				SteamNetworkingIPAddr steamNetworkingAddress;
-				if (steamNetworkingSockets->GetListenSocketAddress(acceptingSteamListenSocket, &steamNetworkingAddress))
+				if (steamNetworkingSockets->GetListenSocketAddress(acceptingSteamListenSocketIP, &steamNetworkingAddress))
 				{
 					return Port(steamNetworkingAddress.m_port);
 				}
@@ -481,7 +626,7 @@ namespace se
 			ownedSteamNetConnections.insert(connection.steamNetConnection);
 		}
 
-		std::shared_ptr<Connection2> ConnectionManager2::connect(const se::net::Endpoint& _endpoint, const bool _symmetric, const std::string_view _name, const time::Time _timeout)
+		std::shared_ptr<Connection2> ConnectionManager2::connectIP(const se::net::Endpoint& _endpoint, const bool _symmetric, const std::string_view _name, const time::Time _timeout)
 		{
 			if (steamNetworkingSockets)
 			{
@@ -526,6 +671,59 @@ namespace se
 					connections.push_back(connection);
 					return connection;
 				}
+			}
+			else
+			{
+				return std::shared_ptr<Connection2>();
+			}
+		}
+
+		std::shared_ptr<Connection2> ConnectionManager2::connectP2P(const NetIdentity& _peerNetIdentity, const se::net::Endpoint& _signalingServerEndpoint, const std::string_view _name, const time::Time _timeout)
+		{
+			se_assert(_peerNetIdentity);
+			se_assert(_signalingServerEndpoint);
+			se_assert(_peerNetIdentity != getMyNetIdentity() && "Connecting to a process local peer is not supported.");
+			if (steamNetworkingSockets)
+			{
+				std::vector<SteamNetworkingConfigValue_t> steamNetworkingConfigValues;
+				steamNetworkingConfigValues.push_back(SteamNetworkingConfigValue_t());
+				steamNetworkingConfigValues.back().SetPtr(k_ESteamNetworkingConfig_Callback_ConnectionStatusChanged, (void*)steamNetConnectionStatusChangedCallbackStatic);
+				steamNetworkingConfigValues.push_back(SteamNetworkingConfigValue_t());
+				steamNetworkingConfigValues.back().SetInt32(k_ESteamNetworkingConfig_TimeoutInitial, int(_timeout.asMilliseconds()));
+
+				const SteamNetworkingIdentity peerSteamNetworkingIdentity = toSteamNetworkingIdentity(_peerNetIdentity);
+				ISteamNetworkingConnectionSignaling* const connectionSignaling = new OutConnectionSignaling(_peerNetIdentity, _signalingServerEndpoint);
+				const HSteamNetConnection steamNetConnection = steamNetworkingSockets->ConnectP2PCustomSignaling(connectionSignaling, &peerSteamNetworkingIdentity, 0, int(steamNetworkingConfigValues.size()), steamNetworkingConfigValues.data());
+				if (steamNetConnection != k_HSteamNetConnection_Invalid)
+				{
+					std::lock_guard<std::recursive_mutex> lock(ownedSteamNetConnectionsMutex);
+					ownedSteamNetConnections.insert(steamNetConnection);
+				}
+				else
+				{
+					se::log::error("Failed to connect: " + _peerNetIdentity.toString());
+					return std::shared_ptr<Connection2>();
+				}
+
+				Connection2::ConstructorParameters connectionConstructorParameters;
+				connectionConstructorParameters.establishmentType = Connection2::EstablishmentType::Outgoing;
+				connectionConstructorParameters.name = _name;
+				connectionConstructorParameters.steamNetConnection = steamNetConnection;
+				connectionConstructorParameters.steamNetworkingSockets = steamNetworkingSockets;
+				connectionConstructorParameters.localListeningPort = getLocalListeningPort(*steamNetworkingSockets, steamNetConnection);
+				SteamNetConnectionInfo_t steamNetConnectionInfo;
+				if (steamNetworkingSockets->GetConnectionInfo(steamNetConnection, &steamNetConnectionInfo))
+				{
+					connectionConstructorParameters.remoteEndpoint = fromSteamNetworkingAddress(steamNetConnectionInfo.m_addrRemote);
+				}
+				else
+				{
+					se::log::error("Failed to get connection info from a new connection");
+				}
+				std::shared_ptr<Connection2> connection(new Connection2(connectionConstructorParameters));
+				initializeSteamNetConnection(*connection);
+				connections.push_back(connection);
+				return connection;
 			}
 			else
 			{

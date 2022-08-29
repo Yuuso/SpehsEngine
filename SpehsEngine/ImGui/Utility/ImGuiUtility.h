@@ -5,6 +5,7 @@
 #include "glm/vec4.hpp"
 #include "SpehsEngine/Core/Color.h"
 #include "SpehsEngine/Core/SE_Time.h"
+#include "SpehsEngine/Core/TimeUtilityFunctions.h"
 #include "SpehsEngine/Core/StringUtilityFunctions.h"
 #include "SpehsEngine/Graphics/Texture.h"
 #include "SpehsEngine/ImGui/imgui.h"
@@ -198,20 +199,10 @@ namespace ImGui
 		return textureSelector(label.c_str(), filepath, directory.c_str());
 	}
 
-	std::optional<bool> confirmationDialog(const char* const header, const char* const message);
-	inline std::optional<bool> confirmationDialog(const std::string& header, const std::string& message)
+	std::optional<bool> confirmationDialog(const char* const header, const char* const message, const std::function<void()>& customRender = std::function<void()>());
+	inline std::optional<bool> confirmationDialog(const std::string& header, const std::string& message, const std::function<void()>& customRender = std::function<void()>())
 	{
-		return confirmationDialog(header.c_str(), message.c_str());
-	}
-	template<typename A, typename ... Arguments>
-	inline std::optional<bool> confirmationDialogV(const std::string& header, const std::string& formatMessage, const A& argument, const Arguments&... arguments)
-	{
-		return confirmationDialog(header.c_str(), formatMessage.c_str(), argument, arguments...);
-	}
-	template<typename A, typename ... Arguments>
-	inline std::optional<bool> confirmationDialogV(const char* const header, const char* const formatMessage, const A& argument, const Arguments&... arguments)
-	{
-		return confirmationDialog(header, se::formatString(formatMessage, argument, arguments...).c_str());
+		return confirmationDialog(header.c_str(), message.c_str(), customRender);
 	}
 
 	std::optional<bool> stringDialog(const char* const header, const char* const message, std::string& output);
@@ -510,6 +501,30 @@ namespace ImGui
 		}
 	}
 
+	inline bool InputT(const char* const label, se::time::TimeInfo& timeInfo)
+	{
+		bool changed = false;
+		if (ImGui::CollapsingHeader(label))
+		{
+			changed |= ImGui::InputT("Day", timeInfo.monthDay);
+			if (ImGui::IsItemHovered())
+			{
+				ImGui::SetTooltip("Day of the month");
+			}
+			changed |= ImGui::InputT("Month", timeInfo.month);
+			changed |= ImGui::InputT("Year", timeInfo.year);
+			changed |= ImGui::InputT("Hour", timeInfo.hour);
+			changed |= ImGui::InputT("Minute", timeInfo.minute);
+			changed |= ImGui::InputT("Second", timeInfo.second);
+			changed |= ImGui::InputT("Dayligt savings flag", timeInfo.dayligtSavingsFlag);
+		}
+		return changed;
+	}
+	inline bool InputT(const std::string& label, se::time::TimeInfo& timeInfo)
+	{
+		return InputT(label.c_str(), timeInfo);
+	}
+
 	// Splits shown string into two parts, id part and mutable part. Useful when the contents of the header edit the shown header string.
 	inline bool CollapsingHeader2(const char* const idLabel, const char* const mutableLabel, const ImGuiTreeNodeFlags flags = 0)
 	{
@@ -523,6 +538,18 @@ namespace ImGui
 	inline bool CollapsingHeader2(const std::string& idLabel, const std::string& mutableLabel, const ImGuiTreeNodeFlags flags = 0)
 	{
 		return CollapsingHeader2(idLabel.c_str(), mutableLabel.c_str(), flags);
+	}
+
+	inline bool BeginCentered(const char* const label, bool* const open, const ImGuiWindowFlags flags = 0, const ImGuiCond centerCondition = ImGuiCond_Appearing)
+	{
+		const ImGuiIO& io = ImGui::GetIO();
+		const ImVec2 displayCenter(io.DisplaySize.x * 0.5f, io.DisplaySize.y * 0.5f);
+		ImGui::SetNextWindowPos(displayCenter, centerCondition, ImVec2(0.5f, 0.5f));
+		return ImGui::Begin(label, open, flags);
+	}
+	inline bool BeginCentered(const std::string& label, bool* const open, const ImGuiWindowFlags flags = 0, const ImGuiCond centerCondition = ImGuiCond_Appearing)
+	{
+		return BeginCentered(label.c_str(), open, flags, centerCondition);
 	}
 
 	// NOTE: 'key' value must be valid in the scope of 'scopedConnection'

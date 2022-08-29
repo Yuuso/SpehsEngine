@@ -587,4 +587,31 @@ namespace se
 		}
 		return false;
 	}
+
+	size_t findAndReplaceAll(std::string& string, const std::string_view v1, const std::string_view v2)
+	{
+		size_t count = 0;
+		while (true)
+		{
+			const size_t start = string.find(v1);
+			if (start == std::string::npos)
+				break;
+			string.replace(start, v1.length(), v2);
+			count++;
+		}
+		return count;
+	}
+	size_t findAndReplaceAll(std::wstring& string, const std::wstring_view v1, const std::wstring_view v2)
+	{
+		size_t count = 0;
+		while (true)
+		{
+			const size_t start = string.find(v1);
+			if (start == std::wstring::npos)
+				break;
+			string.replace(start, v1.length(), v2);
+			count++;
+		}
+		return count;
+	}
 }

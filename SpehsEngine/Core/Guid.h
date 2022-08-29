@@ -63,7 +63,7 @@ namespace se
 
 		bool operator==(const Guid& other) const { return toU64() == other.toU64(); }
 		bool operator!=(const Guid& other) const { return toU64() != other.toU64(); }
-		operator bool() const { return index != invalidIndexValue; }
+		explicit operator bool() const { return index != invalidIndexValue; }
 		uint64_t toU64() const
 		{
 			static_assert(sizeof(Guid) == sizeof(uint64_t), "Guid size must be 64 bit.");

@@ -1,6 +1,7 @@
 
 #include "stdafx.h"
 #include "SpehsEngine/Core/Log.h"
+#include "SpehsEngine/Core/LogSignal.h"
 #include "SpehsEngine/Core/SE_Time.h"
 #include "SpehsEngine/Core/StringViewUtilityFunctions.h"
 #include "SpehsEngine/Core/SystemMessageBox.h"
@@ -18,9 +19,17 @@ namespace se
 {
 	namespace log
 	{
+		static std::recursive_mutex logSignalMutex;
+		static boost::signals2::signal<void(const std::string_view, const LogType)> logSignal;
+		void logSignalImpl(const std::string_view string, const LogType logType)
+		{
+			std::lock_guard<std::recursive_mutex> lock(logSignalMutex);
+			logSignal(string, logType);
+		}
+
 		static std::mutex mutex;
 #if (SE_CONFIGURATION != SE_CONFIGURATION_FINAL_RELEASE)
-		static void writeConsole(const std::string_view message, [[maybe_unused]] const TextColor color)
+		static void writeConsole(const std::string_view _message, [[maybe_unused]] const TextColor color)
 		{
 #if defined(_WIN32)
 			HANDLE handle = INVALID_HANDLE_VALUE;
@@ -60,7 +69,7 @@ namespace se
 				se_assert(result != FALSE);
 			}
 #endif
-			std::cout << message << std::endl;
+			std::cout << _message << std::endl;
 #if defined(_WIN32)
 			if (color != NONE)
 			{
@@ -74,6 +83,7 @@ namespace se
 
 		void debug([[maybe_unused]] const std::string& _message)
 		{
+			logSignalImpl(_message, LogType::Debug);
 		#if (SE_CONFIGURATION != SE_CONFIGURATION_FINAL_RELEASE)
 			if (!_message.empty())
 			{
@@ -84,42 +94,52 @@ namespace se
 		#endif
 		}
 
-		void info([[maybe_unused]] const std::string_view message, [[maybe_unused]] const TextColor color)
+		void info([[maybe_unused]] const std::string_view _message, [[maybe_unused]] const TextColor color)
 		{
+			logSignalImpl(_message, LogType::Info);
 		#if (SE_CONFIGURATION != SE_CONFIGURATION_FINAL_RELEASE)
 			std::lock_guard<std::mutex> lock(mutex);
-			writeConsole(message, color);
+			writeConsole(_message, color);
 		#endif
 		}
 
-		void warning([[maybe_unused]] const std::string_view message)
+		void warning([[maybe_unused]] const std::string_view _message)
 		{
+			logSignalImpl(_message, LogType::Warning);
 		#if (SE_CONFIGURATION != SE_CONFIGURATION_FINAL_RELEASE)
 			std::lock_guard<std::mutex> lock(mutex);
-			const std::string warningMessage("Warning: " + message);
+			const std::string warningMessage("Warning: " + _message);
 			writeConsole(warningMessage, YELLOW);
 		#endif
 		}
 
-		void error(const std::string_view message)
+		void error(const std::string_view _message)
 		{
+			logSignalImpl(_message, LogType::Error);
 			std::lock_guard<std::mutex> lock(mutex);
 		#if (SE_CONFIGURATION != SE_CONFIGURATION_FINAL_RELEASE)
-			const std::string errorMessage("Error: " + message);
+			const std::string errorMessage("Error: " + _message);
 			writeConsole(errorMessage, RED);
 		#endif
-			SystemMessageBox("Error!", std::string(message), BUTTONS_OK | ICON_ERROR);
+			SystemMessageBox("Error!", std::string(_message), BUTTONS_OK | ICON_ERROR);
 		}
 
-		void fatal(const std::string_view message)
+		void fatal(const std::string_view _message)
 		{
+			logSignalImpl(_message, LogType::Fatal);
 			std::lock_guard<std::mutex> lock(mutex);
 		#if (SE_CONFIGURATION != SE_CONFIGURATION_FINAL_RELEASE)
-			const std::string errorMessage("Fatal Error: " + message);
+			const std::string errorMessage("Fatal Error: " + _message);
 			writeConsole(errorMessage, RED);
 		#endif
-			SystemMessageBox("Fatal Error!", std::string(message), BUTTONS_OK | ICON_ERROR);
+			SystemMessageBox("Fatal Error!", std::string(_message), BUTTONS_OK | ICON_ERROR);
 			exit(1);
+		}
+
+		void connectToLogSignal(boost::signals2::scoped_connection& scopedConnection, const std::function<void(const std::string_view, const LogType)>& callback)
+		{
+			std::lock_guard<std::recursive_mutex> lock(logSignalMutex);
+			scopedConnection = logSignal.connect(callback);
 		}
 	}
 }

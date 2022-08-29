@@ -91,6 +91,7 @@ namespace se
 			inline bool isConnecting() const { return getStatus() == Status::Connecting; }
 			inline bool isConnected() const { return getStatus() == Status::Connected; }
 			inline bool isDisconnected() const { return getStatus() == Status::Disconnected; }
+			inline bool isP2P() const { return p2p; }
 			time::Time getPing() const;
 			uint16_t getMaximumSegmentSize() const;
 
@@ -118,6 +119,7 @@ namespace se
 				HSteamListenSocket steamListenSocket; // Connection may be bound to a listening socket
 				EstablishmentType establishmentType = EstablishmentType::Incoming;
 				Status status = Status::Connecting;
+				bool p2p = false;
 			};
 
 			static void closeConnectionImpl(const HSteamNetConnection _steamNetConnection, const std::string& reason, const bool enableLinger);
@@ -135,6 +137,7 @@ namespace se
 			HSteamNetConnection steamNetConnection = k_HSteamNetConnection_Invalid;
 			HSteamNetConnection closedSteamNetConnection = k_HSteamNetConnection_Invalid;
 			const HSteamListenSocket steamListenSocket;
+			const bool p2p;
 			Status status = Status::Connecting; // Every connection begins in the connecting state
 			Settings settings;
 			Statistics statistics;

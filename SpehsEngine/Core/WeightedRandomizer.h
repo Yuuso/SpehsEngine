@@ -16,7 +16,7 @@ namespace se
 			if (weight > 0.0f)
 			{
 				totalWeight += weight;
-				values.push_back(std::make_pair(totalWeight, t));
+				values.push_back(std::make_pair(weight, t));
 			}
 		}
 
@@ -25,14 +25,19 @@ namespace se
 		{
 			if (!values.empty())
 			{
-				const float roll = rng.random<float>(0.0f, totalWeight);
+				float roll = rng.random<float>(0.0f, totalWeight);
 				for (const std::pair<float, T>& pair : values)
 				{
 					if (roll <= pair.first)
 					{
 						return &pair.second;
 					}
+					else
+					{
+						roll -= pair.first;
+					}
 				}
+				return &values.back().second;
 			}
 			return nullptr;
 		}
@@ -42,7 +47,7 @@ namespace se
 		{
 			if (!values.empty())
 			{
-				const float roll = rng.random<float>(0.0f, totalWeight);
+				float roll = rng.random<float>(0.0f, totalWeight);
 				for (size_t i = 0; i < values.size(); i++)
 				{
 					const std::pair<float, T>& pair = values[i];
@@ -50,7 +55,12 @@ namespace se
 					{
 						return i;
 					}
+					else
+					{
+						roll -= pair.first;
+					}
 				}
+				return values.size() - 1;
 			}
 			return std::nullopt;
 		}
@@ -72,6 +82,11 @@ namespace se
 			if (index < values.size())
 			{
 				values.erase(values.begin() + index);
+				totalWeight = 0.0f;
+				for (const std::pair<float, T>& pair : values)
+				{
+					totalWeight += pair.first;
+				}
 			}
 		}
 
