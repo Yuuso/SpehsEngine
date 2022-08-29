@@ -72,14 +72,14 @@ namespace se
 		{
 			const std::string path = pathFinder->getPath(_filepath);
 
-			for (auto& texture : resources)
+			for (auto& audio : resources)
 			{
-				if (texture->getName() == _name)
+				if (audio->getName() == _name)
 				{
-					log::warning("Cannot create texture '" + _name + "', texture with that name already exists!");
-					if (texture->path != path)
-						log::error("Existing texture's '" + _name + "' resource path doesn't match!");
-					return texture;
+					log::warning("Cannot create audio resource '" + _name + "', audio resource with that name already exists!");
+					if (audio->path != path)
+						log::error("Existing audio resource's '" + _name + "' resource path doesn't match!");
+					return audio;
 				}
 			}
 
@@ -92,14 +92,14 @@ namespace se
 		{
 			const std::string path = pathFinder->getPath(_filepath);
 
-			for (auto& texture : resources)
+			for (auto& audio : resources)
 			{
-				if (texture->getName() == _name)
+				if (audio->getName() == _name)
 				{
-					log::warning("Cannot create texture '" + _name + "', texture with that name already exists!");
-					if (texture->path != path)
-						log::error("Existing texture's '" + _name + "' resource path doesn't match!");
-					return texture;
+					log::warning("Cannot create audio resource '" + _name + "', audio resource with that name already exists!");
+					if (audio->path != path)
+						log::error("Existing audio resource's '" + _name + "' audio resource path doesn't match!");
+					return audio;
 				}
 			}
 
