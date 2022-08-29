@@ -32,20 +32,28 @@ namespace se
 				update();
 		}
 
-		std::shared_ptr<AudioSourceBase> AudioResource::loadResource(std::string _filename)
+		AudioResourceData AudioResource::loadResource(std::string _filename)
 		{
-			auto result = std::make_shared<SoLoud::Wav>();
-			result->load(_filename.c_str());
+			auto source = std::make_shared<SoLoud::Wav>();
+			source->load(_filename.c_str());
 			if (globalDefaultEnableDistanceDelay)
-				result->set3dDistanceDelay(true);
+				source->set3dDistanceDelay(true);
+
+			AudioResourceData result;
+			result.source = source;
+			result.length = se::time::fromSeconds(source->getLength());
 			return result;
 		}
-		std::shared_ptr<AudioSourceBase> AudioResource::streamResource(std::string _filename)
+		AudioResourceData AudioResource::streamResource(std::string _filename)
 		{
-			auto result = std::make_shared<SoLoud::WavStream>();
-			result->load(_filename.c_str());
+			auto source = std::make_shared<SoLoud::WavStream>();
+			source->load(_filename.c_str());
 			if (globalDefaultEnableDistanceDelay)
-				result->set3dDistanceDelay(true);
+				source->set3dDistanceDelay(true);
+
+			AudioResourceData result;
+			result.source = source;
+			result.length = se::time::fromSeconds(source->getLength());
 			return result;
 		}
 		void AudioResource::load(const std::string& _filename, std::shared_ptr<ResourceLoader> _resourceLoader)
@@ -57,15 +65,21 @@ namespace se
 			}
 			else
 			{
-				resourceData = loadResource(path);
+				auto data = loadResource(path);
+				resourceData = data.source;
+				length = data.length;
 				applyAttributes();
+				resourceLoadedSignal();
 			}
 		}
 		void AudioResource::stream(const std::string& _filename)
 		{
 			path = _filename;
-			resourceData = streamResource(path);
+			auto data = streamResource(path);
+			resourceData = data.source;
+			length = data.length;
 			applyAttributes();
+			resourceLoadedSignal();
 		}
 		void AudioResource::reload(std::shared_ptr<ResourceLoader> _resourceLoader)
 		{
@@ -94,9 +108,11 @@ namespace se
 					const std::future_status status = resourceFuture.wait_for(std::chrono::seconds(0));
 					if (status == std::future_status::ready)
 					{
-						resourceData = resourceFuture.get();
-						resourceLoadedSignal();
+						auto data = resourceFuture.get();
+						resourceData = data.source;
+						length = data.length;
 						applyAttributes();
+						resourceLoadedSignal();
 						return true;
 					}
 				}
@@ -130,14 +146,6 @@ namespace se
 			}
 		}
 
-		void AudioResource::setSingleInstance(bool _value)
-		{
-			singleInstance = _value;
-			if (auto data = getResource<SoLoud::AudioSource>())
-			{
-				data->setSingleInstance(singleInstance);
-			}
-		}
 		void AudioResource::setVolume(float _value)
 		{
 			volume = _value;
@@ -147,13 +155,13 @@ namespace se
 			}
 		}
 
-		bool AudioResource::isSingleInstance() const
-		{
-			return singleInstance;
-		}
 		float AudioResource::getVolume() const
 		{
 			return volume;
+		}
+		se::time::Time AudioResource::getLength() const
+		{
+			return length;
 		}
 	}
 }

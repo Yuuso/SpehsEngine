@@ -25,6 +25,7 @@ namespace se
 		void AudioSource::setOutput(Bus& _bus)
 		{
 			outputBus = &_bus;
+			// TODO: swap current output if playing?
 		}
 		bool AudioSource::playCommon()
 		{
@@ -47,7 +48,7 @@ namespace se
 
 			return false;
 		}
-		void AudioSource::playBackground()
+		void AudioSource::playBackground(bool _paused)
 		{
 			if (playCommon())
 				return;
@@ -56,7 +57,10 @@ namespace se
 			if (isHandleValid())
 			{
 				applyAttributes();
-				setPause(false);
+				if (!_paused)
+				{
+					setPause(false);
+				}
 			}
 			else
 			{
@@ -82,7 +86,7 @@ namespace se
 				log::warning("Failed to play sound! " + resource->getName());
 			}
 		}
-		void AudioSource::play()
+		void AudioSource::play(bool _paused)
 		{
 			if (playCommon())
 				return;
@@ -94,7 +98,10 @@ namespace se
 			if (isHandleValid())
 			{
 				applyAttributes();
-				setPause(false);
+				if (!_paused)
+				{
+					setPause(false);
+				}
 			}
 			else
 			{
@@ -109,7 +116,7 @@ namespace se
 		void AudioSource::stop()
 		{
 			globalSoloud->stop(handle);
-			handle = 0;
+			handle = invalidAudioHandle;
 		}
 		void AudioSource::seek(time::Time _time)
 		{
@@ -221,11 +228,10 @@ namespace se
 			se_assert(isHandleValid());
 			return globalSoloud->getPause(handle);
 		}
-		time::Time AudioSource::getCurrentTime() const
+		time::Time AudioSource::getStreamPosition() const
 		{
 			se_assert(isHandleValid());
-			// TODO: Test accuracy with getStreamTime, getStreamPosition and custom timer
-			return time::fromSeconds(globalSoloud->getStreamTime(handle));
+			return time::fromSeconds(globalSoloud->getStreamPosition(handle));
 		}
 		const glm::vec3& AudioSource::getPosition() const
 		{

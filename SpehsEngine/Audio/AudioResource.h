@@ -12,7 +12,7 @@ namespace se
 {
 	namespace audio
 	{
-		class AudioResource final
+		class AudioResource
 		{
 		public:
 
@@ -45,15 +45,15 @@ namespace se
 			void setSingleInstance(bool _value); // true: Only one AudioSource can play this at the same time
 			void setVolume(float _value);
 
-			bool isSingleInstance() const;
 			float getVolume() const;
+			se::time::Time getLength() const;
 
 		private:
 
 			friend class AudioManager;
 
-			static std::shared_ptr<AudioSourceBase> loadResource(std::string _filename);
-			static std::shared_ptr<AudioSourceBase> streamResource(std::string _filename);
+			static AudioResourceData loadResource(std::string _filename);
+			static AudioResourceData streamResource(std::string _filename);
 			void load(const std::string& _filename, std::shared_ptr<ResourceLoader> _resourceLoader);
 			void stream(const std::string& _filename);
 			void applyAttributes();
@@ -61,11 +61,12 @@ namespace se
 			bool isStreamResource = false;
 			const std::string name;
 			std::string path;
-			std::future<std::shared_ptr<AudioSourceBase>> resourceFuture;
+			std::future<AudioResourceData> resourceFuture;
 			std::shared_ptr<AudioSourceBase> resourceData = nullptr;
 
 			bool singleInstance = false;
 			float volume = 1.0f;
+			se::time::Time length;
 
 			boost::signals2::signal<void(void)> resourceLoadedSignal;
 		};

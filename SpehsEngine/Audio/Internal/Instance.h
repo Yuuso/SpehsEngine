@@ -34,10 +34,12 @@ namespace se
 
 		protected:
 
-			virtual void applyAttributes();
-			bool isHandleValid() const;
+			friend class Group;
 
-			AudioHandle handle = 0;
+			virtual void applyAttributes();
+			virtual bool isHandleValid() const;
+
+			AudioHandle handle = invalidAudioHandle;
 
 		private:
 

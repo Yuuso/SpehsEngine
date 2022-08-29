@@ -29,13 +29,14 @@ namespace se
 
 		void Bus::connect(Bus& _bus)
 		{
-			handle = bus->play(*_bus.bus);
+			handle = _bus.bus->play(*bus);
 			applyAttributes();
 		}
 		void Bus::disconnect()
 		{
 			se_assert(!isMaster);
 			bus->stop();
+			handle = invalidAudioHandle;
 		}
 
 		int Bus::getVoiceCount()

@@ -31,13 +31,13 @@ namespace se
 
 
 			/// Play sound in 3D position (restarts from beginning if sound is already playing)
-			void play();
+			void play(bool _paused = false);
 
 			/// Play sound in 3D position, other sounds played using playClocked at the same time will be delayed (avoid loads of clumped sounds)
 			void playClocked(time::Time _currentTime);
 
 			/// Play sound without 3D positioning
-			void playBackground();
+			void playBackground(bool _paused = false);
 
 			/// Set pause state
 			void setPause(bool _value);
@@ -87,7 +87,7 @@ namespace se
 
 			bool isPlaying() const;
 			bool isPaused() const;
-			time::Time getCurrentTime() const; /// Current play position. Note: Currently not very accurate
+			time::Time getStreamPosition() const;
 			const glm::vec3& getPosition() const;
 			const glm::vec3& getVelocity() const;
 			bool getLooping() const;
