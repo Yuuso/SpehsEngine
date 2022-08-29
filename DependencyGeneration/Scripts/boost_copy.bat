@@ -15,6 +15,7 @@ IF EXIST "%DEPS_DIR%/include/boost" RMDIR "%DEPS_DIR%/include/boost" /S /Q
 MKDIR "%DEPS_DIR%/include/boost"
 
 REM Actual primary dependencies are asio, signals2, lexical_cast and format
+ROBOCOPY "%BOOST_DIR%/libs/align/include/boost"                 "%DEPS_DIR%/include/boost"       *.*         /S %OPTIONS%
 ROBOCOPY "%BOOST_DIR%/libs/array/include/boost"                 "%DEPS_DIR%/include/boost"       *.*         /S %OPTIONS%
 ROBOCOPY "%BOOST_DIR%/libs/asio/include/boost"                  "%DEPS_DIR%/include/boost"       *.*         /S %OPTIONS%
 ROBOCOPY "%BOOST_DIR%/libs/assert/include/boost"                "%DEPS_DIR%/include/boost"       *.*         /S %OPTIONS%
