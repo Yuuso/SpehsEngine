@@ -1,3 +1,6 @@
-setx SPEHSENGINE_ROOT "%cd%"\
 
-pause
+SETX SPEHSENGINE_ROOT "%cd%"\
+
+@ECHO SPEHSENGINE_ROOT set to: %SPEHSENGINE_ROOT%
+
+@PING 127.0.0.1 -n 4 > nul
