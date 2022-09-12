@@ -89,7 +89,7 @@ namespace se
 			{
 				if (!threadDatas.empty())
 				{
-					std::unordered_map<std::thread::id, ScopeProfiler::ThreadData>::const_iterator it = threadDatas.find(activeThreadId);
+					std::unordered_map<std::thread::id, ScopeProfilerThreadData>::const_iterator it = threadDatas.find(activeThreadId);
 					if (it != threadDatas.end())
 					{
 						it++;
@@ -136,8 +136,8 @@ namespace se
 					timeWindowBegin = time::now() - timeWindowWidth;
 				}
 
-				const std::unordered_map<std::thread::id, ScopeProfiler::ThreadData>::const_iterator threadDataIt = threadDatas.find(activeThreadId);
-				const ScopeProfiler::ThreadData* const threadData = threadDataIt != threadDatas.end() ? &threadDataIt->second : nullptr;
+				const std::unordered_map<std::thread::id, ScopeProfilerThreadData>::const_iterator threadDataIt = threadDatas.find(activeThreadId);
+				const ScopeProfilerThreadData* const threadData = threadDataIt != threadDatas.end() ? &threadDataIt->second : nullptr;
 
 				// Element update
 				const time::Time now = enableUpdate ? time::getProfilerTimestamp() : disableUpdateTime;
@@ -163,7 +163,7 @@ namespace se
 						continue;
 					}
 
-					const ScopeProfiler::Section& section = *sectionInfo.section;
+					const ScopeProfilerSection& section = *sectionInfo.section;
 					const time::Time sectionEndTime = section.endTime ? *section.endTime : now;
 					if (sectionEndTime < beginTime)
 					{
@@ -249,10 +249,10 @@ namespace se
 			SE_SCOPE_PROFILER();
 
 			polygonToSectionInfoLookup.clear();
-			const std::unordered_map<std::thread::id, ScopeProfiler::ThreadData>::const_iterator it = threadDatas.find(activeThreadId);
+			const std::unordered_map<std::thread::id, ScopeProfilerThreadData>::const_iterator it = threadDatas.find(activeThreadId);
 			if (it != threadDatas.end())
 			{
-				const ScopeProfiler::ThreadData& threadData = it->second;
+				const ScopeProfilerThreadData& threadData = it->second;
 
 				// Generate section polygons
 				const size_t sectionCount = threadData.getSectionCountRecursive();
@@ -274,9 +274,9 @@ namespace se
 				if (!threadData.sections.empty())
 				{
 					size_t sectionIndex = 0u;
-					std::function<void(const time::Time, const ScopeProfiler::Section&, const size_t, const graphics::Shape* const, const graphics::Shape* const)> updatePolygon;
+					std::function<void(const time::Time, const ScopeProfilerSection&, const size_t, const graphics::Shape* const, const graphics::Shape* const)> updatePolygon;
 					updatePolygon =
-						[&updatePolygon, &sectionIndex, this](const time::Time sectionBeginTime, const ScopeProfiler::Section& section, const size_t depth, const graphics::Shape* const parent, const graphics::Shape* const rootParent)
+						[&updatePolygon, &sectionIndex, this](const time::Time sectionBeginTime, const ScopeProfilerSection& section, const size_t depth, const graphics::Shape* const parent, const graphics::Shape* const rootParent)
 						{
 							const graphics::Shape* polygon = sectionPolygons[sectionIndex++].get();
 							SectionInfo& sectionInfo = polygonToSectionInfoLookup[polygon];
@@ -285,14 +285,14 @@ namespace se
 							sectionInfo.rootParent = rootParent;
 							sectionInfo.beginTime = sectionBeginTime;
 							sectionInfo.depth = depth;
-							for (const std::pair<const time::Time, ScopeProfiler::Section>& pair : section.children)
+							for (const std::pair<const time::Time, ScopeProfilerSection>& pair : section.children)
 							{
 								updatePolygon(pair.first, pair.second, depth + 1, polygon, rootParent ? rootParent : polygon);
 							}
 						};
 
 					size_t depth = 0;
-					for (const std::pair<const time::Time, ScopeProfiler::Section>& pair : threadData.sections)
+					for (const std::pair<const time::Time, ScopeProfilerSection>& pair : threadData.sections)
 					{
 						updatePolygon(pair.first, pair.second, depth, nullptr, nullptr);
 					}
@@ -429,10 +429,10 @@ namespace se
 			return enableUpdate;
 		}
 
-		void ScopeProfilerVisualizer::profilerFlushCallback(const ScopeProfiler::ThreadData& _threadData)
+		void ScopeProfilerVisualizer::profilerFlushCallback(const ScopeProfilerThreadData& _threadData)
 		{
 			std::lock_guard<std::recursive_mutex> lock(backgroundThreadDataMutex);
-			std::unordered_map<std::thread::id, ScopeProfiler::ThreadData>::iterator it = backgroundThreadDatas.find(_threadData.threadId);
+			std::unordered_map<std::thread::id, ScopeProfilerThreadData>::iterator it = backgroundThreadDatas.find(_threadData.threadId);
 			if (it != backgroundThreadDatas.end())
 			{
 				it->second.add(_threadData);

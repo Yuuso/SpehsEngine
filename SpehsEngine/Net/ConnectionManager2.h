@@ -5,7 +5,6 @@
 #include "SpehsEngine/Net/Connection2.h"
 #include "SpehsEngine/Net/Connection.h"
 #include "steam/steamnetworkingsockets.h"
-#include <functional>
 #include <unordered_map>
 #include <unordered_set>
 #include <mutex>

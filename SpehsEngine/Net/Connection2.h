@@ -8,7 +8,6 @@
 #include "SpehsEngine/Core/LockGuard.h"
 #include "SpehsEngine/Net/ConnectionPackets.h"
 #include "steam/steamnetworkingsockets.h"
-#include <functional>
 #include <map>
 #include <mutex>
 

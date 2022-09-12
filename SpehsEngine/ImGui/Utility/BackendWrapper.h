@@ -3,7 +3,6 @@
 #include "boost/signals2.hpp"
 #include "boost/signals2/connection.hpp"
 #include "SpehsEngine/ImGui/ImGuiTypes.h"
-#include <optional>
 
 namespace se
 {

@@ -7,7 +7,6 @@
 #include "SpehsEngine/Core/StrongInt.h"
 #include "SpehsEngine/Core/LockGuard.h"
 #include "SpehsEngine/Net/ConnectionPackets.h"
-#include <functional>
 #include <map>
 #include <mutex>
 

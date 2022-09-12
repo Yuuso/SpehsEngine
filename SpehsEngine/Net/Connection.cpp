@@ -8,6 +8,7 @@
 #include "SpehsEngine/Core/StringUtilityFunctions.h"
 #include "SpehsEngine/Core/WriteBuffer.h"
 #include "SpehsEngine/Core/PrecompiledInclude.h"
+#include "SpehsEngine/Net/EndpointUtilityFunctions.h"
 
 
 #define DEBUG_LOG(level, message) if (getDebugLogLevel() >= level) \

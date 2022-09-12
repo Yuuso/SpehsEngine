@@ -22,6 +22,7 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)GuidObjectContainer.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)LockGuard.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)MultiMapUtilityFunctions.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)ScopedFrameLimiter.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)StaticRingBuffer.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)ScopeProfiler.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)SE_Assert.cpp" />
@@ -75,6 +76,7 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)ReadAbstract.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)ResourcePathFinder.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)ScopedConnections.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)ScopeProfilerTypes.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)StaticRingBuffer.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)ScopedFrameLimiter.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Guid.h" />

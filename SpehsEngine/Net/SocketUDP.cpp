@@ -6,6 +6,7 @@
 #include <string>
 #include "SpehsEngine/Net/Acceptor.h"
 #include "SpehsEngine/Net/IOService.h"
+#include "SpehsEngine/Net/IOServiceUtilityFunctions.h"
 #include <SpehsEngine/Core/WriteBuffer.h>
 #include <SpehsEngine/Core/ReadBuffer.h>
 #include "SpehsEngine/Core/RAIIVariableSetter.h"
@@ -230,7 +231,7 @@ namespace se
 
 			{
 				std::lock_guard<std::recursive_mutex> lock(sharedImpl->mutex);
-				boost::asio::ip::udp::resolver resolverUDP(sharedImpl->ioService.getImplementationRef());
+				boost::asio::ip::udp::resolver resolverUDP(getImplementationRef(sharedImpl->ioService));
 				const boost::asio::ip::udp::resolver::query queryUDP(boost::asio::ip::udp::v4(), remoteEndpoint.address.toString(), remoteEndpoint.port.toString());
 				boost::asio::ip::udp::resolver::iterator it = resolverUDP.resolve(queryUDP);
 				const boost::asio::ip::udp::resolver::iterator end;
@@ -535,7 +536,7 @@ namespace se
 		
 		SocketUDP::SharedImpl::SharedImpl(IOService& _ioService)
 			: ioService(_ioService)
-			, socket(_ioService.getImplementationRef())
+			, socket(getImplementationRef(_ioService))
 			, receiveBuffer(65536)
 		{
 

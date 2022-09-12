@@ -13,9 +13,7 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)GameFileClient.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)GameFileServer.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)HeaderICMP.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)HeaderIPv4.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)IOService.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)Pinger.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)PacketManager.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)SocketUDP2.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)MultiConnectionAcceptorTCP.cpp" />
@@ -37,6 +35,7 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)Signaling\SignalingImpl.cpp">
       <Filter>Signaling</Filter>
     </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)EndpointUtilityFunctions.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="$(MSBuildThisFileDirectory)Acceptor.h" />
@@ -51,9 +50,7 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)GameFileClient.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)GameFileServer.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)HeaderICMP.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)HeaderIPv4.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)IOService.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)Pinger.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)PacketManager.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)SocketUDP2.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)MultiConnectionAcceptorTCP.h" />
@@ -77,6 +74,8 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)Signaling\SignalingImpl.h">
       <Filter>Signaling</Filter>
     </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)EndpointUtilityFunctions.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)IOServiceUtilityFunctions.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Signaling">

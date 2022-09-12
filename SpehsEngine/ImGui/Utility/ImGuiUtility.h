@@ -12,7 +12,6 @@
 #include "SpehsEngine/ImGui/imgui_stdlib.h"
 #include "SpehsEngine/ImGui/ImGuiTypes.h"
 #include "SpehsEngine/ImGui/Utility/IState.h"
-#include <optional>
 #include <stdint.h>
 
 namespace se

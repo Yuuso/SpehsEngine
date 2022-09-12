@@ -1,7 +1,6 @@
 #pragma once
 
 #include "SpehsEngine/Input/Event.h"
-#include <optional>
 #include <unordered_set>
 #include <vector>
 

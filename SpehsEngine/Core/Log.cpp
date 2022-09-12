@@ -5,6 +5,7 @@
 #include "SpehsEngine/Core/SE_Time.h"
 #include "SpehsEngine/Core/StringViewUtilityFunctions.h"
 #include "SpehsEngine/Core/SystemMessageBox.h"
+#include "boost/signals2/signal.hpp"
 
 #if defined(_WIN32)
 #include <Windows.h>

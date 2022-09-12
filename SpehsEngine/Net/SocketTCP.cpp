@@ -6,6 +6,7 @@
 #include <string>
 #include "SpehsEngine/Net/Acceptor.h"
 #include "SpehsEngine/Net/IOService.h"
+#include "SpehsEngine/Net/IOServiceUtilityFunctions.h"
 #include <SpehsEngine/Core/WriteBuffer.h>
 #include <SpehsEngine/Core/ReadBuffer.h>
 #include "SpehsEngine/Core/RAIIVariableSetter.h"
@@ -340,7 +341,7 @@ namespace se
 
 		SocketTCP::SharedImpl::SharedImpl(IOService& _ioService)
 			: ioService(_ioService)
-			, socket(_ioService.getImplementationRef())
+			, socket(getImplementationRef(_ioService))
 			, receiveBuffer(512)
 		{
 
@@ -599,7 +600,7 @@ namespace se
 			onAcceptCallbackQueued = false;
 
 			if (!acceptor)
-				acceptor.reset(new boost::asio::ip::tcp::acceptor(ioService.getImplementationRef()));
+				acceptor.reset(new boost::asio::ip::tcp::acceptor(getImplementationRef(ioService)));
 			boost::system::error_code error;
 			const boost::asio::ip::tcp::endpoint endpoint(boost::asio::ip::tcp::v4(), port);
 
@@ -809,7 +810,7 @@ namespace se
 
 				// Resolve the remote endpoint
 				boost::system::error_code error;
-				boost::asio::ip::tcp::resolver resolverTCP(ioService.getImplementationRef());
+				boost::asio::ip::tcp::resolver resolverTCP(getImplementationRef(ioService));
 				const boost::asio::ip::tcp::resolver::query query(endpoint.address.toString(), endpoint.port.toString());
 				const boost::asio::ip::tcp::endpoint asioEndpoint = *resolverTCP.resolve(query, error);
 				if (error)
