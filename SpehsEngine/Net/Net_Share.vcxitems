@@ -53,13 +53,16 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)Aria\Aria.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Connection.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Connection2.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)ConnectionId.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)ConnectionManager2.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)ConnectionPackets.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)ConnectionSimulationSettings.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Endpoint.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)EndpointUtilityFunctions.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)GameFileClient.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)GameFileServer.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)HeaderICMP.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Internal\InternalTypes.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)IOService.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)IOServiceUtilityFunctions.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NetIdentity.h" />

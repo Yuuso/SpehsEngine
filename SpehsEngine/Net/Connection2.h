@@ -1,15 +1,14 @@
 #pragma once
 
-#include "boost/signals2.hpp"
-#include "SpehsEngine/Net/Endpoint.h"
-#include "SpehsEngine/Net/SocketUDP2.h"
-#include "SpehsEngine/Core/SE_Time.h"
-#include "SpehsEngine/Core/StrongInt.h"
-#include "SpehsEngine/Core/LockGuard.h"
-#include "SpehsEngine/Net/ConnectionPackets.h"
-#include "steam/steamnetworkingsockets.h"
-#include <map>
-#include <mutex>
+#include "SpehsEngine/Net/ConnectionId.h"
+
+namespace boost
+{
+	namespace signals2
+	{
+		class scoped_connection;
+	}
+}
 
 
 namespace se
@@ -19,6 +18,8 @@ namespace se
 	namespace net
 	{
 		class ConnectionManager2;
+		struct Connection2Parameters;
+		struct Connection2InternalState;
 		class Connection2
 		{
 		public:
@@ -75,13 +76,10 @@ namespace se
 			void disconnect(const std::string& reason = "");
 
 			void setSettings(const Settings& _settings);
-			void setReceiveHandler(const std::function<void(ReadBuffer&, const bool)>& _receiveHandler = std::function<void(ReadBuffer&, const bool)>()) { receiveHandler = _receiveHandler; }
+			void setReceiveHandler(const std::function<void(ReadBuffer&, const bool)>& _receiveHandler = std::function<void(ReadBuffer&, const bool)>());
 			void setEnableAssertOnSendFail(const bool enable) { enableAssertOnSendFail = enable; }
 
-			void connectToStatusChangedSignal(boost::signals2::scoped_connection& scopedConnection, const std::function<void(const Status oldStatus, const Status newStatus)>& callback)
-			{
-				scopedConnection = statusChangedSignal.connect(callback);
-			}
+			void connectToStatusChangedSignal(boost::signals2::scoped_connection& scopedConnection, const std::function<void(const Status oldStatus, const Status newStatus)>& callback);
 
 			Status getStatus() const { return status; }
 			DetailedStatus getDetailedStatus() const;
@@ -99,6 +97,7 @@ namespace se
 			const EstablishmentType establishmentType;
 			const Endpoint remoteEndpoint;
 			const std::optional<Port> localListeningPort;
+			const bool p2p;
 
 		private:
 
@@ -108,41 +107,22 @@ namespace se
 				bool reliable = false;
 			};
 
-			struct ConstructorParameters
-			{
-				ISteamNetworkingSockets* steamNetworkingSockets = nullptr;
-				std::string name;
-				Endpoint remoteEndpoint;
-				std::optional<Port> localListeningPort;
-				HSteamNetConnection steamNetConnection;
-				HSteamListenSocket steamListenSocket; // Connection may be bound to a listening socket
-				EstablishmentType establishmentType = EstablishmentType::Incoming;
-				Status status = Status::Connecting;
-				bool p2p = false;
-			};
-
-			static void closeConnectionImpl(const HSteamNetConnection _steamNetConnection, const std::string& reason, const bool enableLinger);
+			static void closeConnectionImpl(const uint32_t _steamNetConnection, const std::string& reason, const bool enableLinger);
 
 			friend class ConnectionManager2;
 
-			Connection2(const ConstructorParameters& constructorParameters);
+			Connection2(const Connection2Parameters& constructorParameters);
 
 			void disconnectImpl(const std::string& reason, const bool enableLinger);
 			void setStatus(const Status _status);
 			void setSettingsImpl(const Settings& _settings, const bool forceUpdate);
 			void receivePacket(const void* data, const size_t size, const bool reliable);
 
-			ISteamNetworkingSockets& steamNetworkingSockets;
-			HSteamNetConnection steamNetConnection = k_HSteamNetConnection_Invalid;
-			HSteamNetConnection closedSteamNetConnection = k_HSteamNetConnection_Invalid;
-			const HSteamListenSocket steamListenSocket;
-			const bool p2p;
-			Status status = Status::Connecting; // Every connection begins in the connecting state
+			std::unique_ptr<Connection2InternalState> state;
+			Status status = Connection2::Status::Connecting; // Every connection begins in the connecting state
 			Settings settings;
 			Statistics statistics;
 			std::vector<ReceivedPacket> receivedPackets;
-			std::function<void(ReadBuffer&, const bool)> receiveHandler;
-			boost::signals2::signal<void(const Status, const Status)> statusChangedSignal;
 			bool enableAssertOnSendFail = true;
 		};
 	}

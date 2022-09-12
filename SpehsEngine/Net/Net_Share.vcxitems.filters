@@ -76,10 +76,18 @@
     </ClInclude>
     <ClInclude Include="$(MSBuildThisFileDirectory)EndpointUtilityFunctions.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)IOServiceUtilityFunctions.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)ConnectionId.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Internal\InternalTypes.h">
+      <Filter>Internal</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)ConnectionSimulationSettings.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Signaling">
       <UniqueIdentifier>{efdd8041-b723-41c0-8282-e71899c4a09b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Internal">
+      <UniqueIdentifier>{835b0d31-770b-4bda-b587-4d3dd186c188}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>
