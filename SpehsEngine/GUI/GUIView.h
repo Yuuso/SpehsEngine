@@ -35,6 +35,7 @@ namespace se
 			void add(GUIElement& _element);
 			void remove(GUIElement& _element);
 			void clear();
+			const std::vector<GUIElement*>& getRootElements() const;
 
 		private:
 
