@@ -30,6 +30,7 @@ namespace se
 		void setOffset(const size_t offset);
 		void resize(const size_t size);
 		void reserve(const size_t capacity);
+		void clear();
 
 		//Const class, has member write
 		template<class T>
