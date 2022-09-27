@@ -35,6 +35,17 @@ namespace se
 				callbackHandler = new RendererCallbackHandler;
 
 				bgfx::Init init;
+
+			#if defined(_WIN32)
+				init.platformData.ndt = nullptr;
+				init.platformData.nwh = defaultWindow->getNativeWindowHandle();
+			#else
+				#error Window platform data handling not implemented!
+			#endif
+				init.platformData.context = nullptr;
+				init.platformData.backBuffer = nullptr;
+				init.platformData.backBufferDS = nullptr;
+
 				init.type = getRendererType(_rendererBackend);
 				init.resolution.width = (uint32_t)_window.getWidth();
 				init.resolution.height = (uint32_t)_window.getHeight();
@@ -45,8 +56,6 @@ namespace se
 					log::fatal("Failed to initialize Renderer!");
 
 				bgfx::setDebug(BGFX_DEBUG_TEXT /*| BGFX_DEBUG_STATS*/);
-
-				bgfx::setViewClear(0, BGFX_CLEAR_COLOR | BGFX_CLEAR_DEPTH, 0x101010ff, 1.0f, 0);
 			}
 
 			{

@@ -47,16 +47,25 @@ namespace se
 			if (window->getConfinedInput())
 				enableBit(windowFlags, SDL_WINDOW_INPUT_GRABBED);
 			//SDL_WINDOW_ALLOW_HIGHDPI
+			//SDL_WINDOW_OPENGL
+			//SDL_WINDOW_VULKAN
 
 			const int x = window->getX() != -1 ? window->getX() : SDL_WINDOWPOS_UNDEFINED;
 			const int y = window->getY() != -1 ? window->getY() : SDL_WINDOWPOS_UNDEFINED;
 
-			sdlWindow = SDL_CreateWindow(window->getName().c_str(),
-										 x,
-										 y,
-										 window->getWidth(),
-										 window->getHeight(),
-										 windowFlags);
+			sdlWindow = SDL_CreateWindow(
+				window->getName().c_str(),
+				x,
+				y,
+				window->getWidth(),
+				window->getHeight(),
+				windowFlags);
+
+			if (!sdlWindow)
+			{
+				se::log::fatal("Failed to create a window!");
+				return;
+			}
 
 			if (window->getX() == -1 || window->getY() == -1)
 			{
@@ -72,36 +81,9 @@ namespace se
 			window->updateFlags = 0;
 			window->displayIndex = SDL_GetWindowDisplayIndex(sdlWindow);
 
-			SDL_SysWMinfo wmi;
-			SDL_VERSION(&wmi.version);
-			if (SDL_GetWindowWMInfo(sdlWindow, &wmi) != SDL_TRUE)
+			if (!isDefault)
 			{
-				std::string error = "Unable to get SDL window info: ";
-				error += SDL_GetError();
-				se::log::error(error);
-				return;
-			}
-
-			if (isDefault)
-			{
-				bgfx::PlatformData platformData;
-
-#				if defined(_WIN32)
-					platformData.ndt = NULL;
-#				else
-#					error Window handling not implemented!
-#				endif
-
-				platformData.nwh = (void*)wmi.info.win.window;
-
-				platformData.context = NULL;
-				platformData.backBuffer = NULL;
-				platformData.backBufferDS = NULL;
-				bgfx::setPlatformData(platformData);
-			}
-			else
-			{
-				frameBufferHandle = bgfx::createFrameBuffer(wmi.info.win.window, window->getWidth(), window->getHeight());
+				frameBufferHandle = bgfx::createFrameBuffer(getNativeWindowHandle(), window->getWidth(), window->getHeight());
 			}
 		}
 		WindowInternal::~WindowInternal()
@@ -145,8 +127,7 @@ namespace se
 			_renderContext.currentWindow = this;
 			for (size_t i = 0; i < window->views.size(); )
 			{
-				if (bgfx::isValid(frameBufferHandle))
-					bgfx::setViewFrameBuffer(_renderContext.currentViewId, frameBufferHandle);
+				bgfx::setViewFrameBuffer(_renderContext.currentViewId, frameBufferHandle);
 				se_assert(!window->views[i]->wasDestroyed());
 				window->views[i]->render(_renderContext);
 				i++;
@@ -329,7 +310,9 @@ namespace se
 						else
 						{
 							if (bgfx::isValid(frameBufferHandle))
+							{
 								bgfx::destroy(frameBufferHandle);
+							}
 
 							SDL_SysWMinfo wmi;
 							SDL_VERSION(&wmi.version);
@@ -413,6 +396,19 @@ namespace se
 		SDL_Window* WindowInternal::getSDLWindow()
 		{
 			return sdlWindow;
+		}
+		void* WindowInternal::getNativeWindowHandle()
+		{
+			SDL_SysWMinfo wmi;
+			SDL_VERSION(&wmi.version);
+			if (SDL_GetWindowWMInfo(sdlWindow, &wmi) != SDL_TRUE)
+			{
+				std::string error = "Unable to get SDL window info: ";
+				error += SDL_GetError();
+				se::log::error(error);
+				return nullptr;
+			}
+			return wmi.info.win.window;
 		}
 	}
 }

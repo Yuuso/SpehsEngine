@@ -41,7 +41,7 @@ namespace se
 						  "ViewClearFlags don't match bgfx values!");
 
 			bgfx::setViewMode(_renderContext.currentViewId, bgfx::ViewMode::Default);
-			bgfx::setViewClear(_renderContext.currentViewId, view->getClearFlags(), view->getClearColor(), 1.0f, 0);
+			bgfx::setViewClear(_renderContext.currentViewId, view->getClearFlags(), view->getClearColor());
 
 			// Camera
 			{
