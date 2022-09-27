@@ -22,6 +22,9 @@ ROBOCOPY "%SDL_DIR%/VisualC/SDL/x64/Release/"       "%DEPS_DIR%/lib/x64/Release"
 ROBOCOPY "%SDL_DIR%/VisualC/SDLmain/x64/Debug/"     "%DEPS_DIR%/lib/x64/Debug"              SDL2main.lib                %OPTIONS%
 ROBOCOPY "%SDL_DIR%/VisualC/SDLmain/x64/Release/"   "%DEPS_DIR%/lib/x64/Release"            SDL2main.lib                %OPTIONS%
 
+MKDIR "%DEPS_DIR%/dll/x64"
+ROBOCOPY "%SDL_DIR%/VisualC/SDL/x64/Release/"       "%DEPS_DIR%/dll/x64"                    SDL2.dll                    %OPTIONS%
+
 IF EXIST "%DEPS_DIR%/debug/SDL" RMDIR "%DEPS_DIR%/debug/SDL" /S /Q
 MKDIR "%DEPS_DIR%/debug/SDL/x64/Debug"
 MKDIR "%DEPS_DIR%/debug/SDL/x64/Release"
