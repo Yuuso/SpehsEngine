@@ -4,33 +4,46 @@
 #include "SpehsEngine/Core/Log.h"
 #include "SpehsEngine/Core/Thread.h"
 #include "SpehsEngine/Core/ScopedFrameLimiter.h"
-#include <boost/bind.hpp>
+#include "SpehsEngine/Net/IOServiceUtilityFunctions.h"
+#include "boost/asio/io_service.hpp"
+#include "boost/bind.hpp"
+#include <thread>
 
 
 namespace se
 {
 	namespace net
 	{
-		IOService::IOService()
-			: ioService()
-			, ioServiceWork(ioService)
-			, thread(boost::bind(&IOService::run, this))
+		struct IOService::State
 		{
+			State(std::thread&& _thread)
+				: ioService()
+				, ioServiceWork(ioService)
+				, thread(std::move(_thread))
+			{
+			}
+			boost::asio::io_service ioService;
+			std::optional<boost::asio::io_service::work> ioServiceWork;
+			std::thread thread;
+		};
 
+		IOService::IOService()
+			: state(new State(std::thread(boost::bind(&IOService::run, this))))
+		{
 		}
 
 		IOService::~IOService()
 		{
 			try
 			{
-				ioServiceWork.reset(); // End work.
-				ioService.stop();
+				state->ioServiceWork.reset(); // End work.
+				state->ioService.stop();
 			}
 			catch (std::exception& e)
 			{
 				log::info(e.what());
 			}
-			thread.join();
+			state->thread.join();
 		}
 
 		void IOService::run()
@@ -45,16 +58,16 @@ namespace se
 			*/
 			setThreadName("IOService::run()");
 			boost::system::error_code error;
-			ioService.run(error);
+			state->ioService.run(error);
 			if (error)
 			{
 				se::log::info("IOService::run() error: " + error.message());
 			}
 		}
 
-		boost::asio::io_service& IOService::getImplementationRef()
+		boost::asio::io_service& getImplementationRef(IOService& ioService)
 		{
-			return ioService;
+			return ioService.getState().ioService;
 		}
 	}
 }

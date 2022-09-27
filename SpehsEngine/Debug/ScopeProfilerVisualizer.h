@@ -1,6 +1,7 @@
 #pragma once
 
 #include "SpehsEngine/Core/ScopeProfiler.h"
+#include "SpehsEngine/Core/ScopeProfilerTypes.h"
 #include "SpehsEngine/Graphics/FontManager.h"
 #include "SpehsEngine/Graphics/Material.h"
 #include "SpehsEngine/Graphics/ShaderManager.h"
@@ -48,14 +49,14 @@ namespace se
 
 			struct SectionInfo
 			{
-				const ScopeProfiler::Section* section = nullptr;
+				const ScopeProfilerSection* section = nullptr;
 				const graphics::Shape* parent;
 				const graphics::Shape* rootParent;
 				time::Time beginTime;
 				size_t depth = 0;
 			};
 
-			void profilerFlushCallback(const ScopeProfiler::ThreadData& threadData);
+			void profilerFlushCallback(const ScopeProfilerThreadData& threadData);
 			void updateSectionPolygons();
 			void updateSectionTextStrings();
 			float getWidth();
@@ -81,7 +82,7 @@ namespace se
 			bool firstVisualUpdateDone = false;
 
 			std::thread::id activeThreadId;
-			std::unordered_map<std::thread::id, ScopeProfiler::ThreadData> threadDatas;
+			std::unordered_map<std::thread::id, ScopeProfilerThreadData> threadDatas;
 			std::unordered_map<const graphics::Shape*, SectionInfo> polygonToSectionInfoLookup;
 			graphics::Text tooltipText;
 			graphics::Shape tooltipPolygon;
@@ -92,7 +93,7 @@ namespace se
 			std::recursive_mutex backgroundThreadDataMutex;
 			size_t maxThreadDataSectionCount = 0;
 			bool backgroundThreadDataUpdated = false;
-			std::unordered_map<std::thread::id, ScopeProfiler::ThreadData> backgroundThreadDatas;
+			std::unordered_map<std::thread::id, ScopeProfilerThreadData> backgroundThreadDatas;
 		};
 	}
 }

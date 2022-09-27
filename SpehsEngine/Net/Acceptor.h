@@ -1,8 +1,7 @@
 #pragma once
-#include <thread>
-#include <stdint.h>
-#include <boost/asio.hpp>
+
 #include "SpehsEngine/Net/Port.h"
+
 
 namespace se
 {
@@ -20,11 +19,9 @@ namespace se
 			bool open(const Port& _port);
 
 		private:
+			struct State;
+			std::unique_ptr<State> state;
 			Port port;
-			boost::asio::io_service ioService;
-			boost::asio::io_service::work ioServiceWork;
-			std::thread ioServiceThread;
-			boost::asio::ip::tcp::acceptor acceptor;
 		};
 	}
 }

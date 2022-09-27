@@ -52,6 +52,7 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)MultiMapUtilityFunctions.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)TimeUtilityFunctions.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)UtcTime.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)ScopedFrameLimiter.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Noise.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -128,6 +129,7 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)LogSignal.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)TimeUtilityFunctions.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)UtcTime.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)ScopeProfilerTypes.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Noise.h" />
   </ItemGroup>
   <ItemGroup>

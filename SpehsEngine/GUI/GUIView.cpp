@@ -99,5 +99,10 @@ namespace se
 				element->removeFromView();
 			rootElements.clear();
 		}
+
+		const std::vector<GUIElement*>& GUIView::getRootElements() const
+		{
+			return rootElements;
+		}
 	}
 }

@@ -2,12 +2,12 @@
 
 #include "boost/signals2.hpp"
 #include "SpehsEngine/Net/Endpoint.h"
+#include "SpehsEngine/Net/ConnectionSimulationSettings.h"
 #include "SpehsEngine/Net/SocketUDP2.h"
 #include "SpehsEngine/Core/SE_Time.h"
 #include "SpehsEngine/Core/StrongInt.h"
 #include "SpehsEngine/Core/LockGuard.h"
 #include "SpehsEngine/Net/ConnectionPackets.h"
-#include <functional>
 #include <map>
 #include <mutex>
 
@@ -20,21 +20,6 @@ namespace se
 	{
 		class ConnectionManager2;
 		class IOService;
-
-		struct ConnectionSimulationSettings
-		{
-			float chanceToDropIncoming = 0.0f;
-			float chanceToDropOutgoing = 0.0f;
-			float chanceToReorderIncoming = 0.0f;
-			float chanceToReorderOutgoing = 0.0f;
-			time::Time delayIncoming;
-			time::Time delayOutgoing;
-
-			// TO BE REMOVED
-			float chanceToReorderReceivedPacket = 0.0f;
-			uint16_t maximumSegmentSizeIncoming = std::numeric_limits<uint16_t>::max();
-			uint16_t maximumSegmentSizeOutgoing = std::numeric_limits<uint16_t>::max();
-		};
 
 		class Connection
 		{

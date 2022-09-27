@@ -55,6 +55,11 @@ namespace se
 		data.reserve(capacity);
 	}
 
+	void WriteBuffer::clear()
+	{
+		data.clear();
+	}
+
 	bool WriteBuffer::extend(const size_t addedBytes)
 	{
 		if (addedBytes == 0)

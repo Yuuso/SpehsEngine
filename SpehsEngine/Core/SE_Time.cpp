@@ -7,12 +7,10 @@
 #include "SpehsEngine/Core/WriteBuffer.h"
 #include "SpehsEngine/Core/TimeUtilityFunctions.h"
 
-#include <algorithm>
 #include <chrono>
-#include <mutex>
-#include <ctime>
 #include <sstream>
 #include <iomanip>
+#include <thread>
 #if SE_PLATFORM == SE_PLATFORM_WINDOWS
 #include <Windows.h>
 #endif

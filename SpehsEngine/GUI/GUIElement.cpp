@@ -437,6 +437,13 @@ namespace se
 				return children[_index];
 			return nullptr;
 		}
+		const GUIElement* GUIElement::getChild(size_t _index) const
+		{
+			se_assert(_index < children.size());
+			if (_index < children.size())
+				return children[_index].get();
+			return nullptr;
+		}
 		std::shared_ptr<GUIElement> GUIElement::findChild(std::string_view _name, bool _recursive)
 		{
 			for (auto&& child : children)
@@ -457,6 +464,14 @@ namespace se
 		size_t GUIElement::getNumChildren() const
 		{
 			return children.size();
+		}
+		GUIElement* GUIElement::getParent()
+		{
+			return parent;
+		}
+		const GUIElement* GUIElement::getParent() const
+		{
+			return parent;
 		}
 
 		void GUIElement::setUpdateCallback(std::function<void(GUIElement&)> _callback)

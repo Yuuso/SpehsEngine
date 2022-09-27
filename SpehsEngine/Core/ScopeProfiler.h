@@ -1,39 +1,24 @@
 #pragma once
 
-#include "boost/signals2.hpp"
 #include "SpehsEngine/Core/SE_Time.h"
 #include <functional>
-#include <memory>
-#include <optional>
-#include <thread>
+
+namespace boost
+{
+	namespace signals2
+	{
+		class scoped_connection;
+	}
+}
 
 
 namespace se
 {
+	struct ScopeProfilerThreadData;
+
 	class ScopeProfiler
 	{
 	public:
-
-		struct Section
-		{
-			size_t getDepth() const;
-			std::string name;
-			std::string_view function;
-			std::string_view file;
-			int line = 0;
-			std::optional<se::time::Time> endTime;
-			std::map<se::time::Time, Section> children;
-		};
-
-		struct ThreadData
-		{
-			void add(const ThreadData& other);
-			void truncate(const size_t preferredSectionCount);
-			size_t getSectionCountRecursive() const;
-
-			std::thread::id threadId;
-			std::map<se::time::Time, Section> sections;
-		};
 
 		/*
 			functionName must point to static memory.
@@ -60,7 +45,7 @@ namespace se
 			An ending thread has no obligation to call flush before it dies out, therefore potentially leaving some thread data unflushed.
 			Inactive threads that do not make calls to push() or flush() may also hold onto potential stored thread data.
 		*/
-		static void connectToFlushSignal(boost::signals2::scoped_connection& scopedConnection, const std::function<void(const ThreadData&)>& callback);
+		static void connectToFlushSignal(boost::signals2::scoped_connection& scopedConnection, const std::function<void(const ScopeProfilerThreadData&)>& callback);
 
 		/*
 			Always prefer using ScopeProfiler instance over this.

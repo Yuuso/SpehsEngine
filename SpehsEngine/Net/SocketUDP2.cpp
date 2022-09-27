@@ -2,6 +2,7 @@
 #include "SpehsEngine/Net/SocketUDP2.h"
 
 #include "SpehsEngine/Net/IOService.h"
+#include "SpehsEngine/Net/IOServiceUtilityFunctions.h"
 #include "SpehsEngine/Core/Log.h"
 #include "SpehsEngine/Core/StringUtilityFunctions.h"
 #include "boost/bind.hpp"
@@ -31,7 +32,7 @@ namespace se
 		SocketUDP2::SocketUDP2(IOService& _ioService, const std::string& _debugName)
 			: debugName(_debugName)
 			, ioService(_ioService)
-			, boostSocket(_ioService.getImplementationRef())
+			, boostSocket(getImplementationRef(_ioService))
 			, receiveBuffer1(65536)
 			, receiveBuffer2(65536)
 		{
@@ -287,7 +288,7 @@ namespace se
 		boost::asio::ip::udp::endpoint SocketUDP2::resolveRemoteEndpoint(const Endpoint& remoteEndpoint) const
 		{
 			std::lock_guard<std::recursive_mutex> lock(mutex);
-			boost::asio::ip::udp::resolver resolverUDP(ioService.getImplementationRef());
+			boost::asio::ip::udp::resolver resolverUDP(getImplementationRef(ioService));
 			const boost::asio::ip::udp::resolver::query queryUDP(boost::asio::ip::udp::v4(), remoteEndpoint.address.toString(), remoteEndpoint.port.toString());
 			boost::system::error_code error;
 			boost::asio::ip::udp::resolver::iterator it = resolverUDP.resolve(queryUDP, error);

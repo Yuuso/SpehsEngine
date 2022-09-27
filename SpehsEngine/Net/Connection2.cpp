@@ -1,13 +1,8 @@
 #include "stdafx.h"
 #include "SpehsEngine/Net/Connection2.h"
 
-#include "SpehsEngine/Core/BitwiseOperations.h"
-#include "SpehsEngine/Core/ReadBuffer.h"
-#include "SpehsEngine/Core/RNG.h"
-#include "SpehsEngine/Core/STLVectorUtilityFunctions.h"
 #include "SpehsEngine/Core/StringUtilityFunctions.h"
-#include "SpehsEngine/Core/WriteBuffer.h"
-#include "SpehsEngine/Core/PrecompiledInclude.h"
+#include "SpehsEngine/Net/Internal/InternalTypes.h"
 #include "steam/isteamnetworkingutils.h"
 
 
@@ -20,25 +15,23 @@ namespace se
 			std::atomic<ConnectionId::ValueType> nextConnectionId = 1;
 		}
 
-		Connection2::Connection2(const ConstructorParameters& constructorParameters)
-			: name(constructorParameters.name)
+		Connection2::Connection2(const Connection2Parameters& parameters)
+			: name(parameters.name)
 			, connectionId(nextConnectionId++)
-			, establishmentType(constructorParameters.establishmentType)
-			, remoteEndpoint(constructorParameters.remoteEndpoint)
-			, localListeningPort(constructorParameters.localListeningPort)
-			, steamNetworkingSockets(*constructorParameters.steamNetworkingSockets)
-			, steamNetConnection(constructorParameters.steamNetConnection)
-			, steamListenSocket(constructorParameters.steamListenSocket)
-			, p2p(constructorParameters.p2p)
-			, status(constructorParameters.status)
+			, establishmentType(parameters.establishmentType)
+			, remoteEndpoint(parameters.remoteEndpoint)
+			, localListeningPort(parameters.localListeningPort)
+			, p2p(parameters.p2p)
+			, status(parameters.status)
+			, state(new Connection2InternalState(parameters))
 		{
 			setSettingsImpl(settings, true);
-			se_assert(steamNetConnection != k_HSteamNetConnection_Invalid);
+			se_assert(state->steamNetConnection != k_HSteamNetConnection_Invalid);
 		}
 
 		Connection2::~Connection2()
 		{
-			if (steamNetConnection != k_HSteamNetConnection_Invalid)
+			if (state->steamNetConnection != k_HSteamNetConnection_Invalid)
 			{
 				disconnectImpl("~Connection2()", true);
 			}
@@ -46,7 +39,7 @@ namespace se
 
 		void Connection2::update()
 		{
-			if (!receivedPackets.empty() && receiveHandler)
+			if (!receivedPackets.empty() && state->receiveHandler)
 			{
 				std::vector<ReceivedPacket> receivedPackets2;
 				receivedPackets2.swap(receivedPackets);
@@ -54,8 +47,8 @@ namespace se
 				{
 					const ReceivedPacket& receivedPacket = receivedPackets2[i];
 					ReadBuffer readBuffer(receivedPacket.data.data(), receivedPacket.data.size());
-					receiveHandler(readBuffer, receivedPacket.reliable);
-					if (!receiveHandler)
+					state->receiveHandler(readBuffer, receivedPacket.reliable);
+					if (!state->receiveHandler)
 					{
 						// Push the rest of the packets back to the queue until a receive handler is specified
 						const size_t beginIndex = i + 1;
@@ -77,7 +70,7 @@ namespace se
 		bool Connection2::sendPacket(const WriteBuffer& writeBuffer, const bool reliable)
 		{
 			const int flags = reliable ? k_nSteamNetworkingSend_Reliable : k_nSteamNetworkingSend_Unreliable;
-			const EResult result = steamNetworkingSockets.SendMessageToConnection(steamNetConnection, writeBuffer.getData(), uint32_t(writeBuffer.getSize()), flags, nullptr);
+			const EResult result = state->steamNetworkingSockets.SendMessageToConnection(state->steamNetConnection, writeBuffer.getData(), uint32_t(writeBuffer.getSize()), flags, nullptr);
 			if (result == k_EResultOK)
 			{
 				if (reliable)
@@ -97,7 +90,7 @@ namespace se
 			else
 			{
 				std::vector<char> buffer(10000);
-				if (steamNetworkingSockets.GetDetailedConnectionStatus(steamNetConnection, buffer.data(), int(buffer.size())) == 0)
+				if (state->steamNetworkingSockets.GetDetailedConnectionStatus(state->steamNetConnection, buffer.data(), int(buffer.size())) == 0)
 				{
 					se::log::warning(se::formatString("Failed to send packet: %s", buffer.data()));
 				}
@@ -114,11 +107,11 @@ namespace se
 
 		void Connection2::disconnectImpl(const std::string& reason, const bool enableLinger)
 		{
-			if (steamNetConnection != k_HSteamNetConnection_Invalid)
+			if (state->steamNetConnection != k_HSteamNetConnection_Invalid)
 			{
-				closeConnectionImpl(steamNetConnection, reason, enableLinger);
-				closedSteamNetConnection = steamNetConnection; // Used later on by the ConnectionManager
-				steamNetConnection = k_HSteamNetConnection_Invalid;
+				closeConnectionImpl(state->steamNetConnection, reason, enableLinger);
+				state->closedSteamNetConnection = state->steamNetConnection; // Used later on by the ConnectionManager
+				state->steamNetConnection = k_HSteamNetConnection_Invalid;
 			}
 		}
 
@@ -128,7 +121,7 @@ namespace se
 			{
 				const Status oldStatus = status;
 				status = _status;
-				statusChangedSignal(oldStatus, status);
+				state->statusChangedSignal(oldStatus, status);
 			}
 		}
 
@@ -149,10 +142,10 @@ namespace se
 			}
 
 			// Process packet immediately?
-			if (receiveHandler && receivedPackets.empty())
+			if (state->receiveHandler && receivedPackets.empty())
 			{
 				ReadBuffer readBuffer(data, size);
-				receiveHandler(readBuffer, reliable);
+				state->receiveHandler(readBuffer, reliable);
 			}
 			else
 			{
@@ -173,14 +166,14 @@ namespace se
 			if (settings.sendBufferSize != _settings.sendBufferSize || forceUpdate)
 			{
 				se_assert(settings.sendBufferSize <= std::numeric_limits<uint32_t>::max());
-				if (!SteamNetworkingUtils_Lib()->SetConnectionConfigValueInt32(steamNetConnection, k_ESteamNetworkingConfig_SendBufferSize, int32_t(_settings.sendBufferSize)))
+				if (!SteamNetworkingUtils_Lib()->SetConnectionConfigValueInt32(state->steamNetConnection, k_ESteamNetworkingConfig_SendBufferSize, int32_t(_settings.sendBufferSize)))
 				{
 					se::log::error("Failed to set connection send buffer size.");
 				}
 			}
 			if (settings.timeout != _settings.timeout || forceUpdate)
 			{
-				if (!SteamNetworkingUtils_Lib()->SetConnectionConfigValueInt32(steamNetConnection, k_ESteamNetworkingConfig_TimeoutConnected, int32_t(_settings.timeout.asMilliseconds())))
+				if (!SteamNetworkingUtils_Lib()->SetConnectionConfigValueInt32(state->steamNetConnection, k_ESteamNetworkingConfig_TimeoutConnected, int32_t(_settings.timeout.asMilliseconds())))
 				{
 					se::log::error("Failed to set connection timeout time.");
 				}
@@ -192,7 +185,7 @@ namespace se
 		{
 			SteamNetConnectionRealTimeStatus_t steamNetConnectionRealTimeStatus;
 			SteamNetConnectionRealTimeLaneStatus_t steamNetConnectionRealTimeLaneStatus;
-			if (steamNetworkingSockets.GetConnectionRealTimeStatus(steamNetConnection, &steamNetConnectionRealTimeStatus, 0, &steamNetConnectionRealTimeLaneStatus))
+			if (state->steamNetworkingSockets.GetConnectionRealTimeStatus(state->steamNetConnection, &steamNetConnectionRealTimeStatus, 0, &steamNetConnectionRealTimeLaneStatus))
 			{
 				return time::fromMilliseconds(float(steamNetConnectionRealTimeStatus.m_nPing));
 			}
@@ -212,7 +205,7 @@ namespace se
 			DetailedStatus detailedStatus;
 			SteamNetConnectionRealTimeStatus_t steamNetConnectionRealTimeStatus;
 			SteamNetConnectionRealTimeLaneStatus_t steamNetConnectionRealTimeLaneStatus;
-			if (steamNetworkingSockets.GetConnectionRealTimeStatus(steamNetConnection, &steamNetConnectionRealTimeStatus, 0, &steamNetConnectionRealTimeLaneStatus))
+			if (state->steamNetworkingSockets.GetConnectionRealTimeStatus(state->steamNetConnection, &steamNetConnectionRealTimeStatus, 0, &steamNetConnectionRealTimeLaneStatus))
 			{
 				detailedStatus.reliableBytesInSendQueue = steamNetConnectionRealTimeStatus.m_cbPendingReliable;
 				detailedStatus.unreliableBytesInSendQueue = steamNetConnectionRealTimeStatus.m_cbPendingUnreliable;
@@ -222,7 +215,7 @@ namespace se
 			return detailedStatus;
 		}
 
-		void Connection2::closeConnectionImpl(const HSteamNetConnection _steamNetConnection, const std::string& reason, const bool enableLinger)
+		void Connection2::closeConnectionImpl(const uint32_t _steamNetConnection, const std::string& reason, const bool enableLinger)
 		{
 			if (SteamNetworkingSockets()->CloseConnection(_steamNetConnection, 0, reason.c_str(), enableLinger))
 			{
@@ -232,6 +225,16 @@ namespace se
 			{
 				log::error("Failed to close connection");
 			}
+		}
+
+		void Connection2::setReceiveHandler(const std::function<void(ReadBuffer&, const bool)>& _receiveHandler)
+		{
+			state->receiveHandler = _receiveHandler;
+		}
+
+		void Connection2::connectToStatusChangedSignal(boost::signals2::scoped_connection& scopedConnection, const std::function<void(const Status oldStatus, const Status newStatus)>& callback)
+		{
+			scopedConnection = state->statusChangedSignal.connect(callback);
 		}
 	}
 }

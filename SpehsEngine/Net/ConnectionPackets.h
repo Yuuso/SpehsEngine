@@ -1,5 +1,6 @@
 #pragma once
 
+#include "SpehsEngine/Net/ConnectionId.h"
 #include "SpehsEngine/Net/Endpoint.h"
 #include "SpehsEngine/Core/SE_Time.h"
 #include "SpehsEngine/Core/StrongInt.h"
@@ -13,7 +14,6 @@ namespace se
 	namespace net
 	{
 		SE_STRONG_INT(uint32_t, ProtocolId, 0u);
-		SE_STRONG_INT(uint32_t, ConnectionId, 0u);
 
 		struct PacketHeader
 		{

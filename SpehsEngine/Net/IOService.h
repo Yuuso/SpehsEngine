@@ -1,9 +1,5 @@
 #pragma once
 
-#include "boost/asio/io_service.hpp"
-#include <optional>
-#include <thread>
-
 
 namespace se
 {
@@ -13,17 +9,19 @@ namespace se
 		class IOService
 		{
 		public:
+
+			struct State;
+
 			IOService();
 			~IOService();
 
-			boost::asio::io_service& getImplementationRef();
+			State& getState() const { return *state; }
 
 		private:
+
 			void run();
 
-			boost::asio::io_service ioService;
-			std::optional<boost::asio::io_service::work> ioServiceWork;
-			std::thread thread;
+			std::unique_ptr<State> state;
 		};
 	}
 }

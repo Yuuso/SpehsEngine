@@ -33,8 +33,11 @@ namespace se
 			void									removeChild(std::shared_ptr<GUIElement> _element);
 			void									clearChildren();
 			std::shared_ptr<GUIElement>				getChild(size_t _index);
+			const GUIElement*						getChild(size_t _index) const;
 			std::shared_ptr<GUIElement>				findChild(std::string_view _name, bool _recursive = true);
 			size_t									getNumChildren() const;
+			GUIElement*								getParent();
+			const GUIElement*						getParent() const;
 
 			void									setUpdateCallback(std::function<void(GUIElement&)> _callback);
 			virtual bool							hitTest(const glm::vec2& _viewPoint);

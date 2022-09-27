@@ -6,7 +6,6 @@
 #include "SpehsEngine/ImGui/Utility/BackendWrapper.h"
 #include "SpehsEngine/ImGui/imgui.h"
 #include "boost/signals2/connection.hpp"
-#include <optional>
 
 
 namespace se

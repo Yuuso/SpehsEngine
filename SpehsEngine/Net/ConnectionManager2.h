@@ -1,14 +1,7 @@
 #pragma once
 
-#include "boost/bind.hpp"
-#include "boost/signals2.hpp"
 #include "SpehsEngine/Net/Connection2.h"
-#include "SpehsEngine/Net/Connection.h"
-#include "steam/steamnetworkingsockets.h"
-#include <functional>
-#include <unordered_map>
-#include <unordered_set>
-#include <mutex>
+#include "SpehsEngine/Net/ConnectionSimulationSettings.h"
 
 
 namespace se
@@ -42,10 +35,7 @@ namespace se
 			// Connect to a ConnectionManager that has called startAcceptingP2P().
 			[[nodiscard]] std::shared_ptr<Connection2> connectP2P(const NetIdentity& peerNetIdentity, const se::net::Endpoint& signalingServerEndpoint, const std::string_view name = "", const time::Time timeout = time::fromSeconds(10.0f));
 
-			void connectToIncomingConnectionSignal(boost::signals2::scoped_connection& scopedConnection, const std::function<void(std::shared_ptr<Connection2>&)>& callback)
-			{
-				scopedConnection = incomingConnectionSignal.connect(callback);
-			}
+			void connectToIncomingConnectionSignal(boost::signals2::scoped_connection& scopedConnection, const std::function<void(std::shared_ptr<Connection2>&)>& callback);
 			void setRemoveUnreferencedConnections(const bool remove) { removeUnreferencedConnections = remove; }
 
 			void setDebugLogLevel(int level) { debugLogLevel = level; }
@@ -62,43 +52,17 @@ namespace se
 
 		private:
 
-			struct ConnectionStatusChange
-			{
-				HSteamNetConnection steamNetConnection;
-				Connection2::Status status = Connection2::Status::Disconnected;
-				std::string reason;
-			};
-
-			static void steamNetConnectionStatusChangedCallbackStatic(SteamNetConnectionStatusChangedCallback_t* const info);
+			struct State;
 
 			void initializeSteamNetConnection(Connection2& connection);
 			void processIncomingConnectionQueue();
 			void processConnectionStatusChangeQueue();
 			void closeUnusedSteamListenSockets();
-			bool ownsConnection(const HSteamNetConnection steamNetConnection) const;
 
-			ISteamNetworkingSockets* steamNetworkingSockets = nullptr;
-			std::vector<HSteamListenSocket> steamListenSocketsIP;
-			std::vector<HSteamListenSocket> steamListenSocketsP2P;
-			HSteamNetPollGroup steamNetPollGroup;
+			std::unique_ptr<State> state;
+			std::vector<std::shared_ptr<Connection2>> connections;
 			int debugLogLevel = 0;
 			bool removeUnreferencedConnections = false;
-			std::vector<std::shared_ptr<Connection2>> connections;
-			boost::signals2::signal<void(std::shared_ptr<Connection2>&)> incomingConnectionSignal;
-
-			mutable std::recursive_mutex acceptingSteamListenSocketMutex;
-			HSteamListenSocket acceptingSteamListenSocketIP = k_HSteamListenSocket_Invalid;
-			HSteamListenSocket acceptingSteamListenSocketP2P = k_HSteamListenSocket_Invalid;
-			Endpoint acceptingSignalingServerEndpoint;
-
-			mutable std::recursive_mutex incomingConnectionQueueMutex;
-			std::vector<Connection2::ConstructorParameters> incomingConnectionQueue;
-
-			mutable std::recursive_mutex connectionStatusChangeQueueMutex;
-			std::vector<ConnectionStatusChange> connectionStatusChangeQueue;
-
-			mutable std::recursive_mutex ownedSteamNetConnectionsMutex;
-			std::unordered_set<HSteamNetConnection> ownedSteamNetConnections;
 		};
 	}
 }

@@ -12,7 +12,6 @@
 #include "SpehsEngine/ImGui/imgui_stdlib.h"
 #include "SpehsEngine/ImGui/ImGuiTypes.h"
 #include "SpehsEngine/ImGui/Utility/IState.h"
-#include <optional>
 #include <stdint.h>
 
 namespace se
@@ -123,13 +122,15 @@ namespace ImGui
 		Text(label.c_str());
 	}
 
-	inline void TextColored(const se::Color& color, const char* const label)
+	template<typename ... Args>
+	inline void TextColored(const se::Color& color, const char* const format, Args ... args)
 	{
-		TextColored((ImVec4&)color, label);
+		TextColored((ImVec4&)color, format, args...);
 	}
-	inline void TextColored(const se::Color& color, const std::string& label)
+	template<typename ... Args>
+	inline void TextColored(const se::Color& color, const std::string& format, Args ... args)
 	{
-		TextColored((ImVec4&)color, label.c_str());
+		TextColored((ImVec4&)color, format.c_str(), args...);
 	}
 
 	inline ImVec2 SizeToScale(const se::graphics::Texture& _texture, const ImVec2 _size)

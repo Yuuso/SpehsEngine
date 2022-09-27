@@ -1,6 +1,9 @@
 #include "stdafx.h"
 #include "SpehsEngine/Core/ScopeProfiler.h"
 
+#include "SpehsEngine/Core/ScopeProfilerTypes.h"
+#include "boost/signals2/connection.hpp"
+#include "boost/signals2/signal.hpp"
 #include <map>
 #include <mutex>
 #include <thread>
@@ -11,7 +14,7 @@ namespace
 {
 	// Shared static data
 	std::recursive_mutex flushSignalMutex;
-	boost::signals2::signal<void(const se::ScopeProfiler::ThreadData&)> flushSignal;
+	boost::signals2::signal<void(const se::ScopeProfilerThreadData&)> flushSignal;
 
 	// Thread local storage
 	struct EnteredSection
@@ -19,8 +22,8 @@ namespace
 		std::string name;
 		se::time::Time enterTime;
 	};
-	static thread_local se::ScopeProfiler::ThreadData threadData;
-	static thread_local std::stack<se::ScopeProfiler::Section*> sectionStack;
+	static thread_local se::ScopeProfilerThreadData threadData;
+	static thread_local std::stack<se::ScopeProfilerSection*> sectionStack;
 	static thread_local se::time::Time lastFlushTime;
 
 	void evaluateAutomaticFlush()
@@ -37,19 +40,19 @@ namespace
 		}
 	}
 
-	size_t getSectionCountRecursively(const std::map<se::time::Time, se::ScopeProfiler::Section>& sections)
+	size_t getSectionCountRecursively(const std::map<se::time::Time, se::ScopeProfilerSection>& sections)
 	{
 		size_t count = sections.size();
-		for (const std::pair<const se::time::Time, se::ScopeProfiler::Section>& pair : sections)
+		for (const std::pair<const se::time::Time, se::ScopeProfilerSection>& pair : sections)
 		{
 			count += getSectionCountRecursively(pair.second.children);
 		}
 		return count;
 	};
 
-	void removeFinishedSectionsRecursively(std::map<se::time::Time, se::ScopeProfiler::Section>& sections)
+	void removeFinishedSectionsRecursively(std::map<se::time::Time, se::ScopeProfilerSection>& sections)
 	{
-		for (std::map<se::time::Time, se::ScopeProfiler::Section>::iterator it = sections.begin(); it != sections.end();)
+		for (std::map<se::time::Time, se::ScopeProfilerSection>::iterator it = sections.begin(); it != sections.end();)
 		{
 			if (it->second.endTime)
 			{
@@ -63,11 +66,11 @@ namespace
 		}
 	}
 
-	size_t removeFinishedSectionsRecursively(std::map<se::time::Time, se::ScopeProfiler::Section>& sections, const size_t maxRemoveCount)
+	size_t removeFinishedSectionsRecursively(std::map<se::time::Time, se::ScopeProfilerSection>& sections, const size_t maxRemoveCount)
 	{
 		size_t removeCount = 0u;
 
-		for (std::map<se::time::Time, se::ScopeProfiler::Section>::iterator it = sections.begin(); it != sections.end();)
+		for (std::map<se::time::Time, se::ScopeProfilerSection>::iterator it = sections.begin(); it != sections.end();)
 		{
 			// Recurse towards leaf and start removing from there
 			removeCount += removeFinishedSectionsRecursively(it->second.children, maxRemoveCount - removeCount);
@@ -87,11 +90,11 @@ namespace
 		return removeCount;
 	}
 
-	void addSectionsRecursively(std::map<se::time::Time, se::ScopeProfiler::Section>& destination, const std::map<se::time::Time, se::ScopeProfiler::Section>& source)
+	void addSectionsRecursively(std::map<se::time::Time, se::ScopeProfilerSection>& destination, const std::map<se::time::Time, se::ScopeProfilerSection>& source)
 	{
-		for (const std::pair<const se::time::Time, se::ScopeProfiler::Section>& pair : source)
+		for (const std::pair<const se::time::Time, se::ScopeProfilerSection>& pair : source)
 		{
-			se::ScopeProfiler::Section& section = destination[pair.first];
+			se::ScopeProfilerSection& section = destination[pair.first];
 			section.name = pair.second.name;
 			section.function = pair.second.function;
 			section.file = pair.second.file;
@@ -109,7 +112,7 @@ namespace se
 #if SE_ENABLE_SCOPE_PROFILER == SE_TRUE
 		// Add section
 		const se::time::Time now = se::time::getProfilerTimestamp();
-		se::ScopeProfiler::Section& section = sectionStack.empty() ? threadData.sections[now] : sectionStack.top()->children[now];
+		se::ScopeProfilerSection& section = sectionStack.empty() ? threadData.sections[now] : sectionStack.top()->children[now];
 		section.name = name;
 		section.function = function;
 		section.file = file;
@@ -146,7 +149,7 @@ namespace se
 		threadData.threadId = std::this_thread::get_id();
 
 		// Copy thread data to non-thread local memory
-		ThreadData threadDataCopy = threadData;
+		ScopeProfilerThreadData threadDataCopy = threadData;
 
 		// Clear all excess data from thread local storage
 		removeFinishedSectionsRecursively(threadData.sections);
@@ -156,29 +159,29 @@ namespace se
 		flushSignal(threadDataCopy);
 	}
 
-	void ScopeProfiler::connectToFlushSignal(boost::signals2::scoped_connection& scopedConnection, const std::function<void(const ThreadData&)>& callback)
+	void ScopeProfiler::connectToFlushSignal(boost::signals2::scoped_connection& scopedConnection, const std::function<void(const ScopeProfilerThreadData&)>& callback)
 	{
 		std::lock_guard<std::recursive_mutex> lock(flushSignalMutex);
 		scopedConnection = flushSignal.connect(callback);
 	}
 
-	size_t ScopeProfiler::Section::getDepth() const
+	size_t ScopeProfilerSection::getDepth() const
 	{
 		size_t maxDepth = 0;
-		for (const std::pair<time::Time, Section>& pair : children)
+		for (const std::pair<time::Time, ScopeProfilerSection>& pair : children)
 		{
 			maxDepth = std::max(maxDepth, pair.second.getDepth());
 		}
 		return maxDepth + 1;
 	}
 
-	void ScopeProfiler::ThreadData::add(const ThreadData& other)
+	void ScopeProfilerThreadData::add(const ScopeProfilerThreadData& other)
 	{
 		se_assert(threadId == other.threadId);
 		addSectionsRecursively(sections, other.sections);
 	}
 
-	void ScopeProfiler::ThreadData::truncate(const size_t preferredSectionCount)
+	void ScopeProfilerThreadData::truncate(const size_t preferredSectionCount)
 	{
 		const size_t sectionCount = getSectionCountRecursively(sections);
 		if (sectionCount > preferredSectionCount)
@@ -188,7 +191,7 @@ namespace se
 		}
 	}
 
-	size_t ScopeProfiler::ThreadData::getSectionCountRecursive() const
+	size_t ScopeProfilerThreadData::getSectionCountRecursive() const
 	{
 		return getSectionCountRecursively(sections);
 	}

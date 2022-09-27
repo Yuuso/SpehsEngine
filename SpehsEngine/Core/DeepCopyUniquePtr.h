@@ -56,6 +56,25 @@ namespace se
 			return *this;
 		}
 
+		DeepCopyUniquePtr<T, D>& operator=(const std::unique_ptr<T, D>& other)
+		{
+			if (other)
+			{
+				impl.reset(copy(*other));
+			}
+			else
+			{
+				impl.reset();
+			}
+			return *this;
+		}
+
+		DeepCopyUniquePtr<T, D>& operator=(std::unique_ptr<T, D>&& move)
+		{
+			impl = std::move(move);
+			return *this;
+		}
+
 		explicit operator bool() const
 		{
 			return bool(impl);

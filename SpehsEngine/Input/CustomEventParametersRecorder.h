@@ -1,6 +1,7 @@
 #pragma once
 
 #include "SpehsEngine/Input/CustomEventParameters.h"
+#include <optional>
 
 
 namespace se
