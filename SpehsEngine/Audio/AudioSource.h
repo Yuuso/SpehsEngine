@@ -112,16 +112,16 @@ namespace se
 
 			glm::vec3 position;
 			glm::vec3 velocity;
-			bool looping = false;
-			time::Time loopPoint = time::Time::zero;
-			bool protectedState = false;
-			float speed = 1.0f;
-			InaudibleBehavior inaudibleBehavior;
-			float minDistance;
-			float maxDistance;
-			DistanceAttenuation distanceAttenuation;
-			float attenuationRolloff;
-			float dopplerFactor;
+			bool looping								= false;
+			time::Time loopPoint						= time::Time::zero;
+			bool protectedState							= false;
+			float speed									= 1.0f;
+			InaudibleBehavior inaudibleBehavior			= InaudibleBehavior::Nothing;
+			float minDistance							= 0.0f;
+			float maxDistance							= 0.0f;
+			DistanceAttenuation distanceAttenuation		= DistanceAttenuation::Linear;
+			float attenuationRolloff					= 1.0f;
+			float dopplerFactor							= 1.0f;
 
 			Bus* outputBus = nullptr;
 			boost::signals2::scoped_connection busDestroyedConnection;
