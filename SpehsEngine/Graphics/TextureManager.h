@@ -30,6 +30,7 @@ namespace se
 			std::shared_ptr<Texture> create(const std::string_view _name, const std::string_view _texture, const TextureModes _textureModes = TextureModes());
 			std::shared_ptr<Texture> create(const std::string_view _name, const TextureInput& _input, const TextureModes _textureModes = TextureModes());
 			std::shared_ptr<Texture> find(const std::string_view _name) const;
+			void remove(std::string_view _name);
 
 		private:
 

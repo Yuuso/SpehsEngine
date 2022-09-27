@@ -1,416 +1,168 @@
 #include "stdafx.h"
-
-#include "SpehsEngine/Core/SE_Time.h"
-#include "SpehsEngine/Core/DeltaTimeSystem.h"
 #include "SpehsEngine/Audio/AudioEngine.h"
-#include "SpehsEngine/Audio/OpenALError.h"
-#include "SpehsEngine/Audio/SoundSource.h"
 
-#include <AL\al.h>
-#include <AL\alc.h>
-
-#include <algorithm>
-#include <iostream>
-
-
-#define DEFAULT_MAX_SOURCES 255
-
-
-glm::vec3 positionCorrectionFactor = glm::vec3(1.0f, 1.0f, 1.0f);
-
-extern const float defaultRollOffFactor = 1.0f;
-
-
-namespace audioVar
-{
-	std::vector<se::audio::AudioEngine::SourceObject*> sourcePool;
-	/*
-	default: {0, 0, 1}
-	*/
-	glm::vec3 listenerPosition;
-
-	/*
-	default: {0, 0, 0}
-	*/
-	glm::vec3 listenerVelocity;
-
-	/*
-	default: {0, 0, -1, 0, 1, 0}
-	*/
-	struct Orientation
-	{
-		Orientation(){}
-		union
-		{
-			float data[6];
-			struct
-			{
-				glm::vec3 fw;
-				glm::vec3 up;
-			};
-		};
-	};
-	Orientation listenerOrientation;
-
-	/*
-	range: 0.0 -
-	default: 1.0
-
-	Each division by 2 equals an attenuation of about -6dB.
-	Each multiplicaton by 2 equals an amplification of about +6dB.
-
-	0.0 is silent.
-	*/
-	float listenerGain;
-
-	/*
-	Sound sources can belong to an audio channel.
-	Each channel can have their gain level set separately, and the engine automatically updates these changes in the update().
-	A negative channel index refers to plain master channel.
-	*/
-	class AudioChannel
-	{
-	public:
-		/*Enables need to update gain for sound sources, if change is detected*/
-		void setGain(const float gain)
-		{
-			if (_gain == gain)
-				return;
-			_gain = gain;
-			_modified = true;
-		}
-		/*NOTE: query clears modified state*/
-		bool channelModified()
-		{
-			if (_modified)
-			{
-				_modified = false;
-				return true;
-			}
-			return false;
-		}
-		float getGain() const
-		{
-			return _gain;
-		}
-	private:
-		float _gain = 1.0f;
-		bool _modified = false;
-	};
-	/*
-	Audio channels exist in a vector, not visible to outside.
-	Channel indices can be referred to without "instantiating a channel"
-	*/
-	std::vector<AudioChannel> audioChannels;
-
-	size_t maxSources;
-
-	ALCdevice* device;
-	ALCcontext* context;
-
-	se::time::DeltaTimeSystem deltaTimeSystem;
-}
+#include "SpehsEngine/Audio/Internal/GlobalBackend.h"
 
 
 namespace se
 {
 	namespace audio
 	{
-		float AudioEngine::deltaSeconds = 0.0f;
-		float AudioEngine::masterVolume = 1.0f;
-
-		void AudioEngine::init()
+		AudioEngine::AudioEngine()
 		{
-			audioVar::maxSources = DEFAULT_MAX_SOURCES;
-			audioVar::listenerGain = 1.0f;
-			audioVar::listenerPosition = glm::vec3(0.0f, 0.0f, 1.0f);
-			audioVar::listenerVelocity = glm::vec3(0.0f, 0.0f, 0.0f);
-			audioVar::listenerOrientation.up = glm::vec3(0.0f, 1.0f, 0.0f);
-			audioVar::listenerOrientation.fw = glm::vec3(0.0f, 0.0f, -1.0f);
-			audioVar::deltaTimeSystem.init();
-
-			audioVar::device = alcOpenDevice(NULL);
-			if (!audioVar::device)
+			if (initialized)
 			{
-				log::error("Opening OpenAL device failed!");
+				log::fatal("You can only have one AudioEngine!");
+				return;
+			}
+			initialized = true;
+
+			se_assert(!globalSoloud);
+			globalSoloud = new SoLoud::Soloud;
+			auto result = globalSoloud->init(SoLoud::Soloud::CLIP_ROUNDOFF);
+			if (result != 0)
+			{
+				log::fatal("Failed to initialize AudioEngine, " + std::string(globalSoloud->getErrorString(result)));
+				return;
 			}
 
-			audioVar::context = alcCreateContext(audioVar::device, NULL);
-			if (!alcMakeContextCurrent(audioVar::context))
+			const char* backendName = globalSoloud->getBackendString();
+			if (!backendName)
 			{
-				log::error("Failed to make OpenAL context current!");
+				log::warning("AudioEngine backend is null!");
+			}
+			else
+			{
+				log::info("AudioEngine initialized, " + std::string(backendName));
 			}
 
-			checkOpenALCError(audioVar::device, __FILE__, __LINE__);
+			setVoiceLimit(128u);
+			globalSoloud->setGlobalVolume(1.0f);
 
-			for (unsigned i = 0; i < 16; i++) //Bit of a messy solution but this isn't called very often so what ever.
-				audioVar::sourcePool.push_back(new SourceObject());
+			masterBus = std::make_unique<Bus>();
+			masterBus->makeMasterBus();
 		}
-		void AudioEngine::uninit()
+		AudioEngine::~AudioEngine()
 		{
-			for (unsigned i = 0; i < audioVar::sourcePool.size(); i++)
-			{
-				delete audioVar::sourcePool[i];
-			}
-			audioVar::sourcePool.clear();
-			audioVar::device = alcGetContextsDevice(audioVar::context);
-			audioVar::audioChannels.clear();
-			alcMakeContextCurrent(NULL);
-			alcDestroyContext(audioVar::context);
-			alcCloseDevice(audioVar::device);
+			masterBus.reset();
+
+			se_assert(globalSoloud);
+			globalSoloud->deinit();
+			delete globalSoloud;
+			globalSoloud = nullptr;
+
+			se_assert(initialized);
+			initialized = false;
 		}
 
 		void AudioEngine::update()
 		{
-			//Delta time system
-			audioVar::deltaTimeSystem.update();
-			deltaSeconds = audioVar::deltaTimeSystem.deltaSeconds;
-
-			//Audio channel gain change detection
-			for (unsigned c = 0; c < audioVar::audioChannels.size(); c++)
+			if (autoVelocityEnabled && lastUpdate != se::time::Time::zero)
 			{
-				if (audioVar::audioChannels[c].channelModified())
-				{
-					//Notify every sound source that belongs to this channel
-					for (unsigned s = 0; s < audioVar::sourcePool.size(); s++)
-					{
-						if (audioVar::sourcePool[s]->soundPtr)
-						{
-							audioVar::sourcePool[s]->soundPtr->onChannelModified();
-						}
-					}
-				}
+				const float deltaSeconds = (se::time::now() - lastUpdate).asSeconds();
+				listener.velocity = (listener.position - lastListenerPosition) / deltaSeconds;
 			}
+			globalSoloud->set3dListenerParameters(
+				listener.position.x,
+				listener.position.y,
+				listener.position.z,
+				listener.direction.x,
+				listener.direction.y,
+				listener.direction.z,
+				listener.up.x,
+				listener.up.y,
+				listener.up.z,
+				listener.velocity.x,
+				listener.velocity.y,
+				listener.velocity.z
+			);
+			globalSoloud->update3dAudio();
+			lastUpdate = se::time::now();
+			lastListenerPosition = listener.position;
+		}
 
-			//Source pool
-			for (unsigned i = 0; i < audioVar::sourcePool.size(); i++)
+		void AudioEngine::stopAllSounds()
+		{
+			globalSoloud->stopAll();
+		}
+		void AudioEngine::setVoiceLimit(unsigned int _limit)
+		{
+			auto result = globalSoloud->setMaxActiveVoiceCount(_limit);
+			if (result != 0)
 			{
-				if (audioVar::sourcePool[i]->soundPtr)
-				{
-					audioVar::sourcePool[i]->soundPtr->update();
-				}
+				log::error("Failed to set max active voice limit to " + std::to_string(_limit) + ", " + std::string(globalSoloud->getErrorString(result)));
+				return;
 			}
-		}
-
-		void AudioEngine::setMaxSources(const unsigned int _maxSources)
-		{
-			audioVar::maxSources = _maxSources;
-		}
-
-		void AudioEngine::setListenerPosition(const glm::vec2& _pos)
-		{
-			audioVar::listenerPosition.x = _pos.x;
-			audioVar::listenerPosition.y = _pos.y;
-			alListener3f(AL_POSITION,
-						 audioVar::listenerPosition.x * positionCorrectionFactor.x,
-						 audioVar::listenerPosition.y * positionCorrectionFactor.y,
-						 audioVar::listenerPosition.z * positionCorrectionFactor.z);
-		}
-		void AudioEngine::setListenerPosition(const glm::vec3& _pos)
-		{
-			audioVar::listenerPosition.x = _pos.x;
-			audioVar::listenerPosition.y = _pos.y;
-			audioVar::listenerPosition.z = _pos.z;
-			alListener3f(AL_POSITION,
-						 audioVar::listenerPosition.x * positionCorrectionFactor.x,
-						 audioVar::listenerPosition.y * positionCorrectionFactor.y,
-						 audioVar::listenerPosition.z * positionCorrectionFactor.z);
-		}
-		void AudioEngine::setListenerVelocity(const glm::vec2& _vel)
-		{
-			audioVar::listenerVelocity.x = _vel.x;
-			audioVar::listenerVelocity.y = _vel.y;
-			alListener3f(AL_VELOCITY,
-						 audioVar::listenerVelocity.x * positionCorrectionFactor.x,
-						 audioVar::listenerVelocity.y * positionCorrectionFactor.y,
-						 audioVar::listenerVelocity.z * positionCorrectionFactor.z);
-		}
-		void AudioEngine::setListenerVelocity(const glm::vec3& _vel)
-		{
-			audioVar::listenerVelocity.x = _vel.x;
-			audioVar::listenerVelocity.y = _vel.y;
-			audioVar::listenerVelocity.z = _vel.z;
-			alListener3f(AL_VELOCITY,
-						 audioVar::listenerVelocity.x * positionCorrectionFactor.x,
-						 audioVar::listenerVelocity.y * positionCorrectionFactor.y,
-						 audioVar::listenerVelocity.z * positionCorrectionFactor.z);
 		}
 		void AudioEngine::setListenerUp(const glm::vec3& _up)
 		{
-			audioVar::listenerOrientation.up = _up;
-			alListenerfv(AL_ORIENTATION, audioVar::listenerOrientation.data);
+			listener.up = _up;
 		}
-		void AudioEngine::setListenerForward(const glm::vec3& _forward)
+		void AudioEngine::setListenerDirection(const glm::vec3& _direction)
 		{
-			audioVar::listenerOrientation.fw = _forward;
-			alListenerfv(AL_ORIENTATION, audioVar::listenerOrientation.data);
+			listener.direction = _direction;
 		}
-		void AudioEngine::setListenerGain(const float _gain)
+		void AudioEngine::setListenerPosition(const glm::vec3& _position)
 		{
-			audioVar::listenerGain = _gain;
-			alListenerf(AL_GAIN, _gain * masterVolume);
+			listener.position = _position;
 		}
-		void AudioEngine::setChannelGain(const int _channelIndex, float _gain)
+		void AudioEngine::setListenerVelocity(const glm::vec3& _velocity)
 		{
-			/*Notify user if creating absurdly large channels quantities*/
-#ifdef _DEBUG
-			if (_channelIndex > 10000)
-				log::warning("Using over 10000 audio channels!");
-#endif
-
-			/*Prevent channel gain from going below 0*/
-			if (_gain < 0.0f)
-				_gain = 0.0f;
-
-			if (_channelIndex < 0)
-			{//Default, master channel
-				setListenerGain(_gain);
-				return;
-			}
-			else if (_channelIndex >= (int)audioVar::audioChannels.size()) // TODO negative channel index not ok!
-			{/*Automatically resize the channel vector if referring to a channel that does not exist yet*/
-				audioVar::audioChannels.resize(_channelIndex + 1);
-			}
-
-			/*Set channel gain*/
-			audioVar::audioChannels[_channelIndex].setGain(_gain);
+			listener.velocity = _velocity;
 		}
-		float AudioEngine::getChannelGain(const int _channelIndex)
+		void AudioEngine::setAutoVelocityEnabled(bool _enabled)
 		{
-			/*Notify user if creating absurdly large channels quantities*/
-#ifdef _DEBUG
-			if (_channelIndex > 10000)
-				log::warning("Using over 10000 audio channels!");
-#endif
-
-			if (_channelIndex < 0)
-			{//Default, master channel
-				return getListenerGain();
-			}
-			else if (_channelIndex >= (int)audioVar::audioChannels.size()) // TODO negative channel index not ok!
-			{/*Automatically resize the channel vector if referring to a channel that does not exist yet*/
-				audioVar::audioChannels.resize(_channelIndex + 1);
-			}
-
-			/*Get channel gain*/
-			return audioVar::audioChannels[_channelIndex].getGain();
+			autoVelocityEnabled = _enabled;
+			lastListenerPosition = listener.position;
 		}
-		void AudioEngine::setPositionCorrectionFactor(const glm::vec2& _poscor)
+		void AudioEngine::setDistanceDelayEnabled(bool _value)
 		{
-			positionCorrectionFactor.x = _poscor.x;
-			positionCorrectionFactor.y = _poscor.y;
-			alListener3f(AL_POSITION,
-						 audioVar::listenerPosition.x * positionCorrectionFactor.x,
-						 audioVar::listenerPosition.y * positionCorrectionFactor.y,
-						 audioVar::listenerPosition.z * positionCorrectionFactor.z);
-			alListener3f(AL_VELOCITY,
-						 audioVar::listenerVelocity.x * positionCorrectionFactor.x,
-						 audioVar::listenerVelocity.y * positionCorrectionFactor.y,
-						 audioVar::listenerVelocity.z * positionCorrectionFactor.z);
+			globalDefaultEnableDistanceDelay = _value;
 		}
-		void AudioEngine::setPositionCorrectionFactor(const glm::vec3& _poscor)
+		void AudioEngine::setDefaultDopplerFactor(float _factor)
 		{
-			positionCorrectionFactor = _poscor;
-			alListener3f(AL_POSITION,
-						 audioVar::listenerPosition.x * positionCorrectionFactor.x,
-						 audioVar::listenerPosition.y * positionCorrectionFactor.y,
-						 audioVar::listenerPosition.z * positionCorrectionFactor.z);
-			alListener3f(AL_VELOCITY,
-						 audioVar::listenerVelocity.x * positionCorrectionFactor.x,
-						 audioVar::listenerVelocity.y * positionCorrectionFactor.y,
-						 audioVar::listenerVelocity.z * positionCorrectionFactor.z);
+			globalDefaultDopplerFactor = _factor;
 		}
-		glm::vec2 AudioEngine::getListenerPosition()
+		void AudioEngine::setDefaultAttenuationMinDistance(float _min)
 		{
-			return glm::vec2(audioVar::listenerPosition.x, audioVar::listenerPosition.y);
+			globalDefaultMinDistance = _min;
 		}
-		glm::vec2 AudioEngine::getListenerVelocity()
+		void AudioEngine::setDefaultAttenuationMaxDistance(float _max)
 		{
-			return glm::vec2(audioVar::listenerVelocity.x, audioVar::listenerVelocity.y);
+			globalDefaultMaxDistance = _max;
 		}
-		float AudioEngine::getListenerGain()
+		void AudioEngine::setDefaultDistanceAttenuation(DistanceAttenuation _attenuation)
 		{
-			return audioVar::listenerGain;
+			globalDefaultDistanceAttenuation = _attenuation;
+		}
+		void AudioEngine::setDefaultAttenuationRolloffFactor(float _factor)
+		{
+			globalDefaultDistanceAttenuationRolloffFactor = _factor;
 		}
 
-		void AudioEngine::updateGain()
+		Bus& AudioEngine::getMasterBus()
 		{
-			alListenerf(AL_GAIN, audioVar::listenerGain * masterVolume);
+			return *masterBus;
 		}
-
-		bool AudioEngine::getFreeSource(SoundSource* _soundSource)
+		unsigned int AudioEngine::getVoiceLimit() const
 		{
-			for (unsigned i = 0; i < audioVar::sourcePool.size(); i++)
-			{
-				if (!audioVar::sourcePool[i]->soundPtr)
-				{
-					if (audioVar::sourcePool[i]->sourceID != 0)
-					{
-						//Found free source!
-						audioVar::sourcePool[i]->soundPtr = _soundSource;
-						_soundSource->source = audioVar::sourcePool[i];
-						return true;
-					}
-					else
-					{
-						//Need to generate source
-						alGenSources(1, &audioVar::sourcePool[i]->sourceID);
-						checkOpenALErrors(__FILE__, __LINE__);
-						alSourcef(audioVar::sourcePool[i]->sourceID, AL_ROLLOFF_FACTOR, defaultRollOffFactor);
-						if (audioVar::sourcePool[i]->sourceID != 0)
-						{
-							audioVar::sourcePool[i]->soundPtr = _soundSource;
-							_soundSource->source = audioVar::sourcePool[i];
-							return true;
-						}
-					}
-				}
-			}
-
-			if (audioVar::sourcePool.size() < audioVar::maxSources)
-			{
-				//Try making more sources
-				size_t amount = std::min(audioVar::maxSources, audioVar::sourcePool.size() * 2);
-				for (size_t i = audioVar::sourcePool.size(); i < amount; i++) //Bit of a messy solution but this isn't called very often so what ever.
-					audioVar::sourcePool.push_back(new SourceObject());
-				return getFreeSource(_soundSource);
-			}
-
-			//If nothing else > steal it from someone with 'lower' priority
-			//TODO: Remove unnecessary sorting
-			std::sort(audioVar::sourcePool.begin(), audioVar::sourcePool.end(), [](SourceObject* _a, SourceObject* _b)
-			{
-				return _a->soundPtr->getPriority() > _b->soundPtr->getPriority();
-			});
-			for (unsigned i = 0; i < audioVar::sourcePool.size(); i++)
-			{
-				if (audioVar::sourcePool[i]->soundPtr->getPriority() >= _soundSource->getPriority())
-				{
-					if (audioVar::sourcePool[i]->soundPtr->getPriority() != 0)
-					{
-						audioVar::sourcePool[i]->soundPtr->removeSource();
-						audioVar::sourcePool[i]->soundPtr = _soundSource;
-						_soundSource->source = audioVar::sourcePool[i];
-						return true;
-					}
-				}
-			}
-
-			//For now just steal something...
-			for (unsigned i = 0; i < audioVar::sourcePool.size(); i++)
-			{
-				if (audioVar::sourcePool[i]->soundPtr->getPriority() != 0)
-				{
-					audioVar::sourcePool[i]->soundPtr->removeSource();
-					audioVar::sourcePool[i]->soundPtr = _soundSource;
-					_soundSource->source = audioVar::sourcePool[i];
-					return true;
-				}
-			}
-
-			//This should be quite rare
-			log::warning("Could not find a free sound source object!");
-			return false;
+			return globalSoloud->getMaxActiveVoiceCount();
+		}
+		const glm::vec3& AudioEngine::getListenerUp() const
+		{
+			return listener.up;
+		}
+		const glm::vec3& AudioEngine::getListenerDirection() const
+		{
+			return listener.direction;
+		}
+		const glm::vec3& AudioEngine::getListenerPosition() const
+		{
+			return listener.position;
+		}
+		const glm::vec3& AudioEngine::getListenerVelocity() const
+		{
+			return listener.velocity;
 		}
 	}
 }

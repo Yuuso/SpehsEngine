@@ -47,16 +47,25 @@ namespace se
 			if (window->getConfinedInput())
 				enableBit(windowFlags, SDL_WINDOW_INPUT_GRABBED);
 			//SDL_WINDOW_ALLOW_HIGHDPI
+			//SDL_WINDOW_OPENGL
+			//SDL_WINDOW_VULKAN
 
 			const int x = window->getX() != -1 ? window->getX() : SDL_WINDOWPOS_UNDEFINED;
 			const int y = window->getY() != -1 ? window->getY() : SDL_WINDOWPOS_UNDEFINED;
 
-			sdlWindow = SDL_CreateWindow(window->getName().c_str(),
-										 x,
-										 y,
-										 window->getWidth(),
-										 window->getHeight(),
-										 windowFlags);
+			sdlWindow = SDL_CreateWindow(
+				window->getName().c_str(),
+				x,
+				y,
+				window->getWidth(),
+				window->getHeight(),
+				windowFlags);
+
+			if (!sdlWindow)
+			{
+				se::log::fatal("Failed to create a window!");
+				return;
+			}
 
 			if (window->getX() == -1 || window->getY() == -1)
 			{
@@ -72,36 +81,9 @@ namespace se
 			window->updateFlags = 0;
 			window->displayIndex = SDL_GetWindowDisplayIndex(sdlWindow);
 
-			SDL_SysWMinfo wmi;
-			SDL_VERSION(&wmi.version);
-			if (SDL_GetWindowWMInfo(sdlWindow, &wmi) != SDL_TRUE)
+			if (!isDefault)
 			{
-				std::string error = "Unable to get SDL window info: ";
-				error += SDL_GetError();
-				se::log::error(error);
-				return;
-			}
-
-			if (isDefault)
-			{
-				bgfx::PlatformData platformData;
-
-#				if defined(_WIN32)
-					platformData.ndt = NULL;
-#				else
-#					error Window handling not implemented!
-#				endif
-
-				platformData.nwh = (void*)wmi.info.win.window;
-
-				platformData.context = NULL;
-				platformData.backBuffer = NULL;
-				platformData.backBufferDS = NULL;
-				bgfx::setPlatformData(platformData);
-			}
-			else
-			{
-				frameBufferHandle = bgfx::createFrameBuffer(wmi.info.win.window, window->getWidth(), window->getHeight());
+				frameBufferHandle = bgfx::createFrameBuffer(getNativeWindowHandle(), window->getWidth(), window->getHeight());
 			}
 		}
 		WindowInternal::~WindowInternal()
@@ -145,8 +127,7 @@ namespace se
 			_renderContext.currentWindow = this;
 			for (size_t i = 0; i < window->views.size(); )
 			{
-				if (bgfx::isValid(frameBufferHandle))
-					bgfx::setViewFrameBuffer(_renderContext.currentViewId, frameBufferHandle);
+				bgfx::setViewFrameBuffer(_renderContext.currentViewId, frameBufferHandle);
 				se_assert(!window->views[i]->wasDestroyed());
 				window->views[i]->render(_renderContext);
 				i++;
@@ -210,13 +191,13 @@ namespace se
 		void WindowInternal::update()
 		{
 			se_assert(window);
-			if (checkBit(window->updateFlags, WindowUpdateFlag::PositionChanged))
-			{
-				SDL_SetWindowPosition(sdlWindow, window->getX(), window->getY());
-			}
 			if (checkBit(window->updateFlags, WindowUpdateFlag::SizeChanged))
 			{
 				SDL_SetWindowSize(sdlWindow, window->getWidth(), window->getHeight());
+			}
+			if (checkBit(window->updateFlags, WindowUpdateFlag::PositionChanged))
+			{
+				SDL_SetWindowPosition(sdlWindow, window->getX(), window->getY());
 			}
 			if (checkBit(window->updateFlags, WindowUpdateFlag::ResizableChanged))
 			{
@@ -254,16 +235,16 @@ namespace se
 			{
 				SDL_SetWindowGrab(sdlWindow, (SDL_bool)!window->getConfinedInput());
 			}
+			if (checkBit(window->updateFlags, WindowUpdateFlag::OpacityChanged))
+			{
+				SDL_SetWindowOpacity(sdlWindow, window->getOpacity());
+			}
 			if (checkBit(window->updateFlags, WindowUpdateFlag::ShownChanged))
 			{
 				if (window->isShown())
 					SDL_ShowWindow(sdlWindow);
 				else
 					SDL_HideWindow(sdlWindow);
-			}
-			if (checkBit(window->updateFlags, WindowUpdateFlag::OpacityChanged))
-			{
-				SDL_SetWindowOpacity(sdlWindow, window->getOpacity());
 			}
 			window->updateFlags = 0;
 		}
@@ -274,18 +255,27 @@ namespace se
 			{
 				case SDL_WINDOWEVENT_SHOWN:
 				{
-					window->shown = true;
+					if (!checkBit(window->updateFlags, WindowUpdateFlag::ShownChanged))
+					{
+						window->shown = true;
+					}
 					break;
 				}
 				case SDL_WINDOWEVENT_HIDDEN:
 				{
-					window->shown = false;
+					if (!checkBit(window->updateFlags, WindowUpdateFlag::ShownChanged))
+					{
+						window->shown = false;
+					}
 					break;
 				}
 				case SDL_WINDOWEVENT_MOVED:
 				{
-					window->x = _event.data1;
-					window->y = _event.data2;
+					if (!checkBit(window->updateFlags, WindowUpdateFlag::PositionChanged))
+					{
+						window->x = _event.data1;
+						window->y = _event.data2;
+					}
 					window->displayIndex = SDL_GetWindowDisplayIndex(sdlWindow);
 					break;
 				}
@@ -306,8 +296,12 @@ namespace se
 					else
 					{
 						window->aspectRatio = newAspectRatio;
-						window->width = newWidth;
-						window->height = newHeight;
+
+						if (!checkBit(window->updateFlags, WindowUpdateFlag::SizeChanged))
+						{
+							window->width = newWidth;
+							window->height = newHeight;
+						}
 
 						if (isDefault)
 						{
@@ -316,7 +310,9 @@ namespace se
 						else
 						{
 							if (bgfx::isValid(frameBufferHandle))
+							{
 								bgfx::destroy(frameBufferHandle);
+							}
 
 							SDL_SysWMinfo wmi;
 							SDL_VERSION(&wmi.version);
@@ -334,17 +330,28 @@ namespace se
 				}
 				case SDL_WINDOWEVENT_MINIMIZED:
 				{
-					window->minimized = true;
+					if (!checkBit(window->updateFlags, WindowUpdateFlag::Minimized) &&
+						 checkBit(window->updateFlags, WindowUpdateFlag::Restored))
+					{
+						window->minimized = true;
+					}
 					break;
 				}
 				case SDL_WINDOWEVENT_MAXIMIZED:
 				{
-					window->maximized = true;
+					if (!checkBit(window->updateFlags, WindowUpdateFlag::Maximized))
+					{
+						window->maximized = true;
+					}
 					break;
 				}
 				case SDL_WINDOWEVENT_RESTORED:
 				{
-					window->minimized = false;
+					if (!checkBit(window->updateFlags, WindowUpdateFlag::Minimized) &&
+						checkBit(window->updateFlags, WindowUpdateFlag::Restored))
+					{
+						window->minimized = false;
+					}
 					break;
 				}
 				case SDL_WINDOWEVENT_ENTER:
@@ -370,12 +377,6 @@ namespace se
 				case SDL_WINDOWEVENT_CLOSE:
 				{
 					window->quitRequested = true;
-					if (isDefault)
-					{
-						SDL_Event quitEvent;
-						quitEvent.type = SDL_QUIT;
-						SDL_PushEvent(&quitEvent);
-					}
 					break;
 				}
 			}
@@ -395,6 +396,19 @@ namespace se
 		SDL_Window* WindowInternal::getSDLWindow()
 		{
 			return sdlWindow;
+		}
+		void* WindowInternal::getNativeWindowHandle()
+		{
+			SDL_SysWMinfo wmi;
+			SDL_VERSION(&wmi.version);
+			if (SDL_GetWindowWMInfo(sdlWindow, &wmi) != SDL_TRUE)
+			{
+				std::string error = "Unable to get SDL window info: ";
+				error += SDL_GetError();
+				se::log::error(error);
+				return nullptr;
+			}
+			return wmi.info.win.window;
 		}
 	}
 }

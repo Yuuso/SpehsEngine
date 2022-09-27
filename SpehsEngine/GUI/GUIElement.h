@@ -45,6 +45,7 @@ namespace se
 			void									onHover(std::function<void(GUIElement&)> _callback);
 			void									setHoverProperties(const GUIElementProperties& _properties);
 			void									setPressedProperties(const GUIElementProperties& _properties);
+			void									setInheritInputStatus(bool _value);
 
 			static GUIUnit							resolveUnitType(GUIUnit _unit, bool _isWidth);
 			float									unitToPixels(GUIUnit _unit, const glm::vec2& _viewSize) const;
@@ -108,6 +109,7 @@ namespace se
 			bool									globalVisible		= true;
 			glm::vec2								lastViewSize;
 			GUIElementInputStatus					inputStatus			= GUIElementInputStatus::Normal;
+			bool									inheritInputStatus	= false;
 
 			// Parent / children
 			GUIElement*								parent				= nullptr;

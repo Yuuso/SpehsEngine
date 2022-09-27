@@ -39,7 +39,8 @@ namespace se
 			enum : uint8_t
 			{
 				Color	= 0,
-				Normal	= 1
+				Normal	= 1,
+				Roughness = 2,
 			};
 		}
 
@@ -50,7 +51,8 @@ namespace se
 			FlatTexture,
 			Skybox,
 			Text,
-			Phong
+			Phong,
+			PhongCubemap,
 		};
 
 		std::shared_ptr<Material> createMaterial(const DefaultMaterialType _type, ShaderManager& _shaderManager);

@@ -5,6 +5,7 @@
 #include "se_lights.sh"
 
 
+#define CALC_NORMAL_CUBEMAP(__coord) normalize(mul(mtxFromCols(normalize(v_tangent), normalize(v_bitangent), normalize(v_normal)), textureCube(s_texNormal, __coord).rgb * 2.0 - 1.0));
 #define CALC_NORMAL_TEXTURE normalize(mul(mtxFromCols(normalize(v_tangent), normalize(v_bitangent), normalize(v_normal)), texture2D(s_texNormal, v_texcoord0).rgb * 2.0 - 1.0));
 #define CALC_NORMAL normalize(mul(mtxFromCols(normalize(v_tangent), normalize(v_bitangent), normalize(v_normal)), vec3(0.5, 0.5, 1.0) * 2.0 - 1.0));
 
@@ -16,7 +17,7 @@ uniform vec4 u_phong_ShininessStrength;
 #define u_phongShininess			u_phong_ShininessStrength.x;
 #define u_phongSpecularStrength		u_phong_ShininessStrength.y;
 
-vec4 phong(vec3 position, vec3 normal)
+vec4 phong(vec3 position, vec3 normal, float specular)
 {
 	vec3 viewPosition = getViewPosition();
 	vec3 viewDirection = normalize(viewPosition - position);
@@ -45,7 +46,7 @@ vec4 phong(vec3 position, vec3 normal)
 				ambientColor = ambientColor + u_LightColor(i) * attenuation;
 				continue;
 			}
-			
+
 			// Directional light
 			surfaceToLight = -normalize(u_LightDirection(i));
 		}
@@ -72,6 +73,9 @@ vec4 phong(vec3 position, vec3 normal)
 		float diffuseFactor = max(0.0, dot(normal, surfaceToLight));
 		diffuseColor = diffuseColor + diffuseFactor * attenuation * u_LightColor(i);
 
+        if (specular == 0.0)
+            continue;
+
 		// Specular
 		float specularFactor;
 		if (true)
@@ -85,7 +89,7 @@ vec4 phong(vec3 position, vec3 normal)
 			vec3 reflectDirection = reflect(-surfaceToLight, normal);
 			specularFactor = pow(max(0.0, dot(viewDirection, reflectDirection)), shininess);
 		}
-		specularColor = specularColor + specularFactor * specularStrength * attenuation * u_LightColor(i);
+		specularColor = specularColor + specularFactor * specular * specularStrength * attenuation * u_LightColor(i);
 	}
 
 	return vec4(ambientColor + diffuseColor + specularColor, 1.0);

@@ -12,10 +12,10 @@ SET BX_DIR=../../../bx
 IF NOT EXIST %BX_DIR% EXIT /B 1
 CD "%BX_DIR%"
 
-ECHO Checkout a specific version (master branch, 2021/09/06)
+ECHO Checkout a specific version (master branch, 2022/09/13)
 CALL git reset --hard HEAD
 CALL git clean -d -x -f
-CALL git checkout e50536ac03eb404f50123d23f2c9ab2b3e4663e7
+CALL git checkout 2d57ed63c0e0c733059f8e437cb6f02779cf4f1a
 
 
 ECHO.
@@ -25,10 +25,10 @@ SET BIMG_DIR=../bimg
 IF NOT EXIST %BIMG_DIR% EXIT /B 1
 CD "%BIMG_DIR%"
 
-ECHO Checkout a specific version (master branch, 2021/09/06)
+ECHO Checkout a specific version (master branch, 2022/09/24)
 CALL git reset --hard HEAD
 CALL git clean -d -x -f
-CALL git checkout 6693de0e50ff7e76a22d6f37251fa2dec12168cd
+CALL git checkout 0de8816a8b155fe85583aa74f5bc93bdfb8910bb
 
 
 ECHO.
@@ -38,10 +38,10 @@ SET BGFX_DIR=../bgfx
 IF NOT EXIST %BGFX_DIR% EXIT /B 1
 CD "%BGFX_DIR%"
 
-ECHO Checkout a specific version (master branch, 2021/09/15)
+ECHO Checkout a specific version (master branch, 2022/09/14)
 CALL git reset --hard HEAD
 CALL git clean -d -x -f
-CALL git checkout 71a87b653cd4b5671104fe49e2e38cf5dd4d8675
+CALL git checkout 11ac9f27c7c7c38d078824511f223946a43bc3dc
 
 
 IF %ERRORLEVEL% NEQ 0 EXIT /B 1
@@ -62,8 +62,6 @@ IF %ERRORLEVEL% NEQ 0 EXIT /B 1
 ECHO.
 ECHO Build projects
 
-CALL %MSBUILD% ".build/projects/vs2019/bgfx.sln" /property:Configuration=Debug /property:Platform=Win32
-CALL %MSBUILD% ".build/projects/vs2019/bgfx.sln" /property:Configuration=Release /property:Platform=Win32
 CALL %MSBUILD% ".build/projects/vs2019/bgfx.sln" /property:Configuration=Debug /property:Platform=x64
 CALL %MSBUILD% ".build/projects/vs2019/bgfx.sln" /property:Configuration=Release /property:Platform=x64
 

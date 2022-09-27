@@ -1,12 +1,10 @@
 #pragma once
+
+#include "SDL/SDL_joystick.h"
 #include <stdint.h>
 
-/*
-Forward declaration
-IMPORTANT NOTE: This requires a modified version of the SDL_joystick.h where SDL_JoystickGUID is not typedefined from an anonymous struct
-*/
-struct SDL_JoystickGUID;
-typedef struct SDL_JoystickGUID SDL_JoystickGUID;
+
+// TODO: SDL include should not be needed for the SpehsEngine API!
 
 namespace se
 {

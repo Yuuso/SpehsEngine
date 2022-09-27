@@ -55,24 +55,24 @@ namespace se
 					{
 						if (getSize().y.type == GUIUnitType::Auto)
 						{
-							setWidth(GUIUnit(dims.dimensions.x, GUIUnitType::Auto));
+							setWidth(GUIUnit(dims.capsDimensions.x, GUIUnitType::Auto));
 						}
 						else
 						{
-							const float factor = unitToPixels(resolveUnitType(getSize().y, false), _context.viewSize) / dims.dimensions.y;
-							setWidth(GUIUnit(dims.dimensions.x * factor, GUIUnitType::Auto));
+							const float factor = unitToPixels(resolveUnitType(getSize().y, false), _context.viewSize) / dims.capsDimensions.y;
+							setWidth(GUIUnit(dims.capsDimensions.x * factor, GUIUnitType::Auto));
 						}
 					}
 					if (getSize().y.type == GUIUnitType::Auto)
 					{
 						if (getSize().x.type == GUIUnitType::Auto)
 						{
-							setHeight(GUIUnit(dims.dimensions.y, GUIUnitType::Auto));
+							setHeight(GUIUnit(dims.capsDimensions.y, GUIUnitType::Auto));
 						}
 						else
 						{
-							const float factor = unitToPixels(resolveUnitType(getSize().x, true), _context.viewSize) / dims.dimensions.x;
-							setHeight(GUIUnit(dims.dimensions.y * factor, GUIUnitType::Auto));
+							const float factor = unitToPixels(resolveUnitType(getSize().x, true), _context.viewSize) / dims.capsDimensions.x;
+							setHeight(GUIUnit(dims.capsDimensions.y * factor, GUIUnitType::Auto));
 						}
 					}
 				}
@@ -117,7 +117,7 @@ namespace se
 			if (needUpdateDimensions)
 				return glm::vec3(1.0f);
 			const TextDimensions& dims = text.getDimensions();
-			return glm::vec3(unitToPixels(getSize(), _viewSize) / dims.dimensions, 1.0f);
+			return glm::vec3(unitToPixels(getSize(), _viewSize) / dims.capsDimensions, 1.0f);
 		}
 
 		const Color& GUIText::getColor() const

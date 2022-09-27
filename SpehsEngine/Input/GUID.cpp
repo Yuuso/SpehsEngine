@@ -1,6 +1,5 @@
 #include "stdafx.h"
 #include "SpehsEngine/Input/GUID.h"
-#include <SDL/SDL_joystick.h>
 
 
 namespace se

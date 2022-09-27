@@ -21,18 +21,12 @@
     repository: https://github.com/assimp/assimp
     script: assimp.bat
     3D model loading.
-## BGFX
+## BGFX + BIMG + BX
     repository: https://github.com/bkaradzic/bgfx
-    script: bgfx.bat
-    Rendering backend wrapper.
-## BIMG
     repository: https://github.com/bkaradzic/bimg
-    script: bgfx.bat
-    Image library required for BGFX.
-## BX
     repository: https://github.com/bkaradzic/bx
     script: bgfx.bat
-    Base library required for BGFX.
+    Rendering backend wrapper framework.
 ## BOOST
     repository: https://github.com/boostorg/boost
     script: boost.bat
@@ -53,23 +47,15 @@
     repository: https://github.com/KhronosGroup/KTX-Software
     script: TBD
     Tools for creating ktx textures.
-    Not currently required for building any part of the engine. Only used by asset building scripts to create cubemaps.
-## OGG
-    repository: https://github.com/gcp/libogg
-    script: libogg.bat
-    Audio loading. (Status TBD with Audio rework...)
-## OPENAL
-    repository: https://github.com/kcat/openal-soft
-    script: TBD
-    Audio playback. (Might be replaced in the future...)
+    Not currently required for building any part of the engine.
 ## SDL2
     repository: https://github.com/libsdl-org/SDL
-    script: TBD
+    script: sdl.bat
     Input and window management.
-## VORBIS
-    repository: https://github.com/xiph/vorbis
-    script: vorbis.bat
-    Audio loading. (Status TBD with Audio rework...)
+## SOLOUD
+    repository: https://github.com/jarikomppa/soloud
+    script: soloud.bat
+    Audio engine.
 
 ## ZLIB
     ?
@@ -79,4 +65,3 @@
     ?
 ## STEAM / GAME-NETWORKING-SOCKETS
     ?
-    

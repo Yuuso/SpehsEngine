@@ -1,76 +1,69 @@
-
 #pragma once
 
-#include <vector>
-#include <glm/vec2.hpp>
-#include <glm/vec3.hpp>
-
-
-struct ALCdevice_struct;
-struct ALCcontext_struct;
-
-typedef struct ALCdevice_struct ALCdevice;
-typedef struct ALCcontext_struct ALCcontext;
-
-typedef unsigned int ALuint;
+#include "glm/vec3.hpp"
+#include "SpehsEngine/Audio/Internal/InternalTypes.h"
+#include "SpehsEngine/Audio/Types.h"
+#include "SpehsEngine/Audio/Bus.h"
+#include <memory>
 
 
 namespace se
 {
 	namespace audio
 	{
-		//easy debug/temp sounds
-
 		class AudioEngine
 		{
-			friend class SoundSource;
-			friend class ActiveSoundSource;
 		public:
-			struct SourceObject
+
+			AudioEngine();
+			~AudioEngine();
+
+			AudioEngine(const AudioEngine& _other) = delete;
+			AudioEngine& operator=(const AudioEngine& _other) = delete;
+			AudioEngine(AudioEngine&& _other) = delete;
+			AudioEngine& operator=(AudioEngine&& _other) = delete;
+
+
+			void update();
+
+			void stopAllSounds();
+			void setVoiceLimit(unsigned int _limit);
+			void setListenerUp(const glm::vec3& _up);
+			void setListenerDirection(const glm::vec3& _direction);
+			void setListenerPosition(const glm::vec3& _position);
+			void setListenerVelocity(const glm::vec3& _velocity);
+			void setAutoVelocityEnabled(bool _enabled);
+			void setDistanceDelayEnabled(bool _value);
+			void setDefaultDopplerFactor(float _factor);
+			void setDefaultAttenuationMinDistance(float _min);
+			void setDefaultAttenuationMaxDistance(float _max);
+			void setDefaultDistanceAttenuation(DistanceAttenuation _attenuation);
+			void setDefaultAttenuationRolloffFactor(float _factor);
+
+			Bus& getMasterBus();
+			unsigned int getVoiceLimit() const;
+			const glm::vec3& getListenerUp() const;
+			const glm::vec3& getListenerDirection() const;
+			const glm::vec3& getListenerPosition() const;
+			const glm::vec3& getListenerVelocity() const;
+
+		private:
+
+			inline static bool initialized = false;
+
+			struct Listener
 			{
-				ALuint sourceID = 0;
-				SoundSource* soundPtr = nullptr;
+				glm::vec3 up{0.0f, 1.0f, 0.0};
+				glm::vec3 direction{0.0f, 0.0f, -1.0f};
+				glm::vec3 position;
+				glm::vec3 velocity;
 			};
 
-			static void init();
-			static void uninit();
-
-			static void update();
-
-			static void setMaxSources(const unsigned int _maxSources);
-
-			static void setListenerPosition(const glm::vec2& _pos);
-			static void setListenerPosition(const glm::vec3& _pos);
-
-			static void setListenerVelocity(const glm::vec2& _vel);
-			static void setListenerVelocity(const glm::vec3& _vel);
-
-			static void setListenerUp(const glm::vec3& _up);
-			static void setListenerForward(const glm::vec3& _forward);
-
-			static void setListenerGain(const float _gain);
-
-			//These correction factors are applied to all sound and the listener positions and velocities. They are used to set the scale of the units used in positions.
-			static void setPositionCorrectionFactor(const glm::vec2& _poscor);
-			static void setPositionCorrectionFactor(const glm::vec3& _poscor);
-
-			static glm::vec2 getListenerPosition();
-			static glm::vec2 getListenerVelocity();
-			static float getListenerGain();
-
-			//Audio channels
-			/**If referencing previously non-existing channel, channel is created. A negative channel index refers to plain master channel.*/
-			static void setChannelGain(const int _channelIndex, float _gain);
-			/**If referencing previously non-existing channel, channel is created. A negative channel index refers to plain master channel.*/
-			static float getChannelGain(const int _channelIndex);
-
-			static float deltaSeconds;
-
-			static float masterVolume;
-
-		protected:
-			static void updateGain(); //Call when master volume has changed
-			static bool getFreeSource(SoundSource* _soundSource);
+			std::unique_ptr<Bus> masterBus;
+			Listener listener;
+			bool autoVelocityEnabled = false;
+			glm::vec3 lastListenerPosition;
+			time::Time lastUpdate = time::Time::zero;
 		};
 	}
 }

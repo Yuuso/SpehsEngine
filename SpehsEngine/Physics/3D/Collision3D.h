@@ -9,10 +9,13 @@ namespace se
 		class Ray3D;
 		class AABBCollider3D;
 		class FrustumCollider3D;
+		class SphereCollider3D;
+
 		class Collision3D
 		{
 		public:
 			Collision3D(const Ray3D& _ray, const AABBCollider3D& _aabb);
+			Collision3D(const Ray3D& _ray, const SphereCollider3D& _sphere);
 			Collision3D(const FrustumCollider3D& _frustum, const AABBCollider3D& _aabb);
 			Collision3D(const FrustumCollider3D& _frustum, const glm::vec3& _point);
 
