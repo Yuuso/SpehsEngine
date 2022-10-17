@@ -146,6 +146,8 @@
     <ClCompile Include="ConnectionManager2Visualizer.cpp" />
     <ClCompile Include="DebugLib.cpp" />
     <ClCompile Include="FPSHistoryVisualizer.cpp" />
+    <ClCompile Include="ImGfx.cpp" />
+    <ClCompile Include="ImmediateModeGraphics.cpp" />
     <ClCompile Include="ScopedDuration.cpp" />
     <ClCompile Include="ScopeProfilerVisualizer.cpp" />
     <ClCompile Include="stdafx.cpp">
@@ -160,6 +162,8 @@
     <ClInclude Include="ConnectionManager2Visualizer.h" />
     <ClInclude Include="DebugLib.h" />
     <ClInclude Include="FPSHistoryVisualizer.h" />
+    <ClInclude Include="ImGfx.h" />
+    <ClInclude Include="ImmediateModeGraphics.h" />
     <ClInclude Include="PrecompiledInclude.h" />
     <ClInclude Include="ScopedDuration.h" />
     <ClInclude Include="ScopeProfilerVisualizer.h" />

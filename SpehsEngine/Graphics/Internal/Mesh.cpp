@@ -42,6 +42,10 @@ namespace se
 				}
 			}
 		}
+		void Mesh::clearOverriddenModelAttirbutes()
+		{
+			overriddenModelAttributes = 0;
+		}
 
 		void Mesh::addBone(const ModelNode* _boneNode, const glm::mat4& _offsetMatrix)
 		{

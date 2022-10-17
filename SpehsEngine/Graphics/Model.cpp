@@ -28,6 +28,7 @@ namespace se
 				_modelNode.meshes.push_back(std::make_unique<Mesh>(_model, _modelNode, _meshData.meshes[meshIndex].materialIndex, _meshData.meshes[meshIndex].vertexBuffer, _meshData.meshes[meshIndex].indexBuffer));
 				_modelNode.meshes.back()->setName(_meshData.meshes[meshIndex].name);
 				_modelNode.meshes.back()->setPrimitiveType(_meshData.meshes[meshIndex].type);
+				_modelNode.meshes.back()->clearOverriddenModelAttirbutes();
 				while (_numMaterials <= _meshData.meshes[meshIndex].materialIndex)
 					_numMaterials++;
 			}

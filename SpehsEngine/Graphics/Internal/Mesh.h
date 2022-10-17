@@ -20,6 +20,7 @@ namespace se
 
 			void addBone(const ModelNode* _boneNode, const glm::mat4& _offsetMatrix);
 			virtual void updateMatrices() override;
+			void clearOverriddenModelAttirbutes();
 
 			virtual void								setRenderState(bool _state) override;
 			virtual void								toggleRenderState() override;
