@@ -1,5 +1,7 @@
 #pragma once
 
+#include <string>
+
 
 namespace se
 {
@@ -14,6 +16,20 @@ namespace se
 			Billboard,
 			BillboardInstanced,
 		};
+
+		static inline std::string toString(ShaderVariant _variant)
+		{
+			switch (_variant)
+			{
+				case ShaderVariant::Default:			return "Default";
+				case ShaderVariant::Instanced:			return "Instanced";
+				case ShaderVariant::Skinned:			return "Skinned";
+				case ShaderVariant::SkinnedInstanced:	return "SkinnedInstanced";
+				case ShaderVariant::Billboard:			return "Billboard";
+				case ShaderVariant::BillboardInstanced:	return "BillboardInstanced";
+			}
+			return "Unknown";
+		}
 
 		static inline ShaderVariant getShaderVariant(const bool _instanced, const bool _skinned, const bool _billboard)
 		{

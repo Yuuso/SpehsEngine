@@ -37,13 +37,13 @@ namespace se
 			auto it = shaders.find(variant);
 			if (it != shaders.end())
 				return it->second;
+			log::error("Material '" + name + "' is missing the shader variant '" + toString(variant) + "'!");
 
-			log::warning("Material is missing " + std::to_string(static_cast<int>(variant)) + " shader variant!");
 			it = shaders.find(ShaderVariant::Default);
 			if (it != shaders.end())
 				return it->second;
+			log::error("Material '" + name + "'  is also missing the default shader variant!");
 
-			log::warning("Material is also missing the default variant!");
 			return nullptr;
 		}
 		const std::shared_ptr<Font> Material::getFont(uint8_t _slot) const
