@@ -45,7 +45,7 @@ namespace se
 	{ \
 		return InputT(p_label.c_str(), p_value); \
 	} \
-	inline bool InputT(const char* const p_label, p_EnumType& p_value, const std::function<bool(const p_EnumType)>& p_isSelectable) \
+	inline bool InputT(const char* const p_label, p_EnumType& p_value, const std::function<bool(const p_EnumType)>& p_isVisible) \
 	{ \
 		bool changed = false; \
 		if (ImGui::BeginCombo(p_label, p_ToStringFunction(p_value))) \
@@ -53,18 +53,16 @@ namespace se
 			for (int i = int(p_RangeStart); i < int(p_RangeEnd); i++) \
 			{ \
 				const p_EnumType p_v = p_EnumType(i); \
+				if (!p_isVisible(p_v)) \
+					continue; \
 				const bool p_selected = p_v == p_value; \
-				const bool p_selectable = p_isSelectable(p_v); \
-				const ImGuiSelectableFlags p_comboFlags = p_selectable ? 0 : ImGuiSelectableFlags_Disabled; \
-				if (ImGui::Selectable(p_ToStringFunction(p_v), p_selected, p_comboFlags)) \
+				if (ImGui::Selectable(p_ToStringFunction(p_v), p_selected, 0)) \
 				{ \
 					p_value = p_v; \
 					changed = true; \
 				} \
 				if (p_selected) \
-				{ \
 					ImGui::SetItemDefaultFocus(); \
-				} \
 			} \
 			ImGui::EndCombo(); \
 		} \
