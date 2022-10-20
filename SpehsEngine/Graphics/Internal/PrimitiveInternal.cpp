@@ -294,5 +294,10 @@ namespace se
 			}
 			return false;
 		}
+
+		float PrimitiveInternal::getPrimitiveZValue() const
+		{
+			return primitive ? primitive->getPosition().z : 0.0f;
+		}
 	}
 }

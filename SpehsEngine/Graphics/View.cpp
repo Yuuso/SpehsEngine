@@ -32,17 +32,21 @@ namespace se
 		{
 			return offset;
 		}
-		const bool View::getMSAAEnabled() const
+		bool View::getMSAAEnabled() const
 		{
 			return enableMSAA;
 		}
-		const uint32_t View::getClearColor() const
+		uint32_t View::getClearColor() const
 		{
 			return clearColor;
 		}
-		const ViewClearFlagsType View::getClearFlags() const
+		ViewClearFlagsType View::getClearFlags() const
 		{
 			return clearFlags;
+		}
+		DrawCallSortOrder View::getDrawCallSortOrder() const
+		{
+			return drawCallSortOrder;
 		}
 
 		void View::setSize(const ViewSize& _size)
@@ -53,17 +57,21 @@ namespace se
 		{
 			offset = _offset;
 		}
-		void View::setMSAAEnabled(const bool _enabled)
+		void View::setMSAAEnabled(bool _enabled)
 		{
 			enableMSAA = _enabled;
 		}
-		void View::setClearColor(const uint32_t _hexColor)
+		void View::setClearColor(uint32_t _hexColor)
 		{
 			clearColor = _hexColor;
 		}
-		void View::setClearFlags(const ViewClearFlagsType _flags)
+		void View::setClearFlags(ViewClearFlagsType _flags)
 		{
 			clearFlags = _flags;
+		}
+		void View::setDrawCallSortOrder(DrawCallSortOrder _order)
+		{
+			drawCallSortOrder = _order;
 		}
 
 		boost::signals2::scoped_connection View::connectToPreRenderSignal(std::function<void(glm::vec2)> _func)
