@@ -292,5 +292,18 @@ namespace se
 			se_assert_m(false, "Invalid UniformType!");
 			return bgfx::UniformType::Count;
 		}
+
+		bgfx::ViewMode::Enum getViewMode(DrawCallSortOrder _type)
+		{
+			switch (_type)
+			{
+				case DrawCallSortOrder::Default:			return bgfx::ViewMode::Default;
+				case DrawCallSortOrder::Sequential:			return bgfx::ViewMode::Sequential;
+				case DrawCallSortOrder::DepthAscending:		return bgfx::ViewMode::DepthAscending;
+				case DrawCallSortOrder::DepthDescending:	return bgfx::ViewMode::DepthDescending;
+			}
+			se_assert_m(false, "Invalid DrawCallSortOrder!");
+			return bgfx::ViewMode::Default;
+		}
 	}
 }

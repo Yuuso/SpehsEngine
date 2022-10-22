@@ -3,6 +3,7 @@
 
 #include "SpehsEngine/Core/BitwiseOperations.h"
 #include "SpehsEngine/Core/SE_Assert.h"
+#include "SpehsEngine/Graphics/Internal/InternalUtilities.h"
 #include "SpehsEngine/Graphics/Internal/WindowInternal.h"
 
 
@@ -40,7 +41,7 @@ namespace se
 						  ViewClearFlag::ClearStencil == BGFX_CLEAR_STENCIL,
 						  "ViewClearFlags don't match bgfx values!");
 
-			bgfx::setViewMode(_renderContext.currentViewId, bgfx::ViewMode::Default);
+			bgfx::setViewMode(_renderContext.currentViewId, getViewMode(view->getDrawCallSortOrder()));
 			bgfx::setViewClear(_renderContext.currentViewId, view->getClearFlags(), view->getClearColor());
 
 			// Camera

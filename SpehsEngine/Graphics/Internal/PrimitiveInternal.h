@@ -46,6 +46,7 @@ namespace se
 			const RenderMode getRenderMode() const;
 			const VertexBuffer* getVertices() const;
 			const IndexBuffer* getIndices() const;
+			float getPrimitiveZValue() const;
 
 		private:
 

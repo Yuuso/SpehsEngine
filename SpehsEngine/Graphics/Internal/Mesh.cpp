@@ -42,7 +42,7 @@ namespace se
 				}
 			}
 		}
-		void Mesh::clearOverriddenModelAttirbutes()
+		void Mesh::clearOverriddenModelAttributes()
 		{
 			overriddenModelAttributes = 0;
 		}

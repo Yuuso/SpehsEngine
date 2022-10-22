@@ -29,15 +29,17 @@ namespace se
 			Camera& getCamera();
 			const ViewSize& getSize() const;
 			const ViewSize& getOffset() const;
-			const bool getMSAAEnabled() const;
-			const uint32_t getClearColor() const;
-			const ViewClearFlagsType getClearFlags() const;
+			bool getMSAAEnabled() const;
+			uint32_t getClearColor() const;
+			ViewClearFlagsType getClearFlags() const;
+			DrawCallSortOrder getDrawCallSortOrder() const;
 
 			void setSize(const ViewSize& _size);
 			void setOffset(const ViewSize& _offset);
-			void setMSAAEnabled(const bool _enabled);
-			void setClearColor(const uint32_t _hexColor);
-			void setClearFlags(const ViewClearFlagsType _flags);
+			void setMSAAEnabled(bool _enabled);
+			void setClearColor(uint32_t _hexColor);
+			void setClearFlags(ViewClearFlagsType _flags);
+			void setDrawCallSortOrder(DrawCallSortOrder _order);
 
 			boost::signals2::scoped_connection connectToPreRenderSignal(std::function<void(glm::vec2)> _func);
 
@@ -54,6 +56,7 @@ namespace se
 			bool enableMSAA = true; // TODO: Test if this works, move to window if not
 			ViewClearFlagsType clearFlags = ViewClearFlag::ClearColor | ViewClearFlag::ClearDepth | ViewClearFlag::ClearStencil;
 			uint32_t clearColor = 0x000000ff;
+			DrawCallSortOrder drawCallSortOrder = DrawCallSortOrder::Default;
 
 			boost::signals2::signal<void(glm::vec2)> onPreRenderSignal; // param: view size in pixels
 			boost::signals2::signal<void(void)> destroyedSignal;

@@ -169,6 +169,14 @@ namespace se
 			ClearStencil	= (1 << 2),
 		};
 
+		enum class DrawCallSortOrder
+		{
+			Default,
+			Sequential,
+			DepthAscending,
+			DepthDescending
+		};
+
 		enum class TextureWrappingMode
 		{
 			Repeat,

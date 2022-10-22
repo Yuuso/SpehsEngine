@@ -19,6 +19,7 @@ namespace se
 		bgfx::RendererType::Enum getRendererType(const RendererBackend _rendererBackend);
 		RendererBackend getRendererBackend();
 		bgfx::UniformType::Enum getUniformType(const UniformType _type);
+		bgfx::ViewMode::Enum getViewMode(DrawCallSortOrder _type);
 
 		template <typename T>
 		void safeDestroy(ResourceHandle& _resourceHandle)

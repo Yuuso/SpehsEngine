@@ -44,6 +44,29 @@ namespace se
 	inline bool InputT(const std::string& p_label, p_EnumType& p_value) \
 	{ \
 		return InputT(p_label.c_str(), p_value); \
+	} \
+	inline bool InputT(const char* const p_label, p_EnumType& p_value, const std::function<bool(const p_EnumType)>& p_isVisible) \
+	{ \
+		bool changed = false; \
+		if (ImGui::BeginCombo(p_label, p_ToStringFunction(p_value))) \
+		{ \
+			for (int i = int(p_RangeStart); i < int(p_RangeEnd); i++) \
+			{ \
+				const p_EnumType p_v = p_EnumType(i); \
+				if (!p_isVisible(p_v)) \
+					continue; \
+				const bool p_selected = p_v == p_value; \
+				if (ImGui::Selectable(p_ToStringFunction(p_v), p_selected, 0)) \
+				{ \
+					p_value = p_v; \
+					changed = true; \
+				} \
+				if (p_selected) \
+					ImGui::SetItemDefaultFocus(); \
+			} \
+			ImGui::EndCombo(); \
+		} \
+		return changed; \
 	}
 
 namespace se
