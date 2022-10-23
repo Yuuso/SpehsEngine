@@ -32,21 +32,20 @@ namespace se
 			void update();
 
 			void render(RenderContext& _renderContext);
-			void preRender(const bool _forceAllUpdates);
+			void preRender(bool _forceAllUpdates);
 			void postRender();
 
 			void batch(Batch& _batch);
 			void unbatch();
 
-			const bool isBatched() const;
-			const bool wasDestroyed() const;
-			const RenderInfo getRenderInfo() const;
-			const RenderInfo getCopyRenderInfo() const;
-			const bool getRenderState() const;
-			const RenderMode getRenderMode() const;
+			bool isBatched() const;
+			bool wasDestroyed() const;
+			RenderInfo getRenderInfo() const;
+			RenderInfo getCopyRenderInfo() const;
+			bool getRenderState() const;
+			RenderMode getRenderMode() const;
 			const VertexBuffer* getVertices() const;
 			const IndexBuffer* getIndices() const;
-			float getPrimitiveZValue() const;
 
 		private:
 

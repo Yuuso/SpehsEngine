@@ -26,7 +26,6 @@ namespace se
 				return;
 			}
 			primitives.push_back(std::make_unique<PrimitiveInternal>(_primitive));
-			sortPrimitives();
 		}
 		void Scene::remove(Primitive& _primitive)
 		{
@@ -46,7 +45,6 @@ namespace se
 
 			it->reset(primitives.back().release());
 			primitives.pop_back();
-			sortPrimitives();
 		}
 		bool Scene::find(const Primitive& _primitive) const
 		{
@@ -106,11 +104,6 @@ namespace se
 			primitives.clear();
 			batches.clear();
 			lightBatch->clear();
-		}
-
-		void Scene::enablePrimitiveSorting()
-		{
-			sortingEnabled = true;
 		}
 
 		void Scene::render(RenderContext& _renderContext)
@@ -180,7 +173,6 @@ namespace se
 				i++;
 			}
 
-			bool primitivesChanged = false;
 			for (size_t i = 0; i < primitives.size(); )
 			{
 				if (primitives[i]->wasDestroyed())
@@ -189,16 +181,11 @@ namespace se
 						primitives[i]->unbatch();
 					primitives[i].reset(primitives.back().release());
 					primitives.pop_back();
-					primitivesChanged = true;
 					continue;
 				}
 
 				primitives[i]->preRender(_forceAllUpdates);
 				i++;
-			}
-			if (primitivesChanged)
-			{
-				sortPrimitives();
 			}
 			lightBatch->preRender(_forceAllUpdates);
 		}
@@ -241,22 +228,6 @@ namespace se
 				batches.push_back(std::make_unique<Batch>(_primitive.getRenderInfo()));
 				_primitive.batch(*batches.back());
 			}
-		}
-
-		void Scene::sortPrimitives()
-		{
-			if (!sortingEnabled)
-			{
-				return;
-			}
-
-			std::sort(
-				primitives.begin(),
-				primitives.end(),
-				[](const std::unique_ptr<PrimitiveInternal>& _p1, const std::unique_ptr<PrimitiveInternal>& _p2)
-				{
-					return _p1->getPrimitiveZValue() < _p2->getPrimitiveZValue();
-				});
 		}
 	}
 }

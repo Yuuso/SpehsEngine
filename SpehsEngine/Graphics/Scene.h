@@ -41,7 +41,6 @@ namespace se
 			void remove(Light& _light);
 
 			void clear();
-			void enablePrimitiveSorting();
 
 		private:
 
@@ -51,7 +50,6 @@ namespace se
 			void preRender(const bool _renderState, const bool _forceAllUpdates);
 			void postRender(const bool _renderState);
 			void batch(PrimitiveInternal& _primitive);
-			void sortPrimitives();
 
 			std::vector<std::unique_ptr<Batch>> batches;
 			std::vector<std::unique_ptr<PrimitiveInternal>> primitives;
@@ -59,7 +57,6 @@ namespace se
 			std::unique_ptr<LightBatch> lightBatch;
 
 			bool readyToRender = false;
-			bool sortingEnabled = false;
 		};
 	}
 }

@@ -177,7 +177,8 @@ namespace se
 			applyRenderState(_renderInfo, _renderContext);
 
 			bgfx::ProgramHandle programHandle = { shader->getHandle() };
-			bgfx::submit(_renderContext.currentViewId, programHandle);
+			const uint32_t depth = static_cast<uint32_t>(primitive->getPosition().z + static_cast<float>(std::numeric_limits<int16_t>::max()));
+			bgfx::submit(_renderContext.currentViewId, programHandle, depth, BGFX_DISCARD_ALL);
 		}
 
 		void PrimitiveInternal::preRender(const bool _forceAllUpdates)
@@ -224,15 +225,15 @@ namespace se
 			batchPosition = nullptr;
 		}
 
-		const bool PrimitiveInternal::isBatched() const
+		bool PrimitiveInternal::isBatched() const
 		{
 			return primitiveBatch != nullptr;
 		}
-		const bool PrimitiveInternal::wasDestroyed() const
+		bool PrimitiveInternal::wasDestroyed() const
 		{
 			return primitive == nullptr;
 		}
-		const RenderInfo PrimitiveInternal::getRenderInfo() const
+		RenderInfo PrimitiveInternal::getRenderInfo() const
 		{
 			RenderInfo result;
 			result.renderFlags = primitive->getRenderFlags();
@@ -243,7 +244,7 @@ namespace se
 			result.scissor = primitive->getScissor();
 			return result;
 		}
-		const RenderInfo PrimitiveInternal::getCopyRenderInfo() const
+		RenderInfo PrimitiveInternal::getCopyRenderInfo() const
 		{
 			const RenderCopy* renderCopy = primitive->getRenderCopy();
 			if (!renderCopy)
@@ -260,7 +261,7 @@ namespace se
 			result.scissor = primitive->getScissor();
 			return result;
 		}
-		const bool PrimitiveInternal::getRenderState() const
+		bool PrimitiveInternal::getRenderState() const
 		{
 			return primitive->getRenderState()
 				&& getVertices()
@@ -269,7 +270,7 @@ namespace se
 				&& getIndices()->size() > 0
 				&& primitive->getMaterial();
 		}
-		const RenderMode PrimitiveInternal::getRenderMode() const
+		RenderMode PrimitiveInternal::getRenderMode() const
 		{
 			return primitive->getRenderMode();
 		}
@@ -293,11 +294,6 @@ namespace se
 					   (primitive->getIndices()->size() != (batchPosition->indicesEnd - batchPosition->indicesStart));
 			}
 			return false;
-		}
-
-		float PrimitiveInternal::getPrimitiveZValue() const
-		{
-			return primitive ? primitive->getPosition().z : 0.0f;
 		}
 	}
 }
