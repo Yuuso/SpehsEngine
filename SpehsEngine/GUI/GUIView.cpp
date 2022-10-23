@@ -14,10 +14,10 @@ namespace se
 			, materialManager(_shaderManager, _textureManager, _fontManager)
 		{
 			view.setClearFlags(0);
-			view.setDrawCallSortOrder(graphics::DrawCallSortOrder::Sequential);
-			scene.enablePrimitiveSorting();
+			view.setDrawCallSortOrder(graphics::DrawCallSortOrder::DepthAscending);
 			camera.setUp({ 0.0f, 1.0f, 0.0f });
 			camera.setFar(cameraZPos * 2.0f);
+			camera.setNear(1.0f);
 			camera.setDirection({ 0.0f, 0.0f, -1.0f });
 			camera.setProjection(se::graphics::Projection::Orthographic);
 
