@@ -13,8 +13,8 @@ namespace se
 			: view(scene, camera)
 			, materialManager(_shaderManager, _textureManager, _fontManager)
 		{
-			view.setClearFlags(0);
 			view.setDrawCallSortOrder(graphics::DrawCallSortOrder::DepthAscending);
+			view.setClearFlags(graphics::ViewClearFlag::ClearDepth | graphics::ViewClearFlag::ClearStencil);
 			camera.setUp({ 0.0f, 1.0f, 0.0f });
 			camera.setFar(cameraZPos * 2.0f);
 			camera.setNear(1.0f);

@@ -23,10 +23,11 @@ namespace se
 			, pressedProperties(_other.pressedProperties)
 			, consumeInput(_other.consumeInput)
 			, inheritInputStatus(_other.inheritInputStatus)
+			, updateFlags(GUIElementUpdateFlag::EverythingChanged)
 		{
 			// NOTE: dataContext and callbacks are not copied currently!
 			for (auto&& copyChild : _other.children)
-				addChild(std::shared_ptr<GUIElement>(copyChild->clone()));
+				addChild(copyChild->clone());
 		}
 
 		std::shared_ptr<GUIElement> GUIElement::clone()
