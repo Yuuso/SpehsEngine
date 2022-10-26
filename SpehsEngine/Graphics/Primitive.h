@@ -52,6 +52,7 @@ namespace se
 			virtual PrimitiveType						getPrimitiveType() const;
 			virtual RenderMode							getRenderMode() const;
 			virtual const RenderCopy*					getRenderCopy() const;
+			virtual const Stencil*						getStencil() const;
 			virtual const glm::vec3&					getPosition() const;
 			virtual const glm::vec3&					getScale() const;
 			virtual const glm::quat&					getRotation() const;
@@ -74,6 +75,8 @@ namespace se
 			virtual void								setRenderMode(RenderMode _renderMode);
 			virtual void								setRenderCopy(const RenderCopy& _renderCopy);
 			virtual void								removeRenderCopy();
+			virtual void								setStencil(const Stencil& _stencil);
+			virtual void								removeStencil();
 			virtual void								setPosition(const glm::vec3& _position);
 			virtual void								setScale(const glm::vec3& _scale);
 			virtual void								setRotation(const glm::quat& _rotation);
@@ -91,12 +94,15 @@ namespace se
 			friend class PrimitiveInternal;
 			friend class Model;
 
+			void										validateRenderMode();
+
 			std::string									name					= "primitive";
 			bool										renderState				= true;
 			RenderFlagsType								renderFlags				= defaultRenderFlags;
 			PrimitiveType								primitiveType			= defaultPrimitiveType;
 			RenderMode									renderMode				= defaultRenderMode;
 			std::unique_ptr<RenderCopy>					renderCopy;
+			std::unique_ptr<Stencil>					stencil;
 			std::shared_ptr<Material>					material				= nullptr;
 			std::shared_ptr<VertexBuffer>				vertices;
 			std::shared_ptr<IndexBuffer>				indices;

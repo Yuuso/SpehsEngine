@@ -305,5 +305,76 @@ namespace se
 			se_assert_m(false, "Invalid DrawCallSortOrder!");
 			return bgfx::ViewMode::Default;
 		}
+
+		static inline uint32_t setStencilTestState(const Stencil& _stencil)
+		{
+			switch (_stencil.test)
+			{
+				case StencilTest::Less:				return BGFX_STENCIL_TEST_LESS;
+				case StencilTest::LessOrEqual:		return BGFX_STENCIL_TEST_LEQUAL;
+				case StencilTest::Equal:			return BGFX_STENCIL_TEST_EQUAL;
+				case StencilTest::GreaterOrEqual:	return BGFX_STENCIL_TEST_GEQUAL;
+				case StencilTest::Greater:			return BGFX_STENCIL_TEST_GREATER;
+				case StencilTest::NotEqual:			return BGFX_STENCIL_TEST_NOTEQUAL;
+				case StencilTest::Never:			return BGFX_STENCIL_TEST_NEVER;
+				case StencilTest::Always:			return BGFX_STENCIL_TEST_ALWAYS;
+			}
+			se_assert(false);
+			return 0;
+		}
+		static inline uint32_t setStencilOperationsState(const Stencil& _stencil)
+		{
+			uint32_t result = 0;
+			switch (_stencil.stencilFail)
+			{
+				case StencilOperation::Zero:				result |= BGFX_STENCIL_OP_FAIL_S_ZERO;		break;
+				case StencilOperation::Keep:				result |= BGFX_STENCIL_OP_FAIL_S_KEEP;		break;
+				case StencilOperation::Replace:				result |= BGFX_STENCIL_OP_FAIL_S_REPLACE;	break;
+				case StencilOperation::Increment:			result |= BGFX_STENCIL_OP_FAIL_S_INCR;		break;
+				case StencilOperation::IncrementSaturate:	result |= BGFX_STENCIL_OP_FAIL_S_INCRSAT;	break;
+				case StencilOperation::Decrement:			result |= BGFX_STENCIL_OP_FAIL_S_DECR;		break;
+				case StencilOperation::DecrementSaturate:	result |= BGFX_STENCIL_OP_FAIL_S_DECRSAT;	break;
+				case StencilOperation::Invert:				result |= BGFX_STENCIL_OP_FAIL_S_INVERT;	break;
+			}
+			switch (_stencil.depthFail)
+			{
+				case StencilOperation::Zero:				result |= BGFX_STENCIL_OP_FAIL_Z_ZERO;		break;
+				case StencilOperation::Keep:				result |= BGFX_STENCIL_OP_FAIL_Z_KEEP;		break;
+				case StencilOperation::Replace:				result |= BGFX_STENCIL_OP_FAIL_Z_REPLACE;	break;
+				case StencilOperation::Increment:			result |= BGFX_STENCIL_OP_FAIL_Z_INCR;		break;
+				case StencilOperation::IncrementSaturate:	result |= BGFX_STENCIL_OP_FAIL_Z_INCRSAT;	break;
+				case StencilOperation::Decrement:			result |= BGFX_STENCIL_OP_FAIL_Z_DECR;		break;
+				case StencilOperation::DecrementSaturate:	result |= BGFX_STENCIL_OP_FAIL_Z_DECRSAT;	break;
+				case StencilOperation::Invert:				result |= BGFX_STENCIL_OP_FAIL_Z_INVERT;	break;
+			}
+			switch (_stencil.pass)
+			{
+				case StencilOperation::Zero:				result |= BGFX_STENCIL_OP_PASS_Z_ZERO;		break;
+				case StencilOperation::Keep:				result |= BGFX_STENCIL_OP_PASS_Z_KEEP;		break;
+				case StencilOperation::Replace:				result |= BGFX_STENCIL_OP_PASS_Z_REPLACE;	break;
+				case StencilOperation::Increment:			result |= BGFX_STENCIL_OP_PASS_Z_INCR;		break;
+				case StencilOperation::IncrementSaturate:	result |= BGFX_STENCIL_OP_PASS_Z_INCRSAT;	break;
+				case StencilOperation::Decrement:			result |= BGFX_STENCIL_OP_PASS_Z_DECR;		break;
+				case StencilOperation::DecrementSaturate:	result |= BGFX_STENCIL_OP_PASS_Z_DECRSAT;	break;
+				case StencilOperation::Invert:				result |= BGFX_STENCIL_OP_PASS_Z_INVERT;	break;
+			}
+			return result;
+		}
+		uint32_t getStencilState(const Stencil* _stencil)
+		{
+			if (!_stencil)
+			{
+				return BGFX_STENCIL_DEFAULT;
+			}
+
+			se_assert(_stencil->refValue <= 0xffu);
+			se_assert(_stencil->maskValue <= 0xffu);
+			return BGFX_STENCIL_NONE
+				| BGFX_STENCIL_FUNC_REF(_stencil->refValue)
+				| BGFX_STENCIL_FUNC_RMASK(_stencil->maskValue)
+				| setStencilTestState(*_stencil)
+				| setStencilOperationsState(*_stencil)
+				;
+		}
 	}
 }

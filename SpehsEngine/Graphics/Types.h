@@ -310,5 +310,37 @@ namespace se
 			uint16_t width = 0;
 			uint16_t height = 0;
 		};
+
+		enum class StencilTest
+		{
+			Less,
+			LessOrEqual,
+			Equal,
+			GreaterOrEqual,
+			Greater,
+			NotEqual,
+			Never,
+			Always
+		};
+		enum class StencilOperation
+		{
+			Zero,
+			Keep,
+			Replace,
+			Increment,
+			IncrementSaturate,
+			Decrement,
+			DecrementSaturate,
+			Invert
+		};
+		struct Stencil
+		{
+			uint32_t refValue = 0x00;
+			uint32_t maskValue = 0xff;
+			StencilTest test = StencilTest::Always;
+			StencilOperation stencilFail = StencilOperation::Keep;	// Stencil test failed, fragment discarded
+			StencilOperation depthFail = StencilOperation::Keep;	// Stencil test passed but depth test failed, fragment discarded
+			StencilOperation pass = StencilOperation::Keep;			// Both tests passed
+		};
 	}
 }

@@ -139,6 +139,10 @@ namespace se
 		{
 			return renderCopy.get();
 		}
+		const Stencil* Primitive::getStencil() const
+		{
+			return stencil.get();
+		}
 
 		const glm::vec3& Primitive::getPosition() const
 		{
@@ -191,8 +195,7 @@ namespace se
 		void Primitive::setInstances(std::shared_ptr<VertexBuffer> _instances)
 		{
 			instances = _instances;
-			if (instances && renderMode == RenderMode::Static)
-				log::error("Should not use static RenderMode with instanced primitives!");
+			validateRenderMode();
 		}
 		void Primitive::setColor(const Color& _color)
 		{
@@ -203,9 +206,8 @@ namespace se
 		{
 			if (scissor == _scissor)
 				return;
-			se_assert(!_scissor.enabled || renderMode != RenderMode::Static);
 			scissor = _scissor;
-			enableBit(updateFlags, PrimitiveUpdateFlag::RenderInfoChanged);
+			validateRenderMode();
 		}
 
 		void Primitive::setRenderFlags(RenderFlagsType _renderFlags)
@@ -238,20 +240,29 @@ namespace se
 		}
 		void Primitive::setRenderMode(RenderMode _renderMode)
 		{
-			if (getIndices() && getIndices()->size() > 0 && renderMode == RenderMode::Static)
-				log::error("Should not use static RenderMode with instanced primitives!");
 			if (renderMode == _renderMode)
 				return;
 			renderMode = _renderMode;
+			validateRenderMode();
 			enableBit(updateFlags, PrimitiveUpdateFlag::RenderInfoChanged);
 		}
 		void Primitive::setRenderCopy(const RenderCopy& _renderCopy)
 		{
 			renderCopy = std::make_unique<RenderCopy>(_renderCopy);
+			validateRenderMode();
 		}
 		void Primitive::removeRenderCopy()
 		{
 			renderCopy.reset();
+		}
+		void Primitive::setStencil(const Stencil& _stencil)
+		{
+			stencil = std::make_unique<Stencil>(_stencil);
+			validateRenderMode();
+		}
+		void Primitive::removeStencil()
+		{
+			stencil.reset();
 		}
 
 		void Primitive::setPosition(const glm::vec3& _position)
@@ -274,6 +285,29 @@ namespace se
 				return;
 			rotation = _rotation;
 			enableBit(updateFlags, PrimitiveUpdateFlag::TransformChanged);
+		}
+
+		void Primitive::validateRenderMode()
+		{
+			if (renderMode == RenderMode::Static)
+			{
+				if (getInstances())
+				{
+					log::error("RenderMode::Static and instancing don't work together!");
+				}
+				if (getRenderCopy())
+				{
+					log::error("RenderMode::Static and RenderCopy don't work together!");
+				}
+				if (getScissor().enabled)
+				{
+					log::error("RenderMode::Static and Scissor don't work together!");
+				}
+				if (getStencil())
+				{
+					log::error("RenderMode::Static and Stencil don't work together!");
+				}
+			}
 		}
 	}
 }
