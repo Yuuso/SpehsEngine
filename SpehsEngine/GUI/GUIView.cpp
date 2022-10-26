@@ -1,6 +1,8 @@
 #include "stdafx.h"
 #include "SpehsEngine/GUI/GUIView.h"
 
+#include "SpehsEngine/GUI/Internal/StencilMaskManager.h"
+
 
 namespace se
 {
@@ -37,12 +39,17 @@ namespace se
 		{
 			return inputHandlingEnabled;
 		}
+		void GUIView::setLayerMaskStyle(LayerMaskStyle _style)
+		{
+			layerMaskStyle = _style;
+		}
 
 		void GUIView::update(glm::vec2 _renderSize)
 		{
 			camera.setPosition(glm::vec3{ _renderSize.x * 0.5f, -_renderSize.y * 0.5, cameraZPos });
 
-			UpdateContext context{ view.getScene(), materialManager, _renderSize };
+			auto stencilMaskManager = createStencilMaskManager(layerMaskStyle);
+			UpdateContext context{ view.getScene(), materialManager, *stencilMaskManager, _renderSize };
 			for (auto&& element : rootElements)
 			{
 				se_assert(!element->parent);

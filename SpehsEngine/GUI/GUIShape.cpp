@@ -3,6 +3,7 @@
 
 #include "SpehsEngine/Graphics/Scene.h"
 #include "SpehsEngine/GUI/GUIView.h"
+#include "SpehsEngine/GUI/Internal/StencilMaskManager.h"
 #include "SpehsEngine/Math/GLMMatrixUtilityFunctions.h"
 
 
@@ -71,10 +72,17 @@ namespace se
 
 					shape.setScissor(globalScissor);
 
-					if (getColor().a < 1.0f || !getTexture().empty())
-						shape.setRenderFlags(RenderFlag::BlendAlpha | RenderFlag::DepthTestLess);
-					else
-						shape.setRenderFlags(RenderFlag::WriteDepth | RenderFlag::WriteAlpha | RenderFlag::DepthTestLess);
+					if (_context.stencilMaskManager.enabled())
+					{
+						shape.setStencil(_context.stencilMaskManager.get(getLayerMask()));
+					}
+
+					const bool blendAlpha = getColor().a < 1.0f || !getTexture().empty();
+					shape.setRenderFlags(0
+						| RenderFlag::DepthTestLess
+						| (blendAlpha ? RenderFlag::BlendAlpha : 0)
+						| (!blendAlpha ? RenderFlag::WriteDepth : 0)
+						);
 				}
 			}
 			if (checkBit(updateFlags, GUIElementUpdateFlag::VisualUpdateNeeded))
@@ -134,6 +142,13 @@ namespace se
 			{
 				enableBit(updateFlags, GUIElementUpdateFlag::VisualUpdateNeeded);
 			}
+		}
+		void GUIShape::setLayerMask(bool _value)
+		{
+			if (normalProperties.layerMask == _value)
+				return;
+			normalProperties.layerMask = _value;
+			enableBit(updateFlags, GUIElementUpdateFlag::TreeUpdateNeeded);
 		}
 	}
 }

@@ -21,6 +21,8 @@ namespace se
 	namespace gui
 	{
 		class GUIMaterialManager;
+		class StencilMaskManager;
+
 
 		enum GUIElementUpdateFlag : GUIElementUpdateFlagsType
 		{
@@ -35,6 +37,7 @@ namespace se
 		{
 			graphics::Scene& scene;
 			GUIMaterialManager& materialManager;
+			StencilMaskManager& stencilMaskManager;
 
 			glm::vec2 viewSize;
 			ZIndex hoverHandledDepth = std::numeric_limits<ZIndex>::min();

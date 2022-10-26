@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "SpehsEngine/GUI/GUIElement.h"
 
+#include "SpehsEngine/GUI/Internal/StencilMaskManager.h"
 #include "SpehsEngine/Input/MouseUtilityFunctions.h"
 #include "SpehsEngine/Math/GLMMatrixUtilityFunctions.h"
 #include "SpehsEngine/Math/Bounds2D.h"
@@ -232,49 +233,66 @@ namespace se
 						glm::rotate(glm::identity<glm::quat>(), getRotation(), glm::vec3(0.0f, 0.0f, 1.0f)),
 						glm::vec3(getScale().x, getScale().y, 1.0f));
 				if (parent)
+				{
 					globalTrasform = parent->globalTrasform * localTransform;
+				}
 				else
+				{
 					globalTrasform = localTransform;
+				}
 
 				globalVisible = getVisible() && (parent ? parent->globalVisible : true);
 
 				globalScissor.enabled = false;
-				if (getClipping())
+				if (parent && parent->globalScissor.enabled)
 				{
+					globalScissor = parent->globalScissor;
+				}
+				else if (getScissorMask())
+				{
+					// Reset
+					globalScissor.x = 0;
+					globalScissor.y = 0;
+					globalScissor.width = static_cast<uint16_t>(_context.viewSize.x);
+					globalScissor.height = static_cast<uint16_t>(_context.viewSize.y);
+				}
+				if (getScissorMask())
+				{
+					se_assert_m(getRotation() == 0.0f, "GUIElement: Rotation not supported with ScissorMask!");
 					glm::vec3 globalPosition;
 					glm::vec3 globalScale;
 					decomposeTransformationMatrix(globalTrasform, &globalPosition, nullptr, &globalScale);
 
+					const glm::vec2 pixelOffset = unitToPixels(getTransformOffset(), _context.viewSize);
+					globalPosition.x -= pixelOffset.x; // don't ask why this is -= instead of += ...
+					globalPosition.y += pixelOffset.y;
+
 					globalScissor.enabled = true;
+					globalScissor.x = glm::max(globalScissor.x, static_cast<uint16_t>(globalPosition.x));
+					globalScissor.y = glm::max(globalScissor.y, static_cast<uint16_t>(-globalPosition.y));
+					globalScissor.width = glm::min(globalScissor.width, static_cast<uint16_t>(pixelSize.x * globalScale.x));
+					globalScissor.height = glm::min(globalScissor.height, static_cast<uint16_t>(pixelSize.y * globalScale.y));
+
 					globalScissor.x = static_cast<uint16_t>(globalPosition.x);
-					globalScissor.y = static_cast<uint16_t>(globalPosition.y);
+					globalScissor.y = static_cast<uint16_t>(-globalPosition.y);
 					globalScissor.width = static_cast<uint16_t>(pixelSize.x * globalScale.x);
 					globalScissor.height = static_cast<uint16_t>(pixelSize.y * globalScale.y);
 				}
-				if (parent && parent->globalScissor.enabled)
-				{
-					if (getClipping())
-					{
-						glm::vec3 globalPosition;
-						glm::vec3 globalScale;
-						decomposeTransformationMatrix(parent->globalTrasform, &globalPosition, nullptr, &globalScale);
+			}
 
-						globalScissor.enabled = true;
-						globalScissor.x = glm::max(globalScissor.x, static_cast<uint16_t>(globalPosition.x));
-						globalScissor.y = glm::max(globalScissor.y, static_cast<uint16_t>(globalPosition.y));
-						globalScissor.width = glm::min(globalScissor.width, static_cast<uint16_t>(pixelSize.x * globalScale.x));
-						globalScissor.height = glm::min(globalScissor.height, static_cast<uint16_t>(pixelSize.y * globalScale.y));
-					}
-					else
-					{
-						globalScissor = parent->globalScissor;
-					}
-				}
+			if (getLayerMask())
+			{
+				_context.stencilMaskManager.begin();
 			}
 
 			elementUpdate(_context);
 			for (auto&& child : children)
 				child->update(_context);
+
+			if (getLayerMask())
+			{
+				_context.stencilMaskManager.end();
+			}
 
 			updateFlags = 0;
 			lastViewSize = _context.viewSize;
@@ -486,10 +504,11 @@ namespace se
 			glm::vec3 globalScale;
 			decomposeTransformationMatrix(globalTrasform, &globalPosition, nullptr, &globalScale);
 
-			const glm::vec2 globalSize = unitToPixels(getSize(), lastViewSize) * glm::vec2(globalScale.x, globalScale.y);
-			const glm::vec2 pixelOffset = -unitToPixels(getTransformOffset(), lastViewSize);
+			const glm::vec2 scale{ globalScale.x, globalScale.y };
+			const glm::vec2 globalSize = unitToPixels(getSize(), lastViewSize) * scale;
+			const glm::vec2 pixelOffset = -unitToPixels(getTransformOffset(), lastViewSize) * scale;
 
-			Bounds2D bounds(glm::vec2(globalPosition.x + globalSize.x * 0.5f + pixelOffset.x, -globalPosition.y + globalSize.y * 0.5f + pixelOffset.y), globalSize * 0.5f);
+			const Bounds2D bounds(glm::vec2(globalPosition.x + globalSize.x * 0.5f + pixelOffset.x, -globalPosition.y + globalSize.y * 0.5f + pixelOffset.y), globalSize * 0.5f);
 			return bounds.contains(_viewPoint);
 		}
 		void GUIElement::onClick(std::function<void(GUIElement&)> _callback)
@@ -542,9 +561,13 @@ namespace se
 		{
 			return_property(scale);
 		}
-		bool GUIElement::getClipping() const
+		bool GUIElement::getScissorMask() const
 		{
-			return_property(clipping);
+			return_property(scissorMask);
+		}
+		bool GUIElement::getLayerMask() const
+		{
+			return_property(layerMask);
 		}
 		const GUIVec2& GUIElement::getAnchor() const
 		{
@@ -617,11 +640,11 @@ namespace se
 			normalProperties.scale = _scale;
 			enableBit(updateFlags, GUIElementUpdateFlag::TreeUpdateNeeded);
 		}
-		void GUIElement::setClipping(bool _value)
+		void GUIElement::setScissorMask(bool _value)
 		{
-			if (normalProperties.clipping == _value)
+			if (normalProperties.scissorMask == _value)
 				return;
-			normalProperties.clipping = _value;
+			normalProperties.scissorMask = _value;
 			enableBit(updateFlags, GUIElementUpdateFlag::TreeUpdateNeeded);
 		}
 		void GUIElement::setVisible(bool _value)

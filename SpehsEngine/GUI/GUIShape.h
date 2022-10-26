@@ -30,6 +30,7 @@ namespace se
 
 			void									setColor(const Color& _color);
 			void									setTexture(std::string_view _name);
+			void									setLayerMask(bool _value);
 
 		protected:
 
