@@ -234,7 +234,10 @@ namespace se
 			_renderContext.defaultUniforms->setNormalMatrices(identities);
 
 			_renderContext.defaultUniforms->setPrimitiveColor(renderInfo.primitiveColor);
-			_renderContext.lightBatch->bind();
+			if (renderInfo.material->getLit())
+			{
+				_renderContext.lightBatch->bind();
+			}
 			renderInfo.material->bind();
 
 			bgfx::IndexBufferHandle ibh = { indices.bufferObject };

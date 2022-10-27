@@ -59,7 +59,8 @@ namespace se
 			float									getRotation() const;
 			const GUIVec2&							getSize() const;
 			const glm::vec2&						getScale() const;
-			bool									getClipping() const;
+			bool									getScissorMask() const;
+			bool									getLayerMask() const;
 			const GUIVec2&							getAnchor() const;
 			const GUIVec2&							getAlignment() const;
 			bool									getVisible() const;
@@ -76,7 +77,7 @@ namespace se
 			void									setWidth(GUIUnit _width);
 			void									setHeight(GUIUnit _height);
 			void									setScale(const glm::vec2& _scale);
-			void									setClipping(bool _value);
+			void									setScissorMask(bool _value);
 			void									setVisible(bool _value);
 			void									setAnchor(const GUIVec2& _anchor);
 			void									setAnchor(VerticalAnchor _vertical, HorizontalAnchor _horizontal);

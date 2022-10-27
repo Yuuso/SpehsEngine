@@ -20,6 +20,7 @@ namespace se
 		RendererBackend getRendererBackend();
 		bgfx::UniformType::Enum getUniformType(const UniformType _type);
 		bgfx::ViewMode::Enum getViewMode(DrawCallSortOrder _type);
+		uint32_t getStencilState(const Stencil* _stencil);
 
 		template <typename T>
 		void safeDestroy(ResourceHandle& _resourceHandle)

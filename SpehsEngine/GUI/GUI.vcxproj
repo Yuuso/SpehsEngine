@@ -120,6 +120,7 @@
     <ClCompile Include="GUIShape.cpp" />
     <ClCompile Include="GUIText.cpp" />
     <ClCompile Include="GUIView.cpp" />
+    <ClCompile Include="Internal\StencilMaskManager.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
@@ -136,6 +137,7 @@
     <ClInclude Include="GUIStack.h" />
     <ClInclude Include="GUIText.h" />
     <ClInclude Include="Internal\InternalTypes.h" />
+    <ClInclude Include="Internal\StencilMaskManager.h" />
     <ClInclude Include="PrecompiledInclude.h" />
     <ClInclude Include="GUIView.h" />
     <ClInclude Include="GUIShape.h" />

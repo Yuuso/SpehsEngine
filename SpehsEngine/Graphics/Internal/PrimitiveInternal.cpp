@@ -72,7 +72,9 @@ namespace se
 			{
 				unregisterAsBufferObjectRenderer();
 				if (isBatched())
+				{
 					unbatch();
+				}
 				return;
 			}
 
@@ -103,7 +105,9 @@ namespace se
 			{
 				se_assert(getRenderMode() == RenderMode::Dynamic);
 				if (isBatched())
+				{
 					unbatch();
+				}
 				registerAsBufferObjectRenderer();
 			}
 		}
@@ -112,7 +116,9 @@ namespace se
 		{
 			render(_renderContext, getRenderInfo());
 			if (primitive->getRenderCopy())
+			{
 				render(_renderContext, getCopyRenderInfo());
+			}
 		}
 		void PrimitiveInternal::render(RenderContext& _renderContext, const RenderInfo& _renderInfo)
 		{
@@ -154,11 +160,15 @@ namespace se
 
 			_renderContext.defaultUniforms->setPrimitiveColor(_renderInfo.primitiveColor);
 			if (_renderInfo.material->getLit())
+			{
 				_renderContext.lightBatch->bind();
+			}
 			_renderInfo.material->bind();
 
 			if (isBillboardSpherical || isBillboardCylindrical)
+			{
 				_renderContext.defaultUniforms->setBillboardInfo(primitive->getPosition(), isBillboardCylindrical);
+			}
 
 			bgfx::IndexBufferHandle ibh = { getIndices()->bufferObject };
 			bgfx::VertexBufferHandle vbh = { getVertices()->bufferObject };
@@ -171,10 +181,15 @@ namespace se
 				bgfx::setInstanceDataBuffer(dvbh, 0, static_cast<uint32_t>(instances->size()));
 			}
 
-			if (_renderInfo.scissor.enabled)
-				bgfx::setScissor(_renderInfo.scissor.x, _renderInfo.scissor.y, _renderInfo.scissor.width, _renderInfo.scissor.height);
+			const Scissor& scissor = primitive->getScissor();
+			if (scissor.enabled)
+			{
+				bgfx::setScissor(scissor.x, scissor.y, scissor.width, scissor.height);
+			}
 
 			applyRenderState(_renderInfo, _renderContext);
+
+			bgfx::setStencil(getStencilState(primitive->getStencil()));
 
 			bgfx::ProgramHandle programHandle = { shader->getHandle() };
 			const uint32_t depth = static_cast<uint32_t>(primitive->getPosition().z + static_cast<float>(std::numeric_limits<int16_t>::max()));
@@ -215,7 +230,9 @@ namespace se
 			batchPosition = &_batch.add(*getVertices(), *getIndices());
 			primitiveBatch = &_batch;
 			if (primitive->getTransformMatrices()[0] != glm::mat4(1.0f)) // No need to update with identity matrix
+			{
 				primitiveBatch->updateVertices(*batchPosition, *getVertices(), primitive->getTransformMatrices()[0], primitive->getNormalMatrices()[0]);
+			}
 		}
 		void PrimitiveInternal::unbatch()
 		{
@@ -241,7 +258,6 @@ namespace se
 			result.material = primitive->getMaterial();
 			result.attributes = primitive->getVertices()->getAttributes();
 			result.primitiveColor = primitive->getColor();
-			result.scissor = primitive->getScissor();
 			return result;
 		}
 		RenderInfo PrimitiveInternal::getCopyRenderInfo() const
@@ -258,7 +274,6 @@ namespace se
 			result.material = primitive->getMaterial();
 			result.attributes = primitive->getVertices()->getAttributes();
 			result.primitiveColor = renderCopy->primitiveColor;
-			result.scissor = primitive->getScissor();
 			return result;
 		}
 		bool PrimitiveInternal::getRenderState() const
