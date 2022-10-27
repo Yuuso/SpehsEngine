@@ -3,6 +3,7 @@
 
 #include "SpehsEngine/Graphics/Scene.h"
 #include "SpehsEngine/GUI/GUIView.h"
+#include "SpehsEngine/GUI/Internal/StencilMaskManager.h"
 #include "SpehsEngine/Math/GLMMatrixUtilityFunctions.h"
 
 
@@ -102,6 +103,11 @@ namespace se
 					text.setScale(renderScale);
 
 					text.setScissor(globalScissor);
+
+					if (_context.stencilMaskManager.enabled())
+					{
+						text.setStencil(_context.stencilMaskManager.get(getLayerMask()));
+					}
 				}
 			}
 			if (checkBit(updateFlags, GUIElementUpdateFlag::VisualUpdateNeeded))
