@@ -75,7 +75,10 @@ namespace se
 	{
 		return ImVec4(color.r, color.g, color.b, color.a);
 	}
-
+	inline ImVec2 toImVec2(const glm::vec2& vec)
+	{
+		return ImVec2(vec.x, vec.y);
+	}
 	inline Color fromImVec4(const ImVec4& imVec4)
 	{
 		return Color(&imVec4.x);
