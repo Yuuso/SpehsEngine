@@ -29,12 +29,14 @@ namespace se
 
 			size_t									addChild(std::shared_ptr<GUIElement> _element);
 			void									removeChild(size_t _index);
+			bool									removeChild(std::string_view _name);
 			void									removeChild(GUIElement* _element);
 			void									removeChild(std::shared_ptr<GUIElement> _element);
 			void									clearChildren();
 			std::shared_ptr<GUIElement>				getChild(size_t _index);
 			const GUIElement*						getChild(size_t _index) const;
 			std::shared_ptr<GUIElement>				findChild(std::string_view _name, bool _recursive = true);
+			template<typename T> T*					findChild(std::string_view _name, bool _recursive = true);
 			size_t									getNumChildren() const;
 			GUIElement*								getParent();
 			const GUIElement*						getParent() const;
@@ -77,6 +79,7 @@ namespace se
 			void									setWidth(GUIUnit _width);
 			void									setHeight(GUIUnit _height);
 			void									setScale(const glm::vec2& _scale);
+			void									setScale(float _scale);
 			void									setScissorMask(bool _value);
 			void									setVisible(bool _value);
 			void									setAnchor(const GUIVec2& _anchor);
@@ -143,6 +146,21 @@ namespace se
 			std::function<void(GUIElement&)>		hoverCallback;
 			bool									consumeInput = true;
 		};
+
+		template<typename T> T* GUIElement::findChild(std::string_view _name, bool _recursive)
+		{
+			static_assert(std::is_base_of<GUIElement, T>::value, "T must inherit GUIElement");
+			if (const std::shared_ptr<GUIElement> child = findChild(_name, _recursive))
+			{
+				T* const childCast = dynamic_cast<T*>(child.get());
+				se_assert_m(childCast, "Child was not of the expected type.");
+				return childCast;
+			}
+			else
+			{
+				return nullptr;
+			}
+		}
 
 		template<typename T> T* GUIElement::getDataContext()
 		{

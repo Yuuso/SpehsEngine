@@ -423,6 +423,18 @@ namespace se
 			child->onRemovedParent();
 			enableBit(updateFlags, GUIElementUpdateFlag::TreeUpdateNeeded);
 		}
+		bool GUIElement::removeChild(std::string_view _name)
+		{
+			for (size_t i = 0; i < children.size(); i++)
+			{
+				if (children[i]->name == _name)
+				{
+					removeChild(i);
+					return true;
+				}
+			}
+			return false;
+		}
 		void GUIElement::removeChild(GUIElement* _element)
 		{
 			for (size_t i = 0; i < children.size(); i++)
@@ -639,6 +651,10 @@ namespace se
 		{
 			normalProperties.scale = _scale;
 			enableBit(updateFlags, GUIElementUpdateFlag::TreeUpdateNeeded);
+		}
+		void GUIElement::setScale(float _scale)
+		{
+			setScale(glm::vec2(_scale, _scale));
 		}
 		void GUIElement::setScissorMask(bool _value)
 		{

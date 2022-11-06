@@ -130,6 +130,12 @@ namespace se
 			normalProperties.color = _color;
 			enableBit(updateFlags, GUIElementUpdateFlag::VisualUpdateNeeded);
 		}
+		void GUIShape::setAlpha(float _alpha)
+		{
+			Color color = getColor();
+			color.a = _alpha;
+			setColor(color);
+		}
 		void GUIShape::setTexture(std::string_view _name)
 		{
 			normalProperties.texture = _name;

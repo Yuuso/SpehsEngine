@@ -29,6 +29,7 @@ namespace se
 			const std::string_view					getTexture() const;
 
 			void									setColor(const Color& _color);
+			void									setAlpha(float _alpha);
 			void									setTexture(std::string_view _name);
 			void									setLayerMask(bool _value);
 
