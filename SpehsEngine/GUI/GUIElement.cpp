@@ -165,6 +165,11 @@ namespace se
 			if (preUpdateCallback)
 				preUpdateCallback(*this);
 
+			if (parent && checkBit(parent->updateFlags, GUIElementUpdateFlag::TreeUpdateNeeded))
+				enableBit(updateFlags, GUIElementUpdateFlag::TreeUpdateNeeded);
+			if (lastViewSize != _context.viewSize)
+				enableBit(updateFlags, GUIElementUpdateFlag::TreeUpdateNeeded);
+
 			// Hover input update (inputUpdate currently only is called on mouse button presses)
 			GUIElementInputStatus lastStatus = inputStatus;
 			const ZIndex zvalue = getZValue();

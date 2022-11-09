@@ -51,30 +51,33 @@ namespace se
 				if (updateDimensions())
 				{
 					enableBit(updateFlags, GUIElementUpdateFlag::TreeUpdateNeeded);
-					const TextDimensions& dims = text.getDimensions();
-					if (getSize().x.type == GUIUnitType::Auto)
-					{
-						if (getSize().y.type == GUIUnitType::Auto)
-						{
-							setWidth(GUIUnit(dims.capsDimensions.x, GUIUnitType::Auto));
-						}
-						else
-						{
-							const float factor = unitToPixels(resolveUnitType(getSize().y, false), _context.viewSize) / dims.capsDimensions.y;
-							setWidth(GUIUnit(dims.capsDimensions.x * factor, GUIUnitType::Auto));
-						}
-					}
+				}
+			}
+			if (checkBit(updateFlags, GUIElementUpdateFlag::TreeUpdateNeeded))
+			{
+				const TextDimensions& dims = text.getDimensions();
+				if (getSize().x.type == GUIUnitType::Auto)
+				{
 					if (getSize().y.type == GUIUnitType::Auto)
 					{
-						if (getSize().x.type == GUIUnitType::Auto)
-						{
-							setHeight(GUIUnit(dims.capsDimensions.y, GUIUnitType::Auto));
-						}
-						else
-						{
-							const float factor = unitToPixels(resolveUnitType(getSize().x, true), _context.viewSize) / dims.capsDimensions.x;
-							setHeight(GUIUnit(dims.capsDimensions.y * factor, GUIUnitType::Auto));
-						}
+						setWidth(GUIUnit(dims.capsDimensions.x, GUIUnitType::Auto));
+					}
+					else
+					{
+						const float factor = unitToPixels(resolveUnitType(getSize().y, false), _context.viewSize) / dims.capsDimensions.y;
+						setWidth(GUIUnit(dims.capsDimensions.x * factor, GUIUnitType::Auto));
+					}
+				}
+				if (getSize().y.type == GUIUnitType::Auto)
+				{
+					if (getSize().x.type == GUIUnitType::Auto)
+					{
+						setHeight(GUIUnit(dims.capsDimensions.y, GUIUnitType::Auto));
+					}
+					else
+					{
+						const float factor = unitToPixels(resolveUnitType(getSize().x, true), _context.viewSize) / dims.capsDimensions.x;
+						setHeight(GUIUnit(dims.capsDimensions.y * factor, GUIUnitType::Auto));
 					}
 				}
 			}
