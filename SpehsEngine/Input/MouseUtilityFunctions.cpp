@@ -3,11 +3,12 @@
 
 #include "SDL/SDL_mouse.h"
 
+
 namespace se
 {
 	namespace input
 	{
-		glm::ivec2 getMousePosition()
+		std::optional<glm::ivec2> getMousePosition()
 		{
 			if (SDL_Window* const focusedWindow = SDL_GetMouseFocus())
 			{
@@ -17,14 +18,20 @@ namespace se
 			}
 			else
 			{
-				return glm::ivec2();
+				return std::nullopt;
 			}
 		}
 
-		glm::vec2 getMousePositionf()
+		std::optional<glm::vec2> getMousePositionf()
 		{
-			const glm::ivec2 pos = getMousePosition();
-			return glm::vec2(pos.x, pos.y);
+			if (const std::optional<glm::ivec2> pos = getMousePosition())
+			{
+				return glm::vec2(pos->x, pos->y);
+			}
+			else
+			{
+				return std::nullopt;
+			}
 		}
 		void setMousePosition(const glm::ivec2& _pos)
 		{

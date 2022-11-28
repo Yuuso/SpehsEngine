@@ -117,12 +117,15 @@ namespace se
 						// Mouse events
 						case SDL_MOUSEMOTION:
 						{
-							/*
-								The mouse position in the event uses the top-left centered coordinate system.
-								Let's just use the global getter instead to avoid window dependency.
-							*/
-							mousePosition = getMousePosition();
-							mouseMotionCaught = true;
+							if (const std::optional<glm::vec2> focuedWindowMousePosition = getMousePosition())
+							{
+								/*
+									The mouse position in the event uses the top-left centered coordinate system.
+									Let's just use the global getter instead to avoid window dependency.
+								*/
+								mousePosition = *focuedWindowMousePosition;
+								mouseMotionCaught = true;
+							}
 						}
 						break;
 						case SDL_MOUSEBUTTONDOWN:

@@ -1,14 +1,17 @@
 #pragma once
+
 #include "SpehsEngine/Input/MouseButton.h"
 #include "glm/vec2.hpp"
+#include <optional>
+
 
 namespace se
 {
 	namespace input
 	{
 		/* Mouse position is relative to the currently focused window. */
-		glm::ivec2 getMousePosition();
-		glm::vec2 getMousePositionf();
+		std::optional<glm::ivec2> getMousePosition();
+		std::optional<glm::vec2> getMousePositionf();
 		void setMousePosition(const glm::ivec2& _pos);
 
 		bool isMouseButtonDown(const MouseButton mouseButton);

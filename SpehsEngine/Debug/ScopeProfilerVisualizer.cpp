@@ -143,7 +143,6 @@ namespace se
 				const time::Time now = enableUpdate ? time::getProfilerTimestamp() : disableUpdateTime;
 				const time::Time endTime = timeWindowBegin + timeWindowWidth; // Visualized history ends
 				const time::Time beginTime = endTime - timeWindowWidth; // Visualized history begins
-				const glm::vec2 mousePosition = input::getMousePositionf();
 
 				tooltipText.setRenderState(false);
 				tooltipPolygon.setRenderState(false);
@@ -208,37 +207,40 @@ namespace se
 					sectionPolygon->setColor(Color(1.0f, 0.0f, 0.0f) * positiveColorFactor + Color(0.0f, 1.0f, 0.0f) * (1.0f - positiveColorFactor));
 
 					// Tooltip hover?
-					if (mousePosition.x >= position.x && mousePosition.x <= (position.x + size.x) &&
-						mousePosition.y >= position.y && mousePosition.y <= (position.y + size.y))
+					if (const std::optional<glm::vec2> mousePosition = input::getMousePositionf())
 					{
-						std::string string;
-						string += "Name: " + section.name;
-						string += "\nFunction: " + std::string(section.function);
-						string += "\nFile: " + std::string(section.file);
-						string += "\nLine: " + std::to_string(section.line);
-						string += "\nLength: " + toTimeLengthString(sectionDuration, 6);
-						if (sectionInfo.parent)
+						if (mousePosition->x >= position.x && mousePosition->x <= (position.x + size.x) &&
+							mousePosition->y >= position.y && mousePosition->y <= (position.y + size.y))
 						{
-							string += " (" + toString(percentageOfParent * 100.0f, 2) + "% of parent)";
+							std::string string;
+							string += "Name: " + section.name;
+							string += "\nFunction: " + std::string(section.function);
+							string += "\nFile: " + std::string(section.file);
+							string += "\nLine: " + std::to_string(section.line);
+							string += "\nLength: " + toTimeLengthString(sectionDuration, 6);
+							if (sectionInfo.parent)
+							{
+								string += " (" + toString(percentageOfParent * 100.0f, 2) + "% of parent)";
+							}
+							if (threadData)
+							{
+								std::stringstream stringstream;
+								stringstream << threadData->threadId;
+								string += "\nThread id: " + std::string(stringstream.str());
+							}
+							tooltipText.clear();
+							tooltipText.insert(string);
+							tooltipText.setRenderState(true);
+							const float textWidth = tooltipText.getDimensions().dimensions.x;
+							const float tooltipPolygonBorder = 2.0f;
+							const float tooltipWidth = textWidth + 2.0f * tooltipPolygonBorder;
+							const glm::vec2 tooltipTextPosition = glm::vec2(std::min(mousePosition->x + tooltipWidth, view.getSize().width) - tooltipWidth, mousePosition->y);
+							const glm::vec2 tooltipPolygonPosition = tooltipTextPosition + glm::vec2(tooltipPolygonBorder, tooltipPolygonBorder);
+							tooltipText.setPosition({ tooltipTextPosition.x, 0.0f, tooltipTextPosition.y });
+							tooltipPolygon.setRenderState(true);
+							tooltipPolygon.setScale({ tooltipWidth, 1.0f, tooltipText.getDimensions().dimensions.y + 2.0f * tooltipPolygonBorder });
+							tooltipPolygon.setPosition({ tooltipPolygonPosition.x, 0.0f, tooltipPolygonPosition.y });
 						}
-						if (threadData)
-						{
-							std::stringstream stringstream;
-							stringstream << threadData->threadId;
-							string += "\nThread id: " + std::string(stringstream.str());
-						}
-						tooltipText.clear();
-						tooltipText.insert(string);
-						tooltipText.setRenderState(true);
-						const float textWidth = tooltipText.getDimensions().dimensions.x;
-						const float tooltipPolygonBorder = 2.0f;
-						const float tooltipWidth = textWidth + 2.0f * tooltipPolygonBorder;
-						const glm::vec2 tooltipTextPosition = glm::vec2(std::min(mousePosition.x + tooltipWidth, view.getSize().width) - tooltipWidth, mousePosition.y);
-						const glm::vec2 tooltipPolygonPosition = tooltipTextPosition + glm::vec2(tooltipPolygonBorder, tooltipPolygonBorder);
-						tooltipText.setPosition({ tooltipTextPosition.x, 0.0f, tooltipTextPosition.y });
-						tooltipPolygon.setRenderState(true);
-						tooltipPolygon.setScale({ tooltipWidth, 1.0f, tooltipText.getDimensions().dimensions.y + 2.0f * tooltipPolygonBorder });
-						tooltipPolygon.setPosition({ tooltipPolygonPosition.x, 0.0f, tooltipPolygonPosition.y });
 					}
 				}
 			}
