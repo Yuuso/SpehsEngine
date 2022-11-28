@@ -179,23 +179,28 @@ namespace se
 			{
 				if (getVisible() && needInputUpdate())
 				{
-					const bool notConsumed = _context.hoverHandledDepth <= zvalue;
-					if ((notConsumed && hitTest(se::input::getMousePositionf())) || inheritStatus)
+					if (const std::optional<glm::vec2> mousePosition = se::input::getMousePositionf())
 					{
-						if (notConsumed && consumeInput)
-							_context.hoverHandledDepth = zvalue;
-						waitingToHoverUpdate = true;
-						if (inputStatus == GUIElementInputStatus::Normal)
+						const bool notConsumed = _context.hoverHandledDepth <= zvalue;
+						if ((notConsumed && hitTest(*mousePosition)) || inheritStatus)
 						{
-							inputStatus = GUIElementInputStatus::Hover;
+							if (notConsumed && consumeInput)
+								_context.hoverHandledDepth = zvalue;
+							waitingToHoverUpdate = true;
+							if (inputStatus == GUIElementInputStatus::Normal)
+							{
+								inputStatus = GUIElementInputStatus::Hover;
+							}
 						}
 					}
 				}
 			}
 
 			elementPreUpdate(_context);
-			for (auto&& child : children)
-				child->preUpdate(_context);
+			for (size_t i = 0; i < children.size(); i++)
+			{
+				children[i]->preUpdate(_context);
+			}
 
 			if (waitingToHoverUpdate && ((_context.hoverHandledDepth <= zvalue) || inheritStatus))
 			{
@@ -314,16 +319,19 @@ namespace se
 			{
 				if (getVisible() && needInputUpdate())
 				{
-					const bool notConsumed = _context.handledDepth <= zvalue;
-					if ((notConsumed && hitTest(se::input::getMousePositionf())) || inheritStatus)
+					if (const std::optional<glm::vec2> mousePosition = se::input::getMousePositionf())
 					{
-						// Mark our depth, but wait for children to check before actually handling the event
-						if (notConsumed && consumeInput)
-							_context.handledDepth = zvalue;
-						waitingToUpdate = true;
-						if (inputStatus == GUIElementInputStatus::Normal)
+						const bool notConsumed = _context.handledDepth <= zvalue;
+						if ((notConsumed && hitTest(*mousePosition)) || inheritStatus)
 						{
-							inputStatus = GUIElementInputStatus::Hover;
+							// Mark our depth, but wait for children to check before actually handling the event
+							if (notConsumed && consumeInput)
+								_context.handledDepth = zvalue;
+							waitingToUpdate = true;
+							if (inputStatus == GUIElementInputStatus::Normal)
+							{
+								inputStatus = GUIElementInputStatus::Hover;
+							}
 						}
 					}
 				}
@@ -549,7 +557,7 @@ namespace se
 			inheritInputStatus = _value;
 		}
 
-		std::string_view GUIElement::getName() const
+		const std::string& GUIElement::getName() const
 		{
 			return name;
 		}

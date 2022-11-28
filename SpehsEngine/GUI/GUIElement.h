@@ -27,6 +27,7 @@ namespace se
 			virtual std::shared_ptr<GUIElement>		clone();
 
 
+			template<typename T> T&					addChild();
 			size_t									addChild(std::shared_ptr<GUIElement> _element);
 			void									removeChild(size_t _index);
 			bool									removeChild(std::string_view _name);
@@ -40,6 +41,7 @@ namespace se
 			size_t									getNumChildren() const;
 			GUIElement*								getParent();
 			const GUIElement*						getParent() const;
+			template<typename T> void				forEachRecursive(const std::function<void(T&)>& _function);
 
 			void									setUpdateCallback(std::function<void(GUIElement&)> _callback);
 			virtual bool							hitTest(const glm::vec2& _viewPoint);
@@ -54,7 +56,7 @@ namespace se
 			glm::vec2								unitToPixels(const GUIVec2& _vec, const glm::vec2& _viewSize) const;
 
 
-			std::string_view						getName() const;
+			const std::string&						getName() const;
 			const GUIVec2&							getPosition() const;
 			ZIndex									getZIndex() const;
 			ZIndex									getZValue() const; // The actual global ZIndex value
@@ -95,6 +97,8 @@ namespace se
 
 			void									setDataContext(std::any _context);
 			template<typename T> T*					getDataContext();
+			template<typename T> const T*			getDataContext() const;
+			template<typename T> const T&			getDataContext(const T& _default) const;
 
 		protected:
 
@@ -147,6 +151,12 @@ namespace se
 			bool									consumeInput = true;
 		};
 
+		template<typename T> T&	GUIElement::addChild()
+		{
+			static_assert(std::is_base_of<GUIElement, T>::value, "T must inherit GUIElement");
+			return static_cast<T&>(*children[addChild(std::make_shared<T>())]);
+		}
+
 		template<typename T> T* GUIElement::findChild(std::string_view _name, bool _recursive)
 		{
 			static_assert(std::is_base_of<GUIElement, T>::value, "T must inherit GUIElement");
@@ -159,6 +169,19 @@ namespace se
 			else
 			{
 				return nullptr;
+			}
+		}
+
+		template<typename T> void GUIElement::forEachRecursive(const std::function<void(T&)>& _function)
+		{
+			static_assert(std::is_base_of<GUIElement, T>::value, "T must inherit GUIElement");
+			if (T* const self = dynamic_cast<T*>(this))
+			{
+				_function(*self);
+			}
+			for (size_t i = 0; i < children.size(); i++)
+			{
+				children[i]->forEachRecursive(_function);
 			}
 		}
 
@@ -175,8 +198,38 @@ namespace se
 				return std::any_cast<T>(&dataContext);
 			}
 			catch (const std::bad_any_cast&)
+			{
+			}
+			return nullptr;
+		}
+
+		template<typename T> const T* GUIElement::getDataContext() const
+		{
+			if (!dataContext.has_value())
+			{
+				if (parent)
+					return parent->getDataContext<T>();
+				return nullptr;
+			}
+			try
+			{
+				return std::any_cast<T>(&dataContext);
+			}
+			catch (const std::bad_any_cast&)
 			{}
 			return nullptr;
+		}
+
+		template<typename T> const T& GUIElement::getDataContext(const T& _default) const
+		{
+			if (const T* const result = getDataContext<T>())
+			{
+				return *result;
+			}
+			else
+			{
+				return _default;
+			}
 		}
 	}
 }

@@ -50,15 +50,15 @@ namespace se
 
 			auto stencilMaskManager = createStencilMaskManager(layerMaskStyle);
 			UpdateContext context{ view.getScene(), materialManager, *stencilMaskManager, _renderSize };
-			for (auto&& element : rootElements)
+			for (size_t i = 0; i < rootElements.size(); i++)
 			{
-				se_assert(!element->parent);
-				element->preUpdate(context);
+				se_assert(!rootElements[i]->parent);
+				rootElements[i]->preUpdate(context);
 			}
-			for (auto&& element : rootElements)
+			for (size_t i = 0; i < rootElements.size(); i++)
 			{
-				se_assert(!element->parent);
-				element->update(context);
+				se_assert(!rootElements[i]->parent);
+				rootElements[i]->update(context);
 			}
 		}
 
@@ -68,11 +68,12 @@ namespace se
 				return false;
 
 			bool handled = false;
-			for (auto&& element : rootElements)
+			const size_t maxRootElements = rootElements.size(); // Attempt to not handle elements added during the update
+			for (size_t i = 0; i < std::min(maxRootElements, rootElements.size()); i++)
 			{
 				InputUpdateContext context{ _event };
-				se_assert(!element->parent);
-				handled = element->inputUpdate(context) || handled;
+				se_assert(!rootElements[i]->parent);
+				handled = rootElements[i]->inputUpdate(context) || handled;
 			}
 
 			return handled;
