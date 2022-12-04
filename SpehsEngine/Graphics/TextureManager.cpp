@@ -1,7 +1,6 @@
 #include "stdafx.h"
 #include "SpehsEngine/Graphics/TextureManager.h"
 
-#include "SpehsEngine/Core/StringViewUtilityFunctions.h"
 #include "SpehsEngine/Graphics/Internal/InternalUtilities.h"
 
 

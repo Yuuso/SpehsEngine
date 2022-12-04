@@ -2,7 +2,6 @@
 #include "SpehsEngine/Core/Inivar.h"
 
 #include "SpehsEngine/Core/Inifile.h"
-#include "SpehsEngine/Core/StringUtilityFunctions.h"
 #include "SpehsEngine/Core/Log.h"
 
 

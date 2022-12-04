@@ -1,19 +1,16 @@
-
 #include "stdafx.h"
 #include "SpehsEngine/Core/Log.h"
+
 #include "SpehsEngine/Core/LogSignal.h"
 #include "SpehsEngine/Core/SE_Time.h"
-#include "SpehsEngine/Core/StringViewUtilityFunctions.h"
 #include "SpehsEngine/Core/SystemMessageBox.h"
-#include "boost/signals2/signal.hpp"
+#include <iostream>
+#include <iomanip>
+#include <mutex>
 
 #if defined(_WIN32)
 #include <Windows.h>
 #endif
-
-#include <iostream>
-#include <iomanip>
-#include <mutex>
 
 
 namespace se

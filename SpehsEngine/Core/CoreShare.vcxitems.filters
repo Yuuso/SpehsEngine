@@ -4,7 +4,6 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)Archive.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)ArchiveUtilityFunctions.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Guid.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)GuidObjectContainer.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)SE_Assert.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)BufferBase.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Color.cpp" />
@@ -23,10 +22,7 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)RNG.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)ScopeTimer.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)stdafx.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)STLUnorderedMapUtilityFunctions.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)STLVectorUtilityFunctions.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)StringUtilityFunctions.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)StrongInt.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Thread.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)SE_Time.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)WriteBuffer.cpp" />
@@ -40,16 +36,11 @@
       <Filter>File</Filter>
     </ClCompile>
     <ClCompile Include="$(MSBuildThisFileDirectory)SystemMessageBox.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)LockGuard.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)ScopeProfiler.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)STLOptionalUtilityFunctions.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)File\Timestamp.cpp">
       <Filter>File</Filter>
     </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)STLPairUtilityFunctions.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)StaticRingBuffer.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)BufferUtilityFunctions.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)MultiMapUtilityFunctions.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)TimeUtilityFunctions.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)UtcTime.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)ScopedFrameLimiter.cpp" />
@@ -59,7 +50,6 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)Archive.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)ArchiveUtilityFunctions.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Guid.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)GuidObjectContainer.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)SE_Assert.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)BitwiseOperations.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)BufferBase.h" />

@@ -19,12 +19,8 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)BufferUtilityFunctions.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)File\Timestamp.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Guid.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)GuidObjectContainer.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)LockGuard.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)MultiMapUtilityFunctions.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)ScopedFrameLimiter.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Noise.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)StaticRingBuffer.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)ScopeProfiler.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)SE_Assert.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)BufferBase.cpp" />
@@ -49,12 +45,7 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)stdafx.cpp">
       <PrecompiledHeader>Create</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)STLOptionalUtilityFunctions.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)STLPairUtilityFunctions.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)STLUnorderedMapUtilityFunctions.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)STLVectorUtilityFunctions.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)StringUtilityFunctions.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)StrongInt.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)SystemMessageBox.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Thread.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)SE_Time.cpp" />
@@ -82,7 +73,6 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)StaticRingBuffer.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)ScopedFrameLimiter.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Guid.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)GuidObjectContainer.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)ScopeProfiler.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)SE_Assert.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)BitwiseOperations.h" />

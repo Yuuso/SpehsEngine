@@ -1,8 +1,6 @@
 #include "stdafx.h"
 #include "SpehsEngine/Graphics/Model.h"
 
-#include "SpehsEngine/Core/StringViewUtilityFunctions.h"
-#include "SpehsEngine/Core/StringUtilityFunctions.h"
 #include "SpehsEngine/Graphics/ResourceData.h"
 
 

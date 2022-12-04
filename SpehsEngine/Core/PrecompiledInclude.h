@@ -1,18 +1,37 @@
 #pragma once
 
+#include "boost/signals2/signal.hpp"
+#include "boost/signals2/connection.hpp"
 #include "glm/glm.hpp"
+#include "SpehsEngine/Core/ArchiveUtilityFunctions.h"
 #include "SpehsEngine/Core/BitwiseOperations.h"
+#include "SpehsEngine/Core/BufferUtilityFunctions.h"
 #include "SpehsEngine/Core/Color.h"
+#include "SpehsEngine/Core/ColorUtilityFunctions.h"
 #include "SpehsEngine/Core/Constants.h"
+#include "SpehsEngine/Core/DeepCopyUniquePtr.h"
+#include "SpehsEngine/Core/DeepCopyUniquePtrUtilityFunctions.h"
 #include "SpehsEngine/Core/Guid.h"
 #include "SpehsEngine/Core/Log.h"
+#include "SpehsEngine/Core/MultiMapUtilityFunctions.h" // nocommit find in files, remove
 #include "SpehsEngine/Core/ScopedFrameLimiter.h"
 #include "SpehsEngine/Core/ScopeProfiler.h"
 #include "SpehsEngine/Core/SE_Assert.h"
 #include "SpehsEngine/Core/SE_Time.h"
+#include "SpehsEngine/Core/STLOptionalUtilityFunctions.h"
+#include "SpehsEngine/Core/STLPairUtilityFunctions.h"
+#include "SpehsEngine/Core/STLUnorderedMapUtilityFunctions.h"
+#include "SpehsEngine/Core/STLUnorderedSetUtilityFunctions.h"
+#include "SpehsEngine/Core/STLVectorUtilityFunctions.h"
+#include "SpehsEngine/Core/StringUtilityFunctions.h"
+#include "SpehsEngine/Core/StringViewUtilityFunctions.h"
+#include "SpehsEngine/Core/UniquePtrUtilityFunctions.h"
 #include <algorithm>
 #include <functional>
 #include <memory>
+#include <set>
+#include <map>
+#include <unordered_set>
 #include <unordered_map>
 #include <optional>
 #include <stdint.h>
@@ -48,8 +67,3 @@
 #else
 #define SE_ENABLE_SCOPE_PROFILER SE_FALSE
 #endif
-
-namespace se
-{
-	class Archive;
-}

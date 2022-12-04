@@ -1,8 +1,6 @@
 #include "stdafx.h"
 #include "SpehsEngine/Graphics/ModelDataManager.h"
 
-#include "SpehsEngine/Core/Log.h"
-#include "SpehsEngine/Core/StringViewUtilityFunctions.h"
 
 namespace se
 {

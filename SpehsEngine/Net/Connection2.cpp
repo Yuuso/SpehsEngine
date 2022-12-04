@@ -1,7 +1,6 @@
 #include "stdafx.h"
 #include "SpehsEngine/Net/Connection2.h"
 
-#include "SpehsEngine/Core/StringUtilityFunctions.h"
 #include "SpehsEngine/Net/Internal/InternalTypes.h"
 #include "steam/isteamnetworkingutils.h"
 

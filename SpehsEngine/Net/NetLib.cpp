@@ -4,14 +4,13 @@
 #include "SpehsEngine/Core/CoreLib.h"
 #include "SpehsEngine/Core/Log.h"
 #include "SpehsEngine/Core/SE_Time.h"
-#include "SpehsEngine/Core/StringUtilityFunctions.h"
 #include "SpehsEngine/Net/NetIdentity.h"
 #include "steam/isteamnetworkingutils.h"
 #include "steam/steamnetworkingsockets.h"
 #include <iostream>
 #include <stdint.h>
-#include <string>
 #include <thread>
+
 
 namespace se
 {

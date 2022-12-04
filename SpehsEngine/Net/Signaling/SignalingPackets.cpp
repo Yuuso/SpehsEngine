@@ -1,8 +1,6 @@
 #include "stdafx.h"
 #include "SpehsEngine/Net/Signaling/SignalingPackets.h"
 
-#include "SpehsEngine/Core/STLVectorUtilityFunctions.h"
-
 
 namespace se
 {

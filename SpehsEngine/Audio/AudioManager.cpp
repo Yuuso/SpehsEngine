@@ -1,8 +1,6 @@
 #include "stdafx.h"
 #include "SpehsEngine/Audio/AudioManager.h"
 
-#include "SpehsEngine/Core/StringViewUtilityFunctions.h"
-
 
 namespace se
 {

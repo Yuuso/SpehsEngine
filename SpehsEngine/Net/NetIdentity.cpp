@@ -1,7 +1,6 @@
 #include "stdafx.h"
 #include "SpehsEngine/Net/NetIdentity.h"
 
-#include "SpehsEngine/Core/StringUtilityFunctions.h"
 #include "SpehsEngine/Core/RNG.h"
 
 

@@ -1,9 +1,7 @@
 #include "stdafx.h"
 #include "SpehsEngine/Input/EventUtilityFunctions.h"
 
-#include "SpehsEngine/Core/StringUtilityFunctions.h"
 #include "SpehsEngine/Input/JoystickUtilityFunctions.h"
-#include "SpehsEngine/Math/GLMVectorUtilityFunctions.h"
 
 
 namespace se

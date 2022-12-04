@@ -1,12 +1,11 @@
 #include "stdafx.h"
 #include "SpehsEngine/Debug/ScopeProfilerVisualizer.h"
 
-#include "SpehsEngine/Core/StringUtilityFunctions.h"
 #include "SpehsEngine/Graphics/DefaultMaterials.h"
 #include "SpehsEngine/Input/InputManager.h"
 #include "SpehsEngine/Input/Key.h"
 #include "SpehsEngine/Input/MouseUtilityFunctions.h"
-#include "SpehsEngine/Net/ConnectionManager.h"
+#include <sstream>
 
 
 namespace se

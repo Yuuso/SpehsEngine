@@ -3,19 +3,15 @@
 
 #include "SpehsEngine/Core/LockGuard.h"
 #include "SpehsEngine/Core/RNG.h"
-#include "SpehsEngine/Core/ReadBuffer.h"
-#include "SpehsEngine/Core/StringUtilityFunctions.h"
 #include "SpehsEngine/Core/Thread.h"
-#include "SpehsEngine/Core/WriteBuffer.h"
 #include "SpehsEngine/Net/AddressUtilityFunctions.h"
 #include "SpehsEngine/Net/EndpointUtilityFunctions.h"
-#include <set>
+
 
 #define DEBUG_LOG(level, message) if (getDebugLogLevel() >= level) \
 { \
 	se::log::info(debugName + "(" + getLocalPort().toString() + "): " + message); \
 }
-
 
 namespace se
 {

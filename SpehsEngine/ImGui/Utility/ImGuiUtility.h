@@ -6,7 +6,6 @@
 #include "SpehsEngine/Core/Color.h"
 #include "SpehsEngine/Core/SE_Time.h"
 #include "SpehsEngine/Core/TimeUtilityFunctions.h"
-#include "SpehsEngine/Core/StringUtilityFunctions.h"
 #include "SpehsEngine/Graphics/Texture.h"
 #include "SpehsEngine/ImGui/imgui.h"
 #include "SpehsEngine/ImGui/imgui_stdlib.h"

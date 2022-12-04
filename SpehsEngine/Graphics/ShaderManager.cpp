@@ -1,9 +1,6 @@
 #include "stdafx.h"
 #include "SpehsEngine/Graphics/ShaderManager.h"
 
-#include "SpehsEngine/Core/Log.h"
-#include "SpehsEngine/Core/StringViewUtilityFunctions.h"
-
 #include "bgfx/embedded_shader.h"
 #include "SpehsEngine/Graphics/EmbeddedShaders/vs_color.h"
 #include "SpehsEngine/Graphics/EmbeddedShaders/fs_color.h"

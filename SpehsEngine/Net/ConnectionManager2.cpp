@@ -1,12 +1,10 @@
 #include "stdafx.h"
 #include "SpehsEngine/Net/ConnectionManager2.h"
 
-#include "SpehsEngine/Core/StringUtilityFunctions.h"
 #include "SpehsEngine/Net/AddressUtilityFunctions.h"
 #include "SpehsEngine/Net/Signaling/SignalingImpl.h"
 #include "SpehsEngine/Net/Internal/InternalTypes.h"
 #include <mutex>
-#include <unordered_set>
 
 
 namespace se

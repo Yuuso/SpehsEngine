@@ -1,13 +1,12 @@
 #include "stdafx.h"
 #include "SpehsEngine/Core/OS.h"
 
-#include "SpehsEngine/Core/StringUtilityFunctions.h"
-
 #if SE_PLATFORM == SE_PLATFORM_WINDOWS
 #include <Windows.h>
 #include <tlhelp32.h>
 #include <ShlObj_core.h>
 #endif
+
 
 namespace
 {

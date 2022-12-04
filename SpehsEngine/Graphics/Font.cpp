@@ -3,7 +3,6 @@
 
 #include "bgfx/bgfx.h"
 #include "SpehsEngine/Core/File/File.h"
-#include "SpehsEngine/Core/StringViewUtilityFunctions.h"
 #include "SpehsEngine/Graphics/Internal/FontMetrics.h"
 #include "SpehsEngine/Graphics/Internal/InternalTypes.h"
 #include "SpehsEngine/Graphics/Internal/InternalUtilities.h"

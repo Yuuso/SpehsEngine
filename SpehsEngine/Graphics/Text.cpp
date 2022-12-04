@@ -1,7 +1,6 @@
 #include "stdafx.h"
 #include "SpehsEngine/Graphics/Text.h"
 
-#include "SpehsEngine/Core/ColorUtilityFunctions.h"
 #include "SpehsEngine/Graphics/Font.h"
 #include "SpehsEngine/Graphics/Material.h"
 #include <codecvt>

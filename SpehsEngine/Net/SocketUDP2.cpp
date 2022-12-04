@@ -4,10 +4,8 @@
 #include "SpehsEngine/Net/IOService.h"
 #include "SpehsEngine/Net/IOServiceUtilityFunctions.h"
 #include "SpehsEngine/Core/Log.h"
-#include "SpehsEngine/Core/StringUtilityFunctions.h"
 #include "boost/bind.hpp"
 #include "boost/asio/placeholders.hpp"
-#include <string>
 
 #define DEBUG_LOG(level, message) if (getDebugLogLevel() >= level) \
 { \

@@ -1,7 +1,6 @@
 #include "stdafx.h"
 #include "SpehsEngine/Input/EventCatcher.h"
 
-#include "SpehsEngine/Core/STLUnorderedMapUtilityFunctions.h"
 #include "SpehsEngine/Input/MouseUtilityFunctions.h"
 #include "SpehsEngine/Input/KeyUtilityFunctions.h"
 #include "SpehsEngine/Input/JoystickUtilityFunctions.h"

@@ -1,11 +1,6 @@
 #include "stdafx.h"
 #include "SpehsEngine/Graphics/Internal/AnimatorInternal.h"
 
-#include "SpehsEngine/Core/StringViewUtilityFunctions.h"
-#include "SpehsEngine/Core/SE_Time.h"
-#include "SpehsEngine/Core/SE_Assert.h"
-#include "SpehsEngine/Core/Log.h"
-
 #define GLM_ENABLE_EXPERIMENTAL
 #include "glm/gtc/matrix_transform.hpp"
 #include "glm/gtc/quaternion.hpp"
