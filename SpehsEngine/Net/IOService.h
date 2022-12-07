@@ -10,18 +10,14 @@ namespace se
 		{
 		public:
 
-			struct State;
+			struct Impl;
 
 			IOService();
 			~IOService();
 
-			State& getState() const { return *state; }
-
 		private:
 
-			void run();
-
-			std::unique_ptr<State> state;
+			std::unique_ptr<Impl> impl;
 		};
 	}
 }
