@@ -23,6 +23,10 @@ namespace se
 	}
 }
 
+// You can use this to declare header functions with both label types
+#define SE_IMGUI_INPUT_DECL(p_Type, ...) \
+	bool InputT(const char* const p_label, p_Type& p_value, __VA_ARGS__); \
+	bool InputT(const std::string& p_label, p_Type& p_value, __VA_ARGS__);
 
 // Used to implement a dropdown selector for an enum. p_RangeStart value is inclusive, but p_RangeEnd is exclusive.
 #define SE_IMGUI_INPUT_T_ENUM_RANGE_DROPDOWN(p_EnumType, p_RangeStart, p_RangeEnd, p_ToStringFunction) \
