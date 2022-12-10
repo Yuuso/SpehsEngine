@@ -1,11 +1,7 @@
 #pragma once
 
-#include "boost/signals2.hpp"
 #include "SpehsEngine/Audio/Internal/InternalTypes.h"
 #include "SpehsEngine/Audio/ResourceLoader.h"
-#include <future>
-#include <memory>
-#include <string>
 
 
 namespace se
@@ -18,7 +14,7 @@ namespace se
 
 			AudioResource() = delete;
 			AudioResource(const std::string_view _name);
-			~AudioResource();
+			~AudioResource() = default;
 
 			AudioResource(const AudioResource& _other) = delete;
 			AudioResource& operator=(const AudioResource& _other) = delete;

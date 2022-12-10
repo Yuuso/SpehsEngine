@@ -1,6 +1,5 @@
 #pragma once
 
-#include "boost/signals2.hpp"
 #include "SpehsEngine/Audio/Internal/Instance.h"
 #include "SpehsEngine/Audio/Internal/InternalTypes.h"
 

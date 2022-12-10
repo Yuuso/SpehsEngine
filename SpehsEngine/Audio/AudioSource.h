@@ -1,12 +1,9 @@
 #pragma once
 
-#include "boost/signals2/connection.hpp"
-#include "glm/vec3.hpp"
 #include "SpehsEngine/Audio/AudioResource.h"
 #include "SpehsEngine/Audio/Bus.h"
 #include "SpehsEngine/Audio/Internal/Instance.h"
 #include "SpehsEngine/Audio/Types.h"
-#include "SpehsEngine/Core/SE_Time.h"
 
 
 namespace se

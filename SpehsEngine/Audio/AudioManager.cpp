@@ -10,9 +10,6 @@ namespace se
 		{
 			pathFinder = std::make_shared<ResourcePathFinder>();
 		}
-		AudioManager::~AudioManager()
-		{
-		}
 
 		void AudioManager::setResourcePathFinder(std::shared_ptr<ResourcePathFinder> _pathFinder)
 		{

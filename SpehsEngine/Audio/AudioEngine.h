@@ -1,10 +1,8 @@
 #pragma once
 
-#include "glm/vec3.hpp"
 #include "SpehsEngine/Audio/Internal/InternalTypes.h"
 #include "SpehsEngine/Audio/Types.h"
 #include "SpehsEngine/Audio/Bus.h"
-#include <memory>
 
 
 namespace se

@@ -3,8 +3,6 @@
 #include "SpehsEngine/Audio/AudioResource.h"
 #include "SpehsEngine/Audio/ResourceLoader.h"
 #include "SpehsEngine/Core/ResourcePathFinder.h"
-#include <memory>
-#include <string>
 
 
 namespace se
@@ -16,11 +14,10 @@ namespace se
 		public:
 
 			AudioManager();
-			~AudioManager();
+			~AudioManager() = default;
 
 			AudioManager(const AudioManager& _other) = delete;
 			AudioManager& operator=(const AudioManager& _other) = delete;
-
 			AudioManager(AudioManager&& _other) = delete;
 			AudioManager& operator=(AudioManager&& _other) = delete;
 

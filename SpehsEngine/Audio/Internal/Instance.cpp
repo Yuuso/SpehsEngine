@@ -42,6 +42,7 @@ namespace se
 
 		void Instance::applyVolume(time::Time _fade)
 		{
+			se_assert(isHandleValid());
 			if (_fade > time::Time::zero)
 			{
 				globalSoloud->fadeVolume(handle, volume, _fade.asSeconds<double>());
@@ -53,6 +54,7 @@ namespace se
 		}
 		void Instance::applyPan(time::Time _fade)
 		{
+			se_assert(isHandleValid());
 			if (_fade > time::Time::zero)
 			{
 				globalSoloud->fadePan(handle, pan, _fade.asSeconds<double>());
@@ -66,7 +68,7 @@ namespace se
 
 		float Instance::getAudibleVolume() const
 		{
-			return globalSoloud->getOverallVolume(handle);
+			return isHandleValid() ? globalSoloud->getOverallVolume(handle) : 0.0f;
 		}
 		float Instance::getVolume() const
 		{
@@ -85,7 +87,7 @@ namespace se
 		}
 		bool Instance::isHandleValid() const
 		{
-			return globalSoloud->isValidVoiceHandle(handle);
+			return handle != invalidAudioHandle && globalSoloud->isValidVoiceHandle(handle);
 		}
 	}
 }
