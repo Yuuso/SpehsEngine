@@ -342,5 +342,11 @@ namespace se
 			StencilOperation depthFail = StencilOperation::Keep;	// Stencil test passed but depth test failed, fragment discarded
 			StencilOperation pass = StencilOperation::Keep;			// Both tests passed
 		};
+
+		enum class RenderSortDepth
+		{
+			Default,
+			ZPosition,
+		};
 	}
 }

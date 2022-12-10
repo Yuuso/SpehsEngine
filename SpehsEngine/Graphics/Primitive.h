@@ -51,6 +51,7 @@ namespace se
 			virtual bool								checkRenderFlags(RenderFlagsType _renderFlags) const;
 			virtual PrimitiveType						getPrimitiveType() const;
 			virtual RenderMode							getRenderMode() const;
+			virtual uint32_t							getRenderSortDepth() const;
 			virtual const RenderCopy*					getRenderCopy() const;
 			virtual const Stencil*						getStencil() const;
 			virtual const glm::vec3&					getPosition() const;
@@ -73,6 +74,8 @@ namespace se
 			virtual void								disableRenderFlags(RenderFlagsType _renderFlags);
 			virtual void								setPrimitiveType(PrimitiveType _primitiveType);
 			virtual void								setRenderMode(RenderMode _renderMode);
+			virtual void								setRenderSortDepth(RenderSortDepth _renderDepth);
+			virtual void								setRenderSortDepth(uint32_t _renderDepth);
 			virtual void								setRenderCopy(const RenderCopy& _renderCopy);
 			virtual void								removeRenderCopy();
 			virtual void								setStencil(const Stencil& _stencil);
@@ -101,6 +104,8 @@ namespace se
 			RenderFlagsType								renderFlags				= defaultRenderFlags;
 			PrimitiveType								primitiveType			= defaultPrimitiveType;
 			RenderMode									renderMode				= defaultRenderMode;
+			RenderSortDepth								renderSortDepth			= RenderSortDepth::Default;
+			uint32_t									renderDepthValue		= 0;
 			std::unique_ptr<RenderCopy>					renderCopy;
 			std::unique_ptr<Stencil>					stencil;
 			std::shared_ptr<Material>					material				= nullptr;

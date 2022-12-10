@@ -36,6 +36,7 @@ namespace se
 		void GUIText::initText()
 		{
 			text.setOrientation(ShapeOrientation::XY_Plane);
+			text.setRenderSortDepth(RenderSortDepth::ZPosition);
 			enableBit(updateFlags, GUIElementUpdateFlag::MaterialUpdateNeeded);
 		}
 

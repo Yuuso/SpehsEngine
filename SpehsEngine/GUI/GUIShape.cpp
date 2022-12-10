@@ -41,8 +41,8 @@ namespace se
 		{
 			ShapeParameters params;
 			params.orientation = ShapeOrientation::XY_Plane;
-
 			shape.generate(_shapeType, params);
+			shape.setRenderSortDepth(RenderSortDepth::ZPosition);
 			enableBit(updateFlags, GUIElementUpdateFlag::MaterialUpdateNeeded);
 		}
 

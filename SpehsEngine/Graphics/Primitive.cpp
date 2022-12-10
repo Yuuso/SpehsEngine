@@ -135,6 +135,16 @@ namespace se
 		{
 			return renderMode;
 		}
+		uint32_t Primitive::getRenderSortDepth() const
+		{
+			switch (renderSortDepth)
+			{
+				case RenderSortDepth::Default:		return renderDepthValue;
+				case RenderSortDepth::ZPosition:	return (uint32_t)(getPosition().z + (float)(std::numeric_limits<int16_t>::max()));
+			}
+			se_assert(false);
+			return 0u;
+		}
 		const RenderCopy* Primitive::getRenderCopy() const
 		{
 			return renderCopy.get();
@@ -246,6 +256,16 @@ namespace se
 			validateRenderMode();
 			enableBit(updateFlags, PrimitiveUpdateFlag::RenderInfoChanged);
 		}
+		void Primitive::setRenderSortDepth(RenderSortDepth _renderDepth)
+		{
+			renderSortDepth = _renderDepth;
+		}
+		void Primitive::setRenderSortDepth(uint32_t _renderDepth)
+		{
+			renderSortDepth = RenderSortDepth::Default;
+			renderDepthValue = _renderDepth;
+			validateRenderMode();
+		}
 		void Primitive::setRenderCopy(const RenderCopy& _renderCopy)
 		{
 			renderCopy = std::make_unique<RenderCopy>(_renderCopy);
@@ -306,6 +326,10 @@ namespace se
 				if (getStencil())
 				{
 					log::error("RenderMode::Static and Stencil don't work together!");
+				}
+				if (getRenderSortDepth() != 0 || renderSortDepth != RenderSortDepth::Default)
+				{
+					log::error("RenderMode::Static and RenderSortDepth don't work together!");
 				}
 			}
 		}

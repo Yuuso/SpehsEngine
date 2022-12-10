@@ -219,7 +219,7 @@ namespace se
 				RenderCopy copy;
 				copy.primitiveColor = Color(0.85f, 1.0f, 0.85f, 0.05f);
 				copy.primitiveType = PrimitiveType::Lines;
-				enableBit(copy.renderFlags, RenderFlag::BlendAlpha | RenderFlag::DepthTestGreater);
+				copy.renderFlags = RenderFlag::BlendAlpha | RenderFlag::DepthTestGreater;
 				debugPrimitive->setRenderCopy(copy);
 			}
 
@@ -316,8 +316,7 @@ namespace se
 				RenderCopy copy;
 				copy.primitiveColor = Color(0.85f, 1.0f, 0.85f, 0.05f);
 				copy.primitiveType = PrimitiveType::Lines;
-				enableBit(copy.renderFlags, RenderFlag::BlendAlpha);
-				enableBit(copy.renderFlags, RenderFlag::DepthTestGreater);
+				copy.renderFlags = RenderFlag::BlendAlpha | RenderFlag::DepthTestGreater;
 				debugPrimitive->setRenderCopy(copy);
 			}
 
