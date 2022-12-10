@@ -27,6 +27,7 @@
 #include "SpehsEngine/Core/UniquePtrUtilityFunctions.h"
 #include <algorithm>
 #include <functional>
+#include <future>
 #include <memory>
 #include <set>
 #include <map>
