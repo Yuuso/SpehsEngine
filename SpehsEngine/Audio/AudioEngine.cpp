@@ -19,7 +19,7 @@ namespace se
 
 			se_assert(!globalSoloud);
 			globalSoloud = new SoLoud::Soloud;
-			auto result = globalSoloud->init(SoLoud::Soloud::CLIP_ROUNDOFF);
+			auto result = globalSoloud->init(SoLoud::Soloud::CLIP_ROUNDOFF, SoLoud::Soloud::BACKENDS::AUTO);
 			if (result != 0)
 			{
 				log::fatal("Failed to initialize AudioEngine, " + std::string(globalSoloud->getErrorString(result)));

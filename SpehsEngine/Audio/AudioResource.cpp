@@ -14,9 +14,6 @@ namespace se
 			: name(_name)
 		{
 		}
-		AudioResource::~AudioResource()
-		{
-		}
 
 		const std::string& AudioResource::getName() const
 		{

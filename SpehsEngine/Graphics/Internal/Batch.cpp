@@ -248,7 +248,7 @@ namespace se
 			applyRenderState(renderInfo, _renderContext);
 
 			bgfx::ProgramHandle programHandle = { shader->getHandle() };
-			bgfx::submit(_renderContext.currentViewId, programHandle);
+			bgfx::submit(_renderContext.currentViewId, programHandle, 0u, BGFX_DISCARD_ALL);
 			return true;
 		}
 

@@ -25,7 +25,10 @@ namespace se
 		void AudioSource::setOutput(Bus& _bus)
 		{
 			outputBus = &_bus;
-			// TODO: swap current output if playing?
+			if (isHandleValid())
+			{
+				outputBus->bus->annexSound(handle);
+			}
 		}
 		bool AudioSource::playCommon()
 		{
@@ -53,6 +56,7 @@ namespace se
 			if (playCommon())
 				return;
 
+			se_assert(!isHandleValid());
 			handle = outputBus->bus->play(*resource->getResource<SoLoud::AudioSource>(), getVolume(), getPan(), true);
 			if (isHandleValid())
 			{
@@ -72,6 +76,7 @@ namespace se
 			if (playCommon())
 				return;
 
+			se_assert(!isHandleValid());
 			handle = outputBus->bus->play3dClocked(
 				_currentTime.asSeconds<double>(),
 				*resource->getResource<SoLoud::AudioSource>(),
@@ -91,6 +96,7 @@ namespace se
 			if (playCommon())
 				return;
 
+			se_assert(!isHandleValid());
 			handle = outputBus->bus->play3d(
 				*resource->getResource<SoLoud::AudioSource>(),
 				position.x, position.y, position.z,
@@ -110,18 +116,25 @@ namespace se
 		}
 		void AudioSource::setPause(bool _value)
 		{
-			se_assert(isHandleValid());
-			globalSoloud->setPause(handle, _value);
+			if (isHandleValid())
+			{
+				globalSoloud->setPause(handle, _value);
+			}
 		}
 		void AudioSource::stop()
 		{
-			globalSoloud->stop(handle);
+			if (isHandleValid())
+			{
+				globalSoloud->stop(handle);
+			}
 			handle = invalidAudioHandle;
 		}
 		void AudioSource::seek(time::Time _time)
 		{
-			se_assert(isHandleValid());
-			globalSoloud->seek(handle, _time.asSeconds<double>());
+			if (isHandleValid())
+			{
+				globalSoloud->seek(handle, _time.asSeconds<double>());
+			}
 		}
 
 		void AudioSource::setResource(std::shared_ptr<AudioResource> _resource)
@@ -225,12 +238,18 @@ namespace se
 		}
 		bool AudioSource::isPaused() const
 		{
-			se_assert(isHandleValid());
+			if (!isHandleValid())
+			{
+				return false;
+			}
 			return globalSoloud->getPause(handle);
 		}
 		time::Time AudioSource::getStreamPosition() const
 		{
-			se_assert(isHandleValid());
+			if (!isHandleValid())
+			{
+				return se::time::Time::zero;
+			}
 			return time::fromSeconds(globalSoloud->getStreamPosition(handle));
 		}
 		const glm::vec3& AudioSource::getPosition() const
@@ -284,6 +303,7 @@ namespace se
 
 		void AudioSource::applyAttributes()
 		{
+			se_assert(isHandleValid());
 			audio::Instance::applyAttributes();
 			applySpeed();
 			applyInaudibleBehavior();
@@ -298,6 +318,7 @@ namespace se
 		}
 		void AudioSource::applySpeed(time::Time _fade)
 		{
+			se_assert(isHandleValid());
 			if (_fade > time::Time::zero)
 			{
 				globalSoloud->fadeRelativePlaySpeed(handle, speed, _fade.asSeconds());
@@ -309,6 +330,7 @@ namespace se
 		}
 		void AudioSource::applyInaudibleBehavior()
 		{
+			se_assert(isHandleValid());
 			switch (inaudibleBehavior)
 			{
 				default:

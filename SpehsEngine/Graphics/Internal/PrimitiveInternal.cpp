@@ -192,8 +192,7 @@ namespace se
 			bgfx::setStencil(getStencilState(primitive->getStencil()));
 
 			bgfx::ProgramHandle programHandle = { shader->getHandle() };
-			const uint32_t depth = static_cast<uint32_t>(primitive->getPosition().z + static_cast<float>(std::numeric_limits<int16_t>::max()));
-			bgfx::submit(_renderContext.currentViewId, programHandle, depth, BGFX_DISCARD_ALL);
+			bgfx::submit(_renderContext.currentViewId, programHandle, _renderInfo.depth, BGFX_DISCARD_ALL);
 		}
 
 		void PrimitiveInternal::preRender(const bool _forceAllUpdates)
@@ -258,6 +257,7 @@ namespace se
 			result.material = primitive->getMaterial();
 			result.attributes = primitive->getVertices()->getAttributes();
 			result.primitiveColor = primitive->getColor();
+			result.depth = primitive->getRenderSortDepth();
 			return result;
 		}
 		RenderInfo PrimitiveInternal::getCopyRenderInfo() const
@@ -269,11 +269,27 @@ namespace se
 				return getRenderInfo();
 			}
 			RenderInfo result;
-			result.renderFlags = renderCopy->renderFlags;
-			result.primitiveType = renderCopy->primitiveType;
-			result.material = primitive->getMaterial();
+			result.renderFlags =
+				renderCopy->renderFlags.has_value()
+				? renderCopy->renderFlags.value()
+				: primitive->getRenderFlags();
+			result.primitiveType =
+				renderCopy->primitiveType.has_value()
+				? renderCopy->primitiveType.value()
+				: primitive->primitiveType;
+			result.material =
+				renderCopy->material
+				? renderCopy->material
+				: primitive->getMaterial();
 			result.attributes = primitive->getVertices()->getAttributes();
-			result.primitiveColor = renderCopy->primitiveColor;
+			result.primitiveColor =
+				renderCopy->primitiveColor.has_value()
+				? renderCopy->primitiveColor.value()
+				: primitive->getColor();
+			result.depth =
+				renderCopy->renderDepth.has_value()
+				? renderCopy->renderDepth.value()
+				: primitive->getRenderSortDepth();
 			return result;
 		}
 		bool PrimitiveInternal::getRenderState() const
