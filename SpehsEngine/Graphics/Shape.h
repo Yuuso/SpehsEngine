@@ -1,14 +1,14 @@
 #pragma once
 
 #include "SpehsEngine/Graphics/Primitive.h"
-#include "SpehsEngine/Graphics/ShapeGenerator.h"
-#include "SpehsEngine/Graphics/Types.h"
 
 
 namespace se
 {
 	namespace graphics
 	{
+		class ShapeGenerator;
+
 		class Shape : public Primitive
 		{
 		public:

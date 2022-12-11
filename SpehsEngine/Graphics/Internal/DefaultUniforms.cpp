@@ -1,11 +1,7 @@
 #include "stdafx.h"
 #include "SpehsEngine/Graphics/Internal/DefaultUniforms.h"
 
-#include "SpehsEngine/Core/SE_Time.h"
-#include "SpehsEngine/Core/Color.h"
 #include "SpehsEngine/Graphics/Renderer.h"
-
-#include <chrono>
 
 
 namespace se

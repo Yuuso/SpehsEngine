@@ -1,7 +1,9 @@
 #include "stdafx.h"
 #include "SpehsEngine/Debug/ScopeProfilerVisualizer.h"
 
+#include "SpehsEngine/Graphics/Camera.h"
 #include "SpehsEngine/Graphics/DefaultMaterials.h"
+#include "SpehsEngine/Graphics/Scene.h"
 #include "SpehsEngine/Input/InputManager.h"
 #include "SpehsEngine/Input/Key.h"
 #include "SpehsEngine/Input/MouseUtilityFunctions.h"

@@ -2,7 +2,6 @@
 
 #include "SpehsEngine/Graphics/CharacterSet.h"
 #include "SpehsEngine/Math/RectanglePacker.h"
-#include <unordered_map>
 
 
 namespace se

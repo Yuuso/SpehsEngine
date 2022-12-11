@@ -1,10 +1,5 @@
 #pragma once
 
-#include "SpehsEngine/Graphics/Window.h"
-#include "SpehsEngine/Graphics/Internal/InternalTypes.h"
-#include "bgfx/bgfx.h" // TODO: No bgfx includes in headers!
-
-
 struct SDL_Window;
 struct SDL_WindowEvent;
 
@@ -13,6 +8,9 @@ namespace se
 {
 	namespace graphics
 	{
+		struct RenderContext;
+		class Window;
+
 		class WindowInternal
 		{
 		public:

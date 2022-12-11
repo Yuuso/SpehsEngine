@@ -5,8 +5,6 @@
 #include "bx/readerwriter.h"
 #include "SpehsEngine/Core/File/File.h"
 #include "SpehsEngine/Core/File/FileSystem.h"
-#include "SpehsEngine/Core/Log.h"
-#include "SpehsEngine/Core/SE_Assert.h"
 #include <fstream>
 
 

@@ -1,18 +1,14 @@
 #pragma once
 
 #include "SpehsEngine/Graphics/Animator.h"
-#include "SpehsEngine/Graphics/Internal/Animation.h"
-#include "SpehsEngine/Core/SE_Time.h"
-#include "SpehsEngine/Core/DeltaTimeSystem.h"
-#include <memory>
-#include <string>
-#include <vector>
 
 
 namespace se
 {
 	namespace graphics
 	{
+		struct Animation;
+
 		class AnimatorInternal : public Animator
 		{
 		public:
@@ -27,7 +23,7 @@ namespace se
 			AnimatorInternal& operator=(AnimatorInternal&& _other) = delete;
 
 
-			void setAnimations(std::shared_ptr<std::vector<Animation>> _animations);
+			void setAnimations(std::shared_ptr<std::vector<std::unique_ptr<Animation>>> _animations);
 			void update();
 			glm::mat4 getTransform(const std::string& _nodeName) const;
 			bool IsNodePlaying(const std::string& _nodeName) const;

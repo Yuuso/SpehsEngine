@@ -1,8 +1,7 @@
 #include "stdafx.h"
 #include "SpehsEngine/Graphics/Internal/InternalUtilities.h"
 
-#include "SpehsEngine/Core/BitwiseOperations.h"
-#include "SpehsEngine/Core/SE_Assert.h"
+#include "SpehsEngine/Graphics/Internal/RenderInfo.h"
 #include "SpehsEngine/Graphics/Primitive.h"
 
 

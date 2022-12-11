@@ -1,10 +1,8 @@
 #include "stdafx.h"
 #include "SpehsEngine/Graphics/Uniform.h"
 
-#include "bgfx/bgfx.h"
 #include "SpehsEngine/Graphics/Font.h"
 #include "SpehsEngine/Graphics/Texture.h"
-#include "SpehsEngine/Graphics/Internal/InternalUtilities.h"
 
 
 namespace se

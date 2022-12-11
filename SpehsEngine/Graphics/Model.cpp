@@ -1,7 +1,13 @@
 #include "stdafx.h"
 #include "SpehsEngine/Graphics/Model.h"
 
+#include "SpehsEngine/Graphics/Internal/Animation.h"
+#include "SpehsEngine/Graphics/Internal/AnimatorInternal.h"
+#include "SpehsEngine/Graphics/Internal/Mesh.h"
+#include "SpehsEngine/Graphics/Internal/ModelNode.h"
+#include "SpehsEngine/Graphics/ModelData.h"
 #include "SpehsEngine/Graphics/ResourceData.h"
+#include "SpehsEngine/Graphics/VertexBuffer.h"
 
 
 namespace se
@@ -9,8 +15,9 @@ namespace se
 	namespace graphics
 	{
 		Model::Model()
-			: rootNode(*this, nullptr)
 		{
+			rootNode = std::make_unique<ModelNode>(*this, nullptr);
+			animator = std::make_unique<AnimatorInternal>();
 		}
 		Model::~Model()
 		{
@@ -85,17 +92,17 @@ namespace se
 				return;
 			}
 
-			rootNode.reset();
+			rootNode->reset();
 			numMaterialSlots = 0;
 
 			if (!modelData->ready() || !modelData->resourceData)
 				return;
 
 			const MeshData& meshData = *modelData->resourceData.get();
-			processNode(*this, meshData, meshData.rootNode, rootNode, numMaterialSlots);
-			addBones(meshData, rootNode, rootNode);
+			processNode(*this, meshData, meshData.rootNode, *rootNode, numMaterialSlots);
+			addBones(meshData, *rootNode, *rootNode);
 			globalInverseTransform = meshData.globalInverseMatrix;
-			animator.setAnimations(meshData.animations);
+			animator->setAnimations(meshData.animations);
 
 			se_assert(numMaterialSlots > 0);
 			se_assert(materials.size() <= numMaterialSlots);
@@ -104,7 +111,7 @@ namespace se
 		}
 		void Model::postReload()
 		{
-			if (renderMode == RenderMode::Static && animator.hasAnimations())
+			if (renderMode == RenderMode::Static && animator->hasAnimations())
 				log::warning("Should not use static RenderMode with animated models!");
 			setRenderState(renderState);
 			setRenderFlags(renderFlags);
@@ -118,17 +125,17 @@ namespace se
 
 		Animator& Model::getAnimator()
 		{
-			return animator;
+			return *animator;
 		}
 		const Animator& Model::getAnimator() const
 		{
-			return animator;
+			return *animator;
 		}
 
 		void Model::updateAnimations()
 		{
-			animator.update();
-			if (animator.isPlaying())
+			animator->update();
+			if (animator->isPlaying())
 			{
 				// Force update on all transforms
 				foreachPrimitive([](Primitive& _primitive) { enableBit(_primitive.updateFlags, PrimitiveUpdateFlag::TransformChanged); });
@@ -137,29 +144,29 @@ namespace se
 
 		void Model::foreachPrimitive(std::function<void(Primitive&)> _fn)
 		{
-			rootNode.foreachMesh(_fn);
+			rootNode->foreachMesh(_fn);
 		}
 		void Model::foreachPrimitive(std::function<void(Primitive&, std::string_view)> _fn)
 		{
-			rootNode.foreachMesh(_fn);
+			rootNode->foreachMesh(_fn);
 		}
 		const Primitive* Model::getPrimitive(std::string_view _meshName) const
 		{
-			return rootNode.getMesh(_meshName);
+			return rootNode->getMesh(_meshName);
 		}
 		const Primitive* Model::getPrimitive(size_t _index) const
 		{
 			size_t counter = _index;
-			return rootNode.getMesh(counter);
+			return rootNode->getMesh(counter);
 		}
 		Primitive* Model::getPrimitive(std::string_view _meshName)
 		{
-			return rootNode.getMesh(_meshName);
+			return rootNode->getMesh(_meshName);
 		}
 		Primitive* Model::getPrimitive(size_t _index)
 		{
 			size_t counter = _index;
-			return rootNode.getMesh(counter);
+			return rootNode->getMesh(counter);
 		}
 		size_t Model::getNumPrimitives() const
 		{
@@ -287,7 +294,7 @@ namespace se
 		void Model::setRenderMode(RenderMode _renderMode)
 		{
 			renderMode = _renderMode;
-			if (renderMode == RenderMode::Static && animator.hasAnimations())
+			if (renderMode == RenderMode::Static && animator->hasAnimations())
 				log::warning("Should not use static RenderMode with animated models!");
 			foreachPrimitive([](Primitive& _primitive) { enableBit(_primitive.updateFlags, PrimitiveUpdateFlag::RenderInfoChanged); });
 		}

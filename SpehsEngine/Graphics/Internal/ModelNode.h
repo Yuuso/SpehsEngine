@@ -1,13 +1,13 @@
 #pragma once
 
-#include "SpehsEngine/Graphics/Internal/Mesh.h"
-
 
 namespace se
 {
 	namespace graphics
 	{
+		class Mesh;
 		class Model;
+		class Primitive;
 
 		class ModelNode
 		{

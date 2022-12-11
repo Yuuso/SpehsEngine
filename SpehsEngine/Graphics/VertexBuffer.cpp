@@ -1,9 +1,6 @@
 #include "stdafx.h"
 #include "SpehsEngine/Graphics/VertexBuffer.h"
 
-#include "bgfx/bgfx.h"
-#include "SpehsEngine/Graphics/Internal/InternalUtilities.h"
-
 
 namespace se
 {

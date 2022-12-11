@@ -1,15 +1,15 @@
 #pragma once
 
-#include "SpehsEngine/Graphics/ShaderManager.h"
 #include "SpehsEngine/Graphics/Material.h"
-#include "SpehsEngine/Graphics/Uniform.h"
-#include <memory>
 
 
 namespace se
 {
 	namespace graphics
 	{
+		class ShaderManager;
+		class Uniform;
+
 		class PhongAttributes final : public UniformContainer
 		{
 		public:

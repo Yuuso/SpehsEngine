@@ -2,10 +2,9 @@
 #include "SpehsEngine/Graphics/Internal/Batch.h"
 
 #include "SpehsEngine/Graphics/Internal/LightBatch.h"
-#include "SpehsEngine/Core/BitwiseOperations.h"
-#include "SpehsEngine/Core/SE_Assert.h"
 #include "SpehsEngine/Graphics/Internal/DefaultUniforms.h"
-#include "SpehsEngine/Graphics/Internal/InternalUtilities.h"
+#include "SpehsEngine/Graphics/Material.h"
+#include "SpehsEngine/Graphics/Shader.h"
 
 
 namespace se

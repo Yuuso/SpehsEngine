@@ -1,11 +1,5 @@
 #pragma once
 
-#include <bgfx/bgfx.h>
-#include <glm/vec3.hpp>
-#include "SpehsEngine/Core/Color.h"
-#include "SpehsEngine/Graphics/Internal/InternalTypes.h"
-
-
 /*
 	This is used to internally set some default uniform values by the engine.
 	Default uniforms are also listed in Uniform.h and se_shader.sh.

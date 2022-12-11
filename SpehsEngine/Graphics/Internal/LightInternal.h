@@ -1,13 +1,12 @@
 #pragma once
 
-#include "boost/signals2/connection.hpp"
-#include "SpehsEngine/Graphics/Lights.h"
-
 
 namespace se
 {
 	namespace graphics
 	{
+		class Light;
+
 		class LightInternal
 		{
 		public:

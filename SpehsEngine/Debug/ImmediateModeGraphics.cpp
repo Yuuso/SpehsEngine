@@ -2,7 +2,16 @@
 #include "SpehsEngine/Debug/ImmediateModeGraphics.h"
 
 #include "SpehsEngine/Graphics/DefaultMaterials.h"
-
+#include "SpehsEngine/Graphics/FontManager.h"
+#include "SpehsEngine/Graphics/Line.h"
+#include "SpehsEngine/Graphics/Material.h"
+#include "SpehsEngine/Graphics/Model.h"
+#include "SpehsEngine/Graphics/ModelDataManager.h"
+#include "SpehsEngine/Graphics/ShaderManager.h"
+#include "SpehsEngine/Graphics/Shape.h"
+#include "SpehsEngine/Graphics/ShapeGenerator.h"
+#include "SpehsEngine/Graphics/Text.h"
+#include "SpehsEngine/Graphics/TextureManager.h"
 
 using namespace se::graphics;
 

@@ -1,18 +1,16 @@
 #pragma once
 
-#include "SpehsEngine/Graphics/Internal/Resource.h"
-#include "SpehsEngine/Graphics/Internal/TextureFallbacks.h"
-#include "SpehsEngine/Graphics/Internal/InternalTypes.h"
-#include "SpehsEngine/Graphics/ResourceData.h"
-#include "SpehsEngine/Graphics/TextureInput.h"
-#include "SpehsEngine/Graphics/Types.h"
-#include <string>
+#include "SpehsEngine/Graphics/Resource.h"
 
 
 namespace se
 {
 	namespace graphics
 	{
+		struct TextureFallbacks;
+		struct ResourceData;
+		enum class TextureStatus;
+
 		class Texture final : public Resource<TextureData>
 		{
 		public:
@@ -50,7 +48,7 @@ namespace se
 			std::string path;
 
 			TextureModes textureModes;
-			TextureStatus status = TextureStatus::Init;
+			TextureStatus status;
 			std::shared_ptr<TextureFallbacks> fallbacks;
 		};
 	}

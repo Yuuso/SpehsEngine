@@ -1,21 +1,19 @@
 #pragma once
 
-#include "SpehsEngine/Graphics/Internal/Batch.h"
-#include "SpehsEngine/Graphics/Internal/InternalTypes.h"
-#include "SpehsEngine/Graphics/Internal/LightBatch.h"
-#include "SpehsEngine/Graphics/Internal/ModelInternal.h"
-#include "SpehsEngine/Graphics/Internal/PrimitiveInternal.h"
-#include "SpehsEngine/Graphics/Lights.h"
-#include "SpehsEngine/Graphics/Model.h"
-#include "SpehsEngine/Graphics/Primitive.h"
-#include <memory>
-#include <vector>
-
 
 namespace se
 {
 	namespace graphics
 	{
+		class Batch;
+		class Light;
+		class LightBatch;
+		class Model;
+		class ModelInternal;
+		class Primitive;
+		class PrimitiveInternal;
+		struct RenderContext;
+
 		class Scene
 		{
 		public:

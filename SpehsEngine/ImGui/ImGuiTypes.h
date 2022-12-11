@@ -1,6 +1,6 @@
 #pragma once
 
-#include "SpehsEngine/Graphics/Internal/ResourceHandle.h"
+#include "SpehsEngine/Graphics/ResourceHandle.h"
 
 
 namespace se

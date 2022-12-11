@@ -1,10 +1,10 @@
 #include "stdafx.h"
 #include "SpehsEngine/Graphics/Internal/ViewInternal.h"
 
-#include "SpehsEngine/Core/BitwiseOperations.h"
-#include "SpehsEngine/Core/SE_Assert.h"
-#include "SpehsEngine/Graphics/Internal/InternalUtilities.h"
+#include "SpehsEngine/Graphics/Camera.h"
 #include "SpehsEngine/Graphics/Internal/WindowInternal.h"
+#include "SpehsEngine/Graphics/Scene.h"
+#include "SpehsEngine/Graphics/View.h"
 
 
 namespace se

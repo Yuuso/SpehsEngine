@@ -1,23 +1,15 @@
 #pragma once
 
-#include "boost/signals2.hpp"
-#include "SpehsEngine/Graphics/IndexBuffer.h"
-#include "SpehsEngine/Graphics/RenderCopy.h"
-#include "SpehsEngine/Graphics/Types.h"
-#include "SpehsEngine/Graphics/VertexBuffer.h"
-#include "SpehsEngine/Graphics/Material.h"
-#include "glm/mat4x4.hpp"
-#include "glm/vec3.hpp"
-#include "glm/gtc/quaternion.hpp"
-#include <vector>
-#include <string>
-#include <memory>
-
 
 namespace se
 {
 	namespace graphics
 	{
+		class IndexBuffer;
+		class Material;
+		struct RenderCopy;
+		class VertexBuffer;
+
 		class Primitive
 		{
 		public:

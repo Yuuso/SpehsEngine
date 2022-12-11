@@ -1,8 +1,5 @@
 #pragma once
 
-#include "SpehsEngine/Graphics/Types.h"
-#include "SpehsEngine/Core/Color.h"
-
 
 namespace se
 {

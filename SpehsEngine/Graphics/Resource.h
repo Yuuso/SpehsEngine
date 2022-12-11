@@ -1,14 +1,7 @@
 #pragma once
 
-#include "boost/signals2.hpp"
-#include "SpehsEngine/Core/Log.h"
-#include "SpehsEngine/Core/SE_Assert.h"
 #include "SpehsEngine/Graphics/ResourceData.h"
 #include "SpehsEngine/Graphics/ResourceLoader.h"
-#include "SpehsEngine/Graphics/Types.h"
-#include <chrono>
-#include <future>
-#include <memory>
 
 
 namespace se

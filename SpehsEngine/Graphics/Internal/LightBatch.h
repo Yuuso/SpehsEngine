@@ -1,11 +1,7 @@
 #pragma once
 
-#include "bgfx/bgfx.h" // !
-#include "glm/vec4.hpp"
 #include "SpehsEngine/Graphics/Internal/LightInternal.h"
 #include "SpehsEngine/Graphics/Lights.h"
-#include <memory>
-#include <vector>
 
 
 namespace se
@@ -41,10 +37,10 @@ namespace se
 			std::vector<std::unique_ptr<LightInternal>> lights;
 
 			glm::vec4 lightInfo;
-			glm::vec4 data1[MAX_LIGHTS];
-			glm::vec4 data2[MAX_LIGHTS];
-			glm::vec4 data3[MAX_LIGHTS];
-			glm::vec4 data4[MAX_LIGHTS];
+			glm::vec4 data1[SE_MAX_LIGHTS];
+			glm::vec4 data2[SE_MAX_LIGHTS];
+			glm::vec4 data3[SE_MAX_LIGHTS];
+			glm::vec4 data4[SE_MAX_LIGHTS];
 
 			bgfx::UniformHandle lightInfoUniform;
 			bgfx::UniformHandle lightData1Uniform;

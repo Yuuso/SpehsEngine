@@ -1,10 +1,7 @@
 #include "stdafx.h"
 #include "SpehsEngine/Graphics/Shader.h"
 
-#include <bgfx/bgfx.h>
 #include "SpehsEngine/Core/File/File.h"
-#include "SpehsEngine/Core/Log.h"
-#include "SpehsEngine/Graphics/Internal/InternalUtilities.h"
 
 
 namespace se

@@ -1,11 +1,7 @@
 #pragma once
 
-#include "SpehsEngine/Graphics/Internal/InternalTypes.h"
-#include "SpehsEngine/Graphics/Internal/FontMetrics.h"
+#include "SpehsEngine/Graphics/FontMetrics.h"
 #include "SpehsEngine/Graphics/CharacterSet.h"
-#include "SpehsEngine/Graphics/Types.h"
-#include <mutex>
-#include <string>
 
 
 typedef struct FT_LibraryRec_* FT_Library;
@@ -60,7 +56,7 @@ namespace se
 			const uint16_t getAtlasSizeEstimate(const size_t numGlyphs) const;
 			bool loadGlyph(const CharacterCode _charCode);
 			bool glyphIsEmpty() const;
-			int getTextureFormat() const; // bgfx::TextureFormat::Enum
+			bgfx::TextureFormat::Enum getTextureFormat() const;
 			uint32_t getBytesPerPixel() const;
 			const struct bgfx::Memory* createGlyphMemoryBuffer() const;
 			GlyphMetrics getGlyphMetrics() const;

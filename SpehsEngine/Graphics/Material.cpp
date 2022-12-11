@@ -1,6 +1,11 @@
 #include "stdafx.h"
 #include "SpehsEngine/Graphics/Material.h"
 
+#include "SpehsEngine/Graphics/Font.h"
+#include "SpehsEngine/Graphics/Shader.h"
+#include "SpehsEngine/Graphics/Texture.h"
+#include "SpehsEngine/Graphics/Uniform.h"
+
 
 namespace se
 {

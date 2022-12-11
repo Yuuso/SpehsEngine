@@ -1,10 +1,8 @@
 #pragma once
 
-#include "SpehsEngine/Graphics/Internal/ResourceManager.h"
+#include "SpehsEngine/Graphics/ResourceManager.h"
 #include "SpehsEngine/Graphics/ModelData.h"
-#include "SpehsEngine/Graphics/ResourceLoader.h"
-#include <memory>
-#include <string>
+
 
 namespace se
 {

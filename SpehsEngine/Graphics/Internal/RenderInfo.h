@@ -1,16 +1,14 @@
 #pragma once
 
-#include "SpehsEngine/Core/Color.h"
-#include "SpehsEngine/Graphics/Material.h"
-#include "SpehsEngine/Graphics/Types.h"
 #include "SpehsEngine/Graphics/VertexAttribute.h"
-#include <memory>
 
 
 namespace se
 {
 	namespace graphics
 	{
+		class Material;
+
 		struct RenderInfo
 		{
 			RenderFlagsType renderFlags;

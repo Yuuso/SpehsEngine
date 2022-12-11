@@ -1,17 +1,14 @@
 #include "stdafx.h"
 #include "SpehsEngine/Graphics/Renderer.h"
 
-#include "bgfx/bgfx.h"
 #include "bgfx/platform.h"
 #include "SDL/SDL.h"
 #include "SDL/SDL_events.h"
-#include "SpehsEngine/Core/BitwiseOperations.h"
-#include "SpehsEngine/Core/Log.h"
-#include "SpehsEngine/Core/SE_Time.h"
 #include "SpehsEngine/Graphics/GraphicsUtilities.h"
-#include "SpehsEngine/Graphics/Internal/InternalTypes.h"
-#include "SpehsEngine/Graphics/Internal/InternalUtilities.h"
+#include "SpehsEngine/Graphics/Internal/DefaultUniforms.h"
+#include "SpehsEngine/Graphics/Internal/WindowInternal.h"
 #include "SpehsEngine/Graphics/Internal/RendererCallbackHandler.h"
+#include "SpehsEngine/Graphics/Window.h"
 
 
 namespace se

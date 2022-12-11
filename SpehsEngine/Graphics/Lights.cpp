@@ -1,8 +1,10 @@
 #include "stdafx.h"
 #include "SpehsEngine/Graphics/Lights.h"
 
-#include "SpehsEngine/Core/Constants.h"
-#include "SpehsEngine/Core/SE_Assert.h"
+#include "SpehsEngine/Graphics/IndexBuffer.h"
+#include "SpehsEngine/Graphics/Primitive.h"
+#include "SpehsEngine/Graphics/RenderCopy.h"
+#include "SpehsEngine/Graphics/VertexBuffer.h"
 #include "SpehsEngine/Math/Mathematics.h"
 
 

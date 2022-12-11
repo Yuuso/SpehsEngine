@@ -1,7 +1,6 @@
 #pragma once
 
 #include "SpehsEngine/Graphics/CharacterSet.h"
-#include "SpehsEngine/Core/Color.h"
 
 
 namespace se

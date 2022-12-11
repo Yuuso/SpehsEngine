@@ -1,5 +1,5 @@
 #include "stdafx.h"
-#include "SpehsEngine/Graphics/Internal/BufferObject.h"
+#include "SpehsEngine/Graphics/BufferObject.h"
 
 
 namespace se

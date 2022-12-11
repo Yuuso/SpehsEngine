@@ -1,6 +1,8 @@
 #include "stdafx.h"
 #include "SpehsEngine/Graphics/Internal/ModelInternal.h"
 
+#include "SpehsEngine/Graphics/Model.h"
+
 
 namespace se
 {

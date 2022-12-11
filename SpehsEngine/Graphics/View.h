@@ -1,16 +1,13 @@
 #pragma once
 
-#include "boost/signals2.hpp"
-#include "SpehsEngine/Graphics/Scene.h"
-#include "SpehsEngine/Graphics/Camera.h"
-#include "SpehsEngine/Graphics/Types.h"
-#include <memory>
-
 
 namespace se
 {
 	namespace graphics
 	{
+		class Camera;
+		class Scene;
+
 		class View
 		{
 		public:

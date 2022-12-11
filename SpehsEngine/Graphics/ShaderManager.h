@@ -1,9 +1,7 @@
 #pragma once
 
-#include "SpehsEngine/Graphics/Internal/ResourceManager.h"
+#include "SpehsEngine/Graphics/ResourceManager.h"
 #include "SpehsEngine/Graphics/Shader.h"
-#include <memory>
-#include <string>
 
 
 /*

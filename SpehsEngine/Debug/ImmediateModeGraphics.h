@@ -1,20 +1,24 @@
 #pragma once
 
-#include "SpehsEngine/Graphics/FontManager.h"
 #include "SpehsEngine/Graphics/Line.h"
 #include "SpehsEngine/Graphics/Model.h"
-#include "SpehsEngine/Graphics/ModelDataManager.h"
-#include "SpehsEngine/Graphics/ShaderManager.h"
 #include "SpehsEngine/Graphics/Shape.h"
-#include "SpehsEngine/Graphics/ShapeGenerator.h"
 #include "SpehsEngine/Graphics/Text.h"
-#include "SpehsEngine/Graphics/TextureManager.h"
+#include "SpehsEngine/Graphics/Scene.h"
 #include "SpehsEngine/Graphics/View.h"
-#include <vector>
 
 
 namespace se
 {
+	namespace graphics
+	{
+		class FontManager;
+		class ModelDataManager;
+		class ShaderManager;
+		class ShapeGenerator;
+		class TextureManager;
+	}
+
 	namespace debug
 	{
 		template <typename T>
@@ -98,9 +102,13 @@ namespace se
 		{
 		public:
 
-			ImmediateModeGraphics(se::graphics::View& _view, se::graphics::ShaderManager& _shaderManager,
-								  se::graphics::TextureManager& _textureManager, se::graphics::FontManager& _fontManager,
-								  se::graphics::ModelDataManager& _modelDataManager, se::graphics::ShapeGenerator& shapeGenerator);
+			ImmediateModeGraphics(
+				se::graphics::View& _view,
+				se::graphics::ShaderManager& _shaderManager,
+				se::graphics::TextureManager& _textureManager,
+				se::graphics::FontManager& _fontManager,
+				se::graphics::ModelDataManager& _modelDataManager,
+				se::graphics::ShapeGenerator& shapeGenerator);
 
 			void init();
 			void endFrame();

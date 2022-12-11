@@ -1,24 +1,18 @@
 #pragma once
 
-#include "boost/signals2.hpp"
-#include "glm/gtc/quaternion.hpp"
-#include "glm/vec3.hpp"
-#include "SpehsEngine/Core/Color.h"
-#include "SpehsEngine/Graphics/Internal/AnimatorInternal.h"
-#include "SpehsEngine/Graphics/Internal/Mesh.h"
-#include "SpehsEngine/Graphics/Internal/ModelNode.h"
-#include "SpehsEngine/Graphics/Material.h"
-#include "SpehsEngine/Graphics/ModelData.h"
-#include "SpehsEngine/Graphics/Primitive.h"
-#include "SpehsEngine/Graphics/Types.h"
-#include <memory>
-#include <string>
-
 
 namespace se
 {
 	namespace graphics
 	{
+		class Animator;
+		class AnimatorInternal;
+		class ModelNode;
+		class Material;
+		class ModelData;
+		class Primitive;
+		class VertexBuffer;
+
 		class Model
 		{
 		public:
@@ -86,7 +80,7 @@ namespace se
 			void									updateAnimations();
 			void									postReload();
 
-			ModelNode								rootNode;
+			std::unique_ptr<ModelNode>				rootNode;
 			glm::mat4								globalInverseTransform;
 
 			std::string								name;
@@ -99,7 +93,7 @@ namespace se
 			RenderMode								renderMode = defaultRenderMode;
 			Color									color;
 
-			AnimatorInternal						animator;
+			std::unique_ptr<AnimatorInternal>		animator;
 
 			glm::vec3								position = glm::vec3(0.0f);
 			glm::vec3								scale = glm::vec3(1.0f);

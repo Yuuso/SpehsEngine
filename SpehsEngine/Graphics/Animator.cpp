@@ -1,6 +1,8 @@
 #include "stdafx.h"
 #include "SpehsEngine/Graphics/Animator.h"
 
+#include "SpehsEngine/Graphics/Internal/Animation.h"
+
 
 namespace se
 {
@@ -93,68 +95,68 @@ namespace se
 		{
 			auto it = std::find_if(
 				activeAnimations.begin(), activeAnimations.end(),
-				[&](const ActiveAnimation& _animation)
+				[&](const std::unique_ptr<ActiveAnimation>& _animation)
 				{
-					return _animation.name == _name;
+					return _animation->name == _name;
 				});
 			if (it == activeAnimations.end())
 				return nullptr;
-			return &*it;
+			return it->get();
 		}
 		Animation* Animator::getAnimation(const std::string_view _name)
 		{
 			auto it = std::find_if(
 				animations->begin(), animations->end(),
-				[&](const Animation& _animation)
+				[&](const std::unique_ptr<Animation>& _animation)
 				{
-					return _animation.name == _name;
+					return _animation->name == _name;
 				});
 			if (it == animations->end())
 				return nullptr;
-			return &*it;
+			return it->get();
 		}
 		const Animator::ActiveAnimation* Animator::getActiveAnimation(std::string_view _name) const
 		{
 			auto it = std::find_if(
 				activeAnimations.begin(), activeAnimations.end(),
-				[&](const ActiveAnimation& _animation)
+				[&](const std::unique_ptr<ActiveAnimation>& _animation)
 				{
-					return _animation.name == _name;
+					return _animation->name == _name;
 				});
 			if (it == activeAnimations.end())
 				return nullptr;
-			return &*it;
+			return it->get();
 		}
 		const Animation* Animator::getAnimation(const std::string_view _name) const
 		{
 			auto it = std::find_if(
 				animations->begin(), animations->end(),
-				[&](const Animation& _animation)
+				[&](const std::unique_ptr<Animation>& _animation)
 				{
-					return _animation.name == _name;
+					return _animation->name == _name;
 				});
 			if (it == animations->end())
 				return nullptr;
-			return &*it;
+			return it->get();
 		}
 
 
 		void Animator::stopAll(time::Time _fade)
 		{
 			for (auto&& anim : activeAnimations)
-				anim.fadeOut(_fade);
+				anim->fadeOut(_fade);
 		}
 		void Animator::pauseAll(time::Time _fade)
 		{
 			for (auto&& anim : activeAnimations)
-				anim.pause();
+				anim->pause();
 		}
 		void Animator::resumeAll(time::Time _fade)
 		{
 			for (auto&& anim : activeAnimations)
 			{
-				if (anim.paused)
-					anim.start();
+				if (anim->paused)
+					anim->start();
 			}
 		}
 		void Animator::setGlobalSpeed(float _value)
@@ -181,8 +183,8 @@ namespace se
 			{
 				if (Animation* anim = getAnimation(_name))
 				{
-					activeAnimations.push_back(ActiveAnimation(defaultLooping));
-					ActiveAnimation& activeAnimation = activeAnimations.back();
+					activeAnimations.push_back(std::make_unique<ActiveAnimation>(defaultLooping));
+					ActiveAnimation& activeAnimation = *activeAnimations.back();
 					activeAnimation.name = _name;
 					activeAnimation.animation = anim;
 					activeAnimation.start();
@@ -193,8 +195,8 @@ namespace se
 			else
 			{
 				// Animations not loaded yet
-				activeAnimations.push_back(ActiveAnimation(defaultLooping));
-				ActiveAnimation& activeAnimation = activeAnimations.back();
+				activeAnimations.push_back(std::make_unique<ActiveAnimation>(defaultLooping));
+				ActiveAnimation& activeAnimation = *activeAnimations.back();
 				activeAnimation.name = _name;
 				activeAnimation.animation = nullptr;
 				activeAnimation.start();

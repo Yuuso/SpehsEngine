@@ -1,15 +1,11 @@
 #pragma once
 
-#include "SpehsEngine/Core/Color.h"
-#include "SpehsEngine/Graphics/Primitive.h"
-#include "glm/vec3.hpp"
-
 
 namespace se
 {
 	namespace graphics
 	{
-		constexpr size_t MAX_LIGHTS = 16;
+		class Primitive;
 
 		class Light
 		{

@@ -2,8 +2,7 @@
 #include "SpehsEngine/Graphics/Texture.h"
 
 #include "SpehsEngine/Core/File/File.h"
-#include "SpehsEngine/Core/Log.h"
-#include "SpehsEngine/Graphics/Internal/InternalUtilities.h"
+#include "SpehsEngine/Graphics/Internal/TextureFallbacks.h"
 #include "bx/allocator.h"
 #include "bimg/bimg.h"
 #include "bimg/decode.h"
@@ -17,6 +16,7 @@ namespace se
 	{
 		Texture::Texture(const std::string_view _name)
 			: Resource(_name)
+			, status(TextureStatus::Init)
 		{
 		}
 		Texture::~Texture()
@@ -144,8 +144,9 @@ namespace se
 			{
 				bgfx::setName(textureHandle, _path.c_str());
 
+				bgfx::TextureInfo info;
 				bgfx::calcTextureSize(
-					result->info
+					  info
 					, uint16_t(imageContainer->m_width)
 					, uint16_t(imageContainer->m_height)
 					, uint16_t(imageContainer->m_depth)
@@ -154,6 +155,8 @@ namespace se
 					, imageContainer->m_numLayers
 					, bgfx::TextureFormat::Enum(imageContainer->m_format)
 					);
+				result->info.width = info.width;
+				result->info.height = info.height;
 			}
 			else
 			{
@@ -225,10 +228,9 @@ namespace se
 
 			if (bgfx::isValid(textureHandle))
 			{
-				//bgfx::setName(textureHandle, name.c_str());
-
+				bgfx::TextureInfo info;
 				bgfx::calcTextureSize(
-					  result->info
+					  info
 					, _input.width
 					, _input.height
 					, 1
@@ -237,6 +239,8 @@ namespace se
 					, numLayers
 					, textureFormat
 				);
+				result->info.width = info.width;
+				result->info.height = info.height;
 			}
 			else
 			{

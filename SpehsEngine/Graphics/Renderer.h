@@ -1,12 +1,5 @@
 #pragma once
 
-#include "glm/vec2.hpp"
-#include "SpehsEngine/Graphics/Internal/DefaultUniforms.h"
-#include "SpehsEngine/Graphics/Internal/WindowInternal.h"
-#include "SpehsEngine/Graphics/Window.h"
-#include <memory>
-#include <vector>
-
 struct SDL_Window;
 
 
@@ -14,6 +7,10 @@ namespace se
 {
 	namespace graphics
 	{
+		class DefaultUniforms;
+		class Window;
+		class WindowInternal;
+
 		class Renderer
 		{
 		public:

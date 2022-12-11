@@ -1,9 +1,6 @@
 #include "stdafx.h"
 #include "SpehsEngine/Graphics/Internal/FontLibrary.h"
 
-#include "bgfx/bgfx.h"
-#include "SpehsEngine/Core/Log.h"
-#include "SpehsEngine/Core/SE_Assert.h"
 #include "SpehsEngine/Graphics/Renderer.h"
 
 #include <ft2build.h>
@@ -168,7 +165,7 @@ namespace se
 		{
 			return (*face)->glyph->bitmap.buffer == nullptr;
 		}
-		int FontFace::getTextureFormat() const
+		bgfx::TextureFormat::Enum FontFace::getTextureFormat() const
 		{
 			switch ((*face)->glyph->bitmap.pixel_mode)
 			{

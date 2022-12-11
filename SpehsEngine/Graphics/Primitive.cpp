@@ -1,9 +1,10 @@
 #include "stdafx.h"
 #include "SpehsEngine/Graphics/Primitive.h"
 
-#include "SpehsEngine/Core/BitwiseOperations.h"
-#include "SpehsEngine/Graphics/Internal/InternalTypes.h"
-#include "SpehsEngine/Math/GLMMatrixUtilityFunctions.h"
+#include "SpehsEngine/Graphics/IndexBuffer.h"
+#include "SpehsEngine/Graphics/Material.h"
+#include "SpehsEngine/Graphics/RenderCopy.h"
+#include "SpehsEngine/Graphics/VertexBuffer.h"
 
 
 namespace se

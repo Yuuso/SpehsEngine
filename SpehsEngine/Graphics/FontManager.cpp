@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "SpehsEngine/Graphics/FontManager.h"
 
+#include "SpehsEngine/Graphics/Internal/FontLibrary.h"
 #include "SpehsEngine/Graphics/EmbeddedFonts/OpenSans-Regular.ttf.h"
 #include "SpehsEngine/Graphics/EmbeddedFonts/AnonymousPro-Regular.ttf.h"
 

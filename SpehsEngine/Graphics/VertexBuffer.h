@@ -1,11 +1,7 @@
 #pragma once
 
-#include "SpehsEngine/Core/BitwiseOperations.h"
-#include "SpehsEngine/Core/Color.h"
-#include "SpehsEngine/Graphics/Internal/BufferObject.h"
+#include "SpehsEngine/Graphics/BufferObject.h"
 #include "SpehsEngine/Graphics/VertexAttribute.h"
-#include <stdint.h>
-#include <vector>
 
 
 namespace se

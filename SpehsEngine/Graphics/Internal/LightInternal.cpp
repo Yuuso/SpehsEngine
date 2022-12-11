@@ -1,6 +1,8 @@
 #include "stdafx.h"
 #include "SpehsEngine/Graphics/Internal/LightInternal.h"
 
+#include "SpehsEngine/Graphics/Lights.h"
+
 
 namespace se
 {

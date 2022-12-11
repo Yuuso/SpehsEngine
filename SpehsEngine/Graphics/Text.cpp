@@ -1,8 +1,11 @@
 #include "stdafx.h"
 #include "SpehsEngine/Graphics/Text.h"
 
+#include "SpehsEngine/Graphics/CharacterSet.h"
 #include "SpehsEngine/Graphics/Font.h"
+#include "SpehsEngine/Graphics/IndexBuffer.h"
 #include "SpehsEngine/Graphics/Material.h"
+#include "SpehsEngine/Graphics/VertexBuffer.h"
 #include <codecvt>
 
 

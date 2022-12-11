@@ -1,11 +1,8 @@
 #pragma once
 
-#include "SpehsEngine/Graphics/Internal/FontLibrary.h"
-#include "SpehsEngine/Graphics/Internal/ResourceManager.h"
+#include "SpehsEngine/Graphics/ResourceManager.h"
 #include "SpehsEngine/Graphics/CharacterSet.h"
 #include "SpehsEngine/Graphics/Font.h"
-#include <memory>
-#include <vector>
 
 
 /*
@@ -20,6 +17,8 @@ namespace se
 {
 	namespace graphics
 	{
+		class FontLibrary;
+
 		class FontManager : public ResourceManager<Font>
 		{
 		public:

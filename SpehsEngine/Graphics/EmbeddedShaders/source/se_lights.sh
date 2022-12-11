@@ -6,13 +6,13 @@
 // --------------------
 // Lights
 
-#define MAX_LIGHTS 16
+#define SE_MAX_LIGHTS 16
 
 uniform vec4 u_lightInfo;
-uniform vec4 u_lightData1[MAX_LIGHTS];
-uniform vec4 u_lightData2[MAX_LIGHTS];
-uniform vec4 u_lightData3[MAX_LIGHTS];
-uniform vec4 u_lightData4[MAX_LIGHTS];
+uniform vec4 u_lightData1[SE_MAX_LIGHTS];
+uniform vec4 u_lightData2[SE_MAX_LIGHTS];
+uniform vec4 u_lightData3[SE_MAX_LIGHTS];
+uniform vec4 u_lightData4[SE_MAX_LIGHTS];
 
 #define u_LightCount                    int(u_lightInfo.x)
 #define u_LightColor(n)                 u_lightData1[n].xyz

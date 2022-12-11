@@ -1,13 +1,12 @@
 #pragma once
 
-#include "SpehsEngine/Graphics/ResourceData.h"
-#include <memory>
-
 
 namespace se
 {
 	namespace graphics
 	{
+		struct TextureData;
+
 		struct TextureFallbacks
 		{
 			std::shared_ptr<TextureData> init;

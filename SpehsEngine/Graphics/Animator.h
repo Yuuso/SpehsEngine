@@ -1,17 +1,14 @@
 #pragma once
 
-#include "SpehsEngine/Graphics/Internal/Animation.h"
-#include "SpehsEngine/Core/SE_Time.h"
 #include "SpehsEngine/Core/DeltaTimeSystem.h"
-#include <memory>
-#include <string>
-#include <vector>
 
 
 namespace se
 {
 	namespace graphics
 	{
+		struct Animation;
+
 		class Animator
 		{
 		public:
@@ -83,8 +80,8 @@ namespace se
 			Animation* getAnimation(std::string_view _name);
 			const Animation* getAnimation(std::string_view _name) const;
 
-			std::shared_ptr<std::vector<Animation>> animations;
-			std::vector<ActiveAnimation> activeAnimations;
+			std::shared_ptr<std::vector<std::unique_ptr<Animation>>> animations;
+			std::vector<std::unique_ptr<ActiveAnimation>> activeAnimations;
 			time::DeltaTimeSystem deltaTimeSystem;
 			float globalSpeed = 1.0f;
 			bool defaultLooping = true;

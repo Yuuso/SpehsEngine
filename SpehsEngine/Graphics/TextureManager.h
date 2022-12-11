@@ -1,18 +1,15 @@
 #pragma once
 
-#include "SpehsEngine/Graphics/Internal/ResourceManager.h"
-#include "SpehsEngine/Graphics/Internal/TextureFallbacks.h"
-#include "SpehsEngine/Graphics/Types.h"
+#include "SpehsEngine/Graphics/ResourceManager.h"
 #include "SpehsEngine/Graphics/Texture.h"
-#include "SpehsEngine/Graphics/TextureInput.h"
-#include <memory>
-#include <string>
 
 
 namespace se
 {
 	namespace graphics
 	{
+		struct TextureFallbacks;
+
 		class TextureManager : public ResourceManager<Texture>
 		{
 		public:

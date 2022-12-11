@@ -1,6 +1,9 @@
 #include "stdafx.h"
 #include "SpehsEngine/Graphics/ModelData.h"
 
+#include "SpehsEngine/Graphics/Internal/Animation.h"
+#include "SpehsEngine/Graphics/IndexBuffer.h"
+#include "SpehsEngine/Graphics/VertexBuffer.h"
 #include "assimp/config.h"
 #include "assimp/matrix4x4.h"
 #include "assimp/Importer.hpp"
@@ -71,7 +74,7 @@ namespace se
 			constexpr int maxVertices = UINT16_MAX;
 			constexpr int maxIndices = UINT16_MAX;
 			constexpr int maxBoneWeights = 4;
-			constexpr int maxBones = SE_MAX_BONES; // Max bones per mesh, also defined by the shaders, note: aiProcess_SplitByBoneCount
+			constexpr int maxBones = (int)SE_MAX_BONES; // Max bones per mesh, also defined by the shaders, note: aiProcess_SplitByBoneCount
 			importer.SetPropertyInteger(AI_CONFIG_PP_SLM_VERTEX_LIMIT, maxVertices);
 			importer.SetPropertyInteger(AI_CONFIG_PP_SLM_TRIANGLE_LIMIT, maxIndices / 3);
 			importer.SetPropertyInteger(AI_CONFIG_PP_LBW_MAX_WEIGHTS, maxBoneWeights);
@@ -219,7 +222,7 @@ namespace se
 				mesh.vertexBuffer->resize(sceneMesh.mNumVertices);
 				se_assert(mesh.vertexBuffer->size() <= maxVertices);
 				mesh.indexBuffer = std::make_shared<IndexBuffer>();
-				mesh.indexBuffer->resize(sceneMesh.mNumFaces * 3);
+				mesh.indexBuffer->resize((size_t)sceneMesh.mNumFaces * 3);
 				se_assert(mesh.indexBuffer->size() <= maxIndices);
 
 				for (size_t vertexIndex = 0; vertexIndex < sceneMesh.mNumVertices; vertexIndex++)
@@ -289,21 +292,22 @@ namespace se
 
 			if (scene->mNumAnimations > 0)
 			{
-				resource->animations = std::make_shared<std::vector<Animation>>();
+				resource->animations = std::make_shared<std::vector<std::unique_ptr<Animation>>>();
 				resource->animations->resize(scene->mNumAnimations);
 			}
 			for (size_t animationIndex = 0; animationIndex < scene->mNumAnimations; animationIndex++)
 			{
 				const aiAnimation& sceneAnim = *scene->mAnimations[animationIndex];
-				Animation& animation = resource->animations->at(animationIndex);
+				std::unique_ptr<Animation>& animation = resource->animations->at(animationIndex);
+				animation = std::make_unique<Animation>();
 
-				animation.name = sceneAnim.mName.C_Str();
-				animation.numFrames = static_cast<int>(sceneAnim.mDuration);
-				animation.framesPerSeconds = sceneAnim.mTicksPerSecond != 0.0 ? static_cast<float>(sceneAnim.mTicksPerSecond) : 30.0f;
+				animation->name = sceneAnim.mName.C_Str();
+				animation->numFrames = static_cast<int>(sceneAnim.mDuration);
+				animation->framesPerSeconds = sceneAnim.mTicksPerSecond != 0.0 ? static_cast<float>(sceneAnim.mTicksPerSecond) : 30.0f;
 
 				for (size_t channelIndex = 0; channelIndex < sceneAnim.mNumChannels; channelIndex++)
 				{
-					AnimationNode& animNode = animation.channels[sceneAnim.mChannels[channelIndex]->mNodeName.C_Str()];
+					AnimationNode& animNode = animation->channels[sceneAnim.mChannels[channelIndex]->mNodeName.C_Str()];
 
 					animNode.positionKeys.resize(sceneAnim.mChannels[channelIndex]->mNumPositionKeys);
 					for (size_t posKey = 0; posKey < sceneAnim.mChannels[channelIndex]->mNumPositionKeys; posKey++)

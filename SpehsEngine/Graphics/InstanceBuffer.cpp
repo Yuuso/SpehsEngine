@@ -1,15 +1,11 @@
 #include "stdafx.h"
 #include "SpehsEngine/Graphics/InstanceBuffer.h"
 
-#include "SpehsEngine/Math/GLMMatrixUtilityFunctions.h"
-
 
 namespace se
 {
 	namespace graphics
 	{
-		// TODO: Optimize all of this somehow?
-
 		glm::vec3 TransformInstanceData::getPosition() const
 		{
 			glm::vec3 result;

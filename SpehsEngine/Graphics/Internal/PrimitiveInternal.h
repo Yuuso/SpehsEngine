@@ -1,18 +1,15 @@
 #pragma once
 
-#include "boost/signals2/connection.hpp"
-#include "glm/mat4x4.hpp"
-#include "SpehsEngine/Graphics/Internal/Batch.h"
-#include "SpehsEngine/Graphics/Internal/InternalTypes.h"
-#include "SpehsEngine/Graphics/Primitive.h"
-#include "SpehsEngine/Graphics/IndexBuffer.h"
-#include "SpehsEngine/Graphics/VertexBuffer.h"
-#include <vector>
 
 namespace se
 {
 	namespace graphics
 	{
+		class Batch;
+		class IndexBuffer;
+		class Primitive;
+		class VertexBuffer;
+
 		class PrimitiveInternal
 		{
 		public:

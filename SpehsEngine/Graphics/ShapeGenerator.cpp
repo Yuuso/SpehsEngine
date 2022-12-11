@@ -1,6 +1,8 @@
 #include "stdafx.h"
 #include "SpehsEngine/Graphics/ShapeGenerator.h"
 
+#include "SpehsEngine/Graphics/IndexBuffer.h"
+#include "SpehsEngine/Graphics/VertexBuffer.h"
 #include "SpehsEngine/Math/Mathematics.h"
 
 

@@ -1,9 +1,10 @@
 #include "stdafx.h"
 #include "SpehsEngine/Graphics/Internal/AnimatorInternal.h"
 
+#include "SpehsEngine/Graphics/Internal/Animation.h"
+
 #define GLM_ENABLE_EXPERIMENTAL
 #include "glm/gtc/matrix_transform.hpp"
-#include "glm/gtc/quaternion.hpp"
 #include "glm/gtx/quaternion.hpp"
 #include "glm/gtx/rotate_vector.hpp"
 #include "glm/gtx/transform.hpp"
@@ -13,7 +14,7 @@ namespace se
 {
 	namespace graphics
 	{
-		void AnimatorInternal::setAnimations(std::shared_ptr<std::vector<Animation>> _animations)
+		void AnimatorInternal::setAnimations(std::shared_ptr<std::vector<std::unique_ptr<Animation>>> _animations)
 		{
 			animations = _animations;
 			if (!animations)
@@ -21,10 +22,10 @@ namespace se
 
 			for (size_t i = 0; i < activeAnimations.size(); /*i++*/)
 			{
-				activeAnimations[i].animation = getAnimation(activeAnimations[i].name);
-				if (!activeAnimations[i].animation)
+				activeAnimations[i]->animation = getAnimation(activeAnimations[i]->name);
+				if (!activeAnimations[i]->animation)
 				{
-					log::warning("Animation " + activeAnimations[i].name + " not found");
+					log::warning("Animation " + activeAnimations[i]->name + " not found");
 					activeAnimations.erase(activeAnimations.begin() + i);
 					continue;
 				}
@@ -39,7 +40,7 @@ namespace se
 			auto it = activeAnimations.begin();
 			while (it != activeAnimations.end())
 			{
-				if (!it->update(deltaTimeSystem.deltaTime * globalSpeed))
+				if (!it->get()->update(deltaTimeSystem.deltaTime * globalSpeed))
 				{
 					it = activeAnimations.erase(it);
 					continue;
@@ -113,19 +114,19 @@ namespace se
 
 			for (auto&& activeAnimation : activeAnimations)
 			{
-				auto it = activeAnimation.animation->channels.find(_nodeName);
-				if (it == activeAnimation.animation->channels.end())
+				auto it = activeAnimation->animation->channels.find(_nodeName);
+				if (it == activeAnimation->animation->channels.end())
 					continue;
 
-				const float timeInFrames = activeAnimation.animTimer.asSeconds() * activeAnimation.animation->framesPerSeconds;
-				const float animTime = activeAnimation.loop
-					? static_cast<float>(fmod(timeInFrames, activeAnimation.animation->numFrames))
-					: glm::clamp(timeInFrames, 0.0f, static_cast<float>(activeAnimation.animation->numFrames));
+				const float timeInFrames = activeAnimation->animTimer.asSeconds() * activeAnimation->animation->framesPerSeconds;
+				const float animTime = activeAnimation->loop
+					? static_cast<float>(fmod(timeInFrames, activeAnimation->animation->numFrames))
+					: glm::clamp(timeInFrames, 0.0f, static_cast<float>(activeAnimation->animation->numFrames));
 
-				weight += activeAnimation.getWeight();
-				position = glm::mix(position, getPosition(it->second, animTime), activeAnimation.getWeight() / weight);
-				rotation = glm::slerp(rotation, getRotation(it->second, animTime), activeAnimation.getWeight() / weight);
-				scale = glm::mix(scale, getScale(it->second, animTime), activeAnimation.getWeight() / weight);
+				weight += activeAnimation->getWeight();
+				position = glm::mix(position, getPosition(it->second, animTime), activeAnimation->getWeight() / weight);
+				rotation = glm::slerp(rotation, getRotation(it->second, animTime), activeAnimation->getWeight() / weight);
+				scale = glm::mix(scale, getScale(it->second, animTime), activeAnimation->getWeight() / weight);
 			}
 
 			return glm::translate(position) * glm::mat4_cast(rotation) * glm::scale(scale);
@@ -135,7 +136,7 @@ namespace se
 		{
 			for (auto&& activeAnimation : activeAnimations)
 			{
-				if (activeAnimation.animation->channels.find(_nodeName) != activeAnimation.animation->channels.end())
+				if (activeAnimation->animation->channels.find(_nodeName) != activeAnimation->animation->channels.end())
 					return true;
 			}
 			return false;

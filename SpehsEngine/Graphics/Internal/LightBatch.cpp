@@ -9,10 +9,10 @@ namespace se
 		LightBatch::LightBatch()
 		{
 			lightInfoUniform = bgfx::createUniform("u_lightInfo", bgfx::UniformType::Vec4);
-			lightData1Uniform = bgfx::createUniform("u_lightData1", bgfx::UniformType::Vec4, static_cast<uint16_t>(MAX_LIGHTS));
-			lightData2Uniform = bgfx::createUniform("u_lightData2", bgfx::UniformType::Vec4, static_cast<uint16_t>(MAX_LIGHTS));
-			lightData3Uniform = bgfx::createUniform("u_lightData3", bgfx::UniformType::Vec4, static_cast<uint16_t>(MAX_LIGHTS));
-			lightData4Uniform = bgfx::createUniform("u_lightData4", bgfx::UniformType::Vec4, static_cast<uint16_t>(MAX_LIGHTS));
+			lightData1Uniform = bgfx::createUniform("u_lightData1", bgfx::UniformType::Vec4, static_cast<uint16_t>(SE_MAX_LIGHTS));
+			lightData2Uniform = bgfx::createUniform("u_lightData2", bgfx::UniformType::Vec4, static_cast<uint16_t>(SE_MAX_LIGHTS));
+			lightData3Uniform = bgfx::createUniform("u_lightData3", bgfx::UniformType::Vec4, static_cast<uint16_t>(SE_MAX_LIGHTS));
+			lightData4Uniform = bgfx::createUniform("u_lightData4", bgfx::UniformType::Vec4, static_cast<uint16_t>(SE_MAX_LIGHTS));
 		}
 		LightBatch::~LightBatch()
 		{
@@ -99,7 +99,7 @@ namespace se
 				return;
 			}
 
-			if (lights.size() >= MAX_LIGHTS)
+			if (lights.size() >= SE_MAX_LIGHTS)
 			{
 				se::log::error("Max number of Lights reached!");
 				return;

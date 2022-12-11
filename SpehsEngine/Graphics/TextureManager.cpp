@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "SpehsEngine/Graphics/TextureManager.h"
 
-#include "SpehsEngine/Graphics/Internal/InternalUtilities.h"
+#include "SpehsEngine/Graphics/Internal/TextureFallbacks.h"
 
 
 namespace se

@@ -1,8 +1,9 @@
 #include "stdafx.h"
 #include "SpehsEngine/Graphics/Internal/ModelNode.h"
 
+#include "SpehsEngine/Graphics/Internal/AnimatorInternal.h"
+#include "SpehsEngine/Graphics/Internal/Mesh.h"
 #include "SpehsEngine/Graphics/Model.h"
-#include "SpehsEngine/Math/GLMMatrixUtilityFunctions.h"
 
 
 namespace se
@@ -32,9 +33,9 @@ namespace se
 
 		glm::mat4 ModelNode::getLocalTransform() const
 		{
-			if (model.animator.IsNodePlaying(name))
+			if (model.animator->IsNodePlaying(name))
 			{
-				return model.animator.getTransform(name);
+				return model.animator->getTransform(name);
 			}
 			return transform;
 		}

@@ -1,6 +1,9 @@
 #include "stdafx.h"
 #include "SpehsEngine/Graphics/DefaultMaterials.h"
 
+#include "SpehsEngine/Graphics/ShaderManager.h"
+#include "SpehsEngine/Graphics/Uniform.h"
+
 
 namespace se
 {

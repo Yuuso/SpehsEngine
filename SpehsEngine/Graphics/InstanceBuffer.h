@@ -1,14 +1,7 @@
 #pragma once
 
-#include "glm/gtc/quaternion.hpp"
-#include "glm/mat4x4.hpp"
-#include "glm/vec3.hpp"
-#include "SpehsEngine/Core/Color.h"
-#include "SpehsEngine/Core/Log.h"
 #include "SpehsEngine/Graphics/VertexBuffer.h"
-#include "SpehsEngine/Graphics/Types.h"
 #include "SpehsEngine/Graphics/VertexAttribute.h"
-#include <memory>
 
 
 namespace se

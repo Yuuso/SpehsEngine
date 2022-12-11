@@ -1,25 +1,23 @@
 #pragma once
 
-#include "boost/signals2.hpp"
-#include "SpehsEngine/Graphics/Font.h"
-#include "SpehsEngine/Graphics/Shader.h"
 #include "SpehsEngine/Graphics/ShaderVariant.h"
-#include "SpehsEngine/Graphics/Texture.h"
-#include "SpehsEngine/Graphics/Uniform.h"
-#include <memory>
 
 
 namespace se
 {
 	namespace graphics
 	{
+		class Font;
+		class Shader;
+		class Texture;
+		class Uniform;
+
 		class UniformContainer
 		{
 		public:
 			virtual ~UniformContainer() = default;
 			virtual void bind() = 0;
 		};
-
 
 		class Material final
 		{
@@ -30,7 +28,6 @@ namespace se
 
 													Material(const Material& _other) = delete;
 			Material&								operator=(const Material& _other) = delete;
-
 													Material(Material&& _other) = delete;
 			Material&								operator=(Material&& _other) = delete;
 

@@ -1,16 +1,16 @@
 #pragma once
 
-#include "SpehsEngine/Graphics/Internal/FontLibrary.h"
-#include "SpehsEngine/Graphics/Internal/Resource.h"
+#include "SpehsEngine/Graphics/Resource.h"
 #include "SpehsEngine/Graphics/CharacterSet.h"
-#include "SpehsEngine/Graphics/Texture.h"
-#include <memory>
 
 
 namespace se
 {
 	namespace graphics
 	{
+		class FontLibrary;
+		class Texture;
+
 		class Font : public Resource<FontData>
 		{
 		public:

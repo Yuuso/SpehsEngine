@@ -1,13 +1,6 @@
 #pragma once
 
-#include "SpehsEngine/Graphics/Internal/ResourceHandle.h"
-#include "SpehsEngine/Graphics/Types.h"
-#include "glm/vec4.hpp"
-#include "glm/mat3x3.hpp"
-#include "glm/mat4x4.hpp"
-#include <memory>
-#include <stdint.h>
-#include <string>
+#include "SpehsEngine/Graphics/ResourceHandle.h"
 
 
 /*

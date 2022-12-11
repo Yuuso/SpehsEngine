@@ -1,9 +1,14 @@
 #include "stdafx.h"
 #include "SpehsEngine/Graphics/Scene.h"
 
-#include "SpehsEngine/Core/BitwiseOperations.h"
+#include "SpehsEngine/Graphics/Internal/Batch.h"
+#include "SpehsEngine/Graphics/Internal/LightBatch.h"
+#include "SpehsEngine/Graphics/Internal/ModelInternal.h"
+#include "SpehsEngine/Graphics/Internal/PrimitiveInternal.h"
+#include "SpehsEngine/Graphics/Lights.h"
+#include "SpehsEngine/Graphics/Model.h"
+#include "SpehsEngine/Graphics/Primitive.h"
 #include "SpehsEngine/Graphics/Shader.h"
-#include "SpehsEngine/Graphics/Types.h"
 
 
 namespace se

@@ -1,11 +1,6 @@
 #pragma once
 
-// NOTE: No SpehsEngine includes allowed (other than Types.h)
-
-#include "bgfx/bgfx.h" // TODO
-#include "glm/mat4x4.hpp"
-#include "SpehsEngine/Graphics/Types.h"
-#include <vector>
+// NOTE: No SpehsEngine includes allowed
 
 
 namespace se
@@ -64,7 +59,6 @@ namespace se
 			Error,
 		};
 
-		typedef uint32_t PrimitiveAttributeFlagsType;
 		enum class PrimitiveAttributeFlag: PrimitiveAttributeFlagsType
 		{
 			RenderState				= (1 << 0),

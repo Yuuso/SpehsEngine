@@ -1,15 +1,13 @@
 #include "stdafx.h"
 #include "SpehsEngine/Graphics/Internal/WindowInternal.h"
 
-#include "SpehsEngine/Core/BitwiseOperations.h"
-#include "SpehsEngine/Core/Log.h"
-#include "SpehsEngine/Core/SE_Assert.h"
+#include "SpehsEngine/Graphics/Internal/ViewInternal.h"
+#include "SpehsEngine/Graphics/Window.h"
 
 #if defined(_WIN32)
 #include <Windows.h>
 #endif
 
-#include "bgfx/bgfx.h"
 #include "bgfx/platform.h"
 #include "SDL/SDL.h"
 #include "SDL/SDL_syswm.h"

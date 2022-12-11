@@ -2,9 +2,8 @@
 #include "SpehsEngine/Graphics/Window.h"
 
 #include "SDL/SDL_video.h"
-#include "SpehsEngine/Core/BitwiseOperations.h"
-#include "SpehsEngine/Graphics/Renderer.h"
-#include "SpehsEngine/Graphics/Internal/InternalTypes.h"
+#include "SpehsEngine/Graphics/Internal/ViewInternal.h"
+#include "SpehsEngine/Graphics/View.h"
 
 
 namespace se
@@ -13,8 +12,7 @@ namespace se
 	{
 		Window::Window()
 			: aspectRatio(width, height)
-		{
-		}
+		{}
 		Window::Window(bool _hide)
 			: Window()
 		{
@@ -30,12 +28,13 @@ namespace se
 
 		void Window::add(View& _view)
 		{
-			auto it = std::find_if(views.begin(),
-								   views.end(),
-								   [&_view](const std::unique_ptr<ViewInternal>& view)
-								   {
-									   return *view.get() == _view;
-								   });
+			auto it = std::find_if(
+				views.begin(),
+				views.end(),
+				[&_view](const std::unique_ptr<ViewInternal>& view)
+				{
+					return *view.get() == _view;
+				});
 			if (it != views.end())
 			{
 				se::log::error("View already found in window!");
@@ -45,12 +44,13 @@ namespace se
 		}
 		void Window::remove(View& _view)
 		{
-			auto it = std::find_if(views.begin(),
-								   views.end(),
-								   [&_view](const std::unique_ptr<ViewInternal>& view)
-								   {
-									   return *view.get() == _view;
-								   });
+			auto it = std::find_if(
+				views.begin(),
+				views.end(),
+				[&_view](const std::unique_ptr<ViewInternal>& view)
+				{
+					return *view.get() == _view;
+				});
 			if (it == views.end())
 			{
 				se::log::error("View not found!");

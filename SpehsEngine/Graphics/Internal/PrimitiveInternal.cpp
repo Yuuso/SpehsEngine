@@ -1,12 +1,15 @@
 #include "stdafx.h"
 #include "SpehsEngine/Graphics/Internal/PrimitiveInternal.h"
 
-#include "SpehsEngine/Core/BitwiseOperations.h"
-#include "SpehsEngine/Core/SE_Assert.h"
+#include "SpehsEngine/Graphics/Internal/Batch.h"
 #include "SpehsEngine/Graphics/Internal/DefaultUniforms.h"
-#include "SpehsEngine/Graphics/Internal/InternalUtilities.h"
 #include "SpehsEngine/Graphics/Internal/LightBatch.h"
-#include "SpehsEngine/Graphics/Types.h"
+#include "SpehsEngine/Graphics/IndexBuffer.h"
+#include "SpehsEngine/Graphics/Material.h"
+#include "SpehsEngine/Graphics/Primitive.h"
+#include "SpehsEngine/Graphics/RenderCopy.h"
+#include "SpehsEngine/Graphics/Shader.h"
+#include "SpehsEngine/Graphics/VertexBuffer.h"
 
 
 namespace se

@@ -1,6 +1,10 @@
 #include "stdafx.h"
 #include "SpehsEngine/Graphics/Shape.h"
 
+#include "SpehsEngine/Graphics/IndexBuffer.h"
+#include "SpehsEngine/Graphics/VertexBuffer.h"
+#include "SpehsEngine/Graphics/ShapeGenerator.h"
+
 
 namespace se
 {

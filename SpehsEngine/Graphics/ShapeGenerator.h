@@ -1,16 +1,13 @@
 #pragma once
 
-#include "SpehsEngine/Graphics/IndexBuffer.h"
-#include "SpehsEngine/Graphics/Types.h"
-#include "SpehsEngine/Graphics/VertexBuffer.h"
-#include <memory>
-#include <vector>
-
 
 namespace se
 {
 	namespace graphics
 	{
+		class IndexBuffer;
+		class VertexBuffer;
+
 		class ShapeGenerator
 		{
 		public:

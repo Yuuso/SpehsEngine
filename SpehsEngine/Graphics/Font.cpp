@@ -1,11 +1,10 @@
 #include "stdafx.h"
 #include "SpehsEngine/Graphics/Font.h"
 
-#include "bgfx/bgfx.h"
 #include "SpehsEngine/Core/File/File.h"
-#include "SpehsEngine/Graphics/Internal/FontMetrics.h"
-#include "SpehsEngine/Graphics/Internal/InternalTypes.h"
-#include "SpehsEngine/Graphics/Internal/InternalUtilities.h"
+#include "SpehsEngine/Graphics/FontMetrics.h"
+#include "SpehsEngine/Graphics/Internal/FontLibrary.h"
+#include "SpehsEngine/Graphics/Texture.h"
 #include "SpehsEngine/Math/RectanglePacker.h"
 
 
@@ -85,7 +84,7 @@ namespace se
 				{
 					if (!bgfx::isValid(textureHandle))
 					{
-						const bgfx::TextureFormat::Enum textureFormat = (bgfx::TextureFormat::Enum)_fontFace.getTextureFormat();
+						const bgfx::TextureFormat::Enum textureFormat = _fontFace.getTextureFormat();
 						se_assert(textureFormat != bgfx::TextureFormat::Enum::Unknown);
 						textureHandle = bgfx::createTexture2D(
 							uint16_t(atlasSize)

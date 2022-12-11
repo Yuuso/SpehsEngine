@@ -1,14 +1,8 @@
 #pragma once
 
 #include "SpehsEngine/Graphics/IndexBuffer.h"
-#include "SpehsEngine/Graphics/Internal/InternalTypes.h"
 #include "SpehsEngine/Graphics/Internal/RenderInfo.h"
-#include "SpehsEngine/Graphics/Shader.h"
-#include "SpehsEngine/Graphics/Types.h"
 #include "SpehsEngine/Graphics/VertexBuffer.h"
-#include "glm/mat4x4.hpp"
-#include <vector>
-#include <memory>
 
 
 namespace se

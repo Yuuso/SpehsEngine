@@ -1,6 +1,5 @@
 #pragma once
 
-#include <memory>
 #include "SpehsEngine/Core/AsyncTaskManager.h"
 #include "SpehsEngine/Graphics/ResourceData.h"
 

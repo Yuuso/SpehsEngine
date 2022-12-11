@@ -1,15 +1,13 @@
 #pragma once
 
-#include "SpehsEngine/Graphics/View.h"
-#include "SpehsEngine/Graphics/Camera.h"
-#include "SpehsEngine/Graphics/Internal/InternalTypes.h"
-
 
 namespace se
 {
 	namespace graphics
 	{
+		class View;
 		class WindowInternal;
+
 		class ViewInternal
 		{
 		public:

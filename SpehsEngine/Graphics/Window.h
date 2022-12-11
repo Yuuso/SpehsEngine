@@ -1,18 +1,14 @@
 #pragma once
 
-#include "boost/signals2.hpp"
-#include "SpehsEngine/Graphics/Types.h"
-#include "SpehsEngine/Graphics/View.h"
-#include "SpehsEngine/Graphics/Internal/ViewInternal.h"
-#include <vector>
-#include <memory>
-
 
 
 namespace se
 {
 	namespace graphics
 	{
+		class View;
+		class ViewInternal;
+
 		class Window
 		{
 		public:

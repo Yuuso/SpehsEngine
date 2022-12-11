@@ -2,12 +2,6 @@
 
 // NOTE: No SpehsEngine includes allowed
 
-#include "glm/vec2.hpp"
-#include "glm/mat4x4.hpp"
-#include <stdint.h>
-#include <numeric>
-#include <vector>
-
 
 namespace se
 {
@@ -84,6 +78,7 @@ namespace se
 
 		typedef uint32_t PrimitiveUpdateFlagsType;
 		typedef uint32_t WindowUpdateFlagsType;
+		typedef uint32_t PrimitiveAttributeFlagsType;
 
 		enum class PrimitiveType
 		{
@@ -347,6 +342,21 @@ namespace se
 		{
 			Default,
 			ZPosition,
+		};
+
+		struct TextureInput
+		{
+			enum class Format
+			{
+				RGBA8,
+				R8,
+			};
+
+			bool isCubemap = false; // +x, -x, +y, -y, +z, -z
+			Format format = Format::RGBA8;
+			uint16_t width = 0;
+			uint16_t height = 0;
+			std::vector<uint8_t> data;
 		};
 	}
 }

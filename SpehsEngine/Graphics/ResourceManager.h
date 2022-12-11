@@ -1,9 +1,8 @@
 #pragma once
 
 #include "SpehsEngine/Core/ResourcePathFinder.h"
-#include "SpehsEngine/Graphics/Internal/Resource.h"
+#include "SpehsEngine/Graphics/Resource.h"
 #include "SpehsEngine/Graphics/ResourceLoader.h"
-#include <memory>
 
 
 namespace se

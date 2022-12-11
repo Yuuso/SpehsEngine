@@ -1,8 +1,5 @@
 #pragma once
 
-#include "SpehsEngine/Graphics/Types.h"
-#include <string>
-
 
 namespace se
 {

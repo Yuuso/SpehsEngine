@@ -1,14 +1,7 @@
 #pragma once
 
-#include "boost/signals2.hpp"
-#include "SpehsEngine/Graphics/CharacterSet.h"
-#include "SpehsEngine/Graphics/Internal/FontMetrics.h"
 #include "SpehsEngine/Graphics/Primitive.h"
 #include "SpehsEngine/Graphics/TextStyle.h"
-#include "SpehsEngine/Graphics/Types.h"
-#include <memory>
-#include <string>
-#include <vector>
 
 
 namespace se

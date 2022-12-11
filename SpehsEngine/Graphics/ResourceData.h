@@ -1,23 +1,17 @@
 #pragma once
 
-// TODO: Internal
-
-#include "bgfx/bgfx.h" // ?!
-#include "SpehsEngine/Graphics/Internal/Animation.h"
-#include "SpehsEngine/Graphics/Internal/FontMetrics.h"
-#include "SpehsEngine/Graphics/Internal/ResourceHandle.h"
-#include "SpehsEngine/Graphics/Types.h"
-#include "SpehsEngine/Graphics/VertexBuffer.h"
-#include "SpehsEngine/Graphics/IndexBuffer.h"
-#include "glm/mat4x4.hpp"
-#include <vector>
-#include <memory>
+#include "SpehsEngine/Graphics/FontMetrics.h"
+#include "SpehsEngine/Graphics/ResourceHandle.h"
 
 
 namespace se
 {
 	namespace graphics
 	{
+		struct Animation;
+		class IndexBuffer;
+		class VertexBuffer;
+
 		struct ResourceData
 		{
 			virtual ~ResourceData() = default;
@@ -33,7 +27,13 @@ namespace se
 
 		struct TextureData : ResourceData
 		{
-			bgfx::TextureInfo info;
+			struct TextureInfo
+			{
+				uint16_t width;
+				uint16_t height;
+			};
+
+			TextureInfo info;
 		};
 
 		struct FontData : ResourceData
@@ -59,7 +59,6 @@ namespace se
 				std::string boneNodeName;
 				glm::mat4 offsetMatrix;
 			};
-
 			struct MeshInfo
 			{
 				std::string name;
@@ -73,7 +72,7 @@ namespace se
 
 			glm::mat4 globalInverseMatrix;
 
-			std::shared_ptr<std::vector<Animation>> animations;
+			std::shared_ptr<std::vector<std::unique_ptr<Animation>>> animations;
 		};
 	}
 }

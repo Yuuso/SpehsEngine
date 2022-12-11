@@ -1,9 +1,7 @@
 #pragma once
 
-#include "SpehsEngine/Graphics/Internal/Resource.h"
-#include "SpehsEngine/Graphics/Uniform.h"
+#include "SpehsEngine/Graphics/Resource.h"
 #include "SpehsEngine/Graphics/ResourceData.h"
-#include <string>
 
 
 namespace se

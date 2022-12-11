@@ -90,16 +90,13 @@
     <ClInclude Include="Internal\LightBatch.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Internal\Resource.h">
+    <ClInclude Include="Resource.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="ResourceData.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="ResourceLoader.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="TextureInput.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Internal\TextureFallbacks.h">
@@ -114,7 +111,7 @@
     <ClInclude Include="Text.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Internal\ResourceManager.h">
+    <ClInclude Include="ResourceManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Internal\FontLibrary.h">
@@ -123,7 +120,7 @@
     <ClInclude Include="Internal\RenderInfo.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Internal\FontMetrics.h">
+    <ClInclude Include="FontMetrics.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="CharacterSet.h">
@@ -153,10 +150,10 @@
     <ClInclude Include="IndexBuffer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Internal\ResourceHandle.h">
+    <ClInclude Include="ResourceHandle.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Internal\BufferObject.h">
+    <ClInclude Include="BufferObject.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Internal\Mesh.h">
@@ -311,7 +308,7 @@
     <ClCompile Include="Internal\ModelNode.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Internal\BufferObject.cpp">
+    <ClCompile Include="BufferObject.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="ShapeGenerator.cpp">

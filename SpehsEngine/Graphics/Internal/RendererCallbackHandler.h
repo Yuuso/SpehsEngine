@@ -1,10 +1,5 @@
 #pragma once
 
-#include "bgfx/bgfx.h"
-#include <unordered_map>
-#include <stdint.h>
-#include <vector>
-
 
 namespace se
 {
