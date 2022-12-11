@@ -240,8 +240,7 @@ namespace ImGui
 		ImGui::PopID();
 	}
 
-	bool bindCustomEventParameters(const char* const label, se::input::CustomEventParameters& customEventParameters,
-		se::input::EventSignaler& eventSignaler, StateWrapper& stateWrapper)
+	bool InputT(const char* const label, se::input::CustomEventParameters& customEventParameters, se::input::EventSignaler& eventSignaler, StateWrapper& stateWrapper)
 	{
 		struct State : public IState
 		{

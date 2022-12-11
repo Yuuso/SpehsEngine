@@ -349,10 +349,14 @@ namespace ImGui
 		return changed;
 	}
 
-	template<typename T>
-	bool InputT(const char* const label, std::vector<T>& vector, const std::function<bool(T&, const size_t)>& renderElement)
+	template<typename T, typename ... Args>
+	bool InputT(const char* const label, std::vector<T>& vector, Args&& ... args)
 	{
-		se_assert(renderElement);
+		auto renderElement = [&](T& t, const size_t index)
+		{
+			return InputT(("[" + std::to_string(index) + "]").c_str(), t, std::forward<Args>(args)...);
+		};
+
 		bool changed = false;
 		if (!label || ImGui::CollapsingHeader(label))
 		{
@@ -393,7 +397,7 @@ namespace ImGui
 						changed = true;
 					}
 				}
-				changed = renderElement(vector[i], i) || changed;
+				changed |= renderElement(vector[i], i);
 				if (remove)
 				{
 					vector.erase(vector.begin() + i--);
@@ -419,16 +423,20 @@ namespace ImGui
 		}
 		return changed;
 	}
-	template<typename T>
-	inline bool InputT(const std::string& label, std::vector<T>& vector, const std::function<bool(T&, const size_t)>& renderElement)
+	template<typename T, typename ... Args>
+	inline bool InputT(const std::string& label, std::vector<T>& vector, Args&& ... args)
 	{
-		return InputT<T>(label.c_str(), vector, renderElement);
+		return InputT<T>(label.c_str(), vector, std::forward<Args>(args)...);
 	}
 
-	template<typename T>
-	bool InputT(const char* const label, std::optional<T>& optional, const std::function<bool(T&)>& render)
+	template<typename T, typename ... Args>
+	inline bool InputT(const char* const label, std::optional<T>& optional, Args&& ... args)
 	{
-		se_assert(render);
+		auto render = [&](T& t)->bool
+			{
+				return ImGui::InputT(label, t, args...);
+			};
+
 		bool changed = false;
 		bool enabled = optional.has_value();
 		if (ImGui::Checkbox(label, &enabled))
@@ -453,40 +461,10 @@ namespace ImGui
 		}
 		return changed;
 	}
-	template<typename T>
-	inline bool InputT(const std::string& label, std::optional<T>& optional, const std::function<bool(T&)>& render)
+	template<typename T, typename ... Args>
+	inline bool InputT(const std::string& label, std::optional<T>& optional, Args&& ... args)
 	{
-		return InputT<T>(label.c_str(), optional, render);
-	}
-
-	template<typename T>
-	inline bool InputT(const char* const label, std::optional<T>& optional)
-	{
-		return ImGui::InputT<T>(label, optional, [&](T& t)
-			{
-				return ImGui::InputT(label, t);
-			});
-	}
-	template<typename T>
-	inline bool InputT(const std::string& label, std::optional<T>& optional)
-	{
-		return ImGui::InputT<T>(label.c_str(), optional);
-	}
-
-	/* Vector overload for vectors with parameterless InputT() implemented for their element type. */
-	template<typename T>
-	inline bool InputT(const char* const label, std::vector<T>& vector)
-	{
-		return ImGui::InputT<T>(label, vector,
-			[](T& t, const size_t index)
-			{
-				return ImGui::InputT(t);
-			});
-	}
-	template<typename T>
-	inline bool InputT(const std::string& label, std::vector<T>& vector)
-	{
-		return ImGui::InputT<T>(label.c_str(), vector);
+		return ImGui::InputOptional<T>(label.c_str(), optional, std::forward<Args>(args)...);
 	}
 
 	template<typename T>
@@ -589,8 +567,7 @@ namespace ImGui
 		keyBindButton(label.c_str(), key, eventSignaler, scopedConnection);
 	}
 
-	bool bindCustomEventParameters(const char* const label, se::input::CustomEventParameters& customEventParameters,
-		se::input::EventSignaler& eventSignaler, StateWrapper& stateWrapper);
+	bool InputT(const char* const label, se::input::CustomEventParameters& customEventParameters, se::input::EventSignaler& eventSignaler, StateWrapper& stateWrapper);
 
 	inline void SetTooltip(const std::string& tooltip)
 	{
