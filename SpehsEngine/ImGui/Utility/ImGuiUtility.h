@@ -23,14 +23,9 @@ namespace se
 	}
 }
 
-// You can use this to declare header functions with both label types
-#define SE_IMGUI_INPUT_DECL(p_Type, ...) \
-	bool InputT(const char* const p_label, p_Type& p_value, __VA_ARGS__); \
-	bool InputT(const std::string& p_label, p_Type& p_value, __VA_ARGS__);
-
-// Used to implement a dropdown selector for an enum. p_RangeStart value is inclusive, but p_RangeEnd is exclusive.
-#define SE_IMGUI_INPUT_T_ENUM_RANGE_DROPDOWN(p_EnumType, p_RangeStart, p_RangeEnd, p_ToStringFunction) \
-	inline bool InputT(const char* const p_label, p_EnumType& p_value) \
+// Do not use directly, see macros below. Used to implement a dropdown selector for an enum. p_RangeStart value is inclusive, but p_RangeEnd is exclusive.
+#define SE_IMGUI_INPUT_ENUM_RANGE_2(p_EnumType, p_RangeStart, p_RangeEnd, p_ToStringFunction, p_InlineAndBool) \
+	p_InlineAndBool InputT(const char* const p_label, p_EnumType& p_value) \
 	{ \
 		struct Callback { static bool callback(void* data, int n, const char** out_str) { *out_str = p_ToStringFunction(p_EnumType(n + int(p_RangeStart))); return true; } }; \
 		int p_current = int(p_value) - int(p_RangeStart); \
@@ -44,11 +39,11 @@ namespace se
 			return false; \
 		} \
 	} \
-	inline bool InputT(const std::string& p_label, p_EnumType& p_value) \
+	p_InlineAndBool InputT(const std::string& p_label, p_EnumType& p_value) \
 	{ \
 		return InputT(p_label.c_str(), p_value); \
 	} \
-	inline bool InputT(const char* const p_label, p_EnumType& p_value, const std::function<bool(const p_EnumType)>& p_isVisible) \
+	p_InlineAndBool InputT(const char* const p_label, p_EnumType& p_value, const std::function<bool(const p_EnumType)>& p_isVisible) \
 	{ \
 		bool changed = false; \
 		if (ImGui::BeginCombo(p_label, p_ToStringFunction(p_value))) \
@@ -71,6 +66,19 @@ namespace se
 		} \
 		return changed; \
 	}
+
+// Implementation is inlined
+#define SE_IMGUI_INPUT_ENUM_RANGE_INLINE(p_EnumType, p_RangeStart, p_RangeEnd, p_ToStringFunction) \
+	SE_IMGUI_INPUT_ENUM_RANGE_2(p_EnumType, p_RangeStart, p_RangeEnd, p_ToStringFunction, inline bool)
+
+// Implementation is not inlined
+#define SE_IMGUI_INPUT_ENUM_RANGE(p_EnumType, p_RangeStart, p_RangeEnd, p_ToStringFunction) \
+	SE_IMGUI_INPUT_ENUM_RANGE_2(p_EnumType, p_RangeStart, p_RangeEnd, p_ToStringFunction, bool)
+
+// You can use this to declare header functions with both label types
+#define SE_IMGUI_INPUT_DECL(p_Type, ...) \
+	bool InputT(const char* const p_label, p_Type& p_value, __VA_ARGS__); \
+	bool InputT(const std::string& p_label, p_Type& p_value, __VA_ARGS__);
 
 namespace se
 {
