@@ -1,10 +1,11 @@
 #include "stdafx.h"
 #include "SpehsEngine/ImGui/Utility/ImGuiUtility.h"
 
-#include "SpehsEngine/ImGui/Utility/BackendWrapper.h"
 #include "SpehsEngine/Core/File/DirectoryState.h"
+#include "SpehsEngine/Graphics/Texture.h"
 #include "SpehsEngine/Input/EventSignaler.h"
 #include "SpehsEngine/Input/CustomEventParametersRecorder.h"
+#include "SpehsEngine/ImGui/Utility/BackendWrapper.h"
 
 
 namespace ImGui
@@ -37,6 +38,51 @@ namespace ImGui
 			}
 			return changed;
 		}
+	}
+	
+	ImVec2 SizeToScale(const se::graphics::Texture& _texture, const ImVec2 _size)
+	{
+		return ImVec2(_size.x / float(_texture.getWidth()), _size.y / float(_texture.getHeight()));
+	}
+
+	void Image(
+		const se::graphics::Texture& _texture,
+		const ImVec2 scale,
+		const ImVec2 uv0,
+		const ImVec2 uv1,
+		const se::Color tintColor,
+		const se::Color borderColor)
+	{
+		se::imgui::ImGuiUserTextureData userTextureData;
+		userTextureData.resourceHandle = _texture.getHandle();
+		ImGui::Image(
+			userTextureData.id,
+			ImVec2(float(_texture.getWidth()) * scale.x, float(_texture.getHeight()) * scale.y),
+			uv0,
+			uv1,
+			se::toImVec4(tintColor),
+			se::toImVec4(borderColor));
+	}
+
+	bool ImageButton(
+		const se::graphics::Texture& _texture,
+		const ImVec2 scale,
+		const ImVec2 uv0,
+		const ImVec2 uv1,
+		const int framePadding,
+		const se::Color tintColor,
+		const se::Color backgroundColor)
+	{
+		se::imgui::ImGuiUserTextureData userTextureData;
+		userTextureData.resourceHandle = _texture.getHandle();
+		return ImGui::ImageButton(
+			userTextureData.id,
+			ImVec2(float(_texture.getWidth()) * scale.x, float(_texture.getHeight()) * scale.y),
+			uv0,
+			uv1,
+			framePadding,
+			se::toImVec4(backgroundColor),
+			se::toImVec4(tintColor));
 	}
 
 	bool fileSelector(const char* const label, std::string& filepath, const char* const directoryPtr)

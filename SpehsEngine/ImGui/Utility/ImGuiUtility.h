@@ -6,7 +6,6 @@
 #include "SpehsEngine/Core/Color.h"
 #include "SpehsEngine/Core/SE_Time.h"
 #include "SpehsEngine/Core/TimeUtilityFunctions.h"
-#include "SpehsEngine/Graphics/Texture.h"
 #include "SpehsEngine/ImGui/imgui.h"
 #include "SpehsEngine/ImGui/imgui_stdlib.h"
 #include "SpehsEngine/ImGui/ImGuiTypes.h"
@@ -20,6 +19,11 @@ namespace se
 		class EventSignaler;
 		struct CustomEventParameters;
 		enum class Key : uint32_t;
+	}
+
+	namespace graphics
+	{
+		class Texture;
 	}
 }
 
@@ -170,54 +174,24 @@ namespace ImGui
 		TextColored((ImVec4&)color, format.c_str(), args...);
 	}
 
-	inline ImVec2 SizeToScale(const se::graphics::Texture& _texture, const ImVec2 _size)
-	{
-		return ImVec2(_size.x / float(_texture.getWidth()), _size.y / float(_texture.getHeight()));
-	}
+	ImVec2 SizeToScale(const se::graphics::Texture& _texture, const ImVec2 _size);
 
-	inline void Image(
-		  const se::graphics::Texture& _texture
-		, const ImVec2 scale			= ImVec2(1.0f, 1.0f)
-		, const ImVec2 uv0				= ImVec2(0.0f, 0.0f)
-		, const ImVec2 uv1				= ImVec2(1.0f, 1.0f)
-		, const se::Color tintColor		= se::Color(1.0f, 1.0f, 1.0f, 1.0f)
-		, const se::Color borderColor	= se::Color(0.0f, 0.0f, 0.0f, 0.0f)
-		)
-	{
-		se::imgui::ImGuiUserTextureData userTextureData;
-		userTextureData.resourceHandle = _texture.getHandle();
-		ImGui::Image(
-			userTextureData.id
-			, ImVec2(float(_texture.getWidth()) * scale.x, float(_texture.getHeight()) * scale.y)
-			, uv0
-			, uv1
-			, se::toImVec4(tintColor)
-			, se::toImVec4(borderColor)
-			);
-	}
+	void Image(
+		const se::graphics::Texture& _texture,
+		const ImVec2 scale			= ImVec2(1.0f, 1.0f),
+		const ImVec2 uv0				= ImVec2(0.0f, 0.0f),
+		const ImVec2 uv1				= ImVec2(1.0f, 1.0f),
+		const se::Color tintColor		= se::Color(1.0f, 1.0f, 1.0f, 1.0f),
+		const se::Color borderColor	= se::Color(0.0f, 0.0f, 0.0f, 0.0f));
 
-	inline bool ImageButton(
-		const se::graphics::Texture& _texture
-		, const ImVec2 scale				= ImVec2(1.0f, 1.0f)
-		, const ImVec2 uv0					= ImVec2(0.0f, 0.0f)
-		, const ImVec2 uv1					= ImVec2(1.0f, 1.0f)
-		, const int framePadding			= 1
-		, const se::Color tintColor			= se::Color(1.0f, 1.0f, 1.0f, 1.0f)
-		, const se::Color backgroundColor	= se::Color(0.0f, 0.0f, 0.0f, 0.0f)
-		)
-	{
-		se::imgui::ImGuiUserTextureData userTextureData;
-		userTextureData.resourceHandle = _texture.getHandle();
-		return ImGui::ImageButton(
-			userTextureData.id
-			, ImVec2(float(_texture.getWidth()) * scale.x, float(_texture.getHeight()) * scale.y)
-			, uv0
-			, uv1
-			, framePadding
-			, se::toImVec4(backgroundColor)
-			, se::toImVec4(tintColor)
-			);
-	}
+	bool ImageButton(
+		const se::graphics::Texture& _texture,
+		const ImVec2 scale				= ImVec2(1.0f, 1.0f),
+		const ImVec2 uv0				= ImVec2(0.0f, 0.0f),
+		const ImVec2 uv1				= ImVec2(1.0f, 1.0f),
+		const int framePadding			= 1,
+		const se::Color tintColor		= se::Color(1.0f, 1.0f, 1.0f, 1.0f),
+		const se::Color backgroundColor	= se::Color(0.0f, 0.0f, 0.0f, 0.0f));
 
 	bool fileSelector(const char* const label, std::string& filepath, const char* const directory);
 	inline bool fileSelector(const std::string& label, std::string& filepath, const std::string& directory)
