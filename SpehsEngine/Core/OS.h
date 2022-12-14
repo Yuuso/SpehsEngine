@@ -1,7 +1,5 @@
 #pragma once
 
-#include <string>
-
 
 namespace se
 {
@@ -25,4 +23,6 @@ namespace se
 
 	/* Get temporary cache directory. Contains a trailing backslash. */
 	const std::string& getTempDirectory();
+
+	void testCrash();
 }

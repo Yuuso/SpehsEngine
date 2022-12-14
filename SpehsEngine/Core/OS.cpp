@@ -5,6 +5,7 @@
 #include <Windows.h>
 #include <tlhelp32.h>
 #include <ShlObj_core.h>
+#include "errhandlingapi.h"
 #endif
 
 
@@ -229,6 +230,15 @@ namespace se
 #else
 		static const std::string = "/var/tmp/";
 		return string;
+#endif
+	}
+
+	void testCrash()
+	{
+#ifdef _WIN32
+		RaiseException(0xc0000374, 0, 0, NULL);
+#else
+		static_assert(false && "testCrash() implementation is missing.");
 #endif
 	}
 }
