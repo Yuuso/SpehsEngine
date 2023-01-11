@@ -10,7 +10,7 @@
 
 namespace se
 {
-	namespace gui
+	namespace legacygui
 	{
 		class GUIElement
 		{

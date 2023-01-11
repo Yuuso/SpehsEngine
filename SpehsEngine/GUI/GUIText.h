@@ -6,7 +6,7 @@
 
 namespace se
 {
-	namespace gui
+	namespace legacygui
 	{
 		class GUIText : public GUIElement
 		{

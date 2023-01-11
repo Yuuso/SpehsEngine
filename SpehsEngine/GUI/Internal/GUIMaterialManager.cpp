@@ -4,7 +4,7 @@
 
 namespace se
 {
-	namespace gui
+	namespace legacygui
 	{
 		GUIMaterialManager::GUIMaterialManager(graphics::ShaderManager& _shaderManager, graphics::TextureManager& _textureManager, graphics::FontManager& _fontManager)
 			: shaderManager(_shaderManager)

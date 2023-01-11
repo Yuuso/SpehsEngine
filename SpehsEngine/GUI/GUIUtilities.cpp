@@ -4,7 +4,7 @@
 
 namespace se
 {
-	namespace gui
+	namespace legacygui
 	{
 		GUIUnit anchorToUnit(VerticalAlignment _alignment)
 		{

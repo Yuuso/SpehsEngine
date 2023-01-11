@@ -6,6 +6,7 @@
 #include "SpehsEngine/Graphics/Window.h"
 #include "SpehsEngine/GUI/GUIElement.h"
 #include "SpehsEngine/GUI/Internal/GUIMaterialManager.h"
+#include "SpehsEngine/GUI/Internal/StencilMaskManager.h"
 #include "SpehsEngine/Input/EventSignaler.h"
 #include <memory>
 #include <vector>
@@ -13,7 +14,7 @@
 
 namespace se
 {
-	namespace gui
+	namespace legacygui
 	{
 		class GUIView
 		{
@@ -31,7 +32,7 @@ namespace se
 			graphics::View& getView();
 			void setInputHandlingEnabled(bool _value);
 			bool getInputhandlingEnabled() const;
-			void setLayerMaskStyle(LayerMaskStyle _style);
+			void setLayerMaskStyle(gui::LayerMaskStyle _style);
 
 			void add(GUIElement& _element);
 			void remove(GUIElement& _element);
@@ -52,7 +53,7 @@ namespace se
 
 			GUIMaterialManager materialManager;
 			bool inputHandlingEnabled = true;
-			LayerMaskStyle layerMaskStyle = LayerMaskStyle::Incrementing;
+			gui::LayerMaskStyle layerMaskStyle = gui::LayerMaskStyle::Incrementing;
 
 			std::vector<GUIElement*> rootElements;
 		};

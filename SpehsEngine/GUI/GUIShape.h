@@ -7,7 +7,7 @@
 
 namespace se
 {
-	namespace gui
+	namespace legacygui
 	{
 		class GUIShape : public GUIElement
 		{

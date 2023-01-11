@@ -11,7 +11,7 @@ namespace se
 {
 	using namespace graphics;
 
-	namespace gui
+	namespace legacygui
 	{
 		GUIText::GUIText()
 		{

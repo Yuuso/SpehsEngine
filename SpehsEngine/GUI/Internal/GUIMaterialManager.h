@@ -8,7 +8,7 @@
 
 namespace se
 {
-	namespace gui
+	namespace legacygui
 	{
 		// TODO...
 		class GUIMaterialManager

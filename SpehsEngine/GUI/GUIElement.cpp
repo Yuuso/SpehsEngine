@@ -9,7 +9,7 @@
 
 namespace se
 {
-	namespace gui
+	namespace legacygui
 	{
 		GUIElement::~GUIElement()
 		{
@@ -95,17 +95,17 @@ namespace se
 					type = GUIUnitType::Pixels;
 					break;
 
-				case se::gui::GUIUnitType::Self:
+				case GUIUnitType::Self:
 					se_assert_m(false, "GUIUnitType Self width/height not specified! (assuming width)");
 					type = GUIUnitType::SelfWidth;
 					break;
 
-				case se::gui::GUIUnitType::Parent:
+				case GUIUnitType::Parent:
 					se_assert_m(false, "GUIUnitType Parent width/height not specified! (assuming width)");
 					type = GUIUnitType::ParentWidth;
 					break;
 
-				case se::gui::GUIUnitType::View:
+				case GUIUnitType::View:
 					se_assert_m(false, "GUIUnitType View width/height not specified! (assuming width)");
 					type = GUIUnitType::ViewWidth;
 					break;
@@ -136,22 +136,22 @@ namespace se
 					se_assert_m(false, "Unknown unit type!");
 					return _unit.value;
 
-				case GUIUnitType::Pixels:					return _unit.value;
+				case GUIUnitType::Pixels:			return _unit.value;
 
-				case se::gui::GUIUnitType::SelfWidth:		return unitToPixels(resolveUnitType(getSize().x, true), _viewSize) * _unit.value;
-				case se::gui::GUIUnitType::SelfHeight:		return unitToPixels(resolveUnitType(getSize().y, false), _viewSize) * _unit.value;
-				case se::gui::GUIUnitType::SelfMin:			return glm::min(unitToPixels(getSize(), _viewSize).x, unitToPixels(getSize(), _viewSize).y) * _unit.value;
-				case se::gui::GUIUnitType::SelfMax:			return glm::max(unitToPixels(getSize(), _viewSize).x, unitToPixels(getSize(), _viewSize).y) * _unit.value;
+				case GUIUnitType::SelfWidth:		return unitToPixels(resolveUnitType(getSize().x, true), _viewSize) * _unit.value;
+				case GUIUnitType::SelfHeight:		return unitToPixels(resolveUnitType(getSize().y, false), _viewSize) * _unit.value;
+				case GUIUnitType::SelfMin:			return glm::min(unitToPixels(getSize(), _viewSize).x, unitToPixels(getSize(), _viewSize).y) * _unit.value;
+				case GUIUnitType::SelfMax:			return glm::max(unitToPixels(getSize(), _viewSize).x, unitToPixels(getSize(), _viewSize).y) * _unit.value;
 
-				case se::gui::GUIUnitType::ParentWidth:		return parentW() * _unit.value;
-				case se::gui::GUIUnitType::ParentHeight:	return parentH() * _unit.value;
-				case se::gui::GUIUnitType::ParentMin:		return glm::min(parentW(), parentH()) * _unit.value;
-				case se::gui::GUIUnitType::ParentMax:		return glm::max(parentW(), parentH()) * _unit.value;
+				case GUIUnitType::ParentWidth:		return parentW() * _unit.value;
+				case GUIUnitType::ParentHeight:		return parentH() * _unit.value;
+				case GUIUnitType::ParentMin:		return glm::min(parentW(), parentH()) * _unit.value;
+				case GUIUnitType::ParentMax:		return glm::max(parentW(), parentH()) * _unit.value;
 
-				case se::gui::GUIUnitType::ViewWidth:		return _viewSize.x * _unit.value;
-				case se::gui::GUIUnitType::ViewHeight:		return _viewSize.y * _unit.value;
-				case se::gui::GUIUnitType::ViewMin:			return glm::min(_viewSize.x, _viewSize.y) * _unit.value;
-				case se::gui::GUIUnitType::ViewMax:			return glm::max(_viewSize.x, _viewSize.y) * _unit.value;
+				case GUIUnitType::ViewWidth:		return _viewSize.x * _unit.value;
+				case GUIUnitType::ViewHeight:		return _viewSize.y * _unit.value;
+				case GUIUnitType::ViewMin:			return glm::min(_viewSize.x, _viewSize.y) * _unit.value;
+				case GUIUnitType::ViewMax:			return glm::max(_viewSize.x, _viewSize.y) * _unit.value;
 			}
 		}
 		glm::vec2 GUIElement::unitToPixels(const GUIVec2& _vec, const glm::vec2& _viewSize) const

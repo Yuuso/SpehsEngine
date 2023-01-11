@@ -6,9 +6,9 @@
 
 namespace se
 {
-	namespace gui
+	namespace legacygui
 	{
-		static constexpr float cameraZPos = static_cast<float>(std::numeric_limits<ZIndex>::max()) + 1.0f;
+		static constexpr float cameraZPos = static_cast<float>(std::numeric_limits<gui::ZIndex>::max()) + 1.0f;
 
 		GUIView::GUIView(graphics::ShaderManager& _shaderManager, graphics::TextureManager& _textureManager,
 						 graphics::FontManager& _fontManager, input::EventSignaler& _eventSignaler, int _inputPriority)
@@ -39,7 +39,7 @@ namespace se
 		{
 			return inputHandlingEnabled;
 		}
-		void GUIView::setLayerMaskStyle(LayerMaskStyle _style)
+		void GUIView::setLayerMaskStyle(gui::LayerMaskStyle _style)
 		{
 			layerMaskStyle = _style;
 		}
@@ -48,7 +48,7 @@ namespace se
 		{
 			camera.setPosition(glm::vec3{ _renderSize.x * 0.5f, -_renderSize.y * 0.5, cameraZPos });
 
-			auto stencilMaskManager = createStencilMaskManager(layerMaskStyle);
+			auto stencilMaskManager = gui::createStencilMaskManager(layerMaskStyle);
 			UpdateContext context{ view.getScene(), materialManager, *stencilMaskManager, _renderSize };
 			for (size_t i = 0; i < rootElements.size(); i++)
 			{

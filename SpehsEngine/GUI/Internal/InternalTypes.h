@@ -17,11 +17,14 @@ namespace se
 	{
 		struct MouseButtonEvent;
 	}
-
 	namespace gui
 	{
-		class GUIMaterialManager;
 		class StencilMaskManager;
+	}
+
+	namespace legacygui
+	{
+		class GUIMaterialManager;
 
 
 		enum GUIElementUpdateFlag : GUIElementUpdateFlagsType
@@ -37,16 +40,16 @@ namespace se
 		{
 			graphics::Scene& scene;
 			GUIMaterialManager& materialManager;
-			StencilMaskManager& stencilMaskManager;
+			gui::StencilMaskManager & stencilMaskManager;
 
 			glm::vec2 viewSize;
-			ZIndex hoverHandledDepth = std::numeric_limits<ZIndex>::min();
+			gui::ZIndex hoverHandledDepth = std::numeric_limits<gui::ZIndex>::min();
 		};
 
 		struct InputUpdateContext
 		{
 			const input::MouseButtonEvent& mouseButtonEvent;
-			ZIndex handledDepth = std::numeric_limits<ZIndex>::min();
+			gui::ZIndex handledDepth = std::numeric_limits<gui::ZIndex>::min();
 		};
 
 		enum class GUIElementInputStatus

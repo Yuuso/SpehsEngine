@@ -9,7 +9,7 @@
 
 namespace se
 {
-	namespace gui
+	namespace legacygui
 	{
 		struct GUIElementProperties
 		{
