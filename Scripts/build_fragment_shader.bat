@@ -36,17 +36,6 @@ CALL %SHADERC% ^
 -f %SOURCE_LOC%\fs_%SHADER_NAME%.sc ^
 -o %TARGET_LOC%\spirv\fs_%SHADER_NAME%.bin
 
-ECHO 	dx9
-IF NOT EXIST %TARGET_LOC%\dx9 MKDIR %TARGET_LOC%\dx9
-CALL %SHADERC% ^
---type fragment ^
---platform windows ^
---profile ps_3_0 ^
--O 3 ^
---varyingdef %SOURCE_LOC%\varying.def.sc ^
--f %SOURCE_LOC%\fs_%SHADER_NAME%.sc ^
--o %TARGET_LOC%\dx9\fs_%SHADER_NAME%.bin
-
 ECHO 	dx11
 IF NOT EXIST %TARGET_LOC%\dx11 MKDIR %TARGET_LOC%\dx11
 CALL %SHADERC% ^
@@ -57,16 +46,6 @@ CALL %SHADERC% ^
 --varyingdef %SOURCE_LOC%\varying.def.sc ^
 -f %SOURCE_LOC%\fs_%SHADER_NAME%.sc ^
 -o %TARGET_LOC%\dx11\fs_%SHADER_NAME%.bin
-
-ECHO 	metal
-IF NOT EXIST %TARGET_LOC%\metal MKDIR %TARGET_LOC%\metal
-CALL %SHADERC% ^
---type fragment ^
---platform ios ^
---profile metal ^
---varyingdef %SOURCE_LOC%\varying.def.sc ^
--f %SOURCE_LOC%\fs_%SHADER_NAME%.sc ^
--o %TARGET_LOC%\metal\fs_%SHADER_NAME%.bin
 
 
 EXIT /B 0
