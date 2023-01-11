@@ -446,7 +446,7 @@ namespace ImGui
 	template<typename T, typename ... Args>
 	inline bool InputT(const std::string& label, std::optional<T>& optional, Args&& ... args)
 	{
-		return ImGui::InputOptional<T>(label.c_str(), optional, std::forward<Args>(args)...);
+		return ImGui::InputT<T>(label.c_str(), optional, std::forward<Args>(args)...);
 	}
 
 	template<typename T>
