@@ -111,6 +111,10 @@ namespace se
 		{
 			return instances;
 		}
+		uint32_t Primitive::getAutoInstanceCount() const
+		{
+			return autoInstanceCount;
+		}
 		const Color& Primitive::getColor() const
 		{
 			return primitiveColor;
@@ -206,6 +210,11 @@ namespace se
 		void Primitive::setInstances(std::shared_ptr<VertexBuffer> _instances)
 		{
 			instances = _instances;
+			validateRenderMode();
+		}
+		void Primitive::setAutoInstanceCount(uint32_t _numInstances)
+		{
+			autoInstanceCount = _numInstances;
 			validateRenderMode();
 		}
 		void Primitive::setColor(const Color& _color)
@@ -312,7 +321,7 @@ namespace se
 		{
 			if (renderMode == RenderMode::Static)
 			{
-				if (getInstances())
+				if (getInstances() || getAutoInstanceCount() > 0u)
 				{
 					log::error("RenderMode::Static and instancing don't work together!");
 				}
@@ -332,6 +341,10 @@ namespace se
 				{
 					log::error("RenderMode::Static and RenderSortDepth don't work together!");
 				}
+			}
+			if (getAutoInstanceCount() > 0u && getInstances())
+			{
+				log::error("Instance buffer and auto generated instance count can't both be set!");
 			}
 		}
 	}

@@ -37,6 +37,7 @@ namespace se
 			virtual std::shared_ptr<IndexBuffer>		getIndices();
 			virtual std::shared_ptr<const VertexBuffer>	getInstances() const;
 			virtual std::shared_ptr<VertexBuffer>		getInstances();
+			virtual uint32_t							getAutoInstanceCount() const;
 			virtual const Color&						getColor() const;
 			virtual const Scissor&						getScissor() const;
 			virtual RenderFlagsType						getRenderFlags() const;
@@ -59,6 +60,7 @@ namespace se
 			virtual void								setVertices(std::shared_ptr<VertexBuffer> _vertices);
 			virtual void								setIndices(std::shared_ptr<IndexBuffer> _indices);
 			virtual void								setInstances(std::shared_ptr<VertexBuffer> _instances);
+			virtual void								setAutoInstanceCount(uint32_t _numInstances);
 			virtual void								setColor(const Color& _color);
 			virtual void								setScissor(const Scissor& _scissor);
 			virtual void								setRenderFlags(RenderFlagsType _renderFlags);
@@ -104,6 +106,7 @@ namespace se
 			std::shared_ptr<VertexBuffer>				vertices;
 			std::shared_ptr<IndexBuffer>				indices;
 			std::shared_ptr<VertexBuffer>				instances;
+			uint32_t									autoInstanceCount		= 0;
 			glm::vec3									position				= glm::vec3(0.0f);
 			glm::vec3									scale					= glm::vec3(1.0f);
 			glm::quat									rotation				= glm::vec3(0.0f);
