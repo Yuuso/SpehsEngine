@@ -337,8 +337,8 @@ namespace se
 				}
 			}
 
-			for (auto&& child : children)
-				inputHandled = child->inputUpdate(_context) || inputHandled;
+			for (size_t i = 0; i < children.size(); i++)
+				inputHandled = children[i]->inputUpdate(_context) || inputHandled;
 
 			if (waitingToUpdate && ((_context.handledDepth <= zvalue) || inheritStatus))
 			{
