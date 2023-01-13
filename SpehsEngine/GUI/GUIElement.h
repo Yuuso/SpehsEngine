@@ -27,7 +27,7 @@ namespace se
 			virtual std::shared_ptr<GUIElement>		clone();
 
 
-			template<typename T> T&					addChild();
+			template<typename T, typename ... Args> T& addChild(Args&& ... args);
 			size_t									addChild(std::shared_ptr<GUIElement> _element);
 			void									removeChild(size_t _index);
 			bool									removeChild(std::string_view _name);
@@ -151,10 +151,10 @@ namespace se
 			bool									consumeInput = true;
 		};
 
-		template<typename T> T&	GUIElement::addChild()
+		template<typename T, typename ... Args> T&	GUIElement::addChild(Args&& ... args)
 		{
 			static_assert(std::is_base_of<GUIElement, T>::value, "T must inherit GUIElement");
-			return static_cast<T&>(*children[addChild(std::make_shared<T>())]);
+			return static_cast<T&>(*children[addChild(std::make_shared<T>(std::forward<Args>(args)...))]);
 		}
 
 		template<typename T> T* GUIElement::findChild(std::string_view _name, bool _recursive)
