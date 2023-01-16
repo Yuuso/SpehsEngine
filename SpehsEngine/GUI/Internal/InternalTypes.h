@@ -43,13 +43,13 @@ namespace se
 			gui::StencilMaskManager & stencilMaskManager;
 
 			glm::vec2 viewSize;
-			gui::ZIndex hoverHandledDepth = std::numeric_limits<gui::ZIndex>::min();
+			ZIndex hoverHandledDepth = std::numeric_limits<ZIndex>::min();
 		};
 
 		struct InputUpdateContext
 		{
 			const input::MouseButtonEvent& mouseButtonEvent;
-			gui::ZIndex handledDepth = std::numeric_limits<gui::ZIndex>::min();
+			ZIndex handledDepth = std::numeric_limits<ZIndex>::min();
 		};
 
 		enum class GUIElementInputStatus
