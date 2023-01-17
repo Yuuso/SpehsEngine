@@ -8,10 +8,20 @@ namespace se
 {
 	namespace gui
 	{
+		// TODO: Move to Core? C++ Language features?
+	#define SE_INTERFACE __declspec(novtable)
+	#define SE_NO_COPY(CLASS) \
+		CLASS(const CLASS& _other) = delete; \
+		CLASS& operator=(const CLASS& _other) = delete; \
+		CLASS(CLASS&& _other) = delete; \
+		CLASS& operator=(CLASS&& _other) = delete;
+		//
+
 		typedef int16_t ZIndex;
 
 		template<typename S> using Signal = boost::signals2::signal<S>;
-		using Connection = boost::signals2::scoped_connection;
+		using Connection = boost::signals2::connection;
+		using ScopedConnection = boost::signals2::scoped_connection;
 
 		enum Alignment
 		{

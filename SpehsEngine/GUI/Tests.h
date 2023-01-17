@@ -1,6 +1,7 @@
 #pragma once
 
 #include "SpehsEngine/GUI/Element.h"
+#include "SpehsEngine/GUI/Layout.h"
 
 
 namespace se::gui
@@ -12,7 +13,7 @@ namespace se::gui
 
 	class ViewModel : public IPropertyHost
 	{
-		GuiPropertyClass(ViewModel)
+		GUI_PROPERTY_CLASS(ViewModel)
 
 	public:
 		ViewModel(AppData& _data)
@@ -61,46 +62,62 @@ namespace se::gui
 	};
 
 
-
-	void runTests()
+	class TestApp
 	{
+	public:
+		TestApp(input::EventSignaler& _eventSignaler)
+			: layout(_eventSignaler, 1)
+		{}
+
+		void init()
+		{
+			viewModel = std::make_shared<ViewModel>(data);
+
+			Element& element = *layout.add<Element>();
+
+			element.onMouseHover([]{ log::info("boo"); return false; });
+
+			se_assert(element.getExample() == 0);
+			element.setExample(3);
+			se_assert(element.getExample() == 3);
+
+			element.setExample(Binding("DataValue", BindingMode::TwoWay));
+			se_assert(element.getExample() == 0);
+
+			element.setDataContext(viewModel);
+			se_assert(element.getExample() == 4);
+
+			viewModel->setDataValue(5);
+			se_assert(element.getExample() == 5);
+
+			element.setExample(6);
+			se_assert(viewModel->getDataValue() == 6);
+
+			element.setDataContext(nullptr);
+			se_assert(element.getExample() == 0);
+
+			element.setExample(Binding("DataValue", BindingMode::OneWayToSource));
+			se_assert(element.getExample() == 0);
+
+			element.setDataContext(viewModel);
+			se_assert(element.getExample() == 0);
+
+			element.setExample(6);
+			se_assert(viewModel->getDataValue() == 6);
+
+			viewModel->setDataValue(7);
+			se_assert(element.getExample() == 6);
+
+			element.setDataContext(nullptr);
+			se_assert(element.getExample() == 6);
+		}
+		void run()
+		{
+		}
+
+	private:
 		AppData data;
-		std::shared_ptr<ViewModel> viewModel = std::make_shared<ViewModel>(data);
-
-		Element element;
-		se_assert(element.getExample() == 0);
-
-		element.setExample(3);
-		se_assert(element.getExample() == 3);
-
-		element.setExample(Binding("DataValue", BindingMode::TwoWay));
-		se_assert(element.getExample() == 0);
-
-		element.setDataContext(viewModel);
-		se_assert(element.getExample() == 4);
-
-		viewModel->setDataValue(5);
-		se_assert(element.getExample() == 5);
-
-		element.setExample(6);
-		se_assert(viewModel->getDataValue() == 6);
-
-		element.setDataContext(nullptr);
-		se_assert(element.getExample() == 0);
-
-		element.setExample(Binding("DataValue", BindingMode::OneWayToSource));
-		se_assert(element.getExample() == 0);
-
-		element.setDataContext(viewModel);
-		se_assert(element.getExample() == 0);
-
-		element.setExample(6);
-		se_assert(viewModel->getDataValue() == 6);
-
-		viewModel->setDataValue(7);
-		se_assert(element.getExample() == 6);
-
-		element.setDataContext(nullptr);
-		se_assert(element.getExample() == 6);
-	}
+		std::shared_ptr<ViewModel> viewModel;
+		Layout layout;
+	};
 }

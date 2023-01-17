@@ -41,10 +41,11 @@ namespace se::gui
 	public:
 		BindingLink(const Binding& _binding, const PropertyLink& _link)
 			: binding(_binding), propertyLink(_link) {}
+
 		const Binding binding;
 		const PropertyLink& propertyLink;
-		Connection sourceChanged;
-		Connection targetChanged;
+		ScopedConnection sourceChangedConnection;
+		ScopedConnection targetChangedConnection;
 	};
 
 	static inline bool bindingShouldUpdateSourceOnPropertyChanged(const Binding& _binding)

@@ -130,6 +130,7 @@
   <ItemGroup>
     <ClInclude Include="Binding.h" />
     <ClInclude Include="Element.h" />
+    <ClInclude Include="EventRouter.h" />
     <ClInclude Include="GUIElement.h" />
     <ClInclude Include="GUIElementProperties.h" />
     <ClInclude Include="Internal\GUIMaterialManager.h" />
@@ -139,6 +140,7 @@
     <ClInclude Include="GUIText.h" />
     <ClInclude Include="Internal\InternalTypes.h" />
     <ClInclude Include="Internal\StencilMaskManager.h" />
+    <ClInclude Include="Layout.h" />
     <ClInclude Include="PrecompiledInclude.h" />
     <ClInclude Include="GUIView.h" />
     <ClInclude Include="GUIShape.h" />

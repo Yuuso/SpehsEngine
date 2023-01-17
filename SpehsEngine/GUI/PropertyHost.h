@@ -7,12 +7,12 @@
 namespace se::gui
 {
 
-#define GuiPropertyClass(CLASS) \
+#define GUI_PROPERTY_CLASS(CLASS) \
 private: \
 	using SelfClass = CLASS; \
-	inline static PropertyMap property_Map; \
-	inline PropertyMap& getProperties() override { return property_Map; } \
-	inline const PropertyMap& getProperties() const override { return property_Map; } \
+	inline static ::se::gui::PropertyMap property_Map; \
+	inline ::se::gui::PropertyMap& getProperties() override { return property_Map; } \
+	inline const ::se::gui::PropertyMap& getProperties() const override { return property_Map; } \
 
 	class IPropertyHost;
 	class PropertyLink;
@@ -42,7 +42,7 @@ private: \
 		const std::any defaultValue;
 	};
 
-	class IPropertyHost
+	class SE_INTERFACE IPropertyHost
 	{
 	public:
 		virtual PropertyMap& getProperties() = 0;

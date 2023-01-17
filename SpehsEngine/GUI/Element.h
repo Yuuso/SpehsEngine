@@ -4,13 +4,14 @@
 #include <any>
 #include "SpehsEngine/GUI/Binding.h"
 #include "SpehsEngine/GUI/PropertyHost.h"
+#include "SpehsEngine/GUI/EventRouter.h"
 
 
 namespace se::gui
 {
-	class Element : public IPropertyHost
+	class Element : public IPropertyHost, public IEventRouter
 	{
-		GuiPropertyClass(Element)
+		GUI_PROPERTY_CLASS(Element)
 
 
 		// <Example>
@@ -55,14 +56,13 @@ namespace se::gui
 		}
 		SelfClass& setExample(const Binding& _binding)
 		{
-			for (auto it = bindings.begin(); it != bindings.end(); it++)
-			{
-				if (&it->get()->propertyLink == &property_ExampleLink)
-				{
-					bindings.erase(it);
-					break;
-				}
-			}
+			auto it = std::find_if(
+				bindings.begin(), bindings.end(),
+				[](const std::unique_ptr<BindingLink>& binding)
+				{ return &binding->propertyLink == &property_ExampleLink; });
+			if (it != bindings.end())
+				bindings.erase(it);
+
 			bindings.push_back(
 				std::make_unique<BindingLink>(
 					bindingResolveDefaultValue(_binding, BindingMode::OneWay, BindingSourceUpdate::PropertyChanged),
@@ -143,8 +143,8 @@ namespace se::gui
 		}
 		void resolveBinding(BindingLink& _bindingLink)
 		{
-			_bindingLink.sourceChanged.disconnect();
-			_bindingLink.targetChanged.disconnect();
+			_bindingLink.sourceChangedConnection.disconnect();
+			_bindingLink.targetChangedConnection.disconnect();
 
 			IPropertyHost* source = findBindingSource(_bindingLink.binding);
 			if (!source)
@@ -178,7 +178,7 @@ namespace se::gui
 
 			if (bindingShouldUpdateTargetOnPropertyChanged(_bindingLink.binding))
 			{
-				_bindingLink.sourceChanged = source->onPropertyChanged(
+				_bindingLink.sourceChangedConnection = source->onPropertyChanged(
 					[this, &_bindingLink](const std::string& _name, const std::any& _value)
 					{
 						if (_name == _bindingLink.binding.sourcePropertyName)
@@ -190,7 +190,7 @@ namespace se::gui
 
 			if (bindingShouldUpdateSourceOnPropertyChanged(_bindingLink.binding))
 			{
-				_bindingLink.targetChanged = onPropertyChanged(
+				_bindingLink.targetChangedConnection = onPropertyChanged(
 					[source, &_bindingLink](const std::string& _name, const std::any& _value)
 					{
 						if (_name == _bindingLink.propertyLink.name)
@@ -199,6 +199,17 @@ namespace se::gui
 						}
 					});
 			}
+		}
+
+	protected:
+		bool routeParent(const EventRoutingFunction& _func, const EventArgs& _args) override
+		{
+			if (parent)
+			{
+				if (_func(static_cast<IEventRouter*>(parent), _args))
+					return true;
+			}
+			return false;
 		}
 
 	protected:
