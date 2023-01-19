@@ -103,7 +103,7 @@ namespace se
 			{
 				return mouseButton == other.mouseButton;
 			}
-			MouseButton mouseButton = MouseButton::none;
+			MouseButton mouseButton = MouseButton::None;
 		};
 
 		struct MouseMotionEventParameters

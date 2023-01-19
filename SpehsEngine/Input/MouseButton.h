@@ -7,12 +7,12 @@ namespace se
 	{
 		enum class MouseButton
 		{
-			none = 0,
-			left = 1,
-			middle = 2,
-			right = 3,
-			x1 = 4,
-			x2 = 5,
+			None = 0,
+			Left = 1,
+			Middle = 2,
+			Right = 3,
+			X1 = 4,
+			X2 = 5,
 		};
 
 		const char* toString(const MouseButton mouseButton);

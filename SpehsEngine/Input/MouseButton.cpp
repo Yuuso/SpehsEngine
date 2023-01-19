@@ -9,12 +9,12 @@ namespace se
 		{
 			switch (mouseButton)
 			{
-			case MouseButton::none: return "none";
-			case MouseButton::left: return "left";
-			case MouseButton::middle: return "middle";
-			case MouseButton::right: return "right";
-			case MouseButton::x1: return "x1";
-			case MouseButton::x2: return "x2";
+			case MouseButton::None: return "none";
+			case MouseButton::Left: return "left";
+			case MouseButton::Middle: return "middle";
+			case MouseButton::Right: return "right";
+			case MouseButton::X1: return "x1";
+			case MouseButton::X2: return "x2";
 			}
 			return "Error";
 		}
@@ -23,12 +23,12 @@ namespace se
 		{
 			switch (mouseButton)
 			{
-			case MouseButton::none: return "none";
-			case MouseButton::left: return "LMB";
-			case MouseButton::middle: return "MMB";
-			case MouseButton::right: return "RMB";
-			case MouseButton::x1: return "MB1";
-			case MouseButton::x2: return "MB2";
+			case MouseButton::None: return "none";
+			case MouseButton::Left: return "LMB";
+			case MouseButton::Middle: return "MMB";
+			case MouseButton::Right: return "RMB";
+			case MouseButton::X1: return "MB1";
+			case MouseButton::X2: return "MB2";
 			}
 			return "Error";
 		}

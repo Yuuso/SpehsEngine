@@ -63,7 +63,7 @@ namespace se
 			bool isPress() const { return type == Type::Press; }
 			bool isHold() const { return type == Type::Hold; }
 			bool isRelease() const { return type == Type::Release; }
-			MouseButton button = MouseButton::none;
+			MouseButton button = MouseButton::None;
 			Type type = Type::None;
 		};
 		struct MouseMotionEvent

@@ -315,7 +315,7 @@ namespace se
 			bool inputHandled = false;
 			const bool inheritStatus = inheritInputStatus && parent && parent->inputStatus != GUIElementInputStatus::Normal;
 
-			if (_context.mouseButtonEvent.button == input::MouseButton::left)
+			if (_context.mouseButtonEvent.button == input::MouseButton::Left)
 			{
 				if (getVisible() && needInputUpdate())
 				{
