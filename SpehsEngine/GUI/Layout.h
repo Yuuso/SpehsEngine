@@ -17,20 +17,35 @@ namespace se::gui
 		Layout(input::EventSignaler& _eventSignaler, int _inputPriority)
 			: eventSignaler(_eventSignaler)
 		{
-			inputConnections.reserve(6);
+			inputConnections.reserve(4);
 
 			_eventSignaler.connectToMouseHoverSignal(
 				inputConnections.emplace_back(),
 				[this](const input::MouseHoverEvent& _inputEvent)
 				{
-					return routeEventTunnel(MouseHoverArgs("MouseHover", _inputEvent));
+					return routeSystemEvent(MouseHoverArgs("MouseHover", _inputEvent)) == RouteResult::Handled;
 				}, _inputPriority);
 
-			//_eventSignaler.connectToMouseMotionSignal(mouseMotionConnection, [this](const input::MouseButtonEvent& _event){ return mouseButtonCallback(_event); }, _inputPriority);
-			//_eventSignaler.connectToMouseWheelSignal(mouseWheelConnection, [this](const input::MouseButtonEvent& _event){ return mouseButtonCallback(_event); }, _inputPriority);
-			//_eventSignaler.connectToMouseButtonSignal(mouseButtonConnection, [this](const input::MouseButtonEvent& _event){ return mouseButtonCallback(_event); }, _inputPriority);
-			//_eventSignaler.connectToKeyboardSignal(keyboardConnection, [this](const input::MouseButtonEvent& _event){ return mouseButtonCallback(_event); }, _inputPriority);
-			//_eventSignaler.connectToTextInputSignal(textInputConnection, [this](const input::MouseButtonEvent& _event){ return mouseButtonCallback(_event); }, _inputPriority);
+			_eventSignaler.connectToMouseMotionSignal(
+				inputConnections.emplace_back(),
+				[this](const input::MouseMotionEvent& _inputEvent)
+				{
+					return routeSystemEvent(MouseMotionArgs("MouseMotion", _inputEvent)) == RouteResult::Handled;
+				}, _inputPriority);
+
+			_eventSignaler.connectToMouseWheelSignal(
+				inputConnections.emplace_back(),
+				[this](const input::MouseWheelEvent& _inputEvent)
+				{
+					return routeSystemEvent(MouseWheelArgs("MouseWheel", _inputEvent)) == RouteResult::Handled;
+				}, _inputPriority);
+
+			_eventSignaler.connectToMouseButtonSignal(
+				inputConnections.emplace_back(),
+				[this](const input::MouseButtonEvent& _inputEvent)
+				{
+					return routeSystemEvent(MouseButtonArgs("MouseButton", _inputEvent)) == RouteResult::Handled;
+				}, _inputPriority);
 		}
 
 		void update()
@@ -54,14 +69,21 @@ namespace se::gui
 
 	private:
 
-		bool routeChildren(const EventRoutingFunction& _func, const EventArgs& _args) override
+		RouteResult routeChildren(const EventRoutingFn& _func, const EventArgs& _args) override
 		{
+			RouteResult result = RouteResult::NotHandled;
 			for (auto&& element : rootElements)
 			{
-				if (_func(static_cast<IEventRouter*>(element.get()), _args))
-					return true;
+				result = _func(static_cast<IEventRouter*>(element.get()), _args);
+				if (result != RouteResult::NotHandled)
+					return result;
 			}
-			return false;
+			return result;
+		}
+		bool handleRoutedEvent(const EventArgs&) override
+		{
+			// Root element always handles all routed events
+			return true;
 		}
 
 		input::EventSignaler& eventSignaler;

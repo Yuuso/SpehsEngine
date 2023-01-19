@@ -1,30 +1,66 @@
 #pragma once
 
 #include "stdafx.h"
-#include "SpehsEngine/GUI/Element.h"
 #include "SpehsEngine/Input/Event.h"
+#include "SpehsEngine/Input/MouseUtilityFunctions.h"
 
 
 namespace se::gui
 {
+	class Element;
+
 #define GUI_DEFINE_EVENT(EVENT, PARAM_TYPE) \
-	inline ::se::gui::Connection on##EVENT(const std::function<bool(const PARAM_TYPE&)>& _func) \
-	{ return onEvent<PARAM_TYPE>(#EVENT, _func); } \
+	inline ::se::gui::Connection on##EVENT(const std::function<bool(const ::se::gui::PARAM_TYPE&)>& _func) \
+	{ return onEvent<::se::gui::PARAM_TYPE>(#EVENT, _func); } \
 	inline ::se::gui::Connection on##EVENT(const std::function<bool()>& _func) \
 	{ return onEvent(#EVENT, _func); }
+
 #define GUI_DEFINE_TUNNELING_EVENT(EVENT, PARAM_TYPE) \
-	inline ::se::gui::Connection onPreview##EVENT(const std::function<bool(const PARAM_TYPE&)>& _func) \
-	{ return onPreviewEvent<PARAM_TYPE>(#EVENT, _func); } \
+	inline ::se::gui::Connection onPreview##EVENT(const std::function<bool(const ::se::gui::PARAM_TYPE&)>& _func) \
+	{ return onPreviewEvent<::se::gui::PARAM_TYPE>(#EVENT, _func); } \
 	inline ::se::gui::Connection onPreview##EVENT(const std::function<bool()>& _func) \
 	{ return onPreviewEvent(#EVENT, _func); } \
 	GUI_DEFINE_EVENT(EVENT, PARAM_TYPE)
 
-	//
-	// MouseHover
-	// MouseMotion -> MouseEnter, MouseLeave
-	// MouseWheel
-	// MouseButton -> MouseUp/Down/Repeat -> MouseLeft/Right/Middle/X1/X2Up
-	// Keyboard -> KeyUp/Down/Repeat
+#define GUI_DEFINE_MOUSEBUTTON_EVENT(BUTTON, TYPE) \
+	::se::gui::Connection onMouse##BUTTON##TYPE(const std::function<bool(const ::se::gui::MouseButtonArgs&)>& _func) \
+	{ \
+		return onEvent<::se::gui::MouseButtonArgs>( \
+			"MouseButton", \
+			[_func](const ::se::gui::MouseButtonArgs& _args) -> bool \
+			{ \
+				if (_args.button == ::se::input::MouseButton::BUTTON && \
+					_args.type == ::se::input::MouseButtonEvent::Type::TYPE) \
+				{ \
+					return _func(_args); \
+				} \
+				return false; \
+			}); \
+	} \
+	::se::gui::Connection onMouse##BUTTON##TYPE(const std::function<bool()>& _func) \
+	{ \
+		return onEvent<::se::gui::MouseButtonArgs>( \
+			"MouseButton", \
+			[_func](const ::se::gui::MouseButtonArgs& _args) -> bool \
+			{ \
+				if (_args.button == ::se::input::MouseButton::BUTTON && \
+					_args.type == ::se::input::MouseButtonEvent::Type::TYPE) \
+				{ \
+					return _func(); \
+				} \
+				return false; \
+			}); \
+	}
+
+	// TODO: offset pixels to view
+
+	static Vec2 getMousePosition()
+	{
+		std::optional<glm::vec2> pos = se::input::getMousePositionf();
+		if (pos.has_value())
+			return Vec2(pos.value(), UnitType::Pixels);
+		return Vec2({ -1.0f, -1.0f }, UnitType::Auto);
+	}
 
 	struct EventArgs
 	{
@@ -32,31 +68,43 @@ namespace se::gui
 			: eventName(_eventName) {}
 		virtual ~EventArgs() = default;
 		const std::string eventName;
-		//Element* source = nullptr;
+		Element* source;
 	};
-	struct MouseHoverArgs : EventArgs
+	struct MouseEventArgs : EventArgs
+	{
+		MouseEventArgs(std::string_view _eventName, const Vec2&& _position)
+			: EventArgs(_eventName)
+			, position(_position) {}
+		virtual ~MouseEventArgs() = default;
+		const Vec2 position;
+	};
+	struct MouseHoverArgs : MouseEventArgs
 	{
 		MouseHoverArgs(std::string_view _eventName, const input::MouseHoverEvent& _inputEvent)
-			: EventArgs(_eventName), position(_inputEvent.position, UnitType::Pixels) {}
-		const Vec2 position;
+			: MouseEventArgs(_eventName, Vec2(_inputEvent.position, UnitType::Pixels)) {}
 	};
-	struct MouseMotionArgs : EventArgs
+	struct MouseMotionArgs : MouseEventArgs
 	{
-		const Vec2 position;
+		MouseMotionArgs(std::string_view _eventName, const input::MouseMotionEvent& _inputEvent)
+			: MouseEventArgs(_eventName, Vec2(_inputEvent.position, UnitType::Pixels))
+			, previousPosition(_inputEvent.previousPosition, UnitType::Pixels) {}
 		const Vec2 previousPosition;
-		const Vec2 translation;
 	};
-	struct MouseWheelArgs : EventArgs
+	struct MouseWheelArgs : MouseEventArgs
 	{
-		const input::MouseWheelEvent& inputEvent;
+		MouseWheelArgs(std::string_view _eventName, const input::MouseWheelEvent& _inputEvent)
+			: MouseEventArgs(_eventName, getMousePosition())
+			, delta(_inputEvent.delta) {}
+		const glm::ivec2& delta;
 	};
-	struct MouseButtonArgs : EventArgs
+	struct MouseButtonArgs : MouseEventArgs
 	{
-		const input::MouseButtonEvent& inputEvent;
-	};
-	struct KeyboardArgs : EventArgs
-	{
-		const input::KeyboardEvent& inputEvent;
+		MouseButtonArgs(std::string_view _eventName, const input::MouseButtonEvent& _inputEvent)
+			: MouseEventArgs(_eventName, getMousePosition())
+			, button(_inputEvent.button)
+			, type(_inputEvent.type) {}
+		const input::MouseButton& button;
+		const input::MouseButtonEvent::Type& type;
 	};
 
 
@@ -104,24 +152,107 @@ namespace se::gui
 			return eventHandlers[_event].connect([_func](auto&) -> bool { return _func(); });
 		}
 
-		GUI_DEFINE_TUNNELING_EVENT(MouseHover, MouseHoverArgs)
+		GUI_DEFINE_TUNNELING_EVENT(MouseHover,	MouseHoverArgs)
 		GUI_DEFINE_TUNNELING_EVENT(MouseMotion, MouseMotionArgs)
-		GUI_DEFINE_TUNNELING_EVENT(MouseWheel, MouseWheelArgs)
+		GUI_DEFINE_TUNNELING_EVENT(MouseWheel,	MouseWheelArgs)
 		GUI_DEFINE_TUNNELING_EVENT(MouseButton, MouseButtonArgs)
-		GUI_DEFINE_TUNNELING_EVENT(Keyboard, KeyboardArgs)
+		GUI_DEFINE_MOUSEBUTTON_EVENT(Right, Press)
+		GUI_DEFINE_MOUSEBUTTON_EVENT(Left,	Press)
+		GUI_DEFINE_MOUSEBUTTON_EVENT(Right, Release)
+		GUI_DEFINE_MOUSEBUTTON_EVENT(Left,	Release)
+			// TODO: MouseEnter, MouseLeave
 
 	protected:
 
-		using EventRoutingFunction = std::function<bool(IEventRouter*, const EventArgs&)>;
-		virtual bool routeChildren(const EventRoutingFunction&, const EventArgs&)
+		enum class RouteResult
 		{
-			return false;
+			NotHandled,
+			Bubbling,
+			Handled,
+		};
+
+		using EventRoutingFn = std::function<RouteResult(IEventRouter*, const EventArgs&)>;
+		virtual RouteResult routeChildren(const EventRoutingFn&, const EventArgs&)
+		{
+			return RouteResult::NotHandled;
 		}
-		virtual bool routeParent(const EventRoutingFunction&, const EventArgs&)
+		virtual RouteResult routeParent(const EventRoutingFn&, const EventArgs&)
 		{
-			return false;
+			return RouteResult::NotHandled;
 		}
 
+		// Called for System and Tunneling events.
+		// return true means Element wants to handle the event (EventArgs::source should be set)
+		virtual bool handleRoutedEvent(const EventArgs&) = 0;
+
+		RouteResult routeSystemEvent(const EventArgs& _args)
+		{
+			// System events do both tunneling and bubbling
+			switch (routeChildren(&IEventRouter::routeSystemEvent, _args))
+			{
+				case RouteResult::NotHandled:
+					if (handleRoutedEvent(_args))
+						return raiseTunnelingEvent(_args);
+					return RouteResult::NotHandled;
+				case RouteResult::Bubbling:
+					if (!handleRoutedEvent(_args))
+						return RouteResult::Bubbling;
+					callEventHandlers(_args);
+					return RouteResult::Handled;
+				case RouteResult::Handled:
+					return RouteResult::Handled;
+			}
+			se_assert(false);
+			return RouteResult::NotHandled;
+		}
+		RouteResult raiseTunnelingEvent(const EventArgs& _args)
+		{
+			switch (tunnelRoutePreviewEvents(_args))
+			{
+				case RouteResult::Bubbling:
+					se_assert(false);
+					[[fallthrough]];
+				case RouteResult::NotHandled:
+					if (handleRoutedEvent(_args))
+					{
+						callEventHandlers(_args);
+						return RouteResult::Handled;
+					}
+					return RouteResult::Bubbling;
+				case RouteResult::Handled:
+					return RouteResult::Handled;
+			}
+			se_assert(false);
+			return RouteResult::NotHandled;
+		}
+		RouteResult raiseBubblingEvent(const EventArgs& _args)
+		{
+			if (callEventHandlers(_args))
+				return RouteResult::Handled;
+			return routeParent(&IEventRouter::raiseBubblingEvent, _args);
+		}
+		bool raiseDirectEvent(const EventArgs& _args)
+		{
+			return callEventHandlers(_args);
+		}
+
+	private:
+
+		RouteResult tunnelRoutePreviewEvents(const EventArgs& _args)
+		{
+			switch (routeParent(&IEventRouter::tunnelRoutePreviewEvents, _args))
+			{
+				case RouteResult::Bubbling:
+					se_assert(false);
+					[[fallthrough]];
+				case RouteResult::NotHandled:
+					return callPreviewEventHandlers(_args) ? RouteResult::Handled : RouteResult::NotHandled;
+				case RouteResult::Handled:
+					return RouteResult::Handled;
+			}
+			se_assert(false);
+			return RouteResult::NotHandled;
+		}
 		bool callEventHandlers(const EventArgs& _args)
 		{
 			if (eventHandlers.count(_args.eventName) == 0)
@@ -130,27 +261,6 @@ namespace se::gui
 				return result.value();
 			return false;
 		}
-		bool routeEventTunnel(const EventArgs& _args)
-		{
-			if (callPreviewEventHandlers(_args))
-				return true;
-			if (routeChildren(&IEventRouter::routeEventTunnel, _args))
-				return true;
-			if (callEventHandlers(_args))
-				return true;
-			return false;
-		}
-		bool routeEventBubble(const EventArgs& _args)
-		{
-			if (callEventHandlers(_args))
-				return true;
-			if (routeParent(&IEventRouter::routeEventBubble, _args))
-				return true;
-			return false;
-		}
-
-	private:
-
 		bool callPreviewEventHandlers(const EventArgs& _args)
 		{
 			if (previewEventHandlers.count(_args.eventName) == 0)

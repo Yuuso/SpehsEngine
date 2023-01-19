@@ -202,13 +202,19 @@ namespace se::gui
 		}
 
 	protected:
-		bool routeParent(const EventRoutingFunction& _func, const EventArgs& _args) override
+		RouteResult routeParent(const EventRoutingFn& _func, const EventArgs& _args) override
 		{
-			if (parent)
+			return parent ? _func(static_cast<IEventRouter*>(parent), _args) : RouteResult::NotHandled;
+		}
+		virtual bool handleRoutedEvent(const EventArgs& _args) override
+		{
+			try
 			{
-				if (_func(static_cast<IEventRouter*>(parent), _args))
-					return true;
+				dynamic_cast<const MouseEventArgs&>(_args);
+				// TODO: hit testing
+				return true;
 			}
+			catch (std::bad_cast){}
 			return false;
 		}
 

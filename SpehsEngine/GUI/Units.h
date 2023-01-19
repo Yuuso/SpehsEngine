@@ -106,6 +106,41 @@ namespace se
 		};
 
 
+		inline std::string toString(UnitType _type)
+		{
+			switch (_type)
+			{
+				case se::gui::UnitType::Undefined:		break;
+				case se::gui::UnitType::Auto:			return "auto";
+				case se::gui::UnitType::Pixels:			return "px";
+				case se::gui::UnitType::Self:			return "self";
+				case se::gui::UnitType::SelfWidth:		return "sw";
+				case se::gui::UnitType::SelfHeight:		return "sh";
+				case se::gui::UnitType::SelfMin:		return "smin";
+				case se::gui::UnitType::SelfMax:		return "smax";
+				case se::gui::UnitType::Parent:			return "parent";
+				case se::gui::UnitType::ParentWidth:	return "pw";
+				case se::gui::UnitType::ParentHeight:	return "ph";
+				case se::gui::UnitType::ParentMin:		return "pmin";
+				case se::gui::UnitType::ParentMax:		return "pmax";
+				case se::gui::UnitType::View:			return "view";
+				case se::gui::UnitType::ViewWidth:		return "vw";
+				case se::gui::UnitType::ViewHeight:		return "vh";
+				case se::gui::UnitType::ViewMin:		return "vmin";
+				case se::gui::UnitType::ViewMax:		return "vmax";
+			}
+			se_assert_m(false, "Undefined gui unit type");
+			return "";
+		}
+		inline std::string toString(Unit _unit)
+		{
+			return se::toString(_unit.value, 2) + toString(_unit.type);
+		}
+		inline std::string toString(const Vec2& _vec)
+		{
+			return "{" + toString(_vec.x) + ", " + toString(_vec.y) + "}";
+		}
+
 		namespace unit_literals
 		{
 			inline constexpr Unit operator "" _px(long double _value)							{ return Unit(static_cast<float>(_value), UnitType::Pixels); }

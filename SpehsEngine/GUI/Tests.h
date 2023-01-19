@@ -75,7 +75,8 @@ namespace se::gui
 
 			Element& element = *layout.add<Element>();
 
-			element.onMouseHover([]{ log::info("boo"); return false; });
+			element.onMouseMotion([]{ log::info("boo"); return false; });
+			element.onMouseLeftPress([](const MouseButtonArgs& args){ log::info("hoo " + toString(args.position)); return false; });
 
 			se_assert(element.getExample() == 0);
 			element.setExample(3);
