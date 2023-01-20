@@ -146,12 +146,16 @@ namespace se
 	std::string fromWideString(const std::wstring& wstring);
 
 	/*
-		if (postSpaceToLowerCase)
-			CamelCase -> Camel case
-		else
-			CamelCase -> Camel Case
+		Converts variable/class name into a format better suitable for logging or showing in GUI.
+		Names are expected to follow the camelCase convention, with a few exceptions explained below for all caps acronyms.
+		---
+		INPUT				START UPPER: true		START UPPER: false
+		TwoWords			Two words				two words
+		twoWords			Two words				two words
+		SecondACRONYM		Second ACRONYM			second ACRONYM
+		ACRONYMSecond		ACRONYM second			ACRONYM second
 	*/
-	std::string camelCaseToSpaced(const std::string string, const bool postSpaceToLowerCase);
+	std::string variableNameToDisplay(const std::string_view string, const bool startWithUpperCase);
 
 	// Returns string as float. Returns 0.0f if string is invalid
 	float getStringAsFloat(const std::string& string);
