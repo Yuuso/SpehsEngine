@@ -102,6 +102,12 @@ namespace se
 }
 
 
+template<typename T, typename Predicate>
+void eraseIf(std::vector<T>& _vec, const Predicate& pred)
+{
+	_vec.erase(std::remove_if(_vec.begin(), _vec.end(), pred), _vec.end());
+}
+
 template<typename T>
 T* tryFind(std::vector<T>& vector, const T& t)
 {
