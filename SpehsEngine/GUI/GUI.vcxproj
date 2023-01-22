@@ -140,13 +140,14 @@
     <ClInclude Include="GUIText.h" />
     <ClInclude Include="Internal\InternalTypes.h" />
     <ClInclude Include="Internal\StencilMaskManager.h" />
-    <ClInclude Include="Layout.h" />
+    <ClInclude Include="Canvas.h" />
+    <ClInclude Include="LogOutputAction.h" />
     <ClInclude Include="PrecompiledInclude.h" />
     <ClInclude Include="GUIView.h" />
     <ClInclude Include="GUIShape.h" />
     <ClInclude Include="PropertyHost.h" />
     <ClInclude Include="stdafx.h" />
-    <ClInclude Include="Tests.h" />
+    <ClInclude Include="Trigger.h" />
     <ClInclude Include="Types.h" />
     <ClInclude Include="Units.h" />
   </ItemGroup>

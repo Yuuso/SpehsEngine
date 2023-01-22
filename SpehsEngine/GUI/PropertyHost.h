@@ -1,7 +1,6 @@
 #pragma once
 
 #include "stdafx.h" //
-#include <any>
 
 
 namespace se::gui
@@ -21,24 +20,44 @@ private: \
 	class PropertyLink
 	{
 	public:
-		using Getter = std::function<std::any(const IPropertyHost*)>;
-		using Setter = std::function<void(IPropertyHost*, const std::any&)>;
+		using PropertyGetFn = std::function<std::any(const IPropertyHost*)>;
+		using PropertySetFn = std::function<void(IPropertyHost*, const std::any&)>;
+		using PropertyCompFn = std::function<bool(IPropertyHost*, const std::any&)>;
+
 		PropertyLink(PropertyMap& _props,
 					 const std::string& _name,
-					 const Getter _getter,
-					 const Setter _setter,
+					 const PropertyGetFn _getter,
+					 const std::any& _defaultValue)
+			: PropertyLink(_props, _name, _getter, nullptr, nullptr, nullptr, _defaultValue) {}
+		PropertyLink(PropertyMap& _props,
+					 const std::string& _name,
+					 const PropertyGetFn _getter,
+					 const PropertySetFn _setter,
+					 const std::any& _defaultValue)
+			: PropertyLink(_props, _name, _getter, _setter, nullptr, nullptr, _defaultValue) {}
+		PropertyLink(PropertyMap& _props,
+					 const std::string& _name,
+					 const PropertyGetFn _getter,
+					 const PropertySetFn _setter,
+					 const PropertyCompFn _comp,
+					 const PropertySetFn _trigger,
 					 const std::any& _defaultValue)
 			: name(_name)
 			, getProperty(_getter)
 			, setProperty(_setter)
+			, compProperty(_comp)
+			, setPropertyTrigger(_trigger)
 			, defaultValue(_defaultValue)
 		{
 			se_assert_m(_props.find(_name) == _props.end(), "Property '" + _name + "' already exists!");
 			_props[_name] = this;
 		}
+
 		const std::string name;
-		const Getter getProperty;
-		const Setter setProperty;
+		const PropertyGetFn getProperty;
+		const PropertySetFn setProperty;
+		const PropertyCompFn compProperty;
+		const PropertySetFn setPropertyTrigger;
 		const std::any defaultValue;
 	};
 
@@ -54,23 +73,44 @@ private: \
 			const PropertyMap& map = getProperties();
 			return map.find(_name) != map.end();
 		}
-		std::any getProperty(const std::string& _name) const
+		const PropertyLink* getPropertyLink(const std::string& _name)
 		{
 			const PropertyMap& map = getProperties();
 			auto it = map.find(_name);
 			if (it != map.end())
 			{
-				return it->second->getProperty(this);
+				return it->second;
+			}
+			return nullptr;
+		}
+		std::any getProperty(const std::string& _name)
+		{
+			if (const PropertyLink* link = getPropertyLink(_name))
+			{
+				return link->getProperty(this);
 			}
 			return {};
 		}
 		void setProperty(const std::string& _name, const std::any& _value)
 		{
-			PropertyMap& map = getProperties();
-			auto it = map.find(_name);
-			if (it != map.end())
+			if (const PropertyLink* link = getPropertyLink(_name))
 			{
-				it->second->setProperty(this, _value);
+				link->setProperty(this, _value);
+			}
+		}
+		bool compareProperty(const std::string& _name, const std::any& _value)
+		{
+			if (const PropertyLink* link = getPropertyLink(_name))
+			{
+				return link->compProperty(this, _value);
+			}
+			return false;
+		}
+		void setPropertyTriggerValue(const std::string& _name, const std::any& _value)
+		{
+			if (const PropertyLink* link = getPropertyLink(_name))
+			{
+				link->setPropertyTrigger(this, _value);
 			}
 		}
 

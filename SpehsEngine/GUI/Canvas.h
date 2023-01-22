@@ -8,13 +8,13 @@
 
 namespace se::gui
 {
-	class Layout : public IEventRouter
+	class Canvas : public IEventRouter
 	{
 	public:
 
-		SE_NO_COPY(Layout)
+		SE_NO_COPY(Canvas)
 
-		Layout(input::EventSignaler& _eventSignaler, int _inputPriority)
+		Canvas(input::EventSignaler& _eventSignaler, int _inputPriority)
 			: eventSignaler(_eventSignaler)
 		{
 			inputConnections.reserve(4);
@@ -23,35 +23,40 @@ namespace se::gui
 				inputConnections.emplace_back(),
 				[this](const input::MouseHoverEvent& _inputEvent)
 				{
-					return routeSystemEvent(MouseHoverArgs("MouseHover", _inputEvent)) == RouteResult::Handled;
+					auto args = MouseHoverArgs("MouseHover", _inputEvent);
+					return routeSystemEvent(args) == RouteResult::Handled;
 				}, _inputPriority);
 
 			_eventSignaler.connectToMouseMotionSignal(
 				inputConnections.emplace_back(),
 				[this](const input::MouseMotionEvent& _inputEvent)
 				{
-					return routeSystemEvent(MouseMotionArgs("MouseMotion", _inputEvent)) == RouteResult::Handled;
+					auto args = MouseMotionArgs("MouseMotion", _inputEvent);
+					return routeSystemEvent(args) == RouteResult::Handled;
 				}, _inputPriority);
 
 			_eventSignaler.connectToMouseWheelSignal(
 				inputConnections.emplace_back(),
 				[this](const input::MouseWheelEvent& _inputEvent)
 				{
-					return routeSystemEvent(MouseWheelArgs("MouseWheel", _inputEvent)) == RouteResult::Handled;
+					auto args = MouseWheelArgs("MouseWheel", _inputEvent);
+					return routeSystemEvent(args) == RouteResult::Handled;
 				}, _inputPriority);
 
 			_eventSignaler.connectToMouseButtonSignal(
 				inputConnections.emplace_back(),
 				[this](const input::MouseButtonEvent& _inputEvent)
 				{
-					return routeSystemEvent(MouseButtonArgs("MouseButton", _inputEvent)) == RouteResult::Handled;
+					auto args = MouseButtonArgs("MouseButton", _inputEvent);
+					return routeSystemEvent(args) == RouteResult::Handled;
 				}, _inputPriority);
 		}
 
 		void update()
 		{
-			// deinit
-			// init
+			/// Connect to view prerender...
+			// deinit removed elements
+			// init new elements
 			// update
 		}
 		void add(std::shared_ptr<Element>& _element)
@@ -62,14 +67,14 @@ namespace se::gui
 		template<typename T>
 		std::shared_ptr<T>& add()
 		{
-			static_assert(std::is_base_of<Element, T>::value, "Layout::add T must inherit Element");
+			static_assert(std::is_base_of<Element, T>::value, "Canvas::add T must inherit Element");
 			rootElements.push_back(std::make_shared<T>());
 			return rootElements.back();
 		}
 
 	private:
 
-		RouteResult routeChildren(const EventRoutingFn& _func, const EventArgs& _args) override
+		RouteResult routeChildren(const EventRoutingFn& _func, EventArgs& _args) override
 		{
 			RouteResult result = RouteResult::NotHandled;
 			for (auto&& element : rootElements)
@@ -80,7 +85,7 @@ namespace se::gui
 			}
 			return result;
 		}
-		bool handleRoutedEvent(const EventArgs&) override
+		bool handleRoutedEvent(EventArgs&) override
 		{
 			// Root element always handles all routed events
 			return true;

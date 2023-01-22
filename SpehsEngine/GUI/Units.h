@@ -45,12 +45,12 @@ namespace se
 			constexpr Unit(float _value, UnitType _type)
 				: value(_value), type(_type) {}
 
-			bool operator==(const Unit& _other) const				{ return _other.value == this->value && _other.type == this->type; }
-			bool operator!=(const Unit& _other) const				{ return _other.value != this->value || _other.type != this->type; }
-			bool operator>(const Unit& _other) const				{ se_assert(this->type == _other.type); return this->value > _other.value; }
-			bool operator>=(const Unit& _other) const				{ se_assert(this->type == _other.type); return this->value >= _other.value; }
-			bool operator<(const Unit& _other) const				{ se_assert(this->type == _other.type); return this->value < _other.value; }
-			bool operator<=(const Unit& _other) const				{ se_assert(this->type == _other.type); return this->value <= _other.value; }
+			[[nodiscard]] bool operator==(const Unit& _other) const	{ return _other.value == this->value && _other.type == this->type; }
+			[[nodiscard]] bool operator!=(const Unit& _other) const	{ return _other.value != this->value || _other.type != this->type; }
+			[[nodiscard]] bool operator> (const Unit& _other) const	{ se_assert(this->type == _other.type); return this->value >  _other.value; }
+			[[nodiscard]] bool operator>=(const Unit& _other) const	{ se_assert(this->type == _other.type); return this->value >= _other.value; }
+			[[nodiscard]] bool operator< (const Unit& _other) const	{ se_assert(this->type == _other.type); return this->value <  _other.value; }
+			[[nodiscard]] bool operator<=(const Unit& _other) const	{ se_assert(this->type == _other.type); return this->value <= _other.value; }
 
 			void operator+=(const Unit& _other)						{ se_assert(this->type == _other.type || _other.type == UnitType::Undefined); this->value += _other.value; }
 			void operator-=(const Unit& _other)						{ se_assert(this->type == _other.type || _other.type == UnitType::Undefined); this->value -= _other.value; }
@@ -60,14 +60,14 @@ namespace se
 			void operator-=(float _value)							{ this->value -= _value; }
 			void operator*=(float _value)							{ this->value *= _value; }
 			void operator/=(float _value)							{ this->value /= _value; }
-			Unit operator+(const Unit& _other) const				{ se_assert(this->type == _other.type || _other.type == UnitType::Undefined); return Unit(this->value + _other.value, this->type); }
-			Unit operator-(const Unit& _other) const				{ se_assert(this->type == _other.type || _other.type == UnitType::Undefined); return Unit(this->value - _other.value, this->type); }
-			Unit operator*(const Unit& _other) const				{ se_assert(this->type == _other.type || _other.type == UnitType::Undefined); return Unit(this->value * _other.value, this->type); }
-			Unit operator/(const Unit& _other) const				{ se_assert(this->type == _other.type || _other.type == UnitType::Undefined); return Unit(this->value / _other.value, this->type); }
-			Unit operator+(float _value) const						{ return Unit(this->value + _value, this->type); }
-			Unit operator-(float _value) const						{ return Unit(this->value - _value, this->type); }
-			Unit operator*(float _value) const						{ return Unit(this->value * _value, this->type); }
-			Unit operator/(float _value) const						{ return Unit(this->value / _value, this->type); }
+			[[nodiscard]] Unit operator+(const Unit& _other) const	{ se_assert(this->type == _other.type || _other.type == UnitType::Undefined); return Unit(this->value + _other.value, this->type); }
+			[[nodiscard]] Unit operator-(const Unit& _other) const	{ se_assert(this->type == _other.type || _other.type == UnitType::Undefined); return Unit(this->value - _other.value, this->type); }
+			[[nodiscard]] Unit operator*(const Unit& _other) const	{ se_assert(this->type == _other.type || _other.type == UnitType::Undefined); return Unit(this->value * _other.value, this->type); }
+			[[nodiscard]] Unit operator/(const Unit& _other) const	{ se_assert(this->type == _other.type || _other.type == UnitType::Undefined); return Unit(this->value / _other.value, this->type); }
+			[[nodiscard]] Unit operator+(float _value) const		{ return Unit(this->value + _value, this->type); }
+			[[nodiscard]] Unit operator-(float _value) const		{ return Unit(this->value - _value, this->type); }
+			[[nodiscard]] Unit operator*(float _value) const		{ return Unit(this->value * _value, this->type); }
+			[[nodiscard]] Unit operator/(float _value) const		{ return Unit(this->value / _value, this->type); }
 
 			UnitType type = UnitType::Undefined;
 			float value = 0.0f;
@@ -85,8 +85,8 @@ namespace se
 			constexpr Vec2(UnitType _type)
 				: x(0.0f, _type), y(0.0f, _type) {}
 
-			bool operator==(const Vec2& _other) const				{ return _other.x == this->x && _other.y == this->y; }
-			bool operator!=(const Vec2& _other) const				{ return _other.x != this->x || _other.y != this->y; }
+			[[nodiscard]] bool operator==(const Vec2& _other) const	{ return _other.x == this->x && _other.y == this->y; }
+			[[nodiscard]] bool operator!=(const Vec2& _other) const	{ return _other.x != this->x || _other.y != this->y; }
 
 			void operator+=(const Vec2& _other)						{ this->x += _other.x; this->y += _other.y; }
 			void operator-=(const Vec2& _other)						{ this->x -= _other.x; this->y -= _other.y; }
@@ -94,12 +94,12 @@ namespace se
 			void operator/=(const Vec2& _other)						{ this->x /= _other.x; this->y /= _other.y; }
 			void operator*=(float _value)							{ this->x *= _value; this->y *= _value; }
 			void operator/=(float _value)							{ this->x /= _value; this->y /= _value; }
-			Vec2 operator+(const Vec2& _other) const				{ return Vec2(this->x + _other.x, this->y + _other.y); }
-			Vec2 operator-(const Vec2& _other) const				{ return Vec2(this->x - _other.x, this->y - _other.y); }
-			Vec2 operator*(const Vec2& _other) const				{ return Vec2(this->x * _other.x, this->y * _other.y); }
-			Vec2 operator/(const Vec2& _other) const				{ return Vec2(this->x / _other.x, this->y / _other.y); }
-			Vec2 operator*(float _value) const						{ return Vec2(this->x * _value, this->y * _value); }
-			Vec2 operator/(float _value) const						{ return Vec2(this->x / _value, this->y / _value); }
+			[[nodiscard]] Vec2 operator+(const Vec2& _other) const	{ return Vec2(this->x + _other.x, this->y + _other.y); }
+			[[nodiscard]] Vec2 operator-(const Vec2& _other) const	{ return Vec2(this->x - _other.x, this->y - _other.y); }
+			[[nodiscard]] Vec2 operator*(const Vec2& _other) const	{ return Vec2(this->x * _other.x, this->y * _other.y); }
+			[[nodiscard]] Vec2 operator/(const Vec2& _other) const	{ return Vec2(this->x / _other.x, this->y / _other.y); }
+			[[nodiscard]] Vec2 operator*(float _value) const		{ return Vec2(this->x * _value, this->y * _value); }
+			[[nodiscard]] Vec2 operator/(float _value) const		{ return Vec2(this->x / _value, this->y / _value); }
 
 			Unit x;
 			Unit y;

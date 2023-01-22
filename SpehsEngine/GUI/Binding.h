@@ -1,7 +1,6 @@
 #pragma once
 
 #include "stdafx.h" //
-#include <any>
 
 
 namespace se::gui
@@ -23,17 +22,37 @@ namespace se::gui
 		PropertyChanged,
 	};
 
+	enum class RelativeSourceMode
+	{
+		Parent,
+		Self,
+	};
+
+	class RelativeSource
+	{
+	public:
+		RelativeSource() = default;
+		RelativeSource(RelativeSourceMode _mode)
+			: mode(_mode) {}
+		RelativeSourceMode mode = RelativeSourceMode::Parent;
+		unsigned int parentDepth = std::numeric_limits<unsigned int>::max();
+		//std::string sourceType;
+	};
+
 	class Binding
 	{
 	public:
-		Binding(std::string_view _propertyName, BindingMode _mode = BindingMode::Default, BindingSourceUpdate _sourceUpdate = BindingSourceUpdate::Default)
-			: sourcePropertyName(_propertyName), mode(_mode), sourceUpdate(_sourceUpdate) {}
+		Binding(std::string_view _propertyName, BindingMode _mode = BindingMode::Default)
+			: sourcePropertyName(_propertyName), mode(_mode) {}
+		Binding(std::string_view _propertyName, RelativeSource _relativeSource)
+			: sourcePropertyName(_propertyName), relativeSource(_relativeSource) {}
 
 		std::string sourcePropertyName;
 		std::string sourceElementName;
-		BindingMode mode;
-		BindingSourceUpdate sourceUpdate;
-		//IConverter converter;
+		BindingMode mode = BindingMode::Default;
+		BindingSourceUpdate sourceUpdate = BindingSourceUpdate::Default;
+		RelativeSource relativeSource;
+		//IConverter;
 	};
 
 	class BindingLink

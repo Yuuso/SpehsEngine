@@ -3,6 +3,7 @@
 #include "stdafx.h"
 #include "SpehsEngine/Input/Event.h"
 #include "SpehsEngine/Input/MouseUtilityFunctions.h"
+#include "SpehsEngine/GUI/Trigger.h"
 
 
 namespace se::gui
@@ -22,36 +23,6 @@ namespace se::gui
 	{ return onPreviewEvent(#EVENT, _func); } \
 	GUI_DEFINE_EVENT(EVENT, PARAM_TYPE)
 
-#define GUI_DEFINE_MOUSEBUTTON_EVENT(BUTTON, TYPE) \
-	::se::gui::Connection onMouse##BUTTON##TYPE(const std::function<bool(const ::se::gui::MouseButtonArgs&)>& _func) \
-	{ \
-		return onEvent<::se::gui::MouseButtonArgs>( \
-			"MouseButton", \
-			[_func](const ::se::gui::MouseButtonArgs& _args) -> bool \
-			{ \
-				if (_args.button == ::se::input::MouseButton::BUTTON && \
-					_args.type == ::se::input::MouseButtonEvent::Type::TYPE) \
-				{ \
-					return _func(_args); \
-				} \
-				return false; \
-			}); \
-	} \
-	::se::gui::Connection onMouse##BUTTON##TYPE(const std::function<bool()>& _func) \
-	{ \
-		return onEvent<::se::gui::MouseButtonArgs>( \
-			"MouseButton", \
-			[_func](const ::se::gui::MouseButtonArgs& _args) -> bool \
-			{ \
-				if (_args.button == ::se::input::MouseButton::BUTTON && \
-					_args.type == ::se::input::MouseButtonEvent::Type::TYPE) \
-				{ \
-					return _func(); \
-				} \
-				return false; \
-			}); \
-	}
-
 	// TODO: offset pixels to view
 
 	static Vec2 getMousePosition()
@@ -68,7 +39,7 @@ namespace se::gui
 			: eventName(_eventName) {}
 		virtual ~EventArgs() = default;
 		const std::string eventName;
-		Element* source;
+		Element* source = nullptr;
 	};
 	struct MouseEventArgs : EventArgs
 	{
@@ -151,16 +122,28 @@ namespace se::gui
 		{
 			return eventHandlers[_event].connect([_func](auto&) -> bool { return _func(); });
 		}
+		Connection addEventTrigger(const EventTrigger& _eventTrigger)
+		{
+			return onEvent<EventArgs>(
+				_eventTrigger.eventName,
+				[_eventTrigger](const EventArgs& _args) -> bool
+				{
+					for (auto&& action : _eventTrigger.actions)
+					{
+						action->execute(_args.source);
+					}
+					return true;
+				});
+		}
 
 		GUI_DEFINE_TUNNELING_EVENT(MouseHover,	MouseHoverArgs)
 		GUI_DEFINE_TUNNELING_EVENT(MouseMotion, MouseMotionArgs)
 		GUI_DEFINE_TUNNELING_EVENT(MouseWheel,	MouseWheelArgs)
 		GUI_DEFINE_TUNNELING_EVENT(MouseButton, MouseButtonArgs)
-		GUI_DEFINE_MOUSEBUTTON_EVENT(Right, Press)
-		GUI_DEFINE_MOUSEBUTTON_EVENT(Left,	Press)
-		GUI_DEFINE_MOUSEBUTTON_EVENT(Right, Release)
-		GUI_DEFINE_MOUSEBUTTON_EVENT(Left,	Release)
-			// TODO: MouseEnter, MouseLeave
+		GUI_DEFINE_EVENT(MouseRightPress,	MouseButtonArgs)
+		GUI_DEFINE_EVENT(MouseLeftPress,	MouseButtonArgs)
+		GUI_DEFINE_EVENT(MouseRightRelease, MouseButtonArgs)
+		GUI_DEFINE_EVENT(MouseLeftRelease,	MouseButtonArgs)
 
 	protected:
 
@@ -171,47 +154,54 @@ namespace se::gui
 			Handled,
 		};
 
-		using EventRoutingFn = std::function<RouteResult(IEventRouter*, const EventArgs&)>;
-		virtual RouteResult routeChildren(const EventRoutingFn&, const EventArgs&)
+		using EventRoutingFn = std::function<RouteResult(IEventRouter*, EventArgs&)>;
+		virtual RouteResult routeChildren(const EventRoutingFn&, EventArgs&)
 		{
 			return RouteResult::NotHandled;
 		}
-		virtual RouteResult routeParent(const EventRoutingFn&, const EventArgs&)
+		virtual RouteResult routeParent(const EventRoutingFn&, EventArgs&)
 		{
 			return RouteResult::NotHandled;
 		}
 
 		// Called for System and Tunneling events.
 		// return true means Element wants to handle the event (EventArgs::source should be set)
-		virtual bool handleRoutedEvent(const EventArgs&) = 0;
+		virtual bool handleRoutedEvent(EventArgs&) = 0;
 
-		RouteResult routeSystemEvent(const EventArgs& _args)
+		RouteResult routeSystemEvent(EventArgs& _args)
 		{
 			// System events do both tunneling and bubbling
 			switch (routeChildren(&IEventRouter::routeSystemEvent, _args))
 			{
 				case RouteResult::NotHandled:
 					if (handleRoutedEvent(_args))
+					{
 						return raiseTunnelingEvent(_args);
+					}
 					return RouteResult::NotHandled;
+
 				case RouteResult::Bubbling:
-					if (!handleRoutedEvent(_args))
-						return RouteResult::Bubbling;
-					callEventHandlers(_args);
-					return RouteResult::Handled;
+					if (handleRoutedEvent(_args))
+					{
+						callEventHandlers(_args);
+						return RouteResult::Handled;
+					}
+					return RouteResult::Bubbling;
+
 				case RouteResult::Handled:
 					return RouteResult::Handled;
 			}
 			se_assert(false);
 			return RouteResult::NotHandled;
 		}
-		RouteResult raiseTunnelingEvent(const EventArgs& _args)
+		RouteResult raiseTunnelingEvent(EventArgs& _args)
 		{
 			switch (tunnelRoutePreviewEvents(_args))
 			{
 				case RouteResult::Bubbling:
 					se_assert(false);
 					[[fallthrough]];
+
 				case RouteResult::NotHandled:
 					if (handleRoutedEvent(_args))
 					{
@@ -219,16 +209,20 @@ namespace se::gui
 						return RouteResult::Handled;
 					}
 					return RouteResult::Bubbling;
+
 				case RouteResult::Handled:
 					return RouteResult::Handled;
 			}
 			se_assert(false);
 			return RouteResult::NotHandled;
 		}
-		RouteResult raiseBubblingEvent(const EventArgs& _args)
+		RouteResult raiseBubblingEvent(EventArgs& _args)
 		{
 			if (callEventHandlers(_args))
+			{
 				return RouteResult::Handled;
+			}
+			// TODO: Parent's should get Element.Event
 			return routeParent(&IEventRouter::raiseBubblingEvent, _args);
 		}
 		bool raiseDirectEvent(const EventArgs& _args)
@@ -238,35 +232,69 @@ namespace se::gui
 
 	private:
 
-		RouteResult tunnelRoutePreviewEvents(const EventArgs& _args)
+		RouteResult tunnelRoutePreviewEvents(EventArgs& _args)
 		{
 			switch (routeParent(&IEventRouter::tunnelRoutePreviewEvents, _args))
 			{
 				case RouteResult::Bubbling:
 					se_assert(false);
 					[[fallthrough]];
+
 				case RouteResult::NotHandled:
 					return callPreviewEventHandlers(_args) ? RouteResult::Handled : RouteResult::NotHandled;
+
 				case RouteResult::Handled:
 					return RouteResult::Handled;
 			}
 			se_assert(false);
 			return RouteResult::NotHandled;
 		}
+		bool raiseAliasEvents(const EventArgs& _args)
+		{
+			if (_args.eventName == "MouseButton")
+			{
+				const MouseButtonArgs& mouseButtonArgs = static_cast<const MouseButtonArgs&>(_args);
+			#define RAISE_ALIAS_EVENT(BUTTON, TYPE) \
+				if (mouseButtonArgs.button == ::se::input::MouseButton::BUTTON && \
+					mouseButtonArgs.type == ::se::input::MouseButtonEvent::Type::TYPE) \
+				{ if (callAliasHandlers("Mouse"#BUTTON#TYPE, _args)) return true; }
+				RAISE_ALIAS_EVENT(Right, Press)
+				RAISE_ALIAS_EVENT(Left,	Press)
+				RAISE_ALIAS_EVENT(Right, Release)
+				RAISE_ALIAS_EVENT(Left,	Release)
+			}
+			return false;
+		}
+		bool callAliasHandlers(const std::string& _eventName, const EventArgs& _args)
+		{
+			if (eventHandlers.count(_eventName) == 0)
+			{
+				return false;
+			}
+			if (auto result = eventHandlers[_eventName](_args))
+			{
+				return result.value();
+			}
+			return false;
+		}
 		bool callEventHandlers(const EventArgs& _args)
 		{
-			if (eventHandlers.count(_args.eventName) == 0)
-				return false;
-			if (auto result = eventHandlers[_args.eventName](_args))
-				return result.value();
-			return false;
+			if (callAliasHandlers(_args.eventName, _args))
+			{
+				return true;
+			}
+			return raiseAliasEvents(_args);
 		}
 		bool callPreviewEventHandlers(const EventArgs& _args)
 		{
 			if (previewEventHandlers.count(_args.eventName) == 0)
+			{
 				return false;
+			}
 			if (auto result = previewEventHandlers[_args.eventName](_args))
+			{
 				return result.value();
+			}
 			return false;
 		}
 
