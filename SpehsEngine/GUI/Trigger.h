@@ -2,20 +2,16 @@
 
 #include "stdafx.h" //
 #include "SpehsEngine/GUI/Binding.h"
+#include "SpehsEngine/GUI/PropertySetter.h"
 
 
 namespace se::gui
 {
-	class TriggerBase
-	{
-	public:
-	};
-
-
-	struct EventArgs;
 	class Element;
+	class IPropertyHost;
 
-	class TriggerAction
+
+	class ITriggerAction
 	{
 	public:
 		virtual void execute(Element*) const = 0;
@@ -25,37 +21,30 @@ namespace se::gui
 	{
 	public:
 		EventTrigger(std::string_view _eventName,
-					 std::initializer_list<std::shared_ptr<const TriggerAction>> _actions)
+				std::initializer_list<std::shared_ptr<const ITriggerAction>> _actions)
 			: eventName(_eventName)
 			, actions(_actions) {}
-		const std::string eventName;
-		const std::vector<std::shared_ptr<const TriggerAction>> actions;
+		std::string eventName;
+		std::vector<std::shared_ptr<const ITriggerAction>> actions;
 	};
 
 
-	class Setter
+	class PropertyTrigger
 	{
 	public:
-		const std::string propertyName;
-		const std::any value;
-	};
-
-	class Trigger
-	{
-	public:
-		Trigger(std::string_view _propertyName, const std::any& _value,
-				std::initializer_list<Setter> _setters,
-				std::initializer_list<std::shared_ptr<const TriggerAction>> _enterActions = {},
-				std::initializer_list<std::shared_ptr<const TriggerAction>> _exitActions = {})
+		PropertyTrigger(std::string_view _propertyName, const std::any& _value,
+				std::initializer_list<PropertySetter> _setters,
+				std::initializer_list<std::shared_ptr<const ITriggerAction>> _enterActions = {},
+				std::initializer_list<std::shared_ptr<const ITriggerAction>> _exitActions = {})
 			: binding(_propertyName, RelativeSourceMode::Self)
 			, value(_value)
 			, setters(_setters)
 			, enterActions(_enterActions)
 			, exitActions(_exitActions) {}
-		Trigger(const Binding& _binding, const std::any& _value,
-				std::initializer_list<Setter> _setters,
-				std::initializer_list<std::shared_ptr<const TriggerAction>> _enterActions = {},
-				std::initializer_list<std::shared_ptr<const TriggerAction>> _exitActions = {})
+		PropertyTrigger(const Binding& _binding, const std::any& _value,
+				std::initializer_list<PropertySetter> _setters,
+				std::initializer_list<std::shared_ptr<const ITriggerAction>> _enterActions = {},
+				std::initializer_list<std::shared_ptr<const ITriggerAction>> _exitActions = {})
 			: binding(_binding)
 			, value(_value)
 			, setters(_setters)
@@ -64,17 +53,19 @@ namespace se::gui
 
 		const Binding binding;
 		const std::any value;
-		const std::vector<Setter> setters;
-		const std::vector<std::shared_ptr<const TriggerAction>> enterActions;
-		const std::vector<std::shared_ptr<const TriggerAction>> exitActions;
+		std::vector<PropertySetter> setters;
+		std::vector<std::shared_ptr<const ITriggerAction>> enterActions;
+		std::vector<std::shared_ptr<const ITriggerAction>> exitActions;
 	};
 
-	class TriggerLink
+	class PropertyTriggerLink
 	{
 	public:
-		TriggerLink(const Trigger& _trigger)
-			: trigger(_trigger) {}
-		const Trigger trigger;
+		PropertyTriggerLink(const PropertyTrigger& _trigger, PropertyValueType _type)
+			: trigger(_trigger), type(_type) {}
+		const PropertyTrigger trigger;
+		const PropertyValueType type;
+		IPropertyHost* source = nullptr;
 		ScopedConnection sourceChangedConnection;
 		bool active = false;
 	};

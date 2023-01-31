@@ -15,13 +15,25 @@ namespace se
 		CLASS& operator=(const CLASS& _other) = delete; \
 		CLASS(CLASS&& _other) = delete; \
 		CLASS& operator=(CLASS&& _other) = delete;
+		template<typename Type> using unique_ptr_vector = std::vector<std::unique_ptr<Type>>;
 		//
+
+		class CallOnDelete
+		{
+		public:
+			SE_NO_COPY(CallOnDelete)
+			CallOnDelete(const std::function<void()>& _fn) : func(_fn) {}
+			~CallOnDelete() { func(); }
+		private:
+			const std::function<void()> func;
+		};
 
 		typedef int16_t ZIndex;
 
-		template<typename S> using Signal = boost::signals2::signal<S>;
+		template<typename Signature> using Signal = boost::signals2::signal<Signature>;
 		using Connection = boost::signals2::connection;
 		using ScopedConnection = boost::signals2::scoped_connection;
+		using ConnectionBlock = boost::signals2::shared_connection_block;
 
 		enum Alignment
 		{

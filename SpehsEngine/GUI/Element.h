@@ -3,149 +3,69 @@
 #include "stdafx.h" //
 #include "SpehsEngine/GUI/Binding.h"
 #include "SpehsEngine/GUI/PropertyHost.h"
+#include "SpehsEngine/GUI/PropertyLink.h"
+#include "SpehsEngine/GUI/PropertyHostMeta.h"
 #include "SpehsEngine/GUI/EventRouter.h"
+#include "SpehsEngine/GUI/Resource.h"
 
 
 namespace se::gui
 {
 	class Element : public IPropertyHost, public IEventRouter
 	{
-		GUI_PROPERTY_CLASS(Element)
+		GUI_REFLECT(Element, IPropertyHost)
+		{
+			GUI_REGISTER_MEMBER_PROPERTY(Example)
+		}
 
 
-		// <Example>
+	#pragma region Example
 	private:
-		static std::any property_ExampleGet(const IPropertyHost* _instance)
-		{
-			return static_cast<const SelfClass*>(_instance)->getExample();
-		}
-		static void property_ExampleSet(IPropertyHost* _instance, const std::any& _value)
-		{
-			try
-			{
-				static_cast<SelfClass*>(_instance)->setExample(std::any_cast<const int&>(_value));
-			}
-			catch (const std::bad_any_cast&)
-			{
-				se::log::warning("Invalid 'Example' property value type!");
-			}
-		}
-		static bool property_ExampleCompare(IPropertyHost* _instance, const std::any& _value)
-		{
-			try
-			{
-				return static_cast<const SelfClass*>(_instance)->getExample() == std::any_cast<const int&>(_value);
-			}
-			catch (const std::bad_any_cast&)
-			{
-				se::log::warning("Invalid 'Example' property value type!");
-			}
-			return false;
-		}
-		static void property_ExampleSetTriggerValue(IPropertyHost* _instance, const std::any& _value)
-		{
-			static_cast<SelfClass*>(_instance)->setExampleTriggerValue(_value);
-		}
-		inline static const PropertyLink property_ExampleLink{property_Map, "Example",
-			property_ExampleGet, property_ExampleSet, property_ExampleCompare, property_ExampleSetTriggerValue, 0};
-		std::optional<int> property_Example;
-		const int* property_ExampleTriggerValue = nullptr;
-		bool property_ExampleSetterGuard = false;
+		inline static constexpr int property_ExampleDefault = 0;
+		MemberProperty<int> property_Example{ property_ExampleDefault };
 	public:
 		SelfClass& setExample(const int& _value)
 		{
-			if (property_ExampleSetterGuard)
+			if (property_Example.setValue(_value, PropertyValueType::Local))
 			{
-				// To prevent recursion
-				return *this;
+				propertyChanged("Example",
+					static_cast<const void*>(&property_Example.getValue()));
 			}
-			if (_value == property_Example)
-			{
-				return *this;
-			}
-
-			property_Example = _value;
-			if (!property_ExampleTriggerValue)
-			{
-				property_ExampleSetterGuard = true;
-				propertyChangedSignal("Example", _value);
-				property_ExampleSetterGuard = false;
-			}
-
 			return *this;
 		}
 		SelfClass& setExample(const Binding& _binding)
 		{
-			eraseIf(bindings,
-				[](const std::unique_ptr<BindingLink>& binding)
-				{ return &binding->propertyLink == &property_ExampleLink; });
-
-			bindings.push_back(
-				std::make_unique<BindingLink>(
-					bindingResolveDefaultValue(_binding, BindingMode::OneWay, BindingSourceUpdate::PropertyChanged),
-					property_ExampleLink));
-			resolveBinding(*bindings.back());
+			setBinding(
+				bindingResolveDefaultValue(
+					_binding,
+					BindingMode::OneWay,
+					BindingSourceUpdate::PropertyChanged),
+				*getPropertyLink("Example"),
+				PropertyValueType::Local);
+			return *this;
+		}
+		SelfClass& setExample(const Resource& /*_resource*/)
+		{
+			//unresolvedResources.push_back(
+			//	UnresolvedResource(_resource,
+			//	[this](const IResource* resource)
+			//	{
+			//	}));
+			// if initialized, resolve immediately
 			return *this;
 		}
 		const int& getExample() const
 		{
-			// Local triggers
-			if (property_ExampleTriggerValue)
-			{
-				return *property_ExampleTriggerValue;
-			}
-
-			// Local property value or Binding
-			if (property_Example.has_value())
-			{
-				return property_Example.value();
-			}
-
-			// Style
-			// TODO
-
-			// Fallback
-			return std::any_cast<const int&>(property_ExampleLink.defaultValue);
+			return property_Example.getValue();
 		}
-	private:
-		void setExampleTriggerValue(const std::any& _value)
-		{
-			se_assert(!property_ExampleSetterGuard);
-
-			if (!_value.has_value())
-			{
-				if (!property_ExampleTriggerValue)
-					return;
-				property_ExampleTriggerValue = nullptr;
-				property_ExampleSetterGuard = true;
-				propertyChangedSignal("Example", getExample());
-				property_ExampleSetterGuard = false;
-				return;
-			}
-
-			try
-			{
-				property_ExampleTriggerValue = &std::any_cast<const int&>(_value);
-			}
-			catch (const std::bad_any_cast&)
-			{
-				se::log::warning("Invalid 'Example' property value type!");
-			}
-			property_ExampleSetterGuard = true;
-			propertyChangedSignal("Example", _value);
-			property_ExampleSetterGuard = false;
-		}
-		// </Example>
-
-		// <ReadOnlyExample>
-		// </ReadOnlyExample>
+	#pragma endregion
 
 
 	public:
-		void addTrigger(const Trigger& _trigger)
+		void addPropertyTrigger(const PropertyTrigger& _trigger)
 		{
-			triggers.push_back(std::make_unique<TriggerLink>(_trigger));
-			connectTrigger(*triggers.back());
+			propertyTriggers.push_back(std::make_unique<PropertyTriggerLink>(_trigger, PropertyValueType::Local));
+			connectPropertyTrigger(*propertyTriggers.back());
 		}
 
 
@@ -168,51 +88,65 @@ namespace se::gui
 		{
 			for (auto&& bindingLink : bindings)
 			{
-				resolveBinding(*bindingLink);
+				resolveBinding(*bindingLink, PropertyValueType::Local);
 			}
-			for (auto&& triggerLink : triggers)
+			for (auto&& triggerLink : propertyTriggers)
 			{
-				connectTrigger(*triggerLink);
+				connectPropertyTrigger(*triggerLink);
 			}
 		}
 		virtual void onParentChanged()
 		{
 			for (auto&& bindingLink : bindings)
 			{
-				resolveBinding(*bindingLink);
+				resolveBinding(*bindingLink, PropertyValueType::Local);
 			}
-			for (auto&& triggerLink : triggers)
+			for (auto&& triggerLink : propertyTriggers)
 			{
-				connectTrigger(*triggerLink);
+				connectPropertyTrigger(*triggerLink);
 			}
+		}
+		void onInit()
+		{
+			// resouce
+			raiseDirectEvent(EventArgs("Init"));
 		}
 
 	protected:
+		void setBinding(const Binding& _binding, const IPropertyLink& _link, PropertyValueType _type)
+		{
+			eraseIf(bindings,
+				[&_link](const std::unique_ptr<BindingLink>& binding)
+				{ return &binding->propertyLink == &_link; });
+
+			bindings.push_back(std::make_unique<BindingLink>(_binding, _link));
+			resolveBinding(*bindings.back(), _type);
+		}
 		IPropertyHost* findBindingRelativeSource(const Binding& _binding, unsigned int& depth)
 		{
 			if (!_binding.sourceElementName.empty())
 			{
 				if (name == _binding.sourceElementName)
 				{
-					if (hasProperty(_binding.sourcePropertyName))
+					if (getPropertyLink(_binding.sourcePropertyName))
 					{
 						return this;
 					}
-					if (dataContext && dataContext->hasProperty(_binding.sourcePropertyName))
+					if (dataContext && dataContext->getPropertyLink(_binding.sourcePropertyName))
 					{
 						return dataContext.get();
 					}
-					se::log::warning("No property '" + _binding.sourcePropertyName + "' found in Element '" + name + "'!");
+					se::log::warning("No property '" + _binding.sourcePropertyName + "' found in " + getSelfClassName() + " '" + name + "'!");
 					return nullptr;
 				}
 			}
 			else if (dataContext)
 			{
-				if (dataContext->hasProperty(_binding.sourcePropertyName))
+				if (dataContext->getPropertyLink(_binding.sourcePropertyName))
 				{
 					return dataContext.get();
 				}
-				se::log::warning("No property '" + _binding.sourcePropertyName + "' found in DataContext!");
+				se::log::warning("No property '" + _binding.sourcePropertyName + "' found in " + getSelfClassName() + " '" + name + "' DataContext!");
 				return nullptr;
 			}
 
@@ -226,11 +160,11 @@ namespace se::gui
 		{
 			if (_binding.relativeSource.mode == RelativeSourceMode::Self)
 			{
-				if (hasProperty(_binding.sourcePropertyName))
+				if (getPropertyLink(_binding.sourcePropertyName))
 				{
 					return this;
 				}
-				se::log::warning("No property '" + _binding.sourcePropertyName + "' found in Element '" + name + "'!");
+				se::log::warning("No property '" + _binding.sourcePropertyName + "' found in " + getSelfClassName() + "!");
 				return nullptr;
 			}
 
@@ -238,7 +172,7 @@ namespace se::gui
 			unsigned int depth = _binding.relativeSource.parentDepth;
 			return findBindingRelativeSource(_binding, depth);
 		}
-		void resolveBinding(BindingLink& _bindingLink)
+		void resolveBinding(BindingLink& _bindingLink, PropertyValueType _type)
 		{
 			_bindingLink.sourceChangedConnection.disconnect();
 			_bindingLink.targetChangedConnection.disconnect();
@@ -248,39 +182,44 @@ namespace se::gui
 			{
 				if (bindingShouldUpdateTargetOnPropertyChanged(_bindingLink.binding))
 				{
-					_bindingLink.propertyLink.setProperty(this, _bindingLink.propertyLink.defaultValue);
+					_bindingLink.propertyLink.resetValue(*this, _type);
 				}
 				return;
 			}
 
-			se_assert(source->hasProperty(_bindingLink.binding.sourcePropertyName));
-			const std::any sourcePropertyValue = source->getProperty(_bindingLink.binding.sourcePropertyName);
-			se_assert(sourcePropertyValue.has_value());
+			const IPropertyLink* sourcePropLink = source->getPropertyLink(_bindingLink.binding.sourcePropertyName);
+			se_assert(sourcePropLink);
 
-			if (sourcePropertyValue.type() != _bindingLink.propertyLink.defaultValue.type())
+			if (sourcePropLink->getType() != _bindingLink.propertyLink.getType())
 			{
 				// TODO: Converter
 				se::log::warning("Invalid binding '" + _bindingLink.binding.sourcePropertyName + "' source type!");
 				if (bindingShouldUpdateTargetOnPropertyChanged(_bindingLink.binding))
 				{
-					_bindingLink.propertyLink.setProperty(this, _bindingLink.propertyLink.defaultValue);
+					_bindingLink.propertyLink.resetValue(*this, _type);
 				}
 				return;
 			}
 
 			if (bindingShouldUpdateTargetInitial(_bindingLink.binding))
 			{
-				_bindingLink.propertyLink.setProperty(this, sourcePropertyValue);
+				_bindingLink.propertyLink.setValue(*this, sourcePropLink->getValue(*source), _type);
+			}
+
+			if (bindingShouldUpdateSourceInitial(_bindingLink.binding))
+			{
+				sourcePropLink->setValue(*source, _bindingLink.propertyLink.getValue(*this), PropertyValueType::Local);
 			}
 
 			if (bindingShouldUpdateTargetOnPropertyChanged(_bindingLink.binding))
 			{
 				_bindingLink.sourceChangedConnection = source->onPropertyChanged(
-					[this, &_bindingLink](const std::string& _name, const std::any& _value)
+					[this, &_bindingLink, _type](const std::string& _name, const void* _value)
 					{
 						if (_name == _bindingLink.binding.sourcePropertyName)
 						{
-							_bindingLink.propertyLink.setProperty(this, _value);
+							ConnectionBlock recursionGuard{ _bindingLink.targetChangedConnection };
+							_bindingLink.propertyLink.setValue(*this, _value, _type);
 						}
 					});
 			}
@@ -288,39 +227,49 @@ namespace se::gui
 			if (bindingShouldUpdateSourceOnPropertyChanged(_bindingLink.binding))
 			{
 				_bindingLink.targetChangedConnection = onPropertyChanged(
-					[source, &_bindingLink](const std::string& _name, const std::any& _value)
+					[source, sourcePropLink, &_bindingLink, _type](const std::string& _name, const void* _value)
 					{
-						if (_name == _bindingLink.propertyLink.name)
+						if (_name == _bindingLink.propertyLink.getName())
 						{
-							source->setProperty(_bindingLink.binding.sourcePropertyName, _value);
+							ConnectionBlock recursionGuard{ _bindingLink.sourceChangedConnection };
+							sourcePropLink->setValue(*source, _value, PropertyValueType::Local);
 						}
 					});
 			}
 		}
-		void connectTrigger(TriggerLink& _triggerLink)
+		void connectPropertyTrigger(PropertyTriggerLink& _triggerLink)
 		{
 			_triggerLink.sourceChangedConnection.disconnect();
-			IPropertyHost* source = findBindingSource(_triggerLink.trigger.binding);
-			if (!source)
+			_triggerLink.source = findBindingSource(_triggerLink.trigger.binding);
+			if (!_triggerLink.source)
 			{
 				return;
 			}
 
-			updateTriggerTargers(_triggerLink);
+			const IPropertyLink* sourceLink = _triggerLink.source->getPropertyLink(_triggerLink.trigger.binding.sourcePropertyName);
+			if (sourceLink->getType() != _triggerLink.trigger.value.type())
+			{
+				_triggerLink.source = nullptr;
+				log::warning("Invalid PropertyTrigger value type! (" +
+					_triggerLink.trigger.binding.sourcePropertyName + " != " + _triggerLink.trigger.value.type().name() + ")");
+				return;
+			}
 
-			_triggerLink.sourceChangedConnection = source->onPropertyChanged(
-				[this, &_triggerLink](const std::string& _property, const std::any&)
+			updatePropertyTriggerTargers(_triggerLink);
+
+			_triggerLink.sourceChangedConnection = _triggerLink.source->onPropertyChanged(
+				[this, &_triggerLink](const std::string& _name, const void*)
 				{
-					if (_property == _triggerLink.trigger.binding.sourcePropertyName)
+					if (_name == _triggerLink.trigger.binding.sourcePropertyName)
 					{
-						updateTriggerTargers(_triggerLink);
+						updatePropertyTriggerTargers(_triggerLink);
 					}
-				}
-			);
+				});
 		}
-		void updateTriggerTargers(TriggerLink& _triggerLink)
+		void updatePropertyTriggerTargers(PropertyTriggerLink& _triggerLink)
 		{
-			const bool triggerActive = compareProperty(_triggerLink.trigger.binding.sourcePropertyName, _triggerLink.trigger.value);
+			const IPropertyLink* sourceLink = _triggerLink.source->getPropertyLink(_triggerLink.trigger.binding.sourcePropertyName);
+			const bool triggerActive = sourceLink->compareValue(*_triggerLink.source, _triggerLink.trigger.value);
 			if (triggerActive == _triggerLink.active)
 			{
 				return;
@@ -329,7 +278,13 @@ namespace se::gui
 
 			for (auto&& setter : _triggerLink.trigger.setters)
 			{
-				setPropertyTriggerValue(setter.propertyName, triggerActive ? setter.value : std::any{});
+				const IPropertyLink* targetLink = getPropertyLink(setter.propertyName);
+				if (!targetLink)
+				{
+					se::log::warning("No property '" + setter.propertyName + "' found in " + getSelfClassName() + "!");
+					continue;
+				}
+				targetLink->setTriggerValue(*this, triggerActive ? setter.value : std::any{}, _triggerLink.type);
 			}
 
 			auto& actions = triggerActive
@@ -339,6 +294,11 @@ namespace se::gui
 			{
 				action->execute(this);
 			}
+		}
+
+		void applyStyle(const Style& /*_style*/)
+		{
+			// todo
 		}
 
 	public:
@@ -370,8 +330,10 @@ namespace se::gui
 	protected:
 		std::string name = "Test Element";
 		Element* parent = nullptr;
+		std::vector<std::shared_ptr<const IResource>> resources;
+		std::vector<UnresolvedResource> unresolvedResources;
 		std::shared_ptr<IPropertyHost> dataContext;
-		std::vector<std::unique_ptr<BindingLink>> bindings;
-		std::vector<std::unique_ptr<TriggerLink>> triggers;
+		unique_ptr_vector<BindingLink> bindings;
+		unique_ptr_vector<PropertyTriggerLink> propertyTriggers;
 	};
 }

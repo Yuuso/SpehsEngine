@@ -5,7 +5,7 @@
 
 namespace se::gui
 {
-	class LogOutputAction : public TriggerAction
+	class LogOutputAction : public ITriggerAction
 	{
 	public:
 		LogOutputAction() = delete;
@@ -22,27 +22,27 @@ namespace se::gui
 	private:
 		const std::string message;
 	};
-	class SetPropertyAction : public TriggerAction
-	{
-	public:
-		SetPropertyAction() = delete;
-		SetPropertyAction(std::string_view _propertyName, const std::any& _value)
-			: propertyName(_propertyName), value(_value) {}
-		void execute(Element* _source) const override
-		{
-			if (_source)
-			{
-				_source->setProperty(propertyName, value);
-			}
-		}
-	private:
-		const std::string propertyName;
-		const std::any value;
-	};
-	class BeginStoryboardAction : public TriggerAction
+	//class SetPropertyAction : public ITriggerAction
+	//{
+	//public:
+	//	SetPropertyAction() = delete;
+	//	SetPropertyAction(std::string_view _propertyName, const std::any& _value)
+	//		: propertyName(_propertyName), value(_value) {}
+	//	void execute(Element* _source) const override
+	//	{
+	//		if (_source)
+	//		{
+	//			_source->setProperty(propertyName, value);
+	//		}
+	//	}
+	//private:
+	//	const std::string propertyName;
+	//	const std::any value;
+	//};
+	class BeginStoryboardAction : public ITriggerAction
 	{};
-	class InvokeCommandAction : public TriggerAction
+	class InvokeCommandAction : public ITriggerAction
 	{};
-	class RemoveElementAction : public TriggerAction
+	class RemoveElementAction : public ITriggerAction
 	{};
 }

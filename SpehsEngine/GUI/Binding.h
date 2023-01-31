@@ -5,7 +5,7 @@
 
 namespace se::gui
 {
-	class PropertyLink;
+	class IPropertyLink;
 
 	enum class BindingMode
 	{
@@ -58,15 +58,20 @@ namespace se::gui
 	class BindingLink
 	{
 	public:
-		BindingLink(const Binding& _binding, const PropertyLink& _link)
+		BindingLink(const Binding& _binding, const IPropertyLink& _link)
 			: binding(_binding), propertyLink(_link) {}
 
 		const Binding binding;
-		const PropertyLink& propertyLink;
+		const IPropertyLink& propertyLink;
 		ScopedConnection sourceChangedConnection;
 		ScopedConnection targetChangedConnection;
 	};
 
+	static inline bool bindingShouldUpdateSourceInitial(const Binding& _binding)
+	{
+		return _binding.mode == BindingMode::TwoWay ||
+			_binding.mode == BindingMode::OneWayToSource;
+	}
 	static inline bool bindingShouldUpdateSourceOnPropertyChanged(const Binding& _binding)
 	{
 		if (_binding.sourceUpdate == BindingSourceUpdate::PropertyChanged)
@@ -82,7 +87,8 @@ namespace se::gui
 	}
 	static inline bool bindingShouldUpdateTargetOnPropertyChanged(const Binding& _binding)
 	{
-		return _binding.mode == BindingMode::OneWay || _binding.mode == BindingMode::TwoWay;
+		return _binding.mode == BindingMode::OneWay ||
+			_binding.mode == BindingMode::TwoWay;
 	}
 	static inline Binding bindingResolveDefaultValue(
 		const Binding& _binding, BindingMode mode, BindingSourceUpdate sourceUpdate)

@@ -51,27 +51,27 @@ namespace se::gui
 	};
 	struct MouseHoverArgs : MouseEventArgs
 	{
-		MouseHoverArgs(std::string_view _eventName, const input::MouseHoverEvent& _inputEvent)
-			: MouseEventArgs(_eventName, Vec2(_inputEvent.position, UnitType::Pixels)) {}
+		MouseHoverArgs(const input::MouseHoverEvent& _inputEvent)
+			: MouseEventArgs("MouseHover", Vec2(_inputEvent.position, UnitType::Pixels)) {}
 	};
 	struct MouseMotionArgs : MouseEventArgs
 	{
-		MouseMotionArgs(std::string_view _eventName, const input::MouseMotionEvent& _inputEvent)
-			: MouseEventArgs(_eventName, Vec2(_inputEvent.position, UnitType::Pixels))
+		MouseMotionArgs(const input::MouseMotionEvent& _inputEvent)
+			: MouseEventArgs("MouseMotion", Vec2(_inputEvent.position, UnitType::Pixels))
 			, previousPosition(_inputEvent.previousPosition, UnitType::Pixels) {}
 		const Vec2 previousPosition;
 	};
 	struct MouseWheelArgs : MouseEventArgs
 	{
-		MouseWheelArgs(std::string_view _eventName, const input::MouseWheelEvent& _inputEvent)
-			: MouseEventArgs(_eventName, getMousePosition())
+		MouseWheelArgs(const input::MouseWheelEvent& _inputEvent)
+			: MouseEventArgs("MouseWheel", getMousePosition())
 			, delta(_inputEvent.delta) {}
 		const glm::ivec2& delta;
 	};
 	struct MouseButtonArgs : MouseEventArgs
 	{
-		MouseButtonArgs(std::string_view _eventName, const input::MouseButtonEvent& _inputEvent)
-			: MouseEventArgs(_eventName, getMousePosition())
+		MouseButtonArgs(const input::MouseButtonEvent& _inputEvent)
+			: MouseEventArgs("MouseButton", getMousePosition())
 			, button(_inputEvent.button)
 			, type(_inputEvent.type) {}
 		const input::MouseButton& button;
@@ -83,15 +83,16 @@ namespace se::gui
 	{
 	public:
 
-		template<typename T>
-		Connection onPreviewEvent(const std::string& _event, const std::function<bool(const T&)>& _func)
+		template<typename EventArgsType>
+		Connection onPreviewEvent(const std::string& _event, const std::function<bool(const EventArgsType&)>& _func)
 		{
+			static_assert(std::is_base_of<EventArgs, EventArgsType>::value, "onPreviewEvent EventArgsType must inherit EventArgs");
 			return previewEventHandlers[_event].connect(
 				[_func](const EventArgs& _args) -> bool
 				{
 					try
 					{
-						return _func(dynamic_cast<const T&>(_args));
+						return _func(dynamic_cast<const EventArgsType&>(_args));
 					}
 					catch (std::bad_cast){}
 					log::error("Invalid event args type!");
@@ -103,15 +104,16 @@ namespace se::gui
 			return previewEventHandlers[_event].connect([_func](auto&) -> bool { return _func(); });
 		}
 
-		template<typename T>
-		Connection onEvent(const std::string& _event, const std::function<bool(const T&)>& _func)
+		template<typename EventArgsType>
+		Connection onEvent(const std::string& _event, const std::function<bool(const EventArgsType&)>& _func)
 		{
+			static_assert(std::is_base_of<EventArgs, EventArgsType>::value, "onEvent EventArgsType must inherit EventArgs");
 			return eventHandlers[_event].connect(
 				[_func](const EventArgs& _args) -> bool
 				{
 					try
 					{
-						return _func(dynamic_cast<const T&>(_args));
+						return _func(dynamic_cast<const EventArgsType&>(_args));
 					}
 					catch (std::bad_cast){}
 					log::error("Invalid event args type!");
@@ -151,6 +153,7 @@ namespace se::gui
 		{
 			NotHandled,
 			Bubbling,
+			// TODO: Handled doesn't always mean consumed!
 			Handled,
 		};
 

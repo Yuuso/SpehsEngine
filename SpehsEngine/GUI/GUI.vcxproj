@@ -129,6 +129,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Binding.h" />
+    <ClInclude Include="DataProperty.h" />
     <ClInclude Include="Element.h" />
     <ClInclude Include="EventRouter.h" />
     <ClInclude Include="GUIElement.h" />
@@ -142,10 +143,17 @@
     <ClInclude Include="Internal\StencilMaskManager.h" />
     <ClInclude Include="Canvas.h" />
     <ClInclude Include="LogOutputAction.h" />
+    <ClInclude Include="MemberProperty.h" />
     <ClInclude Include="PrecompiledInclude.h" />
     <ClInclude Include="GUIView.h" />
     <ClInclude Include="GUIShape.h" />
     <ClInclude Include="PropertyHost.h" />
+    <ClInclude Include="PropertyHostMeta.h" />
+    <ClInclude Include="PropertyLink.h" />
+    <ClInclude Include="PropertySetter.h" />
+    <ClInclude Include="Mirror.h" />
+    <ClInclude Include="PropertyValueType.h" />
+    <ClInclude Include="Resource.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="Trigger.h" />
     <ClInclude Include="Types.h" />
