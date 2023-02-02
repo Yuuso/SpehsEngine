@@ -122,7 +122,7 @@ namespace se
 		{
 			if (checkBit(overriddenModelAttributes, PrimitiveAttributeFlag::Material))
 				return Primitive::getMaterial();
-			return model.getMaterial();
+			return model.getMaterial(materialIndex);
 		}
 		std::shared_ptr<const VertexBuffer> Mesh::getInstances() const
 		{

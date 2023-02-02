@@ -178,32 +178,24 @@ namespace se
 				return;
 			}
 
-			// Start new animation
+			const Animation* anim = nullptr;
 			if (animations)
 			{
-				if (Animation* anim = getAnimation(_name))
+				anim = getAnimation(_name);
+				if (!anim)
 				{
-					activeAnimations.push_back(std::make_unique<ActiveAnimation>(defaultLooping));
-					ActiveAnimation& activeAnimation = *activeAnimations.back();
-					activeAnimation.name = _name;
-					activeAnimation.animation = anim;
-					activeAnimation.start();
-					activeAnimation.fadeIn(_fade);
+					log::warning("Animation " + _name + " not found! Cannot start animation.");
 					return;
 				}
 			}
-			else
-			{
-				// Animations not loaded yet
-				activeAnimations.push_back(std::make_unique<ActiveAnimation>(defaultLooping));
-				ActiveAnimation& activeAnimation = *activeAnimations.back();
-				activeAnimation.name = _name;
-				activeAnimation.animation = nullptr;
-				activeAnimation.start();
-				activeAnimation.fadeIn(_fade);
-				return;
-			}
-			log::warning("Animation " + _name + " not found! Cannot start animation.");
+
+			// Start new animation
+			activeAnimations.push_back(std::make_unique<ActiveAnimation>(defaultLooping));
+			ActiveAnimation& activeAnimation = *activeAnimations.back();
+			activeAnimation.name = _name;
+			activeAnimation.animation = anim;
+			activeAnimation.start();
+			activeAnimation.fadeIn(_fade);
 		}
 		void Animator::pause(std::string_view _name)
 		{
