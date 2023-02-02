@@ -29,7 +29,6 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)HeaderICMP.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)IOService.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NetIdentity.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)PacketManager.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Signaling\SignalingImpl.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Signaling\SignalingPackets.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Signaling\SignalingServer.cpp" />
@@ -66,6 +65,7 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)IOService.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)IOServiceUtilityFunctions.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NetIdentity.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Packetman.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)PacketManager.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Signaling\SignalingImpl.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Signaling\SignalingPackets.h" />

@@ -14,7 +14,6 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)GameFileServer.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)HeaderICMP.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)IOService.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)PacketManager.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)SocketUDP2.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)MultiConnectionAcceptorTCP.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NetLib.cpp" />
@@ -81,6 +80,7 @@
       <Filter>Internal</Filter>
     </ClInclude>
     <ClInclude Include="$(MSBuildThisFileDirectory)ConnectionSimulationSettings.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Packetman.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Signaling">
