@@ -28,6 +28,8 @@ namespace se
 			windows.push_back(std::make_unique<WindowInternal>(_window, true));
 			defaultWindow = windows.back().get();
 
+			const bgfx::RendererType::Enum rendererType = getRendererType(_rendererBackend);
+
 			{
 				callbackHandler = new RendererCallbackHandler;
 
@@ -43,7 +45,7 @@ namespace se
 				init.platformData.backBuffer = nullptr;
 				init.platformData.backBufferDS = nullptr;
 
-				init.type = getRendererType(_rendererBackend);
+				init.type = rendererType;
 				init.resolution.width = (uint32_t)_window.getWidth();
 				init.resolution.height = (uint32_t)_window.getHeight();
 				init.resolution.reset = getResetParameters(rendererFlags);
@@ -55,19 +57,59 @@ namespace se
 				bgfx::setDebug(BGFX_DEBUG_TEXT /*| BGFX_DEBUG_STATS*/);
 			}
 
-			{
-				//const bgfx::Caps* caps = bgfx::getCaps();
-				// TODO
-			}
+			log::info("Graphics Renderer initialized:");
 
-			log::info("Graphics Renderer initialized, " + toString(getRendererBackend()));
+			// Renderer capabilities
+			{
+				const bgfx::Caps* caps = bgfx::getCaps();
+				se_assert(caps);
+				se_assert(caps->rendererType == rendererType);
+
+				log::info("  Renderer type: " + toString(getRendererBackend()));
+
+				// Check support for features we might use
+				{
+					#define CAPS_CHECK(_c, _warn) \
+					if (!checkBit(caps->supported, _c)) \
+						log::info(std::string("  Renderer: ") + _warn, log::YELLOW);
+
+					CAPS_CHECK(BGFX_CAPS_ALPHA_TO_COVERAGE,			"Alpha to coverage not supported!")
+					CAPS_CHECK(BGFX_CAPS_BLEND_INDEPENDENT,			"Blend independent not supported!")
+					CAPS_CHECK(BGFX_CAPS_COMPUTE,					"Compute shaders not supported!")
+					CAPS_CHECK(BGFX_CAPS_DRAW_INDIRECT,				"Draw indirect not supported!")
+					CAPS_CHECK(BGFX_CAPS_INSTANCING,				"Instancing not supported!")
+					CAPS_CHECK(BGFX_CAPS_HDR10,						"HDR10 not supported!")
+					CAPS_CHECK(BGFX_CAPS_OCCLUSION_QUERY,			"Occlusion query not supported!")
+					CAPS_CHECK(BGFX_CAPS_RENDERER_MULTITHREADED,	"Not rendering multithreaded!")
+					CAPS_CHECK(BGFX_CAPS_SWAP_CHAIN,				"Multiple windows not supported!")
+					CAPS_CHECK(BGFX_CAPS_TEXTURE_BLIT,				"Texture blit not supported!")
+					CAPS_CHECK(BGFX_CAPS_TRANSPARENT_BACKBUFFER,	"Transparent backbuffer not supported!")
+					CAPS_CHECK(BGFX_CAPS_VERTEX_ATTRIB_HALF,		"Half-float vertex attribute not supported!")
+					CAPS_CHECK(BGFX_CAPS_VERTEX_ATTRIB_UINT10,		"10_10_10_2 vertex attribute not supported!")
+					CAPS_CHECK(BGFX_CAPS_VERTEX_ID,					"Auto instancing not supported!")
+				}
+
+				// GPU vendor
+				{
+					switch (caps->vendorId)
+					{
+						case BGFX_PCI_ID_NONE:					log::info("  Renderer PCI ID: Unknown"); break;
+						case BGFX_PCI_ID_SOFTWARE_RASTERIZER:	log::info("  Renderer PCI ID: Software Rasterizer"); break;
+						case BGFX_PCI_ID_AMD:					log::info("  Renderer PCI ID: AMD adapter"); break;
+						case BGFX_PCI_ID_APPLE:					log::info("  Renderer PCI ID: Apple adapter"); break;
+						case BGFX_PCI_ID_INTEL:					log::info("  Renderer PCI ID: Intel adapter"); break;
+						case BGFX_PCI_ID_NVIDIA:				log::info("  Renderer PCI ID: Nvidia adapter"); break;
+						case BGFX_PCI_ID_MICROSOFT:				log::info("  Renderer PCI ID: Microsoft adapter"); break;
+						case BGFX_PCI_ID_ARM:					log::info("  Renderer PCI ID: ARM adapter"); break;
+					}
+				}
+			}
 
 			defaultUniforms = std::make_unique<DefaultUniforms>();
 		}
 		Renderer::Renderer(Window& _window)
 			: Renderer(_window, 0)
-		{
-		}
+		{}
 		Renderer::~Renderer()
 		{
 			se_assert(initialized);

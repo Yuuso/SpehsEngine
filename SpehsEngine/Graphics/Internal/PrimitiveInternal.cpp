@@ -132,8 +132,9 @@ namespace se
 			}
 
 			std::shared_ptr<VertexBuffer> instances = primitive->getInstances();
-			const bool isInstanced = instances != nullptr;
-			if (isInstanced && instances->size() == 0)
+			const uint32_t autoInstanceCount = primitive->getAutoInstanceCount();
+			const bool isInstanced = instances != nullptr || autoInstanceCount > 0u;
+			if (instances && instances->size() == 0)
 			{
 				// Instance buffer empty, no need to render
 				return;
@@ -180,8 +181,19 @@ namespace se
 
 			if (isInstanced)
 			{
-				bgfx::VertexBufferHandle dvbh = { instances->bufferObject };
-				bgfx::setInstanceDataBuffer(dvbh, 0, static_cast<uint32_t>(instances->size()));
+				if (instances)
+				{
+					bgfx::VertexBufferHandle dvbh = { instances->bufferObject };
+					bgfx::setInstanceDataBuffer(dvbh, 0, static_cast<uint32_t>(instances->size()));
+				}
+				else if (autoInstanceCount > 0)
+				{
+					bgfx::setInstanceCount(autoInstanceCount);
+				}
+				else
+				{
+					se_assert(false);
+				}
 			}
 
 			const Scissor& scissor = primitive->getScissor();

@@ -11,8 +11,7 @@ namespace se
 	namespace graphics
 	{
 		Camera::Camera()
-		{
-		}
+		{}
 
 		Projection Camera::getProjection() const
 		{
@@ -79,8 +78,8 @@ namespace se
 		}
 		void Camera::setUp(const glm::vec3& _up)
 		{
-			se_assert(glm::normalize(_up) != getDirection());
 			up = glm::normalize(_up);
+			se_assert(up != getDirection());
 		}
 		void Camera::setZoom(const float _zoom)
 		{
@@ -104,7 +103,7 @@ namespace se
 
 		glm::mat4 Camera::getViewMatrix()
 		{
-			return glm::lookAt(getPosition(), getTarget(), getUp());
+			return glm::lookAtRH(getPosition(), getTarget(), getUp());
 		}
 		glm::mat4 Camera::getProjectionMatrix(const float _viewWidth, const float _viewHeight)
 		{
@@ -112,16 +111,22 @@ namespace se
 			{
 				case Projection::Perspective:
 				{
-					return glm::perspective(glm::radians(getFov()),
-											_viewWidth / _viewHeight,
-											getNear(), getFar());
+					return glm::perspectiveRH_ZO(
+						glm::radians(getFov()),
+						_viewWidth / _viewHeight,
+						getNear(),
+						getFar());
 					break;
 				}
 				case Projection::Orthographic:
 				{
-					return glm::orthoRH_ZO(-(_viewWidth * 0.5f) * getZoom(), (_viewWidth * 0.5f) * getZoom(),
-										   -(_viewHeight * 0.5f) * getZoom(), (_viewHeight * 0.5f) * getZoom(),
-										   getNear(), getFar());
+					return glm::orthoRH_ZO(
+						-(_viewWidth * 0.5f) * getZoom(),
+						(_viewWidth * 0.5f) * getZoom(),
+						-(_viewHeight * 0.5f) * getZoom(),
+						(_viewHeight * 0.5f) * getZoom(),
+						getNear(),
+						getFar());
 					break;
 				}
 			}
