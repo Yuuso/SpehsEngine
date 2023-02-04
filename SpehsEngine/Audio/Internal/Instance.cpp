@@ -87,6 +87,7 @@ namespace se
 		}
 		bool Instance::isHandleValid() const
 		{
+			if (!globalSoloud) return false;
 			return handle != invalidAudioHandle && globalSoloud->isValidVoiceHandle(handle);
 		}
 	}
