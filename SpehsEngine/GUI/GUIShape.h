@@ -44,9 +44,10 @@ namespace se
 
 		private:
 
-			void									initShape(graphics::ShapeType _shapeType);
+			void									initShape(UpdateContext& _context, graphics::ShapeType _shapeType);
 
 			graphics::Shape shape;
+			std::optional<graphics::ShapeType> initShapeType;
 		};
 	}
 }

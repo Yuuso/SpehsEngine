@@ -4,6 +4,7 @@
 #include "SpehsEngine/Graphics/TextureManager.h"
 #include "SpehsEngine/Graphics/FontManager.h"
 #include "SpehsEngine/Graphics/DefaultMaterials.h"
+#include "SpehsEngine/Graphics/ShapeGenerator.h"
 
 
 namespace se
@@ -21,6 +22,8 @@ namespace se
 
 			std::shared_ptr<graphics::Material> createShapeMaterial(std::string_view _texture);
 			std::shared_ptr<graphics::Material> createFontMaterial(std::string_view _font);
+
+			graphics::ShapeGenerator shapeGenerator;
 
 		private:
 
