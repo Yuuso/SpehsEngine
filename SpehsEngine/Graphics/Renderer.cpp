@@ -63,7 +63,8 @@ namespace se
 			{
 				const bgfx::Caps* caps = bgfx::getCaps();
 				se_assert(caps);
-				se_assert(caps->rendererType == rendererType);
+				se_assert(caps->rendererType == rendererType ||
+					_rendererBackend == RendererBackend::Auto);
 
 				log::info("  Renderer type: " + toString(getRendererBackend()));
 
