@@ -3,31 +3,12 @@
 #include "stdafx.h" //
 #include "SpehsEngine/GUI/Binding.h"
 #include "SpehsEngine/GUI/PropertySetter.h"
+#include "SpehsEngine/GUI/TriggerAction.h"
 
 
 namespace se::gui
 {
-	class Element;
 	class IPropertyHost;
-
-
-	class ITriggerAction
-	{
-	public:
-		virtual void execute(Element*) const = 0;
-	};
-
-	class EventTrigger
-	{
-	public:
-		EventTrigger(std::string_view _eventName,
-				std::initializer_list<std::shared_ptr<const ITriggerAction>> _actions)
-			: eventName(_eventName)
-			, actions(_actions) {}
-		std::string eventName;
-		std::vector<std::shared_ptr<const ITriggerAction>> actions;
-	};
-
 
 	class PropertyTrigger
 	{

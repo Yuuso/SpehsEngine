@@ -12,6 +12,7 @@ namespace se::gui
 	public:
 		virtual ~IPropertyHost() = default;
 		virtual const IPropertyLink* getPropertyLink(const std::string&) = 0;
+		virtual std::vector<const IPropertyLink*> getPropertyLinks() = 0;
 
 		Connection onPropertyChanged(const std::function<void(const std::string&, const void*)>& func)
 		{

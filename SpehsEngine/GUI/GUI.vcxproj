@@ -132,6 +132,7 @@
     <ClInclude Include="DataProperty.h" />
     <ClInclude Include="Element.h" />
     <ClInclude Include="EventRouter.h" />
+    <ClInclude Include="EventTrigger.h" />
     <ClInclude Include="GUIElement.h" />
     <ClInclude Include="GUIElementProperties.h" />
     <ClInclude Include="Internal\GUIMaterialManager.h" />
@@ -155,7 +156,9 @@
     <ClInclude Include="PropertyValueType.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="stdafx.h" />
-    <ClInclude Include="Trigger.h" />
+    <ClInclude Include="Style.h" />
+    <ClInclude Include="PropertyTrigger.h" />
+    <ClInclude Include="TriggerAction.h" />
     <ClInclude Include="Types.h" />
     <ClInclude Include="Units.h" />
   </ItemGroup>

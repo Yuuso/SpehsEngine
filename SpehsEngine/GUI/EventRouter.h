@@ -3,7 +3,7 @@
 #include "stdafx.h"
 #include "SpehsEngine/Input/Event.h"
 #include "SpehsEngine/Input/MouseUtilityFunctions.h"
-#include "SpehsEngine/GUI/Trigger.h"
+#include "SpehsEngine/GUI/EventTrigger.h"
 
 
 namespace se::gui

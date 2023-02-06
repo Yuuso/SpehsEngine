@@ -9,14 +9,13 @@
 
 namespace se::gui
 {
-	class Canvas : public IEventRouter
+	class Canvas : private IEventRouter
 	{
 	public:
 
 		SE_NO_COPY(Canvas)
 
 		Canvas(input::EventSignaler& _eventSignaler, int _inputPriority)
-			: eventSignaler(_eventSignaler)
 		{
 			_eventSignaler.connectToMouseHoverSignal(
 				connections.add(),
@@ -53,10 +52,12 @@ namespace se::gui
 
 		void update()
 		{
+			updating = true;
 			/// Connect to view prerender...
 			// deinit removed elements
 			// init new elements
 			// update
+			updating = false;
 		}
 		void add(std::shared_ptr<Element>& _element)
 		{
@@ -87,13 +88,10 @@ namespace se::gui
 		}
 		bool handleRoutedEvent(EventArgs&) override
 		{
-			// Root element always handles all routed events
-			return true;
+			return false;
 		}
 
-		input::EventSignaler& eventSignaler;
 		ScopedConnections connections;
-
 		std::vector<std::shared_ptr<Element>> rootElements;
 		bool updating = false;
 	};

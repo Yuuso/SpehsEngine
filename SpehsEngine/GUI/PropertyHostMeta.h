@@ -22,13 +22,20 @@ public: \
 		if (meta_propertyGetFn == nullptr) ::se::log::fatal(#SELF " type not registered!"); \
 		return meta_propertyGetFn(_name); \
 	} \
+	virtual std::vector<const ::se::gui::IPropertyLink*> getPropertyLinks() override \
+	{ \
+		if (meta_propertiesGetFn == nullptr) ::se::log::fatal(#SELF " type not registered!"); \
+		return meta_propertiesGetFn(); \
+	} \
 private: \
 	friend class ::se::gui::Mirror; \
 	inline static std::function<const ::se::gui::IPropertyLink*(const std::string&)> meta_propertyGetFn = nullptr; \
+	inline static std::function<std::vector<const ::se::gui::IPropertyLink*>()> meta_propertiesGetFn = nullptr; \
 	static void registerProperties(::se::gui::PropertyHostMeta& _meta)
 
 	inline std::string simplifyClassName(const char* _name)
 	{
+		// Removes namespaces
 		std::string result = _name;
 		const size_t pos = result.find_last_of(':');
 		if (pos != std::string::npos)
@@ -63,6 +70,23 @@ private: \
 			if (baseMeta)
 				return baseMeta->getPropertyLink(_name);
 			return nullptr;
+		}
+		std::vector<const IPropertyLink*> getPropertyLinks() const
+		{
+			std::vector<const IPropertyLink*> result;
+			for (auto&& prop : properties)
+			{
+				result.push_back(prop.get());
+			}
+			if (baseMeta)
+			{
+				auto baseResult = baseMeta->getPropertyLinks();
+				result.insert(
+					result.end(),
+					baseResult.begin(),
+					baseResult.end());
+			}
+			return result;
 		}
 
 		template<typename PropertyType, typename HostType>

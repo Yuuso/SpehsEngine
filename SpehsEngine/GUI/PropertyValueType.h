@@ -8,8 +8,11 @@ namespace se::gui
 	enum class PropertyValueType : uint16_t
 	{
 		Default,
+		ImplicitResource,
 		Style,
-		Resource,
+		BindingSource,
 		Local,
+		ExplicitResource = Local,
+		BindingTarget = Local,
 	};
 }

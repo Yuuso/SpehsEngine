@@ -1,6 +1,6 @@
 #pragma once
 
-#include "SpehsEngine/GUI/Trigger.h"
+#include "SpehsEngine/GUI/TriggerAction.h"
 
 
 namespace se::gui

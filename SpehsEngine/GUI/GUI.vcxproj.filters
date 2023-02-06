@@ -107,7 +107,7 @@
     <ClInclude Include="EventRouter.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Trigger.h">
+    <ClInclude Include="PropertyTrigger.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="LogOutputAction.h">
@@ -135,6 +135,15 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="DataProperty.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Style.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="EventTrigger.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="TriggerAction.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

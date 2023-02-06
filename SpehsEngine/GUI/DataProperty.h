@@ -17,8 +17,8 @@ public: \
 		propertyChanged(#NAME, static_cast<const void*>(&VALUE_SIG)); \
 	}
 
-#define GUI_REGISTER_DATA_PROPERTY(NAME, GETFN, SETFN) \
-	_meta.registerDataProperty(#NAME, GETFN, SETFN);
+#define GUI_REGISTER_DATA_PROPERTY(NAME) \
+	_meta.registerDataProperty(#NAME, &SelfClass::get##NAME, &SelfClass::set##NAME);
 
 
 	template<typename PropertyType, typename HostType>

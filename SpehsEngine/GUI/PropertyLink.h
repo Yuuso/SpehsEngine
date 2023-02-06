@@ -6,7 +6,7 @@
 
 namespace se::gui
 {
-	class IPropertyLink
+	class SE_INTERFACE IPropertyLink
 	{
 	public:
 		virtual ~IPropertyLink() = default;
@@ -17,5 +17,12 @@ namespace se::gui
 		virtual void resetValue(IPropertyHost&, PropertyValueType) const = 0;
 		virtual const std::type_info& getType() const = 0;
 		virtual const std::string& getName() const = 0;
+	};
+
+	class SE_INTERFACE IPropertyLinkIterator
+	{
+	public:
+		virtual ~IPropertyLinkIterator() = default;
+
 	};
 }
