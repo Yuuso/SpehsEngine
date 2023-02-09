@@ -93,7 +93,10 @@ namespace se
 				{
 					se::log::warning(se::formatString("Failed to send packet: %s", buffer.data()));
 				}
-				se_assert(!enableAssertOnSendFail && "Send failed");
+				if (result != k_EResultRemoteDisconnect)
+				{
+					se_assert(!enableAssertOnSendFail && "Send failed");
+				}
 				return false;
 			}
 		}
