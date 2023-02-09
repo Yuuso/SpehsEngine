@@ -16,6 +16,7 @@ namespace se
 		public:
 
 			Packetman(Connection2& _connection);
+			~Packetman();
 
 			void update();
 
@@ -38,18 +39,23 @@ namespace se
 			void registerReceiveHandler(const PacketType _packetType,
 				boost::signals2::scoped_connection& _scopedConnection, const std::function<Result(Packet&, const bool)>& _receiveHandler);
 
+			// Returns true if there is at least one sent packet of the given packet type still awaiting for a result
+			bool hasUnfinishedResults(const PacketType _packetType) const;
+
 		private:
 			struct IReceiver
 			{
 				virtual ~IReceiver() {}
-				virtual void process(se::ReadBuffer& _readBuffer, const bool _reliable, const uint16_t _requestId, Connection2& _connection) = 0;
 				virtual bool valid() const = 0;
+				virtual void process(se::ReadBuffer& _readBuffer, const bool _reliable, const uint16_t _requestId, Connection2& _connection) = 0;
 			};
 			struct IRequest
 			{
 				virtual ~IRequest() {}
 				virtual void process(se::ReadBuffer& _readBuffer) = 0;
 				virtual bool timeout(const time::Time& timeout) = 0;
+				virtual void fail() = 0;
+				virtual PacketType getPacketType() const = 0;
 			};
 			uint16_t generateNextRequestId()
 			{
@@ -146,9 +152,11 @@ namespace se
 						se_assert(it != requests.end());
 						if (it != requests.end())
 						{
-							se::ReadBuffer readBuffer2(_readBuffer[_readBuffer.getOffset()], _readBuffer.getSize());
-							it->second->process(readBuffer2);
+							std::unique_ptr<IRequest> request(it->second.release());
 							requests.erase(it);
+							se::ReadBuffer readBuffer2(_readBuffer[_readBuffer.getOffset()], _readBuffer.getSize());
+							request->process(readBuffer2);
+							return;
 						}
 					}
 					else
@@ -158,24 +166,46 @@ namespace se
 						PacketType packetType = PacketType(0);
 						if (!_readBuffer.read(packetType))
 						{
-							se_assert(false && "Failed to read PacketType");
+							if (_reliable)
+							{
+								se::log::error("Failed to read PacketType");
+							}
 							return;
 						}
 						std::unique_ptr<IReceiver>* const receiver = tryFind(receivers, packetType);
 						if (!receiver)
 						{
-							se_assert(!_reliable && "Failed to find receiver for reliably sent PacketType");
+							if (_reliable)
+							{
+								se::log::error("Failed to find receiver for reliably received PacketType: " + std::to_string(int(packetType)));
+							}
 							return;
 						}
 						if (!receiver->get()->valid())
 						{
-							se_assert(!_reliable && "Receiver for reliably sent PacketType is no longer valid");
+							if (_reliable)
+							{
+								se::log::error("Receiver is no longer valid for reliably received PacketType: " + std::to_string(int(packetType)));
+							}
 							return;
 						}
-						se::ReadBuffer readBuffer2(_readBuffer[_readBuffer.getOffset()], _readBuffer.getBytesRemaining());
-						receiver->get()->process(readBuffer2, _reliable, packetId, connection);
+						receiver->get()->process(_readBuffer, _reliable, packetId, connection);
+						return;
 					}
 				});
+		}
+
+		template<typename PacketType>
+		Packetman<PacketType>::~Packetman()
+		{
+			// Fail all the remaining requests
+			std::unordered_map<uint16_t, std::unique_ptr<IRequest>> temp;
+			std::swap(temp, requests);
+			for (std::unordered_map<uint16_t, std::unique_ptr<IRequest>>::iterator it = temp.begin(); it != temp.end(); it++)
+			{
+				it->second->fail();
+			}
+			se_assert(requests.empty() && "New requests should not be added during the destructor");
 		}
 
 		// Send without result
@@ -210,12 +240,17 @@ namespace se
 						: beginTime(time::now())
 					{
 					}
+					PacketType getPacketType() const final
+					{
+						return packetType;
+					}
 					void process(se::ReadBuffer& _readBuffer) final
 					{
 						Result result;
 						if (_readBuffer.read(result))
 						{
 							signal(&result);
+							return;
 						}
 						else
 						{
@@ -239,10 +274,16 @@ namespace se
 							return false;
 						}
 					}
+					void fail() final
+					{
+						signal(nullptr);
+					}
 					boost::signals2::signal<void(Result* const)> signal;
 					time::Time beginTime;
+					PacketType packetType;
 				};
 				Request* const request = new Request();
+				request->packetType = _packetType;
 				_scopedConnection = request->signal.connect(_callback);
 				std::unique_ptr<IRequest>& iRequest = requests[requestId];
 				se_assert(!iRequest);
@@ -258,7 +299,8 @@ namespace se
 		// Receive without result
 		template<typename PacketType>
 		template<typename Packet>
-		void Packetman<PacketType>::registerReceiveHandler(const PacketType _packetType, boost::signals2::scoped_connection& _scopedConnection, const std::function<void(Packet&, const bool)>& _receiveHandler)
+		void Packetman<PacketType>::registerReceiveHandler(const PacketType _packetType,
+			boost::signals2::scoped_connection& _scopedConnection, const std::function<void(Packet&, const bool)>& _receiveHandler)
 		{
 			std::unique_ptr<IReceiver>& iReceiver = receivers[_packetType];
 			if (iReceiver && iReceiver->valid())
@@ -270,11 +312,20 @@ namespace se
 			{
 				void process(se::ReadBuffer& _readBuffer, const bool _reliable, const uint16_t _requestId, Connection2& _connection) final
 				{
-					se_assert(_requestId == 0 && "The sender is expecting a result but the registered receive handler does not provide one");
+					if (_requestId != 0)
+					{
+						// Read PacketType from earlier for logging
+						se_assert(_readBuffer.getOffset() >= sizeof(PacketType));
+						se::ReadBuffer readBuffer2(_readBuffer[_readBuffer.getOffset() - sizeof(PacketType)], sizeof(PacketType));
+						PacketType packetType = PacketType(0);
+						se_assert(readBuffer2.read(packetType));
+						se::log::error("The sender is expecting a result but the registered receive handler does not provide one, PacketType: " + std::to_string(int(packetType)));
+					}
 					Packet packet;
 					if (_readBuffer.read(packet))
 					{
 						signal(packet, _reliable);
+						return;
 					}
 					else
 					{
@@ -295,7 +346,8 @@ namespace se
 		// Receive with result
 		template<typename PacketType>
 		template<typename Packet, typename Result>
-		void Packetman<PacketType>::registerReceiveHandler(const PacketType _packetType, boost::signals2::scoped_connection& _scopedConnection, const std::function<Result(Packet&, const bool)>& _receiveHandler)
+		void Packetman<PacketType>::registerReceiveHandler(const PacketType _packetType,
+			boost::signals2::scoped_connection& _scopedConnection, const std::function<Result(Packet&, const bool)>& _receiveHandler)
 		{
 			std::unique_ptr<IReceiver>& iReceiver = receivers[_packetType];
 			if (iReceiver && iReceiver->valid())
@@ -305,20 +357,40 @@ namespace se
 			}
 			struct Receiver : public IReceiver
 			{
+				~Receiver()
+				{
+					destructorCalled = true;
+				}
 				void process(se::ReadBuffer& _readBuffer, const bool _reliable, const uint16_t _requestId, Connection2& _connection) final
 				{
-					se_assert(_requestId != 0 && "The sender is not expecting a result but the registered receive handler does provide one")
-						se_assert(_reliable && "Packets with results should be always sent reliably");
+					se_assert(_reliable && "Packets with results should be always sent reliably");
+					if (_requestId == 0)
+					{
+						// Read PacketType from earlier for logging
+						se_assert(_readBuffer.getOffset() >= sizeof(PacketType));
+						se::ReadBuffer readBuffer2(_readBuffer[_readBuffer.getOffset() - sizeof(PacketType)], sizeof(PacketType));
+						PacketType packetType = PacketType(0);
+						se_assert(readBuffer2.read(packetType));
+						se::log::error("The sender is not expecting a result but the registered receive handler does provide one, PacketType: " + std::to_string(int(packetType)));
+					}
+
 					Result result;
 					Packet packet;
 					if (_readBuffer.read(packet))
 					{
+						// NOTE: the callback should not deallocate this (and the _connection).
 						result = callback(packet, _reliable);
+						if (destructorCalled)
+						{
+							se::log::error("The receive handler should not deallocate Packetman. Result packet will not be sent.");
+							return;
+						}
 					}
 					else
 					{
 						se_assert(false && "Failed to read packet");
 					}
+
 					const uint16_t resultId = makeResultId(_requestId);
 					WriteBuffer writeBuffer;
 					se_write(writeBuffer, resultId);
@@ -333,11 +405,25 @@ namespace se
 				}
 				boost::signals2::signal<void()> signal;
 				std::function<Result(Packet&, const bool)> callback;
+				bool destructorCalled = false;
 			};
 			Receiver* const receiver = new Receiver();
 			receiver->callback = _receiveHandler;
 			_scopedConnection = receiver->signal.connect([]() {});
 			iReceiver.reset(receiver);
+		}
+
+		template<typename PacketType>
+		bool Packetman<PacketType>::hasUnfinishedResults(const PacketType _packetType) const
+		{
+			for (typename std::unordered_map<uint16_t, std::unique_ptr<IRequest>>::const_iterator it = requests.begin(); it != requests.end(); it++)
+			{
+				if (it->second.get()->getPacketType() == _packetType)
+				{
+					return true;
+				}
+			}
+			return false;
 		}
 	}
 }
