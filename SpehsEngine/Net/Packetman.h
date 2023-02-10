@@ -201,7 +201,7 @@ namespace se
 			// Fail all the remaining requests
 			std::unordered_map<uint16_t, std::unique_ptr<IRequest>> temp;
 			std::swap(temp, requests);
-			for (std::unordered_map<uint16_t, std::unique_ptr<IRequest>>::iterator it = temp.begin(); it != temp.end(); it++)
+			for (typename std::unordered_map<uint16_t, std::unique_ptr<IRequest>>::iterator it = temp.begin(); it != temp.end(); it++)
 			{
 				it->second->fail();
 			}
