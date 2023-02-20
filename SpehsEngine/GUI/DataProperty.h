@@ -5,7 +5,7 @@
 
 namespace se::gui
 {
-#define GUI_DATA_PROPERTY(TYPE, NAME, VALUE_SIG) \
+#define GUI_DATA_PROPERTY(NAME, TYPE, VALUE_SIG) \
 public: \
 	const TYPE& get##NAME() const \
 	{ \
@@ -43,7 +43,7 @@ public: \
 		{
 			return static_cast<const void*>(&(static_cast<const HostType&>(_host).*getFn)());
 		}
-		void setValue(IPropertyHost& _host, const void* _value, PropertyValueType) const override
+		void setValue(IPropertyHost& _host, const void* _value, PropertyPrecedence) const override
 		{
 			if (setFn == nullptr)
 			{
@@ -53,7 +53,7 @@ public: \
 			(static_cast<HostType&>(_host).*setFn)(*static_cast<const PropertyType*>(_value));
 			// NOTE: propertyChanged is the host type's responsibility!
 		}
-		void setTriggerValue(IPropertyHost&, const std::any&, PropertyValueType) const override
+		void setTriggerValue(IPropertyHost&, const std::any&, PropertyPrecedence) const override
 		{
 			se_assert_m(false, "Cannot set trigger value on a DataProperty!");
 		}
@@ -61,7 +61,7 @@ public: \
 		{
 			return (static_cast<const HostType&>(_host).*getFn)() == std::any_cast<const PropertyType&>(_value);
 		}
-		void resetValue(IPropertyHost&, PropertyValueType) const override
+		void resetValue(IPropertyHost&, PropertyPrecedence) const override
 		{
 			se_assert_m(false, "Cannot reset the value of a DataProperty!");
 		}

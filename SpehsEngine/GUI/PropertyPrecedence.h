@@ -5,14 +5,20 @@
 
 namespace se::gui
 {
-	enum class PropertyValueType : uint16_t
+	enum class PropertyPrecedence : uint16_t
 	{
 		Default,
+		ImplicitBaseStyle,
+		ImplicitStyle,
 		ImplicitResource,
+		BaseStyle,
 		Style,
 		BindingSource,
 		Local,
 		ExplicitResource = Local,
 		BindingTarget = Local,
+		Animation
 	};
+
+	// NOTE: Triggers for each precedence level will override the value
 }

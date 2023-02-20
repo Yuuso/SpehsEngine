@@ -1,7 +1,6 @@
 #pragma once
 
 #include "stdafx.h"
-#include "SpehsEngine/GUI/PropertySetter.h"
 
 
 namespace se::gui
@@ -31,29 +30,20 @@ namespace se::gui
 		return "";
 	}
 
-	class Resource
-	{
-	public:
-		Resource(const std::string& _key)
-			: key(_key) {}
-		Resource(uint32_t _key)
-			: key(_key) {}
-		const ResourceKey key;
-	};
 
 	class UnresolvedResource
 	{
 	public:
-		UnresolvedResource(const Resource& _resource, const IPropertyLink* _target)
-			: resource(_resource), target(_target) {}
-		const Resource resource;
+		UnresolvedResource(const ResourceKey& _key, const IPropertyLink* _target)
+			: key(_key), target(_target) {}
+		const ResourceKey key;
 		const IPropertyLink* target = nullptr;
 	};
 
 
-	struct ResourceTargetName			{ const std::string value; };
-	struct ResourceTargetType			{ const std::string value; };
-	struct ResourceTargetPropertyName	{ const std::string value; };
+	struct ResourceTargetName			{ std::string value; };
+	struct ResourceTargetType			{ std::string value; };
+	struct ResourceTargetPropertyName	{ std::string value; };
 
 	class SE_INTERFACE IResource
 	{
@@ -69,10 +59,12 @@ namespace se::gui
 			: targetElementType(_type), targetPropertyName(_prop) {}
 
 		virtual void applyToProperty(
-			const IPropertyLink*, IPropertyHost&, PropertyValueType) const
-		{
-			log::warning("Cannot apply resource '" + toString(key) + "' to a property!");
-		}
+			const IPropertyLink* _link,
+			IPropertyHost& _host,
+			PropertyPrecedence _type) const = 0;
+
+		// returns std::any of <const T*>
+		virtual std::any getValuePtr() const = 0;
 
 		const ResourceKey key;
 		const ResourceTargetName targetElementName;
@@ -84,7 +76,6 @@ namespace se::gui
 	class ValueResource : public IResource
 	{
 	public:
-		virtual ~ValueResource() = default;
 		ValueResource(const std::string& _key, const Type& _value)
 			: IResource(_key), value(_value) {}
 		ValueResource(uint32_t _key, const Type& _value)
@@ -94,10 +85,10 @@ namespace se::gui
 		ValueResource(ResourceTargetType _type, ResourceTargetPropertyName _prop, const Type& _value)
 			: IResource(_type, _prop), value(_value) {}
 
-		virtual void applyToProperty(
+		void applyToProperty(
 			const IPropertyLink* _link,
 			IPropertyHost& _host,
-			PropertyValueType _type) const override
+			PropertyPrecedence _type) const override
 		{
 			if (typeid(value) != _link->getType())
 			{
@@ -106,6 +97,10 @@ namespace se::gui
 				return;
 			}
 			_link->setValue(_host, static_cast<const void*>(&value), _type);
+		}
+		std::any getValuePtr() const override
+		{
+			return std::make_any<const Type*>(&value);
 		}
 
 		const Type value{};

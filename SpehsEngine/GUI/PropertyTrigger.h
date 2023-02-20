@@ -32,8 +32,8 @@ namespace se::gui
 			, enterActions(_enterActions)
 			, exitActions(_exitActions) {}
 
-		const Binding binding;
-		const std::any value;
+		Binding binding;
+		std::any value;
 		std::vector<PropertySetter> setters;
 		std::vector<std::shared_ptr<const ITriggerAction>> enterActions;
 		std::vector<std::shared_ptr<const ITriggerAction>> exitActions;
@@ -42,10 +42,10 @@ namespace se::gui
 	class PropertyTriggerLink
 	{
 	public:
-		PropertyTriggerLink(const PropertyTrigger& _trigger, PropertyValueType _type)
+		PropertyTriggerLink(const PropertyTrigger& _trigger, PropertyPrecedence _type)
 			: trigger(_trigger), type(_type) {}
 		const PropertyTrigger trigger;
-		const PropertyValueType type;
+		const PropertyPrecedence type;
 		IPropertyHost* source = nullptr;
 		ScopedConnection sourceChangedConnection;
 		bool active = false;

@@ -71,6 +71,6 @@ namespace se::gui
 		}
 
 		std::vector<std::unique_ptr<PropertyHostMeta>> registeredPropertyHosts;
-		unique_ptr_vector<CallOnDelete> unregisters;
+		std::vector<std::unique_ptr<CallOnDelete>> unregisters;
 	};
 }

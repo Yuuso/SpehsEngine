@@ -8,15 +8,20 @@ namespace se
 {
 	namespace gui
 	{
+		//////////
 		// TODO: Move to Core? C++ Language features?
+
 	#define SE_INTERFACE __declspec(novtable)
+
 	#define SE_NO_COPY(CLASS) \
+	public: \
 		CLASS(const CLASS& _other) = delete; \
 		CLASS& operator=(const CLASS& _other) = delete; \
 		CLASS(CLASS&& _other) = delete; \
 		CLASS& operator=(CLASS&& _other) = delete;
-		template<typename Type> using unique_ptr_vector = std::vector<std::unique_ptr<Type>>;
+
 		//
+		//////////
 
 		class CallOnDelete
 		{

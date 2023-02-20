@@ -131,7 +131,7 @@
     <ClInclude Include="MemberProperty.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="PropertyValueType.h">
+    <ClInclude Include="PropertyPrecedence.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="DataProperty.h">
