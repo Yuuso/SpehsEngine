@@ -2,6 +2,7 @@
 
 #include <stdint.h>
 #include <utility>
+#include "SpehsEngine/Core/Serial/Serial.h"
 #include "SpehsEngine/Core/Archive.h"
 #include "SpehsEngine/Core/ReadBuffer.h"
 #include "SpehsEngine/Core/WriteBuffer.h"
@@ -38,6 +39,21 @@ namespace se
 	{
 		se_read_from_archive(archive, pair.first);
 		se_read_from_archive(archive, pair.second);
+		return true;
+	}
+
+	template<typename Writer, typename T1, typename T2>
+	void writer(Writer& _writer, const std::pair<T1, T2>& _pair)
+	{
+		se_writer(_writer, _pair.first, "f");
+		se_writer(_writer, _pair.second, "s");
+	}
+
+	template<typename Reader, typename T1, typename T2>
+	bool reader(Reader& _reader, std::pair<T1, T2>& _pair)
+	{
+		se_reader(_reader, _pair.first, "f");
+		se_reader(_reader, _pair.second, "s");
 		return true;
 	}
 }

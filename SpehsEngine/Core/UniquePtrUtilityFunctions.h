@@ -2,6 +2,7 @@
 
 #include <stdint.h>
 #include <memory>
+#include "SpehsEngine/Core/Serial/Serial.h"
 #include "SpehsEngine/Core/Archive.h"
 #include "SpehsEngine/Core/ReadBuffer.h"
 #include "SpehsEngine/Core/WriteBuffer.h"
@@ -67,6 +68,34 @@ namespace se
 		else
 		{
 			pointer.reset();
+		}
+		return true;
+	}
+
+	template<typename Writer, typename T>
+	void writer(Writer& _writer, const std::unique_ptr<T>& _ptr)
+	{
+		const bool exists = _ptr.get() != nullptr;
+		se_writer(_writer, exists, "e");
+		if (exists)
+		{
+			se_writer(_writer, *_ptr, "v");
+		}
+	}
+
+	template<typename Reader, typename T>
+	bool reader(Reader& _reader, std::unique_ptr<T>& _ptr)
+	{
+		bool exists = false;
+		se_reader(_reader, exists, "e");
+		if (exists)
+		{
+			_ptr.reset(new T());
+			se_reader(_reader, *_ptr, "v");
+		}
+		else
+		{
+			_ptr.reset();
 		}
 		return true;
 	}

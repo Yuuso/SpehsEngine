@@ -21,6 +21,8 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)ScopedFrameLimiter.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Noise.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)ScopeProfiler.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Serial\ArchiveReader.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Serial\ArchiveWriter.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)SE_Assert.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)BufferBase.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Color.cpp" />
@@ -57,10 +59,14 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)ArchiveUtilityFunctions.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)AsyncTaskManager.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)BufferUtilityFunctions.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)ByteVector.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)ByteView.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)DeepCopyUniquePtr.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)DeepCopyUniquePtrUtilityFunctions.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)File\Timestamp.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)HexColor.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)MapUtilityFunctions.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Serial\ArchiveIdStack.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)LockGuard.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)LogSignal.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)MultiMapUtilityFunctions.h" />
@@ -69,6 +75,11 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)ResourcePathFinder.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)ScopedConnections.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)ScopeProfilerTypes.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Serial\ArchiveReader.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Serial\ArchiveWriter.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Serial\BinaryReader.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Serial\BinaryWriter.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Serial\Serial.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)StaticRingBuffer.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)ScopedFrameLimiter.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)ScopeProfiler.h" />

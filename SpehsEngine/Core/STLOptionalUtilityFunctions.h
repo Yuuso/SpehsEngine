@@ -2,6 +2,7 @@
 
 #include <stdint.h>
 #include <optional>
+#include "SpehsEngine/Core/Serial/Serial.h"
 #include "SpehsEngine/Core/Archive.h"
 #include "SpehsEngine/Core/ReadBuffer.h"
 #include "SpehsEngine/Core/WriteBuffer.h"
@@ -55,6 +56,34 @@ namespace se
 		{
 			optional.emplace();
 			se_read_from_archive(archive, *optional);
+		}
+		return true;
+	}
+
+	template<typename Writer, typename T>
+	void writer(Writer& _writer, const std::optional<T>& _optional)
+	{
+		const bool exists = _optional.has_value();
+		se_writer(_writer, exists, "e");
+		if (exists)
+		{
+			se_writer(_writer, _optional.value(), "v");
+		}
+	}
+
+	template<typename Reader, typename T>
+	bool reader(Reader& _reader, std::optional<T>& _optional)
+	{
+		bool exists = false;
+		se_reader(_reader, exists, "e");
+		if (exists)
+		{
+			_optional.emplace();
+			se_reader(_reader, _optional.value(), "v");
+		}
+		else
+		{
+			_optional.reset();
 		}
 		return true;
 	}

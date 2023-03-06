@@ -26,6 +26,7 @@
 #include "SpehsEngine/Core/StringUtilityFunctions.h"
 #include "SpehsEngine/Core/StringViewUtilityFunctions.h"
 #include "SpehsEngine/Core/UniquePtrUtilityFunctions.h"
+#include "SpehsEngine/Core/Serial/Serial.h"
 #include <algorithm>
 #include <chrono>
 #include <functional>

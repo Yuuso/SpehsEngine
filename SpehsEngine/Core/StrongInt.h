@@ -24,6 +24,17 @@ struct p_TypeName \
 		se_read(readBuffer, value); \
 		return true; \
 	} \
+	template<typename Writer> \
+	void writer(Writer& _writer) const \
+	{ \
+		se_writer(_writer, value, "v"); \
+	} \
+	template<typename Reader> \
+	bool reader(Reader& _reader) \
+	{ \
+		se_reader(_reader, value, "v"); \
+		return true; \
+	} \
 	bool isValid() const { return value != p_InvalidValue; } \
 	p_TypeName() = default; \
 	p_TypeName(const p_IntType _value) : value(_value) {} \

@@ -97,6 +97,26 @@ namespace se
 		}
 	}
 
+	template<typename Writer>
+	void writer(Writer& _writer, const std::string& _string)
+	{
+		const ByteView byteView((const std::byte*)_string.c_str(), _string.length());
+		se_writer(_writer, byteView, "string");
+	}
+	template<typename Reader>
+	bool reader(Reader& _reader, std::string& _string)
+	{
+		ByteVector byteVector;
+		se_reader(_reader, byteVector, "string");
+		_string.clear();
+		if (byteVector.getSize() > 0)
+		{
+			_string.resize(byteVector.getSize());
+			memcpy(_string.data(), byteVector.getData(), byteVector.getSize());
+		}
+		return true;
+	}
+
 	bool doesStartWith(const std::string_view string, const std::string_view searchParameter);
 	bool doesEndWith(const std::string_view string, const std::string_view searchParameter);
 	bool doesContain(const std::string_view string, const std::string_view searchParameter);

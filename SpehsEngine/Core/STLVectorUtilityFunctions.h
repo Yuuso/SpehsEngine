@@ -99,6 +99,34 @@ namespace se
 		ReadBuffer readBuffer(writeBuffer[0], writeBuffer.getSize());
 		return readFromBuffer<T, SizeType>(readBuffer, vector);
 	}
+
+	template<typename Writer, typename Value>
+	void writer(Writer& _writer, const std::vector<Value>& _vector)
+	{
+		const uint32_t size = uint32_t(_vector.size());
+		se_writer(_writer, size, "s");
+		size_t counter = 0;
+		(void)counter;
+		for (const Value& value : _vector)
+		{
+			se_writer(_writer, value, std::to_string(counter++));
+		}
+	}
+
+	template<typename Reader, typename Value>
+	bool reader(Reader& _reader, std::vector<Value>& _vector)
+	{
+		std::vector<Value> temp;
+		uint32_t size = 0;
+		se_reader(_reader, size, "s");
+		for (uint32_t i = 0; i < size; i++)
+		{
+			temp.push_back(Value());
+			se_reader(_reader, temp.back(), std::to_string(i));
+		}
+		std::swap(temp, _vector);
+		return true;
+	}
 }
 
 

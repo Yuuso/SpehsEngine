@@ -1,7 +1,10 @@
 #pragma once
-#include "BufferBase.h"
-#include "Endianness.h"
-#include "HasMemberFunction.h"
+
+#include "SpehsEngine/Core/BufferBase.h"
+#include "SpehsEngine/Core/Endianness.h"
+#include "SpehsEngine/Core/HasMemberFunction.h"
+#include "SpehsEngine/Core/ByteVector.h"
+
 
 namespace se
 {
@@ -22,41 +25,86 @@ namespace se
 
 		//Is class, has member read
 		template<class T>
-		typename std::enable_if<has_member_read<T, bool(T::*)(ReadBuffer&)>::value, bool>::type read(T& t)
+		inline bool read(T& t)
 		{
-			return t.read(*this);
-		}
-		//Is class, doesn't have member read but has free read
-		template<class T>
-		typename std::enable_if<!has_member_read<T, bool(T::*)(ReadBuffer&)>::value && has_free_read<T>::value, bool>::type read(T& t)
-		{
-			return readFromBuffer(*this, t);
-		}
-		//Isn't class
-		template<typename T>
-		typename std::enable_if<!std::is_class<T>::value, bool>::type read(T& t)
-		{
-			const size_t bytes = sizeof(T);
-			if (offset + bytes > size)
+			if constexpr (std::is_enum<T>::value)
 			{
-				return false;
+				// Enum
+				return read((typename std::underlying_type<T>::type&)t);
 			}
+			else if constexpr (!std::is_class<T>::value)
+			{
+				// Not class
+				const size_t bytes = sizeof(T);
+				if (offset + bytes > size)
+				{
+					return false;
+				}
 
-			if (hostByteOrder == networkByteOrder)
-			{//Read in native byte order
-				memcpy(&t, &data[offset], bytes);
+				if (hostByteOrder == networkByteOrder)
+				{
+					// Read in native byte order
+					memcpy(&t, &data[offset], bytes);
+				}
+				else
+				{
+					// Read in reversed byte order
+					size_t readOffset = offset + bytes;
+					for (size_t i = 0; i < bytes; i++)
+					{
+						((unsigned char*)&t)[i] = data[--readOffset];
+					}
+				}
+
+				offset += bytes;
+				return true;
+			}
+			else if constexpr (std::is_same<T, ByteVector>::value)
+			{
+				// Byte vector
+				uint32_t bytes = 0;
+				if (!read(bytes))
+				{
+					return false;
+				}
+				if (offset + bytes > size)
+				{
+					return false;
+				}
+
+				std::vector<std::byte> vector;
+				t.swap(vector);
+				vector.resize(bytes);
+
+				if (hostByteOrder == networkByteOrder)
+				{
+					// Read in native byte order
+					memcpy(vector.data(), &data[offset], bytes);
+				}
+				else
+				{
+					// Read in reversed byte order
+					size_t readOffset = offset + bytes;
+					for (size_t i = 0; i < bytes; i++)
+					{
+						vector[i] = std::byte(data[--readOffset]);
+					}
+				}
+				t.swap(vector);
+
+				offset += bytes;
+				return true;
+			}
+			else if constexpr (has_free_read<T>::value)
+			{
+				// Free read
+				return readFromBuffer(*this, t);
 			}
 			else
-			{//Read in reversed byte order
-				size_t readOffset = offset + bytes;
-				for (size_t i = 0; i < bytes; i++)
-				{
-					((unsigned char*)&t)[i] = data[--readOffset];
-				}
+			{
+				// Class must have member read
+				return t.read(*this);
 			}
-
-			offset += bytes;
-			return true;
 		}
 
 		void translate(const int bytes) override;

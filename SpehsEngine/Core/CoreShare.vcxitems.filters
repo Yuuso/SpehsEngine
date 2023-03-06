@@ -44,6 +44,8 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)UtcTime.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)ScopedFrameLimiter.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Noise.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Serial\ArchiveReader.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Serial\ArchiveWriter.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="$(MSBuildThisFileDirectory)Archive.h" />
@@ -119,6 +121,15 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)UtcTime.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)ScopeProfilerTypes.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Noise.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)ByteVector.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)ByteView.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Serial\ArchiveIdStack.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Serial\ArchiveReader.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Serial\ArchiveWriter.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Serial\BinaryReader.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Serial\BinaryWriter.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Serial\Serial.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)MapUtilityFunctions.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="File">

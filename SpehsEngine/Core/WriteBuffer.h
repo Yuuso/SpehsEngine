@@ -1,8 +1,10 @@
 #pragma once
-#include <vector>
-#include "BufferBase.h"
-#include "Endianness.h"
-#include "HasMemberFunction.h"
+
+#include "SpehsEngine/Core/BufferBase.h"
+#include "SpehsEngine/Core/Endianness.h"
+#include "SpehsEngine/Core/HasMemberFunction.h"
+#include "SpehsEngine/Core/ByteView.h"
+
 
 namespace se
 {
@@ -32,40 +34,76 @@ namespace se
 		void reserve(const size_t capacity);
 		void clear();
 
-		//Const class, has member write
-		template<class T>
-		typename std::enable_if<has_member_write<T, void(T::*)(WriteBuffer&) const>::value, void>::type write(const T& t)
-		{
-			t.write(*this);
-		}
-		//Const class, doesn't have member write but has free write
-		template<class T>
-		typename std::enable_if<!has_member_write<T, void(T::*)(WriteBuffer&) const>::value && has_free_write<T>::value, void>::type write(const T& t)
-		{
-			writeToBuffer(*this, t);
-		}
-		//Isn't class
 		template<typename T>
-		typename std::enable_if<!std::is_class<T>::value, void>::type write (const T& t)
+		void write (const T& t)
 		{
-			const size_t bytes = sizeof(T);
-			if (offset + bytes > data.size())
+			if constexpr (std::is_enum<T>::value)
 			{
-				data.resize(offset + bytes);
+				// Enum
+				write((typename std::underlying_type<T>::type&)t);
 			}
+			else if constexpr (!std::is_class<T>::value)
+			{
+				// Not class
+				const size_t bytes = sizeof(T);
+				if (offset + bytes > data.size())
+				{
+					data.resize(offset + bytes);
+				}
 
-			if (hostByteOrder == networkByteOrder)
-			{//Write in native order
-				memcpy(&data[offset], &t, bytes);
-				offset += bytes;
+				if (hostByteOrder == networkByteOrder)
+				{
+					// Write in native order
+					memcpy(&data[offset], &t, bytes);
+					offset += bytes;
+				}
+				else
+				{
+					// Write in reversed order
+					size_t endOffset = bytes;
+					for (size_t i = 0; i < bytes; i++)
+					{
+						data[offset++] = ((const uint8_t*)&t)[--endOffset];
+					}
+				}
+			}
+			else if constexpr (std::is_same<T, ByteVector>::value || std::is_same<T, ByteView>::value)
+			{
+				// Byte vector/view
+				const uint32_t vectorSize = uint32_t(t.getSize());
+				const size_t bytes = sizeof(vectorSize) + size_t(vectorSize);
+				if (offset + bytes > data.size())
+				{
+					data.resize(offset + bytes);
+				}
+				write(vectorSize);
+
+				if (hostByteOrder == networkByteOrder)
+				{
+					// Write in native order
+					memcpy(&data[offset], t.getData(), vectorSize);
+					offset += vectorSize;
+				}
+				else
+				{
+					// Write in reversed order
+					size_t endOffset = bytes;
+					for (uint32_t i = 0; i < vectorSize; i++)
+					{
+						data[offset++] = (unsigned char)(*(t.getData() + endOffset));
+						--endOffset;
+					}
+				}
+			}
+			else if constexpr (has_free_write<T>::value)
+			{
+				// Free write
+				writeToBuffer(*this, t);
 			}
 			else
-			{//Write in reversed order
-				size_t endOffset = bytes;
-				for (size_t i = 0; i < bytes; i++)
-				{
-					data[offset++] = ((const uint8_t*)&t)[--endOffset];
-				}
+			{
+				// Class must have member write
+				t.write(*this);
 			}
 		}
 
