@@ -23,10 +23,10 @@ namespace se
 	template<typename Reader, typename Key, typename Value>
 	bool reader(Reader& _reader, Color& _color)
 	{
-		se_reader(_writer, _color.r, "r");
-		se_reader(_writer, _color.g, "g");
-		se_reader(_writer, _color.b, "b");
-		se_reader(_writer, _color.a, "a");
+		se_reader(_reader, _color.r, "r");
+		se_reader(_reader, _color.g, "g");
+		se_reader(_reader, _color.b, "b");
+		se_reader(_reader, _color.a, "a");
 		return true;
 	}
 
