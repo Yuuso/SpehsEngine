@@ -21,8 +21,8 @@ namespace se
 			binaryWriter.swap(data);
 		}
 
-		se_writer(binaryWriter, version, "");
-		se_writer(binaryWriter, objectCount, "");
+		binaryWriter.serial(version);
+		binaryWriter.serial(objectCount);
 
 		// Write the object data blocks in a single go
 		std::vector<uint8_t> data;

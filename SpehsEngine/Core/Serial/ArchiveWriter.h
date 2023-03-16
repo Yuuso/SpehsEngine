@@ -15,7 +15,7 @@ namespace se
 		static inline constexpr bool getReadingEnabled() { return false; }
 
 		template<typename T>
-		inline void serial(const T& _value, const std::string_view _key);
+		inline bool serial(const T& _value, const std::string_view _key);
 
 		std::vector<uint8_t> generateData() const;
 
@@ -31,11 +31,11 @@ namespace se
 	};
 
 	template<typename T>
-	inline void ArchiveWriter::serial(const T& _value, const std::string_view _key)
+	inline bool ArchiveWriter::serial(const T& _value, const std::string_view _key)
 	{
 		if constexpr (std::is_enum<T>::value)
 		{
-			serial<std::underlying_type<T>::type>((const typename std::underlying_type<T>::type&)_value, _key);
+			return serial<std::underlying_type<T>::type>((const typename std::underlying_type<T>::type&)_value, _key);
 		}
 		else if constexpr (!std::is_class<T>::value)
 		{
@@ -45,6 +45,7 @@ namespace se
 			binaryWriter1.serial(objectSize);
 			binaryWriter2.serial(_value);
 			endObject();
+			return true;
 		}
 		else if constexpr (std::is_same<T, ByteView>::value)
 		{
@@ -60,20 +61,17 @@ namespace se
 			memcpy(data.data() + offset, _value.getData(), _value.getSize());
 			binaryWriter2.swap(data);
 			endObject();
-		}
-		else if constexpr (serial_detail::has_free_writer<ArchiveWriter, T>::value)
-		{
-			// Free writer
-			beginObject<T>(_key);
-			writer(*this, _value);
-			endObject();
+			return true;
 		}
 		else
 		{
-			// Must have member writer
+			// Free writer
 			beginObject<T>(_key);
-			_value.writer(*this);
+			const bool result = Serial<SerialTag<T>::type>::template impl<ArchiveWriter, const T&>(*this, _value);
+			//const bool result = se::Serial<T>::template impl<ArchiveWriter, const T&>(*this, _value);
+			//const bool result = serialImpl<std::remove_const<std::remove_reference<T>::type>::type, ArchiveWriter, const T&>(*this, _value);
 			endObject();
+			return result;
 		}
 	}
 }

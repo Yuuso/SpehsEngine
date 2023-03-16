@@ -79,19 +79,13 @@ namespace se
 			endObject();
 			return true;
 		}
-		else if constexpr (serial_detail::has_free_reader<ArchiveReader, T>::value)
+		else
 		{
 			// Free reader
 			beginObject<T>(_key);
-			const bool result = reader(*this, _value);
-			endObject();
-			return result;
-		}
-		else
-		{
-			// Must have member reader
-			beginObject<T>(_key);
-			const bool result = _value.reader(*this);
+			const bool result = Serial<SerialTag<T>::type>::template impl<ArchiveReader, T&>(*this, _value);
+			//const bool result = se::Serial<T>::template impl<ArchiveReader, T&>(*this, _value);
+			//const bool result = serialImpl<std::remove_const<std::remove_reference<T>::type>::type, ArchiveReader, T&>(*this, _value);
 			endObject();
 			return result;
 		}

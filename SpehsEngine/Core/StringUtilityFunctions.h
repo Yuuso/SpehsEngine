@@ -97,24 +97,25 @@ namespace se
 		}
 	}
 
-	template<typename Writer>
-	void writer(Writer& _writer, const std::string& _string)
+	template<> template<typename S, typename T>
+	static bool se::Serial<std::string>::impl(S& _serial, T _string)
 	{
-		const ByteView byteView((const std::byte*)_string.c_str(), _string.length());
-		se_writer(_writer, byteView, "string");
-	}
-	template<typename Reader>
-	bool reader(Reader& _reader, std::string& _string)
-	{
-		ByteVector byteVector;
-		se_reader(_reader, byteVector, "string");
-		_string.clear();
-		if (byteVector.getSize() > 0)
+		typedef typename se::remove_cvref<T>::type VectorType;
+		typedef typename VectorType::value_type ValueType;
+		if constexpr (S::getWritingEnabled())
 		{
-			_string.resize(byteVector.getSize());
-			memcpy(_string.data(), byteVector.getData(), byteVector.getSize());
+			const ByteView byteView((const std::byte*)_string.c_str(), _string.length());
+			se_serial(_serial, byteView, "string");
+			return true;
 		}
-		return true;
+		else
+		{
+			ByteVector byteVector;
+			se_serial(_serial, byteVector, "string");
+			_string.resize(byteVector.getSize());
+			memcpy(_string.data(), (const void*)byteVector.getData(), byteVector.getSize());
+			return true;
+		}
 	}
 
 	bool doesStartWith(const std::string_view string, const std::string_view searchParameter);

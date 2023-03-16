@@ -60,31 +60,35 @@ namespace se
 		return true;
 	}
 
-	template<typename Writer, typename T>
-	void writer(Writer& _writer, const std::optional<T>& _optional)
+	struct SerialTagOptional {};
+	template<typename T> struct SerialTag<std::optional<T>> { typedef SerialTagOptional type; };
+	template<> template<typename S, typename T>
+	static bool Serial<SerialTagOptional>::impl(S& _serial, T _optional)
 	{
-		const bool exists = _optional.has_value();
-		se_writer(_writer, exists, "e");
-		if (exists)
+		if constexpr (S::getWritingEnabled())
 		{
-			se_writer(_writer, _optional.value(), "v");
-		}
-	}
-
-	template<typename Reader, typename T>
-	bool reader(Reader& _reader, std::optional<T>& _optional)
-	{
-		bool exists = false;
-		se_reader(_reader, exists, "e");
-		if (exists)
-		{
-			_optional.emplace();
-			se_reader(_reader, _optional.value(), "v");
+			const bool exists = _optional.has_value();
+			se_serial(_serial, exists, "e");
+			if (exists)
+			{
+				se_serial(_serial, _optional.value(), "v");
+			}
+			return true;
 		}
 		else
 		{
-			_optional.reset();
+			bool exists = false;
+			se_serial(_serial, exists, "e");
+			if (exists)
+			{
+				_optional.emplace();
+				se_serial(_serial, _optional.value(), "v");
+			}
+			else
+			{
+				_optional.reset();
+			}
+			return true;
 		}
-		return true;
 	}
 }

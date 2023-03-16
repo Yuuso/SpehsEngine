@@ -42,18 +42,13 @@ namespace se
 		return true;
 	}
 
-	template<typename Writer, typename T1, typename T2>
-	void writer(Writer& _writer, const std::pair<T1, T2>& _pair)
+	struct SerialTagPair {};
+	template<typename T, typename U> struct SerialTag<std::pair<T, U>> { typedef SerialTagPair type; };
+	template<> template<typename S, typename T>
+	static bool se::Serial<SerialTagPair>::impl(S& _serial, T _pair)
 	{
-		se_writer(_writer, _pair.first, "f");
-		se_writer(_writer, _pair.second, "s");
-	}
-
-	template<typename Reader, typename T1, typename T2>
-	bool reader(Reader& _reader, std::pair<T1, T2>& _pair)
-	{
-		se_reader(_reader, _pair.first, "f");
-		se_reader(_reader, _pair.second, "s");
+		se_serial(_serial, _pair.first, "f");
+		se_serial(_serial, _pair.second, "s");
 		return true;
 	}
 }

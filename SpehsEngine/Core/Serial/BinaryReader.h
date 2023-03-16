@@ -39,15 +39,12 @@ namespace se
 			// Built-in
 			return readBuffer.read(_value);
 		}
-		else if constexpr (serial_detail::has_free_reader<BinaryReader, T>::value)
-		{
-			// Free reader
-			return reader(*this, _value);
-		}
 		else
 		{
-			// Must have member reader
-			return _value.reader(*this);
+			// Free reader
+			return Serial<SerialTag<T>::type>::template impl<BinaryReader, T&>(*this, _value);
+			//return se::Serial<T>::template impl<BinaryReader, T&>(*this, _value);
+			//return serialImpl<std::remove_const<std::remove_reference<T>::type>::type, BinaryReader, T&>(*this, _value);
 		}
 	}
 }

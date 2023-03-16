@@ -2,6 +2,7 @@
 
 #include "SpehsEngine/Core/SE_Time.h"
 #include "SpehsEngine/Core/UtcTime.h"
+#include "SpehsEngine/Core/Serial/Serial.h"
 #include <string>
 
 
@@ -42,5 +43,12 @@ namespace se
 		// Returns local point of time in UTC time
 		std::optional<UtcTime> localToUTC(const Time& localTime);
 		std::optional<Time> utcToLocal(const UtcTime& utcTime);
+	}
+
+	template<> template<typename S, typename T>
+	static bool se::Serial<time::Time>::impl(S& _serial, T _time)
+	{
+		se_serial(_serial, _time.value, "t");
+		return true;
 	}
 }

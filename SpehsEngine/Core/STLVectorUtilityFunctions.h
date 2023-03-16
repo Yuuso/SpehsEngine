@@ -100,32 +100,38 @@ namespace se
 		return readFromBuffer<T, SizeType>(readBuffer, vector);
 	}
 
-	template<typename Writer, typename Value>
-	void writer(Writer& _writer, const std::vector<Value>& _vector)
+	struct SerialTagVector {};
+	template<typename T> struct SerialTag<std::vector<T>> { typedef SerialTagVector type; };
+	template<> template<typename S, typename T>
+	static bool se::Serial<SerialTagVector>::impl(S& _serial, T _vector)
 	{
-		const uint32_t size = uint32_t(_vector.size());
-		se_writer(_writer, size, "s");
-		size_t counter = 0;
-		(void)counter;
-		for (const Value& value : _vector)
+		typedef typename se::remove_cvref<T>::type VectorType;
+		typedef typename VectorType::value_type ValueType;
+		if constexpr (S::getWritingEnabled())
 		{
-			se_writer(_writer, value, std::to_string(counter++));
+			const uint32_t size = uint32_t(_vector.size());
+			se_serial(_serial, size, "s");
+			size_t counter = 0;
+			(void)counter;
+			for (const ValueType& value : _vector)
+			{
+				se_serial(_serial, value, std::to_string(counter++));
+			}
+			return true;
 		}
-	}
-
-	template<typename Reader, typename Value>
-	bool reader(Reader& _reader, std::vector<Value>& _vector)
-	{
-		std::vector<Value> temp;
-		uint32_t size = 0;
-		se_reader(_reader, size, "s");
-		for (uint32_t i = 0; i < size; i++)
+		else
 		{
-			temp.push_back(Value());
-			se_reader(_reader, temp.back(), std::to_string(i));
+			VectorType temp;
+			uint32_t size = 0;
+			se_serial(_serial, size, "s");
+			for (uint32_t i = 0; i < size; i++)
+			{
+				temp.push_back(ValueType());
+				se_serial(_serial, temp.back(), std::to_string(i));
+			}
+			std::swap(temp, _vector);
+			return true;
 		}
-		std::swap(temp, _vector);
-		return true;
 	}
 }
 

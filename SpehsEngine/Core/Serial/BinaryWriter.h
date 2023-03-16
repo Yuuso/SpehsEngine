@@ -16,7 +16,7 @@ namespace se
 		static inline constexpr bool getReadingEnabled() { return false; }
 
 		template<typename T>
-		inline void serial(const T& _value);
+		inline bool serial(const T& _value);
 		// nocommit what dis?
 		template<typename T>
 		void writeAt(const T& t, const size_t _offset) { writeBuffer.writeAt(t, _offset); }
@@ -31,22 +31,20 @@ namespace se
 	};
 
 	template<typename T>
-	inline void BinaryWriter::serial(const T& _value)
+	inline bool BinaryWriter::serial(const T& _value)
 	{
 		if constexpr (std::is_enum<T>::value || !std::is_class<T>::value || std::is_same<T, ByteView>::value)
 		{
 			// Built-in
 			writeBuffer.write(_value);
-		}
-		else if constexpr (serial_detail::has_free_writer<BinaryWriter, T>::value)
-		{
-			// Free writer
-			writer(*this, _value);
+			return true;
 		}
 		else
 		{
-			// Class method
-			_value.writer(*this);
+			// Free writer
+			return Serial<SerialTag<T>::type>::template impl<BinaryWriter, const T&>(*this, _value);
+			//return se::Serial<T>::template impl<BinaryWriter, const T&>(*this, _value);
+			//return serialImpl<std::remove_const<std::remove_reference<T>::type>::type, BinaryWriter, const T&>(*this, _value);
 		}
 	}
 }

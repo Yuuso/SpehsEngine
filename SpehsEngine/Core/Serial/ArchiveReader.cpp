@@ -10,7 +10,7 @@ namespace se
 		{
 			constexpr size_t objectHeaderSize = sizeof(uint64_t) + sizeof(uint32_t);
 			uint32_t objectCount = 0;
-			se_reader(binaryReader, objectCount, "");
+			se_serial(binaryReader, objectCount, "");
 			std::unordered_map<uint64_t, Object> objects;
 			uint32_t objectDataIndex = 0;
 			uint32_t readObjectCount = 0;
@@ -18,8 +18,8 @@ namespace se
 			{
 				uint64_t objectHash = 0;
 				uint32_t objectSize = 0;
-				se_reader(binaryReader, objectHash, "");
-				se_reader(binaryReader, objectSize, "");
+				se_serial(binaryReader, objectHash, "");
+				se_serial(binaryReader, objectSize, "");
 				se_assert(!tryFind(objects, objectHash));
 				Object& object = objects[objectHash];
 				object.index = objectDataIndex;
@@ -47,7 +47,7 @@ namespace se
 			_version = 0;
 			uint8_t version = 0;
 			BinaryReader binaryReader(_data, _size);
-			se_reader(binaryReader, version, "");
+			se_serial(binaryReader, version, "");
 			if (version == 0)
 			{
 				// Invalid version

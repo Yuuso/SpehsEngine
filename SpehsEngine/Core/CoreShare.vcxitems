@@ -66,6 +66,7 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)File\Timestamp.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)HexColor.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)MapUtilityFunctions.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)RemoveCvref.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Serial\ArchiveIdStack.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)LockGuard.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)LogSignal.h" />

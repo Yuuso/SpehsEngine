@@ -2,6 +2,7 @@
 
 #include "SpehsEngine/Core/Color.h"
 #include "SpehsEngine/Core/RNG.h"
+#include "SpehsEngine/Core/Serial/Serial.h"
 #include <string>
 #include <stdint.h>
 
@@ -11,22 +12,13 @@ namespace se
 	class WriteBuffer;
 	class ReadBuffer;
 
-	template<typename Writer, typename Key, typename Value>
-	void writer(Writer& _writer, const Color& _color)
+	template<> template<typename S, typename T>
+	static bool Serial<Color>::impl(S& _serial, T _color)
 	{
-		se_writer(_writer, _color.r, "r");
-		se_writer(_writer, _color.g, "g");
-		se_writer(_writer, _color.b, "b");
-		se_writer(_writer, _color.a, "a");
-	}
-
-	template<typename Reader, typename Key, typename Value>
-	bool reader(Reader& _reader, Color& _color)
-	{
-		se_reader(_reader, _color.r, "r");
-		se_reader(_reader, _color.g, "g");
-		se_reader(_reader, _color.b, "b");
-		se_reader(_reader, _color.a, "a");
+		se_serial(_serial, _color.r, "r");
+		se_serial(_serial, _color.g, "g");
+		se_serial(_serial, _color.b, "b");
+		se_serial(_serial, _color.a, "a");
 		return true;
 	}
 
