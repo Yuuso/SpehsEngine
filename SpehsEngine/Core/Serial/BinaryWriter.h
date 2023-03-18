@@ -43,8 +43,6 @@ namespace se
 		{
 			// Free writer
 			return Serial<SerialTag<T>::type>::template impl<BinaryWriter, const T&>(*this, _value);
-			//return se::Serial<T>::template impl<BinaryWriter, const T&>(*this, _value);
-			//return serialImpl<std::remove_const<std::remove_reference<T>::type>::type, BinaryWriter, const T&>(*this, _value);
 		}
 	}
 }

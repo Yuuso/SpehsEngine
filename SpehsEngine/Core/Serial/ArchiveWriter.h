@@ -68,8 +68,6 @@ namespace se
 			// Free writer
 			beginObject<T>(_key);
 			const bool result = Serial<SerialTag<T>::type>::template impl<ArchiveWriter, const T&>(*this, _value);
-			//const bool result = se::Serial<T>::template impl<ArchiveWriter, const T&>(*this, _value);
-			//const bool result = serialImpl<std::remove_const<std::remove_reference<T>::type>::type, ArchiveWriter, const T&>(*this, _value);
 			endObject();
 			return result;
 		}

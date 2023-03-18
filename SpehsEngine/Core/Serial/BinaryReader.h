@@ -43,8 +43,6 @@ namespace se
 		{
 			// Free reader
 			return Serial<SerialTag<T>::type>::template impl<BinaryReader, T&>(*this, _value);
-			//return se::Serial<T>::template impl<BinaryReader, T&>(*this, _value);
-			//return serialImpl<std::remove_const<std::remove_reference<T>::type>::type, BinaryReader, T&>(*this, _value);
 		}
 	}
 }
