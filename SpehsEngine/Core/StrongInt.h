@@ -58,7 +58,7 @@ namespace std \
 	}; \
 } \
 template<> template<typename S, typename T> \
-static bool se::Serial<p_TypeName>::impl(S& _serial, T _strongInt) \
+static bool se::Serial<p_TypeName>::serial(S& _serial, T _strongInt) \
 { \
 	se_serial(_serial, _strongInt.value, "i"); \
 	return true; \

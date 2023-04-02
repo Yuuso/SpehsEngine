@@ -17,6 +17,8 @@ namespace se
 			return Murmur3::murmurHash3_x86_32(_key.data(), _key.size(), 5);
 		}
 
+		static constexpr uint64_t abstractTypeId = uint64_t(72);
+
 		template<typename T>
 		static constexpr uint64_t getTypeId()
 		{

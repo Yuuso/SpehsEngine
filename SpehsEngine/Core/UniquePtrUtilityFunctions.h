@@ -2,7 +2,8 @@
 
 #include <stdint.h>
 #include <memory>
-#include "SpehsEngine/Core/Serial/Serial.h"
+#include <optional>
+#include "SpehsEngine/Core/Serial/SerialUtility.h"
 #include "SpehsEngine/Core/Archive.h"
 #include "SpehsEngine/Core/ReadBuffer.h"
 #include "SpehsEngine/Core/WriteBuffer.h"
@@ -72,30 +73,80 @@ namespace se
 		return true;
 	}
 
-	template<typename Writer, typename T>
-	void writer(Writer& _writer, const std::unique_ptr<T>& _ptr)
+	struct SerialTagUniquePtr {};
+	template<typename T> struct SerialTag<std::unique_ptr<T>> { typedef SerialTagUniquePtr type; };
+	template<> template<typename S, typename T>
+	static bool Serial<SerialTagUniquePtr>::serial(S& _serial, T _value)
 	{
-		const bool exists = _ptr.get() != nullptr;
-		se_writer(_writer, exists, "e");
-		if (exists)
+		using ElementType = typename remove_cvref<T>::type::element_type;
+		if constexpr (std::is_class<ElementType>::value)
 		{
-			se_writer(_writer, *_ptr, "v");
-		}
-	}
-
-	template<typename Reader, typename T>
-	bool reader(Reader& _reader, std::unique_ptr<T>& _ptr)
-	{
-		bool exists = false;
-		se_reader(_reader, exists, "e");
-		if (exists)
-		{
-			_ptr.reset(new T());
-			se_reader(_reader, *_ptr, "v");
+			if constexpr (S::getWritingEnabled())
+			{
+				// Write class
+				const bool exists = _value.get() != nullptr;
+				se_serial(_serial, exists, "exists");
+				if (exists)
+				{
+					// NOTE: if there was a way to get this type from Serial<ElementType>::identify(), that would be great.
+					using SerialId = typename SerialId<ElementType>::type;
+					const SerialId serialId = Serial<ElementType>::template identify<SerialId>(*_value);
+					se_serial(_serial, serialId, "serialId");
+					serial_call::AbstractWriter<S, ElementType> abstractWriter;
+					abstractWriter.serial = &_serial;
+					abstractWriter.value = _value.get();
+					se::Serial<ElementType>::cast(abstractWriter, serialId);
+					if (!abstractWriter.result.value())
+					{
+						return false;
+					}
+				}
+			}
+			else
+			{
+				// Read class
+				bool exists = false;
+				se_serial(_serial, exists, "exists");
+				if (exists)
+				{
+					// NOTE: if there was a way to get this type from Serial<ElementType>::identify(), that would be great.
+					using SerialId = typename SerialId<ElementType>::type;
+					SerialId serialId;
+					se_serial(_serial, serialId, "serialId");
+					serial_call::AbstractReader<S, ElementType> abstractReader;
+					abstractReader.serial = &_serial;
+					Serial<ElementType>::template cast(abstractReader, serialId);
+					se::Serial<ElementType>::cast(abstractReader, serialId);
+					_value.swap(abstractReader.ptr);
+					if (!_value)
+					{
+						return false;
+					}
+				}
+			}
 		}
 		else
 		{
-			_ptr.reset();
+			if constexpr (S::getWritingEnabled())
+			{
+				// Write non-class
+				const bool exists = _value.get() != nullptr;
+				se_serial(_serial, exists, "exists");
+				if (exists)
+				{
+					se_serial(_serial, *_value, "value");
+				}
+			}
+			else
+			{
+				// Read non-class
+				bool exists = false;
+				se_serial(_serial, exists, "exists");
+				{
+					_value.reset(new ElementType());
+					se_serial(_serial, *_value, "value");
+				}
+			}
 		}
 		return true;
 	}

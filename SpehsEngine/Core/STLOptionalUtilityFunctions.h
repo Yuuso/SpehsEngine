@@ -63,7 +63,7 @@ namespace se
 	struct SerialTagOptional {};
 	template<typename T> struct SerialTag<std::optional<T>> { typedef SerialTagOptional type; };
 	template<> template<typename S, typename T>
-	static bool Serial<SerialTagOptional>::impl(S& _serial, T _optional)
+	static bool Serial<SerialTagOptional>::serial(S& _serial, T _optional)
 	{
 		if constexpr (S::getWritingEnabled())
 		{

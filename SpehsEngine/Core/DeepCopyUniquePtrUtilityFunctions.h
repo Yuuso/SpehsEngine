@@ -32,4 +32,6 @@ namespace se
 	{
 		return readFromArchive(archive, pointer.getImpl());
 	}
+
+	template<typename T> struct SerialTag<DeepCopyUniquePtr<T>> { typedef SerialTagUniquePtr type; };
 }

@@ -10,7 +10,7 @@ namespace se
 	template<typename K, typename V> struct SerialTag<std::map<K, V>> { typedef SerialTagMap type; };
 	template<typename K, typename V> struct SerialTag<std::multimap<K, V>> { typedef SerialTagMap type; };
 	template<> template<typename S, typename T>
-	static bool se::Serial<SerialTagMap>::impl(S& _serial, T _map)
+	static bool se::Serial<SerialTagMap>::serial(S& _serial, T _map)
 	{
 		typedef typename se::remove_cvref<T>::type MapType;
 		typedef typename MapType::key_type KeyType;

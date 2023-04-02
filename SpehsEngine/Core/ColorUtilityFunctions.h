@@ -13,7 +13,7 @@ namespace se
 	class ReadBuffer;
 
 	template<> template<typename S, typename T>
-	static bool Serial<Color>::impl(S& _serial, T _color)
+	static bool Serial<Color>::serial(S& _serial, T _color)
 	{
 		se_serial(_serial, _color.r, "r");
 		se_serial(_serial, _color.g, "g");

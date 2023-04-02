@@ -20,15 +20,21 @@ do { \
 
 namespace se
 {
-	namespace serial_detail
-	{
-	}
-
-	template<typename T>
+	template<typename U>
 	struct Serial
 	{
-		template<typename Serial, typename T>
-		static bool impl(Serial& _serial, T _value);
+		// User types must implement this for basic serialization
+		template<typename Serial, typename URef>	static bool serial(Serial& _serial, URef _value);
+
+		// OPTIONAL: User types must implement these for abstract serialization (used with std::unique_ptr<UserType> serialization)
+		template<typename Target, typename Id>		static void cast(Target& _target, const Id& _id);
+		template<typename Id>						static Id identify(const U& _value);
+	};
+
+	// OPTIONAL: User types must implement this for abstract serialization, this must match the type returned from Serial<UserType>::identity().
+	template<typename ... Args>
+	struct SerialId
+	{
 	};
 
 	// Serial tag types are used to allow making serial functions for template classes, see stl container serial functions as an example.
@@ -41,9 +47,6 @@ namespace se
 	{
 		typedef T type;
 	};
-
-	//template<typename T, typename Serial, typename TRef>
-	//static bool serialImpl(Serial& _serial, TRef _value);
 
 	template<typename Serial, typename Value>
 	inline bool keylessSerial(Serial& _serial, Value& _value)

@@ -81,6 +81,7 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)Serial\BinaryReader.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Serial\BinaryWriter.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Serial\Serial.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Serial\SerialUtility.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)StaticRingBuffer.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)ScopedFrameLimiter.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)ScopeProfiler.h" />

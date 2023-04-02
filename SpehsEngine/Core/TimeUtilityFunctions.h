@@ -46,7 +46,7 @@ namespace se
 	}
 
 	template<> template<typename S, typename T>
-	static bool se::Serial<time::Time>::impl(S& _serial, T _time)
+	static bool se::Serial<time::Time>::serial(S& _serial, T _time)
 	{
 		se_serial(_serial, _time.value, "t");
 		return true;

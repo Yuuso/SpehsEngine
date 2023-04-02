@@ -110,6 +110,16 @@ namespace se
 			return impl.release();
 		}
 
+		void swap(DeepCopyUniquePtr<T> &other)
+		{
+			impl.swap(other.impl);
+		}
+
+		void swap(std::unique_ptr<T> &ptr)
+		{
+			impl.swap(ptr);
+		}
+
 		std::unique_ptr<T, D>& getImpl() { return impl; }
 		const std::unique_ptr<T, D>& getImpl() const { return impl; }
 

@@ -2,7 +2,7 @@
 
 #include "SpehsEngine/Core/Serial/BinaryReader.h"
 #include "SpehsEngine/Core/Serial/ArchiveIdStack.h"
-#include <unordered_map>
+#include "SpehsEngine/Core/STLUnorderedMapUtilityFunctions.h"
 #include <vector>
 
 
@@ -83,7 +83,7 @@ namespace se
 		{
 			// Free reader
 			beginObject<T>(_key);
-			const bool result = Serial<SerialTag<T>::type>::template impl<ArchiveReader, T&>(*this, _value);
+			const bool result = Serial<SerialTag<T>::type>::template serial<ArchiveReader, T&>(*this, _value);
 			endObject();
 			return result;
 		}

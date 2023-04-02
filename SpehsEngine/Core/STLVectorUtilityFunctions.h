@@ -103,7 +103,7 @@ namespace se
 	struct SerialTagVector {};
 	template<typename T> struct SerialTag<std::vector<T>> { typedef SerialTagVector type; };
 	template<> template<typename S, typename T>
-	static bool se::Serial<SerialTagVector>::impl(S& _serial, T _vector)
+	static bool se::Serial<SerialTagVector>::serial(S& _serial, T _vector)
 	{
 		typedef typename se::remove_cvref<T>::type VectorType;
 		typedef typename VectorType::value_type ValueType;
