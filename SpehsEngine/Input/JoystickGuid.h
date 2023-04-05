@@ -32,7 +32,6 @@ static bool se::Serial<se::input::JoystickGuid>::serial(S& _serial, T _value)
 	{
 		ByteVector byteVector;
 		se_serial(_serial, byteVector, "JoystickGuid");
-		_string.resize(byteVector.getSize());
 		if (byteVector.getSize() == dataSize)
 		{
 			memcpy(&_value.data[0], (const void*)byteVector.getData(), dataSize);

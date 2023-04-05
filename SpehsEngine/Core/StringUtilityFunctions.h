@@ -100,8 +100,6 @@ namespace se
 	template<> template<typename S, typename T>
 	static bool se::Serial<std::string>::serial(S& _serial, T _string)
 	{
-		typedef typename se::remove_cvref<T>::type VectorType;
-		typedef typename VectorType::value_type ValueType;
 		if constexpr (S::getWritingEnabled())
 		{
 			const ByteView byteView((const std::byte*)_string.c_str(), _string.length());
