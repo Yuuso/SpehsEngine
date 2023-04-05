@@ -16,3 +16,27 @@ namespace se
 		};
 	}
 }
+
+template<> template<typename S, typename T>
+static bool se::Serial<se::input::JoystickGuid>::serial(S& _serial, T _value)
+{
+	constexpr size_t dataSize = 16;
+	static_assert(sizeof(_value.data) == dataSize);
+	if constexpr (S::getWritingEnabled())
+	{
+		const ByteView byteView((const std::byte*)&_value.data[0], dataSize);
+		se_serial(_serial, byteView, "JoystickGuid");
+		return true;
+	}
+	else
+	{
+		ByteVector byteVector;
+		se_serial(_serial, byteVector, "JoystickGuid");
+		_string.resize(byteVector.getSize());
+		if (byteVector.getSize() == dataSize)
+		{
+			memcpy(&_value.data[0], (const void*)byteVector.getData(), dataSize);
+		}
+		return true;
+	}
+}
