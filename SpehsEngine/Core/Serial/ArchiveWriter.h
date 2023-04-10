@@ -2,6 +2,7 @@
 
 #include "SpehsEngine/Core/Serial/BinaryWriter.h"
 #include "SpehsEngine/Core/Serial/ArchiveIdStack.h"
+#include <unordered_set>
 
 
 namespace se
@@ -24,10 +25,16 @@ namespace se
 		template<typename T>
 		uint64_t beginObject(const std::string_view _key) { return archiveIdStack.pushId(ArchiveIdStack::getTypeId<T>(), _key); }
 		void endObject() { archiveIdStack.popId(); }
+		void useObjectHash(const uint64_t hash)
+		{
+			se_assert(usedObjectHashesDebug.find(hash) == usedObjectHashesDebug.end() && "Object hash collision");
+			usedObjectHashesDebug.insert(hash);
+		}
 
 		ArchiveIdStack archiveIdStack;
 		BinaryWriter binaryWriter1;
 		BinaryWriter binaryWriter2;
+		std::unordered_set<uint64_t> usedObjectHashesDebug;
 	};
 
 	template<typename T>
@@ -41,6 +48,7 @@ namespace se
 		{
 			const uint64_t objectHash = beginObject<T>(_key);
 			const uint32_t objectSize = sizeof(T);
+			useObjectHash(objectHash);
 			binaryWriter1.serial(objectHash);
 			binaryWriter1.serial(objectSize);
 			binaryWriter2.serial(_value);
@@ -52,6 +60,7 @@ namespace se
 			// Write raw data block
 			const uint64_t objectHash = beginObject<T>(_key);
 			const uint32_t objectSize = uint32_t(_value.getSize());
+			useObjectHash(objectHash);
 			binaryWriter1.serial(objectHash);
 			binaryWriter1.serial(objectSize);
 			std::vector<uint8_t> data;
