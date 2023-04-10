@@ -25,3 +25,10 @@ namespace se
 	void writeToBuffer(WriteBuffer& writeBuffer, const net::Address& address);
 	bool readFromBuffer(ReadBuffer& readBuffer, net::Address& address);
 }
+
+template<> template<typename S, typename T>
+static bool se::Serial<se::net::Address>::serial(S& _serial, T _value)
+{
+	se_serial(_serial, _value.value, "value");
+	return true;
+}
