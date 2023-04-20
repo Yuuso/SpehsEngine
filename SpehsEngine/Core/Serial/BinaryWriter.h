@@ -17,7 +17,7 @@ namespace se
 
 		template<typename T>
 		inline bool serial(const T& _value);
-		// nocommit what dis?
+		
 		template<typename T>
 		void writeAt(const T& t, const size_t _offset) { writeBuffer.writeAt(t, _offset); }
 

@@ -75,6 +75,7 @@ namespace se
 		// Private: no instance of this class is intended to be created.
 		InstantiateSerialCast()
 		{
+			impl<serial_call::AbstractReader<LegacyArchiveReader, Class>>();
 			impl<serial_call::AbstractReader<ArchiveReader, Class>>();
 			impl<serial_call::AbstractReader<BinaryReader, Class>>();
 			impl<serial_call::AbstractWriter<ArchiveWriter, Class>>();

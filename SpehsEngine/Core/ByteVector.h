@@ -18,6 +18,7 @@ namespace se
 		inline const std::byte* getData() const { return data.data(); }
 		inline size_t getSize() const { return data.size(); }
 		void swap(std::vector<std::byte>& _data) { data.swap(_data); }
+		void clear() { data.clear(); }
 	private:
 		std::vector<std::byte> data;
 	};
