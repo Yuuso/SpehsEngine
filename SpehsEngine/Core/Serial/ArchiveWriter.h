@@ -23,11 +23,12 @@ namespace se
 	private:
 
 		static constexpr size_t valueHeaderSize = sizeof(uint32_t) + sizeof(uint32_t); // Hash + size
-		static constexpr size_t containerHeaderSize = sizeof(uint32_t) + sizeof(uint32_t) + sizeof(uint32_t); // Hash + valuesEnd + containersEnd
+		static constexpr size_t containerHeaderSize = sizeof(uint32_t) + sizeof(uint32_t) + sizeof(uint32_t) + sizeof(uint32_t); // Hash + values begin + values end + child container count
 
 		BinaryWriter valueHeaders; // hash + size
 		BinaryWriter valueData;
-		BinaryWriter containers; // hash + value data offset + child count
+		BinaryWriter containers; // hash + value count + container count
+		uint32_t containerCounter = 0;
 	};
 
 	template<typename T>
@@ -65,18 +66,22 @@ namespace se
 		{
 			// Free writer (container)
 			const uint32_t hash = getArchiveHash<T>(_key);
+			const uint32_t valuesBegin = uint32_t(valueHeaders.getOffset() / valueHeaderSize);
 			uint32_t valuesEnd = 0;
-			uint32_t containersEnd = 0;
+			uint32_t containerCount = 0;
 			containers.serial(hash);
+			containers.serial(valuesBegin);
 			const size_t valuesEndOffset = containers.getOffset();
 			containers.serial(valuesEnd);
-			const size_t containersEndOffset = containers.getOffset();
-			containers.serial(containersEnd);
+			const size_t containerCountOffset = containers.getOffset();
+			containers.serial(containerCount);
+			const uint32_t containerCounterBegin = ++containerCounter;
 			const bool result = Serial<SerialTag<T>::type>::template serial<ArchiveWriter, const T&>(*this, _value);
 			valuesEnd = uint32_t(valueHeaders.getOffset() / valueHeaderSize);
-			containersEnd = uint32_t(containers.getOffset() / containerHeaderSize);
+			containerCount = containerCounter - containerCounterBegin;
+			containerCounter = containerCounterBegin;
 			containers.writeAt(valuesEnd, valuesEndOffset);
-			containers.writeAt(containersEnd, containersEndOffset);
+			containers.writeAt(containerCount, containerCountOffset);
 			return true;
 		}
 	}

@@ -12,7 +12,7 @@ namespace se
 		const uint32_t buffersSize = uint32_t(valueHeaders.getSize() + valueData.getSize() + containers.getSize());
 		const uint32_t dataSize = uint32_t(valueData.getSize());
 		const size_t headerSize = sizeof(version) + sizeof(valueCount) + sizeof(dataSize);
-		const size_t totalSize = sizeof(version) + sizeof(valueCount) + sizeof(dataSize) + buffersSize;
+		const size_t totalSize = headerSize + buffersSize;
 
 		// Single reserve call to cover the entire write
 		std::vector<uint8_t> data;
@@ -28,11 +28,12 @@ namespace se
 		}
 
 		se_assert(data.size() == headerSize);
-		size_t offset = headerSize;
+		size_t offset = data.size();
 		data.resize(totalSize);
 		memcpy(data.data() + offset, valueHeaders.getData(),	valueHeaders.getSize());	offset += valueHeaders.getSize();
 		memcpy(data.data() + offset, valueData.getData(),		valueData.getSize());		offset += valueData.getSize();
-		memcpy(data.data() + offset, containers.getData(),		containers.getSize());
+		memcpy(data.data() + offset, containers.getData(),		containers.getSize());		offset += containers.getSize();
+		se_assert(offset == data.size());
 		return data;
 	}
 }

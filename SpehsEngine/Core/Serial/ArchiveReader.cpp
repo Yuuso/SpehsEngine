@@ -138,7 +138,7 @@ namespace se
 			binaryReader.translate(int(dataSize));
 
 			// Containers
-			constexpr size_t containerHeaderSize = sizeof(uint32_t) + sizeof(uint32_t) + sizeof(uint32_t);
+			constexpr size_t containerHeaderSize = sizeof(uint32_t) + sizeof(uint32_t) + sizeof(uint32_t) + sizeof(uint32_t);
 			const size_t containerBytes = binaryReader.getBytesRemaining();
 			const uint32_t containerCount = uint32_t(containerBytes / containerHeaderSize);
 			if (containerCount * containerHeaderSize != containerBytes)
@@ -149,32 +149,31 @@ namespace se
 			struct ContainerHeader
 			{
 				uint32_t hash = 0;
+				uint32_t valuesBegin = 0;
 				uint32_t valuesEnd = 0;
-				uint32_t containersEnd = 0;
+				uint32_t containerCount = 0;
 			};
-			uint32_t valuesEnd = 0;
-			uint32_t containersEnd = 0;
 			std::vector<ContainerHeader> containerHeaders;
-			containerHeaders.resize(1 + containerCount);
-			containerHeaders[0].hash = 0;
-			containerHeaders[0].valuesEnd = valueCount;
-			containerHeaders[0].containersEnd = containerCount;
-			for (uint32_t i = 0; i < containerCount; i++)
+			containerHeaders.resize(containerCount);
+			for (ContainerHeader& containerHeader : containerHeaders)
 			{
-				ContainerHeader& containerHeader = containerHeaders[i + 1];
-				if (!binaryReader.serial(containerHeader.hash) || !binaryReader.serial(containerHeader.valuesEnd) || !binaryReader.serial(containerHeader.containersEnd))
+				if (!binaryReader.serial(containerHeader.hash) ||
+					!binaryReader.serial(containerHeader.valuesBegin) ||
+					!binaryReader.serial(containerHeader.valuesEnd) ||
+					!binaryReader.serial(containerHeader.containerCount))
 				{
-					se_assert(false);
 					return std::nullopt;
 				}
-				if (containerHeader.valuesEnd < valuesEnd || valuesEnd > uint32_t(values.size()))
+				if (containerHeader.valuesBegin > containerHeader.valuesEnd)
 				{
-					se_assert(false);
 					return std::nullopt;
 				}
-				if (containerHeader.containersEnd < containersEnd || containersEnd > containerCount)
+				if (containerHeader.valuesEnd > uint32_t(values.size()))
 				{
-					se_assert(false);
+					return std::nullopt;
+				}
+				if (containerHeader.containerCount > containerCount)
+				{
 					return std::nullopt;
 				}
 			}
@@ -184,95 +183,58 @@ namespace se
 				return std::nullopt;
 			}
 
+			struct StackContainer
+			{
+				Container* container = nullptr;
+				ContainerHeader* header = nullptr;
+			};
+			ContainerHeader rootContainerHeader;
+			rootContainerHeader.hash = 0;
+			rootContainerHeader.valuesBegin = 0;
+			rootContainerHeader.valuesEnd = valueCount;
+			rootContainerHeader.containerCount = 0x13371337; // This just needs to be not 0 for the root folder
 			Container rootContainer;
+			std::stack<StackContainer> stack;
+			stack.push(StackContainer());
+			stack.top().container = &rootContainer;
+			stack.top().header = &rootContainerHeader;
 
-
-			//struct Frame
-			//{
-			//	Container* container = nullptr;
-			//	uint32_t valuesEnd = 0;
-			//	uint32_t containersEnd = 0;
-			//};
-			//std::stack<Frame> frameStack;
-			//std::vector<Frame> frameVector;
-			//frameStack.push(Frame());
-			//frameStack.top().container = &rootContainer;
-			//frameStack.top().valuesEnd = uint32_t(values.size());
-			//frameVector.push_back(frameStack.top());
-			//size_t valueIndex = 0;
-			//auto progressValues = [&](const size_t end)
-			//{
-			//	if (frameStack.top().valuesBegin == frameStack.top().valuesEnd)
-			//	{
-			//		return;
-			//	}
-			//	while (valueIndex < end)
-			//	{
-			//		if (valueIndex < values.size())
-			//		{
-			//			const uint32_t hash = valueHashes[valueIndex];
-			//			frameStack.top().container->values[hash] = values[valueIndex];
-			//			valueIndex++;
-			//		}
-			//		else
-			//		{
-			//			break;
-			//		}
-			//	}
-			//};
-			//for (uint32_t i = 0; i < containerCount; i++)
-			//{
-			//	uint32_t hash = 0;
-			//	uint32_t valuesBegin = 0;
-			//	uint32_t valuesEnd = 0;
-			//	if (!binaryReader.serial(hash) || !binaryReader.serial(valuesBegin) || !binaryReader.serial(valuesEnd))
-			//	{
-			//		se_assert(false);
-			//		return std::nullopt;
-			//	}
-			//	if (valuesBegin > valuesEnd || valuesEnd > uint32_t(values.size()))
-			//	{
-			//		se_assert(false);
-			//		return std::nullopt;
-			//	}
-			//	//progressValues(valuesBegin);
-			//	while (valuesBegin >= frameStack.top().valuesEnd)
-			//	{
-			//		se_assert(frameStack.size() > 1);
-			//		frameStack.pop();
-			//	}
-			//	Container& child = frameStack.top().container->containers[hash];
-			//	child.containers.reserve(1000); // nocommit TODO
-			//	frameStack.push(Frame());
-			//	frameStack.top().container = &child;
-			//	frameStack.top().valuesBegin = valuesBegin;
-			//	frameStack.top().valuesEnd = valuesEnd;
-			//	frameVector.push_back(frameStack.top());
-			//}
-			//if (frameStack.size() == 2)
-			//{
-			//	frameStack.pop();
-			//}
-			//progressValues(values.size());
-			//se_assert(valueIndex == values.size());
-			/*
-				NOCOMMIT NOTES TO SELF
-					* Values can have size 0 because data buffers can be empty
-					* valuesBegin and valuesEnd specify a range of values within the container, but some of those values can be within a sub container
-					* The above Frame::container pointers are danging, see the above reserve call
-					* The whole container value begin/end indexing idea does not work for retaining the hierarchy...? in a case like empty-empty-empty-value
-			*/
-			//for (Frame &frame : frameVector)
-			//{
-			//	if (frame.valuesBegin < frame.valuesEnd)
-			//	{
-			//		for (size_t v = frame.valuesBegin; v < frame.valuesEnd; v++)
-			//		{
-			//			const uint32_t hash = valueHashes[v];
-			//			frame.container->values[hash] = values[v];
-			//		}
-			//	}
-			//}
+			size_t nextValueIndex = 0;
+			auto advanceValues = [&](const size_t end)
+			{
+				se_assert(!stack.empty());
+				while (nextValueIndex < end && nextValueIndex < stack.top().header->valuesEnd)
+				{
+					se_assert(nextValueIndex >= stack.top().header->valuesBegin);
+					const uint32_t hash = valueHashes[nextValueIndex];
+					se_assert(!tryFind(stack.top().container->values, hash));
+					stack.top().container->values[hash] = values[nextValueIndex];
+					nextValueIndex++;
+				}
+			};
+			auto endContainer = [&]()
+			{
+				advanceValues(stack.top().header->valuesEnd);
+				stack.pop();
+			};
+			for (ContainerHeader& containerHeader : containerHeaders)
+			{
+				while (stack.top().header->containerCount == 0)
+				{
+					endContainer();
+				}
+				advanceValues(containerHeader.valuesBegin);
+				stack.top().header->containerCount--;
+				Container& parentContainer = *stack.top().container;
+				se_assert(!tryFind(parentContainer.containers, containerHeader.hash));
+				stack.push(StackContainer());
+				stack.top().container = &parentContainer.containers[containerHeader.hash];
+				stack.top().header = &containerHeader;
+			}
+			while (!stack.empty())
+			{
+				endContainer();
+			}
 
 			// Result
 			ReadResult result;
