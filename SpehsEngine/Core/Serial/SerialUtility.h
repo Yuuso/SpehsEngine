@@ -10,9 +10,9 @@
 namespace se
 {
 	// The following templates are used for polymorphic serialization
-	namespace serial_call
+	namespace serial_cast
 	{
-		// Serial<>::call() call target for writing of an abstract user class
+		// Serial<>::cast() target for writing of an abstract user class
 		template<typename Serial, typename T>
 		struct AbstractWriter
 		{
@@ -33,7 +33,7 @@ namespace se
 			std::optional<bool> result;
 		};
 
-		// Serial<>::call() call target for reading of an abstract user class
+		// Serial<>::cast() target for reading of an abstract user class
 		template<typename Serial, typename T>
 		struct AbstractReader
 		{
@@ -75,18 +75,18 @@ namespace se
 		// Private: no instance of this class is intended to be created.
 		InstantiateSerialCast()
 		{
-			impl<serial_call::AbstractReader<LegacyArchiveReader, Class>>();
-			impl<serial_call::AbstractReader<ArchiveReader, Class>>();
-			impl<serial_call::AbstractReader<BinaryReader, Class>>();
-			impl<serial_call::AbstractWriter<ArchiveWriter, Class>>();
-			impl<serial_call::AbstractWriter<BinaryWriter, Class>>();
+			impl<serial_cast::AbstractReader<LegacyArchiveReader, Class>>();
+			impl<serial_cast::AbstractReader<ArchiveReader, Class>>();
+			impl<serial_cast::AbstractReader<BinaryReader, Class>>();
+			impl<serial_cast::AbstractWriter<ArchiveWriter, Class>>();
+			impl<serial_cast::AbstractWriter<BinaryWriter, Class>>();
 		}
-		template<typename CallTarget>
+		template<typename CastTarget>
 		void impl()
 		{
-			CallTarget callTarget;
+			CastTarget castTarget;
 			SerialId serialId;
-			se::Serial<Class>::template cast<CallTarget, SerialId>(callTarget, serialId);
+			se::Serial<Class>::template cast<CastTarget, SerialId>(castTarget, serialId);
 		}
 	};
 }

@@ -92,7 +92,7 @@ namespace se
 					using SerialId = typename SerialId<ElementType>::type;
 					const SerialId serialId = Serial<ElementType>::template identify<SerialId>(*_value);
 					se_serial(_serial, serialId, "serialId");
-					serial_call::AbstractWriter<S, ElementType> abstractWriter;
+					serial_cast::AbstractWriter<S, ElementType> abstractWriter;
 					abstractWriter.serial = &_serial;
 					abstractWriter.value = _value.get();
 					se::Serial<ElementType>::cast(abstractWriter, serialId);
@@ -113,10 +113,9 @@ namespace se
 					using SerialId = typename SerialId<ElementType>::type;
 					SerialId serialId;
 					se_serial(_serial, serialId, "serialId");
-					serial_call::AbstractReader<S, ElementType> abstractReader;
+					serial_cast::AbstractReader<S, ElementType> abstractReader;
 					abstractReader.serial = &_serial;
 					Serial<ElementType>::template cast(abstractReader, serialId);
-					se::Serial<ElementType>::cast(abstractReader, serialId);
 					_value.swap(abstractReader.ptr);
 					if (!_value)
 					{
