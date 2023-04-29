@@ -76,6 +76,7 @@ namespace se
 					error = inflate(&zInfo, Z_FINISH);
 					if (error == Z_STREAM_END)
 					{
+						buffer.resize(zInfo.total_out);
 						return std::optional<std::vector<uint8_t>>(std::move(buffer));
 					}
 					else if (error == Z_MEM_ERROR  || error == Z_BUF_ERROR)
