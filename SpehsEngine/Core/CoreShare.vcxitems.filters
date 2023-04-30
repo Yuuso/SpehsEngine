@@ -132,6 +132,8 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)MapUtilityFunctions.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)RemoveCvref.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Serial\SerialUtility.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)HeapOptional.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)HeapOptionalUtilityFunctions.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="File">
