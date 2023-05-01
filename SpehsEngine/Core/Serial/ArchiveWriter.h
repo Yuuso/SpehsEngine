@@ -47,9 +47,9 @@ namespace se
 			valueData.serial(_value);
 			return true;
 		}
-		else if constexpr (std::is_same<T, ByteView>::value)
+		else if constexpr (std::is_same<T, ByteView>::value || std::is_same<T, ByteVector>::value || IsStaticByteView<T>::value || IsConstStaticByteView<T>::value)
 		{
-			// Write raw data block
+			// Write (static or varying size) raw data block
 			const uint32_t hash = getArchiveHash<T>(_key);
 			const uint32_t size = uint32_t(_value.getSize());
 			valueHeaders.serial(hash);

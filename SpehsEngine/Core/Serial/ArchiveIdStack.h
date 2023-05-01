@@ -89,6 +89,28 @@ namespace se
 	};
 
 	template<typename T>
+	struct IsStaticByteView
+	{
+		static constexpr bool value = false;
+	};
+	template<size_t Length>
+	struct IsStaticByteView<StaticByteView<Length>>
+	{
+		static constexpr bool value = true;
+	};
+
+	template<typename T>
+	struct IsConstStaticByteView
+	{
+		static constexpr bool value = false;
+	};
+	template<size_t Length>
+	struct IsConstStaticByteView<ConstStaticByteView<Length>>
+	{
+		static constexpr bool value = true;
+	};
+
+	template<typename T>
 	static constexpr uint32_t getArchiveTypeId()
 	{
 		if constexpr (std::is_floating_point<T>::value)
@@ -103,9 +125,13 @@ namespace se
 		{
 			return uint32_t(48 + sizeof(T));
 		}
-		else if constexpr (std::is_same<T, ByteView>::value || std::is_same<T, ByteVector>::value)
+		else if constexpr (std::is_same<T, ByteVector>::value || std::is_same<T, ByteView>::value)
 		{
 			return uint32_t(64 + 1);
+		}
+		else if constexpr (IsStaticByteView<T>::value || IsConstStaticByteView<T>::value)
+		{
+			return uint32_t(80 + T::getSize());
 		}
 		else
 		{

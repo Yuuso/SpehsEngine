@@ -24,8 +24,9 @@ namespace se
 		const uint8_t* getData() const { return writeBuffer.getData(); }
 		size_t getOffset() const { return writeBuffer.getOffset(); }
 		size_t getSize() const { return writeBuffer.getSize(); }
-		void reserve(const size_t capacity) { writeBuffer.reserve(capacity); }
-		void swap(std::vector<uint8_t>& other) { writeBuffer.swap(other); }
+		void reserve(const size_t _capacity) { writeBuffer.reserve(_capacity); }
+		void swap(std::vector<uint8_t>& _other) { writeBuffer.swap(_other); }
+		void swap(WriteBuffer& _writeBuffer) { std::swap(_writeBuffer, writeBuffer); }
 	private:
 		WriteBuffer writeBuffer;
 	};

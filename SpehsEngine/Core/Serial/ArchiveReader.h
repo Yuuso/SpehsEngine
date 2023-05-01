@@ -80,6 +80,25 @@ namespace se
 			endObject();
 			return true;
 		}
+		else if constexpr (IsStaticByteView<T>::value)
+		{
+			// Read raw data block
+			const uint64_t objectHash = beginObject<T>(_key);
+			if (const Object* const object = tryFind(objects, objectHash))
+			{
+				if (object->size == T::getSize())
+				{
+					memcpy(_value.getData(), objectData.data() + object->index, T::getSize());
+				}
+				else
+				{
+					memset(_value.getData(), 0, T::getSize());
+					return false;
+				}
+			}
+			endObject();
+			return true;
+		}
 		else
 		{
 			// Free reader
@@ -194,6 +213,28 @@ namespace se
 			else
 			{
 				_value.clear();
+			}
+			return true;
+		}
+		else if constexpr (IsStaticByteView<T>::value)
+		{
+			// Read raw data block static
+			const uint32_t hash = getArchiveHash<T>(_key);
+			if (const Value* const value = findValue(hash))
+			{
+				if (value->size == T::getSize())
+				{
+					memcpy(_value.getData(), valueData.data() + value->index, T::getSize());
+				}
+				else
+				{
+					memset(_value.getData(), 0, T::getSize());
+					return false;
+				}
+			}
+			else
+			{
+				memset(_value.getData(), 0, T::getSize());
 			}
 			return true;
 		}
