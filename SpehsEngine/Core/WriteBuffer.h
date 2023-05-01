@@ -22,8 +22,6 @@ namespace se
 		template<class T, class = void> struct has_free_write : std::false_type {};
 		template<class T> struct has_free_write<T, type_sink_t<decltype(writeToBuffer(std::declval<WriteBuffer&>(), std::declval<const T&>()), void())>> : std::true_type {};
 	public:
-		WriteBuffer();
-		~WriteBuffer() override;
 		
 		void write(se::WriteBuffer& writeBuffer) const;
 		bool read(se::ReadBuffer& readBuffer);
@@ -77,23 +75,19 @@ namespace se
 					data.resize(offset + bytes);
 				}
 				write(vectorSize);
-
-				if (hostByteOrder == networkByteOrder)
+				memcpy(&data[offset], t.getData(), vectorSize);
+				offset += vectorSize;
+			}
+			else if constexpr (IsStaticByteView<T>::value || IsConstStaticByteView<T>::value)
+			{
+				// Static byte view
+				constexpr size_t bytes = T::getSize();
+				if (offset + bytes > data.size())
 				{
-					// Write in native order
-					memcpy(&data[offset], t.getData(), vectorSize);
-					offset += vectorSize;
+					data.resize(offset + bytes);
 				}
-				else
-				{
-					// Write in reversed order
-					size_t endOffset = bytes;
-					for (uint32_t i = 0; i < vectorSize; i++)
-					{
-						data[offset++] = (unsigned char)(*(t.getData() + endOffset));
-						--endOffset;
-					}
-				}
+				memcpy(&data[offset], t.getData(), bytes);
+				offset += bytes;
 			}
 			else if constexpr (has_free_write<T>::value)
 			{

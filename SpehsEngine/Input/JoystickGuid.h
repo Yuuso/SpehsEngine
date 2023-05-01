@@ -1,5 +1,6 @@
 #pragma once
 
+#include "SpehsEngine/Core/ByteView.h"
 #include <stdint.h>
 
 
@@ -20,22 +21,16 @@ namespace se
 template<> template<typename S, typename T>
 static bool se::Serial<se::input::JoystickGuid>::serial(S& _serial, T _value)
 {
-	constexpr size_t dataSize = 16;
-	static_assert(sizeof(_value.data) == dataSize);
 	if constexpr (S::getWritingEnabled())
 	{
-		const ByteView byteView((const std::byte*)&_value.data[0], dataSize);
+		const ConstStaticByteView<16> byteView((const std::byte*)&_value.data[0]);
 		se_serial(_serial, byteView, "JoystickGuid");
 		return true;
 	}
 	else
 	{
-		ByteVector byteVector;
+		StaticByteView<16> byteVector((std::byte*)&_value.data[0]);
 		se_serial(_serial, byteVector, "JoystickGuid");
-		if (byteVector.getSize() == dataSize)
-		{
-			memcpy(&_value.data[0], (const void*)byteVector.getData(), dataSize);
-		}
 		return true;
 	}
 }

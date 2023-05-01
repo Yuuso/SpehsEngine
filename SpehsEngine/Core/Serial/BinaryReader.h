@@ -1,6 +1,7 @@
 #pragma once
 
 #include "SpehsEngine/Core/ReadBuffer.h"
+#include "SpehsEngine/Core/ByteView.h"
 
 
 namespace se
@@ -34,7 +35,7 @@ namespace se
 	template<typename T>
 	inline bool BinaryReader::serial(T& _value)
 	{
-		if constexpr (std::is_enum<T>::value || !std::is_class<T>::value || std::is_same<T, ByteVector>::value)
+		if constexpr (std::is_enum<T>::value || !std::is_class<T>::value || std::is_same<T, ByteVector>::value || IsStaticByteView<T>::value)
 		{
 			// Built-in
 			return readBuffer.read(_value);

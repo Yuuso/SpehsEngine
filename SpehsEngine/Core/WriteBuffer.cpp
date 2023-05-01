@@ -4,16 +4,6 @@
 
 namespace se
 {
-	WriteBuffer::WriteBuffer()
-	{
-
-	}
-
-	WriteBuffer::~WriteBuffer()
-	{
-
-	}
-
 	void WriteBuffer::write(se::WriteBuffer& writeBuffer) const
 	{
 		writeBuffer.write(data);

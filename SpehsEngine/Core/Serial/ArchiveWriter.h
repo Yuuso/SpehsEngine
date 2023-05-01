@@ -1,7 +1,7 @@
 #pragma once
 
 #include "SpehsEngine/Core/Serial/BinaryWriter.h"
-#include "SpehsEngine/Core/Serial/ArchiveIdStack.h"
+#include "SpehsEngine/Core/Serial/ArchiveHash.h"
 #include "SpehsEngine/Core/Log.h"
 
 

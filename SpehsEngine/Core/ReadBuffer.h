@@ -1,9 +1,11 @@
 #pragma once
 
 #include "SpehsEngine/Core/BufferBase.h"
+#include "SpehsEngine/Core/ByteVector.h"
+#include "SpehsEngine/Core/ByteView.h"
 #include "SpehsEngine/Core/Endianness.h"
 #include "SpehsEngine/Core/HasMemberFunction.h"
-#include "SpehsEngine/Core/ByteVector.h"
+#include "SpehsEngine/Core/SE_Assert.h"
 
 
 namespace se
@@ -38,6 +40,7 @@ namespace se
 				const size_t bytes = sizeof(T);
 				if (offset + bytes > size)
 				{
+					se_assert(false);
 					return false;
 				}
 
@@ -69,29 +72,27 @@ namespace se
 				}
 				if (offset + bytes > size)
 				{
+					se_assert(false);
 					return false;
 				}
-
 				std::vector<std::byte> vector;
 				t.swap(vector);
 				vector.resize(bytes);
-
-				if (hostByteOrder == networkByteOrder)
-				{
-					// Read in native byte order
-					memcpy(vector.data(), &data[offset], bytes);
-				}
-				else
-				{
-					// Read in reversed byte order
-					size_t readOffset = offset + bytes;
-					for (size_t i = 0; i < bytes; i++)
-					{
-						vector[i] = std::byte(data[--readOffset]);
-					}
-				}
+				memcpy(vector.data(), &data[offset], bytes);
 				t.swap(vector);
-
+				offset += bytes;
+				return true;
+			}
+			else if constexpr (IsStaticByteView<T>::value)
+			{
+				// Static byte view
+				constexpr uint32_t bytes = uint32_t(T::getSize());
+				if (offset + bytes > size)
+				{
+					se_assert(false);
+					return false;
+				}
+				memcpy(t.getData(), &data[offset], bytes);
 				offset += bytes;
 				return true;
 			}

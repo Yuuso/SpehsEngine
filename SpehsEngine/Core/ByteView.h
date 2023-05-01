@@ -40,4 +40,27 @@ namespace se
 	private:
 		const std::byte* data = nullptr;
 	};
+
+	template<typename T>
+	struct IsStaticByteView
+	{
+		static constexpr bool value = false;
+	};
+	template<size_t Length>
+	struct IsStaticByteView<StaticByteView<Length>>
+	{
+		static constexpr bool value = true;
+	};
+
+	template<typename T>
+	struct IsConstStaticByteView
+	{
+		static constexpr bool value = false;
+	};
+	template<size_t Length>
+	struct IsConstStaticByteView<ConstStaticByteView<Length>>
+	{
+		static constexpr bool value = true;
+	};
+
 }

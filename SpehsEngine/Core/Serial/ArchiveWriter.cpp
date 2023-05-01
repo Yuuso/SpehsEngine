@@ -34,6 +34,14 @@ namespace se
 		memcpy(data.data() + offset, valueData.getData(),		valueData.getSize());		offset += valueData.getSize();
 		memcpy(data.data() + offset, containers.getData(),		containers.getSize());		offset += containers.getSize();
 		se_assert(offset == data.size());
+
+		//se::log::info("Archive data generated: " + std::to_string(totalSize) + " B"
+		//	+ "\n\tArchive header:\t" + std::to_string(headerSize) + " B (" + std::to_string(int(100.0f * float(headerSize) / float(totalSize))) + " %)"
+		//	+ "\n\tValue headers:\t" + std::to_string(valueHeaders.getSize()) + " B (" + std::to_string(int(100.0f * float(valueHeaders.getSize()) / float(totalSize))) + " %)"
+		//	+ "\n\tValue data:\t" + std::to_string(dataSize) + " B (" + std::to_string(int(100.0f * float(dataSize) / float(totalSize))) + " %)"
+		//	+ "\n\tContainers:\t" + std::to_string(containers.getSize()) + " B (" + std::to_string(int(100.0f * float(containers.getSize()) / float(totalSize))) + " %)"
+		//	);
+
 		return data;
 	}
 }

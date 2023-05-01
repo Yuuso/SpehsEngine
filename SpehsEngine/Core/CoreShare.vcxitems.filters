@@ -123,7 +123,6 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)Noise.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)ByteVector.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)ByteView.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)Serial\ArchiveIdStack.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Serial\ArchiveReader.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Serial\ArchiveWriter.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Serial\BinaryReader.h" />
@@ -134,6 +133,7 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)Serial\SerialUtility.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)HeapOptional.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)HeapOptionalUtilityFunctions.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Serial\ArchiveHash.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="File">

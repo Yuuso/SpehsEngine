@@ -34,7 +34,7 @@ namespace se
 	template<typename T>
 	inline bool BinaryWriter::serial(const T& _value)
 	{
-		if constexpr (std::is_enum<T>::value || !std::is_class<T>::value || std::is_same<T, ByteView>::value)
+		if constexpr (std::is_enum<T>::value || !std::is_class<T>::value || std::is_same<T, ByteView>::value || std::is_same<T, ByteVector>::value || IsStaticByteView<T>::value || IsConstStaticByteView<T>::value)
 		{
 			// Built-in
 			writeBuffer.write(_value);
