@@ -1,7 +1,6 @@
 #pragma once
 
 #include "SpehsEngine/Core/Serial/Serial.h"
-#include "SpehsEngine/Core/Archive.h"
 #include "SpehsEngine/Core/ReadBuffer.h"
 #include "SpehsEngine/Core/TypeTraits.h"
 #include "SpehsEngine/Core/WriteBuffer.h"
@@ -47,51 +46,6 @@ namespace se
 				return false;
 			}
 		}
-		return true;
-	}
-
-	template<typename KeyType, typename T, typename Compare = std::less<KeyType>, typename SizeType = uint32_t>
-	Archive writeToArchive(const std::multimap<KeyType, T, Compare>& multimap)
-	{
-		static_assert(std::is_integral<SizeType>::value, "SizeType must be integral.");
-		Archive archive;
-		const SizeType size = SizeType(multimap.size());
-		se_write_to_archive(archive, size);
-		size_t index = 0;
-		for (auto it = multimap.begin(); it != multimap.end(); it++)
-		{
-			archive.write(std::to_string(index) + "k", it->first);
-			archive.write(std::to_string(index) + "v", it->second);
-			index++;
-		}
-		return archive;
-	}
-
-	template<typename KeyType, typename T, typename Compare = std::less<KeyType>, typename SizeType = uint32_t>
-	bool readFromArchive(const Archive& archive, std::multimap<KeyType, T, Compare>& multimap)
-	{
-		static_assert(std::is_integral<SizeType>::value, "SizeType must be integral.");
-		SizeType size = 0;
-		se_read_from_archive(archive, size);
-		std::multimap<KeyType, T, Compare> localMultimap;
-		for (SizeType i = 0; i < size; i++)
-		{
-			KeyType key;
-			if (!archive.read(std::to_string(i) + "k", key))
-			{
-				return false;
-			}
-			const std::multimap<KeyType, T, Compare>::iterator emplaceIt = localMultimap.emplace(key, T());
-			if (emplaceIt == localMultimap.end())
-			{
-				return false;
-			}
-			if (!archive.read(std::to_string(i) + "v", emplaceIt->second))
-			{
-				return false;
-			}
-		}
-		std::swap(localMultimap, multimap);
 		return true;
 	}
 }

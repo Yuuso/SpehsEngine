@@ -1,6 +1,5 @@
 #pragma once
 
-#include "SpehsEngine/Core/Archive.h"
 #include "SpehsEngine/Core/ReadBuffer.h"
 #include "SpehsEngine/Core/TypeTraits.h"
 #include "SpehsEngine/Core/WriteBuffer.h"
@@ -81,44 +80,6 @@ namespace se
 			}
 			T& value = unorderedMap[key];
 			if (!buffer.read(value))
-			{
-				return false;
-			}
-		}
-		return true;
-	}
-
-	template<typename KeyType, typename T, typename Hasher = std::hash<KeyType>, typename SizeType = uint32_t>
-	Archive writeToArchive(const std::unordered_map<KeyType, T, Hasher>& unorderedMap)
-	{
-		static_assert(std::is_integral<SizeType>::value, "SizeType must be integral.");
-		Archive archive;
-		const SizeType size = SizeType(unorderedMap.size());
-		se_write_to_archive(archive, size);
-		size_t index = 0;
-		for (typename std::unordered_map<KeyType, T, Hasher>::const_iterator it = unorderedMap.begin(); it != unorderedMap.end(); it++)
-		{
-			archive.write(std::to_string(index) + "k", it->first);
-			archive.write(std::to_string(index) + "v", it->second);
-			index++;
-		}
-		return archive;
-	}
-
-	template<typename KeyType, typename T, typename Hasher = std::hash<KeyType>, typename SizeType = uint32_t>
-	bool readFromArchive(const Archive& archive, std::unordered_map<KeyType, T, Hasher>& unorderedMap)
-	{
-		static_assert(std::is_integral<SizeType>::value, "SizeType must be integral.");
-		SizeType size = 0;
-		se_read_from_archive(archive, size);
-		for (SizeType i = 0; i < size; i++)
-		{
-			KeyType key;
-			if (!archive.read(std::to_string(i) + "k", key))
-			{
-				return false;
-			}
-			if (!archive.read(std::to_string(i) + "v", unorderedMap[key]))
 			{
 				return false;
 			}

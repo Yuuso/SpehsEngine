@@ -1,33 +1,10 @@
 #pragma once
 
-#include "SpehsEngine/Core/Archive.h"
 #include "SpehsEngine/Core/Murmur3.h"
 #include "SpehsEngine/Core/Serial/Serial.h"
 #include "SpehsEngine/Input/CustomEventParameters.h"
 #include "SpehsEngine/Input/EventUtilityFunctions.h"
 
-
-namespace se
-{
-	Archive writeToArchive(const input::KeyboardEventParameters& eventParameters);
-	Archive writeToArchive(const input::MouseButtonEventParameters& eventParameters);
-	Archive writeToArchive(const input::MouseMotionEventParameters& eventParameters);
-	Archive writeToArchive(const input::MouseWheelEventParameters& eventParameters);
-	Archive writeToArchive(const input::MouseHoverEventParameters& eventParameters);
-	Archive writeToArchive(const input::JoystickButtonEventParameters& eventParameters);
-	Archive writeToArchive(const input::JoystickAxisEventParameters& eventParameters);
-
-	bool readFromArchive(const Archive& archive, input::KeyboardEventParameters& eventParameters);
-	bool readFromArchive(const Archive& archive, input::MouseButtonEventParameters& eventParameters);
-	bool readFromArchive(const Archive& archive, input::MouseMotionEventParameters& eventParameters);
-	bool readFromArchive(const Archive& archive, input::MouseWheelEventParameters& eventParameters);
-	bool readFromArchive(const Archive& archive, input::MouseHoverEventParameters& eventParameters);
-	bool readFromArchive(const Archive& archive, input::JoystickButtonEventParameters& eventParameters);
-	bool readFromArchive(const Archive& archive, input::JoystickAxisEventParameters& eventParameters);
-
-	Archive writeToArchive(const input::CustomEventParameters& customEventParameters);
-	bool readFromArchive(const Archive& archive, input::CustomEventParameters& customEventParameters);
-}
 
 template<> template<typename S, typename T>
 static bool se::Serial<se::input::KeyboardEventParameters>::serial(S& _serial, T _value)

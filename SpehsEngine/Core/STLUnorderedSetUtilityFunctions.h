@@ -1,6 +1,5 @@
 #pragma once
 
-#include "SpehsEngine/Core/Archive.h"
 #include "SpehsEngine/Core/ReadBuffer.h"
 #include "SpehsEngine/Core/TypeTraits.h"
 #include "SpehsEngine/Core/WriteBuffer.h"
@@ -73,39 +72,6 @@ namespace se
 		{
 			ValueType value;
 			if (!buffer.read(value))
-			{
-				return false;
-			}
-			unorderedSet.insert(value);
-		}
-		return true;
-	}
-
-	template<typename ValueType, typename Hasher = std::hash<ValueType>, typename SizeType = uint32_t>
-	Archive writeToArchive(const std::unordered_set<ValueType, Hasher>& unorderedSet)
-	{
-		static_assert(std::is_integral<SizeType>::value, "SizeType must be integral.");
-		Archive archive;
-		const SizeType size = SizeType(unorderedSet.size());
-		se_write_to_archive(archive, size);
-		size_t index = 0;
-		for (const ValueType& value : unorderedSet)
-		{
-			archive.write(std::to_string(index++) + "v", value);
-		}
-		return archive;
-	}
-
-	template<typename ValueType, typename Hasher = std::hash<ValueType>, typename SizeType = uint32_t>
-	bool readFromArchive(const Archive& archive, std::unordered_set<ValueType, Hasher>& unorderedSet)
-	{
-		static_assert(std::is_integral<SizeType>::value, "SizeType must be integral.");
-		SizeType size = 0;
-		se_read_from_archive(archive, size);
-		for (SizeType i = 0; i < size; i++)
-		{
-			ValueType value;
-			if (!archive.read(std::to_string(i) + "v", value))
 			{
 				return false;
 			}

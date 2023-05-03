@@ -1,7 +1,6 @@
 #include "stdafx.h"
 #include "SpehsEngine/Input/JoystickUtilityFunctions.h"
 
-#include "SpehsEngine/Core/Archive.h"
 #include "SDL/SDL_joystick.h"
 
 
@@ -155,29 +154,6 @@ namespace se
 				return SDL_JoystickRumble(joystickSdl, lowFrequency, highFrequency, uint32_t(duration.asMilliseconds())) == 0;
 			}
 			return false;
-		}
-
-		Archive writeToArchive(const input::JoystickGuid& joystickGuid)
-		{
-			Archive archive;
-			uint64_t data1 = 0;
-			uint64_t data2 = 0;
-			memcpy(&data1, &joystickGuid.data[0], 8);
-			memcpy(&data2, &joystickGuid.data[8], 8);
-			se_write_to_archive(archive, data1);
-			se_write_to_archive(archive, data2);
-			return archive;
-		}
-
-		bool readFromArchive(const Archive& archive, input::JoystickGuid& joystickGuid)
-		{
-			uint64_t data1 = 0;
-			uint64_t data2 = 0;
-			se_read_from_archive(archive, data1);
-			se_read_from_archive(archive, data2);
-			memcpy(&joystickGuid.data[0], &data1, 8);
-			memcpy(&joystickGuid.data[8], &data2, 8);
-			return true;
 		}
 	}
 }

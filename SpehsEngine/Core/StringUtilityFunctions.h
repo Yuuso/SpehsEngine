@@ -1,7 +1,6 @@
 #pragma once
 
 #include "boost/format.hpp"
-#include "SpehsEngine/Core/Archive.h"
 #include "SpehsEngine/Core/SE_Assert.h"
 #include "SpehsEngine/Core/ReadBuffer.h"
 #include "SpehsEngine/Core/WriteBuffer.h"
@@ -67,34 +66,6 @@ namespace se
 			}
 		}
 		return true;
-	}
-	
-	template<typename SizeType = uint32_t>
-	Archive writeToArchive(const std::string& string)
-	{
-		static_assert(std::is_integral<SizeType>::value, "SizeType must be integral.");
-		WriteBuffer writeBuffer;
-		writeToBuffer<SizeType>(writeBuffer, string);
-		Archive archive;
-		archive.write("writeBuffer", writeBuffer);
-		return archive;
-	}
-
-	template<typename SizeType = uint32_t>
-	bool readFromArchive(const Archive& archive, std::string& string)
-	{
-		static_assert(std::is_integral<SizeType>::value, "SizeType must be integral.");
-		WriteBuffer writeBuffer;
-		archive.read("writeBuffer", writeBuffer);
-		if (writeBuffer.getSize() > 0)
-		{
-			ReadBuffer readBuffer(writeBuffer[0], writeBuffer.getSize());
-			return readFromBuffer<SizeType>(readBuffer, string);
-		}
-		else
-		{
-			return true;
-		}
 	}
 
 	template<> template<typename S, typename T>

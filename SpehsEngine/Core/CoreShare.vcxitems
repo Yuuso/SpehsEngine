@@ -14,8 +14,6 @@
     <ProjectCapability Include="SourceItemsFromImports" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="$(MSBuildThisFileDirectory)Archive.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)ArchiveUtilityFunctions.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)BufferUtilityFunctions.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)File\Timestamp.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)ScopedFrameLimiter.cpp" />
@@ -55,8 +53,6 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)WriteBuffer.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="$(MSBuildThisFileDirectory)Archive.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)ArchiveUtilityFunctions.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)AsyncTaskManager.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)BufferUtilityFunctions.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)ByteVector.h" />
@@ -73,7 +69,6 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)LogSignal.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)MultiMapUtilityFunctions.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Noise.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)ReadAbstract.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)ResourcePathFinder.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)ScopedConnections.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)ScopeProfilerTypes.h" />
@@ -131,7 +126,6 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)UtcTime.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)WatchedValue.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)WeightedRandomizer.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)WriteAbstract.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)WriteBuffer.h" />
   </ItemGroup>
   <ItemGroup>

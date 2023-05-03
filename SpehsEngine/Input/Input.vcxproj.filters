@@ -146,12 +146,6 @@
     <ClCompile Include="CustomEventGenerator.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="CustomEventParametersUtilityFunctions.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="EventUtilityFunctions.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="CustomEventParameters.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>

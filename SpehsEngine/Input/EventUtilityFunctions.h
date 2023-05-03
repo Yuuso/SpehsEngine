@@ -1,34 +1,8 @@
 #pragma once
 
 #include "SpehsEngine/Input/Event.h"
-#include "SpehsEngine/Core/Archive.h"
 #include "SpehsEngine/Core/Murmur3.h"
 
-
-namespace se
-{
-	Archive writeToArchive(const input::KeyboardEvent& event);
-	Archive writeToArchive(const input::TextInputEvent& event);
-	Archive writeToArchive(const input::MouseButtonEvent& event);
-	Archive writeToArchive(const input::MouseMotionEvent& event);
-	Archive writeToArchive(const input::MouseWheelEvent& event);
-	Archive writeToArchive(const input::MouseHoverEvent& event);
-	Archive writeToArchive(const input::JoystickButtonEvent& event);
-	Archive writeToArchive(const input::JoystickAxisEvent& event);
-	Archive writeToArchive(const input::QuitEvent& event);
-	Archive writeToArchive(const input::FileDropEvent& event);
-
-	bool readFromArchive(const Archive& archive, input::KeyboardEvent& event);
-	bool readFromArchive(const Archive& archive, input::TextInputEvent& event);
-	bool readFromArchive(const Archive& archive, input::MouseButtonEvent& event);
-	bool readFromArchive(const Archive& archive, input::MouseMotionEvent& event);
-	bool readFromArchive(const Archive& archive, input::MouseWheelEvent& event);
-	bool readFromArchive(const Archive& archive, input::MouseHoverEvent& event);
-	bool readFromArchive(const Archive& archive, input::JoystickButtonEvent& event);
-	bool readFromArchive(const Archive& archive, input::JoystickAxisEvent& event);
-	bool readFromArchive(const Archive& archive, input::QuitEvent& event);
-	bool readFromArchive(const Archive& archive, input::FileDropEvent& event);
-}
 
 namespace std
 {

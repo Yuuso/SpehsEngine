@@ -15,6 +15,16 @@ namespace se
 		static inline constexpr bool getWritingEnabled() { return true; }
 		static inline constexpr bool getReadingEnabled() { return false; }
 
+		// Temp: advance a write buffer directly
+		BinaryWriter(WriteBuffer& _writeBuffer)
+			: writeBuffer(_writeBuffer)
+		{
+		}
+		BinaryWriter()
+			: writeBuffer(ownedWriteBuffer)
+		{
+		}
+
 		template<typename T>
 		inline bool serial(const T& _value);
 		
@@ -28,7 +38,8 @@ namespace se
 		void swap(std::vector<uint8_t>& _other) { writeBuffer.swap(_other); }
 		void swap(WriteBuffer& _writeBuffer) { std::swap(_writeBuffer, writeBuffer); }
 	private:
-		WriteBuffer writeBuffer;
+		WriteBuffer ownedWriteBuffer;
+		WriteBuffer& writeBuffer;
 	};
 
 	template<typename T>

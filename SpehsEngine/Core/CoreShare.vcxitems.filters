@@ -1,8 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <ClCompile Include="$(MSBuildThisFileDirectory)Archive.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)ArchiveUtilityFunctions.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)SE_Assert.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)BufferBase.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Color.cpp" />
@@ -48,8 +46,6 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)Serial\ArchiveWriter.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="$(MSBuildThisFileDirectory)Archive.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)ArchiveUtilityFunctions.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)SE_Assert.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)BitwiseOperations.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)BufferBase.h" />
@@ -113,8 +109,6 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)HexColor.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)ResourcePathFinder.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)StringViewUtilityFunctions.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)ReadAbstract.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)WriteAbstract.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)ScopedConnections.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)LogSignal.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)TimeUtilityFunctions.h" />

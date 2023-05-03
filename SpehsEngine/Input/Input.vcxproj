@@ -162,11 +162,9 @@
     <ClCompile Include="CustomEventGenerator.cpp" />
     <ClCompile Include="CustomEventParameters.cpp" />
     <ClCompile Include="CustomEventParametersRecorder.cpp" />
-    <ClCompile Include="CustomEventParametersUtilityFunctions.cpp" />
     <ClCompile Include="Event.cpp" />
     <ClCompile Include="EventCatcher.cpp" />
     <ClCompile Include="EventSignaler.cpp" />
-    <ClCompile Include="EventUtilityFunctions.cpp" />
     <ClCompile Include="GUID.cpp" />
     <ClCompile Include="InputLib.cpp" />
     <ClCompile Include="InputEnumerations.cpp" />
