@@ -33,11 +33,6 @@ namespace se
 
 		UtcTime getUtcTime();
 	}
-
-	class WriteBuffer;
-	class ReadBuffer;
-	void writeToBuffer(WriteBuffer& writeBuffer, const time::UtcTime& utcTime);
-	bool readFromBuffer(ReadBuffer& readBuffer, time::UtcTime& utcTime);
 }
 
 template<> template<typename S, typename T>

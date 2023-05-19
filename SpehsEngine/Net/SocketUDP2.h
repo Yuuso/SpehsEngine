@@ -1,15 +1,17 @@
 #pragma once
-#include <functional>
-#include <memory>
-#include <mutex>
-#include <vector>
+
 #include "boost/asio/ip/udp.hpp"
 #include "boost/system/error_code.hpp"
 #include "boost/enable_shared_from_this.hpp"
 #include "boost/signals2.hpp"
+#include "SpehsEngine/Core/Serial/BinaryWriter.h"
 #include "SpehsEngine/Core/SE_Time.h"
-#include "SpehsEngine/Core/WriteBuffer.h"
 #include "SpehsEngine/Net/Endpoint.h"
+#include <functional>
+#include <memory>
+#include <mutex>
+#include <vector>
+
 
 namespace se
 {
@@ -31,14 +33,14 @@ namespace se
 		class SocketUDP2 : public boost::enable_shared_from_this<SocketUDP2>
 		{
 		private:
-			void pushToBuffers(std::vector<boost::asio::const_buffer>& buffers, const WriteBuffer& writeBuffer)
+			void pushToBuffers(std::vector<boost::asio::const_buffer>& buffers, const BinaryWriter& binaryWriter)
 			{
-				buffers.push_back(boost::asio::const_buffer(writeBuffer.getData(), writeBuffer.getSize()));
+				buffers.push_back(boost::asio::const_buffer(binaryWriter.getData(), binaryWriter.getSize()));
 			}
-			template<typename ... Buffers>
-			void pushToBuffers(std::vector<boost::asio::const_buffer>& buffers, const WriteBuffer& writeBuffer, const Buffers&... writeBuffers)
+			template<typename ... BinaryWriters>
+			void pushToBuffers(std::vector<boost::asio::const_buffer>& buffers, const BinaryWriter& binaryWriter, const BinaryWriters&... binaryWriters)
 			{
-				pushToBuffers(buffers, writeBuffer, writeBuffers...);
+				pushToBuffers(buffers, binaryWriter, binaryWriters...);
 			}
 		public:
 
@@ -55,13 +57,13 @@ namespace se
 			bool bind(const Port port = Port());
 			bool startReceiving();
 			void setReceiveHandler(const std::function<void(ReceivedPacketSocketUDP2&)>& _receiveHandler);
-			void sendPacket(const WriteBuffer& buffer, const boost::asio::ip::udp::endpoint& endpoint);
+			void sendPacket(const BinaryWriter& binaryWriter, const boost::asio::ip::udp::endpoint& endpoint);
 			void sendPacket(const std::vector<boost::asio::const_buffer>& buffers, const boost::asio::ip::udp::endpoint& endpoint);
-			template<typename ... Buffers>
-			void sendPacket(const Buffers&... writeBuffers, const boost::asio::ip::udp::endpoint& endpoint)
+			template<typename ... BinaryWriters>
+			void sendPacket(const BinaryWriters&... binaryWriters, const boost::asio::ip::udp::endpoint& endpoint)
 			{
 				std::vector<boost::asio::const_buffer> buffers;
-				pushToBuffers(buffers, writeBuffers...);
+				pushToBuffers(buffers, binaryWriters...);
 				sendPacket(buffers, endpoint);
 			}
 

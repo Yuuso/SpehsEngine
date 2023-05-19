@@ -1,8 +1,6 @@
 #pragma once
 
 #include "SpehsEngine/Core/Serial/SerialUtility.h"
-#include "SpehsEngine/Core/ReadBuffer.h"
-#include "SpehsEngine/Core/WriteBuffer.h"
 #include <stdint.h>
 #include <memory>
 #include <optional>
@@ -10,36 +8,6 @@
 
 namespace se
 {
-	template<typename T>
-	void writeToBuffer(WriteBuffer& writeBuffer, const std::unique_ptr<T>& pointer)
-	{
-		const bool exists = pointer.get() != nullptr;
-		se_write(writeBuffer, exists);
-		if (exists)
-		{
-			const T& t = *pointer;
-			se_write(writeBuffer, t);
-		}
-	}
-
-	template<typename T>
-	bool readFromBuffer(ReadBuffer& readBuffer, std::unique_ptr<T>& pointer)
-	{
-		bool exists = false;
-		se_read(readBuffer, exists);
-		if (exists)
-		{
-			pointer.reset(new T());
-			T& t = *pointer;
-			se_read(readBuffer, t);
-		}
-		else
-		{
-			pointer.reset();
-		}
-		return true;
-	}
-
 	struct SerialTagUniquePtr {};
 	template<typename T> struct SerialTag<std::unique_ptr<T>> { typedef SerialTagUniquePtr type; };
 	template<> template<typename S, typename T>

@@ -1,4 +1,11 @@
 #pragma once
+
+#include "SpehsEngine/Net/ISocket.h"
+#include "SpehsEngine/Net/Port.h"
+#include "SpehsEngine/Net/Address.h"
+#include "SpehsEngine/Net/IOService.h"
+#include "SpehsEngine/Net/PacketMessage.h"
+#include "SpehsEngine/Core/SE_Time.h"
 #include <boost/asio.hpp>
 #include <boost/bind.hpp>
 #include <boost/system/error_code.hpp>
@@ -9,20 +16,14 @@
 #include <atomic>
 #include <mutex>
 
-#include "SpehsEngine/Net/ISocket.h"
-#include "SpehsEngine/Net/Port.h"
-#include "SpehsEngine/Net/Address.h"
-#include "SpehsEngine/Net/IOService.h"
-#include "SpehsEngine/Net/PacketMessage.h"
-#include "SpehsEngine/Core/SE_Time.h"
 
 namespace se
 {
-	class WriteBuffer;
-	class ReadBuffer;
+	class BinaryWriter;
+	class BinaryReader;
 	namespace net
 	{
-		class HandshakeUDP;
+		struct HandshakeUDP;
 
 		class SocketUDP : public ISocket
 		{
@@ -54,10 +55,10 @@ namespace se
 			void update();
 
 			/* Sends buffer to the set remote endpoint. */
-			bool sendPacket(const WriteBuffer& buffer, const PacketType packetType = PacketType::undefined);
+			bool sendPacket(const BinaryWriter& binaryWriter, const PacketType packetType = PacketType::undefined);
 
 			/* Sends buffer to a specified endpoint. */
-			bool sendPacket(const WriteBuffer& buffer, const boost::asio::ip::udp::endpoint& endpoint, const PacketType packetType = PacketType::undefined);
+			bool sendPacket(const BinaryWriter& binaryWriter, const boost::asio::ip::udp::endpoint& endpoint, const PacketType packetType = PacketType::undefined);
 
 			/* Returns false if the memory allocation fails, or the socket is currently receiving data. */
 			bool resizeReceiveBuffer(const size_t newSize);
@@ -77,7 +78,7 @@ namespace se
 			size_t getReceivedBytes() const override;
 
 			/* Received packets must be processed with a specified receive handler. While there exists no callback, all incoming packets are discarded. */
-			void setOnReceiveCallback(const std::function<void(ReadBuffer&, const boost::asio::ip::udp::endpoint&)> onReceiveCallback = std::function<void(ReadBuffer&, const boost::asio::ip::udp::endpoint&)>());
+			void setOnReceiveCallback(const std::function<void(BinaryReader&, const boost::asio::ip::udp::endpoint&)> onReceiveCallback = std::function<void(BinaryReader&, const boost::asio::ip::udp::endpoint&)>());
 
 			void setReuseAddress(const bool enabled);
 			bool getReuseAddress() const;
@@ -101,7 +102,7 @@ namespace se
 			struct SharedImpl : public boost::enable_shared_from_this<SharedImpl>
 			{
 				SharedImpl(IOService& ioService);
-				bool sendPacket(const WriteBuffer& buffer, const boost::asio::ip::udp::endpoint& endpoint, const PacketType packetType);
+				bool sendPacket(const BinaryWriter& binaryWriter, const boost::asio::ip::udp::endpoint& endpoint, const PacketType packetType);
 				void receiveHandler(const boost::system::error_code& error, std::size_t bytes);
 				boost::asio::ip::udp::endpoint getLocalEndpoint() const;
 				Port getLocalPort() const;
@@ -123,7 +124,7 @@ namespace se
 				time::Time lastSendTime;
 				time::Time heartbeatInterval = se::time::fromSeconds(5.0f);
 				bool receiving = false;
-				std::function<void(ReadBuffer&, const boost::asio::ip::udp::endpoint&)> onReceiveCallback;//User defined receive handler
+				std::function<void(BinaryReader&, const boost::asio::ip::udp::endpoint&)> onReceiveCallback;//User defined receive handler
 				std::function<void(const HandshakeUDP&)> handshakeResponseCallback;
 				std::recursive_mutex receivedPacketsMutex;
 				std::vector<std::unique_ptr<ReceivedPacket>> receivedPackets;

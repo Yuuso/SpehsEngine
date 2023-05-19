@@ -4,8 +4,6 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)Acceptor.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Address.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)AddressUtilityFunctions.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)Aria\Aria.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)Connection.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Connection2.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)ConnectionManager2.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)ConnectionPackets.cpp" />
@@ -17,17 +15,12 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)SocketUDP2.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)MultiConnectionAcceptorTCP.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NetLib.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)Port.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)ISocket.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)ConnectionManager.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)SocketProfiler.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)SocketTCP.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)SocketUDP.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)stdafx.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Signaling\SignalingServer.cpp">
-      <Filter>Signaling</Filter>
-    </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)Signaling\SignalingPackets.cpp">
       <Filter>Signaling</Filter>
     </ClCompile>
     <ClCompile Include="$(MSBuildThisFileDirectory)NetIdentity.cpp" />
@@ -40,8 +33,6 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)Acceptor.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Address.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)AddressUtilityFunctions.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)Aria\Aria.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)Connection.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Connection2.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)ConnectionManager2.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)ConnectionPackets.h" />
@@ -58,7 +49,6 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)Port.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)PrecompiledInclude.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)ISocket.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)ConnectionManager.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)SocketProfiler.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)SocketTCP.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)SocketUDP.h" />

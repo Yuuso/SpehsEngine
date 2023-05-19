@@ -9,9 +9,6 @@
 
 namespace se
 {
-	class WriteBuffer;
-	class ReadBuffer;
-
 	template<> template<typename S, typename T>
 	static bool Serial<Color>::serial(S& _serial, T _color)
 	{
@@ -21,9 +18,6 @@ namespace se
 		se_serial(_serial, _color.a, "a");
 		return true;
 	}
-
-	void writeToBuffer(WriteBuffer& writeBuffer, const Color& color);
-	bool readFromBuffer(ReadBuffer& readBuffer, Color& color);
 
 	std::string toString(const Color& color);
 

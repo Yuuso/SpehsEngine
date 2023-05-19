@@ -2,7 +2,8 @@
 
 #include "boost/signals2/connection.hpp"
 #include "SpehsEngine/Core/StaticRingBuffer.h"
-#include "SpehsEngine/Net/ConnectionPackets.h"
+#include "SpehsEngine/Net/ConnectionId.h"
+//#include "SpehsEngine/Net/ConnectionPackets.h"
 
 namespace se
 {

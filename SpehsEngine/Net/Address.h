@@ -1,5 +1,7 @@
 #pragma once
+
 #include <string>
+
 
 namespace se
 {
@@ -19,11 +21,6 @@ namespace se
 			ValueType value;
 		};
 	}
-
-	class WriteBuffer;
-	class ReadBuffer;
-	void writeToBuffer(WriteBuffer& writeBuffer, const net::Address& address);
-	bool readFromBuffer(ReadBuffer& readBuffer, net::Address& address);
 }
 
 template<> template<typename S, typename T>

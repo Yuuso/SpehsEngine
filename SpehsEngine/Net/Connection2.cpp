@@ -45,8 +45,8 @@ namespace se
 				for (size_t i = 0; i < receivedPackets2.size(); i++)
 				{
 					const ReceivedPacket& receivedPacket = receivedPackets2[i];
-					ReadBuffer readBuffer(receivedPacket.data.data(), receivedPacket.data.size());
-					state->receiveHandler(readBuffer, receivedPacket.reliable);
+					BinaryReader binaryReader(receivedPacket.data.data(), receivedPacket.data.size());
+					state->receiveHandler(binaryReader, receivedPacket.reliable);
 					if (!state->receiveHandler)
 					{
 						// Push the rest of the packets back to the queue until a receive handler is specified
@@ -66,24 +66,24 @@ namespace se
 			}
 		}
 
-		bool Connection2::sendPacket(const WriteBuffer& writeBuffer, const bool reliable)
+		bool Connection2::sendPacket(const BinaryWriter& binaryWriter, const bool reliable)
 		{
 			const int flags = reliable ? k_nSteamNetworkingSend_Reliable : k_nSteamNetworkingSend_Unreliable;
-			const EResult result = state->steamNetworkingSockets.SendMessageToConnection(state->steamNetConnection, writeBuffer.getData(), uint32_t(writeBuffer.getSize()), flags, nullptr);
+			const EResult result = state->steamNetworkingSockets.SendMessageToConnection(state->steamNetConnection, binaryWriter.getData(), uint32_t(binaryWriter.getSize()), flags, nullptr);
 			if (result == k_EResultOK)
 			{
 				if (reliable)
 				{
 					statistics.sentPacketsReliable++;
-					statistics.sentBytesReliable += int64_t(writeBuffer.getSize());
+					statistics.sentBytesReliable += int64_t(binaryWriter.getSize());
 				}
 				else
 				{
 					statistics.sentPacketsUnreliable++;
-					statistics.sentBytesUnreliable += int64_t(writeBuffer.getSize());
+					statistics.sentBytesUnreliable += int64_t(binaryWriter.getSize());
 				}
 				statistics.sentPacketsTotal++;
-				statistics.sentBytesTotal += int64_t(writeBuffer.getSize());
+				statistics.sentBytesTotal += int64_t(binaryWriter.getSize());
 				return true;
 			}
 			else
@@ -146,8 +146,8 @@ namespace se
 			// Process packet immediately?
 			if (state->receiveHandler && receivedPackets.empty())
 			{
-				ReadBuffer readBuffer(data, size);
-				state->receiveHandler(readBuffer, reliable);
+				BinaryReader binaryReader((const uint8_t*)data, size);
+				state->receiveHandler(binaryReader, reliable);
 			}
 			else
 			{
@@ -229,7 +229,7 @@ namespace se
 			}
 		}
 
-		void Connection2::setReceiveHandler(const std::function<void(ReadBuffer&, const bool)>& _receiveHandler)
+		void Connection2::setReceiveHandler(const std::function<void(BinaryReader&, const bool)>& _receiveHandler)
 		{
 			state->receiveHandler = _receiveHandler;
 		}

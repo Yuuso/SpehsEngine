@@ -2,8 +2,6 @@
 
 #include "boost/format.hpp"
 #include "SpehsEngine/Core/SE_Assert.h"
-#include "SpehsEngine/Core/ReadBuffer.h"
-#include "SpehsEngine/Core/WriteBuffer.h"
 #include <string>
 
 
@@ -29,43 +27,6 @@ namespace se
 	{
 		boost::format boostFormat(format);
 		return formatStringImpl(boostFormat, std::forward<Arguments>(args)...);
-	}
-
-	template<typename SizeType = uint32_t>
-	void writeToBuffer(WriteBuffer& writeBuffer, const std::string& string)
-	{
-		static_assert(std::is_integral<SizeType>::value, "SizeType must be integral.");
-		se_assert(size_t(std::numeric_limits<SizeType>::max()) >= string.size() && "String size is larger than the maximum of SizeType.");
-		const SizeType size = SizeType(string.size());
-		writeBuffer.write(size);
-		for (SizeType i = 0; i < size; i++)
-		{
-			writeBuffer.write(string[size_t(i)]);
-		}
-	}
-
-	template<typename SizeType = uint32_t>
-	bool readFromBuffer(ReadBuffer& readBuffer, std::string& string)
-	{
-		static_assert(std::is_integral<SizeType>::value, "SizeType must be integral.");
-		SizeType size = 0;
-		if (!readBuffer.read(size))
-		{
-			return false;
-		}
-		if (readBuffer.getBytesRemaining() < size)
-		{
-			return false;
-		}
-		string.resize(size_t(size));
-		for (SizeType i = 0; i < size; i++)
-		{
-			if (!readBuffer.read(string[size_t(i)]))
-			{
-				return false;
-			}
-		}
-		return true;
 	}
 
 	template<> template<typename S, typename T>

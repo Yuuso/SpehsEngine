@@ -37,7 +37,6 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)File\Timestamp.cpp">
       <Filter>File</Filter>
     </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)BufferUtilityFunctions.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)TimeUtilityFunctions.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)UtcTime.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)ScopedFrameLimiter.cpp" />
@@ -99,9 +98,7 @@
     </ClInclude>
     <ClInclude Include="$(MSBuildThisFileDirectory)STLPairUtilityFunctions.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)StaticRingBuffer.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)BufferUtilityFunctions.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)STLUnorderedSetUtilityFunctions.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)MultiMapUtilityFunctions.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)UniquePtrUtilityFunctions.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)DeepCopyUniquePtrUtilityFunctions.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)WeightedRandomizer.h" />

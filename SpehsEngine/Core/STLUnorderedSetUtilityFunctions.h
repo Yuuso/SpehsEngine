@@ -1,8 +1,6 @@
 #pragma once
 
-#include "SpehsEngine/Core/ReadBuffer.h"
 #include "SpehsEngine/Core/TypeTraits.h"
-#include "SpehsEngine/Core/WriteBuffer.h"
 #include <unordered_set>
 #include <set>
 
@@ -43,41 +41,6 @@ namespace se
 			std::swap(temp, _set);
 			return true;
 		}
-	}
-
-	template<typename ValueType, typename Hasher = std::hash<ValueType>, typename SizeType = uint32_t>
-	void writeToBuffer(WriteBuffer& buffer, const std::unordered_set<ValueType, Hasher>& unorderedSet)
-	{
-		static_assert(std::is_integral<SizeType>::value, "SizeType must be integral.");
-		se_assert(size_t(std::numeric_limits<SizeType>::max()) >= unorderedSet.size() && "Unordered set size is larger than the maximum of SizeType.");
-		const SizeType size = SizeType(unorderedSet.size());
-		buffer.write(size);
-		for (const ValueType& value : unorderedSet)
-		{
-			buffer.write(value);
-		}
-	}
-
-	template<typename ValueType, typename Hasher = std::hash<ValueType>, typename SizeType = uint32_t>
-	bool readFromBuffer(ReadBuffer& buffer, std::unordered_set<ValueType, Hasher>& unorderedSet)
-	{
-		static_assert(std::is_integral<SizeType>::value, "SizeType must be integral.");
-		SizeType size = 0;
-		if (!buffer.read(size))
-		{
-			return false;
-		}
-		unorderedSet.clear();
-		for (SizeType i = 0; i < size; i++)
-		{
-			ValueType value;
-			if (!buffer.read(value))
-			{
-				return false;
-			}
-			unorderedSet.insert(value);
-		}
-		return true;
 	}
 }
 

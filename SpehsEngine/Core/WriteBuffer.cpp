@@ -4,18 +4,7 @@
 
 namespace se
 {
-	void WriteBuffer::write(se::WriteBuffer& writeBuffer) const
-	{
-		writeBuffer.write(data);
-	}
-
-	bool WriteBuffer::read(se::ReadBuffer& readBuffer)
-	{
-		se_read(readBuffer, data);
-		return true;
-	}
-
-	void WriteBuffer::translate(const int bytes)
+	void LegacyWriteBuffer::translate(const int bytes)
 	{
 		se_assert(bytes > 0 || offset >= size_t(std::abs(bytes)));
 		if (offset + bytes > data.size())
@@ -25,30 +14,31 @@ namespace se
 		offset += bytes;
 	}
 
-	void WriteBuffer::setOffset(const size_t _offset)
+	void LegacyWriteBuffer::setOffset(const size_t _offset)
 	{
 		translate(int(_offset) - int(getOffset()));
 	}
 	
-	void WriteBuffer::resize(const size_t size)
+	void LegacyWriteBuffer::resize(const size_t size)
 	{
 		data.resize(size);
 		if (offset > size)
 			offset = size;
 	}
 
-	void WriteBuffer::reserve(const size_t capacity)
+	void LegacyWriteBuffer::reserve(const size_t capacity)
 	{
 		se_assert(capacity >= data.capacity());
 		data.reserve(capacity);
 	}
 
-	void WriteBuffer::clear()
+	void LegacyWriteBuffer::clear()
 	{
 		data.clear();
+		offset = 0;
 	}
 
-	bool WriteBuffer::extend(const size_t addedBytes)
+	bool LegacyWriteBuffer::extend(const size_t addedBytes)
 	{
 		if (addedBytes == 0)
 			return true;

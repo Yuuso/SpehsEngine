@@ -26,9 +26,14 @@ namespace se
 		};
 
 		NetIdentity getMyNetIdentity();
-		void writeToBuffer(se::WriteBuffer& writeBuffer, const NetIdentity& netIdentity);
-		bool readFromBuffer(se::ReadBuffer& readBuffer, NetIdentity& netIdentity);
 		SteamNetworkingIdentity toSteamNetworkingIdentity(const NetIdentity& netIdentity);
 		NetIdentity fromSteamNetworkingIdentity(const SteamNetworkingIdentity& steamNetworkingIdentity);
 	}
+}
+
+template<> template<typename S, typename T>
+static bool se::Serial<se::net::NetIdentity>::serial(S& _serial, T _value)
+{
+	se_serial(_serial, _value.value, "value");
+	return true;
 }

@@ -94,7 +94,7 @@ namespace ImGui
 		if (ImGui::BeginPopupContextItem(browseContextMenuId.c_str(), ImGuiPopupFlags_MouseButtonLeft))
 		{
 			se::DirectoryState directoryState;
-			se::getDirectoryState(directoryState, directory, se::DirectoryState::Flag::none, 0);
+			se::getDirectoryState(directoryState, directory, se::DirectoryState::Flag::None, 0);
 			if (renderDirectoryStateRecursive(directoryState, filepath))
 			{
 				if (!directory.empty())
@@ -140,7 +140,7 @@ namespace ImGui
 				result = false;
 			}
 			se::DirectoryState directoryState;
-			se::getDirectoryState(directoryState, _directory, se::DirectoryState::Flag::none, 0);
+			se::getDirectoryState(directoryState, _directory, se::DirectoryState::Flag::None, 0);
 			if (renderDirectoryStateRecursive(directoryState, output))
 			{
 				std::string_view directory(_directory);

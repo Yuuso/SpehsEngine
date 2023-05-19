@@ -2,29 +2,10 @@
 #include "SpehsEngine/Core/ColorUtilityFunctions.h"
 
 #include "glm/common.hpp"
-#include "SpehsEngine/Core/ReadBuffer.h"
-#include "SpehsEngine/Core/WriteBuffer.h"
 
 
 namespace se
 {
-	void writeToBuffer(WriteBuffer& writeBuffer, const Color& color)
-	{
-		writeBuffer.write(color.r);
-		writeBuffer.write(color.g);
-		writeBuffer.write(color.b);
-		writeBuffer.write(color.a);
-	}
-
-	bool readFromBuffer(ReadBuffer& readBuffer, Color& color)
-	{
-		se_read(readBuffer, color.r);
-		se_read(readBuffer, color.g);
-		se_read(readBuffer, color.b);
-		se_read(readBuffer, color.a);
-		return true;
-	}
-
 	std::string toString(const Color& color)
 	{
 		return "[r:"

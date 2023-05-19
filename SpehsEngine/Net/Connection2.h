@@ -1,6 +1,7 @@
 #pragma once
 
 #include "SpehsEngine/Net/ConnectionId.h"
+#include "SpehsEngine/Net/Endpoint.h"
 
 namespace boost
 {
@@ -13,8 +14,8 @@ namespace boost
 
 namespace se
 {
-	class WriteBuffer;
-	class ReadBuffer;
+	class BinaryWriter;
+	class BinaryReader;
 	namespace net
 	{
 		class ConnectionManager2;
@@ -71,12 +72,12 @@ namespace se
 
 			void update();
 
-			bool sendPacket(const WriteBuffer& writeBuffer, const bool reliable);
+			bool sendPacket(const BinaryWriter& binaryWriter, const bool reliable);
 
 			void disconnect(const std::string& reason = "");
 
 			void setSettings(const Settings& _settings);
-			void setReceiveHandler(const std::function<void(ReadBuffer&, const bool)>& _receiveHandler = std::function<void(ReadBuffer&, const bool)>());
+			void setReceiveHandler(const std::function<void(BinaryReader&, const bool)>& _receiveHandler = std::function<void(BinaryReader&, const bool)>());
 			void setEnableAssertOnSendFail(const bool enable) { enableAssertOnSendFail = enable; }
 
 			void connectToStatusChangedSignal(boost::signals2::scoped_connection& scopedConnection, const std::function<void(const Status oldStatus, const Status newStatus)>& callback);

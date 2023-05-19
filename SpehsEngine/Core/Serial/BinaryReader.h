@@ -14,16 +14,8 @@ namespace se
 		static inline constexpr bool getWritingEnabled() { return false; }
 		static inline constexpr bool getReadingEnabled() { return true; }
 
-		// TEMP: advance a read buffer directly
-		BinaryReader(ReadBuffer& _readBuffer)
-			: ownedReadBuffer(_readBuffer)
-			, readBuffer(_readBuffer)
-		{
-		}
-
 		BinaryReader(const uint8_t* const _data, const size_t _size)
-			: ownedReadBuffer(_data, _size)
-			, readBuffer(ownedReadBuffer)
+			: readBuffer(_data, _size)
 		{
 		}
 
@@ -37,8 +29,7 @@ namespace se
 		inline const uint8_t* getData() const { return readBuffer[0]; }
 
 	private:
-		ReadBuffer ownedReadBuffer; // TEMP
-		ReadBuffer& readBuffer;
+		LegacyReadBuffer readBuffer;
 	};
 
 	template<typename T>

@@ -2,6 +2,7 @@
 
 #include "SpehsEngine/Net/Connection2.h"
 #include "SpehsEngine/Net/ConnectionSimulationSettings.h"
+#include "SpehsEngine/Net/Endpoint.h"
 
 
 namespace se

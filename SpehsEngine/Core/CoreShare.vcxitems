@@ -14,7 +14,6 @@
     <ProjectCapability Include="SourceItemsFromImports" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="$(MSBuildThisFileDirectory)BufferUtilityFunctions.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)File\Timestamp.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)ScopedFrameLimiter.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Noise.cpp" />
@@ -54,7 +53,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="$(MSBuildThisFileDirectory)AsyncTaskManager.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)BufferUtilityFunctions.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)ByteVector.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)ByteView.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)DeepCopyUniquePtr.h" />
@@ -67,7 +65,6 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)RemoveCvref.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)LockGuard.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)LogSignal.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)MultiMapUtilityFunctions.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Noise.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)ResourcePathFinder.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)ScopedConnections.h" />

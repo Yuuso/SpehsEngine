@@ -2,8 +2,6 @@
 #include "SpehsEngine/Core/UtcTime.h"
 
 #include "SpehsEngine/Core/TimeUtilityFunctions.h"
-#include "SpehsEngine/Core/WriteBuffer.h"
-#include "SpehsEngine/Core/ReadBuffer.h"
 
 
 namespace se
@@ -40,16 +38,5 @@ namespace se
 			}
 			return UtcTime();
 		}
-	}
-
-	void writeToBuffer(WriteBuffer& writeBuffer, const time::UtcTime& utcTime)
-	{
-		writeBuffer.write(utcTime.value);
-	}
-
-	bool readFromBuffer(ReadBuffer& readBuffer, time::UtcTime& utcTime)
-	{
-		se_read(readBuffer, utcTime.value);
-		return true;
 	}
 }

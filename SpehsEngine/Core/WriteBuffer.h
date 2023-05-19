@@ -2,7 +2,6 @@
 
 #include "SpehsEngine/Core/BufferBase.h"
 #include "SpehsEngine/Core/Endianness.h"
-#include "SpehsEngine/Core/HasMemberFunction.h"
 #include "SpehsEngine/Core/ByteView.h"
 
 
@@ -13,19 +12,10 @@ namespace se
 		Write buffers can only be extended, but never contracted.
 		Owns the underlying data.
 	*/
-	class WriteBuffer : public BufferBase
+	class LegacyWriteBuffer : public BufferBase
 	{
 	public:
-		SPEHS_HAS_MEMBER_FUNCTION(write, has_member_write);
-		template<class> struct type_sink { typedef void type; }; // consumes a type, and makes it `void`
-		template<class T> using type_sink_t = typename type_sink<T>::type;
-		template<class T, class = void> struct has_free_write : std::false_type {};
-		template<class T> struct has_free_write<T, type_sink_t<decltype(writeToBuffer(std::declval<WriteBuffer&>(), std::declval<const T&>()), void())>> : std::true_type {};
-	public:
 		
-		void write(se::WriteBuffer& writeBuffer) const;
-		bool read(se::ReadBuffer& readBuffer);
-
 		void translate(const int bytes);
 		void setOffset(const size_t offset);
 		void resize(const size_t size);
@@ -89,15 +79,10 @@ namespace se
 				memcpy(&data[offset], t.getData(), bytes);
 				offset += bytes;
 			}
-			else if constexpr (has_free_write<T>::value)
-			{
-				// Free write
-				writeToBuffer(*this, t);
-			}
 			else
 			{
-				// Class must have member write
-				t.write(*this);
+				se_assert(false);
+				return false;
 			}
 		}
 
@@ -127,10 +112,3 @@ namespace se
 		std::vector<uint8_t> data;
 	};
 }
-
-/*
-	Rationale for this macro:
-	Normally we would write 'writeBuffer.write(...)', but then we might accidentally use readBuffer.read(...) in the read function, without handling the read's return value.
-	Thus I decided that it would be better to have such macro, and use se_read/write everywhere.
-*/
-#define se_write(p_WriteBuffer, p_Value) do { (p_WriteBuffer).write(p_Value); } while (false)

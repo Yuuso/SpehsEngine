@@ -1,8 +1,8 @@
 #pragma once
 
-#include <functional>
 #include "boost/signals2/signal.hpp"
 #include "SpehsEngine/Net/Connection2.h"
+#include <functional>
 
 
 namespace se
@@ -47,12 +47,12 @@ namespace se
 			{
 				virtual ~IReceiver() {}
 				virtual bool valid() const = 0;
-				virtual void process(se::ReadBuffer& _readBuffer, const bool _reliable, const uint16_t _requestId, Connection2& _connection) = 0;
+				virtual void process(BinaryReader& _binaryReader, const bool _reliable, const uint16_t _requestId, Connection2& _connection) = 0;
 			};
 			struct IRequest
 			{
 				virtual ~IRequest() {}
-				virtual void process(se::ReadBuffer& _readBuffer) = 0;
+				virtual void process(BinaryReader& _binaryReader) = 0;
 				virtual bool timeout(const time::Time& timeout) = 0;
 				virtual void fail() = 0;
 				virtual PacketType getPacketType() const = 0;
@@ -136,10 +136,10 @@ namespace se
 			: connection(_connection)
 		{
 			connection.setReceiveHandler(
-				[this](se::ReadBuffer& _readBuffer, const bool _reliable)
+				[this](BinaryReader& _binaryReader, const bool _reliable)
 				{
 					uint16_t packetId = 0;
-					if (!_readBuffer.read(packetId))
+					if (!_binaryReader.serial(packetId))
 					{
 						se_assert(false && "Failed to read packet id");
 						return;
@@ -154,8 +154,8 @@ namespace se
 						{
 							std::unique_ptr<IRequest> request(it->second.release());
 							requests.erase(it);
-							se::ReadBuffer readBuffer2(_readBuffer[_readBuffer.getOffset()], _readBuffer.getSize());
-							request->process(readBuffer2);
+							BinaryReader binaryReader2(_binaryReader.getData() + _binaryReader.getOffset(), _binaryReader.getSize());
+							request->process(binaryReader2);
 							return;
 						}
 					}
@@ -164,7 +164,7 @@ namespace se
 						// Receive packet
 						se_assert(isRequestId(packetId));
 						PacketType packetType = PacketType(0);
-						if (!_readBuffer.read(packetType))
+						if (!_binaryReader.serial(packetType))
 						{
 							if (_reliable)
 							{
@@ -189,7 +189,7 @@ namespace se
 							}
 							return;
 						}
-						receiver->get()->process(_readBuffer, _reliable, packetId, connection);
+						receiver->get()->process(_binaryReader, _reliable, packetId, connection);
 						return;
 					}
 				});
@@ -214,11 +214,11 @@ namespace se
 		bool Packetman<PacketType>::sendPacket(const PacketType _packetType, const Packet& _packet, const bool _reliable)
 		{
 			uint16_t packetId = 0;
-			WriteBuffer writeBuffer;
-			se_write(writeBuffer, packetId);
-			se_write(writeBuffer, _packetType);
-			se_write(writeBuffer, _packet);
-			return connection.sendPacket(writeBuffer, _reliable);
+			BinaryWriter binaryWriter;
+			binaryWriter.serial(packetId);
+			binaryWriter.serial(_packetType);
+			binaryWriter.serial(_packet);
+			return connection.sendPacket(binaryWriter, _reliable);
 		}
 
 		// Send with result
@@ -228,11 +228,11 @@ namespace se
 			boost::signals2::scoped_connection& _scopedConnection, const std::function<void(Result* const)>& _callback)
 		{
 			const uint16_t requestId = generateNextRequestId();
-			WriteBuffer writeBuffer;
-			se_write(writeBuffer, requestId);
-			se_write(writeBuffer, _packetType);
-			se_write(writeBuffer, _packet);
-			if (connection.sendPacket(writeBuffer, true))
+			BinaryWriter binaryWriter;
+			binaryWriter.serial(requestId);
+			binaryWriter.serial(_packetType);
+			binaryWriter.serial(_packet);
+			if (connection.sendPacket(binaryWriter, true))
 			{
 				struct Request : public IRequest
 				{
@@ -244,10 +244,10 @@ namespace se
 					{
 						return packetType;
 					}
-					void process(se::ReadBuffer& _readBuffer) final
+					void process(BinaryReader& _binaryReader) final
 					{
 						Result result;
-						if (_readBuffer.read(result))
+						if (_binaryReader.serial(result))
 						{
 							signal(&result);
 							return;
@@ -310,19 +310,19 @@ namespace se
 			}
 			struct Receiver : public IReceiver
 			{
-				void process(se::ReadBuffer& _readBuffer, const bool _reliable, const uint16_t _requestId, Connection2& _connection) final
+				void process(BinaryReader& _binaryReader, const bool _reliable, const uint16_t _requestId, Connection2& _connection) final
 				{
 					if (_requestId != 0)
 					{
 						// Read PacketType from earlier for logging
-						se_assert(_readBuffer.getOffset() >= sizeof(PacketType));
-						se::ReadBuffer readBuffer2(_readBuffer[_readBuffer.getOffset() - sizeof(PacketType)], sizeof(PacketType));
+						se_assert(_binaryReader.getOffset() >= sizeof(PacketType));
+						BinaryReader binaryReader2(_binaryReader.getData() + _binaryReader.getOffset() - sizeof(PacketType), sizeof(PacketType));
 						PacketType packetType = PacketType(0);
-						se_assert(readBuffer2.read(packetType));
+						binaryReader2.serial(packetType);
 						se::log::error("The sender is expecting a result but the registered receive handler does not provide one, PacketType: " + std::to_string(int(packetType)));
 					}
 					Packet packet;
-					if (_readBuffer.read(packet))
+					if (_binaryReader.serial(packet))
 					{
 						signal(packet, _reliable);
 						return;
@@ -361,22 +361,22 @@ namespace se
 				{
 					destructorCalled = true;
 				}
-				void process(se::ReadBuffer& _readBuffer, const bool _reliable, const uint16_t _requestId, Connection2& _connection) final
+				void process(BinaryReader& _binaryReader, const bool _reliable, const uint16_t _requestId, Connection2& _connection) final
 				{
 					se_assert(_reliable && "Packets with results should be always sent reliably");
 					if (_requestId == 0)
 					{
 						// Read PacketType from earlier for logging
-						se_assert(_readBuffer.getOffset() >= sizeof(PacketType));
-						se::ReadBuffer readBuffer2(_readBuffer[_readBuffer.getOffset() - sizeof(PacketType)], sizeof(PacketType));
+						se_assert(_binaryReader.getOffset() >= sizeof(PacketType));
+						BinaryReader binaryReader2(_binaryReader.getData() + _binaryReader.getOffset() - sizeof(PacketType), sizeof(PacketType));
 						PacketType packetType = PacketType(0);
-						se_assert(readBuffer2.read(packetType));
+						se_assert(binaryReader2.serial(packetType));
 						se::log::error("The sender is not expecting a result but the registered receive handler does provide one, PacketType: " + std::to_string(int(packetType)));
 					}
 
 					Result result;
 					Packet packet;
-					if (_readBuffer.read(packet))
+					if (_binaryReader.serial(packet))
 					{
 						// NOTE: the callback should not deallocate this (and the _connection).
 						result = callback(packet, _reliable);
@@ -392,10 +392,10 @@ namespace se
 					}
 
 					const uint16_t resultId = makeResultId(_requestId);
-					WriteBuffer writeBuffer;
-					se_write(writeBuffer, resultId);
-					se_write(writeBuffer, result);
-					const bool sent = _connection.sendPacket(writeBuffer, true);
+					BinaryWriter binaryWriter;
+					binaryWriter.serial(resultId);
+					binaryWriter.serial(result);
+					const bool sent = _connection.sendPacket(binaryWriter, true);
 					(void)sent;
 					se_assert(sent && "Failed to send request result");
 				}

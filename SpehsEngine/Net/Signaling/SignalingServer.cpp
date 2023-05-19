@@ -38,10 +38,10 @@ namespace se
 				Client* const client = clients.back().get();
 				client->socket.reset(acceptingSocket.release());
 				client->socket->setOnReceiveCallback(
-					[this, client](ReadBuffer& readBuffer)
+					[this, client](BinaryReader& binaryReader)
 					{
 						SignalingEntryPacket packet;
-						if (!packet.read(readBuffer))
+						if (!binaryReader.serial(packet))
 						{
 							se::log::warning("Failed to read SignalingEntryPacket");
 							client->socket->disconnect();
@@ -77,10 +77,10 @@ namespace se
 						// Start relaying signaling data packets
 						client->netIdentity = packet.netIdentity;
 						client->socket->setOnReceiveCallback(
-							[this, client](ReadBuffer& readBuffer)
+							[this, client](BinaryReader& binaryReader)
 							{
 								SignalingDataPacket packet;
-								if (!packet.read(readBuffer))
+								if (!binaryReader.serial(packet))
 								{
 									se::log::warning("Failed to read SignalingDataPacket");
 									client->socket->disconnect();
@@ -91,9 +91,9 @@ namespace se
 									if (client2->netIdentity == packet.netIdentity)
 									{
 										packet.netIdentity = client->netIdentity;
-										WriteBuffer writeBuffer;
-										writeBuffer.write(packet);
-										if (!client2->socket->sendPacket(writeBuffer))
+										BinaryWriter binaryWriter;
+										binaryWriter.serial(packet);
+										if (!client2->socket->sendPacket(binaryWriter))
 										{
 											se::log::warning("Failed to redirect SignalingDataPacket");
 											client2->socket->disconnect();

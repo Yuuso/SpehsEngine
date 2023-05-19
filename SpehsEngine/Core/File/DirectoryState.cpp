@@ -4,52 +4,11 @@
 #include "SpehsEngine/Core/File/File.h"
 #include "SpehsEngine/Core/File/FileSystem.h"
 #include "SpehsEngine/Core/Murmur3.h"
+#include "SpehsEngine/Core/BitwiseOperations.h"
 
 
 namespace se
 {
-	void DirectoryState::FileState::write(se::WriteBuffer& writeBuffer) const
-	{
-		writeToBuffer<uint32_t>(writeBuffer, path);
-		writeBuffer.write(fileHash);
-		writeBuffer.write(fileSize);
-	}
-
-	bool DirectoryState::FileState::read(se::ReadBuffer& readBuffer)
-	{
-		if (!readFromBuffer<uint32_t>(readBuffer, path))
-		{
-			return false;
-		}
-		se_read(readBuffer, fileHash);
-		se_read(readBuffer, fileSize);
-		return true;
-	}
-
-	void DirectoryState::write(se::WriteBuffer& writeBuffer) const
-	{
-		writeToBuffer<uint32_t>(writeBuffer, path);
-		writeToBuffer<FileState, uint32_t>(writeBuffer, files);
-		writeToBuffer<DirectoryState, uint32_t>(writeBuffer, directories);
-	}
-
-	bool DirectoryState::read(se::ReadBuffer& readBuffer)
-	{
-		if (!readFromBuffer<uint32_t>(readBuffer, path))
-		{
-			return false;
-		}
-		if (!readFromBuffer<FileState, uint32_t>(readBuffer, files))
-		{
-			return false;
-		}
-		if (!readFromBuffer<DirectoryState, uint32_t>(readBuffer, directories))
-		{
-			return false;
-		}
-		return true;
-	}
-
 	const DirectoryState::FileState* DirectoryState::findFileState(std::string remainingFilePath) const
 	{
 		while (remainingFilePath.size() > 0 && remainingFilePath.front() == '/')
@@ -110,7 +69,8 @@ namespace se
 		return nullptr;
 	}
 
-	void getDirectoryStateImpl(DirectoryState& directoryState, const std::string& fullDirectoryPath, const std::string& relativeDirectoryPath, const DirectoryState::Flag::Type flags, const uint32_t fileHashSeed)
+	void getDirectoryStateImpl(DirectoryState& directoryState, const std::string& fullDirectoryPath, const std::string& relativeDirectoryPath,
+		const DirectoryState::Flag flags, const uint32_t fileHashSeed)
 	{
 		directoryState.path = relativeDirectoryPath;
 		const std::vector<std::string> files = se::listFilesInDirectory(fullDirectoryPath);
@@ -129,26 +89,26 @@ namespace se
 			{
 				directoryState.files.push_back(DirectoryState::FileState());
 				directoryState.files.back().path = relativeFilePath;
-				if (flags & (DirectoryState::Flag::read | DirectoryState::Flag::hash))
+				if (checkBit(flags, DirectoryState::Flag::Read) || checkBit(flags, DirectoryState::Flag::Hash))
 				{
 					File file;
 					if (readFile(file, fullFilePath))
 					{
 						directoryState.files.back().fileSize = uint64_t(file.data.size());
-						if (flags & DirectoryState::Flag::hash)
+						if (checkBit(flags, DirectoryState::Flag::Hash))
 						{
 							std::vector<uint8_t> hashData(directoryState.files.back().path.size() + file.data.size());
 							memcpy(&hashData[0], directoryState.files.back().path.data(), directoryState.files.back().path.size());
 							memcpy(&hashData[directoryState.files.back().path.size()], file.data.data(), file.data.size());
 							directoryState.files.back().fileHash = murmurHash3_x86_32(hashData.data(), hashData.size(), fileHashSeed);
 						}
-						if (flags & DirectoryState::Flag::read)
+						if (checkBit(flags, DirectoryState::Flag::Read))
 						{
 							directoryState.files.back().data.swap(file.data);
 						}
 					}
 				}
-				else if (flags & DirectoryState::Flag::read)
+				else if (checkBit(flags, DirectoryState::Flag::Read))
 				{
 					directoryState.files.back().fileSize = getFileSize(fullFilePath);
 				}
@@ -156,7 +116,7 @@ namespace se
 		}
 	}
 
-	void getDirectoryState(DirectoryState& directoryState, const std::string& path, const DirectoryState::Flag::Type flags, const uint32_t fileHashSeed)
+	void getDirectoryState(DirectoryState& directoryState, const std::string& path, const DirectoryState::Flag flags, const uint32_t fileHashSeed)
 	{
 		getDirectoryStateImpl(directoryState, path, "", flags, fileHashSeed);
 	}
@@ -177,7 +137,10 @@ namespace se
 		}
 	}
 
-	void compare(const DirectoryState& directoryState, const std::string& path, const uint32_t fileHashSeed, std::vector<std::string>& missingDirectories, std::vector<std::string>& missingFiles, std::vector<std::string>& unequalFiles)
+	void compare(const DirectoryState& directoryState, const std::string& path, const uint32_t fileHashSeed,
+		std::vector<std::string>& missingDirectories,
+		std::vector<std::string>& missingFiles,
+		std::vector<std::string>& unequalFiles)
 	{
 		for (size_t i = 0; i < directoryState.files.size(); i++)
 		{

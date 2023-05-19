@@ -92,14 +92,14 @@ namespace se
 				se_assert(!selfSteamNetworkingIdentity.IsLocalHost());
 				SignalingEntryPacket packet;
 				packet.netIdentity = fromSteamNetworkingIdentity(selfSteamNetworkingIdentity);
-				WriteBuffer writeBuffer;
-				writeBuffer.write(packet);
-				socket->sendPacket(writeBuffer);
+				BinaryWriter binaryWriter;
+				binaryWriter.serial(packet);
+				socket->sendPacket(binaryWriter);
 				socket->setOnReceiveCallback(
-					[_signalingServerEndpoint](ReadBuffer& readBuffer)
+					[_signalingServerEndpoint](BinaryReader& binaryReader)
 					{
 						SignalingDataPacket packet;
-						if (!packet.read(readBuffer))
+						if (!binaryReader.serial(packet))
 						{
 							se::log::warning("OutConnectionSignaling: failed to read SignalingDataPacket");
 							return;
@@ -138,9 +138,9 @@ namespace se
 			packet.netIdentity = peerNetIdentity;
 			packet.data.resize(size_t(messageSize));
 			memcpy(packet.data.data(), messageData, messageSize);
-			WriteBuffer writeBuffer;
-			writeBuffer.write(packet);
-			return socket->sendPacket(writeBuffer);
+			BinaryWriter binaryWriter;
+			binaryWriter.serial(packet);
+			return socket->sendPacket(binaryWriter);
 		}
 		void OutConnectionSignaling::Release()
 		{
@@ -159,9 +159,9 @@ namespace se
 			packet.netIdentity = peerNetIdentity;
 			packet.data.resize(size_t(messageSize));
 			memcpy(packet.data.data(), messageData, messageSize);
-			WriteBuffer writeBuffer;
-			writeBuffer.write(packet);
-			return socket.sendPacket(writeBuffer);
+			BinaryWriter binaryWriter;
+			binaryWriter.serial(packet);
+			return socket.sendPacket(binaryWriter);
 		}
 		void InConnectionSignaling::Release()
 		{
@@ -202,15 +202,15 @@ namespace se
 				se_assert(!selfSteamNetworkingIdentity.IsLocalHost());
 				SignalingEntryPacket packet;
 				packet.netIdentity = fromSteamNetworkingIdentity(selfSteamNetworkingIdentity);
-				WriteBuffer writeBuffer;
-				packet.write(writeBuffer);
-				socket.sendPacket(writeBuffer);
+				BinaryWriter binaryWriter;
+				binaryWriter.serial(packet);
+				socket.sendPacket(binaryWriter);
 			}
 		}
-		void AcceptorP2P::receiveHandler(ReadBuffer& readBuffer)
+		void AcceptorP2P::receiveHandler(BinaryReader& binaryReader)
 		{
 			SignalingDataPacket packet;
-			if (!packet.read(readBuffer))
+			if (!binaryReader.serial(packet))
 			{
 				se::log::warning("AcceptorP2P: failed to read SignalingDataPacket");
 				return;

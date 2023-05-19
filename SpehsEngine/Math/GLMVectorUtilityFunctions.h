@@ -3,34 +3,11 @@
 #include "glm/vec2.hpp"
 #include "glm/vec3.hpp"
 #include "glm/vec4.hpp"
-#include "SpehsEngine/Core/WriteBuffer.h"
-#include "SpehsEngine/Core/ReadBuffer.h"
 #include <string>
 
 
 namespace se
 {
-	class WriteBuffer;
-	class ReadBuffer;
-
-	void writeToBuffer(WriteBuffer& writeBuffer, const glm::u16vec2& vec);
-	void writeToBuffer(WriteBuffer& writeBuffer, const glm::u16vec3& vec);
-	void writeToBuffer(WriteBuffer& writeBuffer, const glm::u16vec4& vec);
-	void writeToBuffer(WriteBuffer& writeBuffer, const glm::vec2& vec);
-	void writeToBuffer(WriteBuffer& writeBuffer, const glm::vec3& vec);
-	void writeToBuffer(WriteBuffer& writeBuffer, const glm::vec4& vec);
-	void writeToBuffer(WriteBuffer& writeBuffer, const glm::ivec2& vec);
-	void writeToBuffer(WriteBuffer& writeBuffer, const glm::ivec3& vec);
-	void writeToBuffer(WriteBuffer& writeBuffer, const glm::ivec4& vec);
-	bool readFromBuffer(ReadBuffer& readBuffer, glm::u16vec2& vec);
-	bool readFromBuffer(ReadBuffer& readBuffer, glm::u16vec3& vec);
-	bool readFromBuffer(ReadBuffer& readBuffer, glm::u16vec4& vec);
-	bool readFromBuffer(ReadBuffer& readBuffer, glm::vec2& vec);
-	bool readFromBuffer(ReadBuffer& readBuffer, glm::vec3& vec);
-	bool readFromBuffer(ReadBuffer& readBuffer, glm::vec4& vec);
-	bool readFromBuffer(ReadBuffer& readBuffer, glm::ivec2& vec);
-	bool readFromBuffer(ReadBuffer& readBuffer, glm::ivec3& vec);
-	bool readFromBuffer(ReadBuffer& readBuffer, glm::ivec4& vec);
 	std::string toString(const glm::vec2& vec);
 	std::string toString(const glm::vec3& vec);
 	std::string toString(const glm::vec4& vec);

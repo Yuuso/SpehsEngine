@@ -15,16 +15,6 @@ namespace se
 		static inline constexpr bool getWritingEnabled() { return true; }
 		static inline constexpr bool getReadingEnabled() { return false; }
 
-		// Temp: advance a write buffer directly
-		BinaryWriter(WriteBuffer& _writeBuffer)
-			: writeBuffer(_writeBuffer)
-		{
-		}
-		BinaryWriter()
-			: writeBuffer(ownedWriteBuffer)
-		{
-		}
-
 		template<typename T>
 		inline bool serial(const T& _value);
 		
@@ -34,12 +24,13 @@ namespace se
 		const uint8_t* getData() const { return writeBuffer.getData(); }
 		size_t getOffset() const { return writeBuffer.getOffset(); }
 		size_t getSize() const { return writeBuffer.getSize(); }
+		void resize(const size_t _size) { writeBuffer.resize(_size); }
 		void reserve(const size_t _capacity) { writeBuffer.reserve(_capacity); }
 		void swap(std::vector<uint8_t>& _other) { writeBuffer.swap(_other); }
-		void swap(WriteBuffer& _writeBuffer) { std::swap(_writeBuffer, writeBuffer); }
+		void translate(const int _bytes) { writeBuffer.translate(_bytes); }
+		void clear() { writeBuffer.clear(); }
 	private:
-		WriteBuffer ownedWriteBuffer;
-		WriteBuffer& writeBuffer;
+		LegacyWriteBuffer writeBuffer;
 	};
 
 	template<typename T>
