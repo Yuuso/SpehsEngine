@@ -3,13 +3,12 @@
 #include "boost/signals2/connection.hpp"
 #include "SpehsEngine/Core/StaticRingBuffer.h"
 #include "SpehsEngine/Net/ConnectionId.h"
-//#include "SpehsEngine/Net/ConnectionPackets.h"
 
 namespace se
 {
 	namespace net
 	{
-		class ConnectionManager2;
+		class ConnectionManager;
 	}
 	namespace imgui
 	{
@@ -22,11 +21,11 @@ namespace se
 {
 	namespace debug
 	{
-		class ConnectionManager2Visualizer
+		class ConnectionManagerVisualizer
 		{
 		public:
 
-			ConnectionManager2Visualizer(net::ConnectionManager2& connectionManager2, imgui::BackendWrapper& imGuiBackendWrapper, const bool enabled);
+			ConnectionManagerVisualizer(net::ConnectionManager& ConnectionManager, imgui::BackendWrapper& imGuiBackendWrapper, const bool enabled);
 
 			void setEnabled(const bool enabled);
 			bool getEnabled() const { return preRenderConnection.connected(); }
@@ -45,7 +44,7 @@ namespace se
 
 			void render();
 
-			net::ConnectionManager2& connectionManager2;
+			net::ConnectionManager& connectionManager;
 			imgui::BackendWrapper& imGuiBackendWrapper;
 
 			std::unordered_map<se::net::ConnectionId, ConnectionState> connectionStates;

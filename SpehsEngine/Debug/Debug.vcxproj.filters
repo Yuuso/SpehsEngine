@@ -6,19 +6,19 @@
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="ScopeProfilerVisualizer.h" />
     <ClInclude Include="FPSHistoryVisualizer.h" />
-    <ClInclude Include="ConnectionManager2Visualizer.h" />
     <ClInclude Include="ScopedDuration.h" />
     <ClInclude Include="ImmediateModeGraphics.h" />
     <ClInclude Include="ImGfx.h" />
+    <ClInclude Include="ConnectionManagerVisualizer.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="DebugLib.cpp" />
     <ClCompile Include="stdafx.cpp" />
     <ClCompile Include="ScopeProfilerVisualizer.cpp" />
     <ClCompile Include="FPSHistoryVisualizer.cpp" />
-    <ClCompile Include="ConnectionManager2Visualizer.cpp" />
     <ClCompile Include="ScopedDuration.cpp" />
     <ClCompile Include="ImmediateModeGraphics.cpp" />
     <ClCompile Include="ImGfx.cpp" />
+    <ClCompile Include="ConnectionManagerVisualizer.cpp" />
   </ItemGroup>
 </Project>

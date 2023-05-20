@@ -1,7 +1,7 @@
 #pragma once
 
 #include "SpehsEngine/Net/Endpoint.h"
-#include "SpehsEngine/Net/Connection2.h"
+#include "SpehsEngine/Net/Connection.h"
 #include "steam/steamnetworkingsockets.h"
 #include "boost/signals2/signal.hpp"
 
@@ -10,7 +10,7 @@ namespace se
 {
 	namespace net
 	{
-		struct Connection2Parameters
+		struct ConnectionParameters
 		{
 			ISteamNetworkingSockets* steamNetworkingSockets = nullptr;
 			std::string name;
@@ -18,14 +18,14 @@ namespace se
 			std::optional<Port> localListeningPort;
 			HSteamNetConnection steamNetConnection;
 			HSteamListenSocket steamListenSocket; // Connection may be bound to a listening socket
-			Connection2::EstablishmentType establishmentType = Connection2::EstablishmentType::Incoming;
-			Connection2::Status status = Connection2::Status::Connecting;
+			Connection::EstablishmentType establishmentType = Connection::EstablishmentType::Incoming;
+			Connection::Status status = Connection::Status::Connecting;
 			bool p2p = false;
 		};
 
-		struct Connection2InternalState
+		struct ConnectionInternalState
 		{
-			Connection2InternalState(const Connection2Parameters& parameters)
+			ConnectionInternalState(const ConnectionParameters& parameters)
 				: steamNetworkingSockets(*parameters.steamNetworkingSockets)
 				, steamNetConnection(parameters.steamNetConnection)
 				, steamListenSocket(parameters.steamListenSocket)
@@ -36,7 +36,7 @@ namespace se
 			HSteamNetConnection closedSteamNetConnection = k_HSteamNetConnection_Invalid;
 			const HSteamListenSocket steamListenSocket;
 			std::function<void(BinaryReader&, const bool)> receiveHandler;
-			boost::signals2::signal<void(const Connection2::Status, const Connection2::Status)> statusChangedSignal;
+			boost::signals2::signal<void(const Connection::Status, const Connection::Status)> statusChangedSignal;
 		};
 	}
 }

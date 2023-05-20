@@ -18,10 +18,10 @@ namespace se
 	class BinaryReader;
 	namespace net
 	{
-		class ConnectionManager2;
-		struct Connection2Parameters;
-		struct Connection2InternalState;
-		class Connection2
+		class ConnectionManager;
+		struct ConnectionParameters;
+		struct ConnectionInternalState;
+		class Connection
 		{
 		public:
 
@@ -68,7 +68,7 @@ namespace se
 				uint64_t receivedPacketsTotal = 0;
 			};
 
-			~Connection2();
+			~Connection();
 
 			void update();
 
@@ -110,17 +110,17 @@ namespace se
 
 			static void closeConnectionImpl(const uint32_t _steamNetConnection, const std::string& reason, const bool enableLinger);
 
-			friend class ConnectionManager2;
+			friend class ConnectionManager;
 
-			Connection2(const Connection2Parameters& constructorParameters);
+			Connection(const ConnectionParameters& constructorParameters);
 
 			void disconnectImpl(const std::string& reason, const bool enableLinger);
 			void setStatus(const Status _status);
 			void setSettingsImpl(const Settings& _settings, const bool forceUpdate);
 			void receivePacket(const void* data, const size_t size, const bool reliable);
 
-			std::unique_ptr<Connection2InternalState> state;
-			Status status = Connection2::Status::Connecting; // Every connection begins in the connecting state
+			std::unique_ptr<ConnectionInternalState> state;
+			Status status = Connection::Status::Connecting; // Every connection begins in the connecting state
 			Settings settings;
 			Statistics statistics;
 			std::vector<ReceivedPacket> receivedPackets;

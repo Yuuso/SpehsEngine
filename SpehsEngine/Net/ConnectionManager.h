@@ -1,6 +1,6 @@
 #pragma once
 
-#include "SpehsEngine/Net/Connection2.h"
+#include "SpehsEngine/Net/Connection.h"
 #include "SpehsEngine/Net/ConnectionSimulationSettings.h"
 #include "SpehsEngine/Net/Endpoint.h"
 
@@ -12,12 +12,12 @@ namespace se
 		class SocketTCP;
 		struct NetIdentity;
 
-		class ConnectionManager2
+		class ConnectionManager
 		{
 		public:
 
-			ConnectionManager2(const std::string_view name);
-			~ConnectionManager2();
+			ConnectionManager(const std::string_view name);
+			~ConnectionManager();
 
 			void update();
 
@@ -31,12 +31,12 @@ namespace se
 			void stopAcceptingP2P();
 
 			// Connect to a ConnectionManager that has called startAcceptingIP().
-			[[nodiscard]] std::shared_ptr<Connection2> connectIP(const se::net::Endpoint& endpoint, const bool symmetric, const std::string_view name = "", const time::Time timeout = time::fromSeconds(10.0f));
+			[[nodiscard]] std::shared_ptr<Connection> connectIP(const se::net::Endpoint& endpoint, const bool symmetric, const std::string_view name = "", const time::Time timeout = time::fromSeconds(10.0f));
 
 			// Connect to a ConnectionManager that has called startAcceptingP2P().
-			[[nodiscard]] std::shared_ptr<Connection2> connectP2P(const NetIdentity& peerNetIdentity, const se::net::Endpoint& signalingServerEndpoint, const std::string_view name = "", const time::Time timeout = time::fromSeconds(10.0f));
+			[[nodiscard]] std::shared_ptr<Connection> connectP2P(const NetIdentity& peerNetIdentity, const se::net::Endpoint& signalingServerEndpoint, const std::string_view name = "", const time::Time timeout = time::fromSeconds(10.0f));
 
-			void connectToIncomingConnectionSignal(boost::signals2::scoped_connection& scopedConnection, const std::function<void(std::shared_ptr<Connection2>&)>& callback);
+			void connectToIncomingConnectionSignal(boost::signals2::scoped_connection& scopedConnection, const std::function<void(std::shared_ptr<Connection>&)>& callback);
 			void setRemoveUnreferencedConnections(const bool remove) { removeUnreferencedConnections = remove; }
 
 			void setDebugLogLevel(int level) { debugLogLevel = level; }
@@ -46,8 +46,8 @@ namespace se
 			static void setConnectionSimulationSettings(const ConnectionSimulationSettings& _connectionSimulationSettings);
 			static ConnectionSimulationSettings getConnectionSimulationSettings();
 
-			std::vector<std::shared_ptr<Connection2>>& getConnections() { return connections; }
-			const std::vector<std::shared_ptr<Connection2>>& getConnections() const { return connections; }
+			std::vector<std::shared_ptr<Connection>>& getConnections() { return connections; }
+			const std::vector<std::shared_ptr<Connection>>& getConnections() const { return connections; }
 
 			const std::string name;
 
@@ -55,13 +55,13 @@ namespace se
 
 			struct State;
 
-			void initializeSteamNetConnection(Connection2& connection);
+			void initializeSteamNetConnection(Connection& connection);
 			void processIncomingConnectionQueue();
 			void processConnectionStatusChangeQueue();
 			void closeUnusedSteamListenSockets();
 
 			std::unique_ptr<State> state;
-			std::vector<std::shared_ptr<Connection2>> connections;
+			std::vector<std::shared_ptr<Connection>> connections;
 			int debugLogLevel = 0;
 			bool removeUnreferencedConnections = false;
 		};

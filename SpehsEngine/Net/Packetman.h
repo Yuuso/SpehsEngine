@@ -1,7 +1,7 @@
 #pragma once
 
 #include "boost/signals2/signal.hpp"
-#include "SpehsEngine/Net/Connection2.h"
+#include "SpehsEngine/Net/Connection.h"
 #include <functional>
 
 
@@ -15,7 +15,7 @@ namespace se
 		{
 		public:
 
-			Packetman(Connection2& _connection);
+			Packetman(Connection& _connection);
 			~Packetman();
 
 			void update();
@@ -47,7 +47,7 @@ namespace se
 			{
 				virtual ~IReceiver() {}
 				virtual bool valid() const = 0;
-				virtual void process(BinaryReader& _binaryReader, const bool _reliable, const uint16_t _requestId, Connection2& _connection) = 0;
+				virtual void process(BinaryReader& _binaryReader, const bool _reliable, const uint16_t _requestId, Connection& _connection) = 0;
 			};
 			struct IRequest
 			{
@@ -97,7 +97,7 @@ namespace se
 			std::unordered_map<PacketType, std::unique_ptr<IReceiver>> receivers;
 			std::unordered_map<uint16_t, std::unique_ptr<IRequest>> requests;
 			uint16_t nextRequestId = 1;
-			Connection2& connection;
+			Connection& connection;
 		};
 
 		template<typename PacketType>
@@ -132,7 +132,7 @@ namespace se
 		}
 
 		template<typename PacketType>
-		Packetman<PacketType>::Packetman(Connection2& _connection)
+		Packetman<PacketType>::Packetman(Connection& _connection)
 			: connection(_connection)
 		{
 			connection.setReceiveHandler(
@@ -310,7 +310,7 @@ namespace se
 			}
 			struct Receiver : public IReceiver
 			{
-				void process(BinaryReader& _binaryReader, const bool _reliable, const uint16_t _requestId, Connection2& _connection) final
+				void process(BinaryReader& _binaryReader, const bool _reliable, const uint16_t _requestId, Connection& _connection) final
 				{
 					if (_requestId != 0)
 					{
@@ -361,7 +361,7 @@ namespace se
 				{
 					destructorCalled = true;
 				}
-				void process(BinaryReader& _binaryReader, const bool _reliable, const uint16_t _requestId, Connection2& _connection) final
+				void process(BinaryReader& _binaryReader, const bool _reliable, const uint16_t _requestId, Connection& _connection) final
 				{
 					se_assert(_reliable && "Packets with results should be always sent reliably");
 					if (_requestId == 0)

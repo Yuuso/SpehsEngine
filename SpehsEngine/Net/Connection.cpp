@@ -1,5 +1,5 @@
 #include "stdafx.h"
-#include "SpehsEngine/Net/Connection2.h"
+#include "SpehsEngine/Net/Connection.h"
 
 #include "SpehsEngine/Net/Internal/InternalTypes.h"
 #include "steam/isteamnetworkingutils.h"
@@ -14,7 +14,7 @@ namespace se
 			std::atomic<ConnectionId::ValueType> nextConnectionId = 1;
 		}
 
-		Connection2::Connection2(const Connection2Parameters& parameters)
+		Connection::Connection(const ConnectionParameters& parameters)
 			: name(parameters.name)
 			, connectionId(nextConnectionId++)
 			, establishmentType(parameters.establishmentType)
@@ -22,21 +22,21 @@ namespace se
 			, localListeningPort(parameters.localListeningPort)
 			, p2p(parameters.p2p)
 			, status(parameters.status)
-			, state(new Connection2InternalState(parameters))
+			, state(new ConnectionInternalState(parameters))
 		{
 			setSettingsImpl(settings, true);
 			se_assert(state->steamNetConnection != k_HSteamNetConnection_Invalid);
 		}
 
-		Connection2::~Connection2()
+		Connection::~Connection()
 		{
 			if (state->steamNetConnection != k_HSteamNetConnection_Invalid)
 			{
-				disconnectImpl("~Connection2()", true);
+				disconnectImpl("~Connection()", true);
 			}
 		}
 
-		void Connection2::update()
+		void Connection::update()
 		{
 			if (!receivedPackets.empty() && state->receiveHandler)
 			{
@@ -66,7 +66,7 @@ namespace se
 			}
 		}
 
-		bool Connection2::sendPacket(const BinaryWriter& binaryWriter, const bool reliable)
+		bool Connection::sendPacket(const BinaryWriter& binaryWriter, const bool reliable)
 		{
 			const int flags = reliable ? k_nSteamNetworkingSend_Reliable : k_nSteamNetworkingSend_Unreliable;
 			const EResult result = state->steamNetworkingSockets.SendMessageToConnection(state->steamNetConnection, binaryWriter.getData(), uint32_t(binaryWriter.getSize()), flags, nullptr);
@@ -101,13 +101,13 @@ namespace se
 			}
 		}
 
-		void Connection2::disconnect(const std::string& reason)
+		void Connection::disconnect(const std::string& reason)
 		{
 			disconnectImpl(reason, true);
 			setStatus(Status::Disconnected);
 		}
 
-		void Connection2::disconnectImpl(const std::string& reason, const bool enableLinger)
+		void Connection::disconnectImpl(const std::string& reason, const bool enableLinger)
 		{
 			if (state->steamNetConnection != k_HSteamNetConnection_Invalid)
 			{
@@ -117,7 +117,7 @@ namespace se
 			}
 		}
 
-		void Connection2::setStatus(const Status _status)
+		void Connection::setStatus(const Status _status)
 		{
 			if (_status != status)
 			{
@@ -127,7 +127,7 @@ namespace se
 			}
 		}
 
-		void Connection2::receivePacket(const void* data, const size_t size, const bool reliable)
+		void Connection::receivePacket(const void* data, const size_t size, const bool reliable)
 		{
 			// Track statistics
 			statistics.receivedPacketsTotal++;
@@ -158,12 +158,12 @@ namespace se
 			}
 		}
 
-		void Connection2::setSettings(const Settings& _settings)
+		void Connection::setSettings(const Settings& _settings)
 		{
 			setSettingsImpl(_settings, false);
 		}
 
-		void Connection2::setSettingsImpl(const Settings& _settings, const bool forceUpdate)
+		void Connection::setSettingsImpl(const Settings& _settings, const bool forceUpdate)
 		{
 			if (settings.sendBufferSize != _settings.sendBufferSize || forceUpdate)
 			{
@@ -183,7 +183,7 @@ namespace se
 			settings = _settings;
 		}
 
-		time::Time Connection2::getPing() const
+		time::Time Connection::getPing() const
 		{
 			SteamNetConnectionRealTimeStatus_t steamNetConnectionRealTimeStatus;
 			SteamNetConnectionRealTimeLaneStatus_t steamNetConnectionRealTimeLaneStatus;
@@ -197,12 +197,12 @@ namespace se
 			}
 		}
 
-		uint16_t Connection2::getMaximumSegmentSize() const
+		uint16_t Connection::getMaximumSegmentSize() const
 		{
 			return 1300; // internal value k_cbSteamNetworkingSocketsMaxUDPMsgLen
 		}
 
-		Connection2::DetailedStatus Connection2::getDetailedStatus() const
+		Connection::DetailedStatus Connection::getDetailedStatus() const
 		{
 			DetailedStatus detailedStatus;
 			SteamNetConnectionRealTimeStatus_t steamNetConnectionRealTimeStatus;
@@ -217,7 +217,7 @@ namespace se
 			return detailedStatus;
 		}
 
-		void Connection2::closeConnectionImpl(const uint32_t _steamNetConnection, const std::string& reason, const bool enableLinger)
+		void Connection::closeConnectionImpl(const uint32_t _steamNetConnection, const std::string& reason, const bool enableLinger)
 		{
 			if (SteamNetworkingSockets()->CloseConnection(_steamNetConnection, 0, reason.c_str(), enableLinger))
 			{
@@ -229,12 +229,12 @@ namespace se
 			}
 		}
 
-		void Connection2::setReceiveHandler(const std::function<void(BinaryReader&, const bool)>& _receiveHandler)
+		void Connection::setReceiveHandler(const std::function<void(BinaryReader&, const bool)>& _receiveHandler)
 		{
 			state->receiveHandler = _receiveHandler;
 		}
 
-		void Connection2::connectToStatusChangedSignal(boost::signals2::scoped_connection& scopedConnection, const std::function<void(const Status oldStatus, const Status newStatus)>& callback)
+		void Connection::connectToStatusChangedSignal(boost::signals2::scoped_connection& scopedConnection, const std::function<void(const Status oldStatus, const Status newStatus)>& callback)
 		{
 			scopedConnection = state->statusChangedSignal.connect(callback);
 		}

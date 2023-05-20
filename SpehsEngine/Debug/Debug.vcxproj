@@ -140,7 +140,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="ConnectionManager2Visualizer.cpp" />
+    <ClCompile Include="ConnectionManagerVisualizer.cpp" />
     <ClCompile Include="DebugLib.cpp" />
     <ClCompile Include="FPSHistoryVisualizer.cpp" />
     <ClCompile Include="ImGfx.cpp" />
@@ -155,7 +155,7 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="ConnectionManager2Visualizer.h" />
+    <ClInclude Include="ConnectionManagerVisualizer.h" />
     <ClInclude Include="DebugLib.h" />
     <ClInclude Include="FPSHistoryVisualizer.h" />
     <ClInclude Include="ImGfx.h" />

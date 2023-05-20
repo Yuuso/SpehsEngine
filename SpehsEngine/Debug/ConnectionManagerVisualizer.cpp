@@ -1,24 +1,24 @@
 #include "stdafx.h"
-#include "SpehsEngine/Debug/ConnectionManager2Visualizer.h"
+#include "SpehsEngine/Debug/ConnectionManagerVisualizer.h"
 
 #include "SpehsEngine/ImGui/Utility/ImGuiUtility.h"
 #include "SpehsEngine/ImGui/Utility/BackendWrapper.h"
-#include "SpehsEngine/Net/ConnectionManager2.h"
-#include "SpehsEngine/Net/Connection2.h"
+#include "SpehsEngine/Net/ConnectionManager.h"
+#include "SpehsEngine/Net/Connection.h"
 
 
 namespace se
 {
 	namespace debug
 	{
-		ConnectionManager2Visualizer::ConnectionManager2Visualizer(net::ConnectionManager2& _connectionManager2, imgui::BackendWrapper& _imGuiBackendWrapper, const bool _enabled)
-			: connectionManager2(_connectionManager2)
+		ConnectionManagerVisualizer::ConnectionManagerVisualizer(net::ConnectionManager& _connectionManager, imgui::BackendWrapper& _imGuiBackendWrapper, const bool _enabled)
+			: connectionManager(_connectionManager)
 			, imGuiBackendWrapper(_imGuiBackendWrapper)
 		{
 			setEnabled(_enabled);
 		}
 
-		void ConnectionManager2Visualizer::setEnabled(const bool enabled)
+		void ConnectionManagerVisualizer::setEnabled(const bool enabled)
 		{
 			if (preRenderConnection.connected() == enabled)
 			{
@@ -31,28 +31,28 @@ namespace se
 			}
 			else
 			{
-				imGuiBackendWrapper.connectToPreRenderSignal(preRenderConnection, boost::bind(&ConnectionManager2Visualizer::render, this));
+				imGuiBackendWrapper.connectToPreRenderSignal(preRenderConnection, boost::bind(&ConnectionManagerVisualizer::render, this));
 			}
 		}
 
-		void ConnectionManager2Visualizer::render()
+		void ConnectionManagerVisualizer::render()
 		{
-			if (ImGui::Begin("ConnectionManager2 visualizer"))
+			if (ImGui::Begin("ConnectionManager visualizer"))
 			{
-				int debugLogLevel = connectionManager2.getDebugLogLevel();
+				int debugLogLevel = connectionManager.getDebugLogLevel();
 				if (ImGui::InputT("Debug log level", debugLogLevel))
 				{
-					connectionManager2.setDebugLogLevel(debugLogLevel);
+					connectionManager.setDebugLogLevel(debugLogLevel);
 				}
 
-				if (const std::optional<net::Port> acceptingPort = connectionManager2.getAcceptingPort())
+				if (const std::optional<net::Port> acceptingPort = connectionManager.getAcceptingPort())
 				{
 					ImGui::Text("Accepting port: " + acceptingPort->toString());
 				}
 
 				if (ImGui::CollapsingHeader("Global connection simulation settings"))
 				{
-					net::ConnectionSimulationSettings connectionSimulationSettings = net::ConnectionManager2::getConnectionSimulationSettings();
+					net::ConnectionSimulationSettings connectionSimulationSettings = net::ConnectionManager::getConnectionSimulationSettings();
 					bool connectionSimulationSettingsChanged = false;
 					connectionSimulationSettingsChanged = ImGui::DragScalar1("Chance to re-order incoming packet", connectionSimulationSettings.chanceToReorderIncoming, 0.001f, 0.0f, 1.0f) || connectionSimulationSettingsChanged;
 					connectionSimulationSettingsChanged = ImGui::DragScalar1("Chance to re-order outgoing packet", connectionSimulationSettings.chanceToReorderOutgoing, 0.001f, 0.0f, 1.0f) || connectionSimulationSettingsChanged;
@@ -62,12 +62,12 @@ namespace se
 					connectionSimulationSettingsChanged = ImGui::InputT("Delay outgoing", connectionSimulationSettings.delayOutgoing) || connectionSimulationSettingsChanged;
 					if (connectionSimulationSettingsChanged)
 					{
-						net::ConnectionManager2::setConnectionSimulationSettings(connectionSimulationSettings);
+						net::ConnectionManager::setConnectionSimulationSettings(connectionSimulationSettings);
 					}
 				}
 
-				const std::vector<std::shared_ptr<net::Connection2>> connections = connectionManager2.getConnections();
-				for (const std::shared_ptr<net::Connection2>& connection : connections)
+				const std::vector<std::shared_ptr<net::Connection>> connections = connectionManager.getConnections();
+				for (const std::shared_ptr<net::Connection>& connection : connections)
 				{
 					if (ImGui::CollapsingHeader(connection->remoteEndpoint.toString().c_str()))
 					{
@@ -79,22 +79,22 @@ namespace se
 						ImGui::Text("Connection id: " + std::to_string(connection->connectionId.value));
 						switch (connection->establishmentType)
 						{
-						case net::Connection2::EstablishmentType::Incoming: ImGui::Text("Establishment type: Incoming"); break;
-						case net::Connection2::EstablishmentType::Outgoing: ImGui::Text("Establishment type: Outgoing"); break;
+						case net::Connection::EstablishmentType::Incoming: ImGui::Text("Establishment type: Incoming"); break;
+						case net::Connection::EstablishmentType::Outgoing: ImGui::Text("Establishment type: Outgoing"); break;
 						}
 						switch (connection->getStatus())
 						{
-						case net::Connection2::Status::Connecting: ImGui::Text("Status: Connecting"); break;
-						case net::Connection2::Status::Connected: ImGui::Text("Status: Connected"); break;
-						case net::Connection2::Status::Disconnected: ImGui::Text("Status: Disconnected"); break;
+						case net::Connection::Status::Connecting: ImGui::Text("Status: Connecting"); break;
+						case net::Connection::Status::Connected: ImGui::Text("Status: Connected"); break;
+						case net::Connection::Status::Disconnected: ImGui::Text("Status: Disconnected"); break;
 						}
 
-						const net::Connection2::DetailedStatus detailedStatus = connection->getDetailedStatus();
+						const net::Connection::DetailedStatus detailedStatus = connection->getDetailedStatus();
 						ImGui::Text("Bytes in send queue (reliable): " + std::to_string(detailedStatus.reliableBytesInSendQueue));
 						ImGui::Text("Bytes in send queue (unreliable): " + std::to_string(detailedStatus.unreliableBytesInSendQueue));
 						ImGui::Text("Sent unacked reliable bytes: " + std::to_string(detailedStatus.sentUnackedReliableBytes));
 
-						const net::Connection2::Statistics& statistics = connection->getStatistics();
+						const net::Connection::Statistics& statistics = connection->getStatistics();
 						ImGui::Text("Sent bytes (reliable): " + std::to_string(statistics.sentBytesReliable));
 						ImGui::Text("Sent bytes (unreliable): " + std::to_string(statistics.sentBytesUnreliable));
 						ImGui::Text("Sent bytes (total): " + std::to_string(statistics.sentBytesTotal));
