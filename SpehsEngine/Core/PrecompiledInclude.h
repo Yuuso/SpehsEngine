@@ -6,6 +6,8 @@
 #include "glm/gtc/quaternion.hpp"
 #include "SpehsEngine/Core/RemoveCvref.h"
 #include "SpehsEngine/Core/BitwiseOperations.h"
+#include "SpehsEngine/Core/ByteVector.h"
+#include "SpehsEngine/Core/ByteView.h"
 #include "SpehsEngine/Core/Color.h"
 #include "SpehsEngine/Core/ColorUtilityFunctions.h"
 #include "SpehsEngine/Core/Constants.h"

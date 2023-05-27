@@ -1,6 +1,8 @@
 #pragma once
 
 #include "boost/format.hpp"
+#include "SpehsEngine/Core/ByteVector.h"
+#include "SpehsEngine/Core/ByteView.h"
 #include "SpehsEngine/Core/SE_Assert.h"
 #include <string>
 
