@@ -52,8 +52,8 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)AsyncTaskManager.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)ByteVector.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)ByteView.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)DeepCopyUniquePtr.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)DeepCopyUniquePtrUtilityFunctions.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)DeepPtr.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)DeepPtrUtilityFunctions.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)HeapOptional.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)HeapOptionalUtilityFunctions.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)File\Timestamp.h" />
