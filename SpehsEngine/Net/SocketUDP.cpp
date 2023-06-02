@@ -6,7 +6,6 @@
 #include "SpehsEngine/Net/Acceptor.h"
 #include "SpehsEngine/Net/IOService.h"
 #include "SpehsEngine/Net/IOServiceUtilityFunctions.h"
-#include "SpehsEngine/Core/RAIIVariableSetter.h"
 #include "SpehsEngine/Core/RNG.h"
 #include "SpehsEngine/Core/Log.h"
 #include "SpehsEngine/Core/SE_Time.h"

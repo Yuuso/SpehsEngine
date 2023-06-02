@@ -10,7 +10,6 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)Endianness.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Inifile.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Inivar.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)LapTimer.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Log.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Murmur3.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)OS.cpp" />
@@ -51,21 +50,18 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)CoreLib.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)DeltaTimeSystem.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Endianness.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)FloatCompression.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)HasMemberFunction.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Inifile.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Inivar.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)LapTimer.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Log.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Murmur3.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)OS.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)PrecompiledInclude.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)RAIIVariableSetter.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)RNG.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)ScopeTimer.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)stdafx.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)STLUnorderedMapUtilityFunctions.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)STLVectorUtilityFunctions.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)UnorderedMapUtilityFunctions.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)VectorUtilityFunctions.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)StringUtilityFunctions.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)StrongInt.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Thread.h" />
@@ -85,14 +81,14 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)TypeTraits.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)LockGuard.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)ScopeProfiler.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)STLOptionalUtilityFunctions.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)OptionalUtilityFunctions.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)DeepPtr.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)File\Timestamp.h">
       <Filter>File</Filter>
     </ClInclude>
-    <ClInclude Include="$(MSBuildThisFileDirectory)STLPairUtilityFunctions.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)PairUtilityFunctions.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)StaticRingBuffer.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)STLUnorderedSetUtilityFunctions.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)UnorderedSetUtilityFunctions.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)UniquePtrUtilityFunctions.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)DeepPtrUtilityFunctions.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)WeightedRandomizer.h" />

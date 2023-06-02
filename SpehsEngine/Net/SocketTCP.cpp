@@ -6,7 +6,6 @@
 #include "SpehsEngine/Net/Acceptor.h"
 #include "SpehsEngine/Net/IOService.h"
 #include "SpehsEngine/Net/IOServiceUtilityFunctions.h"
-#include "SpehsEngine/Core/RAIIVariableSetter.h"
 #include "SpehsEngine/Core/Log.h"
 #include "SpehsEngine/Core/SE_Time.h"
 
@@ -732,12 +731,11 @@ namespace se
 				return false;
 			}
 
-			RAIIMutexVariableSetter<bool, std::recursive_mutex> connectingSetter(connecting, true, mutex);
-
 			{
 				std::lock_guard<std::recursive_mutex> lock(mutex);
 
 				// Start a new connection
+				connecting = true;
 				expectedBytes = 0;
 				handshakeSent = false;
 				handshakeReceived = false;
@@ -750,6 +748,7 @@ namespace se
 				if (error)
 				{
 					DEBUG_LOG(1, "failed to resolve the endpoint. Boost asio error: " + error.message());
+					connecting = false;
 					return false;
 				}
 				else
@@ -762,6 +761,7 @@ namespace se
 				if (error)
 				{
 					DEBUG_LOG(1, "failed to connect(). Boost asio error: " + error.message());
+					connecting = false;
 					return false;
 				}
 				else
@@ -792,6 +792,7 @@ namespace se
 				else
 				{
 					DEBUG_LOG(1, "failed to connect. Failed to send handshake.");
+					connecting = false;
 					return false; // If sending the handshake fails, connection was not successful
 				}
 			}
@@ -803,14 +804,18 @@ namespace se
 				if (!handshakeReceived)
 				{
 					DEBUG_LOG(1, "failed to connect! No response handshake received!");
+					connecting = false;
 					return false;
 				}
 			}
 
-			// All done, socket is now at connected state!
-			DEBUG_LOG(1, "successfully received handshake from the remote endpoint. Socket is now in connected state.");
-			std::lock_guard<std::recursive_mutex> lock(mutex);
-			connected = true;
+			// All done, socket is now at connected state
+			{
+				DEBUG_LOG(1, "successfully received handshake from the remote endpoint. Socket is now in connected state.");
+				std::lock_guard<std::recursive_mutex> lock(mutex);
+				connecting = false;
+				connected = true;
+			}
 
 			return true;
 		}
