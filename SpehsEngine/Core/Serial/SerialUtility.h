@@ -22,7 +22,7 @@ namespace se
 			{
 				if constexpr (Serial::getKeyEnabled())
 				{
-					result.emplace(serial->serial((const U&)(*value), "class"));
+					result.emplace(serial->serial((const U&)(*value), SerialKey<U>("class")));
 				}
 				else
 				{
@@ -45,7 +45,7 @@ namespace se
 				ptr.reset(u);
 				if constexpr (Serial::getKeyEnabled())
 				{
-					if (!serial->serial(*u, "class"))
+					if (!serial->serial(*u, SerialKey<U>("class")))
 					{
 						ptr.reset();
 					}

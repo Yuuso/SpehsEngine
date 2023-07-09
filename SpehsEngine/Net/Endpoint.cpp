@@ -12,7 +12,7 @@ namespace se
 
 		size_t Endpoint::HashFunctor::operator()(const Endpoint& endpoint) const
 		{
-			return murmurHash3_x86_32(endpoint.address.value.data(), endpoint.address.value.size(), 0) ^ uint32_t(endpoint.port.value);
+			return size_t(Murmur3::impl(endpoint.address.value.data(), endpoint.address.value.size(), 0) ^ uint32_t(endpoint.port.value));
 		}
 	}
 }

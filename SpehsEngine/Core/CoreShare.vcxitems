@@ -14,7 +14,6 @@
     <ProjectCapability Include="SourceItemsFromImports" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="$(MSBuildThisFileDirectory)File\Timestamp.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)ScopedFrameLimiter.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Noise.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)ScopeProfiler.cpp" />
@@ -65,7 +64,7 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)ResourcePathFinder.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)ScopedConnections.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)ScopeProfilerTypes.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)Serial\ArchiveHash.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Serial\SerialKey.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Serial\ArchiveReader.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Serial\ArchiveWriter.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Serial\BinaryReader.h" />

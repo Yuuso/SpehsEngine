@@ -30,9 +30,6 @@
     </ClCompile>
     <ClCompile Include="$(MSBuildThisFileDirectory)SystemMessageBox.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)ScopeProfiler.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)File\Timestamp.cpp">
-      <Filter>File</Filter>
-    </ClCompile>
     <ClCompile Include="$(MSBuildThisFileDirectory)TimeUtilityFunctions.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)UtcTime.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)ScopedFrameLimiter.cpp" />
@@ -114,7 +111,7 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)Serial\SerialUtility.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)HeapOptional.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)HeapOptionalUtilityFunctions.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)Serial\ArchiveHash.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Serial\SerialKey.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="File">

@@ -1,7 +1,7 @@
 #pragma once
 
 #include "SpehsEngine/Core/Serial/BinaryReader.h"
-#include "SpehsEngine/Core/Serial/ArchiveHash.h"
+#include "SpehsEngine/Core/Serial/SerialKey.h"
 #include "SpehsEngine/Core/UnorderedMapUtilityFunctions.h"
 #include <stack>
 #include <vector>
@@ -20,7 +20,10 @@ namespace se
 		ArchiveReader(const uint8_t* const _data, const size_t _size);
 
 		template<typename T>
-		inline bool serial(T& _value, const std::string_view _key);
+		inline bool serial(T& _value, const SerialKey<T> _serialKey)
+		{
+			return serialImpl(_value, _serialKey.value);
+		}
 
 		inline uint8_t getVersion() { return version; }
 
@@ -40,15 +43,18 @@ namespace se
 			std::unordered_map<uint32_t, Container> containers;
 		};
 
-		const Container* findContainer(const uint32_t _hash) const
+		template<typename T>
+		inline bool serialImpl(T& _value, const uint32_t _keyValue);
+
+		const Container* findContainer(const uint32_t _keyValue) const
 		{
 			if (containerStack.empty())
 			{
-				return tryFind(rootContainer.containers, _hash);
+				return tryFind(rootContainer.containers, _keyValue);
 			}
 			else if (containerStack.top())
 			{
-				return tryFind(containerStack.top()->containers, _hash);
+				return tryFind(containerStack.top()->containers, _keyValue);
 			}
 			else
 			{
@@ -56,15 +62,15 @@ namespace se
 			}
 		}
 
-		const Value* findValue(const uint32_t _hash) const
+		const Value* findValue(const uint32_t _keyValue) const
 		{
 			if (containerStack.empty())
 			{
-				return tryFind(rootContainer.values, _hash);
+				return tryFind(rootContainer.values, _keyValue);
 			}
 			else if (containerStack.top())
 			{
-				return tryFind(containerStack.top()->values, _hash);
+				return tryFind(containerStack.top()->values, _keyValue);
 			}
 			else
 			{
@@ -79,16 +85,15 @@ namespace se
 	};
 
 	template<typename T>
-	inline bool ArchiveReader::serial(T& _value, const std::string_view _key)
+	inline bool ArchiveReader::serialImpl(T& _value, const uint32_t _keyValue)
 	{
 		if constexpr (std::is_enum<T>::value)
 		{
-			return serial<std::underlying_type<T>::type>((typename std::underlying_type<T>::type&)_value, _key);
+			return serialImpl<std::underlying_type<T>::type>((typename std::underlying_type<T>::type&)_value, _keyValue);
 		}
 		else if constexpr (!std::is_class<T>::value)
 		{
-			const uint32_t hash = getArchiveHash<T>(_key);
-			if (const Value* const value = findValue(hash))
+			if (const Value* const value = findValue(_keyValue))
 			{
 				se_assert(size_t(value->size) == sizeof(T));
 				BinaryReader binaryReader(valueData.data() + value->index, size_t(value->size));
@@ -101,8 +106,7 @@ namespace se
 		else if constexpr (std::is_same<T, ByteVector>::value)
 		{
 			// Read dynamic size data block
-			const uint32_t hash = getArchiveHash<T>(_key);
-			if (const Value* const value = findValue(hash))
+			if (const Value* const value = findValue(_keyValue))
 			{
 				std::vector<std::byte> bytes;
 				_value.swap(bytes);
@@ -120,8 +124,7 @@ namespace se
 		else if constexpr (IsStaticByteView<T>::value)
 		{
 			// Read static size data block
-			const uint32_t hash = getArchiveHash<T>(_key);
-			if (const Value* const value = findValue(hash))
+			if (const Value* const value = findValue(_keyValue))
 			{
 				if (value->size == T::getSize())
 				{
@@ -142,8 +145,7 @@ namespace se
 		else
 		{
 			// Free reader
-			const uint32_t hash = getArchiveHash<T>(_key);
-			containerStack.push(findContainer(hash));
+			containerStack.push(findContainer(_keyValue));
 			const bool result = Serial<SerialTag<T>::type>::template serial<ArchiveReader, T&>(*this, _value);
 			containerStack.pop();
 			return result;

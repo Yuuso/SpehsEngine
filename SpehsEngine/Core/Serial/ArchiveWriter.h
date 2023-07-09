@@ -1,7 +1,7 @@
 #pragma once
 
 #include "SpehsEngine/Core/Serial/BinaryWriter.h"
-#include "SpehsEngine/Core/Serial/ArchiveHash.h"
+#include "SpehsEngine/Core/Serial/SerialKey.h"
 #include "SpehsEngine/Core/Log.h"
 
 
@@ -16,33 +16,38 @@ namespace se
 		static inline constexpr bool getReadingEnabled() { return false; }
 
 		template<typename T>
-		inline bool serial(const T& _value, const std::string_view _key);
+		inline bool serial(const T& _value, const SerialKey<T> _key)
+		{
+			return serialImpl(_value, _key.value);
+		}
 
 		std::vector<uint8_t> generateData() const;
 
 	private:
 
-		static constexpr size_t valueHeaderSize = sizeof(uint32_t) + sizeof(uint32_t); // Hash + size
-		static constexpr size_t containerHeaderSize = sizeof(uint32_t) + sizeof(uint32_t) + sizeof(uint32_t) + sizeof(uint32_t); // Hash + values begin + values end + child container count
+		static constexpr size_t valueHeaderSize = sizeof(uint32_t) + sizeof(uint32_t); // Key + size
+		static constexpr size_t containerHeaderSize = sizeof(uint32_t) + sizeof(uint32_t) + sizeof(uint32_t) + sizeof(uint32_t); // Key + values begin + values end + child container count
 
-		BinaryWriter valueHeaders; // hash + size
+		template<typename T>
+		inline bool serialImpl(const T& _value, const uint32_t _keyValue);
+
+		BinaryWriter valueHeaders; // key + size
 		BinaryWriter valueData;
-		BinaryWriter containers; // hash + value count + container count
+		BinaryWriter containers; // key + value count + container count
 		uint32_t containerCounter = 0;
 	};
 
 	template<typename T>
-	inline bool ArchiveWriter::serial(const T& _value, const std::string_view _key)
+	inline bool ArchiveWriter::serialImpl(const T& _value, const uint32_t _keyValue)
 	{
 		if constexpr (std::is_enum<T>::value)
 		{
-			return serial<std::underlying_type<T>::type>((const typename std::underlying_type<T>::type&)_value, _key);
+			return serialImpl<std::underlying_type<T>::type>((const typename std::underlying_type<T>::type&)_value, _keyValue);
 		}
 		else if constexpr (!std::is_class<T>::value)
 		{
-			const uint32_t hash = getArchiveHash<T>(_key);
 			const uint32_t size = sizeof(T);
-			valueHeaders.serial(hash);
+			valueHeaders.serial(_keyValue);
 			valueHeaders.serial(size);
 			valueData.serial(_value);
 			return true;
@@ -50,9 +55,8 @@ namespace se
 		else if constexpr (std::is_same<T, ByteView>::value || std::is_same<T, ByteVector>::value || IsStaticByteView<T>::value || IsConstStaticByteView<T>::value)
 		{
 			// Write (static or varying size) raw data block
-			const uint32_t hash = getArchiveHash<T>(_key);
 			const uint32_t size = uint32_t(_value.getSize());
-			valueHeaders.serial(hash);
+			valueHeaders.serial(_keyValue);
 			valueHeaders.serial(size);
 			std::vector<uint8_t> data;
 			valueData.swap(data);
@@ -65,11 +69,10 @@ namespace se
 		else
 		{
 			// Free writer (container)
-			const uint32_t hash = getArchiveHash<T>(_key);
 			const uint32_t valuesBegin = uint32_t(valueHeaders.getOffset() / valueHeaderSize);
 			uint32_t valuesEnd = 0;
 			uint32_t containerCount = 0;
-			containers.serial(hash);
+			containers.serial(_keyValue);
 			containers.serial(valuesBegin);
 			const size_t valuesEndOffset = containers.getOffset();
 			containers.serial(valuesEnd);
