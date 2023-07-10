@@ -50,7 +50,7 @@ namespace se
 			return impl(s, size_t(Length - 1), seed);
 		}
 
-		static constexpr uint32_t impl2(const std::string_view string, const uint32_t seed)
+		static constexpr uint32_t impl(const std::string_view string, const uint32_t seed)
 		{
 			return impl(string.data(), string.size(), seed);
 		}

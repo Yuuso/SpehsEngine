@@ -34,8 +34,12 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)UtcTime.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)ScopedFrameLimiter.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Noise.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)Serial\ArchiveReader.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)Serial\ArchiveWriter.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Serial\ArchiveWriter.cpp">
+      <Filter>Serial</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)Serial\ArchiveReader.cpp">
+      <Filter>Serial</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="$(MSBuildThisFileDirectory)SE_Assert.h" />
@@ -101,17 +105,31 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)Noise.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)ByteVector.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)ByteView.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)Serial\ArchiveReader.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)Serial\ArchiveWriter.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)Serial\BinaryReader.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)Serial\BinaryWriter.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)Serial\Serial.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)MapUtilityFunctions.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)RemoveCvref.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)Serial\SerialUtility.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)HeapOptional.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)HeapOptionalUtilityFunctions.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)Serial\SerialKey.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Serial\Serial.h">
+      <Filter>Serial</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)Serial\SerialKey.h">
+      <Filter>Serial</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)Serial\SerialUtility.h">
+      <Filter>Serial</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)Serial\BinaryReader.h">
+      <Filter>Serial</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)Serial\ArchiveWriter.h">
+      <Filter>Serial</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)Serial\ArchiveReader.h">
+      <Filter>Serial</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)Serial\BinaryWriter.h">
+      <Filter>Serial</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="File">
@@ -119,6 +137,9 @@
     </Filter>
     <Filter Include="Natvis">
       <UniqueIdentifier>{24c20202-24e4-403c-bbf4-a15171f28125}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Serial">
+      <UniqueIdentifier>{4268019e-0099-44e6-9172-f905dab5b1f4}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

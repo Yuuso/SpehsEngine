@@ -26,25 +26,30 @@ namespace se
 	template<typename T>
 	static constexpr SerialTypeId getSerialTypeId()
 	{
-		if constexpr (std::is_floating_point<T>::value)
+		typedef typename se::remove_cvref<T>::type U;
+		if constexpr (std::is_enum<U>::value)
 		{
-			return SerialTypeId(16 + sizeof(T));
+			return getSerialTypeId<std::underlying_type<U>::type>();
 		}
-		else if constexpr (std::numeric_limits<T>::is_integer && std::is_signed<T>::value)
+		else if constexpr (std::is_floating_point<U>::value)
 		{
-			return SerialTypeId(32 + sizeof(T));
+			return SerialTypeId(16 + sizeof(U));
 		}
-		else if constexpr (std::numeric_limits<T>::is_integer && std::is_unsigned<T>::value)
+		else if constexpr (std::numeric_limits<U>::is_integer && std::is_signed<U>::value)
 		{
-			return SerialTypeId(48 + sizeof(T));
+			return SerialTypeId(32 + sizeof(U));
 		}
-		else if constexpr (std::is_same<T, ByteVector>::value || std::is_same<T, ByteView>::value)
+		else if constexpr (std::numeric_limits<U>::is_integer && std::is_unsigned<U>::value)
+		{
+			return SerialTypeId(48 + sizeof(U));
+		}
+		else if constexpr (std::is_same<U, ByteVector>::value || std::is_same<U, ByteView>::value)
 		{
 			return SerialTypeId(64 + 1);
 		}
-		else if constexpr (IsStaticByteView<T>::value || IsConstStaticByteView<T>::value)
+		else if constexpr (IsStaticByteView<U>::value || IsConstStaticByteView<U>::value)
 		{
-			return SerialTypeId(80 + uint32_t(T::getSize()));
+			return SerialTypeId(80 + uint32_t(U::getSize()));
 		}
 		else
 		{
