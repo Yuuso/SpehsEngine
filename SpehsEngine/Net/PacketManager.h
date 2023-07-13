@@ -37,7 +37,7 @@ namespace se
 
 			bool processPacket(const PacketType packetType, se::BinaryReader& binaryReader)
 			{
-				std::unordered_map<PacketType, boost::signals2::signal<void(se::BinaryReader&)>>::iterator it = receiveHandlerSignals.find(packetType);
+				typename std::unordered_map<PacketType, boost::signals2::signal<void(se::BinaryReader&)>>::iterator it = receiveHandlerSignals.find(packetType);
 				if (it != receiveHandlerSignals.end() && !it->second.empty())
 				{
 					it->second(binaryReader);
