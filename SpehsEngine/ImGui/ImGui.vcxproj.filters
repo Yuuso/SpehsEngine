@@ -15,6 +15,9 @@
     <ClCompile Include="Utility\ImGuiUtility.cpp">
       <Filter>Utility</Filter>
     </ClCompile>
+    <ClCompile Include="Utility\ImGuiInput.cpp">
+      <Filter>Utility</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h" />
@@ -37,6 +40,12 @@
     </ClInclude>
     <ClInclude Include="PrecompiledInclude.h" />
     <ClInclude Include="Utility\IState.h">
+      <Filter>Utility</Filter>
+    </ClInclude>
+    <ClInclude Include="Utility\ImGuiInput.h">
+      <Filter>Utility</Filter>
+    </ClInclude>
+    <ClInclude Include="Utility\Label.h">
       <Filter>Utility</Filter>
     </ClInclude>
   </ItemGroup>

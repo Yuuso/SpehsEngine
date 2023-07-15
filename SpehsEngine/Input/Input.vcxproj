@@ -166,6 +166,7 @@
     <ClCompile Include="EventCatcher.cpp" />
     <ClCompile Include="EventSignaler.cpp" />
     <ClCompile Include="GUID.cpp" />
+    <ClCompile Include="ImGuiInput.cpp" />
     <ClCompile Include="InputLib.cpp" />
     <ClCompile Include="InputEnumerations.cpp" />
     <ClCompile Include="InputManager.cpp" />

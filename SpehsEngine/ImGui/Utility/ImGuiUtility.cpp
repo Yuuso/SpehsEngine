@@ -6,6 +6,7 @@
 #include "SpehsEngine/Input/EventSignaler.h"
 #include "SpehsEngine/Input/CustomEventParametersRecorder.h"
 #include "SpehsEngine/ImGui/Utility/BackendWrapper.h"
+#include "SpehsEngine/ImGui/Utility/ImGuiInput.h"
 
 
 namespace ImGui
@@ -113,7 +114,7 @@ namespace ImGui
 			ImGui::EndPopup();
 		}
 		ImGui::SameLine();
-		if (InputT(label, filepath))
+		if (Input(label, filepath))
 		{
 			changed = true;
 		}
@@ -231,11 +232,11 @@ namespace ImGui
 					return 0;
 				}
 			};
-			ImGui::InputT("", output, inputTextFlags, &Callback::callback);
+			ImGui::Input("", output, inputTextFlags, &Callback::callback);
 			const bool inputDeactivatedAfterEdit = ImGui::IsItemDeactivatedAfterEdit(); // Returns true also on 'esc' and on clicking away
 			*/
 			ImGuiInputTextFlags inputTextFlags = ImGuiInputTextFlags_EnterReturnsTrue; // Works otherwise than pressing 'esc' which clears the buffer
-			if (ImGui::InputT("", output, inputTextFlags))
+			if (ImGui::Input("", output, inputTextFlags))
 			{
 				result.emplace(true);
 				ImGui::CloseCurrentPopup();
@@ -284,33 +285,6 @@ namespace ImGui
 				}, INT_MAX);
 		}
 		ImGui::PopID();
-	}
-
-	bool InputT(const char* const label, se::input::CustomEventParameters& customEventParameters, se::input::EventSignaler& eventSignaler, StateWrapper& stateWrapper)
-	{
-		struct State : public IState
-		{
-			std::unique_ptr<se::input::CustomEventParametersRecorder> customEventParametersRecorder;
-		};
-		State& state = stateWrapper.get<State>();
-
-		bool changed = false;
-		if (state.customEventParametersRecorder)
-		{
-			ImGui::Text(se::formatString("%s: press any key...", label));
-			if (const std::optional<se::input::CustomEventParameters> result = state.customEventParametersRecorder->getCustomEventParameters())
-			{
-				customEventParameters = *result;
-				state.customEventParametersRecorder.reset();
-				changed = true;
-			}
-		}
-		else if (ImGui::Button(se::formatString("%s: %s", label, customEventParameters.toString().c_str())))
-		{
-			state.customEventParametersRecorder.reset(new se::input::CustomEventParametersRecorder(eventSignaler));
-		}
-
-		return changed;
 	}
 
 	std::string getImGuiFormatString(const std::string_view string)

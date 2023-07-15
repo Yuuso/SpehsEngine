@@ -40,7 +40,7 @@ namespace se
 			if (ImGui::Begin("ConnectionManager visualizer"))
 			{
 				int debugLogLevel = connectionManager.getDebugLogLevel();
-				if (ImGui::InputT("Debug log level", debugLogLevel))
+				if (ImGui::Input("Debug log level", debugLogLevel))
 				{
 					connectionManager.setDebugLogLevel(debugLogLevel);
 				}
@@ -58,8 +58,8 @@ namespace se
 					connectionSimulationSettingsChanged = ImGui::DragScalar1("Chance to re-order outgoing packet", connectionSimulationSettings.chanceToReorderOutgoing, 0.001f, 0.0f, 1.0f) || connectionSimulationSettingsChanged;
 					connectionSimulationSettingsChanged = ImGui::DragScalar1("Chance to drop incoming", connectionSimulationSettings.chanceToDropIncoming, 0.001f, 0.0f, 1.0f) || connectionSimulationSettingsChanged;
 					connectionSimulationSettingsChanged = ImGui::DragScalar1("Chance to drop outgoing", connectionSimulationSettings.chanceToDropOutgoing, 0.001f, 0.0f, 1.0f) || connectionSimulationSettingsChanged;
-					connectionSimulationSettingsChanged = ImGui::InputT("Delay incoming", connectionSimulationSettings.delayIncoming) || connectionSimulationSettingsChanged;
-					connectionSimulationSettingsChanged = ImGui::InputT("Delay outgoing", connectionSimulationSettings.delayOutgoing) || connectionSimulationSettingsChanged;
+					connectionSimulationSettingsChanged = ImGui::Input("Delay incoming", connectionSimulationSettings.delayIncoming) || connectionSimulationSettingsChanged;
+					connectionSimulationSettingsChanged = ImGui::Input("Delay outgoing", connectionSimulationSettings.delayOutgoing) || connectionSimulationSettingsChanged;
 					if (connectionSimulationSettingsChanged)
 					{
 						net::ConnectionManager::setConnectionSimulationSettings(connectionSimulationSettings);
