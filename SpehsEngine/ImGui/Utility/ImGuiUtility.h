@@ -336,8 +336,7 @@ namespace ImGui
 	{
 		auto renderElement = [&](T& t, const size_t index)
 		{
-			// nocommit return InputT(("[" + std::to_string(index) + "]").c_str(), t, std::forward<Args>(args)...);
-			return true;
+			return InputT(("[" + std::to_string(index) + "]").c_str(), t, std::forward<Args>(args)...);
 		};
 
 		bool changed = false;
@@ -380,7 +379,7 @@ namespace ImGui
 						changed = true;
 					}
 				}
-				// nocommit changed |= InputT(("[" + std::to_string(i) + "]").c_str(), vector[i], std::forward<Args>(args)...);
+				changed |= InputT(("[" + std::to_string(i) + "]").c_str(), vector[i], std::forward<Args>(args)...);
 				if (remove)
 				{
 					vector.erase(vector.begin() + i--);
@@ -417,8 +416,7 @@ namespace ImGui
 	{
 		auto render = [&](T& t)->bool
 			{
-				// nocommit return ImGui::InputT(label, t, args...);
-				return true;
+				return ImGui::InputT(label, t, args...);
 			};
 
 		bool changed = false;
