@@ -23,7 +23,7 @@ namespace se
 			{
 			}
 
-			Impl::~Impl()
+			~Impl()
 			{
 				try
 				{

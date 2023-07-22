@@ -29,7 +29,7 @@ namespace se
 		typedef typename se::remove_cvref<T>::type U;
 		if constexpr (std::is_enum<U>::value)
 		{
-			return getSerialTypeId<std::underlying_type<U>::type>();
+			return getSerialTypeId<typename std::underlying_type<U>::type>();
 		}
 		else if constexpr (std::is_floating_point<U>::value)
 		{

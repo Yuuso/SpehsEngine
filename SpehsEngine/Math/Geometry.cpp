@@ -236,7 +236,7 @@ namespace se
 		//? const glm::vec2 midCA = (C + A) * 0.5f;
 		const float slopeAB = (B.y - A.y) / (B.x - A.x);
 		const float slopeBC = (C.y - B.y) / (C.x - B.x);
-		const float slopeCA = (A.y - C.y) / (A.x - C.x);
+		//const float slopeCA = (A.y - C.y) / (A.x - C.x);
 		const float perpendicularBisectorSlopeAB = -1.0f / slopeAB;
 		const float perpendicularBisectorSlopeBC = -1.0f / slopeBC;
 		//? const float perpendicularBisectorSlopeCA = -1.0f / slopeCA;

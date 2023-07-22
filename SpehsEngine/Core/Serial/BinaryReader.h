@@ -117,7 +117,7 @@ namespace se
 		else
 		{
 			// Free reader
-			return Serial<SerialTag<T>::type>::template serial<BinaryReader, T&>(*this, _value);
+			return Serial<typename SerialTag<T>::type>::template serial<BinaryReader, T&>(*this, _value);
 		}
 	}
 }

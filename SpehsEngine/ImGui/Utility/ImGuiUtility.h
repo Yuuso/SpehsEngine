@@ -118,16 +118,16 @@ namespace ImGui
 	SE_IMGUI_DRAG_SCALAR(p_ScalarType, p_ImGuiDataType, 2, p_DefaultFormat, p_DefaultImGuiSliderFlags) \
 	SE_IMGUI_DRAG_SCALAR(p_ScalarType, p_ImGuiDataType, 3, p_DefaultFormat, p_DefaultImGuiSliderFlags) \
 	SE_IMGUI_DRAG_SCALAR(p_ScalarType, p_ImGuiDataType, 4, p_DefaultFormat, p_DefaultImGuiSliderFlags)
-	SE_IMGUI_DRAG_SCALAR_ONE_TO_FOUR_COMPONENTS(uint8_t, ImGuiDataType_U8, "%hhu", 0)
-	SE_IMGUI_DRAG_SCALAR_ONE_TO_FOUR_COMPONENTS(uint16_t, ImGuiDataType_U16, "%hu", 0)
-	SE_IMGUI_DRAG_SCALAR_ONE_TO_FOUR_COMPONENTS(uint32_t, ImGuiDataType_U32, "%u", 0)
-	SE_IMGUI_DRAG_SCALAR_ONE_TO_FOUR_COMPONENTS(uint64_t, ImGuiDataType_U64, "%llu", 0)
-	SE_IMGUI_DRAG_SCALAR_ONE_TO_FOUR_COMPONENTS(int8_t, ImGuiDataType_S8, "%hhi", 0)
-	SE_IMGUI_DRAG_SCALAR_ONE_TO_FOUR_COMPONENTS(int16_t, ImGuiDataType_S16, "%hi", 0)
-	SE_IMGUI_DRAG_SCALAR_ONE_TO_FOUR_COMPONENTS(int32_t, ImGuiDataType_S32, "%i", 0)
-	SE_IMGUI_DRAG_SCALAR_ONE_TO_FOUR_COMPONENTS(int64_t, ImGuiDataType_S64, "%lli", 0)
-	SE_IMGUI_DRAG_SCALAR_ONE_TO_FOUR_COMPONENTS(float, ImGuiDataType_Float, "%f", 0)
-	SE_IMGUI_DRAG_SCALAR_ONE_TO_FOUR_COMPONENTS(double, ImGuiDataType_Double, "%f", 0)
+	SE_IMGUI_DRAG_SCALAR_ONE_TO_FOUR_COMPONENTS(uint8_t,	ImGuiDataType_::ImGuiDataType_U8, "%hhu", 0)
+	SE_IMGUI_DRAG_SCALAR_ONE_TO_FOUR_COMPONENTS(uint16_t,	ImGuiDataType_::ImGuiDataType_U16, "%hu", 0)
+	SE_IMGUI_DRAG_SCALAR_ONE_TO_FOUR_COMPONENTS(uint32_t,	ImGuiDataType_::ImGuiDataType_U32, "%u", 0)
+	SE_IMGUI_DRAG_SCALAR_ONE_TO_FOUR_COMPONENTS(uint64_t,	ImGuiDataType_::ImGuiDataType_U64, "%llu", 0)
+	SE_IMGUI_DRAG_SCALAR_ONE_TO_FOUR_COMPONENTS(int8_t,		ImGuiDataType_::ImGuiDataType_S8, "%hhi", 0)
+	SE_IMGUI_DRAG_SCALAR_ONE_TO_FOUR_COMPONENTS(int16_t,	ImGuiDataType_::ImGuiDataType_S16, "%hi", 0)
+	SE_IMGUI_DRAG_SCALAR_ONE_TO_FOUR_COMPONENTS(int32_t,	ImGuiDataType_::ImGuiDataType_S32, "%i", 0)
+	SE_IMGUI_DRAG_SCALAR_ONE_TO_FOUR_COMPONENTS(int64_t,	ImGuiDataType_::ImGuiDataType_S64, "%lli", 0)
+	SE_IMGUI_DRAG_SCALAR_ONE_TO_FOUR_COMPONENTS(float,		ImGuiDataType_::ImGuiDataType_Float, "%f", 0)
+	SE_IMGUI_DRAG_SCALAR_ONE_TO_FOUR_COMPONENTS(double,		ImGuiDataType_::ImGuiDataType_Double, "%f", 0)
 #undef SE_IMGUI_DRAG_SCALAR_ONE_TO_FOUR_COMPONENTS
 #undef SE_IMGUI_DRAG_SCALAR
 
@@ -141,16 +141,16 @@ namespace ImGui
 	{ \
 		return InputScalar(label.c_str(), p_ImGuiDataType, &value, &step, &stepFast, format, flags); \
 	}
-	SE_IMGUI_INPUT_SCALAR(uint8_t, ImGuiDataType_U8, "%hhu", 0)
-	SE_IMGUI_INPUT_SCALAR(uint16_t, ImGuiDataType_U16, "%hu", 0)
-	SE_IMGUI_INPUT_SCALAR(uint32_t, ImGuiDataType_U32, "%u", 0)
-	SE_IMGUI_INPUT_SCALAR(uint64_t, ImGuiDataType_U64, "%llu", 0)
-	SE_IMGUI_INPUT_SCALAR(int8_t, ImGuiDataType_S8, "%hhi", 0)
-	SE_IMGUI_INPUT_SCALAR(int16_t, ImGuiDataType_S16, "%hi", 0)
-	SE_IMGUI_INPUT_SCALAR(int32_t, ImGuiDataType_S32, "%i", 0)
-	SE_IMGUI_INPUT_SCALAR(int64_t, ImGuiDataType_S64, "%lli", 0)
-	SE_IMGUI_INPUT_SCALAR(float, ImGuiDataType_Float, "%.3f", ImGuiInputTextFlags_CharsScientific)
-	SE_IMGUI_INPUT_SCALAR(double, ImGuiDataType_Double, "%.3f", ImGuiInputTextFlags_CharsScientific)
+	SE_IMGUI_INPUT_SCALAR(uint8_t,	ImGuiDataType_::ImGuiDataType_U8,		"%hhu",	0)
+	SE_IMGUI_INPUT_SCALAR(uint16_t,	ImGuiDataType_::ImGuiDataType_U16,		"%hu",	0)
+	SE_IMGUI_INPUT_SCALAR(uint32_t,	ImGuiDataType_::ImGuiDataType_U32,		"%u",	0)
+	SE_IMGUI_INPUT_SCALAR(uint64_t,	ImGuiDataType_::ImGuiDataType_U64,		"%llu",	0)
+	SE_IMGUI_INPUT_SCALAR(int8_t,	ImGuiDataType_::ImGuiDataType_S8,		"%hhi",	0)
+	SE_IMGUI_INPUT_SCALAR(int16_t,	ImGuiDataType_::ImGuiDataType_S16,		"%hi",	0)
+	SE_IMGUI_INPUT_SCALAR(int32_t,	ImGuiDataType_::ImGuiDataType_S32,		"%i",	0)
+	SE_IMGUI_INPUT_SCALAR(int64_t,	ImGuiDataType_::ImGuiDataType_S64,		"%lli",	0)
+	SE_IMGUI_INPUT_SCALAR(float,	ImGuiDataType_::ImGuiDataType_Float,	"%.3f",	ImGuiInputTextFlags_CharsScientific)
+	SE_IMGUI_INPUT_SCALAR(double,	ImGuiDataType_::ImGuiDataType_Double,	"%.3f",	ImGuiInputTextFlags_CharsScientific)
 #undef SE_IMGUI_INPUT_SCALAR
 
 	inline bool Button(const std::string& label, const ImVec2& size = ImVec2(0, 0))
@@ -336,7 +336,8 @@ namespace ImGui
 	{
 		auto renderElement = [&](T& t, const size_t index)
 		{
-			return InputT(("[" + std::to_string(index) + "]").c_str(), t, std::forward<Args>(args)...);
+			// nocommit return InputT(("[" + std::to_string(index) + "]").c_str(), t, std::forward<Args>(args)...);
+			return true;
 		};
 
 		bool changed = false;
@@ -379,7 +380,7 @@ namespace ImGui
 						changed = true;
 					}
 				}
-				changed |= renderElement(vector[i], i);
+				// nocommit changed |= InputT(("[" + std::to_string(i) + "]").c_str(), vector[i], std::forward<Args>(args)...);
 				if (remove)
 				{
 					vector.erase(vector.begin() + i--);
@@ -416,7 +417,8 @@ namespace ImGui
 	{
 		auto render = [&](T& t)->bool
 			{
-				return ImGui::InputT(label, t, args...);
+				// nocommit return ImGui::InputT(label, t, args...);
+				return true;
 			};
 
 		bool changed = false;
@@ -563,7 +565,7 @@ namespace ImGui
 	public:
 		ScopedStyleColor() = default;
 		ScopedStyleColor(const ScopedStyleColor& copy) = delete;
-		ScopedStyleColor(ScopedStyleColor&& move)
+		ScopedStyleColor(ScopedStyleColor&& move) noexcept
 			: pop(move.pop)
 		{
 			move.pop = false;
@@ -596,7 +598,7 @@ namespace ImGui
 	public:
 		ScopedFont() = delete;
 		ScopedFont(const ScopedFont& copy) = delete;
-		ScopedFont(ScopedFont&& other)
+		ScopedFont(ScopedFont&& other) noexcept
 			: pop(other.pop)
 		{
 			other.pop = false;

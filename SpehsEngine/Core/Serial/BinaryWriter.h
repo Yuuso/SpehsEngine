@@ -123,7 +123,7 @@ namespace se
 		else
 		{
 			// Free writer
-			return Serial<SerialTag<T>::type>::template serial<BinaryWriter, const T&>(*this, _value);
+			return Serial<typename SerialTag<T>::type>::template serial<BinaryWriter, const T&>(*this, _value);
 		}
 	}
 }

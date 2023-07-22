@@ -89,7 +89,7 @@ namespace se
 	{
 		if constexpr (std::is_enum<T>::value)
 		{
-			return serialImpl<std::underlying_type<T>::type>((typename std::underlying_type<T>::type&)_value, _keyValue);
+			return serialImpl<typename std::underlying_type<T>::type>((typename std::underlying_type<T>::type&)_value, _keyValue);
 		}
 		else if constexpr (!std::is_class<T>::value)
 		{
@@ -146,7 +146,7 @@ namespace se
 		{
 			// Free reader
 			containerStack.push(findContainer(_keyValue));
-			const bool result = Serial<SerialTag<T>::type>::template serial<ArchiveReader, T&>(*this, _value);
+			const bool result = Serial<typename SerialTag<T>::type>::template serial<ArchiveReader, T&>(*this, _value);
 			containerStack.pop();
 			return result;
 		}

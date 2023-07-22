@@ -9,7 +9,7 @@ namespace se
 	{
 		struct TextStyle
 		{
-			bool operator==(const TextStyle& _other)
+			bool operator==(const TextStyle& _other) const noexcept
 			{
 				return color == _other.color;
 			}

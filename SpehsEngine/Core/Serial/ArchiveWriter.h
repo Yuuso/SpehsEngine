@@ -42,7 +42,7 @@ namespace se
 	{
 		if constexpr (std::is_enum<T>::value)
 		{
-			return serialImpl<std::underlying_type<T>::type>((const typename std::underlying_type<T>::type&)_value, _keyValue);
+			return serialImpl<typename std::underlying_type<T>::type>((const typename std::underlying_type<T>::type&)_value, _keyValue);
 		}
 		else if constexpr (!std::is_class<T>::value)
 		{
@@ -79,7 +79,8 @@ namespace se
 			const size_t containerCountOffset = containers.getOffset();
 			containers.serial(containerCount);
 			const uint32_t containerCounterBegin = ++containerCounter;
-			const bool result = Serial<SerialTag<T>::type>::template serial<ArchiveWriter, const T&>(*this, _value);
+			const bool result = Serial<typename SerialTag<T>::type>::template serial<ArchiveWriter, const T&>(*this, _value);
+			(void)result;
 			valuesEnd = uint32_t(valueHeaders.getOffset() / valueHeaderSize);
 			containerCount = containerCounter - containerCounterBegin;
 			containerCounter = containerCounterBegin;

@@ -9,10 +9,10 @@
 do { \
 	if constexpr (std::remove_reference<decltype(p_serial)>::type::getKeyEnabled()) \
 	{ \
-		const se::SerialTypeId p_serialTypeId = getSerialTypeId<se::remove_cvref<decltype(p_value)>::type>(); \
+		const se::SerialTypeId p_serialTypeId = getSerialTypeId<typename se::remove_cvref<decltype(p_value)>::type>(); \
 		const uint32_t p_serialKeyValue = se::Murmur3::impl(p_key, p_serialTypeId.value); \
-		const se::SerialKey<se::remove_cvref<decltype(p_value)>::type> p_serialKey(p_serialKeyValue); \
-		if (!se::keySerial<se::remove_cvref<decltype(p_serial)>::type, se::remove_cvref<decltype(p_value)>::type>(p_serial, p_value, p_serialKey)) \
+		const se::SerialKey<typename se::remove_cvref<decltype(p_value)>::type> p_serialKey(p_serialKeyValue); \
+		if (!se::keySerial<typename se::remove_cvref<decltype(p_serial)>::type, typename se::remove_cvref<decltype(p_value)>::type>(p_serial, p_value, p_serialKey)) \
 			return false; \
 	} \
 	else \
