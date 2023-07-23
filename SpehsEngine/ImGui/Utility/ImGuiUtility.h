@@ -10,6 +10,7 @@
 #include "SpehsEngine/ImGui/imgui_stdlib.h"
 #include "SpehsEngine/ImGui/ImGuiTypes.h"
 #include "SpehsEngine/ImGui/Utility/IState.h"
+#include "SpehsEngine/ImGui/Utility/String.h"
 #include <stdint.h>
 
 namespace se
@@ -29,7 +30,7 @@ namespace se
 
 // Do not use directly, see macros below. Used to implement a dropdown selector for an enum. p_RangeStart value is inclusive, but p_RangeEnd is exclusive.
 #define SE_IMGUI_INPUT_ENUM_RANGE_2(p_EnumType, p_RangeStart, p_RangeEnd, p_ToStringFunction, p_InlineAndBool) \
-	p_InlineAndBool InputT(const char* const p_label, p_EnumType& p_value) \
+	p_InlineAndBool InputT(const String p_label, p_EnumType& p_value) \
 	{ \
 		struct Callback { static bool callback(void* data, int n, const char** out_str) { *out_str = p_ToStringFunction(p_EnumType(n + int(p_RangeStart))); return true; } }; \
 		int p_current = int(p_value) - int(p_RangeStart); \
@@ -43,11 +44,7 @@ namespace se
 			return false; \
 		} \
 	} \
-	p_InlineAndBool InputT(const std::string& p_label, p_EnumType& p_value) \
-	{ \
-		return InputT(p_label.c_str(), p_value); \
-	} \
-	p_InlineAndBool InputT(const char* const p_label, p_EnumType& p_value, const std::function<bool(const p_EnumType)>& p_isVisible) \
+	p_InlineAndBool InputT(const String p_label, p_EnumType& p_value, const std::function<bool(const p_EnumType)>& p_isVisible) \
 	{ \
 		bool changed = false; \
 		if (ImGui::BeginCombo(p_label, p_ToStringFunction(p_value))) \
@@ -81,8 +78,7 @@ namespace se
 
 // You can use this to declare header functions with both label types
 #define SE_IMGUI_INPUT_DECL(p_Type, ...) \
-	bool InputT(const char* const p_label, p_Type& p_value, __VA_ARGS__); \
-	bool InputT(const std::string& p_label, p_Type& p_value, __VA_ARGS__);
+	bool InputT(const String p_label, p_Type& p_value, __VA_ARGS__);
 
 namespace se
 {
@@ -105,13 +101,9 @@ namespace ImGui
 {
 	// Drag scalars
 #define SE_IMGUI_DRAG_SCALAR(p_ScalarType, p_ImGuiDataType, p_Components, p_DefaultFormat, p_DefaultImGuiSliderFlags) \
-	inline bool DragScalar##p_Components(const char* const label, p_ScalarType& i, float speed, p_ScalarType min, p_ScalarType max, const char* format = p_DefaultFormat, ImGuiSliderFlags flags = p_DefaultImGuiSliderFlags) \
+	inline bool DragScalar##p_Components(const String label, p_ScalarType& i, float speed, p_ScalarType min, p_ScalarType max, const String format = p_DefaultFormat, ImGuiSliderFlags flags = p_DefaultImGuiSliderFlags) \
 	{ \
 		return DragScalarN(label, p_ImGuiDataType, &i, p_Components, speed, &min, &max, format, flags); \
-	} \
-	inline bool DragScalar##p_Components(const std::string& label, p_ScalarType& i, float speed, p_ScalarType min, p_ScalarType max, const char* format = p_DefaultFormat, ImGuiSliderFlags flags = p_DefaultImGuiSliderFlags) \
-	{ \
-		return DragScalarN(label.c_str(), p_ImGuiDataType, &i, p_Components, speed, &min, &max, format, flags); \
 	}
 #define SE_IMGUI_DRAG_SCALAR_ONE_TO_FOUR_COMPONENTS(p_ScalarType, p_ImGuiDataType, p_DefaultFormat, p_DefaultImGuiSliderFlags) \
 	SE_IMGUI_DRAG_SCALAR(p_ScalarType, p_ImGuiDataType, 1, p_DefaultFormat, p_DefaultImGuiSliderFlags) \
@@ -133,13 +125,9 @@ namespace ImGui
 
 	// Input scalars
 #define SE_IMGUI_INPUT_SCALAR(p_ScalarType, p_ImGuiDataType, p_DefaultFormat, p_DefaultImGuiTextFlags) \
-	inline bool InputT(const char* const label, p_ScalarType& value, p_ScalarType step = 1, p_ScalarType stepFast = 100, const char* format = p_DefaultFormat, ImGuiInputTextFlags flags = p_DefaultImGuiTextFlags) \
+	inline bool InputT(const String label, p_ScalarType& value, p_ScalarType step = 1, p_ScalarType stepFast = 100, const String format = p_DefaultFormat, ImGuiInputTextFlags flags = p_DefaultImGuiTextFlags) \
 	{ \
 		return InputScalar(label, p_ImGuiDataType, &value, &step, &stepFast, format, flags); \
-	} \
-	inline bool InputT(const std::string& label, p_ScalarType& value, p_ScalarType step = 1, p_ScalarType stepFast = 100, const char* format = p_DefaultFormat, ImGuiInputTextFlags flags = p_DefaultImGuiTextFlags) \
-	{ \
-		return InputScalar(label.c_str(), p_ImGuiDataType, &value, &step, &stepFast, format, flags); \
 	}
 	SE_IMGUI_INPUT_SCALAR(uint8_t,	ImGuiDataType_::ImGuiDataType_U8,		"%hhu",	0)
 	SE_IMGUI_INPUT_SCALAR(uint16_t,	ImGuiDataType_::ImGuiDataType_U16,		"%hu",	0)
@@ -153,25 +141,20 @@ namespace ImGui
 	SE_IMGUI_INPUT_SCALAR(double,	ImGuiDataType_::ImGuiDataType_Double,	"%.3f",	ImGuiInputTextFlags_CharsScientific)
 #undef SE_IMGUI_INPUT_SCALAR
 
-	inline bool Button(const std::string& label, const ImVec2& size = ImVec2(0, 0))
+	inline bool Button(const String label, const ImVec2& size = ImVec2(0, 0))
 	{
-		return Button(label.c_str(), size);
+		return Button(label.pointer, size);
 	}
 
-	inline void Text(const std::string& label)
+	inline void Text(const String label)
 	{
-		Text(label.c_str());
+		Text(label.pointer);
 	}
 
 	template<typename ... Args>
-	inline void TextColored(const se::Color& color, const char* const format, Args ... args)
+	inline void TextColored(const se::Color& color, const String format, Args ... args)
 	{
 		TextColored((ImVec4&)color, format, args...);
-	}
-	template<typename ... Args>
-	inline void TextColored(const se::Color& color, const std::string& format, Args ... args)
-	{
-		TextColored((ImVec4&)color, format.c_str(), args...);
 	}
 
 	ImVec2 SizeToScale(const se::graphics::Texture& _texture, const ImVec2 _size);
@@ -193,117 +176,57 @@ namespace ImGui
 		const se::Color tintColor		= se::Color(1.0f, 1.0f, 1.0f, 1.0f),
 		const se::Color backgroundColor	= se::Color(0.0f, 0.0f, 0.0f, 0.0f));
 
-	bool fileSelector(const char* const label, std::string& filepath, const char* const directory);
-	inline bool fileSelector(const std::string& label, std::string& filepath, const std::string& directory)
-	{
-		return fileSelector(label.c_str(), filepath, directory.c_str());
-	}
+	bool fileSelector(const String label, std::string& filepath, const String directory);
 
-	std::optional<bool> fileDialog(const char* const header, const char* const message, const char* const directory, std::string& output);
-	inline std::optional<bool> fileDialog(const std::string& header, const std::string& message, const std::string& directory, std::string& output)
-	{
-		return fileDialog(header.c_str(), message.c_str(), directory.c_str(), output);
-	}
+	std::optional<bool> fileDialog(const String header, const String message, const String directory, std::string& output);
 
-	bool textureSelector(const char* const label, std::string& filepath, const char* const directory);
-	inline bool textureSelector(const std::string& label, std::string& filepath, const std::string& directory)
-	{
-		return textureSelector(label.c_str(), filepath, directory.c_str());
-	}
+	bool textureSelector(const String label, std::string& filepath, const String directory);
 
-	std::optional<bool> confirmationDialog(const char* const header, const char* const message, const std::function<void()>& customRender = std::function<void()>());
-	inline std::optional<bool> confirmationDialog(const std::string& header, const std::string& message, const std::function<void()>& customRender = std::function<void()>())
-	{
-		return confirmationDialog(header.c_str(), message.c_str(), customRender);
-	}
+	std::optional<bool> confirmationDialog(const String header, const String message, const std::function<void()>& customRender = std::function<void()>());
 
-	std::optional<bool> stringDialog(const char* const header, const char* const message, std::string& output);
-	inline std::optional<bool> stringDialog(const std::string& header, const std::string& message, std::string& output)
-	{
-		return stringDialog(header.c_str(), message.c_str(), output);
-	}
+	std::optional<bool> stringDialog(const String header, const String message, std::string& output);
 
-	inline bool InputT(const std::string& label, bool& value)
+	inline bool InputT(const String label, bool& value)
 	{
-		return Checkbox(label.c_str(), &value);
+		return Checkbox(label.pointer, &value);
 	}
-	inline bool InputT(const char* const label, bool& value)
+	inline bool InputT(const String label, std::string& value, ImGuiInputTextFlags flags = 0, ImGuiInputTextCallback callback = NULL, void* user_data = NULL)
 	{
-		return Checkbox(label, &value);
+		return InputText(label.pointer, &value, flags, callback, user_data);
 	}
-	inline bool InputT(const char* const label, std::string& value, ImGuiInputTextFlags flags = 0, ImGuiInputTextCallback callback = NULL, void* user_data = NULL)
+	inline bool InputT(const String label, glm::ivec2& value, ImGuiInputTextFlags flags = 0)
 	{
-		return InputText(label, &value, flags, callback, user_data);
+		return InputInt2(label.pointer, &value.x, flags);
 	}
-	inline bool InputT(const std::string& label, std::string& value, ImGuiInputTextFlags flags = 0, ImGuiInputTextCallback callback = NULL, void* user_data = NULL)
+	inline bool InputT(const String label, glm::ivec3& value, ImGuiInputTextFlags flags = 0)
 	{
-		return InputText(label.c_str(), &value, flags, callback, user_data);
+		return InputInt3(label.pointer, &value.x, flags);
 	}
-	inline bool InputT(const char* const label, glm::ivec2& value, ImGuiInputTextFlags flags = 0)
+	inline bool InputT(const String label, glm::ivec4& value, ImGuiInputTextFlags flags = 0)
 	{
-		return InputInt2(label, &value.x, flags);
+		return InputInt4(label.pointer, &value.x, flags);
 	}
-	inline bool InputT(const std::string& label, glm::ivec2& value, ImGuiInputTextFlags flags = 0)
+	inline bool InputT(const String label, glm::vec2& value, const String format = "%.3f", ImGuiInputTextFlags flags = 0)
 	{
-		return InputInt2(label.c_str(), &value.x, flags);
+		return InputFloat2(label.pointer, &value.x, format.pointer, flags);
 	}
-	inline bool InputT(const char* const label, glm::ivec3& value, ImGuiInputTextFlags flags = 0)
+	inline bool InputT(const String label, glm::vec3& value, const String format = "%.3f", ImGuiInputTextFlags flags = 0)
 	{
-		return InputInt3(label, &value.x, flags);
+		return InputFloat3(label.pointer, &value.x, format.pointer, flags);
 	}
-	inline bool InputT(const std::string& label, glm::ivec3& value, ImGuiInputTextFlags flags = 0)
+	inline bool InputT(const String label, glm::vec4& value, const String format = "%.3f", ImGuiInputTextFlags flags = 0)
 	{
-		return InputInt3(label.c_str(), &value.x, flags);
+		return InputFloat4(label.pointer, &value.x, format.pointer, flags);
 	}
-	inline bool InputT(const char* const label, glm::ivec4& value, ImGuiInputTextFlags flags = 0)
+	inline bool InputT(const String label, glm::quat& value, const String format = "%.3f", ImGuiInputTextFlags flags = 0)
 	{
-		return InputInt4(label, &value.x, flags);
+		return InputFloat4(label.pointer, &value.x, format.pointer, flags);
 	}
-	inline bool InputT(const std::string& label, glm::ivec4& value, ImGuiInputTextFlags flags = 0)
+	inline bool InputT(const String label, se::Color& value, ImGuiColorEditFlags flags = 0)
 	{
-		return InputInt4(label.c_str(), &value.x, flags);
+		return ColorEdit4(label.pointer, &(value)[0], flags);
 	}
-	inline bool InputT(const char* const label, glm::vec2& value, const char* format = "%.3f", ImGuiInputTextFlags flags = 0)
-	{
-		return InputFloat2(label, &value.x, format, flags);
-	}
-	inline bool InputT(const std::string& label, glm::vec2& value, const char* format = "%.3f", ImGuiInputTextFlags flags = 0)
-	{
-		return InputFloat2(label.c_str(), &value.x, format, flags);
-	}
-	inline bool InputT(const char* const label, glm::vec3& value, const char* format = "%.3f", ImGuiInputTextFlags flags = 0)
-	{
-		return InputFloat3(label, &value.x, format, flags);
-	}
-	inline bool InputT(const std::string& label, glm::vec3& value, const char* format = "%.3f", ImGuiInputTextFlags flags = 0)
-	{
-		return InputFloat3(label.c_str(), &value.x, format, flags);
-	}
-	inline bool InputT(const char* const label, glm::vec4& value, const char* format = "%.3f", ImGuiInputTextFlags flags = 0)
-	{
-		return InputFloat4(label, &value.x, format, flags);
-	}
-	inline bool InputT(const std::string& label, glm::vec4& value, const char* format = "%.3f", ImGuiInputTextFlags flags = 0)
-	{
-		return InputFloat4(label.c_str(), &value.x, format, flags);
-	}
-	inline bool InputT(const char* const label, glm::quat& value, const char* format = "%.3f", ImGuiInputTextFlags flags = 0)
-	{
-		return InputFloat4(label, &value.x, format, flags);
-	}
-	inline bool InputT(const std::string& label, glm::quat& value, const char* format = "%.3f", ImGuiInputTextFlags flags = 0)
-	{
-		return InputFloat4(label.c_str(), &value.x, format, flags);
-	}
-	inline bool InputT(const char* const label, se::Color& value, ImGuiColorEditFlags flags = 0)
-	{
-		return ColorEdit4(label, &(value)[0], flags);
-	}
-	inline bool InputT(const std::string& label, se::Color& value, ImGuiColorEditFlags flags = 0)
-	{
-		return ColorEdit4(label.c_str(), &(value)[0], flags);
-	}
-	inline bool InputT(const char* const label, se::time::Time& value,
+	inline bool InputT(const String label, se::time::Time& value,
 		const se::time::Time step = se::time::Time(1),
 		const se::time::Time stepFast = se::time::Time(1000), ImGuiInputTextFlags flags = 0)
 	{
@@ -314,16 +237,10 @@ namespace ImGui
 		}
 		return result;
 	}
-	inline bool InputT(const std::string& label, se::time::Time& value,
-		const se::time::Time step = se::time::Time(1),
-		const se::time::Time stepFast = se::time::Time(1000), ImGuiInputTextFlags flags = 0)
-	{
-		return InputT(label.c_str(), value, step, stepFast, flags);
-	}
-	inline bool InputAngle(const std::string& label, float &radians)
+	inline bool InputAngle(const String label, float &radians)
 	{
 		float degrees = (radians / se::PI<float>) * 180.0f;
-		const bool changed = InputT(label.c_str(), degrees);
+		const bool changed = InputT(label.pointer, degrees);
 		if (changed)
 		{
 			radians = (degrees / 180.0f) * se::PI<float>;
@@ -332,7 +249,7 @@ namespace ImGui
 	}
 
 	template<typename T, typename ... Args>
-	bool InputT(const char* const label, std::vector<T>& vector, Args&& ... args)
+	bool InputT(const String label, std::vector<T>& vector, Args&& ... args)
 	{
 		auto renderElement = [&](T& t, const size_t index)
 		{
@@ -405,14 +322,9 @@ namespace ImGui
 		}
 		return changed;
 	}
-	template<typename T, typename ... Args>
-	inline bool InputT(const std::string& label, std::vector<T>& vector, Args&& ... args)
-	{
-		return InputT<T>(label.c_str(), vector, std::forward<Args>(args)...);
-	}
 
 	template<typename T, typename ... Args>
-	inline bool InputT(const char* const label, std::optional<T>& optional, Args&& ... args)
+	inline bool InputT(const String label, std::optional<T>& optional, Args&& ... args)
 	{
 		auto render = [&](T& t)->bool
 			{
@@ -443,55 +355,8 @@ namespace ImGui
 		}
 		return changed;
 	}
-	template<typename T, typename ... Args>
-	inline bool InputT(const std::string& label, std::optional<T>& optional, Args&& ... args)
-	{
-		return ImGui::InputT<T>(label.c_str(), optional, std::forward<Args>(args)...);
-	}
 
-	template<typename T>
-	void InputVector(std::vector<T>& vector, size_t& selectedIndex)
-	{
-		if (ImGui::Button("New"))
-		{
-			selectedIndex = vector.size();
-			vector.push_back(T());
-		}
-		ImGui::SameLine();
-		if (ImGui::Button("Clear"))
-		{
-			vector.clear();
-			selectedIndex = ~0u;
-		}
-		if (selectedIndex < vector.size())
-		{
-			ImGui::SameLine();
-			if (ImGui::Button("Delete"))
-			{
-				vector.erase(vector.begin() + selectedIndex);
-				if (selectedIndex > 0)
-				{
-					selectedIndex--;
-				}
-			}
-		}
-		for (size_t i = 0; i < vector.size(); i++)
-		{
-			if (ImGui::Selectable(std::to_string(i).c_str(), selectedIndex == i))
-			{
-				if (selectedIndex == i)
-				{
-					selectedIndex = ~0u;
-				}
-				else
-				{
-					selectedIndex = i;
-				}
-			}
-		}
-	}
-
-	inline bool InputT(const char* const label, se::time::TimeInfo& timeInfo)
+	inline bool InputT(const String label, se::time::TimeInfo& timeInfo)
 	{
 		bool changed = false;
 		if (ImGui::CollapsingHeader(label))
@@ -510,13 +375,9 @@ namespace ImGui
 		}
 		return changed;
 	}
-	inline bool InputT(const std::string& label, se::time::TimeInfo& timeInfo)
-	{
-		return InputT(label.c_str(), timeInfo);
-	}
 
 	// Splits shown string into two parts, id part and mutable part. Useful when the contents of the header edit the shown header string.
-	inline bool CollapsingHeader2(const char* const idLabel, const char* const mutableLabel, const ImGuiTreeNodeFlags flags = 0)
+	inline bool CollapsingHeader2(const String idLabel, const String mutableLabel, const ImGuiTreeNodeFlags flags = 0)
 	{
 		const bool result = ImGui::CollapsingHeader(idLabel, flags);
 		ImGui::SameLine();
@@ -525,31 +386,19 @@ namespace ImGui
 		ImGui::Text(mutableLabel);
 		return result;
 	}
-	inline bool CollapsingHeader2(const std::string& idLabel, const std::string& mutableLabel, const ImGuiTreeNodeFlags flags = 0)
-	{
-		return CollapsingHeader2(idLabel.c_str(), mutableLabel.c_str(), flags);
-	}
 
-	inline bool BeginCentered(const char* const label, bool* const open, const ImGuiWindowFlags flags = 0, const ImGuiCond centerCondition = ImGuiCond_Appearing)
+	inline bool BeginCentered(const String label, bool* const open, const ImGuiWindowFlags flags = 0, const ImGuiCond centerCondition = ImGuiCond_Appearing)
 	{
 		const ImGuiIO& io = ImGui::GetIO();
 		const ImVec2 displayCenter(io.DisplaySize.x * 0.5f, io.DisplaySize.y * 0.5f);
 		ImGui::SetNextWindowPos(displayCenter, centerCondition, ImVec2(0.5f, 0.5f));
 		return ImGui::Begin(label, open, flags);
 	}
-	inline bool BeginCentered(const std::string& label, bool* const open, const ImGuiWindowFlags flags = 0, const ImGuiCond centerCondition = ImGuiCond_Appearing)
-	{
-		return BeginCentered(label.c_str(), open, flags, centerCondition);
-	}
 
 	// NOTE: 'key' value must be valid in the scope of 'scopedConnection'
-	void keyBindButton(const char* const label, se::input::Key& key, se::input::EventSignaler& eventSignaler, boost::signals2::scoped_connection& scopedConnection);
-	inline void keyBindButton(const std::string& label, se::input::Key& key, se::input::EventSignaler& eventSignaler, boost::signals2::scoped_connection& scopedConnection)
-	{
-		keyBindButton(label.c_str(), key, eventSignaler, scopedConnection);
-	}
+	void keyBindButton(const String label, se::input::Key& key, se::input::EventSignaler& eventSignaler, boost::signals2::scoped_connection& scopedConnection);
 
-	bool InputT(const char* const label, se::input::CustomEventParameters& customEventParameters, se::input::EventSignaler& eventSignaler, StateWrapper& stateWrapper);
+	bool InputT(const String label, se::input::CustomEventParameters& customEventParameters, se::input::EventSignaler& eventSignaler, StateWrapper& stateWrapper);
 
 	inline void SetTooltip(const std::string& tooltip)
 	{
