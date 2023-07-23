@@ -188,43 +188,43 @@ namespace ImGui
 
 	inline bool InputT(const String label, bool& value)
 	{
-		return Checkbox(label.pointer, &value);
+		return Checkbox(label, &value);
 	}
 	inline bool InputT(const String label, std::string& value, ImGuiInputTextFlags flags = 0, ImGuiInputTextCallback callback = NULL, void* user_data = NULL)
 	{
-		return InputText(label.pointer, &value, flags, callback, user_data);
+		return InputText(label, &value, flags, callback, user_data);
 	}
 	inline bool InputT(const String label, glm::ivec2& value, ImGuiInputTextFlags flags = 0)
 	{
-		return InputInt2(label.pointer, &value.x, flags);
+		return InputInt2(label, &value.x, flags);
 	}
 	inline bool InputT(const String label, glm::ivec3& value, ImGuiInputTextFlags flags = 0)
 	{
-		return InputInt3(label.pointer, &value.x, flags);
+		return InputInt3(label, &value.x, flags);
 	}
 	inline bool InputT(const String label, glm::ivec4& value, ImGuiInputTextFlags flags = 0)
 	{
-		return InputInt4(label.pointer, &value.x, flags);
+		return InputInt4(label, &value.x, flags);
 	}
 	inline bool InputT(const String label, glm::vec2& value, const String format = "%.3f", ImGuiInputTextFlags flags = 0)
 	{
-		return InputFloat2(label.pointer, &value.x, format.pointer, flags);
+		return InputFloat2(label, &value.x, format, flags);
 	}
 	inline bool InputT(const String label, glm::vec3& value, const String format = "%.3f", ImGuiInputTextFlags flags = 0)
 	{
-		return InputFloat3(label.pointer, &value.x, format.pointer, flags);
+		return InputFloat3(label, &value.x, format, flags);
 	}
 	inline bool InputT(const String label, glm::vec4& value, const String format = "%.3f", ImGuiInputTextFlags flags = 0)
 	{
-		return InputFloat4(label.pointer, &value.x, format.pointer, flags);
+		return InputFloat4(label, &value.x, format, flags);
 	}
 	inline bool InputT(const String label, glm::quat& value, const String format = "%.3f", ImGuiInputTextFlags flags = 0)
 	{
-		return InputFloat4(label.pointer, &value.x, format.pointer, flags);
+		return InputFloat4(label, &value.x, format, flags);
 	}
 	inline bool InputT(const String label, se::Color& value, ImGuiColorEditFlags flags = 0)
 	{
-		return ColorEdit4(label.pointer, &(value)[0], flags);
+		return ColorEdit4(label, &(value)[0], flags);
 	}
 	inline bool InputT(const String label, se::time::Time& value,
 		const se::time::Time step = se::time::Time(1),
@@ -240,7 +240,7 @@ namespace ImGui
 	inline bool InputAngle(const String label, float &radians)
 	{
 		float degrees = (radians / se::PI<float>) * 180.0f;
-		const bool changed = InputT(label.pointer, degrees);
+		const bool changed = InputT(label, degrees);
 		if (changed)
 		{
 			radians = (degrees / 180.0f) * se::PI<float>;
@@ -251,11 +251,6 @@ namespace ImGui
 	template<typename T, typename ... Args>
 	bool InputT(const String label, std::vector<T>& vector, Args&& ... args)
 	{
-		auto renderElement = [&](T& t, const size_t index)
-		{
-			return InputT(("[" + std::to_string(index) + "]").c_str(), t, std::forward<Args>(args)...);
-		};
-
 		bool changed = false;
 		if (!label || ImGui::CollapsingHeader(label))
 		{
@@ -296,7 +291,7 @@ namespace ImGui
 						changed = true;
 					}
 				}
-				changed |= InputT(("[" + std::to_string(i) + "]").c_str(), vector[i], std::forward<Args>(args)...);
+				changed |= InputT(String("[" + std::to_string(i) + "]"), (T&)vector[i], std::forward<Args>(args)...);
 				if (remove)
 				{
 					vector.erase(vector.begin() + i--);
@@ -326,11 +321,6 @@ namespace ImGui
 	template<typename T, typename ... Args>
 	inline bool InputT(const String label, std::optional<T>& optional, Args&& ... args)
 	{
-		auto render = [&](T& t)->bool
-			{
-				return ImGui::InputT(label, t, args...);
-			};
-
 		bool changed = false;
 		bool enabled = optional.has_value();
 		if (ImGui::Checkbox(label, &enabled))
@@ -349,7 +339,7 @@ namespace ImGui
 		{
 			ImGui::Indent();
 			ImGui::PushID(&optional);
-			changed = render(*optional);
+			changed = InputT(label, (T&)optional.value(), std::forward<Args>(args)...);
 			ImGui::PopID();
 			ImGui::Unindent();
 		}
