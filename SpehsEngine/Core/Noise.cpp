@@ -1,8 +1,6 @@
 #include "stdafx.h"
 #include "SpehsEngine/Core/Noise.h"
 
-#include <mutex>
-
 
 namespace se
 {

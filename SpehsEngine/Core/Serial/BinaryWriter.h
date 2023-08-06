@@ -1,7 +1,10 @@
 #pragma once
 
+#include "SpehsEngine/Core/ByteVector.h"
+#include "SpehsEngine/Core/ByteView.h"
 #include "SpehsEngine/Core/Endianness.h"
 #include "SpehsEngine/Core/SE_Assert.h"
+#include "SpehsEngine/Core/Serial/Serial.h"
 #include <vector>
 
 

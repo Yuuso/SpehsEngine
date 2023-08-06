@@ -18,6 +18,9 @@
       <Platform>x64</Platform>
     </ProjectConfiguration>
   </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="ScopedConnections.cpp" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{CBB134B8-C9FE-4129-A6DD-58B94CBE1096}</ProjectGuid>
     <RootNamespace>Core</RootNamespace>

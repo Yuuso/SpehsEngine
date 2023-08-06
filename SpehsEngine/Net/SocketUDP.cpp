@@ -1,14 +1,10 @@
 #include "stdafx.h"
 #include "SpehsEngine/Net/SocketUDP.h"
 
-#include <assert.h>
-#include <iostream>
+#include "SpehsEngine/Core/RNG.h"
 #include "SpehsEngine/Net/Acceptor.h"
 #include "SpehsEngine/Net/IOService.h"
 #include "SpehsEngine/Net/IOServiceUtilityFunctions.h"
-#include "SpehsEngine/Core/RNG.h"
-#include "SpehsEngine/Core/Log.h"
-#include "SpehsEngine/Core/SE_Time.h"
 
 #define DEBUG_LOG(level, message) if (getDebugLogLevel() >= level) \
 { \

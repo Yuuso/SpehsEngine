@@ -12,12 +12,7 @@ namespace se
 		CustomEventParametersRecorder::CustomEventParametersRecorder(EventSignaler& _eventSignaler)
 			: eventSignaler(_eventSignaler)
 		{
-			auto addScopedConnection = [this]()->boost::signals2::scoped_connection&
-			{
-				scopedConnections.push_back(boost::signals2::scoped_connection());
-				return scopedConnections.back();
-			};
-			eventSignaler.connectToKeyboardSignal(addScopedConnection(),
+			eventSignaler.connectToKeyboardSignal(scopedConnections.add(),
 				[this](const KeyboardEvent& event)
 				{
 					if (event.type == KeyboardEvent::Type::Press)
@@ -33,7 +28,7 @@ namespace se
 						return false;
 					}
 				}, EventSignaler::maxPriority);
-			eventSignaler.connectToMouseButtonSignal(addScopedConnection(),
+			eventSignaler.connectToMouseButtonSignal(scopedConnections.add(),
 				[this](const MouseButtonEvent& event)
 				{
 					if (event.isPress())
@@ -49,7 +44,7 @@ namespace se
 						return false;
 					}
 				}, EventSignaler::maxPriority);
-			eventSignaler.connectToJoystickButtonSignal(addScopedConnection(),
+			eventSignaler.connectToJoystickButtonSignal(scopedConnections.add(),
 				[this](const JoystickButtonEvent& event)
 				{
 					if (event.isPress())

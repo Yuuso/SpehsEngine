@@ -2,6 +2,7 @@
 
 #include "SpehsEngine/Core/Serial/BinaryWriter.h"
 #include "SpehsEngine/Core/Serial/SerialKey.h"
+#include "SpehsEngine/Core/Serial/Serial.h"
 #include "SpehsEngine/Core/Log.h"
 
 

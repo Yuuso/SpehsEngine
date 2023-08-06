@@ -1,9 +1,7 @@
 #include "stdafx.h"
 #include "SpehsEngine/Net/IOService.h"
 
-#include "SpehsEngine/Core/Log.h"
 #include "SpehsEngine/Core/Thread.h"
-#include "SpehsEngine/Core/ScopedFrameLimiter.h"
 #include "SpehsEngine/Net/IOServiceUtilityFunctions.h"
 #include "boost/asio/io_service.hpp"
 #include "boost/bind.hpp"

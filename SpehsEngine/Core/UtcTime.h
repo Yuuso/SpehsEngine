@@ -34,10 +34,3 @@ namespace se
 		UtcTime getUtcTime();
 	}
 }
-
-template<> template<typename S, typename T>
-static bool se::Serial<se::time::UtcTime>::serial(S& _serial, T _value)
-{
-	se_serial(_serial, _value.value, "value");
-	return true;
-}

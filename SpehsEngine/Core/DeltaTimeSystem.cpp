@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "SpehsEngine/Core/DeltaTimeSystem.h"
 
+
 namespace se
 {
 	namespace time

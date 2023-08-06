@@ -1,7 +1,6 @@
 #pragma once
 
 #include "SpehsEngine/Core/Color.h"
-#include "SpehsEngine/Core/RNG.h"
 #include "SpehsEngine/Core/Serial/Serial.h"
 #include <string>
 #include <stdint.h>
@@ -9,6 +8,11 @@
 
 namespace se
 {
+	namespace rng
+	{
+		template <typename SeedType> class PRNG;
+	}
+
 	template<> template<typename S, typename T>
 	static bool Serial<Color>::serial(S& _serial, T _color)
 	{
@@ -42,10 +46,12 @@ namespace se
 	/*
 	PRNG random called 3 times.
 	*/
-	Color randomColor(rng::PRNG<unsigned>& _prng = rng::defaultRandom);
+	Color randomColor(rng::PRNG<unsigned>& _prng);
+	Color randomColor();
 
 	/*
 	PRNG random called 1 time.
 	*/
-	Color randomBrightColor(rng::PRNG<unsigned>& _prng = rng::defaultRandom);
+	Color randomBrightColor(rng::PRNG<unsigned>& _prng);
+	Color randomBrightColor();
 }

@@ -1,10 +1,7 @@
 #pragma once
 
 #include "glm/mat4x4.hpp"
-#include "glm/vec2.hpp"
 #include "SpehsEngine/GUI/Types.h"
-#include <numeric>
-#include <optional>
 
 
 namespace se

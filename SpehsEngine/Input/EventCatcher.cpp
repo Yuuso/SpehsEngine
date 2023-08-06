@@ -1,9 +1,10 @@
 #include "stdafx.h"
 #include "SpehsEngine/Input/EventCatcher.h"
 
+#include "SpehsEngine/Input/JoystickUtilityFunctions.h"
 #include "SpehsEngine/Input/MouseUtilityFunctions.h"
 #include "SpehsEngine/Input/KeyUtilityFunctions.h"
-#include "SpehsEngine/Input/JoystickUtilityFunctions.h"
+#include "SpehsEngine/Core/ScopeProfiler.h"
 #include "SDL/SDL.h"
 #include "SDL/SDL_joystick.h"
 #include "SDL/SDL_events.h"

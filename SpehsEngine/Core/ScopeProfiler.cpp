@@ -2,11 +2,6 @@
 #include "SpehsEngine/Core/ScopeProfiler.h"
 
 #include "SpehsEngine/Core/ScopeProfilerTypes.h"
-#include "boost/signals2/connection.hpp"
-#include "boost/signals2/signal.hpp"
-#include <map>
-#include <mutex>
-#include <thread>
 #include <stack>
 
 

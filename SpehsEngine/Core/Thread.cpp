@@ -1,10 +1,11 @@
 #include "stdafx.h"
 #include "SpehsEngine/Core/Thread.h"
+
 #include <thread>
+
 #if SE_PLATFORM == SE_PLATFORM_WINDOWS
 #include <windows.h>
 #endif
-
 
 
 namespace se
@@ -18,18 +19,15 @@ namespace se
 		DWORD dwThreadID; // Thread ID (-1=caller thread).
 		DWORD dwFlags; // Reserved for future use, must be zero.
 	} THREADNAME_INFO;
-#pragma pack(pop)	
-	void setThreadName(uint32_t dwThreadID, const char* threadName)
+#pragma pack(pop)
+
+	void setThreadName(uint32_t dwThreadID, const std::string& _name)
 	{
-
-		// DWORD dwThreadID = ::GetThreadId( static_cast<HANDLE>( t.native_handle() ) );
-
 		THREADNAME_INFO info;
 		info.dwType = 0x1000;
-		info.szName = threadName;
+		info.szName = _name.c_str();
 		info.dwThreadID = dwThreadID;
 		info.dwFlags = 0;
-
 		__try
 		{
 			static const DWORD MS_VC_EXCEPTION = 0x406D1388;
@@ -39,24 +37,28 @@ namespace se
 		{
 		}
 	}
-	void setThreadName(const std::string& name)
+	void setThreadName(const std::string_view _name)
 	{
-		setThreadName(GetCurrentThreadId(), name.c_str());
+		const std::string name(_name);
+		setThreadName(GetCurrentThreadId(), name);
 	}
-	void setThreadName(std::thread& thread, const std::string& name)
+	void setThreadName(std::thread& _thread, const std::string_view _name)
 	{
-		DWORD threadId = ::GetThreadId(static_cast<HANDLE>(thread.native_handle()));
-		setThreadName(threadId, name.c_str());
+		const std::string name(_name);
+		DWORD threadId = ::GetThreadId(static_cast<HANDLE>(_thread.native_handle()));
+		setThreadName(threadId, name);
 	}
 #else
-	void setThreadName(std::thread& thread, const std::string& name)
+	void setThreadName(std::thread& _thread, const std::string_view _name)
 	{
-		auto handle = thread.native_handle();
+		auto handle = _thread.native_handle();
+		const std::string name(_name);
 		pthread_setname_np(handle, name.c_str());
 	}
 #include <sys/prctl.h>
-	void setThreadName(const std::string& name)
+	void setThreadName(const std::string_view _name)
 	{
+		const std::string name(_name);
 		prctl(PR_SET_NAME, name.c_str(), 0, 0, 0);
 	}
 #endif
