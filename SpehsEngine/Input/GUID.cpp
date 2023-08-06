@@ -4,19 +4,12 @@
 
 namespace se
 {
-	GUID::GUID(const SDL_JoystickGUID& other)
+	GUID::GUID(const GUID& other)
 	{
-		for (int i = 0; i < 16; i++)
-			guid[i] = other.data[i];
+		*this = other;
 	}
 
-	GUID::GUID(const SDL_JoystickGUID&& other)
-	{
-		for (int i = 0; i < 16; i++)
-			guid[i] = other.data[i];
-	}
-
-	void GUID::operator=(GUID& other)
+	void GUID::operator=(const GUID& other)
 	{
 		for (int i = 0; i < 16; i++)
 			guid[i] = other.guid[i];
@@ -28,30 +21,10 @@ namespace se
 			guid[i] = other.guid[i];
 	}
 
-	void GUID::operator=(SDL_JoystickGUID& other)
-	{
-		for (int i = 0; i < 16; i++)
-			guid[i] = other.data[i];
-	}
-
-	void GUID::operator=(SDL_JoystickGUID&& other)
-	{
-		for (int i = 0; i < 16; i++)
-			guid[i] = other.data[i];
-	}
-
 	bool GUID::operator==(const GUID& other) const
 	{
 		for (int i = 0; i < 16; i++)
 			if (guid[i] != other.guid[i])
-				return false;
-		return true;
-	}
-
-	bool GUID::operator==(const SDL_JoystickGUID& other) const
-	{
-		for (int i = 0; i < 16; i++)
-			if (guid[i] != other.data[i])
 				return false;
 		return true;
 	}

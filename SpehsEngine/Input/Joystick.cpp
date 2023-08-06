@@ -3,11 +3,10 @@
 
 #include "SpehsEngine/Input/InputLib.h"
 #include "SpehsEngine/Input/InputManager.h"
-
-#include <SDL/SDL.h>
-#include <SDL/SDL_joystick.h>
-#include <SDL/SDL_events.h>
-
+#include "SpehsEngine/Input/Internal/SDLUtility.h"
+#include "SDL/SDL.h"
+#include "SDL/SDL_joystick.h"
+#include "SDL/SDL_events.h"
 #include <iostream>
 
 #define SINT16_MIN -32768
@@ -21,7 +20,7 @@ namespace se
 	{
 		se::GUID getJoystickDeviceGUID(int _deviceIndex)
 		{
-			return SDL_JoystickGetDeviceGUID(_deviceIndex);
+			return fromSdlGuid(SDL_JoystickGetDeviceGUID(_deviceIndex));
 		}
 
 		Joystick::Joystick(InputManager& _inputManager, int index)
@@ -38,7 +37,7 @@ namespace se
 
 			ID = SDL_JoystickInstanceID(joystick);
 			name = SDL_JoystickNameForIndex(index);
-			guid = GUID(SDL_JoystickGetDeviceGUID(index));
+			guid = fromSdlGuid(SDL_JoystickGetDeviceGUID(index));
 			buttonCount = SDL_JoystickNumButtons(joystick);
 			axisCount = SDL_JoystickNumAxes(joystick);
 			hatCount = SDL_JoystickNumHats(joystick);

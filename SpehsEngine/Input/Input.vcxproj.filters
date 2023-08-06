@@ -93,6 +93,9 @@
     <ClInclude Include="JoystickHatState.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Internal\SDLUtility.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="GUID.cpp">
@@ -153,6 +156,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="JoystickGuid.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Internal\SDLUtility.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
