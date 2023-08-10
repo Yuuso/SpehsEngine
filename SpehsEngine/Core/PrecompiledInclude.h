@@ -34,6 +34,7 @@
 #include "SpehsEngine/Core/PairUtilityFunctions.h"
 #include "SpehsEngine/Core/RemoveCvref.h"
 #include "SpehsEngine/Core/ScopeProfiler.h"
+#include "SpehsEngine/Core/ScopedConnections.h"
 #include "SpehsEngine/Core/ScopedFrameLimiter.h"
 #include "SpehsEngine/Core/SE_Assert.h"
 #include "SpehsEngine/Core/SE_Time.h"
