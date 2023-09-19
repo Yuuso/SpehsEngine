@@ -89,15 +89,8 @@ namespace se::gfx
 
 	enum class RenderMode
 	{
-		/*
-		Static: Primitive is transformed and recreated rarely.
-		Dynamic: Primitive is recreated rarely but is transformed frequently.
-		Transient: Primitive is recreated frequently.
-		*/
-		Static,
-		Dynamic,
-		//Transient
-		// TODO: Split Dynamic into 'DynamicDynamic' and 'StaticDynamic'?
+		Batched,
+		Dynamic
 	};
 	constexpr RenderMode defaultRenderMode = RenderMode::Dynamic;
 

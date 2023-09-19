@@ -315,27 +315,27 @@ void Primitive::setRotation(const glm::quat& _rotation)
 
 void Primitive::validateRenderMode()
 {
-	if (renderMode == RenderMode::Static)
+	if (renderMode == RenderMode::Batched)
 	{
 		if (getInstances() || getAutoInstanceCount() > 0u)
 		{
-			log::error("RenderMode::Static and instancing don't work together!");
+			log::error("RenderMode::Batched and instancing don't work together!");
 		}
 		if (getRenderCopy())
 		{
-			log::error("RenderMode::Static and RenderCopy don't work together!");
+			log::error("RenderMode::Batched and RenderCopy don't work together!");
 		}
 		if (getScissor().enabled)
 		{
-			log::error("RenderMode::Static and Scissor don't work together!");
+			log::error("RenderMode::Batched and Scissor don't work together!");
 		}
 		if (getStencil())
 		{
-			log::error("RenderMode::Static and Stencil don't work together!");
+			log::error("RenderMode::Batched and Stencil don't work together!");
 		}
 		if (getRenderSortDepth() != 0 || renderSortDepth != RenderSortDepth::Default)
 		{
-			log::error("RenderMode::Static and RenderSortDepth don't work together!");
+			log::error("RenderMode::Batched and RenderSortDepth don't work together!");
 		}
 	}
 	if (getAutoInstanceCount() > 0u && getInstances())

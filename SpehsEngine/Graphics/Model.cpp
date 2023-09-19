@@ -107,15 +107,19 @@ void Model::reloadModeData()
 }
 void Model::postReload()
 {
-	if (renderMode == RenderMode::Static && animator->hasAnimations())
-		log::warning("Should not use static RenderMode with animated models!");
+	if (renderMode == RenderMode::Batched && animator->hasAnimations())
+	{
+		log::warning("Should not use RenderMode::Batched with animated models!");
+	}
 	setRenderState(renderState);
 	setRenderFlags(renderFlags);
 	setPrimitiveType(primitiveType);
 	setRenderMode(renderMode);
 	setColor(color);
 	if (instances)
+	{
 		foreachPrimitive([this](Primitive& _primitive) { _primitive.setInstances(instances); });
+	}
 	foreachPrimitive([](Primitive& _primitive) { enableBit(_primitive.updateFlags, PrimitiveUpdateFlag::TransformChanged); }); // Force transform update
 }
 
@@ -226,8 +230,10 @@ RenderMode Model::getRenderMode() const
 void Model::setInstances(std::shared_ptr<VertexBuffer> _instances)
 {
 	instances = _instances;
-	if (instances && renderMode == RenderMode::Static)
-		log::error("Should not use static RenderMode with instanced primitives!");
+	if (instances && renderMode == RenderMode::Batched)
+	{
+		log::error("Should not use RenderMode::Batched with instanced primitives!");
+	}
 }
 
 const glm::vec3& Model::getPosition() const
@@ -290,8 +296,10 @@ void Model::setPrimitiveType(PrimitiveType _primitiveType)
 void Model::setRenderMode(RenderMode _renderMode)
 {
 	renderMode = _renderMode;
-	if (renderMode == RenderMode::Static && animator->hasAnimations())
-		log::warning("Should not use static RenderMode with animated models!");
+	if (renderMode == RenderMode::Batched && animator->hasAnimations())
+	{
+		log::warning("Should not use RenderMode::Batched with animated models!");
+	}
 	foreachPrimitive([](Primitive& _primitive) { enableBit(_primitive.updateFlags, PrimitiveUpdateFlag::RenderInfoChanged); });
 }
 

@@ -121,7 +121,7 @@ void Scene::render(RenderContext& _renderContext)
 		primitive->update();
 		if (primitive->getRenderState())
 		{
-			if (primitive->getRenderMode() == RenderMode::Static)
+			if (primitive->getRenderMode() == RenderMode::Batched)
 			{
 				if (!primitive->isBatched())
 					batch(*primitive.get());

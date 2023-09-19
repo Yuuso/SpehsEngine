@@ -77,7 +77,7 @@ void PrimitiveInternal::update()
 		return;
 	}
 
-	if (getRenderMode() == RenderMode::Static)
+	if (getRenderMode() == RenderMode::Batched)
 	{
 		unregisterAsBufferObjectRenderer();
 		if (isBatched())
