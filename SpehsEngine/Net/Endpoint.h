@@ -28,11 +28,14 @@ namespace se
 			Port port;
 		};
 	}
+}
 
-	class WriteBuffer;
-	class ReadBuffer;
-	void writeToBuffer(WriteBuffer& writeBuffer, const net::Endpoint& endpoint);
-	bool readFromBuffer(ReadBuffer& readBuffer, net::Endpoint& endpoint);
+template<> template<typename S, typename T>
+static bool se::Serial<se::net::Endpoint>::serial(S& _serial, T _value)
+{
+	se_serial(_serial, _value.port, "port");
+	se_serial(_serial, _value.address, "address");
+	return true;
 }
 
 namespace std

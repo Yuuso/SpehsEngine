@@ -206,9 +206,9 @@ namespace se
 		struct FontSize
 		{
 			FontSize()
-				: size(12) {}
+				: type(FontSizeType::Pixel), size(12) {}
 			FontSize(const uint32_t _size, const FontSizeType _type = FontSizeType::Pixel)
-				: size(_size), type(_type) {}
+				: type(_type), size(_size) {}
 
 			FontSizeType type;
 			uint32_t size;

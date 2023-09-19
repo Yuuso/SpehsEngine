@@ -71,7 +71,7 @@ namespace se
 			static void eraseFromStaticContainer(const Endpoint signalingServerEndpoint);
 
 			AcceptorP2P(const Endpoint& signalingServerEndpoint);
-			void receiveHandler(ReadBuffer& readBuffer);
+			void receiveHandler(BinaryReader& binaryReader);
 
 			SocketTCP socket;
 			static std::recursive_mutex staticMutex;

@@ -2,29 +2,11 @@
 #include "SpehsEngine/Core/ColorUtilityFunctions.h"
 
 #include "glm/common.hpp"
-#include "SpehsEngine/Core/ReadBuffer.h"
-#include "SpehsEngine/Core/WriteBuffer.h"
+#include "SpehsEngine/Core/RNG.h"
 
 
 namespace se
 {
-	void writeToBuffer(WriteBuffer& writeBuffer, const Color& color)
-	{
-		writeBuffer.write(color.r);
-		writeBuffer.write(color.g);
-		writeBuffer.write(color.b);
-		writeBuffer.write(color.a);
-	}
-
-	bool readFromBuffer(ReadBuffer& readBuffer, Color& color)
-	{
-		se_read(readBuffer, color.r);
-		se_read(readBuffer, color.g);
-		se_read(readBuffer, color.b);
-		se_read(readBuffer, color.a);
-		return true;
-	}
-
 	std::string toString(const Color& color)
 	{
 		return "[r:"
@@ -117,8 +99,16 @@ namespace se
 	{
 		return Color(_prng.unit(), _prng.unit(), _prng.unit());
 	}
+	Color randomColor()
+	{
+		return randomColor(rng::defaultRandom);
+	}
 	Color randomBrightColor(rng::PRNG<unsigned>& _prng)
 	{
 		return colorHSB(_prng.random<float>(0.0f, 360.0f), 1.0f, 0.5f);
+	}
+	Color randomBrightColor()
+	{
+		return randomBrightColor(rng::defaultRandom);
 	}
 }

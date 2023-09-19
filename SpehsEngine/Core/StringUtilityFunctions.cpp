@@ -252,22 +252,43 @@ namespace se
 		return string;
 	}
 
-	std::string camelCaseToSpaced(const std::string string, const bool postSpaceToLowerCase)
+	std::string variableNameToDisplay(const std::string_view optionName, const bool startWithUpperCase)
 	{
 		std::string result;
-		result.reserve(string.size() + 1);
-		for (size_t i = 0; i < string.size(); i++)
+		result.reserve(optionName.length());
+		bool wasUpper = false;
+		for (size_t i = 0; i < optionName.length(); i++)
 		{
-			char c = string[i];
-			if (i > 0 && c >= 'A' && c <= 'Z')
+			char c = optionName[i];
+			const bool isUpper = std::isupper(c);
+			const bool hasNext = i + 1 < optionName.length();
+			const bool nextIsUpper = hasNext ? std::isupper(optionName[i + 1]) : true;
+			if (i > 0)
 			{
-				result.push_back(' ');
-				if (postSpaceToLowerCase)
+				if ((isUpper && !wasUpper) || (wasUpper && isUpper && !nextIsUpper))
 				{
-					c = char(tolower(int(c)));
+					result += " ";
+					if (!nextIsUpper)
+					{
+						// New words start with lower case (with expection of words that consist of multiple capital letters in a sequence)
+						c = char(std::tolower(c));
+					}
 				}
 			}
-			result.push_back(c);
+			else if (startWithUpperCase)
+			{
+				c = char(std::toupper(c));
+			}
+			else if (isUpper && nextIsUpper)
+			{
+				// All upper case acronym, do not change to lower
+			}
+			else if (startWithUpperCase)
+			{
+				c = char(std::tolower(c));
+			}
+			result += c;
+			wasUpper = isUpper;
 		}
 		return result;
 	}
@@ -281,9 +302,11 @@ namespace se
 		for (unsigned i = 0; i < string.size(); i++)
 		{
 			if (string[i] >= '0' && string[i] <= '9')
-			{//Add numerical value
+			{
+				// Add numerical value
 				if (checkBit(stringState, 2))
-				{//Decimal
+				{
+					// Decimal
 					floatValue += int(string[i] - 48) * decimalFactor;
 					decimalFactor *= 0.1f;
 				}
@@ -296,26 +319,29 @@ namespace se
 			else if (string[i] == '-')
 			{
 				if (checkBit(stringState, 1))
-				{//Second '-' character, return
+				{
+					// Second '-' character, return
 					return 0.0f;
 				}
-				enableBit(stringState, 1);//Negative
+				enableBit(stringState, 1); // Negative
 			}
 			else if (string[i] == '.' || string[i] == ',')
 			{
 				if (checkBit(stringState, 2))
-				{//Second ',/.' character, return
+				{
+					// Second ',/.' character, return
 					return 0.0f;
 				}
-				enableBit(stringState, 2);//Begin decimal part
+				enableBit(stringState, 2); // Begin decimal part
 			}
 			else
-			{//Character is unknown
+			{
+				// Character is unknown
 				return 0.0f;
 			}
 		}
 
-		//Add up values, negate if needed
+		// Add up values, negate if needed
 		floatValue += intValue;
 		if (checkBit(stringState, 1))
 			floatValue *= -1;
@@ -330,7 +356,8 @@ namespace se
 		for (unsigned i = 0; i < string.size(); i++)
 		{
 			if (string[i] >= '0' && string[i] <= '9')
-			{//Add numerical value
+			{
+				// Add numerical value
 				{
 					intValue *= 10;
 					intValue += int(string[i] - 48);
@@ -339,26 +366,29 @@ namespace se
 			else if (string[i] == '-')
 			{
 				if (checkBit(stringState, 1))
-				{//Second '-' character, return
+				{
+					// Second '-' character, return
 					return 0;
 				}
-				enableBit(stringState, 1);//Negative
+				enableBit(stringState, 1); // Negative
 			}
 			else if (string[i] == '.' || string[i] == ',')
 			{
 				if (checkBit(stringState, 2))
-				{//Second ',/.' character, return
+				{
+					// Second ',/.' character, return
 					return 0;
 				}
-				enableBit(stringState, 2);//Begin decimal part
+				enableBit(stringState, 2); // Begin decimal part
 			}
 			else
-			{//Character is unknown
+			{
+				// Character is unknown
 				return 0;
 			}
 		}
 
-		//negate if needed
+		// Negate if needed
 		if (checkBit(stringState, 1))
 			intValue *= -1;
 

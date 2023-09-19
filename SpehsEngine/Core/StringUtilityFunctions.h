@@ -1,18 +1,18 @@
 #pragma once
 
-#include "boost/format.hpp"
-#include "SpehsEngine/Core/Archive.h"
+#include "SpehsEngine/Core/ByteVector.h"
+#include "SpehsEngine/Core/ByteView.h"
+#include "SpehsEngine/Core/SE_Time.h"
 #include "SpehsEngine/Core/SE_Assert.h"
-#include "SpehsEngine/Core/ReadBuffer.h"
-#include "SpehsEngine/Core/WriteBuffer.h"
+#include "SpehsEngine/Core/Serial/Serial.h"
+#include "boost/format.hpp"
 #include <string>
-
 
 namespace se
 {
-	inline std::string formatStringImpl(boost::format& f)
+	inline std::string formatStringImpl(boost::format &format)
 	{
-		return boost::str(f);
+		return boost::str(format);
 	}
 	template<typename T, typename... Args>
 	inline std::string formatStringImpl(boost::format& f, T&& t, Args&&... args)
@@ -32,67 +32,21 @@ namespace se
 		return formatStringImpl(boostFormat, std::forward<Arguments>(args)...);
 	}
 
-	template<typename SizeType = uint32_t>
-	void writeToBuffer(WriteBuffer& writeBuffer, const std::string& string)
+	template<> template<typename S, typename T>
+	static bool se::Serial<std::string>::serial(S& _serial, T _string)
 	{
-		static_assert(std::is_integral<SizeType>::value, "SizeType must be integral.");
-		se_assert(size_t(std::numeric_limits<SizeType>::max()) >= string.size() && "String size is larger than the maximum of SizeType.");
-		const SizeType size = SizeType(string.size());
-		writeBuffer.write(size);
-		for (SizeType i = 0; i < size; i++)
+		if constexpr (S::getWritingEnabled())
 		{
-			writeBuffer.write(string[size_t(i)]);
-		}
-	}
-
-	template<typename SizeType = uint32_t>
-	bool readFromBuffer(ReadBuffer& readBuffer, std::string& string)
-	{
-		static_assert(std::is_integral<SizeType>::value, "SizeType must be integral.");
-		SizeType size = 0;
-		if (!readBuffer.read(size))
-		{
-			return false;
-		}
-		if (readBuffer.getBytesRemaining() < size)
-		{
-			return false;
-		}
-		string.resize(size_t(size));
-		for (SizeType i = 0; i < size; i++)
-		{
-			if (!readBuffer.read(string[size_t(i)]))
-			{
-				return false;
-			}
-		}
-		return true;
-	}
-	
-	template<typename SizeType = uint32_t>
-	Archive writeToArchive(const std::string& string)
-	{
-		static_assert(std::is_integral<SizeType>::value, "SizeType must be integral.");
-		WriteBuffer writeBuffer;
-		writeToBuffer<SizeType>(writeBuffer, string);
-		Archive archive;
-		archive.write("writeBuffer", writeBuffer);
-		return archive;
-	}
-
-	template<typename SizeType = uint32_t>
-	bool readFromArchive(const Archive& archive, std::string& string)
-	{
-		static_assert(std::is_integral<SizeType>::value, "SizeType must be integral.");
-		WriteBuffer writeBuffer;
-		archive.read("writeBuffer", writeBuffer);
-		if (writeBuffer.getSize() > 0)
-		{
-			ReadBuffer readBuffer(writeBuffer[0], writeBuffer.getSize());
-			return readFromBuffer<SizeType>(readBuffer, string);
+			const ByteView byteView((const std::byte*)_string.c_str(), _string.length());
+			se_serial(_serial, byteView, "string");
+			return true;
 		}
 		else
 		{
+			ByteVector byteVector;
+			se_serial(_serial, byteVector, "string");
+			_string.resize(byteVector.getSize());
+			memcpy(_string.data(), (const void*)byteVector.getData(), byteVector.getSize());
 			return true;
 		}
 	}
@@ -146,12 +100,16 @@ namespace se
 	std::string fromWideString(const std::wstring& wstring);
 
 	/*
-		if (postSpaceToLowerCase)
-			CamelCase -> Camel case
-		else
-			CamelCase -> Camel Case
+		Converts variable/class name into a format better suitable for logging or showing in GUI.
+		Names are expected to follow the camelCase convention, with a few exceptions explained below for all caps acronyms.
+		---
+		INPUT				START UPPER: true		START UPPER: false
+		TwoWords			Two words				two words
+		twoWords			Two words				two words
+		SecondACRONYM		Second ACRONYM			second ACRONYM
+		ACRONYMSecond		ACRONYM second			ACRONYM second
 	*/
-	std::string camelCaseToSpaced(const std::string string, const bool postSpaceToLowerCase);
+	std::string variableNameToDisplay(const std::string_view string, const bool startWithUpperCase);
 
 	// Returns string as float. Returns 0.0f if string is invalid
 	float getStringAsFloat(const std::string& string);

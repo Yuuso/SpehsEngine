@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?> 
+<AutoVisualizer xmlns="http://schemas.microsoft.com/vstudio/debugger/natvis/2010">
+  <Type Name="se::BinaryReader">
+    <DisplayString>Offset: {offset}, Size: {size}</DisplayString>
+    <Expand>
+      <Item Name="Offset" ExcludeView="simple">offset</Item>
+      <Item Name="Size" ExcludeView="simple">size</Item>
+      <ArrayItems>
+        <Size>size</Size>
+        <ValuePointer>data</ValuePointer>
+      </ArrayItems>
+    </Expand>
+  </Type>
+</AutoVisualizer>

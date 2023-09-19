@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "SpehsEngine/Graphics/GraphicsLib.h"
 
-#include <SDL/SDL.h>
+#include "SDL/SDL.h"
 
 
 namespace se

@@ -16,7 +16,7 @@
       <WarningLevel>Level4</WarningLevel>
       <AdditionalOptions>/wd26439 /wd26495 /wd4201 /wd4100 /wd4127 /w44062 /Zc:__cplusplus %(AdditionalOptions)</AdditionalOptions>
       <SDLCheck>true</SDLCheck>
-      <LanguageStandard>stdcpp17</LanguageStandard>
+      <LanguageStandard>stdcpp20</LanguageStandard>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
     </ClCompile>
     <Lib>

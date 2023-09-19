@@ -1,31 +1,87 @@
 #pragma once
 
-#include "SpehsEngine/Core/Archive.h"
 #include "SpehsEngine/Core/Murmur3.h"
+#include "SpehsEngine/Core/Serial/Serial.h"
 #include "SpehsEngine/Input/CustomEventParameters.h"
 #include "SpehsEngine/Input/EventUtilityFunctions.h"
 
 
-namespace se
+template<> template<typename S, typename T>
+static bool se::Serial<se::input::KeyboardEventParameters>::serial(S& _serial, T _value)
 {
-	Archive writeToArchive(const input::KeyboardEventParameters& eventParameters);
-	Archive writeToArchive(const input::MouseButtonEventParameters& eventParameters);
-	Archive writeToArchive(const input::MouseMotionEventParameters& eventParameters);
-	Archive writeToArchive(const input::MouseWheelEventParameters& eventParameters);
-	Archive writeToArchive(const input::MouseHoverEventParameters& eventParameters);
-	Archive writeToArchive(const input::JoystickButtonEventParameters& eventParameters);
-	Archive writeToArchive(const input::JoystickAxisEventParameters& eventParameters);
+	se_serial(_serial, _value.key, "key");
+	return true;
+}
 
-	bool readFromArchive(const Archive& archive, input::KeyboardEventParameters& eventParameters);
-	bool readFromArchive(const Archive& archive, input::MouseButtonEventParameters& eventParameters);
-	bool readFromArchive(const Archive& archive, input::MouseMotionEventParameters& eventParameters);
-	bool readFromArchive(const Archive& archive, input::MouseWheelEventParameters& eventParameters);
-	bool readFromArchive(const Archive& archive, input::MouseHoverEventParameters& eventParameters);
-	bool readFromArchive(const Archive& archive, input::JoystickButtonEventParameters& eventParameters);
-	bool readFromArchive(const Archive& archive, input::JoystickAxisEventParameters& eventParameters);
+template<> template<typename S, typename T>
+static bool se::Serial<se::input::MouseButtonEventParameters>::serial(S& _serial, T _value)
+{
+	se_serial(_serial, _value.mouseButton, "mouseButton");
+	return true;
+}
 
-	Archive writeToArchive(const input::CustomEventParameters& customEventParameters);
-	bool readFromArchive(const Archive& archive, input::CustomEventParameters& customEventParameters);
+template<> template<typename S, typename T>
+static bool se::Serial<se::input::MouseMotionEventParameters>::serial(S& _serial, T _value)
+{
+	return true;
+}
+
+template<> template<typename S, typename T>
+static bool se::Serial<se::input::MouseWheelEventParameters>::serial(S& _serial, T _value)
+{
+	return true;
+}
+
+template<> template<typename S, typename T>
+static bool se::Serial<se::input::MouseHoverEventParameters>::serial(S& _serial, T _value)
+{
+	return true;
+}
+
+template<> template<typename S, typename T>
+static bool se::Serial<se::input::JoystickButtonEventParameters>::serial(S& _serial, T _value)
+{
+	se_serial(_serial, _value.joystickGuid, "joystickGuid");
+	se_serial(_serial, _value.buttonIndex, "buttonIndex");
+	return true;
+}
+
+template<> template<typename S, typename T>
+static bool se::Serial<se::input::JoystickAxisEventParameters>::serial(S& _serial, T _value)
+{
+	se_serial(_serial, _value.joystickGuid, "joystickGuid");
+	se_serial(_serial, _value.axisIndex, "axisIndex");
+	return true;
+}
+
+template<> template<typename S, typename T>
+static bool se::Serial<se::input::JoystickHatEventParameters>::serial(S& _serial, T _value)
+{
+	se_serial(_serial, _value.joystickGuid, "joystickGuid");
+	se_serial(_serial, _value.hatIndex, "hatIndex");
+	return true;
+}
+
+template<> template<typename S, typename T>
+static bool se::Serial<se::input::CustomEventParameters>::serial(S& _serial, T _value)
+{
+	se_serial(_serial, _value.eventType, "eventType");
+	switch (_value.eventType)
+	{
+	case input::EventType::none: break;
+	case input::EventType::quit: break;
+	case input::EventType::textInput: break;
+	case input::EventType::fileDrop: break;
+	case input::EventType::keyboard:		se_serial(_serial, _value.keyboardEventParameters, "keyboardEventParameters"); break;
+	case input::EventType::mouseButton:		se_serial(_serial, _value.mouseButtonEventParameters, "mouseButtonEventParameters"); break;
+	case input::EventType::mouseMotion:		se_serial(_serial, _value.mouseMotionEventParameters, "mouseMotionEventParameters"); break;
+	case input::EventType::mouseWheel:		se_serial(_serial, _value.mouseWheelEventParameters, "mouseWheelEventParameters"); break;
+	case input::EventType::mouseHover:		se_serial(_serial, _value.mouseHoverEventParameters, "mouseHoverEventParameters"); break;
+	case input::EventType::joystickButton:	se_serial(_serial, _value.joystickButtonEventParameters, "joystickButtonEventParameters"); break;
+	case input::EventType::joystickAxis:	se_serial(_serial, _value.joystickAxisEventParameters, "joystickAxisEventParameters"); break;
+	case input::EventType::joystickHat:		se_serial(_serial, _value.joystickHatEventParameters, "joystickHatEventParameters"); break;
+	}
+	return true;
 }
 
 namespace std
@@ -69,21 +125,21 @@ namespace std
 	{
 		size_t operator()(const se::input::JoystickButtonEventParameters& eventParameters) const
 		{
-			return size_t(se::murmurHash3_x86_32(&eventParameters.joystickGuid.data, 17, 0));
+			return size_t(se::Murmur3::impl((const char*)&eventParameters.joystickGuid.data, 17, 0));
 		}
 	};
 	template<> struct hash<se::input::JoystickAxisEventParameters>
 	{
 		size_t operator()(const se::input::JoystickAxisEventParameters& eventParameters) const
 		{
-			return size_t(se::murmurHash3_x86_32(&eventParameters.joystickGuid.data, 17, 0));
+			return size_t(se::Murmur3::impl((const char*)&eventParameters.joystickGuid.data, 17, 0));
 		}
 	};
 	template<> struct hash<se::input::JoystickHatEventParameters>
 	{
 		size_t operator()(const se::input::JoystickHatEventParameters& eventParameters) const
 		{
-			return size_t(se::murmurHash3_x86_32(&eventParameters.joystickGuid.data, 17, 0));
+			return size_t(se::Murmur3::impl((const char*)&eventParameters.joystickGuid.data, 17, 0));
 		}
 	};
 
@@ -108,7 +164,7 @@ namespace std
 			case se::input::EventType::joystickAxis: data[1] = std::hash<se::input::JoystickAxisEventParameters>()(customEventParameters.joystickAxisEventParameters); break;
 			case se::input::EventType::joystickHat: data[1] = std::hash<se::input::JoystickHatEventParameters>()(customEventParameters.joystickHatEventParameters); break;
 			}
-			return size_t(se::murmurHash3_x86_32(data, sizeof(size_t) * 2, 0));
+			return size_t(se::Murmur3::impl((const char*)data, sizeof(size_t) * 2, 0));
 		}
 	};
 }

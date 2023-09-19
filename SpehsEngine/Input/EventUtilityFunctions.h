@@ -1,34 +1,8 @@
 #pragma once
 
 #include "SpehsEngine/Input/Event.h"
-#include "SpehsEngine/Core/Archive.h"
 #include "SpehsEngine/Core/Murmur3.h"
 
-
-namespace se
-{
-	Archive writeToArchive(const input::KeyboardEvent& event);
-	Archive writeToArchive(const input::TextInputEvent& event);
-	Archive writeToArchive(const input::MouseButtonEvent& event);
-	Archive writeToArchive(const input::MouseMotionEvent& event);
-	Archive writeToArchive(const input::MouseWheelEvent& event);
-	Archive writeToArchive(const input::MouseHoverEvent& event);
-	Archive writeToArchive(const input::JoystickButtonEvent& event);
-	Archive writeToArchive(const input::JoystickAxisEvent& event);
-	Archive writeToArchive(const input::QuitEvent& event);
-	Archive writeToArchive(const input::FileDropEvent& event);
-
-	bool readFromArchive(const Archive& archive, input::KeyboardEvent& event);
-	bool readFromArchive(const Archive& archive, input::TextInputEvent& event);
-	bool readFromArchive(const Archive& archive, input::MouseButtonEvent& event);
-	bool readFromArchive(const Archive& archive, input::MouseMotionEvent& event);
-	bool readFromArchive(const Archive& archive, input::MouseWheelEvent& event);
-	bool readFromArchive(const Archive& archive, input::MouseHoverEvent& event);
-	bool readFromArchive(const Archive& archive, input::JoystickButtonEvent& event);
-	bool readFromArchive(const Archive& archive, input::JoystickAxisEvent& event);
-	bool readFromArchive(const Archive& archive, input::QuitEvent& event);
-	bool readFromArchive(const Archive& archive, input::FileDropEvent& event);
-}
 
 namespace std
 {
@@ -36,21 +10,21 @@ namespace std
 	{
 		size_t operator()(const se::input::KeyboardEvent& event) const
 		{
-			return size_t(se::murmurHash3_x86_32(&event, 9, 0));
+			return size_t(se::Murmur3::impl((const char*)&event, 9, 0));
 		}
 	};
 	template<> struct hash<se::input::TextInputEvent>
 	{
 		size_t operator()(const se::input::TextInputEvent& event) const
 		{
-			return size_t(se::murmurHash3_x86_32(event.buffer.data(), event.buffer.size(), 0));
+			return size_t(se::Murmur3::impl((const char*)event.buffer.data(), event.buffer.size(), 0));
 		}
 	};
 	template<> struct hash<se::input::MouseButtonEvent>
 	{
 		size_t operator()(const se::input::MouseButtonEvent& event) const
 		{
-			return size_t(se::murmurHash3_x86_32(&event, 5, 0));
+			return size_t(se::Murmur3::impl((const char*)&event, 5, 0));
 		}
 	};
 	template<> struct hash<se::input::MouseMotionEvent>
@@ -58,42 +32,42 @@ namespace std
 		size_t operator()(const se::input::MouseMotionEvent& event) const
 		{
 			static_assert(sizeof(event) == 24);
-			return size_t(se::murmurHash3_x86_32(&event, sizeof(event), 0));
+			return size_t(se::Murmur3::impl((const char*)&event, sizeof(event), 0));
 		}
 	};
 	template<> struct hash<se::input::MouseWheelEvent>
 	{
 		size_t operator()(const se::input::MouseWheelEvent& event) const
 		{
-			return size_t(se::murmurHash3_x86_32(&event.delta, 8, 0));
+			return size_t(se::Murmur3::impl((const char*)&event.delta, 8, 0));
 		}
 	};
 	template<> struct hash<se::input::MouseHoverEvent>
 	{
 		size_t operator()(const se::input::MouseHoverEvent& event) const
 		{
-			return size_t(se::murmurHash3_x86_32(&event.position, 8, 0));
+			return size_t(se::Murmur3::impl((const char*)&event.position, 8, 0));
 		}
 	};
 	template<> struct hash<se::input::JoystickButtonEvent>
 	{
 		size_t operator()(const se::input::JoystickButtonEvent& event) const
 		{
-			return size_t(se::murmurHash3_x86_32(&event.joystickId, 22, 0));
+			return size_t(se::Murmur3::impl((const char*)&event.joystickId, 22, 0));
 		}
 	};
 	template<> struct hash<se::input::JoystickAxisEvent>
 	{
 		size_t operator()(const se::input::JoystickAxisEvent& event) const
 		{
-			return size_t(se::murmurHash3_x86_32(&event.joystickId, 25, 0));
+			return size_t(se::Murmur3::impl((const char*)&event.joystickId, 25, 0));
 		}
 	};
 	template<> struct hash<se::input::JoystickHatEvent>
 	{
 		size_t operator()(const se::input::JoystickHatEvent& event) const
 		{
-			return size_t(se::murmurHash3_x86_32(&event.joystickId, 22, 0));
+			return size_t(se::Murmur3::impl((const char*)&event.joystickId, 22, 0));
 		}
 	};
 	template<> struct hash<se::input::QuitEvent>
@@ -107,7 +81,7 @@ namespace std
 	{
 		size_t operator()(const se::input::FileDropEvent& event) const
 		{
-			return size_t(se::murmurHash3_x86_32(event.filepath.data(), event.filepath.size(), 0));
+			return size_t(se::Murmur3::impl((const char*)event.filepath.data(), event.filepath.size(), 0));
 		}
 	};
 }

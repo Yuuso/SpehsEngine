@@ -33,9 +33,4 @@ namespace se
 
 		UtcTime getUtcTime();
 	}
-
-	class WriteBuffer;
-	class ReadBuffer;
-	void writeToBuffer(WriteBuffer& writeBuffer, const time::UtcTime& utcTime);
-	bool readFromBuffer(ReadBuffer& readBuffer, time::UtcTime& utcTime);
 }

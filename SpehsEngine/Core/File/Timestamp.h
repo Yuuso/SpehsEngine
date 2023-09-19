@@ -15,7 +15,7 @@ namespace se
 			bool operator<=(const Timestamp& other) { return value <= other.value; }
 			bool operator>=(const Timestamp& other) { return value >= other.value; }
 
-			int64_t value = 0ull; // Value represents seconds
+			int64_t value = 0; // Value represents seconds
 		};
 	}
 }

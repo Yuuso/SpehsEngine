@@ -141,9 +141,9 @@ namespace se
 			}
 		}
 
-		void SocketUDP2::sendPacket(const WriteBuffer& writeBuffer, const boost::asio::ip::udp::endpoint& endpoint)
+		void SocketUDP2::sendPacket(const BinaryWriter& binaryWriter, const boost::asio::ip::udp::endpoint& endpoint)
 		{
-			const std::vector<boost::asio::const_buffer> buffers{ boost::asio::const_buffer(writeBuffer.getData(), writeBuffer.getSize()) };
+			const std::vector<boost::asio::const_buffer> buffers{ boost::asio::const_buffer(binaryWriter.getData(), binaryWriter.getSize()) };
 			return sendPacket(buffers, endpoint);
 		}
 

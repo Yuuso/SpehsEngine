@@ -27,25 +27,25 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
@@ -144,6 +144,7 @@
     <ClInclude Include="InputEnumerations.h" />
     <ClInclude Include="InputManager.h" />
     <ClInclude Include="InputState.h" />
+    <ClInclude Include="Internal\SDLUtility.h" />
     <ClInclude Include="Joystick.h" />
     <ClInclude Include="JoystickGuid.h" />
     <ClInclude Include="JoystickHatState.h" />
@@ -162,16 +163,15 @@
     <ClCompile Include="CustomEventGenerator.cpp" />
     <ClCompile Include="CustomEventParameters.cpp" />
     <ClCompile Include="CustomEventParametersRecorder.cpp" />
-    <ClCompile Include="CustomEventParametersUtilityFunctions.cpp" />
     <ClCompile Include="Event.cpp" />
     <ClCompile Include="EventCatcher.cpp" />
     <ClCompile Include="EventSignaler.cpp" />
-    <ClCompile Include="EventUtilityFunctions.cpp" />
     <ClCompile Include="GUID.cpp" />
     <ClCompile Include="InputLib.cpp" />
     <ClCompile Include="InputEnumerations.cpp" />
     <ClCompile Include="InputManager.cpp" />
     <ClCompile Include="InputState.cpp" />
+    <ClCompile Include="Internal\SDLUtility.cpp" />
     <ClCompile Include="Joystick.cpp" />
     <ClCompile Include="JoystickGuid.cpp" />
     <ClCompile Include="JoystickUtilityFunctions.cpp" />

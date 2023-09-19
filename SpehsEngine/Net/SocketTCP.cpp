@@ -6,7 +6,6 @@
 #include "SpehsEngine/Net/Acceptor.h"
 #include "SpehsEngine/Net/IOService.h"
 #include "SpehsEngine/Net/IOServiceUtilityFunctions.h"
-#include "SpehsEngine/Core/RAIIVariableSetter.h"
 #include "SpehsEngine/Core/Log.h"
 #include "SpehsEngine/Core/SE_Time.h"
 
@@ -29,6 +28,24 @@ namespace
 
 namespace se
 {
+	struct Handshake
+	{
+		bool isValid() const
+		{
+			return handshakeVersion == currentVersion;
+		}
+
+		static const uint16_t currentVersion = 1;
+		uint16_t handshakeVersion = currentVersion;
+	};
+
+	template<> template<typename S, typename T>
+	static bool se::Serial<Handshake>::serial(S& _serial, T _value)
+	{
+		se_serial(_serial, _value.handshakeVersion, "handshakeVersion");
+		return true;
+	}
+
 	extern std::string workingDirectory;
 	namespace net
 	{
@@ -36,86 +53,6 @@ namespace se
 		{
 			return endpoint.address().to_string() + ":" + std::to_string(endpoint.port());
 		}
-
-		class Handshake
-		{
-			static const uint16_t endiannessCheckBytes = 0xACDC;
-		public:
-
-			bool isValid() const
-			{
-				return valid;
-			}
-
-			void write(WriteBuffer& buffer) const
-			{
-				buffer.write(currentMagic);
-				buffer.write(handshakeVersion);
-				buffer.write(endiannessCheckBytes);
-			}
-
-			bool read(ReadBuffer& buffer)
-			{
-				// NOTE: buffer can contain invalid data! If so, set the valid boolean to false
-				valid = true;
-
-				// Magic
-				if (!buffer.read(magic))
-				{
-					log::info("Handshake::read() invalid handshake. No bytes left to read magic.");
-					valid = false;
-					return false;
-				}
-
-				if (magic != currentMagic)
-				{
-					log::info("Handshake::read() invalid handshake. Incompatible magic - my version: " + se::toHexString(currentMagic) + ", read magic: " + se::toHexString(magic));
-					valid = false;
-					return false;
-				}
-
-				// Handshake version
-				if (!buffer.read(handshakeVersion))
-				{
-					log::info("Handshake::read() invalid handshake. No bytes left to read handshake version.");
-					valid = false;
-					return false;
-				}
-
-				if (handshakeVersion != currentVersion)
-				{
-					log::info("Handshake::read() invalid handshake. Incompatible versions - my version: " + std::to_string(currentVersion) + ", other version: " + std::to_string(handshakeVersion));
-					valid = false;
-					return false;
-				}
-
-				// Endianness check bytes
-				uint16_t readEndiannessCheckBytes;
-				if (!buffer.read(readEndiannessCheckBytes))
-				{
-					log::info("Handshake::read() invalid handshake. No bytes left to read endianness check bytes.");
-					valid = false;
-					return false;
-				}
-
-				if (readEndiannessCheckBytes != endiannessCheckBytes)
-				{
-					log::info("Handshake::read() invalid handshake. Invalid endianness check bytes.");
-					valid = false;
-					return false;
-				}
-
-				return true;
-			}
-
-		private:
-			typedef uint16_t VersionType;
-			static const VersionType currentVersion = 1;
-			static const uint64_t currentMagic = 0xC0DEC5F070C01001; // Mmmm...magic
-			uint64_t magic = currentMagic;
-			VersionType handshakeVersion = currentVersion;
-			bool valid = true;
-		};
 
 		SocketTCP::SocketTCP(IOService& _ioService)
 			: sharedImpl(new SharedImpl(_ioService))
@@ -205,14 +142,14 @@ namespace se
 			return sharedImpl->getReceivedBytes();
 		}
 
-		bool SocketTCP::sendPacket(const WriteBuffer& writeBuffer, const PacketType packetType)
+		bool SocketTCP::sendPacket(const BinaryWriter& binaryWriter, const PacketType packetType)
 		{
-			return sharedImpl->sendPacket(writeBuffer, packetType);
+			return sharedImpl->sendPacket(binaryWriter, packetType);
 		}
 
-		bool SocketTCP::placeDataOnReceiveQueue(WriteBuffer& writeBuffer)
+		bool SocketTCP::placeDataOnReceiveQueue(BinaryWriter& binaryWriter)
 		{
-			return sharedImpl->placeDataOnReceiveQueue(writeBuffer);
+			return sharedImpl->placeDataOnReceiveQueue(binaryWriter);
 		}
 
 		bool SocketTCP::resizeReceiveBuffer(const size_t newSize)
@@ -220,7 +157,7 @@ namespace se
 			return sharedImpl->resizeReceiveBuffer(newSize);
 		}
 
-		void SocketTCP::setOnReceiveCallback(const std::function<void(ReadBuffer&)> callbackFunction)
+		void SocketTCP::setOnReceiveCallback(const std::function<void(BinaryReader&)> callbackFunction)
 		{
 			sharedImpl->setOnReceiveCallback(callbackFunction);
 		}
@@ -240,9 +177,9 @@ namespace se
 			return sharedImpl->update();
 		}
 
-		bool SocketTCP::spehsReceiveHandler(ReadBuffer& buffer)
+		bool SocketTCP::spehsReceiveHandler(BinaryReader& binaryReader)
 		{
-			return sharedImpl->spehsReceiveHandler(buffer);
+			return sharedImpl->spehsReceiveHandler(binaryReader);
 		}
 
 		bool SocketTCP::startAccepting(const Port& port, const std::function<void(SocketTCP&)> callbackFunction)
@@ -381,7 +318,7 @@ namespace se
 				std::lock_guard<std::recursive_mutex> lock(mutex);
 				if (socket.is_open())
 				{
-					onReceiveCallback = std::function<void(ReadBuffer&)>();
+					onReceiveCallback = std::function<void(BinaryReader&)>();
 					boost::system::error_code error;
 					socket.shutdown(boost::asio::socket_base::shutdown_both, error);
 					if (error)
@@ -548,17 +485,17 @@ namespace se
 
 			if (bytes)
 			{
-				ReadBuffer readBuffer(&receiveBuffer[0], bytes);
+				BinaryReader binaryReader(&receiveBuffer[0], bytes);
 				if (expectedBytes == 0)
 				{
 					// Header received
-					readBuffer.read(expectedBytes);
+					binaryReader.serial(expectedBytes);
 					startReceiving();
 				}
 				else if (expectedBytes == bytes)
 				{
 					// Data received
-					const bool keepReceiving = socketTCP ? socketTCP->spehsReceiveHandler(readBuffer) : false;
+					const bool keepReceiving = socketTCP ? socketTCP->spehsReceiveHandler(binaryReader) : false;
 					expectedBytes = 0; // Begin to expect header next
 					if (keepReceiving)
 						startReceiving();
@@ -693,10 +630,10 @@ namespace se
 			DEBUG_LOG(1, "accepting socket received a handshake.");
 
 			// Send a response handshake
-			WriteBuffer buffer;
+			BinaryWriter binaryWriter;
 			const Handshake handshake;
-			buffer.write(handshake);
-			if (socketTCP->sendPacket(buffer, PacketType::handshake))
+			binaryWriter.serial(handshake);
+			if (socketTCP->sendPacket(binaryWriter, PacketType::handshake))
 			{
 				DEBUG_LOG(1, "accepting socket sent a handshake.");
 				handshakeSent = true;
@@ -794,12 +731,11 @@ namespace se
 				return false;
 			}
 
-			RAIIMutexVariableSetter<bool, std::recursive_mutex> connectingSetter(connecting, true, mutex);
-
 			{
 				std::lock_guard<std::recursive_mutex> lock(mutex);
 
 				// Start a new connection
+				connecting = true;
 				expectedBytes = 0;
 				handshakeSent = false;
 				handshakeReceived = false;
@@ -812,6 +748,7 @@ namespace se
 				if (error)
 				{
 					DEBUG_LOG(1, "failed to resolve the endpoint. Boost asio error: " + error.message());
+					connecting = false;
 					return false;
 				}
 				else
@@ -824,6 +761,7 @@ namespace se
 				if (error)
 				{
 					DEBUG_LOG(1, "failed to connect(). Boost asio error: " + error.message());
+					connecting = false;
 					return false;
 				}
 				else
@@ -835,13 +773,13 @@ namespace se
 				startReceiving();
 
 				// Send the spehs handshake
-				WriteBuffer buffer;
+				BinaryWriter binaryWriter;
 				const Handshake handshake;
-				buffer.write(handshake);
+				binaryWriter.serial(handshake);
 				const time::Time handshakeSendBeginTime = time::now();
 				while (time::now() - handshakeSendBeginTime < se::time::fromSeconds(5.0f))
 				{
-					if (sendPacket(buffer, PacketType::handshake))
+					if (sendPacket(binaryWriter, PacketType::handshake))
 					{
 						handshakeSent = true;
 						break;
@@ -854,6 +792,7 @@ namespace se
 				else
 				{
 					DEBUG_LOG(1, "failed to connect. Failed to send handshake.");
+					connecting = false;
 					return false; // If sending the handshake fails, connection was not successful
 				}
 			}
@@ -865,14 +804,18 @@ namespace se
 				if (!handshakeReceived)
 				{
 					DEBUG_LOG(1, "failed to connect! No response handshake received!");
+					connecting = false;
 					return false;
 				}
 			}
 
-			// All done, socket is now at connected state!
-			DEBUG_LOG(1, "successfully received handshake from the remote endpoint. Socket is now in connected state.");
-			std::lock_guard<std::recursive_mutex> lock(mutex);
-			connected = true;
+			// All done, socket is now at connected state
+			{
+				DEBUG_LOG(1, "successfully received handshake from the remote endpoint. Socket is now in connected state.");
+				std::lock_guard<std::recursive_mutex> lock(mutex);
+				connecting = false;
+				connected = true;
+			}
 
 			return true;
 		}
@@ -892,9 +835,9 @@ namespace se
 			if (disconnectType != DisconnectType::doNotSendDisconnectPacket)
 			{
 				// Try sending the disconnect packet before disconnecting
-				WriteBuffer buffer;
-				buffer.write(disconnectType);
-				sendPacket(buffer, PacketType::disconnect);
+				BinaryWriter binaryWriter;
+				binaryWriter.serial(disconnectType);
+				sendPacket(binaryWriter, PacketType::disconnect);
 			}
 
 			// Reset the connection state
@@ -919,9 +862,9 @@ namespace se
 			handshakeReceived = false;
 		}
 
-		bool SocketTCP::SharedImpl::sendPacket(const WriteBuffer& buffer, const PacketType packetType)
+		bool SocketTCP::SharedImpl::sendPacket(const BinaryWriter& binaryWriter, const PacketType packetType)
 		{
-			if (buffer.getSize() == 0)
+			if (binaryWriter.getSize() == 0)
 			{
 				se_assert(false && "Trying to send an empty packet.");
 				return true;
@@ -938,19 +881,19 @@ namespace se
 			}
 
 			// Spehs header
-			WriteBuffer headerBuffer;
-			const ExpectedBytesType dataBufferSize = ExpectedBytesType(buffer.getSize());
-			const ExpectedBytesType headerBytesValue = ExpectedBytesType(buffer.getSize() + sizeof(packetType));
+			BinaryWriter headerBinaryWriter;
+			const ExpectedBytesType dataBufferSize = ExpectedBytesType(binaryWriter.getSize());
+			const ExpectedBytesType headerBytesValue = ExpectedBytesType(binaryWriter.getSize() + sizeof(packetType));
 
-			headerBuffer.write(headerBytesValue);
-			headerBuffer.write(packetType);
+			headerBinaryWriter.serial(headerBytesValue);
+			headerBinaryWriter.serial(packetType);
 
-			const size_t headerBufferSize = headerBuffer.getSize();
+			const size_t headerSize = headerBinaryWriter.getSize();
 			size_t offset = 0;
-			while (offset < headerBufferSize)
+			while (offset < headerSize)
 			{
 				// Keep sending data until the whole header has been sent
-				const size_t writtenBytes = socket.write_some(boost::asio::buffer(headerBuffer[offset], headerBufferSize - offset), error);
+				const size_t writtenBytes = socket.write_some(boost::asio::buffer(headerBinaryWriter.getData() - offset, headerSize - offset), error);
 				offset += writtenBytes;
 				sentBytes += writtenBytes;
 				if (error)
@@ -966,7 +909,7 @@ namespace se
 			while (offset < dataBufferSize)
 			{
 				// Keep sending data until all data has been sent
-				const size_t writtenBytes = socket.write_some(boost::asio::buffer(buffer[offset], dataBufferSize - offset), error);
+				const size_t writtenBytes = socket.write_some(boost::asio::buffer(binaryWriter.getData() + offset, dataBufferSize - offset), error);
 				offset += writtenBytes;
 				sentBytes += writtenBytes;
 				if (error)
@@ -977,20 +920,20 @@ namespace se
 				}
 			}
 
-			DEBUG_LOG(2, "sent 4(packet byte size) + 1(packet type) + " + std::to_string(buffer.getSize()) +
+			DEBUG_LOG(2, "sent 4(packet byte size) + 1(packet type) + " + std::to_string(binaryWriter.getSize()) +
 				" bytes to: " + getLocalEndpoint().address().to_string() + ":" + std::to_string(getLocalEndpoint().port()));
 
 			return true;
 		}
 
-		bool SocketTCP::SharedImpl::placeDataOnReceiveQueue(WriteBuffer& writeBuffer)
+		bool SocketTCP::SharedImpl::placeDataOnReceiveQueue(BinaryWriter& binaryWriter)
 		{
 			if (isConnected())
 			{
 				std::lock_guard<std::recursive_mutex> lock(mutex);
 				std::lock_guard<std::recursive_mutex> lock2(receivedPacketsMutex);
 				receivedPackets.push_back(std::make_unique<ReceivedPacket>());
-				writeBuffer.swap(receivedPackets.back()->data);
+				binaryWriter.swap(receivedPackets.back()->data);
 				return true;
 			}
 			else
@@ -1010,7 +953,7 @@ namespace se
 			return true;
 		}
 
-		void SocketTCP::SharedImpl::setOnReceiveCallback(const std::function<void(ReadBuffer&)> callbackFunction)
+		void SocketTCP::SharedImpl::setOnReceiveCallback(const std::function<void(BinaryReader&)> callbackFunction)
 		{
 			std::lock_guard<std::recursive_mutex> lock(mutex);
 			onReceiveCallback = callbackFunction;
@@ -1044,7 +987,7 @@ namespace se
 			while (true)
 			{
 				std::vector<uint8_t> data;
-				std::function<void(ReadBuffer&)> handler;
+				std::function<void(BinaryReader&)> handler;
 				{
 					std::lock_guard<std::recursive_mutex> lock(mutex);
 					std::lock_guard<std::recursive_mutex> lock2(receivedPacketsMutex);
@@ -1060,19 +1003,19 @@ namespace se
 						receivedPackets.erase(receivedPackets.begin());
 					}
 				}
-				ReadBuffer readBuffer(data.data(), data.size());
-				handler(readBuffer);
+				BinaryReader binaryReader(data.data(), data.size());
+				handler(binaryReader);
 			}
 		}
 
-		bool SocketTCP::SharedImpl::spehsReceiveHandler(ReadBuffer& buffer)
+		bool SocketTCP::SharedImpl::spehsReceiveHandler(BinaryReader& binaryReader)
 		{
 			std::lock_guard<std::recursive_mutex> lock(mutex);
 
 			// Read packet type
 			PacketType packetType;
-			buffer.read(packetType);
-			DEBUG_LOG(2, "received packet of type: " + std::to_string((int)packetType) + ", " + std::to_string(buffer.getBytesRemaining()) + " bytes.");
+			binaryReader.serial(packetType);
+			DEBUG_LOG(2, "received packet of type: " + std::to_string((int)packetType) + ", " + std::to_string(binaryReader.getBytesRemaining()) + " bytes.");
 
 			// Process packet
 			switch (packetType)
@@ -1081,20 +1024,20 @@ namespace se
 				break;
 			case PacketType::undefined:
 			{
-				const size_t userBytes = buffer.getBytesRemaining();
+				const size_t userBytes = binaryReader.getBytesRemaining();
 				DEBUG_LOG(2, "received user defined packet. Bytes: " + std::to_string(userBytes));
 				se_assert(userBytes > 0);
 
 				// Push to received packets queue
 				std::lock_guard<std::recursive_mutex> lock2(receivedPacketsMutex);
 				receivedPackets.push_back(std::unique_ptr<ReceivedPacket>(new ReceivedPacket(userBytes)));
-				memcpy(receivedPackets.back()->data.data(), buffer[buffer.getOffset()], userBytes);
+				memcpy(receivedPackets.back()->data.data(), binaryReader.getData() + binaryReader.getOffset(), userBytes);
 				return true;
 			}
 			case PacketType::disconnect:
 			{
 				DisconnectType disconnectType;
-				buffer.read(disconnectType);
+				binaryReader.serial(disconnectType);
 				disconnect(DisconnectType::doNotSendDisconnectPacket);
 				DEBUG_LOG(1, "remote socket gracefully disconnected. Disconnect type was: " + std::to_string((uint8_t)disconnectType));
 				return false;
@@ -1107,9 +1050,7 @@ namespace se
 					return false;
 				}
 				Handshake handshake;
-				buffer.read(handshake);
-
-				if (handshake.isValid())
+				if (binaryReader.serial(handshake) && handshake.isValid())
 				{
 					DEBUG_LOG(1, "valid spehs handshake received.");
 					handshakeReceived = true;

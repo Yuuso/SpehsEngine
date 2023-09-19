@@ -1,6 +1,5 @@
 #pragma once
 
-#include "SpehsEngine/Core/Archive.h"
 #include "SpehsEngine/Core/SE_Time.h"
 #include "SpehsEngine/Input/JoystickId.h"
 #include "SpehsEngine/Input/JoystickGuid.h"
@@ -38,8 +37,5 @@ namespace se
 		JoystickHatState getJoystickHatState(const JoystickId joystickId, const uint8_t hatIndex);
 
 		bool setJoystickRumble(const JoystickId joystickId, const uint16_t lowFrequency, const uint16_t highFrequency, const time::Time duration);
-
-		Archive writeToArchive(const JoystickGuid& joystickGuid);
-		bool readFromArchive(const Archive& archive, JoystickGuid& joystickGuid);
 	}
 }

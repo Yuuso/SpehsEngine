@@ -85,27 +85,27 @@ namespace ImGui
 			se::toImVec4(tintColor));
 	}
 
-	bool fileSelector(const char* const label, std::string& filepath, const char* const directoryPtr)
+	bool fileSelector(const String _label, std::string& _filepath, const String _directory)
 	{
-		const std::string directory(directoryPtr);
+		const std::string directory(_directory);
 		bool changed = false;
 		ImGui::Button("Browse");
-		const std::string browseContextMenuId = label + filepath + directory;
+		const std::string browseContextMenuId = std::string(_label) + _filepath + directory;
 		if (ImGui::BeginPopupContextItem(browseContextMenuId.c_str(), ImGuiPopupFlags_MouseButtonLeft))
 		{
 			se::DirectoryState directoryState;
-			se::getDirectoryState(directoryState, directory, se::DirectoryState::Flag::none, 0);
-			if (renderDirectoryStateRecursive(directoryState, filepath))
+			se::getDirectoryState(directoryState, directory, se::DirectoryState::Flag::None, 0);
+			if (renderDirectoryStateRecursive(directoryState, _filepath))
 			{
 				if (!directory.empty())
 				{
 					if (directory.back() == '/')
 					{
-						filepath.insert(filepath.begin(), directory.begin(), directory.end());
+						_filepath.insert(_filepath.begin(), directory.begin(), directory.end());
 					}
 					else
 					{
-						filepath = std::string(directory) + "/" + filepath;
+						_filepath = std::string(directory) + "/" + _filepath;
 					}
 				}
 				changed = true;
@@ -113,7 +113,7 @@ namespace ImGui
 			ImGui::EndPopup();
 		}
 		ImGui::SameLine();
-		if (InputT(label, filepath))
+		if (InputT(_label, _filepath))
 		{
 			changed = true;
 		}
@@ -121,7 +121,7 @@ namespace ImGui
 		return changed;
 	}
 
-	std::optional<bool> fileDialog(const char* const label, const char* const message, const char* const _directory, std::string& output)
+	std::optional<bool> fileDialog(const String label, const String message, const String _directory, std::string& output)
 	{
 		std::optional<bool> result;
 		const ImGuiWindowFlags windowFlags =
@@ -140,7 +140,7 @@ namespace ImGui
 				result = false;
 			}
 			se::DirectoryState directoryState;
-			se::getDirectoryState(directoryState, _directory, se::DirectoryState::Flag::none, 0);
+			se::getDirectoryState(directoryState, std::string(_directory.pointer), se::DirectoryState::Flag::None, 0);
 			if (renderDirectoryStateRecursive(directoryState, output))
 			{
 				std::string_view directory(_directory);
@@ -166,16 +166,16 @@ namespace ImGui
 		return result;
 	}
 
-	bool textureSelector(const char* const label, std::string& filepath, const char* const directory)
+	bool textureSelector(const String label, std::string& filepath, const String directory)
 	{
 		return fileSelector(label, filepath, directory);
 	}
 
-	std::optional<bool> confirmationDialog(const char* const header, const char* const message, const std::function<void()>& customRender)
+	std::optional<bool> confirmationDialog(const String header, const String message, const std::function<void()>& customRender)
 	{
 		std::optional<bool> result;
 
-		ImGui::OpenPopup(header);
+		ImGui::OpenPopup(header.pointer);
 
 		ImVec2 center(ImGui::GetIO().DisplaySize.x * 0.5f, ImGui::GetIO().DisplaySize.y * 0.5f);
 		ImGui::SetNextWindowPos(center, ImGuiCond_Appearing, ImVec2(0.5f, 0.5f));
@@ -203,11 +203,11 @@ namespace ImGui
 		return result;
 	}
 
-	std::optional<bool> stringDialog(const char* const header, const char* const message, std::string& output)
+	std::optional<bool> stringDialog(const String header, const String message, std::string& output)
 	{
 		std::optional<bool> result;
 
-		ImGui::OpenPopup(header);
+		ImGui::OpenPopup(header.pointer);
 
 		ImVec2 center(ImGui::GetIO().DisplaySize.x * 0.5f, ImGui::GetIO().DisplaySize.y * 0.5f);
 		ImGui::SetNextWindowPos(center, ImGuiCond_Appearing, ImVec2(0.5f, 0.5f));
@@ -257,7 +257,7 @@ namespace ImGui
 		return result;
 	}
 
-	void keyBindButton(const char* const label, se::input::Key& key, se::input::EventSignaler& eventSignaler, boost::signals2::scoped_connection& scopedConnection)
+	void keyBindButton(const String label, se::input::Key& key, se::input::EventSignaler& eventSignaler, boost::signals2::scoped_connection& scopedConnection)
 	{
 		ImGui::PushID(&scopedConnection);
 		ImGui::Text(label);
@@ -286,7 +286,7 @@ namespace ImGui
 		ImGui::PopID();
 	}
 
-	bool InputT(const char* const label, se::input::CustomEventParameters& customEventParameters, se::input::EventSignaler& eventSignaler, StateWrapper& stateWrapper)
+	bool InputT(const String label, se::input::CustomEventParameters& customEventParameters, se::input::EventSignaler& eventSignaler, StateWrapper& stateWrapper)
 	{
 		struct State : public IState
 		{

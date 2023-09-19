@@ -1,15 +1,10 @@
 #include "stdafx.h"
 #include "SpehsEngine/Net/SocketUDP.h"
 
-#include <assert.h>
-#include <iostream>
+#include "SpehsEngine/Core/RNG.h"
 #include "SpehsEngine/Net/Acceptor.h"
 #include "SpehsEngine/Net/IOService.h"
 #include "SpehsEngine/Net/IOServiceUtilityFunctions.h"
-#include "SpehsEngine/Core/RAIIVariableSetter.h"
-#include "SpehsEngine/Core/RNG.h"
-#include "SpehsEngine/Core/Log.h"
-#include "SpehsEngine/Core/SE_Time.h"
 
 #define DEBUG_LOG(level, message) if (getDebugLogLevel() >= level) \
 { \
@@ -30,98 +25,32 @@ namespace
 
 namespace se
 {
+	namespace net
+	{
+		struct HandshakeUDP
+		{
+			bool isValid() const
+			{
+				return handshakeVersion == currentVersion;
+			}
+
+			static const uint16_t currentVersion = 1;
+			uint16_t handshakeVersion = currentVersion;
+			uint64_t key = 0;
+		};
+	}
+
+	template<> template<typename S, typename T>
+	static bool se::Serial<net::HandshakeUDP>::serial(S& _serial, T _value)
+	{
+		se_serial(_serial, _value.handshakeVersion, "handshakeVersion");
+		se_serial(_serial, _value.key, "key");
+		return true;
+	}
+
 	extern std::string workingDirectory;
 	namespace net
 	{
-		class HandshakeUDP
-		{
-		private:
-			static const uint16_t endiannessCheckBytes = 0xACDC;
-		public:
-
-			bool isValid() const
-			{
-				return valid;
-			}
-
-			void write(WriteBuffer& buffer) const
-			{
-				buffer.write(currentMagic);
-				buffer.write(handshakeVersion);
-				buffer.write(endiannessCheckBytes);
-				buffer.write(key);
-			}
-
-			bool read(ReadBuffer& buffer)
-			{
-				//NOTE: buffer can contain invalid data! If so, set the valid boolean to false
-				valid = true;
-
-				//Magic
-				if (!buffer.read(magic))
-				{
-					log::info("HandshakeUDP::read() invalid handshake. No bytes left to read magic.");
-					valid = false;
-					return false;
-				}
-
-				if (magic != currentMagic)
-				{
-					log::info("HandshakeUDP::read() invalid handshake. Incompatible magic - my version: " + se::toHexString(currentMagic) + ", read magic: " + se::toHexString(magic));
-					valid = false;
-					return false;
-				}
-
-				if (!buffer.read(handshakeVersion))
-				{
-					log::info("HandshakeUDP::read() invalid handshake. No bytes left to read handshake version.");
-					valid = false;
-					return false;
-				}
-
-				if (handshakeVersion != currentVersion)
-				{
-					log::info("HandshakeUDP::read() invalid handshake. Incompatible versions - my version: " + std::to_string(currentVersion) + ", other version: " + std::to_string(handshakeVersion));
-					valid = false;
-					return false;
-				}
-
-				uint16_t readEndiannessCheckBytes;
-				if (!buffer.read(readEndiannessCheckBytes))
-				{
-					log::info("HandshakeUDP::read() invalid handshake. No bytes left to read endianness check bytes.");
-					valid = false;
-					return false;
-				}
-
-				if (readEndiannessCheckBytes != endiannessCheckBytes)
-				{
-					log::info("HandshakeUDP::read() invalid handshake. Invalid endianness check bytes.");
-					valid = false;
-					return false;
-				}
-
-				if (!buffer.read(key))
-				{
-					log::info("HandshakeUDP::read() invalid handshake. No bytes left to the read key value.");
-					valid = false;
-					return false;
-				}
-
-				return true;
-			}
-
-			size_t key = 0;
-
-		private:
-			typedef uint16_t VersionType;
-			static const VersionType currentVersion = 1;
-			static const uint64_t currentMagic = 0xC0DEC5F070C01001;//Mmmm...magic
-			uint64_t magic = currentMagic;
-			VersionType handshakeVersion = currentVersion;
-			bool valid = true;
-		};
-
 		SocketUDP::SocketUDP(IOService& _ioService)
 			: sharedImpl(new SharedImpl(_ioService))
 		{
@@ -159,7 +88,7 @@ namespace se
 				std::lock_guard<std::recursive_mutex> lock(sharedImpl->mutex);
 				if (sharedImpl->socket.is_open())
 				{
-					sharedImpl->onReceiveCallback = std::function<void(ReadBuffer&, const boost::asio::ip::udp::endpoint&)>();
+					sharedImpl->onReceiveCallback = std::function<void(BinaryReader&, const boost::asio::ip::udp::endpoint&)>();
 					boost::system::error_code error;
 					sharedImpl->socket.shutdown(boost::asio::socket_base::shutdown_both, error);
 					if (error)
@@ -277,14 +206,14 @@ namespace se
 			const time::Time beginTime = time::now();
 			HandshakeUDP handshake;
 			handshake.key = handshakeKey;
-			WriteBuffer writeBuffer;
-			writeBuffer.write(handshake);
+			BinaryWriter binaryWriter;
+			binaryWriter.serial(handshake);
 			startReceiving();
 			while (!handshakeSuccess)
 			{
 				update();
 				
-				if (!sendPacket(writeBuffer, PacketType::handshake))
+				if (!sendPacket(binaryWriter, PacketType::handshake))
 				{
 					break;
 				}
@@ -340,12 +269,12 @@ namespace se
 			sharedImpl->receivedPackets.clear();
 		}
 
-		bool SocketUDP::sendPacket(const WriteBuffer& buffer, const PacketType packetType)
+		bool SocketUDP::sendPacket(const BinaryWriter& binaryWriter, const PacketType packetType)
 		{
 			if (isConnected())
 			{
 				std::lock_guard<std::recursive_mutex> lock(sharedImpl->mutex);
-				return sendPacket(buffer, sharedImpl->connectedEndpoint, packetType);
+				return sendPacket(binaryWriter, sharedImpl->connectedEndpoint, packetType);
 			}
 			else
 			{
@@ -354,9 +283,9 @@ namespace se
 			}
 		}
 
-		bool SocketUDP::sendPacket(const WriteBuffer& writeBuffer, const boost::asio::ip::udp::endpoint& endpoint, const PacketType packetType)
+		bool SocketUDP::sendPacket(const BinaryWriter& binaryWriter, const boost::asio::ip::udp::endpoint& endpoint, const PacketType packetType)
 		{
-			return sharedImpl->sendPacket(writeBuffer, endpoint, packetType);
+			return sharedImpl->sendPacket(binaryWriter, endpoint, packetType);
 		}
 
 		bool SocketUDP::resizeReceiveBuffer(const size_t newSize)
@@ -391,7 +320,7 @@ namespace se
 			return true;
 		}
 
-		void SocketUDP::setOnReceiveCallback(const std::function<void(ReadBuffer&, const boost::asio::ip::udp::endpoint&)> onReceiveCallback)
+		void SocketUDP::setOnReceiveCallback(const std::function<void(BinaryReader&, const boost::asio::ip::udp::endpoint&)> onReceiveCallback)
 		{
 			std::lock_guard<std::recursive_mutex> lock(sharedImpl->mutex);
 			sharedImpl->onReceiveCallback = onReceiveCallback;
@@ -422,7 +351,7 @@ namespace se
 			//Heartbeat
 			if (isConnected() && time::now() - sharedImpl->lastSendTime > sharedImpl->heartbeatInterval)
 			{
-				sendPacket(WriteBuffer(), PacketType::heartbeat);
+				sendPacket(BinaryWriter(), PacketType::heartbeat);
 			}
 
 			std::lock_guard<std::recursive_mutex> lock2(sharedImpl->receivedPacketsMutex);
@@ -430,8 +359,8 @@ namespace se
 			{
 				for (size_t i = 0; i < sharedImpl->receivedPackets.size(); i++)
 				{
-					ReadBuffer readBuffer(sharedImpl->receivedPackets[i]->buffer.data(), sharedImpl->receivedPackets[i]->buffer.size());
-					sharedImpl->onReceiveCallback(readBuffer, sharedImpl->receivedPackets[i]->senderEndpoint);
+					BinaryReader binaryReader(sharedImpl->receivedPackets[i]->buffer.data(), sharedImpl->receivedPackets[i]->buffer.size());
+					sharedImpl->onReceiveCallback(binaryReader, sharedImpl->receivedPackets[i]->senderEndpoint);
 				}
 			}
 			clearReceivedPackets();
@@ -538,18 +467,18 @@ namespace se
 
 		}
 
-		bool SocketUDP::SharedImpl::sendPacket(const WriteBuffer& buffer, const boost::asio::ip::udp::endpoint& endpoint, const PacketType packetType)
+		bool SocketUDP::SharedImpl::sendPacket(const BinaryWriter& binaryWriter, const boost::asio::ip::udp::endpoint& endpoint, const PacketType packetType)
 		{
 			std::lock_guard<std::recursive_mutex> lock(mutex);
 			boost::system::error_code error;
 
-			const SizeType packetSize = SizeType(buffer.getSize());
+			const SizeType packetSize = SizeType(binaryWriter.getSize());
 			std::vector<boost::asio::const_buffer> buffers;
 			buffers.push_back(boost::asio::buffer(&packetType, sizeof(packetType)));
 			buffers.push_back(boost::asio::buffer(&packetSize, sizeof(packetSize)));
-			if (buffer.getSize() > 0)
+			if (binaryWriter.getSize() > 0)
 			{
-				buffers.push_back(boost::asio::buffer(buffer[0], buffer.getSize()));
+				buffers.push_back(boost::asio::buffer(binaryWriter.getData(), binaryWriter.getSize()));
 			}
 
 			const size_t writtenBytes = socket.send_to(buffers, endpoint, 0, error);
@@ -565,7 +494,7 @@ namespace se
 				return false;
 			}
 
-			DEBUG_LOG(2, "packet sent to: " + endpoint.address().to_string() + ":" + std::to_string(endpoint.port()) + ". Size: " + std::to_string(buffer.getSize()));
+			DEBUG_LOG(2, "packet sent to: " + endpoint.address().to_string() + ":" + std::to_string(endpoint.port()) + ". Size: " + std::to_string(binaryWriter.getSize()));
 
 			lastSendTime = time::now();
 			return true;
@@ -618,43 +547,43 @@ namespace se
 			
 			if (bytes > 0)
 			{
-				ReadBuffer readBuffer(&receiveBuffer[0], bytes);
+				BinaryReader binaryReader(&receiveBuffer[0], bytes);
 
 				//Read header
 				PacketType packetType;
-				if (readBuffer.read(packetType))
+				if (binaryReader.serial(packetType))
 				{
 					SizeType packetSize;
-					if (readBuffer.read(packetSize))
+					if (binaryReader.serial(packetSize))
 					{
-						if (packetSize == readBuffer.getBytesRemaining())
+						if (packetSize == binaryReader.getBytesRemaining())
 						{
 							if (packetType == PacketType::undefined)
 							{
-								if (onReceiveCallback && readBuffer.getBytesRemaining())
+								if (onReceiveCallback && binaryReader.getBytesRemaining())
 								{
 									std::lock_guard<std::recursive_mutex> lock2(receivedPacketsMutex);
 									receivedPackets.push_back(std::unique_ptr<ReceivedPacket>());
 									receivedPackets.back().reset(new ReceivedPacket());
-									receivedPackets.back()->buffer.resize(readBuffer.getBytesRemaining());
-									memcpy(receivedPackets.back()->buffer.data(), readBuffer[readBuffer.getOffset()], readBuffer.getBytesRemaining());
+									receivedPackets.back()->buffer.resize(binaryReader.getBytesRemaining());
+									memcpy(receivedPackets.back()->buffer.data(), binaryReader.getData() + binaryReader.getOffset(), binaryReader.getBytesRemaining());
 									receivedPackets.back()->senderEndpoint = senderEndpoint;
 								}
 							}
 							else if (packetType == PacketType::heartbeat)
 							{
-								se_assert(readBuffer.getBytesRemaining() == 0);
+								se_assert(binaryReader.getBytesRemaining() == 0);
 							}
 							else if (packetType == PacketType::handshake)
 							{
 								HandshakeUDP handshake;
-								if (readBuffer.read(handshake))
+								if (binaryReader.serial(handshake))
 								{
 									HandshakeUDP responseHandshake;
 									responseHandshake.key = handshake.key;
-									WriteBuffer writeBuffer;
-									writeBuffer.write(responseHandshake);
-									sendPacket(writeBuffer, senderEndpoint, PacketType::handshakeResponse);
+									BinaryWriter binaryWriter;
+									binaryWriter.serial(responseHandshake);
+									sendPacket(binaryWriter, senderEndpoint, PacketType::handshakeResponse);
 								}
 								else
 								{
@@ -664,7 +593,7 @@ namespace se
 							else if (packetType == PacketType::handshakeResponse)
 							{
 								HandshakeUDP handshake;
-								if (readBuffer.read(handshake))
+								if (binaryReader.serial(handshake))
 								{
 									if (handshakeResponseCallback)
 									{

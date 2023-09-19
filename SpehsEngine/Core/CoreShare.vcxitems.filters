@@ -1,10 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <ClCompile Include="$(MSBuildThisFileDirectory)Archive.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)ArchiveUtilityFunctions.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)SE_Assert.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)BufferBase.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Color.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)ColorUtilityFunctions.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Compression.cpp" />
@@ -13,18 +10,15 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)Endianness.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Inifile.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Inivar.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)LapTimer.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Log.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Murmur3.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)OS.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)ReadBuffer.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)RNG.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)ScopeTimer.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)stdafx.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)StringUtilityFunctions.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Thread.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)SE_Time.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)WriteBuffer.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)File\File.cpp">
       <Filter>File</Filter>
     </ClCompile>
@@ -36,21 +30,20 @@
     </ClCompile>
     <ClCompile Include="$(MSBuildThisFileDirectory)SystemMessageBox.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)ScopeProfiler.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)File\Timestamp.cpp">
-      <Filter>File</Filter>
-    </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)BufferUtilityFunctions.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)TimeUtilityFunctions.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)UtcTime.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)ScopedFrameLimiter.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Noise.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Serial\ArchiveWriter.cpp">
+      <Filter>Serial</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)Serial\ArchiveReader.cpp">
+      <Filter>Serial</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="$(MSBuildThisFileDirectory)Archive.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)ArchiveUtilityFunctions.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)SE_Assert.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)BitwiseOperations.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)BufferBase.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Color.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)ColorUtilityFunctions.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Compression.h" />
@@ -58,28 +51,23 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)CoreLib.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)DeltaTimeSystem.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Endianness.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)FloatCompression.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)HasMemberFunction.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Inifile.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Inivar.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)LapTimer.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Log.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Murmur3.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)OS.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)PrecompiledInclude.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)RAIIVariableSetter.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)ReadBuffer.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)RNG.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)ScopeTimer.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)stdafx.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)STLUnorderedMapUtilityFunctions.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)STLVectorUtilityFunctions.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)UnorderedMapUtilityFunctions.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)VectorUtilityFunctions.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)StringUtilityFunctions.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)StrongInt.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Thread.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)SE_Time.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)WatchedValue.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)WriteBuffer.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)File\File.h">
       <Filter>File</Filter>
     </ClInclude>
@@ -94,31 +82,54 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)TypeTraits.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)LockGuard.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)ScopeProfiler.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)STLOptionalUtilityFunctions.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)DeepCopyUniquePtr.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)OptionalUtilityFunctions.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)DeepPtr.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)File\Timestamp.h">
       <Filter>File</Filter>
     </ClInclude>
-    <ClInclude Include="$(MSBuildThisFileDirectory)STLPairUtilityFunctions.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)PairUtilityFunctions.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)StaticRingBuffer.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)BufferUtilityFunctions.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)STLUnorderedSetUtilityFunctions.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)MultiMapUtilityFunctions.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)UnorderedSetUtilityFunctions.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)UniquePtrUtilityFunctions.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)DeepCopyUniquePtrUtilityFunctions.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)DeepPtrUtilityFunctions.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)WeightedRandomizer.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)AsyncTaskManager.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)HexColor.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)ResourcePathFinder.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)StringViewUtilityFunctions.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)ReadAbstract.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)WriteAbstract.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)ScopedConnections.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)LogSignal.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)TimeUtilityFunctions.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)UtcTime.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)ScopeProfilerTypes.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Noise.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)ByteVector.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)ByteView.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)MapUtilityFunctions.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)RemoveCvref.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)HeapOptional.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)HeapOptionalUtilityFunctions.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Serial\Serial.h">
+      <Filter>Serial</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)Serial\SerialKey.h">
+      <Filter>Serial</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)Serial\SerialUtility.h">
+      <Filter>Serial</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)Serial\BinaryReader.h">
+      <Filter>Serial</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)Serial\ArchiveWriter.h">
+      <Filter>Serial</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)Serial\ArchiveReader.h">
+      <Filter>Serial</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)Serial\BinaryWriter.h">
+      <Filter>Serial</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="File">
@@ -127,9 +138,12 @@
     <Filter Include="Natvis">
       <UniqueIdentifier>{24c20202-24e4-403c-bbf4-a15171f28125}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Serial">
+      <UniqueIdentifier>{4268019e-0099-44e6-9172-f905dab5b1f4}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <Natvis Include="$(MSBuildThisFileDirectory)ReadBuffer.natvis">
+    <Natvis Include="$(MSBuildThisFileDirectory)BinaryReader.natvis">
       <Filter>Natvis</Filter>
     </Natvis>
     <Natvis Include="$(MSBuildThisFileDirectory)Time.natvis">

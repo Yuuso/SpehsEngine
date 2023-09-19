@@ -16,14 +16,14 @@ namespace se
 			template<typename Packet>
 			void registerReceiveHandler(const PacketType packetType, boost::signals2::scoped_connection& scopedConnection, const std::function<void(Packet&)>& receiveHandler)
 			{
-				boost::signals2::signal<void(se::ReadBuffer&)>& signal = receiveHandlerSignals[packetType];
+				boost::signals2::signal<void(se::BinaryReader&)>& signal = receiveHandlerSignals[packetType];
 				se_assert(signal.empty() && "Multiple sources shouldn't connect as a receive handler to a single packet type at the same time.");
 				if (signal.empty())
 				{
-					scopedConnection = signal.connect([this, receiveHandler](se::ReadBuffer& readBuffer)
+					scopedConnection = signal.connect([this, receiveHandler](se::BinaryReader& binaryReader)
 						{
 							Packet packet;
-							if (readBuffer.read(packet))
+							if (binaryReader.serial(packet))
 							{
 								receiveHandler(packet);
 							}
@@ -35,12 +35,12 @@ namespace se
 				}
 			}
 
-			bool processPacket(const PacketType packetType, se::ReadBuffer& readBuffer)
+			bool processPacket(const PacketType packetType, se::BinaryReader& binaryReader)
 			{
-				std::unordered_map<PacketType, boost::signals2::signal<void(se::ReadBuffer&)>>::iterator it = receiveHandlerSignals.find(packetType);
+				typename std::unordered_map<PacketType, boost::signals2::signal<void(se::BinaryReader&)>>::iterator it = receiveHandlerSignals.find(packetType);
 				if (it != receiveHandlerSignals.end() && !it->second.empty())
 				{
-					it->second(readBuffer);
+					it->second(binaryReader);
 					return true;
 				}
 				else
@@ -50,7 +50,7 @@ namespace se
 			}
 
 		private:
-			std::unordered_map<PacketType, boost::signals2::signal<void(se::ReadBuffer&)>> receiveHandlerSignals;
+			std::unordered_map<PacketType, boost::signals2::signal<void(se::BinaryReader&)>> receiveHandlerSignals;
 		};
 	}
 }

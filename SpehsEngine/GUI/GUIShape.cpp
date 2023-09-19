@@ -19,7 +19,7 @@ namespace se
 		}
 		GUIShape::GUIShape(ShapeType _shapeType)
 		{
-			initShape(_shapeType);
+			initShapeType = _shapeType;
 
 			// Default non-zero size
 			setSize(GUIVec2({ 10.0f, 10.0f }, GUIUnitType::Pixels));
@@ -27,7 +27,7 @@ namespace se
 		GUIShape::GUIShape(const GUIShape& _other)
 			: GUIElement(_other)
 		{
-			initShape(_other.shape.getShapeType());
+			initShapeType = _other.shape.getShapeType();
 			setColor(_other.getColor());
 		}
 
@@ -37,17 +37,22 @@ namespace se
 		}
 
 
-		void GUIShape::initShape(ShapeType _shapeType)
+		void GUIShape::initShape(UpdateContext& _context, ShapeType _shapeType)
 		{
 			ShapeParameters params;
 			params.orientation = ShapeOrientation::XY_Plane;
-			shape.generate(_shapeType, params);
+			shape.generate(_shapeType, params, &_context.materialManager.shapeGenerator);
 			shape.setRenderSortDepth(RenderSortDepth::ZPosition);
 			enableBit(updateFlags, GUIElementUpdateFlag::MaterialUpdateNeeded);
 		}
 
 		void GUIShape::elementUpdate(UpdateContext& _context)
 		{
+			if (initShapeType.has_value())
+			{
+				initShape(_context, *initShapeType);
+				initShapeType.reset();
+			}
 			if (checkBit(updateFlags, GUIElementUpdateFlag::MaterialUpdateNeeded))
 			{
 				shape.setMaterial(_context.materialManager.createShapeMaterial(getTexture()));

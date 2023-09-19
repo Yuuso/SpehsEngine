@@ -1,45 +1,51 @@
 #pragma once
 
-#include "boost/signals2/signal.hpp"
+// Standard library includes
+#include <functional>
+#include <map>
+#include <memory>
+#include <mutex>
+#include <numeric>
+#include <optional>
+#include <set>
+#include <stdint.h>
+#include <string>
+#include <type_traits>
+#include <unordered_map>
+#include <unordered_set>
+#include <vector>
+
+// Third party includes
 #include "boost/signals2/connection.hpp"
+#include "boost/signals2/signal.hpp"
 #include "glm/glm.hpp"
 #include "glm/gtc/quaternion.hpp"
-#include "SpehsEngine/Core/ArchiveUtilityFunctions.h"
+
+// Spehs Engine includes
 #include "SpehsEngine/Core/BitwiseOperations.h"
-#include "SpehsEngine/Core/BufferUtilityFunctions.h"
+#include "SpehsEngine/Core/ByteVector.h"
+#include "SpehsEngine/Core/ByteView.h"
 #include "SpehsEngine/Core/Color.h"
 #include "SpehsEngine/Core/ColorUtilityFunctions.h"
 #include "SpehsEngine/Core/Constants.h"
-#include "SpehsEngine/Core/DeepCopyUniquePtr.h"
-#include "SpehsEngine/Core/DeepCopyUniquePtrUtilityFunctions.h"
+#include "SpehsEngine/Core/DeepPtrUtilityFunctions.h"
 #include "SpehsEngine/Core/Log.h"
-#include "SpehsEngine/Core/MultiMapUtilityFunctions.h"
-#include "SpehsEngine/Core/ScopedFrameLimiter.h"
+#include "SpehsEngine/Core/OptionalUtilityFunctions.h"
+#include "SpehsEngine/Core/PairUtilityFunctions.h"
+#include "SpehsEngine/Core/RemoveCvref.h"
 #include "SpehsEngine/Core/ScopeProfiler.h"
+#include "SpehsEngine/Core/ScopedConnections.h"
+#include "SpehsEngine/Core/ScopedFrameLimiter.h"
 #include "SpehsEngine/Core/SE_Assert.h"
 #include "SpehsEngine/Core/SE_Time.h"
-#include "SpehsEngine/Core/STLOptionalUtilityFunctions.h"
-#include "SpehsEngine/Core/STLPairUtilityFunctions.h"
-#include "SpehsEngine/Core/STLUnorderedMapUtilityFunctions.h"
-#include "SpehsEngine/Core/STLUnorderedSetUtilityFunctions.h"
-#include "SpehsEngine/Core/STLVectorUtilityFunctions.h"
+#include "SpehsEngine/Core/Serial/SerialUtility.h"
 #include "SpehsEngine/Core/StringUtilityFunctions.h"
 #include "SpehsEngine/Core/StringViewUtilityFunctions.h"
+#include "SpehsEngine/Core/TimeUtilityFunctions.h"
 #include "SpehsEngine/Core/UniquePtrUtilityFunctions.h"
-#include <algorithm>
-#include <chrono>
-#include <functional>
-#include <future>
-#include <memory>
-#include <numeric>
-#include <set>
-#include <map>
-#include <unordered_set>
-#include <unordered_map>
-#include <optional>
-#include <stdint.h>
-#include <string>
-#include <vector>
+#include "SpehsEngine/Core/UnorderedMapUtilityFunctions.h"
+#include "SpehsEngine/Core/UnorderedSetUtilityFunctions.h"
+#include "SpehsEngine/Core/VectorUtilityFunctions.h"
 
 
 #define SE_FALSE 1000

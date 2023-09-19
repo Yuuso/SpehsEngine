@@ -1,8 +1,5 @@
 #pragma once
-#include <mutex>
-#include <string>
-#include <stdint.h>
-#include <boost/signals2.hpp>
+
 
 namespace se
 {

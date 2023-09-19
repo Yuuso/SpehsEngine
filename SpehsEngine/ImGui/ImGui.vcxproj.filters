@@ -39,6 +39,9 @@
     <ClInclude Include="Utility\IState.h">
       <Filter>Utility</Filter>
     </ClInclude>
+    <ClInclude Include="Utility\String.h">
+      <Filter>Utility</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Utility">

@@ -10,8 +10,8 @@ namespace se
 		class ScopedCustomEvent
 		{
 		public:
-			ScopedCustomEvent() = default;
-			ScopedCustomEvent(ScopedCustomEvent&& move)
+			ScopedCustomEvent() noexcept = default;
+			ScopedCustomEvent(ScopedCustomEvent&& move) noexcept
 			{
 				swap(move);
 			}
@@ -23,7 +23,7 @@ namespace se
 					(*unregisterCustomEventFunction)(*registeredCustomEventId);
 				}
 			}
-			ScopedCustomEvent& operator=(ScopedCustomEvent&& move)
+			ScopedCustomEvent& operator=(ScopedCustomEvent&& move) noexcept
 			{
 				swap(move);
 			}

@@ -14,17 +14,6 @@ namespace se
 			return myNetIdentity;
 		}
 
-		void writeToBuffer(se::WriteBuffer& writeBuffer, const NetIdentity& netIdentity)
-		{
-			se_write(writeBuffer, netIdentity.value);
-		}
-
-		bool readFromBuffer(se::ReadBuffer& readBuffer, NetIdentity& netIdentity)
-		{
-			se_read(readBuffer, netIdentity.value);
-			return true;
-		}
-
 		bool NetIdentity::fromString(const std::string_view string)
 		{
 			uint64_t v = 0;

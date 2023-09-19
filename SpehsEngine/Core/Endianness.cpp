@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "Endianness.h"
 
+
 namespace se
 {
 	std::string getEndiannessAsString(const Endianness endianness)

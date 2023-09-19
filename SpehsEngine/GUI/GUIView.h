@@ -39,6 +39,8 @@ namespace se
 			void clear();
 			const std::vector<GUIElement*>& getRootElements() const;
 
+			[[nodiscard]] boost::signals2::scoped_connection connectToRootElementAddedSignal(const std::function<void(GUIElement&)>& callback);
+
 		private:
 
 			void update(glm::vec2 _renderSize);
@@ -49,6 +51,7 @@ namespace se
 
 			boost::signals2::scoped_connection updateConnection;
 			boost::signals2::scoped_connection mouseButtonConnection;
+			boost::signals2::signal<void(GUIElement&)> rootElementAddedSignal;
 			graphics::View view;
 
 			GUIMaterialManager materialManager;

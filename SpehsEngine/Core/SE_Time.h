@@ -1,10 +1,12 @@
 #pragma once
+
 #include <stdint.h>
 #include <string>
 
 #ifdef delay
 #undef delay
 #endif
+
 
 namespace se
 {
@@ -117,9 +119,4 @@ namespace se
 		*/
 		Time getProfilerTimestamp();
 	}
-
-	class WriteBuffer;
-	class ReadBuffer;
-	void writeToBuffer(WriteBuffer& writeBuffer, const time::Time& time);
-	bool readFromBuffer(ReadBuffer& readBuffer, time::Time& time);
 }

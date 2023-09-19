@@ -90,6 +90,7 @@ namespace se
 			se_assert(!_element.parent);
 			rootElements.push_back(&_element);
 			_element.addToView();
+			rootElementAddedSignal(_element);
 		}
 		void GUIView::remove(GUIElement& _element)
 		{
@@ -113,6 +114,11 @@ namespace se
 		const std::vector<GUIElement*>& GUIView::getRootElements() const
 		{
 			return rootElements;
+		}
+		
+		boost::signals2::scoped_connection GUIView::connectToRootElementAddedSignal(const std::function<void(GUIElement&)>& callback)
+		{
+			return rootElementAddedSignal.connect(callback);
 		}
 	}
 }

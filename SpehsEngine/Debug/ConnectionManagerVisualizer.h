@@ -2,7 +2,7 @@
 
 #include "boost/signals2/connection.hpp"
 #include "SpehsEngine/Core/StaticRingBuffer.h"
-#include "SpehsEngine/Net/ConnectionPackets.h"
+#include "SpehsEngine/Net/ConnectionId.h"
 
 namespace se
 {
@@ -25,7 +25,7 @@ namespace se
 		{
 		public:
 
-			ConnectionManagerVisualizer(net::ConnectionManager& connectionManager, imgui::BackendWrapper& imGuiBackendWrapper, const bool enabled);
+			ConnectionManagerVisualizer(net::ConnectionManager& ConnectionManager, imgui::BackendWrapper& imGuiBackendWrapper, const bool enabled);
 
 			void setEnabled(const bool enabled);
 			bool getEnabled() const { return preRenderConnection.connected(); }

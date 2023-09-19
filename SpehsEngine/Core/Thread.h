@@ -1,8 +1,13 @@
 #pragma once
-#include <string>
-#include <thread>
+
+namespace std
+{
+	class thread;
+}
+
+
 namespace se
 {
-	void setThreadName(const std::string& name);
-	void setThreadName(std::thread& thread, const std::string& name);
+	void setThreadName(const std::string_view _name);
+	void setThreadName(std::thread& _thread, const std::string_view _name);
 }

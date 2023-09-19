@@ -1,7 +1,7 @@
 #pragma once
+
 #include "SpehsEngine/Core/SE_Time.h"
 #include "SpehsEngine/Core/ScopeProfiler.h"
-#include <mutex>
 
 #if SE_CONFIGURATION == SE_CONFIGURATION_FINAL_RELEASE
 #define SE_LOCK_GUARD_PROFILING_ENABLED SE_FALSE

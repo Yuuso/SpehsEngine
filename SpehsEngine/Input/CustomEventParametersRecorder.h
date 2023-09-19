@@ -1,5 +1,6 @@
 #pragma once
 
+#include "SpehsEngine/Core/ScopedConnections.h"
 #include "SpehsEngine/Input/CustomEventParameters.h"
 #include <optional>
 
@@ -22,7 +23,7 @@ namespace se
 		private:
 			EventSignaler& eventSignaler;
 			std::optional<CustomEventParameters> customEventParameters;
-			std::vector<boost::signals2::scoped_connection> scopedConnections;
+			ScopedConnections scopedConnections;
 		};
 	}
 }

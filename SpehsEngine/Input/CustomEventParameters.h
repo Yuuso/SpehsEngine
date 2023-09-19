@@ -2,6 +2,7 @@
 
 #include "SpehsEngine/Input/Event.h"
 #include "SpehsEngine/Input/JoystickUtilityFunctions.h"
+#include "SpehsEngine/Core/BitwiseOperations.h"
 
 
 namespace se
@@ -33,9 +34,9 @@ namespace se
 
 			virtual ~ICustomEvent() {}
 
-			bool isPress() const { return type == Type::Press; }
-			bool isHold() const { return type == Type::Hold; }
-			bool isRelease() const { return type == Type::Release; }
+			bool isHold() const		{ return checkBit(type, Type::Hold); }
+			bool isPress() const	{ return checkBit(type, Type::Press); }
+			bool isRelease() const	{ return checkBit(type, Type::Release); }
 
 			Value value;
 			Type type = Type::None;

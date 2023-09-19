@@ -4,9 +4,10 @@
 #include "SpehsEngine/Input/InputLib.h"
 #include "SpehsEngine/Input/EventCatcher.h"
 #include "SpehsEngine/Input/MouseUtilityFunctions.h"
-#include <SDL/SDL.h>
-#include <SDL/SDL_joystick.h>
-#include <SDL/SDL_events.h>
+#include "SpehsEngine/Input/Internal/SDLUtility.h"
+#include "SDL/SDL.h"
+#include "SDL/SDL_joystick.h"
+#include "SDL/SDL_events.h"
 #include <iostream>
 
 #define SINT16_MIN -32768
@@ -256,7 +257,7 @@ namespace se
 					bool foundOffline = false;
 					for (size_t i = 0; i < joysticks.size(); i++)
 					{
-						if (joysticks[i]->offline && joysticks[i]->guid == SDL_JoystickGetDeviceGUID(c))
+						if (joysticks[i]->offline && joysticks[i]->guid == fromSdlGuid(SDL_JoystickGetDeviceGUID(c)))
 						{//Found matching offline joystick, bring it online
 							SDL_Joystick* js = SDL_JoystickOpen(c);
 							if (js == NULL)
@@ -326,7 +327,7 @@ namespace se
 		{
 			if (joystickIndex >= (int)joysticks.size() || joystickIndex < 0)
 				return -1;
-			GUID guid = SDL_JoystickGetDeviceGUID(joystickIndex);
+			GUID guid = fromSdlGuid(SDL_JoystickGetDeviceGUID(joystickIndex));
 			int index = 0;
 			for (int i = 0; i < joystickIndex - 1; i++)
 			{

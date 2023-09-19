@@ -1,4 +1,10 @@
 #pragma once
+
+#include "SpehsEngine/Net/ISocket.h"
+#include "SpehsEngine/Net/Endpoint.h"
+#include "SpehsEngine/Net/IOService.h"
+#include "SpehsEngine/Net/PacketMessage.h"
+#include "SpehsEngine/Core/SE_Time.h"
 #include <boost/asio.hpp>
 #include <boost/bind.hpp>
 #include <boost/system/error_code.hpp>
@@ -9,16 +15,12 @@
 #include <atomic>
 #include <mutex>
 
-#include "SpehsEngine/Net/ISocket.h"
-#include "SpehsEngine/Net/Endpoint.h"
-#include "SpehsEngine/Net/IOService.h"
-#include "SpehsEngine/Net/PacketMessage.h"
-#include "SpehsEngine/Core/SE_Time.h"
 
 namespace se
 {
-	class WriteBuffer;
-	class ReadBuffer;
+	class BinaryWriter;
+	class BinaryReader;
+
 	namespace net
 	{
 		namespace aria
@@ -60,16 +62,16 @@ namespace se
 			void disconnect();
 
 			/* Sends buffer to the connected endpoint. Spehs-level packet type specification is also possible (only for advanced use). */
-			bool sendPacket(const WriteBuffer& writeBuffer, const PacketType packetType = PacketType::undefined);
+			bool sendPacket(const BinaryWriter& BinaryWriter, const PacketType packetType = PacketType::undefined);
 
 			/* Try placing a packet into the receive queue to be processed as if it was received through the connection. Returns false if not connected. */
-			bool placeDataOnReceiveQueue(WriteBuffer& writeBuffer);
+			bool placeDataOnReceiveQueue(BinaryWriter& binaryWriter);
 
 			/* Returns false if the memory allocation fails, or the socket is currently receiving data. */
 			bool resizeReceiveBuffer(const size_t newSize);
 
 			/* Socket keeps receiving packets as long as connection is alive. Received packets must be processed with a specified receive handler. */
-			void setOnReceiveCallback(const std::function<void(ReadBuffer&)> onReceiveCallback = std::function<void(ReadBuffer&)>());
+			void setOnReceiveCallback(const std::function<void(BinaryReader&)> onReceiveCallback = std::function<void(BinaryReader&)>());
 			bool hasOnReceiveCallback() const;
 
 			/* Starts listening for a new incoming connection. Upon success, a connection is made. Non-blocking call. Callback is called even if no connection is made! */
@@ -135,7 +137,7 @@ namespace se
 			void clearReceivedPackets();
 			
 			//Receive handlers
-			bool spehsReceiveHandler(ReadBuffer& buffer);//Internal receive handler, unpacks spehs header. Calls the user defined receive handler.
+			bool spehsReceiveHandler(BinaryReader& buffer);//Internal receive handler, unpacks spehs header. Calls the user defined receive handler.
 
 			struct SharedImpl : public boost::enable_shared_from_this<SharedImpl>
 			{
@@ -158,13 +160,13 @@ namespace se
 				bool connect(const Endpoint& endpoint);
 				void disconnect();
 				void disconnect(const DisconnectType disconnectType);
-				bool sendPacket(const WriteBuffer& buffer, const PacketType packetType);
-				bool placeDataOnReceiveQueue(WriteBuffer& writeBuffer);
+				bool sendPacket(const BinaryWriter& binaryWriter, const PacketType packetType);
+				bool placeDataOnReceiveQueue(BinaryWriter& binaryWriter);
 				bool resizeReceiveBuffer(const size_t newSize);
-				void setOnReceiveCallback(const std::function<void(ReadBuffer&)> callbackFunction);
+				void setOnReceiveCallback(const std::function<void(BinaryReader&)> callbackFunction);
 				bool hasOnReceiveCallback() const;
 				void update();
-				bool spehsReceiveHandler(ReadBuffer& buffer);
+				bool spehsReceiveHandler(BinaryReader& binaryReader);
 				void setNoDelay(const bool enabled);
 				bool getNoDelay() const;
 				void setReuseAddress(const bool enabled);
@@ -191,7 +193,7 @@ namespace se
 				boost::asio::ip::tcp::socket socket;
 				std::unique_ptr<boost::asio::ip::tcp::acceptor> acceptor;
 				std::unique_ptr<std::thread> spehsAcceptThread;
-				std::function<void(ReadBuffer&)> onReceiveCallback;//User defined receive handler
+				std::function<void(BinaryReader&)> onReceiveCallback; // User defined receive handler
 				std::function<void(SocketTCP&)> onAcceptCallback;
 				ExpectedBytesType expectedBytes = 0;
 				std::vector<unsigned char> receiveBuffer;
