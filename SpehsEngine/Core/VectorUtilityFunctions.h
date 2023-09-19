@@ -38,6 +38,13 @@ namespace se
 			return true;
 		}
 	}
+
+
+	template<typename T, typename Predicate>
+	void eraseIf(std::vector<T>& _vec, const Predicate& pred)
+	{
+		_vec.erase(std::remove_if(_vec.begin(), _vec.end(), pred), _vec.end());
+	}
 }
 
 template<typename T>

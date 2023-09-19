@@ -20,6 +20,7 @@ namespace se
 		GUIShape::GUIShape(ShapeType _shapeType)
 		{
 			initShapeType = _shapeType;
+			se_assert(initShapeType != ShapeType::Unknown);
 
 			// Default non-zero size
 			setSize(GUIVec2({ 10.0f, 10.0f }, GUIUnitType::Pixels));
@@ -27,7 +28,9 @@ namespace se
 		GUIShape::GUIShape(const GUIShape& _other)
 			: GUIElement(_other)
 		{
-			initShapeType = _other.shape.getShapeType();
+			initShapeType = _other.initShapeType.has_value()
+				? _other.initShapeType : _other.shape.getShapeType();
+			se_assert(initShapeType != ShapeType::Unknown);
 			setColor(_other.getColor());
 		}
 
