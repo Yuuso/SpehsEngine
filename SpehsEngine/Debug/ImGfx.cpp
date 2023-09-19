@@ -17,18 +17,18 @@ namespace ImGfx
 		instance = nullptr;
 	}
 
-	PrimitiveModifier shape(se::graphics::ShapeType _type, se::graphics::ShapeParameters _params)
+	PrimitiveModifier shape(se::gfx::ShapeType _type, se::gfx::ShapeParameters _params)
 	{
 		if (!instance) se::log::fatal("ImGfx not initialized!");
 		return instance->shape(_type, _params);
 	}
 	PrimitiveModifier sphere()
 	{
-		return shape(se::graphics::ShapeType::Sphere);
+		return shape(se::gfx::ShapeType::Sphere);
 	}
 	PrimitiveModifier box()
 	{
-		return shape(se::graphics::ShapeType::Box);
+		return shape(se::gfx::ShapeType::Box);
 	}
 	PrimitiveModifier icon(std::string_view _texture)
 	{

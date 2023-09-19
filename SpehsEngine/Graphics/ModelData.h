@@ -4,38 +4,35 @@
 #include "SpehsEngine/Graphics/ResourceData.h"
 
 
-namespace se
+namespace se::gfx
 {
-	namespace graphics
+	class ModelData : public Resource<MeshData>
 	{
-		class ModelData : public Resource<MeshData>
-		{
-		public:
+	public:
 
-			ModelData() = delete;
-			ModelData(const std::string_view _name);
-			~ModelData();
+		ModelData() = delete;
+		ModelData(const std::string_view _name);
+		~ModelData();
 
-			ModelData(const ModelData& _other) = delete;
-			ModelData& operator=(const ModelData& _other) = delete;
+		ModelData(const ModelData& _other) = delete;
+		ModelData& operator=(const ModelData& _other) = delete;
 
-			ModelData(ModelData&& _other) = delete;
-			ModelData& operator=(ModelData&& _other) = delete;
+		ModelData(ModelData&& _other) = delete;
+		ModelData& operator=(ModelData&& _other) = delete;
 
 
-			void reload(std::shared_ptr<ResourceLoader> _resourceLoader = nullptr) override;
-			bool reloadable() const override;
+		void reload(std::shared_ptr<ResourceLoader> _resourceLoader = nullptr) override;
+		bool reloadable() const override;
 
-		private:
+	private:
 
-			friend class ModelDataManager;
-			friend class Model;
+		friend class ModelDataManager;
+		friend class Model;
 
-			static std::shared_ptr<ResourceData> createResource(const std::string _path);
-			void destroy();
-			void create(const std::string_view _path, std::shared_ptr<ResourceLoader> _resourceLoader);
+		static std::shared_ptr<ResourceData> createResource(const std::string _path);
+		void destroy();
+		void create(const std::string_view _path, std::shared_ptr<ResourceLoader> _resourceLoader);
 
-			std::string path;
-		};
-	}
+		std::string path;
+	};
 }

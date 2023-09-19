@@ -8,8 +8,8 @@ namespace se
 {
 	namespace
 	{
-		int instanceCount = 0;
-		bool valid = false;
+		static int instanceCount = 0;
+		static bool valid = false;
 	}
 
 	GraphicsLib::GraphicsLib()

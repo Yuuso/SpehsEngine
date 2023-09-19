@@ -5,44 +5,47 @@
 #include "SpehsEngine/Graphics/Font.h"
 
 
-/*
-	LIST OF DEFAULT FONTS
-
-	- AnonymousPro-Regular
-	- OpenSans-Regular
-*/
-
-
-namespace se
+namespace se::gfx::impl
 {
-	namespace graphics
+	class FontLibrary;
+}
+
+namespace se::gfx
+{
+	/*
+		LIST OF DEFAULT FONTS
+
+		- AnonymousPro-Regular
+		- OpenSans-Regular
+	*/
+
+	class FontManager : public ResourceManager<Font>
 	{
-		class FontLibrary;
+	public:
 
-		class FontManager : public ResourceManager<Font>
-		{
-		public:
+		FontManager();
+		~FontManager() = default;
 
-			FontManager();
-			~FontManager() = default;
+		FontManager(const FontManager& _other) = delete;
+		FontManager& operator=(const FontManager& _other) = delete;
 
-			FontManager(const FontManager& _other) = delete;
-			FontManager& operator=(const FontManager& _other) = delete;
-
-			FontManager(FontManager&& _other) = delete;
-			FontManager& operator=(FontManager&& _other) = delete;
+		FontManager(FontManager&& _other) = delete;
+		FontManager& operator=(FontManager&& _other) = delete;
 
 
-			std::shared_ptr<Font> create(const std::string_view _name, const std::string_view _font, const FontSize _size, const CharacterSet& _charMap = defaultCharacterSet);
-			std::shared_ptr<Font> find(const std::string_view _name) const;
+		std::shared_ptr<Font> create(
+			const std::string_view _name,
+			const std::string_view _font,
+			const FontSize _size,
+			const CharacterSet& _charMap = defaultCharacterSet);
+		std::shared_ptr<Font> find(const std::string_view _name) const;
 
-			void createDefaultFonts();
-			std::shared_ptr<Font> getDefaultFont() const;
+		void createDefaultFonts();
+		std::shared_ptr<Font> getDefaultFont() const;
 
-		private:
+	private:
 
-			std::shared_ptr<FontLibrary> fontLibrary;
-			bool defaultFontsCreated = false;
-		};
-	}
+		std::shared_ptr<impl::FontLibrary> fontLibrary;
+		bool defaultFontsCreated = false;
+	};
 }

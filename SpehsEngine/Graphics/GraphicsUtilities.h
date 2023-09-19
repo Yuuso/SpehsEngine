@@ -1,10 +1,7 @@
 #pragma once
 
 
-namespace se
+namespace se::gfx
 {
-	namespace graphics
-	{
-		std::string toString(RendererBackend _backend);
-	}
+	std::string toString(RendererBackend _backend);
 }

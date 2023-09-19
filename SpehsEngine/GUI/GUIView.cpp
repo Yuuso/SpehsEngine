@@ -10,23 +10,23 @@ namespace se
 	{
 		static constexpr float cameraZPos = static_cast<float>(std::numeric_limits<gui::ZIndex>::max()) + 1.0f;
 
-		GUIView::GUIView(graphics::ShaderManager& _shaderManager, graphics::TextureManager& _textureManager,
-						 graphics::FontManager& _fontManager, input::EventSignaler& _eventSignaler, int _inputPriority)
+		GUIView::GUIView(gfx::ShaderManager& _shaderManager, gfx::TextureManager& _textureManager,
+						 gfx::FontManager& _fontManager, input::EventSignaler& _eventSignaler, int _inputPriority)
 			: view(scene, camera)
 			, materialManager(_shaderManager, _textureManager, _fontManager)
 		{
-			view.setDrawCallSortOrder(graphics::DrawCallSortOrder::DepthAscending);
-			view.setClearFlags(graphics::ViewClearFlag::ClearDepth | graphics::ViewClearFlag::ClearStencil);
+			view.setDrawCallSortOrder(gfx::DrawCallSortOrder::DepthAscending);
+			view.setClearFlags(gfx::ViewClearFlag::ClearDepth | gfx::ViewClearFlag::ClearStencil);
 			camera.setUp({ 0.0f, 1.0f, 0.0f });
 			camera.setFar(cameraZPos * 2.0f);
 			camera.setNear(1.0f);
 			camera.setDirection({ 0.0f, 0.0f, -1.0f });
-			camera.setProjection(se::graphics::Projection::Orthographic);
+			camera.setProjection(se::gfx::Projection::Orthographic);
 
 			updateConnection = view.connectToPreRenderSignal([this](glm::vec2 _renderSize){ update(_renderSize); });
 			_eventSignaler.connectToMouseButtonSignal(mouseButtonConnection, [this](const input::MouseButtonEvent& _event){ return mouseButtonCallback(_event); }, _inputPriority);
 		}
-		graphics::View& GUIView::getView()
+		gfx::View& GUIView::getView()
 		{
 			return view;
 		}
@@ -115,7 +115,7 @@ namespace se
 		{
 			return rootElements;
 		}
-		
+
 		boost::signals2::scoped_connection GUIView::connectToRootElementAddedSignal(const std::function<void(GUIElement&)>& callback)
 		{
 			return rootElementAddedSignal.connect(callback);

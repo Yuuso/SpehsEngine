@@ -20,34 +20,31 @@
 */
 
 
-namespace se
+namespace se::gfx
 {
-	namespace graphics
+	class ShaderManager : public ResourceManager<Shader>
 	{
-		class ShaderManager : public ResourceManager<Shader>
-		{
-		public:
+	public:
 
-			ShaderManager() = default;
-			virtual ~ShaderManager() = default;
+		ShaderManager() = default;
+		virtual ~ShaderManager() = default;
 
-			ShaderManager(const ShaderManager& _other) = delete;
-			ShaderManager& operator=(const ShaderManager& _other) = delete;
+		ShaderManager(const ShaderManager& _other) = delete;
+		ShaderManager& operator=(const ShaderManager& _other) = delete;
 
-			ShaderManager(ShaderManager&& _other) = delete;
-			ShaderManager& operator=(ShaderManager&& _other) = delete;
+		ShaderManager(ShaderManager&& _other) = delete;
+		ShaderManager& operator=(ShaderManager&& _other) = delete;
 
 
-			std::shared_ptr<Shader> create(const std::string_view _name,
-										   const std::string_view _vertexShader,
-										   const std::string_view _fragmentShader);
-			std::shared_ptr<Shader> find(const std::string_view _name) const;
+		std::shared_ptr<Shader> create(const std::string_view _name,
+										const std::string_view _vertexShader,
+										const std::string_view _fragmentShader);
+		std::shared_ptr<Shader> find(const std::string_view _name) const;
 
-			void createDefaultShaders();
+		void createDefaultShaders();
 
-		private:
+	private:
 
-			bool defaultShadersCreated = false;
-		};
-	}
+		bool defaultShadersCreated = false;
+	};
 }

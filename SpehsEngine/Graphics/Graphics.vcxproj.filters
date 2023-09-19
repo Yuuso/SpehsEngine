@@ -51,16 +51,16 @@
     <ClInclude Include="Shader.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Internal\Batch.h">
+    <ClInclude Include="Impl\Batch.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Types.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Internal\InternalTypes.h">
+    <ClInclude Include="Impl\InternalTypes.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Internal\InternalUtilities.h">
+    <ClInclude Include="Impl\InternalUtilities.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="VertexBuffer.h">
@@ -69,7 +69,7 @@
     <ClInclude Include="Uniform.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Internal\DefaultUniforms.h">
+    <ClInclude Include="Impl\DefaultUniforms.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="TextureManager.h">
@@ -87,7 +87,7 @@
     <ClInclude Include="Lights.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Internal\LightBatch.h">
+    <ClInclude Include="Impl\LightBatch.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Resource.h">
@@ -99,7 +99,7 @@
     <ClInclude Include="ResourceLoader.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Internal\TextureFallbacks.h">
+    <ClInclude Include="Impl\TextureFallbacks.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="FontManager.h">
@@ -114,10 +114,10 @@
     <ClInclude Include="ResourceManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Internal\FontLibrary.h">
+    <ClInclude Include="Impl\FontLibrary.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Internal\RenderInfo.h">
+    <ClInclude Include="Impl\RenderInfo.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="FontMetrics.h">
@@ -135,7 +135,7 @@
     <ClInclude Include="Line.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Internal\RendererCallbackHandler.h">
+    <ClInclude Include="Impl\RendererCallbackHandler.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="ModelData.h">
@@ -156,10 +156,10 @@
     <ClInclude Include="BufferObject.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Internal\Mesh.h">
+    <ClInclude Include="Impl\Mesh.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Internal\ModelNode.h">
+    <ClInclude Include="Impl\ModelNode.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="ShapeGenerator.h">
@@ -168,25 +168,25 @@
     <ClInclude Include="RenderCopy.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Internal\Animation.h">
+    <ClInclude Include="Impl\Animation.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Internal\Bone.h">
+    <ClInclude Include="Impl\Bone.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Internal\LightInternal.h">
+    <ClInclude Include="Impl\LightInternal.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Internal\ModelInternal.h">
+    <ClInclude Include="Impl\ModelInternal.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Internal\PrimitiveInternal.h">
+    <ClInclude Include="Impl\PrimitiveInternal.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Internal\ViewInternal.h">
+    <ClInclude Include="Impl\ViewInternal.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Internal\WindowInternal.h">
+    <ClInclude Include="Impl\WindowInternal.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="InstanceBuffer.h">
@@ -198,7 +198,7 @@
     <ClInclude Include="Animator.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Internal\AnimatorInternal.h">
+    <ClInclude Include="Impl\AnimatorInternal.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="GraphicsUtilities.h">
@@ -239,10 +239,10 @@
     <ClCompile Include="Shader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Internal\Batch.cpp">
+    <ClCompile Include="Impl\Batch.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Internal\InternalUtilities.cpp">
+    <ClCompile Include="Impl\InternalUtilities.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="VertexBuffer.cpp">
@@ -251,7 +251,7 @@
     <ClCompile Include="Uniform.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Internal\DefaultUniforms.cpp">
+    <ClCompile Include="Impl\DefaultUniforms.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="TextureManager.cpp">
@@ -266,7 +266,7 @@
     <ClCompile Include="Lights.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Internal\LightBatch.cpp">
+    <ClCompile Include="Impl\LightBatch.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="FontManager.cpp">
@@ -275,7 +275,7 @@
     <ClCompile Include="Font.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Internal\FontLibrary.cpp">
+    <ClCompile Include="Impl\FontLibrary.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Text.cpp">
@@ -287,7 +287,7 @@
     <ClCompile Include="Line.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Internal\RendererCallbackHandler.cpp">
+    <ClCompile Include="Impl\RendererCallbackHandler.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="ModelData.cpp">
@@ -302,10 +302,10 @@
     <ClCompile Include="IndexBuffer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Internal\Mesh.cpp">
+    <ClCompile Include="Impl\Mesh.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Internal\ModelNode.cpp">
+    <ClCompile Include="Impl\ModelNode.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="BufferObject.cpp">
@@ -317,25 +317,25 @@
     <ClCompile Include="Material.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Internal\LightInternal.cpp">
+    <ClCompile Include="Impl\LightInternal.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Internal\ModelInternal.cpp">
+    <ClCompile Include="Impl\ModelInternal.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Internal\PrimitiveInternal.cpp">
+    <ClCompile Include="Impl\PrimitiveInternal.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Internal\ViewInternal.cpp">
+    <ClCompile Include="Impl\ViewInternal.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Internal\WindowInternal.cpp">
+    <ClCompile Include="Impl\WindowInternal.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="InstanceBuffer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Internal\AnimatorInternal.cpp">
+    <ClCompile Include="Impl\AnimatorInternal.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Animator.cpp">

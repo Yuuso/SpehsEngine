@@ -3,7 +3,7 @@
 
 #include <vector>
 
-using namespace se::graphics;
+using namespace se::gfx;
 
 
 namespace se::gui
@@ -14,7 +14,7 @@ namespace se::gui
 		void begin() override;
 		void end() override;
 		bool enabled() const override;
-		graphics::Stencil get(bool _write) const override;
+		Stencil get(bool _write) const override;
 
 	private:
 		uint32_t currentLayer = 0;
@@ -26,7 +26,7 @@ namespace se::gui
 		void begin() override;
 		void end() override;
 		bool enabled() const override;
-		graphics::Stencil get(bool _write) const override;
+		Stencil get(bool _write) const override;
 
 	private:
 		std::vector<uint32_t> activeLayers;
@@ -39,7 +39,7 @@ namespace se::gui
 		void begin() override;
 		void end() override;
 		bool enabled() const override;
-		graphics::Stencil get(bool _write) const override;
+		Stencil get(bool _write) const override;
 
 	private:
 		std::vector<uint32_t> activeBits;

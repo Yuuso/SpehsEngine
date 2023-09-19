@@ -6,7 +6,7 @@
 
 namespace se
 {
-	namespace graphics
+	namespace gfx
 	{
 		class Scene;
 	}
@@ -35,7 +35,7 @@ namespace se
 
 		struct UpdateContext
 		{
-			graphics::Scene& scene;
+			gfx::Scene& scene;
 			GUIMaterialManager& materialManager;
 			gui::StencilMaskManager & stencilMaskManager;
 

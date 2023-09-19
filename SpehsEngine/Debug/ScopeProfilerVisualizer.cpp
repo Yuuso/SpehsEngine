@@ -27,13 +27,13 @@ namespace se
 			struct SectionInfo
 			{
 				const ScopeProfilerSection* section = nullptr;
-				const graphics::Shape* parent;
-				const graphics::Shape* rootParent;
+				const gfx::Shape* parent;
+				const gfx::Shape* rootParent;
 				time::Time beginTime;
 				size_t depth = 0;
 			};
 
-			Impl(graphics::View& _view, graphics::FontManager& _fontManager, graphics::ShaderManager& _shaderManager, input::InputManager& _inputManager)
+			Impl(gfx::View& _view, gfx::FontManager& _fontManager, gfx::ShaderManager& _shaderManager, input::InputManager& _inputManager)
 				: view(_view)
 				, inputManager(_inputManager)
 				, activeThreadId(std::this_thread::get_id())
@@ -41,14 +41,14 @@ namespace se
 				setMaxThreadDataSectionCount(64);
 				ScopeProfiler::connectToFlushSignal(profilerFlushConnection, boost::bind(&Impl::profilerFlushCallback, this, boost::placeholders::_1));
 
-				se_assert(_view.getCamera().getProjection() == graphics::Projection::Orthographic);
+				se_assert(_view.getCamera().getProjection() == gfx::Projection::Orthographic);
 
-				textMaterial = graphics::createMaterial(graphics::DefaultMaterialType::Text, _shaderManager);
+				textMaterial = gfx::createMaterial(gfx::DefaultMaterialType::Text, _shaderManager);
 				textMaterial->setFont(_fontManager.getDefaultFont());
 
-				shapeMaterial = graphics::createMaterial(graphics::DefaultMaterialType::FlatColor, _shaderManager);
+				shapeMaterial = gfx::createMaterial(gfx::DefaultMaterialType::FlatColor, _shaderManager);
 
-				tooltipPolygon.generate(graphics::ShapeType::Rectangle);
+				tooltipPolygon.generate(gfx::ShapeType::Rectangle);
 				tooltipPolygon.setMaterial(shapeMaterial);
 				tooltipPolygon.setColor(Color(0.2f, 0.2f, 0.2f));
 				_view.getScene().add(tooltipPolygon);
@@ -287,8 +287,8 @@ namespace se
 					{
 						while (sectionPolygons.size() < sectionCount)
 						{
-							sectionPolygons.push_back(std::make_unique<graphics::Shape>());
-							sectionPolygons.back()->generate(graphics::ShapeType::Rectangle);
+							sectionPolygons.push_back(std::make_unique<gfx::Shape>());
+							sectionPolygons.back()->generate(gfx::ShapeType::Rectangle);
 							sectionPolygons.back()->setColor(Color(0.0f, 1.0f, 0.0f));
 						}
 					}
@@ -296,11 +296,16 @@ namespace se
 					if (!threadData.sections.empty())
 					{
 						size_t sectionIndex = 0u;
-						std::function<void(const time::Time, const ScopeProfilerSection&, const size_t, const graphics::Shape* const, const graphics::Shape* const)> updatePolygon;
+						std::function<void(const time::Time, const ScopeProfilerSection&, const size_t, const gfx::Shape* const, const gfx::Shape* const)> updatePolygon;
 						updatePolygon =
-							[&updatePolygon, &sectionIndex, this](const time::Time sectionBeginTime, const ScopeProfilerSection& section, const size_t depth, const graphics::Shape* const parent, const graphics::Shape* const rootParent)
+							[&updatePolygon, &sectionIndex, this](
+								const time::Time sectionBeginTime,
+								const ScopeProfilerSection& section,
+								const size_t depth,
+								const gfx::Shape* const parent,
+								const gfx::Shape* const rootParent)
 						{
-							const graphics::Shape* polygon = sectionPolygons[sectionIndex++].get();
+							const gfx::Shape* polygon = sectionPolygons[sectionIndex++].get();
 							SectionInfo& sectionInfo = polygonToSectionInfoLookup[polygon];
 							sectionInfo.section = &section;
 							sectionInfo.parent = parent;
@@ -467,11 +472,11 @@ namespace se
 				backgroundThreadDataUpdated = true;
 			}
 
-			graphics::View& view;
+			gfx::View& view;
 			input::InputManager& inputManager;
 
-			std::shared_ptr<graphics::Material> textMaterial;
-			std::shared_ptr<graphics::Material> shapeMaterial;
+			std::shared_ptr<gfx::Material> textMaterial;
+			std::shared_ptr<gfx::Material> shapeMaterial;
 
 			// Visual settings
 			float beginX = 5.0f;
@@ -489,11 +494,11 @@ namespace se
 
 			std::thread::id activeThreadId;
 			std::unordered_map<std::thread::id, ScopeProfilerThreadData> threadDatas;
-			std::unordered_map<const graphics::Shape*, SectionInfo> polygonToSectionInfoLookup;
-			graphics::Text tooltipText;
-			graphics::Shape tooltipPolygon;
-			std::vector<std::unique_ptr<graphics::Text>> sectionTexts;
-			std::vector<std::unique_ptr<graphics::Shape>> sectionPolygons;
+			std::unordered_map<const gfx::Shape*, SectionInfo> polygonToSectionInfoLookup;
+			gfx::Text tooltipText;
+			gfx::Shape tooltipPolygon;
+			std::vector<std::unique_ptr<gfx::Text>> sectionTexts;
+			std::vector<std::unique_ptr<gfx::Shape>> sectionPolygons;
 			boost::signals2::scoped_connection profilerFlushConnection;
 
 			std::recursive_mutex backgroundThreadDataMutex;
@@ -502,8 +507,11 @@ namespace se
 			std::unordered_map<std::thread::id, ScopeProfilerThreadData> backgroundThreadDatas;
 		};
 
-		ScopeProfilerVisualizer::ScopeProfilerVisualizer(graphics::View& _view, graphics::FontManager& _fontManager,
-			graphics::ShaderManager& _shaderManager, input::InputManager& _inputManager)
+		ScopeProfilerVisualizer::ScopeProfilerVisualizer(
+			gfx::View& _view,
+			gfx::FontManager& _fontManager,
+			gfx::ShaderManager& _shaderManager,
+			input::InputManager& _inputManager)
 			: impl(new Impl(_view, _fontManager, _shaderManager, _inputManager))
 		{
 		}

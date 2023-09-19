@@ -9,18 +9,16 @@
 
 namespace se
 {
-	using namespace graphics;
-
 	namespace legacygui
 	{
 		GUIShape::GUIShape()
-			: GUIShape(ShapeType::Rectangle)
+			: GUIShape(gfx::ShapeType::Rectangle)
 		{
 		}
-		GUIShape::GUIShape(ShapeType _shapeType)
+		GUIShape::GUIShape(gfx::ShapeType _shapeType)
 		{
 			initShapeType = _shapeType;
-			se_assert(initShapeType != ShapeType::Unknown);
+			se_assert(initShapeType != gfx::ShapeType::Unknown);
 
 			// Default non-zero size
 			setSize(GUIVec2({ 10.0f, 10.0f }, GUIUnitType::Pixels));
@@ -30,7 +28,7 @@ namespace se
 		{
 			initShapeType = _other.initShapeType.has_value()
 				? _other.initShapeType : _other.shape.getShapeType();
-			se_assert(initShapeType != ShapeType::Unknown);
+			se_assert(initShapeType != gfx::ShapeType::Unknown);
 			setColor(_other.getColor());
 		}
 
@@ -40,12 +38,12 @@ namespace se
 		}
 
 
-		void GUIShape::initShape(UpdateContext& _context, ShapeType _shapeType)
+		void GUIShape::initShape(UpdateContext& _context, gfx::ShapeType _shapeType)
 		{
-			ShapeParameters params;
-			params.orientation = ShapeOrientation::XY_Plane;
+			gfx::ShapeParameters params;
+			params.orientation = gfx::ShapeOrientation::XY_Plane;
 			shape.generate(_shapeType, params, &_context.materialManager.shapeGenerator);
-			shape.setRenderSortDepth(RenderSortDepth::ZPosition);
+			shape.setRenderSortDepth(gfx::RenderSortDepth::ZPosition);
 			enableBit(updateFlags, GUIElementUpdateFlag::MaterialUpdateNeeded);
 		}
 
@@ -87,9 +85,9 @@ namespace se
 
 					const bool blendAlpha = getColor().a < 1.0f || !getTexture().empty();
 					shape.setRenderFlags(0
-						| RenderFlag::DepthTestLess
-						| (blendAlpha ? RenderFlag::BlendAlpha : 0)
-						| (!blendAlpha ? RenderFlag::WriteDepth : 0)
+						| gfx::RenderFlag::DepthTestLess
+						| (blendAlpha ? gfx::RenderFlag::BlendAlpha : 0)
+						| (!blendAlpha ? gfx::RenderFlag::WriteDepth : 0)
 						);
 				}
 			}

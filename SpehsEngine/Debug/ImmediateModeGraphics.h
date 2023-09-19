@@ -10,7 +10,7 @@
 
 namespace se
 {
-	namespace graphics
+	namespace gfx
 	{
 		class FontManager;
 		class ModelDataManager;
@@ -39,9 +39,9 @@ namespace se
 			GraphicsObjectModifier<T>& scale(const glm::vec3& _scale)								{ object.setScale(_scale); return *this; }
 			GraphicsObjectModifier<T>& rotation(const glm::quat& _rotation)							{ object.setRotation(_rotation); return *this; }
 			GraphicsObjectModifier<T>& color(const se::Color& _color)								{ object.setColor(_color); return *this; }
-			GraphicsObjectModifier<T>& material(std::shared_ptr<se::graphics::Material> _material)	{ object.setMaterial(_material); return *this; }
-			GraphicsObjectModifier<T>& primitiveType(se::graphics::PrimitiveType _primitiveType)	{ object.setPrimitiveType(_primitiveType); return *this; }
-			GraphicsObjectModifier<T>& renderFlags(se::graphics::RenderFlagsType _renderFlags)		{ object.setRenderFlags(_renderFlags); return *this; }
+			GraphicsObjectModifier<T>& material(std::shared_ptr<se::gfx::Material> _material)	{ object.setMaterial(_material); return *this; }
+			GraphicsObjectModifier<T>& primitiveType(se::gfx::PrimitiveType _primitiveType)	{ object.setPrimitiveType(_primitiveType); return *this; }
+			GraphicsObjectModifier<T>& renderFlags(se::gfx::RenderFlagsType _renderFlags)		{ object.setRenderFlags(_renderFlags); return *this; }
 
 		private:
 			T& object;
@@ -50,7 +50,7 @@ namespace se
 		template <typename T>
 		struct FrameVector
 		{
-			FrameVector(se::graphics::View& _view) : view(_view) {}
+			FrameVector(se::gfx::View& _view) : view(_view) {}
 			T& find(std::string_view _name)
 			{
 				auto it = std::find_if(vector.begin(), vector.end(), [_name](std::unique_ptr<T>& _e){ return _e->getName() == _name; });
@@ -90,31 +90,31 @@ namespace se
 				currentIndex = 0;
 			}
 
-			se::graphics::View& view;
+			se::gfx::View& view;
 			std::vector<std::unique_ptr<T>> vector;
 			size_t currentIndex = 0;
 		};
 
-		typedef GraphicsObjectModifier<se::graphics::Primitive> PrimitiveModifier;
-		typedef GraphicsObjectModifier<se::graphics::Model> ModelModifier;
+		typedef GraphicsObjectModifier<se::gfx::Primitive> PrimitiveModifier;
+		typedef GraphicsObjectModifier<se::gfx::Model> ModelModifier;
 
 		class ImmediateModeGraphics
 		{
 		public:
 
 			ImmediateModeGraphics(
-				se::graphics::View& _view,
-				se::graphics::ShaderManager& _shaderManager,
-				se::graphics::TextureManager& _textureManager,
-				se::graphics::FontManager& _fontManager,
-				se::graphics::ModelDataManager& _modelDataManager,
-				se::graphics::ShapeGenerator& shapeGenerator);
+				se::gfx::View& _view,
+				se::gfx::ShaderManager& _shaderManager,
+				se::gfx::TextureManager& _textureManager,
+				se::gfx::FontManager& _fontManager,
+				se::gfx::ModelDataManager& _modelDataManager,
+				se::gfx::ShapeGenerator& shapeGenerator);
 
 			void init();
 			void endFrame();
 			void cleanup();
 
-			PrimitiveModifier	shape(se::graphics::ShapeType _type, se::graphics::ShapeParameters _params = {});
+			PrimitiveModifier	shape(se::gfx::ShapeType _type, se::gfx::ShapeParameters _params = {});
 			PrimitiveModifier	icon(std::string_view _texture);
 			PrimitiveModifier	line(const glm::vec3& _start, const glm::vec3& _end);
 			PrimitiveModifier	linePoint(const glm::vec3& _point, std::string_view _lineId);
@@ -123,20 +123,20 @@ namespace se
 
 		private:
 
-			se::graphics::View& view;
-			se::graphics::ShaderManager& shaderManager;
-			se::graphics::TextureManager& textureManager;
-			se::graphics::FontManager& fontManager;
-			se::graphics::ModelDataManager& modelDataManager;
-			se::graphics::ShapeGenerator& shapeGenerator;
+			se::gfx::View& view;
+			se::gfx::ShaderManager& shaderManager;
+			se::gfx::TextureManager& textureManager;
+			se::gfx::FontManager& fontManager;
+			se::gfx::ModelDataManager& modelDataManager;
+			se::gfx::ShapeGenerator& shapeGenerator;
 
-			std::shared_ptr<se::graphics::Material> defaultFlatMaterial;
-			std::shared_ptr<se::graphics::Material> defaultTextMaterial;
+			std::shared_ptr<se::gfx::Material> defaultFlatMaterial;
+			std::shared_ptr<se::gfx::Material> defaultTextMaterial;
 
-			FrameVector<se::graphics::Shape> shapes;
-			FrameVector<se::graphics::Line> lines;
-			FrameVector<se::graphics::Text> texts;
-			FrameVector<se::graphics::Model> models;
+			FrameVector<se::gfx::Shape> shapes;
+			FrameVector<se::gfx::Line> lines;
+			FrameVector<se::gfx::Text> texts;
+			FrameVector<se::gfx::Model> models;
 		};
 	}
 }

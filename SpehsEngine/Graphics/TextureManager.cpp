@@ -1,147 +1,141 @@
 #include "stdafx.h"
 #include "SpehsEngine/Graphics/TextureManager.h"
 
-#include "SpehsEngine/Graphics/Internal/TextureFallbacks.h"
+#include "SpehsEngine/Graphics/Impl/TextureFallbacks.h"
 
 
-namespace se
+TextureManager::TextureManager()
+	: ResourceManager()
 {
-	namespace graphics
+	initFallbacks();
+}
+TextureManager::~TextureManager()
+{
+	destroyFallbacks();
+}
+
+void TextureManager::initFallbacks()
+{
+	fallbacks = std::make_shared<TextureFallbacks>();
+
+	TextureModes modes;
+	modes.sampleMin = TextureSamplingMode::Point;
+	modes.sampleMag = TextureSamplingMode::Point;
+	modes.sampleMip = TextureSamplingMode::Point;
+
+	TextureInput input;
+	input.format = TextureInput::Format::RGBA8;
+	input.width = 3;
+	input.height = 3;
+
+	input.data = {	255,	0,		255,	255,
+					255,	255,	255,	255,
+					255,	0,		255,	255,
+
+					255,	255,	255,	255,
+					255,	0,		255,	255,
+					255,	255,	255,	255,
+
+					255,	0,		255,	255,
+					255,	255,	255,	255,
+					255,	0,		255,	255 };
+	fallbacks->init = std::dynamic_pointer_cast<TextureData>(Texture::createResourceFromInput(input, modes));
+
+	input.data = {	255,	0,		255,	255,
+					0,		255,	0,		255,
+					255,	0,		255,	255,
+
+					0,		255,	0,		255,
+					255,	0,		255,	255,
+					0,		255,	0,		255,
+
+					255,	0,		255,	255,
+					0,		255,	0,		255,
+					255,	0,		255,	255 };
+	fallbacks->loading = std::dynamic_pointer_cast<TextureData>(Texture::createResourceFromInput(input, modes));
+
+	input.data = {	255,	0,		255,	255,
+					255,	0,		255,	255,
+					255,	0,		255,	255,
+
+					255,	0,		255,	255,
+					255,	0,		255,	255,
+					255,	0,		255,	255,
+
+					255,	0,		255,	255,
+					255,	0,		255,	255,
+					255,	0,		255,	255 };
+	fallbacks->error = std::dynamic_pointer_cast<TextureData>(Texture::createResourceFromInput(input, modes));
+}
+void TextureManager::destroyFallbacks()
+{
+	if (fallbacks)
 	{
-		TextureManager::TextureManager()
-			: ResourceManager()
+		if (fallbacks->init)
+			safeDestroy<bgfx::TextureHandle>(fallbacks->init->handle);
+		if (fallbacks->loading)
+			safeDestroy<bgfx::TextureHandle>(fallbacks->loading->handle);
+		if (fallbacks->error)
+			safeDestroy<bgfx::TextureHandle>(fallbacks->error->handle);
+	}
+}
+
+std::shared_ptr<Texture> TextureManager::create(const std::string_view _name, const std::string_view _texture, const TextureModes _textureModes)
+{
+	const std::string path = pathFinder->getPath(_texture);
+
+	for (auto& texture : resources)
+	{
+		if (texture->getName() == _name)
 		{
-			initFallbacks();
-		}
-		TextureManager::~TextureManager()
-		{
-			destroyFallbacks();
-		}
-
-		void TextureManager::initFallbacks()
-		{
-			fallbacks = std::make_shared<TextureFallbacks>();
-
-			TextureModes modes;
-			modes.sampleMin = se::graphics::TextureSamplingMode::Point;
-			modes.sampleMag = se::graphics::TextureSamplingMode::Point;
-			modes.sampleMip = se::graphics::TextureSamplingMode::Point;
-
-			TextureInput input;
-			input.format = TextureInput::Format::RGBA8;
-			input.width = 3;
-			input.height = 3;
-
-			input.data = {	255,	0,		255,	255,
-							255,	255,	255,	255,
-							255,	0,		255,	255,
-
-							255,	255,	255,	255,
-							255,	0,		255,	255,
-							255,	255,	255,	255,
-
-							255,	0,		255,	255,
-							255,	255,	255,	255,
-							255,	0,		255,	255 };
-			fallbacks->init = std::dynamic_pointer_cast<TextureData>(Texture::createResourceFromInput(input, modes));
-
-			input.data = {	255,	0,		255,	255,
-							0,		255,	0,		255,
-							255,	0,		255,	255,
-
-							0,		255,	0,		255,
-							255,	0,		255,	255,
-							0,		255,	0,		255,
-
-							255,	0,		255,	255,
-							0,		255,	0,		255,
-							255,	0,		255,	255 };
-			fallbacks->loading = std::dynamic_pointer_cast<TextureData>(Texture::createResourceFromInput(input, modes));
-
-			input.data = {	255,	0,		255,	255,
-							255,	0,		255,	255,
-							255,	0,		255,	255,
-
-							255,	0,		255,	255,
-							255,	0,		255,	255,
-							255,	0,		255,	255,
-
-							255,	0,		255,	255,
-							255,	0,		255,	255,
-							255,	0,		255,	255 };
-			fallbacks->error = std::dynamic_pointer_cast<TextureData>(Texture::createResourceFromInput(input, modes));
-		}
-		void TextureManager::destroyFallbacks()
-		{
-			if (fallbacks)
-			{
-				if (fallbacks->init)
-					safeDestroy<bgfx::TextureHandle>(fallbacks->init->handle);
-				if (fallbacks->loading)
-					safeDestroy<bgfx::TextureHandle>(fallbacks->loading->handle);
-				if (fallbacks->error)
-					safeDestroy<bgfx::TextureHandle>(fallbacks->error->handle);
-			}
-		}
-
-		std::shared_ptr<Texture> TextureManager::create(const std::string_view _name, const std::string_view _texture, const TextureModes _textureModes)
-		{
-			const std::string path = pathFinder->getPath(_texture);
-
-			for (auto& texture : resources)
-			{
-				if (texture->getName() == _name)
-				{
-					log::warning("Cannot create texture '" + _name + "', texture with that name already exists!");
-					if (texture->path != path)
-						log::error("Existing texture's '" + _name + "' resource path doesn't match!");
-					return texture;
-				}
-			}
-
-			resources.push_back(std::make_shared<Texture>(_name));
-			std::shared_ptr<Texture>& texture = resources.back();
-			texture->setFallbacks(fallbacks);
-			texture->create(path, _textureModes, resourceLoader);
+			log::warning("Cannot create texture '" + _name + "', texture with that name already exists!");
+			if (texture->path != path)
+				log::error("Existing texture's '" + _name + "' resource path doesn't match!");
 			return texture;
-		}
-		std::shared_ptr<Texture> TextureManager::create(const std::string_view _name, const TextureInput& _input, const TextureModes _textureModes)
-		{
-			for (auto& texture : resources)
-			{
-				if (texture->getName() == _name)
-				{
-					log::warning("Cannot create texture '" + _name + "', texture with that name already exists!");
-					return texture;
-				}
-			}
-
-			resources.push_back(std::make_shared<Texture>(_name));
-			std::shared_ptr<Texture>& texture = resources.back();
-			texture->setFallbacks(fallbacks);
-			texture->create(_input, _textureModes);
-			return texture;
-		}
-		std::shared_ptr<Texture> TextureManager::find(const std::string_view _name) const
-		{
-			for (auto& texture : resources)
-			{
-				if (texture->getName() == _name)
-					return texture;
-			}
-			return nullptr;
-		}
-		void TextureManager::remove(std::string_view _name)
-		{
-			for (auto it = resources.begin(); it != resources.end(); it++)
-			{
-				if (it->get()->getName() == _name)
-				{
-					resources.erase(it);
-					return;
-				}
-			}
-			log::warning("Cannot remove texture '" + _name + "', texture with that name not found!");
 		}
 	}
+
+	resources.push_back(std::make_shared<Texture>(_name));
+	std::shared_ptr<Texture>& texture = resources.back();
+	texture->setFallbacks(fallbacks);
+	texture->create(path, _textureModes, resourceLoader);
+	return texture;
+}
+std::shared_ptr<Texture> TextureManager::create(const std::string_view _name, const TextureInput& _input, const TextureModes _textureModes)
+{
+	for (auto& texture : resources)
+	{
+		if (texture->getName() == _name)
+		{
+			log::warning("Cannot create texture '" + _name + "', texture with that name already exists!");
+			return texture;
+		}
+	}
+
+	resources.push_back(std::make_shared<Texture>(_name));
+	std::shared_ptr<Texture>& texture = resources.back();
+	texture->setFallbacks(fallbacks);
+	texture->create(_input, _textureModes);
+	return texture;
+}
+std::shared_ptr<Texture> TextureManager::find(const std::string_view _name) const
+{
+	for (auto& texture : resources)
+	{
+		if (texture->getName() == _name)
+			return texture;
+	}
+	return nullptr;
+}
+void TextureManager::remove(std::string_view _name)
+{
+	for (auto it = resources.begin(); it != resources.end(); it++)
+	{
+		if (it->get()->getName() == _name)
+		{
+			resources.erase(it);
+			return;
+		}
+	}
+	log::warning("Cannot remove texture '" + _name + "', texture with that name not found!");
 }

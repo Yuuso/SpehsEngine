@@ -4,51 +4,72 @@
 #include "SpehsEngine/Graphics/CharacterSet.h"
 
 
-namespace se
+namespace se::gfx::impl
 {
-	namespace graphics
+	class FontLibrary;
+}
+
+namespace se::gfx
+{
+	class Texture;
+
+	class Font : public Resource<FontData>
 	{
-		class FontLibrary;
-		class Texture;
+	public:
 
-		class Font : public Resource<FontData>
-		{
-		public:
+		Font() = delete;
+		Font(const std::string_view _name);
+		~Font();
 
-			Font() = delete;
-			Font(const std::string_view _name);
-			~Font();
+		Font(const Font& _other) = delete;
+		Font& operator=(const Font& _other) = delete;
 
-			Font(const Font& _other) = delete;
-			Font& operator=(const Font& _other) = delete;
-
-			Font(Font&& _other) = delete;
-			Font& operator=(Font&& _other) = delete;
+		Font(Font&& _other) = delete;
+		Font& operator=(Font&& _other) = delete;
 
 
-			void reload(std::shared_ptr<ResourceLoader> _resourceLoader = nullptr) override;
-			bool reloadable() const override;
-			const FontSize& getFontSize() const;
+		void reload(std::shared_ptr<ResourceLoader> _resourceLoader = nullptr) override;
+		bool reloadable() const override;
+		const FontSize& getFontSize() const;
 
-			std::shared_ptr<Texture> getDebugTexture();
+		std::shared_ptr<Texture> getDebugTexture();
 
-		private:
+	private:
 
-			friend class FontManager;
-			friend class Text;
+		friend class FontManager;
+		friend class Text;
 
-			static std::shared_ptr<ResourceData> createResource(const std::string _path, const FontSize _size, CharacterSet _charMap, std::shared_ptr<FontLibrary> _fontLibrary);
-			static std::shared_ptr<ResourceData> createResourceFromData(const uint8_t* _data, const size_t _dataSize, const FontSize _size, CharacterSet _charMap, std::shared_ptr<FontLibrary> _fontLibrary);
-			void destroy();
-			void create(const std::string_view _path, const FontSize _size, const CharacterSet& _charMap, std::shared_ptr<FontLibrary> _fontLibrary, std::shared_ptr<ResourceLoader> _resourceLoader);
-			void create(const uint8_t* _data, const size_t _dataSize, const FontSize _size, const CharacterSet& _charMap, std::shared_ptr<FontLibrary> _fontLibrary, std::shared_ptr<ResourceLoader> _resourceLoader);
+		static std::shared_ptr<ResourceData> createResource(
+			const std::string _path,
+			const FontSize _size,
+			CharacterSet _charMap,
+			std::shared_ptr<impl::FontLibrary> _fontLibrary);
+		static std::shared_ptr<ResourceData> createResourceFromData(
+			const uint8_t* _data,
+			const size_t _dataSize,
+			const FontSize _size,
+			CharacterSet _charMap,
+			std::shared_ptr<impl::FontLibrary> _fontLibrary);
+		void destroy();
+		void create(
+			const std::string_view _path,
+			const FontSize _size,
+			const CharacterSet& _charMap,
+			std::shared_ptr<impl::FontLibrary> _fontLibrary,
+			std::shared_ptr<ResourceLoader> _resourceLoader);
+		void create(
+			const uint8_t* _data,
+			const size_t _dataSize,
+			const FontSize _size,
+			const CharacterSet& _charMap,
+			std::shared_ptr<impl::FontLibrary> _fontLibrary,
+			std::shared_ptr<ResourceLoader> _resourceLoader);
 
-			std::string path;
-			FontSize size;
-			CharacterSet charMap;
-			std::shared_ptr<FontLibrary> fontLibrary;
+		std::string path;
+		FontSize size;
+		CharacterSet charMap;
+		std::shared_ptr<impl::FontLibrary> fontLibrary;
 
-			std::shared_ptr<Texture> debugTexture;
-		};
-	}
+		std::shared_ptr<Texture> debugTexture;
+	};
 }

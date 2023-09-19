@@ -40,13 +40,13 @@ namespace ImGui
 		}
 	}
 	
-	ImVec2 SizeToScale(const se::graphics::Texture& _texture, const ImVec2 _size)
+	ImVec2 SizeToScale(const se::gfx::Texture& _texture, const ImVec2 _size)
 	{
 		return ImVec2(_size.x / float(_texture.getWidth()), _size.y / float(_texture.getHeight()));
 	}
 
 	void Image(
-		const se::graphics::Texture& _texture,
+		const se::gfx::Texture& _texture,
 		const ImVec2 scale,
 		const ImVec2 uv0,
 		const ImVec2 uv1,
@@ -65,7 +65,7 @@ namespace ImGui
 	}
 
 	bool ImageButton(
-		const se::graphics::Texture& _texture,
+		const se::gfx::Texture& _texture,
 		const ImVec2 scale,
 		const ImVec2 uv0,
 		const ImVec2 uv1,

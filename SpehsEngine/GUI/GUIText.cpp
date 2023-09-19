@@ -9,8 +9,6 @@
 
 namespace se
 {
-	using namespace graphics;
-
 	namespace legacygui
 	{
 		GUIText::GUIText()
@@ -35,8 +33,8 @@ namespace se
 
 		void GUIText::initText()
 		{
-			text.setOrientation(ShapeOrientation::XY_Plane);
-			text.setRenderSortDepth(RenderSortDepth::ZPosition);
+			text.setOrientation(gfx::ShapeOrientation::XY_Plane);
+			text.setRenderSortDepth(gfx::RenderSortDepth::ZPosition);
 			enableBit(updateFlags, GUIElementUpdateFlag::MaterialUpdateNeeded);
 		}
 
@@ -56,7 +54,7 @@ namespace se
 			}
 			if (checkBit(updateFlags, GUIElementUpdateFlag::TreeUpdateNeeded))
 			{
-				const TextDimensions& dims = text.getDimensions();
+				const gfx::TextDimensions& dims = text.getDimensions();
 				if (getSize().x.type == GUIUnitType::Auto)
 				{
 					if (getSize().y.type == GUIUnitType::Auto)
@@ -126,7 +124,7 @@ namespace se
 		{
 			if (needUpdateDimensions)
 				return glm::vec3(1.0f);
-			const TextDimensions& dims = text.getDimensions();
+			const gfx::TextDimensions& dims = text.getDimensions();
 			return glm::vec3(unitToPixels(getSize(), _viewSize) / dims.capsDimensions, 1.0f);
 		}
 

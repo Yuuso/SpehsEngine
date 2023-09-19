@@ -2,32 +2,29 @@
 #include "SpehsEngine/Graphics/GraphicsUtilities.h"
 
 
-namespace se
+namespace se::gfx
 {
-	namespace graphics
+	std::string toString(RendererBackend _backend)
 	{
-		std::string toString(RendererBackend _backend)
+		switch (_backend)
 		{
-			switch (_backend)
-			{
-				case se::graphics::RendererBackend::Auto:
-				case se::graphics::RendererBackend::Noop:
-					break;
+			case RendererBackend::Auto:
+			case RendererBackend::Noop:
+				break;
 
-				case se::graphics::RendererBackend::Agc:			return "Arc";
-				case se::graphics::RendererBackend::Direct3D9:		return "Direct3D 9";
-				case se::graphics::RendererBackend::Direct3D11:		return "Direct3D 11";
-				case se::graphics::RendererBackend::Direct3D12:		return "Direct3D 12";
-				case se::graphics::RendererBackend::Gnm:			return "Gnm";
-				case se::graphics::RendererBackend::Metal:			return "Metal";
-				case se::graphics::RendererBackend::Nvn:			return "Nvn";
-				case se::graphics::RendererBackend::OpenGLES:		return "OpenGL ES";
-				case se::graphics::RendererBackend::OpenGL:			return "OpenGL";
-				case se::graphics::RendererBackend::Vulkan:			return "Vulkan";
-				case se::graphics::RendererBackend::WebGPU:			return "WebGPU";
-			}
-			se_assert(false);
-			return "Unknown";
+			case RendererBackend::Agc:			return "Arc";
+			case RendererBackend::Direct3D9:	return "Direct3D 9";
+			case RendererBackend::Direct3D11:	return "Direct3D 11";
+			case RendererBackend::Direct3D12:	return "Direct3D 12";
+			case RendererBackend::Gnm:			return "Gnm";
+			case RendererBackend::Metal:		return "Metal";
+			case RendererBackend::Nvn:			return "Nvn";
+			case RendererBackend::OpenGLES:		return "OpenGL ES";
+			case RendererBackend::OpenGL:		return "OpenGL";
+			case RendererBackend::Vulkan:		return "Vulkan";
+			case RendererBackend::WebGPU:		return "WebGPU";
 		}
+		se_assert(false);
+		return "Unknown";
 	}
 }

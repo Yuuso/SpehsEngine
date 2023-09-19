@@ -53,7 +53,7 @@ namespace se
 			bool									updateDimensions();
 			glm::vec3								getRenderScale(const glm::vec2& _viewSize);
 
-			graphics::Text text;
+			gfx::Text text;
 			bool needUpdateDimensions = false;
 		};
 	}

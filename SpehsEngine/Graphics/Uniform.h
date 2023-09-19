@@ -28,46 +28,43 @@
 */
 
 
-namespace se
+namespace se::gfx
 {
-	namespace graphics
+	class Font;
+	class Texture;
+
+	class Uniform
 	{
-		class Font;
-		class Texture;
+	public:
 
-		class Uniform
-		{
-		public:
+		Uniform(const std::string_view _name, const UniformType _type, const uint16_t _numElements = 1);
+		~Uniform();
 
-			Uniform(const std::string_view _name, const UniformType _type, const uint16_t _numElements = 1);
-			~Uniform();
+		Uniform(const Uniform& _other) = delete;
+		Uniform& operator=(const Uniform& _other) = delete;
 
-			Uniform(const Uniform& _other) = delete;
-			Uniform& operator=(const Uniform& _other) = delete;
+		Uniform(Uniform&& _other) = delete;
+		Uniform& operator=(Uniform&& _other) = delete;
 
-			Uniform(Uniform&& _other) = delete;
-			Uniform& operator=(Uniform&& _other) = delete;
-
-			bool operator==(const Uniform& _other) const;
+		bool operator==(const Uniform& _other) const;
 
 
-			const std::string& getName() const;
-			const UniformType getType() const;
-			const uint16_t getNumElements() const;
+		const std::string& getName() const;
+		const UniformType getType() const;
+		const uint16_t getNumElements() const;
 
-			void set(const glm::vec4* _value, const uint16_t _numElements = 1);
-			void set(const glm::mat3* _value, const uint16_t _numElements = 1);
-			void set(const glm::mat4* _value, const uint16_t _numElements = 1);
-			void set(const Texture& _value, const uint8_t _stage);
-			void set(const Font& _value, const uint8_t _stage);
+		void set(const glm::vec4* _value, const uint16_t _numElements = 1);
+		void set(const glm::mat3* _value, const uint16_t _numElements = 1);
+		void set(const glm::mat4* _value, const uint16_t _numElements = 1);
+		void set(const Texture& _value, const uint8_t _stage);
+		void set(const Font& _value, const uint8_t _stage);
 
-		private:
+	private:
 
-			const std::string name;
-			const UniformType type;
-			const uint16_t numElements;
+		const std::string name;
+		const UniformType type;
+		const uint16_t numElements;
 
-			ResourceHandle uniformHandle = INVALID_RESOURCE_HANDLE;
-		};
-	}
+		ResourceHandle uniformHandle = INVALID_RESOURCE_HANDLE;
+	};
 }

@@ -22,7 +22,7 @@ namespace se
 		enum class Key : uint32_t;
 	}
 
-	namespace graphics
+	namespace gfx
 	{
 		class Texture;
 	}
@@ -157,10 +157,10 @@ namespace ImGui
 		TextColored((ImVec4&)color, format, args...);
 	}
 
-	ImVec2 SizeToScale(const se::graphics::Texture& _texture, const ImVec2 _size);
+	ImVec2 SizeToScale(const se::gfx::Texture& _texture, const ImVec2 _size);
 
 	void Image(
-		const se::graphics::Texture& _texture,
+		const se::gfx::Texture& _texture,
 		const ImVec2 scale			= ImVec2(1.0f, 1.0f),
 		const ImVec2 uv0				= ImVec2(0.0f, 0.0f),
 		const ImVec2 uv1				= ImVec2(1.0f, 1.0f),
@@ -168,7 +168,7 @@ namespace ImGui
 		const se::Color borderColor	= se::Color(0.0f, 0.0f, 0.0f, 0.0f));
 
 	bool ImageButton(
-		const se::graphics::Texture& _texture,
+		const se::gfx::Texture& _texture,
 		const ImVec2 scale				= ImVec2(1.0f, 1.0f),
 		const ImVec2 uv0				= ImVec2(0.0f, 0.0f),
 		const ImVec2 uv1				= ImVec2(1.0f, 1.0f),

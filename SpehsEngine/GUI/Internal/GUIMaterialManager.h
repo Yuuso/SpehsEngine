@@ -15,23 +15,23 @@ namespace se
 		class GUIMaterialManager
 		{
 		public:
-			GUIMaterialManager(graphics::ShaderManager& _shaderManager, graphics::TextureManager& _textureManager, graphics::FontManager& _fontManager);
+			GUIMaterialManager(gfx::ShaderManager& _shaderManager, gfx::TextureManager& _textureManager, gfx::FontManager& _fontManager);
 
-			std::shared_ptr<graphics::Texture> getTexture(std::string_view _texture);
-			std::shared_ptr<graphics::Font> getFont(std::string_view _font);
+			std::shared_ptr<gfx::Texture> getTexture(std::string_view _texture);
+			std::shared_ptr<gfx::Font> getFont(std::string_view _font);
 
-			std::shared_ptr<graphics::Material> createShapeMaterial(std::string_view _texture);
-			std::shared_ptr<graphics::Material> createFontMaterial(std::string_view _font);
+			std::shared_ptr<gfx::Material> createShapeMaterial(std::string_view _texture);
+			std::shared_ptr<gfx::Material> createFontMaterial(std::string_view _font);
 
-			graphics::ShapeGenerator shapeGenerator;
+			gfx::ShapeGenerator shapeGenerator;
 
 		private:
 
-			std::shared_ptr<graphics::Texture> colorTexture;
+			std::shared_ptr<gfx::Texture> colorTexture;
 
-			graphics::ShaderManager& shaderManager;
-			graphics::TextureManager& textureManager;
-			graphics::FontManager& fontManager;
+			gfx::ShaderManager& shaderManager;
+			gfx::TextureManager& textureManager;
+			gfx::FontManager& fontManager;
 		};
 	}
 }

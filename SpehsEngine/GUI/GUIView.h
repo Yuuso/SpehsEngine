@@ -20,8 +20,8 @@ namespace se
 		{
 		public:
 
-			GUIView(graphics::ShaderManager& _shaderManager, graphics::TextureManager& _textureManager,
-					graphics::FontManager& _fontManager, input::EventSignaler& _eventSignaler, int _inputPriority);
+			GUIView(gfx::ShaderManager& _shaderManager, gfx::TextureManager& _textureManager,
+					gfx::FontManager& _fontManager, input::EventSignaler& _eventSignaler, int _inputPriority);
 			~GUIView() = default;
 			GUIView(const GUIView& _other) = delete;
 			GUIView& operator=(const GUIView& _other) = delete;
@@ -29,7 +29,7 @@ namespace se
 			GUIView& operator=(GUIView&& _other) = delete;
 
 
-			graphics::View& getView();
+			gfx::View& getView();
 			void setInputHandlingEnabled(bool _value);
 			bool getInputhandlingEnabled() const;
 			void setLayerMaskStyle(gui::LayerMaskStyle _style);
@@ -46,13 +46,13 @@ namespace se
 			void update(glm::vec2 _renderSize);
 			bool mouseButtonCallback(const input::MouseButtonEvent& _event);
 
-			graphics::Camera camera;
-			graphics::Scene scene;
+			gfx::Camera camera;
+			gfx::Scene scene;
 
 			boost::signals2::scoped_connection updateConnection;
 			boost::signals2::scoped_connection mouseButtonConnection;
 			boost::signals2::signal<void(GUIElement&)> rootElementAddedSignal;
-			graphics::View view;
+			gfx::View view;
 
 			GUIMaterialManager materialManager;
 			bool inputHandlingEnabled = true;

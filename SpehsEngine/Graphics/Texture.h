@@ -3,53 +3,54 @@
 #include "SpehsEngine/Graphics/Resource.h"
 
 
-namespace se
+namespace se::gfx::impl
 {
-	namespace graphics
+	struct TextureFallbacks;
+	enum class TextureStatus;
+}
+
+namespace se::gfx
+{
+	struct ResourceData;
+
+	class Texture final : public Resource<TextureData>
 	{
-		struct TextureFallbacks;
-		struct ResourceData;
-		enum class TextureStatus;
+	public:
 
-		class Texture final : public Resource<TextureData>
-		{
-		public:
+		Texture(const std::string_view _name);
+		~Texture();
 
-			Texture(const std::string_view _name);
-			~Texture();
+		Texture(const Texture& _other) = delete;
+		Texture& operator=(const Texture& _other) = delete;
 
-			Texture(const Texture& _other) = delete;
-			Texture& operator=(const Texture& _other) = delete;
-
-			Texture(Texture&& _other) = delete;
-			Texture& operator=(Texture&& _other) = delete;
+		Texture(Texture&& _other) = delete;
+		Texture& operator=(Texture&& _other) = delete;
 
 
-			void reload(std::shared_ptr<ResourceLoader> _resourceLoader = nullptr) override;
-			bool reloadable() const;
-			bool update() override;
+		void reload(std::shared_ptr<ResourceLoader> _resourceLoader = nullptr) override;
+		bool reloadable() const;
+		bool update() override;
 
-			const uint16_t getWidth() const;
-			const uint16_t getHeight() const;
+		const uint16_t getWidth() const;
+		const uint16_t getHeight() const;
 
-		private:
+	private:
 
-			friend class TextureManager;
-			friend class Font;
+		friend class TextureManager;
+		friend class Font;
 
-			static std::shared_ptr<ResourceData> createResource(const std::string _path, const TextureModes _textureModes);
-			static std::shared_ptr<ResourceData> createResourceFromInput(const TextureInput& _input, const TextureModes _textureModes);
-			void create(const std::string_view _path, const TextureModes _textureModes, std::shared_ptr<ResourceLoader> _resourceLoader);
-			void create(const TextureInput& _input, const TextureModes _textureModes);
-			void destroy();
-			void setFallbacks(std::shared_ptr<TextureFallbacks> _fallbacks);
-			void setStatus(const TextureStatus _status);
+		static std::shared_ptr<ResourceData> createResource(const std::string _path, const TextureModes _textureModes);
+		static std::shared_ptr<ResourceData> createResourceFromInput(const TextureInput& _input, const TextureModes _textureModes);
+		void create(const std::string_view _path, const TextureModes _textureModes, std::shared_ptr<ResourceLoader> _resourceLoader);
+		void create(const TextureInput& _input, const TextureModes _textureModes);
+		void destroy();
+		void setFallbacks(std::shared_ptr<impl::TextureFallbacks> _fallbacks);
+		void setStatus(const impl::TextureStatus _status);
 
-			std::string path;
+		std::string path;
 
-			TextureModes textureModes;
-			TextureStatus status;
-			std::shared_ptr<TextureFallbacks> fallbacks;
-		};
-	}
+		TextureModes textureModes;
+		impl::TextureStatus status;
+		std::shared_ptr<impl::TextureFallbacks> fallbacks;
+	};
 }

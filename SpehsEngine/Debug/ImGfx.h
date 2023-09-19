@@ -8,7 +8,7 @@ namespace ImGfx
 	void init(se::debug::ImmediateModeGraphics& _instance);
 	void deinit();
 
-	se::debug::PrimitiveModifier	shape(se::graphics::ShapeType _type, se::graphics::ShapeParameters _params = {});
+	se::debug::PrimitiveModifier	shape(se::gfx::ShapeType _type, se::gfx::ShapeParameters _params = {});
 	se::debug::PrimitiveModifier	sphere();
 	se::debug::PrimitiveModifier	box();
 	se::debug::PrimitiveModifier	icon(std::string_view _texture);

@@ -4,37 +4,37 @@
 #include "SpehsEngine/Graphics/Texture.h"
 
 
-namespace se
+namespace se::gfx::impl
 {
-	namespace graphics
+	struct TextureFallbacks;
+}
+
+namespace se::gfx
+{
+	class TextureManager : public ResourceManager<Texture>
 	{
-		struct TextureFallbacks;
+	public:
 
-		class TextureManager : public ResourceManager<Texture>
-		{
-		public:
+		TextureManager();
+		~TextureManager();
 
-			TextureManager();
-			~TextureManager();
+		TextureManager(const TextureManager& _other) = delete;
+		TextureManager& operator=(const TextureManager& _other) = delete;
 
-			TextureManager(const TextureManager& _other) = delete;
-			TextureManager& operator=(const TextureManager& _other) = delete;
-
-			TextureManager(TextureManager&& _other) = delete;
-			TextureManager& operator=(TextureManager&& _other) = delete;
+		TextureManager(TextureManager&& _other) = delete;
+		TextureManager& operator=(TextureManager&& _other) = delete;
 
 
-			std::shared_ptr<Texture> create(const std::string_view _name, const std::string_view _texture, const TextureModes _textureModes = TextureModes());
-			std::shared_ptr<Texture> create(const std::string_view _name, const TextureInput& _input, const TextureModes _textureModes = TextureModes());
-			std::shared_ptr<Texture> find(const std::string_view _name) const;
-			void remove(std::string_view _name);
+		std::shared_ptr<Texture> create(const std::string_view _name, const std::string_view _texture, const TextureModes _textureModes = TextureModes());
+		std::shared_ptr<Texture> create(const std::string_view _name, const TextureInput& _input, const TextureModes _textureModes = TextureModes());
+		std::shared_ptr<Texture> find(const std::string_view _name) const;
+		void remove(std::string_view _name);
 
-		private:
+	private:
 
-			void initFallbacks();
-			void destroyFallbacks();
+		void initFallbacks();
+		void destroyFallbacks();
 
-			std::shared_ptr<TextureFallbacks> fallbacks;
-		};
-	}
+		std::shared_ptr<impl::TextureFallbacks> fallbacks;
+	};
 }

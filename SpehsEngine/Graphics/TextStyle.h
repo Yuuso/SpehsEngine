@@ -3,35 +3,32 @@
 #include "SpehsEngine/Graphics/CharacterSet.h"
 
 
-namespace se
+namespace se::gfx
 {
-	namespace graphics
+	struct TextStyle
 	{
-		struct TextStyle
+		bool operator==(const TextStyle& _other) const noexcept
 		{
-			bool operator==(const TextStyle& _other) const noexcept
-			{
-				return color == _other.color;
-			}
+			return color == _other.color;
+		}
 
-			se::Color color;
+		se::Color color;
 
-			// font index
-			// scale
-			// background color
-			// strikethrough color
-			// underline color
-			// border color
-			// offset
-			// kerning
-		};
+		// font index
+		// scale
+		// background color
+		// strikethrough color
+		// underline color
+		// border color
+		// offset
+		// kerning
+	};
 
-		struct StyledStringSegment
-		{
-			TextStyle style;
-			std::basic_string<CharacterCode> text; // utf-32
-		};
+	struct StyledStringSegment
+	{
+		TextStyle style;
+		std::basic_string<CharacterCode> text; // utf-32
+	};
 
-		typedef std::vector<std::unique_ptr<StyledStringSegment>> StyledString;
-	}
+	typedef std::vector<std::unique_ptr<StyledStringSegment>> StyledString;
 }

@@ -2,158 +2,149 @@
 #include "SpehsEngine/Graphics/VertexBuffer.h"
 
 
-namespace se
+VertexBuffer::VertexBuffer(const VertexAttributeFlagsType _vertexAttributes)
 {
-	namespace graphics
+	setAttributes(_vertexAttributes);
+}
+VertexBuffer::~VertexBuffer()
+{
+	safeDestroy<bgfx::VertexBufferHandle>(bufferObject);
+}
+
+VertexBuffer::VertexBuffer(const VertexBuffer& _other)
+	: BufferObject(_other)
+	, buffer(_other.buffer)
+	, attributes(_other.attributes)
+	, vertexBytes(_other.vertexBytes)
+{
+}
+VertexBuffer& VertexBuffer::operator=(const VertexBuffer& _other)
+{
+	BufferObject::operator=(_other);
+	buffer = _other.buffer;
+	attributes = _other.attributes;
+	vertexBytes = _other.vertexBytes;
+	return *this;
+}
+
+VertexBuffer::VertexBuffer(VertexBuffer&& _other)
+	: BufferObject(std::move(_other))
+	, buffer(std::move(_other.buffer))
+	, attributes(_other.attributes)
+	, vertexBytes(_other.vertexBytes)
+{
+}
+VertexBuffer& VertexBuffer::operator=(VertexBuffer&& _other)
+{
+	BufferObject::operator=(std::move(_other));
+	buffer = std::move(_other.buffer);
+	attributes = _other.attributes;
+	vertexBytes = _other.vertexBytes;
+	return *this;
+}
+
+const VertexAttributeFlagsType VertexBuffer::getAttributes() const
+{
+	return attributes;
+}
+void VertexBuffer::setAttributes(const VertexAttributeFlagsType _vertexAttributes)
+{
+	se_assert(buffer.size() == 0); // TODO: re-order the buffer?!
+	attributes = _vertexAttributes;
+	calculateVertexSize();
+}
+
+const size_t VertexBuffer::size() const
+{
+	if (vertexBytes == 0)
+		return 0;
+	return buffer.size() / vertexBytes;
+}
+const size_t VertexBuffer::bytes() const
+{
+	return buffer.size();
+}
+void VertexBuffer::resize(const size_t _size)
+{
+	se_assert(_size == 0 || vertexBytes > 0);
+	buffer.resize(_size * vertexBytes);
+	bufferChanged = true;
+}
+void VertexBuffer::grow(const size_t _amount)
+{
+	se_assert(_amount == 0 || vertexBytes > 0);
+	buffer.resize(buffer.size() + _amount * vertexBytes);
+	bufferChanged = true;
+}
+void VertexBuffer::pushBack(const VertexBuffer& _vertices)
+{
+	se_assert(getAttributes() == _vertices.getAttributes());
+	buffer.insert(buffer.end(), _vertices.buffer.begin(), _vertices.buffer.end());
+	bufferChanged = true;
+}
+void VertexBuffer::erase(const size_t _begin, const size_t _end)
+{
+	se_assert(_begin <= _end);
+	se_assert(_begin < size());
+	se_assert(_end <= size());
+
+	// NOTE:
+	// _end is index (not in bytes) and is not inclusive.
+	// Erasing from _begin to _begin would only erase 1 byte.
+	const size_t fixedEnd = glm::max(_end, _begin + 1);
+
+	buffer.erase(buffer.begin() + _begin * vertexBytes, buffer.begin() + fixedEnd * vertexBytes);
+	bufferChanged = true;
+}
+void VertexBuffer::clear()
+{
+	buffer.clear();
+	se_assert(size() == 0);
+	bufferChanged = true;
+}
+const void* VertexBuffer::data() const
+{
+	return reinterpret_cast<const void*>(buffer.data());
+}
+
+void VertexBuffer::calculateVertexSize()
+{
+	vertexBytes = 0;
+
+	#define check_attribute_bytes(__attribute) \
+		if(checkBit(attributes, VertexAttribute::VertexAttributeFlag::__attribute)) { vertexBytes += sizeof(VertexAttribute::##__attribute##Type); }
+
+	check_attribute_bytes(Position)
+	check_attribute_bytes(Normal)
+	check_attribute_bytes(Tangent)
+	check_attribute_bytes(Bitangent)
+	check_attribute_bytes(Color0)
+	check_attribute_bytes(Color1)
+	check_attribute_bytes(Color2)
+	check_attribute_bytes(Color3)
+	check_attribute_bytes(Weight)
+	check_attribute_bytes(Indices)
+	check_attribute_bytes(TexCoord0)
+	check_attribute_bytes(TexCoord1)
+	check_attribute_bytes(TexCoord2)
+	check_attribute_bytes(Data0)
+	check_attribute_bytes(Data1)
+	check_attribute_bytes(Data2)
+	check_attribute_bytes(Data3)
+	check_attribute_bytes(Data4)
+
+	#undef check_attribute_bytes
+}
+
+void VertexBuffer::updateBuffer()
+{
+	safeDestroy<bgfx::VertexBufferHandle>(bufferObject);
+	if (renderers.size() > 0 && size() > 0)
 	{
-		VertexBuffer::VertexBuffer()
-		{
-		}
-		VertexBuffer::VertexBuffer(const VertexAttributeFlagsType _vertexAttributes)
-		{
-			setAttributes(_vertexAttributes);
-		}
-		VertexBuffer::~VertexBuffer()
-		{
-			safeDestroy<bgfx::VertexBufferHandle>(bufferObject);
-		}
-
-		VertexBuffer::VertexBuffer(const VertexBuffer& _other)
-			: BufferObject(_other)
-			, buffer(_other.buffer)
-			, attributes(_other.attributes)
-			, vertexBytes(_other.vertexBytes)
-		{
-		}
-		VertexBuffer& VertexBuffer::operator=(const VertexBuffer& _other)
-		{
-			BufferObject::operator=(_other);
-			buffer = _other.buffer;
-			attributes = _other.attributes;
-			vertexBytes = _other.vertexBytes;
-			return *this;
-		}
-
-		VertexBuffer::VertexBuffer(VertexBuffer&& _other)
-			: BufferObject(std::move(_other))
-			, buffer(std::move(_other.buffer))
-			, attributes(_other.attributes)
-			, vertexBytes(_other.vertexBytes)
-		{
-		}
-		VertexBuffer& VertexBuffer::operator=(VertexBuffer&& _other)
-		{
-			BufferObject::operator=(std::move(_other));
-			buffer = std::move(_other.buffer);
-			attributes = _other.attributes;
-			vertexBytes = _other.vertexBytes;
-			return *this;
-		}
-
-		const VertexAttributeFlagsType VertexBuffer::getAttributes() const
-		{
-			return attributes;
-		}
-		void VertexBuffer::setAttributes(const VertexAttributeFlagsType _vertexAttributes)
-		{
-			se_assert(buffer.size() == 0); // TODO: re-order the buffer?!
-			attributes = _vertexAttributes;
-			calculateVertexSize();
-		}
-
-		const size_t VertexBuffer::size() const
-		{
-			if (vertexBytes == 0)
-				return 0;
-			return buffer.size() / vertexBytes;
-		}
-		const size_t VertexBuffer::bytes() const
-		{
-			return buffer.size();
-		}
-		void VertexBuffer::resize(const size_t _size)
-		{
-			se_assert(_size == 0 || vertexBytes > 0);
-			buffer.resize(_size * vertexBytes);
-			bufferChanged = true;
-		}
-		void VertexBuffer::grow(const size_t _amount)
-		{
-			se_assert(_amount == 0 || vertexBytes > 0);
-			buffer.resize(buffer.size() + _amount * vertexBytes);
-			bufferChanged = true;
-		}
-		void VertexBuffer::pushBack(const VertexBuffer& _vertices)
-		{
-			se_assert(getAttributes() == _vertices.getAttributes());
-			buffer.insert(buffer.end(), _vertices.buffer.begin(), _vertices.buffer.end());
-			bufferChanged = true;
-		}
-		void VertexBuffer::erase(const size_t _begin, const size_t _end)
-		{
-			se_assert(_begin <= _end);
-			se_assert(_begin < size());
-			se_assert(_end <= size());
-
-			// NOTE:
-			// _end is index (not in bytes) and is not inclusive.
-			// Erasing from _begin to _begin would only erase 1 byte.
-			const size_t fixedEnd = glm::max(_end, _begin + 1);
-
-			buffer.erase(buffer.begin() + _begin * vertexBytes, buffer.begin() + fixedEnd * vertexBytes);
-			bufferChanged = true;
-		}
-		void VertexBuffer::clear()
-		{
-			buffer.clear();
-			se_assert(size() == 0);
-			bufferChanged = true;
-		}
-		const void* VertexBuffer::data() const
-		{
-			return reinterpret_cast<const void*>(buffer.data());
-		}
-
-		void VertexBuffer::calculateVertexSize()
-		{
-			vertexBytes = 0;
-
-			#define check_attribute_bytes(__attribute) \
-				if(checkBit(attributes, VertexAttribute::VertexAttributeFlag::__attribute)) { vertexBytes += sizeof(VertexAttribute::##__attribute##Type); }
-
-			check_attribute_bytes(Position)
-			check_attribute_bytes(Normal)
-			check_attribute_bytes(Tangent)
-			check_attribute_bytes(Bitangent)
-			check_attribute_bytes(Color0)
-			check_attribute_bytes(Color1)
-			check_attribute_bytes(Color2)
-			check_attribute_bytes(Color3)
-			check_attribute_bytes(Weight)
-			check_attribute_bytes(Indices)
-			check_attribute_bytes(TexCoord0)
-			check_attribute_bytes(TexCoord1)
-			check_attribute_bytes(TexCoord2)
-			check_attribute_bytes(Data0)
-			check_attribute_bytes(Data1)
-			check_attribute_bytes(Data2)
-			check_attribute_bytes(Data3)
-			check_attribute_bytes(Data4)
-
-			#undef check_attribute_bytes
-		}
-
-		void VertexBuffer::updateBuffer()
-		{
-			safeDestroy<bgfx::VertexBufferHandle>(bufferObject);
-			if (renderers.size() > 0 && size() > 0)
-			{
-				const bgfx::Memory* bufferMemory = bgfx::copy(data(), uint32_t(bytes()));
-				bufferObject = bgfx::createVertexBuffer(bufferMemory, findVertexLayout(getAttributes())).idx;
-				if (bufferObject == INVALID_RESOURCE_HANDLE)
-					log::fatal("Out of vertex buffer memory?");
-			}
-			bufferChanged = false;
-		}
+		const bgfx::Memory* bufferMemory = bgfx::copy(data(), uint32_t(bytes()));
+		bufferObject = bgfx::createVertexBuffer(bufferMemory, findVertexLayout(getAttributes())).idx;
+		if (bufferObject == INVALID_RESOURCE_HANDLE)
+			log::fatal("Out of vertex buffer memory?");
 	}
+	bufferChanged = false;
 }

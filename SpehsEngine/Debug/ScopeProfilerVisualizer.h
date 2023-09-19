@@ -3,7 +3,7 @@
 
 namespace se
 {
-	namespace graphics
+	namespace gfx
 	{
 		class View;
 		class FontManager;
@@ -24,7 +24,7 @@ namespace se
 		{
 		public:
 
-			ScopeProfilerVisualizer(graphics::View& _view, graphics::FontManager& _fontManager, graphics::ShaderManager& _shaderManager, input::InputManager& _inputManager);
+			ScopeProfilerVisualizer(gfx::View& _view, gfx::FontManager& _fontManager, gfx::ShaderManager& _shaderManager, input::InputManager& _inputManager);
 			~ScopeProfilerVisualizer();
 
 			void update(const time::Time& deltaTime);

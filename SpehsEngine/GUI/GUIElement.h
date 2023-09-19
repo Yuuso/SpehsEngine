@@ -113,7 +113,7 @@ namespace se
 			// Frame update values
 			GUIElementUpdateFlagsType				updateFlags			= 0;
 			glm::mat4								globalTrasform		= glm::identity<glm::mat4>();
-			graphics::Scissor						globalScissor;
+			gfx::Scissor							globalScissor;
 			bool									globalVisible		= true;
 			glm::vec2								lastViewSize;
 			GUIElementInputStatus					inputStatus			= GUIElementInputStatus::Normal;

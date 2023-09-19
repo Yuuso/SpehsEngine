@@ -10,7 +10,7 @@ namespace se
 	{
 		class EventSignaler;
 	}
-	namespace graphics
+	namespace gfx
 	{
 		class Renderer;
 	}
@@ -28,7 +28,7 @@ namespace se
 		{
 		public:
 
-			BackendWrapper(input::EventSignaler& eventSignaler, const int inputPriority, graphics::Renderer& _renderer);
+			BackendWrapper(input::EventSignaler& eventSignaler, const int inputPriority, gfx::Renderer& _renderer);
 			~BackendWrapper();
 
 			void render();
@@ -41,7 +41,7 @@ namespace se
 		private:
 
 			input::EventSignaler& eventSignaler;
-			graphics::Renderer& renderer;
+			gfx::Renderer& renderer;
 
 			int inputPriority = 0;
 			bool mousePressedStates[3] = { false, false, false };

@@ -13,7 +13,7 @@
 #include "SpehsEngine/Graphics/Text.h"
 #include "SpehsEngine/Graphics/TextureManager.h"
 
-using namespace se::graphics;
+using namespace se::gfx;
 
 
 namespace se

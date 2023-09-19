@@ -5,85 +5,82 @@
 #include "SpehsEngine/Graphics/ResourceLoader.h"
 
 
-namespace se
+namespace se::gfx
 {
-	namespace graphics
+	template <typename T>
+	class ResourceManager
 	{
-		template <typename T>
-		class ResourceManager
+	public:
+
+		ResourceManager()
 		{
-		public:
+			pathFinder = std::make_shared<ResourcePathFinder>();
+		}
+		virtual ~ResourceManager() = default;
 
-			ResourceManager()
+		ResourceManager(const ResourceManager& _other) = delete;
+		ResourceManager& operator=(const ResourceManager& _other) = delete;
+
+		ResourceManager(ResourceManager&& _other) = delete;
+		ResourceManager& operator=(ResourceManager&& _other) = delete;
+
+
+		void setResourcePathFinder(std::shared_ptr<ResourcePathFinder> _pathFinder)
+		{
+			pathFinder = _pathFinder;
+		}
+		void setResourceLoader(std::shared_ptr<ResourceLoader> _resourceLoader)
+		{
+			resourceLoader = _resourceLoader;
+		}
+
+		void update()
+		{
+			for (auto&& resource : resources)
 			{
-				pathFinder = std::make_shared<ResourcePathFinder>();
+				resource->update();
 			}
-			virtual ~ResourceManager() = default;
-
-			ResourceManager(const ResourceManager& _other) = delete;
-			ResourceManager& operator=(const ResourceManager& _other) = delete;
-
-			ResourceManager(ResourceManager&& _other) = delete;
-			ResourceManager& operator=(ResourceManager&& _other) = delete;
-
-
-			void setResourcePathFinder(std::shared_ptr<ResourcePathFinder> _pathFinder)
+		}
+		void reload()
+		{
+			for (auto&& resource : resources)
 			{
-				pathFinder = _pathFinder;
+				if (resource->reloadable())
+					resource->reload(resourceLoader);
 			}
-			void setResourceLoader(std::shared_ptr<ResourceLoader> _resourceLoader)
+		}
+		void purgeUnused()
+		{
+			for (size_t i = 0; i < resources.size(); /*i++*/)
 			{
-				resourceLoader = _resourceLoader;
-			}
-
-			void update()
-			{
-				for (auto&& resource : resources)
+				if (resources[i]->reloadable() && resources[i].use_count() == 1)
 				{
-					resource->update();
+					resources[i].swap(resources.back());
+					resources.pop_back();
+				}
+				else
+				{
+					i++;
 				}
 			}
-			void reload()
+		}
+		bool ready() const
+		{
+			for (auto&& resource : resources)
 			{
-				for (auto&& resource : resources)
+				if (!resource->ready())
 				{
-					if (resource->reloadable())
-						resource->reload(resourceLoader);
+					return false;
 				}
 			}
-			void purgeUnused()
-			{
-				for (size_t i = 0; i < resources.size(); /*i++*/)
-				{
-					if (resources[i]->reloadable() && resources[i].use_count() == 1)
-					{
-						resources[i].swap(resources.back());
-						resources.pop_back();
-					}
-					else
-					{
-						i++;
-					}
-				}
-			}
-			bool ready() const
-			{
-				for (auto&& resource : resources)
-				{
-					if (!resource->ready())
-					{
-						return false;
-					}
-				}
-				return true;
-			}
+			return true;
+		}
 
-		protected:
+	protected:
 
-			std::shared_ptr<ResourcePathFinder> pathFinder = nullptr;
-			std::shared_ptr<ResourceLoader> resourceLoader = nullptr;
+		std::shared_ptr<ResourcePathFinder> pathFinder = nullptr;
+		std::shared_ptr<ResourceLoader> resourceLoader = nullptr;
 
-			std::vector<std::shared_ptr<T>> resources;
-		};
-	}
+		std::vector<std::shared_ptr<T>> resources;
+	};
 }

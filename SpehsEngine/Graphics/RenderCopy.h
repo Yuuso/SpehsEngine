@@ -1,19 +1,16 @@
 #pragma once
 
 
-namespace se
+namespace se::gfx
 {
-	namespace graphics
-	{
-		class Material;
+	class Material;
 
-		struct RenderCopy
-		{
-			std::optional<RenderFlagsType> renderFlags;
-			std::optional<PrimitiveType> primitiveType;
-			std::shared_ptr<Material> material;
-			std::optional<Color> primitiveColor;
-			std::optional<uint32_t> renderDepth;
-		};
-	}
+	struct RenderCopy
+	{
+		std::optional<RenderFlagsType> renderFlags;
+		std::optional<PrimitiveType> primitiveType;
+		std::shared_ptr<Material> material;
+		std::optional<Color> primitiveColor;
+		std::optional<uint32_t> renderDepth;
+	};
 }

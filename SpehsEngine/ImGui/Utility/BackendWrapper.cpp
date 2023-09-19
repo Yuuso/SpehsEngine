@@ -46,7 +46,7 @@ namespace se
         }
 
 
-        BackendWrapper::BackendWrapper(input::EventSignaler& _eventSignaler, const int _inputPriority, graphics::Renderer& _renderer)
+        BackendWrapper::BackendWrapper(input::EventSignaler& _eventSignaler, const int _inputPriority, gfx::Renderer& _renderer)
             : eventSignaler(_eventSignaler)
             , inputPriority(_inputPriority)
             , renderer(_renderer)

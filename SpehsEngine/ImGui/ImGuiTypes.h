@@ -17,7 +17,7 @@ namespace se
 		union ImGuiUserTextureData
 		{
 			void* id;
-			graphics::ResourceHandle resourceHandle;
+			gfx::ResourceHandle resourceHandle;
 		};
 	}
 }
