@@ -16,9 +16,8 @@ namespace se::gui
 		BindingSource,
 		Local,
 		ExplicitResource = Local,
-		BindingTarget = Local,
-		Animation
+		BindingTarget = Local
 	};
 
-	// NOTE: Triggers for each precedence level will override the value
+	// NOTE: Triggers and Animation for each precedence level will override the value.
 }

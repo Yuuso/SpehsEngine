@@ -36,6 +36,7 @@ namespace se::gui
 			handleDataContextChanged();
 			return *this;
 		}
+
 	public:
 		SelfClass& addPropertyTrigger(const PropertyTrigger& _trigger)
 		{
@@ -48,6 +49,7 @@ namespace se::gui
 			propertyTriggers.push_back(std::make_unique<PropertyTriggerLink>(_trigger, _type));
 			connectPropertyTrigger(*propertyTriggers.back());
 		}
+
 	public:
 		template<typename Type>
 		SelfClass& addResource(const std::string& _name, const Type& _value)
@@ -59,6 +61,12 @@ namespace se::gui
 		{
 			resources.push_back(_resource);
 			return *this;
+		}
+
+	public:
+		SelfClass& addAnimation()
+		{
+
 		}
 
 
