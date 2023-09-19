@@ -12,10 +12,10 @@ SET BX_DIR=../../../bx
 IF NOT EXIST %BX_DIR% EXIT /B 1
 CD "%BX_DIR%"
 
-ECHO Checkout a specific version (master branch, 2022/09/13)
+ECHO Checkout a specific version (master branch, 2023/09/15)
 CALL git reset --hard HEAD
 CALL git clean -d -x -f
-CALL git checkout 2d57ed63c0e0c733059f8e437cb6f02779cf4f1a
+CALL git checkout 16c55699c168a6cff1ebf64c836163b2e40de7c7
 
 
 ECHO.
@@ -25,10 +25,10 @@ SET BIMG_DIR=../bimg
 IF NOT EXIST %BIMG_DIR% EXIT /B 1
 CD "%BIMG_DIR%"
 
-ECHO Checkout a specific version (master branch, 2022/09/24)
+ECHO Checkout a specific version (master branch, 2023/09/15)
 CALL git reset --hard HEAD
 CALL git clean -d -x -f
-CALL git checkout 0de8816a8b155fe85583aa74f5bc93bdfb8910bb
+CALL git checkout ab96ba9dda6c23273751be81509f3fe3086d7724
 
 
 ECHO.
@@ -38,10 +38,10 @@ SET BGFX_DIR=../bgfx
 IF NOT EXIST %BGFX_DIR% EXIT /B 1
 CD "%BGFX_DIR%"
 
-ECHO Checkout a specific version (master branch, 2022/09/14)
+ECHO Checkout a specific version (master branch, 2023/09/15)
 CALL git reset --hard HEAD
 CALL git clean -d -x -f
-CALL git checkout 11ac9f27c7c7c38d078824511f223946a43bc3dc
+CALL git checkout 17f773007a707d213a1e267bab155de5b9af73e4
 
 
 IF %ERRORLEVEL% NEQ 0 EXIT /B 1
