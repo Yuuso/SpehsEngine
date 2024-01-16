@@ -20,14 +20,9 @@ namespace se
 		{
 		public:
 
-			GUIView(gfx::ShaderManager& _shaderManager, gfx::TextureManager& _textureManager,
-					gfx::FontManager& _fontManager, input::EventSignaler& _eventSignaler, int _inputPriority);
+			SE_NO_COPY_OR_MOVE(GUIView);
+			GUIView(AssetManager& _assetManager, input::EventSignaler& _eventSignaler, int _inputPriority);
 			~GUIView() = default;
-			GUIView(const GUIView& _other) = delete;
-			GUIView& operator=(const GUIView& _other) = delete;
-			GUIView(GUIView&& _other) = delete;
-			GUIView& operator=(GUIView&& _other) = delete;
-
 
 			gfx::View& getView();
 			void setInputHandlingEnabled(bool _value);

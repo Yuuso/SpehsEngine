@@ -1,52 +1,54 @@
 #include "stdafx.h"
 #include "SpehsEngine/GUI/Internal/GUIMaterialManager.h"
 
+#include "SpehsEngine/Graphics/DefaultFonts.h"
+
 
 namespace se
 {
 	namespace legacygui
 	{
-		GUIMaterialManager::GUIMaterialManager(gfx::ShaderManager& _shaderManager, gfx::TextureManager& _textureManager, gfx::FontManager& _fontManager)
-			: shaderManager(_shaderManager)
-			, textureManager(_textureManager)
-			, fontManager(_fontManager)
+		GUIMaterialManager::GUIMaterialManager(AssetManager& _assetManager)
+			: assetManager(_assetManager)
 		{
-			gfx::TextureInput textureInput;
-			textureInput.width = 1;
-			textureInput.height = 1;
-			textureInput.data = { 255, 255, 255, 255 };
-			colorTexture = textureManager.create("SE_GUI_WhiteColor", textureInput);
+			gfx::TextureInput textureInput{ 1, 1 };
+			textureInput.push(255, 255, 255, 255);
+			colorTexture = std::make_shared<gfx::Texture>("SE_GUI_WhiteColor", nullptr, textureInput);
 		}
 
 		std::shared_ptr<gfx::Texture> GUIMaterialManager::getTexture(std::string_view _texture)
 		{
 			if (_texture.empty())
 				return colorTexture;
-			auto texture = textureManager.find(_texture);
+			auto texture = assetManager.find<gfx::Texture>(_texture);
 			if (!texture)
-				texture = textureManager.create(_texture, _texture);
+			{
+				texture = assetManager.emplace<gfx::Texture>(_texture, _texture);
+			}
 			return texture;
 		}
 		std::shared_ptr<gfx::Font> GUIMaterialManager::getFont(std::string_view _font)
 		{
 			if (_font.empty())
-				return fontManager.getDefaultFont();
-			auto font = fontManager.find(_font);
+				return assetManager.find<gfx::Font>(gfx::getDefaultFontName());
+			auto font = assetManager.find<gfx::Font>(_font);
 			if (!font)
-				font = fontManager.create(_font, _font, gfx::FontSize());
+			{
+				font = assetManager.emplace<gfx::Font>(_font, _font);
+			}
 			font->waitUntilReady();
 			return font;
 		}
 
 		std::shared_ptr<gfx::Material> GUIMaterialManager::createShapeMaterial(std::string_view _texture)
 		{
-			auto result = gfx::createMaterial(gfx::DefaultMaterialType::FlatTexture, shaderManager);
+			auto result = gfx::createMaterial(gfx::DefaultMaterialType::FlatTexture, assetManager);
 			result->setTexture(getTexture(_texture));
 			return result;
 		}
 		std::shared_ptr<gfx::Material> GUIMaterialManager::createFontMaterial(std::string_view _font)
 		{
-			auto result = gfx::createMaterial(gfx::DefaultMaterialType::Text, shaderManager);
+			auto result = gfx::createMaterial(gfx::DefaultMaterialType::Text, assetManager);
 			result->setFont(getFont(_font));
 			return result;
 		}

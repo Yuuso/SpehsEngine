@@ -3,11 +3,10 @@
 
 namespace se
 {
+	class AssetManager;
 	namespace gfx
 	{
 		class View;
-		class FontManager;
-		class ShaderManager;
 	}
 
 	namespace input
@@ -24,7 +23,7 @@ namespace se
 		{
 		public:
 
-			ScopeProfilerVisualizer(gfx::View& _view, gfx::FontManager& _fontManager, gfx::ShaderManager& _shaderManager, input::InputManager& _inputManager);
+			ScopeProfilerVisualizer(gfx::View& _view, AssetManager& _assetManager, input::InputManager& _inputManager);
 			~ScopeProfilerVisualizer();
 
 			void update(const time::Time& deltaTime);

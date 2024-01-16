@@ -1,6 +1,6 @@
 #pragma once
 
-#include "SpehsEngine/Graphics/ResourceHandle.h"
+#include "SpehsEngine/Core/Asset.h"
 
 
 namespace se
@@ -12,12 +12,6 @@ namespace se
 			Mono,
 			Regular,
 			Count
-		};
-
-		union ImGuiUserTextureData
-		{
-			void* id;
-			gfx::ResourceHandle resourceHandle;
 		};
 	}
 }

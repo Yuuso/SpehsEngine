@@ -1,17 +1,17 @@
 #include "stdafx.h"
 #include "SpehsEngine/Debug/ImmediateModeGraphics.h"
 
+#include "SpehsEngine/Core/AssetManager.h"
+#include "SpehsEngine/Graphics/DefaultFonts.h"
 #include "SpehsEngine/Graphics/DefaultMaterials.h"
-#include "SpehsEngine/Graphics/FontManager.h"
 #include "SpehsEngine/Graphics/Line.h"
 #include "SpehsEngine/Graphics/Material.h"
 #include "SpehsEngine/Graphics/Model.h"
-#include "SpehsEngine/Graphics/ModelDataManager.h"
-#include "SpehsEngine/Graphics/ShaderManager.h"
+#include "SpehsEngine/Graphics/ModelAsset.h"
 #include "SpehsEngine/Graphics/Shape.h"
 #include "SpehsEngine/Graphics/ShapeGenerator.h"
 #include "SpehsEngine/Graphics/Text.h"
-#include "SpehsEngine/Graphics/TextureManager.h"
+#include "SpehsEngine/Graphics/Texture.h"
 
 using namespace se::gfx;
 
@@ -31,14 +31,9 @@ namespace se
 		}
 
 		ImmediateModeGraphics::ImmediateModeGraphics(
-				View& _view, ShaderManager& _shaderManager,
-				TextureManager& _textureManager, FontManager& _fontManager,
-				ModelDataManager& _modelDataManager, ShapeGenerator& _shapeGenerator)
+				View& _view, AssetManager& _assetManager, ShapeGenerator& _shapeGenerator)
 			: view(_view)
-			, shaderManager(_shaderManager)
-			, textureManager(_textureManager)
-			, fontManager(_fontManager)
-			, modelDataManager(_modelDataManager)
+			, assetManager(_assetManager)
 			, shapeGenerator(_shapeGenerator)
 			, shapes(_view)
 			, lines(_view)
@@ -48,9 +43,9 @@ namespace se
 
 		void ImmediateModeGraphics::init()
 		{
-			defaultFlatMaterial = createMaterial(DefaultMaterialType::FlatColor, shaderManager);
-			defaultTextMaterial = createMaterial(DefaultMaterialType::Text, shaderManager);
-			defaultTextMaterial->setFont(fontManager.getDefaultFont());
+			defaultFlatMaterial = createMaterial(DefaultMaterialType::FlatColor, assetManager);
+			defaultTextMaterial = createMaterial(DefaultMaterialType::Text, assetManager);
+			defaultTextMaterial->setFont(assetManager.find<Font>(getDefaultFontName()));
 		}
 		void ImmediateModeGraphics::endFrame()
 		{
@@ -88,11 +83,11 @@ namespace se
 			Shape& shape = shapes.next();
 			shape.generate(ShapeType::Square, ShapeParameters{}, &shapeGenerator);
 			setDefaults(shape);
-			auto material = createMaterial(DefaultMaterialType::FlatTexture, shaderManager);
-			auto texture = textureManager.find(_texture);
+			auto material = createMaterial(DefaultMaterialType::FlatTexture, assetManager);
+			auto texture = assetManager.find<Texture>(_texture);
 			if (!texture)
 			{
-				texture = textureManager.create(_texture, _texture);
+				texture = assetManager.emplace<Texture>(_texture, _texture);
 			}
 			material->setTexture(texture);
 			shape.setMaterial(material);
@@ -129,11 +124,11 @@ namespace se
 			}
 			else
 			{
-				auto material = createMaterial(DefaultMaterialType::Text, shaderManager);
-				auto font = fontManager.find(_font);
+				auto material = createMaterial(DefaultMaterialType::Text, assetManager);
+				auto font = assetManager.find<Font>(_font);
 				if (!font)
 				{
-					font = fontManager.create(_font, _font, 30);
+					font = assetManager.emplace<Font>(_font, _font, FontSize{ 30 });
 				}
 				material->setFont(font);
 				text.setMaterial(material);
@@ -143,12 +138,12 @@ namespace se
 		ModelModifier ImmediateModeGraphics::model(std::string_view _model)
 		{
 			Model& model = models.next();
-			auto modelData = modelDataManager.find(_model);
-			if (!modelData)
+			auto modelAsset = assetManager.find<ModelAsset>(_model);
+			if (!modelAsset)
 			{
-				modelData = modelDataManager.create(_model, _model);
+				modelAsset = assetManager.emplace<ModelAsset>(_model, _model);
 			}
-			model.loadModelData(modelData);
+			model.loadModelAsset(modelAsset);
 			setDefaults(model);
 			model.setPrimitiveType(PrimitiveType::Triangles);
 			model.setMaterial(defaultFlatMaterial);

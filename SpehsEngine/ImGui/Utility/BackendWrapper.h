@@ -12,7 +12,7 @@ namespace se
 	}
 	namespace gfx
 	{
-		class Renderer;
+		class Window;
 	}
 }
 struct ImFont;
@@ -28,7 +28,7 @@ namespace se
 		{
 		public:
 
-			BackendWrapper(input::EventSignaler& eventSignaler, const int inputPriority, gfx::Renderer& _renderer);
+			BackendWrapper(input::EventSignaler& eventSignaler, int inputPriority, gfx::Window& _window);
 			~BackendWrapper();
 
 			void render();
@@ -41,7 +41,7 @@ namespace se
 		private:
 
 			input::EventSignaler& eventSignaler;
-			gfx::Renderer& renderer;
+			gfx::Window& window;
 
 			int inputPriority = 0;
 			bool mousePressedStates[3] = { false, false, false };

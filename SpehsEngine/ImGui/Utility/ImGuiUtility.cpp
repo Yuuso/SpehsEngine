@@ -39,7 +39,7 @@ namespace ImGui
 			return changed;
 		}
 	}
-	
+
 	ImVec2 SizeToScale(const se::gfx::Texture& _texture, const ImVec2 _size)
 	{
 		return ImVec2(_size.x / float(_texture.getWidth()), _size.y / float(_texture.getHeight()));
@@ -53,10 +53,8 @@ namespace ImGui
 		const se::Color tintColor,
 		const se::Color borderColor)
 	{
-		se::imgui::ImGuiUserTextureData userTextureData;
-		userTextureData.resourceHandle = _texture.getHandle();
 		ImGui::Image(
-			userTextureData.id,
+			_texture.getHandle().ptr, // This might technically be UB...
 			ImVec2(float(_texture.getWidth()) * scale.x, float(_texture.getHeight()) * scale.y),
 			uv0,
 			uv1,
@@ -73,10 +71,8 @@ namespace ImGui
 		const se::Color tintColor,
 		const se::Color backgroundColor)
 	{
-		se::imgui::ImGuiUserTextureData userTextureData;
-		userTextureData.resourceHandle = _texture.getHandle();
 		return ImGui::ImageButton(
-			userTextureData.id,
+			_texture.getHandle().ptr, // This might technically be UB...
 			ImVec2(float(_texture.getWidth()) * scale.x, float(_texture.getHeight()) * scale.y),
 			uv0,
 			uv1,
@@ -277,7 +273,7 @@ namespace ImGui
 						scopedConnection.disconnect();
 						return true;
 					}
-					else	
+					else
 					{
 						return false;
 					}

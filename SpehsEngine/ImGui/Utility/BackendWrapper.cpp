@@ -6,7 +6,7 @@
 #include "SpehsEngine/ImGui/imgui.h"
 #include "SpehsEngine/ImGui/imgui_impl_sdl.h"
 #include "SpehsEngine/Input/EventSignaler.h"
-#include "SpehsEngine/Graphics/Renderer.h"
+#include "SpehsEngine/Graphics/Window.h"
 #include "SDL/SDL_mouse.h"
 #include "SDL/SDL_keyboard.h"
 #include "SDL/SDL_keycode.h"
@@ -46,10 +46,10 @@ namespace se
         }
 
 
-        BackendWrapper::BackendWrapper(input::EventSignaler& _eventSignaler, const int _inputPriority, gfx::Renderer& _renderer)
+        BackendWrapper::BackendWrapper(input::EventSignaler& _eventSignaler, int _inputPriority, gfx::Window& _window)
             : eventSignaler(_eventSignaler)
             , inputPriority(_inputPriority)
-            , renderer(_renderer)
+            , window(_window)
         {
             IMGUI_CHECKVERSION();
             ImGui::CreateContext();
@@ -59,7 +59,11 @@ namespace se
             //io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
             ImGui::StyleColorsDark();
 
-            SDL_Window* sdlWindow = renderer.getDefaultSDLWindow(); // NOTE: ImGui will only work in the default window!
+            SDL_Window* sdlWindow = window.getSDLWindow();
+            if (!sdlWindow)
+            {
+                log::fatal("Window is not valid!");
+            }
             ImGui_ImplSDL2_Init(sdlWindow);
 
             // Bgfx implementation
@@ -144,7 +148,7 @@ namespace se
             // After event signaler has updated, begin a new frame with the freshly received input state
             eventSignaler.connectToPostUpdateSignal(eventSignalerPostUpdateConnection, [this]()
                 {
-                    SDL_Window* sdlWindow = renderer.getDefaultSDLWindow();
+                    SDL_Window* sdlWindow = window.getSDLWindow();
                     ImGui_ImplSDL2_NewFrame(sdlWindow);
                     ImGui::NewFrame();
                 });
@@ -168,7 +172,7 @@ namespace se
 
             // Bgfx implementation
             {
-                bgfx::setViewFrameBuffer(impl::viewId, BGFX_INVALID_HANDLE); // Use default backbuffer, which should be the default window
+                bgfx::setViewFrameBuffer(impl::viewId, BGFX_INVALID_HANDLE); // Use default back buffer, which should be the default window
                 ImDrawData* drawData = ImGui::GetDrawData();
 
                 const ImGuiIO& io = ImGui::GetIO();
@@ -230,9 +234,9 @@ namespace se
 
                             if (cmd->TextureId != nullptr)
                             {
-                                se::imgui::ImGuiUserTextureData userTextureData;
-                                userTextureData.id = cmd->TextureId;
-                                textureHandle = { userTextureData.resourceHandle } ;
+                                // This might technically be UB...
+                                AssetHandle texture{ cmd->TextureId };
+                                textureHandle.idx = texture.u16handle;
                             }
 
                             const uint16_t xx = uint16_t(bx::max(cmd->ClipRect.x, 0.0f));

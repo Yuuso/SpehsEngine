@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "SpehsEngine/GUI/GUIText.h"
 
+#include "SpehsEngine/Graphics/Font.h"
 #include "SpehsEngine/Graphics/Scene.h"
 #include "SpehsEngine/GUI/GUIView.h"
 #include "SpehsEngine/GUI/Internal/StencilMaskManager.h"
@@ -197,7 +198,7 @@ namespace se
 		bool GUIText::updateDimensions()
 		{
 			auto material = text.getMaterial();
-			if (!material || !material->getFont() || !material->getFont()->ready())
+			if (!material || !material->getFont() || material->getFont()->isLoading())
 			{
 				needUpdateDimensions = true;
 				return false;

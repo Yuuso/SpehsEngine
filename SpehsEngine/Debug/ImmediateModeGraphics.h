@@ -10,13 +10,10 @@
 
 namespace se
 {
+	class AssetManager;
 	namespace gfx
 	{
-		class FontManager;
-		class ModelDataManager;
-		class ShaderManager;
 		class ShapeGenerator;
-		class TextureManager;
 	}
 
 	namespace debug
@@ -104,10 +101,7 @@ namespace se
 
 			ImmediateModeGraphics(
 				se::gfx::View& _view,
-				se::gfx::ShaderManager& _shaderManager,
-				se::gfx::TextureManager& _textureManager,
-				se::gfx::FontManager& _fontManager,
-				se::gfx::ModelDataManager& _modelDataManager,
+				se::AssetManager& _assetManager,
 				se::gfx::ShapeGenerator& shapeGenerator);
 
 			void init();
@@ -124,10 +118,7 @@ namespace se
 		private:
 
 			se::gfx::View& view;
-			se::gfx::ShaderManager& shaderManager;
-			se::gfx::TextureManager& textureManager;
-			se::gfx::FontManager& fontManager;
-			se::gfx::ModelDataManager& modelDataManager;
+			se::AssetManager& assetManager;
 			se::gfx::ShapeGenerator& shapeGenerator;
 
 			std::shared_ptr<se::gfx::Material> defaultFlatMaterial;

@@ -1,10 +1,9 @@
 #pragma once
 
-#include "SpehsEngine/Graphics/ShaderManager.h"
-#include "SpehsEngine/Graphics/TextureManager.h"
-#include "SpehsEngine/Graphics/FontManager.h"
+#include "SpehsEngine/Core/AssetManager.h"
 #include "SpehsEngine/Graphics/DefaultMaterials.h"
 #include "SpehsEngine/Graphics/ShapeGenerator.h"
+#include "SpehsEngine/Graphics/Texture.h"
 
 
 namespace se
@@ -15,7 +14,7 @@ namespace se
 		class GUIMaterialManager
 		{
 		public:
-			GUIMaterialManager(gfx::ShaderManager& _shaderManager, gfx::TextureManager& _textureManager, gfx::FontManager& _fontManager);
+			GUIMaterialManager(AssetManager& _assetManager);
 
 			std::shared_ptr<gfx::Texture> getTexture(std::string_view _texture);
 			std::shared_ptr<gfx::Font> getFont(std::string_view _font);
@@ -29,9 +28,7 @@ namespace se
 
 			std::shared_ptr<gfx::Texture> colorTexture;
 
-			gfx::ShaderManager& shaderManager;
-			gfx::TextureManager& textureManager;
-			gfx::FontManager& fontManager;
+			AssetManager& assetManager;
 		};
 	}
 }

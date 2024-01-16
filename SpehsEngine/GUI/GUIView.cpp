@@ -10,10 +10,9 @@ namespace se
 	{
 		static constexpr float cameraZPos = static_cast<float>(std::numeric_limits<gui::ZIndex>::max()) + 1.0f;
 
-		GUIView::GUIView(gfx::ShaderManager& _shaderManager, gfx::TextureManager& _textureManager,
-						 gfx::FontManager& _fontManager, input::EventSignaler& _eventSignaler, int _inputPriority)
+		GUIView::GUIView(AssetManager& _assetManager, input::EventSignaler& _eventSignaler, int _inputPriority)
 			: view(scene, camera)
-			, materialManager(_shaderManager, _textureManager, _fontManager)
+			, materialManager(_assetManager)
 		{
 			view.setDrawCallSortOrder(gfx::DrawCallSortOrder::DepthAscending);
 			view.setClearFlags(gfx::ViewClearFlag::ClearDepth | gfx::ViewClearFlag::ClearStencil);

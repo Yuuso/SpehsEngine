@@ -8,21 +8,6 @@ namespace se
 {
 	namespace gui
 	{
-		//////////
-		// TODO: Move to Core? C++ Language features?
-
-	#define SE_INTERFACE __declspec(novtable)
-
-	#define SE_NO_COPY(CLASS) \
-	public: \
-		CLASS(const CLASS& _other) = delete; \
-		CLASS& operator=(const CLASS& _other) = delete; \
-		CLASS(CLASS&& _other) = delete; \
-		CLASS& operator=(CLASS&& _other) = delete;
-
-		//
-		//////////
-
 		class CallOnDelete
 		{
 		public:
@@ -40,7 +25,9 @@ namespace se
 		using ScopedConnection = boost::signals2::scoped_connection;
 		using ConnectionBlock = boost::signals2::shared_connection_block;
 
-		enum Alignment
+		// using enum Alignment;
+		// SetAlignment(Top | Left);
+		enum class Alignment
 		{
 			Center		=				0,
 
