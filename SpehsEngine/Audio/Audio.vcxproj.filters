@@ -27,10 +27,7 @@
     <ClCompile Include="AudioLib.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="AudioResource.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="AudioManager.cpp">
+    <ClCompile Include="AudioAsset.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Internal\Instance.cpp">
@@ -65,19 +62,13 @@
     <ClInclude Include="Group.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="AudioManager.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="AudioResource.h">
+    <ClInclude Include="AudioAsset.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Internal\Instance.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Internal\InternalTypes.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="ResourceLoader.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Types.h">

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "SpehsEngine/Audio/AudioResource.h"
+#include "SpehsEngine/Audio/AudioAsset.h"
 #include "SpehsEngine/Audio/Bus.h"
 #include "SpehsEngine/Audio/Internal/Instance.h"
 #include "SpehsEngine/Audio/Types.h"
@@ -23,7 +23,7 @@ namespace se
 			AudioSource& operator=(AudioSource&& _other) = delete;
 
 
-			void setResource(std::shared_ptr<AudioResource> _resource);
+			void setAsset(std::shared_ptr<AudioAsset> _asset);
 			void setOutput(Bus& _bus);
 
 
@@ -122,7 +122,7 @@ namespace se
 
 			Bus* outputBus = nullptr;
 			boost::signals2::scoped_connection busDestroyedConnection;
-			std::shared_ptr<AudioResource> resource;
+			std::shared_ptr<AudioAsset> asset;
 		};
 	}
 }

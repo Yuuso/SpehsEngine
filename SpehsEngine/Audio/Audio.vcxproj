@@ -133,9 +133,8 @@
   <ItemGroup>
     <ClCompile Include="AudioLib.cpp" />
     <ClCompile Include="AudioEngine.cpp" />
-    <ClCompile Include="AudioManager.cpp" />
     <ClCompile Include="AudioSource.cpp" />
-    <ClCompile Include="AudioResource.cpp" />
+    <ClCompile Include="AudioAsset.cpp" />
     <ClCompile Include="Bus.cpp" />
     <ClCompile Include="Group.cpp" />
     <ClCompile Include="Internal\Instance.cpp" />
@@ -149,16 +148,14 @@
   <ItemGroup>
     <ClInclude Include="AudioLib.h" />
     <ClInclude Include="AudioEngine.h" />
-    <ClInclude Include="AudioManager.h" />
     <ClInclude Include="Internal\GlobalBackend.h" />
     <ClInclude Include="Internal\InternalTypes.h" />
-    <ClInclude Include="AudioResource.h" />
+    <ClInclude Include="AudioAsset.h" />
     <ClInclude Include="Bus.h" />
     <ClInclude Include="Internal\Instance.h" />
     <ClInclude Include="Group.h" />
     <ClInclude Include="PrecompiledInclude.h" />
     <ClInclude Include="AudioSource.h" />
-    <ClInclude Include="ResourceLoader.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="Types.h" />
   </ItemGroup>

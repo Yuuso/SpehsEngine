@@ -15,8 +15,7 @@ namespace se
 			, distanceAttenuation(globalDefaultDistanceAttenuation)
 			, attenuationRolloff(globalDefaultDistanceAttenuationRolloffFactor)
 			, dopplerFactor(globalDefaultDopplerFactor)
-		{
-		}
+		{}
 		AudioSource::~AudioSource()
 		{
 			stop();
@@ -32,9 +31,9 @@ namespace se
 		}
 		bool AudioSource::playCommon()
 		{
-			if (!resource || !resource->ready() || !resource->resourceDataIsValid())
+			if (!asset || asset->isLoading() || !asset->isValid())
 			{
-				log::warning("Cannot play AudioSource, audio resource not valid!");
+				log::warning("Cannot play AudioSource, audio asset is invalid or loading!");
 				return true;
 			}
 			if (!outputBus)
@@ -57,7 +56,7 @@ namespace se
 				return;
 
 			se_assert(!isHandleValid());
-			handle = outputBus->bus->play(*resource->getResource<SoLoud::AudioSource>(), getVolume(), getPan(), true);
+			handle = outputBus->bus->play(*asset->getSource(), getVolume(), getPan(), true);
 			if (isHandleValid())
 			{
 				applyAttributes();
@@ -68,7 +67,7 @@ namespace se
 			}
 			else
 			{
-				log::warning("Failed to play sound! " + resource->getName());
+				log::warning("Failed to play sound! " + asset->getName());
 			}
 		}
 		void AudioSource::playClocked(time::Time _currentTime)
@@ -79,7 +78,7 @@ namespace se
 			se_assert(!isHandleValid());
 			handle = outputBus->bus->play3dClocked(
 				_currentTime.asSeconds<double>(),
-				*resource->getResource<SoLoud::AudioSource>(),
+				*asset->getSource(),
 				position.x, position.y, position.z,
 				velocity.x, velocity.y, velocity.z, getVolume());
 			if (isHandleValid())
@@ -88,7 +87,7 @@ namespace se
 			}
 			else
 			{
-				log::warning("Failed to play sound! " + resource->getName());
+				log::warning("Failed to play sound! " + asset->getName());
 			}
 		}
 		void AudioSource::play(bool _paused)
@@ -98,7 +97,7 @@ namespace se
 
 			se_assert(!isHandleValid());
 			handle = outputBus->bus->play3d(
-				*resource->getResource<SoLoud::AudioSource>(),
+				*asset->getSource(),
 				position.x, position.y, position.z,
 				velocity.x, velocity.y, velocity.z, getVolume(), true);
 			if (isHandleValid())
@@ -111,7 +110,7 @@ namespace se
 			}
 			else
 			{
-				log::warning("Failed to play sound! " + resource->getName());
+				log::warning("Failed to play sound! " + asset->getName());
 			}
 		}
 		void AudioSource::setPause(bool _value)
@@ -137,9 +136,10 @@ namespace se
 			}
 		}
 
-		void AudioSource::setResource(std::shared_ptr<AudioResource> _resource)
+		void AudioSource::setAsset(std::shared_ptr<AudioAsset> _asset)
 		{
-			resource = _resource;
+			stop();
+			asset = _asset;
 		}
 		void AudioSource::setPosition(const glm::vec3& _position)
 		{
