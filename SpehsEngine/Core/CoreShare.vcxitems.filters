@@ -40,6 +40,10 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)Serial\ArchiveReader.cpp">
       <Filter>Serial</Filter>
     </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)ScopedConnections.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Asset.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)AssetManager.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)AsyncTaskManager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="$(MSBuildThisFileDirectory)SE_Assert.h" />
@@ -95,7 +99,6 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)WeightedRandomizer.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)AsyncTaskManager.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)HexColor.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)ResourcePathFinder.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)StringViewUtilityFunctions.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)ScopedConnections.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)LogSignal.h" />
@@ -130,6 +133,10 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)Serial\BinaryWriter.h">
       <Filter>Serial</Filter>
     </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)ClassUtilities.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Asset.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)AssetManager.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)EnumUtilityFunctions.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="File">

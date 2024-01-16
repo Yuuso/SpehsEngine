@@ -1,112 +1,49 @@
 #pragma once
 
 #include "SpehsEngine/Core/Thread.h"
-#include "SpehsEngine/Core/SE_Assert.h"
-#include <condition_variable>
-#include <future>
-#include <mutex>
-#include <thread>
-#include <vector>
-#include <queue>
-#include <functional>
 
 
 namespace se
 {
-	template <typename T>
 	class AsyncTaskManager
 	{
 	public:
 
-		AsyncTaskManager(const size_t _numThreads = 1);
+		SE_NO_COPY_OR_MOVE(AsyncTaskManager)
+		AsyncTaskManager(size_t _threadCount = getDefaultThreadCount());
 		~AsyncTaskManager();
 
-		AsyncTaskManager(const AsyncTaskManager& _other) = delete;
-		AsyncTaskManager& operator=(const AsyncTaskManager& _other) = delete;
+		// Add task to queue
+		void add(const std::function<void()>& _fn);
 
-		AsyncTaskManager(AsyncTaskManager&& _other) = delete;
-		AsyncTaskManager& operator=(AsyncTaskManager&& _other) = delete;
+		// Add task with return type to queue
+		template<typename T>
+		std::future<T> add(const std::function<T()>& _fn)
+		{
+			std::lock_guard<std::mutex> lock(mutex);
+			std::shared_ptr<std::packaged_task<T()>> task =
+				std::make_shared<std::packaged_task<T()>>(_fn);
+			taskQueue.emplace([task]{ (*task)(); });
+			cvar.notify_one();
+			return task->get_future();
+		}
 
+		// Returns the number of unfinished tasks
+		size_t getTasksLeft() const;
 
-		std::future<T> push(std::function<T()> _fn);
-		size_t numTasksLeft() const;
+		// Returns number of threads in thread pool
+		size_t getThreadCount() const;
+
+		// Returns recommended default thread count
+		static size_t getDefaultThreadCount();
 
 	private:
-
-		std::vector<std::thread> threadPool;
 
 		mutable std::mutex mutex;
 		std::condition_variable cvar;
 		bool shutdown = false;
 		size_t numWorking = 0;
-		std::queue<std::packaged_task<T()>> taskQueue;
+		std::queue<std::function<void()>> taskQueue;
+		std::vector<std::thread> threadPool;
 	};
-
-
-
-	template <typename T>
-	AsyncTaskManager<T>::AsyncTaskManager(const size_t _numThreads)
-	{
-		se_assert(_numThreads > 0);
-		threadPool.resize(_numThreads);
-
-		auto worker = [this]()
-		{
-			std::unique_lock<std::mutex> lock(mutex);
-			while (true)
-			{
-				cvar.wait(lock, [&]{ return shutdown || !taskQueue.empty(); });
-
-				if (shutdown)
-					break;
-
-				std::packaged_task<T()> task = std::move(taskQueue.front());
-				taskQueue.pop();
-
-				numWorking++;
-				lock.unlock();
-				task();
-				lock.lock();
-				numWorking--;
-			}
-		};
-
-		unsigned threadNum = 0;
-		for (auto&& thread : threadPool)
-		{
-			thread = std::thread(worker);
-			setThreadName(thread, "AsyncTaskManagerWorker" + std::to_string(++threadNum));
-		}
-	}
-
-	template <typename T>
-	AsyncTaskManager<T>::~AsyncTaskManager()
-	{
-		{
-			std::lock_guard<std::mutex> lock(mutex);
-			shutdown = true;
-		}
-		cvar.notify_all();
-
-		for (auto&& thread : threadPool)
-		{
-			thread.join();
-		}
-	}
-
-	template <typename T>
-	std::future<T> AsyncTaskManager<T>::push(std::function<T()> _fn)
-	{
-		std::lock_guard<std::mutex> lock(mutex);
-		taskQueue.emplace(_fn);
-		cvar.notify_one();
-		return taskQueue.back().get_future();
-	}
-
-	template <typename T>
-	size_t AsyncTaskManager<T>::numTasksLeft() const
-	{
-		std::lock_guard<std::mutex> lock(mutex);
-		return taskQueue.size() + numWorking;
-	}
 }
