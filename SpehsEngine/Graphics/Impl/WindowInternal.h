@@ -6,24 +6,21 @@ struct SDL_WindowEvent;
 namespace se::gfx
 {
 	class Window;
+	namespace impl
+	{
+		struct RenderContext;
+	}
 }
 
 namespace se::gfx::impl
 {
-	struct RenderContext;
-
 	class WindowInternal
 	{
 	public:
 
+		SE_NO_COPY_OR_MOVE(WindowInternal);
 		WindowInternal(Window& _window, const bool _isDefault);
 		~WindowInternal();
-
-		WindowInternal(const WindowInternal& _other) = delete;
-		WindowInternal& operator=(const WindowInternal& _other) = delete;
-
-		WindowInternal(WindowInternal&& _other) = delete;
-		WindowInternal& operator=(WindowInternal&& _other) = delete;
 
 		bool operator==(const Window& _other) const;
 
@@ -54,7 +51,7 @@ namespace se::gfx::impl
 
 		boost::signals2::scoped_connection windowDestroyedConnection;
 
-		Window* window;
+		Window* window = nullptr;
 
 		SDL_Window* sdlWindow = nullptr;
 		bgfx::FrameBufferHandle frameBufferHandle = BGFX_INVALID_HANDLE;

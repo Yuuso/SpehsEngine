@@ -3,10 +3,10 @@
 
 #include "SpehsEngine/Graphics/Impl/Animation.h"
 #include "SpehsEngine/Graphics/Impl/AnimatorInternal.h"
+#include "SpehsEngine/Graphics/Impl/AssetData.h"
 #include "SpehsEngine/Graphics/Impl/Mesh.h"
 #include "SpehsEngine/Graphics/Impl/ModelNode.h"
-#include "SpehsEngine/Graphics/ModelData.h"
-#include "SpehsEngine/Graphics/ResourceData.h"
+#include "SpehsEngine/Graphics/ModelAsset.h"
 #include "SpehsEngine/Graphics/VertexBuffer.h"
 
 
@@ -73,16 +73,16 @@ static void addBones(const MeshData& _meshData, ModelNode& _rootNode, ModelNode&
 	}
 }
 
-void Model::loadModelData(std::shared_ptr<ModelData> _modelData)
+void Model::loadModelAsset(std::shared_ptr<ModelAsset> _modelAsset)
 {
-	se_assert(_modelData);
-	modelData = _modelData;
-	modelDataLoadedConnection = modelData->resourceLoadedSignal.connect(boost::bind(&Model::reloadModeData, this));
-	reloadModeData();
+	se_assert(_modelAsset);
+	modelAsset = _modelAsset;
+	modelAssetLoadedConnection = modelAsset->connectToLoadedSignal([this]{ reloadModeAsset(); });
+	reloadModeAsset();
 }
-void Model::reloadModeData()
+void Model::reloadModeAsset()
 {
-	if (!modelData)
+	if (!modelAsset)
 	{
 		log::warning("ModelData not set, cannot reload!");
 		return;
@@ -91,14 +91,20 @@ void Model::reloadModeData()
 	rootNode->reset();
 	numMaterialSlots = 0;
 
-	if (!modelData->ready() || !modelData->resourceData)
+	if (modelAsset->isLoading() || !modelAsset->isValid())
 		return;
 
-	const MeshData& meshData = *modelData->resourceData.get();
-	processNode(*this, meshData, meshData.rootNode, *rootNode, numMaterialSlots);
-	addBones(meshData, *rootNode, *rootNode);
-	globalInverseTransform = meshData.globalInverseMatrix;
-	animator->setAnimations(meshData.animations);
+	const MeshData* meshData = modelAsset->getData<MeshData>();
+	if (!meshData)
+	{
+		log::error("Invalid model asset data");
+		return;
+	}
+
+	processNode(*this, *meshData, meshData->rootNode, *rootNode, numMaterialSlots);
+	addBones(*meshData, *rootNode, *rootNode);
+	globalInverseTransform = meshData->globalInverseMatrix;
+	animator->setAnimations(meshData->animations);
 
 	se_assert(numMaterialSlots > 0);
 	se_assert(materials.size() <= numMaterialSlots);
@@ -170,8 +176,16 @@ Primitive* Model::getPrimitive(size_t _index)
 }
 size_t Model::getNumPrimitives() const
 {
-	if (modelData)
-		return modelData->resourceData->meshes.size();
+	if (modelAsset && modelAsset->isValid())
+	{
+		const MeshData* meshData = modelAsset->getData<MeshData>();
+		if (!meshData)
+		{
+			log::error("Invalid model asset data");
+			return 0;
+		}
+		return meshData->meshes.size();
+	}
 	return 0;
 }
 

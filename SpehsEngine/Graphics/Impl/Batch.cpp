@@ -208,14 +208,14 @@ bool Batch::render(RenderContext& _renderContext)
 		return false;
 	se_assert(vertices.size() != 0 && indices.size() != 0 && batchPositions.size() != 0);
 
-	std::shared_ptr<Shader> shader = renderInfo.material->getShader();
+	std::shared_ptr<const Shader> shader = renderInfo.material->getShader();
 
 	if (!shader)
 	{
 		log::warning("Shader missing!");
 		return true;
 	}
-	if (!shader->ready())
+	if (shader->isLoading())
 	{
 		log::warning("Shader not ready for rendering!");
 		return true;
@@ -224,7 +224,7 @@ bool Batch::render(RenderContext& _renderContext)
 	updateBuffers();
 
 	static const glm::mat4 identity = glm::mat4(1.0f);
-	bgfx::setTransform(reinterpret_cast<const void*>(&identity));
+	bgfx::setTransform(static_cast<const void*>(&identity));
 	static const UniformMatrices identities = { identity };
 	_renderContext.defaultUniforms->setNormalMatrices(identities);
 
@@ -233,16 +233,16 @@ bool Batch::render(RenderContext& _renderContext)
 	{
 		_renderContext.lightBatch->bind();
 	}
-	renderInfo.material->bind();
+	renderInfo.material->bind(_renderContext.fallbackTexture);
 
-	bgfx::IndexBufferHandle ibh = { indices.bufferObject };
-	bgfx::VertexBufferHandle vbh = { vertices.bufferObject };
+	bgfx::IndexBufferHandle ibh = { indices.getHandle().u16handle };
+	bgfx::VertexBufferHandle vbh = { vertices.getHandle().u16handle };
 	bgfx::setIndexBuffer(ibh, 0, static_cast<uint32_t>(indices.size()));
 	bgfx::setVertexBuffer(0, vbh);
 
 	applyRenderState(renderInfo, _renderContext);
 
-	bgfx::ProgramHandle programHandle = { shader->getHandle() };
+	bgfx::ProgramHandle programHandle = { shader->getHandle().u16handle };
 	bgfx::submit(_renderContext.currentViewId, programHandle, 0u, BGFX_DISCARD_ALL);
 	return true;
 }

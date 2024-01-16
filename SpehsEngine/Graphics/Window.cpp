@@ -21,7 +21,6 @@ Window::~Window()
 {
 	destroyedSignal();
 }
-
 void Window::add(View& _view)
 {
 	auto it = std::find_if(
@@ -54,80 +53,77 @@ void Window::remove(View& _view)
 	}
 	views.erase(it);
 }
-
-
-void Window::requestScreenShot(const std::string& _fileName)
+void Window::takeScreenShot(const std::string& _fileName)
 {
 	se_assert(!_fileName.empty());
 	screenShotFileName = _fileName;
 }
 
-
 const std::string& Window::getName() const
 {
 	return name;
 }
-const int Window::getX() const
+int Window::getX() const
 {
 	return x;
 }
-const int Window::getY() const
+int Window::getY() const
 {
 	return y;
 }
-const uint16_t Window::getWidth() const
+uint16_t Window::getWidth() const
 {
 	return width;
 }
-const uint16_t Window::getHeight() const
+uint16_t Window::getHeight() const
 {
 	return height;
 }
-const AspectRatio Window::getAspectRatio() const
+AspectRatio Window::getAspectRatio() const
 {
 	return aspectRatio;
 }
-const bool Window::getResizable() const
+bool Window::getResizable() const
 {
-	return resizable;
+	return checkBit(flags, WindowFlags::Resizable);
 }
-const bool Window::getBorderless() const
+bool Window::getBorderless() const
 {
-	return borderless;
+	return checkBit(flags, WindowFlags::Borderless);
 }
-const float Window::getOpacity() const
+float Window::getOpacity() const
 {
 	return opacity;
 }
-const bool Window::isShown() const
+bool Window::isShown() const
 {
-	return shown;
+	return checkBit(flags, WindowFlags::Shown);
 }
-const bool Window::getMinimized() const
+bool Window::isMinimized() const
 {
-	return minimized;
+	return checkBit(flags, WindowFlags::Minimized);
 }
-const bool Window::getMaximized() const
+bool Window::isMaximized() const
 {
-	return maximized;
+	return checkBit(flags, WindowFlags::Maximized);
 }
-const bool Window::isQuitRequested() const
+bool Window::isQuitRequested() const
 {
-	return quitRequested;
+	return checkBit(flags, WindowFlags::QuitRequested);
 }
-const bool Window::getMouseFocus() const
+bool Window::hasMouseFocus() const
 {
-	return mouseFocus;
+	return checkBit(flags, WindowFlags::MouseFocus);
 }
-const bool Window::getKeyboardFocus() const
+bool Window::hasKeyboardFocus() const
 {
-	return keyboardFocus;
+	return checkBit(flags, WindowFlags::KeyboardFocus);
 }
-const bool Window::getConfinedInput() const
+bool Window::getConfinedInput() const
 {
-	return confinedInput;
+	return checkBit(flags, WindowFlags::ConfinedInput);
 }
-const int Window::getDisplayIndex() const
+int Window::getDisplayIndex() const
 {
 	return displayIndex;
 }
@@ -169,18 +165,18 @@ void Window::setHeight(const uint16_t _height)
 	aspectRatio = AspectRatio(width, height);
 	enableBit(updateFlags, WindowUpdateFlag::SizeChanged);
 }
-void Window::forceKeepAspectRatio(const bool _value)
+void Window::forceKeepAspectRatio(bool _value)
 {
-	keepAspectRatio = _value;
+	setBit(flags, WindowFlags::KeepAspectRatio, _value);
 }
 void Window::setResizable(const bool _value)
 {
-	resizable = _value;
+	setBit(flags, WindowFlags::Resizable, _value);
 	enableBit(updateFlags, WindowUpdateFlag::ResizableChanged);
 }
 void Window::setBorderless(const bool _value)
 {
-	borderless = _value;
+	setBit(flags, WindowFlags::Borderless, _value);
 	enableBit(updateFlags, WindowUpdateFlag::BorderlessChanged);
 }
 void Window::setOpacity(const float _value)
@@ -190,47 +186,55 @@ void Window::setOpacity(const float _value)
 }
 void Window::show()
 {
-	if (!shown)
+	if (!isShown())
 	{
-		shown = true;
+		setBit(flags, WindowFlags::Shown, true);
 		enableBit(updateFlags, WindowUpdateFlag::ShownChanged);
 	}
 }
 void Window::hide()
 {
-	if (shown)
+	if (isShown())
 	{
-		shown = false;
+		setBit(flags, WindowFlags::Shown, false);
 		enableBit(updateFlags, WindowUpdateFlag::ShownChanged);
 	}
 }
 void Window::minimize()
 {
-	if (!minimized)
+	if (!isMinimized())
 	{
-		minimized = true;
+		setBit(flags, WindowFlags::Minimized, true);
 		enableBit(updateFlags, WindowUpdateFlag::Minimized);
 	}
 }
 void Window::restore()
 {
-	if (minimized)
+	if (isMinimized())
 	{
-		minimized = false;
+		setBit(flags, WindowFlags::Minimized, false);
 		enableBit(updateFlags, WindowUpdateFlag::Restored);
 	}
 }
 void Window::maximize()
 {
-	if (!maximized)
+	if (!isMaximized())
 	{
-		maximized = true;
+		setBit(flags, WindowFlags::Maximized, true);
+		enableBit(updateFlags, WindowUpdateFlag::Maximized);
+	}
+}
+void Window::unmaximize()
+{
+	if (isMaximized())
+	{
+		setBit(flags, WindowFlags::Maximized, false);
 		enableBit(updateFlags, WindowUpdateFlag::Maximized);
 	}
 }
 void Window::ignoreQuitRequest()
 {
-	quitRequested = false;
+	disableBit(flags, WindowFlags::QuitRequested);
 }
 void Window::focus()
 {
@@ -242,6 +246,10 @@ void Window::raise()
 }
 void Window::setConfinedInput(const bool _value)
 {
-	confinedInput = _value;
+	setBit(flags, WindowFlags::ConfinedInput, _value);
 	enableBit(updateFlags, WindowUpdateFlag::ConfinedInputChanged);
+}
+SDL_Window* Window::getSDLWindow()
+{
+	return sdlWindow;
 }

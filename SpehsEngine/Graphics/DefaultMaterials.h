@@ -1,5 +1,6 @@
 #pragma once
 
+#include "SpehsEngine/Core/AssetManager.h"
 #include "SpehsEngine/Graphics/Material.h"
 
 
@@ -53,5 +54,5 @@ namespace se::gfx
 		PhongCubemap,
 	};
 
-	std::shared_ptr<Material> createMaterial(const DefaultMaterialType _type, ShaderManager& _shaderManager);
+	std::shared_ptr<Material> createMaterial(const DefaultMaterialType _type, const AssetManager& _assetManager);
 }

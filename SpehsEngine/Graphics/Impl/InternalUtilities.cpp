@@ -1,8 +1,10 @@
 #include "stdafx.h"
 #include "SpehsEngine/Graphics/Impl/InternalUtilities.h"
 
+#include "SpehsEngine/Core/Endianness.h"
 #include "SpehsEngine/Graphics/Impl/RenderInfo.h"
 #include "SpehsEngine/Graphics/Primitive.h"
+#include <fstream>
 
 
 namespace se::gfx::impl

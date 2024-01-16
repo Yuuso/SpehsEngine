@@ -67,13 +67,6 @@ namespace se::gfx
 		WebGPU
 	};
 
-	struct DisplayMode
-	{
-		int width;
-		int height;
-		int refreshRate;
-	};
-
 	typedef uint32_t PrimitiveUpdateFlagsType;
 	typedef uint32_t WindowUpdateFlagsType;
 	typedef uint32_t PrimitiveAttributeFlagsType;
@@ -196,13 +189,14 @@ namespace se::gfx
 
 	struct FontSize
 	{
-		FontSize()
-			: type(FontSizeType::Pixel), size(12) {}
-		FontSize(const uint32_t _size, const FontSizeType _type = FontSizeType::Pixel)
-			: type(_type), size(_size) {}
+		constexpr FontSize() = default;
+		constexpr FontSize(uint32_t _size, FontSizeType _type = FontSizeType::Pixel)
+			: size(std::max(_size, minSize)), type(_type) {}
 
-		FontSizeType type;
-		uint32_t size;
+		FontSizeType type = FontSizeType::Pixel;
+		uint32_t size = 12u;
+
+		inline static constexpr uint32_t minSize = 4u;
 	};
 
 	struct TextDimensions
@@ -333,20 +327,5 @@ namespace se::gfx
 	{
 		Default,
 		ZPosition,
-	};
-
-	struct TextureInput
-	{
-		enum class Format
-		{
-			RGBA8,
-			R8,
-		};
-
-		bool isCubemap = false; // +x, -x, +y, -y, +z, -z
-		Format format = Format::RGBA8;
-		uint16_t width = 0;
-		uint16_t height = 0;
-		std::vector<uint8_t> data;
 	};
 }

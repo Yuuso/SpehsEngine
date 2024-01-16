@@ -2,6 +2,10 @@
 #include "SpehsEngine/Graphics/BufferObject.h"
 
 
+BufferObject::BufferObject()
+{
+	bufferHandle.u16handle = bgfx::kInvalidHandle;
+}
 BufferObject::~BufferObject()
 {
 	// TODO: Is this a problem?
@@ -24,31 +28,39 @@ BufferObject& BufferObject::operator=(const BufferObject& _other)
 
 BufferObject::BufferObject(BufferObject&& _other)
 	: renderers(std::move(_other.renderers))
-	, bufferObject(_other.bufferObject)
+	, bufferHandle(_other.bufferHandle)
 	, bufferChanged(_other.bufferChanged)
 {
-	_other.bufferObject = INVALID_RESOURCE_HANDLE;
+	_other.bufferHandle = bgfx::kInvalidHandle;
 }
 BufferObject& BufferObject::operator=(BufferObject&& _other)
 {
 	renderers = std::move(_other.renderers);
-	bufferObject = _other.bufferObject;
+	bufferHandle = _other.bufferHandle;
 	bufferChanged = _other.bufferChanged;
-	_other.bufferObject = INVALID_RESOURCE_HANDLE;
+	_other.bufferHandle = bgfx::kInvalidHandle;
 	return *this;
 }
 
+AssetHandle BufferObject::getHandle() const
+{
+	return bufferHandle;
+}
 void BufferObject::registerAsRenderer(const uintptr_t _value)
 {
 	const size_t sizeBefore = renderers.size();
 	renderers.insert(_value);
 	if (sizeBefore == 0 && renderers.size() > 0)
+	{
 		updateBuffer();
+	}
 }
 void BufferObject::unregisterAsRenderer(const uintptr_t _value)
 {
 	const size_t sizeBefore = renderers.size();
 	renderers.erase(_value);
 	if (sizeBefore > 0 && renderers.size() == 0)
+	{
 		updateBuffer();
+	}
 }

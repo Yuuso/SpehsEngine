@@ -7,33 +7,54 @@
 #include "SpehsEngine/Graphics/Uniform.h"
 
 
-void Material::bind()
+void Material::bind(Texture* _fallbackTexture)
 {
 	for (auto&& font : fonts)
 	{
-		se_assert_m(font.second->font, "Material '" + getName() + "' missing font in slot " + std::to_string(font.first) + ".");
+		se_assert_m(font.second->font,
+			"Material '" + getName() + "' missing font in slot " + std::to_string(font.first) + ".");
 		if (font.second->font)
+		{
 			font.second->uniform->set(*font.second->font.get(), font.first);
+		}
 	}
 	for (auto&& texture : textures)
 	{
-		se_assert_m(texture.second->texture, "Material '" + getName() + "' missing texture in slot " + std::to_string(texture.first) + ".");
+		se_assert_m(texture.second->texture,
+			"Material '" + getName() + "' missing texture in slot " + std::to_string(texture.first) + ".");
 		if (texture.second->texture)
-			texture.second->uniform->set(*texture.second->texture.get(), texture.first);
+		{
+			if (texture.second->texture->isValid())
+			{
+				texture.second->uniform->set(*texture.second->texture.get(), texture.first);
+			}
+			else if (_fallbackTexture)
+			{
+				texture.second->uniform->set(*_fallbackTexture, texture.first);
+			}
+			else
+			{
+				log::warning("No valid texture or fallback for material '"
+					+ getName() + "' in slot " + std::to_string(texture.first) + "!");
+			}
+		}
 	}
 	for (auto&& uniformContainer : uniformContainers)
 	{
-		se_assert_m(uniformContainer.second, "Material '" + getName() + "' missing uniform container '" + uniformContainer.first + "'.");
+		se_assert_m(uniformContainer.second,
+			"Material '" + getName() + "' missing uniform container '" + uniformContainer.first + "'.");
 		if (uniformContainer.second)
+		{
 			uniformContainer.second->bind();
+		}
 	}
 }
-void Material::connectToFontChangedSignal(boost::signals2::scoped_connection& scopedConnection, const boost::function<void(void)>& callback)
+boost::signals2::scoped_connection Material::connectToFontChangedSignal(const boost::function<void()>& callback)
 {
-	scopedConnection = fontChangedSignal.connect(callback);
+	return fontChangedSignal.connect(callback);
 }
 
-const std::shared_ptr<Shader> Material::getShader(ShaderVariant variant) const
+std::shared_ptr<const Shader> Material::getShader(ShaderVariant variant) const
 {
 	auto it = shaders.find(variant);
 	if (it != shaders.end())
@@ -47,14 +68,14 @@ const std::shared_ptr<Shader> Material::getShader(ShaderVariant variant) const
 
 	return nullptr;
 }
-const std::shared_ptr<Font> Material::getFont(uint8_t _slot) const
+std::shared_ptr<const Font> Material::getFont(uint8_t _slot) const
 {
 	auto it = fonts.find(_slot);
 	if (it == fonts.end())
 		return nullptr;
 	return it->second->font;
 }
-const std::shared_ptr<Texture> Material::getTexture(uint8_t _slot) const
+std::shared_ptr<const Texture> Material::getTexture(uint8_t _slot) const
 {
 	auto it = textures.find(_slot);
 	if (it == textures.end())

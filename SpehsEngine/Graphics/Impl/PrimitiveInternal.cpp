@@ -142,14 +142,14 @@ void PrimitiveInternal::render(RenderContext& _renderContext, const RenderInfo& 
 	const bool isBillboardCylindrical = checkBit(_renderInfo.renderFlags, RenderFlag::BillboardCylindrical);
 
 	const ShaderVariant shaderVariant = getShaderVariant(isInstanced, isSkinned, isBillboardSpherical || isBillboardCylindrical);
-	std::shared_ptr<Shader> shader = _renderInfo.material->getShader(shaderVariant);
+	std::shared_ptr<const Shader> shader = _renderInfo.material->getShader(shaderVariant);
 
 	if (!shader)
 	{
 		log::warning("Shader missing!");
 		return;
 	}
-	if (!shader->ready())
+	if (shader->isLoading())
 	{
 		log::warning("Shader not ready for rendering!");
 		return;
@@ -163,15 +163,15 @@ void PrimitiveInternal::render(RenderContext& _renderContext, const RenderInfo& 
 	{
 		_renderContext.lightBatch->bind();
 	}
-	_renderInfo.material->bind();
+	_renderInfo.material->bind(_renderContext.fallbackTexture);
 
 	if (isBillboardSpherical || isBillboardCylindrical)
 	{
 		_renderContext.defaultUniforms->setBillboardInfo(primitive->getPosition(), isBillboardCylindrical);
 	}
 
-	bgfx::IndexBufferHandle ibh = { getIndices()->bufferObject };
-	bgfx::VertexBufferHandle vbh = { getVertices()->bufferObject };
+	bgfx::IndexBufferHandle ibh = { getIndices()->getHandle().u16handle };
+	bgfx::VertexBufferHandle vbh = { getVertices()->getHandle().u16handle };
 	bgfx::setIndexBuffer(ibh);
 	bgfx::setVertexBuffer(0, vbh);
 
@@ -179,7 +179,7 @@ void PrimitiveInternal::render(RenderContext& _renderContext, const RenderInfo& 
 	{
 		if (instances)
 		{
-			bgfx::VertexBufferHandle dvbh = { instances->bufferObject };
+			bgfx::VertexBufferHandle dvbh = { instances->getHandle().u16handle };
 			bgfx::setInstanceDataBuffer(dvbh, 0, static_cast<uint32_t>(instances->size()));
 		}
 		else if (autoInstanceCount > 0)
@@ -202,7 +202,7 @@ void PrimitiveInternal::render(RenderContext& _renderContext, const RenderInfo& 
 
 	bgfx::setStencil(getStencilState(primitive->getStencil()));
 
-	bgfx::ProgramHandle programHandle = { shader->getHandle() };
+	bgfx::ProgramHandle programHandle = { shader->getHandle().u16handle };
 	bgfx::submit(_renderContext.currentViewId, programHandle, _renderInfo.depth, BGFX_DISCARD_ALL);
 }
 

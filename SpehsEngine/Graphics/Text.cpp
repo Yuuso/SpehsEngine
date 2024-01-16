@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "SpehsEngine/Graphics/Text.h"
 
+#include "SpehsEngine/Graphics/Impl/AssetData.h"
 #include "SpehsEngine/Graphics/CharacterSet.h"
 #include "SpehsEngine/Graphics/Font.h"
 #include "SpehsEngine/Graphics/IndexBuffer.h"
@@ -155,7 +156,7 @@ void Text::setMaterial(std::shared_ptr<Material> _material)
 	se_assert(_material);
 	Primitive::setMaterial(_material);
 	textChanged();
-	_material->connectToFontChangedSignal(fontChangedConnection, boost::bind(&Text::fontChanged, this));
+	fontChangedConnection = _material->connectToFontChangedSignal([this]{ fontChanged(); });
 }
 
 std::string Text::getPlainText() const
@@ -237,7 +238,7 @@ void Text::generateBuffers()
 	if (!primitiveMaterial)
 		return;
 
-	std::shared_ptr<Font> font = primitiveMaterial->getFont(0);
+	std::shared_ptr<const Font> font = primitiveMaterial->getFont(0);
 	se_assert(font);
 	if (!font)
 		return;
@@ -245,9 +246,18 @@ void Text::generateBuffers()
 	needBufferUpdate = false;
 
 	if (!fontLoadedConnection.connected())
-		fontLoadedConnection = font->resourceLoadedSignal.connect(boost::bind(&Text::textChanged, this));
-	if (!font->ready())
+	{
+		fontLoadedConnection = font->connectToLoadedSignal(boost::bind(&Text::textChanged, this));
+	}
+	if (font->isLoading())
 		return;
+
+	const FontData* fontData = font->getData<FontData>();
+	if (!fontData)
+	{
+		log::error("Invalid font asset data!");
+		return;
+	}
 
 	std::shared_ptr<VertexBuffer> newVertexBuffer = std::make_shared<VertexBuffer>();
 	VertexBuffer& newVertices = *newVertexBuffer.get();
@@ -259,7 +269,7 @@ void Text::generateBuffers()
 	glm::vec2 cursor;
 	size_t vertexIndex = 0;
 
-	const float atlasSize = (float)font->resourceData->fontMetrics.textureSize;
+	const float atlasSize = (float)fontData->fontMetrics.textureSize;
 
 	auto addQuad = [&](const glm::vec2& _offset, const glm::vec2& _size, const Rectangle& _coord, const Color& _color)
 		{
@@ -311,7 +321,7 @@ void Text::generateBuffers()
 
 	if (drawDebug)
 	{
-		Rectangle& fillerRect = font->resourceData->fillerGlyph;
+		const Rectangle& fillerRect = fontData->fillerGlyph;
 
 		// Debug origin
 		addQuad(glm::vec2(-3.0f, 0.0f), glm::vec2(7.0f, 1.0f), fillerRect, Color(1.0f, 0.0f, 0.0f));
@@ -346,7 +356,7 @@ void Text::generateBuffers()
 			if (charCode == U'\n')
 			{
 				cursor.x = 0.0f;
-				cursor.y -= font->resourceData->fontMetrics.height * lineSpacing;
+				cursor.y -= font->getData<FontData>()->fontMetrics.height * lineSpacing;
 				continue;
 			}
 			if (charCode == U'\t')
@@ -356,11 +366,13 @@ void Text::generateBuffers()
 				advanceMultiplier = 4.0f;
 			}
 
-			auto it = font->resourceData->glyphMap.find(charCode);
-			if (it == font->resourceData->glyphMap.end())
+			auto it = fontData->glyphMap.find(charCode);
+			if (it == fontData->glyphMap.end())
+			{
 				charCode = replacementCharacter;
+			}
 
-			GlyphMetrics& glyph = font->resourceData->glyphMap[charCode];
+			const GlyphMetrics& glyph = fontData->glyphMap.at(charCode);
 
 			// Glyph
 			static constexpr Rectangle emptyRect;
@@ -407,10 +419,17 @@ void Text::updateDimensions()
 		return;
 	}
 
-	std::shared_ptr<Font> font = primitiveMaterial->getFont(0);
-	if (!font || !font->ready())
+	std::shared_ptr<const Font> font = primitiveMaterial->getFont(0);
+	if (!font || font->isLoading())
 	{
 		log::warning("Text::updateDimensions: Missing font!");
+		return;
+	}
+
+	const FontData* fontData = font->getData<FontData>();
+	if (!fontData)
+	{
+		log::error("Invalid font asset data!");
 		return;
 	}
 
@@ -444,10 +463,10 @@ void Text::updateDimensions()
 				if (cursor.x == 0.0f && cursor.y == 0.0f)
 				{
 					// Empty first line
-					dimensions.offsetFromOrigin.y = static_cast<float>(font->resourceData->fontMetrics.ascent);
+					dimensions.offsetFromOrigin.y = static_cast<float>(fontData->fontMetrics.ascent);
 				}
 				cursor.x = 0.0f;
-				cursor.y -= font->resourceData->fontMetrics.height * lineSpacing;
+				cursor.y -= fontData->fontMetrics.height * lineSpacing;
 				continue;
 			}
 			if (charCode == U'\t')
@@ -457,11 +476,13 @@ void Text::updateDimensions()
 				advanceMultiplier = 4.0f;
 			}
 
-			auto it = font->resourceData->glyphMap.find(charCode);
-			if (it == font->resourceData->glyphMap.end())
+			auto it = fontData->glyphMap.find(charCode);
+			if (it == fontData->glyphMap.end())
+			{
 				charCode = replacementCharacter;
+			}
 
-			GlyphMetrics& glyph = font->resourceData->glyphMap[charCode];
+			const GlyphMetrics& glyph = fontData->glyphMap.at(charCode);
 
 			if (cursor.x == 0.0f && cursor.y == 0.0f)
 			{

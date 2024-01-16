@@ -1,56 +1,54 @@
 #pragma once
 
-#include "SpehsEngine/Graphics/Resource.h"
+#include "SpehsEngine/Core/Asset.h"
+#include "SpehsEngine/Graphics/TextureInput.h"
 
-
-namespace se::gfx::impl
-{
-	struct TextureFallbacks;
-	enum class TextureStatus;
-}
 
 namespace se::gfx
 {
-	struct ResourceData;
-
-	class Texture final : public Resource<TextureData>
+	class Texture : public IAsset
 	{
 	public:
 
-		Texture(const std::string_view _name);
-		~Texture();
+		~Texture() = default;
 
-		Texture(const Texture& _other) = delete;
-		Texture& operator=(const Texture& _other) = delete;
+		// Construct empty texture
+		Texture(std::string_view _name);
 
-		Texture(Texture&& _other) = delete;
-		Texture& operator=(Texture&& _other) = delete;
+		// Construct and load from file
+		Texture(std::string_view _name, AsyncTaskManager* _taskManager,
+			std::string_view _path, const TextureModes& _textureModes = TextureModes{});
 
+		// Construct and load from input data
+		Texture(std::string_view _name, AsyncTaskManager* _taskManager,
+			TextureInput& _input, const TextureModes& _textureModes = TextureModes{});
 
-		void reload(std::shared_ptr<ResourceLoader> _resourceLoader = nullptr) override;
-		bool reloadable() const;
-		bool update() override;
+		bool isReloadable() const override;
+		void reload(AsyncTaskManager* _taskManager) override;
 
-		const uint16_t getWidth() const;
-		const uint16_t getHeight() const;
+		// Load texture from file
+		void load(AsyncTaskManager* _taskManager, std::string_view _path, const TextureModes& _textureModes);
+
+		// Load texture from input data
+		void load(AsyncTaskManager* _taskManager, TextureInput& _input, const TextureModes& _textureModes);
+
+		// Load texture synchronously from input data
+		void load(const TextureInputData& _input, const TextureModes& _textureModes);
+
+		// Texture dimensions
+		uint16_t getWidth() const;
+		uint16_t getHeight() const;
+
+		const std::string& getPath() const;
+		const TextureModes& getTextureModes() const;
 
 	private:
 
-		friend class TextureManager;
-		friend class Font;
-
-		static std::shared_ptr<ResourceData> createResource(const std::string _path, const TextureModes _textureModes);
-		static std::shared_ptr<ResourceData> createResourceFromInput(const TextureInput& _input, const TextureModes _textureModes);
-		void create(const std::string_view _path, const TextureModes _textureModes, std::shared_ptr<ResourceLoader> _resourceLoader);
-		void create(const TextureInput& _input, const TextureModes _textureModes);
-		void destroy();
-		void setFallbacks(std::shared_ptr<impl::TextureFallbacks> _fallbacks);
-		void setStatus(const impl::TextureStatus _status);
+		void handleLoaded() override;
 
 		std::string path;
-
 		TextureModes textureModes;
-		impl::TextureStatus status;
-		std::shared_ptr<impl::TextureFallbacks> fallbacks;
+		uint16_t width = 0;
+		uint16_t height = 0;
 	};
 }

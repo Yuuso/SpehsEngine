@@ -8,7 +8,7 @@ VertexBuffer::VertexBuffer(const VertexAttributeFlagsType _vertexAttributes)
 }
 VertexBuffer::~VertexBuffer()
 {
-	safeDestroy<bgfx::VertexBufferHandle>(bufferObject);
+	safeDestroy<bgfx::VertexBufferHandle>(bufferHandle);
 }
 
 VertexBuffer::VertexBuffer(const VertexBuffer& _other)
@@ -138,13 +138,15 @@ void VertexBuffer::calculateVertexSize()
 
 void VertexBuffer::updateBuffer()
 {
-	safeDestroy<bgfx::VertexBufferHandle>(bufferObject);
+	safeDestroy<bgfx::VertexBufferHandle>(bufferHandle);
 	if (renderers.size() > 0 && size() > 0)
 	{
 		const bgfx::Memory* bufferMemory = bgfx::copy(data(), uint32_t(bytes()));
-		bufferObject = bgfx::createVertexBuffer(bufferMemory, findVertexLayout(getAttributes())).idx;
-		if (bufferObject == INVALID_RESOURCE_HANDLE)
+		bufferHandle.u16handle = bgfx::createVertexBuffer(bufferMemory, findVertexLayout(getAttributes())).idx;
+		if (bufferHandle.u16handle == bgfx::kInvalidHandle)
+		{
 			log::fatal("Out of vertex buffer memory?");
+		}
 	}
 	bufferChanged = false;
 }

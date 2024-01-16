@@ -53,8 +53,7 @@ namespace se::gfx
 				se_assert(checkBit(attributes, _attribute)); \
 				se_assert(size() > _at); \
 				return *reinterpret_cast<const VertexAttribute::##__attribute##Type*>(&buffer[_at * vertexBytes + offset<_attribute>()]); \
-			} \
-
+			}
 		IMPL_GET_FUNCS(Position)
 		IMPL_GET_FUNCS(Normal)
 		IMPL_GET_FUNCS(Tangent)
@@ -73,8 +72,17 @@ namespace se::gfx
 		IMPL_GET_FUNCS(Data2)
 		IMPL_GET_FUNCS(Data3)
 		IMPL_GET_FUNCS(Data4)
-
 		#undef IMPL_GET_FUNCS
+
+		// Set if attribute flag is set, return false if attribute is not set
+		template <VertexAttribute::VertexAttributeFlag _attribute, typename T>
+		bool set(size_t _at, const T& _value)
+		{
+			if (!checkBit(attributes, _attribute))
+				return false;
+			get<_attribute>(_at) = _value;
+			return true;
+		}
 
 	private:
 
@@ -84,29 +92,33 @@ namespace se::gfx
 		{
 			size_t result = 0;
 
-			#define check_attribute_offset(__attribute) \
-				if (checkBit(attributes, VertexAttribute::VertexAttributeFlag::__attribute)) { if constexpr (_attribute == VertexAttribute::VertexAttributeFlag::__attribute) return result; else result += sizeof(VertexAttribute::##__attribute##Type); }
-
-			check_attribute_offset(Position)
-			check_attribute_offset(Normal)
-			check_attribute_offset(Tangent)
-			check_attribute_offset(Bitangent)
-			check_attribute_offset(Color0)
-			check_attribute_offset(Color1)
-			check_attribute_offset(Color2)
-			check_attribute_offset(Color3)
-			check_attribute_offset(Weight)
-			check_attribute_offset(Indices)
-			check_attribute_offset(TexCoord0)
-			check_attribute_offset(TexCoord1)
-			check_attribute_offset(TexCoord2)
-			check_attribute_offset(Data0)
-			check_attribute_offset(Data1)
-			check_attribute_offset(Data2)
-			check_attribute_offset(Data3)
-			check_attribute_offset(Data4)
-
-			#undef check_attribute_offset
+			#define CHECK_ATTR_OFFSET(ATTR) \
+				if (checkBit(attributes, VertexAttribute::VertexAttributeFlag::ATTR)) \
+				{ \
+					if constexpr (_attribute == VertexAttribute::VertexAttributeFlag::ATTR) \
+						return result; \
+					else \
+						result += sizeof(VertexAttribute::##ATTR##Type); \
+				}
+			CHECK_ATTR_OFFSET(Position)
+			CHECK_ATTR_OFFSET(Normal)
+			CHECK_ATTR_OFFSET(Tangent)
+			CHECK_ATTR_OFFSET(Bitangent)
+			CHECK_ATTR_OFFSET(Color0)
+			CHECK_ATTR_OFFSET(Color1)
+			CHECK_ATTR_OFFSET(Color2)
+			CHECK_ATTR_OFFSET(Color3)
+			CHECK_ATTR_OFFSET(Weight)
+			CHECK_ATTR_OFFSET(Indices)
+			CHECK_ATTR_OFFSET(TexCoord0)
+			CHECK_ATTR_OFFSET(TexCoord1)
+			CHECK_ATTR_OFFSET(TexCoord2)
+			CHECK_ATTR_OFFSET(Data0)
+			CHECK_ATTR_OFFSET(Data1)
+			CHECK_ATTR_OFFSET(Data2)
+			CHECK_ATTR_OFFSET(Data3)
+			CHECK_ATTR_OFFSET(Data4)
+			#undef CHECK_ATTR_OFFSET
 
 			return result;
 		}

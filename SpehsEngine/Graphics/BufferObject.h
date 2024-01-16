@@ -1,6 +1,6 @@
 #pragma once
 
-#include "SpehsEngine/Graphics/ResourceHandle.h"
+#include "SpehsEngine/Core/Asset.h"
 
 namespace se::gfx::impl
 {
@@ -14,7 +14,7 @@ namespace se::gfx
 	{
 	public:
 
-		BufferObject() = default;
+		BufferObject();
 		virtual ~BufferObject();
 
 		BufferObject(const BufferObject& _other);
@@ -24,6 +24,7 @@ namespace se::gfx
 		BufferObject& operator=(BufferObject&& _other);
 
 
+		AssetHandle getHandle() const;
 		virtual void updateBuffer() = 0;
 
 	protected:
@@ -36,7 +37,7 @@ namespace se::gfx
 		void unregisterAsRenderer(const uintptr_t _value);
 		bool getBufferChanged() const { return bufferChanged; }
 
-		ResourceHandle bufferObject = INVALID_RESOURCE_HANDLE;
+		AssetHandle bufferHandle;
 		std::unordered_set<uintptr_t> renderers;
 		bool bufferChanged = false;
 	};

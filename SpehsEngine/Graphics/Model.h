@@ -12,7 +12,7 @@ namespace se::gfx
 {
 	class Animator;
 	class Material;
-	class ModelData;
+	class ModelAsset;
 	class Primitive;
 	class VertexBuffer;
 
@@ -30,8 +30,8 @@ namespace se::gfx
 		Model&									operator=(Model&& _other) = delete;
 
 
-		void									loadModelData(std::shared_ptr<ModelData> _modelData);
-		void									reloadModeData();
+		void									loadModelAsset(std::shared_ptr<ModelAsset> _modelAsset);
+		void									reloadModeAsset();
 
 		Animator&								getAnimator();
 		const Animator&							getAnimator() const;
@@ -102,11 +102,11 @@ namespace se::gfx
 		glm::vec3								scale = glm::vec3(1.0f);
 		glm::quat								rotation = glm::vec3(0.0f);
 
-		std::shared_ptr<ModelData>				modelData;
+		std::shared_ptr<ModelAsset>				modelAsset;
 		std::vector<std::shared_ptr<Material>>	materials;
 		std::shared_ptr<VertexBuffer>			instances;
 
 		boost::signals2::signal<void(void)>		destroyedSignal;
-		boost::signals2::scoped_connection		modelDataLoadedConnection;
+		boost::signals2::scoped_connection		modelAssetLoadedConnection;
 	};
 }

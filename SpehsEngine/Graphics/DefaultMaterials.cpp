@@ -1,8 +1,9 @@
 #include "stdafx.h"
 #include "SpehsEngine/Graphics/DefaultMaterials.h"
 
-#include "SpehsEngine/Graphics/ShaderManager.h"
+#include "SpehsEngine/Graphics/Shader.h"
 #include "SpehsEngine/Graphics/Uniform.h"
+#include "SpehsEngine/Graphics/DefaultShaders.h"
 
 
 PhongAttributes::PhongAttributes()
@@ -25,46 +26,46 @@ float& PhongAttributes::specularStrength()
 
 namespace se::gfx
 {
-	std::shared_ptr<Material> createMaterial(const DefaultMaterialType _type, ShaderManager& _shaderManager)
+	std::shared_ptr<Material> createMaterial(const DefaultMaterialType _type, const AssetManager& _assetManager)
 	{
 		switch (_type)
 		{
 			case DefaultMaterialType::FlatColor:
 			{
 				std::shared_ptr<Material> material = std::make_shared<Material>();
-				material->setShader(_shaderManager.find("color"), ShaderVariant::Default);
+				material->setShader(_assetManager.find<Shader>(getDefaultShaderName(DefaultShaderType::Color)), ShaderVariant::Default);
 				return material;
 			}
 			case DefaultMaterialType::FlatTexture:
 			{
 				std::shared_ptr<Material> material = std::make_shared<Material>();
-				material->setShader(_shaderManager.find("tex"), ShaderVariant::Default);
-				material->setShader(_shaderManager.find("tex_billboard"), ShaderVariant::Billboard);
-				material->setShader(_shaderManager.find("tex_billboard_instanced"), ShaderVariant::BillboardInstanced);
+				material->setShader(_assetManager.find<Shader>(getDefaultShaderName(DefaultShaderType::Texture)), ShaderVariant::Default);
+				material->setShader(_assetManager.find<Shader>(getDefaultShaderName(DefaultShaderType::Texture_Billboard)), ShaderVariant::Billboard);
+				material->setShader(_assetManager.find<Shader>(getDefaultShaderName(DefaultShaderType::Texture_Billboard_Instanced)), ShaderVariant::BillboardInstanced);
 				material->setTexture(nullptr, "s_texColor", 0);
 				return material;
 			}
 			case DefaultMaterialType::Skybox:
 			{
 				std::shared_ptr<Material> material = std::make_shared<Material>();
-				material->setShader(_shaderManager.find("skybox"), ShaderVariant::Default);
+				material->setShader(_assetManager.find<Shader>(getDefaultShaderName(DefaultShaderType::Skybox)), ShaderVariant::Default);
 				material->setTexture(nullptr, "s_texColor", 0);
 				return material;
 			}
 			case DefaultMaterialType::Text:
 			{
 				std::shared_ptr<Material> material = std::make_shared<Material>();
-				material->setShader(_shaderManager.find("text"), ShaderVariant::Default);
+				material->setShader(_assetManager.find<Shader>(getDefaultShaderName(DefaultShaderType::Text)), ShaderVariant::Default);
 				material->setFont(nullptr, "s_fontTex", 0);
 				return material;
 			}
 			case DefaultMaterialType::Phong:
 			{
 				std::shared_ptr<Material> material = std::make_shared<Material>();
-				material->setShader(_shaderManager.find("phong"), ShaderVariant::Default);
-				material->setShader(_shaderManager.find("phong_instanced"), ShaderVariant::Instanced);
-				material->setShader(_shaderManager.find("phong_skinned"), ShaderVariant::Skinned);
-				material->setShader(_shaderManager.find("phong_skinned_instanced"), ShaderVariant::SkinnedInstanced);
+				material->setShader(_assetManager.find<Shader>(getDefaultShaderName(DefaultShaderType::Phong)), ShaderVariant::Default);
+				material->setShader(_assetManager.find<Shader>(getDefaultShaderName(DefaultShaderType::Phong_Instanced)), ShaderVariant::Instanced);
+				material->setShader(_assetManager.find<Shader>(getDefaultShaderName(DefaultShaderType::Phong_Skinned)), ShaderVariant::Skinned);
+				material->setShader(_assetManager.find<Shader>(getDefaultShaderName(DefaultShaderType::Phong_Skinned_Instanced)), ShaderVariant::SkinnedInstanced);
 				material->setTexture(nullptr, "s_texColor", PhongTextureType::Color);
 				material->setTexture(nullptr, "s_texNormal", PhongTextureType::Normal);
 				material->setLit(true);
@@ -74,7 +75,7 @@ namespace se::gfx
 			case DefaultMaterialType::PhongCubemap:
 			{
 				std::shared_ptr<Material> material = std::make_shared<Material>();
-				material->setShader(_shaderManager.find("phong_cubemap"), ShaderVariant::Default);
+				material->setShader(_assetManager.find<Shader>(getDefaultShaderName(DefaultShaderType::Phong_Cubemap)), ShaderVariant::Default);
 				material->setTexture(nullptr, "s_texColor", PhongTextureType::Color);
 				material->setTexture(nullptr, "s_texNormal", PhongTextureType::Normal);
 				material->setTexture(nullptr, "s_texRoughness", PhongTextureType::Roughness);

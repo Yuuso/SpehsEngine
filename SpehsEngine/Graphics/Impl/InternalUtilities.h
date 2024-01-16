@@ -1,7 +1,7 @@
 #pragma once
 
-#include "SpehsEngine/Graphics/ResourceHandle.h"
 #include "SpehsEngine/Graphics/VertexAttribute.h"
+#include "SpehsEngine/Core/Asset.h"
 
 
 namespace se::gfx::impl
@@ -19,13 +19,14 @@ namespace se::gfx::impl
 	uint32_t getStencilState(const Stencil* _stencil);
 
 	template <typename T>
-	void safeDestroy(ResourceHandle& _resourceHandle)
+	void safeDestroy(AssetHandle& _assetHandle)
 	{
-		T resourceHandle = { _resourceHandle };
-		if (bgfx::isValid(resourceHandle))
+		static_assert(sizeof(T) == sizeof(_assetHandle.u16handle));
+		T bgfxHandle = T{ _assetHandle.u16handle };
+		if (bgfx::isValid(bgfxHandle))
 		{
-			bgfx::destroy(resourceHandle);
+			bgfx::destroy(bgfxHandle);
 		}
-		_resourceHandle = INVALID_RESOURCE_HANDLE;
+		_assetHandle.u16handle = bgfx::kInvalidHandle;
 	}
 }

@@ -4,7 +4,8 @@
 #include <codecvt>
 
 
-static_assert(std::is_same<CharacterCode, std::u32string_view::traits_type::char_type>::value, "CharacterCode type mismatch!");
+static_assert(std::is_same<CharacterCode, std::u32string_view::traits_type::char_type>::value,
+			  "CharacterCode type mismatch!");
 
 namespace se::gfx
 {

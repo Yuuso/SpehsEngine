@@ -2,14 +2,16 @@
 
 #include "SpehsEngine/Graphics/ShaderVariant.h"
 
-
 namespace se::gfx
 {
 	class Font;
 	class Shader;
 	class Texture;
 	class Uniform;
+}
 
+namespace se::gfx
+{
 	class UniformContainer
 	{
 	public:
@@ -21,33 +23,29 @@ namespace se::gfx
 	{
 	public:
 
-												Material() = default;
-												~Material() = default;
-
-												Material(const Material& _other) = delete;
-		Material&								operator=(const Material& _other) = delete;
-												Material(Material&& _other) = delete;
-		Material&								operator=(Material&& _other) = delete;
+		SE_NO_COPY_OR_MOVE(Material);
+											Material() = default;
+											~Material() = default;
 
 
-		void									bind();
-		void									connectToFontChangedSignal(boost::signals2::scoped_connection& scopedConnection, const boost::function<void(void)>& callback);
+		void								bind(Texture* _fallbackTexture);
+		boost::signals2::scoped_connection	connectToFontChangedSignal(const boost::function<void()>& callback);
 
-		const std::shared_ptr<Shader>			getShader(ShaderVariant variant = ShaderVariant::Default) const;
-		const std::shared_ptr<Texture>			getTexture(uint8_t _slot = 0) const;
-		const std::shared_ptr<Font>				getFont(uint8_t _slot = 0) const;
-		bool									checkUniformContainer(const std::string& _name) const;
-		bool									getLit() const;
-		const std::string&						getName() const;
+		std::shared_ptr<const Shader>		getShader(ShaderVariant variant = ShaderVariant::Default) const;
+		std::shared_ptr<const Texture>		getTexture(uint8_t _slot = 0) const;
+		std::shared_ptr<const Font>			getFont(uint8_t _slot = 0) const;
+		bool								checkUniformContainer(const std::string& _name) const;
+		bool								getLit() const;
+		const std::string&					getName() const;
 
-		void									setShader(std::shared_ptr<Shader> _shader, ShaderVariant variant = ShaderVariant::Default);
-		void									setTexture(std::shared_ptr<Texture> _texture, std::string_view _uniformName, uint8_t _slot);
-		void									setTexture(std::shared_ptr<Texture> _texture, uint8_t _slot = 0);
-		void									setFont(std::shared_ptr<Font> _font, std::string_view _uniformName, uint8_t _slot);
-		void									setFont(std::shared_ptr<Font> _font, uint8_t _slot = 0);
-		void									setUniformContainer(std::shared_ptr<UniformContainer> _uniformContainer, const std::string& _name);
-		void									setLit(bool _value);
-		void									setName(std::string_view _name);
+		void								setShader(std::shared_ptr<Shader> _shader, ShaderVariant variant = ShaderVariant::Default);
+		void								setTexture(std::shared_ptr<Texture> _texture, std::string_view _uniformName, uint8_t _slot);
+		void								setTexture(std::shared_ptr<Texture> _texture, uint8_t _slot = 0);
+		void								setFont(std::shared_ptr<Font> _font, std::string_view _uniformName, uint8_t _slot);
+		void								setFont(std::shared_ptr<Font> _font, uint8_t _slot = 0);
+		void								setUniformContainer(std::shared_ptr<UniformContainer> _uniformContainer, const std::string& _name);
+		void								setLit(bool _value);
+		void								setName(std::string_view _name);
 
 	private:
 
@@ -69,6 +67,6 @@ namespace se::gfx
 
 		std::string name = "unknown";
 		bool lightsEnabled = false;
-		boost::signals2::signal<void(void)> fontChangedSignal;
+		boost::signals2::signal<void()> fontChangedSignal;
 	};
 }

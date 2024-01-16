@@ -1,55 +1,42 @@
 #pragma once
 
-#include "SpehsEngine/Graphics/Resource.h"
-#include "SpehsEngine/Graphics/ResourceData.h"
+#include "SpehsEngine/Core/Asset.h"
 
-
-namespace se::gfx::impl
-{
-	class Batch;
-	class PrimitiveInternal;
-}
 
 namespace se::gfx
 {
-	class Shader : public Resource<ShaderData>
+	class Shader : public IAsset
 	{
 	public:
 
-		Shader() = delete;
-		Shader(const std::string_view _name);
-		~Shader();
+		~Shader() = default;
 
-		Shader(const Shader& _other) = delete;
-		Shader& operator=(const Shader& _other) = delete;
+		// Construct empty shader
+		Shader(std::string_view _name);
 
-		Shader(Shader&& _other) = delete;
-		Shader& operator=(Shader&& _other) = delete;
+		// Construct and load shader from file
+		Shader(std::string_view _name, AsyncTaskManager* _taskManager,
+			std::string_view _vertexShaderPath, std::string_view _fragmentShaderPath);
 
+		// Construct and load embedded shader
+		Shader(std::string_view _name, AsyncTaskManager* _taskManager,
+			AssetHandle _vertexShaderHandle, AssetHandle _fragmentShaderHandle);
 
-		void reload(std::shared_ptr<ResourceLoader> _resourceLoader = nullptr) override;
-		bool reloadable() const override;
+		bool isReloadable() const override;
+		void reload(AsyncTaskManager* _taskManager) override;
+
+		// Load shader from file
+		void load(AsyncTaskManager* _taskManager,
+			std::string_view _vertexShaderPath, std::string_view _fragmentShaderPath);
+
+		// Load embedded shader
+		void load(AsyncTaskManager* _taskManager,
+			AssetHandle _vertexShaderHandle, AssetHandle _fragmentShaderHandle);
+
+		const std::string& getVertexShaderPath() const;
+		const std::string& getFragmentShaderPath() const;
 
 	private:
-
-		friend class impl::Batch;
-		friend class impl::PrimitiveInternal;
-		friend class ShaderManager;
-
-		static std::shared_ptr<ResourceData> createResource(
-			const std::string _vertexShaderPath,
-			const std::string _fragmentShaderPath);
-		static std::shared_ptr<ResourceData> createResourceFromHandles(
-			ResourceHandle _vertexShaderHandle,
-			ResourceHandle _fragmentShaderHandle);
-		void destroy();
-		void create(
-			const std::string_view _vertexShaderPath,
-			const std::string_view _fragmentShaderPath,
-			std::shared_ptr<ResourceLoader> _resourceLoader);
-		void create(
-			ResourceHandle _vertexShaderHandle,
-			ResourceHandle _fragmentShaderHandle);
 
 		std::string vertexShaderPath;
 		std::string fragmentShaderPath;

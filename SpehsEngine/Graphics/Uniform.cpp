@@ -19,7 +19,7 @@ Uniform::~Uniform()
 
 bool Uniform::operator==(const Uniform& _other) const
 {
-	return uniformHandle == _other.uniformHandle;
+	return uniformHandle.u16handle == _other.uniformHandle.u16handle;
 }
 
 const UniformType Uniform::getType() const
@@ -40,27 +40,27 @@ void Uniform::set(const glm::vec4* _value, const uint16_t _numElements)
 	se_assert(_value != nullptr);
 	se_assert(type == UniformType::Vec4);
 	se_assert(_numElements <= numElements);
-	bgfx::setUniform({ uniformHandle }, reinterpret_cast<const void*>(_value), _numElements);
+	bgfx::setUniform({ uniformHandle.u16handle }, reinterpret_cast<const void*>(_value), _numElements);
 }
 void Uniform::set(const glm::mat3* _value, const uint16_t _numElements)
 {
 	se_assert(_value != nullptr);
 	se_assert(type == UniformType::Mat3);
 	se_assert(_numElements <= numElements);
-	bgfx::setUniform({ uniformHandle }, reinterpret_cast<const void*>(_value), _numElements);
+	bgfx::setUniform({ uniformHandle.u16handle }, reinterpret_cast<const void*>(_value), _numElements);
 }
 void Uniform::set(const glm::mat4* _value, const uint16_t _numElements)
 {
 	se_assert(_value != nullptr);
 	se_assert(type == UniformType::Mat4);
 	se_assert(_numElements <= numElements);
-	bgfx::setUniform({ uniformHandle }, reinterpret_cast<const void*>(_value), _numElements);
+	bgfx::setUniform({ uniformHandle.u16handle }, reinterpret_cast<const void*>(_value), _numElements);
 }
 void Uniform::set(const Texture& _value, const uint8_t _stage)
 {
-	bgfx::setTexture(_stage, { uniformHandle }, { _value.getHandle() });
+	bgfx::setTexture(_stage, { uniformHandle.u16handle }, { _value.getHandle().u16handle });
 }
 void Uniform::set(const Font& _value, const uint8_t _stage)
 {
-	bgfx::setTexture(_stage, { uniformHandle }, { _value.getHandle() });
+	bgfx::setTexture(_stage, { uniformHandle.u16handle }, { _value.getHandle().u16handle });
 }

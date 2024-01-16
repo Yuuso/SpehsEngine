@@ -2,6 +2,10 @@
 
 // NOTE: No SpehsEngine includes allowed
 
+namespace se::gfx
+{
+	class Texture;
+}
 
 namespace se::gfx::impl
 {
@@ -9,6 +13,7 @@ namespace se::gfx::impl
 	{
 		const class WindowInternal* currentWindow	= nullptr;
 		class DefaultUniforms* defaultUniforms		= nullptr;
+		Texture* fallbackTexture					= nullptr;
 		class LightBatch* lightBatch				= nullptr;
 		bgfx::ViewId currentViewId					= 0;
 		RendererFlagsType rendererFlags				= 0;
@@ -47,14 +52,6 @@ namespace se::gfx::impl
 		size_t verticesEnd;
 		size_t indicesStart;
 		size_t indicesEnd;
-	};
-
-	enum class TextureStatus
-	{
-		Init,
-		Loading,
-		Valid,
-		Error,
 	};
 
 	enum class PrimitiveAttributeFlag : PrimitiveAttributeFlagsType

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "SpehsEngine/Graphics/ResourceHandle.h"
+#include "SpehsEngine/Core/Asset.h"
 
 
 /*
@@ -37,14 +37,10 @@ namespace se::gfx
 	{
 	public:
 
+		SE_NO_COPY_OR_MOVE(Uniform);
+		Uniform() = delete;
 		Uniform(const std::string_view _name, const UniformType _type, const uint16_t _numElements = 1);
 		~Uniform();
-
-		Uniform(const Uniform& _other) = delete;
-		Uniform& operator=(const Uniform& _other) = delete;
-
-		Uniform(Uniform&& _other) = delete;
-		Uniform& operator=(Uniform&& _other) = delete;
 
 		bool operator==(const Uniform& _other) const;
 
@@ -65,6 +61,6 @@ namespace se::gfx
 		const UniformType type;
 		const uint16_t numElements;
 
-		ResourceHandle uniformHandle = INVALID_RESOURCE_HANDLE;
+		AssetHandle uniformHandle;
 	};
 }

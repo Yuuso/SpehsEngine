@@ -4,7 +4,7 @@
 
 IndexBuffer::~IndexBuffer()
 {
-	safeDestroy<bgfx::IndexBufferHandle>(bufferObject);
+	safeDestroy<bgfx::IndexBufferHandle>(bufferHandle);
 }
 
 IndexBuffer::IndexBuffer(const IndexBuffer& _other)
@@ -31,14 +31,16 @@ IndexBuffer& IndexBuffer::operator=(IndexBuffer&& _other)
 
 void IndexBuffer::updateBuffer()
 {
-	safeDestroy<bgfx::IndexBufferHandle>(bufferObject);
+	safeDestroy<bgfx::IndexBufferHandle>(bufferHandle);
 	if (renderers.size() > 0 && size() > 0)
 	{
 		static_assert(sizeof(IndexType) == 2);
 		const bgfx::Memory* bufferMemory = bgfx::copy(data(), uint32_t(bytes()));
-		bufferObject = bgfx::createIndexBuffer(bufferMemory).idx;
-		if (bufferObject == INVALID_RESOURCE_HANDLE)
+		bufferHandle.u16handle = bgfx::createIndexBuffer(bufferMemory).idx;
+		if (bufferHandle.u16handle == bgfx::kInvalidHandle)
+		{
 			log::fatal("Out of index buffer memory?");
+		}
 	}
 	bufferChanged = false;
 }

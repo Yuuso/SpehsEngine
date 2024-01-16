@@ -30,13 +30,13 @@ WindowInternal::WindowInternal(Window& _window, const bool _isDefault)
 		enableBit(windowFlags, SDL_WINDOW_BORDERLESS);
 	if (window->getResizable())
 		enableBit(windowFlags, SDL_WINDOW_RESIZABLE);
-	if (window->getMinimized())
+	if (window->isMinimized())
 		enableBit(windowFlags, SDL_WINDOW_MINIMIZED);
-	if (window->getMaximized())
+	if (window->isMaximized())
 		enableBit(windowFlags, SDL_WINDOW_MAXIMIZED);
-	if (window->getKeyboardFocus())
+	if (window->hasKeyboardFocus())
 		enableBit(windowFlags, SDL_WINDOW_INPUT_FOCUS);
-	if (window->getMouseFocus())
+	if (window->hasMouseFocus())
 		enableBit(windowFlags, SDL_WINDOW_MOUSE_FOCUS);
 	if (window->getConfinedInput())
 		enableBit(windowFlags, SDL_WINDOW_INPUT_GRABBED);
@@ -74,6 +74,7 @@ WindowInternal::WindowInternal(Window& _window, const bool _isDefault)
 	}
 	window->updateFlags = 0;
 	window->displayIndex = SDL_GetWindowDisplayIndex(sdlWindow);
+	window->sdlWindow = sdlWindow;
 
 	if (!isDefault)
 	{
@@ -157,7 +158,7 @@ void WindowInternal::postRender()
 
 bool WindowInternal::renderState() const
 {
-	return !window->getMinimized() && window->isShown();
+	return !window->isMinimized() && window->isShown();
 }
 
 const bool WindowInternal::wasDestroyed() const
@@ -251,7 +252,7 @@ void WindowInternal::handleWindowEvent(const SDL_WindowEvent& _event)
 		{
 			if (!checkBit(window->updateFlags, WindowUpdateFlag::ShownChanged))
 			{
-				window->shown = true;
+				enableBit(window->flags, Window::WindowFlags::Shown);
 			}
 			break;
 		}
@@ -259,7 +260,7 @@ void WindowInternal::handleWindowEvent(const SDL_WindowEvent& _event)
 		{
 			if (!checkBit(window->updateFlags, WindowUpdateFlag::ShownChanged))
 			{
-				window->shown = false;
+				disableBit(window->flags, Window::WindowFlags::Shown);
 			}
 			break;
 		}
@@ -278,7 +279,7 @@ void WindowInternal::handleWindowEvent(const SDL_WindowEvent& _event)
 			const uint16_t newWidth = (uint16_t)_event.data1;
 			const uint16_t newHeight = (uint16_t)_event.data2;
 			const AspectRatio newAspectRatio(newWidth, newHeight);
-			if (window->keepAspectRatio && newAspectRatio != window->aspectRatio)
+			if (checkBit(window->flags, Window::WindowFlags::KeepAspectRatio) && newAspectRatio != window->aspectRatio)
 			{
 				const float newAspectHeight = newWidth / ((float)window->aspectRatio.numerator / (float)window->aspectRatio.denominator);
 				const float newAspectWidth = newHeight * ((float)window->aspectRatio.numerator / (float)window->aspectRatio.denominator);
@@ -327,7 +328,7 @@ void WindowInternal::handleWindowEvent(const SDL_WindowEvent& _event)
 			if (!checkBit(window->updateFlags, WindowUpdateFlag::Minimized) &&
 					checkBit(window->updateFlags, WindowUpdateFlag::Restored))
 			{
-				window->minimized = true;
+				enableBit(window->flags, Window::WindowFlags::Minimized);
 			}
 			break;
 		}
@@ -335,7 +336,7 @@ void WindowInternal::handleWindowEvent(const SDL_WindowEvent& _event)
 		{
 			if (!checkBit(window->updateFlags, WindowUpdateFlag::Maximized))
 			{
-				window->maximized = true;
+				disableBit(window->flags, Window::WindowFlags::Minimized);
 			}
 			break;
 		}
@@ -344,33 +345,33 @@ void WindowInternal::handleWindowEvent(const SDL_WindowEvent& _event)
 			if (!checkBit(window->updateFlags, WindowUpdateFlag::Minimized) &&
 				checkBit(window->updateFlags, WindowUpdateFlag::Restored))
 			{
-				window->minimized = false;
+				disableBit(window->flags, Window::WindowFlags::Minimized);
 			}
 			break;
 		}
 		case SDL_WINDOWEVENT_ENTER:
 		{
-			window->mouseFocus = true;
+			enableBit(window->flags, Window::WindowFlags::MouseFocus);
 			break;
 		}
 		case SDL_WINDOWEVENT_LEAVE:
 		{
-			window->mouseFocus = false;
+			disableBit(window->flags, Window::WindowFlags::MouseFocus);
 			break;
 		}
 		case SDL_WINDOWEVENT_FOCUS_GAINED:
 		{
-			window->keyboardFocus = true;
+			enableBit(window->flags, Window::WindowFlags::KeyboardFocus);
 			break;
 		}
 		case SDL_WINDOWEVENT_FOCUS_LOST:
 		{
-			window->keyboardFocus = false;
+			disableBit(window->flags, Window::WindowFlags::KeyboardFocus);
 			break;
 		}
 		case SDL_WINDOWEVENT_CLOSE:
 		{
-			window->quitRequested = true;
+			enableBit(window->flags, Window::WindowFlags::QuitRequested);
 			break;
 		}
 	}
