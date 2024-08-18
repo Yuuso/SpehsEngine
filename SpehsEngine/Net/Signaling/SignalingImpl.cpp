@@ -2,6 +2,7 @@
 #include "SpehsEngine/Net/Signaling/SignalingImpl.h"
 
 #include "SpehsEngine/Net/Signaling/SignalingPackets.h"
+#include "SpehsEngine/Net/IOService.h"
 #include "steam/isteamnetworkingsockets.h"
 
 
@@ -11,7 +12,7 @@ namespace se
 	{
 		std::recursive_mutex OutConnectionSignaling::staticMutex;
 		std::unique_ptr<IOService> OutConnectionSignaling::staticIoService;
-		std::unordered_map<Endpoint, std::unique_ptr<SocketTCP>> OutConnectionSignaling::staticSockets;
+		std::unordered_map<Endpoint, std::unique_ptr<ISocketTCP>> OutConnectionSignaling::staticSockets;
 
 		std::recursive_mutex AcceptorP2P::staticMutex;
 		std::unique_ptr<IOService> AcceptorP2P::staticIoService;
@@ -35,7 +36,7 @@ namespace se
 			return outConnectionSignaling;
 		}
 
-		InSignalingReceivedContext::InSignalingReceivedContext(SocketTCP& _signalingServerConnectedSocket)
+		InSignalingReceivedContext::InSignalingReceivedContext(ISocketTCP& _signalingServerConnectedSocket)
 			: socket(_signalingServerConnectedSocket)
 		{
 			se_assert(socket.isConnected());
@@ -54,14 +55,14 @@ namespace se
 			return inConnectionSignaling;
 		}
 
-		SocketTCP* OutConnectionSignaling::getStaticSocket(const Endpoint& _signalingServerEndpoint)
+		ISocketTCP* OutConnectionSignaling::getStaticSocket(const Endpoint& _signalingServerEndpoint)
 		{
 			std::lock_guard<std::recursive_mutex> lock(staticMutex);
 			if (!staticIoService)
 			{
 				staticIoService.reset(new IOService());
 			}
-			std::unique_ptr<SocketTCP>& socket = staticSockets[_signalingServerEndpoint];
+			std::unique_ptr<ISocketTCP>& socket = staticSockets[_signalingServerEndpoint];
 			if (socket)
 			{
 				// This endpoint is already being used by some other local source
@@ -69,7 +70,7 @@ namespace se
 			}
 			else
 			{
-				socket.reset(new SocketTCP(*staticIoService));
+				socket = ISocketTCP::create(*staticIoService);
 				return socket.get();
 			}
 		}
@@ -147,7 +148,7 @@ namespace se
 			delete this;
 		}
 
-		InConnectionSignaling::InConnectionSignaling(const NetIdentity _peerNetIdentity, SocketTCP& _socket)
+		InConnectionSignaling::InConnectionSignaling(const NetIdentity _peerNetIdentity, ISocketTCP& _socket)
 			: peerNetIdentity(_peerNetIdentity)
 			, socket(_socket)
 		{
@@ -191,9 +192,9 @@ namespace se
 			}
 		}
 		AcceptorP2P::AcceptorP2P(const Endpoint& signalingServerEndpoint)
-			: socket(getStaticIoService())
+			: socket(ISocketTCP::create(getStaticIoService()))
 		{
-			if (socket.connect(signalingServerEndpoint))
+			if (socket->connect(signalingServerEndpoint))
 			{
 				SteamNetworkingIdentity selfSteamNetworkingIdentity;
 				selfSteamNetworkingIdentity.Clear();
@@ -204,7 +205,7 @@ namespace se
 				packet.netIdentity = fromSteamNetworkingIdentity(selfSteamNetworkingIdentity);
 				BinaryWriter binaryWriter;
 				binaryWriter.serial(packet);
-				socket.sendPacket(binaryWriter);
+				socket->sendPacket(binaryWriter);
 			}
 		}
 		void AcceptorP2P::receiveHandler(BinaryReader& binaryReader)
@@ -215,7 +216,7 @@ namespace se
 				se::log::warning("AcceptorP2P: failed to read SignalingDataPacket");
 				return;
 			}
-			InSignalingReceivedContext inSignalingReceivedContext(socket);
+			InSignalingReceivedContext inSignalingReceivedContext(*socket);
 			if (!SteamNetworkingSockets()->ReceivedP2PCustomSignal((const void*)packet.data.data(), (int)packet.data.size(), &inSignalingReceivedContext))
 			{
 				se::log::error("ReceivedP2PCustomSignal failed for InSignalingReceivedContext in AcceptorP2P.");

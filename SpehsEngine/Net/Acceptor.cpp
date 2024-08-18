@@ -4,7 +4,7 @@
 #include "boost/asio/io_service.hpp"
 #include "boost/bind.hpp"
 #include "SpehsEngine/Core/Log.h"
-#include "SpehsEngine/Net/SocketTCP.h"
+#include <boost/asio/ip/tcp.hpp>
 #include <stdint.h>
 #include <thread>
 

@@ -13,7 +13,7 @@ namespace se
 		{
 			struct Client
 			{
-				std::unique_ptr<SocketTCP> socket;
+				std::unique_ptr<ISocketTCP> socket;
 				NetIdentity netIdentity;
 			};
 
@@ -27,11 +27,11 @@ namespace se
 			void startAccepting()
 			{
 				se_assert(!acceptingSocket);
-				acceptingSocket.reset(new SocketTCP(ioService));
+				acceptingSocket = ISocketTCP::create(ioService);
 				acceptingSocket->startAccepting(port, std::bind(&SignalingServer::Impl::accept, this, std::placeholders::_1));
 			}
 
-			void accept(SocketTCP& socket)
+			void accept(ISocketTCP& socket)
 			{
 				// Start expecting the entry packet
 				clients.push_back(std::make_unique<Client>());
@@ -127,7 +127,7 @@ namespace se
 
 			IOService& ioService;
 			const Port& port;
-			std::unique_ptr<SocketTCP> acceptingSocket;
+			std::unique_ptr<ISocketTCP> acceptingSocket;
 			std::vector<std::unique_ptr<Client>> clients;
 		};
 

@@ -8,12 +8,13 @@ namespace se
 		struct Port
 		{
 			typedef uint16_t ValueType;
-			Port() = default;
-			Port(const ValueType& _value) : value(_value) {}
-			operator ValueType() const { return value; }
-			bool operator==(const Port& other) const { return value == other.value; }
-			bool operator!=(const Port& other) const { return value != other.value; }
-			explicit operator bool() const { return value != 0; }
+			constexpr Port() = default;
+			constexpr Port(const ValueType& _value) : value(_value) {}
+			constexpr operator ValueType() const { return value; }
+			constexpr bool operator==(const Port& other) const { return value == other.value; }
+			constexpr bool operator!=(const Port& other) const { return value != other.value; }
+			constexpr explicit operator bool() const { return value != 0u; }
+			constexpr bool isValid() const { return value != 0u; }
 			std::string toString() const { return std::to_string(value); }
 			ValueType value = 0;
 		};

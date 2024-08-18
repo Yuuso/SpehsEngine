@@ -7,11 +7,11 @@ namespace se
 {
 	namespace net
 	{
-		class SocketTCP;
+		struct ISocketTCP;
 		class Acceptor
 		{
 		public:
-			friend class SocketTCP;
+			friend struct ISocketTCP;
 		public:
 			Acceptor();
 			~Acceptor();

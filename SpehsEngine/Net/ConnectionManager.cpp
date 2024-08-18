@@ -279,7 +279,7 @@ namespace se
 		{
 			if (OutConnectionSignaling::staticMutex.try_lock())
 			{
-				for (std::pair<const Endpoint, std::unique_ptr<SocketTCP>>& pair : OutConnectionSignaling::staticSockets)
+				for (std::pair<const Endpoint, std::unique_ptr<ISocketTCP>>& pair : OutConnectionSignaling::staticSockets)
 				{
 					pair.second->update();
 				}
@@ -291,12 +291,12 @@ namespace se
 				for(std::unordered_map<Endpoint, std::unique_ptr<AcceptorP2P>>::iterator it = AcceptorP2P::staticContainer.begin(); it != AcceptorP2P::staticContainer.end(); it++)
 				{
 					AcceptorP2P& acceptor = *it->second;
-					if (!acceptor.socket.hasOnReceiveCallback())
+					if (!acceptor.socket->hasOnReceiveCallback())
 					{
-						acceptor.socket.setOnReceiveCallback(std::bind(&AcceptorP2P::receiveHandler, &acceptor, std::placeholders::_1));
+						acceptor.socket->setOnReceiveCallback(std::bind(&AcceptorP2P::receiveHandler, &acceptor, std::placeholders::_1));
 					}
-					acceptor.socket.update();
-					if (!acceptor.socket.isConnected())
+					acceptor.socket->update();
+					if (!acceptor.socket->isConnected())
 					{
 						AcceptorP2P::eraseFromStaticContainer(it->first);
 					}
@@ -560,7 +560,7 @@ namespace se
 						return false;
 					}
 					acceptor.reset(new AcceptorP2P(signalingServerEndpoint));
-					if (!acceptor->socket.isConnected())
+					if (!acceptor->socket->isConnected())
 					{
 						se::log::error("AcceptorP2P failed to connect to signaling server: " + signalingServerEndpoint.toString());
 						AcceptorP2P::eraseFromStaticContainer(signalingServerEndpoint);
@@ -649,6 +649,7 @@ namespace se
 
 		std::shared_ptr<Connection> ConnectionManager::connectIP(const se::net::Endpoint& _endpoint, const bool _symmetric, const std::string_view _name, const time::Time _timeout)
 		{
+			se_assert(_endpoint);
 			if (state->steamNetworkingSockets)
 			{
 				std::vector<SteamNetworkingConfigValue_t> steamNetworkingConfigValues;

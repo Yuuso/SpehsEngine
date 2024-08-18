@@ -28,7 +28,7 @@ namespace se
 				boost::asio::ip::tcp::endpoint endpoint = *it;
 				if (endpoint.address().is_v4())
 				{
-					return Address(endpoint.address().to_string());
+					return Address(endpoint.address().to_v4().to_uint());
 				}
 				it++;
 			}
@@ -39,7 +39,7 @@ namespace se
 		{
 			SteamNetworkingIPAddr steamNetworkingAddress;
 			steamNetworkingAddress.Clear();
-			if (!SteamNetworkingUtils()->SteamNetworkingIPAddr_ParseString(&steamNetworkingAddress, endpoint.address.value.c_str()))
+			if (!SteamNetworkingUtils()->SteamNetworkingIPAddr_ParseString(&steamNetworkingAddress, endpoint.address.toString().c_str()))
 			{
 				se::log::warning("Failed to parse endpoint address");
 			}
@@ -50,10 +50,14 @@ namespace se
 		se::net::Endpoint fromSteamNetworkingAddress(const SteamNetworkingIPAddr& steamNetworkingAddress)
 		{
 			se::net::Endpoint endpoint;
-			endpoint.address.value.resize(64);
-			SteamNetworkingUtils()->SteamNetworkingIPAddr_ToString(steamNetworkingAddress, endpoint.address.value.data(), endpoint.address.value.size(), false);
-			const size_t length = strlen(endpoint.address.value.data());
-			endpoint.address.value.resize(length);
+			if (steamNetworkingAddress.IsIPv4())
+			{
+				endpoint.address = Address(steamNetworkingAddress.GetIPv4());
+			}
+			else
+			{
+				endpoint.address = Address(&steamNetworkingAddress.m_ipv6[0]);
+			}
 			endpoint.port = steamNetworkingAddress.m_port;
 			return endpoint;
 		}

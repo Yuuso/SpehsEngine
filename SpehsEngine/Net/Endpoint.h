@@ -17,13 +17,17 @@ namespace se
 			{
 				size_t operator()(const Endpoint& endpoint) const;
 			};
+
 			static const Endpoint invalid;
-			Endpoint() : address(invalid.address), port(invalid.port) {}
-			Endpoint(const Address& _address, const Port& _port) : address(_address), port(_port) {}
-			bool operator==(const Endpoint& other) const { return port == other.port && address == other.address; }
-			bool operator!=(const Endpoint& other) const { return port != other.port || address != other.address; }
-			explicit operator bool() const { return (bool)port && (bool)address; }
+
+			constexpr Endpoint() = default;
+			constexpr Endpoint(const Address& _address, const Port& _port) : address(_address), port(_port) {}
+			constexpr bool operator==(const Endpoint& other) const { return port == other.port && address == other.address; }
+			constexpr bool operator!=(const Endpoint& other) const { return port != other.port || address != other.address; }
+			constexpr explicit operator bool() const { return (bool)port && (bool)address; }
+			constexpr bool isValid() const { return address.isValid() && port.isValid(); }
 			std::string toString() const { return address.toString() + ":" + port.toString(); }
+
 			Address address;
 			Port port;
 		};

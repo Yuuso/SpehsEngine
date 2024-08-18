@@ -32,7 +32,6 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)Inifile.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Inivar.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Log.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)Murmur3.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)OS.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)RNG.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)ScopeTimer.cpp" />

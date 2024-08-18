@@ -1,20 +1,8 @@
 #pragma once
 
 #include "SpehsEngine/Net/ISocket.h"
-#include "SpehsEngine/Net/Port.h"
-#include "SpehsEngine/Net/Address.h"
-#include "SpehsEngine/Net/IOService.h"
+#include "SpehsEngine/Net/Endpoint.h"
 #include "SpehsEngine/Net/PacketMessage.h"
-#include "SpehsEngine/Core/SE_Time.h"
-#include <boost/asio.hpp>
-#include <boost/bind.hpp>
-#include <boost/system/error_code.hpp>
-#include <boost/enable_shared_from_this.hpp>
-#include <type_traits>
-#include <functional>
-#include <thread>
-#include <atomic>
-#include <mutex>
 
 
 namespace se
@@ -24,126 +12,66 @@ namespace se
 	namespace net
 	{
 		struct HandshakeUDP;
+		class IOService;
 
-		class SocketUDP : public ISocket
+		struct ISocketUDP : public ISocket
 		{
-		private:
 			typedef uint32_t ExpectedBytesType;
 			typedef uint32_t Id;
 
-		public:
-
-			SocketUDP(IOService& ioService);
-			virtual ~SocketUDP();
+			static std::unique_ptr<ISocketUDP> create(IOService& ioService);
+			virtual ~ISocketUDP() = default;
 
 			/* Opens the socket. Must be called before packets can be received or sent. */
-			bool open();
-			void close();
+			virtual bool open() = 0;
+			virtual void close() = 0;
 			/* Binds the socket to a local endpoint. */
-			bool bind(const Port& port);
+			virtual bool bind(const Port& port) = 0;
 
 			/*
 				Connects the socket to a remote endpoint. Blocking call.
 				Socket must be opened before calling.
 				UDP is a connectionless protocol, connection status cannot be maintained.
 			*/
-			bool connect(const Endpoint& remoteEndpoint);
+			virtual bool connect(const Endpoint& remoteEndpoint) = 0;
 			/* Clears the connected endpoint value. */
-			void disconnect();
+			virtual void disconnect() = 0;
 
 			/* Process arrived packets(onReceive callbacks). */
-			void update();
+			virtual void update() = 0;
 
 			/* Sends buffer to the set remote endpoint. */
-			bool sendPacket(const BinaryWriter& binaryWriter, const PacketType packetType = PacketType::undefined);
+			virtual bool sendPacket(const BinaryWriter& binaryWriter, const PacketType packetType = PacketType::undefined) = 0;
 
 			/* Sends buffer to a specified endpoint. */
-			bool sendPacket(const BinaryWriter& binaryWriter, const boost::asio::ip::udp::endpoint& endpoint, const PacketType packetType = PacketType::undefined);
+			virtual bool sendPacket(const BinaryWriter& binaryWriter, const Endpoint& endpoint, const PacketType packetType = PacketType::undefined) = 0;
 
 			/* Returns false if the memory allocation fails, or the socket is currently receiving data. */
-			bool resizeReceiveBuffer(const size_t newSize);
+			virtual bool resizeReceiveBuffer(const size_t newSize) = 0;
 
 			/* Starts receiving data from the connected endpoint. Non-blocking call. */
-			bool startReceiving();
-			bool isReceiving() const;
+			virtual bool startReceiving() = 0;
+			virtual bool isReceiving() const = 0;
 
 			/* Heartbeat packets are sent between set intervals (requires calling update()). When set to 0, no heartbeats are sent. */
-			void setHeartbeatInterval(const time::Time interval);
-			time::Time getHeartbeatInterval() const;
+			virtual void setHeartbeatInterval(const time::Time interval) = 0;
+			virtual time::Time getHeartbeatInterval() const = 0;
 			
-			/* Returns the total number of sent bytes. Does not account bytes from the IP implementation. */
-			size_t getSentBytes() const override;
-
-			/* Returns the total number of received bytes. Does not account bytes from the IP implementation. */
-			size_t getReceivedBytes() const override;
-
 			/* Received packets must be processed with a specified receive handler. While there exists no callback, all incoming packets are discarded. */
-			void setOnReceiveCallback(const std::function<void(BinaryReader&, const boost::asio::ip::udp::endpoint&)> onReceiveCallback = std::function<void(BinaryReader&, const boost::asio::ip::udp::endpoint&)>());
+			virtual void setOnReceiveCallback(const std::function<void(BinaryReader&, const Endpoint&)> onReceiveCallback = std::function<void(BinaryReader&, const Endpoint&)>()) = 0;
 
-			void setReuseAddress(const bool enabled);
-			bool getReuseAddress() const;
+			virtual void setReuseAddress(const bool enabled) = 0;
+			virtual bool getReuseAddress() const = 0;
 
-			bool isOpen() const;
-			Port getLocalPort() const;
+			virtual bool isOpen() const = 0;
+			virtual Port getLocalPort() const = 0;
 
-			bool isConnected() const;
-			boost::asio::ip::udp::endpoint getLocalEndpoint() const;
-			boost::asio::ip::udp::endpoint getConnectedEndpoint() const;
+			virtual bool isConnected() const = 0;
+			virtual Endpoint getLocalEndpoint() const = 0;
+			virtual Endpoint getConnectedEndpoint() const = 0;
 
-			void setDebugLogLevel(const int level);
-			int getDebugLogLevel() const;
-
-		private:
-
-			void resumeReceiving();
-			void clearReceivedPackets();
-			
-			//Received packets
-			struct SharedImpl : public boost::enable_shared_from_this<SharedImpl>
-			{
-				SharedImpl(IOService& ioService);
-				bool sendPacket(const BinaryWriter& binaryWriter, const boost::asio::ip::udp::endpoint& endpoint, const PacketType packetType);
-				void receiveHandler(const boost::system::error_code& error, std::size_t bytes);
-				boost::asio::ip::udp::endpoint getLocalEndpoint() const;
-				Port getLocalPort() const;
-				void setDebugLogLevel(const int level);
-				int getDebugLogLevel() const;
-
-				struct ReceivedPacket
-				{
-					std::vector<uint8_t> buffer;
-					boost::asio::ip::udp::endpoint senderEndpoint;
-				};
-				mutable std::recursive_mutex mutex;
-				boost::asio::ip::udp::endpoint connectedEndpoint;
-				boost::asio::ip::udp::endpoint senderEndpoint;//Used by the receiver thread. Think carefully about thread sync!
-				IOService& ioService;
-				boost::asio::ip::udp::socket socket;
-				std::vector<unsigned char> receiveBuffer;
-				time::Time lastReceiveTime;
-				time::Time lastSendTime;
-				time::Time heartbeatInterval = se::time::fromSeconds(5.0f);
-				bool receiving = false;
-				std::function<void(BinaryReader&, const boost::asio::ip::udp::endpoint&)> onReceiveCallback;//User defined receive handler
-				std::function<void(const HandshakeUDP&)> handshakeResponseCallback;
-				std::recursive_mutex receivedPacketsMutex;
-				std::vector<std::unique_ptr<ReceivedPacket>> receivedPackets;
-				SocketUDP* socketUDP = nullptr;
-				size_t sentBytes = 0;
-				size_t receivedBytes = 0;
-
-				/*
-				level 1: prints most essential state changes.
-				level 2: prints some network traffic numbers.
-				level 3: prints receive buffer in hex string.
-				*/
-				int debugLogLevel = 0;
-			};
-			boost::shared_ptr<SharedImpl> sharedImpl;
-
-		private:
-			friend struct SharedImpl;
+			virtual void setDebugLogLevel(const int level) = 0;
+			virtual int getDebugLogLevel() const = 0;
 		};
 	}
 }
-

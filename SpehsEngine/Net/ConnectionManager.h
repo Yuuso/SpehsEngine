@@ -9,7 +9,6 @@ namespace se
 {
 	namespace net
 	{
-		class SocketTCP;
 		struct NetIdentity;
 
 		class ConnectionManager
