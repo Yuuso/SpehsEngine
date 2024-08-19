@@ -4,17 +4,27 @@
 #include "SpehsEngine/Graphics/Scene.h"
 #include "SpehsEngine/Graphics/View.h"
 #include "SpehsEngine/Graphics/Window.h"
-#include "SpehsEngine/GUI/GUIElement.h"
-#include "SpehsEngine/GUI/Internal/GUIMaterialManager.h"
-#include "SpehsEngine/Input/EventSignaler.h"
 #include <memory>
 #include <vector>
+
+namespace se
+{
+	namespace graphics
+	{
+		class ShaderManager;
+		class TextureManager;
+		class FontManager;
+	}
+}
 
 
 namespace se
 {
 	namespace gui
 	{
+		class GUIElement;
+		class GUIMaterialManager;
+
 		class GUIView
 		{
 		public:
@@ -53,7 +63,7 @@ namespace se
 			boost::signals2::signal<void(GUIElement&)> rootElementAddedSignal;
 			graphics::View view;
 
-			GUIMaterialManager materialManager;
+			std::unique_ptr<GUIMaterialManager> materialManager;
 			bool inputHandlingEnabled = true;
 			LayerMaskStyle layerMaskStyle = LayerMaskStyle::Incrementing;
 

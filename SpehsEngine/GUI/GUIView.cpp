@@ -2,6 +2,9 @@
 #include "SpehsEngine/GUI/GUIView.h"
 
 #include "SpehsEngine/GUI/Internal/StencilMaskManager.h"
+#include "SpehsEngine/GUI/Internal/GUIMaterialManager.h"
+#include "SpehsEngine/GUI/GUIElement.h"
+#include "SpehsEngine/Input/EventSignaler.h"
 
 
 namespace se
@@ -13,7 +16,7 @@ namespace se
 		GUIView::GUIView(graphics::ShaderManager& _shaderManager, graphics::TextureManager& _textureManager,
 						 graphics::FontManager& _fontManager, input::EventSignaler& _eventSignaler, int _inputPriority)
 			: view(scene, camera)
-			, materialManager(_shaderManager, _textureManager, _fontManager)
+			, materialManager(new GUIMaterialManager(_shaderManager, _textureManager, _fontManager))
 		{
 			view.setDrawCallSortOrder(graphics::DrawCallSortOrder::DepthAscending);
 			view.setClearFlags(graphics::ViewClearFlag::ClearDepth | graphics::ViewClearFlag::ClearStencil);
@@ -49,7 +52,7 @@ namespace se
 			camera.setPosition(glm::vec3{ _renderSize.x * 0.5f, -_renderSize.y * 0.5, cameraZPos });
 
 			auto stencilMaskManager = createStencilMaskManager(layerMaskStyle);
-			UpdateContext context{ view.getScene(), materialManager, *stencilMaskManager, _renderSize };
+			UpdateContext context{ view.getScene(), *materialManager, *stencilMaskManager, _renderSize };
 			for (size_t i = 0; i < rootElements.size(); i++)
 			{
 				se_assert(!rootElements[i]->parent);
