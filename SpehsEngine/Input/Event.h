@@ -14,20 +14,20 @@ namespace se
 {
 	namespace input
 	{
-		enum class EventType
+		enum class EventType : uint8_t
 		{
-			none,
-			keyboard,
-			textInput,
-			mouseButton,
-			mouseMotion,
-			mouseWheel,
-			mouseHover,
-			joystickButton,
-			joystickAxis,
-			joystickHat,
-			quit,
-			fileDrop,
+			none			= 0,
+			keyboard		= 1,
+			textInput		= 2,
+			mouseButton		= 3,
+			mouseMotion		= 4,
+			mouseWheel		= 5,
+			mouseHover		= 6,
+			joystickButton	= 7,
+			joystickAxis	= 8,
+			joystickHat		= 9,
+			quit			= 10,
+			fileDrop		= 11,
 		};
 
 		std::string toString(const EventType eventType);
