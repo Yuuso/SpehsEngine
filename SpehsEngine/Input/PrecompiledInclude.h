@@ -19,5 +19,7 @@ namespace se
 		struct TextInputEvent;
 		class EventCatcher;
 		class EventSignaler;
+		class CustomEventGenerator;
+		class InputManager;
 	}
 }

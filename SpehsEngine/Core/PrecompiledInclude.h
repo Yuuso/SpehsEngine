@@ -21,6 +21,15 @@
 #include "glm/glm.hpp"
 #include "glm/gtc/quaternion.hpp"
 
+namespace se
+{
+	namespace time
+	{
+		class DeltaTimeSystem;
+		class Time;
+	}
+}
+
 // Spehs Engine includes
 #include "SpehsEngine/Core/BitwiseOperations.h"
 #include "SpehsEngine/Core/ByteVector.h"
