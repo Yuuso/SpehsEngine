@@ -15,7 +15,7 @@ namespace se
 		public:
 
 			PhongAttributes();
-			~PhongAttributes() = default;
+			~PhongAttributes();
 
 			PhongAttributes(const PhongAttributes& _other) = delete;
 			PhongAttributes& operator=(const PhongAttributes& _other) = delete;

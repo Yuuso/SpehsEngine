@@ -13,6 +13,10 @@ namespace se
 		{
 			attributesUniform = std::make_unique<Uniform>("u_phong_ShininessStrength", UniformType::Vec4);
 		}
+		PhongAttributes::~PhongAttributes()
+		{
+			// ~Uniform()
+		}
 		void PhongAttributes::bind()
 		{
 			attributesUniform->set(&data);
