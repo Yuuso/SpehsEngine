@@ -28,6 +28,7 @@ namespace se
 		class DeltaTimeSystem;
 		class Time;
 	}
+	template<typename T> class AsyncTaskManager;
 }
 
 // Spehs Engine includes

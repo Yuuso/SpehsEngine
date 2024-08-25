@@ -14,6 +14,7 @@ namespace se
 		class FontManager;
 		class ModelDataManager;
 		class ShapeGenerator;
+		struct ResourceData;
 	}
 }
 
