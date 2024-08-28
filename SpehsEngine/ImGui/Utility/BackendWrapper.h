@@ -1,20 +1,15 @@
 #pragma once
 
-#include "boost/signals2.hpp"
-#include "boost/signals2/connection.hpp"
 #include "SpehsEngine/ImGui/ImGuiTypes.h"
 
 namespace se
 {
-	namespace input
-	{
-		class EventSignaler;
-	}
 	namespace graphics
 	{
 		class Renderer;
 	}
 }
+
 struct ImFont;
 
 

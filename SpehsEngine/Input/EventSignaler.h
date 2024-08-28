@@ -2,9 +2,6 @@
 
 #include "SpehsEngine/Input/Event.h"
 #include "SpehsEngine/Input/CustomEventParameters.h"
-#include "boost/signals2.hpp"
-#include "glm/vec2.hpp"
-#include <vector>
 
 
 namespace se
@@ -195,7 +192,6 @@ namespace se
 
 	//.h
 	#include "SpehsEngine/Input/Event.h"
-	#include "boost/signals2.hpp"
 
 	void eventSignalerPreUpdateCallback();
 	void eventSignalerPostUpdateCallback();

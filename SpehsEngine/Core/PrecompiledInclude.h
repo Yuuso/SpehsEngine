@@ -18,6 +18,7 @@
 // Third party includes
 #include "boost/signals2/connection.hpp"
 #include "boost/signals2/signal.hpp"
+#include "boost/assert.hpp"
 #include "glm/glm.hpp"
 #include "glm/gtc/quaternion.hpp"
 
@@ -29,6 +30,14 @@ namespace se
 		class Time;
 	}
 	template<typename T> class AsyncTaskManager;
+}
+
+namespace boost
+{
+	namespace signals2
+	{
+		class scoped_connection;
+	}
 }
 
 // Spehs Engine includes

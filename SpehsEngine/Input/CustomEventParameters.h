@@ -1,8 +1,6 @@
 #pragma once
 
-#include "SpehsEngine/Input/Event.h"
-#include "SpehsEngine/Input/JoystickUtilityFunctions.h"
-#include "SpehsEngine/Core/BitwiseOperations.h"
+#include "SpehsEngine/Input/JoystickGuid.h"
 
 
 namespace se
@@ -49,180 +47,69 @@ namespace se
 		*/
 		struct KeyboardEventParameters
 		{
-			bool check(const KeyboardEvent& event) const
-			{
-				return event.key == key;
-			}
-			void set(ICustomEvent& customEvent, const KeyboardEvent& event) const
-			{
-				switch (event.type)
-				{
-				case KeyboardEvent::Type::None:
-					break;
-				case KeyboardEvent::Type::Press:
-					customEvent.type = ICustomEvent::Type::Press;
-					break;
-				case KeyboardEvent::Type::Hold:
-					customEvent.type = ICustomEvent::Type::Hold;
-					break;
-				case KeyboardEvent::Type::Release:
-					customEvent.type = ICustomEvent::Type::Release;
-					break;
-				}
-			}
-			bool operator==(const KeyboardEventParameters& other) const
-			{
-				return key == other.key;
-			}
-			Key key = Key::UNKNOWN;
+			bool check(const KeyboardEvent& event) const;
+			void set(ICustomEvent& customEvent, const KeyboardEvent& event) const;
+			bool operator==(const KeyboardEventParameters& other) const;
+
+			Key key = Key(0);
 		};
 
 		struct MouseButtonEventParameters
 		{
-			bool check(const MouseButtonEvent& event) const
-			{
-				return event.button == mouseButton;
-			}
-			void set(ICustomEvent& customEvent, const MouseButtonEvent& event) const
-			{
-				switch (event.type)
-				{
-				case MouseButtonEvent::Type::None:
-					break;
-				case MouseButtonEvent::Type::Press:
-					customEvent.type = ICustomEvent::Type::Press;
-					break;
-				case MouseButtonEvent::Type::Hold:
-					customEvent.type = ICustomEvent::Type::Hold;
-					break;
-				case MouseButtonEvent::Type::Release:
-					customEvent.type = ICustomEvent::Type::Release;
-					break;
-				}
-			}
-			bool operator==(const MouseButtonEventParameters& other) const
-			{
-				return mouseButton == other.mouseButton;
-			}
+			bool check(const MouseButtonEvent& event) const;
+			void set(ICustomEvent& customEvent, const MouseButtonEvent& event) const;
+			bool operator==(const MouseButtonEventParameters& other) const;
+
 			MouseButton mouseButton = MouseButton::none;
 		};
 
 		struct MouseMotionEventParameters
 		{
-			bool check(const MouseMotionEvent&) const
-			{
-				return true;
-			}
-			void set(ICustomEvent& customEvent, const MouseMotionEvent& event) const
-			{
-				customEvent.type = ICustomEvent::Type::Vec2;
-				customEvent.value.vec2 = event.translation;
-			}
-			bool operator==(const MouseMotionEventParameters&) const
-			{
-				return true;
-			}
+			bool check(const MouseMotionEvent&) const;
+			void set(ICustomEvent& customEvent, const MouseMotionEvent& event) const;
+			bool operator==(const MouseMotionEventParameters&) const;
 		};
 
 		struct MouseWheelEventParameters
 		{
-			bool check(const MouseWheelEvent&) const
-			{
-				return true;
-			}
-			void set(ICustomEvent& customEvent, const MouseWheelEvent& event) const
-			{
-				customEvent.type = ICustomEvent::Type::Ivec2;
-				customEvent.value.ivec2 = event.delta;
-			}
-			bool operator==(const MouseWheelEventParameters&) const
-			{
-				return true;
-			}
+			bool check(const MouseWheelEvent&) const;
+			void set(ICustomEvent& customEvent, const MouseWheelEvent& event) const;
+			bool operator==(const MouseWheelEventParameters&) const;
 		};
 
 		struct MouseHoverEventParameters
 		{
-			bool check(const MouseHoverEvent&) const
-			{
-				return true;
-			}
-			void set(ICustomEvent& customEvent, const MouseHoverEvent& event) const
-			{
-				customEvent.type = ICustomEvent::Type::Vec2;
-				customEvent.value.vec2 = event.position;
-			}
-			bool operator==(const MouseHoverEventParameters&) const
-			{
-				return true;
-			}
+			bool check(const MouseHoverEvent&) const;
+			void set(ICustomEvent& customEvent, const MouseHoverEvent& event) const;
+			bool operator==(const MouseHoverEventParameters&) const;
 		};
 
 		struct JoystickButtonEventParameters
 		{
-			bool check(const JoystickButtonEvent& event) const
-			{
-				return buttonIndex == event.buttonIndex && joystickGuid == getJoystickGuid(event.joystickId);
-			}
-			void set(ICustomEvent& customEvent, const JoystickButtonEvent& event) const
-			{
-				switch (event.type)
-				{
-				case JoystickButtonEvent::Type::None:
-					break;
-				case JoystickButtonEvent::Type::Press:
-					customEvent.type = ICustomEvent::Type::Press;
-					break;
-				case JoystickButtonEvent::Type::Hold:
-					customEvent.type = ICustomEvent::Type::Hold;
-					break;
-				case JoystickButtonEvent::Type::Release:
-					customEvent.type = ICustomEvent::Type::Release;
-					break;
-				}
-			}
-			bool operator==(const JoystickButtonEventParameters& other) const
-			{
-				return buttonIndex == other.buttonIndex && joystickGuid == other.joystickGuid;
-			}
+			bool check(const JoystickButtonEvent& event) const;
+			void set(ICustomEvent& customEvent, const JoystickButtonEvent& event) const;
+			bool operator==(const JoystickButtonEventParameters& other) const;
+
 			JoystickGuid joystickGuid;
 			uint8_t buttonIndex = 0;
 		};
 
 		struct JoystickAxisEventParameters
 		{
-			bool check(const JoystickAxisEvent& event) const
-			{
-				return axisIndex == event.axisIndex && joystickGuid == getJoystickGuid(event.joystickId);
-			}
-			void set(ICustomEvent& customEvent, const JoystickAxisEvent& event) const
-			{
-				customEvent.type = ICustomEvent::Type::Int;
-				customEvent.value.i = event.axisState;
-			}
-			bool operator==(const JoystickAxisEventParameters& other) const
-			{
-				return axisIndex == other.axisIndex && joystickGuid == other.joystickGuid;
-			}
+			bool check(const JoystickAxisEvent& event) const;
+			void set(ICustomEvent& customEvent, const JoystickAxisEvent& event) const;
+			bool operator==(const JoystickAxisEventParameters& other) const;
+
 			JoystickGuid joystickGuid;
 			uint8_t axisIndex = 0;
 		};
 
 		struct JoystickHatEventParameters
 		{
-			bool check(const JoystickHatEvent& event) const
-			{
-				return hatIndex == event.hatIndex && joystickGuid == getJoystickGuid(event.joystickId);
-			}
-			void set(ICustomEvent& customEvent, const JoystickHatEvent& event) const
-			{
-				customEvent.type = ICustomEvent::Type::Int;
-				customEvent.value.i = int(event.joystickHatState);
-			}
-			bool operator==(const JoystickHatEventParameters& other) const
-			{
-				return hatIndex == other.hatIndex && joystickGuid == other.joystickGuid;
-			}
+			bool check(const JoystickHatEvent& event) const;
+			void set(ICustomEvent& customEvent, const JoystickHatEvent& event) const;
+			bool operator==(const JoystickHatEventParameters& other) const;
+
 			JoystickGuid joystickGuid;
 			uint8_t hatIndex = 0;
 		};
@@ -235,7 +122,7 @@ namespace se
 			// Returns a shorter string, better suited for texts in the UI
 			std::string toShortString() const;
 
-			EventType eventType = EventType::none;
+			EventType eventType = EventType(0);
 			KeyboardEventParameters keyboardEventParameters;
 			MouseButtonEventParameters mouseButtonEventParameters;
 			MouseMotionEventParameters mouseMotionEventParameters;

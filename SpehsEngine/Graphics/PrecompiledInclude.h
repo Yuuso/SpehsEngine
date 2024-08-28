@@ -18,6 +18,7 @@ namespace se
 	}
 }
 
+#include "SpehsEngine/Graphics/ResourceHandle.h"
 #include "SpehsEngine/Graphics/Types.h"
 
 static constexpr uint16_t SE_MAX_BONES = 32;	// BGFX_CONFIG_MAX_BONES
