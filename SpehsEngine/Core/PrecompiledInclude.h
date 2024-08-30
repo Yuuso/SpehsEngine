@@ -29,7 +29,9 @@ namespace se
 		class DeltaTimeSystem;
 		class Time;
 	}
+	struct Circle;
 	template<typename T> class AsyncTaskManager;
+	template<typename T> class WatchedValue;
 }
 
 namespace boost
