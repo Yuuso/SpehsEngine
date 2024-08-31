@@ -242,6 +242,7 @@
     <ClCompile Include="Primitive.cpp" />
     <ClCompile Include="Internal\PrimitiveInternal.cpp" />
     <ClCompile Include="Renderer.cpp" />
+    <ClCompile Include="ResourceLoader.cpp" />
     <ClCompile Include="Scene.cpp" />
     <ClCompile Include="Shader.cpp" />
     <ClCompile Include="ShaderManager.cpp" />

@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "SpehsEngine/Graphics/ModelData.h"
 
+#include "SpehsEngine/Core/AsyncTaskManager.h"
 #include "SpehsEngine/Graphics/Internal/Animation.h"
 #include "SpehsEngine/Graphics/IndexBuffer.h"
 #include "SpehsEngine/Graphics/VertexBuffer.h"

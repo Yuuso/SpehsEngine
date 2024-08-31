@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "SpehsEngine/Graphics/Font.h"
 
+#include "SpehsEngine/Core/AsyncTaskManager.h"
 #include "SpehsEngine/Core/File/File.h"
 #include "SpehsEngine/Graphics/FontMetrics.h"
 #include "SpehsEngine/Graphics/Internal/FontLibrary.h"

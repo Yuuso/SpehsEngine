@@ -18,6 +18,7 @@ namespace se
 	}
 }
 
+#include <future>
 #include "SpehsEngine/Graphics/ResourceHandle.h"
 #include "SpehsEngine/Graphics/Types.h"
 

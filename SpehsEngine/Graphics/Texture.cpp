@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "SpehsEngine/Graphics/Texture.h"
 
+#include "SpehsEngine/Core/AsyncTaskManager.h"
 #include "SpehsEngine/Core/File/File.h"
 #include "SpehsEngine/Graphics/Internal/TextureFallbacks.h"
 #include "bx/allocator.h"

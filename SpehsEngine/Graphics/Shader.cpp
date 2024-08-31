@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "SpehsEngine/Graphics/Shader.h"
 
+#include "SpehsEngine/Core/AsyncTaskManager.h"
 #include "SpehsEngine/Core/File/File.h"
 
 
