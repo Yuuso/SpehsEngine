@@ -4,6 +4,7 @@ namespace se
 {
 	namespace net
 	{
+		class IOService;
 		class Connection;
 		class ConnectionManager;
 		template<typename PacketType> class Packetman;

@@ -3,7 +3,6 @@
 #include "SpehsEngine/Net/Endpoint.h"
 #include "SpehsEngine/Net/Connection.h"
 #include "steam/steamnetworkingsockets.h"
-#include "boost/signals2/signal.hpp"
 
 
 namespace se

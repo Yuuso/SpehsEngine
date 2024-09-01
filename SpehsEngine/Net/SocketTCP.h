@@ -3,7 +3,6 @@
 #include "SpehsEngine/Net/ISocket.h"
 #include "SpehsEngine/Net/Endpoint.h"
 #include "SpehsEngine/Net/PacketMessage.h"
-#include <boost/asio/ip/tcp.hpp>
 
 
 namespace se

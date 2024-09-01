@@ -212,7 +212,6 @@ namespace se
 	boost::signals2::scoped_connection textInputConnection;
 
 	//.cpp
-	#include "boost/bind.hpp"
 	#include "SpehsEngine/Input/EventSignaler.h"
 	const int inputPriority = INPUT_PRIORITY;
 	eventSignaler.connectToPreUpdateSignal(eventSignalerPreUpdateConnection, boost::bind(&MyClass::eventSignalerPreUpdateCallback, this));

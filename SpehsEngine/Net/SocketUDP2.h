@@ -11,8 +11,6 @@ namespace se
 {
 	namespace net
 	{
-		class IOService;
-
 		struct ReceivedPacketSocketUDP2
 		{
 			enum class ErrorType { None, ConnectionRefused };

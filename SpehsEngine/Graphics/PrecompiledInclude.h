@@ -4,16 +4,22 @@ namespace se
 {
 	namespace graphics
 	{
-		class Window;
+		class Camera;
+		class Font;
+		class FontManager;
+		class ModelData;
+		class ModelDataManager;
+		class Primitive;
 		class Renderer;
 		class Scene;
-		class Camera;
-		class View;
+		class Shader;
 		class ShaderManager;
-		class TextureManager;
-		class FontManager;
-		class ModelDataManager;
+		class Shape;
 		class ShapeGenerator;
+		class Texture;
+		class TextureManager;
+		class View;
+		class Window;
 		struct ResourceData;
 	}
 }
@@ -21,6 +27,7 @@ namespace se
 #include <future>
 #include "SpehsEngine/Graphics/ResourceHandle.h"
 #include "SpehsEngine/Graphics/Types.h"
+#include "SpehsEngine/Graphics/Material.h"
 
 static constexpr uint16_t SE_MAX_BONES = 32;	// BGFX_CONFIG_MAX_BONES
 static constexpr size_t SE_MAX_LIGHTS = 16;

@@ -1,20 +1,7 @@
 #pragma once
 
-#include "boost/signals2/connection.hpp"
 #include "SpehsEngine/Core/StaticRingBuffer.h"
 #include "SpehsEngine/Net/ConnectionId.h"
-
-namespace se
-{
-	namespace net
-	{
-		class ConnectionManager;
-	}
-	namespace imgui
-	{
-		class BackendWrapper;
-	}
-}
 
 
 namespace se

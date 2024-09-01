@@ -5,7 +5,6 @@
 #include "SpehsEngine/ImGui/Utility/ImGuiUtility.h"
 #include "SpehsEngine/ImGui/Utility/BackendWrapper.h"
 #include "SpehsEngine/ImGui/imgui.h"
-#include "boost/signals2/connection.hpp"
 
 
 namespace se

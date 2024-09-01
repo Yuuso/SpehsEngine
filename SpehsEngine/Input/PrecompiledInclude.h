@@ -38,3 +38,4 @@ namespace se
 #include "SpehsEngine/Input/Key.h"
 #include "SpehsEngine/Input/MouseButton.h"
 #include "SpehsEngine/Input/JoystickHatState.h"
+#include "SpehsEngine/Input/CustomEventParameters.h"

@@ -1,8 +1,6 @@
 #pragma once
 
-#include "boost/signals2/signal.hpp"
 #include "SpehsEngine/Net/Connection.h"
-#include <functional>
 
 
 namespace se

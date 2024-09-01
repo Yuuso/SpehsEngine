@@ -1,6 +1,5 @@
 #pragma once
 
-#include "boost/signals2/connection.hpp"
 #include "glm/ext/quaternion_float.hpp"
 #include "glm/vec4.hpp"
 #include "SpehsEngine/Core/Color.h"
@@ -11,22 +10,7 @@
 #include "SpehsEngine/ImGui/ImGuiTypes.h"
 #include "SpehsEngine/ImGui/Utility/IState.h"
 #include "SpehsEngine/ImGui/Utility/String.h"
-#include <stdint.h>
 
-namespace se
-{
-	namespace input
-	{
-		class EventSignaler;
-		struct CustomEventParameters;
-		enum class Key : uint32_t;
-	}
-
-	namespace graphics
-	{
-		class Texture;
-	}
-}
 
 // Do not use directly, see macros below. Used to implement a dropdown selector for an enum. p_RangeStart value is inclusive, but p_RangeEnd is exclusive.
 #define SE_IMGUI_INPUT_ENUM_RANGE_2(p_EnumType, p_RangeStart, p_RangeEnd, p_ToStringFunction, p_InlineAndBool) \

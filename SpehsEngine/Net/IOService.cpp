@@ -64,7 +64,7 @@ namespace se
 			std::thread thread;
 		};
 
-		boost::asio::io_service& getImplementationRef(IOService& ioService)
+		boost::asio::io_context& getImplementationRef(IOService& ioService)
 		{
 			return IOService::Impl::getImplementationRef(ioService);
 		}
