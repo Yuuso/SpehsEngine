@@ -126,6 +126,7 @@ Renderer::~Renderer()
 {
 	se_assert(initialized);
 	windows.clear();
+	fallbackTexture.reset();
 	defaultUniforms.reset();
 	bgfx::shutdown();
 	while (bgfx::renderFrame() != bgfx::RenderFrame::NoContext) {}
