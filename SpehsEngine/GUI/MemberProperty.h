@@ -30,6 +30,10 @@ public: \
 			*getPropertyLink(#NAME)); \
 		return *this; \
 	} \
+	SelfClass& set##NAME(::se::gui::Inherit) \
+	{ \
+		set##NAME(::se::gui::Binding{ #NAME, RelativeSource{RelativeSourceMode::Parent} }); \
+	} \
 	SelfClass& set##NAME(const ::se::gui::ResourceKey& _key) \
 	{ \
 		const ::se::gui::IPropertyLink* link = getPropertyLink(#NAME); \

@@ -39,6 +39,8 @@ namespace se::gui
 		//std::string sourceType;
 	};
 
+	class Inherit {};
+
 	class Binding
 	{
 	public:
