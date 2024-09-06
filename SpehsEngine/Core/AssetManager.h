@@ -35,6 +35,9 @@ namespace se
 		// Remove all unprotected assets that are not referenced outside of this manager
 		void purgeUnused();
 
+		// Remove all assets
+		void purgeAll();
+
 		// Return asset with name, nullptr if not found
 		template<typename T>
 		requires std::derived_from<T, IAsset>

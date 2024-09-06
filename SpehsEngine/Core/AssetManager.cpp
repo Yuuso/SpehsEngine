@@ -66,4 +66,8 @@ namespace se
 			}
 		}
 	}
+	void AssetManager::purgeAll()
+	{
+		assets.clear();
+	}
 }
