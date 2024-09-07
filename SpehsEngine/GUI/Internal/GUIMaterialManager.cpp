@@ -6,7 +6,7 @@
 
 namespace se
 {
-	namespace legacygui
+	namespace gui
 	{
 		GUIMaterialManager::GUIMaterialManager(AssetManager& _assetManager)
 			: assetManager(_assetManager)

@@ -10,7 +10,7 @@
 
 namespace se
 {
-	namespace legacygui
+	namespace gui
 	{
 		GUIText::GUIText()
 		{

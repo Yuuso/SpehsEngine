@@ -19,7 +19,7 @@ namespace se
 		class StencilMaskManager;
 	}
 
-	namespace legacygui
+	namespace gui
 	{
 		class GUIMaterialManager;
 

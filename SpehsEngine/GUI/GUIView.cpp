@@ -6,7 +6,7 @@
 
 namespace se
 {
-	namespace legacygui
+	namespace gui
 	{
 		static constexpr float cameraZPos = static_cast<float>(std::numeric_limits<gui::ZIndex>::max()) + 1.0f;
 

@@ -6,6 +6,7 @@
 
 namespace se
 {
+	// New gui
 	namespace gui
 	{
 		class CallOnDelete
@@ -17,8 +18,6 @@ namespace se
 		private:
 			const std::function<void()> func;
 		};
-
-		typedef int16_t ZIndex;
 
 		template<typename Signature> using Signal = boost::signals2::signal<Signature>;
 		using Connection = boost::signals2::connection;
@@ -41,9 +40,10 @@ namespace se
 		};
 	}
 
-	namespace legacygui
+	// Old gui
+	namespace gui
 	{
-		typedef gui::ZIndex ZIndex;
+		typedef int16_t ZIndex;
 		typedef uint16_t GUIElementUpdateFlagsType;
 
 		enum class VerticalAlignment

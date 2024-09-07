@@ -6,6 +6,3 @@
 #include "SpehsEngine/GUI/GUIUtilities.h"
 #include <any>
 #include <variant>
-
-// temp for compile testing...
-#include "SpehsEngine/GUI/Canvas.h"

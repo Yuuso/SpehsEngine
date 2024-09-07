@@ -9,7 +9,7 @@
 
 namespace se
 {
-	namespace legacygui
+	namespace gui
 	{
 		GUIShape::GUIShape()
 			: GUIShape(gfx::ShapeType::Rectangle)

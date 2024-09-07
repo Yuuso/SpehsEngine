@@ -9,7 +9,7 @@
 
 namespace se
 {
-	namespace legacygui
+	namespace gui
 	{
 		GUIElement::~GUIElement()
 		{

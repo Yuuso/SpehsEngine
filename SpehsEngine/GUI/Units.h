@@ -181,10 +181,10 @@ namespace se
 		}
 	}
 
-	namespace legacygui
+	namespace gui
 	{
-		typedef gui::UnitType	GUIUnitType;
-		typedef gui::Unit		GUIUnit;
-		typedef gui::Vec2		GUIVec2;
+		typedef UnitType	GUIUnitType;
+		typedef Unit		GUIUnit;
+		typedef Vec2		GUIVec2;
 	}
 }

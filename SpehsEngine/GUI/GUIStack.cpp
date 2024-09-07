@@ -4,7 +4,7 @@
 
 namespace se
 {
-	namespace legacygui
+	namespace gui
 	{
 		GUIStack::GUIStack(const GUIStack & _other)
 			: GUIElement(_other)

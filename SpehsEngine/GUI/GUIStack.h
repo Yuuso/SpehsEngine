@@ -5,7 +5,7 @@
 
 namespace se
 {
-	namespace legacygui
+	namespace gui
 	{
 		class GUIStack : public GUIElement
 		{
