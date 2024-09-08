@@ -35,7 +35,9 @@ namespace se
 }
 
 #include "SpehsEngine/Input/Event.h"
+#include "SpehsEngine/Input/EventUtilityFunctions.h"
 #include "SpehsEngine/Input/Key.h"
 #include "SpehsEngine/Input/MouseButton.h"
 #include "SpehsEngine/Input/JoystickHatState.h"
 #include "SpehsEngine/Input/CustomEventParameters.h"
+#include "SpehsEngine/Input/CustomEventParametersUtilityFunctions.h"
