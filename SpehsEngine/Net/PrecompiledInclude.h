@@ -7,6 +7,7 @@ namespace se
 		class IOService;
 		class Connection;
 		class ConnectionManager;
+		struct NetIdentity;
 		template<typename PacketType> class Packetman;
 	}
 }
