@@ -1,16 +1,5 @@
 #pragma once
 
-#include "SpehsEngine/Core/SE_Time.h"
-#include <functional>
-
-namespace boost
-{
-	namespace signals2
-	{
-		class scoped_connection;
-	}
-}
-
 
 namespace se
 {

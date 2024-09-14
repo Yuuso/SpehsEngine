@@ -1,14 +1,9 @@
 #pragma once
 
 #include "SpehsEngine/Core/Thread.h"
-#include "SpehsEngine/Core/SE_Assert.h"
 #include <condition_variable>
-#include <future>
-#include <mutex>
 #include <thread>
-#include <vector>
 #include <queue>
-#include <functional>
 
 
 namespace se

@@ -2,8 +2,6 @@
 
 #include "SpehsEngine/Core/Color.h"
 #include "SpehsEngine/Core/Serial/Serial.h"
-#include <string>
-#include <stdint.h>
 
 
 namespace se

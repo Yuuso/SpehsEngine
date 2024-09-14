@@ -1,8 +1,5 @@
 #pragma once
 
-#include <stdint.h>
-#include "SpehsEngine/Core/Murmur3.h"
-
 
 #define SE_STRONG_INT(p_IntType, p_TypeName, p_InvalidValue) \
 struct p_TypeName \

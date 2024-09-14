@@ -24,7 +24,6 @@ namespace se
 	}
 }
 
-#include <future>
 #include "SpehsEngine/Graphics/ResourceHandle.h"
 #include "SpehsEngine/Graphics/Types.h"
 #include "SpehsEngine/Graphics/Material.h"

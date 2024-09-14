@@ -1,13 +1,7 @@
 #pragma once
 
-#include "glm/gtc/quaternion.hpp"
-#include "glm/vec2.hpp"
-#include "glm/vec3.hpp"
 #include "SpehsEngine/Core/SE_Assert.h"
-#include <mutex>
-#include <random>
-#include <stdint.h>
-#include <type_traits>
+#include <random> // TODO: remove
 
 
 namespace se

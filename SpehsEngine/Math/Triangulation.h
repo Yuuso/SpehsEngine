@@ -2,8 +2,6 @@
 Implementation by Teo Hiltunen, based on theory provided by: http://www.academicpub.org/jao/paperInfo.aspx?PaperID=15630
 */
 #pragma once
-#include <vector>
-#include <glm/vec2.hpp>
 
 namespace se
 {

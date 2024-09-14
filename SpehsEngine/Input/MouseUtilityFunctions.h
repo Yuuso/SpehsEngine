@@ -1,8 +1,6 @@
 #pragma once
 
 #include "SpehsEngine/Input/MouseButton.h"
-#include "glm/vec2.hpp"
-#include <optional>
 
 
 namespace se

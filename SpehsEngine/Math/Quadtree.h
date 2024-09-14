@@ -1,7 +1,7 @@
 #pragma once
-#include <vector>
-#include "glm/vec2.hpp"
+
 #include "SpehsEngine/Math/Bounds2D.h"
+
 
 namespace se
 {

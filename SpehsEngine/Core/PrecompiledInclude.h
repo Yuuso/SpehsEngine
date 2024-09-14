@@ -2,12 +2,14 @@
 
 // Standard library includes
 #include <functional>
+#include <future>
 #include <map>
 #include <memory>
 #include <mutex>
 #include <numeric>
 #include <optional>
 #include <set>
+#include <stack>
 #include <stdint.h>
 #include <string>
 #include <type_traits>
@@ -29,7 +31,7 @@ namespace se
 		class DeltaTimeSystem;
 		class Time;
 	}
-	struct Circle;
+	class ResourcePathFinder;
 	template<typename T> class AsyncTaskManager;
 	template<typename T> class WatchedValue;
 }
@@ -42,23 +44,30 @@ namespace boost
 	}
 }
 
-// Spehs Engine includes
-#include "SpehsEngine/Core/BitwiseOperations.h"
-#include "SpehsEngine/Core/ByteVector.h"
-#include "SpehsEngine/Core/ByteView.h"
-#include "SpehsEngine/Core/Color.h"
-#include "SpehsEngine/Core/ColorUtilityFunctions.h"
-#include "SpehsEngine/Core/Constants.h"
-#include "SpehsEngine/Core/DeepPtrUtilityFunctions.h"
+namespace std
+{
+	class thread;
+}
+
+/// Spehs Engine includes
 #include "SpehsEngine/Core/Log.h"
-#include "SpehsEngine/Core/OptionalUtilityFunctions.h"
-#include "SpehsEngine/Core/PairUtilityFunctions.h"
+#include "SpehsEngine/Core/Constants.h"
 #include "SpehsEngine/Core/RemoveCvref.h"
-#include "SpehsEngine/Core/ScopeProfiler.h"
-#include "SpehsEngine/Core/ScopedConnections.h"
-#include "SpehsEngine/Core/ScopedFrameLimiter.h"
 #include "SpehsEngine/Core/SE_Assert.h"
 #include "SpehsEngine/Core/SE_Time.h"
+#include "SpehsEngine/Core/Color.h"
+#include "SpehsEngine/Core/BitwiseOperations.h"
+//
+#include "SpehsEngine/Core/ByteVector.h"
+#include "SpehsEngine/Core/ByteView.h"
+#include "SpehsEngine/Core/ScopedConnections.h"
+#include "SpehsEngine/Core/ScopedFrameLimiter.h"
+#include "SpehsEngine/Core/ScopeProfiler.h"
+//
+#include "SpehsEngine/Core/ColorUtilityFunctions.h"
+#include "SpehsEngine/Core/DeepPtrUtilityFunctions.h"
+#include "SpehsEngine/Core/OptionalUtilityFunctions.h"
+#include "SpehsEngine/Core/PairUtilityFunctions.h"
 #include "SpehsEngine/Core/Serial/SerialUtility.h"
 #include "SpehsEngine/Core/StringUtilityFunctions.h"
 #include "SpehsEngine/Core/StringViewUtilityFunctions.h"

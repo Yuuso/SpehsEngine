@@ -1,7 +1,8 @@
 #pragma once
-#include "glm/vec2.hpp"
+
 #include "SpehsEngine/Math/LineSegment2DOrientation.h"
 #include "SpehsEngine/Math/Bounds2D.h"
+
 
 namespace se
 {

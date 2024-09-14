@@ -1,8 +1,5 @@
 #pragma once
 
-#include <memory>
-#include <stdint.h>
-
 
 namespace se
 {

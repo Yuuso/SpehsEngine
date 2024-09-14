@@ -2,15 +2,13 @@
 
 #include "SpehsEngine/Core/ByteVector.h"
 #include "SpehsEngine/Core/ByteView.h"
-#include "SpehsEngine/Core/SE_Time.h"
-#include "SpehsEngine/Core/SE_Assert.h"
 #include "SpehsEngine/Core/Serial/Serial.h"
 #include "boost/format.hpp"
 
 
 namespace se
 {
-	inline std::string formatStringImpl(boost::format &format)
+	inline std::string formatStringImpl(boost::format& format)
 	{
 		return boost::str(format);
 	}

@@ -5,7 +5,6 @@
 #include "SpehsEngine/Core/Serial/ArchiveWriter.h"
 #include "SpehsEngine/Core/Serial/BinaryReader.h"
 #include "SpehsEngine/Core/Serial/BinaryWriter.h"
-#include <optional>
 
 
 namespace se

@@ -1,7 +1,6 @@
 #pragma once
 
 #include "SpehsEngine/Core/HasMemberFunction.h"
-#include <memory>
 
 
 namespace se

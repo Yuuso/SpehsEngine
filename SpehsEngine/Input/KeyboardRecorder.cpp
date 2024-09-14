@@ -1,5 +1,5 @@
 #include "stdafx.h"
-#include <algorithm>
+
 #include "SpehsEngine/Input/KeyboardRecorder.h"
 #include "SpehsEngine/Input/InputManager.h"
 

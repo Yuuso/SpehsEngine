@@ -1,7 +1,6 @@
 #pragma once
 
 #include "SpehsEngine/Core/ByteView.h"
-#include <stdint.h>
 
 
 namespace se

@@ -1,10 +1,5 @@
 #pragma once
 
-namespace std
-{
-	class thread;
-}
-
 
 namespace se
 {

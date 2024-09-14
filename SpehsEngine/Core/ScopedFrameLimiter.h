@@ -1,7 +1,5 @@
 #pragma once
 
-#include "SpehsEngine/Core/SE_Time.h"
-
 
 namespace se
 {

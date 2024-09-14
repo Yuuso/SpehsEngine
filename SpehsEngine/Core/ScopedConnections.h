@@ -1,15 +1,5 @@
 #pragma once
 
-#include <vector>
-
-namespace boost
-{
-	namespace signals2
-	{
-		class scoped_connection;
-	}
-}
-
 
 namespace se
 {

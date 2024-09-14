@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "SpehsEngine/Audio/AudioResource.h"
 
+#include "SpehsEngine/Core/AsyncTaskManager.h"
 #include "soloud/soloud_wav.h"
 #include "soloud/soloud_wavstream.h"
 #include "SpehsEngine/Audio/Internal/GlobalBackend.h"

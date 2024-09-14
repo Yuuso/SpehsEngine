@@ -1,8 +1,6 @@
 #pragma once
 
 #include "SpehsEngine/Core/Serial/Serial.h"
-#include <stdint.h>
-#include <utility>
 
 
 namespace se

@@ -3,8 +3,6 @@
 #include "SpehsEngine/Core/Serial/BinaryReader.h"
 #include "SpehsEngine/Core/Serial/SerialKey.h"
 #include "SpehsEngine/Core/UnorderedMapUtilityFunctions.h"
-#include <stack>
-#include <vector>
 
 
 namespace se

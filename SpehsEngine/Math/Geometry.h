@@ -1,11 +1,8 @@
 #pragma once
-#include <glm/vec2.hpp>
-#include <glm/vec3.hpp>
+
 
 namespace se
 {
-	class Vertex;
-	
 	/**Returns angle from origin to destination*/
 	extern inline float getAcuteAngle(const glm::vec2& vector1, const glm::vec2& vector2);
 
@@ -40,7 +37,6 @@ namespace se
 	extern inline float getRadius(glm::vec2* cusps, const size_t numCusps);
 
 	/*Returns center of a convex polygon*/
-	extern inline glm::vec2 getCenter(se::Vertex* cusps, const size_t numCusps);
 	extern inline glm::vec2 getCenter(glm::vec2* cusps, const size_t numCusps);
 
 	extern inline float cross2(const glm::vec2& _vec1, const glm::vec2& _vec2);

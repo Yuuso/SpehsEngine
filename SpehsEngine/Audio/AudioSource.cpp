@@ -1,7 +1,9 @@
 #include "stdafx.h"
 #include "SpehsEngine/Audio/AudioSource.h"
 
+#include "SpehsEngine/Audio/AudioResource.h"
 #include "SpehsEngine/Audio/Internal/GlobalBackend.h"
+#include "SpehsEngine/Audio/Bus.h"
 
 
 namespace se

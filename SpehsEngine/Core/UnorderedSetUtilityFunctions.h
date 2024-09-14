@@ -1,8 +1,6 @@
 #pragma once
 
 #include "SpehsEngine/Core/TypeTraits.h"
-#include <unordered_set>
-#include <set>
 
 
 namespace se
