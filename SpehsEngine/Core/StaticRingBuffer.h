@@ -3,15 +3,40 @@
 
 namespace se
 {
+	template<typename T>
+	struct IStaticRingBuffer
+	{
+		virtual ~IStaticRingBuffer() = default;
+		virtual bool pushFront(const T& t) = 0;
+		virtual bool pushBack(const T& t) = 0;
+		virtual T& at(const size_t index) = 0;
+		virtual const T& at(const size_t index) const = 0;
+		virtual T& operator[](const size_t index) = 0;
+		virtual const T& operator[](const size_t index) const = 0;
+		virtual T& getFront() = 0;
+		virtual const T& getFront() const = 0;
+		virtual T& getBack() = 0;
+		virtual const T& getBack() const = 0;
+		virtual const T* getBuffer() const = 0;
+		virtual void popFront() = 0;
+		virtual void popBack() = 0;
+		virtual size_t getMaxSize() const = 0;
+		virtual size_t getSize() const = 0;
+		virtual size_t getBeginOffset() const = 0;
+		virtual size_t getEndOffset() const = 0;
+		virtual bool isEmpty() const = 0;
+		virtual bool isFull() const = 0;
+	};
+
 	template<typename T, uint32_t MaxSize>
-	class StaticRingBuffer
+	class StaticRingBuffer final : public IStaticRingBuffer<T>
 	{
 	public:
 
 		static_assert(MaxSize > 0, "MaxSize cannot be zero.");
 		static_assert(std::is_fundamental<T>::value, "Only fundamental types are supported currently. Consider adding support when needed.");
 
-		bool pushFront(const T& t)
+		bool pushFront(const T& t) final
 		{
 			if (size < MaxSize)
 			{
@@ -33,7 +58,7 @@ namespace se
 			}
 		}
 		
-		bool pushBack(const T& t)
+		bool pushBack(const T& t) final
 		{
 			if (size < MaxSize)
 			{
@@ -52,7 +77,7 @@ namespace se
 			}
 		}
 
-		void popFront()
+		void popFront() final
 		{
 			if (size > 0)
 			{
@@ -65,7 +90,7 @@ namespace se
 			}
 		}
 
-		void popBack()
+		void popBack() final
 		{
 			if (size > 0)
 			{
@@ -81,7 +106,7 @@ namespace se
 			}
 		}
 
-		T& at(const size_t index)
+		T& at(const size_t index) final
 		{
 			const size_t offset = beginOffset + index;
 			if (offset < MaxSize)
@@ -94,7 +119,7 @@ namespace se
 			}
 		}
 
-		const T& at(const size_t index) const
+		const T& at(const size_t index) const final
 		{
 			const size_t offset = beginOffset + index;
 			if (offset < MaxSize)
@@ -107,21 +132,21 @@ namespace se
 			}
 		}
 
-		inline T& operator[](const size_t index) { return at(index); }
-		inline const T& operator[](const size_t index) const { return at(index); }
+		T& operator[](const size_t index) final { return at(index); }
+		const T& operator[](const size_t index) const final { return at(index); }
 
-		inline T& getFront() { return at(beginOffset); }
-		inline const T& getFront() const { return at(beginOffset); }
-		inline T& getBack() { return at(endOffset); }
-		inline const T& getBack() const { return at(endOffset); }
+		T& getFront() final { return at(beginOffset); }
+		const T& getFront() const final { return at(beginOffset); }
+		T& getBack() final { return at(endOffset); }
+		const T& getBack() const final { return at(endOffset); }
 
-		inline const T* getBuffer() const { return buffer; }
-		inline size_t getMaxSize() const { return MaxSize; }
-		inline size_t getSize() const { return size; }
-		inline size_t getBeginOffset() const { return beginOffset; }
-		inline size_t getEndOffset() const { return endOffset; }
-		inline bool isEmpty() const { return size == 0; }
-		inline bool isFull() const { return size == MaxSize; }
+		const T* getBuffer() const final { return buffer; }
+		size_t getMaxSize() const final { return MaxSize; }
+		size_t getSize() const final { return size; }
+		size_t getBeginOffset() const final { return beginOffset; }
+		size_t getEndOffset() const final { return endOffset; }
+		bool isEmpty() const final { return size == 0; }
+		bool isFull() const final { return size == MaxSize; }
 
 	private:
 		T buffer[MaxSize];

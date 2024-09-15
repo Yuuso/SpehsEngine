@@ -34,6 +34,8 @@ namespace se
 	class ResourcePathFinder;
 	template<typename T> class AsyncTaskManager;
 	template<typename T> class WatchedValue;
+	template<typename T> struct IStaticRingBuffer;
+	template<typename T, uint32_t MaxSize> class StaticRingBuffer;
 }
 
 namespace boost

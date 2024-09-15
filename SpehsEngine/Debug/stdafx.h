@@ -9,3 +9,4 @@
 #include "SpehsEngine/Graphics/PrecompiledInclude.h"
 #include "SpehsEngine/GUI/PrecompiledInclude.h"
 #include "SpehsEngine/ImGui/PrecompiledInclude.h"
+#include "SpehsEngine/Debug/PrecompiledInclude.h"

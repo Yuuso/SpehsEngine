@@ -10,6 +10,7 @@ namespace se
 		class GUIText;
 		class GUIView;
 	}
+	class GUILib;
 }
 
 #include "SpehsEngine/GUI/Units.h"
