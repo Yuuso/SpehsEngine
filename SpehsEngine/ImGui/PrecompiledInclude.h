@@ -8,4 +8,4 @@ namespace se
 	}
 }
 
-#include "SpehsEngine/ImGui/Utility/IState.h"
+#include "SpehsEngine/ImGui/Utility/ImGuiUtility.h"
