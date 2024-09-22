@@ -35,7 +35,7 @@ namespace se
 			return value;
 		}
 
-		void connectToChangedSignal(boost::signals2::scoped_connection& scopedConnection, const boost::function<void(const T&, const T&)>& callback)
+		void connectToChangedSignal(boost::signals2::scoped_connection& scopedConnection, const std::function<void(const T&, const T&)>& callback)
 		{
 			scopedConnection = changedSignal.connect(callback);
 		}

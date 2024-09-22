@@ -1,8 +1,6 @@
 #include "stdafx.h"
 #include "SpehsEngine/Core/ScopedConnections.h"
 
-#include "boost/signals2/connection.hpp"
-
 
 namespace se
 {

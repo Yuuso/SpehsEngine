@@ -32,7 +32,7 @@ namespace se
 					uniformContainer.second->bind();
 			}
 		}
-		void Material::connectToFontChangedSignal(boost::signals2::scoped_connection& scopedConnection, const boost::function<void(void)>& callback)
+		void Material::connectToFontChangedSignal(boost::signals2::scoped_connection& scopedConnection, const std::function<void(void)>& callback)
 		{
 			scopedConnection = fontChangedSignal.connect(callback);
 		}
