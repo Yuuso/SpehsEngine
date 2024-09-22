@@ -45,7 +45,7 @@ namespace se
 				}
 				else
 				{
-					imGuiBackendWrapper.connectToPreRenderSignal(preRenderConnection, boost::bind(&ConnectionManagerVisualizer::render, this));
+					imGuiBackendWrapper.connectToPreRenderSignal(preRenderConnection, std::bind(&ConnectionManagerVisualizer::render, this));
 				}
 			}
 

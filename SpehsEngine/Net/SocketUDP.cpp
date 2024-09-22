@@ -9,16 +9,12 @@
 #include "SpehsEngine/Net/Port.h"
 #include "SpehsEngine/Net/Address.h"
 #include "SpehsEngine/Net/PacketMessage.h"
-#include "SpehsEngine/Core/SE_Time.h"
 #include <boost/asio/ip/udp.hpp>
 #include <boost/asio/placeholders.hpp>
 #include <boost/bind.hpp>
 #include <boost/system/error_code.hpp>
 #include <boost/enable_shared_from_this.hpp>
-#include <type_traits>
-#include <functional>
 #include <thread>
-#include <atomic>
 #include <mutex>
 
 #define DEBUG_LOG(level, message) if (getDebugLogLevel() >= level) \

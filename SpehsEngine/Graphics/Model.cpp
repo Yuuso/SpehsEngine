@@ -81,7 +81,7 @@ namespace se
 		{
 			se_assert(_modelData);
 			modelData = _modelData;
-			modelDataLoadedConnection = modelData->resourceLoadedSignal.connect(boost::bind(&Model::reloadModeData, this));
+			modelDataLoadedConnection = modelData->resourceLoadedSignal.connect(std::bind(&Model::reloadModeData, this));
 			reloadModeData();
 		}
 		void Model::reloadModeData()

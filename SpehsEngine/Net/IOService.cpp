@@ -17,7 +17,7 @@ namespace se
 			Impl()
 				: ioService()
 				, ioServiceWork(ioService)
-				, thread(boost::bind(&Impl::run, this))
+				, thread(std::bind(&Impl::run, this))
 			{
 			}
 

@@ -3,7 +3,6 @@
 
 #include "SpehsEngine/ImGui/Utility/ImGuiUtility.h"
 #include "SpehsEngine/ImGui/Utility/BackendWrapper.h"
-//#include "SpehsEngine/ImGui/imgui.h"
 
 
 namespace se
@@ -20,7 +19,7 @@ namespace se
 				}
 				else
 				{
-					imGuiBackendWrapper.connectToPreRenderSignal(preRenderConnection, boost::bind(&FPSHistoryVisualizerBase::render, this));
+					imGuiBackendWrapper.connectToPreRenderSignal(preRenderConnection, std::bind(&FPSHistoryVisualizerBase::render, this));
 				}
 			}
 		}

@@ -14,7 +14,7 @@ namespace se
 		ViewInternal::ViewInternal(View& _view)
 			: view(&_view)
 		{
-			viewDestroyedConnection = view->destroyedSignal.connect(boost::bind(&ViewInternal::viewDestroyed, this));
+			viewDestroyedConnection = view->destroyedSignal.connect(std::bind(&ViewInternal::viewDestroyed, this));
 		}
 		ViewInternal::~ViewInternal()
 		{

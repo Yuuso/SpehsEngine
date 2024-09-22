@@ -19,7 +19,7 @@ namespace se
 		PrimitiveInternal::PrimitiveInternal(Primitive& _primitive)
 			: primitive(&_primitive)
 		{
-			primitiveDestroyedConnection = primitive->destroyedSignal.connect(boost::bind(&PrimitiveInternal::primitiveDestroyed, this));
+			primitiveDestroyedConnection = primitive->destroyedSignal.connect(std::bind(&PrimitiveInternal::primitiveDestroyed, this));
 		}
 		PrimitiveInternal::~PrimitiveInternal()
 		{

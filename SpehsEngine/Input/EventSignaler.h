@@ -214,14 +214,14 @@ namespace se
 	//.cpp
 	#include "SpehsEngine/Input/EventSignaler.h"
 	const int inputPriority = INPUT_PRIORITY;
-	eventSignaler.connectToPreUpdateSignal(eventSignalerPreUpdateConnection, boost::bind(&MyClass::eventSignalerPreUpdateCallback, this));
-	eventSignaler.connectToPostUpdateSignal(eventSignalerPostUpdateConnection, boost::bind(&MyClass::eventSignalerPostUpdateCallback, this));
-	eventSignaler.connectToMouseHoverSignal(mouseWheelConnection, boost::bind(&MyClass::mouseHoverCallback, this, boost::placeholders::_1), inputPriority);
-	eventSignaler.connectToMouseMotionSignal(mouseMotionConnection, boost::bind(&MyClass::mouseMotionCallback, this, boost::placeholders::_1), inputPriority);
-	eventSignaler.connectToMouseWheelSignal(mouseWheelConnection, boost::bind(&MyClass::mouseWheelCallback, this, boost::placeholders::_1), inputPriority);
-	eventSignaler.connectToMouseButtonSignal(mouseButtonConnection, boost::bind(&MyClass::mouseButtonCallback, this, boost::placeholders::_1), inputPriority);
-	eventSignaler.connectToKeyboardSignal(keyboardConnection, boost::bind(&MyClass::keyboardCallback, this, boost::placeholders::_1), inputPriority);
-	eventSignaler.connectToTextInputSignal(textInputConnection, boost::bind(&MyClass::textInputCallback, this, boost::placeholders::_1), inputPriority);
+	eventSignaler.connectToPreUpdateSignal(eventSignalerPreUpdateConnection, std::bind(&MyClass::eventSignalerPreUpdateCallback, this));
+	eventSignaler.connectToPostUpdateSignal(eventSignalerPostUpdateConnection, std::bind(&MyClass::eventSignalerPostUpdateCallback, this));
+	eventSignaler.connectToMouseHoverSignal(mouseWheelConnection, std::bind(&MyClass::mouseHoverCallback, this, std::placeholders::_1), inputPriority);
+	eventSignaler.connectToMouseMotionSignal(mouseMotionConnection, std::bind(&MyClass::mouseMotionCallback, this, std::placeholders::_1), inputPriority);
+	eventSignaler.connectToMouseWheelSignal(mouseWheelConnection, std::bind(&MyClass::mouseWheelCallback, this, std::placeholders::_1), inputPriority);
+	eventSignaler.connectToMouseButtonSignal(mouseButtonConnection, std::bind(&MyClass::mouseButtonCallback, this, std::placeholders::_1), inputPriority);
+	eventSignaler.connectToKeyboardSignal(keyboardConnection, std::bind(&MyClass::keyboardCallback, this, std::placeholders::_1), inputPriority);
+	eventSignaler.connectToTextInputSignal(textInputConnection, std::bind(&MyClass::textInputCallback, this, std::placeholders::_1), inputPriority);
 
 	void MyClass::eventSignalerPreUpdateCallback()
 	{

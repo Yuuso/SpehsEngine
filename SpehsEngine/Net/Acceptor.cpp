@@ -5,7 +5,6 @@
 #include "boost/bind.hpp"
 #include "SpehsEngine/Core/Log.h"
 #include <boost/asio/ip/tcp.hpp>
-#include <stdint.h>
 #include <thread>
 
 

@@ -1,18 +1,13 @@
 #include "stdafx.h"
 #include "SpehsEngine/Net/SocketTCP.h"
 
-#include <assert.h>
-#include <iostream>
 #include "SpehsEngine/Net/Acceptor.h"
 #include "SpehsEngine/Net/IOService.h"
 #include "SpehsEngine/Net/IOServiceUtilityFunctions.h"
-#include "SpehsEngine/Core/Log.h"
-#include "SpehsEngine/Core/SE_Time.h"
 #include "SpehsEngine/Net/Endpoint.h"
 #include "SpehsEngine/Net/IOService.h"
 #include "SpehsEngine/Net/PacketMessage.h"
 #include "SpehsEngine/Net/EndpointUtilityFunctions.h"
-#include "SpehsEngine/Core/SE_Time.h"
 #include <boost/asio/read.hpp>
 #include <boost/asio/buffer.hpp>
 #include <boost/asio/placeholders.hpp>
@@ -20,10 +15,7 @@
 #include <boost/bind.hpp>
 #include <boost/system/error_code.hpp>
 #include <boost/enable_shared_from_this.hpp>
-#include <type_traits>
-#include <functional>
 #include <thread>
-#include <atomic>
 #include <mutex>
 
 #define DEBUG_LOG(level, message) if (getDebugLogLevel() >= level) \

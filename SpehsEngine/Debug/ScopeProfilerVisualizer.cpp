@@ -39,7 +39,7 @@ namespace se
 				, activeThreadId(std::this_thread::get_id())
 			{
 				setMaxThreadDataSectionCount(64);
-				ScopeProfiler::connectToFlushSignal(profilerFlushConnection, boost::bind(&Impl::profilerFlushCallback, this, boost::placeholders::_1));
+				ScopeProfiler::connectToFlushSignal(profilerFlushConnection, std::bind(&Impl::profilerFlushCallback, this, std::placeholders::_1));
 
 				se_assert(_view.getCamera().getProjection() == graphics::Projection::Orthographic);
 

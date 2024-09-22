@@ -159,7 +159,7 @@ namespace se
 			se_assert(_material);
 			Primitive::setMaterial(_material);
 			textChanged();
-			_material->connectToFontChangedSignal(fontChangedConnection, boost::bind(&Text::fontChanged, this));
+			_material->connectToFontChangedSignal(fontChangedConnection, std::bind(&Text::fontChanged, this));
 		}
 
 		std::string Text::getPlainText() const
@@ -249,7 +249,7 @@ namespace se
 			needBufferUpdate = false;
 
 			if (!fontLoadedConnection.connected())
-				fontLoadedConnection = font->resourceLoadedSignal.connect(boost::bind(&Text::textChanged, this));
+				fontLoadedConnection = font->resourceLoadedSignal.connect(std::bind(&Text::textChanged, this));
 			if (!font->ready())
 				return;
 

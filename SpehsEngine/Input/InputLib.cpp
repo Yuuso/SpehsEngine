@@ -1,16 +1,7 @@
 #include "stdafx.h"
-
 #include "SpehsEngine/Input/InputLib.h"
-#include "SpehsEngine/Core/CoreLib.h"
-#include "SpehsEngine/Core/Log.h"
-#include "SpehsEngine/Core/SE_Time.h"
-#include "SpehsEngine/Input/InputManager.h"
+
 #include "SDL/SDL.h"
-#include "boost/bind.hpp"
-#include <string>
-#include <thread>
-#include <iostream>
-#include <stdint.h>
 
 
 namespace se

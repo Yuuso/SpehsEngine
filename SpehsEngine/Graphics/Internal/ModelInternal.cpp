@@ -11,7 +11,7 @@ namespace se
 		ModelInternal::ModelInternal(Model& _model)
 			: model(&_model)
 		{
-			modelDestroyedConnection = model->destroyedSignal.connect(boost::bind(&ModelInternal::modelDestroyed, this));
+			modelDestroyedConnection = model->destroyedSignal.connect(std::bind(&ModelInternal::modelDestroyed, this));
 		}
 
 		bool ModelInternal::operator==(const Model& _other) const
