@@ -26,7 +26,7 @@ namespace se
 
 		void DeltaTimeSystem::update()
 		{
-			const se::time::Time now = se::time::now();
+			const time::Time now = time::now();
 			deltaTime = now - deltaTimestamp;
 			deltaTimestamp = now;
 			deltaSeconds = deltaTime.asSeconds();

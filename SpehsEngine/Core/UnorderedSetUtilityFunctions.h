@@ -9,9 +9,9 @@ namespace se
 	template<typename T> struct SerialTag<std::unordered_set<T>> { typedef SerialTagSet type; };
 	template<typename T> struct SerialTag<std::set<T>> { typedef SerialTagSet type; };
 	template<> template<typename S, typename T>
-	static bool se::Serial<SerialTagSet>::serial(S& _serial, T _set)
+	static bool Serial<SerialTagSet>::serial(S& _serial, T _set)
 	{
-		typedef typename se::remove_cvref<T>::type SetType;
+		typedef typename remove_cvref<T>::type SetType;
 		typedef typename SetType::value_type ValueType;
 		if constexpr (S::getWritingEnabled())
 		{

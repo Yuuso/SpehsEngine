@@ -43,13 +43,13 @@ namespace se
 						SignalingEntryPacket packet;
 						if (!binaryReader.serial(packet))
 						{
-							se::log::warning("Failed to read SignalingEntryPacket");
+							log::warning("Failed to read SignalingEntryPacket");
 							client->socket->disconnect();
 							return;
 						}
 						if (!packet.netIdentity)
 						{
-							se::log::warning("SignalingEntryPacket: invalid net identity");
+							log::warning("SignalingEntryPacket: invalid net identity");
 							client->socket->disconnect();
 							return;
 						}
@@ -59,7 +59,7 @@ namespace se
 						{
 							if (clients[d]->netIdentity == packet.netIdentity)
 							{
-								se::log::warning("SignalingEntryPacket duplicate net identity found");
+								log::warning("SignalingEntryPacket duplicate net identity found");
 								for (size_t r = 0; r < clients.size(); r++)
 								{
 									if (clients[r].get() == client)
@@ -82,7 +82,7 @@ namespace se
 								SignalingDataPacket packet;
 								if (!binaryReader.serial(packet))
 								{
-									se::log::warning("Failed to read SignalingDataPacket");
+									log::warning("Failed to read SignalingDataPacket");
 									client->socket->disconnect();
 									return;
 								}
@@ -95,13 +95,13 @@ namespace se
 										binaryWriter.serial(packet);
 										if (!client2->socket->sendPacket(binaryWriter))
 										{
-											se::log::warning("Failed to redirect SignalingDataPacket");
+											log::warning("Failed to redirect SignalingDataPacket");
 											client2->socket->disconnect();
 										}
 										return;
 									}
 								}
-								se::log::warning("SignalingDataPacket received for unknown net identity: " + packet.netIdentity.toString());
+								log::warning("SignalingDataPacket received for unknown net identity: " + packet.netIdentity.toString());
 							});
 					});
 				startAccepting();

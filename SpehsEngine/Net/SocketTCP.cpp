@@ -20,7 +20,7 @@
 
 #define DEBUG_LOG(level, message) if (getDebugLogLevel() >= level) \
 { \
-	se::log::info("SocketTCP(" + getLocalPort().toString() + "): " + message); \
+	log::info("SocketTCP(" + getLocalPort().toString() + "): " + message); \
 }
 
 
@@ -133,7 +133,7 @@ namespace se
 					{
 						if (debugLogLevel >= 1)
 						{
-							se::log::error("Failed to open SocketTCP. Boost asio error: " + error.message());
+							log::error("Failed to open SocketTCP. Boost asio error: " + error.message());
 						}
 						return false;
 					}
@@ -164,7 +164,7 @@ namespace se
 							std::lock_guard<std::recursive_mutex> lock2(receivedPacketsMutex);
 							if (receivedPackets.size() > 0)
 							{
-								se::log::warning("SocketTCP::close: " + std::to_string(receivedPackets.size()) + " unprocessed received packets will be cleared.");
+								log::warning("SocketTCP::close: " + std::to_string(receivedPackets.size()) + " unprocessed received packets will be cleared.");
 							}
 							clearReceivedPackets();
 						}
@@ -607,7 +607,7 @@ namespace se
 						const Handshake handshake;
 						binaryWriter.serial(handshake);
 						const time::Time handshakeSendBeginTime = time::now();
-						while (time::now() - handshakeSendBeginTime < se::time::fromSeconds(5.0f))
+						while (time::now() - handshakeSendBeginTime < time::fromSeconds(5.0f))
 						{
 							if (sendPacket(binaryWriter, PacketType::handshake))
 							{

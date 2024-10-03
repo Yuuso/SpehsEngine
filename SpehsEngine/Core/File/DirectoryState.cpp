@@ -73,14 +73,14 @@ namespace se
 		const DirectoryState::Flag flags, const uint32_t fileHashSeed)
 	{
 		directoryState.path = relativeDirectoryPath;
-		const std::vector<std::string> files = se::listFilesInDirectory(fullDirectoryPath);
+		const std::vector<std::string> files = listFilesInDirectory(fullDirectoryPath);
 		directoryState.files.clear();
 		directoryState.directories.clear();
 		for (size_t i = 0; i < files.size(); i++)
 		{
 			const std::string fullFilePath = fullDirectoryPath.empty() ? files[i] : (fullDirectoryPath + "/" + files[i]);
 			const std::string relativeFilePath = relativeDirectoryPath.empty() ? files[i] : (relativeDirectoryPath + "/" + files[i]);
-			if (se::isDirectory(fullFilePath))
+			if (isDirectory(fullFilePath))
 			{
 				directoryState.directories.push_back(DirectoryState());
 				getDirectoryStateImpl(directoryState.directories.back(), fullFilePath, relativeFilePath, flags, fileHashSeed);
@@ -161,7 +161,7 @@ namespace se
 				}
 				else
 				{
-					se::log::error("DirectoryState file hashes must be pre-calculated.");
+					log::error("DirectoryState file hashes must be pre-calculated.");
 				}
 			}
 			else

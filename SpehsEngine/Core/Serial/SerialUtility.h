@@ -85,7 +85,7 @@ namespace se
 		{
 			CastTarget castTarget;
 			SerialId serialId;
-			se::Serial<Class>::template cast<CastTarget, SerialId>(castTarget, serialId);
+			Serial<Class>::template cast<CastTarget, SerialId>(castTarget, serialId);
 		}
 	};
 }

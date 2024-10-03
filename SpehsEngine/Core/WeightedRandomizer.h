@@ -19,7 +19,7 @@ namespace se
 		}
 
 		template<typename SeedType>
-		const T* get(se::rng::PRNG<SeedType>& rng) const
+		const T* get(rng::PRNG<SeedType>& rng) const
 		{
 			if (!values.empty())
 			{
@@ -41,7 +41,7 @@ namespace se
 		}
 
 		template<typename SeedType>
-		const std::optional<size_t> getIndex(se::rng::PRNG<SeedType>& rng) const
+		const std::optional<size_t> getIndex(rng::PRNG<SeedType>& rng) const
 		{
 			if (!values.empty())
 			{

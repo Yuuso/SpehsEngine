@@ -19,7 +19,7 @@ namespace se
 		glm::vec2 angle = destination - origin;
 		float pointDirection = atan2(angle.y, angle.x);
 		if (angle.y < 0)
-			pointDirection += se::TWO_PI<float>;
+			pointDirection += TWO_PI<float>;
 		return pointDirection;
 	}
 
@@ -33,7 +33,7 @@ namespace se
 	{
 		float pointDirection = atan2(destination.y, destination.x);
 		if (destination.y < 0)
-			pointDirection += se::TWO_PI<float>;
+			pointDirection += TWO_PI<float>;
 		return pointDirection;
 	}
 
@@ -41,7 +41,7 @@ namespace se
 	{
 		float angle = angle2 - angle1;
 		if (angle < 0)
-			angle += se::TWO_PI<float>;
+			angle += TWO_PI<float>;
 		return angle;
 	}
 
@@ -49,8 +49,8 @@ namespace se
 	{
 		angle2 -= angle1;
 		if (angle2 < 0)
-			angle2 += se::TWO_PI<float>;
-		if (angle2 < radTolerance || angle2 > se::TWO_PI<float> - radTolerance)
+			angle2 += TWO_PI<float>;
+		if (angle2 < radTolerance || angle2 > TWO_PI<float> - radTolerance)
 			return true;
 		return false;
 	}
@@ -172,7 +172,7 @@ namespace se
 			if (shape % 2)
 				firstPosition = 0;
 			else
-				firstPosition = (se::TWO_PI<float> / shape) / 2.0f;
+				firstPosition = (TWO_PI<float> / shape) / 2.0f;
 			cusps[0] = glm::vec2(cos(firstPosition), sin(firstPosition));
 
 			//Take record of min/max cusp values so that it can be streched to match the desired width/height
@@ -184,8 +184,8 @@ namespace se
 			{
 				//Set position
 				cusps[i] = glm::vec2(
-					cos(firstPosition - i * (se::TWO_PI<float> / shape)),
-					sin(firstPosition - i * (se::TWO_PI<float> / shape)));
+					cos(firstPosition - i * (TWO_PI<float> / shape)),
+					sin(firstPosition - i * (TWO_PI<float> / shape)));
 
 				//Check min/max
 				if (cusps[i].x > maxX)

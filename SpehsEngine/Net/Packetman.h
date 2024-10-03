@@ -257,7 +257,7 @@ namespace se
 					}
 					bool timeout(const time::Time& timeout) final
 					{
-						if (signal.empty())
+						if (signal.isEmpty())
 						{
 							return true;
 						}
@@ -332,7 +332,7 @@ namespace se
 				}
 				bool valid() const final
 				{
-					return !signal.empty();
+					return !signal.isEmpty();
 				}
 				Signal<void(Packet&, const bool)> signal;
 			};
@@ -399,7 +399,7 @@ namespace se
 				}
 				bool valid() const final
 				{
-					return !signal.empty();
+					return !signal.isEmpty();
 				}
 				Signal<void()> signal;
 				std::function<Result(Packet&, const bool)> callback;

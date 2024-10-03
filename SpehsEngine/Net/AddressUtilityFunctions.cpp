@@ -20,7 +20,7 @@ namespace se
 			boost::asio::ip::tcp::resolver::iterator end, it = resolver.resolve(queryTCP, error);
 			if (error)
 			{
-				se::log::warning("se::net::getLocalAddress(): failed to resolve local address. Boost error" + error.message());
+				log::warning("se::net::getLocalAddress(): failed to resolve local address. Boost error" + error.message());
 				return Address();
 			}
 			while (it != end)
@@ -35,21 +35,21 @@ namespace se
 			return Address();
 		}
 
-		SteamNetworkingIPAddr toSteamNetworkingAddress(const se::net::Endpoint& endpoint)
+		SteamNetworkingIPAddr toSteamNetworkingAddress(const Endpoint& endpoint)
 		{
 			SteamNetworkingIPAddr steamNetworkingAddress;
 			steamNetworkingAddress.Clear();
 			if (!SteamNetworkingUtils()->SteamNetworkingIPAddr_ParseString(&steamNetworkingAddress, endpoint.address.toString().c_str()))
 			{
-				se::log::warning("Failed to parse endpoint address");
+				log::warning("Failed to parse endpoint address");
 			}
 			steamNetworkingAddress.SetIPv4(steamNetworkingAddress.GetIPv4(), endpoint.port);
 			return steamNetworkingAddress;
 		}
 
-		se::net::Endpoint fromSteamNetworkingAddress(const SteamNetworkingIPAddr& steamNetworkingAddress)
+		Endpoint fromSteamNetworkingAddress(const SteamNetworkingIPAddr& steamNetworkingAddress)
 		{
-			se::net::Endpoint endpoint;
+			Endpoint endpoint;
 			if (steamNetworkingAddress.IsIPv4())
 			{
 				endpoint.address = Address(steamNetworkingAddress.GetIPv4());

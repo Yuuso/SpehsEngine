@@ -129,6 +129,8 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)Serial\BinaryWriter.h">
       <Filter>Serial</Filter>
     </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)Signal.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)FunctionTraits.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="File">

@@ -102,7 +102,7 @@ namespace se
 				}
 				else
 				{
-					se::log::info("Failed to accept client");
+					log::info("Failed to accept client");
 				}
 			}
 			else
@@ -117,7 +117,7 @@ namespace se
 						}
 						else
 						{
-							se::log::info("Failed to accept client");
+							log::info("Failed to accept client");
 						}
 						busyAcceptingSockets[i].reset(busyAcceptingSockets.back().release());
 						busyAcceptingSockets.pop_back();

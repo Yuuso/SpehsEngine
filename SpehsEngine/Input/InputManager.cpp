@@ -269,7 +269,7 @@ namespace se
 							{
 								std::string error = "Couldn't open SDL joystick! ";
 								error += SDL_GetError();
-								se::log::error(error);
+								log::error(error);
 							}
 							joysticks[i]->goOnline(js);
 							foundOffline = true;

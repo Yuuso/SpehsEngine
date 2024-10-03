@@ -52,7 +52,7 @@ namespace se
 			}
 			if (getDebugLogLevel() >= 1 && receivedPacketsToProcess.size() > 1000)
 			{
-				se::log::warning("SocketUDP2: processing " + std::to_string(receivedPacketsToProcess.size()) + " packets in a single update.");
+				log::warning("SocketUDP2: processing " + std::to_string(receivedPacketsToProcess.size()) + " packets in a single update.");
 			}
 
 			size_t packetIndex = 0u;
@@ -175,7 +175,7 @@ namespace se
 						"A message sent on a datagram socket was larger than the internal message buffer or some other network limit,
 						or the buffer used to receive a datagram into was smaller than the datagram itself"
 					*/
-					se::log::warning(error.message());
+					log::warning(error.message());
 				}
 				else
 				{

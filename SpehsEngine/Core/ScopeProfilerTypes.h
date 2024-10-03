@@ -12,8 +12,8 @@ namespace se
 		std::string_view function;
 		std::string_view file;
 		int line = 0;
-		std::optional<se::time::Time> endTime;
-		std::map<se::time::Time, ScopeProfilerSection> children;
+		std::optional<time::Time> endTime;
+		std::map<time::Time, ScopeProfilerSection> children;
 	};
 
 	struct ScopeProfilerThreadData
@@ -23,6 +23,6 @@ namespace se
 		size_t getSectionCountRecursive() const;
 
 		std::thread::id threadId;
-		std::map<se::time::Time, ScopeProfilerSection> sections;
+		std::map<time::Time, ScopeProfilerSection> sections;
 	};
 }

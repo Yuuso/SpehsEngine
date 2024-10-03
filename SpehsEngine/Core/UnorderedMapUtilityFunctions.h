@@ -9,9 +9,9 @@ namespace se
 	struct SerialTagUnorderedMap {};
 	template<typename K, typename V> struct SerialTag<std::unordered_map<K, V>> { typedef SerialTagUnorderedMap type; };
 	template<> template<typename S, typename T>
-	static bool se::Serial<SerialTagUnorderedMap>::serial(S& _serial, T _map)
+	static bool Serial<SerialTagUnorderedMap>::serial(S& _serial, T _map)
 	{
-		typedef typename se::remove_cvref<T>::type MapType;
+		typedef typename remove_cvref<T>::type MapType;
 		typedef typename MapType::key_type KeyType;
 		typedef typename MapType::mapped_type ValueType;
 		if constexpr (S::getWritingEnabled())

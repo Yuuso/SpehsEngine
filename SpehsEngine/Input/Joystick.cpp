@@ -14,7 +14,7 @@ namespace se
 {
 	namespace input
 	{
-		se::GUID getJoystickDeviceGUID(int _deviceIndex)
+		GUID getJoystickDeviceGUID(int _deviceIndex)
 		{
 			return fromSdlGuid(SDL_JoystickGetDeviceGUID(_deviceIndex));
 		}
@@ -27,7 +27,7 @@ namespace se
 			{
 				std::string error = "Failed to open SDL_joystick! ";
 				error += SDL_GetError();
-				se::log::error(error);
+				log::error(error);
 				return;
 			}
 

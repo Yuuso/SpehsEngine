@@ -823,7 +823,7 @@ namespace se
             case NoiseType::OpenSimplex_4D_UnskewedBase:                return OpenSimplexNoise::Noise4_UnskewedBase(seed, _x, _y, _z, _w);
             case NoiseType::Size: break;
         }
-        se::log::error("NoiseGenerator::generate: Unknown NoiseType! (" + std::to_string(static_cast<int>(_type)) + ")");
+        log::error("NoiseGenerator::generate: Unknown NoiseType! (" + std::to_string(static_cast<int>(_type)) + ")");
         return 0.0f;
     }
 }

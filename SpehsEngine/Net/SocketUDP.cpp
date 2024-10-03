@@ -310,7 +310,7 @@ namespace se
 				std::vector<unsigned char> receiveBuffer;
 				time::Time lastReceiveTime;
 				time::Time lastSendTime;
-				time::Time heartbeatInterval = se::time::fromSeconds(5.0f);
+				time::Time heartbeatInterval = time::fromSeconds(5.0f);
 				bool receiving = false;
 				std::function<void(BinaryReader&, const Endpoint&)> onReceiveCallback;//User defined receive handler
 				std::function<void(const HandshakeUDP&)> handshakeResponseCallback;
@@ -467,7 +467,7 @@ namespace se
 
 				/* Send out a keyed handshake and wait for a response. */
 				bool handshakeSuccess = false;
-				const size_t handshakeKey = se::rng::random<size_t>();
+				const size_t handshakeKey = rng::random<size_t>();
 				{
 					std::lock_guard<std::recursive_mutex> lock(sharedImpl->mutex);
 					sharedImpl->handshakeResponseCallback = [&handshakeSuccess, &handshakeKey](const HandshakeUDP& receivedHandshake)

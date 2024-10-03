@@ -50,7 +50,7 @@ namespace se
 				ioService.run(error);
 				if (error)
 				{
-					se::log::info("IOService::run() error: " + error.message());
+					log::info("IOService::run() error: " + error.message());
 				}
 			}
 

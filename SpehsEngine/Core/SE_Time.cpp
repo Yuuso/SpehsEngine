@@ -33,7 +33,7 @@ namespace se
 		{
 			if (initialized)
 			{
-				se::log::warning("se::time has already been initialized!");
+				log::warning("se::time has already been initialized!");
 				return;
 			}
 
@@ -42,7 +42,7 @@ namespace se
 				LARGE_INTEGER counter;
 				if (!QueryPerformanceFrequency(&counter))
 				{
-					se::log::error("QueryPerformanceFrequency failed!");
+					log::error("QueryPerformanceFrequency failed!");
 				}
 				queryPerformanceFrequency = double(counter.QuadPart);
 			}
@@ -82,11 +82,11 @@ namespace se
 			LARGE_INTEGER counter;
 			if (QueryPerformanceCounter(&counter))
 			{
-				return se::time::Time(se::time::TimeValueType(double(counter.QuadPart) / (queryPerformanceFrequency / double(se::time::conversionRate::second))));
+				return time::Time(time::TimeValueType(double(counter.QuadPart) / (queryPerformanceFrequency / double(time::conversionRate::second))));
 			}
 			else
 			{
-				se::log::error("QueryPerformanceCounter failed.");
+				log::error("QueryPerformanceCounter failed.");
 			}
 #else
 #error getProfilerTimestamp() implementation is missing.

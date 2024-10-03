@@ -67,7 +67,7 @@ namespace se
 		std::lock_guard<std::recursive_mutex> lock(mutex);
 		if (name.size() == 0)
 		{
-			se::log::warning("Cannot write appvars, no fileName was specified.");
+			log::warning("Cannot write appvars, no fileName was specified.");
 			return false;
 		}
 
@@ -112,7 +112,7 @@ namespace se
 				}
 				else
 				{
-					se::log::warning(name + fileExtension + " contains an empty section name. No section created.");
+					log::warning(name + fileExtension + " contains an empty section name. No section created.");
 				}
 			}
 			else
@@ -174,7 +174,7 @@ namespace se
 									{
 										if (section->readVars[i].type == type && section->readVars[i].name == varName)
 										{
-											se::log::warning("An appvar was read but the section already has an appvar with this type and name, discarding. Type: '" + type + "', Name: '" + varName + "', Value: '" + value + "'.");
+											log::warning("An appvar was read but the section already has an appvar with this type and name, discarding. Type: '" + type + "', Name: '" + varName + "', Value: '" + value + "'.");
 											exists = true;
 											break;
 										}
@@ -185,7 +185,7 @@ namespace se
 									}
 								}
 								else
-									se::log::warning("An appvar was read but no section was assigned. Type: '" + type + "', Name: '" + name + "', Value: '" + value + "'.");
+									log::warning("An appvar was read but no section was assigned. Type: '" + type + "', Name: '" + name + "', Value: '" + value + "'.");
 							}
 						}
 					}

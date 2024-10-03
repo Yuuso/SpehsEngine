@@ -102,23 +102,23 @@ namespace se
 	{
 		if (bytes >= 1024ull * 1024ull * 1024ull * 1024ull * 1024ull)
 		{
-			return se::toString(float(double(bytes) / double(1024ull * 1024ull * 1024ull * 1024ull * 1024ull)), 2) + " PB";
+			return toString(float(double(bytes) / double(1024ull * 1024ull * 1024ull * 1024ull * 1024ull)), 2) + " PB";
 		}
 		else if (bytes >= 1024ull * 1024ull * 1024ull * 1024ull)
 		{
-			return se::toString(float(double(bytes) / double(1024ull * 1024ull * 1024ull * 1024ull)), 2) + " TB";
+			return toString(float(double(bytes) / double(1024ull * 1024ull * 1024ull * 1024ull)), 2) + " TB";
 		}
 		else if (bytes >= 1024ull * 1024ull * 1024ull)
 		{
-			return se::toString(float(double(bytes) / double(1024ull * 1024ull * 1024ull)), 2) + " GB";
+			return toString(float(double(bytes) / double(1024ull * 1024ull * 1024ull)), 2) + " GB";
 		}
 		else if (bytes >= 1024ull * 1024ull)
 		{
-			return se::toString(float(double(bytes) / double(1024ull * 1024ull)), 2) + " MB";
+			return toString(float(double(bytes) / double(1024ull * 1024ull)), 2) + " MB";
 		}
 		else if (bytes >= 1024ull)
 		{
-			return se::toString(float(double(bytes) / double(1024ull)), 2) + " KB";
+			return toString(float(double(bytes) / double(1024ull)), 2) + " KB";
 		}
 		else
 		{

@@ -196,7 +196,7 @@ namespace se
 			else
 			{
 				// Cannot read future versions / the version value is corrupt
-				se::log::error("ArchiveReader failed to read, unhandled version: " + std::to_string(version));
+				log::error("ArchiveReader failed to read, unhandled version: " + std::to_string(version));
 				return std::nullopt;
 			}
 		}

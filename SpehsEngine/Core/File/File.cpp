@@ -107,7 +107,7 @@ namespace se
 			stream.open(_path, std::ios::binary);
 			if (stream.fail())
 			{
-				se::log::warning("Failed to write file at: " + _path + ". Failed to open file.");
+				log::warning("Failed to write file at: " + _path + ". Failed to open file.");
 				return false;
 			}
 		}
@@ -115,7 +115,7 @@ namespace se
 		stream.write(reinterpret_cast<const char*>(_data), _dataSize);
 		if (stream.fail())
 		{
-			se::log::warning("Failed to write file at: " + _path + ". Failure occured while writing.");
+			log::warning("Failed to write file at: " + _path + ". Failure occured while writing.");
 			return false;
 		}
 		return true;

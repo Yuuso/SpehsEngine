@@ -51,6 +51,7 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)ByteView.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)DeepPtr.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)DeepPtrUtilityFunctions.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)FunctionTraits.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)HeapOptional.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)HeapOptionalUtilityFunctions.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)File\Timestamp.h" />
@@ -70,6 +71,7 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)Serial\BinaryWriter.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Serial\Serial.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Serial\SerialUtility.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Signal.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)StaticRingBuffer.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)ScopedFrameLimiter.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)ScopeProfiler.h" />

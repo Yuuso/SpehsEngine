@@ -13,7 +13,7 @@ namespace se
 	{
 		struct OutSignalingReceivedContext : public ISteamNetworkingSignalingRecvContext
 		{
-			OutSignalingReceivedContext(const se::net::Endpoint& _signalingServerEndpoint);
+			OutSignalingReceivedContext(const Endpoint& _signalingServerEndpoint);
 			void SendRejectionSignal(const SteamNetworkingIdentity& peerSteamNetworkingIdentity, const void* pMsg, int cbMsg) final;
 			ISteamNetworkingConnectionSignaling* OnConnectRequest(HSteamNetConnection hConn, const SteamNetworkingIdentity& peerSteamNetworkingIdentity, int nLocalVirtualPort) final;
 

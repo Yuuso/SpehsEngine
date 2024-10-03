@@ -27,7 +27,7 @@ namespace se
 	template<typename T>
 	static constexpr SerialTypeId getSerialTypeId()
 	{
-		typedef typename se::remove_cvref<T>::type U;
+		typedef typename remove_cvref<T>::type U;
 		if constexpr (std::is_enum<U>::value)
 		{
 			return getSerialTypeId<typename std::underlying_type<U>::type>();

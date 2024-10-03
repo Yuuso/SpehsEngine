@@ -11,19 +11,19 @@ namespace se
 {
 	bool AssertMessageBox(const std::string& _message, bool& _ignore)
 	{
-		se::log::info("Assert failed!\n" + _message, se::log::DARKRED);
+		log::info("Assert failed!\n" + _message, se::log::DARKRED);
 		const MessageResult result = SystemMessageBox("Assert failed!", _message, BUTTONS_ABORT_RETRY_IGNORE | ICON_WARNING);
 		switch (result)
 		{
 			default: [[fallthrough]];
-			case se::MessageResult::RESULT_ERROR: [[fallthrough]];
-			case se::MessageResult::RESULT_ABORT:
+			case MessageResult::RESULT_ERROR: [[fallthrough]];
+			case MessageResult::RESULT_ABORT:
 				// ABORT: Break program execution to debug
 				return true;
-			case se::MessageResult::RESULT_RETRY:
+			case MessageResult::RESULT_RETRY:
 				// RETRY: Continue execution
 				return false;
-			case se::MessageResult::RESULT_IGNORE:
+			case MessageResult::RESULT_IGNORE:
 				// IGNORE: Continue execution and ignore these asserts in the future
 				_ignore = true;
 				return false;

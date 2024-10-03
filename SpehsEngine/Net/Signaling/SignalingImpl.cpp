@@ -18,7 +18,7 @@ namespace se
 		std::unique_ptr<IOService> AcceptorP2P::staticIoService;
 		std::unordered_map<Endpoint, std::unique_ptr<AcceptorP2P>> AcceptorP2P::staticContainer;
 
-		OutSignalingReceivedContext::OutSignalingReceivedContext(const se::net::Endpoint& _signalingServerEndpoint)
+		OutSignalingReceivedContext::OutSignalingReceivedContext(const Endpoint& _signalingServerEndpoint)
 			: signalingServerEndpoint(_signalingServerEndpoint)
 		{
 		}
@@ -26,7 +26,7 @@ namespace se
 		{
 			// We'll just silently ignore all failures. This is actually the more secure way to handle it in many cases.
 			SteamNetworkingIdentityRender peerSteamNetworkingIdentityRender(peerSteamNetworkingIdentity);
-			log::info("OutSignalingReceivedContext: silently rejecting: " + std::string(peerSteamNetworkingIdentityRender.c_str()), se::log::TextColor::DARKBLUE);
+			log::info("OutSignalingReceivedContext: silently rejecting: " + std::string(peerSteamNetworkingIdentityRender.c_str()), log::TextColor::DARKBLUE);
 		}
 		ISteamNetworkingConnectionSignaling* OutSignalingReceivedContext::OnConnectRequest(HSteamNetConnection hConn, const SteamNetworkingIdentity& peerSteamNetworkingIdentity, int nLocalVirtualPort)
 		{
@@ -45,7 +45,7 @@ namespace se
 		{
 			// We'll just silently ignore all failures. This is actually the more secure way to handle it in many cases.
 			SteamNetworkingIdentityRender peerSteamNetworkingIdentityRender(peerSteamNetworkingIdentity);
-			log::info("InSignalingReceivedContext: silently rejecting: " + std::string(peerSteamNetworkingIdentityRender.c_str()), se::log::TextColor::DARKBLUE);
+			log::info("InSignalingReceivedContext: silently rejecting: " + std::string(peerSteamNetworkingIdentityRender.c_str()), log::TextColor::DARKBLUE);
 		}
 		ISteamNetworkingConnectionSignaling* InSignalingReceivedContext::OnConnectRequest(HSteamNetConnection hConn, const SteamNetworkingIdentity& peerSteamNetworkingIdentity, int nLocalVirtualPort)
 		{
@@ -102,19 +102,19 @@ namespace se
 						SignalingDataPacket packet;
 						if (!binaryReader.serial(packet))
 						{
-							se::log::warning("OutConnectionSignaling: failed to read SignalingDataPacket");
+							log::warning("OutConnectionSignaling: failed to read SignalingDataPacket");
 							return;
 						}
 						OutSignalingReceivedContext outSignalingReceivedContext(_signalingServerEndpoint);
 						if (!SteamNetworkingSockets()->ReceivedP2PCustomSignal((const void*)packet.data.data(), (int)packet.data.size(), &outSignalingReceivedContext))
 						{
-							se::log::warning("ReceivedP2PCustomSignal failed for OutSignalingReceivedContext");
+							log::warning("ReceivedP2PCustomSignal failed for OutSignalingReceivedContext");
 						}
 					});
 			}
 			else
 			{
-				se::log::warning("Failed to connect to the signaling server at: " + _signalingServerEndpoint.toString());
+				log::warning("Failed to connect to the signaling server at: " + _signalingServerEndpoint.toString());
 			}
 		}
 		OutConnectionSignaling::~OutConnectionSignaling()
@@ -213,13 +213,13 @@ namespace se
 			SignalingDataPacket packet;
 			if (!binaryReader.serial(packet))
 			{
-				se::log::warning("AcceptorP2P: failed to read SignalingDataPacket");
+				log::warning("AcceptorP2P: failed to read SignalingDataPacket");
 				return;
 			}
 			InSignalingReceivedContext inSignalingReceivedContext(*socket);
 			if (!SteamNetworkingSockets()->ReceivedP2PCustomSignal((const void*)packet.data.data(), (int)packet.data.size(), &inSignalingReceivedContext))
 			{
-				se::log::error("ReceivedP2PCustomSignal failed for InSignalingReceivedContext in AcceptorP2P.");
+				log::error("ReceivedP2PCustomSignal failed for InSignalingReceivedContext in AcceptorP2P.");
 			}
 		}
 	}

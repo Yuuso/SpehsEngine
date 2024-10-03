@@ -10,7 +10,7 @@ namespace se
 		struct AudioResourceData
 		{
 			std::shared_ptr<AudioSourceBase> source;
-			se::time::Time length;
+			time::Time length;
 		};
 
 		std::shared_ptr<ResourceLoader> makeResourceLoader(const size_t _numThreads = 1);

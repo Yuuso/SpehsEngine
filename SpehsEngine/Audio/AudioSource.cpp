@@ -250,7 +250,7 @@ namespace se
 		{
 			if (!isHandleValid())
 			{
-				return se::time::Time::zero;
+				return time::Time::zero;
 			}
 			return time::fromSeconds(globalSoloud->getStreamPosition(handle));
 		}

@@ -27,7 +27,7 @@ namespace se
 					serial_cast::AbstractWriter<S, ElementType> abstractWriter;
 					abstractWriter.serial = &_serial;
 					abstractWriter.value = _value.get();
-					se::Serial<ElementType>::cast(abstractWriter, serialId);
+					Serial<ElementType>::cast(abstractWriter, serialId);
 					if (!abstractWriter.result.value())
 					{
 						return false;
