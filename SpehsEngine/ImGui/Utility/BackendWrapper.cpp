@@ -109,7 +109,7 @@ namespace se
 
             setInputPriority(_inputPriority);
 
-            eventSignaler.connectToKeyboardSignal(keyboardConnection0, [](const input::KeyboardEvent& event)
+            eventSignaler.connectToKeyboardSignal(maxPriorityKeyboardConnection, [](const input::KeyboardEvent& event)
                 {
                     if (event.isPress())
                     {
@@ -258,13 +258,14 @@ namespace se
         void BackendWrapper::setInputPriority(const int _inputPriority)
         {
             inputPriority = _inputPriority;
-            eventSignaler.connectToMouseHoverSignal(mouseHoverConnection, [](const input::MouseHoverEvent& event)
+            inputPriorityConnections.clear();
+            eventSignaler.connectToMouseHoverSignal(inputPriorityConnections.add(), [](const input::MouseHoverEvent& event)
                 {
                     ImGuiIO& io = ImGui::GetIO();
                     return io.WantCaptureMouse;
                 }, inputPriority);
 
-            eventSignaler.connectToMouseWheelSignal(mouseWheelConnection, [](const input::MouseWheelEvent& event)
+            eventSignaler.connectToMouseWheelSignal(inputPriorityConnections.add(), [](const input::MouseWheelEvent& event)
                 {
                     ImGuiIO& io = ImGui::GetIO();
                     if (io.WantCaptureMouse)
@@ -281,13 +282,13 @@ namespace se
                     }
                 }, inputPriority);
 
-            eventSignaler.connectToMouseButtonSignal(mouseButtonConnection, [this](const input::MouseButtonEvent& event)
+            eventSignaler.connectToMouseButtonSignal(inputPriorityConnections.add(), [this](const input::MouseButtonEvent& event)
                 {
                     ImGuiIO& io = ImGui::GetIO();
                     return io.WantCaptureMouse;
                 }, inputPriority);
 
-            eventSignaler.connectToTextInputSignal(textInputConnection, [](const input::TextInputEvent& event)
+            eventSignaler.connectToTextInputSignal(inputPriorityConnections.add(), [](const input::TextInputEvent& event)
                 {
                     ImGuiIO& io = ImGui::GetIO();
                     if (io.WantCaptureKeyboard)
@@ -301,7 +302,7 @@ namespace se
                     }
                 }, inputPriority);
 
-            eventSignaler.connectToKeyboardSignal(keyboardConnection, [](const input::KeyboardEvent& event)
+            eventSignaler.connectToKeyboardSignal(inputPriorityConnections.add(), [](const input::KeyboardEvent& event)
                 {
                     if (event.isPress())
                     {

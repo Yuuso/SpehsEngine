@@ -33,7 +33,7 @@ namespace se
 
 
 			void									bind();
-			void									connectToFontChangedSignal(boost::signals2::scoped_connection& scopedConnection, const std::function<void(void)>& callback);
+			void									connectToFontChangedSignal(ScopedConnection& scopedConnection, const std::function<void(void)>& callback);
 
 			const std::shared_ptr<Shader>			getShader(ShaderVariant variant = ShaderVariant::Default) const;
 			const std::shared_ptr<Texture>			getTexture(uint8_t _slot = 0) const;
@@ -71,7 +71,7 @@ namespace se
 
 			std::string name = "unknown";
 			bool lightsEnabled = false;
-			boost::signals2::signal<void(void)> fontChangedSignal;
+			Signal<void(void)> fontChangedSignal;
 		};
 	}
 }

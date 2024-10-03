@@ -248,7 +248,7 @@ namespace se
 
 			needBufferUpdate = false;
 
-			if (!fontLoadedConnection.connected())
+			if (!fontLoadedConnection.isConnected())
 				fontLoadedConnection = font->resourceLoadedSignal.connect(std::bind(&Text::textChanged, this));
 			if (!font->ready())
 				return;

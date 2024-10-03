@@ -53,7 +53,7 @@ namespace se
 			void unregisterAsBufferObjectRenderer();
 			void primitiveDestroyed();
 
-			boost::signals2::scoped_connection primitiveDestroyedConnection;
+			ScopedConnection primitiveDestroyedConnection;
 
 			Primitive* primitive = nullptr;
 			PrimitiveUpdateFlagsType cachedPrimitiveUpdateFlags = 0;

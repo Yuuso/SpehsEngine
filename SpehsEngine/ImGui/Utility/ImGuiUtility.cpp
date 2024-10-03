@@ -257,12 +257,12 @@ namespace ImGui
 		return result;
 	}
 
-	void keyBindButton(const String label, se::input::Key& key, se::input::EventSignaler& eventSignaler, boost::signals2::scoped_connection& scopedConnection)
+	void keyBindButton(const String label, se::input::Key& key, se::input::EventSignaler& eventSignaler, se::ScopedConnection& scopedConnection)
 	{
 		ImGui::PushID(&scopedConnection);
 		ImGui::Text(label);
 		ImGui::SameLine();
-		if (ImGui::Button(scopedConnection.connected() ? "press any key" : se::input::toString(key)))
+		if (ImGui::Button(scopedConnection ? "press any key" : se::input::toString(key)))
 		{
 			eventSignaler.connectToKeyboardSignal(
 				scopedConnection,

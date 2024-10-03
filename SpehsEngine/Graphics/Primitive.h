@@ -116,7 +116,7 @@ namespace se
 			UniformMatrices								transformMatrices;
 			UniformMatrices								normalMatrices;
 
-			boost::signals2::signal<void(void)>			destroyedSignal;
+			Signal<void(void)>							destroyedSignal;
 		};
 	}
 }

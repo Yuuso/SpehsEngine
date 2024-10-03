@@ -33,7 +33,7 @@ namespace se
 
 			void modelDestroyed();
 
-			boost::signals2::scoped_connection modelDestroyedConnection;
+			ScopedConnection modelDestroyedConnection;
 
 			Model* model = nullptr;
 			bool wasAdded = true;

@@ -30,12 +30,12 @@ namespace se
 			void stopAcceptingP2P();
 
 			// Connect to a ConnectionManager that has called startAcceptingIP().
-			[[nodiscard]] std::shared_ptr<Connection> connectIP(const se::net::Endpoint& endpoint, const bool symmetric, const std::string_view name = "", const time::Time timeout = time::fromSeconds(10.0f));
+			[[nodiscard]] std::shared_ptr<Connection> connectIP(const Endpoint& endpoint, const bool symmetric, const std::string_view name = "", const time::Time timeout = time::fromSeconds(10.0f));
 
 			// Connect to a ConnectionManager that has called startAcceptingP2P().
-			[[nodiscard]] std::shared_ptr<Connection> connectP2P(const NetIdentity& peerNetIdentity, const se::net::Endpoint& signalingServerEndpoint, const std::string_view name = "", const time::Time timeout = time::fromSeconds(10.0f));
+			[[nodiscard]] std::shared_ptr<Connection> connectP2P(const NetIdentity& peerNetIdentity, const Endpoint& signalingServerEndpoint, const std::string_view name = "", const time::Time timeout = time::fromSeconds(10.0f));
 
-			void connectToIncomingConnectionSignal(boost::signals2::scoped_connection& scopedConnection, const std::function<void(std::shared_ptr<Connection>&)>& callback);
+			void connectToIncomingConnectionSignal(ScopedConnection& scopedConnection, const std::function<void(std::shared_ptr<Connection>&)>& callback);
 			void setRemoveUnreferencedConnections(const bool remove) { removeUnreferencedConnections = remove; }
 
 			void setDebugLogLevel(int level) { debugLogLevel = level; }

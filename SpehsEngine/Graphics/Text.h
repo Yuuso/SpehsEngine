@@ -76,8 +76,8 @@ namespace se
 			bool drawDebug = false;
 			ShapeOrientation orientation = ShapeOrientation::XZ_Plane;
 
-			boost::signals2::scoped_connection fontLoadedConnection;
-			boost::signals2::scoped_connection fontChangedConnection;
+			ScopedConnection fontLoadedConnection;
+			ScopedConnection fontChangedConnection;
 		};
 	}
 }

@@ -30,7 +30,7 @@ namespace se
 
 			void lightDestroyed();
 
-			boost::signals2::scoped_connection lightDestroyedConnection;
+			ScopedConnection lightDestroyedConnection;
 
 			Light* light = nullptr;
 		};

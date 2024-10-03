@@ -40,7 +40,7 @@ namespace se
 		std::string toString() const override;
 		bool fromString(const std::string& string) override;
 
-		boost::signals2::signal<void(const Inivar<T>&)> changedSignal;
+		Signal<void(const Inivar<T>&)> changedSignal;
 	private:
 		friend class Inisection;
 		Inivar(Inisection& _section, const std::string& _name, const T& _value);

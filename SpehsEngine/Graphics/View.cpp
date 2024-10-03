@@ -74,7 +74,7 @@ namespace se
 			drawCallSortOrder = _order;
 		}
 
-		boost::signals2::scoped_connection View::connectToPreRenderSignal(std::function<void(glm::vec2)> _func)
+		ScopedConnection View::connectToPreRenderSignal(std::function<void(glm::vec2)> _func)
 		{
 			return onPreRenderSignal.connect(_func);
 		}

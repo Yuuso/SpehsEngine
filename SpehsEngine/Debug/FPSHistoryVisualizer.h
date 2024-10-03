@@ -12,7 +12,7 @@ namespace se
 		public:
 			virtual ~FPSHistoryVisualizerBase() = default;
 			void setEnabled(const bool enabled);
-			bool getEnabled() const { return preRenderConnection.connected(); }
+			bool getEnabled() const { return preRenderConnection.isConnected(); }
 			float getMin() const { return bufferMin; }
 			float getMax() const { return bufferMax; }
 			float getAverage() const { return bufferAverage; }
@@ -32,13 +32,13 @@ namespace se
 			float bufferMax = 0.0f;
 			float bufferAverage = 0.0f;
 			std::string fpsString;
-			se::time::Time fpsStringUpdateTime;
-			std::optional<se::time::Time> beginFrameTime;
+			time::Time fpsStringUpdateTime;
+			std::optional<time::Time> beginFrameTime;
 
 		private:
 			void render();
 			float getAverageFrameSeconds();
-			boost::signals2::scoped_connection preRenderConnection;
+			ScopedConnection preRenderConnection;
 		};
 
 		template<uint32_t MaxSize>

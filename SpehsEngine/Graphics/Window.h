@@ -95,7 +95,7 @@ namespace se
 			std::string				screenShotFileName;
 
 			friend class WindowInternal;
-			boost::signals2::signal<void(void)> destroyedSignal;
+			Signal<void(void)> destroyedSignal;
 			std::vector<std::unique_ptr<ViewInternal>> views;
 			WindowUpdateFlagsType updateFlags = 0;
 		};

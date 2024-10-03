@@ -18,9 +18,6 @@
 #include <vector>
 
 // Third party includes
-#include "boost/signals2/connection.hpp"
-#include "boost/signals2/signal.hpp"
-#include "boost/assert.hpp"
 #include "glm/glm.hpp"
 #include "glm/gtc/quaternion.hpp"
 
@@ -59,6 +56,7 @@ namespace std
 #include "SpehsEngine/Core/SE_Time.h"
 #include "SpehsEngine/Core/Color.h"
 #include "SpehsEngine/Core/BitwiseOperations.h"
+#include "SpehsEngine/Core/Signal.h"
 //
 #include "SpehsEngine/Core/ByteVector.h"
 #include "SpehsEngine/Core/ByteView.h"

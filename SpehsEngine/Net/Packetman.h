@@ -25,17 +25,17 @@ namespace se
 			// Send with result
 			template<typename Packet, typename Result>
 			bool sendPacket(const PacketType _packetType, const Packet& _packet,
-				boost::signals2::scoped_connection& _scopedConnection, const std::function<void(Result* const)>& _callback);
+				ScopedConnection& _scopedConnection, const std::function<void(Result* const)>& _callback);
 
 			// Receive without result
 			template<typename Packet>
 			void registerReceiveHandler(const PacketType _packetType,
-				boost::signals2::scoped_connection& _scopedConnection, const std::function<void(Packet&, const bool)>& _receiveHandler);
+				ScopedConnection& _scopedConnection, const std::function<void(Packet&, const bool)>& _receiveHandler);
 
 			// Receive with result
 			template<typename Packet, typename Result>
 			void registerReceiveHandler(const PacketType _packetType,
-				boost::signals2::scoped_connection& _scopedConnection, const std::function<Result(Packet&, const bool)>& _receiveHandler);
+				ScopedConnection& _scopedConnection, const std::function<Result(Packet&, const bool)>& _receiveHandler);
 
 			// Returns true if there is at least one sent packet of the given packet type still awaiting for a result
 			bool hasUnfinishedResults(const PacketType _packetType) const;
@@ -166,7 +166,7 @@ namespace se
 						{
 							if (_reliable)
 							{
-								se::log::error("Failed to read PacketType");
+								log::error("Failed to read PacketType");
 							}
 							return;
 						}
@@ -175,7 +175,7 @@ namespace se
 						{
 							if (_reliable)
 							{
-								se::log::error("Failed to find receiver for reliably received PacketType: " + std::to_string(int(packetType)));
+								log::error("Failed to find receiver for reliably received PacketType: " + std::to_string(int(packetType)));
 							}
 							return;
 						}
@@ -183,7 +183,7 @@ namespace se
 						{
 							if (_reliable)
 							{
-								se::log::error("Receiver is no longer valid for reliably received PacketType: " + std::to_string(int(packetType)));
+								log::error("Receiver is no longer valid for reliably received PacketType: " + std::to_string(int(packetType)));
 							}
 							return;
 						}
@@ -223,7 +223,7 @@ namespace se
 		template<typename PacketType>
 		template<typename Packet, typename Result>
 		bool Packetman<PacketType>::sendPacket(const PacketType _packetType, const Packet& _packet,
-			boost::signals2::scoped_connection& _scopedConnection, const std::function<void(Result* const)>& _callback)
+			ScopedConnection& _scopedConnection, const std::function<void(Result* const)>& _callback)
 		{
 			const uint16_t requestId = generateNextRequestId();
 			BinaryWriter binaryWriter;
@@ -276,7 +276,7 @@ namespace se
 					{
 						signal(nullptr);
 					}
-					boost::signals2::signal<void(Result* const)> signal;
+					Signal<void(Result* const)> signal;
 					time::Time beginTime;
 					PacketType packetType;
 				};
@@ -298,7 +298,7 @@ namespace se
 		template<typename PacketType>
 		template<typename Packet>
 		void Packetman<PacketType>::registerReceiveHandler(const PacketType _packetType,
-			boost::signals2::scoped_connection& _scopedConnection, const std::function<void(Packet&, const bool)>& _receiveHandler)
+			ScopedConnection& _scopedConnection, const std::function<void(Packet&, const bool)>& _receiveHandler)
 		{
 			std::unique_ptr<IReceiver>& iReceiver = receivers[_packetType];
 			if (iReceiver && iReceiver->valid())
@@ -317,7 +317,7 @@ namespace se
 						BinaryReader binaryReader2(_binaryReader.getData() + _binaryReader.getOffset() - sizeof(PacketType), sizeof(PacketType));
 						PacketType packetType = PacketType(0);
 						binaryReader2.serial(packetType);
-						se::log::error("The sender is expecting a result but the registered receive handler does not provide one, PacketType: " + std::to_string(int(packetType)));
+						log::error("The sender is expecting a result but the registered receive handler does not provide one, PacketType: " + std::to_string(int(packetType)));
 					}
 					Packet packet;
 					if (_binaryReader.serial(packet))
@@ -334,7 +334,7 @@ namespace se
 				{
 					return !signal.empty();
 				}
-				boost::signals2::signal<void(Packet&, const bool)> signal;
+				Signal<void(Packet&, const bool)> signal;
 			};
 			Receiver* const receiver = new Receiver();
 			_scopedConnection = receiver->signal.connect(_receiveHandler);
@@ -345,7 +345,7 @@ namespace se
 		template<typename PacketType>
 		template<typename Packet, typename Result>
 		void Packetman<PacketType>::registerReceiveHandler(const PacketType _packetType,
-			boost::signals2::scoped_connection& _scopedConnection, const std::function<Result(Packet&, const bool)>& _receiveHandler)
+			ScopedConnection& _scopedConnection, const std::function<Result(Packet&, const bool)>& _receiveHandler)
 		{
 			std::unique_ptr<IReceiver>& iReceiver = receivers[_packetType];
 			if (iReceiver && iReceiver->valid())
@@ -369,7 +369,7 @@ namespace se
 						BinaryReader binaryReader2(_binaryReader.getData() + _binaryReader.getOffset() - sizeof(PacketType), sizeof(PacketType));
 						PacketType packetType = PacketType(0);
 						se_assert(binaryReader2.serial(packetType));
-						se::log::error("The sender is not expecting a result but the registered receive handler does provide one, PacketType: " + std::to_string(int(packetType)));
+						log::error("The sender is not expecting a result but the registered receive handler does provide one, PacketType: " + std::to_string(int(packetType)));
 					}
 
 					Result result;
@@ -380,7 +380,7 @@ namespace se
 						result = callback(packet, _reliable);
 						if (destructorCalled)
 						{
-							se::log::error("The receive handler should not deallocate Packetman. Result packet will not be sent.");
+							log::error("The receive handler should not deallocate Packetman. Result packet will not be sent.");
 							return;
 						}
 					}
@@ -401,7 +401,7 @@ namespace se
 				{
 					return !signal.empty();
 				}
-				boost::signals2::signal<void()> signal;
+				Signal<void()> signal;
 				std::function<Result(Packet&, const bool)> callback;
 				bool destructorCalled = false;
 			};

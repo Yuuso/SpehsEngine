@@ -80,7 +80,7 @@ namespace se
 			void setReceiveHandler(const std::function<void(BinaryReader&, const bool)>& _receiveHandler = std::function<void(BinaryReader&, const bool)>());
 			void setEnableAssertOnSendFail(const bool enable) { enableAssertOnSendFail = enable; }
 
-			void connectToStatusChangedSignal(boost::signals2::scoped_connection& scopedConnection, const std::function<void(const Status oldStatus, const Status newStatus)>& callback);
+			void connectToStatusChangedSignal(ScopedConnection& scopedConnection, const std::function<void(const Status oldStatus, const Status newStatus)>& callback);
 
 			Status getStatus() const { return status; }
 			DetailedStatus getDetailedStatus() const;

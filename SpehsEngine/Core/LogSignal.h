@@ -14,6 +14,6 @@ namespace se
 			Fatal,
 		};
 
-		void connectToLogSignal(boost::signals2::scoped_connection& scopedConnection, const std::function<void(const std::string_view, const LogType)>& callback);
+		void connectToLogSignal(ScopedConnection& scopedConnection, const std::function<void(const std::string_view, const LogType)>& callback);
 	}
 }

@@ -75,7 +75,7 @@ namespace se
 			std::future<std::shared_ptr<ResourceData>> resourceFuture;
 			std::shared_ptr<T> resourceData;
 
-			boost::signals2::signal<void(void)> resourceLoadedSignal;
+			Signal<void(void)> resourceLoadedSignal;
 		};
 	}
 }

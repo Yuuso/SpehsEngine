@@ -13,22 +13,18 @@ namespace se
 		{
 			for (size_t e = 0; e < events.size(); e++)
 			{
-				for (size_t s = 0; s < signals.size();)
+				for (size_t s = 0; s < signals.size(); s++)
 				{
-					if (signals[s]->signal.empty())
+					if (signals[s]->signal.isEmpty())
 					{
-						signals.erase(signals.begin() + s);
+						signals.erase(signals.begin() + s--);
 					}
-					else
+					else if (std::optional<bool> consumed = signals[s]->signal(events[e]))
 					{
-						if (signals[s]->signal(events[e]))
+						if (consumed.value())
 						{
 							//A connected receiver used the event, do not call receivers with a lower priority.
 							break;
-						}
-						else
-						{
-							s++;
 						}
 					}
 				}
@@ -69,57 +65,57 @@ namespace se
 			postUpdateSignal();
 		}
 
-		void EventSignaler::connectToMouseHoverSignal(boost::signals2::scoped_connection& scopedConnection, const std::function<bool(const MouseHoverEvent&)>& callback, const int priority)
+		void EventSignaler::connectToMouseHoverSignal(ScopedConnection& scopedConnection, const std::function<bool(const MouseHoverEvent&)>& callback, const int priority)
 		{
 			connectToEventSignal<MouseHoverEvent>(scopedConnection, callback, priority, mouseHoverSignals);
 		}
 
-		void EventSignaler::connectToMouseMotionSignal(boost::signals2::scoped_connection& scopedConnection, const std::function<bool(const MouseMotionEvent&)>& callback, const int priority)
+		void EventSignaler::connectToMouseMotionSignal(ScopedConnection& scopedConnection, const std::function<bool(const MouseMotionEvent&)>& callback, const int priority)
 		{
 			connectToEventSignal<MouseMotionEvent>(scopedConnection, callback, priority, mouseMotionSignals);
 		}
 
-		void EventSignaler::connectToMouseWheelSignal(boost::signals2::scoped_connection& scopedConnection, const std::function<bool(const MouseWheelEvent&)>& callback, const int priority)
+		void EventSignaler::connectToMouseWheelSignal(ScopedConnection& scopedConnection, const std::function<bool(const MouseWheelEvent&)>& callback, const int priority)
 		{
 			connectToEventSignal<MouseWheelEvent>(scopedConnection, callback, priority, mouseWheelSignals);
 		}
 
-		void EventSignaler::connectToMouseButtonSignal(boost::signals2::scoped_connection& scopedConnection, const std::function<bool(const MouseButtonEvent&)>& callback, const int priority)
+		void EventSignaler::connectToMouseButtonSignal(ScopedConnection& scopedConnection, const std::function<bool(const MouseButtonEvent&)>& callback, const int priority)
 		{
 			connectToEventSignal<MouseButtonEvent>(scopedConnection, callback, priority, mouseButtonSignals);
 		}
 
-		void EventSignaler::connectToKeyboardSignal(boost::signals2::scoped_connection& scopedConnection, const std::function<bool(const KeyboardEvent&)>& callback, const int priority)
+		void EventSignaler::connectToKeyboardSignal(ScopedConnection& scopedConnection, const std::function<bool(const KeyboardEvent&)>& callback, const int priority)
 		{
 			connectToEventSignal<KeyboardEvent>(scopedConnection, callback, priority, keyboardSignals);
 		}
 
-		void EventSignaler::connectToTextInputSignal(boost::signals2::scoped_connection& scopedConnection, const std::function<bool(const TextInputEvent&)>& callback, const int priority)
+		void EventSignaler::connectToTextInputSignal(ScopedConnection& scopedConnection, const std::function<bool(const TextInputEvent&)>& callback, const int priority)
 		{
 			connectToEventSignal<TextInputEvent>(scopedConnection, callback, priority, textInputSignals);
 		}
 
-		void EventSignaler::connectToJoystickButtonSignal(boost::signals2::scoped_connection& scopedConnection, const std::function<bool(const JoystickButtonEvent&)>& callback, const int priority)
+		void EventSignaler::connectToJoystickButtonSignal(ScopedConnection& scopedConnection, const std::function<bool(const JoystickButtonEvent&)>& callback, const int priority)
 		{
 			connectToEventSignal<JoystickButtonEvent>(scopedConnection, callback, priority, joystickButtonSignals);
 		}
 
-		void EventSignaler::connectToJoystickAxisSignal(boost::signals2::scoped_connection& scopedConnection, const std::function<bool(const JoystickAxisEvent&)>& callback, const int priority)
+		void EventSignaler::connectToJoystickAxisSignal(ScopedConnection& scopedConnection, const std::function<bool(const JoystickAxisEvent&)>& callback, const int priority)
 		{
 			connectToEventSignal<JoystickAxisEvent>(scopedConnection, callback, priority, joystickAxisSignals);
 		}
 
-		void EventSignaler::connectToJoystickHatSignal(boost::signals2::scoped_connection& scopedConnection, const std::function<bool(const JoystickHatEvent&)>& callback, const int priority)
+		void EventSignaler::connectToJoystickHatSignal(ScopedConnection& scopedConnection, const std::function<bool(const JoystickHatEvent&)>& callback, const int priority)
 		{
 			connectToEventSignal<JoystickHatEvent>(scopedConnection, callback, priority, joystickHatSignals);
 		}
 
-		void EventSignaler::connectToQuitSignal(boost::signals2::scoped_connection& scopedConnection, const std::function<bool(const QuitEvent&)>& callback, const int priority)
+		void EventSignaler::connectToQuitSignal(ScopedConnection& scopedConnection, const std::function<bool(const QuitEvent&)>& callback, const int priority)
 		{
 			connectToEventSignal<QuitEvent>(scopedConnection, callback, priority, quitSignals);
 		}
 
-		void EventSignaler::connectToFileDropSignal(boost::signals2::scoped_connection& scopedConnection, const std::function<bool(const FileDropEvent&)>& callback, const int priority)
+		void EventSignaler::connectToFileDropSignal(ScopedConnection& scopedConnection, const std::function<bool(const FileDropEvent&)>& callback, const int priority)
 		{
 			connectToEventSignal<FileDropEvent>(scopedConnection, callback, priority, fileDropSignals);
 		}

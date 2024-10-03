@@ -87,7 +87,7 @@ namespace se
 							}
 							else
 							{
-								se::log::error("unhandled k_ESteamNetworkingConnectionState");
+								log::error("unhandled k_ESteamNetworkingConnectionState");
 							}
 							return;
 						}
@@ -108,7 +108,7 @@ namespace se
 					if (!steamListenSocket)
 					{
 						Connection::closeConnectionImpl(info->m_hConn, "", true);
-						se::log::error("Failed to accept incoming connection from: " + std::string(info->m_info.m_szConnectionDescription) + ". Could not get steam listen socket.");
+						log::error("Failed to accept incoming connection from: " + std::string(info->m_info.m_szConnectionDescription) + ". Could not get steam listen socket.");
 						return;
 					}
 
@@ -149,11 +149,11 @@ namespace se
 					if (acceptConnectionResult != k_EResultOK)
 					{
 						Connection::closeConnectionImpl(info->m_hConn, "", true);
-						se::log::error("Failed to accept incoming connection from: " + std::string(info->m_info.m_szConnectionDescription) + ". Error code: " + std::to_string(acceptConnectionResult));
+						log::error("Failed to accept incoming connection from: " + std::string(info->m_info.m_szConnectionDescription) + ". Error code: " + std::to_string(acceptConnectionResult));
 						return;
 					}
 
-					se::log::info("Accepted new connection: " + std::string(info->m_info.m_szConnectionDescription));
+					log::info("Accepted new connection: " + std::string(info->m_info.m_szConnectionDescription));
 					ConnectionParameters connectionParameters;
 					connectionParameters.status = Connection::Status::Connected;
 					connectionParameters.establishmentType = Connection::EstablishmentType::Incoming;
@@ -175,7 +175,7 @@ namespace se
 				}
 				case k_ESteamNetworkingConnectionState_FindingRoute:
 					// P2P connections will spend a brief time here where they swap addresses and try to find a route
-					se::log::info("Finding route: " + std::string(info->m_info.m_szConnectionDescription));
+					log::info("Finding route: " + std::string(info->m_info.m_szConnectionDescription));
 					break;
 				case k_ESteamNetworkingConnectionState_Connected:
 					std::lock_guard<std::mutex> lock(connectionManagersMutex);
@@ -206,7 +206,7 @@ namespace se
 			std::vector<HSteamListenSocket> steamListenSocketsIP;
 			std::vector<HSteamListenSocket> steamListenSocketsP2P;
 			HSteamNetPollGroup steamNetPollGroup;
-			boost::signals2::signal<void(std::shared_ptr<Connection>&)> incomingConnectionSignal;
+			Signal<void(std::shared_ptr<Connection>&)> incomingConnectionSignal;
 
 			mutable std::recursive_mutex acceptingSteamListenSocketMutex;
 			HSteamListenSocket acceptingSteamListenSocketIP = k_HSteamListenSocket_Invalid;
@@ -236,7 +236,7 @@ namespace se
 				state->steamNetPollGroup = state->steamNetworkingSockets->CreatePollGroup();
 				if (state->steamNetPollGroup == k_HSteamNetPollGroup_Invalid)
 				{
-					se::log::error("Failed to create steam net poll group.");
+					log::error("Failed to create steam net poll group.");
 				}
 			}
 
@@ -325,7 +325,7 @@ namespace se
 					}
 					else if (messageCount < 0)
 					{
-						se::log::error("Error checking for messages");
+						log::error("Error checking for messages");
 					}
 					else
 					{
@@ -483,7 +483,7 @@ namespace se
 			{
 				if (const std::optional<Port> existingAcceptingPort = getAcceptingPort())
 				{
-					se::log::error("Already accepting on port: " + existingAcceptingPort->toString());
+					log::error("Already accepting on port: " + existingAcceptingPort->toString());
 				}
 				return false;
 			}
@@ -528,7 +528,7 @@ namespace se
 				}
 				else
 				{
-					se::log::error("Failed to start listening on port: " + std::to_string(localSteamNetworkingAddress.m_port) + ". Failed to create listening socket.");
+					log::error("Failed to start listening on port: " + std::to_string(localSteamNetworkingAddress.m_port) + ". Failed to create listening socket.");
 					return false;
 				}
 			}
@@ -544,7 +544,7 @@ namespace se
 				std::lock_guard<std::recursive_mutex> lock(state->acceptingSteamListenSocketMutex);
 				if (state->acceptingSteamListenSocketP2P != k_HSteamListenSocket_Invalid)
 				{
-					se::log::error("Already accepting P2P");
+					log::error("Already accepting P2P");
 					return false;
 				}
 			}
@@ -562,7 +562,7 @@ namespace se
 					acceptor.reset(new AcceptorP2P(signalingServerEndpoint));
 					if (!acceptor->socket->isConnected())
 					{
-						se::log::error("AcceptorP2P failed to connect to signaling server: " + signalingServerEndpoint.toString());
+						log::error("AcceptorP2P failed to connect to signaling server: " + signalingServerEndpoint.toString());
 						AcceptorP2P::eraseFromStaticContainer(signalingServerEndpoint);
 						return false;
 					}
@@ -581,7 +581,7 @@ namespace se
 				}
 				else
 				{
-					se::log::error("Failed to start listening P2P. Failed to create listening socket.");
+					log::error("Failed to start listening P2P. Failed to create listening socket.");
 					return false;
 				}
 			}
@@ -640,14 +640,14 @@ namespace se
 		{
 			if (!state->steamNetworkingSockets->SetConnectionPollGroup(connection.state->steamNetConnection, state->steamNetPollGroup))
 			{
-				se::log::error("Failed to set connection poll group.");
+				log::error("Failed to set connection poll group.");
 			}
 
 			std::lock_guard<std::recursive_mutex> lock(state->ownedSteamNetConnectionsMutex);
 			state->ownedSteamNetConnections.insert(connection.state->steamNetConnection);
 		}
 
-		std::shared_ptr<Connection> ConnectionManager::connectIP(const se::net::Endpoint& _endpoint, const bool _symmetric, const std::string_view _name, const time::Time _timeout)
+		std::shared_ptr<Connection> ConnectionManager::connectIP(const Endpoint& _endpoint, const bool _symmetric, const std::string_view _name, const time::Time _timeout)
 		{
 			se_assert(_endpoint);
 			if (state->steamNetworkingSockets)
@@ -676,7 +676,7 @@ namespace se
 
 				if (steamNetConnection == k_HSteamNetConnection_Invalid)
 				{
-					se::log::error("Failed to connect: " + _endpoint.toString());
+					log::error("Failed to connect: " + _endpoint.toString());
 					return std::shared_ptr<Connection>();
 				}
 				else
@@ -700,7 +700,7 @@ namespace se
 			}
 		}
 
-		std::shared_ptr<Connection> ConnectionManager::connectP2P(const NetIdentity& _peerNetIdentity, const se::net::Endpoint& _signalingServerEndpoint, const std::string_view _name, const time::Time _timeout)
+		std::shared_ptr<Connection> ConnectionManager::connectP2P(const NetIdentity& _peerNetIdentity, const Endpoint& _signalingServerEndpoint, const std::string_view _name, const time::Time _timeout)
 		{
 			se_assert(_peerNetIdentity);
 			se_assert(_signalingServerEndpoint);
@@ -723,7 +723,7 @@ namespace se
 				}
 				else
 				{
-					se::log::error("Failed to connect: " + _peerNetIdentity.toString());
+					log::error("Failed to connect: " + _peerNetIdentity.toString());
 					return std::shared_ptr<Connection>();
 				}
 
@@ -740,7 +740,7 @@ namespace se
 				}
 				else
 				{
-					se::log::error("Failed to get connection info from a new connection");
+					log::error("Failed to get connection info from a new connection");
 				}
 				std::shared_ptr<Connection> connection(new Connection(connectionParameters));
 				initializeSteamNetConnection(*connection);
@@ -753,7 +753,7 @@ namespace se
 			}
 		}
 
-		void ConnectionManager::connectToIncomingConnectionSignal(boost::signals2::scoped_connection& scopedConnection, const std::function<void(std::shared_ptr<Connection>&)>& callback)
+		void ConnectionManager::connectToIncomingConnectionSignal(ScopedConnection& scopedConnection, const std::function<void(std::shared_ptr<Connection>&)>& callback)
 		{
 			scopedConnection = state->incomingConnectionSignal.connect(callback);
 		}

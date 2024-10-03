@@ -51,7 +51,7 @@ namespace se
 			void windowDestroyed();
 			bool renderState() const;
 
-			boost::signals2::scoped_connection windowDestroyedConnection;
+			ScopedConnection windowDestroyedConnection;
 
 			Window* window;
 

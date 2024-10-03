@@ -17,7 +17,7 @@ namespace se
 	namespace log
 	{
 		static std::recursive_mutex logSignalMutex;
-		static boost::signals2::signal<void(const std::string_view, const LogType)> logSignal;
+		static Signal<void(const std::string_view, const LogType)> logSignal;
 		void logSignalImpl(const std::string_view string, const LogType logType)
 		{
 			std::lock_guard<std::recursive_mutex> lock(logSignalMutex);
@@ -133,7 +133,7 @@ namespace se
 			exit(1);
 		}
 
-		void connectToLogSignal(boost::signals2::scoped_connection& scopedConnection, const std::function<void(const std::string_view, const LogType)>& callback)
+		void connectToLogSignal(ScopedConnection& scopedConnection, const std::function<void(const std::string_view, const LogType)>& callback)
 		{
 			std::lock_guard<std::recursive_mutex> lock(logSignalMutex);
 			scopedConnection = logSignal.connect(callback);

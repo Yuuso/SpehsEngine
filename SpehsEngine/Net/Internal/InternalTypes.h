@@ -35,7 +35,7 @@ namespace se
 			HSteamNetConnection closedSteamNetConnection = k_HSteamNetConnection_Invalid;
 			const HSteamListenSocket steamListenSocket;
 			std::function<void(BinaryReader&, const bool)> receiveHandler;
-			boost::signals2::signal<void(const Connection::Status, const Connection::Status)> statusChangedSignal;
+			Signal<void(const Connection::Status, const Connection::Status)> statusChangedSignal;
 		};
 	}
 }

@@ -119,7 +119,7 @@ namespace se
 			return rootElements;
 		}
 		
-		boost::signals2::scoped_connection GUIView::connectToRootElementAddedSignal(const std::function<void(GUIElement&)>& callback)
+		ScopedConnection GUIView::connectToRootElementAddedSignal(const std::function<void(GUIElement&)>& callback)
 		{
 			return rootElementAddedSignal.connect(callback);
 		}

@@ -15,9 +15,9 @@ namespace se
 	{
 		struct ConnectionState
 		{
-			std::pair<se::time::Time, uint64_t> prevReliableBytesSent;
-			std::pair<se::time::Time, uint64_t> prevReliableBytesReceived;
-			se::time::Time prevSendQuotaPerSecondTime;
+			std::pair<time::Time, uint64_t> prevReliableBytesSent;
+			std::pair<time::Time, uint64_t> prevReliableBytesReceived;
+			time::Time prevSendQuotaPerSecondTime;
 			StaticRingBuffer<float, 64> reliableBytesSentHistory;
 			StaticRingBuffer<float, 64> reliableBytesReceivedHistory;
 			StaticRingBuffer<float, 64> sendQuotaPerSecondHistory;
@@ -34,12 +34,12 @@ namespace se
 
 			void setEnabled(const bool enabled) final
 			{
-				if (preRenderConnection.connected() == enabled)
+				if (preRenderConnection.isConnected() == enabled)
 				{
 					return;
 				}
 
-				if (preRenderConnection.connected())
+				if (preRenderConnection)
 				{
 					preRenderConnection.disconnect();
 				}
@@ -85,8 +85,8 @@ namespace se
 					{
 						if (ImGui::CollapsingHeader(connection->remoteEndpoint.toString().c_str()))
 						{
-							const se::time::Time now = se::time::now();
-							const se::time::Time historyRecordInterval = se::time::fromSeconds(0.1f);
+							const time::Time now = se::time::now();
+							const time::Time historyRecordInterval = se::time::fromSeconds(0.1f);
 							ConnectionState& connectionState = connectionStates[connection->connectionId];
 
 							ImGui::Text("Remote endpoint: " + connection->remoteEndpoint.toString());
@@ -127,13 +127,13 @@ namespace se
 				ImGui::End();
 			}
 
-			bool getEnabled() const final { return preRenderConnection.connected(); }
+			bool getEnabled() const final { return preRenderConnection.isConnected(); }
 
 			net::ConnectionManager& connectionManager;
 			imgui::BackendWrapper& imGuiBackendWrapper;
 
-			std::unordered_map<se::net::ConnectionId, ConnectionState> connectionStates;
-			boost::signals2::scoped_connection preRenderConnection;
+			std::unordered_map<net::ConnectionId, ConnectionState> connectionStates;
+			ScopedConnection preRenderConnection;
 		};
 
 		std::unique_ptr<IConnectionManagerVisualizer> IConnectionManagerVisualizer::create(net::ConnectionManager& _connectionManager, imgui::BackendWrapper& _imGuiBackendWrapper, const bool _enabled)

@@ -494,7 +494,7 @@ namespace se
 			graphics::Shape tooltipPolygon;
 			std::vector<std::unique_ptr<graphics::Text>> sectionTexts;
 			std::vector<std::unique_ptr<graphics::Shape>> sectionPolygons;
-			boost::signals2::scoped_connection profilerFlushConnection;
+			ScopedConnection profilerFlushConnection;
 
 			std::recursive_mutex backgroundThreadDataMutex;
 			size_t maxThreadDataSectionCount = 0;

@@ -316,7 +316,7 @@ namespace ImGui
 	bool BeginCentered(const String label, bool* const open, const ImGuiWindowFlags flags = 0, const ImGuiCond centerCondition = ImGuiCond_Appearing);
 
 	// NOTE: 'key' value must be valid in the scope of 'scopedConnection'
-	void keyBindButton(const String label, se::input::Key& key, se::input::EventSignaler& eventSignaler, boost::signals2::scoped_connection& scopedConnection);
+	void keyBindButton(const String label, se::input::Key& key, se::input::EventSignaler& eventSignaler, se::ScopedConnection& scopedConnection);
 
 	bool InputT(const String label, se::input::CustomEventParameters& customEventParameters, se::input::EventSignaler& eventSignaler, StateWrapper& stateWrapper);
 

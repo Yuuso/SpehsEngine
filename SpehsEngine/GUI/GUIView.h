@@ -48,7 +48,7 @@ namespace se
 			void clear();
 			const std::vector<GUIElement*>& getRootElements() const;
 
-			[[nodiscard]] boost::signals2::scoped_connection connectToRootElementAddedSignal(const std::function<void(GUIElement&)>& callback);
+			[[nodiscard]] ScopedConnection connectToRootElementAddedSignal(const std::function<void(GUIElement&)>& callback);
 
 		private:
 
@@ -58,9 +58,9 @@ namespace se
 			graphics::Camera camera;
 			graphics::Scene scene;
 
-			boost::signals2::scoped_connection updateConnection;
-			boost::signals2::scoped_connection mouseButtonConnection;
-			boost::signals2::signal<void(GUIElement&)> rootElementAddedSignal;
+			ScopedConnection updateConnection;
+			ScopedConnection mouseButtonConnection;
+			Signal<void(GUIElement&)> rootElementAddedSignal;
 			graphics::View view;
 
 			std::unique_ptr<GUIMaterialManager> materialManager;

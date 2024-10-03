@@ -103,8 +103,8 @@ namespace se
 			std::vector<std::shared_ptr<Material>>	materials;
 			std::shared_ptr<VertexBuffer>			instances;
 
-			boost::signals2::signal<void(void)>		destroyedSignal;
-			boost::signals2::scoped_connection		modelDataLoadedConnection;
+			Signal<void(void)>		destroyedSignal;
+			ScopedConnection		modelDataLoadedConnection;
 		};
 	}
 }

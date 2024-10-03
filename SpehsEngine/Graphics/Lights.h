@@ -67,7 +67,7 @@ namespace se
 			std::shared_ptr<Primitive> debugPrimitive;
 			virtual void generateDebugPrimitive() {}
 
-			boost::signals2::signal<void(void)> destroyedSignal;
+			Signal<void(void)> destroyedSignal;
 		};
 
 
