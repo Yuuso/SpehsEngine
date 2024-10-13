@@ -7,25 +7,13 @@
 
 namespace se
 {
-	class BinaryWriter;
-	class BinaryReader;
-
 	namespace net
 	{
-		namespace aria
-		{
-			class Connector;
-			class Client;
-		}
-
-		class IOService;
-
 		struct ISocketTCP : public ISocket
 		{
 			typedef uint32_t ExpectedBytesType;
 			typedef uint32_t Id;
-			friend class aria::Connector;
-			friend class aria::Client;
+
 			enum class AcceptingState { idle, listeningForConnection, establishingConnection };
 
 			static std::unique_ptr<ISocketTCP> create(IOService& ioService);

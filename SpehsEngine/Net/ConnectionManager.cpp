@@ -20,6 +20,35 @@ namespace se
 				std::string reason;
 			};
 
+			SteamNetworkingIdentity toSteamNetworkingIdentity(const NetIdentity& netIdentity)
+			{
+				SteamNetworkingIdentity result;
+				result.SetGenericString(netIdentity.toString().c_str());
+				return result;
+			}
+
+			SteamNetworkingIPAddr toSteamNetworkingAddress(const Endpoint& endpoint)
+			{
+				SteamNetworkingIPAddr steamNetworkingAddress;
+				steamNetworkingAddress.Clear();
+				if (!SteamNetworkingUtils()->SteamNetworkingIPAddr_ParseString(&steamNetworkingAddress, endpoint.address.toString().c_str()))
+				{
+					log::warning("Failed to parse endpoint address");
+				}
+				steamNetworkingAddress.SetIPv4(steamNetworkingAddress.GetIPv4(), endpoint.port);
+				return steamNetworkingAddress;
+			}
+
+			Endpoint fromSteamNetworkingAddress(const SteamNetworkingIPAddr& steamNetworkingAddress)
+			{
+				Endpoint endpoint;
+				endpoint.address = steamNetworkingAddress.IsIPv4()
+					? Address(steamNetworkingAddress.GetIPv4())
+					: Address(&steamNetworkingAddress.m_ipv6[0]);
+				endpoint.port = steamNetworkingAddress.m_port;
+				return endpoint;
+			}
+
 			std::optional<HSteamListenSocket> getSteamListenSocket(ISteamNetworkingSockets& steamNetworkingSockets, const HSteamNetConnection steamNetConnection)
 			{
 				SteamNetConnectionInfo_t steamNetConnectionInfo;

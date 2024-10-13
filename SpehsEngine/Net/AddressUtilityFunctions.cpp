@@ -4,7 +4,6 @@
 #include "boost/asio/ip/host_name.hpp"
 #include "boost/asio/io_service.hpp"
 #include "boost/asio/ip/tcp.hpp"
-#include "steam/isteamnetworkingutils.h"
 
 namespace se
 {
@@ -33,33 +32,6 @@ namespace se
 				it++;
 			}
 			return Address();
-		}
-
-		SteamNetworkingIPAddr toSteamNetworkingAddress(const Endpoint& endpoint)
-		{
-			SteamNetworkingIPAddr steamNetworkingAddress;
-			steamNetworkingAddress.Clear();
-			if (!SteamNetworkingUtils()->SteamNetworkingIPAddr_ParseString(&steamNetworkingAddress, endpoint.address.toString().c_str()))
-			{
-				log::warning("Failed to parse endpoint address");
-			}
-			steamNetworkingAddress.SetIPv4(steamNetworkingAddress.GetIPv4(), endpoint.port);
-			return steamNetworkingAddress;
-		}
-
-		Endpoint fromSteamNetworkingAddress(const SteamNetworkingIPAddr& steamNetworkingAddress)
-		{
-			Endpoint endpoint;
-			if (steamNetworkingAddress.IsIPv4())
-			{
-				endpoint.address = Address(steamNetworkingAddress.GetIPv4());
-			}
-			else
-			{
-				endpoint.address = Address(&steamNetworkingAddress.m_ipv6[0]);
-			}
-			endpoint.port = steamNetworkingAddress.m_port;
-			return endpoint;
 		}
 
 		bool isValidEmailAddress(const std::string_view string)

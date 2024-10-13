@@ -7,13 +7,8 @@
 
 namespace se
 {
-	class BinaryWriter;
-	class BinaryReader;
 	namespace net
 	{
-		struct HandshakeUDP;
-		class IOService;
-
 		struct ISocketUDP : public ISocket
 		{
 			typedef uint32_t ExpectedBytesType;

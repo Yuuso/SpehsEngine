@@ -1,13 +1,13 @@
 #pragma once
+
 #include "SpehsEngine/Net/IOService.h"
 #include "SpehsEngine/Net/Port.h"
+
 
 namespace se
 {
 	namespace net
 	{
-		struct ISocketTCP;
-
 		class MultiConnectionAcceptorTCP
 		{
 		public:

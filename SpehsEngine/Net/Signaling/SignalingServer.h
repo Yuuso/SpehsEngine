@@ -1,15 +1,12 @@
 #pragma once
 
 #include "SpehsEngine/Net/Port.h"
-#include <memory>
 
 
 namespace se
 {
 	namespace net
 	{
-		class IOService;
-
 		class SignalingServer
 		{
 		public:

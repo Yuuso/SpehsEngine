@@ -9,8 +9,6 @@ namespace se
 {
 	namespace net
 	{
-		struct NetIdentity;
-
 		class ConnectionManager
 		{
 		public:

@@ -3,24 +3,13 @@
 #include "SpehsEngine/Net/ConnectionId.h"
 #include "SpehsEngine/Net/Endpoint.h"
 
-namespace boost
-{
-	namespace signals2
-	{
-		class scoped_connection;
-	}
-}
-
 
 namespace se
 {
-	class BinaryWriter;
-	class BinaryReader;
 	namespace net
 	{
-		class ConnectionManager;
-		struct ConnectionParameters;
 		struct ConnectionInternalState;
+
 		class Connection
 		{
 		public:

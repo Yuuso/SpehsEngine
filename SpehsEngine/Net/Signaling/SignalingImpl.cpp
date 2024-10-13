@@ -18,6 +18,15 @@ namespace se
 		std::unique_ptr<IOService> AcceptorP2P::staticIoService;
 		std::unordered_map<Endpoint, std::unique_ptr<AcceptorP2P>> AcceptorP2P::staticContainer;
 
+		static NetIdentity fromSteamNetworkingIdentity(const SteamNetworkingIdentity& steamNetworkingIdentity)
+		{
+			NetIdentity netIdentity;
+			const bool success = netIdentity.fromString(steamNetworkingIdentity.GetGenericString());
+			(void)success;
+			se_assert(success);
+			return netIdentity;
+		}
+
 		OutSignalingReceivedContext::OutSignalingReceivedContext(const Endpoint& _signalingServerEndpoint)
 			: signalingServerEndpoint(_signalingServerEndpoint)
 		{
