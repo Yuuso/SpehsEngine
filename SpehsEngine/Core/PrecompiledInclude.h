@@ -1,8 +1,8 @@
 #pragma once
 
 // Standard library includes
+#include <algorithm>
 #include <functional>
-#include <future>
 #include <map>
 #include <memory>
 #include <mutex>
@@ -78,6 +78,7 @@ namespace boost
 namespace std
 {
 	class thread;
+	template<typename T> class future;
 }
 
 /// Spehs Engine includes

@@ -2,6 +2,7 @@
 
 #include "SpehsEngine/Audio/Internal/InternalTypes.h"
 #include "SpehsEngine/Audio/ResourceLoader.h"
+#include <future>
 
 
 namespace se

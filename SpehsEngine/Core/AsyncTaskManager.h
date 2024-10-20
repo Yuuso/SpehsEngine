@@ -4,6 +4,7 @@
 #include <condition_variable>
 #include <thread>
 #include <queue>
+#include <future>
 
 
 namespace se
