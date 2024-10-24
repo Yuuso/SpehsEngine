@@ -23,7 +23,7 @@ namespace se
 		{
 			if (!values.empty())
 			{
-				float roll = rng.random<float>(0.0f, totalWeight);
+				float roll = getRandomFloat(rng, 0.0f, totalWeight);
 				for (const std::pair<float, T>& pair : values)
 				{
 					if (roll <= pair.first)
@@ -45,7 +45,7 @@ namespace se
 		{
 			if (!values.empty())
 			{
-				float roll = rng.random<float>(0.0f, totalWeight);
+				float roll = getRandomFloat(rng, 0.0f, totalWeight);
 				for (size_t i = 0; i < values.size(); i++)
 				{
 					const std::pair<float, T>& pair = values[i];

@@ -40,6 +40,7 @@
       <Filter>Serial</Filter>
     </ClCompile>
     <ClCompile Include="$(MSBuildThisFileDirectory)ScopedConnections.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)RandomUtilityFunctions.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="$(MSBuildThisFileDirectory)SE_Assert.h" />
@@ -132,6 +133,7 @@
     </ClInclude>
     <ClInclude Include="$(MSBuildThisFileDirectory)Signal.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)FunctionTraits.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)RandomUtilityFunctions.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="File">

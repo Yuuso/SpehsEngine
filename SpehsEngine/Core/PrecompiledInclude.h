@@ -55,6 +55,10 @@
 
 namespace se
 {
+	namespace rng
+	{
+		template <typename SeedType> class PRNG;
+	}
 	namespace time
 	{
 		class DeltaTimeSystem;
@@ -101,6 +105,7 @@ namespace std
 #include "SpehsEngine/Core/DeepPtrUtilityFunctions.h"
 #include "SpehsEngine/Core/OptionalUtilityFunctions.h"
 #include "SpehsEngine/Core/PairUtilityFunctions.h"
+#include "SpehsEngine/Core/RandomUtilityFunctions.h"
 #include "SpehsEngine/Core/Serial/SerialUtility.h"
 #include "SpehsEngine/Core/StringUtilityFunctions.h"
 #include "SpehsEngine/Core/StringViewUtilityFunctions.h"
