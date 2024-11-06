@@ -75,6 +75,7 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)Serial\Serial.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Serial\SerialUtility.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Signal.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Clamp.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)StaticRingBuffer.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)ScopedFrameLimiter.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)ScopeProfiler.h" />

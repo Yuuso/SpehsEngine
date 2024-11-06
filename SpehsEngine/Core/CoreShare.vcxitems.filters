@@ -134,6 +134,7 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)Signal.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)FunctionTraits.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)RandomUtilityFunctions.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Clamp.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="File">

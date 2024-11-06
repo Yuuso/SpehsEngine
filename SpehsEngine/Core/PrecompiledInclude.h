@@ -86,6 +86,7 @@ namespace std
 }
 
 /// Spehs Engine includes
+#include "SpehsEngine/Core/Clamp.h"
 #include "SpehsEngine/Core/Log.h"
 #include "SpehsEngine/Core/Constants.h"
 #include "SpehsEngine/Core/RemoveCvref.h"
