@@ -21,6 +21,7 @@ namespace se
 		class View;
 		class Window;
 		struct ResourceData;
+		typedef AsyncTaskManager<std::shared_ptr<ResourceData>> ResourceLoader;
 	}
 }
 
