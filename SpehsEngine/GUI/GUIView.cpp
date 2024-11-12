@@ -4,6 +4,7 @@
 #include "SpehsEngine/GUI/Internal/StencilMaskManager.h"
 #include "SpehsEngine/GUI/Internal/GUIMaterialManager.h"
 #include "SpehsEngine/GUI/GUIElement.h"
+#include "SpehsEngine/GUI/Internal/GUIMaterialManager.h"
 #include "SpehsEngine/Input/EventSignaler.h"
 
 
@@ -29,6 +30,10 @@ namespace se
 			updateConnection = view.connectToPreRenderSignal([this](glm::vec2 _renderSize){ update(_renderSize); });
 			_eventSignaler.connectToMouseButtonSignal(mouseButtonConnection, [this](const input::MouseButtonEvent& _event){ return mouseButtonCallback(_event); }, _inputPriority);
 		}
+		GUIView::~GUIView()
+		{
+			// ~GUIMaterialManager()
+		}
 		graphics::View& GUIView::getView()
 		{
 			return view;
@@ -45,6 +50,10 @@ namespace se
 		void GUIView::setLayerMaskStyle(LayerMaskStyle _style)
 		{
 			layerMaskStyle = _style;
+		}
+		void GUIView::setTextureModes(const graphics::TextureModes& _textureModes)
+		{
+			materialManager->setTextureModes(_textureModes);
 		}
 
 		void GUIView::update(glm::vec2 _renderSize)

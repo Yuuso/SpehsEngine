@@ -23,6 +23,9 @@ namespace se
 			std::shared_ptr<graphics::Material> createShapeMaterial(std::string_view _texture);
 			std::shared_ptr<graphics::Material> createFontMaterial(std::string_view _font);
 
+			// Currently affects only new calls to getTexture()
+			void setTextureModes(const graphics::TextureModes& _textureModes);
+
 			graphics::ShapeGenerator shapeGenerator;
 
 		private:
@@ -32,6 +35,7 @@ namespace se
 			graphics::ShaderManager& shaderManager;
 			graphics::TextureManager& textureManager;
 			graphics::FontManager& fontManager;
+			graphics::TextureModes textureModes;
 		};
 	}
 }

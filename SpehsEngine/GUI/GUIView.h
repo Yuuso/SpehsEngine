@@ -31,7 +31,7 @@ namespace se
 
 			GUIView(graphics::ShaderManager& _shaderManager, graphics::TextureManager& _textureManager,
 					graphics::FontManager& _fontManager, input::EventSignaler& _eventSignaler, int _inputPriority);
-			~GUIView() = default;
+			~GUIView();
 			GUIView(const GUIView& _other) = delete;
 			GUIView& operator=(const GUIView& _other) = delete;
 			GUIView(GUIView&& _other) = delete;
@@ -42,6 +42,7 @@ namespace se
 			void setInputHandlingEnabled(bool _value);
 			bool getInputhandlingEnabled() const;
 			void setLayerMaskStyle(LayerMaskStyle _style);
+			void setTextureModes(const graphics::TextureModes& _textureModes);
 
 			void add(GUIElement& _element);
 			void remove(GUIElement& _element);

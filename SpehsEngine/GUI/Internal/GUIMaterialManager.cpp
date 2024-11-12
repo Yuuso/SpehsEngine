@@ -24,7 +24,7 @@ namespace se
 				return colorTexture;
 			auto texture = textureManager.find(_texture);
 			if (!texture)
-				texture = textureManager.create(_texture, _texture);
+				texture = textureManager.create(_texture, _texture, textureModes);
 			return texture;
 		}
 		std::shared_ptr<graphics::Font> GUIMaterialManager::getFont(std::string_view _font)
@@ -49,6 +49,11 @@ namespace se
 			auto result = graphics::createMaterial(graphics::DefaultMaterialType::Text, shaderManager);
 			result->setFont(getFont(_font));
 			return result;
+		}
+
+		void GUIMaterialManager::setTextureModes(const graphics::TextureModes& _textureModes)
+		{
+			textureModes = _textureModes;
 		}
 	}
 }
