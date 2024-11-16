@@ -5,6 +5,7 @@
 #include "boost/asio/io_service.hpp"
 #include "boost/asio/ip/tcp.hpp"
 
+
 namespace se
 {
 	namespace net
@@ -15,23 +16,35 @@ namespace se
 			boost::asio::io_service io;
 			boost::system::error_code error;
 			boost::asio::ip::tcp::resolver resolver(io);
-			boost::asio::ip::tcp::resolver::query queryTCP(localHostName, "");
+			boost::asio::ip::resolver_base::flags flags = boost::asio::ip::resolver_base::flags::all_matching;
+			boost::asio::ip::tcp::resolver::query queryTCP(localHostName, "", flags);
 			boost::asio::ip::tcp::resolver::iterator end, it = resolver.resolve(queryTCP, error);
 			if (error)
 			{
 				log::warning("se::net::getLocalAddress(): failed to resolve local address. Boost error" + error.message());
 				return Address();
 			}
+			Address result;
 			while (it != end)
 			{
-				boost::asio::ip::tcp::endpoint endpoint = *it;
-				if (endpoint.address().is_v4())
+				const boost::asio::ip::tcp::endpoint endpoint = *it;
+				const boost::asio::ip::address address = endpoint.address();
+				if (address.is_v4())
 				{
-					return Address(endpoint.address().to_v4().to_uint());
+					const std::string addressString = address.to_v4().to_string();
+					result = Address::makeFromStringIpv4(addressString);
+
+					// If there are multiple addresses then use the (first) one in the default address range
+					// Don't know how this should be handled but this works for my current setup
+					constexpr std::string defaultAddressRangeStartString = "192.168.";
+					if (doesStartWith(addressString, defaultAddressRangeStartString))
+					{
+						break;
+					}
 				}
 				it++;
 			}
-			return Address();
+			return result;
 		}
 
 		bool isValidEmailAddress(const std::string_view string)
