@@ -14,7 +14,7 @@ namespace se
 		{
 			uint32_t value = 0;
 			uint8_t* const valuePtr8 = (unsigned char*)(&value);
-			size_t byteIndex = 0;
+			size_t byteIndex = 3;
 			size_t numberBeginIndex = 0;
 			for (size_t i = 0; i < _string.size() + 1; i++)
 			{
@@ -33,7 +33,7 @@ namespace se
 							}
 							const uint8_t byte = uint8_t(number);
 							memcpy(valuePtr8 + byteIndex, &byte, sizeof(byte));
-							if (byteIndex++ < 4)
+							if (byteIndex-- > 0)
 							{
 								numberBeginIndex = i + 1;
 							}
@@ -65,15 +65,15 @@ namespace se
 				string = "Invalid";
 				break;
 			case Type::Ipv4:
-				for (size_t i = 0; i < 4; i++)
+				for (size_t i = 4; i-- > 0;)
 				{
 					uint8_t byte = 0;
 					memcpy(&byte, (const uint8_t*)&data0 + i, sizeof(byte));
+					string += std::to_string(byte);
 					if (i > 0)
 					{
 						string += ".";
 					}
-					string += std::to_string(byte);
 				}
 				break;
 			case Type::Ipv6:
