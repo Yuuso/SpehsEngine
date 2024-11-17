@@ -135,6 +135,7 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)FunctionTraits.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)RandomUtilityFunctions.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Clamp.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Preprocessor.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="File">
