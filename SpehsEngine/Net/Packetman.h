@@ -18,6 +18,8 @@ namespace se
 
 			void update();
 
+			void setPacketReceivingEnabled(const bool _enabled);
+
 			// Send without result
 			template<typename Packet>
 			bool sendPacket(const PacketType _packetType, const Packet& _packet, const bool _reliable);
@@ -55,6 +57,7 @@ namespace se
 				virtual void fail() = 0;
 				virtual PacketType getPacketType() const = 0;
 			};
+			void receiveHandler(BinaryReader& _binaryReader, const bool _reliable);
 			uint16_t generateNextRequestId()
 			{
 				while (nextRequestId == 0 || isResultId(nextRequestId) || tryFind(requests, nextRequestId))
@@ -130,67 +133,16 @@ namespace se
 		}
 
 		template<typename PacketType>
+		void Packetman<PacketType>::setPacketReceivingEnabled(const bool _enabled)
+		{
+			connection.setPacketReceivingEnabled(_enabled);
+		}
+
+		template<typename PacketType>
 		Packetman<PacketType>::Packetman(Connection& _connection)
 			: connection(_connection)
 		{
-			connection.setReceiveHandler(
-				[this](BinaryReader& _binaryReader, const bool _reliable)
-				{
-					uint16_t packetId = 0;
-					if (!_binaryReader.serial(packetId))
-					{
-						se_assert(false && "Failed to read packet id");
-						return;
-					}
-					if (isResultId(packetId))
-					{
-						// Receive result
-						const uint16_t requestId = makeRequestId(packetId);
-						const std::unordered_map<uint16_t, std::unique_ptr<IRequest>>::iterator it = requests.find(requestId);
-						se_assert(it != requests.end());
-						if (it != requests.end())
-						{
-							std::unique_ptr<IRequest> request(it->second.release());
-							requests.erase(it);
-							BinaryReader binaryReader2(_binaryReader.getData() + _binaryReader.getOffset(), _binaryReader.getSize());
-							request->process(binaryReader2);
-							return;
-						}
-					}
-					else
-					{
-						// Receive packet
-						se_assert(isRequestId(packetId));
-						PacketType packetType = PacketType(0);
-						if (!_binaryReader.serial(packetType))
-						{
-							if (_reliable)
-							{
-								log::error("Failed to read PacketType");
-							}
-							return;
-						}
-						std::unique_ptr<IReceiver>* const receiver = tryFind(receivers, packetType);
-						if (!receiver)
-						{
-							if (_reliable)
-							{
-								log::error("Failed to find receiver for reliably received PacketType: " + std::to_string(int(packetType)));
-							}
-							return;
-						}
-						if (!receiver->get()->valid())
-						{
-							if (_reliable)
-							{
-								log::error("Receiver is no longer valid for reliably received PacketType: " + std::to_string(int(packetType)));
-							}
-							return;
-						}
-						receiver->get()->process(_binaryReader, _reliable, packetId, connection);
-						return;
-					}
-				});
+			connection.setReceiveHandler(std::bind(&Packetman<PacketType>::receiveHandler, this, std::placeholders::_1, std::placeholders::_2));
 		}
 
 		template<typename PacketType>
@@ -204,6 +156,65 @@ namespace se
 				it->second->fail();
 			}
 			se_assert(requests.empty() && "New requests should not be added during the destructor");
+		}
+
+		template<typename PacketType>
+		void Packetman<PacketType>::receiveHandler(BinaryReader& _binaryReader, const bool _reliable)
+		{
+			uint16_t packetId = 0;
+			if (!_binaryReader.serial(packetId))
+			{
+				se_assert(false && "Failed to read packet id");
+				return;
+			}
+			if (isResultId(packetId))
+			{
+				// Receive result
+				const uint16_t requestId = makeRequestId(packetId);
+				const std::unordered_map<uint16_t, std::unique_ptr<IRequest>>::iterator it = requests.find(requestId);
+				se_assert(it != requests.end());
+				if (it != requests.end())
+				{
+					std::unique_ptr<IRequest> request(it->second.release());
+					requests.erase(it);
+					BinaryReader binaryReader2(_binaryReader.getData() + _binaryReader.getOffset(), _binaryReader.getSize());
+					request->process(binaryReader2);
+					return;
+				}
+			}
+			else
+			{
+				// Receive packet
+				se_assert(isRequestId(packetId));
+				PacketType packetType = PacketType(0);
+				if (!_binaryReader.serial(packetType))
+				{
+					if (_reliable)
+					{
+						log::error("Failed to read PacketType");
+					}
+					return;
+				}
+				std::unique_ptr<IReceiver>* const receiver = tryFind(receivers, packetType);
+				if (!receiver)
+				{
+					if (_reliable)
+					{
+						log::error("Failed to find receiver for reliably received PacketType: " + std::to_string(int(packetType)));
+					}
+					return;
+				}
+				if (!receiver->get()->valid())
+				{
+					if (_reliable)
+					{
+						log::error("Receiver is no longer valid for reliably received PacketType: " + std::to_string(int(packetType)));
+					}
+					return;
+				}
+				receiver->get()->process(_binaryReader, _reliable, packetId, connection);
+				return;
+			}
 		}
 
 		// Send without result

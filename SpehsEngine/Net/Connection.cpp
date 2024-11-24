@@ -38,7 +38,7 @@ namespace se
 
 		void Connection::update()
 		{
-			if (!receivedPackets.empty() && state->receiveHandler)
+			if (!receivedPackets.empty() && state->receiveHandler && packetReceivingEnabled)
 			{
 				std::vector<ReceivedPacket> receivedPackets2;
 				receivedPackets2.swap(receivedPackets);
@@ -47,23 +47,30 @@ namespace se
 					const ReceivedPacket& receivedPacket = receivedPackets2[i];
 					BinaryReader binaryReader(receivedPacket.data.data(), receivedPacket.data.size());
 					state->receiveHandler(binaryReader, receivedPacket.reliable);
-					if (!state->receiveHandler)
+					if (!state->receiveHandler || !packetReceivingEnabled)
 					{
-						// Push the rest of the packets back to the queue until a receive handler is specified
-						const size_t beginIndex = i + 1;
-						const size_t endIndex = receivedPackets2.size() - 1;
-						const size_t count = endIndex - beginIndex;
+						// Push the rest of the packets back to the queue until a receive handler is specified and packet receiving is enabled
+						const size_t firstIndex = i + 1;
+						const size_t lastIndex = receivedPackets2.size() - 1;
+						const size_t count = firstIndex - lastIndex;
 						if (count > 0)
 						{
+							se_assert(receivedPackets.empty());
 							receivedPackets.resize(count);
 							for (size_t p = 0; p < count; p++)
 							{
-								std::swap(receivedPackets[i], receivedPackets2[beginIndex + i]);
+								std::swap(receivedPackets[p], receivedPackets2[firstIndex + p]);
 							}
 						}
+						break;
 					}
 				}
 			}
+		}
+
+		void Connection::setPacketReceivingEnabled(const bool _enabled)
+		{
+			packetReceivingEnabled = _enabled;
 		}
 
 		bool Connection::sendPacket(const BinaryWriter& binaryWriter, const bool reliable)
@@ -144,7 +151,7 @@ namespace se
 			}
 
 			// Process packet immediately?
-			if (state->receiveHandler && receivedPackets.empty())
+			if (state->receiveHandler && receivedPackets.empty() && packetReceivingEnabled)
 			{
 				BinaryReader binaryReader((const uint8_t*)data, size);
 				state->receiveHandler(binaryReader, reliable);
