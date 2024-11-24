@@ -42,12 +42,15 @@ namespace se
 			// Returns true if there is at least one sent packet of the given packet type still awaiting for a result
 			bool hasUnfinishedResults(const PacketType _packetType) const;
 
+			// Can be used for more descriptive debug messages
+			void setDebugToStringFunction(const std::function<const char*(PacketType)>&& _function) { debugToStringFunction = _function; }
+
 		private:
 			struct IReceiver
 			{
 				virtual ~IReceiver() {}
 				virtual bool valid() const = 0;
-				virtual void process(BinaryReader& _binaryReader, const bool _reliable, const uint16_t _requestId, Connection& _connection) = 0;
+				virtual void process(const Packetman& _packetman, BinaryReader& _binaryReader, const bool _reliable, const uint16_t _requestId, Connection& _connection) = 0;
 			};
 			struct IRequest
 			{
@@ -95,10 +98,24 @@ namespace se
 				se_assert(requestId != 0);
 				return requestId;
 			}
+			std::string toString(const PacketType _packetType) const
+			{
+				std::string result;
+				if (debugToStringFunction)
+				{
+					result = debugToStringFunction(_packetType);
+				}
+				if (result.empty())
+				{
+					result = std::to_string(std::underlying_type<PacketType>::type(_packetType));
+				}
+				return result;
+			}
 			std::unordered_map<PacketType, std::unique_ptr<IReceiver>> receivers;
 			std::unordered_map<uint16_t, std::unique_ptr<IRequest>> requests;
 			uint16_t nextRequestId = 1;
 			Connection& connection;
+			std::function<const char* (PacketType)> debugToStringFunction;
 		};
 
 		template<typename PacketType>
@@ -200,7 +217,7 @@ namespace se
 				{
 					if (_reliable)
 					{
-						log::error("Failed to find receiver for reliably received PacketType: " + std::to_string(int(packetType)));
+						log::error("Failed to find receiver for reliably received PacketType: " + toString(packetType));
 					}
 					return;
 				}
@@ -208,11 +225,11 @@ namespace se
 				{
 					if (_reliable)
 					{
-						log::error("Receiver is no longer valid for reliably received PacketType: " + std::to_string(int(packetType)));
+						log::error("Receiver is no longer valid for reliably received PacketType: " + toString(packetType));
 					}
 					return;
 				}
-				receiver->get()->process(_binaryReader, _reliable, packetId, connection);
+				receiver->get()->process(*this, _binaryReader, _reliable, packetId, connection);
 				return;
 			}
 		}
@@ -319,7 +336,7 @@ namespace se
 			}
 			struct Receiver : public IReceiver
 			{
-				void process(BinaryReader& _binaryReader, const bool _reliable, const uint16_t _requestId, Connection& _connection) final
+				void process(const Packetman& _packetman, BinaryReader& _binaryReader, const bool _reliable, const uint16_t _requestId, Connection& _connection) final
 				{
 					if (_requestId != 0)
 					{
@@ -328,7 +345,7 @@ namespace se
 						BinaryReader binaryReader2(_binaryReader.getData() + _binaryReader.getOffset() - sizeof(PacketType), sizeof(PacketType));
 						PacketType packetType = PacketType(0);
 						binaryReader2.serial(packetType);
-						log::error("The sender is expecting a result but the registered receive handler does not provide one, PacketType: " + std::to_string(int(packetType)));
+						log::error("The sender is expecting a result but the registered receive handler does not provide one, PacketType: " + _packetman.toString(packetType));
 					}
 					Packet packet;
 					if (_binaryReader.serial(packet))
@@ -370,7 +387,7 @@ namespace se
 				{
 					destructorCalled = true;
 				}
-				void process(BinaryReader& _binaryReader, const bool _reliable, const uint16_t _requestId, Connection& _connection) final
+				void process(const Packetman& _packetman, BinaryReader& _binaryReader, const bool _reliable, const uint16_t _requestId, Connection& _connection) final
 				{
 					se_assert(_reliable && "Packets with results should be always sent reliably");
 					if (_requestId == 0)
@@ -380,7 +397,7 @@ namespace se
 						BinaryReader binaryReader2(_binaryReader.getData() + _binaryReader.getOffset() - sizeof(PacketType), sizeof(PacketType));
 						PacketType packetType = PacketType(0);
 						se_assert(binaryReader2.serial(packetType));
-						log::error("The sender is not expecting a result but the registered receive handler does provide one, PacketType: " + std::to_string(int(packetType)));
+						log::error("The sender is not expecting a result but the registered receive handler does provide one, PacketType: " + _packetman.toString(packetType));
 					}
 
 					Result result;
