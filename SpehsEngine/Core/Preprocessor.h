@@ -33,4 +33,4 @@
 
 // Obtain the number of elements used in a "for each" style macro at compile time
 #define SE_FOR_EACH_CONSTEXPR_COUNT_IMPL(...)+1
-#define SE_FOR_EACH_CONSTEXPR_COUNT(p_ForEachMacro) 0 + p_ForEachMacro(SE_FOR_EACH_CONSTEXPR_COUNT_IMPL);
+#define SE_FOR_EACH_CONSTEXPR_COUNT(p_ForEachMacro) 0 p_ForEachMacro(SE_FOR_EACH_CONSTEXPR_COUNT_IMPL)
