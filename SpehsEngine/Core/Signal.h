@@ -251,7 +251,6 @@ namespace se
 			{
 				// Push to front, connections established during call will not be executed on the same call
 				insertFrontScopedConnection(scopedConnection);
-				// TODO nocommit: this moves the currently calling std::function which messes things up
 				this->functions.insert(this->functions.begin(), _function);
 			}
 			else
