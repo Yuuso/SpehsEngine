@@ -30,6 +30,9 @@ namespace se
 			updateConnection = view.connectToPreRenderSignal([this](glm::vec2 _renderSize){ update(_renderSize); });
 			_eventSignaler.connectToMouseButtonSignal(mouseButtonConnection, [this](const input::MouseButtonEvent& _event){ return mouseButtonCallback(_event); }, _inputPriority);
 		}
+		GUIView::~GUIView()
+		{}
+
 		gfx::View& GUIView::getView()
 		{
 			return view;

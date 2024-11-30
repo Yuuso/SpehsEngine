@@ -16,6 +16,8 @@ namespace se
 			textureInput.push(255, 255, 255, 255);
 			colorTexture = std::make_shared<gfx::Texture>("SE_GUI_WhiteColor", nullptr, textureInput);
 		}
+		GUIMaterialManager::~GUIMaterialManager()
+		{}
 
 		std::shared_ptr<gfx::Texture> GUIMaterialManager::getTexture(std::string_view _texture)
 		{

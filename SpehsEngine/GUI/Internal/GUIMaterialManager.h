@@ -14,6 +14,7 @@ namespace se
 		{
 		public:
 			GUIMaterialManager(AssetManager& _assetManager);
+			~GUIMaterialManager();
 
 			std::shared_ptr<gfx::Texture> getTexture(std::string_view _texture);
 			std::shared_ptr<gfx::Font> getFont(std::string_view _font);

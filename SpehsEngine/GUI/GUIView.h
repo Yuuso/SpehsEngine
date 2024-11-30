@@ -25,7 +25,7 @@ namespace se
 
 			SE_NO_COPY_OR_MOVE(GUIView);
 			GUIView(AssetManager& _assetManager, input::EventSignaler& _eventSignaler, int _inputPriority);
-			~GUIView() = default;
+			~GUIView();
 
 			gfx::View& getView();
 			void setInputHandlingEnabled(bool _value);
