@@ -2,9 +2,6 @@
 
 #include "SpehsEngine/Input/Event.h"
 #include "SpehsEngine/Input/CustomEventParameters.h"
-#include "boost/signals2.hpp"
-#include "glm/vec2.hpp"
-#include <vector>
 
 
 namespace se
@@ -38,23 +35,23 @@ namespace se
 
 			void signalEvents(EventCatcher& eventCatcher);
 
-			void connectToPreUpdateSignal(boost::signals2::scoped_connection& scopedConnection, const boost::function<void()>& callback) { scopedConnection = preUpdateSignal.connect(callback); }
-			void connectToPostUpdateSignal(boost::signals2::scoped_connection& scopedConnection, const boost::function<void()>& callback) { scopedConnection = postUpdateSignal.connect(callback); }
-			void connectToMouseHoverSignal(boost::signals2::scoped_connection& scopedConnection, const boost::function<bool(const MouseHoverEvent&)>& callback, const int priority);
-			void connectToMouseMotionSignal(boost::signals2::scoped_connection& scopedConnection, const boost::function<bool(const MouseMotionEvent&)>& callback, const int priority);
-			void connectToMouseWheelSignal(boost::signals2::scoped_connection& scopedConnection, const boost::function<bool(const MouseWheelEvent&)>& callback, const int priority);
-			void connectToMouseButtonSignal(boost::signals2::scoped_connection& scopedConnection, const boost::function<bool(const MouseButtonEvent&)>& callback, const int priority);
-			void connectToKeyboardSignal(boost::signals2::scoped_connection& scopedConnection, const boost::function<bool(const KeyboardEvent&)>& callback, const int priority);
-			void connectToTextInputSignal(boost::signals2::scoped_connection& scopedConnection, const boost::function<bool(const TextInputEvent&)>& callback, const int priority);
-			void connectToJoystickButtonSignal(boost::signals2::scoped_connection& scopedConnection, const boost::function<bool(const JoystickButtonEvent&)>& callback, const int priority);
-			void connectToJoystickAxisSignal(boost::signals2::scoped_connection& scopedConnection, const boost::function<bool(const JoystickAxisEvent&)>& callback, const int priority);
-			void connectToJoystickHatSignal(boost::signals2::scoped_connection& scopedConnection, const boost::function<bool(const JoystickHatEvent&)>& callback, const int priority);
-			void connectToQuitSignal(boost::signals2::scoped_connection& scopedConnection, const boost::function<bool(const QuitEvent&)>& callback, const int priority);
-			void connectToFileDropSignal(boost::signals2::scoped_connection& scopedConnection, const boost::function<bool(const FileDropEvent&)>& callback, const int priority);
+			void connectToPreUpdateSignal(ScopedConnection& scopedConnection, const std::function<void()>& callback) { scopedConnection = preUpdateSignal.connect(callback); }
+			void connectToPostUpdateSignal(ScopedConnection& scopedConnection, const std::function<void()>& callback) { scopedConnection = postUpdateSignal.connect(callback); }
+			void connectToMouseHoverSignal(ScopedConnection& scopedConnection, const std::function<bool(const MouseHoverEvent&)>& callback, const int priority);
+			void connectToMouseMotionSignal(ScopedConnection& scopedConnection, const std::function<bool(const MouseMotionEvent&)>& callback, const int priority);
+			void connectToMouseWheelSignal(ScopedConnection& scopedConnection, const std::function<bool(const MouseWheelEvent&)>& callback, const int priority);
+			void connectToMouseButtonSignal(ScopedConnection& scopedConnection, const std::function<bool(const MouseButtonEvent&)>& callback, const int priority);
+			void connectToKeyboardSignal(ScopedConnection& scopedConnection, const std::function<bool(const KeyboardEvent&)>& callback, const int priority);
+			void connectToTextInputSignal(ScopedConnection& scopedConnection, const std::function<bool(const TextInputEvent&)>& callback, const int priority);
+			void connectToJoystickButtonSignal(ScopedConnection& scopedConnection, const std::function<bool(const JoystickButtonEvent&)>& callback, const int priority);
+			void connectToJoystickAxisSignal(ScopedConnection& scopedConnection, const std::function<bool(const JoystickAxisEvent&)>& callback, const int priority);
+			void connectToJoystickHatSignal(ScopedConnection& scopedConnection, const std::function<bool(const JoystickHatEvent&)>& callback, const int priority);
+			void connectToQuitSignal(ScopedConnection& scopedConnection, const std::function<bool(const QuitEvent&)>& callback, const int priority);
+			void connectToFileDropSignal(ScopedConnection& scopedConnection, const std::function<bool(const FileDropEvent&)>& callback, const int priority);
 
 			template<typename CustomEvent>
 			void connectToCustomEventSignal(
-				boost::signals2::scoped_connection& scopedConnection, const boost::function<bool(const CustomEvent&)>& callback, const int priority)
+				ScopedConnection& scopedConnection, const std::function<bool(const CustomEvent&)>& callback, const int priority)
 			{
 				static_assert(std::is_base_of<ICustomEvent, CustomEvent>::value);
 				scopedConnection.disconnect();
@@ -74,7 +71,7 @@ namespace se
 				}
 				else
 				{
-					if (priority != maxPriority && priority != minPriority && (*it)->signal.num_slots() > 0)
+					if (priority != maxPriority && priority != minPriority && !(*it)->signal.isEmpty())
 					{
 						log::error("Another source has already connected to this signal with the same priority: " + std::to_string(priority));
 					}
@@ -94,22 +91,18 @@ namespace se
 				std::unordered_map<size_t, std::vector<std::unique_ptr<CustomSignal>>>::iterator it = customEventSignalContainers.find(typeid(CustomEvent).hash_code());
 				if (it != customEventSignalContainers.end())
 				{
-					for (size_t s = 0; s < it->second.size();)
+					for (size_t s = 0; s < it->second.size(); s++)
 					{
-						if (it->second[s]->signal.empty())
+						if (it->second[s]->signal.isEmpty())
 						{
-							it->second.erase(it->second.begin() + s);
+							it->second.erase(it->second.begin() + s--);
 						}
-						else
+						else if (const std::optional<bool> consumed = it->second[s]->signal(&customEvent))
 						{
-							if (it->second[s]->signal(&customEvent))
+							if (consumed.value())
 							{
 								//A connected receiver used the event, do not call receivers with a lower priority.
 								return true;
-							}
-							else
-							{
-								s++;
 							}
 						}
 					}
@@ -119,38 +112,21 @@ namespace se
 
 		private:
 
-			struct Combiner
-			{
-				typedef bool result_type;
-				template<typename InputIterator>
-				bool operator()(InputIterator it, InputIterator end) const
-				{
-					if (it == end)
-						return false;
-					while (it != end)
-					{
-						if (*it++)
-							return true;
-					}
-					return false;
-				}
-			};
-
 			template<typename EventType>
 			struct PrioritizedEventSignal
 			{
-				boost::signals2::signal<bool(const EventType&), Combiner> signal;
+				Signal<bool(const EventType&)> signal;
 				int priority = 0;
 			};
 
 			struct CustomSignal
 			{
-				boost::signals2::signal<bool(const void* const), Combiner> signal;
+				Signal<bool(const void* const)> signal;
 				int priority = 0;
 			};
 
 			template<typename EventType>
-			void connectToEventSignal(boost::signals2::scoped_connection& scopedConnection, const boost::function<bool(const EventType&)>& callback, const int priority, std::vector<std::unique_ptr<PrioritizedEventSignal<EventType>>>& signals)
+			void connectToEventSignal(ScopedConnection& scopedConnection, const std::function<bool(const EventType&)>& callback, const int priority, std::vector<std::unique_ptr<PrioritizedEventSignal<EventType>>>& signals)
 			{
 				scopedConnection.disconnect();
 				const std::vector<std::unique_ptr<PrioritizedEventSignal<EventType>>>::iterator it = std::find_if(signals.begin(), signals.end(), [priority](const std::unique_ptr<PrioritizedEventSignal<EventType>>& signal)->bool { return priority == signal->priority; });
@@ -163,7 +139,7 @@ namespace se
 				}
 				else
 				{
-					if (priority != maxPriority && priority != minPriority && (*it)->signal.num_slots() > 0)
+					if (priority != maxPriority && priority != minPriority && (*it)->signal.getConnectionCount() > 0)
 					{
 						log::error("Another source has already connected to this signal with the same priority: " + std::to_string(priority));
 					}
@@ -171,8 +147,8 @@ namespace se
 				}
 			}
 
-			boost::signals2::signal<void(void)> preUpdateSignal;
-			boost::signals2::signal<void(void)> postUpdateSignal;
+			Signal<void(void)> preUpdateSignal;
+			Signal<void(void)> postUpdateSignal;
 			std::vector<std::unique_ptr<PrioritizedEventSignal<MouseHoverEvent>>> mouseHoverSignals;
 			std::vector<std::unique_ptr<PrioritizedEventSignal<MouseMotionEvent>>> mouseMotionSignals;
 			std::vector<std::unique_ptr<PrioritizedEventSignal<MouseWheelEvent>>> mouseWheelSignals;
@@ -195,7 +171,6 @@ namespace se
 
 	//.h
 	#include "SpehsEngine/Input/Event.h"
-	#include "boost/signals2.hpp"
 
 	void eventSignalerPreUpdateCallback();
 	void eventSignalerPostUpdateCallback();
@@ -206,27 +181,26 @@ namespace se
 	bool keyboardCallback(const se::input::KeyboardEvent& event);
 	bool textInputCallback(const se::input::TextInputEvent& event);
 
-	boost::signals2::scoped_connection eventSignalerPreUpdateConnection;
-	boost::signals2::scoped_connection eventSignalerPostUpdateConnection;
-	boost::signals2::scoped_connection mouseHoverConnection;
-	boost::signals2::scoped_connection mouseMotionConnection;
-	boost::signals2::scoped_connection mouseWheelConnection;
-	boost::signals2::scoped_connection mouseButtonConnection;
-	boost::signals2::scoped_connection keyboardConnection;
-	boost::signals2::scoped_connection textInputConnection;
+	ScopedConnection eventSignalerPreUpdateConnection;
+	ScopedConnection eventSignalerPostUpdateConnection;
+	ScopedConnection mouseHoverConnection;
+	ScopedConnection mouseMotionConnection;
+	ScopedConnection mouseWheelConnection;
+	ScopedConnection mouseButtonConnection;
+	ScopedConnection keyboardConnection;
+	ScopedConnection textInputConnection;
 
 	//.cpp
-	#include "boost/bind.hpp"
 	#include "SpehsEngine/Input/EventSignaler.h"
 	const int inputPriority = INPUT_PRIORITY;
-	eventSignaler.connectToPreUpdateSignal(eventSignalerPreUpdateConnection, boost::bind(&MyClass::eventSignalerPreUpdateCallback, this));
-	eventSignaler.connectToPostUpdateSignal(eventSignalerPostUpdateConnection, boost::bind(&MyClass::eventSignalerPostUpdateCallback, this));
-	eventSignaler.connectToMouseHoverSignal(mouseWheelConnection, boost::bind(&MyClass::mouseHoverCallback, this, boost::placeholders::_1), inputPriority);
-	eventSignaler.connectToMouseMotionSignal(mouseMotionConnection, boost::bind(&MyClass::mouseMotionCallback, this, boost::placeholders::_1), inputPriority);
-	eventSignaler.connectToMouseWheelSignal(mouseWheelConnection, boost::bind(&MyClass::mouseWheelCallback, this, boost::placeholders::_1), inputPriority);
-	eventSignaler.connectToMouseButtonSignal(mouseButtonConnection, boost::bind(&MyClass::mouseButtonCallback, this, boost::placeholders::_1), inputPriority);
-	eventSignaler.connectToKeyboardSignal(keyboardConnection, boost::bind(&MyClass::keyboardCallback, this, boost::placeholders::_1), inputPriority);
-	eventSignaler.connectToTextInputSignal(textInputConnection, boost::bind(&MyClass::textInputCallback, this, boost::placeholders::_1), inputPriority);
+	eventSignaler.connectToPreUpdateSignal(eventSignalerPreUpdateConnection, std::bind(&MyClass::eventSignalerPreUpdateCallback, this));
+	eventSignaler.connectToPostUpdateSignal(eventSignalerPostUpdateConnection, std::bind(&MyClass::eventSignalerPostUpdateCallback, this));
+	eventSignaler.connectToMouseHoverSignal(mouseWheelConnection, std::bind(&MyClass::mouseHoverCallback, this, std::placeholders::_1), inputPriority);
+	eventSignaler.connectToMouseMotionSignal(mouseMotionConnection, std::bind(&MyClass::mouseMotionCallback, this, std::placeholders::_1), inputPriority);
+	eventSignaler.connectToMouseWheelSignal(mouseWheelConnection, std::bind(&MyClass::mouseWheelCallback, this, std::placeholders::_1), inputPriority);
+	eventSignaler.connectToMouseButtonSignal(mouseButtonConnection, std::bind(&MyClass::mouseButtonCallback, this, std::placeholders::_1), inputPriority);
+	eventSignaler.connectToKeyboardSignal(keyboardConnection, std::bind(&MyClass::keyboardCallback, this, std::placeholders::_1), inputPriority);
+	eventSignaler.connectToTextInputSignal(textInputConnection, std::bind(&MyClass::textInputCallback, this, std::placeholders::_1), inputPriority);
 
 	void MyClass::eventSignalerPreUpdateCallback()
 	{

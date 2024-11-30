@@ -32,21 +32,5 @@ namespace se
 		{
 			return std::to_string(value);
 		}
-
-		SteamNetworkingIdentity toSteamNetworkingIdentity(const NetIdentity& netIdentity)
-		{
-			SteamNetworkingIdentity result;
-			result.SetGenericString(netIdentity.toString().c_str());
-			return result;
-		}
-
-		NetIdentity fromSteamNetworkingIdentity(const SteamNetworkingIdentity& steamNetworkingIdentity)
-		{
-			NetIdentity netIdentity;
-			const bool success = netIdentity.fromString(steamNetworkingIdentity.GetGenericString());
-			(void)success;
-			se_assert(success);
-			return netIdentity;
-		}
 	}
 }

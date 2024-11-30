@@ -4,21 +4,17 @@
 #include "SpehsEngine/Input/InputLib.h"
 #include "SpehsEngine/Input/InputManager.h"
 #include "SpehsEngine/Input/Internal/SDLUtility.h"
+#include "SpehsEngine/Input/InputEnumerations.h"
 #include "SDL/SDL.h"
 #include "SDL/SDL_joystick.h"
 #include "SDL/SDL_events.h"
-#include <iostream>
-
-#define SINT16_MIN -32768
-#define SINT16_MAX  32767
-#define SINT16_STATES 65536
 
 
 namespace se
 {
 	namespace input
 	{
-		se::GUID getJoystickDeviceGUID(int _deviceIndex)
+		GUID getJoystickDeviceGUID(int _deviceIndex)
 		{
 			return fromSdlGuid(SDL_JoystickGetDeviceGUID(_deviceIndex));
 		}
@@ -31,7 +27,7 @@ namespace se
 			{
 				std::string error = "Failed to open SDL_joystick! ";
 				error += SDL_GetError();
-				se::log::error(error);
+				log::error(error);
 				return;
 			}
 
@@ -44,7 +40,7 @@ namespace se
 			offline = false;
 			std::string str("Joystick created: ");
 			str += SDL_JoystickName(joystick);
-			se::log::info(str);
+			log::info(str);
 		}
 
 		Joystick::~Joystick()
@@ -58,7 +54,7 @@ namespace se
 				SDL_JoystickClose(joystick);
 			joystick = nullptr;
 			offline = true;
-			std::cout << "\n" << name << " went offline!";
+			log::info(name + " went offline!");
 		}
 
 		void Joystick::goOnline(SDL_Joystick* newJs)
@@ -67,16 +63,16 @@ namespace se
 			offline = false;
 
 			if (!SDL_JoystickGetAttached(newJs))
-				std::cout << "\n" << name << " couldn't go online!";
+				log::info(name + " couldn't go online!");
 			else
-				std::cout << "\n" << name << " went online!";
+				log::info(name + " went online!");
 		}
 
 		float Joystick::getAxisState(int axisIndex)
 		{
 			if (offline)
 				return 0.0f;
-			return float(SDL_JoystickGetAxis(joystick, axisIndex)) / SINT16_MAX;
+			return float(SDL_JoystickGetAxis(joystick, axisIndex)) / std::numeric_limits<int16_t>::max();
 		}
 
 		bool Joystick::isButtonDown(int buttonIndex)

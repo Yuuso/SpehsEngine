@@ -10,7 +10,7 @@ namespace se
 		thread_local std::vector<ScopedDuration::Data*> ScopedDuration::stack;
 
 		ScopedDuration::ScopedDuration(const char* const _message)
-			: beginTime(se::time::getProfilerTimestamp())
+			: beginTime(time::getProfilerTimestamp())
 		{
 			if (stack.empty())
 			{
@@ -42,21 +42,21 @@ namespace se
 			if (data)
 			{
 				se_assert(data == stack.back());
-				data->duration += se::time::getProfilerTimestamp() - beginTime;
+				data->duration += time::getProfilerTimestamp() - beginTime;
 				stack.pop_back();
 				if (stack.empty())
 				{
 					// Log stack
-					std::function<void(const ScopedDuration::Data&, const se::time::Time* const, const size_t)> log;
-					log = [&log](const ScopedDuration::Data& data, const se::time::Time* const parentDuration, const size_t depth)
+					std::function<void(const ScopedDuration::Data&, const time::Time* const, const size_t)> log;
+					log = [&log](const ScopedDuration::Data& data, const time::Time* const parentDuration, const size_t depth)
 					{
 						std::string string(depth, ' ');
 						string += std::string(data.message) + " " + std::to_string(int(data.duration.asMilliseconds())) + " ms";
 						if (parentDuration)
 						{
-							string += std::string(" (") + se::toString(100.0f * data.duration.asSeconds() / parentDuration->asSeconds(), 2) + "%)";
+							string += std::string(" (") + toString(100.0f * data.duration.asSeconds() / parentDuration->asSeconds(), 2) + "%)";
 						}
-						se::log::info(string);
+						log::info(string);
 						for (const std::pair<const char* const, std::unique_ptr<ScopedDuration::Data>>& pair : data.children)
 						{
 							log(*pair.second, &data.duration, depth + 1);

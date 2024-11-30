@@ -1,6 +1,7 @@
 #pragma once
 
 // Standard library includes
+#include <algorithm>
 #include <condition_variable>
 #include <functional>
 #include <future>
@@ -11,6 +12,7 @@
 #include <optional>
 #include <queue>
 #include <set>
+#include <stack>
 #include <stdint.h>
 #include <string>
 #include <thread>
@@ -20,38 +22,11 @@
 #include <vector>
 
 // Third party includes
-#include "boost/signals2/connection.hpp"
-#include "boost/signals2/signal.hpp"
-#include "glm/glm.hpp"
+#include "glm/fwd.hpp"
+#include "glm/vec2.hpp"
+#include "glm/vec3.hpp"
+#include "glm/vec4.hpp"
 #include "glm/gtc/quaternion.hpp"
-
-// Spehs Engine includes
-#include "SpehsEngine/Core/BitwiseOperations.h"
-#include "SpehsEngine/Core/ByteVector.h"
-#include "SpehsEngine/Core/ByteView.h"
-#include "SpehsEngine/Core/ClassUtilities.h"
-#include "SpehsEngine/Core/Color.h"
-#include "SpehsEngine/Core/ColorUtilityFunctions.h"
-#include "SpehsEngine/Core/Constants.h"
-#include "SpehsEngine/Core/DeepPtrUtilityFunctions.h"
-#include "SpehsEngine/Core/Log.h"
-#include "SpehsEngine/Core/OptionalUtilityFunctions.h"
-#include "SpehsEngine/Core/PairUtilityFunctions.h"
-#include "SpehsEngine/Core/RemoveCvref.h"
-#include "SpehsEngine/Core/ScopedConnections.h"
-#include "SpehsEngine/Core/ScopedFrameLimiter.h"
-#include "SpehsEngine/Core/ScopeProfiler.h"
-#include "SpehsEngine/Core/SE_Assert.h"
-#include "SpehsEngine/Core/SE_Time.h"
-#include "SpehsEngine/Core/Serial/SerialUtility.h"
-#include "SpehsEngine/Core/StringUtilityFunctions.h"
-#include "SpehsEngine/Core/StringViewUtilityFunctions.h"
-#include "SpehsEngine/Core/TimeUtilityFunctions.h"
-#include "SpehsEngine/Core/UniquePtrUtilityFunctions.h"
-#include "SpehsEngine/Core/UnorderedMapUtilityFunctions.h"
-#include "SpehsEngine/Core/UnorderedSetUtilityFunctions.h"
-#include "SpehsEngine/Core/VectorUtilityFunctions.h"
-
 
 #define SE_FALSE 1000
 #define SE_TRUE 1001
@@ -72,7 +47,7 @@
 #define SE_CONFIGURATION SE_CONFIGURATION_DEBUG
 #else
 #define SE_CONFIGURATION SE_CONFIGURATION_RELEASE
-// TODO: setting the configuration to final release nocommit
+// TODO: setting the configuration to final release
 #endif
 
 // Scope profiler
@@ -81,3 +56,68 @@
 #else
 #define SE_ENABLE_SCOPE_PROFILER SE_FALSE
 #endif
+
+namespace se
+{
+	namespace rng
+	{
+		template <typename SeedType> class PRNG;
+	}
+	namespace time
+	{
+		class DeltaTimeSystem;
+		class Time;
+	}
+	class ResourcePathFinder;
+	class AsyncTaskManager;
+	template<typename T> class WatchedValue;
+	template<typename T> struct IStaticRingBuffer;
+	template<typename T, uint32_t MaxSize> class StaticRingBuffer;
+}
+
+namespace boost
+{
+	namespace signals2
+	{
+		class scoped_connection;
+	}
+}
+
+namespace std
+{
+	class thread;
+	template<typename T> class future;
+}
+
+/// Spehs Engine includes
+#include "SpehsEngine/Core/Preprocessor.h"
+#include "SpehsEngine/Core/ClassUtilities.h"
+#include "SpehsEngine/Core/Clamp.h"
+#include "SpehsEngine/Core/Log.h"
+#include "SpehsEngine/Core/Constants.h"
+#include "SpehsEngine/Core/RemoveCvref.h"
+#include "SpehsEngine/Core/SE_Assert.h"
+#include "SpehsEngine/Core/SE_Time.h"
+#include "SpehsEngine/Core/Color.h"
+#include "SpehsEngine/Core/BitwiseOperations.h"
+#include "SpehsEngine/Core/Signal.h"
+//
+#include "SpehsEngine/Core/ByteVector.h"
+#include "SpehsEngine/Core/ByteView.h"
+#include "SpehsEngine/Core/ScopedConnections.h"
+#include "SpehsEngine/Core/ScopedFrameLimiter.h"
+#include "SpehsEngine/Core/ScopeProfiler.h"
+//
+#include "SpehsEngine/Core/ColorUtilityFunctions.h"
+#include "SpehsEngine/Core/DeepPtrUtilityFunctions.h"
+#include "SpehsEngine/Core/OptionalUtilityFunctions.h"
+#include "SpehsEngine/Core/PairUtilityFunctions.h"
+#include "SpehsEngine/Core/RandomUtilityFunctions.h"
+#include "SpehsEngine/Core/Serial/SerialUtility.h"
+#include "SpehsEngine/Core/StringUtilityFunctions.h"
+#include "SpehsEngine/Core/StringViewUtilityFunctions.h"
+#include "SpehsEngine/Core/TimeUtilityFunctions.h"
+#include "SpehsEngine/Core/UniquePtrUtilityFunctions.h"
+#include "SpehsEngine/Core/UnorderedMapUtilityFunctions.h"
+#include "SpehsEngine/Core/UnorderedSetUtilityFunctions.h"
+#include "SpehsEngine/Core/VectorUtilityFunctions.h"

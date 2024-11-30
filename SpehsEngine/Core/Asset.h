@@ -84,7 +84,7 @@ namespace se
 		void waitUntilReady();
 
 		// Connect to 'loaded' signal.
-		boost::signals2::scoped_connection connectToLoadedSignal(const std::function<void()>& _fn) const;
+		ScopedConnection connectToLoadedSignal(const std::function<void()>& _fn) const;
 
 	protected:
 
@@ -97,6 +97,6 @@ namespace se
 		std::future<std::shared_ptr<AssetData>> assetFuture;
 		std::shared_ptr<AssetData> assetData;
 		bool purgeProtection = false;
-		mutable boost::signals2::signal<void()> loadedSignal;
+		mutable Signal<void()> loadedSignal;
 	};
 }

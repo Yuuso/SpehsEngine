@@ -18,7 +18,7 @@ namespace se
 	{
 		void steamNetworkingDebug(ESteamNetworkingSocketsDebugOutputType debugOutputType, const char* message)
 		{
-			se::log::info(message);
+			log::info(message);
 		}
 
 		int instanceCount = 0;
@@ -47,23 +47,23 @@ namespace se
 			SteamDatagramErrMsg errorMessage;
 			if (!GameNetworkingSockets_Init(&selfSteamNetworkingIdentity, errorMessage))
 			{
-				se::log::error(se::formatString("GameNetworkingSockets_Init failed.  %s", errorMessage));
+				log::error(se::formatString("GameNetworkingSockets_Init failed.  %s", errorMessage));
 				return;
 			}
 
 			SteamNetworkingUtils()->SetDebugOutputFunction(k_ESteamNetworkingSocketsDebugOutputType_Msg, steamNetworkingDebug);
 			if (!SteamNetworkingUtils()->SetGlobalConfigValueString(k_ESteamNetworkingConfig_P2P_STUN_ServerList, "stun.l.google.com:19302"))
 			{
-				se::log::error("Failed to set k_ESteamNetworkingConfig_P2P_STUN_ServerList");
+				log::error("Failed to set k_ESteamNetworkingConfig_P2P_STUN_ServerList");
 			}
 			//if (!SteamNetworkingUtils()->SetGlobalConfigValueInt32(k_ESteamNetworkingConfig_LogLevel_P2PRendezvous, k_ESteamNetworkingSocketsDebugOutputType_Msg))
 			//{
-			//	se::log::error("Failed to set k_ESteamNetworkingConfig_LogLevel_P2PRendezvous");
+			//	log::error("Failed to set k_ESteamNetworkingConfig_LogLevel_P2PRendezvous");
 			//}
 			if (!SteamNetworkingUtils()->SetGlobalConfigValueInt32(k_ESteamNetworkingConfig_P2P_Transport_ICE_Enable,
 				k_nSteamNetworkingConfig_P2P_Transport_ICE_Enable_Private | k_nSteamNetworkingConfig_P2P_Transport_ICE_Enable_Public))
 			{
-				se::log::error("Failed to set k_ESteamNetworkingConfig_P2P_Transport_ICE_Enable");
+				log::error("Failed to set k_ESteamNetworkingConfig_P2P_Transport_ICE_Enable");
 			}
 
 			valid = true;

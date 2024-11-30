@@ -125,7 +125,7 @@ namespace se
 		);
 		if (result == 0)
 		{
-			se::log::error("Failed to create process '" + filename + "'. Error: " + getLastErrorMessage());
+			log::error("Failed to create process '" + filename + "'. Error: " + getLastErrorMessage());
 			return false;
 		}
 		else

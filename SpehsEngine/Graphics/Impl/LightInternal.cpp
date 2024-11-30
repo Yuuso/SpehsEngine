@@ -7,7 +7,7 @@
 LightInternal::LightInternal(Light& _light)
 	: light(&_light)
 {
-	lightDestroyedConnection = light->destroyedSignal.connect(boost::bind(&LightInternal::lightDestroyed, this));
+	lightDestroyedConnection = light->destroyedSignal.connect(std::bind(&LightInternal::lightDestroyed, this));
 }
 
 bool LightInternal::operator==(const Light& _other) const

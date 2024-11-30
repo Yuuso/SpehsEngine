@@ -10,9 +10,14 @@
 #include "SDL/SDL_events.h"
 #include <iostream>
 
+struct _SDL_Joystick;
+typedef struct _SDL_Joystick SDL_Joystick;
+typedef int32_t SDL_JoystickID;
+
 #define SINT16_MIN -32768
 #define SINT16_MAX  32767
 #define SINT16_STATES 65536
+
 
 namespace se
 {
@@ -264,7 +269,7 @@ namespace se
 							{
 								std::string error = "Couldn't open SDL joystick! ";
 								error += SDL_GetError();
-								se::log::error(error);
+								log::error(error);
 							}
 							joysticks[i]->goOnline(js);
 							foundOffline = true;

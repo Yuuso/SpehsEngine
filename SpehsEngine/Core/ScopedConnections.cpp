@@ -1,8 +1,6 @@
 #include "stdafx.h"
 #include "SpehsEngine/Core/ScopedConnections.h"
 
-#include "boost/signals2/connection.hpp"
-
 
 namespace se
 {
@@ -11,9 +9,9 @@ namespace se
 	{
 	}
 
-	boost::signals2::scoped_connection& ScopedConnections::add()
+	ScopedConnection& ScopedConnections::add()
 	{
-		vector.push_back(boost::signals2::scoped_connection());
+		vector.push_back(ScopedConnection());
 		return vector.back();
 	}
 

@@ -102,21 +102,21 @@ namespace std
 	};
 	template<> struct hash<se::input::MouseMotionEventParameters>
 	{
-		size_t operator()(const se::input::MouseMotionEventParameters& eventParameters) const
+		size_t operator()(const se::input::MouseMotionEventParameters&) const
 		{
 			return size_t(1);
 		}
 	};
 	template<> struct hash<se::input::MouseWheelEventParameters>
 	{
-		size_t operator()(const se::input::MouseWheelEventParameters& eventParameters) const
+		size_t operator()(const se::input::MouseWheelEventParameters&) const
 		{
 			return size_t(1);
 		}
 	};
 	template<> struct hash<se::input::MouseHoverEventParameters>
 	{
-		size_t operator()(const se::input::MouseHoverEventParameters& eventParameters) const
+		size_t operator()(const se::input::MouseHoverEventParameters&) const
 		{
 			return size_t(1);
 		}

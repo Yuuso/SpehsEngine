@@ -5,7 +5,6 @@
 #include "SpehsEngine/Core/Serial/ArchiveWriter.h"
 #include "SpehsEngine/Core/Serial/BinaryReader.h"
 #include "SpehsEngine/Core/Serial/BinaryWriter.h"
-#include <optional>
 
 
 namespace se
@@ -86,7 +85,7 @@ namespace se
 		{
 			CastTarget castTarget;
 			SerialId serialId;
-			se::Serial<Class>::template cast<CastTarget, SerialId>(castTarget, serialId);
+			Serial<Class>::template cast<CastTarget, SerialId>(castTarget, serialId);
 		}
 	};
 }

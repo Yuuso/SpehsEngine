@@ -29,7 +29,7 @@ namespace se::gfx
 
 
 		void								bind(Texture* _fallbackTexture);
-		boost::signals2::scoped_connection	connectToFontChangedSignal(const boost::function<void()>& callback);
+		ScopedConnection					connectToFontChangedSignal(const std::function<void()>& callback);
 
 		std::shared_ptr<const Shader>		getShader(ShaderVariant variant = ShaderVariant::Default) const;
 		std::shared_ptr<const Texture>		getTexture(uint8_t _slot = 0) const;
@@ -67,6 +67,6 @@ namespace se::gfx
 
 		std::string name = "unknown";
 		bool lightsEnabled = false;
-		boost::signals2::signal<void()> fontChangedSignal;
+		Signal<void(void)> fontChangedSignal;
 	};
 }

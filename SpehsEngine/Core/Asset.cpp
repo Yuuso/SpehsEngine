@@ -88,7 +88,7 @@ namespace se
 			update();
 		}
 	}
-	boost::signals2::scoped_connection IAsset::connectToLoadedSignal(const std::function<void()>& _fn) const
+	ScopedConnection IAsset::connectToLoadedSignal(const std::function<void()>& _fn) const
 	{
 		return loadedSignal.connect(_fn);
 	}

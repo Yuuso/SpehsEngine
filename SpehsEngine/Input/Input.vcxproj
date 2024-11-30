@@ -143,7 +143,6 @@
     <ClInclude Include="InputLib.h" />
     <ClInclude Include="InputEnumerations.h" />
     <ClInclude Include="InputManager.h" />
-    <ClInclude Include="InputState.h" />
     <ClInclude Include="Internal\SDLUtility.h" />
     <ClInclude Include="Joystick.h" />
     <ClInclude Include="JoystickGuid.h" />
@@ -170,7 +169,6 @@
     <ClCompile Include="InputLib.cpp" />
     <ClCompile Include="InputEnumerations.cpp" />
     <ClCompile Include="InputManager.cpp" />
-    <ClCompile Include="InputState.cpp" />
     <ClCompile Include="Internal\SDLUtility.cpp" />
     <ClCompile Include="Joystick.cpp" />
     <ClCompile Include="JoystickGuid.cpp" />

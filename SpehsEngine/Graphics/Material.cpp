@@ -49,7 +49,7 @@ void Material::bind(Texture* _fallbackTexture)
 		}
 	}
 }
-boost::signals2::scoped_connection Material::connectToFontChangedSignal(const boost::function<void()>& callback)
+ScopedConnection Material::connectToFontChangedSignal(const std::function<void()>& callback)
 {
 	return fontChangedSignal.connect(callback);
 }

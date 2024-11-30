@@ -5,14 +5,14 @@ namespace se
 {
 	namespace audio
 	{
-		enum class InaudibleBehavior
+		enum class InaudibleBehavior : uint32_t
 		{
 			Pause,
 			Stop,
 			Nothing,
 		};
 
-		enum class DistanceAttenuation
+		enum class DistanceAttenuation : uint32_t
 		{
 			Disabled = 0,	// No attenuation, always max volume
 			Inverse,		// Very sharp volume drop off

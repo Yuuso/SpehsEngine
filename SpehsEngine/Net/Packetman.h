@@ -1,8 +1,6 @@
 #pragma once
 
-#include "boost/signals2/signal.hpp"
 #include "SpehsEngine/Net/Connection.h"
-#include <functional>
 
 
 namespace se
@@ -20,6 +18,8 @@ namespace se
 
 			void update();
 
+			void setPacketReceivingEnabled(const bool _enabled);
+
 			// Send without result
 			template<typename Packet>
 			bool sendPacket(const PacketType _packetType, const Packet& _packet, const bool _reliable);
@@ -27,27 +27,30 @@ namespace se
 			// Send with result
 			template<typename Packet, typename Result>
 			bool sendPacket(const PacketType _packetType, const Packet& _packet,
-				boost::signals2::scoped_connection& _scopedConnection, const std::function<void(Result* const)>& _callback);
+				ScopedConnection& _scopedConnection, const std::function<void(Result* const)>& _callback);
 
 			// Receive without result
 			template<typename Packet>
 			void registerReceiveHandler(const PacketType _packetType,
-				boost::signals2::scoped_connection& _scopedConnection, const std::function<void(Packet&, const bool)>& _receiveHandler);
+				ScopedConnection& _scopedConnection, const std::function<void(Packet&, const bool)>& _receiveHandler);
 
 			// Receive with result
 			template<typename Packet, typename Result>
 			void registerReceiveHandler(const PacketType _packetType,
-				boost::signals2::scoped_connection& _scopedConnection, const std::function<Result(Packet&, const bool)>& _receiveHandler);
+				ScopedConnection& _scopedConnection, const std::function<Result(Packet&, const bool)>& _receiveHandler);
 
 			// Returns true if there is at least one sent packet of the given packet type still awaiting for a result
 			bool hasUnfinishedResults(const PacketType _packetType) const;
+
+			// Can be used for more descriptive debug messages
+			void setDebugToStringFunction(const std::function<const char*(PacketType)>&& _function) { debugToStringFunction = _function; }
 
 		private:
 			struct IReceiver
 			{
 				virtual ~IReceiver() {}
 				virtual bool valid() const = 0;
-				virtual void process(BinaryReader& _binaryReader, const bool _reliable, const uint16_t _requestId, Connection& _connection) = 0;
+				virtual void process(const Packetman& _packetman, BinaryReader& _binaryReader, const bool _reliable, const uint16_t _requestId, Connection& _connection) = 0;
 			};
 			struct IRequest
 			{
@@ -57,6 +60,7 @@ namespace se
 				virtual void fail() = 0;
 				virtual PacketType getPacketType() const = 0;
 			};
+			void receiveHandler(BinaryReader& _binaryReader, const bool _reliable);
 			uint16_t generateNextRequestId()
 			{
 				while (nextRequestId == 0 || isResultId(nextRequestId) || tryFind(requests, nextRequestId))
@@ -94,10 +98,24 @@ namespace se
 				se_assert(requestId != 0);
 				return requestId;
 			}
+			std::string toString(const PacketType _packetType) const
+			{
+				std::string result;
+				if (debugToStringFunction)
+				{
+					result = debugToStringFunction(_packetType);
+				}
+				if (result.empty())
+				{
+					result = std::to_string(std::underlying_type<PacketType>::type(_packetType));
+				}
+				return result;
+			}
 			std::unordered_map<PacketType, std::unique_ptr<IReceiver>> receivers;
 			std::unordered_map<uint16_t, std::unique_ptr<IRequest>> requests;
 			uint16_t nextRequestId = 1;
 			Connection& connection;
+			std::function<const char* (PacketType)> debugToStringFunction;
 		};
 
 		template<typename PacketType>
@@ -132,67 +150,16 @@ namespace se
 		}
 
 		template<typename PacketType>
+		void Packetman<PacketType>::setPacketReceivingEnabled(const bool _enabled)
+		{
+			connection.setPacketReceivingEnabled(_enabled);
+		}
+
+		template<typename PacketType>
 		Packetman<PacketType>::Packetman(Connection& _connection)
 			: connection(_connection)
 		{
-			connection.setReceiveHandler(
-				[this](BinaryReader& _binaryReader, const bool _reliable)
-				{
-					uint16_t packetId = 0;
-					if (!_binaryReader.serial(packetId))
-					{
-						se_assert(false && "Failed to read packet id");
-						return;
-					}
-					if (isResultId(packetId))
-					{
-						// Receive result
-						const uint16_t requestId = makeRequestId(packetId);
-						const std::unordered_map<uint16_t, std::unique_ptr<IRequest>>::iterator it = requests.find(requestId);
-						se_assert(it != requests.end());
-						if (it != requests.end())
-						{
-							std::unique_ptr<IRequest> request(it->second.release());
-							requests.erase(it);
-							BinaryReader binaryReader2(_binaryReader.getData() + _binaryReader.getOffset(), _binaryReader.getSize());
-							request->process(binaryReader2);
-							return;
-						}
-					}
-					else
-					{
-						// Receive packet
-						se_assert(isRequestId(packetId));
-						PacketType packetType = PacketType(0);
-						if (!_binaryReader.serial(packetType))
-						{
-							if (_reliable)
-							{
-								se::log::error("Failed to read PacketType");
-							}
-							return;
-						}
-						std::unique_ptr<IReceiver>* const receiver = tryFind(receivers, packetType);
-						if (!receiver)
-						{
-							if (_reliable)
-							{
-								se::log::error("Failed to find receiver for reliably received PacketType: " + std::to_string(int(packetType)));
-							}
-							return;
-						}
-						if (!receiver->get()->valid())
-						{
-							if (_reliable)
-							{
-								se::log::error("Receiver is no longer valid for reliably received PacketType: " + std::to_string(int(packetType)));
-							}
-							return;
-						}
-						receiver->get()->process(_binaryReader, _reliable, packetId, connection);
-						return;
-					}
-				});
+			connection.setReceiveHandler(std::bind(&Packetman<PacketType>::receiveHandler, this, std::placeholders::_1, std::placeholders::_2));
 		}
 
 		template<typename PacketType>
@@ -206,6 +173,65 @@ namespace se
 				it->second->fail();
 			}
 			se_assert(requests.empty() && "New requests should not be added during the destructor");
+		}
+
+		template<typename PacketType>
+		void Packetman<PacketType>::receiveHandler(BinaryReader& _binaryReader, const bool _reliable)
+		{
+			uint16_t packetId = 0;
+			if (!_binaryReader.serial(packetId))
+			{
+				se_assert(false && "Failed to read packet id");
+				return;
+			}
+			if (isResultId(packetId))
+			{
+				// Receive result
+				const uint16_t requestId = makeRequestId(packetId);
+				const std::unordered_map<uint16_t, std::unique_ptr<IRequest>>::iterator it = requests.find(requestId);
+				se_assert(it != requests.end());
+				if (it != requests.end())
+				{
+					std::unique_ptr<IRequest> request(it->second.release());
+					requests.erase(it);
+					BinaryReader binaryReader2(_binaryReader.getData() + _binaryReader.getOffset(), _binaryReader.getSize());
+					request->process(binaryReader2);
+					return;
+				}
+			}
+			else
+			{
+				// Receive packet
+				se_assert(isRequestId(packetId));
+				PacketType packetType = PacketType(0);
+				if (!_binaryReader.serial(packetType))
+				{
+					if (_reliable)
+					{
+						log::error("Failed to read PacketType");
+					}
+					return;
+				}
+				std::unique_ptr<IReceiver>* const receiver = tryFind(receivers, packetType);
+				if (!receiver)
+				{
+					if (_reliable)
+					{
+						log::error("Failed to find receiver for reliably received PacketType: " + toString(packetType));
+					}
+					return;
+				}
+				if (!receiver->get()->valid())
+				{
+					if (_reliable)
+					{
+						log::error("Receiver is no longer valid for reliably received PacketType: " + toString(packetType));
+					}
+					return;
+				}
+				receiver->get()->process(*this, _binaryReader, _reliable, packetId, connection);
+				return;
+			}
 		}
 
 		// Send without result
@@ -225,7 +251,7 @@ namespace se
 		template<typename PacketType>
 		template<typename Packet, typename Result>
 		bool Packetman<PacketType>::sendPacket(const PacketType _packetType, const Packet& _packet,
-			boost::signals2::scoped_connection& _scopedConnection, const std::function<void(Result* const)>& _callback)
+			ScopedConnection& _scopedConnection, const std::function<void(Result* const)>& _callback)
 		{
 			const uint16_t requestId = generateNextRequestId();
 			BinaryWriter binaryWriter;
@@ -259,7 +285,7 @@ namespace se
 					}
 					bool timeout(const time::Time& timeout) final
 					{
-						if (signal.empty())
+						if (signal.isEmpty())
 						{
 							return true;
 						}
@@ -278,7 +304,7 @@ namespace se
 					{
 						signal(nullptr);
 					}
-					boost::signals2::signal<void(Result* const)> signal;
+					Signal<void(Result* const)> signal;
 					time::Time beginTime;
 					PacketType packetType;
 				};
@@ -300,7 +326,7 @@ namespace se
 		template<typename PacketType>
 		template<typename Packet>
 		void Packetman<PacketType>::registerReceiveHandler(const PacketType _packetType,
-			boost::signals2::scoped_connection& _scopedConnection, const std::function<void(Packet&, const bool)>& _receiveHandler)
+			ScopedConnection& _scopedConnection, const std::function<void(Packet&, const bool)>& _receiveHandler)
 		{
 			std::unique_ptr<IReceiver>& iReceiver = receivers[_packetType];
 			if (iReceiver && iReceiver->valid())
@@ -310,7 +336,7 @@ namespace se
 			}
 			struct Receiver : public IReceiver
 			{
-				void process(BinaryReader& _binaryReader, const bool _reliable, const uint16_t _requestId, Connection& _connection) final
+				void process(const Packetman& _packetman, BinaryReader& _binaryReader, const bool _reliable, const uint16_t _requestId, Connection& _connection) final
 				{
 					if (_requestId != 0)
 					{
@@ -319,7 +345,7 @@ namespace se
 						BinaryReader binaryReader2(_binaryReader.getData() + _binaryReader.getOffset() - sizeof(PacketType), sizeof(PacketType));
 						PacketType packetType = PacketType(0);
 						binaryReader2.serial(packetType);
-						se::log::error("The sender is expecting a result but the registered receive handler does not provide one, PacketType: " + std::to_string(int(packetType)));
+						log::error("The sender is expecting a result but the registered receive handler does not provide one, PacketType: " + _packetman.toString(packetType));
 					}
 					Packet packet;
 					if (_binaryReader.serial(packet))
@@ -334,9 +360,9 @@ namespace se
 				}
 				bool valid() const final
 				{
-					return !signal.empty();
+					return !signal.isEmpty();
 				}
-				boost::signals2::signal<void(Packet&, const bool)> signal;
+				Signal<void(Packet&, const bool)> signal;
 			};
 			Receiver* const receiver = new Receiver();
 			_scopedConnection = receiver->signal.connect(_receiveHandler);
@@ -347,7 +373,7 @@ namespace se
 		template<typename PacketType>
 		template<typename Packet, typename Result>
 		void Packetman<PacketType>::registerReceiveHandler(const PacketType _packetType,
-			boost::signals2::scoped_connection& _scopedConnection, const std::function<Result(Packet&, const bool)>& _receiveHandler)
+			ScopedConnection& _scopedConnection, const std::function<Result(Packet&, const bool)>& _receiveHandler)
 		{
 			std::unique_ptr<IReceiver>& iReceiver = receivers[_packetType];
 			if (iReceiver && iReceiver->valid())
@@ -361,7 +387,7 @@ namespace se
 				{
 					destructorCalled = true;
 				}
-				void process(BinaryReader& _binaryReader, const bool _reliable, const uint16_t _requestId, Connection& _connection) final
+				void process(const Packetman& _packetman, BinaryReader& _binaryReader, const bool _reliable, const uint16_t _requestId, Connection& _connection) final
 				{
 					se_assert(_reliable && "Packets with results should be always sent reliably");
 					if (_requestId == 0)
@@ -371,7 +397,7 @@ namespace se
 						BinaryReader binaryReader2(_binaryReader.getData() + _binaryReader.getOffset() - sizeof(PacketType), sizeof(PacketType));
 						PacketType packetType = PacketType(0);
 						se_assert(binaryReader2.serial(packetType));
-						se::log::error("The sender is not expecting a result but the registered receive handler does provide one, PacketType: " + std::to_string(int(packetType)));
+						log::error("The sender is not expecting a result but the registered receive handler does provide one, PacketType: " + _packetman.toString(packetType));
 					}
 
 					Result result;
@@ -382,7 +408,7 @@ namespace se
 						result = callback(packet, _reliable);
 						if (destructorCalled)
 						{
-							se::log::error("The receive handler should not deallocate Packetman. Result packet will not be sent.");
+							log::error("The receive handler should not deallocate Packetman. Result packet will not be sent.");
 							return;
 						}
 					}
@@ -401,9 +427,9 @@ namespace se
 				}
 				bool valid() const final
 				{
-					return !signal.empty();
+					return !signal.isEmpty();
 				}
-				boost::signals2::signal<void()> signal;
+				Signal<void()> signal;
 				std::function<Result(Packet&, const bool)> callback;
 				bool destructorCalled = false;
 			};

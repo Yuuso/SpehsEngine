@@ -1,4 +1,5 @@
 #pragma once
+
 #define SPEHS_HAS_MEMBER_FUNCTION(functionName, structName) \
 template<typename T, typename Sign> \
 struct structName \

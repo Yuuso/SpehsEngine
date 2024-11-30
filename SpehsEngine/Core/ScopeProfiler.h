@@ -1,16 +1,5 @@
 #pragma once
 
-#include "SpehsEngine/Core/SE_Time.h"
-#include <functional>
-
-namespace boost
-{
-	namespace signals2
-	{
-		class scoped_connection;
-	}
-}
-
 
 namespace se
 {
@@ -45,7 +34,7 @@ namespace se
 			An ending thread has no obligation to call flush before it dies out, therefore potentially leaving some thread data unflushed.
 			Inactive threads that do not make calls to push() or flush() may also hold onto potential stored thread data.
 		*/
-		static void connectToFlushSignal(boost::signals2::scoped_connection& scopedConnection, const std::function<void(const ScopeProfilerThreadData&)>& callback);
+		static void connectToFlushSignal(ScopedConnection& scopedConnection, const std::function<void(const ScopeProfilerThreadData&)>& callback);
 
 		/*
 			Always prefer using ScopeProfiler instance over this.

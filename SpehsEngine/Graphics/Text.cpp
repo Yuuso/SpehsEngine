@@ -245,9 +245,9 @@ void Text::generateBuffers()
 
 	needBufferUpdate = false;
 
-	if (!fontLoadedConnection.connected())
+	if (!fontLoadedConnection.isConnected())
 	{
-		fontLoadedConnection = font->connectToLoadedSignal(boost::bind(&Text::textChanged, this));
+		fontLoadedConnection = font->connectToLoadedSignal(std::bind(&Text::textChanged, this));
 	}
 	if (font->isLoading())
 		return;

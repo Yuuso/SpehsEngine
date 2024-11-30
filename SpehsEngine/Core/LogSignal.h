@@ -1,15 +1,5 @@
 #pragma once
 
-#include <functional>
-
-namespace boost
-{
-	namespace signals2
-	{
-		class scoped_connection;
-	}
-}
-
 
 namespace se
 {
@@ -24,6 +14,6 @@ namespace se
 			Fatal,
 		};
 
-		void connectToLogSignal(boost::signals2::scoped_connection& scopedConnection, const std::function<void(const std::string_view, const LogType)>& callback);
+		void connectToLogSignal(ScopedConnection& scopedConnection, const std::function<void(const std::string_view, const LogType)>& callback);
 	}
 }

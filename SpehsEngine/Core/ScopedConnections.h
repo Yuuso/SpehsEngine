@@ -1,15 +1,5 @@
 #pragma once
 
-#include <vector>
-
-namespace boost
-{
-	namespace signals2
-	{
-		class scoped_connection;
-	}
-}
-
 
 namespace se
 {
@@ -26,10 +16,10 @@ namespace se
 		ScopedConnections& operator=(const ScopedConnections& _copy) = default;
 		ScopedConnections& operator=(ScopedConnections&& _move) = default;
 
-		boost::signals2::scoped_connection& add();
+		ScopedConnection& add();
 		void clear();
 
 	private:
-		std::vector<boost::signals2::scoped_connection> vector;
+		std::vector<ScopedConnection> vector;
 	};
 }

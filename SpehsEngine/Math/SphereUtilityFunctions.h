@@ -1,6 +1,7 @@
 #pragma once
-#include <vector>
+
 #include "SpehsEngine/Math/Sphere.h"
+
 
 namespace se
 {

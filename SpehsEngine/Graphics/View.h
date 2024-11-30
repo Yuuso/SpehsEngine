@@ -40,7 +40,7 @@ namespace se::gfx
 		void setClearFlags(ViewClearFlagsType _flags);
 		void setDrawCallSortOrder(DrawCallSortOrder _order);
 
-		boost::signals2::scoped_connection connectToPreRenderSignal(std::function<void(glm::vec2)> _func);
+		ScopedConnection connectToPreRenderSignal(std::function<void(glm::vec2)> _func);
 
 	private:
 
@@ -57,7 +57,7 @@ namespace se::gfx
 		uint32_t clearColor = 0x000000ff;
 		DrawCallSortOrder drawCallSortOrder = DrawCallSortOrder::Default;
 
-		boost::signals2::signal<void(glm::vec2)> onPreRenderSignal; // param: view size in pixels
-		boost::signals2::signal<void(void)> destroyedSignal;
+		Signal<void(glm::vec2)> onPreRenderSignal; // param: view size in pixels
+		Signal<void(void)> destroyedSignal;
 	};
 }

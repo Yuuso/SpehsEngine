@@ -36,7 +36,7 @@ namespace se::gfx::impl
 		void viewDestroyed();
 		void calculateRenderSize(const WindowInternal* _currentWindow);
 
-		boost::signals2::scoped_connection viewDestroyedConnection;
+		ScopedConnection viewDestroyedConnection;
 
 		View* view;
 		bool wasAdded = true;

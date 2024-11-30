@@ -37,7 +37,7 @@ namespace se::debug
 			, activeThreadId(std::this_thread::get_id())
 		{
 			setMaxThreadDataSectionCount(64);
-			ScopeProfiler::connectToFlushSignal(profilerFlushConnection, boost::bind(&Impl::profilerFlushCallback, this, boost::placeholders::_1));
+			ScopeProfiler::connectToFlushSignal(profilerFlushConnection, std::bind(&Impl::profilerFlushCallback, this, std::placeholders::_1));
 
 			se_assert(_view.getCamera().getProjection() == gfx::Projection::Orthographic);
 
@@ -497,7 +497,7 @@ namespace se::debug
 		gfx::Shape tooltipPolygon;
 		std::vector<std::unique_ptr<gfx::Text>> sectionTexts;
 		std::vector<std::unique_ptr<gfx::Shape>> sectionPolygons;
-		boost::signals2::scoped_connection profilerFlushConnection;
+		ScopedConnection profilerFlushConnection;
 
 		std::recursive_mutex backgroundThreadDataMutex;
 		size_t maxThreadDataSectionCount = 0;

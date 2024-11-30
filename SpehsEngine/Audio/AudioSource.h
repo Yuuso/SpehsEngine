@@ -121,7 +121,7 @@ namespace se
 			float dopplerFactor							= 1.0f;
 
 			Bus* outputBus = nullptr;
-			boost::signals2::scoped_connection busDestroyedConnection;
+			ScopedConnection busDestroyedConnection;
 			std::shared_ptr<AudioAsset> asset;
 		};
 	}

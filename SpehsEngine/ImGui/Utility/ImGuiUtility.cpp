@@ -253,12 +253,12 @@ namespace ImGui
 		return result;
 	}
 
-	void keyBindButton(const String label, se::input::Key& key, se::input::EventSignaler& eventSignaler, boost::signals2::scoped_connection& scopedConnection)
+	void keyBindButton(const String label, se::input::Key& key, se::input::EventSignaler& eventSignaler, se::ScopedConnection& scopedConnection)
 	{
 		ImGui::PushID(&scopedConnection);
 		ImGui::Text(label);
 		ImGui::SameLine();
-		if (ImGui::Button(scopedConnection.connected() ? "press any key" : se::input::toString(key)))
+		if (ImGui::Button(scopedConnection ? "press any key" : se::input::toString(key)))
 		{
 			eventSignaler.connectToKeyboardSignal(
 				scopedConnection,
@@ -330,5 +330,66 @@ namespace ImGui
 	void PushFont(const se::imgui::ImGuiFont _font)
 	{
 		PushFont(getFont(_font));
+	}
+
+	bool InputT(const String label, se::time::Time& value,
+		const se::time::Time step,
+		const se::time::Time stepFast, ImGuiInputTextFlags flags)
+	{
+		const bool result = InputT(label, value.value, step.value, stepFast.value, "%llu", flags);
+		if (ImGui::IsItemHovered())
+		{
+			ImGui::SetTooltip(se::toTimeLengthString(value, 2).c_str());
+		}
+		return result;
+	}
+
+	bool InputAngle(const String label, float& radians)
+	{
+		float degrees = (radians / se::PI<float>) * 180.0f;
+		const bool changed = InputT(label, degrees);
+		if (changed)
+		{
+			radians = (degrees / 180.0f) * se::PI<float>;
+		}
+		return changed;
+	}
+
+	bool InputT(const String label, se::time::TimeInfo& timeInfo)
+	{
+		bool changed = false;
+		if (ImGui::CollapsingHeader(label))
+		{
+			changed |= ImGui::InputT("Day", timeInfo.monthDay);
+			if (ImGui::IsItemHovered())
+			{
+				ImGui::SetTooltip("Day of the month");
+			}
+			changed |= ImGui::InputT("Month", timeInfo.month);
+			changed |= ImGui::InputT("Year", timeInfo.year);
+			changed |= ImGui::InputT("Hour", timeInfo.hour);
+			changed |= ImGui::InputT("Minute", timeInfo.minute);
+			changed |= ImGui::InputT("Second", timeInfo.second);
+			changed |= ImGui::InputT("Dayligt savings flag", timeInfo.dayligtSavingsFlag);
+		}
+		return changed;
+	}
+
+	bool CollapsingHeader2(const String idLabel, const String mutableLabel, const ImGuiTreeNodeFlags flags)
+	{
+		const bool result = ImGui::CollapsingHeader(idLabel, flags);
+		ImGui::SameLine();
+		ImGui::Text("");
+		ImGui::SameLine();
+		ImGui::Text(mutableLabel);
+		return result;
+	}
+
+	bool BeginCentered(const String label, bool* const open, const ImGuiWindowFlags flags, const ImGuiCond centerCondition)
+	{
+		const ImGuiIO& io = ImGui::GetIO();
+		const ImVec2 displayCenter(io.DisplaySize.x * 0.5f, io.DisplaySize.y * 0.5f);
+		ImGui::SetNextWindowPos(displayCenter, centerCondition, ImVec2(0.5f, 0.5f));
+		return ImGui::Begin(label, open, flags);
 	}
 }

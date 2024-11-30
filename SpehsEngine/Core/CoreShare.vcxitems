@@ -14,6 +14,8 @@
     <ProjectCapability Include="SourceItemsFromImports" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="$(MSBuildThisFileDirectory)RandomUtilityFunctions.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)ScopedConnections.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Asset.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)AssetManager.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)AsyncTaskManager.cpp" />
@@ -35,7 +37,6 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)Inifile.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Inivar.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Log.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)Murmur3.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)OS.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)RNG.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)ScopeTimer.cpp" />
@@ -56,18 +57,20 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)ByteView.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)DeepPtr.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)DeepPtrUtilityFunctions.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)FunctionTraits.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)EnumUtilityFunctions.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)HeapOptional.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)HeapOptionalUtilityFunctions.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)File\Timestamp.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)HexColor.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)MapUtilityFunctions.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Preprocessor.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)RandomUtilityFunctions.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)RemoveCvref.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)LockGuard.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)LogSignal.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Noise.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)ScopedConnections.h" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)ScopedConnections.cpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)ScopeProfilerTypes.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Serial\SerialKey.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Serial\ArchiveReader.h" />
@@ -76,6 +79,8 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)Serial\BinaryWriter.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Serial\Serial.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Serial\SerialUtility.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Signal.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Clamp.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)StaticRingBuffer.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)ScopedFrameLimiter.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)ScopeProfiler.h" />

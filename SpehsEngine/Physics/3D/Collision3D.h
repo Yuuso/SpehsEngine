@@ -1,4 +1,3 @@
-
 #pragma once
 
 
@@ -6,11 +5,6 @@ namespace se
 {
 	namespace physics
 	{
-		class Ray3D;
-		class AABBCollider3D;
-		class FrustumCollider3D;
-		class SphereCollider3D;
-
 		class Collision3D
 		{
 		public:

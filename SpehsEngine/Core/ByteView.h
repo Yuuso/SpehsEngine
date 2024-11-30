@@ -1,5 +1,6 @@
 #pragma once
 
+
 namespace se
 {
 	// Memory is not owned

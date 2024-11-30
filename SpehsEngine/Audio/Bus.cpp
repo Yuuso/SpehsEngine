@@ -44,7 +44,7 @@ namespace se
 			return bus->getActiveVoiceCount();
 		}
 
-		boost::signals2::scoped_connection Bus::connectToDestroyedSignal(std::function<void()> _func)
+		ScopedConnection Bus::connectToDestroyedSignal(std::function<void()> _func)
 		{
 			return destroyedSignal.connect(_func);
 		}

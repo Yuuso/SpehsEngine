@@ -5,6 +5,7 @@
 #include "SpehsEngine/Graphics/Scene.h"
 #include "SpehsEngine/GUI/GUIView.h"
 #include "SpehsEngine/GUI/Internal/StencilMaskManager.h"
+#include "SpehsEngine/GUI/Internal/GUIMaterialManager.h"
 #include "SpehsEngine/Math/GLMMatrixUtilityFunctions.h"
 
 

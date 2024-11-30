@@ -3,24 +3,13 @@
 #include "SpehsEngine/Net/ConnectionId.h"
 #include "SpehsEngine/Net/Endpoint.h"
 
-namespace boost
-{
-	namespace signals2
-	{
-		class scoped_connection;
-	}
-}
-
 
 namespace se
 {
-	class BinaryWriter;
-	class BinaryReader;
 	namespace net
 	{
-		class ConnectionManager;
-		struct ConnectionParameters;
 		struct ConnectionInternalState;
+
 		class Connection
 		{
 		public:
@@ -72,15 +61,17 @@ namespace se
 
 			void update();
 
-			bool sendPacket(const BinaryWriter& binaryWriter, const bool reliable);
+			void setPacketReceivingEnabled(const bool _enabled);
 
-			void disconnect(const std::string& reason = "");
+			bool sendPacket(const BinaryWriter& _binaryWriter, const bool _reliable);
+
+			void disconnect(const std::string& _reason = "");
 
 			void setSettings(const Settings& _settings);
 			void setReceiveHandler(const std::function<void(BinaryReader&, const bool)>& _receiveHandler = std::function<void(BinaryReader&, const bool)>());
 			void setEnableAssertOnSendFail(const bool enable) { enableAssertOnSendFail = enable; }
 
-			void connectToStatusChangedSignal(boost::signals2::scoped_connection& scopedConnection, const std::function<void(const Status oldStatus, const Status newStatus)>& callback);
+			void connectToStatusChangedSignal(ScopedConnection& _scopedConnection, const std::function<void(const Status oldStatus, const Status newStatus)>& _callback);
 
 			Status getStatus() const { return status; }
 			DetailedStatus getDetailedStatus() const;
@@ -125,6 +116,7 @@ namespace se
 			Statistics statistics;
 			std::vector<ReceivedPacket> receivedPackets;
 			bool enableAssertOnSendFail = true;
+			bool packetReceivingEnabled = true;
 		};
 	}
 }

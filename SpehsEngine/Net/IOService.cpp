@@ -17,7 +17,7 @@ namespace se
 			Impl()
 				: ioService()
 				, ioServiceWork(ioService)
-				, thread(boost::bind(&Impl::run, this))
+				, thread(std::bind(&Impl::run, this))
 			{
 			}
 
@@ -50,7 +50,7 @@ namespace se
 				ioService.run(error);
 				if (error)
 				{
-					se::log::info("IOService::run() error: " + error.message());
+					log::info("IOService::run() error: " + error.message());
 				}
 			}
 
@@ -64,7 +64,7 @@ namespace se
 			std::thread thread;
 		};
 
-		boost::asio::io_service& getImplementationRef(IOService& ioService)
+		boost::asio::io_context& getImplementationRef(IOService& ioService)
 		{
 			return IOService::Impl::getImplementationRef(ioService);
 		}

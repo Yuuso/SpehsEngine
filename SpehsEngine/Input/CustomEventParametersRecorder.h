@@ -2,15 +2,12 @@
 
 #include "SpehsEngine/Core/ScopedConnections.h"
 #include "SpehsEngine/Input/CustomEventParameters.h"
-#include <optional>
 
 
 namespace se
 {
 	namespace input
 	{
-		class EventSignaler;
-
 		// Helper class for recording user inputs to be used to generate custom events.
 		class CustomEventParametersRecorder
 		{

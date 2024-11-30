@@ -161,13 +161,13 @@ namespace se
 				//For common vertex 1
 				begin = *neighbours[n]->point(neighbourPointIndex + 1) - *neighbours[n]->point(neighbourPointIndex);
 				end = *point(n - 1) - *point(n);
-				const float angle1 = se::getAngle(se::getAngle(begin), se::getAngle(end));
+				const float angle1 = getAngle(getAngle(begin), getAngle(end));
 				//For common vertex 2
 				begin = *point(n - 1) - *point(n + 1);
 				end = *neighbours[n]->point(neighbourPointIndex + 1) - *neighbours[n]->point(neighbourPointIndex - 1);
-				const float angle2 = se::getAngle(se::getAngle(begin), se::getAngle(end));
+				const float angle2 = getAngle(getAngle(begin), getAngle(end));
 				////Conclusion
-				if (angle1 + angle2 < se::PI<float>)
+				if (angle1 + angle2 < PI<float>)
 				{//Exchange
 
 					Triangle& other = *neighbours[n];

@@ -12,16 +12,16 @@ namespace se::gui
 
 #define GUI_DEFINE_EVENT(EVENT, PARAM_TYPE) \
 public: \
-	inline ::se::gui::Connection on##EVENT(const std::function<bool(const ::se::gui::PARAM_TYPE&)>& _func) \
+	inline ::se::Connection on##EVENT(const std::function<bool(const ::se::gui::PARAM_TYPE&)>& _func) \
 	{ return onEvent<::se::gui::PARAM_TYPE>(#EVENT, _func); } \
-	inline ::se::gui::Connection on##EVENT(const std::function<bool()>& _func) \
+	inline ::se::Connection on##EVENT(const std::function<bool()>& _func) \
 	{ return onEvent(#EVENT, _func); }
 
 #define GUI_DEFINE_TUNNELING_EVENT(EVENT, PARAM_TYPE) \
 public: \
-	inline ::se::gui::Connection onPreview##EVENT(const std::function<bool(const ::se::gui::PARAM_TYPE&)>& _func) \
+	inline ::se::Connection onPreview##EVENT(const std::function<bool(const ::se::gui::PARAM_TYPE&)>& _func) \
 	{ return onPreviewEvent<::se::gui::PARAM_TYPE>(#EVENT, _func); } \
-	inline ::se::gui::Connection onPreview##EVENT(const std::function<bool()>& _func) \
+	inline ::se::Connection onPreview##EVENT(const std::function<bool()>& _func) \
 	{ return onPreviewEvent(#EVENT, _func); } \
 	GUI_DEFINE_EVENT(EVENT, PARAM_TYPE)
 

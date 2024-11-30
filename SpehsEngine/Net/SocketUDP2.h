@@ -3,22 +3,14 @@
 #include "boost/asio/ip/udp.hpp"
 #include "boost/system/error_code.hpp"
 #include "boost/enable_shared_from_this.hpp"
-#include "boost/signals2.hpp"
 #include "SpehsEngine/Core/Serial/BinaryWriter.h"
-#include "SpehsEngine/Core/SE_Time.h"
 #include "SpehsEngine/Net/Endpoint.h"
-#include <functional>
-#include <memory>
-#include <mutex>
-#include <vector>
 
 
 namespace se
 {
 	namespace net
 	{
-		class IOService;
-
 		struct ReceivedPacketSocketUDP2
 		{
 			enum class ErrorType { None, ConnectionRefused };

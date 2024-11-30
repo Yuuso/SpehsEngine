@@ -1,9 +1,5 @@
 #pragma once
 
-#include <stdint.h>
-#include <string>
-#include <steam/steamnetworkingtypes.h>
-
 
 namespace se
 {
@@ -26,8 +22,6 @@ namespace se
 		};
 
 		NetIdentity getMyNetIdentity();
-		SteamNetworkingIdentity toSteamNetworkingIdentity(const NetIdentity& netIdentity);
-		NetIdentity fromSteamNetworkingIdentity(const SteamNetworkingIdentity& steamNetworkingIdentity);
 	}
 }
 

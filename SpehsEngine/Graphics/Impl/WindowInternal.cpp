@@ -21,7 +21,7 @@ WindowInternal::WindowInternal(Window& _window, const bool _isDefault)
 	: window(&_window)
 	, isDefault(_isDefault)
 {
-	windowDestroyedConnection = window->destroyedSignal.connect(boost::bind(&WindowInternal::windowDestroyed, this));
+	windowDestroyedConnection = window->destroyedSignal.connect(std::bind(&WindowInternal::windowDestroyed, this));
 
 	uint32_t windowFlags = 0;
 	if (!window->isShown())

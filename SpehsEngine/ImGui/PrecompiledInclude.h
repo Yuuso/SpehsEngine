@@ -1,3 +1,11 @@
 #pragma once
 
-#include "SpehsEngine/ImGui/Utility/IState.h"
+namespace se
+{
+	namespace imgui
+	{
+		class BackendWrapper;
+	}
+}
+
+#include "SpehsEngine/ImGui/Utility/ImGuiUtility.h"

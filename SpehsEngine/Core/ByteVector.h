@@ -1,5 +1,6 @@
 #pragma once
 
+
 namespace se
 {
 	// Strong type for a raw data block used in archives

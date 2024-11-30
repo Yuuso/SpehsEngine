@@ -3,7 +3,6 @@
 #include "SpehsEngine/Net/Endpoint.h"
 #include "SpehsEngine/Net/Connection.h"
 #include "steam/steamnetworkingsockets.h"
-#include "boost/signals2/signal.hpp"
 
 
 namespace se
@@ -36,7 +35,7 @@ namespace se
 			HSteamNetConnection closedSteamNetConnection = k_HSteamNetConnection_Invalid;
 			const HSteamListenSocket steamListenSocket;
 			std::function<void(BinaryReader&, const bool)> receiveHandler;
-			boost::signals2::signal<void(const Connection::Status, const Connection::Status)> statusChangedSignal;
+			Signal<void(const Connection::Status, const Connection::Status)> statusChangedSignal;
 		};
 	}
 }

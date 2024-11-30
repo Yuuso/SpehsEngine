@@ -4,7 +4,7 @@
 #include "boost/asio/ip/host_name.hpp"
 #include "boost/asio/io_service.hpp"
 #include "boost/asio/ip/tcp.hpp"
-#include "steam/isteamnetworkingutils.h"
+
 
 namespace se
 {
@@ -16,46 +16,35 @@ namespace se
 			boost::asio::io_service io;
 			boost::system::error_code error;
 			boost::asio::ip::tcp::resolver resolver(io);
-			boost::asio::ip::tcp::resolver::query queryTCP(localHostName, "");
+			boost::asio::ip::resolver_base::flags flags = boost::asio::ip::resolver_base::flags::all_matching;
+			boost::asio::ip::tcp::resolver::query queryTCP(localHostName, "", flags);
 			boost::asio::ip::tcp::resolver::iterator end, it = resolver.resolve(queryTCP, error);
 			if (error)
 			{
-				se::log::warning("se::net::getLocalAddress(): failed to resolve local address. Boost error" + error.message());
+				log::warning("se::net::getLocalAddress(): failed to resolve local address. Boost error" + error.message());
 				return Address();
 			}
+			Address result;
 			while (it != end)
 			{
-				boost::asio::ip::tcp::endpoint endpoint = *it;
-				if (endpoint.address().is_v4())
+				const boost::asio::ip::tcp::endpoint endpoint = *it;
+				const boost::asio::ip::address address = endpoint.address();
+				if (address.is_v4())
 				{
-					return Address(endpoint.address().to_string());
+					const std::string addressString = address.to_v4().to_string();
+					result = Address::makeFromStringIpv4(addressString);
+
+					// If there are multiple addresses then use the (first) one in the default address range
+					// Don't know how this should be handled but this works for my current setup
+					constexpr std::string defaultAddressRangeStartString = "192.168.";
+					if (doesStartWith(addressString, defaultAddressRangeStartString))
+					{
+						break;
+					}
 				}
 				it++;
 			}
-			return Address();
-		}
-
-		SteamNetworkingIPAddr toSteamNetworkingAddress(const se::net::Endpoint& endpoint)
-		{
-			SteamNetworkingIPAddr steamNetworkingAddress;
-			steamNetworkingAddress.Clear();
-			if (!SteamNetworkingUtils()->SteamNetworkingIPAddr_ParseString(&steamNetworkingAddress, endpoint.address.value.c_str()))
-			{
-				se::log::warning("Failed to parse endpoint address");
-			}
-			steamNetworkingAddress.SetIPv4(steamNetworkingAddress.GetIPv4(), endpoint.port);
-			return steamNetworkingAddress;
-		}
-
-		se::net::Endpoint fromSteamNetworkingAddress(const SteamNetworkingIPAddr& steamNetworkingAddress)
-		{
-			se::net::Endpoint endpoint;
-			endpoint.address.value.resize(64);
-			SteamNetworkingUtils()->SteamNetworkingIPAddr_ToString(steamNetworkingAddress, endpoint.address.value.data(), endpoint.address.value.size(), false);
-			const size_t length = strlen(endpoint.address.value.data());
-			endpoint.address.value.resize(length);
-			endpoint.port = steamNetworkingAddress.m_port;
-			return endpoint;
+			return result;
 		}
 
 		bool isValidEmailAddress(const std::string_view string)

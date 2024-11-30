@@ -3,6 +3,7 @@
 #include "SpehsEngine/Core/Serial/SerialKey.h"
 #include "SpehsEngine/Core/RemoveCvref.h"
 
+
 // Key is omitted at compile time if not using key serial
 #define se_serial(p_serial, p_value, p_key) \
 do { \

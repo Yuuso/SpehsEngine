@@ -2,7 +2,6 @@
 #include "SpehsEngine/Core/ColorUtilityFunctions.h"
 
 #include "glm/common.hpp"
-#include "SpehsEngine/Core/RNG.h"
 
 
 namespace se
@@ -94,21 +93,5 @@ namespace se
 			return Color(chroma + smallest, smallest, intermediateValue + smallest);
 		else
 			return Color(smallest, smallest, smallest);
-	}
-	Color randomColor(rng::PRNG<unsigned>& _prng)
-	{
-		return Color(_prng.unit(), _prng.unit(), _prng.unit());
-	}
-	Color randomColor()
-	{
-		return randomColor(rng::defaultRandom);
-	}
-	Color randomBrightColor(rng::PRNG<unsigned>& _prng)
-	{
-		return colorHSB(_prng.random<float>(0.0f, 360.0f), 1.0f, 0.5f);
-	}
-	Color randomBrightColor()
-	{
-		return randomBrightColor(rng::defaultRandom);
 	}
 }

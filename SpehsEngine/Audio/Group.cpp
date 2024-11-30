@@ -22,7 +22,7 @@ namespace se
 			handle = globalSoloud->createVoiceGroup();
 			if (!isHandleValid())
 			{
-				se::log::error("Failed to create a voice group!");
+				log::error("Failed to create a voice group!");
 			}
 		}
 		void Group::addVoice(Instance& _instance)

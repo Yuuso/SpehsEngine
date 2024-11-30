@@ -1,12 +1,12 @@
 #pragma once
+
 #include "SpehsEngine/Net/Port.h"
+
 
 namespace se
 {
 	namespace net
 	{
-		struct Endpoint;
-
 		class ISocket
 		{
 		public:

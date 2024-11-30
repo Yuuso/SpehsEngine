@@ -21,9 +21,6 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)ConnectionManager.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Endpoint.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)EndpointUtilityFunctions.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)GameFileClient.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)GameFileServer.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)HeaderICMP.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)IOService.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NetIdentity.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Signaling\SignalingImpl.cpp" />
@@ -49,9 +46,6 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)ConnectionSimulationSettings.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Endpoint.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)EndpointUtilityFunctions.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)GameFileClient.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)GameFileServer.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)HeaderICMP.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Internal\InternalTypes.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)IOService.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)IOServiceUtilityFunctions.h" />

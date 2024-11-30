@@ -1,24 +1,16 @@
 #pragma once
 
-#include <unordered_map>
-#include <string>
-
-#include "SpehsEngine/Input/InputEnumerations.h"
 #include "SpehsEngine/Input/GUID.h"
-
-#define SINT16_MIN -32768
-#define SINT16_MAX  32767
 
 struct _SDL_Joystick;
 typedef struct _SDL_Joystick SDL_Joystick;
 typedef int32_t SDL_JoystickID;
 
+
 namespace se
 {
 	namespace input
 	{
-		class InputManager;
-
 		GUID getJoystickDeviceGUID(int _deviceIndex);
 		/**Joysticks can only be created during run time, they will not be removed but instead go into offline mode. \n
 		This is because parts of the program can be attached to a joystick through a pointer/reference and unknowingly could try to access the removed joystick's state*/

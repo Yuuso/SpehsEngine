@@ -99,7 +99,7 @@ namespace se::gfx
 		WindowFlags				flags				= WindowFlags{Resizable | Shown};
 
 		friend class impl::WindowInternal;
-		boost::signals2::signal<void(void)> destroyedSignal;
+		Signal<void(void)> destroyedSignal;
 		std::vector<std::unique_ptr<impl::ViewInternal>> views;
 		WindowUpdateFlagsType updateFlags = 0;
 		SDL_Window* sdlWindow = nullptr;

@@ -12,7 +12,13 @@ namespace se
 
 		size_t Endpoint::HashFunctor::operator()(const Endpoint& endpoint) const
 		{
-			return size_t(Murmur3::impl(endpoint.address.value.data(), endpoint.address.value.size(), 0) ^ uint32_t(endpoint.port.value));
+			switch (endpoint.address.type)
+			{
+			case Address::Type::None: break;
+			case Address::Type::Ipv4: return size_t(endpoint.address.data0 ^ uint32_t(endpoint.port.value));
+			case Address::Type::Ipv6: return size_t(Murmur3::impl((const char*)&endpoint.address.data0, 16, 0) ^ uint32_t(endpoint.port.value));
+			}
+			return size_t(uint32_t(endpoint.port.value));
 		}
 	}
 }

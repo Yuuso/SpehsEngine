@@ -2,6 +2,7 @@
 #include "SpehsEngine/GUI/Internal/GUIMaterialManager.h"
 
 #include "SpehsEngine/Graphics/DefaultFonts.h"
+#include "SpehsEngine/Graphics/DefaultMaterials.h"
 
 
 namespace se
@@ -23,7 +24,7 @@ namespace se
 			auto texture = assetManager.find<gfx::Texture>(_texture);
 			if (!texture)
 			{
-				texture = assetManager.emplace<gfx::Texture>(_texture, _texture);
+				texture = assetManager.emplace<gfx::Texture>(_texture, _texture, textureModes);
 			}
 			return texture;
 		}
@@ -51,6 +52,11 @@ namespace se
 			auto result = gfx::createMaterial(gfx::DefaultMaterialType::Text, assetManager);
 			result->setFont(getFont(_font));
 			return result;
+		}
+
+		void GUIMaterialManager::setTextureModes(const gfx::TextureModes& _textureModes)
+		{
+			textureModes = _textureModes;
 		}
 	}
 }

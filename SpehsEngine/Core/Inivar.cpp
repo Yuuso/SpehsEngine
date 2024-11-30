@@ -35,7 +35,7 @@ namespace se
 			}
 			else
 			{
-				se::log::warning("Appvar::fromString() failed. Name: '" + readVar->name + "', value: '" + readVar->value + "'.");
+				log::warning("Appvar::fromString() failed. Name: '" + readVar->name + "', value: '" + readVar->value + "'.");
 				return false;
 			}
 		}

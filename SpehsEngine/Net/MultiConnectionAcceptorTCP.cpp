@@ -1,7 +1,8 @@
 #include "stdafx.h"
 #include "SpehsEngine/Net/MultiConnectionAcceptorTCP.h"
 
-#include <SpehsEngine/Core/Log.h>
+#include "SpehsEngine/Net/SocketTCP.h"
+#include "SpehsEngine/Core/Log.h"
 
 namespace se
 {
@@ -11,8 +12,13 @@ namespace se
 			: ioService(_ioService)
 			, port(_port)
 		{
-			awaitingAcceptingSocket.reset(new se::net::SocketTCP(ioService));
+			awaitingAcceptingSocket = ISocketTCP::create(ioService);
 			awaitingAcceptingSocket->startAccepting(port, std::bind(&MultiConnectionAcceptorTCP::onAcceptCallback, this, std::placeholders::_1));
+		}
+
+		MultiConnectionAcceptorTCP::~MultiConnectionAcceptorTCP()
+		{
+			// ~SocketTCP()
 		}
 
 		void MultiConnectionAcceptorTCP::update()
@@ -21,25 +27,25 @@ namespace se
 			{
 				awaitingAcceptingSocket->update();
 				se_assert(awaitingAcceptingSocket);
-				if (awaitingAcceptingSocket->getAcceptingState() == SocketTCP::AcceptingState::idle)
+				if (awaitingAcceptingSocket->getAcceptingState() == ISocketTCP::AcceptingState::idle)
 				{
 					if (accepting)
 					{
 						awaitingAcceptingSocket->startAccepting(port, std::bind(&MultiConnectionAcceptorTCP::onAcceptCallback, this, std::placeholders::_1));
 					}
 				}
-				else if (awaitingAcceptingSocket->getAcceptingState() == SocketTCP::AcceptingState::establishingConnection)
+				else if (awaitingAcceptingSocket->getAcceptingState() == ISocketTCP::AcceptingState::establishingConnection)
 				{
 					//Push to busy accepting sockets so that we can start taking in another connection
-					busyAcceptingSockets.push_back(std::unique_ptr<SocketTCP>(awaitingAcceptingSocket.release()));
-					awaitingAcceptingSocket.reset(new se::net::SocketTCP(ioService));
+					busyAcceptingSockets.push_back(std::unique_ptr<ISocketTCP>(awaitingAcceptingSocket.release()));
+					awaitingAcceptingSocket = ISocketTCP::create(ioService);
 					awaitingAcceptingSocket->startAccepting(port, std::bind(&MultiConnectionAcceptorTCP::onAcceptCallback, this, std::placeholders::_1));
 					awaitingAcceptingSocket->update();
 				}
 			}
 			else if (accepting)
 			{
-				awaitingAcceptingSocket.reset(new se::net::SocketTCP(ioService));
+				awaitingAcceptingSocket = ISocketTCP::create(ioService);
 				awaitingAcceptingSocket->startAccepting(port, std::bind(&MultiConnectionAcceptorTCP::onAcceptCallback, this, std::placeholders::_1));
 				awaitingAcceptingSocket->update();
 			}
@@ -58,7 +64,7 @@ namespace se
 		{
 			accepting = true;
 			log::info("MultiConnectionAcceptorTCP: started accepting connections");
-			awaitingAcceptingSocket.reset(new se::net::SocketTCP(ioService));
+			awaitingAcceptingSocket = ISocketTCP::create(ioService);
 			awaitingAcceptingSocket->startAccepting(port, std::bind(&MultiConnectionAcceptorTCP::onAcceptCallback, this, std::placeholders::_1));
 		}
 
@@ -67,7 +73,7 @@ namespace se
 			accepting = false;
 			if (awaitingAcceptingSocket)
 			{
-				if (awaitingAcceptingSocket->getAcceptingState() != SocketTCP::AcceptingState::idle)
+				if (awaitingAcceptingSocket->getAcceptingState() != ISocketTCP::AcceptingState::idle)
 				{
 					awaitingAcceptingSocket->stopAccepting();
 				}
@@ -75,7 +81,7 @@ namespace se
 			}
 			for (size_t i = 0; i < busyAcceptingSockets.size(); i++)
 			{
-				if (busyAcceptingSockets[i]->getAcceptingState() != SocketTCP::AcceptingState::idle)
+				if (busyAcceptingSockets[i]->getAcceptingState() != ISocketTCP::AcceptingState::idle)
 				{
 					busyAcceptingSockets[i]->stopAccepting();
 				}
@@ -84,19 +90,19 @@ namespace se
 			log::info("MultiConnectionAcceptorTCP: stopped accepting connections");
 		}
 
-		void MultiConnectionAcceptorTCP::onAcceptCallback(SocketTCP& socketTCP)
+		void MultiConnectionAcceptorTCP::onAcceptCallback(ISocketTCP& socketTCP)
 		{
 			if (&socketTCP == awaitingAcceptingSocket.get())
 			{
 				if (socketTCP.isConnected())
 				{
-					connectedSockets.push_back(std::unique_ptr<SocketTCP>(awaitingAcceptingSocket.release()));
-					awaitingAcceptingSocket.reset(new se::net::SocketTCP(ioService));
+					connectedSockets.push_back(std::unique_ptr<ISocketTCP>(awaitingAcceptingSocket.release()));
+					awaitingAcceptingSocket = ISocketTCP::create(ioService);
 					awaitingAcceptingSocket->startAccepting(port, std::bind(&MultiConnectionAcceptorTCP::onAcceptCallback, this, std::placeholders::_1));
 				}
 				else
 				{
-					se::log::info("Failed to accept client");
+					log::info("Failed to accept client");
 				}
 			}
 			else
@@ -107,11 +113,11 @@ namespace se
 					{
 						if (socketTCP.isConnected())
 						{
-							connectedSockets.push_back(std::unique_ptr<SocketTCP>(busyAcceptingSockets[i].release()));
+							connectedSockets.push_back(std::unique_ptr<ISocketTCP>(busyAcceptingSockets[i].release()));
 						}
 						else
 						{
-							se::log::info("Failed to accept client");
+							log::info("Failed to accept client");
 						}
 						busyAcceptingSockets[i].reset(busyAcceptingSockets.back().release());
 						busyAcceptingSockets.pop_back();
@@ -122,16 +128,16 @@ namespace se
 			}
 		}
 
-		const std::vector<std::unique_ptr<SocketTCP>>& MultiConnectionAcceptorTCP::getConnectedSockets() const
+		const std::vector<std::unique_ptr<ISocketTCP>>& MultiConnectionAcceptorTCP::getConnectedSockets() const
 		{
 			return connectedSockets;
 		}
 
-		void MultiConnectionAcceptorTCP::releaseConnectedSockets(std::vector<std::unique_ptr<SocketTCP>>& deposit)
+		void MultiConnectionAcceptorTCP::releaseConnectedSockets(std::vector<std::unique_ptr<ISocketTCP>>& deposit)
 		{
 			for (size_t i = 0; i < connectedSockets.size(); i++)
 			{
-				deposit.push_back(std::unique_ptr<SocketTCP>(connectedSockets[i].release()));
+				deposit.push_back(std::unique_ptr<ISocketTCP>(connectedSockets[i].release()));
 			}
 			connectedSockets.clear();
 		}

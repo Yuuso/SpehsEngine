@@ -2,34 +2,21 @@
 
 #include "SpehsEngine/Core/ByteVector.h"
 #include "SpehsEngine/Core/ByteView.h"
-#include "SpehsEngine/Core/SE_Time.h"
-#include "SpehsEngine/Core/SE_Assert.h"
 #include "SpehsEngine/Core/Serial/Serial.h"
-#include "boost/format.hpp"
-#include <string>
+
 
 namespace se
 {
-	inline std::string formatStringImpl(boost::format &format)
-	{
-		return boost::str(format);
-	}
-	template<typename T, typename... Args>
-	inline std::string formatStringImpl(boost::format& f, T&& t, Args&&... args)
-	{
-		return formatStringImpl(f % std::forward<T>(t), std::forward<Args>(args)...);
-	}
-	template<typename... Arguments>
-	inline std::string formatString(const std::string& format, Arguments&&... args)
-	{
-		boost::format boostFormat(format.c_str());
-		return formatStringImpl(boostFormat, std::forward<Arguments>(args)...);
-	}
 	template<typename... Arguments>
 	inline std::string formatString(const char* const format, Arguments&&... args)
 	{
-		boost::format boostFormat(format);
-		return formatStringImpl(boostFormat, std::forward<Arguments>(args)...);
+		const int lengthWithoutNullTerminator = std::snprintf(nullptr, 0, format, std::forward<Arguments>(args)...);
+		const int lengthWithNullTerminator = lengthWithoutNullTerminator + 1;
+		std::string result;
+		result.resize(lengthWithNullTerminator);
+		sprintf_s(result.data(), lengthWithNullTerminator, format, std::forward<Arguments>(args)...);
+		result.pop_back(); // Useless null terminator
+		return result;
 	}
 
 	template<> template<typename S, typename T>

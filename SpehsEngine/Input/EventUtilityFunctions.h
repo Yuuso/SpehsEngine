@@ -72,7 +72,7 @@ namespace std
 	};
 	template<> struct hash<se::input::QuitEvent>
 	{
-		size_t operator()(const se::input::QuitEvent& event) const
+		size_t operator()(const se::input::QuitEvent&) const
 		{
 			return size_t(1);
 		}

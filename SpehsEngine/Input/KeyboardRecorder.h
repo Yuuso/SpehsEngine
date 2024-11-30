@@ -1,13 +1,10 @@
 #pragma once
-#include <vector>
-#include "SpehsEngine/Core/SE_Time.h"
+
 
 namespace se
 {
 	namespace input
 	{
-		class InputManager;
-
 		/** This class can be used to record text input from the keyboard.
 		All input is divided into two types: character and command input.
 		Registered keystrokes can be obtained from the input vectors after the update.

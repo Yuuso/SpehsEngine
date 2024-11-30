@@ -19,11 +19,11 @@ namespace se
 		}
 
 		template<typename SeedType>
-		const T* get(se::rng::PRNG<SeedType>& rng) const
+		const T* get(rng::PRNG<SeedType>& rng) const
 		{
 			if (!values.empty())
 			{
-				float roll = rng.random<float>(0.0f, totalWeight);
+				float roll = getRandomFloat(rng, 0.0f, totalWeight);
 				for (const std::pair<float, T>& pair : values)
 				{
 					if (roll <= pair.first)
@@ -41,11 +41,11 @@ namespace se
 		}
 
 		template<typename SeedType>
-		const std::optional<size_t> getIndex(se::rng::PRNG<SeedType>& rng) const
+		const std::optional<size_t> getIndex(rng::PRNG<SeedType>& rng) const
 		{
 			if (!values.empty())
 			{
-				float roll = rng.random<float>(0.0f, totalWeight);
+				float roll = getRandomFloat(rng, 0.0f, totalWeight);
 				for (size_t i = 0; i < values.size(); i++)
 				{
 					const std::pair<float, T>& pair = values[i];

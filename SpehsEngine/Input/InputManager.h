@@ -1,27 +1,14 @@
 #pragma once
 
-#include <unordered_map>
-#include <string>
-#include <glm/vec2.hpp>
-#include <glm/vec4.hpp>
-
 #include "SpehsEngine/Input/InputEnumerations.h"
 #include "SpehsEngine/Input/GUID.h"
 #include "SpehsEngine/Input/Joystick.h"
 
-#define SINT16_MIN -32768
-#define SINT16_MAX  32767
-
-struct _SDL_Joystick;
-typedef struct _SDL_Joystick SDL_Joystick;
-typedef int32_t SDL_JoystickID;
 
 namespace se
 {
 	namespace input
 	{
-		class EventCatcher;
-
 		class InputManager
 		{
 		public:
@@ -74,8 +61,8 @@ namespace se
 
 			//Public access members
 			std::vector<Joystick*> joysticks;
-			KeyboardKey latestKeyboardPress = KeyboardKey::KEYBOARD_UNKNOWN;///< Latest key pressed. Reset for each update (0) if nothing was pressed during that update
-			KeyboardKey latestMouseButtonPress = KEYBOARD_UNKNOWN;///< Latest mouse buton pressed. Reset for each update (0) if nothing was pressed during that update
+			KeyboardKey latestKeyboardPress = KeyboardKey(0);///< Latest key pressed. Reset for each update (0) if nothing was pressed during that update
+			KeyboardKey latestMouseButtonPress = KeyboardKey(0);///< Latest mouse buton pressed. Reset for each update (0) if nothing was pressed during that update
 			std::unordered_map<unsigned int, bool> keyMap;
 			std::unordered_map<unsigned int, bool> previousKeyMap;
 

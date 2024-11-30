@@ -1,32 +1,11 @@
 #pragma once
 
-#include "boost/signals2/connection.hpp"
-#include "glm/ext/quaternion_float.hpp"
-#include "glm/vec4.hpp"
-#include "SpehsEngine/Core/Color.h"
-#include "SpehsEngine/Core/SE_Time.h"
-#include "SpehsEngine/Core/TimeUtilityFunctions.h"
 #include "SpehsEngine/ImGui/imgui.h"
 #include "SpehsEngine/ImGui/imgui_stdlib.h"
 #include "SpehsEngine/ImGui/ImGuiTypes.h"
 #include "SpehsEngine/ImGui/Utility/IState.h"
 #include "SpehsEngine/ImGui/Utility/String.h"
-#include <stdint.h>
 
-namespace se
-{
-	namespace input
-	{
-		class EventSignaler;
-		struct CustomEventParameters;
-		enum class Key : uint32_t;
-	}
-
-	namespace gfx
-	{
-		class Texture;
-	}
-}
 
 // Do not use directly, see macros below. Used to implement a dropdown selector for an enum. p_RangeStart value is inclusive, but p_RangeEnd is exclusive.
 #define SE_IMGUI_INPUT_ENUM_RANGE_2(p_EnumType, p_RangeStart, p_RangeEnd, p_ToStringFunction, p_InlineAndBool) \
@@ -226,27 +205,10 @@ namespace ImGui
 	{
 		return ColorEdit4(label, &(value)[0], flags);
 	}
-	inline bool InputT(const String label, se::time::Time& value,
+	bool InputT(const String label, se::time::Time& value,
 		const se::time::Time step = se::time::Time(1),
-		const se::time::Time stepFast = se::time::Time(1000), ImGuiInputTextFlags flags = 0)
-	{
-		const bool result = InputT(label, value.value, step.value, stepFast.value, "%llu", flags);
-		if (ImGui::IsItemHovered())
-		{
-			ImGui::SetTooltip(se::toTimeLengthString(value, 2).c_str());
-		}
-		return result;
-	}
-	inline bool InputAngle(const String label, float &radians)
-	{
-		float degrees = (radians / se::PI<float>) * 180.0f;
-		const bool changed = InputT(label, degrees);
-		if (changed)
-		{
-			radians = (degrees / 180.0f) * se::PI<float>;
-		}
-		return changed;
-	}
+		const se::time::Time stepFast = se::time::Time(1000), ImGuiInputTextFlags flags = 0);
+	bool InputAngle(const String label, float& radians);
 
 	template<typename T, typename ... Args>
 	bool InputT(const String label, std::vector<T>& vector, Args&& ... args)
@@ -346,47 +308,15 @@ namespace ImGui
 		return changed;
 	}
 
-	inline bool InputT(const String label, se::time::TimeInfo& timeInfo)
-	{
-		bool changed = false;
-		if (ImGui::CollapsingHeader(label))
-		{
-			changed |= ImGui::InputT("Day", timeInfo.monthDay);
-			if (ImGui::IsItemHovered())
-			{
-				ImGui::SetTooltip("Day of the month");
-			}
-			changed |= ImGui::InputT("Month", timeInfo.month);
-			changed |= ImGui::InputT("Year", timeInfo.year);
-			changed |= ImGui::InputT("Hour", timeInfo.hour);
-			changed |= ImGui::InputT("Minute", timeInfo.minute);
-			changed |= ImGui::InputT("Second", timeInfo.second);
-			changed |= ImGui::InputT("Dayligt savings flag", timeInfo.dayligtSavingsFlag);
-		}
-		return changed;
-	}
+	bool InputT(const String label, se::time::TimeInfo& timeInfo);
 
 	// Splits shown string into two parts, id part and mutable part. Useful when the contents of the header edit the shown header string.
-	inline bool CollapsingHeader2(const String idLabel, const String mutableLabel, const ImGuiTreeNodeFlags flags = 0)
-	{
-		const bool result = ImGui::CollapsingHeader(idLabel, flags);
-		ImGui::SameLine();
-		ImGui::Text("");
-		ImGui::SameLine();
-		ImGui::Text(mutableLabel);
-		return result;
-	}
+	bool CollapsingHeader2(const String idLabel, const String mutableLabel, const ImGuiTreeNodeFlags flags = 0);
 
-	inline bool BeginCentered(const String label, bool* const open, const ImGuiWindowFlags flags = 0, const ImGuiCond centerCondition = ImGuiCond_Appearing)
-	{
-		const ImGuiIO& io = ImGui::GetIO();
-		const ImVec2 displayCenter(io.DisplaySize.x * 0.5f, io.DisplaySize.y * 0.5f);
-		ImGui::SetNextWindowPos(displayCenter, centerCondition, ImVec2(0.5f, 0.5f));
-		return ImGui::Begin(label, open, flags);
-	}
+	bool BeginCentered(const String label, bool* const open, const ImGuiWindowFlags flags = 0, const ImGuiCond centerCondition = ImGuiCond_Appearing);
 
 	// NOTE: 'key' value must be valid in the scope of 'scopedConnection'
-	void keyBindButton(const String label, se::input::Key& key, se::input::EventSignaler& eventSignaler, boost::signals2::scoped_connection& scopedConnection);
+	void keyBindButton(const String label, se::input::Key& key, se::input::EventSignaler& eventSignaler, se::ScopedConnection& scopedConnection);
 
 	bool InputT(const String label, se::input::CustomEventParameters& customEventParameters, se::input::EventSignaler& eventSignaler, StateWrapper& stateWrapper);
 

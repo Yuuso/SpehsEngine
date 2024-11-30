@@ -2,6 +2,7 @@
 #include "SpehsEngine/Audio/AudioSource.h"
 
 #include "SpehsEngine/Audio/Internal/GlobalBackend.h"
+#include "SpehsEngine/Audio/Bus.h"
 
 
 namespace se
@@ -248,7 +249,7 @@ namespace se
 		{
 			if (!isHandleValid())
 			{
-				return se::time::Time::zero;
+				return time::Time::zero;
 			}
 			return time::fromSeconds(globalSoloud->getStreamPosition(handle));
 		}

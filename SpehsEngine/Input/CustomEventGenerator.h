@@ -86,7 +86,7 @@ namespace se
 			struct RegisteredCustomEvent
 			{
 				std::shared_ptr<uint32_t> id;
-				boost::signals2::scoped_connection scopedConnection;
+				ScopedConnection scopedConnection;
 			};
 
 			EventSignaler& eventSignaler;

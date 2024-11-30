@@ -1,7 +1,6 @@
 #pragma once
 
 #include "SpehsEngine/Core/SE_Time.h"
-#include <string>
 
 
 namespace se
@@ -19,11 +18,11 @@ namespace se
 
 			//Public attributes for maximum speed
 			float deltaSeconds = 0.0f;
-			se::time::Time deltaTime;
+			time::Time deltaTime;
 
 		private:
 			std::string name;
-			se::time::Time deltaTimestamp;
+			time::Time deltaTimestamp;
 		};
 	}
 }

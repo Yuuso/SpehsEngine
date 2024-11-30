@@ -26,7 +26,7 @@ namespace se
 
 			int getVoiceCount();
 
-			[[nodiscard]] boost::signals2::scoped_connection connectToDestroyedSignal(std::function<void()> _func);
+			[[nodiscard]] ScopedConnection connectToDestroyedSignal(std::function<void()> _func);
 
 		private:
 
@@ -37,7 +37,7 @@ namespace se
 
 			bool isMaster = false;
 			AudioBus* bus = nullptr;
-			boost::signals2::signal<void()> destroyedSignal;
+			Signal<void()> destroyedSignal;
 		};
 	}
 }

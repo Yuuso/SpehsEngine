@@ -1,6 +1,31 @@
 #pragma once
 
+namespace se
+{
+	namespace graphics
+	{
+		class Camera;
+		class Font;
+		class FontManager;
+		class ModelData;
+		class ModelDataManager;
+		class Primitive;
+		class Renderer;
+		class Scene;
+		class Shader;
+		class ShaderManager;
+		class Shape;
+		class ShapeGenerator;
+		class Texture;
+		class TextureManager;
+		class View;
+		class Window;
+		struct ResourceData;
+	}
+}
+
 #include "SpehsEngine/Graphics/Types.h"
+#include "SpehsEngine/Graphics/Material.h"
 
 namespace se::gfx
 {

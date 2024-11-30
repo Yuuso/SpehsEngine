@@ -1,8 +1,5 @@
 #pragma once
 
-#include <functional>
-#include "boost/signals2/signal.hpp"
-
 
 namespace se
 {
@@ -14,13 +11,13 @@ namespace se
 		public:
 
 			template<typename Packet>
-			void registerReceiveHandler(const PacketType packetType, boost::signals2::scoped_connection& scopedConnection, const std::function<void(Packet&)>& receiveHandler)
+			void registerReceiveHandler(const PacketType packetType, ScopedConnection& scopedConnection, const std::function<void(Packet&)>& receiveHandler)
 			{
-				boost::signals2::signal<void(se::BinaryReader&)>& signal = receiveHandlerSignals[packetType];
-				se_assert(signal.empty() && "Multiple sources shouldn't connect as a receive handler to a single packet type at the same time.");
-				if (signal.empty())
+				Signal<void(BinaryReader&)>& signal = receiveHandlerSignals[packetType];
+				se_assert(signal.isEmpty() && "Multiple sources shouldn't connect as a receive handler to a single packet type at the same time.");
+				if (signal.isEmpty())
 				{
-					scopedConnection = signal.connect([this, receiveHandler](se::BinaryReader& binaryReader)
+					scopedConnection = signal.connect([this, receiveHandler](BinaryReader& binaryReader)
 						{
 							Packet packet;
 							if (binaryReader.serial(packet))
@@ -29,16 +26,16 @@ namespace se
 							}
 							else
 							{
-								se::log::error("Failed to read packet contents");
+								log::error("Failed to read packet contents");
 							}
 						});
 				}
 			}
 
-			bool processPacket(const PacketType packetType, se::BinaryReader& binaryReader)
+			bool processPacket(const PacketType packetType, BinaryReader& binaryReader)
 			{
-				typename std::unordered_map<PacketType, boost::signals2::signal<void(se::BinaryReader&)>>::iterator it = receiveHandlerSignals.find(packetType);
-				if (it != receiveHandlerSignals.end() && !it->second.empty())
+				typename std::unordered_map<PacketType, Signal<void(BinaryReader&)>>::iterator it = receiveHandlerSignals.find(packetType);
+				if (it != receiveHandlerSignals.end() && !it->second.isEmpty())
 				{
 					it->second(binaryReader);
 					return true;
@@ -50,7 +47,7 @@ namespace se
 			}
 
 		private:
-			std::unordered_map<PacketType, boost::signals2::signal<void(se::BinaryReader&)>> receiveHandlerSignals;
+			std::unordered_map<PacketType, Signal<void(BinaryReader&)>> receiveHandlerSignals;
 		};
 	}
 }

@@ -1,8 +1,5 @@
 #pragma once
 
-#include <stdint.h>
-#include <string>
-
 #ifdef delay
 #undef delay
 #endif

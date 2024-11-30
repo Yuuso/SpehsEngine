@@ -1,11 +1,11 @@
 #pragma once
-#include <string>
+
 
 namespace se
 {
 	namespace input
 	{
-		enum class MouseButton
+		enum class MouseButton : uint32_t
 		{
 			None = 0,
 			Left = 1,

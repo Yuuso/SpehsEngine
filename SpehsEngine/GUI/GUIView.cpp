@@ -1,7 +1,11 @@
 #include "stdafx.h"
 #include "SpehsEngine/GUI/GUIView.h"
 
+#include "SpehsEngine/Core/AssetManager.h"
 #include "SpehsEngine/GUI/Internal/StencilMaskManager.h"
+#include "SpehsEngine/GUI/Internal/GUIMaterialManager.h"
+#include "SpehsEngine/GUI/GUIElement.h"
+#include "SpehsEngine/Input/EventSignaler.h"
 
 
 namespace se
@@ -12,8 +16,9 @@ namespace se
 
 		GUIView::GUIView(AssetManager& _assetManager, input::EventSignaler& _eventSignaler, int _inputPriority)
 			: view(scene, camera)
-			, materialManager(_assetManager)
 		{
+			materialManager = std::make_unique<GUIMaterialManager>(_assetManager);
+
 			view.setDrawCallSortOrder(gfx::DrawCallSortOrder::DepthAscending);
 			view.setClearFlags(gfx::ViewClearFlag::ClearDepth | gfx::ViewClearFlag::ClearStencil);
 			camera.setUp({ 0.0f, 1.0f, 0.0f });
@@ -42,13 +47,17 @@ namespace se
 		{
 			layerMaskStyle = _style;
 		}
+		void GUIView::setTextureModes(const gfx::TextureModes& _textureModes)
+		{
+			materialManager->setTextureModes(_textureModes);
+		}
 
 		void GUIView::update(glm::vec2 _renderSize)
 		{
 			camera.setPosition(glm::vec3{ _renderSize.x * 0.5f, -_renderSize.y * 0.5, cameraZPos });
 
-			auto stencilMaskManager = gui::createStencilMaskManager(layerMaskStyle);
-			UpdateContext context{ view.getScene(), materialManager, *stencilMaskManager, _renderSize };
+			auto stencilMaskManager = createStencilMaskManager(layerMaskStyle);
+			UpdateContext context{ view.getScene(), *materialManager, *stencilMaskManager, _renderSize };
 			for (size_t i = 0; i < rootElements.size(); i++)
 			{
 				se_assert(!rootElements[i]->parent);
@@ -115,7 +124,7 @@ namespace se
 			return rootElements;
 		}
 
-		boost::signals2::scoped_connection GUIView::connectToRootElementAddedSignal(const std::function<void(GUIElement&)>& callback)
+		ScopedConnection GUIView::connectToRootElementAddedSignal(const std::function<void(GUIElement&)>& callback)
 		{
 			return rootElementAddedSignal.connect(callback);
 		}

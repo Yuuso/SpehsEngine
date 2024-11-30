@@ -1,8 +1,5 @@
 #pragma once
 
-#include <string>
-#include <glm/gtc/quaternion.hpp>
-
 
 namespace se
 {
