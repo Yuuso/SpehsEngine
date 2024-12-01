@@ -120,20 +120,22 @@ namespace ImGui
 	SE_IMGUI_INPUT_SCALAR(double,	ImGuiDataType_::ImGuiDataType_Double,	"%.3f",	ImGuiInputTextFlags_CharsScientific)
 #undef SE_IMGUI_INPUT_SCALAR
 
-	inline bool Button(const String label, const ImVec2& size = ImVec2(0, 0))
+	inline bool Button(const String _label, const ImVec2& _size = ImVec2(0, 0))
 	{
-		return Button(label.pointer, size);
+		return Button(_label.pointer, _size);
 	}
+	
+	bool ButtonWithConfirm(const String _label, const ImVec2& _size = ImVec2(0, 0));
 
-	inline void Text(const String label)
+	inline void Text(const String _label)
 	{
-		Text(label.pointer);
+		Text(_label.pointer);
 	}
 
 	template<typename ... Args>
-	inline void TextColored(const se::Color& color, const String format, Args ... args)
+	inline void TextColored(const se::Color& _color, const String _format, Args ... _args)
 	{
-		TextColored((ImVec4&)color, format, args...);
+		TextColored((ImVec4&)_color, _format, _args...);
 	}
 
 	ImVec2 SizeToScale(const se::graphics::Texture& _texture, const ImVec2 _size);

@@ -45,6 +45,44 @@ namespace ImGui
 		return ImVec2(_size.x / float(_texture.getWidth()), _size.y / float(_texture.getHeight()));
 	}
 
+	bool ButtonWithConfirm(const String label, const ImVec2& size)
+	{
+		bool result = false;
+		const bool wasOpen = ImGui::GetStateStorage()->GetInt(ImGui::GetID(label)) != 0;
+		std::optional<int> newState;
+		if (Button(label))
+		{
+			if (wasOpen)
+			{
+				newState.emplace(0);
+			}
+			else
+			{
+				newState.emplace(1);
+			}
+		}
+		if (wasOpen)
+		{
+			Indent();
+			if (Button("Confirm", size))
+			{
+				ImGui::GetStateStorage()->SetInt(ImGui::GetID(label), 0);
+				result = true;
+				newState.emplace(0);
+			}
+			else if (Button("Cancel", size))
+			{
+				newState.emplace(0);
+			}
+			Unindent();
+		}
+		if (newState)
+		{
+			ImGui::GetStateStorage()->SetInt(ImGui::GetID(label), *newState);
+		}
+		return result;
+	}
+
 	void Image(
 		const se::graphics::Texture& _texture,
 		const ImVec2 scale,
