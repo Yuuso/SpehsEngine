@@ -66,21 +66,22 @@ namespace se
 				void, std::optional<typename FunctionTraits<Signature>::ResultType>>::type type;
 		};
 
+		// After the call, return the temporarily moved function back to the functions vector
 		template<typename Signature>
-		inline void postCallSignal(std::vector<std::function<Signature>>& _functions, std::function<Signature>&& _function, const size_t _callIndex)
+		inline void postCallSignal(std::vector<std::function<Signature>>& _functions, std::function<Signature>&& _function, const size_t _likelyIndex)
 		{
-			if (_callIndex > 0)
+			const size_t functionCount = _functions.size();
+			if (_likelyIndex < functionCount)
 			{
-				for (size_t i = _callIndex - 1; i < _functions.size(); i++)
+				// Try to quickly locate the empty index
+				if (!_functions[_likelyIndex])
 				{
-					if (!_functions[i])
-					{
-						std::swap(_function, _functions[i]);
-						return;
-					}
+					std::swap(_function, _functions[_likelyIndex]);
+					return;
 				}
 			}
-			for (size_t i = 0; i < _callIndex; i++)
+			// Search everything
+			for (size_t i = 0; i < functionCount; i++)
 			{
 				if (!_functions[i])
 				{
