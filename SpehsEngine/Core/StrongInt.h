@@ -1,9 +1,7 @@
 #pragma once
 
 
-#define SE_STRONG_INT(p_IntType, p_TypeName, p_InvalidValue) \
-struct p_TypeName \
-{ \
+#define SE_STRONG_INT_BASIC_IMPL(p_IntType, p_TypeName, p_DefaultValue) \
 	static_assert(std::is_integral<p_IntType>::value, "p_IntType must be an integral type."); \
 	typedef p_IntType ValueType;\
 	struct HashFunctor \
@@ -16,7 +14,6 @@ struct p_TypeName \
 				return size_t(strongInt.value); \
 		} \
 	}; \
-	constexpr bool isValid() const noexcept { return value != p_InvalidValue; } \
 	constexpr p_TypeName() noexcept = default; \
 	constexpr p_TypeName(const p_IntType _value) noexcept : value(_value) {} \
 	constexpr p_TypeName(const p_TypeName &_other) noexcept : value(_other.value) {} \
@@ -25,9 +22,24 @@ struct p_TypeName \
 	constexpr void operator=(const p_TypeName& other) noexcept { value = other.value; }; \
 	constexpr void operator=(p_TypeName&& other) noexcept { value = other.value; } \
 	constexpr p_TypeName operator++(int) noexcept { return p_TypeName(value++); } \
-	constexpr explicit operator bool() const noexcept { return value != p_InvalidValue; } \
 	constexpr operator p_IntType() const noexcept { return value; } \
-	p_IntType value = p_InvalidValue; \
+	p_IntType value = p_DefaultValue;
+
+#define SE_STRONG_INT_INVALID_IMPL(p_InvalidValue) \
+	constexpr bool isValid() const noexcept { return value != p_InvalidValue; } \
+	constexpr explicit operator bool() const noexcept { return value != p_InvalidValue; } \
+
+#define SE_STRONG_INT(p_IntType, p_TypeName, p_InvalidValue) \
+struct p_TypeName \
+{ \
+	SE_STRONG_INT_INVALID_IMPL(p_InvalidValue) \
+	SE_STRONG_INT_BASIC_IMPL(p_IntType, p_TypeName, p_InvalidValue) \
+};
+
+#define SE_STRONG_INT_WITHOUT_INVALID(p_IntType, p_TypeName, p_DefaultValue) \
+struct p_TypeName \
+{ \
+	SE_STRONG_INT_BASIC_IMPL(p_IntType, p_TypeName, p_DefaultValue) \
 };
 
 // Must be used from the global namespace
