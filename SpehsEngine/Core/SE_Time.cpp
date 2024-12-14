@@ -179,46 +179,5 @@ namespace se
 			second.push_back(__TIME__[7]);
 			return second;
 		}
-
-		//TIME STRUCT
-#pragma region TIME STRUCT
-		const Time Time::zero = Time(0);
-		Time::Time(const Time& other)
-			: value(other.value)
-		{
-		}
-		Time Time::operator*(const double factor) const { return Time(TimeValueType((double)value * factor)); }
-		Time Time::operator*(const float factor) const { return Time(TimeValueType((float)value * factor)); }
-		Time Time::operator*(const int factor) const { return Time(value * (TimeValueType)factor); }
-		Time Time::operator*(const TimeValueType factor) const { return Time(value * factor); }
-		Time Time::operator/(const double factor) const { return Time(TimeValueType((double)value / factor)); }
-		Time Time::operator/(const float factor) const { return Time(TimeValueType((float)value / factor)); }
-		Time Time::operator/(const int factor) const { return Time(value / (TimeValueType)factor); }
-		Time Time::operator/(const TimeValueType factor) const { return Time(value / factor); }
-		Time Time::operator+(const Time& other) const { return Time(value + other.value); }
-		Time Time::operator-(const Time& other) const { return Time(value - other.value); }
-		Time Time::operator-() const { return Time(-value); }
-		void Time::operator=(const Time& other) { value = other.value; }
-		void Time::operator*=(const double factor) { value = TimeValueType((double)value * factor); }
-		void Time::operator*=(const float factor) { value = TimeValueType((float)value * factor); }
-		void Time::operator*=(const int factor) { value *= (TimeValueType)factor; }
-		void Time::operator*=(const TimeValueType factor) { value *= factor; }
-		void Time::operator/=(const double divisor) { value = TimeValueType((double)value / divisor); }
-		void Time::operator/=(const float divisor) { value = TimeValueType((float)value / divisor); }
-		void Time::operator/=(const int divisor) { value /= (TimeValueType)divisor; }
-		void Time::operator/=(const TimeValueType divisor) { value /= divisor; }
-		void Time::operator+=(const Time& other) { value += other.value; }
-		void Time::operator-=(const Time& other) { value -= other.value; }
-		bool Time::operator==(const Time& other) const { return value == other.value; }
-		bool Time::operator!=(const Time& other) const { return value != other.value; }
-		bool Time::operator>(const Time& other) const { return value > other.value; }
-		bool Time::operator<(const Time& other) const { return value < other.value; }
-		bool Time::operator>=(const Time& other) const { return value >= other.value; }
-		bool Time::operator<=(const Time& other) const { return value <= other.value; }
-		Time operator*(const double multiplier, const Time time) { return Time(TimeValueType((double)time.value * multiplier)); }
-		Time operator*(const float multiplier, const Time time) { return Time(TimeValueType((float)time.value * multiplier)); }
-		Time operator*(const int multiplier, const Time time) { return Time(time.value * (TimeValueType)multiplier); }
-		Time operator*(const TimeValueType multiplier, const Time time) { return Time(time.value * multiplier); }
-#pragma endregion
 	}
 }

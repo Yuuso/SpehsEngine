@@ -22,66 +22,65 @@ namespace se
 		{
 		public:
 
-			constexpr Time();
-			constexpr Time(const TimeValueType _value);
-			Time(const Time& other);
-
 			static const Time zero;
 
-			void operator*=(const double factor);
-			void operator*=(const float factor);
-			void operator*=(const int factor);
-			void operator*=(const TimeValueType factor);
-			void operator/=(const double divisor);
-			void operator/=(const float divisor);
-			void operator/=(const int divisor);
-			void operator/=(const TimeValueType divisor);
-			void operator+=(const Time& other);
-			void operator-=(const Time& other);
-			Time operator*(const double factor) const;
-			Time operator*(const float factor) const;
-			Time operator*(const int factor) const;
-			Time operator*(const TimeValueType factor) const;
-			Time operator/(const double divisor) const;
-			Time operator/(const float divisor) const;
-			Time operator/(const int divisor) const;
-			Time operator/(const TimeValueType divisor) const;
-			Time operator+(const Time& other) const;
-			Time operator-(const Time& other) const;
-			Time operator-() const;
-			void operator=(const Time& other);
-			bool operator==(const Time& other) const;
-			bool operator!=(const Time& other) const;
-			bool operator>(const Time& other) const;
-			bool operator<(const Time& other) const;
-			bool operator>=(const Time& other) const;
-			bool operator<=(const Time& other) const;
+			constexpr Time() : value(0) {}
+			constexpr Time(const TimeValueType _value) : value(_value) {}
+			constexpr Time(const Time& _other) : value(_other.value) {}
+			
+			constexpr Time operator-() const								{ return Time(-value); }
+			constexpr Time operator*(const double _factor) const			{ return Time(TimeValueType((double)value * _factor)); }
+			constexpr Time operator*(const float _factor) const				{ return Time(TimeValueType((float)value * _factor)); }
+			constexpr Time operator*(const int _factor) const				{ return Time(value * (TimeValueType)_factor); }
+			constexpr Time operator*(const TimeValueType _factor) const		{ return Time(value * _factor); }
+			constexpr Time operator/(const double _factor) const			{ return Time(TimeValueType((double)value / _factor)); }
+			constexpr Time operator/(const float _factor) const				{ return Time(TimeValueType((float)value / _factor)); }
+			constexpr Time operator/(const int _factor) const				{ return Time(value / (TimeValueType)_factor); }
+			constexpr Time operator/(const TimeValueType _factor) const		{ return Time(value / _factor); }
+			constexpr Time operator+(const Time& _other) const				{ return Time(value + _other.value); }
+			constexpr Time operator-(const Time& _other) const				{ return Time(value - _other.value); }
+			constexpr void operator=(const Time& _other)					{ value = _other.value; }
+			constexpr void operator*=(const double _factor)					{ value = TimeValueType((double)value * _factor); }
+			constexpr void operator*=(const float _factor)					{ value = TimeValueType((float)value * _factor); }
+			constexpr void operator*=(const int _factor)					{ value *= (TimeValueType)_factor; }
+			constexpr void operator*=(const TimeValueType _factor)			{ value *= _factor; }
+			constexpr void operator/=(const double divisor)					{ value = TimeValueType((double)value / divisor); }
+			constexpr void operator/=(const float divisor)					{ value = TimeValueType((float)value / divisor); }
+			constexpr void operator/=(const int divisor)					{ value /= (TimeValueType)divisor; }
+			constexpr void operator/=(const TimeValueType divisor)			{ value /= divisor; }
+			constexpr void operator+=(const Time& _other)					{ value += _other.value; }
+			constexpr void operator-=(const Time& _other)					{ value -= _other.value; }
+			constexpr bool operator==(const Time& _other) const				{ return value == _other.value; }
+			constexpr bool operator!=(const Time& _other) const				{ return value != _other.value; }
+			constexpr bool operator>(const Time& _other) const				{ return value > _other.value; }
+			constexpr bool operator<(const Time& _other) const				{ return value < _other.value; }
+			constexpr bool operator>=(const Time& _other) const				{ return value >= _other.value; }
+			constexpr bool operator<=(const Time& _other) const				{ return value <= _other.value; }
 
-			template<typename T = float> inline constexpr T asSeconds() const		{ return (T)value / (T)conversionRate::second;		}
-			template<typename T = float> inline constexpr T asMilliseconds() const	{ return (T)value / (T)conversionRate::millisecond; }
-			template<typename T = float> inline constexpr T asMicroseconds() const	{ return (T)value / (T)conversionRate::microsecond; }
-			template<typename T = float> inline constexpr T asNanoseconds() const	{ return (T)value / (T)conversionRate::nanosecond;	}
+			template<typename T = float> constexpr T asSeconds() const		{ return (T)value / (T)conversionRate::second; }
+			template<typename T = float> constexpr T asMilliseconds() const	{ return (T)value / (T)conversionRate::millisecond; }
+			template<typename T = float> constexpr T asMicroseconds() const	{ return (T)value / (T)conversionRate::microsecond; }
+			template<typename T = float> constexpr T asNanoseconds() const	{ return (T)value / (T)conversionRate::nanosecond;	}
 
 			TimeValueType value;
 		};
 
-		constexpr Time::Time()
-			: value(0) { }
-		constexpr Time::Time(const TimeValueType _value)
-			: value(_value) { }
+		inline constexpr const Time Time::zero = Time(0);
 
-		Time operator*(const float multiplier, const Time time);
-		Time operator*(const int multiplier, const Time time);
+		constexpr Time operator*(const double _multiplier, const Time _time)		{ return Time(TimeValueType((double)_time.value * _multiplier)); }
+		constexpr Time operator*(const float _multiplier, const Time _time)			{ return Time(TimeValueType((float)_time.value * _multiplier)); }
+		constexpr Time operator*(const int _multiplier, const Time _time)			{ return Time(_time.value * (TimeValueType)_multiplier); }
+		constexpr Time operator*(const TimeValueType _multiplier, const Time _time)	{ return Time(_time.value * _multiplier); }
 
-		template<typename T = float> inline T asSeconds(const Time time)		{ return time.asSeconds<T>();		}
-		template<typename T = float> inline T asMilliseconds(const Time time)	{ return time.asMilliseconds<T>();	}
-		template<typename T = float> inline T asMicroseconds(const Time time)	{ return time.asMicroseconds<T>();	}
-		template<typename T = float> inline T asNanoseconds(const Time time)	{ return time.asNanoseconds<T>();	}
+		template<typename T = float> constexpr T asSeconds(const Time _time)		{ return _time.asSeconds<T>(); }
+		template<typename T = float> constexpr T asMilliseconds(const Time _time)	{ return _time.asMilliseconds<T>(); }
+		template<typename T = float> constexpr T asMicroseconds(const Time _time)	{ return _time.asMicroseconds<T>(); }
+		template<typename T = float> constexpr T asNanoseconds(const Time _time)	{ return _time.asNanoseconds<T>(); }
 
-		inline constexpr Time fromSeconds(const double seconds)				{ return TimeValueType(seconds * static_cast<double>(conversionRate::second)); }
-		inline constexpr Time fromMilliseconds(const double milliseconds)	{ return TimeValueType(milliseconds * static_cast<double>(conversionRate::millisecond)); }
-		inline constexpr Time fromMicroseconds(const double microseconds)	{ return TimeValueType(microseconds * static_cast<double>(conversionRate::microsecond)); }
-		inline constexpr Time fromNanoseconds(const double nanoseconds)		{ return TimeValueType(nanoseconds * static_cast<double>(conversionRate::nanosecond)); }
+		constexpr Time fromSeconds(const double _seconds)							{ return TimeValueType(_seconds * static_cast<double>(conversionRate::second)); }
+		constexpr Time fromMilliseconds(const double _milliseconds)					{ return TimeValueType(_milliseconds * static_cast<double>(conversionRate::millisecond)); }
+		constexpr Time fromMicroseconds(const double _microseconds)					{ return TimeValueType(_microseconds * static_cast<double>(conversionRate::microsecond)); }
+		constexpr Time fromNanoseconds(const double _nanoseconds)					{ return TimeValueType(_nanoseconds * static_cast<double>(conversionRate::nanosecond)); }
 
 		/* Initializes the time system. */
 		void initialize();
