@@ -17,6 +17,9 @@ namespace se
 		static inline constexpr bool getWritingEnabled()	{ return true; }
 		static inline constexpr bool getReadingEnabled()	{ return false; }
 
+		constexpr BinaryWriter() = default;
+		constexpr BinaryWriter(std::vector<uint8_t>&& _data) : data(std::move(_data)) { offset = data.size(); }
+
 		template<typename T>
 		inline bool serial(const T& _value);
 
@@ -29,6 +32,7 @@ namespace se
 			serial(_t);
 			setOffset(restoreOffset);
 		}
+
 		void translate(const int _bytes)
 		{
 			se_assert(_bytes > 0 || offset >= size_t(std::abs(_bytes)));
@@ -38,14 +42,16 @@ namespace se
 			}
 			offset += _bytes;
 		}
-		inline void setOffset(const size_t _offset)		{ translate(int(_offset) - int(getOffset())); }
-		inline const uint8_t* getData() const			{ return data.data(); }
-		inline size_t getOffset() const					{ return offset; }
-		inline size_t getSize() const					{ return data.size(); }
-		inline void reserve(const size_t _capacity)		{ data.reserve(_capacity); }
-		inline void resize(const size_t _size)			{ data.resize(_size);	offset = std::min(offset, _size); }
-		inline void swap(std::vector<uint8_t>& _other)	{ data.swap(_other);	offset = data.size(); }
-		inline void clear()								{ data.clear();			offset = 0; }
+
+		inline void setOffset(const size_t _offset)			{ translate(int(_offset) - int(getOffset())); }
+		inline void reserve(const size_t _capacity)			{ data.reserve(_capacity); }
+		inline void resize(const size_t _size)				{ data.resize(_size);	offset = std::min(offset, _size); }
+		inline void swap(std::vector<uint8_t>& _other)		{ data.swap(_other);	offset = data.size(); }
+		inline void clear()									{ data.clear();			offset = 0; }
+		inline const std::vector<uint8_t> getVector() const	{ return data; }
+		inline const uint8_t* getData() const				{ return data.data(); }
+		inline size_t getSize() const						{ return data.size(); }
+		inline size_t getOffset() const						{ return offset; }
 
 	private:
 		std::vector<uint8_t> data;
