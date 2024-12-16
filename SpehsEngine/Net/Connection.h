@@ -63,6 +63,7 @@ namespace se
 
 			void setPacketReceivingEnabled(const bool _enabled);
 
+			bool sendPacket(const std::vector<uint8_t>& _data, const bool _reliable);
 			bool sendPacket(const BinaryWriter& _binaryWriter, const bool _reliable);
 
 			void disconnect(const std::string& _reason = "");

@@ -73,24 +73,25 @@ namespace se
 			packetReceivingEnabled = _enabled;
 		}
 
-		bool Connection::sendPacket(const BinaryWriter& binaryWriter, const bool reliable)
+		inline bool Connection::sendPacket(const std::vector<uint8_t>& _data, const bool _reliable)
 		{
-			const int flags = reliable ? k_nSteamNetworkingSend_Reliable : k_nSteamNetworkingSend_Unreliable;
-			const EResult result = state->steamNetworkingSockets.SendMessageToConnection(state->steamNetConnection, binaryWriter.getData(), uint32_t(binaryWriter.getSize()), flags, nullptr);
+			const int flags = _reliable ? k_nSteamNetworkingSend_Reliable : k_nSteamNetworkingSend_Unreliable;
+			const EResult result = state->steamNetworkingSockets.SendMessageToConnection(state->steamNetConnection, _data.data(), uint32_t(_data.size()), flags, nullptr);
 			if (result == k_EResultOK)
 			{
-				if (reliable)
+				const int64_t sentSize = int64_t(_data.size());
+				if (_reliable)
 				{
 					statistics.sentPacketsReliable++;
-					statistics.sentBytesReliable += int64_t(binaryWriter.getSize());
+					statistics.sentBytesReliable += sentSize;
 				}
 				else
 				{
 					statistics.sentPacketsUnreliable++;
-					statistics.sentBytesUnreliable += int64_t(binaryWriter.getSize());
+					statistics.sentBytesUnreliable += sentSize;
 				}
 				statistics.sentPacketsTotal++;
-				statistics.sentBytesTotal += int64_t(binaryWriter.getSize());
+				statistics.sentBytesTotal += sentSize;
 				return true;
 			}
 			else
@@ -106,6 +107,11 @@ namespace se
 				}
 				return false;
 			}
+		}
+
+		bool Connection::sendPacket(const BinaryWriter& binaryWriter, const bool reliable)
+		{
+			return sendPacket(binaryWriter.getVector(), reliable);
 		}
 
 		void Connection::disconnect(const std::string& reason)
