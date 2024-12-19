@@ -9,7 +9,7 @@ namespace ImGui
 		constexpr String(const char* const _string) : pointer(_string) {}
 		String(const std::string& _string) : pointer(_string.c_str()) {}
 		constexpr operator const char* () const { return pointer; }
-		constexpr operator bool () const { return pointer != nullptr; }
+		constexpr explicit operator bool () const { return pointer != nullptr; }
 		const char* const pointer = nullptr;
 	};
 }
