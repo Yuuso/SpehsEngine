@@ -278,13 +278,8 @@ namespace se
 					globalPosition.y += pixelOffset.y;
 
 					globalScissor.enabled = true;
-					globalScissor.x = glm::max(globalScissor.x, static_cast<uint16_t>(globalPosition.x));
-					globalScissor.y = glm::max(globalScissor.y, static_cast<uint16_t>(-globalPosition.y));
-					globalScissor.width = glm::min(globalScissor.width, static_cast<uint16_t>(pixelSize.x * globalScale.x));
-					globalScissor.height = glm::min(globalScissor.height, static_cast<uint16_t>(pixelSize.y * globalScale.y));
-
-					globalScissor.x = static_cast<uint16_t>(globalPosition.x);
-					globalScissor.y = static_cast<uint16_t>(-globalPosition.y);
+					globalScissor.x = static_cast<uint16_t>(std::max(0.0f, globalPosition.x));
+					globalScissor.y = static_cast<uint16_t>(std::max(0.0f, -globalPosition.y));
 					globalScissor.width = static_cast<uint16_t>(pixelSize.x * globalScale.x);
 					globalScissor.height = static_cast<uint16_t>(pixelSize.y * globalScale.y);
 				}
