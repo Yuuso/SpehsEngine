@@ -278,10 +278,26 @@ namespace se
 					globalPosition.y += pixelOffset.y;
 
 					globalScissor.enabled = true;
-					globalScissor.x = static_cast<uint16_t>(std::max(0.0f, globalPosition.x));
-					globalScissor.y = static_cast<uint16_t>(std::max(0.0f, -globalPosition.y));
-					globalScissor.width = static_cast<uint16_t>(pixelSize.x * globalScale.x);
-					globalScissor.height = static_cast<uint16_t>(pixelSize.y * globalScale.y);
+					if (globalPosition.x >= 0.0f)
+					{
+						globalScissor.x = static_cast<uint16_t>(globalPosition.x);
+						globalScissor.width = static_cast<uint16_t>(pixelSize.x * globalScale.x);
+					}
+					else
+					{
+						globalScissor.x = 0;
+						globalScissor.width = static_cast<uint16_t>(std::max(0.0f, pixelSize.x * globalScale.x + globalPosition.x));
+					}
+					if (globalPosition.y < 0.0f)
+					{
+						globalScissor.y = static_cast<uint16_t>(-globalPosition.y);
+						globalScissor.height = static_cast<uint16_t>(pixelSize.y * globalScale.y);
+					}
+					else
+					{
+						globalScissor.y = 0;
+						globalScissor.height = static_cast<uint16_t>(std::max(0.0f, pixelSize.y * globalScale.y - globalPosition.y));
+					}
 				}
 			}
 
