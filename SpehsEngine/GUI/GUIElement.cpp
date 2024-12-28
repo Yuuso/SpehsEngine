@@ -280,23 +280,23 @@ namespace se
 					globalScissor.enabled = true;
 					if (globalPosition.x >= 0.0f)
 					{
-						globalScissor.x = static_cast<uint16_t>(globalPosition.x);
-						globalScissor.width = static_cast<uint16_t>(pixelSize.x * globalScale.x);
+						globalScissor.x = static_cast<uint16_t>(rintf(globalPosition.x));
+						globalScissor.width = static_cast<uint16_t>(rintf(pixelSize.x * globalScale.x));
 					}
 					else
 					{
 						globalScissor.x = 0;
-						globalScissor.width = static_cast<uint16_t>(std::max(0.0f, pixelSize.x * globalScale.x + globalPosition.x));
+						globalScissor.width = static_cast<uint16_t>(std::max(0.0f, rintf(pixelSize.x * globalScale.x + globalPosition.x)));
 					}
 					if (globalPosition.y < 0.0f)
 					{
-						globalScissor.y = static_cast<uint16_t>(-globalPosition.y);
-						globalScissor.height = static_cast<uint16_t>(pixelSize.y * globalScale.y);
+						globalScissor.y = static_cast<uint16_t>(rintf(-globalPosition.y));
+						globalScissor.height = static_cast<uint16_t>(rintf(pixelSize.y * globalScale.y));
 					}
 					else
 					{
 						globalScissor.y = 0;
-						globalScissor.height = static_cast<uint16_t>(std::max(0.0f, pixelSize.y * globalScale.y - globalPosition.y));
+						globalScissor.height = static_cast<uint16_t>(std::max(0.0f, rintf(pixelSize.y * globalScale.y - globalPosition.y)));
 					}
 				}
 			}
