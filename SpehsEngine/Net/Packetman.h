@@ -19,6 +19,7 @@ namespace se
 			void update();
 
 			void setPacketReceivingEnabled(const bool _enabled);
+			bool getPacketReceivingEnabled() const;
 
 			// Send without result
 			template<typename Packet>
@@ -153,6 +154,12 @@ namespace se
 		void Packetman<PacketType>::setPacketReceivingEnabled(const bool _enabled)
 		{
 			connection.setPacketReceivingEnabled(_enabled);
+		}
+
+		template<typename PacketType>
+		bool Packetman<PacketType>::getPacketReceivingEnabled() const
+		{
+			return connection.getPacketReceivingEnabled();
 		}
 
 		template<typename PacketType>

@@ -62,6 +62,7 @@ namespace se
 			void update();
 
 			void setPacketReceivingEnabled(const bool _enabled);
+			bool getPacketReceivingEnabled() const;
 
 			bool sendPacket(const std::vector<uint8_t>& _data, const bool _reliable);
 			bool sendPacket(const BinaryWriter& _binaryWriter, const bool _reliable);

@@ -73,6 +73,11 @@ namespace se
 			packetReceivingEnabled = _enabled;
 		}
 
+		bool Connection::getPacketReceivingEnabled() const
+		{
+			return packetReceivingEnabled;
+		}
+
 		inline bool Connection::sendPacket(const std::vector<uint8_t>& _data, const bool _reliable)
 		{
 			const int flags = _reliable ? k_nSteamNetworkingSend_Reliable : k_nSteamNetworkingSend_Unreliable;
