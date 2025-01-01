@@ -69,8 +69,15 @@ namespace se
 				{
 					glm::vec3 globalPosition;
 					glm::quat globalRotation;
-					glm::vec3 globalScale;
-					decomposeTransformationMatrix(globalTrasform, &globalPosition, &globalRotation, &globalScale);
+					decomposeTransformationMatrix(globalTrasform, &globalPosition, &globalRotation, nullptr);
+
+					/*
+						Something breaks if both x/y are negative, but somehow this works if they are flipped here.
+					*/
+					const glm::vec2& scale = getScale();
+					const glm::vec3 globalScale = (scale.x < 0.0f && scale.y < 0.0f)
+						? glm::vec3(-scale.x, -scale.y, 1.0f)
+						: glm::vec3(scale.x, scale.y, 1.0f);
 
 					shape.setPosition(globalPosition);
 					shape.setRotation(globalRotation);

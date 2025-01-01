@@ -12,7 +12,7 @@ namespace se
 {
 	glm::mat4 constructTransformationMatrix(const glm::vec3& _pos, const glm::quat& _rot, const glm::vec3& _scale)
 	{
-		return glm::translate(_pos) * glm::mat4_cast(_rot) * glm::scale(glm::vec3(_scale));
+		return glm::translate(_pos) * glm::mat4_cast(_rot) * glm::scale(_scale);
 	}
 	void decomposeTransformationMatrix(const glm::mat4& _transformationMatrix, glm::vec3* _pos, glm::quat* _rot, glm::vec3* _scale)
 	{
@@ -28,6 +28,7 @@ namespace se
 
 		if (_scale)
 		{
+			// TODO: this does not work for negative scale values
 			(*_scale).x = glm::length(glm::vec3(m[0][0], m[0][1], m[0][2]));
 			(*_scale).y = glm::length(glm::vec3(m[1][0], m[1][1], m[1][2]));
 			(*_scale).z = glm::length(glm::vec3(m[2][0], m[2][1], m[2][2]));
