@@ -46,6 +46,9 @@ namespace se
 			// Can be used for more descriptive debug messages
 			void setDebugToStringFunction(const std::function<const char*(PacketType)>&& _function) { debugToStringFunction = _function; }
 
+			// This signal may be useful if you need to make sure that the receive handler result gets sent first before sending another packet.
+			[[nodiscard]] se::ScopedConnection connectToPostReceiveHandlerSignal(const std::function<void()>& _callback) { return postReceiveHandlerSignal.connect(_callback); }
+
 		private:
 			struct IReceiver
 			{
@@ -116,6 +119,7 @@ namespace se
 			std::unordered_map<uint16_t, std::unique_ptr<IRequest>> requests;
 			uint16_t nextRequestId = 1;
 			Connection& connection;
+			Signal<void()> postReceiveHandlerSignal;
 			std::function<const char* (PacketType)> debugToStringFunction;
 		};
 
@@ -237,6 +241,7 @@ namespace se
 					return;
 				}
 				receiver->get()->process(*this, _binaryReader, _reliable, packetId, connection);
+				postReceiveHandlerSignal();
 				return;
 			}
 		}
