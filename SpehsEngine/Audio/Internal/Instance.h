@@ -21,10 +21,10 @@ namespace se
 
 
 			/// Volume setting, 0.0 - ?
-			void setVolume(float _volume, time::Time _fade = time::Time::zero);
+			void setVolume(float _volume, Time _fade = Time::zero);
 
 			/// Pan setting, -1.0: left, 0.0: middle, 1.0: right
-			void setPan(float _pan, time::Time _fade = time::Time::zero);
+			void setPan(float _pan, Time _fade = Time::zero);
 
 
 			float getAudibleVolume() const;
@@ -42,8 +42,8 @@ namespace se
 
 		private:
 
-			void applyVolume(time::Time _fade = time::Time::zero);
-			void applyPan(time::Time _fade = time::Time::zero);
+			void applyVolume(Time _fade = Time::zero);
+			void applyPan(Time _fade = Time::zero);
 
 			float volume = 1.0f;
 			float pan = 0.0f;

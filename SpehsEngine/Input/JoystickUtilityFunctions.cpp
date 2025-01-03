@@ -145,7 +145,7 @@ namespace se
 			return JoystickHatState::Center;
 		}
 
-		bool setJoystickRumble(const JoystickId joystickId, const uint16_t lowFrequency, const uint16_t highFrequency, const time::Time duration)
+		bool setJoystickRumble(const JoystickId joystickId, const uint16_t lowFrequency, const uint16_t highFrequency, const Time duration)
 		{
 			SDL_Joystick* const joystickSdl = getJoystickSdl(joystickId);
 			se_assert(joystickSdl);

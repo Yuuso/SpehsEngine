@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?> 
 <AutoVisualizer xmlns="http://schemas.microsoft.com/vstudio/debugger/natvis/2010">
-  <Type Name="se::time::Time">
+  <Type Name="se::Time">
     <DisplayString Condition="value == 0">0</DisplayString>
     <DisplayString Condition="1000 > value">{value} ns</DisplayString>
     <DisplayString Condition="1000000 > value">{value / 1000} µs</DisplayString>

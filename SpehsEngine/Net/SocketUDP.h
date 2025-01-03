@@ -49,8 +49,8 @@ namespace se
 			virtual bool isReceiving() const = 0;
 
 			/* Heartbeat packets are sent between set intervals (requires calling update()). When set to 0, no heartbeats are sent. */
-			virtual void setHeartbeatInterval(const time::Time interval) = 0;
-			virtual time::Time getHeartbeatInterval() const = 0;
+			virtual void setHeartbeatInterval(const Time interval) = 0;
+			virtual Time getHeartbeatInterval() const = 0;
 			
 			/* Received packets must be processed with a specified receive handler. While there exists no callback, all incoming packets are discarded. */
 			virtual void setOnReceiveCallback(const std::function<void(BinaryReader&, const Endpoint&)> onReceiveCallback = std::function<void(BinaryReader&, const Endpoint&)>()) = 0;

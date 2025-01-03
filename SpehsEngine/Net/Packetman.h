@@ -60,7 +60,7 @@ namespace se
 			{
 				virtual ~IRequest() {}
 				virtual void process(BinaryReader& _binaryReader) = 0;
-				virtual bool timeout(const time::Time& timeout) = 0;
+				virtual bool timeout(const Time& timeout) = 0;
 				virtual void fail() = 0;
 				virtual PacketType getPacketType() const = 0;
 			};
@@ -129,9 +129,9 @@ namespace se
 			for (typename std::unordered_map<uint16_t, std::unique_ptr<IRequest>>::iterator it = requests.begin(); it != requests.end(); )
 			{
 #if SE_CONFIGURATION == SE_CONFIGURATION_FINAL_RELEASE
-				const time::Time timeout = time::fromSeconds(10.0f);
+				const Time timeout = Time::fromSeconds(10.0f);
 #else
-				const time::Time timeout = time::fromSeconds(99999.9f);
+				const Time timeout = Time::fromSeconds(99999.9f);
 #endif
 				const uint16_t requestId = it->first;
 				if (it->second->timeout(timeout))
@@ -275,7 +275,7 @@ namespace se
 				struct Request : public IRequest
 				{
 					Request()
-						: beginTime(time::now())
+						: beginTime(getEpochTime())
 					{
 					}
 					PacketType getPacketType() const final
@@ -295,13 +295,13 @@ namespace se
 							se_assert(false && "Failed to read result as the expected type");
 						}
 					}
-					bool timeout(const time::Time& timeout) final
+					bool timeout(const Time& timeout) final
 					{
 						if (signal.isEmpty())
 						{
 							return true;
 						}
-						const time::Time age = time::now() - beginTime;
+						const Time age = getEpochTime() - beginTime;
 						if (age > timeout)
 						{
 							signal(nullptr);
@@ -317,7 +317,7 @@ namespace se
 						signal(nullptr);
 					}
 					Signal<void(Result* const)> signal;
-					time::Time beginTime;
+					Time beginTime;
 					PacketType packetType;
 				};
 				Request* const request = new Request();

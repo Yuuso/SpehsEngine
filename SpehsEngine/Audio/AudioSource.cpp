@@ -47,7 +47,7 @@ namespace se
 
 			if (isPlaying())
 			{
-				seek(time::Time::zero);
+				seek(Time::zero);
 				return true;
 			}
 
@@ -73,7 +73,7 @@ namespace se
 				log::warning("Failed to play sound! " + resource->getName());
 			}
 		}
-		void AudioSource::playClocked(time::Time _currentTime)
+		void AudioSource::playClocked(Time _currentTime)
 		{
 			if (playCommon())
 				return;
@@ -131,7 +131,7 @@ namespace se
 			}
 			handle = invalidAudioHandle;
 		}
-		void AudioSource::seek(time::Time _time)
+		void AudioSource::seek(Time _time)
 		{
 			if (isHandleValid())
 			{
@@ -164,7 +164,7 @@ namespace se
 			if (isHandleValid())
 				globalSoloud->setLooping(handle, looping);
 		}
-		void AudioSource::setLoopPoint(time::Time _loopPoint)
+		void AudioSource::setLoopPoint(Time _loopPoint)
 		{
 			loopPoint = _loopPoint;
 
@@ -178,7 +178,7 @@ namespace se
 			if (isHandleValid())
 				globalSoloud->setProtectVoice(handle, protectedState);
 		}
-		void AudioSource::setSpeed(float _speed, time::Time _fade)
+		void AudioSource::setSpeed(float _speed, Time _fade)
 		{
 			speed = _speed;
 
@@ -186,7 +186,7 @@ namespace se
 			{
 				applySpeed(_fade);
 			}
-			else if (_fade > time::Time::zero)
+			else if (_fade > Time::zero)
 			{
 				log::warning("Cannot fade speed, instance is not valid!");
 			}
@@ -246,13 +246,13 @@ namespace se
 			}
 			return globalSoloud->getPause(handle);
 		}
-		time::Time AudioSource::getStreamPosition() const
+		Time AudioSource::getStreamPosition() const
 		{
 			if (!isHandleValid())
 			{
-				return time::Time::zero;
+				return Time::zero;
 			}
-			return time::fromSeconds(globalSoloud->getStreamPosition(handle));
+			return Time::fromSeconds(globalSoloud->getStreamPosition(handle));
 		}
 		const glm::vec3& AudioSource::getPosition() const
 		{
@@ -266,7 +266,7 @@ namespace se
 		{
 			return looping;
 		}
-		time::Time AudioSource::getLoopPoint() const
+		Time AudioSource::getLoopPoint() const
 		{
 			return loopPoint;
 		}
@@ -318,10 +318,10 @@ namespace se
 			globalSoloud->set3dSourceAttenuation(handle, static_cast<unsigned int>(distanceAttenuation), attenuationRolloff);
 			globalSoloud->set3dSourceDopplerFactor(handle, dopplerFactor);
 		}
-		void AudioSource::applySpeed(time::Time _fade)
+		void AudioSource::applySpeed(Time _fade)
 		{
 			se_assert(isHandleValid());
-			if (_fade > time::Time::zero)
+			if (_fade > Time::zero)
 			{
 				globalSoloud->fadeRelativePlaySpeed(handle, speed, _fade.asSeconds());
 			}

@@ -33,19 +33,19 @@ namespace se
 		/*
 			NOTE: _incrementHoldLockTime reference must be valid for the duration of the LockGuard instance.
 		*/
-		LockGuard(Mutex& _mutex, time::Time& _incrementLockTime, time::Time& _incrementHoldLockTime)
-			: timestamp(time::getProfilerTimestamp())
+		LockGuard(Mutex& _mutex, Time& _incrementLockTime, Time& _incrementHoldLockTime)
+			: timestamp(getProfilerTime())
 			, incrementHoldLockTime(&_incrementHoldLockTime)
 			, lockGuard((ScopeProfiler::enterSectionManually("", __FUNCTION__, __FILE__, __LINE__), _mutex))
 		{
 			ScopeProfiler::leaveSectionManually();
-			const time::Time postLockTimestamp = time::getProfilerTimestamp();
-			const time::Time acquireLockDuration = postLockTimestamp - timestamp;
+			const Time postLockTimestamp = getProfilerTime();
+			const Time acquireLockDuration = postLockTimestamp - timestamp;
 			_incrementLockTime += acquireLockDuration;
 			timestamp = postLockTimestamp;
 		}
 #else
-		LockGuard(Mutex& _mutex, time::Time& _incrementLockTime, time::Time& _incrementHoldLockTime)
+		LockGuard(Mutex& _mutex, Time& _incrementLockTime, Time& _incrementHoldLockTime)
 			: lockGuard(_mutex)
 		{
 		}
@@ -56,7 +56,7 @@ namespace se
 		{
 			if (incrementHoldLockTime)
 			{
-				const time::Time holdLockDuration = time::getProfilerTimestamp() - timestamp;
+				const Time holdLockDuration = getProfilerTime() - timestamp;
 				*incrementHoldLockTime += holdLockDuration;
 			}
 		}
@@ -65,8 +65,8 @@ namespace se
 	private:
 
 #if SE_LOCK_GUARD_PROFILING_ENABLED == SE_TRUE
-		time::Time timestamp;
-		time::Time* incrementHoldLockTime = nullptr;
+		Time timestamp;
+		Time* incrementHoldLockTime = nullptr;
 #endif
 		std::lock_guard<Mutex> lockGuard;
 

@@ -20,15 +20,15 @@ namespace se
 
 		private:
 			const ISocket& socket;
-			const time::Time beginTime;
+			const Time beginTime;
 			const size_t beginSentBytes;
 			const size_t beginReceivedBytes;
-			time::Time lastUpdateTime;
+			Time lastUpdateTime;
 			size_t lastUpdateSentBytes = 0;
 			size_t lastUpdateReceivedBytes = 0;
 			struct UpdateFrame
 			{
-				time::Time duration;
+				Time duration;
 				size_t sentBytes = 0;
 				size_t receivedBytes = 0;
 			};

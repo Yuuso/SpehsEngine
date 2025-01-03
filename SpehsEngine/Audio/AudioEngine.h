@@ -57,7 +57,7 @@ namespace se
 			Listener listener;
 			bool autoVelocityEnabled = false;
 			glm::vec3 lastListenerPosition;
-			time::Time lastUpdate = time::Time::zero;
+			Time lastUpdate = Time::zero;
 		};
 	}
 }

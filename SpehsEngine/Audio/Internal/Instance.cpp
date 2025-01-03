@@ -13,7 +13,7 @@ namespace se
 			se_assert_m(globalSoloud, "AudioEngine not initialized!");
 		}
 
-		void Instance::setVolume(float _volume, time::Time _fade)
+		void Instance::setVolume(float _volume, Time _fade)
 		{
 			volume = _volume;
 
@@ -21,12 +21,12 @@ namespace se
 			{
 				applyVolume(_fade);
 			}
-			else if (_fade > time::Time::zero)
+			else if (_fade > Time::zero)
 			{
 				log::warning("Cannot fade volume, instance is not valid!");
 			}
 		}
-		void Instance::setPan(float _pan, time::Time _fade)
+		void Instance::setPan(float _pan, Time _fade)
 		{
 			pan = _pan;
 
@@ -34,16 +34,16 @@ namespace se
 			{
 				applyPan(_fade);
 			}
-			else if (_fade > time::Time::zero)
+			else if (_fade > Time::zero)
 			{
 				log::warning("Cannot fade pan, instance is not valid!");
 			}
 		}
 
-		void Instance::applyVolume(time::Time _fade)
+		void Instance::applyVolume(Time _fade)
 		{
 			se_assert(isHandleValid());
-			if (_fade > time::Time::zero)
+			if (_fade > Time::zero)
 			{
 				globalSoloud->fadeVolume(handle, volume, _fade.asSeconds<double>());
 			}
@@ -52,10 +52,10 @@ namespace se
 				globalSoloud->setVolume(handle, volume);
 			}
 		}
-		void Instance::applyPan(time::Time _fade)
+		void Instance::applyPan(Time _fade)
 		{
 			se_assert(isHandleValid());
-			if (_fade > time::Time::zero)
+			if (_fade > Time::zero)
 			{
 				globalSoloud->fadePan(handle, pan, _fade.asSeconds<double>());
 			}

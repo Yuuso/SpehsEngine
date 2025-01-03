@@ -73,20 +73,20 @@ namespace se
 		}
 	}
 
-	std::string toTimeLengthString(const time::Time& time, const size_t precision)
+	std::string toTimeLengthString(const Time& time, const size_t precision)
 	{
 		// TODO: proper precision
-		if (time.value >= time::conversionRate::second)
+		if (time.value >= detail::time_conversion_rate::second)
 		{
 			const float f = time.asSeconds();
 			return toString(f, precision) + " s";
 		}
-		else if (time.value >= time::conversionRate::millisecond)
+		else if (time.value >= detail::time_conversion_rate::millisecond)
 		{
 			const float f = time.asMilliseconds();
 			return toString(f, precision) + " ms";
 		}
-		else if (time.value >= time::conversionRate::microsecond)
+		else if (time.value >= detail::time_conversion_rate::microsecond)
 		{
 			const float f = time.asMicroseconds();
 			return toString(f, precision) + " us";

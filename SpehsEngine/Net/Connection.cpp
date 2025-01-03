@@ -201,17 +201,17 @@ namespace se
 			settings = _settings;
 		}
 
-		time::Time Connection::getPing() const
+		Time Connection::getPing() const
 		{
 			SteamNetConnectionRealTimeStatus_t steamNetConnectionRealTimeStatus;
 			SteamNetConnectionRealTimeLaneStatus_t steamNetConnectionRealTimeLaneStatus;
 			if (state->steamNetworkingSockets.GetConnectionRealTimeStatus(state->steamNetConnection, &steamNetConnectionRealTimeStatus, 0, &steamNetConnectionRealTimeLaneStatus))
 			{
-				return time::fromMilliseconds(float(steamNetConnectionRealTimeStatus.m_nPing));
+				return Time::fromMilliseconds(float(steamNetConnectionRealTimeStatus.m_nPing));
 			}
 			else
 			{
-				return time::fromMilliseconds(9999.9f);
+				return Time::fromMilliseconds(9999.9f);
 			}
 		}
 
@@ -230,7 +230,7 @@ namespace se
 				detailedStatus.reliableBytesInSendQueue = steamNetConnectionRealTimeStatus.m_cbPendingReliable;
 				detailedStatus.unreliableBytesInSendQueue = steamNetConnectionRealTimeStatus.m_cbPendingUnreliable;
 				detailedStatus.sentUnackedReliableBytes = steamNetConnectionRealTimeStatus.m_cbSentUnackedReliable;
-				detailedStatus.ping = time::fromMilliseconds(float(steamNetConnectionRealTimeStatus.m_nPing));
+				detailedStatus.ping = Time::fromMilliseconds(float(steamNetConnectionRealTimeStatus.m_nPing));
 			}
 			return detailedStatus;
 		}

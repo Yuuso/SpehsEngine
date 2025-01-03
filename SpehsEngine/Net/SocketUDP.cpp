@@ -23,19 +23,19 @@
 }
 
 
-namespace
+namespace se
 {
-	typedef uint16_t SizeType;
+	namespace
+	{
+		typedef uint16_t SizeType;
 
 #ifdef SE_FINAL_RELEASE
-	static const se::time::Time connectionTimeout = se::time::fromSeconds(5.0f);
+		static const se::Time connectionTimeout = Time::fromSeconds(5.0f);
 #else
-	static const se::time::Time connectionTimeout = se::time::fromSeconds(10000.0f);
+		static const se::Time connectionTimeout = Time::fromSeconds(10000.0f);
 #endif
 }
 
-namespace se
-{
 	namespace net
 	{
 		inline boost::asio::ip::udp::endpoint toAsioEndpoint(const Endpoint& endpoint)
@@ -145,7 +145,7 @@ namespace se
 
 					DEBUG_LOG(2, "packet sent to: " + fromAsioEndpoint(endpoint).toString() + ". Size: " + std::to_string(binaryWriter.getSize()));
 
-					lastSendTime = time::now();
+					lastSendTime = getEpochTime();
 					return true;
 				}
 
@@ -167,7 +167,7 @@ namespace se
 
 					se_assert(socketUDP);
 					se_assert(receiving);
-					lastReceiveTime = time::now();
+					lastReceiveTime = getEpochTime();
 					receivedBytes += bytes;
 
 					if (error)
@@ -308,9 +308,9 @@ namespace se
 				IOService& ioService;
 				boost::asio::ip::udp::socket socket;
 				std::vector<unsigned char> receiveBuffer;
-				time::Time lastReceiveTime;
-				time::Time lastSendTime;
-				time::Time heartbeatInterval = time::fromSeconds(5.0f);
+				Time lastReceiveTime;
+				Time lastSendTime;
+				Time heartbeatInterval = Time::fromSeconds(5.0f);
 				bool receiving = false;
 				std::function<void(BinaryReader&, const Endpoint&)> onReceiveCallback;//User defined receive handler
 				std::function<void(const HandshakeUDP&)> handshakeResponseCallback;
@@ -479,8 +479,8 @@ namespace se
 							}
 						};
 				}
-				const time::Time sendInterval = time::fromSeconds(1.0f / 30.0f);
-				const time::Time beginTime = time::now();
+				const Time sendInterval = Time::fromSeconds(1.0f / 30.0f);
+				const Time beginTime = getEpochTime();
 				HandshakeUDP handshake;
 				handshake.key = handshakeKey;
 				BinaryWriter binaryWriter;
@@ -495,12 +495,12 @@ namespace se
 						break;
 					}
 
-					if (time::now() - beginTime >= connectionTimeout)
+					if (getEpochTime() - beginTime >= connectionTimeout)
 					{
 						break;
 					}
 
-					time::sleep(sendInterval);
+					sleep(sendInterval);
 				}
 
 				{
@@ -587,7 +587,7 @@ namespace se
 				}
 
 				std::lock_guard<std::recursive_mutex> lock(sharedImpl->mutex);
-				sharedImpl->lastReceiveTime = time::now();
+				sharedImpl->lastReceiveTime = getEpochTime();
 				sharedImpl->receiving = true;
 				clearReceivedPackets();
 				resumeReceiving();
@@ -626,7 +626,7 @@ namespace se
 				std::lock_guard<std::recursive_mutex> lock1(sharedImpl->mutex);
 
 				//Heartbeat
-				if (isConnected() && time::now() - sharedImpl->lastSendTime > sharedImpl->heartbeatInterval)
+				if (isConnected() && getEpochTime() - sharedImpl->lastSendTime > sharedImpl->heartbeatInterval)
 				{
 					sendPacket(BinaryWriter(), PacketType::heartbeat);
 				}
@@ -643,13 +643,13 @@ namespace se
 				clearReceivedPackets();
 			}
 
-			void setHeartbeatInterval(const time::Time interval) final
+			void setHeartbeatInterval(const Time interval) final
 			{
 				std::lock_guard<std::recursive_mutex> lock1(sharedImpl->mutex);
 				sharedImpl->heartbeatInterval = interval;
 			}
 
-			time::Time getHeartbeatInterval() const final
+			Time getHeartbeatInterval() const final
 			{
 				std::lock_guard<std::recursive_mutex> lock1(sharedImpl->mutex);
 				return sharedImpl->heartbeatInterval;

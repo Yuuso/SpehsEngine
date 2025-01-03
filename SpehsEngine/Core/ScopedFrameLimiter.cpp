@@ -6,20 +6,17 @@
 
 namespace se
 {
-	namespace time
+	ScopedFrameLimiter::ScopedFrameLimiter(const Time scopedMinimumLifetime)
+		: endTime(getEpochTime() + scopedMinimumLifetime)
 	{
-		ScopedFrameLimiter::ScopedFrameLimiter(const Time scopedMinimumLifetime)
-			: endTime(now() + scopedMinimumLifetime)
+	}
+	ScopedFrameLimiter::~ScopedFrameLimiter()
+	{
+		SE_SCOPE_PROFILER();
+		const Time remaining = endTime - getEpochTime();
+		if (remaining.value > 0)
 		{
-		}
-		ScopedFrameLimiter::~ScopedFrameLimiter()
-		{
-			SE_SCOPE_PROFILER();
-			const Time remaining = endTime - now();
-			if (remaining.value > 0)
-			{
-				sleep(remaining);
-			}
+			sleep(remaining);
 		}
 	}
 }

@@ -11,8 +11,8 @@ namespace se
 			float chanceToDropOutgoing = 0.0f;
 			float chanceToReorderIncoming = 0.0f;
 			float chanceToReorderOutgoing = 0.0f;
-			time::Time delayIncoming;
-			time::Time delayOutgoing;
+			Time delayIncoming;
+			Time delayOutgoing;
 
 			// TO BE REMOVED
 			float chanceToReorderReceivedPacket = 0.0f;

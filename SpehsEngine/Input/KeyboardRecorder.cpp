@@ -10,8 +10,8 @@ namespace se
 	{
 		KeyboardRecorder::KeyboardRecorder(InputManager& _inputManager)
 			: inputManager(_inputManager)
-			, beginKeyRepeatTime(time::fromSeconds(0.66f))
-			, continueKeyRepeatTime(time::fromSeconds(0.1f))
+			, beginKeyRepeatTime(Time::fromSeconds(0.66f))
+			, continueKeyRepeatTime(Time::fromSeconds(0.1f))
 		{
 			commandKeys.push_back(KEYBOARD_RETURN);
 			commandKeys.push_back(KEYBOARD_KP_ENTER);
@@ -43,16 +43,16 @@ namespace se
 
 		void KeyboardRecorder::setBeginKeyRepeatTimer(const float seconds)
 		{
-			beginKeyRepeatTime = time::fromSeconds(seconds);
+			beginKeyRepeatTime = Time::fromSeconds(seconds);
 			for (unsigned i = 0; i < heldKeys.size(); i++)
-				heldKeys[i].timer = std::min(time::fromSeconds(seconds), heldKeys[i].timer);
+				heldKeys[i].timer = std::min(Time::fromSeconds(seconds), heldKeys[i].timer);
 		}
 
 		void KeyboardRecorder::setContinuousKeyRepeatTimer(const float seconds)
 		{
-			continueKeyRepeatTime = time::fromSeconds(seconds);
+			continueKeyRepeatTime = Time::fromSeconds(seconds);
 			for (unsigned i = 0; i < heldKeys.size(); i++)
-				heldKeys[i].timer = std::min(time::fromSeconds(seconds), heldKeys[i].timer);
+				heldKeys[i].timer = std::min(Time::fromSeconds(seconds), heldKeys[i].timer);
 		}
 
 		void KeyboardRecorder::addCommandKey(const unsigned key)
@@ -100,7 +100,7 @@ namespace se
 			{
 				if (heldKeys[i].key == key)
 				{
-					if (heldKeys[i].timer <= time::Time::zero)
+					if (heldKeys[i].timer <= Time::zero)
 					{//Ready to re-register key stroke
 						heldKeys[i].timer = continueKeyRepeatTime;//Repeated strike timer
 						return true;
@@ -115,7 +115,7 @@ namespace se
 			return true;
 		}
 
-		void KeyboardRecorder::update(const time::Time time)
+		void KeyboardRecorder::update(const Time time)
 		{
 			characterInput.clear();
 			commandInput.clear();
@@ -197,7 +197,7 @@ namespace se
 			//Clean up held keys that were not re-stroke
 			for (unsigned i = 0; i < heldKeys.size();)
 			{
-				if (heldKeys[i].timer <= time::Time::zero)
+				if (heldKeys[i].timer <= Time::zero)
 					heldKeys.erase(heldKeys.begin() + i);
 				else
 					i++;

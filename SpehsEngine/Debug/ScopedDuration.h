@@ -21,7 +21,7 @@ namespace se
 				{
 				}
 				const char* const message;
-				time::Time duration;
+				Time duration;
 				std::unordered_map<const char*, std::unique_ptr<Data>> children;
 			};
 
@@ -30,7 +30,7 @@ namespace se
 			static thread_local std::unique_ptr<Data> root;
 			static thread_local std::vector<Data*> stack;
 			Data* data = nullptr;
-			const time::Time beginTime;
+			const Time beginTime;
 		};
 	}
 }

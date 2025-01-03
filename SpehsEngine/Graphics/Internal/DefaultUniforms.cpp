@@ -64,7 +64,7 @@ namespace se
 
 		void DefaultUniforms::updateEngineUtility()
 		{
-			const glm::vec4 data = glm::vec4(se::time::getRunTime().asSeconds<float>(), 0.0f, 0.0f, 0.0f);
+			const glm::vec4 data = glm::vec4(se::getRunTime().asSeconds<float>(), 0.0f, 0.0f, 0.0f);
 			bgfx::setUniform(engineUtility, reinterpret_cast<const void*>(&data));
 		}
 	}

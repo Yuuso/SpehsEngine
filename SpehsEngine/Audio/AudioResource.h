@@ -43,7 +43,7 @@ namespace se
 			void setVolume(float _value);
 
 			float getVolume() const;
-			time::Time getLength() const;
+			Time getLength() const;
 
 		private:
 
@@ -63,7 +63,7 @@ namespace se
 
 			bool singleInstance = false;
 			float volume = 1.0f;
-			time::Time length;
+			Time length;
 
 			Signal<void(void)> resourceLoadedSignal;
 		};

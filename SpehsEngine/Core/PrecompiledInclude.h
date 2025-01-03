@@ -59,12 +59,9 @@ namespace se
 	{
 		template <typename SeedType> class PRNG;
 	}
-	namespace time
-	{
-		class DeltaTimeSystem;
-		class Time;
-	}
+	class DeltaTimeSystem;
 	class ResourcePathFinder;
+	class Time;
 	template<typename T> class AsyncTaskManager;
 	template<typename T> class WatchedValue;
 	template<typename T> struct IStaticRingBuffer;

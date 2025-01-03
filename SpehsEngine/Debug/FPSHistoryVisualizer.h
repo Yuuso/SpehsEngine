@@ -32,8 +32,8 @@ namespace se
 			float bufferMax = 0.0f;
 			float bufferAverage = 0.0f;
 			std::string fpsString;
-			time::Time fpsStringUpdateTime;
-			std::optional<time::Time> beginFrameTime;
+			Time fpsStringUpdateTime;
+			std::optional<Time> beginFrameTime;
 
 		private:
 			void render();

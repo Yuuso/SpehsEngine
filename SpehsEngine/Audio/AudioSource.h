@@ -29,7 +29,7 @@ namespace se
 			void play(bool _paused = false);
 
 			/// Play sound in 3D position, other sounds played using playClocked at the same time will be delayed (avoid loads of clumped sounds)
-			void playClocked(time::Time _currentTime);
+			void playClocked(Time _currentTime);
 
 			/// Play sound without 3D positioning
 			void playBackground(bool _paused = false);
@@ -41,7 +41,7 @@ namespace se
 			void stop();
 
 			/// Seek to a specific time in the sound
-			void seek(time::Time _time);
+			void seek(Time _time);
 
 			/// 3D position of the sound source
 			void setPosition(const glm::vec3& _position);
@@ -53,13 +53,13 @@ namespace se
 			void setLooping(bool _value);
 
 			/// Loop point, 0 by default (start of the sound)
-			void setLoopPoint(time::Time _loopPoint);
+			void setLoopPoint(Time _loopPoint);
 
 			/// Protected voices will never be killed. Normally oldest sound will be killed when trying to play more sounds than voice limit.
 			void setProtected(bool _value);
 
 			/// Relative play speed, cannot be 0.0
-			void setSpeed(float _speed, time::Time _fade = time::Time::zero);
+			void setSpeed(float _speed, Time _fade = Time::zero);
 
 			/// What happens when the sound becomes inaudible
 			void setInaudibleBehavior(InaudibleBehavior _behavior);
@@ -82,11 +82,11 @@ namespace se
 
 			bool isPlaying() const;
 			bool isPaused() const;
-			time::Time getStreamPosition() const;
+			Time getStreamPosition() const;
 			const glm::vec3& getPosition() const;
 			const glm::vec3& getVelocity() const;
 			bool getLooping() const;
-			time::Time getLoopPoint() const;
+			Time getLoopPoint() const;
 			bool getProtected() const;
 			float getSpeed() const;
 			InaudibleBehavior getInaudibleBehavior() const;
@@ -101,14 +101,14 @@ namespace se
 
 			bool playCommon();
 			void applyAttributes() override;
-			void applySpeed(time::Time _fade = time::Time::zero);
+			void applySpeed(Time _fade = Time::zero);
 			void applyInaudibleBehavior();
 			void busDestroyedCallback();
 
 			glm::vec3 position;
 			glm::vec3 velocity;
 			bool looping								= false;
-			time::Time loopPoint						= time::Time::zero;
+			Time loopPoint						= Time::zero;
 			bool protectedState							= false;
 			float speed									= 1.0f;
 			InaudibleBehavior inaudibleBehavior			= InaudibleBehavior::Nothing;

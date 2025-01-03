@@ -15,9 +15,9 @@ namespace se
 	{
 		struct ConnectionState
 		{
-			std::pair<time::Time, uint64_t> prevReliableBytesSent;
-			std::pair<time::Time, uint64_t> prevReliableBytesReceived;
-			time::Time prevSendQuotaPerSecondTime;
+			std::pair<Time, uint64_t> prevReliableBytesSent;
+			std::pair<Time, uint64_t> prevReliableBytesReceived;
+			Time prevSendQuotaPerSecondTime;
 			StaticRingBuffer<float, 64> reliableBytesSentHistory;
 			StaticRingBuffer<float, 64> reliableBytesReceivedHistory;
 			StaticRingBuffer<float, 64> sendQuotaPerSecondHistory;
@@ -85,8 +85,8 @@ namespace se
 					{
 						if (ImGui::CollapsingHeader(connection->remoteEndpoint.toString().c_str()))
 						{
-							const time::Time now = se::time::now();
-							const time::Time historyRecordInterval = se::time::fromSeconds(0.1f);
+							const Time now = se::getEpochTime();
+							const Time historyRecordInterval = se::Time::fromSeconds(0.1f);
 							ConnectionState& connectionState = connectionStates[connection->connectionId];
 
 							ImGui::Text("Remote endpoint: " + connection->remoteEndpoint.toString());

@@ -29,7 +29,7 @@ namespace se
 			if (beginFrameTime)
 			{
 				IStaticRingBuffer<float>& buffer = getStaticRingBuffer();
-				const time::Time frameDuration = time::getProfilerTimestamp() - *beginFrameTime;
+				const Time frameDuration = getProfilerTime() - *beginFrameTime;
 				if (buffer.isFull())
 				{
 					buffer.popFront();
@@ -51,7 +51,7 @@ namespace se
 					bufferAverage += value * averageMultiplier;
 				}
 			}
-			beginFrameTime = time::getProfilerTimestamp();
+			beginFrameTime = getProfilerTime();
 		}
 
 		void FPSHistoryVisualizerBase::render()
@@ -59,7 +59,7 @@ namespace se
 			update();
 			if (ImGui::Begin("FPS History"))
 			{
-				if (!beginFrameTime || *beginFrameTime - fpsStringUpdateTime > time::fromSeconds(0.5f))
+				if (!beginFrameTime || *beginFrameTime - fpsStringUpdateTime > Time::fromSeconds(0.5f))
 				{
 					fpsString = "FPS: ";
 					fpsString += std::to_string(int(getAverage()));

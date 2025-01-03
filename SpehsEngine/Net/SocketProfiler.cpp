@@ -9,10 +9,10 @@ namespace se
 	{
 		SocketProfiler::SocketProfiler(const ISocket& _socket)
 			: socket(_socket)
-			, beginTime(time::now())
+			, beginTime(getEpochTime())
 			, beginSentBytes(_socket.getSentBytes())
 			, beginReceivedBytes(_socket.getReceivedBytes())
-			, lastUpdateTime(time::now())
+			, lastUpdateTime(getEpochTime())
 			, lastUpdateSentBytes(beginSentBytes)
 			, lastUpdateReceivedBytes(beginReceivedBytes)
 		{
@@ -21,7 +21,7 @@ namespace se
 
 		void SocketProfiler::update()
 		{
-			const time::Time now = time::now();
+			const Time now = getEpochTime();
 			const size_t sentBytes = socket.getSentBytes();
 			const size_t receivedBytes = socket.getReceivedBytes();
 			updateFrames.push_back(UpdateFrame());
@@ -33,7 +33,7 @@ namespace se
 			lastUpdateReceivedBytes = receivedBytes;
 
 			//Calculate statistics
-			time::Time duration;
+			Time duration;
 			size_t totalSentBytes = 0;
 			size_t totalReceivedBytes = 0;
 			for (size_t i = 0; i < updateFrames.size(); i++)

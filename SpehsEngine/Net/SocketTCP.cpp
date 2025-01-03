@@ -24,19 +24,20 @@
 }
 
 
-namespace
-{
-#ifdef SE_FINAL_RELEASE
-		static const se::time::Time handshakeReceiveTimeout = se::time::fromSeconds(5.0f);
-		static const se::time::Time connectionTimeout = se::time::fromSeconds(5.0f);
-#else
-		static const se::time::Time handshakeReceiveTimeout = se::time::fromSeconds(10000.0f);
-		static const se::time::Time connectionTimeout = se::time::fromSeconds(10000.0f);
-#endif
-}
 
 namespace se
 {
+	namespace
+	{
+#ifdef SE_FINAL_RELEASE
+		static const Time handshakeReceiveTimeout = Time::fromSeconds(5.0f);
+		static const Time connectionTimeout = Time::fromSeconds(5.0f);
+#else
+		static const Time handshakeReceiveTimeout = Time::fromSeconds(10000.0f);
+		static const Time connectionTimeout = Time::fromSeconds(10000.0f);
+#endif
+	}
+
 	struct Handshake
 	{
 		bool isValid() const
@@ -266,8 +267,7 @@ namespace se
 
 					receivedBytes += bytes;
 					receiving = false;
-					lastReceiveTime = time::now();
-
+					lastReceiveTime = getEpochTime();
 
 					if (error)
 					{
@@ -480,16 +480,16 @@ namespace se
 					// Socket is now in the connected state!
 					acceptingState = AcceptingState::idle;
 					connected = true;
-					lastReceiveTime = time::now();
+					lastReceiveTime = getEpochTime();
 					onAcceptCallbackQueued = true;
 				}
 
-				bool waitForHandshake(const time::Time timeout)
+				bool waitForHandshake(const Time timeout)
 				{
-					const time::Time beginTime = time::now();
+					const Time beginTime = getEpochTime();
 					while (true)
 					{
-						if (time::now() - beginTime > timeout)
+						if (getEpochTime() - beginTime > timeout)
 							return false;
 						std::lock_guard<std::recursive_mutex> lock(mutex);
 						update();
@@ -606,8 +606,8 @@ namespace se
 						BinaryWriter binaryWriter;
 						const Handshake handshake;
 						binaryWriter.serial(handshake);
-						const time::Time handshakeSendBeginTime = time::now();
-						while (time::now() - handshakeSendBeginTime < time::fromSeconds(5.0f))
+						const Time handshakeSendBeginTime = getEpochTime();
+						while (getEpochTime() - handshakeSendBeginTime < Time::fromSeconds(5.0f))
 						{
 							if (sendPacket(binaryWriter, PacketType::handshake))
 							{
@@ -991,7 +991,7 @@ namespace se
 				bool isConnected() const
 				{
 					std::lock_guard<std::recursive_mutex> lock(mutex);
-					if (time::now() - lastReceiveTime >= connectionTimeout)
+					if (getEpochTime() - lastReceiveTime >= connectionTimeout)
 						return false;
 					return connected;
 				}
@@ -1029,7 +1029,7 @@ namespace se
 				std::function<void(ISocketTCP&)> onAcceptCallback;
 				ISocketTCP::ExpectedBytesType expectedBytes = 0;
 				std::vector<unsigned char> receiveBuffer;
-				time::Time lastReceiveTime;
+				Time lastReceiveTime;
 				bool receiving = false;
 				AcceptingState acceptingState = AcceptingState::idle;
 				bool connected = false;
@@ -1108,7 +1108,7 @@ namespace se
 				while (getAcceptingState() != AcceptingState::idle) { }
 			}
 
-			bool waitForHandshake(const time::Time timeout)
+			bool waitForHandshake(const Time timeout)
 			{
 				return sharedImpl->waitForHandshake(timeout);
 			}

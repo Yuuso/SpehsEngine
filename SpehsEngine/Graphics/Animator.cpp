@@ -16,43 +16,43 @@ namespace se
 			}
 			else
 			{
-				animTimer = time::Time::zero;
+				animTimer = Time::zero;
 			}
 		}
 		void Animator::ActiveAnimation::pause()
 		{
 			paused = true;
 		}
-		void Animator::ActiveAnimation::fadeIn(const time::Time _fade)
+		void Animator::ActiveAnimation::fadeIn(const Time _fade)
 		{
 			fadeInTime = _fade;
 			fadeInTimer = _fade;
 		}
-		void Animator::ActiveAnimation::fadeOut(const time::Time _fade)
+		void Animator::ActiveAnimation::fadeOut(const Time _fade)
 		{
 			fadeOutTime = _fade;
 			fadeOutTimer = _fade;
 
-			if (fadeOutTimer <= se::time::Time::zero)
+			if (fadeOutTimer <= Time::zero)
 			{
 				// Set non-zero timer to stop the animation on the next update
-				fadeOutTimer = se::time::fromNanoseconds(1.0);
+				fadeOutTimer = Time::fromNanoseconds(1.0);
 			}
 		}
 		bool Animator::ActiveAnimation::fadingIn() const
 		{
-			return fadeInTimer > time::Time::zero;
+			return fadeInTimer > Time::zero;
 		}
 		bool Animator::ActiveAnimation::fadingOut() const
 		{
-			return fadeOutTimer > time::Time::zero;
+			return fadeOutTimer > Time::zero;
 		}
 		bool Animator::ActiveAnimation::isFinished() const
 		{
 			if (loop)
 				return false;
 			if (speed < 0.0f)
-				return animTimer <= se::time::Time::zero;
+				return animTimer <= Time::zero;
 			const float timeInFrames = animTimer.asSeconds() * animation->framesPerSeconds;
 			return timeInFrames >= static_cast<float>(animation->numFrames);
 		}
@@ -65,7 +65,7 @@ namespace se
 				result *= 1.0f - (fadeInTimer.asMilliseconds() / fadeInTime.asMilliseconds());
 			return result;
 		}
-		bool Animator::ActiveAnimation::update(const time::Time _deltaTime)
+		bool Animator::ActiveAnimation::update(const Time _deltaTime)
 		{
 			if (paused)
 				return true;
@@ -83,8 +83,8 @@ namespace se
 			if (fadingIn())
 			{
 				fadeInTimer -= _deltaTime;
-				if (fadeInTimer < se::time::Time::zero)
-					fadeInTimer = se::time::Time::zero;
+				if (fadeInTimer < Time::zero)
+					fadeInTimer = Time::zero;
 			}
 			return true;
 		}
@@ -141,17 +141,17 @@ namespace se
 		}
 
 
-		void Animator::stopAll(time::Time _fade)
+		void Animator::stopAll(Time _fade)
 		{
 			for (auto&& anim : activeAnimations)
 				anim->fadeOut(_fade);
 		}
-		void Animator::pauseAll(time::Time _fade)
+		void Animator::pauseAll(Time _fade)
 		{
 			for (auto&& anim : activeAnimations)
 				anim->pause();
 		}
-		void Animator::resumeAll(time::Time _fade)
+		void Animator::resumeAll(Time _fade)
 		{
 			for (auto&& anim : activeAnimations)
 			{
@@ -168,7 +168,7 @@ namespace se
 			defaultLooping = _value;
 		}
 
-		void Animator::start(std::string_view _name, time::Time _fade)
+		void Animator::start(std::string_view _name, Time _fade)
 		{
 			// Restart / unpause an already active animation
 			if (ActiveAnimation* anim = getActiveAnimation(_name))
@@ -206,7 +206,7 @@ namespace se
 			}
 			log::warning("Animation '" + _name + "' not found! Cannot pause animation.");
 		}
-		void Animator::stop(std::string_view _name, time::Time _fade)
+		void Animator::stop(std::string_view _name, Time _fade)
 		{
 			if (ActiveAnimation* anim = getActiveAnimation(_name))
 			{

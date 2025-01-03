@@ -207,9 +207,9 @@ namespace ImGui
 	{
 		return ColorEdit4(label, &(value)[0], flags);
 	}
-	bool InputT(const String label, se::time::Time& value,
-		const se::time::Time step = se::time::Time(1),
-		const se::time::Time stepFast = se::time::Time(1000), ImGuiInputTextFlags flags = 0);
+	bool InputT(const String label, se::Time& value,
+		const se::Time step = se::Time(1),
+		const se::Time stepFast = se::Time(1000), ImGuiInputTextFlags flags = 0);
 	bool InputAngle(const String label, float& radians);
 
 	template<typename T, typename ... Args>
@@ -310,7 +310,7 @@ namespace ImGui
 		return changed;
 	}
 
-	bool InputT(const String label, se::time::TimeInfo& timeInfo);
+	bool InputT(const String label, se::TimeInfo& timeInfo);
 
 	// Splits shown string into two parts, id part and mutable part. Useful when the contents of the header edit the shown header string.
 	bool CollapsingHeader2(const String idLabel, const String mutableLabel, const ImGuiTreeNodeFlags flags = 0);

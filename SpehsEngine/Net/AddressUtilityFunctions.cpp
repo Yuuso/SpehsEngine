@@ -36,7 +36,7 @@ namespace se
 
 					// If there are multiple addresses then use the (first) one in the default address range
 					// Don't know how this should be handled but this works for my current setup
-					constexpr std::string defaultAddressRangeStartString = "192.168.";
+					constexpr const char* const defaultAddressRangeStartString = "192.168.";
 					if (doesStartWith(addressString, defaultAddressRangeStartString))
 					{
 						break;

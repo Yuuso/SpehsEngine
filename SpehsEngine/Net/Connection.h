@@ -29,7 +29,7 @@ namespace se
 
 			struct DetailedStatus // TODO renamings...
 			{
-				time::Time ping;
+				Time ping;
 				size_t reliableBytesInSendQueue = 0;
 				size_t unreliableBytesInSendQueue = 0;
 				size_t sentUnackedReliableBytes = 0;
@@ -38,7 +38,7 @@ namespace se
 			struct Settings
 			{
 				size_t sendBufferSize = 524288;
-				time::Time timeout = time::fromSeconds(10.0f);
+				Time timeout = Time::fromSeconds(10.0f);
 			};
 
 			struct Statistics
@@ -83,7 +83,7 @@ namespace se
 			inline bool isConnected() const { return getStatus() == Status::Connected; }
 			inline bool isDisconnected() const { return getStatus() == Status::Disconnected; }
 			inline bool isP2P() const { return p2p; }
-			time::Time getPing() const;
+			Time getPing() const;
 			uint16_t getMaximumSegmentSize() const;
 
 			const std::string name;

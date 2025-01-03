@@ -29,7 +29,7 @@ namespace se
 				const ScopeProfilerSection* section = nullptr;
 				const graphics::Shape* parent;
 				const graphics::Shape* rootParent;
-				time::Time beginTime;
+				Time beginTime;
 				size_t depth = 0;
 			};
 
@@ -72,7 +72,7 @@ namespace se
 				return view.getSize().width - 10.0f;
 			}
 
-			void update(const time::Time& deltaTime)
+			void update(const Time& deltaTime)
 			{
 				SE_SCOPE_PROFILER();
 
@@ -102,7 +102,7 @@ namespace se
 				}
 				if (inputManager.isKeyPressed(unsigned(input::Key::KP_5)))
 				{
-					timeWindowBegin = enableUpdate ? time::getProfilerTimestamp() : disableUpdateTime;
+					timeWindowBegin = enableUpdate ? getProfilerTime() : disableUpdateTime;
 					translateTimeWindowBegin(-timeWindowWidth / 2);
 				}
 				if (inputManager.isKeyPressed(unsigned(input::Key::KP_0)))
@@ -153,16 +153,16 @@ namespace se
 					if (!firstVisualUpdateDone)
 					{
 						firstVisualUpdateDone = true;
-						timeWindowBegin = time::now() - timeWindowWidth;
+						timeWindowBegin = getEpochTime() - timeWindowWidth;
 					}
 
 					const std::unordered_map<std::thread::id, ScopeProfilerThreadData>::const_iterator threadDataIt = threadDatas.find(activeThreadId);
 					const ScopeProfilerThreadData* const threadData = threadDataIt != threadDatas.end() ? &threadDataIt->second : nullptr;
 
 					// Element update
-					const time::Time now = enableUpdate ? time::getProfilerTimestamp() : disableUpdateTime;
-					const time::Time endTime = timeWindowBegin + timeWindowWidth; // Visualized history ends
-					const time::Time beginTime = endTime - timeWindowWidth; // Visualized history begins
+					const Time now = enableUpdate ? getProfilerTime() : disableUpdateTime;
+					const Time endTime = timeWindowBegin + timeWindowWidth; // Visualized history ends
+					const Time beginTime = endTime - timeWindowWidth; // Visualized history begins
 
 					tooltipText.setRenderState(false);
 					tooltipPolygon.setRenderState(false);
@@ -183,7 +183,7 @@ namespace se
 						}
 
 						const ScopeProfilerSection& section = *sectionInfo.section;
-						const time::Time sectionEndTime = section.endTime ? *section.endTime : now;
+						const Time sectionEndTime = section.endTime ? *section.endTime : now;
 						if (sectionEndTime < beginTime)
 						{
 							sectionPolygon->setRenderState(false);
@@ -191,28 +191,28 @@ namespace se
 						}
 
 						auto parentIt = polygonToSectionInfoLookup.find(sectionInfo.parent);
-						const time::Time parentSectionBeginTime = parentIt != polygonToSectionInfoLookup.end()
+						const Time parentSectionBeginTime = parentIt != polygonToSectionInfoLookup.end()
 							? parentIt->second.beginTime
-							: time::Time::zero;
-						const time::Time parentSectionEndTime = parentIt != polygonToSectionInfoLookup.end()
+							: Time::zero;
+						const Time parentSectionEndTime = parentIt != polygonToSectionInfoLookup.end()
 							? (parentIt->second.section->endTime ? *parentIt->second.section->endTime : now)
-							: time::Time::zero;
-						const time::Time parentSectionDuration = parentSectionEndTime - parentSectionBeginTime;
+							: Time::zero;
+						const Time parentSectionDuration = parentSectionEndTime - parentSectionBeginTime;
 						auto rootParentIt = polygonToSectionInfoLookup.find(sectionInfo.rootParent);
-						const time::Time rootParentSectionBeginTime = rootParentIt != polygonToSectionInfoLookup.end()
+						const Time rootParentSectionBeginTime = rootParentIt != polygonToSectionInfoLookup.end()
 							? rootParentIt->second.beginTime
-							: time::Time::zero;
-						const time::Time rootParentSectionEndTime = rootParentIt != polygonToSectionInfoLookup.end()
+							: Time::zero;
+						const Time rootParentSectionEndTime = rootParentIt != polygonToSectionInfoLookup.end()
 							? (rootParentIt->second.section->endTime ? *rootParentIt->second.section->endTime : now)
-							: time::Time::zero;
-						const time::Time rootParentSectionDuration = rootParentSectionEndTime - rootParentSectionBeginTime;
-						const time::Time visualCompareSectionDuration = targetRootSectionWidth ? *targetRootSectionWidth : rootParentSectionDuration;
-						const time::Time sectionBeginTime = sectionInfo.beginTime;
-						const time::Time sectionDuration = sectionEndTime - sectionBeginTime;
-						const time::Time displaySectionBeginTime = std::max(beginTime, sectionBeginTime);
-						const time::Time displaySectionEndTime = std::min(endTime, sectionEndTime);
-						const time::Time displaySectionDuration = displaySectionEndTime - displaySectionBeginTime;
-						se_assert(displaySectionDuration >= time::Time::zero);
+							: Time::zero;
+						const Time rootParentSectionDuration = rootParentSectionEndTime - rootParentSectionBeginTime;
+						const Time visualCompareSectionDuration = targetRootSectionWidth ? *targetRootSectionWidth : rootParentSectionDuration;
+						const Time sectionBeginTime = sectionInfo.beginTime;
+						const Time sectionDuration = sectionEndTime - sectionBeginTime;
+						const Time displaySectionBeginTime = std::max(beginTime, sectionBeginTime);
+						const Time displaySectionEndTime = std::min(endTime, sectionEndTime);
+						const Time displaySectionDuration = displaySectionEndTime - displaySectionBeginTime;
+						se_assert(displaySectionDuration >= Time::zero);
 						const float xStartPercentage = (displaySectionBeginTime - beginTime).asSeconds() / timeWindowWidth.asSeconds();
 						const float xEndPercentage = (displaySectionEndTime - beginTime).asSeconds() / timeWindowWidth.asSeconds();
 						const float timeWindowPercentage = xEndPercentage - xStartPercentage;
@@ -296,9 +296,9 @@ namespace se
 					if (!threadData.sections.empty())
 					{
 						size_t sectionIndex = 0u;
-						std::function<void(const time::Time, const ScopeProfilerSection&, const size_t, const graphics::Shape* const, const graphics::Shape* const)> updatePolygon;
+						std::function<void(const Time, const ScopeProfilerSection&, const size_t, const graphics::Shape* const, const graphics::Shape* const)> updatePolygon;
 						updatePolygon =
-							[&updatePolygon, &sectionIndex, this](const time::Time sectionBeginTime, const ScopeProfilerSection& section, const size_t depth, const graphics::Shape* const parent, const graphics::Shape* const rootParent)
+							[&updatePolygon, &sectionIndex, this](const Time sectionBeginTime, const ScopeProfilerSection& section, const size_t depth, const graphics::Shape* const parent, const graphics::Shape* const rootParent)
 						{
 							const graphics::Shape* polygon = sectionPolygons[sectionIndex++].get();
 							SectionInfo& sectionInfo = polygonToSectionInfoLookup[polygon];
@@ -307,14 +307,14 @@ namespace se
 							sectionInfo.rootParent = rootParent;
 							sectionInfo.beginTime = sectionBeginTime;
 							sectionInfo.depth = depth;
-							for (const std::pair<const time::Time, ScopeProfilerSection>& pair : section.children)
+							for (const std::pair<const Time, ScopeProfilerSection>& pair : section.children)
 							{
 								updatePolygon(pair.first, pair.second, depth + 1, polygon, rootParent ? rootParent : polygon);
 							}
 						};
 
 						size_t depth = 0;
-						for (const std::pair<const time::Time, ScopeProfilerSection>& pair : threadData.sections)
+						for (const std::pair<const Time, ScopeProfilerSection>& pair : threadData.sections)
 						{
 							updatePolygon(pair.first, pair.second, depth, nullptr, nullptr);
 						}
@@ -337,9 +337,9 @@ namespace se
 				//for (const std::pair<std::thread::id, Profiler::ThreadData> threadDataPair : threadDatas)
 				//{
 				//	stringstream << "\n    Thread id: " << threadDataPair.first;
-				//	for (const std::pair<time::Time, Profiler::Section>& sectionPair : threadDataPair.second.sections)
+				//	for (const std::pair<Time, Profiler::Section>& sectionPair : threadDataPair.second.sections)
 				//	{
-				//		const time::Time duration = sectionPair.second.endTime - sectionPair.first;
+				//		const Time duration = sectionPair.second.endTime - sectionPair.first;
 				//		stringstream << "\n        " << sectionPair.second.name << ": " << std::to_string(duration.asNanoseconds()) << " ns";
 				//	}
 				//}
@@ -347,7 +347,7 @@ namespace se
 				//text.setString(stringstream.str());
 			}
 
-			void setTargetRootSectionWidth(const time::Time* const time)
+			void setTargetRootSectionWidth(const Time* const time)
 			{
 				if (time)
 				{
@@ -359,21 +359,21 @@ namespace se
 				}
 			}
 
-			void setTimeWindowWidth(const time::Time& time)
+			void setTimeWindowWidth(const Time& time)
 			{
 				if (time != timeWindowWidth)
 				{
-					const time::Time delta = time - timeWindowWidth;
-					const time::Time halfDelta = delta / 2ll;
+					const Time delta = time - timeWindowWidth;
+					const Time halfDelta = delta / 2ll;
 					translateTimeWindowBegin(-halfDelta);
 					timeWindowWidth = time;
 				}
 			}
 
-			void translateTimeWindowBegin(const time::Time& time)
+			void translateTimeWindowBegin(const Time& time)
 			{
-				const time::Time newTimeWindowBegin = timeWindowBegin + time;
-				if (time < time::Time::zero)
+				const Time newTimeWindowBegin = timeWindowBegin + time;
+				if (time < Time::zero)
 				{
 					if (newTimeWindowBegin < timeWindowBegin)
 					{
@@ -436,12 +436,12 @@ namespace se
 					enableUpdate = enabled;
 					if (enabled)
 					{
-						const time::Time timeSinceDisableUpdate = time::now() - disableUpdateTime;
+						const Time timeSinceDisableUpdate = getEpochTime() - disableUpdateTime;
 						timeWindowBegin += timeSinceDisableUpdate;
 					}
 					else
 					{
-						disableUpdateTime = time::now();
+						disableUpdateTime = getEpochTime();
 					}
 				}
 			}
@@ -478,10 +478,10 @@ namespace se
 			float beginY = 5.0f;
 			float sectionHeight = 32.0f;
 			float horizontalSpeed = 1.0f;
-			time::Time timeWindowBegin; // Timestamp where the time window begins
-			time::Time timeWindowWidth = time::fromSeconds(1.0f); // Visualized duration
-			time::Time disableUpdateTime;
-			std::optional<time::Time> targetRootSectionWidth;
+			Time timeWindowBegin; // Timestamp where the time window begins
+			Time timeWindowWidth = Time::fromSeconds(1.0f); // Visualized duration
+			Time disableUpdateTime;
+			std::optional<Time> targetRootSectionWidth;
 
 			bool renderState = true;
 			bool enableUpdate = true;
@@ -513,14 +513,14 @@ namespace se
 			// ~Impl()
 		}
 
-		void ScopeProfilerVisualizer::update(const time::Time& _deltaTime)						{ impl->update(_deltaTime); }
+		void ScopeProfilerVisualizer::update(const Time& _deltaTime)						{ impl->update(_deltaTime); }
 		void ScopeProfilerVisualizer::setRenderState(const bool _visible)						{ impl->setRenderState(_visible); }
 		bool ScopeProfilerVisualizer::getRenderState() const									{ return impl->getRenderState(); }
 		void ScopeProfilerVisualizer::setEnableUpdate(const bool _enabled)						{ impl->setEnableUpdate(_enabled); }
 		bool ScopeProfilerVisualizer::getEnableUpdate() const									{ return impl->getEnableUpdate(); }
-		void ScopeProfilerVisualizer::setTargetRootSectionWidth(const time::Time* const _time)	{ impl->setTargetRootSectionWidth(_time); }
-		void ScopeProfilerVisualizer::setTimeWindowWidth(const time::Time& _time)				{ impl->setTimeWindowWidth(_time); }
-		void ScopeProfilerVisualizer::translateTimeWindowBegin(const time::Time& _time)			{ impl->translateTimeWindowBegin(_time); }
+		void ScopeProfilerVisualizer::setTargetRootSectionWidth(const Time* const _time)	{ impl->setTargetRootSectionWidth(_time); }
+		void ScopeProfilerVisualizer::setTimeWindowWidth(const Time& _time)				{ impl->setTimeWindowWidth(_time); }
+		void ScopeProfilerVisualizer::translateTimeWindowBegin(const Time& _time)			{ impl->translateTimeWindowBegin(_time); }
 		void ScopeProfilerVisualizer::setMaxThreadDataSectionCount(const size_t _count)			{ impl->setMaxThreadDataSectionCount(_count); }
 	}
 }

@@ -13,18 +13,18 @@
 }
 
 
-namespace
-{
-	typedef uint16_t SizeType;
-#ifdef SE_FINAL_RELEASE
-	static const se::time::Time connectionTimeout = se::time::fromSeconds(5.0f);
-#else
-	static const se::time::Time connectionTimeout = se::time::fromSeconds(10000.0f);
-#endif
-}
-
 namespace se
 {
+	namespace
+	{
+		typedef uint16_t SizeType;
+#ifdef SE_FINAL_RELEASE
+		static const Time connectionTimeout = Time::fromSeconds(5.0f);
+#else
+		static const Time connectionTimeout = Time::fromSeconds(10000.0f);
+#endif
+	}
+
 	namespace net
 	{
 		SocketUDP2::SocketUDP2(IOService& _ioService, const std::string& _debugName)
@@ -186,7 +186,7 @@ namespace se
 			else
 			{
 				sentBytes += bytes;
-				lastSendTime = time::now();
+				lastSendTime = getEpochTime();
 				DEBUG_LOG(2, "packet sent to: " + endpoint.address().to_string() + ":" + std::to_string(endpoint.port()) + ". Size: " + std::to_string(bytes));
 			}
 		}
@@ -239,7 +239,7 @@ namespace se
 				}
 			}
 
-			lastReceiveTime = time::now();
+			lastReceiveTime = getEpochTime();
 			receivedBytes += bytes;
 
 			ReceivedPacketSocketUDP2::ErrorType errorType = ReceivedPacketSocketUDP2::ErrorType::None;

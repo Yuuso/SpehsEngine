@@ -17,16 +17,16 @@ namespace se
 		struct EnteredSection
 		{
 			std::string name;
-			time::Time enterTime;
+			Time enterTime;
 		};
 		static thread_local ScopeProfilerThreadData threadData;
 		static thread_local std::stack<ScopeProfilerSection*> sectionStack;
-		static thread_local time::Time lastFlushTime;
+		static thread_local Time lastFlushTime;
 
 		void evaluateAutomaticFlush()
 		{
-			const time::Time now = time::now();
-			const time::Time automaticFlushInterval = time::fromSeconds(1.0f / 60.0f);
+			const Time now = getEpochTime();
+			const Time automaticFlushInterval = Time::fromSeconds(1.0f / 60.0f);
 			if (now - lastFlushTime > automaticFlushInterval || threadData.sections.size() > 10000)
 			{
 				if (flushSignalMutex.try_lock())
@@ -37,19 +37,19 @@ namespace se
 			}
 		}
 
-		size_t getSectionCountRecursively(const std::map<time::Time, ScopeProfilerSection>& sections)
+		size_t getSectionCountRecursively(const std::map<Time, ScopeProfilerSection>& sections)
 		{
 			size_t count = sections.size();
-			for (const std::pair<const time::Time, ScopeProfilerSection>& pair : sections)
+			for (const std::pair<const Time, ScopeProfilerSection>& pair : sections)
 			{
 				count += getSectionCountRecursively(pair.second.children);
 			}
 			return count;
 		};
 
-		void removeFinishedSectionsRecursively(std::map<time::Time, ScopeProfilerSection>& sections)
+		void removeFinishedSectionsRecursively(std::map<Time, ScopeProfilerSection>& sections)
 		{
-			for (std::map<time::Time, ScopeProfilerSection>::iterator it = sections.begin(); it != sections.end();)
+			for (std::map<Time, ScopeProfilerSection>::iterator it = sections.begin(); it != sections.end();)
 			{
 				if (it->second.endTime)
 				{
@@ -63,11 +63,11 @@ namespace se
 			}
 		}
 
-		size_t removeFinishedSectionsRecursively(std::map<time::Time, ScopeProfilerSection>& sections, const size_t maxRemoveCount)
+		size_t removeFinishedSectionsRecursively(std::map<Time, ScopeProfilerSection>& sections, const size_t maxRemoveCount)
 		{
 			size_t removeCount = 0u;
 
-			for (std::map<time::Time, ScopeProfilerSection>::iterator it = sections.begin(); it != sections.end();)
+			for (std::map<Time, ScopeProfilerSection>::iterator it = sections.begin(); it != sections.end();)
 			{
 				// Recurse towards leaf and start removing from there
 				removeCount += removeFinishedSectionsRecursively(it->second.children, maxRemoveCount - removeCount);
@@ -87,9 +87,9 @@ namespace se
 			return removeCount;
 		}
 
-		void addSectionsRecursively(std::map<time::Time, ScopeProfilerSection>& destination, const std::map<time::Time, ScopeProfilerSection>& source)
+		void addSectionsRecursively(std::map<Time, ScopeProfilerSection>& destination, const std::map<Time, ScopeProfilerSection>& source)
 		{
-			for (const std::pair<const time::Time, ScopeProfilerSection>& pair : source)
+			for (const std::pair<const Time, ScopeProfilerSection>& pair : source)
 			{
 				ScopeProfilerSection& section = destination[pair.first];
 				section.name = pair.second.name;
@@ -106,7 +106,7 @@ namespace se
 	{
 #if SE_ENABLE_SCOPE_PROFILER == SE_TRUE
 		// Add section
-		const time::Time now = time::getProfilerTimestamp();
+		const Time now = getProfilerTime();
 		ScopeProfilerSection& section = sectionStack.empty() ? threadData.sections[now] : sectionStack.top()->children[now];
 		section.name = name;
 		section.function = function;
@@ -120,7 +120,7 @@ namespace se
 	{
 #if SE_ENABLE_SCOPE_PROFILER == SE_TRUE
 		// Finish section
-		const time::Time now = time::getProfilerTimestamp();
+		const Time now = getProfilerTime();
 		se_assert(!sectionStack.empty());
 		sectionStack.top()->endTime.emplace(now);
 		sectionStack.pop();
@@ -163,7 +163,7 @@ namespace se
 	size_t ScopeProfilerSection::getDepth() const
 	{
 		size_t maxDepth = 0;
-		for (const std::pair<time::Time, ScopeProfilerSection>& pair : children)
+		for (const std::pair<Time, ScopeProfilerSection>& pair : children)
 		{
 			maxDepth = std::max(maxDepth, pair.second.getDepth());
 		}

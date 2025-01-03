@@ -19,7 +19,7 @@ namespace se
 			KeyboardRecorder(InputManager& inputManager);
 			virtual ~KeyboardRecorder();
 
-			virtual void update(const time::Time deltaTime);
+			virtual void update(const Time deltaTime);
 			void stop();///< Resets the recorder so that all ongoing recording is stopped
 			void setBeginKeyRepeatTimer(const float seconds);///< Time after the first keystroke of a pressed key to begin receiving keystrokes continuously
 			void setContinuousKeyRepeatTimer(const float seconds);///< Time between continuous keystrokes
@@ -41,12 +41,12 @@ namespace se
 			struct KeyHoldData
 			{
 				unsigned key;//Key ID
-				time::Time timer;//Timer until re-press
+				Time timer;//Timer until re-press
 			};
 			std::vector<KeyHoldData> heldKeys;
 			std::vector<unsigned> commandKeys;
-			time::Time beginKeyRepeatTime;
-			time::Time continueKeyRepeatTime;
+			Time beginKeyRepeatTime;
+			Time continueKeyRepeatTime;
 		};
 	}
 }

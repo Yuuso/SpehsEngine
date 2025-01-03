@@ -46,7 +46,7 @@ namespace se
 				se_assert(result != FALSE);
 			}
 #endif
-			const time::Time timeNow = time::getRunTime();
+			const Time timeNow = getRunTime();
 			const int minutes = static_cast<int>(timeNow.asSeconds()) / 60;
 			const int seconds = static_cast<int>(timeNow.asSeconds()) % 60;
 			const int milliseconds = static_cast<int>(timeNow.asMilliseconds()) % 1000;

@@ -60,9 +60,9 @@ namespace se
 
 		void AudioEngine::update()
 		{
-			if (autoVelocityEnabled && lastUpdate != time::Time::zero)
+			if (autoVelocityEnabled && lastUpdate != Time::zero)
 			{
-				const float deltaSeconds = (time::now() - lastUpdate).asSeconds();
+				const float deltaSeconds = (getEpochTime() - lastUpdate).asSeconds();
 				listener.velocity = (listener.position - lastListenerPosition) / deltaSeconds;
 			}
 			globalSoloud->set3dListenerParameters(
@@ -80,7 +80,7 @@ namespace se
 				listener.velocity.z
 			);
 			globalSoloud->update3dAudio();
-			lastUpdate = time::now();
+			lastUpdate = getEpochTime();
 			lastListenerPosition = listener.position;
 		}
 

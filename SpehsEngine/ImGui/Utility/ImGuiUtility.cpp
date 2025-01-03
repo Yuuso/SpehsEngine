@@ -374,9 +374,9 @@ namespace ImGui
 		PushFont(getFont(_font));
 	}
 
-	bool InputT(const String label, se::time::Time& value,
-		const se::time::Time step,
-		const se::time::Time stepFast, ImGuiInputTextFlags flags)
+	bool InputT(const String label, se::Time& value,
+		const se::Time step,
+		const se::Time stepFast, ImGuiInputTextFlags flags)
 	{
 		const bool result = InputT(label, value.value, step.value, stepFast.value, "%llu", flags);
 		if (ImGui::IsItemHovered())
@@ -397,7 +397,7 @@ namespace ImGui
 		return changed;
 	}
 
-	bool InputT(const String label, se::time::TimeInfo& timeInfo)
+	bool InputT(const String label, se::TimeInfo& timeInfo)
 	{
 		bool changed = false;
 		if (ImGui::CollapsingHeader(label))

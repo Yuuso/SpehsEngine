@@ -342,9 +342,9 @@ namespace se
 				processIncomingConnectionQueue();
 				processConnectionStatusChangeQueue();
 
-				const time::Time beginTime = time::now();
-				const time::Time maxTime = time::fromSeconds(1.0f / 120.0f);
-				while (state->steamNetPollGroup != k_HSteamNetPollGroup_Invalid && (time::now() - beginTime <= maxTime))
+				const Time beginTime = getEpochTime();
+				const Time maxTime = Time::fromSeconds(1.0f / 120.0f);
+				while (state->steamNetPollGroup != k_HSteamNetPollGroup_Invalid && (getEpochTime() - beginTime <= maxTime))
 				{
 					ISteamNetworkingMessage* steamNetworkingMessages[16];
 					int messageCount = state->steamNetworkingSockets->ReceiveMessagesOnPollGroup(state->steamNetPollGroup, steamNetworkingMessages, 16);
@@ -676,7 +676,7 @@ namespace se
 			state->ownedSteamNetConnections.insert(connection.state->steamNetConnection);
 		}
 
-		std::shared_ptr<Connection> ConnectionManager::connectIP(const Endpoint& _endpoint, const bool _symmetric, const std::string_view _name, const time::Time _timeout)
+		std::shared_ptr<Connection> ConnectionManager::connectIP(const Endpoint& _endpoint, const bool _symmetric, const std::string_view _name, const Time _timeout)
 		{
 			se_assert(_endpoint);
 			if (state->steamNetworkingSockets)
@@ -729,7 +729,7 @@ namespace se
 			}
 		}
 
-		std::shared_ptr<Connection> ConnectionManager::connectP2P(const NetIdentity& _peerNetIdentity, const Endpoint& _signalingServerEndpoint, const std::string_view _name, const time::Time _timeout)
+		std::shared_ptr<Connection> ConnectionManager::connectP2P(const NetIdentity& _peerNetIdentity, const Endpoint& _signalingServerEndpoint, const std::string_view _name, const Time _timeout)
 		{
 			se_assert(_peerNetIdentity);
 			se_assert(_signalingServerEndpoint);

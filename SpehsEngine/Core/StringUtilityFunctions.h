@@ -52,7 +52,7 @@ namespace se
 		Returns a nicely formated time length string.
 		Presicion: how many digits to display.
 	*/
-	std::string toTimeLengthString(const time::Time& time, const size_t precision);
+	std::string toTimeLengthString(const Time& time, const size_t precision);
 
 	/*
 		Returns a nicely formated byte size string.

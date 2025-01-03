@@ -10,7 +10,7 @@ namespace se
 		thread_local std::vector<ScopedDuration::Data*> ScopedDuration::stack;
 
 		ScopedDuration::ScopedDuration(const char* const _message)
-			: beginTime(time::getProfilerTimestamp())
+			: beginTime(getProfilerTime())
 		{
 			if (stack.empty())
 			{
@@ -42,13 +42,13 @@ namespace se
 			if (data)
 			{
 				se_assert(data == stack.back());
-				data->duration += time::getProfilerTimestamp() - beginTime;
+				data->duration += getProfilerTime() - beginTime;
 				stack.pop_back();
 				if (stack.empty())
 				{
 					// Log stack
-					std::function<void(const ScopedDuration::Data&, const time::Time* const, const size_t)> log;
-					log = [&log](const ScopedDuration::Data& data, const time::Time* const parentDuration, const size_t depth)
+					std::function<void(const ScopedDuration::Data&, const Time* const, const size_t)> log;
+					log = [&log](const ScopedDuration::Data& data, const Time* const parentDuration, const size_t depth)
 					{
 						std::string string(depth, ' ');
 						string += std::string(data.message) + " " + std::to_string(int(data.duration.asMilliseconds())) + " ms";

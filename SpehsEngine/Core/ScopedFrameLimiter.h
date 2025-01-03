@@ -3,15 +3,12 @@
 
 namespace se
 {
-	namespace time
+	class ScopedFrameLimiter
 	{
-		class ScopedFrameLimiter
-		{
-		public:
-			ScopedFrameLimiter(const Time scopedMinimumLifetime);
-			~ScopedFrameLimiter();
-		private:
-			const Time endTime;
-		};
-	}
+	public:
+		ScopedFrameLimiter(const Time scopedMinimumLifetime);
+		~ScopedFrameLimiter();
+	private:
+		const Time endTime;
+	};
 }

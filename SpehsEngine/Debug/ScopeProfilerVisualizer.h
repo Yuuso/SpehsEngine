@@ -27,7 +27,7 @@ namespace se
 			ScopeProfilerVisualizer(graphics::View& _view, graphics::FontManager& _fontManager, graphics::ShaderManager& _shaderManager, input::InputManager& _inputManager);
 			~ScopeProfilerVisualizer();
 
-			void update(const time::Time& deltaTime);
+			void update(const Time& deltaTime);
 
 			void setRenderState(const bool visible);
 			bool getRenderState() const;
@@ -36,9 +36,9 @@ namespace se
 			bool getEnableUpdate() const;
 
 			/* Set an override for preferred root section length. For example at 1/60 of a second when the root section is the frame. Used for section colouring purposes. */
-			void setTargetRootSectionWidth(const time::Time* const time);
-			void setTimeWindowWidth(const time::Time& time);
-			void translateTimeWindowBegin(const time::Time& time);
+			void setTargetRootSectionWidth(const Time* const time);
+			void setTimeWindowWidth(const Time& time);
+			void translateTimeWindowBegin(const Time& time);
 			void setMaxThreadDataSectionCount(const size_t count);
 
 		private:

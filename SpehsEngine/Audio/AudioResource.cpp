@@ -39,7 +39,7 @@ namespace se
 
 			AudioResourceData result;
 			result.source = source;
-			result.length = time::fromSeconds(source->getLength());
+			result.length = Time::fromSeconds(source->getLength());
 			return result;
 		}
 		AudioResourceData AudioResource::streamResource(std::string _filename)
@@ -51,7 +51,7 @@ namespace se
 
 			AudioResourceData result;
 			result.source = source;
-			result.length = time::fromSeconds(source->getLength());
+			result.length = Time::fromSeconds(source->getLength());
 			return result;
 		}
 		void AudioResource::load(const std::string& _filename, std::shared_ptr<ResourceLoader> _resourceLoader)
@@ -157,7 +157,7 @@ namespace se
 		{
 			return volume;
 		}
-		time::Time AudioResource::getLength() const
+		Time AudioResource::getLength() const
 		{
 			return length;
 		}

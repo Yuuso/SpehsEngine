@@ -26,7 +26,7 @@ namespace se
 		if (!valid)
 		{
 			// INITIALIZATIONS
-			time::initialize();
+			Time::initialize();
 			rng::initialize();
 
 			// Check available integer widths

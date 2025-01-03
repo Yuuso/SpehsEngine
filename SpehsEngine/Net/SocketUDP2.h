@@ -85,8 +85,8 @@ namespace se
 			std::vector<unsigned char> receiveBuffer2;
 			bool receiving = false;
 			std::function<void(ReceivedPacketSocketUDP2&)> receiveHandler;
-			time::Time lastReceiveTime;
-			time::Time lastSendTime;
+			Time lastReceiveTime;
+			Time lastSendTime;
 			uint64_t sentBytes = 0;
 			uint64_t receivedBytes = 0;
 			std::recursive_mutex receivedPacketsMutex;

@@ -23,15 +23,15 @@ namespace se
 			Animator& operator=(Animator&& _other) = delete;
 
 
-			void stopAll(time::Time _fade = se::time::Time::zero);
-			void pauseAll(time::Time _fade = se::time::Time::zero);
-			void resumeAll(time::Time _fade = se::time::Time::zero);
+			void stopAll(Time _fade = Time::zero);
+			void pauseAll(Time _fade = Time::zero);
+			void resumeAll(Time _fade = Time::zero);
 			void setGlobalSpeed(float _value);
 			void setDefaultLooping(bool _value);
 
-			void start(std::string_view _name, time::Time _fade = se::time::Time::zero);
+			void start(std::string_view _name, Time _fade = Time::zero);
 			void pause(std::string_view _name);
-			void stop(std::string_view _name, time::Time _fade = se::time::Time::zero);
+			void stop(std::string_view _name, Time _fade = Time::zero);
 			void stopWhenFinished(std::string_view _name, bool _value);
 			void setSpeed(std::string_view _name, float _value);
 			void setLooping(std::string_view _name, bool _value);
@@ -52,9 +52,9 @@ namespace se
 
 				void start();
 				void pause();
-				void fadeIn(time::Time _fade);
-				void fadeOut(time::Time _fade);
-				bool update(time::Time _deltaTime);
+				void fadeIn(Time _fade);
+				void fadeOut(Time _fade);
+				bool update(Time _deltaTime);
 				bool fadingIn() const;
 				bool fadingOut() const;
 				bool isFinished() const;
@@ -62,12 +62,12 @@ namespace se
 
 				std::string name;
 				const Animation* animation = nullptr;
-				time::Time fadeInTime;
-				time::Time fadeOutTime;
+				Time fadeInTime;
+				Time fadeOutTime;
 
-				time::Time animTimer;
-				time::Time fadeInTimer;
-				time::Time fadeOutTimer;
+				Time animTimer;
+				Time fadeInTimer;
+				Time fadeOutTimer;
 
 				bool paused = false;
 				bool loop /*= true*/;
@@ -82,7 +82,7 @@ namespace se
 
 			std::shared_ptr<std::vector<std::unique_ptr<Animation>>> animations;
 			std::vector<std::unique_ptr<ActiveAnimation>> activeAnimations;
-			time::DeltaTimeSystem deltaTimeSystem;
+			DeltaTimeSystem deltaTimeSystem;
 			float globalSpeed = 1.0f;
 			bool defaultLooping = true;
 		};

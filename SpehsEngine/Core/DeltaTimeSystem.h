@@ -5,24 +5,20 @@
 
 namespace se
 {
-	namespace time
+	class DeltaTimeSystem
 	{
-		class DeltaTimeSystem
-		{
-		public:
-			DeltaTimeSystem(const std::string& debugName = "unnamed");
-			virtual ~DeltaTimeSystem();
+	public:
+		DeltaTimeSystem(const std::string& debugName = "unnamed");
+		virtual ~DeltaTimeSystem() = default;
 
-			void init();
-			void update();
+		void init();
+		void update();
 
-			//Public attributes for maximum speed
-			float deltaSeconds = 0.0f;
-			time::Time deltaTime;
+		float deltaSeconds = 0.0f;
+		Time deltaTime;
 
-		private:
-			std::string name;
-			time::Time deltaTimestamp;
-		};
-	}
+	private:
+		std::string name;
+		Time deltaTimestamp;
+	};
 }
