@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.29509.3
+# Visual Studio Version 17
+VisualStudioVersion = 17.7.34003.232
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Audio", "Audio\Audio.vcxproj", "{F721E433-F0D2-4F4C-BEA0-1AA2B2824CBD}"
 	ProjectSection(ProjectDependencies) = postProject
@@ -11,23 +11,6 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Core", "Core\Core.vcxproj", "{CBB134B8-C9FE-4129-A6DD-58B94CBE1096}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CoreShare", "Core\CoreShare.vcxitems", "{45D41ACC-2C3C-43D2-BC10-02AA73FFC7C7}"
-EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Game", "Game\Game.vcxproj", "{1C54A116-BAEE-43B1-85A0-52A1D524044A}"
-	ProjectSection(ProjectDependencies) = postProject
-		{9594522F-6B2A-4DCC-B1D4-70A90550C490} = {9594522F-6B2A-4DCC-B1D4-70A90550C490}
-		{F721E433-F0D2-4F4C-BEA0-1AA2B2824CBD} = {F721E433-F0D2-4F4C-BEA0-1AA2B2824CBD}
-		{CDAEF09B-DC58-42C8-81B8-83C3E5D8145E} = {CDAEF09B-DC58-42C8-81B8-83C3E5D8145E}
-		{ED3A1BB2-BBE1-4BAF-8606-DBE012375818} = {ED3A1BB2-BBE1-4BAF-8606-DBE012375818}
-		{CBB134B8-C9FE-4129-A6DD-58B94CBE1096} = {CBB134B8-C9FE-4129-A6DD-58B94CBE1096}
-		{CE4F0DDF-B21D-4E85-961E-5DE4F41FFEB8} = {CE4F0DDF-B21D-4E85-961E-5DE4F41FFEB8}
-	EndProjectSection
-EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GPIO", "GPIO\GPIO.vcxproj", "{28510A11-2597-4E7F-8AB7-04D8D6617F73}"
-	ProjectSection(ProjectDependencies) = postProject
-		{CBB134B8-C9FE-4129-A6DD-58B94CBE1096} = {CBB134B8-C9FE-4129-A6DD-58B94CBE1096}
-	EndProjectSection
-EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GPIO_Share", "GPIO\GPIO_Share.vcxitems", "{F3630E63-73EC-4338-A0A1-41346357311C}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GUI", "GUI\GUI.vcxproj", "{5F7EC1B1-79D0-410B-AAA5-67AE29DD3843}"
 	ProjectSection(ProjectDependencies) = postProject
@@ -60,16 +43,6 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Physics", "Physics\Physics.
 		{CBB134B8-C9FE-4129-A6DD-58B94CBE1096} = {CBB134B8-C9FE-4129-A6DD-58B94CBE1096}
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Sync", "Sync\Sync.vcxproj", "{7CDD365E-B7C3-4B9F-8107-3B94872BF6C9}"
-	ProjectSection(ProjectDependencies) = postProject
-		{28510A11-2597-4E7F-8AB7-04D8D6617F73} = {28510A11-2597-4E7F-8AB7-04D8D6617F73}
-		{9594522F-6B2A-4DCC-B1D4-70A90550C490} = {9594522F-6B2A-4DCC-B1D4-70A90550C490}
-		{CDAEF09B-DC58-42C8-81B8-83C3E5D8145E} = {CDAEF09B-DC58-42C8-81B8-83C3E5D8145E}
-		{CBB134B8-C9FE-4129-A6DD-58B94CBE1096} = {CBB134B8-C9FE-4129-A6DD-58B94CBE1096}
-	EndProjectSection
-EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Sync_Share", "Sync\Sync_Share.vcxitems", "{F9A7362B-F51A-4941-BC6F-1EC1222C8B18}"
-EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Graphics", "Graphics\Graphics.vcxproj", "{717C5315-3123-4B0E-8BD4-58E9AE782955}"
 	ProjectSection(ProjectDependencies) = postProject
 		{9594522F-6B2A-4DCC-B1D4-70A90550C490} = {9594522F-6B2A-4DCC-B1D4-70A90550C490}
@@ -96,16 +69,6 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ImGui", "ImGui\ImGui.vcxpro
 	EndProjectSection
 EndProject
 Global
-	GlobalSection(SharedMSBuildProjectFiles) = preSolution
-		Net\Net_Share.vcxitems*{1e65a9fa-c973-42fe-aa97-cd08c94e9bb4}*SharedItemsImports = 9
-		GPIO\GPIO_Share.vcxitems*{28510a11-2597-4e7f-8ab7-04d8d6617f73}*SharedItemsImports = 4
-		Core\CoreShare.vcxitems*{45d41acc-2c3c-43d2-bc10-02aa73ffc7c7}*SharedItemsImports = 9
-		Sync\Sync_Share.vcxitems*{7cdd365e-b7c3-4b9f-8107-3b94872bf6c9}*SharedItemsImports = 4
-		Core\CoreShare.vcxitems*{cbb134b8-c9fe-4129-a6dd-58b94cbe1096}*SharedItemsImports = 4
-		Net\Net_Share.vcxitems*{cdaef09b-dc58-42c8-81b8-83c3e5d8145e}*SharedItemsImports = 4
-		GPIO\GPIO_Share.vcxitems*{f3630e63-73ec-4338-a0a1-41346357311c}*SharedItemsImports = 9
-		Sync\Sync_Share.vcxitems*{f9a7362b-f51a-4941-bc6f-1ec1222c8b18}*SharedItemsImports = 9
-	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
 		Debug|x86 = Debug|x86
@@ -129,22 +92,6 @@ Global
 		{CBB134B8-C9FE-4129-A6DD-58B94CBE1096}.Release|x64.Build.0 = Release|x64
 		{CBB134B8-C9FE-4129-A6DD-58B94CBE1096}.Release|x86.ActiveCfg = Release|Win32
 		{CBB134B8-C9FE-4129-A6DD-58B94CBE1096}.Release|x86.Build.0 = Release|Win32
-		{1C54A116-BAEE-43B1-85A0-52A1D524044A}.Debug|x64.ActiveCfg = Debug|x64
-		{1C54A116-BAEE-43B1-85A0-52A1D524044A}.Debug|x64.Build.0 = Debug|x64
-		{1C54A116-BAEE-43B1-85A0-52A1D524044A}.Debug|x86.ActiveCfg = Debug|Win32
-		{1C54A116-BAEE-43B1-85A0-52A1D524044A}.Debug|x86.Build.0 = Debug|Win32
-		{1C54A116-BAEE-43B1-85A0-52A1D524044A}.Release|x64.ActiveCfg = Release|x64
-		{1C54A116-BAEE-43B1-85A0-52A1D524044A}.Release|x64.Build.0 = Release|x64
-		{1C54A116-BAEE-43B1-85A0-52A1D524044A}.Release|x86.ActiveCfg = Release|Win32
-		{1C54A116-BAEE-43B1-85A0-52A1D524044A}.Release|x86.Build.0 = Release|Win32
-		{28510A11-2597-4E7F-8AB7-04D8D6617F73}.Debug|x64.ActiveCfg = Debug|x64
-		{28510A11-2597-4E7F-8AB7-04D8D6617F73}.Debug|x64.Build.0 = Debug|x64
-		{28510A11-2597-4E7F-8AB7-04D8D6617F73}.Debug|x86.ActiveCfg = Debug|Win32
-		{28510A11-2597-4E7F-8AB7-04D8D6617F73}.Debug|x86.Build.0 = Debug|Win32
-		{28510A11-2597-4E7F-8AB7-04D8D6617F73}.Release|x64.ActiveCfg = Release|x64
-		{28510A11-2597-4E7F-8AB7-04D8D6617F73}.Release|x64.Build.0 = Release|x64
-		{28510A11-2597-4E7F-8AB7-04D8D6617F73}.Release|x86.ActiveCfg = Release|Win32
-		{28510A11-2597-4E7F-8AB7-04D8D6617F73}.Release|x86.Build.0 = Release|Win32
 		{5F7EC1B1-79D0-410B-AAA5-67AE29DD3843}.Debug|x64.ActiveCfg = Debug|x64
 		{5F7EC1B1-79D0-410B-AAA5-67AE29DD3843}.Debug|x64.Build.0 = Debug|x64
 		{5F7EC1B1-79D0-410B-AAA5-67AE29DD3843}.Debug|x86.ActiveCfg = Debug|Win32
@@ -185,14 +132,6 @@ Global
 		{ED3A1BB2-BBE1-4BAF-8606-DBE012375818}.Release|x64.Build.0 = Release|x64
 		{ED3A1BB2-BBE1-4BAF-8606-DBE012375818}.Release|x86.ActiveCfg = Release|Win32
 		{ED3A1BB2-BBE1-4BAF-8606-DBE012375818}.Release|x86.Build.0 = Release|Win32
-		{7CDD365E-B7C3-4B9F-8107-3B94872BF6C9}.Debug|x64.ActiveCfg = Debug|x64
-		{7CDD365E-B7C3-4B9F-8107-3B94872BF6C9}.Debug|x64.Build.0 = Debug|x64
-		{7CDD365E-B7C3-4B9F-8107-3B94872BF6C9}.Debug|x86.ActiveCfg = Debug|Win32
-		{7CDD365E-B7C3-4B9F-8107-3B94872BF6C9}.Debug|x86.Build.0 = Debug|Win32
-		{7CDD365E-B7C3-4B9F-8107-3B94872BF6C9}.Release|x64.ActiveCfg = Release|x64
-		{7CDD365E-B7C3-4B9F-8107-3B94872BF6C9}.Release|x64.Build.0 = Release|x64
-		{7CDD365E-B7C3-4B9F-8107-3B94872BF6C9}.Release|x86.ActiveCfg = Release|Win32
-		{7CDD365E-B7C3-4B9F-8107-3B94872BF6C9}.Release|x86.Build.0 = Release|Win32
 		{717C5315-3123-4B0E-8BD4-58E9AE782955}.Debug|x64.ActiveCfg = Debug|x64
 		{717C5315-3123-4B0E-8BD4-58E9AE782955}.Debug|x64.Build.0 = Debug|x64
 		{717C5315-3123-4B0E-8BD4-58E9AE782955}.Debug|x86.ActiveCfg = Debug|Win32
@@ -223,5 +162,11 @@ Global
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {C60B4BC2-D355-4B57-A147-032191AD7A9C}
+	EndGlobalSection
+	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		Net\Net_Share.vcxitems*{1e65a9fa-c973-42fe-aa97-cd08c94e9bb4}*SharedItemsImports = 9
+		Core\CoreShare.vcxitems*{45d41acc-2c3c-43d2-bc10-02aa73ffc7c7}*SharedItemsImports = 9
+		Core\CoreShare.vcxitems*{cbb134b8-c9fe-4129-a6dd-58b94cbe1096}*SharedItemsImports = 4
+		Net\Net_Share.vcxitems*{cdaef09b-dc58-42c8-81b8-83c3e5d8145e}*SharedItemsImports = 4
 	EndGlobalSection
 EndGlobal
