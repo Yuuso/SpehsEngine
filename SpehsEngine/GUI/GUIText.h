@@ -34,7 +34,7 @@ namespace se
 			void									setFont(std::string_view _font);
 			void									setLineSpacing(const float _amount);
 			void									movePen(const int _movement);
-			void									insert(const std::string& _text); // utf-8
+			void									insert(const std::string_view _text); // utf-8
 			void									clear();
 
 		protected:

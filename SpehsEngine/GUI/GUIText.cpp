@@ -186,7 +186,7 @@ namespace se
 			text.movePen(_movement);
 		}
 
-		void GUIText::insert(const std::string& _text)
+		void GUIText::insert(const std::string_view _text)
 		{
 			text.insert(_text);
 			needUpdateDimensions = true;

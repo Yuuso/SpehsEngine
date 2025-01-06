@@ -92,10 +92,10 @@ namespace se
 			}
 			penPosition = _text.penPosition;
 		}
-		void Text::insert(const std::string& _text)
+		void Text::insert(const std::string_view _text)
 		{
 			std::wstring_convert<std::codecvt_utf8<char32_t>, char32_t> converter;
-			insert(converter.from_bytes(_text));
+			insert(converter.from_bytes(_text.data(), _text.data() + _text.length()));
 		}
 		void Text::insert(const std::u32string_view _text)
 		{
