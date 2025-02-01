@@ -312,6 +312,10 @@ namespace ImGui
 
 	bool InputT(const String label, se::TimeInfo& timeInfo);
 
+	inline bool CollapsingHeader(const String _idLabel, const ImGuiTreeNodeFlags _flags = 0)
+	{
+		return ImGui::CollapsingHeader(_idLabel.pointer, _flags);
+	}
 	// Splits shown string into two parts, id part and mutable part. Useful when the contents of the header edit the shown header string.
 	bool CollapsingHeader2(const String idLabel, const String mutableLabel, const ImGuiTreeNodeFlags flags = 0);
 
