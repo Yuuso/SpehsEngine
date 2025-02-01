@@ -390,7 +390,7 @@ namespace se
 			std::unique_ptr<IReceiver>& iReceiver = receivers[_packetType];
 			if (iReceiver && iReceiver->valid())
 			{
-				se_assert(false && "Multiple packet receivers for the same PacketType cannot exist at the same time");
+				log::error("Multiple packet receivers for the same PacketType cannot exist at the same time, PacketType: " + toString(_packetType));
 				return;
 			}
 			struct Receiver : public IReceiver
@@ -408,7 +408,9 @@ namespace se
 						se_assert(_binaryReader.getOffset() >= sizeof(PacketType));
 						BinaryReader binaryReader2(_binaryReader.getData() + _binaryReader.getOffset() - sizeof(PacketType), sizeof(PacketType));
 						PacketType packetType = PacketType(0);
-						se_assert(binaryReader2.serial(packetType));
+						const bool packetTypeRead = binaryReader2.serial(packetType);
+						(void)packetTypeRead;
+						se_assert(packetTypeRead);
 						log::error("The sender is not expecting a result but the registered receive handler does provide one, PacketType: " + _packetman.toString(packetType));
 					}
 
