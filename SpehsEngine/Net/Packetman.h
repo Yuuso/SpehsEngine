@@ -44,7 +44,7 @@ namespace se
 			bool hasUnfinishedResults(const PacketType _packetType) const;
 
 			// Can be used for more descriptive debug messages
-			void setDebugToStringFunction(const std::function<const char*(PacketType)>&& _function) { debugToStringFunction = _function; }
+			void setDebugToStringFunction(const std::function<const char*(PacketType)>&& _function) { debug.toStringFunction = _function; }
 
 			// This signal may be useful if you need to make sure that the receive handler result gets sent first before sending another packet.
 			[[nodiscard]] se::ScopedConnection connectToPostReceiveHandlerSignal(const std::function<void()>& _callback) { return postReceiveHandlerSignal.connect(_callback); }
@@ -60,9 +60,18 @@ namespace se
 			{
 				virtual ~IRequest() {}
 				virtual void process(BinaryReader& _binaryReader) = 0;
-				virtual bool timeout(const Time& timeout) = 0;
+				virtual bool timeout(const Time _epochNow, const Time _timeout) = 0;
+				virtual bool isConnected() const = 0;
 				virtual void fail() = 0;
 				virtual PacketType getPacketType() const = 0;
+			};
+			struct Debug
+			{
+				static constexpr size_t RequestIdsCapacity = 32;
+				std::vector<uint16_t> abandonedRequestIds;
+				std::vector<uint16_t> timeoutedRequestIds;
+				std::unordered_map<uint16_t, PacketType> requestIdToPacketType;
+				std::function<const char* (PacketType)> toStringFunction;
 			};
 			void receiveHandler(BinaryReader& _binaryReader, const bool _reliable);
 			uint16_t generateNextRequestId()
@@ -77,7 +86,7 @@ namespace se
 				}
 				return nextRequestId;
 			}
-			static const uint16_t resultIdBit = 1 << 15;
+			static constexpr uint16_t resultIdBit = 1 << 15;
 			static uint16_t isRequestId(const uint16_t _requestId)
 			{
 				return !checkBit(_requestId, resultIdBit);
@@ -105,9 +114,9 @@ namespace se
 			std::string toString(const PacketType _packetType) const
 			{
 				std::string result;
-				if (debugToStringFunction)
+				if (debug.toStringFunction)
 				{
-					result = debugToStringFunction(_packetType);
+					result = debug.toStringFunction(_packetType);
 				}
 				if (result.empty())
 				{
@@ -120,7 +129,7 @@ namespace se
 			uint16_t nextRequestId = 1;
 			Connection& connection;
 			Signal<void()> postReceiveHandlerSignal;
-			std::function<const char* (PacketType)> debugToStringFunction;
+			Debug debug;
 		};
 
 		template<typename PacketType>
@@ -129,17 +138,38 @@ namespace se
 			for (typename std::unordered_map<uint16_t, std::unique_ptr<IRequest>>::iterator it = requests.begin(); it != requests.end(); )
 			{
 #if SE_CONFIGURATION == SE_CONFIGURATION_FINAL_RELEASE
-				const Time timeout = Time::fromSeconds(10.0f);
+				constexpr std::optional<Time> timeout = Time::fromSeconds(10.0f);
 #else
-				const Time timeout = Time::fromSeconds(99999.9f);
+				constexpr std::optional<Time> timeout = std::nullopt;
 #endif
+				const Time epochNow = getEpochTime();
 				const uint16_t requestId = it->first;
-				if (it->second->timeout(timeout))
+				const bool isConnected = it->second->isConnected();
+				if (!isConnected || (timeout && it->second->timeout(epochNow, timeout.value())))
 				{
+					std::vector<uint16_t>& failedRequestIds = isConnected ? debug.timeoutedRequestIds : debug.abandonedRequestIds;
+					if (failedRequestIds.size() == Debug::RequestIdsCapacity)
+					{
+						findAndErase(debug.requestIdToPacketType, failedRequestIds.front());
+						failedRequestIds.erase(failedRequestIds.begin());
+					}
+					failedRequestIds.push_back(requestId);
+
 					// Iterator might have been invalidated from the timeout callback
 					it = requests.find(requestId);
 					if (it != requests.end())
 					{
+						std::string packetTypeString;
+						if (const PacketType *const packetType = tryFind(debug.requestIdToPacketType, requestId))
+						{
+							packetTypeString = toString(*packetType);
+						}
+						else
+						{
+							packetTypeString = "-";
+						}
+						const std::string reason = isConnected ? "timeout" : "abandoning";
+						se::log::info("Packetman (" + connection.name + ") request removed due to " + reason + ". Id: " + std::to_string(requestId) + ", PacketType: " + packetTypeString);
 						it = requests.erase(it);
 					}
 					else
@@ -199,15 +229,45 @@ namespace se
 			{
 				// Receive result
 				const uint16_t requestId = makeRequestId(packetId);
+				se_assert(requestId != 0);
+				const std::unordered_map<uint16_t, PacketType>::iterator requestIdToPacketTypeIt = debug.requestIdToPacketType.find(requestId);
 				const std::unordered_map<uint16_t, std::unique_ptr<IRequest>>::iterator it = requests.find(requestId);
-				se_assert(it != requests.end());
 				if (it != requests.end())
 				{
 					std::unique_ptr<IRequest> request(it->second.release());
 					requests.erase(it);
+					if (requestIdToPacketTypeIt != debug.requestIdToPacketType.end())
+					{
+						debug.requestIdToPacketType.erase(requestIdToPacketTypeIt);
+					}
 					BinaryReader binaryReader2(_binaryReader.getData() + _binaryReader.getOffset(), _binaryReader.getSize());
 					request->process(binaryReader2);
 					return;
+				}
+				else
+				{
+					std::string packetTypeString;
+					if (requestIdToPacketTypeIt != debug.requestIdToPacketType.end())
+					{
+						packetTypeString = toString(requestIdToPacketTypeIt->second);
+						debug.requestIdToPacketType.erase(requestIdToPacketTypeIt);
+					}
+					else
+					{
+						packetTypeString = "-";
+					}
+					if (findAndErase(debug.abandonedRequestIds, requestId))
+					{
+						se::log::error("Request result received for a result that previously got abandoned. PacketType: " + packetTypeString);
+					}
+					else if (findAndErase(debug.timeoutedRequestIds, requestId))
+					{
+						se::log::error("Request result received for a result that previously got timeouted. PacketType: " + packetTypeString);
+					}
+					else
+					{
+						se_assert_m(false, "Request result received for an unknown result. PacketType: " + packetTypeString);
+					}
 				}
 			}
 			else
@@ -295,14 +355,10 @@ namespace se
 							se_assert(false && "Failed to read result as the expected type");
 						}
 					}
-					bool timeout(const Time& timeout) final
+					bool timeout(const Time _epochNow, const Time _timeout) final
 					{
-						if (signal.isEmpty())
-						{
-							return true;
-						}
-						const Time age = getEpochTime() - beginTime;
-						if (age > timeout)
+						const Time age = _epochNow - beginTime;
+						if (age > _timeout)
 						{
 							signal(nullptr);
 							return true;
@@ -311,6 +367,10 @@ namespace se
 						{
 							return false;
 						}
+					}
+					bool isConnected() const final
+					{
+						return !signal.isEmpty();
 					}
 					void fail() final
 					{
@@ -323,6 +383,7 @@ namespace se
 				Request* const request = new Request();
 				request->packetType = _packetType;
 				_scopedConnection = request->signal.connect(_callback);
+				debug.requestIdToPacketType[requestId] = _packetType;
 				std::unique_ptr<IRequest>& iRequest = requests[requestId];
 				se_assert(!iRequest);
 				iRequest.reset(request);
