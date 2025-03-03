@@ -7,14 +7,14 @@
 
 namespace se
 {
-	template<typename... Arguments>
-	inline std::string formatString(const char* const format, Arguments&&... args)
+	template<typename... Args>
+	inline std::string formatString(const char* const format, Args&&... args)
 	{
-		const int lengthWithoutNullTerminator = std::snprintf(nullptr, 0, format, std::forward<Arguments>(args)...);
+		const int lengthWithoutNullTerminator = std::snprintf(nullptr, 0, format, std::forward<Args>(args)...);
 		const int lengthWithNullTerminator = lengthWithoutNullTerminator + 1;
 		std::string result;
 		result.resize(lengthWithNullTerminator);
-		sprintf_s(result.data(), lengthWithNullTerminator, format, std::forward<Arguments>(args)...);
+		sprintf_s(result.data(), lengthWithNullTerminator, format, std::forward<Args>(args)...);
 		result.pop_back(); // Useless null terminator
 		return result;
 	}
@@ -103,6 +103,11 @@ namespace se
 
 	// Returns string as integer. Returns 0 if string is invalid
 	int getStringAsInt(const std::string& string);
+
+	inline std::u32string toU32String(const std::string& _string)
+	{
+		return std::u32string(_string.begin(), _string.end());
+	}
 
 	// Returns "true" or "false"
 	std::string toString(const bool value);
