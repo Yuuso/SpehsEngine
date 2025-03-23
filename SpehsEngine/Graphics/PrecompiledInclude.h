@@ -20,6 +20,8 @@ namespace se
 		class TextureManager;
 		class View;
 		class Window;
+		struct FontMetrics;
+		struct GlyphMetrics;
 		struct ResourceData;
 		typedef AsyncTaskManager<std::shared_ptr<ResourceData>> ResourceLoader;
 	}
