@@ -40,6 +40,10 @@ namespace se
 		{
 			return size;
 		}
+		const FontData* Font::getFontData() const
+		{
+			return resourceData.get();
+		}
 
 		void Font::destroy()
 		{
