@@ -34,6 +34,7 @@ namespace se
 
 
 			std::shared_ptr<Font> create(const std::string_view _name, const std::string_view _font, const FontSize _size, const CharacterSet& _charMap = defaultCharacterSet);
+			std::shared_ptr<Font> create(const std::string_view _name, const std::string_view _font, const FontSize _size, const TextureModes& _textureModes, const CharacterSet& _charMap = defaultCharacterSet);
 			std::shared_ptr<Font> find(const std::string_view _name) const;
 
 			void createDefaultFonts();

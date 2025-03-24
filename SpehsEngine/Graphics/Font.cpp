@@ -30,7 +30,7 @@ namespace se
 				return;
 			}
 			destroy();
-			create(path, size, charMap, fontLibrary, _resourceLoader);
+			create(path, size, textureModes, charMap, fontLibrary, _resourceLoader);
 		}
 		bool Font::reloadable() const
 		{
@@ -52,7 +52,7 @@ namespace se
 			resourceData.reset();
 		}
 
-		static std::shared_ptr<ResourceData> createResource(FontFace& _fontFace, CharacterSet _charMap, const std::string_view _name)
+		static std::shared_ptr<ResourceData> createResource(FontFace& _fontFace, const TextureModes& _textureModes, CharacterSet _charMap, const std::string_view _name)
 		{
 			se_assert(!_charMap.empty());
 
@@ -97,7 +97,7 @@ namespace se
 							, false
 							, 1
 							, textureFormat
-							, TextureModesToFlags(TextureModes())
+							, TextureModesToFlags(_textureModes)
 							, nullptr
 						);
 
@@ -158,60 +158,62 @@ namespace se
 			result->fontMetrics.textureSize = atlasSize;
 			return result;
 		}
-		std::shared_ptr<ResourceData> Font::createResource(const std::string _path, const FontSize _size, CharacterSet _charMap, std::shared_ptr<FontLibrary> _fontLibrary)
+		std::shared_ptr<ResourceData> Font::createResource(const std::string _path, const FontSize _size, const TextureModes _textureModes, CharacterSet _charMap, std::shared_ptr<FontLibrary> _fontLibrary)
 		{
 			FontFace fontFace = _fontLibrary->loadFace(_path);
 			fontFace.setSize(_size);
-			std::shared_ptr<ResourceData> result = graphics::createResource(fontFace, _charMap, _path);
+			std::shared_ptr<ResourceData> result = graphics::createResource(fontFace, _textureModes, _charMap, _path);
 			_fontLibrary->destroyFace(fontFace);
 			return result;
 		}
-		std::shared_ptr<ResourceData> Font::createResourceFromData(const uint8_t* _data, const size_t _dataSize, const FontSize _size, CharacterSet _charMap, std::shared_ptr<FontLibrary> _fontLibrary)
+		std::shared_ptr<ResourceData> Font::createResourceFromData(const uint8_t* _data, const size_t _dataSize, const FontSize _size, const TextureModes _textureModes, CharacterSet _charMap, std::shared_ptr<FontLibrary> _fontLibrary)
 		{
 			FontFace fontFace = _fontLibrary->loadFace(_data, _dataSize);
 			fontFace.setSize(_size);
-			std::shared_ptr<ResourceData> result = graphics::createResource(fontFace, _charMap, "embedded");
+			std::shared_ptr<ResourceData> result = graphics::createResource(fontFace, _textureModes, _charMap, "embedded");
 			_fontLibrary->destroyFace(fontFace);
 			return result;
 		}
-		void Font::create(const std::string_view _path, const FontSize _size, const CharacterSet& _charMap, std::shared_ptr<FontLibrary> _fontLibrary, std::shared_ptr<ResourceLoader> _resourceLoader)
+		void Font::create(const std::string_view _path, const FontSize _size, const TextureModes& _textureModes, const CharacterSet& _charMap, std::shared_ptr<FontLibrary> _fontLibrary, std::shared_ptr<ResourceLoader> _resourceLoader)
 		{
 			se_assert(!resourceData);
 			se_assert(_fontLibrary);
 
 			path = _path;
 			size = _size;
+			textureModes = _textureModes;
 			charMap = _charMap;
 			fontLibrary = _fontLibrary;
 
 			if (_resourceLoader)
 			{
-				std::function<std::shared_ptr<ResourceData>()> func = std::bind(&Font::createResource, path, size, charMap, fontLibrary);
+				std::function<std::shared_ptr<ResourceData>()> func = std::bind(&Font::createResource, path, size, textureModes, charMap, fontLibrary);
 				resourceFuture = _resourceLoader->push(func);
 			}
 			else
 			{
-				resourceData = std::dynamic_pointer_cast<FontData>(createResource(path, size, charMap, fontLibrary));
+				resourceData = std::dynamic_pointer_cast<FontData>(createResource(path, size, textureModes, charMap, fontLibrary));
 			}
 		}
-		void Font::create(const uint8_t* _data, const size_t _dataSize, const FontSize _size, const CharacterSet& _charMap, std::shared_ptr<FontLibrary> _fontLibrary, std::shared_ptr<ResourceLoader> _resourceLoader)
+		void Font::create(const uint8_t* _data, const size_t _dataSize, const FontSize _size, const TextureModes& _textureModes, const CharacterSet& _charMap, std::shared_ptr<FontLibrary> _fontLibrary, std::shared_ptr<ResourceLoader> _resourceLoader)
 		{
 			se_assert(!resourceData);
 			se_assert(_fontLibrary);
 
 			path = "";
 			size = _size;
+			textureModes = _textureModes;
 			charMap = _charMap;
 			fontLibrary = _fontLibrary;
 
 			if (_resourceLoader)
 			{
-				std::function<std::shared_ptr<ResourceData>()> func = std::bind(&Font::createResourceFromData, _data, _dataSize, size, charMap, fontLibrary);
+				std::function<std::shared_ptr<ResourceData>()> func = std::bind(&Font::createResourceFromData, _data, _dataSize, size, textureModes, charMap, fontLibrary);
 				resourceFuture = _resourceLoader->push(func);
 			}
 			else
 			{
-				resourceData = std::dynamic_pointer_cast<FontData>(createResourceFromData(_data, _dataSize, size, charMap, fontLibrary));
+				resourceData = std::dynamic_pointer_cast<FontData>(createResourceFromData(_data, _dataSize, size, textureModes, charMap, fontLibrary));
 			}
 		}
 

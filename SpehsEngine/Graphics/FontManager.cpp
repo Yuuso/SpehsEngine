@@ -17,6 +17,11 @@ namespace se
 
 		std::shared_ptr<Font> FontManager::create(const std::string_view _name, const std::string_view _font, const FontSize _size, const CharacterSet& _charMap)
 		{
+			return create(_name, _font, _size, TextureModes(), _charMap);
+		}
+
+		std::shared_ptr<Font> FontManager::create(const std::string_view _name, const std::string_view _font, const FontSize _size, const TextureModes& _textureModes, const CharacterSet& _charMap)
+		{
 			const std::string fontPath = pathFinder->getPath(_font);
 
 			for (auto& font : resources)
@@ -32,7 +37,7 @@ namespace se
 
 			resources.push_back(std::make_shared<Font>(_name));
 			std::shared_ptr<Font>& font = resources.back();
-			font->create(fontPath, _size, _charMap, fontLibrary, resourceLoader);
+			font->create(fontPath, _size, _textureModes, _charMap, fontLibrary, resourceLoader);
 			return font;
 		}
 		std::shared_ptr<Font> FontManager::find(const std::string_view _name) const
@@ -55,12 +60,13 @@ namespace se
 			defaultFontsCreated = true;
 
 			const FontSize defaultFontSize(60, FontSizeType::Pixel);
+			const TextureModes defaultTextureModes;
 
 			resources.push_back(std::make_shared<Font>("AnonymousPro-Regular"));
-			resources.back()->create(font_anonymousProRegularTtf, sizeof(font_anonymousProRegularTtf), defaultFontSize, defaultCharacterSet, fontLibrary, resourceLoader);
+			resources.back()->create(font_anonymousProRegularTtf, sizeof(font_anonymousProRegularTtf), defaultFontSize, defaultTextureModes, defaultCharacterSet, fontLibrary, resourceLoader);
 
 			resources.push_back(std::make_shared<Font>("OpenSans-Regular"));
-			resources.back()->create(font_openSansRegularTtf, sizeof(font_openSansRegularTtf), defaultFontSize, defaultCharacterSet, fontLibrary, resourceLoader);
+			resources.back()->create(font_openSansRegularTtf, sizeof(font_openSansRegularTtf), defaultFontSize, defaultTextureModes, defaultCharacterSet, fontLibrary, resourceLoader);
 		}
 		std::shared_ptr<Font> FontManager::getDefaultFont() const
 		{
