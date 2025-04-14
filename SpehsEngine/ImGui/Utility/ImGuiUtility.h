@@ -222,10 +222,10 @@ namespace ImGui
 			{
 				ImGui::Indent();
 			}
-			ImGui::PushID(&vector);
+			ImGui::PushID(label);
 			for (size_t i = 0; i < vector.size(); i++)
 			{
-				ImGui::PushID(&vector[i]);
+				ImGui::PushID(int(i));
 				bool remove = false;
 				if (ImGui::Button("Delete"))
 				{
@@ -287,7 +287,7 @@ namespace ImGui
 	{
 		bool changed = false;
 		bool enabled = optional.has_value();
-		ImGui::PushID(&optional);
+		ImGui::PushID(label);
 		if (ImGui::Checkbox(label, &enabled))
 		{
 			if (enabled)
