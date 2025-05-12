@@ -29,4 +29,6 @@ namespace se
 	Color randomColor();
 	Color randomBrightColor(rng::PRNG<unsigned>& _prng);
 	Color randomBrightColor();
+
+	rng::PRNG<uint32_t>& getDefaultRandom();
 }

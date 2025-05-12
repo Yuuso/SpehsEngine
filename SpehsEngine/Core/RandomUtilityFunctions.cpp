@@ -67,4 +67,9 @@ namespace se
 	{
 		return randomBrightColor(rng::defaultRandom);
 	}
+
+	rng::PRNG<uint32_t>& getDefaultRandom()
+	{
+		return rng::defaultRandom;
+	}
 }
