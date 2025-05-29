@@ -16,6 +16,7 @@ namespace se
 		class ShaderManager;
 		class Shape;
 		class ShapeGenerator;
+		class Text;
 		class Texture;
 		class TextureManager;
 		class View;
