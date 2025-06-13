@@ -66,6 +66,7 @@ namespace se
 	template<typename T> class WatchedValue;
 	template<typename T> struct IStaticRingBuffer;
 	template<typename T, uint32_t MaxSize> class StaticRingBuffer;
+	enum HexColor : uint32_t;
 }
 
 namespace boost

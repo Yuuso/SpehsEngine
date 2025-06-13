@@ -35,4 +35,15 @@ namespace se
 	brightness: 0 - 1.0f
 	*/
 	Color colorHSB(const float _hue, const float _saturation, const float _brightness);
+
+	constexpr HexColor toHexColor(const Color& _color)
+	{
+		constexpr uint32_t maxValue = 0x000000FF;
+		constexpr float maxValuef = float(maxValue);
+		const uint32_t r = uint32_t(_color.r * maxValuef) << 24;
+		const uint32_t g = uint32_t(_color.g * maxValuef) << 16;
+		const uint32_t b = uint32_t(_color.b * maxValuef) << 8;
+		const uint32_t a = uint32_t(_color.a * maxValuef);
+		return HexColor(r | g | b | a);
+	}
 }
