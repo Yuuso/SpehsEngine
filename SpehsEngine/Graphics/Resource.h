@@ -19,7 +19,7 @@ namespace se
 			Resource(const std::string_view _name) : name(_name) {}
 			virtual ~Resource() = default;
 
-			inline const std::string& getName() { return name; }
+			inline const std::string& getName() const { return name; }
 			inline bool ready() const { return !resourceFuture.valid(); }
 			inline void waitUntilReady()
 			{
