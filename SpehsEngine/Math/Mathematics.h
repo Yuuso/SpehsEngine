@@ -3,11 +3,13 @@
 
 namespace se
 {
-	// Linear Interpolation
-	template <typename type>
-	inline type lerp(type _a, type _b, float _value)
+	constexpr double lerp(const double _a, const double _b, const double _amount)
 	{
-		return static_cast<type>((1.0f - _value) * _a + _value * _b);
+		return (1.0 - _amount) * _a + _amount * _b;
+	}
+	constexpr float lerp(const float _a, const float _b, const float _amount)
+	{
+		return (1.0f - _amount) * _a + _amount * _b;
 	}
 
 	int factorial(int number);

@@ -336,7 +336,7 @@ namespace se
 			using namespace VertexAttribute;
 			newVertices.setAttributes(Position);
 
-			const size_t resolution = se::lerp(8, 64, getOuterCone() / TWO_PI<float>);
+			const size_t resolution = static_cast<size_t>(se::lerp(8.0f, 64.0f, getOuterCone() / TWO_PI<float>));
 			newVertices.resize(resolution * 2 + 1);
 			newIndices.resize(resolution * 4 + 4);
 
