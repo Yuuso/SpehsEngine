@@ -11,6 +11,14 @@ namespace se
 	{
 		return (1.0f - _amount) * _a + _amount * _b;
 	}
+	constexpr Color lerp(const Color& _a, const Color& _b, const float _amount)
+	{
+		return Color(
+			lerp(_a.r, _b.r, _amount),
+			lerp(_a.g, _b.g, _amount),
+			lerp(_a.b, _b.b, _amount),
+			lerp(_a.a, _b.a, _amount));
+	}
 
 	int factorial(int number);
 }
