@@ -20,6 +20,34 @@ namespace se
 		};
 	}
 
+	// Returns all given bits or-ed together
+	template<typename V>
+	constexpr V orBits(const V _a, const V _b)
+	{
+		using U = typename detail::Underlying<V, V>::type;
+		return V(U(_a) | U(_b));
+	}
+	template<typename V, typename ... Args>
+	constexpr V orBits(const V _a, const V _b, Args &&... _args)
+	{
+		using U = typename detail::Underlying<V, V>::type;
+		return orBits(orBits(_a, _b), std::forward<Args>(_args)...);
+	}
+
+	// Returns all given bits and-ed together
+	template<typename V>
+	constexpr V andBits(const V _a, const V _b)
+	{
+		using U = typename detail::Underlying<V, V>::type;
+		return V(U(_a) & U(_b));
+	}
+	template<typename V, typename ... Args>
+	constexpr V andBits(const V _a, const V _b, Args &&... _args)
+	{
+		using U = typename detail::Underlying<V, V>::type;
+		return andBits(andBits(_a, _b), std::forward<Args>(_args)...);
+	}
+
 	// Enables all given bits in the variable
 	template<typename V, typename B>
 	constexpr void enableBit(V& variable, const B bits)
