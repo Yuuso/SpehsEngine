@@ -344,18 +344,23 @@ namespace se
 			ZPosition,
 		};
 
+		enum class TextureFormat : uint8_t
+		{
+			Unknown,
+			RGBA8,
+			R8,
+		};
+
 		struct TextureInput
 		{
-			enum class Format
-			{
-				RGBA8,
-				R8,
-			};
+			typedef TextureFormat Format;
 
 			bool isCubemap = false; // +x, -x, +y, -y, +z, -z
-			Format format = Format::RGBA8;
+			bool isMutable = false; // Allows use of Texture::setTextureData()
+			TextureFormat format = TextureFormat::RGBA8;
 			uint16_t width = 0;
 			uint16_t height = 0;
+			uint16_t layerCount = 1;
 			std::vector<uint8_t> data;
 		};
 	}

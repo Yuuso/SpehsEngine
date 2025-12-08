@@ -28,7 +28,7 @@ namespace se
 			modes.sampleMip = se::graphics::TextureSamplingMode::Point;
 
 			TextureInput input;
-			input.format = TextureInput::Format::RGBA8;
+			input.format = TextureFormat::RGBA8;
 			input.width = 3;
 			input.height = 3;
 

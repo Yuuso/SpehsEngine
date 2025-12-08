@@ -2,6 +2,7 @@
 
 #include "SpehsEngine/Graphics/FontMetrics.h"
 #include "SpehsEngine/Graphics/ResourceHandle.h"
+#include "SpehsEngine/Graphics/Types.h"
 
 
 namespace se
@@ -29,8 +30,11 @@ namespace se
 		{
 			struct TextureInfo
 			{
-				uint16_t width;
-				uint16_t height;
+				uint16_t width = 0;
+				uint16_t height = 0;
+				uint16_t layerCount = 0;
+				TextureFormat textureFormat = TextureFormat::Unknown;
+				bool isMutable = false;
 			};
 
 			TextureInfo info;

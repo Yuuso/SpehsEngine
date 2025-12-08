@@ -40,19 +40,40 @@ namespace se
 			return !path.empty();
 		}
 
-		const uint16_t Texture::getWidth() const
+		uint16_t Texture::getWidth() const
 		{
 			se_assert_m(resourceData, "Texture not loaded!");
 			if (!resourceData)
 				return 0;
 			return resourceData->info.width;
 		}
-		const uint16_t Texture::getHeight() const
+		uint16_t Texture::getHeight() const
 		{
 			se_assert_m(resourceData, "Texture not loaded!");
 			if (!resourceData)
 				return 0;
 			return resourceData->info.height;
+		}
+		uint16_t Texture::getLayerCount() const
+		{
+			se_assert_m(resourceData, "Texture not loaded!");
+			if (!resourceData)
+				return 0;
+			return resourceData->info.layerCount;
+		}
+		TextureFormat Texture::getTextureFormat() const
+		{
+			se_assert_m(resourceData, "Texture not loaded!");
+			if (!resourceData)
+				return TextureFormat::Unknown;
+			return resourceData->info.textureFormat;
+		}
+		bool Texture::getTextureDataMutable() const
+		{
+			se_assert_m(resourceData, "Texture not loaded!");
+			if (!resourceData)
+				return false;
+			return resourceData->info.isMutable;
 		}
 
 		bool Texture::update()
@@ -63,6 +84,46 @@ namespace se
 				setStatus(TextureStatus::Valid);
 			}
 			return result;
+		}
+
+		static constexpr TextureFormat toTextureFormat(const bgfx::TextureFormat::Enum _implTextureFormat)
+		{
+			if (_implTextureFormat == bgfx::TextureFormat::Enum::RGBA8) return TextureFormat::RGBA8;
+			else if (_implTextureFormat == bgfx::TextureFormat::Enum::R8) return TextureFormat::R8;
+			else return TextureFormat::Unknown;
+		}
+
+		static constexpr bgfx::TextureFormat::Enum toTextureFormatImpl(const TextureFormat _textureFormat)
+		{
+			switch (_textureFormat)
+			{
+			case TextureFormat::RGBA8: return bgfx::TextureFormat::Enum::RGBA8;
+			case TextureFormat::R8: return bgfx::TextureFormat::Enum::R8;
+			case TextureFormat::Unknown: break;
+			}
+			return bgfx::TextureFormat::Enum::Count;
+		}
+
+		static constexpr size_t getBytesPerPixel(const TextureFormat _textureFormat)
+		{
+			switch (_textureFormat)
+			{
+			case TextureFormat::RGBA8: return 4;
+			case TextureFormat::R8: return 1;
+			case TextureFormat::Unknown: break;
+			}
+			return 0;
+		}
+
+		void Texture::setTextureData(const uint16_t _layer, const uint16_t _x, const uint16_t _y, const uint16_t _width, const uint16_t _height, const std::vector<uint8_t>& _data)
+		{
+			se_assert_m(getTextureDataMutable(), "This function can only be called for mutable textures.");
+			se_assert_m(_data.size() % getBytesPerPixel(getTextureFormat()) == 0, "Texture data appears to be in different format. Bytes per pixel do not match.");
+			// TODO: optimize. No need to allocate this multiple times on both callsite and here?
+			const bgfx::Memory* const memory = bgfx::copy(_data.data(), uint32_t(_data.size()));
+			const bgfx::TextureHandle textureHandle{ getHandle() };
+			const uint16_t mip = 0;
+			bgfx::updateTexture2D(textureHandle, _layer, mip, _x, _y, _width, _height, memory);
 		}
 
 		std::shared_ptr<ResourceData> Texture::createResource(const std::string _path, const TextureModes _textureModes)
@@ -158,6 +219,9 @@ namespace se
 					);
 				result->info.width = info.width;
 				result->info.height = info.height;
+				result->info.layerCount = info.numLayers;
+				result->info.textureFormat = toTextureFormat(info.format);
+				result->info.isMutable = false;
 			}
 			else
 			{
@@ -172,27 +236,15 @@ namespace se
 			se_assert(_input.width > 0 && _input.height > 0);
 
 			const uint64_t flags = TextureModesToFlags(_textureModes);
-			const bgfx::Memory* mem = bgfx::copy(_input.data.data(), uint32_t(_input.data.size()));
+			const bgfx::Memory* memory = bgfx::copy(_input.data.data(), uint32_t(_input.data.size()));
+			const bgfx::Memory* immutableMemory = _input.isMutable ? nullptr : memory;
 			const bool hasMips = false;
-			const bool numLayers = 1;
 
-			bgfx::TextureFormat::Enum textureFormat;
-			size_t bytesPerPixel;
-			if (_input.format == TextureInput::Format::RGBA8)
-			{
-				textureFormat = bgfx::TextureFormat::Enum::RGBA8;
-				bytesPerPixel = 4;
-			}
-			else if (_input.format == TextureInput::Format::R8)
-			{
-				textureFormat = bgfx::TextureFormat::Enum::R8;
-				bytesPerPixel = 1;
-			}
-			else
+			const bgfx::TextureFormat::Enum textureFormat = toTextureFormatImpl(_input.format);
+			const size_t bytesPerPixel = getBytesPerPixel(_input.format);
+			if (textureFormat == bgfx::TextureFormat::Enum::Count)
 			{
 				se::log::error("Texture::createResourceFromInput: Invalid texture format!");
-				textureFormat = bgfx::TextureFormat::Enum::RGBA8;
-				bytesPerPixel = 4;
 			}
 			se_assert(_input.data.size() % bytesPerPixel == 0);
 
@@ -201,27 +253,41 @@ namespace se
 			{
 				se_assert(_input.width == _input.height);
 				se_assert((_input.data.size() / bytesPerPixel) == (size_t)(_input.width * _input.height * 6));
-				textureHandle = bgfx::createTextureCube(
-					  _input.width
-					, hasMips
-					, numLayers
-					, textureFormat
-					, flags
-					, mem
-				);
+				textureHandle = bgfx::createTextureCube(_input.width, hasMips, _input.layerCount, textureFormat, flags, immutableMemory);
+				if (_input.isMutable)
+				{
+					se_assert(false && "TODO");
+				}
+			}
+			else if (_input.layerCount > 1)
+			{
+				se_assert((_input.data.size() / bytesPerPixel / _input.layerCount) == (size_t)(_input.width * _input.height));
+				const uint64_t bgfxCapsSupportedFlags = bgfx::getCaps()->supported;
+				if (checkBit(bgfxCapsSupportedFlags, BGFX_CAPS_TEXTURE_2D_ARRAY))
+				{
+					textureHandle = bgfx::createTexture2D(_input.width, _input.height, hasMips, _input.layerCount, textureFormat, flags, immutableMemory);
+					if (_input.isMutable)
+					{
+						se_assert(false && "TODO");
+					}
+				}
+				else
+				{
+					se_assert(false && "Texture 2D array not supported?");
+				}
 			}
 			else
 			{
 				se_assert((_input.data.size() / bytesPerPixel) == (size_t)(_input.width * _input.height));
-				textureHandle = bgfx::createTexture2D(
-					  _input.width
-					, _input.height
-					, hasMips
-					, numLayers
-					, textureFormat
-					, flags
-					, mem
-				);
+				textureHandle = bgfx::createTexture2D(_input.width, _input.height, hasMips, _input.layerCount, textureFormat, flags, immutableMemory);
+				if (_input.isMutable)
+				{
+					const uint16_t layer = 0;
+					const uint16_t mip = 0;
+					const uint16_t x = 0;
+					const uint16_t y = 0;
+					bgfx::updateTexture2D(textureHandle, layer, mip, x, y, _input.width, _input.height, memory);
+				}
 			}
 
 			std::shared_ptr<TextureData> result = std::make_shared<TextureData>();
@@ -234,14 +300,17 @@ namespace se
 					  info
 					, _input.width
 					, _input.height
-					, 1
+					, 1/*depth*/
 					, _input.isCubemap
 					, hasMips
-					, numLayers
+					, _input.layerCount
 					, textureFormat
 				);
 				result->info.width = info.width;
 				result->info.height = info.height;
+				result->info.layerCount = info.numLayers;
+				result->info.textureFormat = _input.format;
+				result->info.isMutable = _input.isMutable;
 			}
 			else
 			{

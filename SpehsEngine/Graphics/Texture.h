@@ -29,8 +29,13 @@ namespace se
 			bool reloadable() const;
 			bool update() override;
 
-			const uint16_t getWidth() const;
-			const uint16_t getHeight() const;
+			void setTextureData(const uint16_t _layer, const uint16_t _x, const uint16_t _y, const uint16_t _width, const uint16_t _height, const std::vector<uint8_t>& _data);
+
+			uint16_t getWidth() const;
+			uint16_t getHeight() const;
+			uint16_t getLayerCount() const;
+			TextureFormat getTextureFormat() const;
+			bool getTextureDataMutable() const;
 
 		private:
 

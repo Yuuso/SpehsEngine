@@ -14,7 +14,18 @@ namespace se
 			, type(_type)
 			, numElements(_numElements)
 		{
-			uniformHandle = bgfx::createUniform(name.c_str(), getUniformType(type), numElements).idx;
+			const bgfx::UniformHandle bgfxUniformHandle = bgfx::createUniform(name.c_str(), getUniformType(type), numElements);
+			uniformHandle = bgfxUniformHandle.idx;
+			if (_numElements > 1)
+			{
+				// Verify that the number of elements is correct.
+				bgfx::UniformInfo uniformInfo;
+				bgfx::getUniformInfo(bgfxUniformHandle, uniformInfo);
+				if (uniformInfo.num != _numElements)
+				{
+					se::log::error("Uniform creation failed. Mismatching number of elements. Hardware/API limit reached?");
+				}
+			}
 		}
 		Uniform::~Uniform()
 		{
