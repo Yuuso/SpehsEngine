@@ -21,9 +21,9 @@ namespace se
 				// Verify that the number of elements is correct.
 				bgfx::UniformInfo uniformInfo;
 				bgfx::getUniformInfo(bgfxUniformHandle, uniformInfo);
-				if (uniformInfo.num != _numElements)
+				if (uniformInfo.num < _numElements)
 				{
-					se::log::error("Uniform creation failed. Mismatching number of elements. Hardware/API limit reached?");
+					se::log::error("Uniform creation failed. Insufficient number of elements available. Hardware/API limit reached?");
 				}
 			}
 		}
