@@ -32,6 +32,12 @@ namespace
 
 namespace se
 {
+#if SE_PLATFORM == SE_PLATFORM_WINDOWS
+	uint64_t ProcessHandle::invalidValue = NULL;
+#else
+#error("ProcessHandle::invalidValue undefined");
+#endif
+
 	bool copyToClipBoard(const void* data, size_t bytes)
 	{
 #if SE_PLATFORM == SE_PLATFORM_WINDOWS
@@ -96,7 +102,7 @@ namespace se
 #endif
 	}
 
-	bool createProcess(const std::string& filename, const std::string& commandLine)
+	ProcessHandle createProcess(const std::string& filename, const std::string& commandLine)
 	{
 #if SE_PLATFORM == SE_PLATFORM_WINDOWS
 		std::string commandLineCopy = commandLine;
@@ -111,7 +117,7 @@ namespace se
 		ZeroMemory(&processInfo, sizeof(processInfo));
 
 		// start the program up
-		auto result = CreateProcess(
+		const BOOL success = CreateProcess(
 			filename.c_str(),				// the path
 			&commandLineCopy[0],			// Command line
 			NULL,							// Process handle not inheritable
@@ -123,17 +129,28 @@ namespace se
 			&startupInfo,					// Pointer to STARTUPINFO structure
 			&processInfo					// Pointer to PROCESS_INFORMATION structure (removed extra parentheses)
 		);
-		if (result == 0)
+		if (success == 0)
 		{
 			log::error("Failed to create process '" + filename + "'. Error: " + getLastErrorMessage());
-			return false;
+			return ProcessHandle();
 		}
 		else
 		{
-			return true;
+			return ProcessHandle{uint64_t(processInfo.hProcess)};
 		}
 #else
 		static_assert(false && "Create process implementation is missing.");
+		return ProcessHandle();
+#endif
+	}
+
+	bool terminateProcess(const ProcessHandle _processHandle)
+	{
+#if SE_PLATFORM == SE_PLATFORM_WINDOWS
+		const BOOL success = TerminateProcess(HANDLE(_processHandle.value), 0);
+		return success != 0;
+#else
+		static_assert(false && "Close process implementation is missing.");
 		return false;
 #endif
 	}

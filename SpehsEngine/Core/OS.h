@@ -3,6 +3,14 @@
 
 namespace se
 {
+	struct ProcessHandle
+	{
+		static uint64_t invalidValue;
+		explicit operator bool() const { return value != invalidValue; }
+		bool isValid() const { return value != invalidValue; }
+		uint64_t value = invalidValue;
+	};
+
 	/* Copies data into operating system clipboard. Returns true upon success */
 	bool copyToClipBoard(const void* data, size_t bytes);
 
@@ -10,7 +18,8 @@ namespace se
 	std::string copyFromClipBoard();
 
 	/* Creates a new process by launching the specified file. */
-	bool createProcess(const std::string& filename, const std::string& commandLine);
+	ProcessHandle createProcess(const std::string& filename, const std::string& commandLine);
+	bool terminateProcess(const ProcessHandle _processHandle);
 
 	/* Calls function for each running process name. */
 	bool forEachProcessName(const std::function<void(const std::string_view& processName)>& callback);
