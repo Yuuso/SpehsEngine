@@ -21,6 +21,10 @@ namespace se
 			void setPacketReceivingEnabled(const bool _enabled);
 			bool getPacketReceivingEnabled() const;
 
+			// Send and ignore expected result
+			template<typename Packet>
+			bool sendPacketIgnoreResult(const PacketType _packetType, const Packet& _packet, const bool _reliable);
+
 			// Send without result
 			template<typename Packet>
 			bool sendPacket(const PacketType _packetType, const Packet& _packet, const bool _reliable);
@@ -76,12 +80,13 @@ namespace se
 			void receiveHandler(BinaryReader& _binaryReader, const bool _reliable);
 			uint16_t generateNextRequestId()
 			{
-				while (nextRequestId == 0 || isResultId(nextRequestId) || tryFind(requests, nextRequestId))
+				// Id 0: no expected result, 1: ignored result
+				while (nextRequestId < 2 || isResultId(nextRequestId) || tryFind(requests, nextRequestId))
 				{
 					nextRequestId++;
 					if (isResultId(nextRequestId))
 					{
-						nextRequestId = 1;
+						nextRequestId = 2;
 					}
 				}
 				return nextRequestId;
@@ -97,7 +102,7 @@ namespace se
 			}
 			static uint16_t makeResultId(const uint16_t _requestId)
 			{
-				se_assert(_requestId != 0);
+				se_assert(_requestId > 1);
 				se_assert(!isResultId(_requestId));
 				uint16_t resultId = _requestId;
 				enableBit(resultId, resultIdBit);
@@ -108,7 +113,7 @@ namespace se
 				se_assert(isResultId(_resultId));
 				uint16_t requestId = _resultId;
 				disableBit(requestId, resultIdBit);
-				se_assert(requestId != 0);
+				se_assert(requestId > 1);
 				return requestId;
 			}
 			std::string toString(const PacketType _packetType) const
@@ -126,7 +131,7 @@ namespace se
 			}
 			std::unordered_map<PacketType, std::unique_ptr<IReceiver>> receivers;
 			std::unordered_map<uint16_t, std::unique_ptr<IRequest>> requests;
-			uint16_t nextRequestId = 1;
+			uint16_t nextRequestId = 2;
 			Connection& connection;
 			Signal<void()> postReceiveHandlerSignal;
 			Debug debug;
@@ -304,6 +309,20 @@ namespace se
 				postReceiveHandlerSignal();
 				return;
 			}
+		}
+
+		// Send and ignore expected result
+		template<typename PacketType>
+		template<typename Packet>
+		bool Packetman<PacketType>::sendPacketIgnoreResult(const PacketType _packetType, const Packet& _packet, const bool _reliable)
+		{
+			// request id 1 is special for ignored expected result
+			uint16_t packetId = 1;
+			BinaryWriter binaryWriter;
+			binaryWriter.serial(packetId);
+			binaryWriter.serial(_packetType);
+			binaryWriter.serial(_packet);
+			return connection.sendPacket(binaryWriter, _reliable);
 		}
 
 		// Send without result
@@ -492,13 +511,17 @@ namespace se
 						se_assert(false && "Failed to read packet");
 					}
 
-					const uint16_t resultId = makeResultId(_requestId);
-					BinaryWriter binaryWriter;
-					binaryWriter.serial(resultId);
-					binaryWriter.serial(result);
-					const bool sent = _connection.sendPacket(binaryWriter, true);
-					(void)sent;
-					se_assert(sent && "Failed to send request result");
+					// Request id 1 is special and indicates that the sender wants to ignore the result
+					if (_requestId > 1)
+					{
+						const uint16_t resultId = makeResultId(_requestId);
+						BinaryWriter binaryWriter;
+						binaryWriter.serial(resultId);
+						binaryWriter.serial(result);
+						const bool sent = _connection.sendPacket(binaryWriter, true);
+						(void)sent;
+						se_assert(sent && "Failed to send request result");
+					}
 				}
 				bool valid() const final
 				{
