@@ -287,7 +287,6 @@ namespace ImGui
 	{
 		bool changed = false;
 		bool enabled = optional.has_value();
-		ImGui::PushID(label);
 		if (ImGui::Checkbox(label, &enabled))
 		{
 			if (enabled)
@@ -303,10 +302,11 @@ namespace ImGui
 		if (optional)
 		{
 			ImGui::Indent();
+			ImGui::PushID(0x0B7102A1);
 			changed |= InputT(label, (T&)optional.value(), std::forward<Args>(args)...);
+			ImGui::PopID();
 			ImGui::Unindent();
 		}
-		ImGui::PopID();
 		return changed;
 	}
 
