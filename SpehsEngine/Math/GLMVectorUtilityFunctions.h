@@ -10,6 +10,9 @@ namespace se
 	std::string toString(const glm::ivec3& vec);
 	std::string toString(const glm::ivec4& vec);
 
+	constexpr float getLengthSquared(const glm::vec2& _vec2) { return (_vec2.x * _vec2.x) + (_vec2.y * _vec2.y); }
+	constexpr float getLengthSquared(const glm::vec3& _vec3) { return (_vec3.x * _vec3.x) + (_vec3.y * _vec3.y) + (_vec3.z * _vec3.z); }
+
 	// Serial
 	struct SerialTagVec2 {};
 	struct SerialTagVec3 {};
