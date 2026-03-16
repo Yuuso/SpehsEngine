@@ -89,4 +89,19 @@ namespace se
 		else
 			disableBit<V, B>(variable, bits);
 	}
+
+	template<typename V>
+	constexpr size_t countBits(const V _variable)
+	{
+		static_assert(std::is_enum<V>::value || std::is_integral<V>::value);
+		using U = typename detail::Underlying<V, V>::type;
+		size_t result = 0;
+		U n = U(_variable);
+		while (n)
+		{
+			n &= (n - 1);
+			result++;
+		}
+		return result;
+	}
 }
