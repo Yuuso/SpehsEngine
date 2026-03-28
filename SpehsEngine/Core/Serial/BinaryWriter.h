@@ -18,7 +18,7 @@ namespace se
 		static inline constexpr bool getReadingEnabled()	{ return false; }
 
 		constexpr BinaryWriter() = default;
-		constexpr BinaryWriter(std::vector<uint8_t>&& _data) : data(std::move(_data)) { offset = data.size(); }
+		BinaryWriter(std::vector<uint8_t>&& _data) : data(std::move(_data)) { offset = data.size(); }
 
 		template<typename T>
 		inline bool serial(const T& _value);

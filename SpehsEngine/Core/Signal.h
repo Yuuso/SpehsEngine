@@ -143,7 +143,7 @@ namespace se
 			typedef typename FunctionTraits<Signature>::ResultType FunctionResultType;
 			typedef typename SignalCallResult<Signature>::type OptionalResultType;
 			inline OptionalResultType operator()(
-				FunctionTraits<Signature>::Arg1Type _1)
+				typename FunctionTraits<Signature>::Arg1Type _1)
 			{
 				if constexpr (std::is_same<FunctionResultType, void>::value)
 					callSignal<Signature>(functions, callIndex, _1);
@@ -158,8 +158,8 @@ namespace se
 			typedef typename FunctionTraits<Signature>::ResultType FunctionResultType;
 			typedef typename SignalCallResult<Signature>::type OptionalResultType;
 			inline OptionalResultType operator()(
-				FunctionTraits<Signature>::Arg1Type _1,
-				FunctionTraits<Signature>::Arg2Type _2)
+				typename FunctionTraits<Signature>::Arg1Type _1,
+				typename FunctionTraits<Signature>::Arg2Type _2)
 			{
 				if constexpr (std::is_same<FunctionResultType, void>::value)
 					callSignal<Signature>(functions, callIndex, _1, _2);
@@ -174,9 +174,9 @@ namespace se
 			typedef typename FunctionTraits<Signature>::ResultType FunctionResultType;
 			typedef typename SignalCallResult<Signature>::type OptionalResultType;
 			inline OptionalResultType operator()(
-				FunctionTraits<Signature>::Arg1Type _1,
-				FunctionTraits<Signature>::Arg2Type _2,
-				FunctionTraits<Signature>::Arg3Type _3)
+				typename FunctionTraits<Signature>::Arg1Type _1,
+				typename FunctionTraits<Signature>::Arg2Type _2,
+				typename FunctionTraits<Signature>::Arg3Type _3)
 			{
 				if constexpr (std::is_same<FunctionResultType, void>::value)
 					callSignal<Signature>(functions, callIndex, _1, _2, _3);
@@ -191,10 +191,10 @@ namespace se
 			typedef typename FunctionTraits<Signature>::ResultType FunctionResultType;
 			typedef typename SignalCallResult<Signature>::type OptionalResultType;
 			inline OptionalResultType operator()(
-				FunctionTraits<Signature>::Arg1Type _1,
-				FunctionTraits<Signature>::Arg2Type _2,
-				FunctionTraits<Signature>::Arg3Type _3,
-				FunctionTraits<Signature>::Arg4Type _4)
+				typename FunctionTraits<Signature>::Arg1Type _1,
+				typename FunctionTraits<Signature>::Arg2Type _2,
+				typename FunctionTraits<Signature>::Arg3Type _3,
+				typename FunctionTraits<Signature>::Arg4Type _4)
 			{
 				if constexpr (std::is_same<FunctionResultType, void>::value)
 					callSignal<Signature>(functions, callIndex, _1, _2, _3, _4);

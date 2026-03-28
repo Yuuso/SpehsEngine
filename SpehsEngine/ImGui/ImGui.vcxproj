@@ -177,6 +177,14 @@
     <ClInclude Include="Utility\IState.h" />
     <ClInclude Include="Utility\String.h" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Core\Core.vcxproj">
+      <Project>{cbb134b8-c9fe-4129-a6dd-58b94cbe1096}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\Input\Input.vcxproj">
+      <Project>{ce4f0ddf-b21d-4e85-961e-5de4f41ffeb8}</Project>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

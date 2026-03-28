@@ -44,7 +44,7 @@ namespace se
 		{
 			static constexpr EventType getEventTypeStatic() { return EventType::textInput; }
 			constexpr EventType getEventType() const { return getEventTypeStatic(); }
-			constexpr bool operator==(const TextInputEvent& other) const { return buffer == other.buffer; }
+			inline bool operator==(const TextInputEvent& other) const { return buffer == other.buffer; }
 			std::string buffer;
 		};
 
@@ -130,7 +130,7 @@ namespace se
 		{
 			static constexpr EventType getEventTypeStatic() { return EventType::fileDrop; }
 			constexpr EventType getEventType() const { return getEventTypeStatic(); }
-			constexpr bool operator==(const FileDropEvent& other) const { return filepath == other.filepath; }
+			inline bool operator==(const FileDropEvent& other) const { return filepath == other.filepath; }
 			std::string filepath;
 		};
 	}
