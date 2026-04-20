@@ -28,6 +28,7 @@ namespace se
 		class EventSignaler;
 		class CustomEventGenerator;
 		class InputManager;
+		class KeyboardRecorder;
 
 		const char* toString(const Key key);
 		const char* toShortString(const Key key);

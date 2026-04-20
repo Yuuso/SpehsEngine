@@ -1,52 +1,28 @@
 #pragma once
 
 
-namespace se
+namespace se::input
 {
-	namespace input
+	class KeyboardRecorder
 	{
-		/** This class can be used to record text input from the keyboard.
-		All input is divided into two types: character and command input.
-		Registered keystrokes can be obtained from the input vectors after the update.
+	public:
 
-		A default list of most commonly used command keys is listened to, but the list can be altered by the user.
+		KeyboardRecorder(EventSignaler& _eventSignaler, const int _inputPriority, const std::u32string_view _string);
+		virtual ~KeyboardRecorder() = default;
 
-		The purpose of this class is to provide a layer between the input manager and an upper layer entity, which is responsible for processing the command key strokes.
-		*/
-		class KeyboardRecorder
-		{
-		public:
-			KeyboardRecorder(InputManager& inputManager);
-			virtual ~KeyboardRecorder();
+		// Returns index in output string where the next input will be instered into
+		size_t getCursorIndex() const { return cursorIndex; }
 
-			virtual void update(const Time deltaTime);
-			void stop();///< Resets the recorder so that all ongoing recording is stopped
-			void setBeginKeyRepeatTimer(const float seconds);///< Time after the first keystroke of a pressed key to begin receiving keystrokes continuously
-			void setContinuousKeyRepeatTimer(const float seconds);///< Time between continuous keystrokes
+		// Returns value only once finished
+		std::optional<std::u32string> getResult() const { return finished ? std::make_optional(output) : std::nullopt; }
+		const std::u32string& getOutput() const { return output; }
 
-			////Command keys
-			void addCommandKey(const unsigned key);///< Lists specified key as a command key, and will register keystrokes from that kay into the command input vector
-			void removeCommandKey(const unsigned key);///< Removes specified key from the list of listened command keys
-			void clearCommandKeys();///< Removes all command keys currently listed as listened keys
-			bool isCommandKey(const unsigned key) const;///< Returns whether specified key is listened as a command key
-			std::vector<unsigned> getCommandKeys() const { return commandKeys; }
+	private:
 
-			InputManager& inputManager;
-
-			//Registered keystroked will appear in these vector after the update
-			std::vector<char> characterInput;
-			std::vector<unsigned> commandInput;//The value indicates key code of the "command" key
-		private:
-			bool tryKey(unsigned key);//Checks whether key should be registered as a keystroke
-			struct KeyHoldData
-			{
-				unsigned key;//Key ID
-				Time timer;//Timer until re-press
-			};
-			std::vector<KeyHoldData> heldKeys;
-			std::vector<unsigned> commandKeys;
-			Time beginKeyRepeatTime;
-			Time continueKeyRepeatTime;
-		};
-	}
+		std::u32string output;
+		size_t cursorIndex = 0;
+		bool finished = false;
+		ScopedConnection textInputConnection;
+		ScopedConnection keyboardEventConnection;
+	};
 }
