@@ -17,7 +17,7 @@ namespace std
 	{
 		size_t operator()(const se::input::TextInputEvent& event) const
 		{
-			return size_t(se::Murmur3::impl((const char*)event.buffer.data(), event.buffer.size(), 0));
+			return size_t(se::Murmur3::impl((const char*)event.string.data(), event.string.size(), 0));
 		}
 	};
 	template<> struct hash<se::input::MouseButtonEvent>

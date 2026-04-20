@@ -293,7 +293,10 @@ namespace se
                     ImGuiIO& io = ImGui::GetIO();
                     if (io.WantCaptureKeyboard)
                     {
-                        io.AddInputCharactersUTF8(event.buffer.c_str());
+                        for (const char32_t c32 : event.string)
+                        {
+                            io.AddInputCharacter(c32);
+                        }
                         return false;
                     }
                     else

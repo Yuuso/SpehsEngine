@@ -44,8 +44,8 @@ namespace se
 		{
 			static constexpr EventType getEventTypeStatic() { return EventType::textInput; }
 			constexpr EventType getEventType() const { return getEventTypeStatic(); }
-			inline bool operator==(const TextInputEvent& other) const { return buffer == other.buffer; }
-			std::string buffer;
+			inline bool operator==(const TextInputEvent& other) const { return string == other.string; }
+			std::u32string string;
 		};
 
 		struct MouseButtonEvent
