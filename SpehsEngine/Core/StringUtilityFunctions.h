@@ -104,10 +104,11 @@ namespace se
 	// Returns string as integer. Returns 0 if string is invalid
 	int getStringAsInt(const std::string& string);
 
-	inline std::u32string toU32String(const std::string& _string)
+	struct UTF32
 	{
-		return std::u32string(_string.begin(), _string.end());
-	}
+		static std::u32string fromUTF8(const std::string_view& _stringUTF8);
+		static std::string toUTF8(const std::u32string_view& _stringUTF32);
+	};
 
 	// Returns "true" or "false"
 	std::string toString(const bool value);

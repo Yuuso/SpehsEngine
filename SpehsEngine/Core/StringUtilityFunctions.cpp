@@ -2,6 +2,7 @@
 #include "SpehsEngine/Core/StringUtilityFunctions.h"
 
 #include "boost/lexical_cast.hpp"
+#include <codecvt>
 
 #if SE_PLATFORM == SE_PLATFORM_WINDOWS
 #include <Windows.h>
@@ -393,6 +394,18 @@ namespace se
 			intValue *= -1;
 
 		return intValue;
+	}
+
+	std::u32string UTF32::fromUTF8(const std::string_view& _stringUTF8)
+	{
+		std::wstring_convert<std::codecvt_utf8<char32_t>, char32_t> converter;
+		return converter.from_bytes(_stringUTF8.data(), _stringUTF8.data() + _stringUTF8.size());
+	}
+
+	std::string UTF32::toUTF8(const std::u32string_view& _stringUTF32)
+	{
+		std::wstring_convert<std::codecvt_utf8<char32_t>, char32_t> converter;
+		return converter.to_bytes(_stringUTF32.data(), _stringUTF32.data() + _stringUTF32.size());
 	}
 
 	std::string toString(const bool value)
