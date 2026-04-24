@@ -7,22 +7,26 @@ namespace se::input
 	{
 	public:
 
-		KeyboardRecorder(EventSignaler& _eventSignaler, const int _inputPriority, const std::u32string_view _string);
+		KeyboardRecorder(EventSignaler& _eventSignaler, const int _inputPriority, const std::string_view _string);
 		virtual ~KeyboardRecorder() = default;
 
-		// Returns index in output string where the next input will be instered into
+		void setCharacterValidator(const std::function<bool(const char32_t)>& _isValidFunction) { isValidFunction = _isValidFunction; }
+
+		// Returns index in output string where the next input will be inserted into
 		size_t getCursorIndex() const { return cursorIndex; }
 
 		// Returns value only once finished
-		std::optional<std::u32string> getResult() const { return finished ? std::make_optional(output) : std::nullopt; }
-		const std::u32string& getOutput() const { return output; }
+		std::optional<std::string> getResult() const;
+		const std::u32string& getOutput32() const { return output32; }
 
 	private:
 
-		std::u32string output;
+		// Store output in UTF32 -> this makes managing cursor much easier
+		std::u32string output32;
 		size_t cursorIndex = 0;
 		bool finished = false;
 		ScopedConnection textInputConnection;
 		ScopedConnection keyboardEventConnection;
+		std::function<bool(const char32_t)> isValidFunction;
 	};
 }

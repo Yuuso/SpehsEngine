@@ -7,8 +7,8 @@
 
 namespace se::input
 {
-	KeyboardRecorder::KeyboardRecorder(EventSignaler& _eventSignaler, const int _inputPriority, const std::u32string_view _string)
-		: output(_string)
+	KeyboardRecorder::KeyboardRecorder(EventSignaler& _eventSignaler, const int _inputPriority, const std::string_view _string)
+		: output32(_string.begin(), _string.end())
 		, cursorIndex(_string.length())
 	{
 		_eventSignaler.connectToKeyboardSignal(keyboardEventConnection,
@@ -17,7 +17,7 @@ namespace se::input
 				constexpr char32_t whitespace = ' ';
 				if (_event.isPress())
 				{
-					if (_event.key == Key::RETURN)
+					if ((_event.key == Key::RETURN) || (_event.key == Key::ESCAPE))
 					{
 						finished = true;
 						return true;
@@ -32,13 +32,13 @@ namespace se::input
 								while (true)
 								{
 									const size_t removeIndex = cursorIndex - 1;
-									const bool isWhitespace = output[removeIndex] == whitespace;
+									const bool isWhitespace = output32[removeIndex] == whitespace;
 									if (isWhitespace && removeCount > 0)
 									{
 										// Already removed something and encountered whitespace -> stop
 										break;
 									}
-									output.erase(removeIndex, 1);
+									output32.erase(removeIndex, 1);
 									cursorIndex--;
 									removeCount++;
 									if (cursorIndex == 0)
@@ -49,7 +49,7 @@ namespace se::input
 							}
 							else
 							{
-								output.erase(cursorIndex - 1, 1);
+								output32.erase(cursorIndex - 1, 1);
 								cursorIndex--;
 							}
 						}
@@ -57,7 +57,7 @@ namespace se::input
 					}
 					else if (_event.key == Key::KEY_DELETE)
 					{
-						if (cursorIndex < output.length())
+						if (cursorIndex < output32.length())
 						{
 							if (isCtrlDown())
 							{
@@ -65,15 +65,15 @@ namespace se::input
 								while (true)
 								{
 									const size_t removeIndex = cursorIndex;
-									const bool isWhitespace = output[removeIndex] == whitespace;
+									const bool isWhitespace = output32[removeIndex] == whitespace;
 									if (isWhitespace && removeCount > 0)
 									{
 										// Already removed something and encountered whitespace -> stop
 										break;
 									}
-									output.erase(removeIndex, 1);
+									output32.erase(removeIndex, 1);
 									removeCount++;
-									if (cursorIndex == output.length())
+									if (cursorIndex == output32.length())
 									{
 										break;
 									}
@@ -81,7 +81,7 @@ namespace se::input
 							}
 							else
 							{
-								output.erase(cursorIndex, 1);
+								output32.erase(cursorIndex, 1);
 							}
 						}
 						return true;
@@ -96,7 +96,7 @@ namespace se::input
 					}
 					else if (_event.key == Key::RIGHT)
 					{
-						if (cursorIndex < output.length())
+						if (cursorIndex < output32.length())
 						{
 							cursorIndex++;
 						}
@@ -109,7 +109,7 @@ namespace se::input
 					}
 					else if (_event.key == Key::END)
 					{
-						cursorIndex = output.length();
+						cursorIndex = output32.length();
 						return true;
 					}
 				}
@@ -125,10 +125,32 @@ namespace se::input
 				}
 				else
 				{
-					output += _event.string;
-					cursorIndex++;
+					for (const char32_t c32 : _event.string)
+					{
+						if (isValidFunction)
+						{
+							if (!isValidFunction(c32))
+							{
+								continue;
+							}
+						}
+						output32 += c32;
+						cursorIndex++;
+					}
 				}
 				return true;
 			}, _inputPriority);
+	}
+
+	std::optional<std::string> KeyboardRecorder::getResult() const
+	{
+		if (finished)
+		{
+			return UTF32::toUTF8(output32);
+		}
+		else
+		{
+			return std::nullopt;
+		}
 	}
 }
