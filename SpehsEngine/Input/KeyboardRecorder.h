@@ -15,8 +15,8 @@ namespace se::input
 		// Returns index in output string where the next input will be inserted into
 		size_t getCursorIndex() const { return cursorIndex; }
 
-		// Returns value only once finished
-		std::optional<std::string> getResult() const;
+		// Returns value once finished, and resets the finished state.
+		std::optional<std::string> popResult();
 		const std::u32string& getOutput32() const { return output32; }
 
 	private:

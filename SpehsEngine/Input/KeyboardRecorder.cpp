@@ -142,10 +142,11 @@ namespace se::input
 			}, _inputPriority);
 	}
 
-	std::optional<std::string> KeyboardRecorder::getResult() const
+	std::optional<std::string> KeyboardRecorder::popResult()
 	{
 		if (finished)
 		{
+			finished = false;
 			return UTF32::toUTF8(output32);
 		}
 		else
