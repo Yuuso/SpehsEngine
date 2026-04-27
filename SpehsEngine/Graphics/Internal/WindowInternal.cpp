@@ -30,6 +30,8 @@ namespace se
 			uint32_t windowFlags = 0;
 			if (!window->isShown())
 				enableBit(windowFlags, SDL_WINDOW_HIDDEN);
+			if (window->getFullscreen())
+				enableBit(windowFlags, SDL_WINDOW_FULLSCREEN);
 			if (window->getBorderless())
 				enableBit(windowFlags, SDL_WINDOW_BORDERLESS);
 			if (window->getResizable())
@@ -193,6 +195,16 @@ namespace se
 			{
 				SDL_SetWindowSize(sdlWindow, window->getWidth(), window->getHeight());
 			}
+			if (checkBit(window->updateFlags, WindowUpdateFlag::MinSizeChanged))
+			{
+				const Window::u16vec2 minSize = window->getMinSize();
+				SDL_SetWindowMinimumSize(sdlWindow, minSize.x, minSize.y);
+			}
+			if (checkBit(window->updateFlags, WindowUpdateFlag::MinSizeChanged))
+			{
+				const Window::u16vec2 maxSize = window->getMaxSize();
+				SDL_SetWindowMaximumSize(sdlWindow, maxSize.x, maxSize.y);
+			}
 			if (checkBit(window->updateFlags, WindowUpdateFlag::PositionChanged))
 			{
 				SDL_SetWindowPosition(sdlWindow, window->getX(), window->getY());
@@ -224,6 +236,11 @@ namespace se
 			if (checkBit(window->updateFlags, WindowUpdateFlag::NameChanged))
 			{
 				SDL_SetWindowTitle(sdlWindow, window->getName().c_str());
+			}
+			if (checkBit(window->updateFlags, WindowUpdateFlag::FullscreenChanged))
+			{
+				const Uint32 flags = window->getFullscreen() ? SDL_WINDOW_FULLSCREEN : 0;
+				SDL_SetWindowFullscreen(sdlWindow, flags);
 			}
 			if (checkBit(window->updateFlags, WindowUpdateFlag::BorderlessChanged))
 			{
@@ -297,8 +314,8 @@ namespace se
 
 						if (!checkBit(window->updateFlags, WindowUpdateFlag::SizeChanged))
 						{
-							window->width = newWidth;
-							window->height = newHeight;
+							window->size.x = newWidth;
+							window->size.y = newHeight;
 						}
 
 						if (isDefault)

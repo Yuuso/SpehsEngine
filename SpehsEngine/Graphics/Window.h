@@ -13,6 +13,8 @@ namespace se
 		{
 		public:
 
+			typedef glm::vec<2, uint16_t> u16vec2;
+
 									Window();
 									Window(bool _hide);
 									~Window();
@@ -34,8 +36,12 @@ namespace se
 			const int				getY() const;
 			const uint16_t			getWidth() const;
 			const uint16_t			getHeight() const;
+			const u16vec2			getSize() const;
+			const u16vec2			getMinSize() const;
+			const u16vec2			getMaxSize() const;
 			const AspectRatio		getAspectRatio() const;
 			const bool				getResizable() const;
+			const bool				getFullscreen() const;
 			const bool				getBorderless() const;
 			const float				getOpacity() const;
 			const bool				isShown() const;
@@ -54,8 +60,12 @@ namespace se
 			void					setCenteredY();
 			void					setWidth(const uint16_t _width);
 			void					setHeight(const uint16_t _height);
+			void					setSize(const u16vec2& _size);
+			void					setMinSize(const u16vec2& _minSize);
+			void					setMaxSize(const u16vec2& _maxSize);
 			void					forceKeepAspectRatio(const bool _value);
 			void					setResizable(const bool _value);
+			void					setFullscreen(const bool _value);
 			void					setBorderless(const bool _value);
 			void					setOpacity(const float _value);
 			void					show();
@@ -74,11 +84,13 @@ namespace se
 
 			int						x					= -1;
 			int						y					= -1;
-			uint16_t				width				= 800;
-			uint16_t				height				= 600;
+			u16vec2					size				= u16vec2(800, 600);
+			u16vec2					minSize				= u16vec2(0, 0);
+			u16vec2					maxSize				= u16vec2(65535u, 65535u);
 			bool					keepAspectRatio		= false;
 			AspectRatio				aspectRatio;
 			bool					resizable			= true;
+			bool					fullscreen			= false;
 			bool					borderless			= false;
 			float					opacity				= 1.0f;
 			int						displayIndex		= -1;

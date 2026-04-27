@@ -11,7 +11,7 @@ namespace se
 	namespace graphics
 	{
 		Window::Window()
-			: aspectRatio(width, height)
+			: aspectRatio(size.x, size.y)
 		{}
 		Window::Window(bool _hide)
 			: Window()
@@ -81,11 +81,23 @@ namespace se
 		}
 		const uint16_t Window::getWidth() const
 		{
-			return width;
+			return size.x;
 		}
 		const uint16_t Window::getHeight() const
 		{
-			return height;
+			return size.y;
+		}
+		const Window::u16vec2 Window::getSize() const
+		{
+			return size;
+		}
+		const Window::u16vec2 Window::getMinSize() const
+		{
+			return minSize;
+		}
+		const Window::u16vec2 Window::getMaxSize() const
+		{
+			return maxSize;
 		}
 		const AspectRatio Window::getAspectRatio() const
 		{
@@ -94,6 +106,10 @@ namespace se
 		const bool Window::getResizable() const
 		{
 			return resizable;
+		}
+		const bool Window::getFullscreen() const
+		{
+			return fullscreen;
 		}
 		const bool Window::getBorderless() const
 		{
@@ -163,15 +179,47 @@ namespace se
 		}
 		void Window::setWidth(const uint16_t _width)
 		{
-			width = _width;
-			aspectRatio = AspectRatio(width, height);
-			enableBit(updateFlags, WindowUpdateFlag::SizeChanged);
+			setSize(u16vec2(_width, size.y));
 		}
 		void Window::setHeight(const uint16_t _height)
 		{
-			height = _height;
-			aspectRatio = AspectRatio(width, height);
-			enableBit(updateFlags, WindowUpdateFlag::SizeChanged);
+			setSize(u16vec2(size.x, _height));
+		}
+		void Window::setSize(const u16vec2& _size)
+		{
+			const u16vec2 clampedSize(
+				se::clamp(_size.x, minSize.x, maxSize.x),
+				se::clamp(_size.y, minSize.y, maxSize.y));
+			if (size != clampedSize)
+			{
+				size = clampedSize;
+				aspectRatio = AspectRatio(size.x, size.y);
+				enableBit(updateFlags, WindowUpdateFlag::SizeChanged);
+			}
+		}
+		void Window::setMinSize(const u16vec2& _minSize)
+		{
+			if (minSize != _minSize)
+			{
+				minSize = _minSize;
+				enableBit(updateFlags, WindowUpdateFlag::MinSizeChanged);
+				setMaxSize(u16vec2(
+					std::max(minSize.x, maxSize.x),
+					std::max(minSize.y, maxSize.y)));
+				setSize(size);
+			}
+		}
+		void Window::setMaxSize(const u16vec2& _maxSize)
+		{
+			if (maxSize != _maxSize)
+			{
+				maxSize = _maxSize;
+				enableBit(updateFlags, WindowUpdateFlag::MaxSizeChanged);
+				setMinSize(u16vec2(
+					std::min(minSize.x, maxSize.x),
+					std::min(minSize.y, maxSize.y)));
+				setSize(size);
+			}
 		}
 		void Window::forceKeepAspectRatio(const bool _value)
 		{
@@ -181,6 +229,11 @@ namespace se
 		{
 			resizable = _value;
 			enableBit(updateFlags, WindowUpdateFlag::ResizableChanged);
+		}
+		void Window::setFullscreen(const bool _value)
+		{
+			fullscreen = _value;
+			enableBit(updateFlags, WindowUpdateFlag::FullscreenChanged);
 		}
 		void Window::setBorderless(const bool _value)
 		{
