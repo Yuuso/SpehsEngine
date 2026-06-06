@@ -351,7 +351,7 @@ namespace se
 			binaryWriter.serial(_packet);
 			if (connection.sendPacket(binaryWriter, true))
 			{
-				struct Request : public IRequest
+				struct Request final : public IRequest
 				{
 					Request()
 						: beginTime(getEpochTime())
@@ -426,7 +426,7 @@ namespace se
 				se_assert(false && "Multiple packet receivers for the same PacketType cannot exist at the same time");
 				return;
 			}
-			struct Receiver : public IReceiver
+			struct Receiver final : public IReceiver
 			{
 				void process(const Packetman& _packetman, BinaryReader& _binaryReader, const bool _reliable, const uint16_t _requestId, Connection& _connection) final
 				{
@@ -473,7 +473,7 @@ namespace se
 				log::error("Multiple packet receivers for the same PacketType cannot exist at the same time, PacketType: " + toString(_packetType));
 				return;
 			}
-			struct Receiver : public IReceiver
+			struct Receiver final : public IReceiver
 			{
 				~Receiver()
 				{

@@ -98,9 +98,9 @@ namespace se
 			}
 		}
 
-		struct SocketTCP : public ISocketTCP
+		struct SocketTCP final : public ISocketTCP
 		{
-			struct SharedImpl : public boost::enable_shared_from_this<SharedImpl>
+			struct SharedImpl final : public boost::enable_shared_from_this<SharedImpl>
 			{
 				SharedImpl(IOService& _ioService)
 					: ioService(_ioService)

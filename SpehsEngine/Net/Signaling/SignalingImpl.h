@@ -11,7 +11,7 @@ namespace se
 {
 	namespace net
 	{
-		struct OutSignalingReceivedContext : public ISteamNetworkingSignalingRecvContext
+		struct OutSignalingReceivedContext final : public ISteamNetworkingSignalingRecvContext
 		{
 			OutSignalingReceivedContext(const Endpoint& _signalingServerEndpoint);
 			void SendRejectionSignal(const SteamNetworkingIdentity& peerSteamNetworkingIdentity, const void* pMsg, int cbMsg) final;
@@ -20,7 +20,7 @@ namespace se
 			const Endpoint signalingServerEndpoint;
 		};
 
-		struct InSignalingReceivedContext : public ISteamNetworkingSignalingRecvContext
+		struct InSignalingReceivedContext final : public ISteamNetworkingSignalingRecvContext
 		{
 			InSignalingReceivedContext(ISocketTCP& _signalingServerConnectedSocket);
 			void SendRejectionSignal(const SteamNetworkingIdentity& peerSteamNetworkingIdentity, const void* pMsg, int cbMsg) final;
@@ -30,7 +30,7 @@ namespace se
 		};
 
 		// Creates a static socket for this signaling server endpoint
-		struct OutConnectionSignaling : public ISteamNetworkingConnectionSignaling
+		struct OutConnectionSignaling final : public ISteamNetworkingConnectionSignaling
 		{
 			static ISocketTCP* getStaticSocket(const Endpoint& _signalingServerEndpoint);
 
@@ -49,7 +49,7 @@ namespace se
 		};
 
 		// Re-uses a socket that is already connected to a signaling server
-		struct InConnectionSignaling : public ISteamNetworkingConnectionSignaling
+		struct InConnectionSignaling final : public ISteamNetworkingConnectionSignaling
 		{
 			InConnectionSignaling(const NetIdentity _peerNetIdentity, ISocketTCP& _socket);
 			bool SendSignal(HSteamNetConnection hConn, const SteamNetConnectionInfo_t& info, const void* messageData, int messageSize) final;

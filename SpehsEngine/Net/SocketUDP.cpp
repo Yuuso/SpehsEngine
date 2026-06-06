@@ -98,10 +98,10 @@ namespace se
 	extern std::string workingDirectory;
 	namespace net
 	{
-		struct SocketUDP : public ISocketUDP
+		struct SocketUDP final : public ISocketUDP
 		{
 			//Received packets
-			struct SharedImpl : public boost::enable_shared_from_this<SharedImpl>
+			struct SharedImpl final : public boost::enable_shared_from_this<SharedImpl>
 			{
 				struct ReceivedPacket
 				{

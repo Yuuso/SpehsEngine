@@ -326,7 +326,7 @@ namespace ImGui
 
 	bool InputT(const String label, se::input::CustomEventParameters& customEventParameters, se::input::EventSignaler& eventSignaler, StateWrapper& stateWrapper)
 	{
-		struct State : public IState
+		struct State final : public IState
 		{
 			std::unique_ptr<se::input::CustomEventParametersRecorder> customEventParametersRecorder;
 		};
