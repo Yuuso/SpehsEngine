@@ -302,6 +302,10 @@ namespace se
 		{
 			return dopplerFactor;
 		}
+		const AudioResource* AudioSource::getResource() const
+		{
+			return resource.get();
+		}
 
 		void AudioSource::applyAttributes()
 		{

@@ -95,6 +95,7 @@ namespace se
 			DistanceAttenuation getDistanceAttenuation() const;
 			float getAttenuationRolloffFactor() const;
 			float getDopplerFactor() const;
+			const AudioResource* getResource() const;
 
 
 		private:
