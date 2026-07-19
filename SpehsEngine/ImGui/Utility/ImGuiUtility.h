@@ -78,6 +78,13 @@ namespace se
 
 namespace ImGui
 {
+	inline bool CollapsingHeader(const String _idLabel, const ImGuiTreeNodeFlags _flags = 0)
+	{
+		return ImGui::CollapsingHeader(_idLabel.pointer, _flags);
+	}
+	// Splits shown string into two parts, id part and mutable part. Useful when the contents of the header edit the shown header string.
+	bool CollapsingHeader2(const String idLabel, const String mutableLabel, const ImGuiTreeNodeFlags flags = 0);
+
 	// Drag scalars
 #define SE_IMGUI_DRAG_SCALAR(p_ScalarType, p_ImGuiDataType, p_Components, p_DefaultFormat, p_DefaultImGuiSliderFlags) \
 	inline bool DragScalar##p_Components(const String label, p_ScalarType& i, float speed, p_ScalarType min, p_ScalarType max, const String format = p_DefaultFormat, ImGuiSliderFlags flags = p_DefaultImGuiSliderFlags) \
@@ -212,11 +219,34 @@ namespace ImGui
 		const se::Time stepFast = se::Time(1000), ImGuiInputTextFlags flags = 0);
 	bool InputAngle(const String label, float& radians);
 
+	template<typename ContainerWithSize>
+	bool CollapsingHeaderContainer(const String _label, const ContainerWithSize& _container)
+	{
+		if (!_label)
+		{
+			return true;
+		}
+		else if (_container.empty())
+		{
+			return CollapsingHeader(_label);
+		}
+		else
+		{
+			constexpr size_t reservedLength = 7; // "(12345)"
+			std::string labelWithSize;
+			labelWithSize.reserve(reservedLength);
+			labelWithSize += "(";
+			labelWithSize += std::to_string(_container.size());
+			labelWithSize += ")";
+			return CollapsingHeader2(_label, labelWithSize);
+		}
+	}
+
 	template<typename T, typename ... Args>
 	bool InputT(const String label, std::vector<T>& vector, Args&& ... args)
 	{
 		bool changed = false;
-		if (!label || ImGui::CollapsingHeader(label))
+		if (CollapsingHeaderContainer(label, vector))
 		{
 			if (label)
 			{
@@ -311,13 +341,6 @@ namespace ImGui
 	}
 
 	bool InputT(const String label, se::TimeInfo& timeInfo);
-
-	inline bool CollapsingHeader(const String _idLabel, const ImGuiTreeNodeFlags _flags = 0)
-	{
-		return ImGui::CollapsingHeader(_idLabel.pointer, _flags);
-	}
-	// Splits shown string into two parts, id part and mutable part. Useful when the contents of the header edit the shown header string.
-	bool CollapsingHeader2(const String idLabel, const String mutableLabel, const ImGuiTreeNodeFlags flags = 0);
 
 	bool BeginCentered(const String label, bool* const open, const ImGuiWindowFlags flags = 0, const ImGuiCond centerCondition = ImGuiCond_Appearing);
 
